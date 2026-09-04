@@ -25,6 +25,7 @@ import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/tags_screen.dart';
 import '../features/qr/presentation/scanner_screen.dart';
 import '../domain/species/species_info.dart';
+import '../features/species/presentation/care_guide_screen.dart';
 import '../features/species/presentation/species_picker_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
@@ -49,6 +50,7 @@ abstract final class Routes {
   static String plantTimeline(String id) => '/plants/$id/timeline';
   static String plantGallery(String id) => '/plants/$id/gallery';
   static String plantSchedule(String id) => '/plants/$id/schedule';
+  static String plantCare(String id) => '/plants/$id/care';
   static String location(String id) => '/locations/$id';
   static const appearance = '/settings/appearance';
   static const notifications = '/settings/notifications';
@@ -130,6 +132,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),
       GoRoute(path: Routes.members, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const MembersScreen())),
       GoRoute(path: Routes.diagnosis, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const DiagnosisSettingsScreen())),
+      GoRoute(
+        path: '/plants/:id/care',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, CareGuideScreen(plantId: s.pathParameters['id']!)),
+      ),
       GoRoute(
         path: Routes.speciesPicker,
         parentNavigatorKey: rootNavigatorKey,

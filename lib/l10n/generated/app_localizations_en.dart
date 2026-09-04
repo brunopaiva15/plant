@@ -1876,4 +1876,596 @@ class AppLocalizationsEn extends AppLocalizations {
   String notifTaskDue(String title) {
     return 'Time for: $title';
   }
+
+  @override
+  String get careGuide => 'Care guide';
+
+  @override
+  String get careGuideSubtitle =>
+      'When to water, how much light, what to watch for.';
+
+  @override
+  String get careHowTo => 'How to care for it';
+
+  @override
+  String get careWatering => 'Watering';
+
+  @override
+  String get careLight => 'Light';
+
+  @override
+  String get careHumidity => 'Humidity';
+
+  @override
+  String get careTemperature => 'Temperature';
+
+  @override
+  String get careSoil => 'Soil';
+
+  @override
+  String get careFertilizing => 'Fertilizer';
+
+  @override
+  String get careRepotting => 'Repotting';
+
+  @override
+  String get careToxicity => 'Toxicity';
+
+  @override
+  String get careDifficulty => 'Difficulty';
+
+  @override
+  String get carePropagation => 'Propagation';
+
+  @override
+  String get careIssues => 'Watch out for';
+
+  @override
+  String get careTips => 'Good habits';
+
+  @override
+  String careEveryDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count days',
+      one: 'Every day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careWateringNow(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count days right now',
+      one: 'Every day right now',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careWateringSeasons(int summer, int winter) {
+    return '$summer days in season · $winter days in winter';
+  }
+
+  @override
+  String careFertilizeSeason(String from, String to) {
+    return 'from $from to $to';
+  }
+
+  @override
+  String get careNoFertilizer => 'No fertilizer needed';
+
+  @override
+  String careRepotMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count months',
+      one: 'Every month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String careRepotYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count years',
+      one: 'Every year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get careRepotNone => 'No repotting: grown as an annual';
+
+  @override
+  String careTempIdeal(int min, int max) {
+    return '$min to $max °C';
+  }
+
+  @override
+  String careTempMin(int min) {
+    return 'Handles down to $min °C';
+  }
+
+  @override
+  String get careLightShade => 'Shade';
+
+  @override
+  String get careLightLow => 'Low light';
+
+  @override
+  String get careLightIndirect => 'Indirect light';
+
+  @override
+  String get careLightBright => 'Bright indirect light';
+
+  @override
+  String get careLightSome => 'A few hours of sun';
+
+  @override
+  String get careLightFull => 'Full sun';
+
+  @override
+  String get careHumidityLow => 'Dry air is fine';
+
+  @override
+  String get careHumidityAverage => 'Average humidity';
+
+  @override
+  String get careHumidityHigh => 'Likes humid air';
+
+  @override
+  String get careDifficultyEasy => 'Easy';
+
+  @override
+  String get careDifficultyMedium => 'Moderate';
+
+  @override
+  String get careDifficultyDemanding => 'Demanding';
+
+  @override
+  String get careToxicSafe => 'No known hazard';
+
+  @override
+  String get careToxicMild => 'Mildly irritating';
+
+  @override
+  String get careToxicToxic => 'Toxic if eaten';
+
+  @override
+  String get careToxicUnknown => 'Toxicity unknown';
+
+  @override
+  String get careToxicPets => 'Keep away from pets and children.';
+
+  @override
+  String get careSoilStandard => 'All-purpose potting mix';
+
+  @override
+  String get careSoilDraining => 'Free-draining mix';
+
+  @override
+  String get careSoilCactus => 'Cactus and succulent mix';
+
+  @override
+  String get careSoilOrchid => 'Orchid bark';
+
+  @override
+  String get careSoilAcidic => 'Ericaceous (acidic) soil';
+
+  @override
+  String get careSoilRich => 'Rich compost-based mix';
+
+  @override
+  String get careSoilAquatic => 'No soil at all';
+
+  @override
+  String get carePropCutting => 'Stem cutting';
+
+  @override
+  String get carePropLeaf => 'Leaf cutting';
+
+  @override
+  String get carePropDivision => 'Division';
+
+  @override
+  String get carePropOffsets => 'Offsets';
+
+  @override
+  String get carePropLayering => 'Layering';
+
+  @override
+  String get carePropSeed => 'Seed';
+
+  @override
+  String get carePropWater => 'Rooting in water';
+
+  @override
+  String get carePropTuber => 'Splitting tubers';
+
+  @override
+  String get careMatchSpecies => 'Species guide';
+
+  @override
+  String careMatchGenus(String name) {
+    return '$name genus guide';
+  }
+
+  @override
+  String careMatchFamily(String name) {
+    return '$name family guide';
+  }
+
+  @override
+  String get careMatchGeneric => 'General guidance';
+
+  @override
+  String get careMatchNote =>
+      'These figures come from the botanical group, not the exact species. Set the species to refine them.';
+
+  @override
+  String get careDisclaimer =>
+      'Guidance, not rules: your light, your pot and your air matter just as much.';
+
+  @override
+  String get careApplyToSchedule => 'Apply to schedule';
+
+  @override
+  String get careScheduleApplied => 'Schedule updated';
+
+  @override
+  String careSuggestedIntervals(int water, int fertilize) {
+    return 'Water every $water days, feed every $fertilize days';
+  }
+
+  @override
+  String get careBadgeMist => 'Mist';
+
+  @override
+  String get careBadgeDormant => 'Winter rest';
+
+  @override
+  String get careBadgeOutdoor => 'Happy outdoors';
+
+  @override
+  String get careIssueOverwatering => 'Overwatering: soft, yellow leaves';
+
+  @override
+  String get careIssueUnderwatering => 'Underwatering: drooping leaves';
+
+  @override
+  String get careIssueRootRot => 'Root rot';
+
+  @override
+  String get careIssueSpiderMites => 'Spider mites (fine webbing)';
+
+  @override
+  String get careIssueMealybugs => 'Mealybugs';
+
+  @override
+  String get careIssueScale => 'Scale insects';
+
+  @override
+  String get careIssueAphids => 'Aphids';
+
+  @override
+  String get careIssueFungusGnats => 'Fungus gnats';
+
+  @override
+  String get careIssueWhitefly => 'Whitefly';
+
+  @override
+  String get careIssueSlugs => 'Slugs and snails';
+
+  @override
+  String get careIssuePowderyMildew => 'Powdery mildew';
+
+  @override
+  String get careIssueLeafSpot => 'Leaf spot';
+
+  @override
+  String get careIssueBlight => 'Blight';
+
+  @override
+  String get careIssueSunburn => 'Sunburn';
+
+  @override
+  String get careIssueDryTips => 'Dry brown leaf tips';
+
+  @override
+  String get careIssueLeafDrop => 'Leaf drop';
+
+  @override
+  String get careIssueEtiolation => 'Stretching from too little light';
+
+  @override
+  String get careIssueChlorosis => 'Chlorosis: pale leaves, green veins';
+
+  @override
+  String get careIssueBlossomEndRot => 'Blossom end rot';
+
+  @override
+  String get careTipFingerTest =>
+      'Push a finger in: water when the top 2 cm are dry.';
+
+  @override
+  String get careTipDrySoilFirst =>
+      'Let the soil dry out completely between waterings.';
+
+  @override
+  String get careTipNeverDryOut => 'Never let the soil dry out completely.';
+
+  @override
+  String get careTipEvenWatering =>
+      'Water evenly: irregular watering splits the fruit.';
+
+  @override
+  String get careTipWaterAtBase => 'Water at the base, keeping the leaves dry.';
+
+  @override
+  String get careTipNoWaterOnLeaves =>
+      'Keep water off the leaves: droplets leave marks.';
+
+  @override
+  String get careTipBottomWatering =>
+      'Water from below: stand the pot in water for 20 minutes.';
+
+  @override
+  String get careTipFilteredWater =>
+      'Use rain or filtered water: hard water browns the tips.';
+
+  @override
+  String get careTipRainwaterOnly =>
+      'Water with rainwater: this plant hates lime.';
+
+  @override
+  String get careTipThirstyPlant => 'A thirsty one: check daily in summer.';
+
+  @override
+  String get careTipDroopSignal => 'It droops when thirsty: that is your cue.';
+
+  @override
+  String get careTipWinterDry => 'Keep it nearly dry through winter.';
+
+  @override
+  String get careTipWinterRest =>
+      'Cut watering right back in winter: it rests.';
+
+  @override
+  String get careTipSummerDormant =>
+      'It rests in summer: water very little then.';
+
+  @override
+  String get careTipNoWaterWhileSplitting =>
+      'Do not water while it is splitting into new leaves.';
+
+  @override
+  String get careTipOrchidSoak =>
+      'Soak the pot for 10 minutes, then drain fully.';
+
+  @override
+  String get careTipSoakMount => 'Soak the whole plant, then let it air-dry.';
+
+  @override
+  String get careTipDryUpsideDown =>
+      'After soaking, dry it upside down: water in the centre rots it.';
+
+  @override
+  String get careTipWaterInTheCup =>
+      'Fill the central cup and refresh the water weekly.';
+
+  @override
+  String get careTipNoSoil =>
+      'It lives without soil: just rest it on a holder.';
+
+  @override
+  String get careTipGreenRoots =>
+      'Green roots mean hydrated. Silvery roots mean water it.';
+
+  @override
+  String get careTipHumidityTray =>
+      'Stand the pot on a tray of damp clay pebbles.';
+
+  @override
+  String get careTipNoDirectSun =>
+      'Keep it out of direct sun: it scorches the leaves.';
+
+  @override
+  String get careTipToleratesLowLight =>
+      'It copes with a dim room but grows faster near a window.';
+
+  @override
+  String get careTipToleratesNeglect =>
+      'It forgives neglect: when in doubt, do not water.';
+
+  @override
+  String get careTipBrightForColor =>
+      'The brighter the light, the stronger the colours.';
+
+  @override
+  String get careTipRotatePot =>
+      'Turn the pot a quarter each week so it grows straight.';
+
+  @override
+  String get careTipHatesMoving =>
+      'It hates being moved: find one spot and leave it there.';
+
+  @override
+  String get careTipWipeLeaves =>
+      'Wipe the leaves: they breathe and catch light better.';
+
+  @override
+  String get careTipTrimToBushOut => 'Trim leggy stems and it will branch out.';
+
+  @override
+  String get careTipMonsteraSupport =>
+      'Give it a moss pole: leaves get bigger and more split.';
+
+  @override
+  String get careTipShallowPot => 'A wide, shallow pot suits it better.';
+
+  @override
+  String get careTipLikesBeingPotbound =>
+      'It flowers better when snug: repot rarely.';
+
+  @override
+  String get careTipTrunkStoresWater =>
+      'The swollen base stores water: too little beats too much.';
+
+  @override
+  String get careTipPupsToShare =>
+      'It makes pups: detach them to propagate or give away.';
+
+  @override
+  String get careTipKeepFlowerSpike =>
+      'Do not cut a green flower spike: it can rebloom on it.';
+
+  @override
+  String get careTipDarkForRebloom =>
+      'To rebloom, give it six weeks of long, cool nights.';
+
+  @override
+  String get careTipNotADesertCactus =>
+      'Not a desert cactus: it likes shade and moisture.';
+
+  @override
+  String get careTipDeadheadFlowers =>
+      'Remove spent flowers and it keeps blooming.';
+
+  @override
+  String get careTipPinchFlowers =>
+      'Pinch off flower buds: the leaves stay tender.';
+
+  @override
+  String get careTipHarvestTop =>
+      'Harvest from the top, above a pair of leaves.';
+
+  @override
+  String get careTipHarvestOutside =>
+      'Pick the outer leaves: the centre keeps growing.';
+
+  @override
+  String get careTipStakeAndPrune => 'Stake it and pinch out the side shoots.';
+
+  @override
+  String get careTipPrunesInSpring =>
+      'Prune in spring, never into old dry wood.';
+
+  @override
+  String get careTipPrunesAfterFlowering =>
+      'Prune right after flowering to keep it compact.';
+
+  @override
+  String get careTipWinterPruning =>
+      'Prune in winter, frost-free, while it sleeps.';
+
+  @override
+  String get careTipPruneAfterHarvest => 'Prune after harvest, not in spring.';
+
+  @override
+  String get careTipCutSpentCanes => 'Cut spent fruiting canes to the ground.';
+
+  @override
+  String get careTipTrimTwiceAYear =>
+      'Two trims a year is enough: June and late August.';
+
+  @override
+  String get careTipContainItsRoots =>
+      'Grow it in a pot or add a root barrier: it spreads fast.';
+
+  @override
+  String get careTipMulchIt => 'Mulch the base: less watering, fewer weeds.';
+
+  @override
+  String get careTipAcidSoil =>
+      'It needs acidic soil: skip all-purpose compost.';
+
+  @override
+  String get careTipBlueNeedsAcid =>
+      'Blue flowers need acidic soil; in lime they turn pink.';
+
+  @override
+  String get careTipCitrusFertilizer =>
+      'Use a dedicated citrus feed all through the growing season.';
+
+  @override
+  String get careTipNoFertilizer =>
+      'No feeding: rich soil costs it scent and shape.';
+
+  @override
+  String get careTipNoNitrogen => 'Skip nitrogen feed: it makes its own.';
+
+  @override
+  String get careTipLetFoliageDieBack =>
+      'Let the foliage yellow in place: it refuels the bulb.';
+
+  @override
+  String get careTipDiesBackInWinter =>
+      'It vanishes in winter and returns in spring: that is normal.';
+
+  @override
+  String get careTipSummerOutdoors =>
+      'Move it outside for summer, in shade for the first days.';
+
+  @override
+  String get careTipWinterIndoors => 'Bring it in before the first frost.';
+
+  @override
+  String get careTipWinterShelter => 'Overwinter it in a cool, bright room.';
+
+  @override
+  String get careTipWinterCool =>
+      'A cool, bright winter (10–14 °C) does it good.';
+
+  @override
+  String get careTipCoolerIsBetter =>
+      'It prefers cool: keep it away from radiators.';
+
+  @override
+  String get careTipHardyOutdoors =>
+      'Hardy: it overwinters outdoors unprotected.';
+
+  @override
+  String get careTipShelterFromWind =>
+      'Shelter it from wind: the foliage tears easily.';
+
+  @override
+  String get careTipAirFlow => 'Give it airflow: stagnant air invites disease.';
+
+  @override
+  String get careTipSpiderMiteWatch =>
+      'Check under the leaves: spider mites love it.';
+
+  @override
+  String get careTipSlugWatch =>
+      'Protect the young shoots from slugs in spring.';
+
+  @override
+  String get careTipBoxMothWatch =>
+      'Watch for box moth: caterpillars and silk in the foliage.';
+
+  @override
+  String get careTipSapIrritant =>
+      'Its sap irritates skin and eyes: wear gloves to prune.';
+
+  @override
+  String get careTipVeryToxic =>
+      'Every part is highly toxic, including the smoke if burned.';
+
+  @override
+  String get careTipSharpSpines =>
+      'Its spines are dangerous: keep it away from walkways.';
+
+  @override
+  String get careTipSplitsAreNormal =>
+      'Leaves split with age: that is normal, not a disease.';
+
+  @override
+  String get careTipDryToBloom => 'A little drought stress triggers flowering.';
 }

@@ -15,6 +15,8 @@ import '../data/repositories/tag_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
 import '../data/services/anthropic_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
+import '../data/species/catalog_care_guide.dart';
+import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
@@ -183,3 +185,6 @@ final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.
 final speciesServiceProvider = Provider<SpeciesService>((ref) => GbifSpeciesService());
+
+/// Fiches d'entretien (catalogue intégré, hors ligne).
+final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide());

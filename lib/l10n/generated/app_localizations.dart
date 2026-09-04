@@ -3263,6 +3263,978 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'C\'est le moment : {title}'**
   String notifTaskDue(String title);
+
+  /// No description provided for @careGuide.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche d\'entretien'**
+  String get careGuide;
+
+  /// No description provided for @careGuideSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand arroser, quelle lumière, que surveiller.'**
+  String get careGuideSubtitle;
+
+  /// No description provided for @careHowTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment en prendre soin'**
+  String get careHowTo;
+
+  /// No description provided for @careWatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosage'**
+  String get careWatering;
+
+  /// No description provided for @careLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière'**
+  String get careLight;
+
+  /// No description provided for @careHumidity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humidité'**
+  String get careHumidity;
+
+  /// No description provided for @careTemperature.
+  ///
+  /// In fr, this message translates to:
+  /// **'Température'**
+  String get careTemperature;
+
+  /// No description provided for @careSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Substrat'**
+  String get careSoil;
+
+  /// No description provided for @careFertilizing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais'**
+  String get careFertilizing;
+
+  /// No description provided for @careRepotting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rempotage'**
+  String get careRepotting;
+
+  /// No description provided for @careToxicity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toxicité'**
+  String get careToxicity;
+
+  /// No description provided for @careDifficulty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Difficulté'**
+  String get careDifficulty;
+
+  /// No description provided for @carePropagation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Multiplication'**
+  String get carePropagation;
+
+  /// No description provided for @careIssues.
+  ///
+  /// In fr, this message translates to:
+  /// **'À surveiller'**
+  String get careIssues;
+
+  /// No description provided for @careTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bons réflexes'**
+  String get careTips;
+
+  /// No description provided for @careEveryDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Tous les jours} other{Tous les {count} jours}}'**
+  String careEveryDays(int count);
+
+  /// No description provided for @careWateringNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Tous les jours en ce moment} other{Tous les {count} jours en ce moment}}'**
+  String careWateringNow(int count);
+
+  /// No description provided for @careWateringSeasons.
+  ///
+  /// In fr, this message translates to:
+  /// **'{summer} j en pleine saison · {winter} j en hiver'**
+  String careWateringSeasons(int summer, int winter);
+
+  /// No description provided for @careFertilizeSeason.
+  ///
+  /// In fr, this message translates to:
+  /// **'de {from} à {to}'**
+  String careFertilizeSeason(String from, String to);
+
+  /// No description provided for @careNoFertilizer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun engrais nécessaire'**
+  String get careNoFertilizer;
+
+  /// No description provided for @careRepotMonths.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Chaque mois} other{Tous les {count} mois}}'**
+  String careRepotMonths(int count);
+
+  /// No description provided for @careRepotYears.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Tous les ans} other{Tous les {count} ans}}'**
+  String careRepotYears(int count);
+
+  /// No description provided for @careRepotNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de rempotage : culture annuelle'**
+  String get careRepotNone;
+
+  /// No description provided for @careTempIdeal.
+  ///
+  /// In fr, this message translates to:
+  /// **'{min} à {max} °C'**
+  String careTempIdeal(int min, int max);
+
+  /// No description provided for @careTempMin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supporte jusqu\'à {min} °C'**
+  String careTempMin(int min);
+
+  /// No description provided for @careLightShade.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ombre'**
+  String get careLightShade;
+
+  /// No description provided for @careLightLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faible lumière'**
+  String get careLightLow;
+
+  /// No description provided for @careLightIndirect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière indirecte'**
+  String get careLightIndirect;
+
+  /// No description provided for @careLightBright.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière vive indirecte'**
+  String get careLightBright;
+
+  /// No description provided for @careLightSome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques heures de soleil'**
+  String get careLightSome;
+
+  /// No description provided for @careLightFull.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plein soleil'**
+  String get careLightFull;
+
+  /// No description provided for @careHumidityLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air sec accepté'**
+  String get careHumidityLow;
+
+  /// No description provided for @careHumidityAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humidité ordinaire'**
+  String get careHumidityAverage;
+
+  /// No description provided for @careHumidityHigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aime l\'air humide'**
+  String get careHumidityHigh;
+
+  /// No description provided for @careDifficultyEasy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facile'**
+  String get careDifficultyEasy;
+
+  /// No description provided for @careDifficultyMedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne'**
+  String get careDifficultyMedium;
+
+  /// No description provided for @careDifficultyDemanding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exigeante'**
+  String get careDifficultyDemanding;
+
+  /// No description provided for @careToxicSafe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans danger connu'**
+  String get careToxicSafe;
+
+  /// No description provided for @careToxicMild.
+  ///
+  /// In fr, this message translates to:
+  /// **'Légèrement irritante'**
+  String get careToxicMild;
+
+  /// No description provided for @careToxicToxic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toxique si ingérée'**
+  String get careToxicToxic;
+
+  /// No description provided for @careToxicUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toxicité non renseignée'**
+  String get careToxicUnknown;
+
+  /// No description provided for @careToxicPets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tenir hors de portée des animaux et des enfants.'**
+  String get careToxicPets;
+
+  /// No description provided for @careSoilStandard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau universel'**
+  String get careSoilStandard;
+
+  /// No description provided for @careSoilDraining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau très drainant'**
+  String get careSoilDraining;
+
+  /// No description provided for @careSoilCactus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau cactus et succulentes'**
+  String get careSoilCactus;
+
+  /// No description provided for @careSoilOrchid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écorces pour orchidées'**
+  String get careSoilOrchid;
+
+  /// No description provided for @careSoilAcidic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terre de bruyère'**
+  String get careSoilAcidic;
+
+  /// No description provided for @careSoilRich.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau riche en compost'**
+  String get careSoilRich;
+
+  /// No description provided for @careSoilAquatic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans substrat'**
+  String get careSoilAquatic;
+
+  /// No description provided for @carePropCutting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture de tige'**
+  String get carePropCutting;
+
+  /// No description provided for @carePropLeaf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture de feuille'**
+  String get carePropLeaf;
+
+  /// No description provided for @carePropDivision.
+  ///
+  /// In fr, this message translates to:
+  /// **'Division de la touffe'**
+  String get carePropDivision;
+
+  /// No description provided for @carePropOffsets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejets'**
+  String get carePropOffsets;
+
+  /// No description provided for @carePropLayering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marcottage'**
+  String get carePropLayering;
+
+  /// No description provided for @carePropSeed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semis'**
+  String get carePropSeed;
+
+  /// No description provided for @carePropWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture dans l\'eau'**
+  String get carePropWater;
+
+  /// No description provided for @carePropTuber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Séparation des tubercules'**
+  String get carePropTuber;
+
+  /// No description provided for @careMatchSpecies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche de l\'espèce'**
+  String get careMatchSpecies;
+
+  /// No description provided for @careMatchGenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche du genre {name}'**
+  String careMatchGenus(String name);
+
+  /// No description provided for @careMatchFamily.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche de la famille des {name}'**
+  String careMatchFamily(String name);
+
+  /// No description provided for @careMatchGeneric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repères généraux'**
+  String get careMatchGeneric;
+
+  /// No description provided for @careMatchNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces repères viennent du groupe botanique, pas de l\'espèce exacte. Précisez l\'espèce pour affiner.'**
+  String get careMatchNote;
+
+  /// No description provided for @careDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des repères, pas des règles : votre lumière, votre pot et votre air comptent autant.'**
+  String get careDisclaimer;
+
+  /// No description provided for @careApplyToSchedule.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appliquer au planning'**
+  String get careApplyToSchedule;
+
+  /// No description provided for @careScheduleApplied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Planning mis à jour'**
+  String get careScheduleApplied;
+
+  /// No description provided for @careSuggestedIntervals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosage tous les {water} jours, engrais tous les {fertilize} jours'**
+  String careSuggestedIntervals(int water, int fertilize);
+
+  /// No description provided for @careBadgeMist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brumiser'**
+  String get careBadgeMist;
+
+  /// No description provided for @careBadgeDormant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repos hivernal'**
+  String get careBadgeDormant;
+
+  /// No description provided for @careBadgeOutdoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supporte l\'extérieur'**
+  String get careBadgeOutdoor;
+
+  /// No description provided for @careIssueOverwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excès d\'eau : feuilles molles et jaunes'**
+  String get careIssueOverwatering;
+
+  /// No description provided for @careIssueUnderwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Manque d\'eau : feuilles qui retombent'**
+  String get careIssueUnderwatering;
+
+  /// No description provided for @careIssueRootRot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourriture des racines'**
+  String get careIssueRootRot;
+
+  /// No description provided for @careIssueSpiderMites.
+  ///
+  /// In fr, this message translates to:
+  /// **'Araignées rouges (fines toiles)'**
+  String get careIssueSpiderMites;
+
+  /// No description provided for @careIssueMealybugs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cochenilles farineuses'**
+  String get careIssueMealybugs;
+
+  /// No description provided for @careIssueScale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cochenilles à bouclier'**
+  String get careIssueScale;
+
+  /// No description provided for @careIssueAphids.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pucerons'**
+  String get careIssueAphids;
+
+  /// No description provided for @careIssueFungusGnats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moucherons du terreau'**
+  String get careIssueFungusGnats;
+
+  /// No description provided for @careIssueWhitefly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aleurodes (mouches blanches)'**
+  String get careIssueWhitefly;
+
+  /// No description provided for @careIssueSlugs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Limaces et escargots'**
+  String get careIssueSlugs;
+
+  /// No description provided for @careIssuePowderyMildew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oïdium (feutrage blanc)'**
+  String get careIssuePowderyMildew;
+
+  /// No description provided for @careIssueLeafSpot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taches foliaires'**
+  String get careIssueLeafSpot;
+
+  /// No description provided for @careIssueBlight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mildiou'**
+  String get careIssueBlight;
+
+  /// No description provided for @careIssueSunburn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brûlures du soleil'**
+  String get careIssueSunburn;
+
+  /// No description provided for @careIssueDryTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointes sèches et brunes'**
+  String get careIssueDryTips;
+
+  /// No description provided for @careIssueLeafDrop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chute de feuilles'**
+  String get careIssueLeafDrop;
+
+  /// No description provided for @careIssueEtiolation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étiolement par manque de lumière'**
+  String get careIssueEtiolation;
+
+  /// No description provided for @careIssueChlorosis.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chlorose : feuilles pâles, nervures vertes'**
+  String get careIssueChlorosis;
+
+  /// No description provided for @careIssueBlossomEndRot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nécrose apicale des fruits'**
+  String get careIssueBlossomEndRot;
+
+  /// No description provided for @careTipFingerTest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enfoncez un doigt : arrosez quand les 2 premiers centimètres sont secs.'**
+  String get careTipFingerTest;
+
+  /// No description provided for @careTipDrySoilFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laissez le terreau sécher complètement entre deux arrosages.'**
+  String get careTipDrySoilFirst;
+
+  /// No description provided for @careTipNeverDryOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne laissez jamais le terreau sécher complètement.'**
+  String get careTipNeverDryOut;
+
+  /// No description provided for @careTipEvenWatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosez régulièrement : les à-coups font éclater les fruits.'**
+  String get careTipEvenWatering;
+
+  /// No description provided for @careTipWaterAtBase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosez au pied, sans mouiller le feuillage.'**
+  String get careTipWaterAtBase;
+
+  /// No description provided for @careTipNoWaterOnLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne mouillez pas les feuilles : l\'eau stagnante les tache.'**
+  String get careTipNoWaterOnLeaves;
+
+  /// No description provided for @careTipBottomWatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosez par le bas : posez le pot dans une soucoupe d\'eau 20 minutes.'**
+  String get careTipBottomWatering;
+
+  /// No description provided for @careTipFilteredWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférez l\'eau de pluie ou filtrée : le calcaire brunit les pointes.'**
+  String get careTipFilteredWater;
+
+  /// No description provided for @careTipRainwaterOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosez à l\'eau de pluie : cette plante déteste le calcaire.'**
+  String get careTipRainwaterOnly;
+
+  /// No description provided for @careTipThirstyPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Grosse buveuse : en été, vérifiez tous les jours.'**
+  String get careTipThirstyPlant;
+
+  /// No description provided for @careTipDroopSignal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle s\'affaisse quand elle a soif : c\'est votre signal.'**
+  String get careTipDroopSignal;
+
+  /// No description provided for @careTipWinterDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'En hiver, gardez-la presque au sec.'**
+  String get careTipWinterDry;
+
+  /// No description provided for @careTipWinterRest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ralentissez fortement l\'arrosage en hiver : elle se repose.'**
+  String get careTipWinterRest;
+
+  /// No description provided for @careTipSummerDormant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle se repose en été : arrosez très peu à cette période.'**
+  String get careTipSummerDormant;
+
+  /// No description provided for @careTipNoWaterWhileSplitting.
+  ///
+  /// In fr, this message translates to:
+  /// **'N\'arrosez pas pendant qu\'elle change de feuilles.'**
+  String get careTipNoWaterWhileSplitting;
+
+  /// No description provided for @careTipOrchidSoak.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trempez le pot 10 minutes, puis laissez bien égoutter.'**
+  String get careTipOrchidSoak;
+
+  /// No description provided for @careTipSoakMount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trempez la plante entière, puis laissez-la sécher à l\'air.'**
+  String get careTipSoakMount;
+
+  /// No description provided for @careTipDryUpsideDown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après le bain, laissez-la sécher tête en bas : l\'eau au cœur la fait pourrir.'**
+  String get careTipDryUpsideDown;
+
+  /// No description provided for @careTipWaterInTheCup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplissez la rosette centrale et renouvelez l\'eau chaque semaine.'**
+  String get careTipWaterInTheCup;
+
+  /// No description provided for @careTipNoSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle vit sans terre : posez-la simplement sur un support.'**
+  String get careTipNoSoil;
+
+  /// No description provided for @careTipGreenRoots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Racines vertes = bien hydratée. Argentées = il est temps d\'arroser.'**
+  String get careTipGreenRoots;
+
+  /// No description provided for @careTipHumidityTray.
+  ///
+  /// In fr, this message translates to:
+  /// **'Posez le pot sur un lit de billes d\'argile humides.'**
+  String get careTipHumidityTray;
+
+  /// No description provided for @careTipNoDirectSun.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évitez le soleil direct : il brûle le feuillage.'**
+  String get careTipNoDirectSun;
+
+  /// No description provided for @careTipToleratesLowLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle supporte une pièce peu lumineuse, mais pousse plus vite près d\'une fenêtre.'**
+  String get careTipToleratesLowLight;
+
+  /// No description provided for @careTipToleratesNeglect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle pardonne les oublis : en cas de doute, n\'arrosez pas.'**
+  String get careTipToleratesNeglect;
+
+  /// No description provided for @careTipBrightForColor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus la lumière est vive, plus les couleurs sont marquées.'**
+  String get careTipBrightForColor;
+
+  /// No description provided for @careTipRotatePot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tournez le pot d\'un quart de tour chaque semaine pour qu\'elle reste droite.'**
+  String get careTipRotatePot;
+
+  /// No description provided for @careTipHatesMoving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle déteste être déplacée : trouvez-lui une place et laissez-la.'**
+  String get careTipHatesMoving;
+
+  /// No description provided for @careTipWipeLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dépoussiérez les feuilles : elles respirent et captent mieux la lumière.'**
+  String get careTipWipeLeaves;
+
+  /// No description provided for @careTipTrimToBushOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taillez les tiges trop longues : elle se ramifiera.'**
+  String get careTipTrimToBushOut;
+
+  /// No description provided for @careTipMonsteraSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Offrez-lui un tuteur moussu : les feuilles deviendront plus grandes et découpées.'**
+  String get careTipMonsteraSupport;
+
+  /// No description provided for @careTipShallowPot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un pot large et peu profond lui convient mieux.'**
+  String get careTipShallowPot;
+
+  /// No description provided for @careTipLikesBeingPotbound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle fleurit mieux à l\'étroit : rempotez rarement.'**
+  String get careTipLikesBeingPotbound;
+
+  /// No description provided for @careTipTrunkStoresWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Son pied renflé stocke l\'eau : mieux vaut trop peu que trop.'**
+  String get careTipTrunkStoresWater;
+
+  /// No description provided for @careTipPupsToShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle fait des rejets : détachez-les pour multiplier ou offrir.'**
+  String get careTipPupsToShare;
+
+  /// No description provided for @careTipKeepFlowerSpike.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne coupez pas la hampe verte : elle peut refleurir dessus.'**
+  String get careTipKeepFlowerSpike;
+
+  /// No description provided for @careTipDarkForRebloom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour la refaire fleurir, offrez-lui six semaines de nuits longues et fraîches.'**
+  String get careTipDarkForRebloom;
+
+  /// No description provided for @careTipNotADesertCactus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce n\'est pas un cactus du désert : il aime l\'ombre et l\'humidité.'**
+  String get careTipNotADesertCactus;
+
+  /// No description provided for @careTipDeadheadFlowers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirez les fleurs fanées : elle refleurira plus longtemps.'**
+  String get careTipDeadheadFlowers;
+
+  /// No description provided for @careTipPinchFlowers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pincez les fleurs dès qu\'elles montent : les feuilles restent tendres.'**
+  String get careTipPinchFlowers;
+
+  /// No description provided for @careTipHarvestTop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récoltez par le haut, au-dessus d\'une paire de feuilles.'**
+  String get careTipHarvestTop;
+
+  /// No description provided for @careTipHarvestOutside.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cueillez les feuilles extérieures : le cœur continue de pousser.'**
+  String get careTipHarvestOutside;
+
+  /// No description provided for @careTipStakeAndPrune.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuteurez et supprimez les gourmands entre tige et branche.'**
+  String get careTipStakeAndPrune;
+
+  /// No description provided for @careTipPrunesInSpring.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taillez au printemps, jamais dans le vieux bois sec.'**
+  String get careTipPrunesInSpring;
+
+  /// No description provided for @careTipPrunesAfterFlowering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taillez juste après la floraison pour garder une touffe compacte.'**
+  String get careTipPrunesAfterFlowering;
+
+  /// No description provided for @careTipWinterPruning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taillez en hiver, hors gel, quand la plante dort.'**
+  String get careTipWinterPruning;
+
+  /// No description provided for @careTipPruneAfterHarvest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taillez après la récolte, pas au printemps.'**
+  String get careTipPruneAfterHarvest;
+
+  /// No description provided for @careTipCutSpentCanes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coupez à ras les tiges qui ont fructifié.'**
+  String get careTipCutSpentCanes;
+
+  /// No description provided for @careTipTrimTwiceAYear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deux tailles par an suffisent : juin et fin août.'**
+  String get careTipTrimTwiceAYear;
+
+  /// No description provided for @careTipContainItsRoots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plantez-la en pot ou posez une barrière anti-rhizome : elle envahit tout.'**
+  String get careTipContainItsRoots;
+
+  /// No description provided for @careTipMulchIt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paillez le pied : moins d\'arrosages, moins de mauvaises herbes.'**
+  String get careTipMulchIt;
+
+  /// No description provided for @careTipAcidSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle exige une terre acide : évitez le terreau universel.'**
+  String get careTipAcidSoil;
+
+  /// No description provided for @careTipBlueNeedsAcid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les fleurs bleues demandent un sol acide ; en sol calcaire elles virent au rose.'**
+  String get careTipBlueNeedsAcid;
+
+  /// No description provided for @careTipCitrusFertilizer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisez un engrais spécial agrumes pendant toute la belle saison.'**
+  String get careTipCitrusFertilizer;
+
+  /// No description provided for @careTipNoFertilizer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas d\'engrais : trop riche, elle perd son parfum et sa tenue.'**
+  String get careTipNoFertilizer;
+
+  /// No description provided for @careTipNoNitrogen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évitez l\'engrais azoté : elle fabrique son propre azote.'**
+  String get careTipNoNitrogen;
+
+  /// No description provided for @careTipLetFoliageDieBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laissez le feuillage jaunir sur pied : il recharge le bulbe.'**
+  String get careTipLetFoliageDieBack;
+
+  /// No description provided for @careTipDiesBackInWinter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle disparaît en hiver et repart au printemps : c\'est normal.'**
+  String get careTipDiesBackInWinter;
+
+  /// No description provided for @careTipSummerOutdoors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sortez-la l\'été, à l\'ombre les premiers jours.'**
+  String get careTipSummerOutdoors;
+
+  /// No description provided for @careTipWinterIndoors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rentrez-la avant les premières gelées.'**
+  String get careTipWinterIndoors;
+
+  /// No description provided for @careTipWinterShelter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abritez-la l\'hiver dans une pièce fraîche et lumineuse.'**
+  String get careTipWinterShelter;
+
+  /// No description provided for @careTipWinterCool.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un hiver frais (10–14 °C) et lumineux lui fait du bien.'**
+  String get careTipWinterCool;
+
+  /// No description provided for @careTipCoolerIsBetter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle préfère la fraîcheur : évitez la proximité d\'un radiateur.'**
+  String get careTipCoolerIsBetter;
+
+  /// No description provided for @careTipHardyOutdoors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rustique : elle passe l\'hiver dehors sans protection.'**
+  String get careTipHardyOutdoors;
+
+  /// No description provided for @careTipShelterFromWind.
+  ///
+  /// In fr, this message translates to:
+  /// **'Placez-la à l\'abri du vent : le feuillage s\'abîme vite.'**
+  String get careTipShelterFromWind;
+
+  /// No description provided for @careTipAirFlow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aérez autour d\'elle : l\'air confiné favorise les maladies.'**
+  String get careTipAirFlow;
+
+  /// No description provided for @careTipSpiderMiteWatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inspectez le dessous des feuilles : les araignées rouges l\'adorent.'**
+  String get careTipSpiderMiteWatch;
+
+  /// No description provided for @careTipSlugWatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Protégez les jeunes pousses des limaces au printemps.'**
+  String get careTipSlugWatch;
+
+  /// No description provided for @careTipBoxMothWatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveillez la pyrale : chenilles et fils de soie dans le feuillage.'**
+  String get careTipBoxMothWatch;
+
+  /// No description provided for @careTipSapIrritant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sa sève irrite la peau et les yeux : portez des gants pour la tailler.'**
+  String get careTipSapIrritant;
+
+  /// No description provided for @careTipVeryToxic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes ses parties sont très toxiques, y compris la fumée si on la brûle.'**
+  String get careTipVeryToxic;
+
+  /// No description provided for @careTipSharpSpines.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ses pointes sont dangereuses : éloignez-la des passages.'**
+  String get careTipSharpSpines;
+
+  /// No description provided for @careTipSplitsAreNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les feuilles se fendent avec l\'âge : c\'est normal, pas une maladie.'**
+  String get careTipSplitsAreNormal;
+
+  /// No description provided for @careTipDryToBloom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un léger stress hydrique déclenche la floraison.'**
+  String get careTipDryToBloom;
 }
 
 class _AppLocalizationsDelegate

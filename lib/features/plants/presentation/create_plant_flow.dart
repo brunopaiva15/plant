@@ -21,6 +21,8 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../account/application/membership_providers.dart';
+import '../../../core/l10n/care_labels.dart';
+import '../../../domain/care/care_guide.dart';
 import '../../species/presentation/species_field.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
@@ -74,6 +76,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   DateTime? _acquiredAt;
   int _watering = AppConfig.defaultWateringInterval;
   int _fertilizing = AppConfig.defaultFertilizingInterval;
+
+  /// Vrai dès que l'utilisateur règle un intervalle à la main : la fiche
+  /// d'entretien ne doit plus écraser son choix.
+  bool _intervalsTouched = false;
   bool _more = false;
   late String? _locationId = widget.initialLocationId;
   bool _noLocation = false;
@@ -121,6 +127,17 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
     setState(() {
       _identification = ref.read(photoStorageProvider).absolutePath(photo.filePath).then((path) => identifier.identify([File(path)], language: lang)).catchError((_) => <IdentificationCandidate>[]);
+    });
+  }
+
+  /// Reprend les intervalles conseillés par la fiche d'entretien de l'espèce,
+  /// tant que l'utilisateur ne les a pas réglés lui-même.
+  void _applyCareProfile(String scientificName, {String? family}) {
+    final care = ref.read(careGuideProvider).resolve(scientificName, family: family);
+    setState(() {
+      if (_intervalsTouched) return;
+      _watering = care.profile.wateringDaysFor(DateTime.now().month);
+      _fertilizing = care.profile.fertilizingDays ?? 0;
     });
   }
 
@@ -274,7 +291,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: Space.sm),
-          SpeciesField(controller: _species, onPicked: (s) => setState(() { if (_name.text.trim().isEmpty) _name.text = s.commonName ?? s.scientificName.split(' ').first; })),
+          SpeciesField(
+            controller: _species,
+            onPicked: (s) {
+              if (_name.text.trim().isEmpty) _name.text = s.commonName ?? s.scientificName.split(' ').first;
+              _applyCareProfile(s.scientificName, family: s.family);
+            },
+          ),
+          _CarePreview(speciesName: _species.text),
           if (_identification != null) _IdentificationSuggestions(future: _identification!, onPick: _applyCandidate),
           const SizedBox(height: Space.lg),
           Pressable(
@@ -301,12 +325,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                         FloraListRow(
                           leading: const Text('💧', style: TextStyle(fontSize: 18)),
                           title: l10n.wateringEvery,
-                          trailing: QuantityStepper(value: _watering, min: 0, max: 120, label: l10n.everyDays(_watering), onChanged: (v) => setState(() => _watering = v)),
+                          trailing: QuantityStepper(value: _watering, min: 0, max: 120, label: l10n.everyDays(_watering), onChanged: (v) => setState(() { _watering = v; _intervalsTouched = true; })),
                         ),
                         FloraListRow(
                           leading: const Text('🌱', style: TextStyle(fontSize: 18)),
                           title: l10n.fertilizingEvery,
-                          trailing: QuantityStepper(value: _fertilizing, min: 0, max: 365, step: 5, label: l10n.everyDays(_fertilizing), onChanged: (v) => setState(() => _fertilizing = v)),
+                          trailing: QuantityStepper(value: _fertilizing, min: 0, max: 365, step: 5, label: l10n.everyDays(_fertilizing), onChanged: (v) => setState(() { _fertilizing = v; _intervalsTouched = true; })),
                         ),
                         FloraListRow(
                           leading: Icon(CupertinoIcons.calendar, size: 20, color: c.inkSecondary),
@@ -472,6 +496,47 @@ class _StepDots extends StatelessWidget {
             decoration: BoxDecoration(color: i == index ? c.sage : c.line, borderRadius: Radii.fullAll),
           ),
       ],
+    );
+  }
+}
+
+/// Aperçu de la fiche d'entretien pendant la création : l'utilisateur voit
+/// tout de suite ce que l'app sait de son espèce.
+class _CarePreview extends ConsumerWidget {
+  const _CarePreview({required this.speciesName});
+
+  final String speciesName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    if (speciesName.trim().length < 3) return const SizedBox.shrink();
+    final care = ref.watch(careGuideProvider).resolve(speciesName);
+    if (care.match == CareMatch.generic) return const SizedBox.shrink();
+    final p = care.profile;
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.sm),
+      child: FloraCard(
+        color: c.sageSoft,
+        padding: const EdgeInsets.all(Space.md),
+        child: Row(
+          children: [
+            const Text('📖', style: TextStyle(fontSize: 18)),
+            const SizedBox(width: Space.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.careWateringNow(p.wateringDaysFor(DateTime.now().month)), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Text('${l10n.lightName(p.light)} · ${l10n.careMatchLabel(care)}', style: context.text.caption),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -276,6 +276,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
               child: FloraButton(label: l10n.addAction, icon: CupertinoIcons.plus, expand: true, onPressed: () => showAddActionSheet(context, plantId: id, plantName: plant.name)),
             ),
           ),
+          _CareGuideCard(plantId: id, speciesName: plant.speciesName),
           _PlantTasks(plantId: id),
           _RecentHistory(plantId: id),
           _Growth(plantId: id, photos: photos, onAdd: _addPhoto),
@@ -374,6 +375,48 @@ class _NextCareState extends ConsumerState<_NextCare> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Accès à la fiche d'entretien, avec le repère d'arrosage du moment.
+class _CareGuideCard extends ConsumerWidget {
+  const _CareGuideCard({required this.plantId, required this.speciesName});
+
+  final String plantId;
+  final String? speciesName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final care = ref.watch(careGuideProvider).resolve(speciesName);
+    final days = care.profile.wateringDaysFor(DateTime.now().month);
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(Space.page, Space.lg, Space.page, 0),
+        child: FloraCard(
+          onTap: () => context.push(Routes.plantCare(plantId)),
+          padding: const EdgeInsets.all(Space.md),
+          child: Row(
+            children: [
+              EmojiTile(emoji: '📖', size: 44, background: c.sageSoft),
+              const SizedBox(width: Space.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.careHowTo, style: context.text.title3),
+                    const SizedBox(height: 2),
+                    Text(l10n.careWateringNow(days), style: context.text.caption),
+                  ],
+                ),
+              ),
+              Icon(CupertinoIcons.chevron_right, size: 16, color: c.inkTertiary),
+            ],
+          ),
+        ),
       ),
     );
   }

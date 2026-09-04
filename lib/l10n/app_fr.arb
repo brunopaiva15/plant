@@ -972,5 +972,256 @@
         "type": "String"
       }
     }
-  }
+  },
+  "careGuide": "Fiche d'entretien",
+  "careGuideSubtitle": "Quand arroser, quelle lumière, que surveiller.",
+  "careHowTo": "Comment en prendre soin",
+  "careWatering": "Arrosage",
+  "careLight": "Lumière",
+  "careHumidity": "Humidité",
+  "careTemperature": "Température",
+  "careSoil": "Substrat",
+  "careFertilizing": "Engrais",
+  "careRepotting": "Rempotage",
+  "careToxicity": "Toxicité",
+  "careDifficulty": "Difficulté",
+  "carePropagation": "Multiplication",
+  "careIssues": "À surveiller",
+  "careTips": "Bons réflexes",
+  "careEveryDays": "{count, plural, =1{Tous les jours} other{Tous les {count} jours}}",
+  "@careEveryDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careWateringNow": "{count, plural, =1{Tous les jours en ce moment} other{Tous les {count} jours en ce moment}}",
+  "@careWateringNow": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careWateringSeasons": "{summer} j en pleine saison · {winter} j en hiver",
+  "@careWateringSeasons": {
+    "placeholders": {
+      "summer": {
+        "type": "int"
+      },
+      "winter": {
+        "type": "int"
+      }
+    }
+  },
+  "careFertilizeSeason": "de {from} à {to}",
+  "@careFertilizeSeason": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "careNoFertilizer": "Aucun engrais nécessaire",
+  "careRepotMonths": "{count, plural, =1{Chaque mois} other{Tous les {count} mois}}",
+  "@careRepotMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careRepotYears": "{count, plural, =1{Tous les ans} other{Tous les {count} ans}}",
+  "@careRepotYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "careRepotNone": "Pas de rempotage : culture annuelle",
+  "careTempIdeal": "{min} à {max} °C",
+  "@careTempIdeal": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careTempMin": "Supporte jusqu'à {min} °C",
+  "@careTempMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "careLightShade": "Ombre",
+  "careLightLow": "Faible lumière",
+  "careLightIndirect": "Lumière indirecte",
+  "careLightBright": "Lumière vive indirecte",
+  "careLightSome": "Quelques heures de soleil",
+  "careLightFull": "Plein soleil",
+  "careHumidityLow": "Air sec accepté",
+  "careHumidityAverage": "Humidité ordinaire",
+  "careHumidityHigh": "Aime l'air humide",
+  "careDifficultyEasy": "Facile",
+  "careDifficultyMedium": "Moyenne",
+  "careDifficultyDemanding": "Exigeante",
+  "careToxicSafe": "Sans danger connu",
+  "careToxicMild": "Légèrement irritante",
+  "careToxicToxic": "Toxique si ingérée",
+  "careToxicUnknown": "Toxicité non renseignée",
+  "careToxicPets": "Tenir hors de portée des animaux et des enfants.",
+  "careSoilStandard": "Terreau universel",
+  "careSoilDraining": "Terreau très drainant",
+  "careSoilCactus": "Terreau cactus et succulentes",
+  "careSoilOrchid": "Écorces pour orchidées",
+  "careSoilAcidic": "Terre de bruyère",
+  "careSoilRich": "Terreau riche en compost",
+  "careSoilAquatic": "Sans substrat",
+  "carePropCutting": "Bouture de tige",
+  "carePropLeaf": "Bouture de feuille",
+  "carePropDivision": "Division de la touffe",
+  "carePropOffsets": "Rejets",
+  "carePropLayering": "Marcottage",
+  "carePropSeed": "Semis",
+  "carePropWater": "Bouture dans l'eau",
+  "carePropTuber": "Séparation des tubercules",
+  "careMatchSpecies": "Fiche de l'espèce",
+  "careMatchGenus": "Fiche du genre {name}",
+  "@careMatchGenus": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careMatchFamily": "Fiche de la famille des {name}",
+  "@careMatchFamily": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careMatchGeneric": "Repères généraux",
+  "careMatchNote": "Ces repères viennent du groupe botanique, pas de l'espèce exacte. Précisez l'espèce pour affiner.",
+  "careDisclaimer": "Des repères, pas des règles : votre lumière, votre pot et votre air comptent autant.",
+  "careApplyToSchedule": "Appliquer au planning",
+  "careScheduleApplied": "Planning mis à jour",
+  "careSuggestedIntervals": "Arrosage tous les {water} jours, engrais tous les {fertilize} jours",
+  "@careSuggestedIntervals": {
+    "placeholders": {
+      "water": {
+        "type": "int"
+      },
+      "fertilize": {
+        "type": "int"
+      }
+    }
+  },
+  "careBadgeMist": "Brumiser",
+  "careBadgeDormant": "Repos hivernal",
+  "careBadgeOutdoor": "Supporte l'extérieur",
+  "careIssueOverwatering": "Excès d'eau : feuilles molles et jaunes",
+  "careIssueUnderwatering": "Manque d'eau : feuilles qui retombent",
+  "careIssueRootRot": "Pourriture des racines",
+  "careIssueSpiderMites": "Araignées rouges (fines toiles)",
+  "careIssueMealybugs": "Cochenilles farineuses",
+  "careIssueScale": "Cochenilles à bouclier",
+  "careIssueAphids": "Pucerons",
+  "careIssueFungusGnats": "Moucherons du terreau",
+  "careIssueWhitefly": "Aleurodes (mouches blanches)",
+  "careIssueSlugs": "Limaces et escargots",
+  "careIssuePowderyMildew": "Oïdium (feutrage blanc)",
+  "careIssueLeafSpot": "Taches foliaires",
+  "careIssueBlight": "Mildiou",
+  "careIssueSunburn": "Brûlures du soleil",
+  "careIssueDryTips": "Pointes sèches et brunes",
+  "careIssueLeafDrop": "Chute de feuilles",
+  "careIssueEtiolation": "Étiolement par manque de lumière",
+  "careIssueChlorosis": "Chlorose : feuilles pâles, nervures vertes",
+  "careIssueBlossomEndRot": "Nécrose apicale des fruits",
+  "careTipFingerTest": "Enfoncez un doigt : arrosez quand les 2 premiers centimètres sont secs.",
+  "careTipDrySoilFirst": "Laissez le terreau sécher complètement entre deux arrosages.",
+  "careTipNeverDryOut": "Ne laissez jamais le terreau sécher complètement.",
+  "careTipEvenWatering": "Arrosez régulièrement : les à-coups font éclater les fruits.",
+  "careTipWaterAtBase": "Arrosez au pied, sans mouiller le feuillage.",
+  "careTipNoWaterOnLeaves": "Ne mouillez pas les feuilles : l'eau stagnante les tache.",
+  "careTipBottomWatering": "Arrosez par le bas : posez le pot dans une soucoupe d'eau 20 minutes.",
+  "careTipFilteredWater": "Préférez l'eau de pluie ou filtrée : le calcaire brunit les pointes.",
+  "careTipRainwaterOnly": "Arrosez à l'eau de pluie : cette plante déteste le calcaire.",
+  "careTipThirstyPlant": "Grosse buveuse : en été, vérifiez tous les jours.",
+  "careTipDroopSignal": "Elle s'affaisse quand elle a soif : c'est votre signal.",
+  "careTipWinterDry": "En hiver, gardez-la presque au sec.",
+  "careTipWinterRest": "Ralentissez fortement l'arrosage en hiver : elle se repose.",
+  "careTipSummerDormant": "Elle se repose en été : arrosez très peu à cette période.",
+  "careTipNoWaterWhileSplitting": "N'arrosez pas pendant qu'elle change de feuilles.",
+  "careTipOrchidSoak": "Trempez le pot 10 minutes, puis laissez bien égoutter.",
+  "careTipSoakMount": "Trempez la plante entière, puis laissez-la sécher à l'air.",
+  "careTipDryUpsideDown": "Après le bain, laissez-la sécher tête en bas : l'eau au cœur la fait pourrir.",
+  "careTipWaterInTheCup": "Remplissez la rosette centrale et renouvelez l'eau chaque semaine.",
+  "careTipNoSoil": "Elle vit sans terre : posez-la simplement sur un support.",
+  "careTipGreenRoots": "Racines vertes = bien hydratée. Argentées = il est temps d'arroser.",
+  "careTipHumidityTray": "Posez le pot sur un lit de billes d'argile humides.",
+  "careTipNoDirectSun": "Évitez le soleil direct : il brûle le feuillage.",
+  "careTipToleratesLowLight": "Elle supporte une pièce peu lumineuse, mais pousse plus vite près d'une fenêtre.",
+  "careTipToleratesNeglect": "Elle pardonne les oublis : en cas de doute, n'arrosez pas.",
+  "careTipBrightForColor": "Plus la lumière est vive, plus les couleurs sont marquées.",
+  "careTipRotatePot": "Tournez le pot d'un quart de tour chaque semaine pour qu'elle reste droite.",
+  "careTipHatesMoving": "Elle déteste être déplacée : trouvez-lui une place et laissez-la.",
+  "careTipWipeLeaves": "Dépoussiérez les feuilles : elles respirent et captent mieux la lumière.",
+  "careTipTrimToBushOut": "Taillez les tiges trop longues : elle se ramifiera.",
+  "careTipMonsteraSupport": "Offrez-lui un tuteur moussu : les feuilles deviendront plus grandes et découpées.",
+  "careTipShallowPot": "Un pot large et peu profond lui convient mieux.",
+  "careTipLikesBeingPotbound": "Elle fleurit mieux à l'étroit : rempotez rarement.",
+  "careTipTrunkStoresWater": "Son pied renflé stocke l'eau : mieux vaut trop peu que trop.",
+  "careTipPupsToShare": "Elle fait des rejets : détachez-les pour multiplier ou offrir.",
+  "careTipKeepFlowerSpike": "Ne coupez pas la hampe verte : elle peut refleurir dessus.",
+  "careTipDarkForRebloom": "Pour la refaire fleurir, offrez-lui six semaines de nuits longues et fraîches.",
+  "careTipNotADesertCactus": "Ce n'est pas un cactus du désert : il aime l'ombre et l'humidité.",
+  "careTipDeadheadFlowers": "Retirez les fleurs fanées : elle refleurira plus longtemps.",
+  "careTipPinchFlowers": "Pincez les fleurs dès qu'elles montent : les feuilles restent tendres.",
+  "careTipHarvestTop": "Récoltez par le haut, au-dessus d'une paire de feuilles.",
+  "careTipHarvestOutside": "Cueillez les feuilles extérieures : le cœur continue de pousser.",
+  "careTipStakeAndPrune": "Tuteurez et supprimez les gourmands entre tige et branche.",
+  "careTipPrunesInSpring": "Taillez au printemps, jamais dans le vieux bois sec.",
+  "careTipPrunesAfterFlowering": "Taillez juste après la floraison pour garder une touffe compacte.",
+  "careTipWinterPruning": "Taillez en hiver, hors gel, quand la plante dort.",
+  "careTipPruneAfterHarvest": "Taillez après la récolte, pas au printemps.",
+  "careTipCutSpentCanes": "Coupez à ras les tiges qui ont fructifié.",
+  "careTipTrimTwiceAYear": "Deux tailles par an suffisent : juin et fin août.",
+  "careTipContainItsRoots": "Plantez-la en pot ou posez une barrière anti-rhizome : elle envahit tout.",
+  "careTipMulchIt": "Paillez le pied : moins d'arrosages, moins de mauvaises herbes.",
+  "careTipAcidSoil": "Elle exige une terre acide : évitez le terreau universel.",
+  "careTipBlueNeedsAcid": "Les fleurs bleues demandent un sol acide ; en sol calcaire elles virent au rose.",
+  "careTipCitrusFertilizer": "Utilisez un engrais spécial agrumes pendant toute la belle saison.",
+  "careTipNoFertilizer": "Pas d'engrais : trop riche, elle perd son parfum et sa tenue.",
+  "careTipNoNitrogen": "Évitez l'engrais azoté : elle fabrique son propre azote.",
+  "careTipLetFoliageDieBack": "Laissez le feuillage jaunir sur pied : il recharge le bulbe.",
+  "careTipDiesBackInWinter": "Elle disparaît en hiver et repart au printemps : c'est normal.",
+  "careTipSummerOutdoors": "Sortez-la l'été, à l'ombre les premiers jours.",
+  "careTipWinterIndoors": "Rentrez-la avant les premières gelées.",
+  "careTipWinterShelter": "Abritez-la l'hiver dans une pièce fraîche et lumineuse.",
+  "careTipWinterCool": "Un hiver frais (10–14 °C) et lumineux lui fait du bien.",
+  "careTipCoolerIsBetter": "Elle préfère la fraîcheur : évitez la proximité d'un radiateur.",
+  "careTipHardyOutdoors": "Rustique : elle passe l'hiver dehors sans protection.",
+  "careTipShelterFromWind": "Placez-la à l'abri du vent : le feuillage s'abîme vite.",
+  "careTipAirFlow": "Aérez autour d'elle : l'air confiné favorise les maladies.",
+  "careTipSpiderMiteWatch": "Inspectez le dessous des feuilles : les araignées rouges l'adorent.",
+  "careTipSlugWatch": "Protégez les jeunes pousses des limaces au printemps.",
+  "careTipBoxMothWatch": "Surveillez la pyrale : chenilles et fils de soie dans le feuillage.",
+  "careTipSapIrritant": "Sa sève irrite la peau et les yeux : portez des gants pour la tailler.",
+  "careTipVeryToxic": "Toutes ses parties sont très toxiques, y compris la fumée si on la brûle.",
+  "careTipSharpSpines": "Ses pointes sont dangereuses : éloignez-la des passages.",
+  "careTipSplitsAreNormal": "Les feuilles se fendent avec l'âge : c'est normal, pas une maladie.",
+  "careTipDryToBloom": "Un léger stress hydrique déclenche la floraison."
 }
