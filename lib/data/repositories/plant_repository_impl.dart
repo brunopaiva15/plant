@@ -178,6 +178,7 @@ class DriftPlantRepository implements PlantRepository {
               createdAt: now,
               updatedAt: now,
             ));
+        await _db.enqueueSync('care_schedules', schedule.id, 'upsert', const {});
       }
       await _db.enqueueSync('plants', id, 'upsert', {'name': data.name});
     });
@@ -207,12 +208,18 @@ class DriftPlantRepository implements PlantRepository {
   }
 
   @override
-  Future<void> setFavorite(String id, bool value) => (_db.update(_db.plants)..where((p) => p.id.equals(id)))
-      .write(PlantsCompanion(isFavorite: Value(value), updatedAt: Value(DateTime.now())));
+  Future<void> setFavorite(String id, bool value) async {
+    await (_db.update(_db.plants)..where((p) => p.id.equals(id))).write(PlantsCompanion(isFavorite: Value(value), updatedAt: Value(DateTime.now())));
+    await _db.enqueueSync('plants', id, 'upsert', const {});
+  }
 
   @override
-  Future<void> moveToLocation(List<String> ids, String? locationId) => (_db.update(_db.plants)..where((p) => p.id.isIn(ids)))
-      .write(PlantsCompanion(locationId: Value(locationId), updatedAt: Value(DateTime.now())));
+  Future<void> moveToLocation(List<String> ids, String? locationId) async {
+    await (_db.update(_db.plants)..where((p) => p.id.isIn(ids))).write(PlantsCompanion(locationId: Value(locationId), updatedAt: Value(DateTime.now())));
+    for (final id in ids) {
+      await _db.enqueueSync('plants', id, 'upsert', const {});
+    }
+  }
 
   @override
   Future<void> archive(List<String> ids, {String? reason}) async {
@@ -229,6 +236,9 @@ class DriftPlantRepository implements PlantRepository {
           .write(CareSchedulesCompanion(enabled: const Value(false), updatedAt: Value(now)));
       for (final id in ids) {
         await _db.enqueueSync('plants', id, 'upsert', {'status': 'archived'});
+      }
+      for (final s in await (_db.select(_db.careSchedules)..where((s) => s.plantId.isIn(ids))).get()) {
+        await _db.enqueueSync('care_schedules', s.id, 'upsert', const {});
       }
     });
   }
@@ -252,6 +262,10 @@ class DriftPlantRepository implements PlantRepository {
           nextDueAt: Value(CareEngine.initialDue(s, now)),
           updatedAt: Value(now),
         ));
+        await _db.enqueueSync('care_schedules', s.id, 'upsert', const {});
+      }
+      for (final id in ids) {
+        await _db.enqueueSync('plants', id, 'upsert', const {});
       }
     });
   }

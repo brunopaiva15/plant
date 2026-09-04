@@ -79,12 +79,13 @@ class DriftInventoryRepository implements InventoryRepository {
     final next = (row.quantity + delta).clamp(0, double.infinity).toDouble();
     await (_db.update(_db.inventoryItems)..where((i) => i.id.equals(id)))
         .write(InventoryItemsCompanion(quantity: Value(next), updatedAt: Value(DateTime.now())));
+    await _db.enqueueSync('inventory_items', id, 'upsert', const {});
   }
 
   @override
   Future<void> delete(String id) async {
     await (_db.update(_db.inventoryItems)..where((i) => i.id.equals(id)))
         .write(InventoryItemsCompanion(deletedAt: Value(DateTime.now())));
-    await _db.enqueueSync('inventory_items', id, 'delete', {});
+    await _db.enqueueSync('inventory_items', id, 'upsert', {});
   }
 }

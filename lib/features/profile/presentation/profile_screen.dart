@@ -19,6 +19,7 @@ class ProfileScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final c = context.colors;
     final prefs = ref.watch(preferencesProvider);
+    final user = ref.watch(currentUserProvider).value;
     final count = ref.watch(activePlantCountProvider).value ?? 0;
     final themeLabel = switch (prefs.themeMode) { ThemeMode.system => l10n.themeSystem, ThemeMode.light => l10n.themeLight, ThemeMode.dark => l10n.themeDark };
     final languageLabel = prefs.locale == null ? l10n.languageSystem : _languageName(prefs.locale!.languageCode);
@@ -101,9 +102,14 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: Space.lg),
               FloraGroup(
-                footer: l10n.localAccountHint,
+                footer: ref.watch(authRepositoryProvider).supportsRemote ? l10n.signInHint : l10n.localAccountHint,
                 children: [
-                  FloraListRow(leading: Icon(CupertinoIcons.lock, size: 20, color: c.inkSecondary), title: l10n.account, subtitle: l10n.localAccount),
+                  FloraListRow(
+                    leading: Icon(user != null && !user.isLocal ? CupertinoIcons.person_crop_circle_fill : CupertinoIcons.lock, size: 20, color: user != null && !user.isLocal ? c.sage : c.inkSecondary),
+                    title: l10n.account,
+                    subtitle: user != null && !user.isLocal ? (user.email ?? l10n.signedInAs) : l10n.localAccount,
+                    onTap: () => context.push(Routes.account),
+                  ),
                   FloraListRow(
                     leading: Icon(CupertinoIcons.sparkles, size: 20, color: c.sun),
                     title: l10n.premium,

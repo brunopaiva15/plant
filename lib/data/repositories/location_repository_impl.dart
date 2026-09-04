@@ -93,13 +93,17 @@ class DriftLocationRepository implements LocationRepository {
     await _db.transaction(() async {
       // Les plantes et sous-emplacements ne sont jamais perdus : ils remontent d'un niveau.
       final parent = await (_db.select(_db.locations)..where((l) => l.id.equals(id))).getSingleOrNull();
+      final movedPlants = await (_db.select(_db.plants)..where((p) => p.locationId.equals(id))).get();
       await (_db.update(_db.plants)..where((p) => p.locationId.equals(id)))
           .write(PlantsCompanion(locationId: Value(parent?.parentId), updatedAt: Value(now)));
       await (_db.update(_db.locations)..where((l) => l.parentId.equals(id)))
           .write(LocationsCompanion(parentId: Value(parent?.parentId), updatedAt: Value(now)));
       await (_db.update(_db.locations)..where((l) => l.id.equals(id)))
           .write(LocationsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
-      await _db.enqueueSync('locations', id, 'delete', {});
+      await _db.enqueueSync('locations', id, 'upsert', {});
+      for (final p in movedPlants) {
+        await _db.enqueueSync('plants', p.id, 'upsert', {});
+      }
     });
   }
 

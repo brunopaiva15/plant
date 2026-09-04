@@ -1370,4 +1370,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String notifLowStockMany(int count) {
     return '$count items are almost out.';
   }
+
+  @override
+  String get accountTitle => 'Account';
+
+  @override
+  String get signIn => 'Sign in';
+
+  @override
+  String get signInHint =>
+      'An account backs up your plants, syncs them across your devices and lets you share a garden. Without one, everything stays on this phone.';
+
+  @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get continueWithEmail => 'Continue with email';
+
+  @override
+  String get emailHint => 'you@example.com';
+
+  @override
+  String get sendCode => 'Send me a code';
+
+  @override
+  String codeSent(String email) {
+    return 'Code sent to $email.';
+  }
+
+  @override
+  String get codeHint => '6-digit code';
+
+  @override
+  String get verifyCode => 'Verify';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get signOutConfirm => 'Your data stays on this phone.';
+
+  @override
+  String get signedInAs => 'Signed in';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String syncIdle(String time) {
+    return 'Up to date · $time';
+  }
+
+  @override
+  String get syncNever => 'Not synced yet';
+
+  @override
+  String syncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending changes',
+      one: '1 pending change',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncOffline => 'Offline · will resume automatically';
+
+  @override
+  String get syncError => 'Sync error';
+
+  @override
+  String get syncSyncing => 'Syncing…';
+
+  @override
+  String get authError => 'Couldn\'t sign in. Check the address and try again.';
+
+  @override
+  String get appleUnavailable =>
+      'Apple sign-in is available on iPhone and iPad.';
+
+  @override
+  String get synchronization => 'Sync';
 }

@@ -28,6 +28,7 @@ class DriftActionTypeRepository implements ActionTypeRepository {
           schedulable: Value(schedulable),
           sortOrder: count.length,
         ));
+    await _db.enqueueSync('action_types', key, 'upsert', const {});
     return (await (_db.select(_db.actionTypes)..where((t) => t.key.equals(key))).getSingle()).toDomain();
   }
 
@@ -35,8 +36,12 @@ class DriftActionTypeRepository implements ActionTypeRepository {
   Future<void> deleteCustom(String key) async {
     if (!key.startsWith(ActionType.customPrefix)) return;
     await _db.transaction(() async {
+      for (final s in await (_db.select(_db.careSchedules)..where((s) => s.typeKey.equals(key))).get()) {
+        await _db.enqueueSync('care_schedules', s.id, 'delete', const {});
+      }
       await (_db.delete(_db.careSchedules)..where((s) => s.typeKey.equals(key))).go();
       await (_db.delete(_db.actionTypes)..where((t) => t.key.equals(key))).go();
+      await _db.enqueueSync('action_types', key, 'delete', const {});
     });
   }
 }

@@ -138,5 +138,6 @@ class DriftCareRepository implements CareRepository {
     final updated = CareEngine.snooze(row.toDomain(), now, days: days);
     await (_db.update(_db.careSchedules)..where((s) => s.id.equals(scheduleId)))
         .write(CareSchedulesCompanion(nextDueAt: Value(updated.nextDueAt), updatedAt: Value(now)));
+    await _db.enqueueSync('care_schedules', scheduleId, 'upsert', const {});
   }
 }

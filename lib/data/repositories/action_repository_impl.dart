@@ -57,6 +57,7 @@ class DriftActionRepository implements ActionRepository {
           lastCompletedAt: Value(completed.lastCompletedAt),
           updatedAt: Value(now),
         ));
+        await _db.enqueueSync('care_schedules', schedule.id, 'upsert', const {});
       }
       final notes = data.notes?.trim();
       await _db.into(_db.plantActions).insert(PlantActionsCompanion.insert(
@@ -70,8 +71,10 @@ class DriftActionRepository implements ActionRepository {
             createdAt: now,
           ));
       if (data.typeKey == CareKind.measurement.key && metadata['value'] is num) {
+        final measurementId = _uuid.v4();
+        await _db.enqueueSync('measurements', measurementId, 'upsert', const {});
         await _db.into(_db.measurements).insert(MeasurementsCompanion.insert(
-              id: _uuid.v4(),
+              id: measurementId,
               plantId: data.plantId,
               actionId: Value(id),
               kind: (metadata['kind'] as String?) ?? 'height',
@@ -108,6 +111,10 @@ class DriftActionRepository implements ActionRepository {
           lastCompletedAt: Value(prevCompleted == null ? null : DateTime.parse(prevCompleted)),
           updatedAt: Value(DateTime.now()),
         ));
+        await _db.enqueueSync('care_schedules', schedule.id, 'upsert', const {});
+      }
+      for (final m in await (_db.select(_db.measurements)..where((m) => m.actionId.equals(action.id))).get()) {
+        await _db.enqueueSync('measurements', m.id, 'delete', const {});
       }
       await (_db.delete(_db.measurements)..where((m) => m.actionId.equals(action.id))).go();
       await (_db.delete(_db.plantActions)..where((a) => a.id.equals(action.id))).go();

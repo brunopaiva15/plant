@@ -1376,4 +1376,91 @@ class AppLocalizationsDe extends AppLocalizations {
   String notifLowStockMany(int count) {
     return '$count Artikel sind fast aufgebraucht.';
   }
+
+  @override
+  String get accountTitle => 'Konto';
+
+  @override
+  String get signIn => 'Anmelden';
+
+  @override
+  String get signInHint =>
+      'Ein Konto sichert deine Pflanzen, synchronisiert sie zwischen Geräten und erlaubt das Teilen eines Gartens. Ohne Konto bleibt alles auf diesem Telefon.';
+
+  @override
+  String get continueWithApple => 'Mit Apple fortfahren';
+
+  @override
+  String get continueWithGoogle => 'Mit Google fortfahren';
+
+  @override
+  String get continueWithEmail => 'Mit E-Mail fortfahren';
+
+  @override
+  String get emailHint => 'du@beispiel.ch';
+
+  @override
+  String get sendCode => 'Code senden';
+
+  @override
+  String codeSent(String email) {
+    return 'Code an $email gesendet.';
+  }
+
+  @override
+  String get codeHint => '6-stelliger Code';
+
+  @override
+  String get verifyCode => 'Bestätigen';
+
+  @override
+  String get signOut => 'Abmelden';
+
+  @override
+  String get signOutConfirm => 'Deine Daten bleiben auf diesem Telefon.';
+
+  @override
+  String get signedInAs => 'Angemeldet';
+
+  @override
+  String get syncNow => 'Jetzt synchronisieren';
+
+  @override
+  String syncIdle(String time) {
+    return 'Aktuell · $time';
+  }
+
+  @override
+  String get syncNever => 'Noch nicht synchronisiert';
+
+  @override
+  String syncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ausstehende Änderungen',
+      one: '1 ausstehende Änderung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncOffline => 'Offline · wird automatisch fortgesetzt';
+
+  @override
+  String get syncError => 'Synchronisierungsfehler';
+
+  @override
+  String get syncSyncing => 'Synchronisiere…';
+
+  @override
+  String get authError =>
+      'Anmeldung nicht möglich. Prüfe die Adresse und versuche es erneut.';
+
+  @override
+  String get appleUnavailable =>
+      'Apple-Anmeldung ist auf iPhone und iPad verfügbar.';
+
+  @override
+  String get synchronization => 'Synchronisierung';
 }

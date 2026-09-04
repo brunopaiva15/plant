@@ -2465,6 +2465,150 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count} articles sont presque épuisés.'**
   String notifLowStockMany(int count);
+
+  /// No description provided for @accountTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte'**
+  String get accountTitle;
+
+  /// No description provided for @signIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter'**
+  String get signIn;
+
+  /// No description provided for @signInHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte sauvegarde vos plantes, les synchronise entre vos appareils et permet de partager un jardin. Sans compte, tout reste sur ce téléphone.'**
+  String get signInHint;
+
+  /// No description provided for @continueWithApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Apple'**
+  String get continueWithApple;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @continueWithEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec un e-mail'**
+  String get continueWithEmail;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'vous@exemple.ch'**
+  String get emailHint;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir un code'**
+  String get sendCode;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code envoyé à {email}.'**
+  String codeSent(String email);
+
+  /// No description provided for @codeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code à 6 chiffres'**
+  String get codeHint;
+
+  /// No description provided for @verifyCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get verifyCode;
+
+  /// No description provided for @signOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
+  String get signOut;
+
+  /// No description provided for @signOutConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données restent sur ce téléphone.'**
+  String get signOutConfirm;
+
+  /// No description provided for @signedInAs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecté'**
+  String get signedInAs;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchroniser maintenant'**
+  String get syncNow;
+
+  /// No description provided for @syncIdle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À jour · {time}'**
+  String syncIdle(String time);
+
+  /// No description provided for @syncNever.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore synchronisé'**
+  String get syncNever;
+
+  /// No description provided for @syncPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 changement en attente} other{{count} changements en attente}}'**
+  String syncPending(int count);
+
+  /// No description provided for @syncOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne · reprise automatique'**
+  String get syncOffline;
+
+  /// No description provided for @syncError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de synchronisation'**
+  String get syncError;
+
+  /// No description provided for @syncSyncing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation…'**
+  String get syncSyncing;
+
+  /// No description provided for @authError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion impossible. Vérifiez l\'adresse et réessayez.'**
+  String get authError;
+
+  /// No description provided for @appleUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple est disponible sur iPhone et iPad.'**
+  String get appleUnavailable;
+
+  /// No description provided for @synchronization.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation'**
+  String get synchronization;
 }
 
 class _AppLocalizationsDelegate

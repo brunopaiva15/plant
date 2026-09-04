@@ -27,6 +27,24 @@ class LocalAuthRepository implements AuthRepository {
   }
 
   @override
+  AppUser? get currentUser => _current;
+
+  @override
+  bool get supportsRemote => false;
+
+  @override
+  Future<void> requestEmailCode(String email) => throw UnsupportedError('local account');
+
+  @override
+  Future<void> verifyEmailCode({required String email, required String code}) => throw UnsupportedError('local account');
+
+  @override
+  Future<void> signInWithApple() => throw UnsupportedError('local account');
+
+  @override
+  Future<void> signInWithGoogle() => throw UnsupportedError('local account');
+
+  @override
   Future<AppUser> ensureLocalUser() async {
     var userId = _prefs.userId;
     var gardenId = _prefs.gardenId;

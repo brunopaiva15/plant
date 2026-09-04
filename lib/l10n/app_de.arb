@@ -459,5 +459,50 @@
         "type": "int"
       }
     }
+  },
+  "accountTitle": "Konto",
+  "signIn": "Anmelden",
+  "signInHint": "Ein Konto sichert deine Pflanzen, synchronisiert sie zwischen Geräten und erlaubt das Teilen eines Gartens. Ohne Konto bleibt alles auf diesem Telefon.",
+  "continueWithApple": "Mit Apple fortfahren",
+  "continueWithGoogle": "Mit Google fortfahren",
+  "continueWithEmail": "Mit E-Mail fortfahren",
+  "emailHint": "du@beispiel.ch",
+  "sendCode": "Code senden",
+  "codeSent": "Code an {email} gesendet.",
+  "codeHint": "6-stelliger Code",
+  "verifyCode": "Bestätigen",
+  "signOut": "Abmelden",
+  "signOutConfirm": "Deine Daten bleiben auf diesem Telefon.",
+  "signedInAs": "Angemeldet",
+  "syncNow": "Jetzt synchronisieren",
+  "syncIdle": "Aktuell · {time}",
+  "syncNever": "Noch nicht synchronisiert",
+  "syncPending": "{count, plural, =1{1 ausstehende Änderung} other{{count} ausstehende Änderungen}}",
+  "syncOffline": "Offline · wird automatisch fortgesetzt",
+  "syncError": "Synchronisierungsfehler",
+  "syncSyncing": "Synchronisiere…",
+  "authError": "Anmeldung nicht möglich. Prüfe die Adresse und versuche es erneut.",
+  "appleUnavailable": "Apple-Anmeldung ist auf iPhone und iPad verfügbar.",
+  "synchronization": "Synchronisierung",
+  "@codeSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@syncIdle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

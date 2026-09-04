@@ -1,12 +1,17 @@
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
+import 'app/sync_coordinator.dart';
 import 'core/l10n/l10n.dart';
+import 'core/config/supabase_config.dart';
 import 'data/auth/local_auth_repository.dart';
+import 'data/auth/supabase_auth_repository.dart';
+import 'domain/auth/auth_repository.dart';
 import 'data/db/database.dart';
 import 'data/services/notification_service.dart';
 import 'data/services/preferences_service.dart';
@@ -17,8 +22,20 @@ Future<void> main() async {
 
   final prefs = await PreferencesService.load();
   final db = FloraDatabase(driftDatabase(name: 'flora'));
-  final auth = LocalAuthRepository(db, prefs);
-  await auth.ensureLocalUser();
+  final AuthRepository auth;
+  final String gardenId;
+  if (SupabaseConfig.isConfigured) {
+    await Supabase.initialize(url: SupabaseConfig.url, publishableKey: SupabaseConfig.anonKey);
+    final remoteAuth = SupabaseAuthRepository(Supabase.instance.client, db, prefs);
+    await remoteAuth.ensureLocalUser();
+    auth = remoteAuth;
+    gardenId = remoteAuth.gardenId;
+  } else {
+    final localAuth = LocalAuthRepository(db, prefs);
+    await localAuth.ensureLocalUser();
+    auth = localAuth;
+    gardenId = localAuth.gardenId;
+  }
   final notifications = NotificationService();
   await notifications.init();
 
@@ -27,7 +44,7 @@ Future<void> main() async {
     preferencesServiceProvider.overrideWithValue(prefs),
     notificationServiceProvider.overrideWithValue(notifications),
     authRepositoryProvider.overrideWithValue(auth),
-    gardenIdProvider.overrideWithValue(auth.gardenId),
+    gardenIdProvider.overrideWithValue(gardenId),
   ]);
 
   // Emplacements de départ, dans la langue de l'appareil.
@@ -44,6 +61,8 @@ Future<void> main() async {
   };
   // Les rappels sont recalculés à chaque lancement (dates et réglages ont pu changer).
   container.read(reminderSchedulerProvider).reschedule();
+  // Démarre la synchronisation si un compte est connecté (no-op sinon).
+  container.listen(syncCoordinatorProvider, (_, _) {});
 
   runApp(UncontrolledProviderScope(container: container, child: const FloraApp()));
 }

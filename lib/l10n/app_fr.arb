@@ -708,5 +708,50 @@
         "type": "int"
       }
     }
-  }
+  },
+  "accountTitle": "Compte",
+  "signIn": "Se connecter",
+  "signInHint": "Un compte sauvegarde vos plantes, les synchronise entre vos appareils et permet de partager un jardin. Sans compte, tout reste sur ce téléphone.",
+  "continueWithApple": "Continuer avec Apple",
+  "continueWithGoogle": "Continuer avec Google",
+  "continueWithEmail": "Continuer avec un e-mail",
+  "emailHint": "vous@exemple.ch",
+  "sendCode": "Recevoir un code",
+  "codeSent": "Code envoyé à {email}.",
+  "@codeSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "codeHint": "Code à 6 chiffres",
+  "verifyCode": "Valider",
+  "signOut": "Se déconnecter",
+  "signOutConfirm": "Vos données restent sur ce téléphone.",
+  "signedInAs": "Connecté",
+  "syncNow": "Synchroniser maintenant",
+  "syncIdle": "À jour · {time}",
+  "@syncIdle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Pas encore synchronisé",
+  "syncPending": "{count, plural, =1{1 changement en attente} other{{count} changements en attente}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncOffline": "Hors ligne · reprise automatique",
+  "syncError": "Erreur de synchronisation",
+  "syncSyncing": "Synchronisation…",
+  "authError": "Connexion impossible. Vérifiez l'adresse et réessayez.",
+  "appleUnavailable": "Apple est disponible sur iPhone et iPad.",
+  "synchronization": "Synchronisation"
 }

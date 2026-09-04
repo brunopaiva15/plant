@@ -74,6 +74,23 @@ class PreferencesService {
       _prefs.setString('weather_place', '${name.replaceAll('|', ' ')}|$lat|$lon');
   Future<void> clearWeatherPlace() => _prefs.remove('weather_place');
 
+  // Synchronisation
+  DateTime? syncCursor(String table) {
+    final raw = _prefs.getString('sync_cursor_$table');
+    return raw == null ? null : DateTime.tryParse(raw);
+  }
+
+  Future<void> setSyncCursor(String table, DateTime value) => _prefs.setString('sync_cursor_$table', value.toUtc().toIso8601String());
+
+  Future<void> clearSyncCursors() async {
+    for (final k in _prefs.getKeys().where((k) => k.startsWith('sync_cursor_')).toList()) {
+      await _prefs.remove(k);
+    }
+  }
+
+  String? get syncedAccountId => _prefs.getString('synced_account_id');
+  Future<void> setSyncedAccountId(String id) => _prefs.setString('synced_account_id', id);
+
   String get plantNetApiKey => _prefs.getString('plantnet_api_key') ?? '';
   Future<void> setPlantNetApiKey(String key) => _prefs.setString('plantnet_api_key', key.trim());
 

@@ -53,13 +53,16 @@ class DriftPhotoRepository implements PhotoRepository {
       await (_db.update(_db.plants)..where((p) => p.id.equals(plantId) & p.primaryPhotoId.isNull()))
           .write(PlantsCompanion(primaryPhotoId: Value(id), updatedAt: Value(now)));
       await _db.enqueueSync('plant_photos', id, 'upsert', {});
+      await _db.enqueueSync('plants', plantId, 'upsert', {});
     });
     return (await (_db.select(_db.plantPhotos)..where((p) => p.id.equals(id))).getSingle()).toDomain();
   }
 
   @override
-  Future<void> setPrimary(String plantId, String photoId) => (_db.update(_db.plants)..where((p) => p.id.equals(plantId)))
-      .write(PlantsCompanion(primaryPhotoId: Value(photoId), updatedAt: Value(DateTime.now())));
+  Future<void> setPrimary(String plantId, String photoId) async {
+    await (_db.update(_db.plants)..where((p) => p.id.equals(plantId))).write(PlantsCompanion(primaryPhotoId: Value(photoId), updatedAt: Value(DateTime.now())));
+    await _db.enqueueSync('plants', plantId, 'upsert', {});
+  }
 
   @override
   Future<void> delete(String photoId) async {
@@ -79,10 +82,12 @@ class DriftPhotoRepository implements PhotoRepository {
             .getSingleOrNull();
         await (_db.update(_db.plants)..where((p) => p.id.equals(photo.plantId)))
             .write(PlantsCompanion(primaryPhotoId: Value(next?.id), updatedAt: Value(now)));
+        await _db.enqueueSync('plants', photo.plantId, 'upsert', {});
       }
       await (_db.update(_db.plantActions)..where((a) => a.photoId.equals(photoId)))
           .write(PlantActionsCompanion(deletedAt: Value(now)));
-      await _db.enqueueSync('plant_photos', photoId, 'delete', {});
+      // Suppression logique : la ligne reste, avec deleted_at, pour les autres appareils.
+      await _db.enqueueSync('plant_photos', photoId, 'upsert', {});
     });
   }
 }

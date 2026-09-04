@@ -1373,4 +1373,90 @@ class AppLocalizationsFr extends AppLocalizations {
   String notifLowStockMany(int count) {
     return '$count articles sont presque épuisés.';
   }
+
+  @override
+  String get accountTitle => 'Compte';
+
+  @override
+  String get signIn => 'Se connecter';
+
+  @override
+  String get signInHint =>
+      'Un compte sauvegarde vos plantes, les synchronise entre vos appareils et permet de partager un jardin. Sans compte, tout reste sur ce téléphone.';
+
+  @override
+  String get continueWithApple => 'Continuer avec Apple';
+
+  @override
+  String get continueWithGoogle => 'Continuer avec Google';
+
+  @override
+  String get continueWithEmail => 'Continuer avec un e-mail';
+
+  @override
+  String get emailHint => 'vous@exemple.ch';
+
+  @override
+  String get sendCode => 'Recevoir un code';
+
+  @override
+  String codeSent(String email) {
+    return 'Code envoyé à $email.';
+  }
+
+  @override
+  String get codeHint => 'Code à 6 chiffres';
+
+  @override
+  String get verifyCode => 'Valider';
+
+  @override
+  String get signOut => 'Se déconnecter';
+
+  @override
+  String get signOutConfirm => 'Vos données restent sur ce téléphone.';
+
+  @override
+  String get signedInAs => 'Connecté';
+
+  @override
+  String get syncNow => 'Synchroniser maintenant';
+
+  @override
+  String syncIdle(String time) {
+    return 'À jour · $time';
+  }
+
+  @override
+  String get syncNever => 'Pas encore synchronisé';
+
+  @override
+  String syncPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changements en attente',
+      one: '1 changement en attente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncOffline => 'Hors ligne · reprise automatique';
+
+  @override
+  String get syncError => 'Erreur de synchronisation';
+
+  @override
+  String get syncSyncing => 'Synchronisation…';
+
+  @override
+  String get authError =>
+      'Connexion impossible. Vérifiez l\'adresse et réessayez.';
+
+  @override
+  String get appleUnavailable => 'Apple est disponible sur iPhone et iPad.';
+
+  @override
+  String get synchronization => 'Synchronisation';
 }

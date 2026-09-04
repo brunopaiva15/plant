@@ -459,5 +459,50 @@
         "type": "int"
       }
     }
+  },
+  "accountTitle": "Account",
+  "signIn": "Sign in",
+  "signInHint": "An account backs up your plants, syncs them across your devices and lets you share a garden. Without one, everything stays on this phone.",
+  "continueWithApple": "Continue with Apple",
+  "continueWithGoogle": "Continue with Google",
+  "continueWithEmail": "Continue with email",
+  "emailHint": "you@example.com",
+  "sendCode": "Send me a code",
+  "codeSent": "Code sent to {email}.",
+  "codeHint": "6-digit code",
+  "verifyCode": "Verify",
+  "signOut": "Sign out",
+  "signOutConfirm": "Your data stays on this phone.",
+  "signedInAs": "Signed in",
+  "syncNow": "Sync now",
+  "syncIdle": "Up to date · {time}",
+  "syncNever": "Not synced yet",
+  "syncPending": "{count, plural, =1{1 pending change} other{{count} pending changes}}",
+  "syncOffline": "Offline · will resume automatically",
+  "syncError": "Sync error",
+  "syncSyncing": "Syncing…",
+  "authError": "Couldn't sign in. Check the address and try again.",
+  "appleUnavailable": "Apple sign-in is available on iPhone and iPad.",
+  "synchronization": "Sync",
+  "@codeSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@syncIdle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
