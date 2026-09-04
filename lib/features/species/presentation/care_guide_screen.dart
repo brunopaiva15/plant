@@ -149,7 +149,7 @@ class CareGuideBody extends StatelessWidget {
           const SizedBox(height: Space.lg),
           Text(l10n.careIssues, style: context.text.title3),
           const SizedBox(height: Space.sm),
-          FloraGroup(children: [for (final i in p.issues) FloraListRow(leading: const Text('👀', style: TextStyle(fontSize: 16)), title: l10n.issueName(i), dense: true, chevron: false)]),
+          FloraGroup(children: [for (final i in p.issues) FloraListRow(leading: const Text('👀', style: TextStyle(fontSize: 16)), title: l10n.issueName(i), dense: true, chevron: false, titleMaxLines: 2)]),
         ],
 
         if (p.propagation.isNotEmpty) ...[

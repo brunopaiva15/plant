@@ -19,6 +19,7 @@ class FloraListRow extends StatelessWidget {
     this.dense = false,
     this.subtitleColor,
     this.strikethrough = false,
+    this.titleMaxLines = 1,
   });
 
   final String title;
@@ -35,6 +36,9 @@ class FloraListRow extends StatelessWidget {
 
   /// Titre barré (tâche terminée).
   final bool strikethrough;
+
+  /// Lignes autorisées pour le titre : 2 pour une phrase courte.
+  final int titleMaxLines;
 
   @override
   Widget build(BuildContext context) {
