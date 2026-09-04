@@ -33,46 +33,81 @@ class FloraListRow extends StatelessWidget {
     final c = context.colors;
     final showChevron = chevron ?? (onTap != null && trailing == null);
     final row = Padding(
-      padding: EdgeInsets.symmetric(horizontal: Space.md, vertical: dense ? Space.sm : Space.md),
-      child: Row(
-        children: [
-          if (leading != null) ...[
-            SizedBox(width: 32, child: Center(child: leading)),
-            const SizedBox(width: Space.sm),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: context.text.body.copyWith(color: destructive ? c.danger : c.ink),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 2),
-                  Text(subtitle!, style: context.text.caption, maxLines: 2, overflow: TextOverflow.ellipsis),
+      padding: EdgeInsets.symmetric(
+        horizontal: Space.md,
+        vertical: dense ? Space.sm : Space.md,
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) => Row(
+          children: [
+            if (leading != null) ...[
+              SizedBox(width: 32, child: Center(child: leading)),
+              const SizedBox(width: Space.sm),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: context.text.body.copyWith(
+                      color: destructive ? c.danger : c.ink,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: context.text.caption,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          if (trailing != null) ...[const SizedBox(width: Space.sm), Flexible(child: trailing!)],
-          if (showChevron) ...[
-            const SizedBox(width: Space.xs),
-            Icon(CupertinoIcons.chevron_right, size: 16, color: c.inkTertiary),
+            if (trailing != null) ...[
+              const SizedBox(width: Space.sm),
+              // Borné à la moitié de la ligne : le titre garde la priorité, sans
+              // que le trailing ne partage l'espace libre (il reste calé à droite).
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: constraints.maxWidth * 0.5,
+                ),
+                child: trailing!,
+              ),
+            ],
+            if (showChevron) ...[
+              const SizedBox(width: Space.xs),
+              Icon(
+                CupertinoIcons.chevron_right,
+                size: 16,
+                color: c.inkTertiary,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
     if (onTap == null) return row;
-    return Pressable(onTap: onTap, scale: 1, child: ColoredBox(color: Colors.transparent, child: row));
+    return Pressable(
+      onTap: onTap,
+      scale: 1,
+      child: ColoredBox(color: Colors.transparent, child: row),
+    );
   }
 }
 
 /// Pastille d'emoji sur fond pastel, pour les leading de listes et cartes.
 class EmojiTile extends StatelessWidget {
-  const EmojiTile({super.key, required this.emoji, this.size = 40, this.background});
+  const EmojiTile({
+    super.key,
+    required this.emoji,
+    this.size = 40,
+    this.background,
+  });
 
   final String emoji;
   final double size;
@@ -83,7 +118,10 @@ class EmojiTile extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(color: background ?? context.colors.surfaceMuted, borderRadius: BorderRadius.circular(size * 0.32)),
+      decoration: BoxDecoration(
+        color: background ?? context.colors.surfaceMuted,
+        borderRadius: BorderRadius.circular(size * 0.32),
+      ),
       alignment: Alignment.center,
       child: Text(emoji, style: TextStyle(fontSize: size * 0.48, height: 1)),
     );
