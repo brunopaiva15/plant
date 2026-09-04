@@ -84,7 +84,12 @@ class _CareTaskCardState extends ConsumerState<CareTaskCard> {
                 const SizedBox(height: 6),
                 DueBadge(
                   emoji: emoji,
-                  label: status == DueStatus.today ? l10n.verbToday(verb) : l10n.careDueLabel(l10n.kindName(t.typeKey, custom: custom), l10n.dueLabel(t.dueAt, now)),
+                  // Le bouton porte déjà le verbe : le badge reste court.
+                  label: switch (status) {
+                    DueStatus.today => l10n.verbToday(verb),
+                    DueStatus.overdue => l10n.dueLabel(t.dueAt, now),
+                    _ => l10n.careDueLabel(l10n.kindName(t.typeKey, custom: custom), l10n.dueLabel(t.dueAt, now)),
+                  },
                   status: status,
                   compact: true,
                 ),

@@ -72,20 +72,29 @@ class AdaptiveSegmented<T extends Object> extends StatelessWidget {
         children: {
           for (final e in segments.entries)
             e.key: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 4),
-              child: Text(e.value, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
+              padding: const EdgeInsets.symmetric(horizontal: Space.xxs, vertical: 4),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(e.value, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600), maxLines: 1),
+              ),
             ),
         },
         onValueChanged: change,
       );
     }
     return SegmentedButton<T>(
-      segments: [for (final e in segments.entries) ButtonSegment(value: e.key, label: Text(e.value))],
+      segments: [
+        for (final e in segments.entries)
+          ButtonSegment(value: e.key, label: FittedBox(fit: BoxFit.scaleDown, child: Text(e.value, maxLines: 1, softWrap: false))),
+      ],
       selected: {value},
       showSelectedIcon: false,
+      expandedInsets: EdgeInsets.zero,
       onSelectionChanged: (s) => change(s.first),
       style: ButtonStyle(
         visualDensity: VisualDensity.compact,
+        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 6)),
+        textStyle: WidgetStatePropertyAll(context.text.callout.copyWith(fontWeight: FontWeight.w600)),
         side: WidgetStatePropertyAll(BorderSide(color: c.line)),
         backgroundColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? c.sageSoft : c.surface),
         foregroundColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? c.sage : c.ink),

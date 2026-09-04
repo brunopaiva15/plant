@@ -163,7 +163,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
           SliverAppBar(
-            expandedHeight: width * 1.05,
+            expandedHeight: primary == null ? width * 0.62 : width * 1.05,
             pinned: true,
             stretch: true,
             backgroundColor: c.canvas,
@@ -190,6 +190,22 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                   fit: StackFit.expand,
                   children: [
                     PlantImage(relativePath: primary?.filePath ?? summary.thumbPath, cacheWidth: 1200, heroTag: 'plant-$id', placeholderEmoji: '🪴'),
+                    if (primary == null)
+                      Align(
+                        alignment: const Alignment(0, 0.55),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs),
+                          decoration: BoxDecoration(color: c.surface.withValues(alpha: 0.9), borderRadius: Radii.fullAll),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(CupertinoIcons.camera_fill, size: 16, color: c.sage),
+                              const SizedBox(width: 6),
+                              Text(l10n.addPhoto, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                      ),
                     DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [c.canvas.withValues(alpha: 0), c.canvas.withValues(alpha: 0), c.canvas], stops: const [0, 0.7, 1]),
