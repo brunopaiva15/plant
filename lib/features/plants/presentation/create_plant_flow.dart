@@ -21,6 +21,7 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../account/application/membership_providers.dart';
+import '../../species/presentation/species_field.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
 Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? locationId}) async {
@@ -273,7 +274,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: Space.sm),
-          FloraTextField(controller: _species, hint: l10n.speciesHint, textInputAction: TextInputAction.done, textCapitalization: TextCapitalization.sentences),
+          SpeciesField(controller: _species, onPicked: (s) => setState(() { if (_name.text.trim().isEmpty) _name.text = s.commonName ?? s.scientificName.split(' ').first; })),
           if (_identification != null) _IdentificationSuggestions(future: _identification!, onPick: _applyCandidate),
           const SizedBox(height: Space.lg),
           Pressable(

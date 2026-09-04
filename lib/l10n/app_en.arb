@@ -549,5 +549,31 @@
         "type": "int"
       }
     }
+  },
+  "speciesInfo": "Species",
+  "speciesSource": "Source: GBIF — Global Biodiversity Information Facility",
+  "speciesCommonNames": "Common names",
+  "speciesFamily": "Family",
+  "speciesOrder": "Order",
+  "speciesGenus": "Genus",
+  "speciesStatus": "Status",
+  "speciesOpenGbif": "View on GBIF",
+  "speciesNotFound": "Species not found in GBIF.",
+  "speciesLoading": "Searching GBIF…",
+  "speciesPhotos": "Observations",
+  "speciesPhotoCredit": "{author} · {license}",
+  "speciesSuggestions": "Suggestions",
+  "speciesUseName": "Use this name",
+  "speciesStatusAccepted": "Accepted name",
+  "speciesStatusSynonym": "Synonym",
+  "@speciesPhotoCredit": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
   }
 }

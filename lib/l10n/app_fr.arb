@@ -798,5 +798,31 @@
       }
     }
   },
-  "diagnosisSaved": "Diagnostic ajouté au journal"
+  "diagnosisSaved": "Diagnostic ajouté au journal",
+  "speciesInfo": "Fiche espèce",
+  "speciesSource": "Source : GBIF — Global Biodiversity Information Facility",
+  "speciesCommonNames": "Noms communs",
+  "speciesFamily": "Famille",
+  "speciesOrder": "Ordre",
+  "speciesGenus": "Genre",
+  "speciesStatus": "Statut",
+  "speciesOpenGbif": "Voir sur GBIF",
+  "speciesNotFound": "Espèce introuvable dans GBIF.",
+  "speciesLoading": "Recherche dans GBIF…",
+  "speciesPhotos": "Observations",
+  "speciesPhotoCredit": "{author} · {license}",
+  "@speciesPhotoCredit": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
+  },
+  "speciesSuggestions": "Suggestions",
+  "speciesUseName": "Utiliser ce nom",
+  "speciesStatusAccepted": "Nom accepté",
+  "speciesStatusSynonym": "Synonyme"
 }

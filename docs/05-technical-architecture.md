@@ -11,7 +11,11 @@
 | Notifications | `flutter_local_notifications` + `timezone` | planification locale fiable, actions inline |
 | Prefs | `shared_preferences` | réglages simples |
 | i18n | `flutter_localizations` + ARB (`gen-l10n`) | fr / en / de / it, pluriels, dates locales |
-| Backend (P2) | Supabase derrière `RemoteDataSource` | Postgres + Auth + Storage + Realtime, mais remplaçable |
+| Backend (P3) | Supabase derrière `RemoteDataSource` | Postgres + Auth + Storage + Realtime, mais remplaçable |
+| Espèces | GBIF (`SpeciesService`) | gratuit, sans clé, taxonomie de référence, images d'observations avec attribution |
+| Identification | Pl@ntNet (`PlantIdentifier`) | clé de l'utilisateur |
+| Diagnostic | API Claude en HTTP brut (`PlantDiagnoser`) | clé de l'utilisateur, sortie structurée |
+| Météo | Open-Meteo (`WeatherService`) | gratuit, sans compte |
 
 ## Couches
 ```

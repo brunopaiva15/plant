@@ -9,6 +9,7 @@ import 'app/router.dart';
 import 'app/sync_coordinator.dart';
 import 'core/l10n/l10n.dart';
 import 'core/config/supabase_config.dart';
+import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
 import 'data/auth/supabase_auth_repository.dart';
 import 'domain/auth/auth_repository.dart';
@@ -21,7 +22,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await PreferencesService.load();
-  final db = FloraDatabase(driftDatabase(name: 'flora'));
+  final db = FloraDatabase(driftDatabase(
+    name: 'flora',
+    web: DriftWebOptions(sqlite3Wasm: Uri.parse('sqlite3.wasm'), driftWorker: Uri.parse('drift_worker.js')),
+  ));
   final AuthRepository auth;
   final String gardenId;
   if (SupabaseConfig.isConfigured) {
@@ -55,6 +59,8 @@ Future<void> main() async {
     (name: l10n.defaultBedroom, icon: '🛏️', outdoor: false),
     (name: l10n.defaultBalcony, icon: '🌤️', outdoor: true),
   ]);
+
+  if (DemoSeed.requested) await DemoSeed.apply(db, gardenId);
 
   notifications.onOpen = (payload) {
     if (payload != null && payload.isNotEmpty) container.read(routerProvider).go(payload);

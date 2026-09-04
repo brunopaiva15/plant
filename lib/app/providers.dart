@@ -13,6 +13,7 @@ import '../data/repositories/photo_repository_impl.dart';
 import '../data/repositories/plant_repository_impl.dart';
 import '../data/repositories/tag_repository_impl.dart';
 import '../data/services/anthropic_diagnoser.dart';
+import '../data/services/gbif_species_service.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
@@ -20,6 +21,7 @@ import '../data/services/plantnet_identifier.dart';
 import '../data/services/preferences_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
+import '../domain/species/species_info.dart';
 import '../domain/identification/plant_identifier.dart';
 import '../domain/weather/weather.dart';
 import '../features/export/export_service.dart';
@@ -176,3 +178,6 @@ final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
   final key = ref.watch(preferencesProvider.select((p) => p.anthropicApiKey));
   return key.isEmpty ? const UnconfiguredDiagnoser() : AnthropicDiagnoser(key);
 });
+
+/// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.
+final speciesServiceProvider = Provider<SpeciesService>((ref) => GbifSpeciesService());

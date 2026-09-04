@@ -2795,6 +2795,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Diagnostic ajouté au journal'**
   String get diagnosisSaved;
+
+  /// No description provided for @speciesInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche espèce'**
+  String get speciesInfo;
+
+  /// No description provided for @speciesSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source : GBIF — Global Biodiversity Information Facility'**
+  String get speciesSource;
+
+  /// No description provided for @speciesCommonNames.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noms communs'**
+  String get speciesCommonNames;
+
+  /// No description provided for @speciesFamily.
+  ///
+  /// In fr, this message translates to:
+  /// **'Famille'**
+  String get speciesFamily;
+
+  /// No description provided for @speciesOrder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ordre'**
+  String get speciesOrder;
+
+  /// No description provided for @speciesGenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Genre'**
+  String get speciesGenus;
+
+  /// No description provided for @speciesStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get speciesStatus;
+
+  /// No description provided for @speciesOpenGbif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir sur GBIF'**
+  String get speciesOpenGbif;
+
+  /// No description provided for @speciesNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèce introuvable dans GBIF.'**
+  String get speciesNotFound;
+
+  /// No description provided for @speciesLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche dans GBIF…'**
+  String get speciesLoading;
+
+  /// No description provided for @speciesPhotos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Observations'**
+  String get speciesPhotos;
+
+  /// No description provided for @speciesPhotoCredit.
+  ///
+  /// In fr, this message translates to:
+  /// **'{author} · {license}'**
+  String speciesPhotoCredit(String author, String license);
+
+  /// No description provided for @speciesSuggestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions'**
+  String get speciesSuggestions;
+
+  /// No description provided for @speciesUseName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser ce nom'**
+  String get speciesUseName;
+
+  /// No description provided for @speciesStatusAccepted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom accepté'**
+  String get speciesStatusAccepted;
+
+  /// No description provided for @speciesStatusSynonym.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synonyme'**
+  String get speciesStatusSynonym;
 }
 
 class _AppLocalizationsDelegate

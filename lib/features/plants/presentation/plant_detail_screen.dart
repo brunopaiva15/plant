@@ -24,6 +24,7 @@ import 'plant_tags_sheet.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
 import '../../diagnosis/presentation/diagnosis_sheet.dart';
+import '../../species/presentation/species_sheet.dart';
 import 'timeline_row.dart';
 
 /// La fiche plante : photo immersive, prochains soins, actions rapides,
@@ -208,7 +209,21 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(plant.name, style: context.text.title1),
-                  if (plant.speciesName != null) ...[const SizedBox(height: 2), Text(plant.speciesName!, style: context.text.callout.copyWith(fontStyle: FontStyle.italic))],
+                  if (plant.speciesName != null) ...[
+                    const SizedBox(height: 2),
+                    Pressable(
+                      onTap: () => showSpeciesSheet(context, scientificName: plant.speciesName!),
+                      scale: 0.98,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(child: Text(plant.speciesName!, style: context.text.callout.copyWith(fontStyle: FontStyle.italic, color: c.sage), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                          const SizedBox(width: 4),
+                          Icon(CupertinoIcons.info_circle, size: 14, color: c.sage),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 4),
                   Text(
                     [

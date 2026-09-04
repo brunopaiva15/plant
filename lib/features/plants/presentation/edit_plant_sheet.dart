@@ -8,6 +8,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
+import '../../species/presentation/species_field.dart';
 
 /// Édition d'une plante : l'essentiel d'abord, le reste sous « Plus d'options ».
 Future<void> showEditPlantSheet(BuildContext context, {required Plant plant}) =>
@@ -79,7 +80,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
           SheetHeader(title: l10n.editPlant),
           FloraTextField(controller: _name, hint: l10n.plantNameHint, textCapitalization: TextCapitalization.words),
           const SizedBox(height: Space.xs),
-          FloraTextField(controller: _species, hint: l10n.speciesHint),
+          SpeciesField(controller: _species),
           const SizedBox(height: Space.md),
           FloraGroup(
             children: [

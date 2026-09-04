@@ -1565,4 +1565,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisSaved => 'Diagnosis added to the journal';
+
+  @override
+  String get speciesInfo => 'Species';
+
+  @override
+  String get speciesSource =>
+      'Source: GBIF — Global Biodiversity Information Facility';
+
+  @override
+  String get speciesCommonNames => 'Common names';
+
+  @override
+  String get speciesFamily => 'Family';
+
+  @override
+  String get speciesOrder => 'Order';
+
+  @override
+  String get speciesGenus => 'Genus';
+
+  @override
+  String get speciesStatus => 'Status';
+
+  @override
+  String get speciesOpenGbif => 'View on GBIF';
+
+  @override
+  String get speciesNotFound => 'Species not found in GBIF.';
+
+  @override
+  String get speciesLoading => 'Searching GBIF…';
+
+  @override
+  String get speciesPhotos => 'Observations';
+
+  @override
+  String speciesPhotoCredit(String author, String license) {
+    return '$author · $license';
+  }
+
+  @override
+  String get speciesSuggestions => 'Suggestions';
+
+  @override
+  String get speciesUseName => 'Use this name';
+
+  @override
+  String get speciesStatusAccepted => 'Accepted name';
+
+  @override
+  String get speciesStatusSynonym => 'Synonym';
 }

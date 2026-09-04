@@ -39,6 +39,7 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | QR codes : sheet par plante, scanner (ouvre la fiche), planche d'étiquettes PDF (fiche + multi-sélection) | ✅ |
 | Identification : interface `PlantIdentifier`, adaptateur Pl@ntNet (clé fournie par l'utilisateur dans Profil), suggestions à l'étape « nom » et action « Identifier » sur la fiche | ✅ |
 | Croissance : comparaison avant / après avec curseur | ✅ |
+| Base de connaissances GBIF (sans clé) : suggestions d'espèces à la saisie, fiche espèce (taxonomie, noms communs localisés, observations photographiées avec licence et auteur, lien GBIF) | ✅ |
 | Synchronisation Supabase (adapter `RemoteDataSource`, outbox déjà en place) | → Phase 3 |
 | Notification « stock bas » (regroupée au rappel quotidien) | → Phase 3 |
 
