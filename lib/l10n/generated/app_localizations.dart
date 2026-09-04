@@ -1895,6 +1895,396 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Enregistré'**
   String get saved;
+
+  /// No description provided for @gardenLocations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements'**
+  String get gardenLocations;
+
+  /// No description provided for @gardenInventory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inventaire'**
+  String get gardenInventory;
+
+  /// No description provided for @gardenCalendar.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calendrier'**
+  String get gardenCalendar;
+
+  /// No description provided for @inventoryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inventaire'**
+  String get inventoryTitle;
+
+  /// No description provided for @newItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvel article'**
+  String get newItem;
+
+  /// No description provided for @editItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'article'**
+  String get editItem;
+
+  /// No description provided for @itemName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get itemName;
+
+  /// No description provided for @itemNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais plantes vertes'**
+  String get itemNameHint;
+
+  /// No description provided for @category.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get category;
+
+  /// No description provided for @catFertilizer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais'**
+  String get catFertilizer;
+
+  /// No description provided for @catSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreaux'**
+  String get catSoil;
+
+  /// No description provided for @catSubstrate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Substrats'**
+  String get catSubstrate;
+
+  /// No description provided for @catPot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pots'**
+  String get catPot;
+
+  /// No description provided for @catTool.
+  ///
+  /// In fr, this message translates to:
+  /// **'Outils'**
+  String get catTool;
+
+  /// No description provided for @catTreatment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Traitements'**
+  String get catTreatment;
+
+  /// No description provided for @catSeed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Graines'**
+  String get catSeed;
+
+  /// No description provided for @catAccessory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accessoires'**
+  String get catAccessory;
+
+  /// No description provided for @unit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get unit;
+
+  /// No description provided for @unitPieces.
+  ///
+  /// In fr, this message translates to:
+  /// **'unités'**
+  String get unitPieces;
+
+  /// No description provided for @lowThreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuil de stock bas'**
+  String get lowThreshold;
+
+  /// No description provided for @lowStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock bas'**
+  String get lowStock;
+
+  /// No description provided for @remaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'{amount} restants'**
+  String remaining(String amount);
+
+  /// No description provided for @noInventoryTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inventaire vide'**
+  String get noInventoryTitle;
+
+  /// No description provided for @noInventorySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais, terreaux, pots, outils : gardez l\'œil sur vos réserves.'**
+  String get noInventorySubtitle;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer l\'article'**
+  String get deleteItem;
+
+  /// No description provided for @lowStockItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 article en stock bas} other{{count} articles en stock bas}}'**
+  String lowStockItems(int count);
+
+  /// No description provided for @calendarTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calendrier'**
+  String get calendarTitle;
+
+  /// No description provided for @agenda.
+  ///
+  /// In fr, this message translates to:
+  /// **'Agenda'**
+  String get agenda;
+
+  /// No description provided for @month.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois'**
+  String get month;
+
+  /// No description provided for @noEventsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien de prévu'**
+  String get noEventsTitle;
+
+  /// No description provided for @noEventsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les soins à venir apparaîtront ici.'**
+  String get noEventsSubtitle;
+
+  /// No description provided for @projected.
+  ///
+  /// In fr, this message translates to:
+  /// **'prévu'**
+  String get projected;
+
+  /// No description provided for @today.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get today;
+
+  /// No description provided for @measurementsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mesures'**
+  String get measurementsTitle;
+
+  /// No description provided for @addMeasurement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une mesure'**
+  String get addMeasurement;
+
+  /// No description provided for @sinceFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'{delta} depuis {date}'**
+  String sinceFirst(String delta, String date);
+
+  /// No description provided for @qrCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR code'**
+  String get qrCode;
+
+  /// No description provided for @qrHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Collez-le sur le pot : le scanner ouvre directement la fiche.'**
+  String get qrHint;
+
+  /// No description provided for @scan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner'**
+  String get scan;
+
+  /// No description provided for @scanHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Visez le QR code d\'une plante.'**
+  String get scanHint;
+
+  /// No description provided for @unknownQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce QR code n\'appartient pas à votre jardin.'**
+  String get unknownQr;
+
+  /// No description provided for @shareQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get shareQr;
+
+  /// No description provided for @printLabels.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étiquettes PDF'**
+  String get printLabels;
+
+  /// No description provided for @labels.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étiquettes'**
+  String get labels;
+
+  /// No description provided for @cameraPermission.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisez l\'accès à l\'appareil photo dans les Réglages.'**
+  String get cameraPermission;
+
+  /// No description provided for @identify.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifier'**
+  String get identify;
+
+  /// No description provided for @identifying.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse en cours…'**
+  String get identifying;
+
+  /// No description provided for @identifyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Est-ce bien…'**
+  String get identifyTitle;
+
+  /// No description provided for @identifyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions à confirmer, jamais des certitudes.'**
+  String get identifyHint;
+
+  /// No description provided for @identifyNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune correspondance fiable.'**
+  String get identifyNone;
+
+  /// No description provided for @identifyError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identification impossible. Vérifiez votre connexion et réessayez.'**
+  String get identifyError;
+
+  /// No description provided for @useThis.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser'**
+  String get useThis;
+
+  /// No description provided for @identificationSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identification'**
+  String get identificationSettings;
+
+  /// No description provided for @identificationHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reconnaissance d\'espèce à partir d\'une photo, via le service Pl@ntNet. Créez une clé gratuite sur my.plantnet.org et collez-la ici.'**
+  String get identificationHint;
+
+  /// No description provided for @apiKey.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clé API'**
+  String get apiKey;
+
+  /// No description provided for @apiKeyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Collez votre clé'**
+  String get apiKeyHint;
+
+  /// No description provided for @identificationEnabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identification activée'**
+  String get identificationEnabled;
+
+  /// No description provided for @identificationDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non configurée'**
+  String get identificationDisabled;
+
+  /// No description provided for @confidence.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent} %'**
+  String confidence(int percent);
+
+  /// No description provided for @speciesSet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèce mise à jour'**
+  String get speciesSet;
+
+  /// No description provided for @compare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparer'**
+  String get compare;
+
+  /// No description provided for @compareHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Glissez pour comparer.'**
+  String get compareHint;
+
+  /// No description provided for @before.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant'**
+  String get before;
+
+  /// No description provided for @after.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après'**
+  String get after;
+
+  /// No description provided for @comparePickFirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez deux photos.'**
+  String get comparePickFirst;
 }
 
 class _AppLocalizationsDelegate

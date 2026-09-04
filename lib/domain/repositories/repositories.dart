@@ -131,6 +131,7 @@ class NewAction {
 abstract class ActionRepository {
   Stream<List<PlantAction>> watchByPlant(String plantId, {int? limit});
   Stream<List<PlantAction>> watchRecent({int limit = 20});
+  Stream<List<PlantAction>> watchBetween(DateTime from, DateTime to);
 
   /// Enregistre l'action et complète la routine du même type, s'il y en a une.
   Future<PlantAction> log(NewAction data);
@@ -144,6 +145,7 @@ abstract class ActionRepository {
 
 abstract class CareRepository {
   Stream<List<CareSchedule>> watchByPlant(String plantId);
+  Stream<List<CareSchedule>> watchAllEnabled();
   Stream<List<CareTask>> watchTasks({required DateTime until});
   Stream<List<CareTask>> watchDueTasks(DateTime now);
   Future<CareSchedule> upsert(CareSchedule schedule);
@@ -179,4 +181,27 @@ abstract class TagRepository {
   Future<void> setPlantTags(String plantId, List<String> tagIds);
   Future<void> addTagToPlants(List<String> plantIds, String tagId);
   Future<void> delete(String tagId);
+}
+
+abstract class MeasurementRepository {
+  Stream<List<MeasurementSeries>> watchSeries(String plantId);
+}
+
+abstract class InventoryRepository {
+  Stream<List<InventoryItem>> watchAll();
+  Stream<List<InventoryItem>> watchLowStock();
+  Future<InventoryItem> create({
+    required InventoryCategory category,
+    required String name,
+    required double quantity,
+    required String unit,
+    double? lowThreshold,
+    String? locationId,
+    String? notes,
+    String? photoPath,
+    String? thumbPath,
+  });
+  Future<void> update(InventoryItem item);
+  Future<void> adjustQuantity(String id, double delta);
+  Future<void> delete(String id);
 }

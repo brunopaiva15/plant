@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,12 +12,14 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
+import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
+import '../../identification/presentation/identification_sheet.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
 Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? locationId}) async {
@@ -56,6 +60,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   StoredPhoto? _photo;
   bool _picking = false;
   bool _saving = false;
+  Future<List<IdentificationCandidate>>? _identification;
 
   late final _name = TextEditingController(text: widget.parentName == null ? '' : context.l10n.cuttingOf(widget.parentName!));
   final _species = TextEditingController();
@@ -91,6 +96,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         if (_photo != null) await ref.read(photoStorageProvider).deleteFiles(_photo!.filePath, _photo!.thumbPath);
         setState(() => _photo = stored);
         Haptics.success();
+        _startIdentification(stored);
         _go(1);
       }
     } catch (e, st) {
@@ -99,6 +105,17 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     } finally {
       if (mounted) setState(() => _picking = false);
     }
+  }
+
+  /// Identification en arrière-plan dès qu'une photo existe (si un service est configuré).
+  /// Les suggestions apparaissent à l'étape du nom, sans étape supplémentaire.
+  void _startIdentification(StoredPhoto photo) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (!identifier.isConfigured) return;
+    final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    setState(() {
+      _identification = ref.read(photoStorageProvider).absolutePath(photo.filePath).then((path) => identifier.identify([File(path)], language: lang)).catchError((_) => <IdentificationCandidate>[]);
+    });
   }
 
   Future<void> _cancel() async {
@@ -252,6 +269,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           ),
           const SizedBox(height: Space.sm),
           FloraTextField(controller: _species, hint: l10n.speciesHint, textInputAction: TextInputAction.done, textCapitalization: TextCapitalization.sentences),
+          if (_identification != null) _IdentificationSuggestions(future: _identification!, onPick: _applyCandidate),
           const SizedBox(height: Space.lg),
           Pressable(
             onTap: () => setState(() => _more = !_more),
@@ -310,6 +328,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     );
   }
 
+  void _applyCandidate(IdentificationCandidate c) {
+    setState(() {
+      _species.text = c.scientificName;
+      if (_name.text.trim().isEmpty) _name.text = c.commonName ?? c.scientificName.split(' ').first;
+    });
+  }
+
   Widget _locationStep() {
     final l10n = context.l10n;
     final locations = ref.watch(locationsProvider).value ?? const <Location>[];
@@ -337,6 +362,42 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       actions: [
         FloraButton(label: l10n.finish, expand: true, loading: _saving, onPressed: _finish),
       ],
+    );
+  }
+}
+
+class _IdentificationSuggestions extends StatelessWidget {
+  const _IdentificationSuggestions({required this.future, required this.onPick});
+
+  final Future<List<IdentificationCandidate>> future;
+  final ValueChanged<IdentificationCandidate> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return FutureBuilder<List<IdentificationCandidate>>(
+      future: future,
+      builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return Padding(
+            padding: const EdgeInsets.only(top: Space.sm),
+            child: Row(children: [const AdaptiveProgress(), const SizedBox(width: Space.xs), Text(l10n.identifying, style: context.text.caption)]),
+          );
+        }
+        final results = (snap.data ?? const <IdentificationCandidate>[]).take(3).toList();
+        if (results.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: Space.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.identifyHint, style: context.text.caption),
+              const SizedBox(height: Space.xs),
+              FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
+            ],
+          ),
+        );
+      },
     );
   }
 }

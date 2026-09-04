@@ -30,14 +30,17 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Favoris, tags (optionnels), archives (« Anciennes plantes ») + restauration | ✅ |
 | Sélection multiple (long press) → arroser / déplacer / archiver | ✅ |
 
-## Phase 2 — « Comprendre »
-- Identification par photo (service abstrait `PlantIdentifier`, provider externe branchable)
-- Inventaire (engrais, terreaux, pots, outils…) avec seuil de stock bas
-- Calendrier (agenda prioritaire, vue mois)
-- Mesures et mini-visualisations (hauteur, largeur, feuilles, pot)
-- QR codes par plante (génération, scan, export PDF d'étiquettes)
-- Croissance : galerie chronologique, comparaison avant / après
-- Synchronisation Supabase (adapter `RemoteDataSource`, outbox déjà en place)
+## Phase 2 — « Comprendre » ✅ (implémentée dans ce dépôt)
+| Fonction | État |
+|---|---|
+| Mesures : saisie (hauteur, largeur, feuilles, pot) + cartes « 42 cm · +8 cm depuis juin » avec courbe minimale | ✅ |
+| Inventaire : catégories, quantité + unité, [−] [+], seuil de stock bas, emplacement, notes | ✅ |
+| Calendrier : agenda 30 jours (historique + échéances + occurrences projetées), vue mois avec points | ✅ |
+| QR codes : sheet par plante, scanner (ouvre la fiche), planche d'étiquettes PDF (fiche + multi-sélection) | ✅ |
+| Identification : interface `PlantIdentifier`, adaptateur Pl@ntNet (clé fournie par l'utilisateur dans Profil), suggestions à l'étape « nom » et action « Identifier » sur la fiche | ✅ |
+| Croissance : comparaison avant / après avec curseur | ✅ |
+| Synchronisation Supabase (adapter `RemoteDataSource`, outbox déjà en place) | → Phase 3 |
+| Notification « stock bas » (regroupée au rappel quotidien) | → Phase 3 |
 
 ## Phase 3 — « Partager »
 - Collaboration (jardin partagé, rôles Owner / Member / Viewer, « Arrosée par Laura à 08:32 »)

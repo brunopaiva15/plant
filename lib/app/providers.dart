@@ -6,14 +6,18 @@ import '../data/db/database.dart';
 import '../data/repositories/action_repository_impl.dart';
 import '../data/repositories/action_type_repository_impl.dart';
 import '../data/repositories/care_repository_impl.dart';
+import '../data/repositories/inventory_repository_impl.dart';
+import '../data/repositories/measurement_repository_impl.dart';
 import '../data/repositories/location_repository_impl.dart';
 import '../data/repositories/photo_repository_impl.dart';
 import '../data/repositories/plant_repository_impl.dart';
 import '../data/repositories/tag_repository_impl.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_storage_service.dart';
+import '../data/services/plantnet_identifier.dart';
 import '../data/services/preferences_service.dart';
 import '../domain/auth/auth_repository.dart';
+import '../domain/identification/plant_identifier.dart';
 import '../domain/models/models.dart';
 import '../domain/repositories/repositories.dart';
 
@@ -38,6 +42,10 @@ final careRepositoryProvider =
 final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider)));
 final actionTypeRepositoryProvider =
     Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));
+final measurementRepositoryProvider =
+    Provider<MeasurementRepository>((ref) => DriftMeasurementRepository(ref.watch(databaseProvider)));
+final inventoryRepositoryProvider =
+    Provider<InventoryRepository>((ref) => DriftInventoryRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final tagRepositoryProvider =
     Provider<TagRepository>((ref) => DriftTagRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 
@@ -69,6 +77,7 @@ class AppPreferences {
     required this.quietWeekdays,
     required this.onboardingDone,
     required this.displayName,
+    required this.plantNetApiKey,
   });
 
   final ThemeMode themeMode;
@@ -81,6 +90,7 @@ class AppPreferences {
   final Set<int> quietWeekdays;
   final bool onboardingDone;
   final String displayName;
+  final String plantNetApiKey;
 }
 
 class PreferencesController extends Notifier<AppPreferences> {
@@ -103,6 +113,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       quietWeekdays: s.quietWeekdays,
       onboardingDone: s.onboardingDone,
       displayName: s.displayName ?? '',
+      plantNetApiKey: s.plantNetApiKey,
     );
   }
 
@@ -120,6 +131,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setNotificationTime(TimeOfDay time) => _apply((s) => s.setNotificationTime(time));
   Future<void> setQuietWeekdays(Set<int> days) => _apply((s) => s.setQuietWeekdays(days));
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
+  Future<void> setPlantNetApiKey(String key) => _apply((s) => s.setPlantNetApiKey(key));
   Future<void> setDisplayName(String name) async {
     await ref.read(authRepositoryProvider).updateDisplayName(name);
     state = _read();
@@ -127,3 +139,9 @@ class PreferencesController extends Notifier<AppPreferences> {
 }
 
 final preferencesProvider = NotifierProvider<PreferencesController, AppPreferences>(PreferencesController.new);
+
+/// Identification : Pl@ntNet si une clé est configurée, sinon service inactif.
+final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
+  final key = ref.watch(preferencesProvider.select((p) => p.plantNetApiKey));
+  return key.isEmpty ? const UnconfiguredIdentifier() : PlantNetIdentifier(key);
+});

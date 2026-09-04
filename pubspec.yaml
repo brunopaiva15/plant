@@ -51,6 +51,12 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   drift_flutter: ^0.3.1
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.4.0
+  pdf: ^3.13.0
+  printing: ^5.15.0
+  http: ^1.6.0
+  share_plus: ^13.3.0
 
 dev_dependencies:
   flutter_test:

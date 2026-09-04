@@ -78,6 +78,13 @@ class ProfileScreen extends ConsumerWidget {
               FloraGroup(
                 children: [
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.actionTypes, onTap: () => context.push(Routes.actionTypes)),
+                  FloraListRow(
+                    leading: const Text('🔬', style: TextStyle(fontSize: 18)),
+                    title: l10n.identificationSettings,
+                    trailing: value(ref.watch(plantIdentifierProvider).isConfigured ? l10n.identificationEnabled : l10n.identificationDisabled),
+                    chevron: true,
+                    onTap: () => context.push(Routes.identification),
+                  ),
                   FloraListRow(leading: const Text('🏷️', style: TextStyle(fontSize: 18)), title: l10n.tags, onTap: () => context.push(Routes.tags)),
                   FloraListRow(leading: const Text('🍂', style: TextStyle(fontSize: 18)), title: l10n.archives, onTap: () => context.push(Routes.archive)),
                 ],

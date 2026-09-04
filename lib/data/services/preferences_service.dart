@@ -58,6 +58,9 @@ class PreferencesService {
   Future<void> setQuietWeekdays(Set<int> days) =>
       _prefs.setStringList('quiet_weekdays', days.map((d) => d.toString()).toList());
 
+  String get plantNetApiKey => _prefs.getString('plantnet_api_key') ?? '';
+  Future<void> setPlantNetApiKey(String key) => _prefs.setString('plantnet_api_key', key.trim());
+
   bool get notificationPromptShown => _prefs.getBool('notification_prompt_shown') ?? false;
   Future<void> setNotificationPromptShown() => _prefs.setBool('notification_prompt_shown', true);
 }

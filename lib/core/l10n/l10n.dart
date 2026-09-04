@@ -85,6 +85,30 @@ extension ActionTypeLabels on AppLocalizations {
         PlantHealth.sick => healthSick,
       };
 
+  String categoryName(InventoryCategory c) => switch (c) {
+        InventoryCategory.fertilizer => catFertilizer,
+        InventoryCategory.soil => catSoil,
+        InventoryCategory.substrate => catSubstrate,
+        InventoryCategory.pot => catPot,
+        InventoryCategory.tool => catTool,
+        InventoryCategory.treatment => catTreatment,
+        InventoryCategory.seed => catSeed,
+        InventoryCategory.accessory => catAccessory,
+      };
+
+  String measurementKindName(MeasurementKind k) => switch (k) {
+        MeasurementKind.height => measureHeight,
+        MeasurementKind.width => measureWidth,
+        MeasurementKind.leaves => measureLeaves,
+        MeasurementKind.pot => measurePot,
+      };
+
+  /// « 42 cm », « 9 » (sans unité), « 1,5 L ».
+  String formatQuantity(double value, String unit) {
+    final text = value == value.roundToDouble() ? value.toInt().toString() : value.toStringAsFixed(1);
+    return unit.isEmpty ? text : '$text $unit';
+  }
+
   /// Joint des noms : « Monstera, Pilea et Ficus ».
   String joinNames(List<String> names) {
     if (names.isEmpty) return '';

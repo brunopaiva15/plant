@@ -1049,4 +1049,217 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saved => 'Saved';
+
+  @override
+  String get gardenLocations => 'Locations';
+
+  @override
+  String get gardenInventory => 'Inventory';
+
+  @override
+  String get gardenCalendar => 'Calendar';
+
+  @override
+  String get inventoryTitle => 'Inventory';
+
+  @override
+  String get newItem => 'New item';
+
+  @override
+  String get editItem => 'Edit item';
+
+  @override
+  String get itemName => 'Name';
+
+  @override
+  String get itemNameHint => 'Green plant fertilizer';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get catFertilizer => 'Fertilizers';
+
+  @override
+  String get catSoil => 'Soils';
+
+  @override
+  String get catSubstrate => 'Substrates';
+
+  @override
+  String get catPot => 'Pots';
+
+  @override
+  String get catTool => 'Tools';
+
+  @override
+  String get catTreatment => 'Treatments';
+
+  @override
+  String get catSeed => 'Seeds';
+
+  @override
+  String get catAccessory => 'Accessories';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get unitPieces => 'pieces';
+
+  @override
+  String get lowThreshold => 'Low stock threshold';
+
+  @override
+  String get lowStock => 'Low stock';
+
+  @override
+  String remaining(String amount) {
+    return '$amount left';
+  }
+
+  @override
+  String get noInventoryTitle => 'Empty inventory';
+
+  @override
+  String get noInventorySubtitle =>
+      'Fertilizers, soils, pots, tools: keep an eye on your supplies.';
+
+  @override
+  String get deleteItem => 'Delete item';
+
+  @override
+  String lowStockItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items running low',
+      one: '1 item running low',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarTitle => 'Calendar';
+
+  @override
+  String get agenda => 'Agenda';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get noEventsTitle => 'Nothing planned';
+
+  @override
+  String get noEventsSubtitle => 'Upcoming care will show up here.';
+
+  @override
+  String get projected => 'planned';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get measurementsTitle => 'Measurements';
+
+  @override
+  String get addMeasurement => 'Add a measurement';
+
+  @override
+  String sinceFirst(String delta, String date) {
+    return '$delta since $date';
+  }
+
+  @override
+  String get qrCode => 'QR code';
+
+  @override
+  String get qrHint =>
+      'Stick it on the pot: scanning opens the plant directly.';
+
+  @override
+  String get scan => 'Scan';
+
+  @override
+  String get scanHint => 'Point at a plant\'s QR code.';
+
+  @override
+  String get unknownQr => 'This QR code doesn\'t belong to your garden.';
+
+  @override
+  String get shareQr => 'Share';
+
+  @override
+  String get printLabels => 'PDF labels';
+
+  @override
+  String get labels => 'Labels';
+
+  @override
+  String get cameraPermission => 'Allow camera access in Settings.';
+
+  @override
+  String get identify => 'Identify';
+
+  @override
+  String get identifying => 'Analyzing…';
+
+  @override
+  String get identifyTitle => 'Is it…';
+
+  @override
+  String get identifyHint => 'Suggestions to confirm, never certainties.';
+
+  @override
+  String get identifyNone => 'No reliable match.';
+
+  @override
+  String get identifyError =>
+      'Couldn\'t identify. Check your connection and try again.';
+
+  @override
+  String get useThis => 'Use';
+
+  @override
+  String get identificationSettings => 'Identification';
+
+  @override
+  String get identificationHint =>
+      'Species recognition from a photo, powered by Pl@ntNet. Create a free key on my.plantnet.org and paste it here.';
+
+  @override
+  String get apiKey => 'API key';
+
+  @override
+  String get apiKeyHint => 'Paste your key';
+
+  @override
+  String get identificationEnabled => 'Identification enabled';
+
+  @override
+  String get identificationDisabled => 'Not configured';
+
+  @override
+  String confidence(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get speciesSet => 'Species updated';
+
+  @override
+  String get compare => 'Compare';
+
+  @override
+  String get compareHint => 'Drag to compare.';
+
+  @override
+  String get before => 'Before';
+
+  @override
+  String get after => 'After';
+
+  @override
+  String get comparePickFirst => 'Pick two photos.';
 }

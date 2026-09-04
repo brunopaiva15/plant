@@ -19,17 +19,24 @@ part 'database.g.dart';
   PlantTags,
   Measurements,
   SyncOutbox,
+  InventoryItems,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async {
           await m.createAll();
+          await _createIndexes();
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(inventoryItems);
+          }
           await _createIndexes();
         },
         beforeOpen: (details) async {
@@ -45,6 +52,8 @@ class FloraDatabase extends _$FloraDatabase {
     await customStatement('CREATE INDEX IF NOT EXISTS idx_schedules_due ON care_schedules(enabled, next_due_at)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_schedules_plant ON care_schedules(plant_id, type_key)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_photos_plant ON plant_photos(plant_id, taken_at)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_measurements_plant ON measurements(plant_id, kind, measured_at)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_category ON inventory_items(garden_id, category_key)');
   }
 
   /// Les types intégrés existent toujours en base pour rester triables avec

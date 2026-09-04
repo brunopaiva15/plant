@@ -101,3 +101,33 @@ extension CareScheduleRowMapper on CareScheduleRow {
 extension TagRowMapper on TagRow {
   Tag toDomain() => Tag(id: id, gardenId: gardenId, name: name, createdAt: createdAt);
 }
+
+extension MeasurementRowMapper on MeasurementRow {
+  Measurement toDomain() => Measurement(
+        id: id,
+        plantId: plantId,
+        actionId: actionId,
+        kind: MeasurementKind.fromKey(kind),
+        value: value,
+        unit: unit,
+        measuredAt: measuredAt,
+      );
+}
+
+extension InventoryItemRowMapper on InventoryItemRow {
+  InventoryItem toDomain() => InventoryItem(
+        id: id,
+        gardenId: gardenId,
+        category: InventoryCategory.fromKey(categoryKey),
+        name: name,
+        quantity: quantity,
+        unit: unit,
+        lowThreshold: lowThreshold,
+        locationId: locationId,
+        notes: notes,
+        photoPath: photoPath,
+        thumbPath: thumbPath,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}

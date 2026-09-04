@@ -19,7 +19,10 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
 import 'create_plant_flow.dart';
 import 'edit_plant_sheet.dart';
+import 'measurements_section.dart';
 import 'plant_tags_sheet.dart';
+import '../../identification/presentation/identification_sheet.dart';
+import '../../qr/presentation/plant_qr_sheet.dart';
 import 'timeline_row.dart';
 
 /// La fiche plante : photo immersive, prochains soins, actions rapides,
@@ -73,6 +76,9 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           onPressed: () => _toggleFavorite(plant),
         ),
         SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
+        SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
+        if (ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
+          SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
         SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
         SheetAction(
           label: l10n.move,
@@ -86,6 +92,18 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
         SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
       ],
     );
+  }
+
+  Future<void> _identify(Plant plant) async {
+    final photos = ref.read(plantPhotosProvider(id)).value ?? const <PlantPhoto>[];
+    final primary = photos.where((p) => p.id == plant.primaryPhotoId).firstOrNull ?? photos.firstOrNull;
+    if (primary == null) return;
+    final path = await ref.read(photoStorageProvider).absolutePath(primary.filePath);
+    if (!mounted) return;
+    final candidate = await showIdentificationSheet(context, absoluteImagePath: path);
+    if (candidate == null || !mounted) return;
+    await ref.read(plantRepositoryProvider).update(plant.copyWith(speciesName: () => candidate.scientificName));
+    if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.speciesSet, emoji: '🔬'));
   }
 
   Future<void> _toggleFavorite(Plant plant) async {
@@ -222,6 +240,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           ),
           _RecentHistory(plantId: id),
           _Growth(plantId: id, photos: photos, onAdd: _addPhoto),
+          MeasurementsSection(plantId: id, plantName: plant.name),
           _Info(summary: summary),
           _Cuttings(plantId: id, plant: plant),
           const SliverPadding(padding: EdgeInsets.only(bottom: Space.huge)),

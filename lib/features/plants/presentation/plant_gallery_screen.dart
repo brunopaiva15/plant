@@ -12,6 +12,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../application/plant_providers.dart';
+import 'compare_screen.dart';
 
 /// Croissance : toutes les photos, groupées par mois, plein écran au tap.
 class PlantGalleryScreen extends ConsumerWidget {
@@ -35,7 +36,22 @@ class PlantGalleryScreen extends ConsumerWidget {
     }
     return FloraPage(
       title: l10n.growth,
-      trailing: FloraIconButton(
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (photos.length >= 2) ...[
+            FloraIconButton(
+              icon: CupertinoIcons.rectangle_split_3x1,
+              semanticLabel: l10n.compare,
+              onPressed: () => Navigator.of(context).push(
+                isCupertino(context)
+                    ? CupertinoPageRoute<void>(builder: (_) => CompareScreen(photos: photos))
+                    : MaterialPageRoute<void>(builder: (_) => CompareScreen(photos: photos)),
+              ),
+            ),
+            const SizedBox(width: Space.xs),
+          ],
+          FloraIconButton(
         icon: CupertinoIcons.camera,
         semanticLabel: l10n.addPhoto,
         onPressed: () => showAdaptiveActionSheet(
@@ -46,6 +62,8 @@ class PlantGalleryScreen extends ConsumerWidget {
             SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.gallery)),
           ],
         ),
+          ),
+        ],
       ),
       child: photos.isEmpty
           ? EmptyState(emoji: '📷', title: l10n.noPhotosTitle, subtitle: l10n.noPhotosSubtitle, compact: true)

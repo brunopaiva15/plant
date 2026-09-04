@@ -20,14 +20,22 @@ care_schedules   id, plant_id, type_key, strategy(fixed|seasonal|manual), interv
                  next_due_at?, last_completed_at?, enabled, created_at, updated_at
 tags             id, garden_id, name, color?, created_at
 plant_tags       plant_id, tag_id
-plant_measurements id, plant_id, action_id?, kind(height|width|leaves|pot), value, unit, measured_at   [P2 UI]
+measurements     id, plant_id, action_id?, kind(height|width|leaves|pot), value, unit, measured_at
 sync_outbox      id, entity, entity_id, op(upsert|delete), payload(json), created_at, attempts
 ```
 
-## Tables prévues (schéma réservé, UI en P2–P4)
+## Tables Phase 2 (schéma v2)
 ```
-inventory_categories, inventory_items, tasks, notes, attachments, calendar_events,
-notifications, devices, shared_links, plant_links(qr|nfc), plant_relationships
+inventory_items  id, garden_id, category_key(fertilizer|soil|substrate|pot|tool|treatment|seed|accessory),
+                 name, quantity, unit, low_threshold?, location_id?, notes?, photo_path?, thumb_path?,
+                 created_at, updated_at, deleted_at
+```
+Les catégories d'inventaire sont un enum localisé (pas de table) ; les QR codes encodent `flora://plant/<id>` sans table dédiée.
+Le calendrier n'est pas stocké : il est projeté à la volée (`CalendarProjector`) à partir des routines et de l'historique.
+
+## Tables prévues (schéma réservé, UI en P3–P4)
+```
+tasks, notes, attachments, notifications, devices, shared_links, plant_links(nfc), plant_relationships
 ```
 
 ## Relations

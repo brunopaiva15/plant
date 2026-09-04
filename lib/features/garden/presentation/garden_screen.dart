@@ -8,12 +8,60 @@ import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
+import '../../calendar/presentation/calendar_view.dart';
+import '../../inventory/presentation/inventory_item_sheet.dart';
+import '../../inventory/presentation/inventory_list.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
 
-/// Jardin : arborescence des emplacements avec le nombre de plantes.
-/// Inventaire et calendrier rejoindront cet onglet en Phase 2.
+enum GardenSection { locations, inventory, calendar }
+
+class GardenSectionController extends Notifier<GardenSection> {
+  @override
+  GardenSection build() => GardenSection.locations;
+  void set(GardenSection s) => state = s;
+}
+
+final gardenSectionProvider = NotifierProvider<GardenSectionController, GardenSection>(GardenSectionController.new);
+
+/// Jardin : emplacements, inventaire et calendrier derrière un contrôle segmenté.
 class GardenScreen extends ConsumerWidget {
   const GardenScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final section = ref.watch(gardenSectionProvider);
+    final trailing = switch (section) {
+      GardenSection.locations => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newLocationTitle, onPressed: () => showLocationEditSheet(context)),
+      GardenSection.inventory => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newItem, onPressed: () => showInventoryItemSheet(context)),
+      GardenSection.calendar => null,
+    };
+    return LargeTitlePage(
+      title: l10n.gardenTitle,
+      trailing: trailing,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
+            child: AdaptiveSegmented<GardenSection>(
+              segments: {GardenSection.locations: l10n.gardenLocations, GardenSection.inventory: l10n.gardenInventory, GardenSection.calendar: l10n.gardenCalendar},
+              value: section,
+              onChanged: (s) => ref.read(gardenSectionProvider.notifier).set(s),
+            ),
+          ),
+        ),
+        switch (section) {
+          GardenSection.locations => const _LocationsSlivers(),
+          GardenSection.inventory => const InventorySlivers(),
+          GardenSection.calendar => const CalendarSlivers(),
+        },
+      ],
+    );
+  }
+}
+
+class _LocationsSlivers extends ConsumerWidget {
+  const _LocationsSlivers();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,9 +69,7 @@ class GardenScreen extends ConsumerWidget {
     final tree = ref.watch(locationTreeProvider);
     final nodes = tree.value ?? const <LocationNode>[];
     final count = ref.watch(activePlantCountProvider).value ?? 0;
-    return LargeTitlePage(
-      title: l10n.gardenTitle,
-      trailing: FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newLocationTitle, onPressed: () => showLocationEditSheet(context)),
+    return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
           child: Padding(

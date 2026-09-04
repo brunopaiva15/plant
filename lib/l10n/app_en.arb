@@ -298,5 +298,101 @@
   "noteAddedToast": "Note added",
   "actionAddedToast": "Action saved",
   "locationCreated": "{name} created",
-  "saved": "Saved"
+  "saved": "Saved",
+  "gardenLocations": "Locations",
+  "gardenInventory": "Inventory",
+  "gardenCalendar": "Calendar",
+  "inventoryTitle": "Inventory",
+  "newItem": "New item",
+  "editItem": "Edit item",
+  "itemName": "Name",
+  "itemNameHint": "Green plant fertilizer",
+  "category": "Category",
+  "catFertilizer": "Fertilizers",
+  "catSoil": "Soils",
+  "catSubstrate": "Substrates",
+  "catPot": "Pots",
+  "catTool": "Tools",
+  "catTreatment": "Treatments",
+  "catSeed": "Seeds",
+  "catAccessory": "Accessories",
+  "unit": "Unit",
+  "unitPieces": "pieces",
+  "lowThreshold": "Low stock threshold",
+  "lowStock": "Low stock",
+  "remaining": "{amount} left",
+  "noInventoryTitle": "Empty inventory",
+  "noInventorySubtitle": "Fertilizers, soils, pots, tools: keep an eye on your supplies.",
+  "deleteItem": "Delete item",
+  "lowStockItems": "{count, plural, =1{1 item running low} other{{count} items running low}}",
+  "calendarTitle": "Calendar",
+  "agenda": "Agenda",
+  "month": "Month",
+  "noEventsTitle": "Nothing planned",
+  "noEventsSubtitle": "Upcoming care will show up here.",
+  "projected": "planned",
+  "today": "Today",
+  "measurementsTitle": "Measurements",
+  "addMeasurement": "Add a measurement",
+  "sinceFirst": "{delta} since {date}",
+  "qrCode": "QR code",
+  "qrHint": "Stick it on the pot: scanning opens the plant directly.",
+  "scan": "Scan",
+  "scanHint": "Point at a plant's QR code.",
+  "unknownQr": "This QR code doesn't belong to your garden.",
+  "shareQr": "Share",
+  "printLabels": "PDF labels",
+  "labels": "Labels",
+  "cameraPermission": "Allow camera access in Settings.",
+  "identify": "Identify",
+  "identifying": "Analyzing…",
+  "identifyTitle": "Is it…",
+  "identifyHint": "Suggestions to confirm, never certainties.",
+  "identifyNone": "No reliable match.",
+  "identifyError": "Couldn't identify. Check your connection and try again.",
+  "useThis": "Use",
+  "identificationSettings": "Identification",
+  "identificationHint": "Species recognition from a photo, powered by Pl@ntNet. Create a free key on my.plantnet.org and paste it here.",
+  "apiKey": "API key",
+  "apiKeyHint": "Paste your key",
+  "identificationEnabled": "Identification enabled",
+  "identificationDisabled": "Not configured",
+  "confidence": "{percent}%",
+  "speciesSet": "Species updated",
+  "compare": "Compare",
+  "compareHint": "Drag to compare.",
+  "before": "Before",
+  "after": "After",
+  "comparePickFirst": "Pick two photos.",
+  "@remaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@lowStockItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sinceFirst": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@confidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

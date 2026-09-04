@@ -20,12 +20,13 @@ lib/
 ├── domain/
 │   ├── models/                    Plant, Location, PlantAction, CareSchedule, PlantPhoto, ActionType, Tag…
 │   ├── repositories/              interfaces
-│   ├── care/                      CareEngine, ReminderPlanner, Season
+│   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
+│   ├── identification/            PlantIdentifier (interface, candidats)
 │   └── auth/                      AuthRepository, AppUser
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier
 │   └── auth/                      LocalAuthRepository
 ├── features/
 │   ├── onboarding/
@@ -33,8 +34,11 @@ lib/
 │   ├── plants/                    list, detail, create, edit, timeline, gallery, schedule
 │   ├── actions/                   add action sheet, quick actions
 │   ├── locations/
-│   ├── garden/
-│   ├── search/
+│   ├── garden/                    onglet segmenté : emplacements · inventaire · calendrier
+│   ├── inventory/
+│   ├── calendar/
+│   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
+│   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── archive/
 │   └── profile/                   settings, appearance, notifications, action types, about
 └── l10n/

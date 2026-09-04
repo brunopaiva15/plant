@@ -298,5 +298,101 @@
   "noteAddedToast": "Nota aggiunta",
   "actionAddedToast": "Azione salvata",
   "locationCreated": "{name} creato",
-  "saved": "Salvato"
+  "saved": "Salvato",
+  "gardenLocations": "Posizioni",
+  "gardenInventory": "Inventario",
+  "gardenCalendar": "Calendario",
+  "inventoryTitle": "Inventario",
+  "newItem": "Nuovo articolo",
+  "editItem": "Modifica articolo",
+  "itemName": "Nome",
+  "itemNameHint": "Concime piante verdi",
+  "category": "Categoria",
+  "catFertilizer": "Concimi",
+  "catSoil": "Terricci",
+  "catSubstrate": "Substrati",
+  "catPot": "Vasi",
+  "catTool": "Attrezzi",
+  "catTreatment": "Trattamenti",
+  "catSeed": "Semi",
+  "catAccessory": "Accessori",
+  "unit": "Unità",
+  "unitPieces": "pezzi",
+  "lowThreshold": "Soglia di scorta bassa",
+  "lowStock": "Scorta bassa",
+  "remaining": "{amount} rimasti",
+  "noInventoryTitle": "Inventario vuoto",
+  "noInventorySubtitle": "Concimi, terricci, vasi, attrezzi: tieni d'occhio le scorte.",
+  "deleteItem": "Elimina articolo",
+  "lowStockItems": "{count, plural, =1{1 articolo in esaurimento} other{{count} articoli in esaurimento}}",
+  "calendarTitle": "Calendario",
+  "agenda": "Agenda",
+  "month": "Mese",
+  "noEventsTitle": "Niente in programma",
+  "noEventsSubtitle": "Le cure in arrivo appariranno qui.",
+  "projected": "previsto",
+  "today": "Oggi",
+  "measurementsTitle": "Misure",
+  "addMeasurement": "Aggiungi una misura",
+  "sinceFirst": "{delta} dal {date}",
+  "qrCode": "Codice QR",
+  "qrHint": "Attaccalo al vaso: la scansione apre direttamente la pianta.",
+  "scan": "Scansiona",
+  "scanHint": "Inquadra il codice QR di una pianta.",
+  "unknownQr": "Questo codice QR non appartiene al tuo giardino.",
+  "shareQr": "Condividi",
+  "printLabels": "Etichette PDF",
+  "labels": "Etichette",
+  "cameraPermission": "Consenti l'accesso alla fotocamera nelle Impostazioni.",
+  "identify": "Identifica",
+  "identifying": "Analisi in corso…",
+  "identifyTitle": "È forse…",
+  "identifyHint": "Suggerimenti da confermare, mai certezze.",
+  "identifyNone": "Nessuna corrispondenza affidabile.",
+  "identifyError": "Identificazione impossibile. Controlla la connessione e riprova.",
+  "useThis": "Usa",
+  "identificationSettings": "Identificazione",
+  "identificationHint": "Riconoscimento della specie da una foto, tramite Pl@ntNet. Crea una chiave gratuita su my.plantnet.org e incollala qui.",
+  "apiKey": "Chiave API",
+  "apiKeyHint": "Incolla la chiave",
+  "identificationEnabled": "Identificazione attiva",
+  "identificationDisabled": "Non configurata",
+  "confidence": "{percent}%",
+  "speciesSet": "Specie aggiornata",
+  "compare": "Confronta",
+  "compareHint": "Trascina per confrontare.",
+  "before": "Prima",
+  "after": "Dopo",
+  "comparePickFirst": "Scegli due foto.",
+  "@remaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@lowStockItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sinceFirst": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@confidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

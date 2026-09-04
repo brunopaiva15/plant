@@ -9,6 +9,7 @@ import 'package:flora/data/services/notification_service.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/repositories/repositories.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -150,6 +151,32 @@ void main() {
     await tester.tap(find.text('Profil'));
     await settle(tester);
     expect(find.text('Apparence'), findsOneWidget);
+  });
+
+  testWidgets('garden tab shows inventory and calendar without layout errors', (tester) async {
+    final container = await boot(tester, seed: (c) async {
+      await c.read(plantRepositoryProvider).create(const NewPlant(name: 'Hoya'));
+      await c.read(inventoryRepositoryProvider).create(category: InventoryCategory.fertilizer, name: 'Engrais', quantity: 120, unit: 'ml', lowThreshold: 200);
+    });
+    await pumpApp(tester, container);
+    await tester.tap(find.text('Jardin'));
+    await settle(tester);
+    expect(find.text('Aucun emplacement'), findsOneWidget);
+
+    await tester.tap(find.text('Inventaire'));
+    await settle(tester);
+    expect(find.text('Engrais'), findsWidgets);
+    expect(find.text('1 article en stock bas'), findsOneWidget);
+    await tester.tap(find.byIcon(CupertinoIcons.plus).last);
+    await settle(tester);
+    expect(find.textContaining('170 ml'), findsOneWidget);
+
+    await tester.tap(find.text('Calendrier'));
+    await settle(tester);
+    expect(find.text('Hoya'), findsWidgets);
+    await tester.tap(find.text('Mois'));
+    await settle(tester);
+    expect(find.text('Agenda'), findsOneWidget);
   });
 
   testWidgets('onboarding leads to Today after entering a name', (tester) async {

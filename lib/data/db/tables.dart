@@ -167,3 +167,22 @@ class SyncOutbox extends Table {
   DateTimeColumn get createdAt => dateTime()();
   IntColumn get attempts => integer().withDefault(const Constant(0))();
 }
+
+@DataClassName('InventoryItemRow')
+class InventoryItems extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get categoryKey => text()();
+  TextColumn get name => text()();
+  RealColumn get quantity => real().withDefault(const Constant(0))();
+  TextColumn get unit => text().withDefault(const Constant(''))();
+  RealColumn get lowThreshold => real().nullable()();
+  TextColumn get locationId => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get photoPath => text().nullable()();
+  TextColumn get thumbPath => text().nullable()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

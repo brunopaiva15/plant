@@ -5812,6 +5812,815 @@ class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxRow> {
   }
 }
 
+class $InventoryItemsTable extends InventoryItems
+    with TableInfo<$InventoryItemsTable, InventoryItemRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InventoryItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryKeyMeta = const VerificationMeta(
+    'categoryKey',
+  );
+  @override
+  late final GeneratedColumn<String> categoryKey = GeneratedColumn<String>(
+    'category_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantityMeta = const VerificationMeta(
+    'quantity',
+  );
+  @override
+  late final GeneratedColumn<double> quantity = GeneratedColumn<double>(
+    'quantity',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _unitMeta = const VerificationMeta('unit');
+  @override
+  late final GeneratedColumn<String> unit = GeneratedColumn<String>(
+    'unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _lowThresholdMeta = const VerificationMeta(
+    'lowThreshold',
+  );
+  @override
+  late final GeneratedColumn<double> lowThreshold = GeneratedColumn<double>(
+    'low_threshold',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationIdMeta = const VerificationMeta(
+    'locationId',
+  );
+  @override
+  late final GeneratedColumn<String> locationId = GeneratedColumn<String>(
+    'location_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _thumbPathMeta = const VerificationMeta(
+    'thumbPath',
+  );
+  @override
+  late final GeneratedColumn<String> thumbPath = GeneratedColumn<String>(
+    'thumb_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    categoryKey,
+    name,
+    quantity,
+    unit,
+    lowThreshold,
+    locationId,
+    notes,
+    photoPath,
+    thumbPath,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inventory_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InventoryItemRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('category_key')) {
+      context.handle(
+        _categoryKeyMeta,
+        categoryKey.isAcceptableOrUnknown(
+          data['category_key']!,
+          _categoryKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryKeyMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(
+        _quantityMeta,
+        quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta),
+      );
+    }
+    if (data.containsKey('unit')) {
+      context.handle(
+        _unitMeta,
+        unit.isAcceptableOrUnknown(data['unit']!, _unitMeta),
+      );
+    }
+    if (data.containsKey('low_threshold')) {
+      context.handle(
+        _lowThresholdMeta,
+        lowThreshold.isAcceptableOrUnknown(
+          data['low_threshold']!,
+          _lowThresholdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('location_id')) {
+      context.handle(
+        _locationIdMeta,
+        locationId.isAcceptableOrUnknown(data['location_id']!, _locationIdMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('thumb_path')) {
+      context.handle(
+        _thumbPathMeta,
+        thumbPath.isAcceptableOrUnknown(data['thumb_path']!, _thumbPathMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InventoryItemRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InventoryItemRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      categoryKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_key'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      quantity: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}quantity'],
+      )!,
+      unit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}unit'],
+      )!,
+      lowThreshold: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}low_threshold'],
+      ),
+      locationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_id'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
+      thumbPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}thumb_path'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $InventoryItemsTable createAlias(String alias) {
+    return $InventoryItemsTable(attachedDatabase, alias);
+  }
+}
+
+class InventoryItemRow extends DataClass
+    implements Insertable<InventoryItemRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String gardenId;
+  final String categoryKey;
+  final String name;
+  final double quantity;
+  final String unit;
+  final double? lowThreshold;
+  final String? locationId;
+  final String? notes;
+  final String? photoPath;
+  final String? thumbPath;
+  final DateTime? deletedAt;
+  const InventoryItemRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.gardenId,
+    required this.categoryKey,
+    required this.name,
+    required this.quantity,
+    required this.unit,
+    this.lowThreshold,
+    this.locationId,
+    this.notes,
+    this.photoPath,
+    this.thumbPath,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    map['category_key'] = Variable<String>(categoryKey);
+    map['name'] = Variable<String>(name);
+    map['quantity'] = Variable<double>(quantity);
+    map['unit'] = Variable<String>(unit);
+    if (!nullToAbsent || lowThreshold != null) {
+      map['low_threshold'] = Variable<double>(lowThreshold);
+    }
+    if (!nullToAbsent || locationId != null) {
+      map['location_id'] = Variable<String>(locationId);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
+    }
+    if (!nullToAbsent || thumbPath != null) {
+      map['thumb_path'] = Variable<String>(thumbPath);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  InventoryItemsCompanion toCompanion(bool nullToAbsent) {
+    return InventoryItemsCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      gardenId: Value(gardenId),
+      categoryKey: Value(categoryKey),
+      name: Value(name),
+      quantity: Value(quantity),
+      unit: Value(unit),
+      lowThreshold: lowThreshold == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lowThreshold),
+      locationId: locationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationId),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
+      thumbPath: thumbPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(thumbPath),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory InventoryItemRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InventoryItemRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      categoryKey: serializer.fromJson<String>(json['categoryKey']),
+      name: serializer.fromJson<String>(json['name']),
+      quantity: serializer.fromJson<double>(json['quantity']),
+      unit: serializer.fromJson<String>(json['unit']),
+      lowThreshold: serializer.fromJson<double?>(json['lowThreshold']),
+      locationId: serializer.fromJson<String?>(json['locationId']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
+      thumbPath: serializer.fromJson<String?>(json['thumbPath']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'categoryKey': serializer.toJson<String>(categoryKey),
+      'name': serializer.toJson<String>(name),
+      'quantity': serializer.toJson<double>(quantity),
+      'unit': serializer.toJson<String>(unit),
+      'lowThreshold': serializer.toJson<double?>(lowThreshold),
+      'locationId': serializer.toJson<String?>(locationId),
+      'notes': serializer.toJson<String?>(notes),
+      'photoPath': serializer.toJson<String?>(photoPath),
+      'thumbPath': serializer.toJson<String?>(thumbPath),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  InventoryItemRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? gardenId,
+    String? categoryKey,
+    String? name,
+    double? quantity,
+    String? unit,
+    Value<double?> lowThreshold = const Value.absent(),
+    Value<String?> locationId = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    Value<String?> photoPath = const Value.absent(),
+    Value<String?> thumbPath = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => InventoryItemRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    categoryKey: categoryKey ?? this.categoryKey,
+    name: name ?? this.name,
+    quantity: quantity ?? this.quantity,
+    unit: unit ?? this.unit,
+    lowThreshold: lowThreshold.present ? lowThreshold.value : this.lowThreshold,
+    locationId: locationId.present ? locationId.value : this.locationId,
+    notes: notes.present ? notes.value : this.notes,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    thumbPath: thumbPath.present ? thumbPath.value : this.thumbPath,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  InventoryItemRow copyWithCompanion(InventoryItemsCompanion data) {
+    return InventoryItemRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      categoryKey: data.categoryKey.present
+          ? data.categoryKey.value
+          : this.categoryKey,
+      name: data.name.present ? data.name.value : this.name,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+      unit: data.unit.present ? data.unit.value : this.unit,
+      lowThreshold: data.lowThreshold.present
+          ? data.lowThreshold.value
+          : this.lowThreshold,
+      locationId: data.locationId.present
+          ? data.locationId.value
+          : this.locationId,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      thumbPath: data.thumbPath.present ? data.thumbPath.value : this.thumbPath,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryItemRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('categoryKey: $categoryKey, ')
+          ..write('name: $name, ')
+          ..write('quantity: $quantity, ')
+          ..write('unit: $unit, ')
+          ..write('lowThreshold: $lowThreshold, ')
+          ..write('locationId: $locationId, ')
+          ..write('notes: $notes, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('thumbPath: $thumbPath, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    categoryKey,
+    name,
+    quantity,
+    unit,
+    lowThreshold,
+    locationId,
+    notes,
+    photoPath,
+    thumbPath,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InventoryItemRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.categoryKey == this.categoryKey &&
+          other.name == this.name &&
+          other.quantity == this.quantity &&
+          other.unit == this.unit &&
+          other.lowThreshold == this.lowThreshold &&
+          other.locationId == this.locationId &&
+          other.notes == this.notes &&
+          other.photoPath == this.photoPath &&
+          other.thumbPath == this.thumbPath &&
+          other.deletedAt == this.deletedAt);
+}
+
+class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String> categoryKey;
+  final Value<String> name;
+  final Value<double> quantity;
+  final Value<String> unit;
+  final Value<double?> lowThreshold;
+  final Value<String?> locationId;
+  final Value<String?> notes;
+  final Value<String?> photoPath;
+  final Value<String?> thumbPath;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const InventoryItemsCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.categoryKey = const Value.absent(),
+    this.name = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.unit = const Value.absent(),
+    this.lowThreshold = const Value.absent(),
+    this.locationId = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.thumbPath = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InventoryItemsCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String gardenId,
+    required String categoryKey,
+    required String name,
+    this.quantity = const Value.absent(),
+    this.unit = const Value.absent(),
+    this.lowThreshold = const Value.absent(),
+    this.locationId = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.thumbPath = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       gardenId = Value(gardenId),
+       categoryKey = Value(categoryKey),
+       name = Value(name);
+  static Insertable<InventoryItemRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? categoryKey,
+    Expression<String>? name,
+    Expression<double>? quantity,
+    Expression<String>? unit,
+    Expression<double>? lowThreshold,
+    Expression<String>? locationId,
+    Expression<String>? notes,
+    Expression<String>? photoPath,
+    Expression<String>? thumbPath,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (categoryKey != null) 'category_key': categoryKey,
+      if (name != null) 'name': name,
+      if (quantity != null) 'quantity': quantity,
+      if (unit != null) 'unit': unit,
+      if (lowThreshold != null) 'low_threshold': lowThreshold,
+      if (locationId != null) 'location_id': locationId,
+      if (notes != null) 'notes': notes,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (thumbPath != null) 'thumb_path': thumbPath,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InventoryItemsCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String>? categoryKey,
+    Value<String>? name,
+    Value<double>? quantity,
+    Value<String>? unit,
+    Value<double?>? lowThreshold,
+    Value<String?>? locationId,
+    Value<String?>? notes,
+    Value<String?>? photoPath,
+    Value<String?>? thumbPath,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return InventoryItemsCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      categoryKey: categoryKey ?? this.categoryKey,
+      name: name ?? this.name,
+      quantity: quantity ?? this.quantity,
+      unit: unit ?? this.unit,
+      lowThreshold: lowThreshold ?? this.lowThreshold,
+      locationId: locationId ?? this.locationId,
+      notes: notes ?? this.notes,
+      photoPath: photoPath ?? this.photoPath,
+      thumbPath: thumbPath ?? this.thumbPath,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (categoryKey.present) {
+      map['category_key'] = Variable<String>(categoryKey.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<double>(quantity.value);
+    }
+    if (unit.present) {
+      map['unit'] = Variable<String>(unit.value);
+    }
+    if (lowThreshold.present) {
+      map['low_threshold'] = Variable<double>(lowThreshold.value);
+    }
+    if (locationId.present) {
+      map['location_id'] = Variable<String>(locationId.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (thumbPath.present) {
+      map['thumb_path'] = Variable<String>(thumbPath.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryItemsCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('categoryKey: $categoryKey, ')
+          ..write('name: $name, ')
+          ..write('quantity: $quantity, ')
+          ..write('unit: $unit, ')
+          ..write('lowThreshold: $lowThreshold, ')
+          ..write('locationId: $locationId, ')
+          ..write('notes: $notes, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('thumbPath: $thumbPath, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -5826,6 +6635,7 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
   late final $PlantTagsTable plantTags = $PlantTagsTable(this);
   late final $MeasurementsTable measurements = $MeasurementsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
+  late final $InventoryItemsTable inventoryItems = $InventoryItemsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5842,6 +6652,7 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     plantTags,
     measurements,
     syncOutbox,
+    inventoryItems,
   ];
 }
 
@@ -8849,6 +9660,398 @@ typedef $$SyncOutboxTableProcessedTableManager =
       SyncOutboxRow,
       PrefetchHooks Function()
     >;
+typedef $$InventoryItemsTableCreateCompanionBuilder =
+    InventoryItemsCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      required String id,
+      required String gardenId,
+      required String categoryKey,
+      required String name,
+      Value<double> quantity,
+      Value<String> unit,
+      Value<double?> lowThreshold,
+      Value<String?> locationId,
+      Value<String?> notes,
+      Value<String?> photoPath,
+      Value<String?> thumbPath,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$InventoryItemsTableUpdateCompanionBuilder =
+    InventoryItemsCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> id,
+      Value<String> gardenId,
+      Value<String> categoryKey,
+      Value<String> name,
+      Value<double> quantity,
+      Value<String> unit,
+      Value<double?> lowThreshold,
+      Value<String?> locationId,
+      Value<String?> notes,
+      Value<String?> photoPath,
+      Value<String?> thumbPath,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$InventoryItemsTableFilterComposer
+    extends Composer<_$FloraDatabase, $InventoryItemsTable> {
+  $$InventoryItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryKey => $composableBuilder(
+    column: $table.categoryKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lowThreshold => $composableBuilder(
+    column: $table.lowThreshold,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get thumbPath => $composableBuilder(
+    column: $table.thumbPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InventoryItemsTableOrderingComposer
+    extends Composer<_$FloraDatabase, $InventoryItemsTable> {
+  $$InventoryItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoryKey => $composableBuilder(
+    column: $table.categoryKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lowThreshold => $composableBuilder(
+    column: $table.lowThreshold,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get thumbPath => $composableBuilder(
+    column: $table.thumbPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InventoryItemsTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $InventoryItemsTable> {
+  $$InventoryItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get categoryKey => $composableBuilder(
+    column: $table.categoryKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<double> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+
+  GeneratedColumn<String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<double> get lowThreshold => $composableBuilder(
+    column: $table.lowThreshold,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get thumbPath =>
+      $composableBuilder(column: $table.thumbPath, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$InventoryItemsTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $InventoryItemsTable,
+          InventoryItemRow,
+          $$InventoryItemsTableFilterComposer,
+          $$InventoryItemsTableOrderingComposer,
+          $$InventoryItemsTableAnnotationComposer,
+          $$InventoryItemsTableCreateCompanionBuilder,
+          $$InventoryItemsTableUpdateCompanionBuilder,
+          (
+            InventoryItemRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $InventoryItemsTable,
+              InventoryItemRow
+            >,
+          ),
+          InventoryItemRow,
+          PrefetchHooks Function()
+        > {
+  $$InventoryItemsTableTableManager(
+    _$FloraDatabase db,
+    $InventoryItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InventoryItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InventoryItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InventoryItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String> categoryKey = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<double> quantity = const Value.absent(),
+                Value<String> unit = const Value.absent(),
+                Value<double?> lowThreshold = const Value.absent(),
+                Value<String?> locationId = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
+                Value<String?> thumbPath = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InventoryItemsCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                categoryKey: categoryKey,
+                name: name,
+                quantity: quantity,
+                unit: unit,
+                lowThreshold: lowThreshold,
+                locationId: locationId,
+                notes: notes,
+                photoPath: photoPath,
+                thumbPath: thumbPath,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String gardenId,
+                required String categoryKey,
+                required String name,
+                Value<double> quantity = const Value.absent(),
+                Value<String> unit = const Value.absent(),
+                Value<double?> lowThreshold = const Value.absent(),
+                Value<String?> locationId = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
+                Value<String?> thumbPath = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InventoryItemsCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                categoryKey: categoryKey,
+                name: name,
+                quantity: quantity,
+                unit: unit,
+                lowThreshold: lowThreshold,
+                locationId: locationId,
+                notes: notes,
+                photoPath: photoPath,
+                thumbPath: thumbPath,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$InventoryItemsTable, InventoryItemRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $InventoryItemsTable,
+                    InventoryItemRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InventoryItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $InventoryItemsTable,
+      InventoryItemRow,
+      $$InventoryItemsTableFilterComposer,
+      $$InventoryItemsTableOrderingComposer,
+      $$InventoryItemsTableAnnotationComposer,
+      $$InventoryItemsTableCreateCompanionBuilder,
+      $$InventoryItemsTableUpdateCompanionBuilder,
+      (
+        InventoryItemRow,
+        BaseReferences<_$FloraDatabase, $InventoryItemsTable, InventoryItemRow>,
+      ),
+      InventoryItemRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -8874,4 +10077,6 @@ class $FloraDatabaseManager {
       $$MeasurementsTableTableManager(_db, _db.measurements);
   $$SyncOutboxTableTableManager get syncOutbox =>
       $$SyncOutboxTableTableManager(_db, _db.syncOutbox);
+  $$InventoryItemsTableTableManager get inventoryItems =>
+      $$InventoryItemsTableTableManager(_db, _db.inventoryItems);
 }

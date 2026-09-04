@@ -33,6 +33,13 @@ class DriftActionRepository implements ActionRepository {
       .map((rows) => rows.map((r) => r.toDomain()).toList());
 
   @override
+  Stream<List<PlantAction>> watchBetween(DateTime from, DateTime to) => (_db.select(_db.plantActions)
+        ..where((a) => a.deletedAt.isNull() & a.occurredAt.isBetweenValues(from, to))
+        ..orderBy([(a) => OrderingTerm.asc(a.occurredAt)]))
+      .watch()
+      .map((rows) => rows.map((r) => r.toDomain()).toList());
+
+  @override
   Future<PlantAction> log(NewAction data) async {
     final now = DateTime.now();
     final occurredAt = data.occurredAt ?? now;

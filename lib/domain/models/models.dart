@@ -1,4 +1,7 @@
 export 'action_type.dart';
+export 'calendar_event.dart';
+export 'inventory_item.dart';
+export 'measurement.dart';
 export 'care_kind.dart';
 export 'care_schedule.dart';
 export 'care_task.dart';

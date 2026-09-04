@@ -10,6 +10,8 @@ import '../../actions/application/care_actions.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
 import 'plant_tags_sheet.dart';
+import '../../qr/application/label_pdf.dart';
+import '../../qr/presentation/plant_qr_sheet.dart';
 
 /// Barre flottante en mode sélection : « 6 sélectionnées · 💧 📍 🏷 🗑 ».
 class SelectionBar extends ConsumerWidget {
@@ -44,6 +46,18 @@ class SelectionBar extends ConsumerWidget {
       ctrl.clear();
     }
 
+    Future<void> labels() async {
+      final repo = ref.read(plantRepositoryProvider);
+      final data = <LabelData>[];
+      for (final id in ids) {
+        final p = await repo.getPlant(id);
+        if (p != null) data.add(LabelData(plantId: p.id, name: p.name, species: p.speciesName));
+      }
+      if (!context.mounted) return;
+      await shareLabels(context, data);
+      ctrl.clear();
+    }
+
     Future<void> archive() async {
       final ok = await showAdaptiveConfirm(context, title: l10n.archive, message: l10n.archivedCount(ids.length), confirmLabel: l10n.archive, cancelLabel: l10n.cancel, destructive: true);
       if (!ok) return;
@@ -74,6 +88,7 @@ class SelectionBar extends ConsumerWidget {
               _Action(emoji: '💧', label: l10n.verbWatering, onTap: water),
               _Action(emoji: '📍', label: l10n.move, onTap: move),
               _Action(emoji: '🏷️', label: l10n.addTag, onTap: tag),
+              _Action(emoji: '🔲', label: l10n.labels, onTap: labels),
               _Action(emoji: '🗂', label: l10n.archive, onTap: archive),
             ],
           ),

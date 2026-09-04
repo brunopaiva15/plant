@@ -24,6 +24,11 @@ class DriftCareRepository implements CareRepository {
       .watch()
       .map((rows) => rows.map((r) => r.toDomain()).toList());
 
+  @override
+  Stream<List<CareSchedule>> watchAllEnabled() => (_db.select(_db.careSchedules)..where((s) => s.enabled.equals(true)))
+      .watch()
+      .map((rows) => rows.map((r) => r.toDomain()).toList());
+
   /// Routines actives dont l'échéance est ≤ [until], jointes à leurs plantes actives.
   @override
   Stream<List<CareTask>> watchTasks({required DateTime until}) {

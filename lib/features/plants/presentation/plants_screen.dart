@@ -93,6 +93,8 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              FloraIconButton(icon: CupertinoIcons.qrcode_viewfinder, semanticLabel: l10n.scan, onPressed: () => context.push(Routes.scan)),
+              const SizedBox(width: Space.xs),
               FloraIconButton(
                 icon: filter.hasActiveFilters ? CupertinoIcons.line_horizontal_3_decrease_circle_fill : CupertinoIcons.line_horizontal_3_decrease,
                 semanticLabel: l10n.filters,

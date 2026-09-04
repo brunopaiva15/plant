@@ -298,5 +298,101 @@
   "noteAddedToast": "Notiz hinzugefügt",
   "actionAddedToast": "Aktion gesichert",
   "locationCreated": "{name} angelegt",
-  "saved": "Gesichert"
+  "saved": "Gesichert",
+  "gardenLocations": "Orte",
+  "gardenInventory": "Inventar",
+  "gardenCalendar": "Kalender",
+  "inventoryTitle": "Inventar",
+  "newItem": "Neuer Artikel",
+  "editItem": "Artikel bearbeiten",
+  "itemName": "Name",
+  "itemNameHint": "Grünpflanzendünger",
+  "category": "Kategorie",
+  "catFertilizer": "Dünger",
+  "catSoil": "Erden",
+  "catSubstrate": "Substrate",
+  "catPot": "Töpfe",
+  "catTool": "Werkzeuge",
+  "catTreatment": "Behandlungen",
+  "catSeed": "Samen",
+  "catAccessory": "Zubehör",
+  "unit": "Einheit",
+  "unitPieces": "Stück",
+  "lowThreshold": "Schwelle für niedrigen Bestand",
+  "lowStock": "Wenig Vorrat",
+  "remaining": "{amount} übrig",
+  "noInventoryTitle": "Leeres Inventar",
+  "noInventorySubtitle": "Dünger, Erde, Töpfe, Werkzeuge: behalte deine Vorräte im Blick.",
+  "deleteItem": "Artikel löschen",
+  "lowStockItems": "{count, plural, =1{1 Artikel wird knapp} other{{count} Artikel werden knapp}}",
+  "calendarTitle": "Kalender",
+  "agenda": "Agenda",
+  "month": "Monat",
+  "noEventsTitle": "Nichts geplant",
+  "noEventsSubtitle": "Anstehende Pflege erscheint hier.",
+  "projected": "geplant",
+  "today": "Heute",
+  "measurementsTitle": "Messungen",
+  "addMeasurement": "Messung hinzufügen",
+  "sinceFirst": "{delta} seit {date}",
+  "qrCode": "QR-Code",
+  "qrHint": "Auf den Topf kleben: Scannen öffnet direkt die Pflanze.",
+  "scan": "Scannen",
+  "scanHint": "Richte die Kamera auf den QR-Code einer Pflanze.",
+  "unknownQr": "Dieser QR-Code gehört nicht zu deinem Garten.",
+  "shareQr": "Teilen",
+  "printLabels": "PDF-Etiketten",
+  "labels": "Etiketten",
+  "cameraPermission": "Erlaube den Kamerazugriff in den Einstellungen.",
+  "identify": "Bestimmen",
+  "identifying": "Analyse läuft…",
+  "identifyTitle": "Ist es…",
+  "identifyHint": "Vorschläge zum Bestätigen, keine Gewissheiten.",
+  "identifyNone": "Keine zuverlässige Übereinstimmung.",
+  "identifyError": "Bestimmung nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
+  "useThis": "Verwenden",
+  "identificationSettings": "Bestimmung",
+  "identificationHint": "Artbestimmung anhand eines Fotos über Pl@ntNet. Erstelle einen kostenlosen Schlüssel auf my.plantnet.org und füge ihn hier ein.",
+  "apiKey": "API-Schlüssel",
+  "apiKeyHint": "Schlüssel einfügen",
+  "identificationEnabled": "Bestimmung aktiviert",
+  "identificationDisabled": "Nicht konfiguriert",
+  "confidence": "{percent} %",
+  "speciesSet": "Art aktualisiert",
+  "compare": "Vergleichen",
+  "compareHint": "Ziehen zum Vergleichen.",
+  "before": "Vorher",
+  "after": "Nachher",
+  "comparePickFirst": "Wähle zwei Fotos.",
+  "@remaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@lowStockItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@sinceFirst": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@confidence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

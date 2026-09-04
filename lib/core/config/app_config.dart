@@ -6,6 +6,9 @@ abstract final class AppConfig {
   static const String appName = 'Flora';
   static const String bundleId = 'ch.vergasta.plant';
 
+  /// Schéma des liens encodés dans les QR codes (`flora://plant/<id>`).
+  static const String linkScheme = 'flora';
+
   /// Limite de plantes actives de l'offre gratuite (freemium, non agressif).
   static const int freePlantLimit = 10;
 
