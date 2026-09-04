@@ -20,10 +20,15 @@ import '../../locations/presentation/location_edit_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
 import '../../identification/presentation/identification_sheet.dart';
+import '../../account/application/membership_providers.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
 Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? locationId}) async {
   final l10n = context.l10n;
+  if (!ref.read(canEditProvider)) {
+    ref.read(toastProvider.notifier).show(ToastData(message: l10n.readOnlyHint, emoji: '🔒'));
+    return;
+  }
   if (ref.read(freeLimitReachedProvider)) {
     await showAdaptiveConfirm(
       context,

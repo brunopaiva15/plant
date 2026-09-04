@@ -504,5 +504,25 @@
         "type": "int"
       }
     }
+  },
+  "membersTitle": "Members",
+  "shareGarden": "Share the garden",
+  "inviteMember": "Invite",
+  "inviteHint": "The person must already have a Flora account with this address.",
+  "roleOwner": "Owner",
+  "roleMember": "Member",
+  "roleViewer": "View only",
+  "invited": "Invitation sent",
+  "inviteError": "Couldn't invite: this address has no account yet.",
+  "removeMember": "Remove from garden",
+  "readOnlyHint": "You're viewing this garden in read-only mode.",
+  "byUser": "by {name}",
+  "you": "you",
+  "@byUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

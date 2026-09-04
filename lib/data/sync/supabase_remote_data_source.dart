@@ -30,6 +30,7 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
 
   @override
   Future<List<RemoteRow>> pullSince(String table, {required String gardenId, DateTime? since}) async {
+    if (table == 'garden_members' || table == 'profiles') return _pullMembership(table, gardenId);
     final stamp = _lww.contains(table) ? 'updated_at' : 'created_at';
     PostgrestFilterBuilder<PostgrestList> query;
     if (table == 'gardens') {
@@ -46,6 +47,23 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
         Map<String, Object?>.from(r)..remove('plants'),
     ];
   }
+
+  /// Membres et profils via la fonction `garden_members_with_names` (RLS-safe).
+  Future<List<RemoteRow>> _pullMembership(String table, String gardenId) async {
+    final rows = await _client.rpc<List<dynamic>>('garden_members_with_names', params: {'p_garden_id': gardenId});
+    final list = rows.cast<Map<String, dynamic>>();
+    if (table == 'garden_members') {
+      return [for (final r in list) {'garden_id': gardenId, 'user_id': r['user_id'], 'role': r['role']}];
+    }
+    return [for (final r in list) {'id': r['user_id'], 'display_name': r['display_name'], 'email': r['email']}];
+  }
+
+  /// Invite un membre par e-mail (propriétaire uniquement).
+  Future<void> inviteMember({required String gardenId, required String email, required String role}) =>
+      _client.rpc('invite_member', params: {'p_garden_id': gardenId, 'p_email': email.trim(), 'p_role': role});
+
+  Future<void> removeMember({required String gardenId, required String userId}) =>
+      _client.from('garden_members').delete().match({'garden_id': gardenId, 'user_id': userId});
 
   @override
   Future<String> uploadFile(String storagePath, File file) async {

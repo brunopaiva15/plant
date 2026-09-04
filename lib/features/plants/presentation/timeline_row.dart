@@ -5,6 +5,7 @@ import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
+import '../../account/application/membership_providers.dart';
 
 /// Une entrée du journal : « 💧 Arrosée · 09:42 », note, photo, mesure.
 class TimelineRow extends ConsumerWidget {
@@ -23,6 +24,8 @@ class TimelineRow extends ConsumerWidget {
     final emoji = custom?.emoji ?? CareKind.fromKey(action.typeKey)?.emoji ?? '✓';
     final title = action.typeKey == CareKind.note.key ? (action.notes ?? l10n.kindNote) : l10n.kindDone(action.typeKey, custom: custom);
     final detail = _detail(l10n);
+    final me = ref.watch(currentUserProvider).value;
+    final authorName = action.userId != null && action.userId != me?.id ? ref.watch(profileNamesProvider)[action.userId!] : null;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -45,7 +48,10 @@ class TimelineRow extends ConsumerWidget {
                     children: [
                       Expanded(child: Text(title, style: action.typeKey == CareKind.note.key ? context.text.body : context.text.title3)),
                       const SizedBox(width: Space.xs),
-                      Text(Dates.time(context, action.occurredAt), style: context.text.caption),
+                      Text(
+                        authorName == null || authorName.isEmpty ? Dates.time(context, action.occurredAt) : '${Dates.time(context, action.occurredAt)} · ${l10n.byUser(authorName)}',
+                        style: context.text.caption,
+                      ),
                     ],
                   ),
                   if (detail != null) ...[const SizedBox(height: 2), Text(detail, style: context.text.callout)],

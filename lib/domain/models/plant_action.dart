@@ -9,10 +9,14 @@ class PlantAction {
     this.notes,
     this.metadata = const {},
     this.photoId,
+    this.userId,
   });
 
   final String id;
   final String plantId;
+
+  /// Auteur (compte), `null` pour le compte local.
+  final String? userId;
 
   /// Clé du type ([CareKind.key] ou `custom:…`).
   final String typeKey;

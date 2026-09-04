@@ -2609,6 +2609,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Synchronisation'**
   String get synchronization;
+
+  /// No description provided for @membersTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membres'**
+  String get membersTitle;
+
+  /// No description provided for @shareGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager le jardin'**
+  String get shareGarden;
+
+  /// No description provided for @inviteMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inviter'**
+  String get inviteMember;
+
+  /// No description provided for @inviteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'invité doit déjà avoir un compte Flora avec cette adresse.'**
+  String get inviteHint;
+
+  /// No description provided for @roleOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Propriétaire'**
+  String get roleOwner;
+
+  /// No description provided for @roleMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membre'**
+  String get roleMember;
+
+  /// No description provided for @roleViewer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture seule'**
+  String get roleViewer;
+
+  /// No description provided for @invited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation envoyée'**
+  String get invited;
+
+  /// No description provided for @inviteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'inviter : cette adresse n\'a pas encore de compte.'**
+  String get inviteError;
+
+  /// No description provided for @removeMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer du jardin'**
+  String get removeMember;
+
+  /// No description provided for @readOnlyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous consultez ce jardin en lecture seule.'**
+  String get readOnlyHint;
+
+  /// No description provided for @byUser.
+  ///
+  /// In fr, this message translates to:
+  /// **'par {name}'**
+  String byUser(String name);
+
+  /// No description provided for @you.
+  ///
+  /// In fr, this message translates to:
+  /// **'vous'**
+  String get you;
 }
 
 class _AppLocalizationsDelegate

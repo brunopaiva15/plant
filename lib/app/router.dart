@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
+import '../features/account/presentation/members_screen.dart';
 import '../features/archive/presentation/archive_screen.dart';
 import '../features/garden/presentation/garden_screen.dart';
 import '../features/identification/presentation/identification_settings_screen.dart';
@@ -56,6 +57,7 @@ abstract final class Routes {
   static const scan = '/scan';
   static const weather = '/settings/weather';
   static const account = '/settings/account';
+  static const members = '/settings/members';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -121,6 +123,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.identification, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const IdentificationSettingsScreen())),
       GoRoute(path: Routes.weather, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const WeatherSettingsScreen())),
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),
+      GoRoute(path: Routes.members, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const MembersScreen())),
       GoRoute(
         path: Routes.scan,
         parentNavigatorKey: rootNavigatorKey,

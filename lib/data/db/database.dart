@@ -20,12 +20,14 @@ part 'database.g.dart';
   Measurements,
   SyncOutbox,
   InventoryItems,
+  Profiles,
+  GardenMembers,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -39,6 +41,12 @@ class FloraDatabase extends _$FloraDatabase {
           }
           if (from < 3) {
             await m.addColumn(locations, locations.isOutdoor);
+          }
+          if (from < 4) {
+            await m.addColumn(plantActions, plantActions.userId);
+            await m.addColumn(plantPhotos, plantPhotos.userId);
+            await m.createTable(profiles);
+            await m.createTable(gardenMembers);
           }
           await _createIndexes();
         },

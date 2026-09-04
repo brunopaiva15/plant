@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
@@ -167,6 +169,8 @@ class _SignedIn extends ConsumerWidget {
             FloraListRow(leading: Icon(CupertinoIcons.arrow_2_circlepath, size: 20, color: c.inkSecondary), title: l10n.syncNow, onTap: () => ref.read(syncCoordinatorProvider.notifier).syncNow(), chevron: false),
           ],
         ),
+        const SizedBox(height: Space.lg),
+        FloraGroup(children: [FloraListRow(leading: Icon(CupertinoIcons.person_2, size: 20, color: c.inkSecondary), title: l10n.membersTitle, subtitle: l10n.shareGarden, onTap: () => context.push(Routes.members))]),
         const SizedBox(height: Space.lg),
         FloraGroup(children: [FloraListRow(title: l10n.signOut, destructive: true, onTap: onSignOut, chevron: false)]),
       ],

@@ -39,6 +39,9 @@ lib/
 │   ├── calendar/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
+│   ├── weather/                   ligne météo, conseil pluie, réglage du lieu
+│   ├── account/                   compte, membres, rôles
+│   ├── export/                    export ZIP
 │   ├── archive/
 │   └── profile/                   settings, appearance, notifications, action types, about
 └── l10n/

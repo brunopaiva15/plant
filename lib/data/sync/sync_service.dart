@@ -195,10 +195,10 @@ class SyncService {
         return r == null || r.isBuiltin ? null : RowCodec.toRemote(r, extra: {'garden_id': _gardenId});
       case 'plant_photos':
         final r = await (_db.select(_db.plantPhotos)..where((x) => x.id.equals(id))).getSingleOrNull();
-        return r == null ? null : RowCodec.toRemote(r, extra: {'storage_path': r.filePath, 'thumb_path': r.thumbPath, if (_userId != null) 'user_id': _userId}, drop: {'file_path'});
+        return r == null ? null : RowCodec.toRemote(r, extra: {'storage_path': r.filePath, 'thumb_path': r.thumbPath, 'user_id': r.userId ?? _userId}, drop: {'file_path'});
       case 'plant_actions':
         final r = await (_db.select(_db.plantActions)..where((x) => x.id.equals(id))).getSingleOrNull();
-        return r == null ? null : RowCodec.toRemote(r, extra: {if (_userId != null) 'user_id': _userId});
+        return r == null ? null : RowCodec.toRemote(r, extra: {'user_id': r.userId ?? _userId});
       case 'care_schedules':
         final r = await (_db.select(_db.careSchedules)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r);
@@ -222,6 +222,7 @@ class SyncService {
   // ---------------------------------------------------------------- pull
 
   Future<void> pull() async {
+    await _pullMembership();
     for (final table in tables) {
       final since = _cursors.read(table);
       final rows = await _remote.pullSince(table, gardenId: _gardenId, since: since);
@@ -238,13 +239,33 @@ class SyncService {
     }
   }
 
+  /// Membres du jardin et leurs profils : caches locaux en lecture seule.
+  Future<void> _pullMembership() async {
+    final members = await _remote.pullSince('garden_members', gardenId: _gardenId);
+    if (members.isEmpty) return;
+    final profiles = await _remote.pullSince('profiles', gardenId: _gardenId);
+    await _db.transaction(() async {
+      await (_db.delete(_db.gardenMembers)..where((m) => m.gardenId.equals(_gardenId))).go();
+      for (final m in members) {
+        await _db.into(_db.gardenMembers).insertOnConflictUpdate(GardenMembersCompanion.insert(gardenId: _gardenId, userId: m['user_id'] as String, role: m['role'] as String));
+      }
+      for (final p in profiles) {
+        await _db.into(_db.profiles).insertOnConflictUpdate(ProfilesCompanion.insert(
+              id: p['id'] as String,
+              displayName: Value((p['display_name'] as String?) ?? ''),
+              email: Value(p['email'] as String?),
+            ));
+      }
+    });
+  }
+
   DateTime? _stampOf(Map<String, Object?> row) {
     final raw = row['updated_at'] ?? row['created_at'];
     return raw is String ? DateTime.parse(raw) : null;
   }
 
   Future<void> _applyRemote(String table, Map<String, Object?> remote) async {
-    final json = RowCodec.toLocalJson(remote, drop: {'owner_id', 'user_id', 'storage_path'});
+    final json = RowCodec.toLocalJson(remote, drop: {'owner_id', 'storage_path'});
     final s = RowCodec.serializer;
     switch (table) {
       case 'gardens':

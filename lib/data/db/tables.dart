@@ -66,6 +66,7 @@ class Plants extends Table with Timestamps {
 class PlantPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get plantId => text()();
+  TextColumn get userId => text().nullable()();
   TextColumn get filePath => text()();
   TextColumn get thumbPath => text()();
   IntColumn get width => integer()();
@@ -95,6 +96,7 @@ class ActionTypes extends Table {
 class PlantActions extends Table {
   TextColumn get id => text()();
   TextColumn get plantId => text()();
+  TextColumn get userId => text().nullable()();
   TextColumn get typeKey => text()();
   DateTimeColumn get occurredAt => dateTime()();
   TextColumn get notes => text().nullable()();
@@ -186,4 +188,26 @@ class InventoryItems extends Table with Timestamps {
 
   @override
   Set<Column> get primaryKey => {id};
+}
+
+/// Cache local des profils (noms des membres du jardin), alimenté par la synchro.
+@DataClassName('ProfileRow')
+class Profiles extends Table {
+  TextColumn get id => text()();
+  TextColumn get displayName => text().withDefault(const Constant(''))();
+  TextColumn get email => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Cache local des membres du jardin (rôles), alimenté par la synchro.
+@DataClassName('GardenMemberRow')
+class GardenMembers extends Table {
+  TextColumn get gardenId => text()();
+  TextColumn get userId => text()();
+  TextColumn get role => text()();
+
+  @override
+  Set<Column> get primaryKey => {gardenId, userId};
 }

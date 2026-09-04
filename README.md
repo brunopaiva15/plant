@@ -16,6 +16,7 @@ Nom de travail : **Flora** — identifiant `ch.vergasta.plant`.
 | [docs/05-technical-architecture.md](docs/05-technical-architecture.md) | E. Architecture technique, offline, notifications |
 | [docs/06-design-system.md](docs/06-design-system.md) | F. Couleurs, typographie, spacing, composants |
 | [docs/07-project-structure.md](docs/07-project-structure.md) | G. Arborescence du projet |
+| [docs/08-sync-and-collaboration.md](docs/08-sync-and-collaboration.md) | Synchronisation, comptes, collaboration (Supabase) |
 
 ## Démarrer
 ```bash
@@ -24,6 +25,13 @@ dart run build_runner build --delete-conflicting-outputs   # schéma drift (déj
 flutter gen-l10n                                            # localisations (déjà commitées)
 flutter run
 ```
+
+## Backend (optionnel)
+Sans configuration, l'app est 100 % locale. Pour la synchronisation et les comptes :
+```bash
+flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co --dart-define=SUPABASE_ANON_KEY=...
+```
+Schéma et politiques RLS : `supabase/schema.sql`. Détails : docs/08.
 
 ## Tests
 ```bash

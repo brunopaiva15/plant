@@ -8,10 +8,14 @@ class PlantPhoto {
     required this.height,
     required this.takenAt,
     required this.createdAt,
+    this.userId,
   });
 
   final String id;
   final String plantId;
+
+  /// Auteur (compte), `null` pour le compte local.
+  final String? userId;
 
   /// Chemins relatifs au dossier documents de l'application.
   final String filePath;

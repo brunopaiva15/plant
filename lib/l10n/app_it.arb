@@ -504,5 +504,25 @@
         "type": "int"
       }
     }
+  },
+  "membersTitle": "Membri",
+  "shareGarden": "Condividi il giardino",
+  "inviteMember": "Invita",
+  "inviteHint": "La persona deve già avere un account Flora con questo indirizzo.",
+  "roleOwner": "Proprietario",
+  "roleMember": "Membro",
+  "roleViewer": "Sola lettura",
+  "invited": "Invito inviato",
+  "inviteError": "Impossibile invitare: questo indirizzo non ha ancora un account.",
+  "removeMember": "Rimuovi dal giardino",
+  "readOnlyHint": "Stai consultando questo giardino in sola lettura.",
+  "byUser": "di {name}",
+  "you": "tu",
+  "@byUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

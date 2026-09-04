@@ -10,9 +10,10 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftActionRepository implements ActionRepository {
-  DriftActionRepository(this._db);
+  DriftActionRepository(this._db, {String? Function()? currentUserId}) : _currentUserId = currentUserId ?? (() => null);
 
   final FloraDatabase _db;
+  final String? Function() _currentUserId;
   static const _uuid = Uuid();
 
   @override
@@ -63,6 +64,7 @@ class DriftActionRepository implements ActionRepository {
       await _db.into(_db.plantActions).insert(PlantActionsCompanion.insert(
             id: id,
             plantId: data.plantId,
+            userId: Value(_currentUserId()),
             typeKey: data.typeKey,
             occurredAt: occurredAt,
             notes: Value(notes == null || notes.isEmpty ? null : notes),

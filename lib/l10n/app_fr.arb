@@ -753,5 +753,25 @@
   "syncSyncing": "Synchronisation…",
   "authError": "Connexion impossible. Vérifiez l'adresse et réessayez.",
   "appleUnavailable": "Apple est disponible sur iPhone et iPad.",
-  "synchronization": "Synchronisation"
+  "synchronization": "Synchronisation",
+  "membersTitle": "Membres",
+  "shareGarden": "Partager le jardin",
+  "inviteMember": "Inviter",
+  "inviteHint": "L'invité doit déjà avoir un compte Flora avec cette adresse.",
+  "roleOwner": "Propriétaire",
+  "roleMember": "Membre",
+  "roleViewer": "Lecture seule",
+  "invited": "Invitation envoyée",
+  "inviteError": "Impossible d'inviter : cette adresse n'a pas encore de compte.",
+  "removeMember": "Retirer du jardin",
+  "readOnlyHint": "Vous consultez ce jardin en lecture seule.",
+  "byUser": "par {name}",
+  "@byUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "you": "vous"
 }

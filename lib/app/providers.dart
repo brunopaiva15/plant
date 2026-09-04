@@ -39,10 +39,16 @@ final plantRepositoryProvider =
     Provider<PlantRepository>((ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final locationRepositoryProvider = Provider<LocationRepository>(
     (ref) => DriftLocationRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
-final actionRepositoryProvider = Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider)));
+String? _remoteUserId(Ref ref) {
+  final u = ref.read(authRepositoryProvider).currentUser;
+  return u == null || u.isLocal ? null : u.id;
+}
+
+final actionRepositoryProvider =
+    Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
 final careRepositoryProvider =
     Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider)));
-final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider)));
+final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
 final actionTypeRepositoryProvider =
     Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));
 final measurementRepositoryProvider =

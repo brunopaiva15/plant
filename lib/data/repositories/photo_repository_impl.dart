@@ -7,9 +7,10 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftPhotoRepository implements PhotoRepository {
-  DriftPhotoRepository(this._db);
+  DriftPhotoRepository(this._db, {String? Function()? currentUserId}) : _currentUserId = currentUserId ?? (() => null);
 
   final FloraDatabase _db;
+  final String? Function() _currentUserId;
   static const _uuid = Uuid();
 
   @override
@@ -42,6 +43,7 @@ class DriftPhotoRepository implements PhotoRepository {
       await _db.into(_db.plantPhotos).insert(PlantPhotosCompanion.insert(
             id: id,
             plantId: plantId,
+            userId: Value(_currentUserId()),
             filePath: filePath,
             thumbPath: thumbPath,
             width: width,

@@ -504,5 +504,25 @@
         "type": "int"
       }
     }
+  },
+  "membersTitle": "Mitglieder",
+  "shareGarden": "Garten teilen",
+  "inviteMember": "Einladen",
+  "inviteHint": "Die Person braucht bereits ein Flora-Konto mit dieser Adresse.",
+  "roleOwner": "Eigentümer",
+  "roleMember": "Mitglied",
+  "roleViewer": "Nur lesen",
+  "invited": "Einladung gesendet",
+  "inviteError": "Einladung nicht möglich: diese Adresse hat noch kein Konto.",
+  "removeMember": "Aus dem Garten entfernen",
+  "readOnlyHint": "Du siehst diesen Garten nur lesend.",
+  "byUser": "von {name}",
+  "you": "du",
+  "@byUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -48,6 +48,7 @@ extension PlantPhotoRowMapper on PlantPhotoRow {
   PlantPhoto toDomain() => PlantPhoto(
         id: id,
         plantId: plantId,
+        userId: userId,
         filePath: filePath,
         thumbPath: thumbPath,
         width: width,
@@ -72,6 +73,7 @@ extension PlantActionRowMapper on PlantActionRow {
   PlantAction toDomain() => PlantAction(
         id: id,
         plantId: plantId,
+        userId: userId,
         typeKey: typeKey,
         occurredAt: occurredAt,
         notes: notes,

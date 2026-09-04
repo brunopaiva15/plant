@@ -33,6 +33,15 @@ inventory_items  id, garden_id, category_key(fertilizer|soil|substrate|pot|tool|
 Les catégories d'inventaire sont un enum localisé (pas de table) ; les QR codes encodent `flora://plant/<id>` sans table dédiée.
 Le calendrier n'est pas stocké : il est projeté à la volée (`CalendarProjector`) à partir des routines et de l'historique.
 
+## Phase 3 (schémas v3–v4)
+```
+locations.is_outdoor           météo (balcon, jardin, serre)
+plant_actions.user_id          auteur (compte) ; plant_photos.user_id idem
+profiles (cache)               id, display_name, email — membres du jardin
+garden_members (cache)         garden_id, user_id, role
+```
+Le schéma Postgres complet avec RLS, triggers et fonctions (`invite_member`, `garden_members_with_names`) est dans `supabase/schema.sql`.
+
 ## Tables prévues (schéma réservé, UI en P3–P4)
 ```
 tasks, notes, attachments, notifications, devices, shared_links, plant_links(nfc), plant_relationships

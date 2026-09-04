@@ -9,6 +9,7 @@ import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/components/toast.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
+import '../../account/application/membership_providers.dart';
 import '../../today/application/completed_tasks.dart';
 import '../../today/application/reminder_scheduler.dart';
 
@@ -35,7 +36,15 @@ class CareActions {
     );
   }
 
+  /// Lecture seule (viewer) : on informe, on n'écrit pas.
+  bool _blockedReadOnly() {
+    if (_ref.read(canEditProvider)) return false;
+    _toast.show(ToastData(message: _ref.read(_readOnlyMessageProvider), emoji: '🔒'));
+    return true;
+  }
+
   Future<PlantAction> log(NewAction data, {required String message, required String undoLabel, String emoji = '✓'}) async {
+    if (_blockedReadOnly()) throw StateError('read-only');
     final action = await _actions.log(data);
     Haptics.success();
     _analytics.track(data.typeKey == CareKind.watering.key ? AnalyticsEvents.wateringLogged : AnalyticsEvents.actionLogged, {'type': data.typeKey});
@@ -56,6 +65,7 @@ class CareActions {
   /// Multi-sélection : un seul toast, un seul Undo pour tout le lot.
   Future<void> logMany(BuildContext context, {required List<String> plantIds, required String typeKey}) async {
     final l10n = context.l10n;
+    if (_blockedReadOnly()) return;
     final custom = _ref.read(actionTypeByKeyProvider)[typeKey];
     final logged = await _actions.logMany(plantIds, typeKey);
     Haptics.success();
@@ -85,6 +95,7 @@ class CareActions {
   /// Import d'une photo : stockage, entrée d'historique, toast.
   Future<PlantPhoto?> addPhoto(BuildContext context, {required String plantId, required PhotoSource source}) async {
     final l10n = context.l10n;
+    if (_blockedReadOnly()) return null;
     final storage = _ref.read(photoStorageProvider);
     try {
       final stored = await storage.pick(source);
@@ -112,3 +123,6 @@ class CareActions {
 }
 
 final careActionsProvider = Provider<CareActions>((ref) => CareActions(ref));
+
+/// Message « lecture seule », localisé hors arbre de widgets.
+final _readOnlyMessageProvider = Provider<String>((ref) => resolveLocalizations(ref.watch(preferencesProvider).locale).readOnlyHint);

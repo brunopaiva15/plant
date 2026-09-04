@@ -1463,4 +1463,47 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get synchronization => 'Synchronisierung';
+
+  @override
+  String get membersTitle => 'Mitglieder';
+
+  @override
+  String get shareGarden => 'Garten teilen';
+
+  @override
+  String get inviteMember => 'Einladen';
+
+  @override
+  String get inviteHint =>
+      'Die Person braucht bereits ein Flora-Konto mit dieser Adresse.';
+
+  @override
+  String get roleOwner => 'Eigentümer';
+
+  @override
+  String get roleMember => 'Mitglied';
+
+  @override
+  String get roleViewer => 'Nur lesen';
+
+  @override
+  String get invited => 'Einladung gesendet';
+
+  @override
+  String get inviteError =>
+      'Einladung nicht möglich: diese Adresse hat noch kein Konto.';
+
+  @override
+  String get removeMember => 'Aus dem Garten entfernen';
+
+  @override
+  String get readOnlyHint => 'Du siehst diesen Garten nur lesend.';
+
+  @override
+  String byUser(String name) {
+    return 'von $name';
+  }
+
+  @override
+  String get you => 'du';
 }

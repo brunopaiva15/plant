@@ -49,10 +49,11 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Export complet (ZIP : `data.json` de toutes les tables + photos), partage natif | ✅ |
 | Timelapse de croissance (photos en fondu, chronologiques) | ✅ |
 | Stock bas regroupé dans le rappel quotidien | ✅ |
-| Collaboration (jardin partagé, rôles Owner / Member / Viewer, « Arrosée par Laura à 08:32 ») | ⏳ nécessite le backend (Supabase) |
-| Synchronisation multi-appareils (outbox → `RemoteDataSource`) | ⏳ nécessite le backend |
+| Synchronisation multi-appareils : `SyncService` (push depuis l'outbox, pull delta, last-write-wins, photos), adaptateur Supabase, temps réel, coordinateur (démarrage / premier plan / après écriture) | ✅ code + tests ; activé par `--dart-define` (voir docs/08) |
+| Comptes : e-mail par code, Apple natif (iOS), Google OAuth ; compte local conservé sans connexion | ✅ |
+| Collaboration : membres, invitation par e-mail (RPC), rôles owner / member / viewer, « · par Laura » dans la timeline, lecture seule pour viewer | ✅ |
 | Diagnostic (« Ma plante a un problème »), suggestions non affirmatives | ⏳ nécessite un fournisseur d'IA (clé utilisateur, même modèle que l'identification) |
-| Partage par lien public révocable | ⏳ nécessite le backend |
+| Partage par lien public révocable (table `shared_links` prête) | ⏳ page publique à créer côté backend |
 | Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
 
 ## Phase 4 — « Étendre »

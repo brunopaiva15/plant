@@ -2261,6 +2261,15 @@ class $PlantPhotosTable extends PlantPhotos
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _filePathMeta = const VerificationMeta(
     'filePath',
   );
@@ -2338,6 +2347,7 @@ class $PlantPhotosTable extends PlantPhotos
   List<GeneratedColumn> get $columns => [
     id,
     plantId,
+    userId,
     filePath,
     thumbPath,
     width,
@@ -2370,6 +2380,12 @@ class $PlantPhotosTable extends PlantPhotos
       );
     } else if (isInserting) {
       context.missing(_plantIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
     }
     if (data.containsKey('file_path')) {
       context.handle(
@@ -2442,6 +2458,10 @@ class $PlantPhotosTable extends PlantPhotos
         DriftSqlType.string,
         data['${effectivePrefix}plant_id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
       filePath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}file_path'],
@@ -2482,6 +2502,7 @@ class $PlantPhotosTable extends PlantPhotos
 class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
   final String id;
   final String plantId;
+  final String? userId;
   final String filePath;
   final String thumbPath;
   final int width;
@@ -2492,6 +2513,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
   const PlantPhotoRow({
     required this.id,
     required this.plantId,
+    this.userId,
     required this.filePath,
     required this.thumbPath,
     required this.width,
@@ -2505,6 +2527,9 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['plant_id'] = Variable<String>(plantId);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     map['file_path'] = Variable<String>(filePath);
     map['thumb_path'] = Variable<String>(thumbPath);
     map['width'] = Variable<int>(width);
@@ -2521,6 +2546,9 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     return PlantPhotosCompanion(
       id: Value(id),
       plantId: Value(plantId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
       filePath: Value(filePath),
       thumbPath: Value(thumbPath),
       width: Value(width),
@@ -2541,6 +2569,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     return PlantPhotoRow(
       id: serializer.fromJson<String>(json['id']),
       plantId: serializer.fromJson<String>(json['plantId']),
+      userId: serializer.fromJson<String?>(json['userId']),
       filePath: serializer.fromJson<String>(json['filePath']),
       thumbPath: serializer.fromJson<String>(json['thumbPath']),
       width: serializer.fromJson<int>(json['width']),
@@ -2556,6 +2585,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'plantId': serializer.toJson<String>(plantId),
+      'userId': serializer.toJson<String?>(userId),
       'filePath': serializer.toJson<String>(filePath),
       'thumbPath': serializer.toJson<String>(thumbPath),
       'width': serializer.toJson<int>(width),
@@ -2569,6 +2599,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
   PlantPhotoRow copyWith({
     String? id,
     String? plantId,
+    Value<String?> userId = const Value.absent(),
     String? filePath,
     String? thumbPath,
     int? width,
@@ -2579,6 +2610,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
   }) => PlantPhotoRow(
     id: id ?? this.id,
     plantId: plantId ?? this.plantId,
+    userId: userId.present ? userId.value : this.userId,
     filePath: filePath ?? this.filePath,
     thumbPath: thumbPath ?? this.thumbPath,
     width: width ?? this.width,
@@ -2591,6 +2623,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     return PlantPhotoRow(
       id: data.id.present ? data.id.value : this.id,
       plantId: data.plantId.present ? data.plantId.value : this.plantId,
+      userId: data.userId.present ? data.userId.value : this.userId,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
       thumbPath: data.thumbPath.present ? data.thumbPath.value : this.thumbPath,
       width: data.width.present ? data.width.value : this.width,
@@ -2606,6 +2639,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     return (StringBuffer('PlantPhotoRow(')
           ..write('id: $id, ')
           ..write('plantId: $plantId, ')
+          ..write('userId: $userId, ')
           ..write('filePath: $filePath, ')
           ..write('thumbPath: $thumbPath, ')
           ..write('width: $width, ')
@@ -2621,6 +2655,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
   int get hashCode => Object.hash(
     id,
     plantId,
+    userId,
     filePath,
     thumbPath,
     width,
@@ -2635,6 +2670,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
       (other is PlantPhotoRow &&
           other.id == this.id &&
           other.plantId == this.plantId &&
+          other.userId == this.userId &&
           other.filePath == this.filePath &&
           other.thumbPath == this.thumbPath &&
           other.width == this.width &&
@@ -2647,6 +2683,7 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
 class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
   final Value<String> id;
   final Value<String> plantId;
+  final Value<String?> userId;
   final Value<String> filePath;
   final Value<String> thumbPath;
   final Value<int> width;
@@ -2658,6 +2695,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
   const PlantPhotosCompanion({
     this.id = const Value.absent(),
     this.plantId = const Value.absent(),
+    this.userId = const Value.absent(),
     this.filePath = const Value.absent(),
     this.thumbPath = const Value.absent(),
     this.width = const Value.absent(),
@@ -2670,6 +2708,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
   PlantPhotosCompanion.insert({
     required String id,
     required String plantId,
+    this.userId = const Value.absent(),
     required String filePath,
     required String thumbPath,
     required int width,
@@ -2689,6 +2728,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
   static Insertable<PlantPhotoRow> custom({
     Expression<String>? id,
     Expression<String>? plantId,
+    Expression<String>? userId,
     Expression<String>? filePath,
     Expression<String>? thumbPath,
     Expression<int>? width,
@@ -2701,6 +2741,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (plantId != null) 'plant_id': plantId,
+      if (userId != null) 'user_id': userId,
       if (filePath != null) 'file_path': filePath,
       if (thumbPath != null) 'thumb_path': thumbPath,
       if (width != null) 'width': width,
@@ -2715,6 +2756,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
   PlantPhotosCompanion copyWith({
     Value<String>? id,
     Value<String>? plantId,
+    Value<String?>? userId,
     Value<String>? filePath,
     Value<String>? thumbPath,
     Value<int>? width,
@@ -2727,6 +2769,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     return PlantPhotosCompanion(
       id: id ?? this.id,
       plantId: plantId ?? this.plantId,
+      userId: userId ?? this.userId,
       filePath: filePath ?? this.filePath,
       thumbPath: thumbPath ?? this.thumbPath,
       width: width ?? this.width,
@@ -2746,6 +2789,9 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     }
     if (plantId.present) {
       map['plant_id'] = Variable<String>(plantId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (filePath.present) {
       map['file_path'] = Variable<String>(filePath.value);
@@ -2779,6 +2825,7 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     return (StringBuffer('PlantPhotosCompanion(')
           ..write('id: $id, ')
           ..write('plantId: $plantId, ')
+          ..write('userId: $userId, ')
           ..write('filePath: $filePath, ')
           ..write('thumbPath: $thumbPath, ')
           ..write('width: $width, ')
@@ -3237,6 +3284,15 @@ class $PlantActionsTable extends PlantActions
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _typeKeyMeta = const VerificationMeta(
     'typeKey',
   );
@@ -3317,6 +3373,7 @@ class $PlantActionsTable extends PlantActions
   List<GeneratedColumn> get $columns => [
     id,
     plantId,
+    userId,
     typeKey,
     occurredAt,
     notes,
@@ -3349,6 +3406,12 @@ class $PlantActionsTable extends PlantActions
       );
     } else if (isInserting) {
       context.missing(_plantIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
     }
     if (data.containsKey('type_key')) {
       context.handle(
@@ -3415,6 +3478,10 @@ class $PlantActionsTable extends PlantActions
         DriftSqlType.string,
         data['${effectivePrefix}plant_id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
       typeKey: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}type_key'],
@@ -3455,6 +3522,7 @@ class $PlantActionsTable extends PlantActions
 class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
   final String id;
   final String plantId;
+  final String? userId;
   final String typeKey;
   final DateTime occurredAt;
   final String? notes;
@@ -3465,6 +3533,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
   const PlantActionRow({
     required this.id,
     required this.plantId,
+    this.userId,
     required this.typeKey,
     required this.occurredAt,
     this.notes,
@@ -3478,6 +3547,9 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['plant_id'] = Variable<String>(plantId);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     map['type_key'] = Variable<String>(typeKey);
     map['occurred_at'] = Variable<DateTime>(occurredAt);
     if (!nullToAbsent || notes != null) {
@@ -3498,6 +3570,9 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
     return PlantActionsCompanion(
       id: Value(id),
       plantId: Value(plantId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
       typeKey: Value(typeKey),
       occurredAt: Value(occurredAt),
       notes: notes == null && nullToAbsent
@@ -3522,6 +3597,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
     return PlantActionRow(
       id: serializer.fromJson<String>(json['id']),
       plantId: serializer.fromJson<String>(json['plantId']),
+      userId: serializer.fromJson<String?>(json['userId']),
       typeKey: serializer.fromJson<String>(json['typeKey']),
       occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
       notes: serializer.fromJson<String?>(json['notes']),
@@ -3537,6 +3613,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'plantId': serializer.toJson<String>(plantId),
+      'userId': serializer.toJson<String?>(userId),
       'typeKey': serializer.toJson<String>(typeKey),
       'occurredAt': serializer.toJson<DateTime>(occurredAt),
       'notes': serializer.toJson<String?>(notes),
@@ -3550,6 +3627,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
   PlantActionRow copyWith({
     String? id,
     String? plantId,
+    Value<String?> userId = const Value.absent(),
     String? typeKey,
     DateTime? occurredAt,
     Value<String?> notes = const Value.absent(),
@@ -3560,6 +3638,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
   }) => PlantActionRow(
     id: id ?? this.id,
     plantId: plantId ?? this.plantId,
+    userId: userId.present ? userId.value : this.userId,
     typeKey: typeKey ?? this.typeKey,
     occurredAt: occurredAt ?? this.occurredAt,
     notes: notes.present ? notes.value : this.notes,
@@ -3572,6 +3651,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
     return PlantActionRow(
       id: data.id.present ? data.id.value : this.id,
       plantId: data.plantId.present ? data.plantId.value : this.plantId,
+      userId: data.userId.present ? data.userId.value : this.userId,
       typeKey: data.typeKey.present ? data.typeKey.value : this.typeKey,
       occurredAt: data.occurredAt.present
           ? data.occurredAt.value
@@ -3589,6 +3669,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
     return (StringBuffer('PlantActionRow(')
           ..write('id: $id, ')
           ..write('plantId: $plantId, ')
+          ..write('userId: $userId, ')
           ..write('typeKey: $typeKey, ')
           ..write('occurredAt: $occurredAt, ')
           ..write('notes: $notes, ')
@@ -3604,6 +3685,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
   int get hashCode => Object.hash(
     id,
     plantId,
+    userId,
     typeKey,
     occurredAt,
     notes,
@@ -3618,6 +3700,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
       (other is PlantActionRow &&
           other.id == this.id &&
           other.plantId == this.plantId &&
+          other.userId == this.userId &&
           other.typeKey == this.typeKey &&
           other.occurredAt == this.occurredAt &&
           other.notes == this.notes &&
@@ -3630,6 +3713,7 @@ class PlantActionRow extends DataClass implements Insertable<PlantActionRow> {
 class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
   final Value<String> id;
   final Value<String> plantId;
+  final Value<String?> userId;
   final Value<String> typeKey;
   final Value<DateTime> occurredAt;
   final Value<String?> notes;
@@ -3641,6 +3725,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
   const PlantActionsCompanion({
     this.id = const Value.absent(),
     this.plantId = const Value.absent(),
+    this.userId = const Value.absent(),
     this.typeKey = const Value.absent(),
     this.occurredAt = const Value.absent(),
     this.notes = const Value.absent(),
@@ -3653,6 +3738,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
   PlantActionsCompanion.insert({
     required String id,
     required String plantId,
+    this.userId = const Value.absent(),
     required String typeKey,
     required DateTime occurredAt,
     this.notes = const Value.absent(),
@@ -3669,6 +3755,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
   static Insertable<PlantActionRow> custom({
     Expression<String>? id,
     Expression<String>? plantId,
+    Expression<String>? userId,
     Expression<String>? typeKey,
     Expression<DateTime>? occurredAt,
     Expression<String>? notes,
@@ -3681,6 +3768,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (plantId != null) 'plant_id': plantId,
+      if (userId != null) 'user_id': userId,
       if (typeKey != null) 'type_key': typeKey,
       if (occurredAt != null) 'occurred_at': occurredAt,
       if (notes != null) 'notes': notes,
@@ -3695,6 +3783,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
   PlantActionsCompanion copyWith({
     Value<String>? id,
     Value<String>? plantId,
+    Value<String?>? userId,
     Value<String>? typeKey,
     Value<DateTime>? occurredAt,
     Value<String?>? notes,
@@ -3707,6 +3796,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
     return PlantActionsCompanion(
       id: id ?? this.id,
       plantId: plantId ?? this.plantId,
+      userId: userId ?? this.userId,
       typeKey: typeKey ?? this.typeKey,
       occurredAt: occurredAt ?? this.occurredAt,
       notes: notes ?? this.notes,
@@ -3726,6 +3816,9 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
     }
     if (plantId.present) {
       map['plant_id'] = Variable<String>(plantId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (typeKey.present) {
       map['type_key'] = Variable<String>(typeKey.value);
@@ -3759,6 +3852,7 @@ class PlantActionsCompanion extends UpdateCompanion<PlantActionRow> {
     return (StringBuffer('PlantActionsCompanion(')
           ..write('id: $id, ')
           ..write('plantId: $plantId, ')
+          ..write('userId: $userId, ')
           ..write('typeKey: $typeKey, ')
           ..write('occurredAt: $occurredAt, ')
           ..write('notes: $notes, ')
@@ -6670,6 +6764,530 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   }
 }
 
+class $ProfilesTable extends Profiles
+    with TableInfo<$ProfilesTable, ProfileRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, displayName, email];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProfileRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProfileRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProfileRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      ),
+    );
+  }
+
+  @override
+  $ProfilesTable createAlias(String alias) {
+    return $ProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class ProfileRow extends DataClass implements Insertable<ProfileRow> {
+  final String id;
+  final String displayName;
+  final String? email;
+  const ProfileRow({required this.id, required this.displayName, this.email});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['display_name'] = Variable<String>(displayName);
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    return map;
+  }
+
+  ProfilesCompanion toCompanion(bool nullToAbsent) {
+    return ProfilesCompanion(
+      id: Value(id),
+      displayName: Value(displayName),
+      email: email == null && nullToAbsent
+          ? const Value.absent()
+          : Value(email),
+    );
+  }
+
+  factory ProfileRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProfileRow(
+      id: serializer.fromJson<String>(json['id']),
+      displayName: serializer.fromJson<String>(json['displayName']),
+      email: serializer.fromJson<String?>(json['email']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'displayName': serializer.toJson<String>(displayName),
+      'email': serializer.toJson<String?>(email),
+    };
+  }
+
+  ProfileRow copyWith({
+    String? id,
+    String? displayName,
+    Value<String?> email = const Value.absent(),
+  }) => ProfileRow(
+    id: id ?? this.id,
+    displayName: displayName ?? this.displayName,
+    email: email.present ? email.value : this.email,
+  );
+  ProfileRow copyWithCompanion(ProfilesCompanion data) {
+    return ProfileRow(
+      id: data.id.present ? data.id.value : this.id,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      email: data.email.present ? data.email.value : this.email,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfileRow(')
+          ..write('id: $id, ')
+          ..write('displayName: $displayName, ')
+          ..write('email: $email')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, displayName, email);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProfileRow &&
+          other.id == this.id &&
+          other.displayName == this.displayName &&
+          other.email == this.email);
+}
+
+class ProfilesCompanion extends UpdateCompanion<ProfileRow> {
+  final Value<String> id;
+  final Value<String> displayName;
+  final Value<String?> email;
+  final Value<int> rowid;
+  const ProfilesCompanion({
+    this.id = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProfilesCompanion.insert({
+    required String id,
+    this.displayName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<ProfileRow> custom({
+    Expression<String>? id,
+    Expression<String>? displayName,
+    Expression<String>? email,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (displayName != null) 'display_name': displayName,
+      if (email != null) 'email': email,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProfilesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? displayName,
+    Value<String?>? email,
+    Value<int>? rowid,
+  }) {
+    return ProfilesCompanion(
+      id: id ?? this.id,
+      displayName: displayName ?? this.displayName,
+      email: email ?? this.email,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilesCompanion(')
+          ..write('id: $id, ')
+          ..write('displayName: $displayName, ')
+          ..write('email: $email, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GardenMembersTable extends GardenMembers
+    with TableInfo<$GardenMembersTable, GardenMemberRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GardenMembersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [gardenId, userId, role];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'garden_members';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GardenMemberRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gardenId, userId};
+  @override
+  GardenMemberRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GardenMemberRow(
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
+    );
+  }
+
+  @override
+  $GardenMembersTable createAlias(String alias) {
+    return $GardenMembersTable(attachedDatabase, alias);
+  }
+}
+
+class GardenMemberRow extends DataClass implements Insertable<GardenMemberRow> {
+  final String gardenId;
+  final String userId;
+  final String role;
+  const GardenMemberRow({
+    required this.gardenId,
+    required this.userId,
+    required this.role,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['garden_id'] = Variable<String>(gardenId);
+    map['user_id'] = Variable<String>(userId);
+    map['role'] = Variable<String>(role);
+    return map;
+  }
+
+  GardenMembersCompanion toCompanion(bool nullToAbsent) {
+    return GardenMembersCompanion(
+      gardenId: Value(gardenId),
+      userId: Value(userId),
+      role: Value(role),
+    );
+  }
+
+  factory GardenMemberRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GardenMemberRow(
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      role: serializer.fromJson<String>(json['role']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'gardenId': serializer.toJson<String>(gardenId),
+      'userId': serializer.toJson<String>(userId),
+      'role': serializer.toJson<String>(role),
+    };
+  }
+
+  GardenMemberRow copyWith({String? gardenId, String? userId, String? role}) =>
+      GardenMemberRow(
+        gardenId: gardenId ?? this.gardenId,
+        userId: userId ?? this.userId,
+        role: role ?? this.role,
+      );
+  GardenMemberRow copyWithCompanion(GardenMembersCompanion data) {
+    return GardenMemberRow(
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      role: data.role.present ? data.role.value : this.role,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GardenMemberRow(')
+          ..write('gardenId: $gardenId, ')
+          ..write('userId: $userId, ')
+          ..write('role: $role')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(gardenId, userId, role);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GardenMemberRow &&
+          other.gardenId == this.gardenId &&
+          other.userId == this.userId &&
+          other.role == this.role);
+}
+
+class GardenMembersCompanion extends UpdateCompanion<GardenMemberRow> {
+  final Value<String> gardenId;
+  final Value<String> userId;
+  final Value<String> role;
+  final Value<int> rowid;
+  const GardenMembersCompanion({
+    this.gardenId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.role = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GardenMembersCompanion.insert({
+    required String gardenId,
+    required String userId,
+    required String role,
+    this.rowid = const Value.absent(),
+  }) : gardenId = Value(gardenId),
+       userId = Value(userId),
+       role = Value(role);
+  static Insertable<GardenMemberRow> custom({
+    Expression<String>? gardenId,
+    Expression<String>? userId,
+    Expression<String>? role,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (gardenId != null) 'garden_id': gardenId,
+      if (userId != null) 'user_id': userId,
+      if (role != null) 'role': role,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GardenMembersCompanion copyWith({
+    Value<String>? gardenId,
+    Value<String>? userId,
+    Value<String>? role,
+    Value<int>? rowid,
+  }) {
+    return GardenMembersCompanion(
+      gardenId: gardenId ?? this.gardenId,
+      userId: userId ?? this.userId,
+      role: role ?? this.role,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GardenMembersCompanion(')
+          ..write('gardenId: $gardenId, ')
+          ..write('userId: $userId, ')
+          ..write('role: $role, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -6685,6 +7303,8 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
   late final $MeasurementsTable measurements = $MeasurementsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
   late final $InventoryItemsTable inventoryItems = $InventoryItemsTable(this);
+  late final $ProfilesTable profiles = $ProfilesTable(this);
+  late final $GardenMembersTable gardenMembers = $GardenMembersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6702,6 +7322,8 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     measurements,
     syncOutbox,
     inventoryItems,
+    profiles,
+    gardenMembers,
   ];
 }
 
@@ -7776,6 +8398,7 @@ typedef $$PlantPhotosTableCreateCompanionBuilder =
     PlantPhotosCompanion Function({
       required String id,
       required String plantId,
+      Value<String?> userId,
       required String filePath,
       required String thumbPath,
       required int width,
@@ -7789,6 +8412,7 @@ typedef $$PlantPhotosTableUpdateCompanionBuilder =
     PlantPhotosCompanion Function({
       Value<String> id,
       Value<String> plantId,
+      Value<String?> userId,
       Value<String> filePath,
       Value<String> thumbPath,
       Value<int> width,
@@ -7815,6 +8439,11 @@ class $$PlantPhotosTableFilterComposer
 
   ColumnFilters<String> get plantId => $composableBuilder(
     column: $table.plantId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7873,6 +8502,11 @@ class $$PlantPhotosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get filePath => $composableBuilder(
     column: $table.filePath,
     builder: (column) => ColumnOrderings(column),
@@ -7923,6 +8557,9 @@ class $$PlantPhotosTableAnnotationComposer
 
   GeneratedColumn<String> get plantId =>
       $composableBuilder(column: $table.plantId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get filePath =>
       $composableBuilder(column: $table.filePath, builder: (column) => column);
@@ -7979,6 +8616,7 @@ class $$PlantPhotosTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> plantId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 Value<String> filePath = const Value.absent(),
                 Value<String> thumbPath = const Value.absent(),
                 Value<int> width = const Value.absent(),
@@ -7990,6 +8628,7 @@ class $$PlantPhotosTableTableManager
               }) => PlantPhotosCompanion(
                 id: id,
                 plantId: plantId,
+                userId: userId,
                 filePath: filePath,
                 thumbPath: thumbPath,
                 width: width,
@@ -8003,6 +8642,7 @@ class $$PlantPhotosTableTableManager
               ({
                 required String id,
                 required String plantId,
+                Value<String?> userId = const Value.absent(),
                 required String filePath,
                 required String thumbPath,
                 required int width,
@@ -8014,6 +8654,7 @@ class $$PlantPhotosTableTableManager
               }) => PlantPhotosCompanion.insert(
                 id: id,
                 plantId: plantId,
+                userId: userId,
                 filePath: filePath,
                 thumbPath: thumbPath,
                 width: width,
@@ -8291,6 +8932,7 @@ typedef $$PlantActionsTableCreateCompanionBuilder =
     PlantActionsCompanion Function({
       required String id,
       required String plantId,
+      Value<String?> userId,
       required String typeKey,
       required DateTime occurredAt,
       Value<String?> notes,
@@ -8304,6 +8946,7 @@ typedef $$PlantActionsTableUpdateCompanionBuilder =
     PlantActionsCompanion Function({
       Value<String> id,
       Value<String> plantId,
+      Value<String?> userId,
       Value<String> typeKey,
       Value<DateTime> occurredAt,
       Value<String?> notes,
@@ -8330,6 +8973,11 @@ class $$PlantActionsTableFilterComposer
 
   ColumnFilters<String> get plantId => $composableBuilder(
     column: $table.plantId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8388,6 +9036,11 @@ class $$PlantActionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get typeKey => $composableBuilder(
     column: $table.typeKey,
     builder: (column) => ColumnOrderings(column),
@@ -8438,6 +9091,9 @@ class $$PlantActionsTableAnnotationComposer
 
   GeneratedColumn<String> get plantId =>
       $composableBuilder(column: $table.plantId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get typeKey =>
       $composableBuilder(column: $table.typeKey, builder: (column) => column);
@@ -8496,6 +9152,7 @@ class $$PlantActionsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> plantId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 Value<String> typeKey = const Value.absent(),
                 Value<DateTime> occurredAt = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
@@ -8507,6 +9164,7 @@ class $$PlantActionsTableTableManager
               }) => PlantActionsCompanion(
                 id: id,
                 plantId: plantId,
+                userId: userId,
                 typeKey: typeKey,
                 occurredAt: occurredAt,
                 notes: notes,
@@ -8520,6 +9178,7 @@ class $$PlantActionsTableTableManager
               ({
                 required String id,
                 required String plantId,
+                Value<String?> userId = const Value.absent(),
                 required String typeKey,
                 required DateTime occurredAt,
                 Value<String?> notes = const Value.absent(),
@@ -8531,6 +9190,7 @@ class $$PlantActionsTableTableManager
               }) => PlantActionsCompanion.insert(
                 id: id,
                 plantId: plantId,
+                userId: userId,
                 typeKey: typeKey,
                 occurredAt: occurredAt,
                 notes: notes,
@@ -10120,6 +10780,351 @@ typedef $$InventoryItemsTableProcessedTableManager =
       InventoryItemRow,
       PrefetchHooks Function()
     >;
+typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
+  required String id,
+  Value<String> displayName,
+  Value<String?> email,
+  Value<int> rowid,
+});
+typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
+  Value<String> id,
+  Value<String> displayName,
+  Value<String?> email,
+  Value<int> rowid,
+});
+
+class $$ProfilesTableFilterComposer
+    extends Composer<_$FloraDatabase, $ProfilesTable> {
+  $$ProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProfilesTableOrderingComposer
+    extends Composer<_$FloraDatabase, $ProfilesTable> {
+  $$ProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProfilesTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $ProfilesTable> {
+  $$ProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+}
+
+class $$ProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $ProfilesTable,
+          ProfileRow,
+          $$ProfilesTableFilterComposer,
+          $$ProfilesTableOrderingComposer,
+          $$ProfilesTableAnnotationComposer,
+          $$ProfilesTableCreateCompanionBuilder,
+          $$ProfilesTableUpdateCompanionBuilder,
+          (
+            ProfileRow,
+            BaseReferences<_$FloraDatabase, $ProfilesTable, ProfileRow>,
+          ),
+          ProfileRow,
+          PrefetchHooks Function()
+        > {
+  $$ProfilesTableTableManager(_$FloraDatabase db, $ProfilesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProfilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProfilesCompanion(
+                id: id,
+                displayName: displayName,
+                email: email,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String> displayName = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProfilesCompanion.insert(
+                id: id,
+                displayName: displayName,
+                email: email,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ProfilesTable, ProfileRow>(table),
+                  BaseReferences<_$FloraDatabase, $ProfilesTable, ProfileRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $ProfilesTable,
+      ProfileRow,
+      $$ProfilesTableFilterComposer,
+      $$ProfilesTableOrderingComposer,
+      $$ProfilesTableAnnotationComposer,
+      $$ProfilesTableCreateCompanionBuilder,
+      $$ProfilesTableUpdateCompanionBuilder,
+      (ProfileRow, BaseReferences<_$FloraDatabase, $ProfilesTable, ProfileRow>),
+      ProfileRow,
+      PrefetchHooks Function()
+    >;
+typedef $$GardenMembersTableCreateCompanionBuilder =
+    GardenMembersCompanion Function({
+      required String gardenId,
+      required String userId,
+      required String role,
+      Value<int> rowid,
+    });
+typedef $$GardenMembersTableUpdateCompanionBuilder =
+    GardenMembersCompanion Function({
+      Value<String> gardenId,
+      Value<String> userId,
+      Value<String> role,
+      Value<int> rowid,
+    });
+
+class $$GardenMembersTableFilterComposer
+    extends Composer<_$FloraDatabase, $GardenMembersTable> {
+  $$GardenMembersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GardenMembersTableOrderingComposer
+    extends Composer<_$FloraDatabase, $GardenMembersTable> {
+  $$GardenMembersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GardenMembersTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $GardenMembersTable> {
+  $$GardenMembersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+}
+
+class $$GardenMembersTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $GardenMembersTable,
+          GardenMemberRow,
+          $$GardenMembersTableFilterComposer,
+          $$GardenMembersTableOrderingComposer,
+          $$GardenMembersTableAnnotationComposer,
+          $$GardenMembersTableCreateCompanionBuilder,
+          $$GardenMembersTableUpdateCompanionBuilder,
+          (
+            GardenMemberRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $GardenMembersTable,
+              GardenMemberRow
+            >,
+          ),
+          GardenMemberRow,
+          PrefetchHooks Function()
+        > {
+  $$GardenMembersTableTableManager(
+    _$FloraDatabase db,
+    $GardenMembersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GardenMembersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GardenMembersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GardenMembersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> gardenId = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GardenMembersCompanion(
+                gardenId: gardenId,
+                userId: userId,
+                role: role,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String gardenId,
+                required String userId,
+                required String role,
+                Value<int> rowid = const Value.absent(),
+              }) => GardenMembersCompanion.insert(
+                gardenId: gardenId,
+                userId: userId,
+                role: role,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GardenMembersTable, GardenMemberRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $GardenMembersTable,
+                    GardenMemberRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GardenMembersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $GardenMembersTable,
+      GardenMemberRow,
+      $$GardenMembersTableFilterComposer,
+      $$GardenMembersTableOrderingComposer,
+      $$GardenMembersTableAnnotationComposer,
+      $$GardenMembersTableCreateCompanionBuilder,
+      $$GardenMembersTableUpdateCompanionBuilder,
+      (
+        GardenMemberRow,
+        BaseReferences<_$FloraDatabase, $GardenMembersTable, GardenMemberRow>,
+      ),
+      GardenMemberRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -10147,4 +11152,8 @@ class $FloraDatabaseManager {
       $$SyncOutboxTableTableManager(_db, _db.syncOutbox);
   $$InventoryItemsTableTableManager get inventoryItems =>
       $$InventoryItemsTableTableManager(_db, _db.inventoryItems);
+  $$ProfilesTableTableManager get profiles =>
+      $$ProfilesTableTableManager(_db, _db.profiles);
+  $$GardenMembersTableTableManager get gardenMembers =>
+      $$GardenMembersTableTableManager(_db, _db.gardenMembers);
 }
