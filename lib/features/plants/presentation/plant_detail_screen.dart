@@ -257,6 +257,10 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                     ].join(' · '),
                     style: context.text.caption,
                   ),
+                  if (plant.number > 0) ...[
+                    const SizedBox(height: 2),
+                    Text(l10n.plantNumber(plant.number), style: context.text.caption),
+                  ],
                   if (summary.tags.isNotEmpty || plant.health != PlantHealth.healthy) ...[
                     const SizedBox(height: Space.sm),
                     Wrap(

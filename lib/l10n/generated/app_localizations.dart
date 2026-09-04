@@ -4661,6 +4661,96 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aperçu'**
   String get preview;
+
+  /// No description provided for @locationNotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes de l\'emplacement'**
+  String get locationNotes;
+
+  /// No description provided for @locationLog.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal'**
+  String get locationLog;
+
+  /// No description provided for @addLogEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une entrée'**
+  String get addLogEntry;
+
+  /// No description provided for @editLogEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'entrée'**
+  String get editLogEntry;
+
+  /// No description provided for @logEntryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Store changé, serre nettoyée…'**
+  String get logEntryHint;
+
+  /// No description provided for @noLogEntries.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal vide'**
+  String get noLogEntries;
+
+  /// No description provided for @confirmDeleteLogEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cette entrée ?'**
+  String get confirmDeleteLogEntry;
+
+  /// No description provided for @locationPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo de l\'emplacement'**
+  String get locationPhoto;
+
+  /// No description provided for @removeLocationPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer la photo'**
+  String get removeLocationPhoto;
+
+  /// No description provided for @careAllPlants.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soigner toutes les plantes'**
+  String get careAllPlants;
+
+  /// No description provided for @waterAllHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arroser tout ici'**
+  String get waterAllHere;
+
+  /// No description provided for @fertilizeAllHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fertiliser tout ici'**
+  String get fertilizeAllHere;
+
+  /// No description provided for @repotAllHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rempoter tout ici'**
+  String get repotAllHere;
+
+  /// No description provided for @plantNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'N° {number}'**
+  String plantNumber(int number);
+
+  /// No description provided for @searchByNumberHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Astuce : tapez #42 pour retrouver la plante n° 42.'**
+  String get searchByNumberHint;
 }
 
 class _AppLocalizationsDelegate

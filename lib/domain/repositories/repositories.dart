@@ -107,6 +107,12 @@ abstract class LocationRepository {
   Future<void> delete(String id);
   /// Crée les emplacements de départ si aucun n'existe.
   Future<void> ensureDefaults(List<({String name, String icon, bool outdoor})> defaults);
+
+  /// Journal de l'emplacement, du plus récent au plus ancien.
+  Stream<List<LocationLogEntry>> watchLog(String locationId);
+  Future<LocationLogEntry> addLogEntry(String locationId, String content);
+  Future<void> editLogEntry(String id, String content);
+  Future<void> deleteLogEntry(String id);
 }
 
 /// Données d'une nouvelle action.

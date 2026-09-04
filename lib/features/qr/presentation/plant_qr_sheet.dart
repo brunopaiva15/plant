@@ -43,7 +43,7 @@ class _QrBody extends StatelessWidget {
             label: l10n.printLabels,
             icon: CupertinoIcons.printer,
             expand: true,
-            onPressed: () => shareLabels(context, [LabelData(plantId: plant.id, name: plant.name, species: plant.speciesName)]),
+            onPressed: () => shareLabels(context, [LabelData(plantId: plant.id, name: plant.name, species: plant.speciesName, number: plant.number)]),
           ),
         ],
       ),

@@ -56,5 +56,6 @@ class ExportService {
         'plant_attributes': (await _db.select(_db.plantAttributes).get()).map((r) => r.toJson()).toList(),
         'attribute_schemas': (await _db.select(_db.attributeSchemas).get()).map((r) => r.toJson()).toList(),
         'plant_attachments': (await _db.select(_db.plantAttachments).get()).map((r) => r.toJson()).toList(),
+        'location_logs': (await _db.select(_db.locationLogs).get()).map((r) => r.toJson()).toList(),
       };
 }

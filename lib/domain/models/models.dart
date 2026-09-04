@@ -7,6 +7,7 @@ export 'care_schedule.dart';
 export 'care_task.dart';
 export 'free_task.dart';
 export 'location.dart';
+export 'location_log.dart';
 export 'plant.dart';
 export 'plant_action.dart';
 export 'plant_attachment.dart';

@@ -59,6 +59,18 @@ class $GardensTable extends Gardens with TableInfo<$GardensTable, GardenRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _plantCounterMeta = const VerificationMeta(
+    'plantCounter',
+  );
+  @override
+  late final GeneratedColumn<int> plantCounter = GeneratedColumn<int>(
+    'plant_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
@@ -77,6 +89,7 @@ class $GardensTable extends Gardens with TableInfo<$GardensTable, GardenRow> {
     id,
     ownerId,
     name,
+    plantCounter,
     deletedAt,
   ];
   @override
@@ -128,6 +141,15 @@ class $GardensTable extends Gardens with TableInfo<$GardensTable, GardenRow> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('plant_counter')) {
+      context.handle(
+        _plantCounterMeta,
+        plantCounter.isAcceptableOrUnknown(
+          data['plant_counter']!,
+          _plantCounterMeta,
+        ),
+      );
+    }
     if (data.containsKey('deleted_at')) {
       context.handle(
         _deletedAtMeta,
@@ -163,6 +185,10 @@ class $GardensTable extends Gardens with TableInfo<$GardensTable, GardenRow> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      plantCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plant_counter'],
+      )!,
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -182,6 +208,10 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
   final String id;
   final String ownerId;
   final String name;
+
+  /// Dernier numéro de plante attribué. Ne recule jamais, même après une
+  /// suppression définitive : un numéro imprimé reste unique pour toujours.
+  final int plantCounter;
   final DateTime? deletedAt;
   const GardenRow({
     required this.createdAt,
@@ -189,6 +219,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
     required this.id,
     required this.ownerId,
     required this.name,
+    required this.plantCounter,
     this.deletedAt,
   });
   @override
@@ -199,6 +230,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     map['name'] = Variable<String>(name);
+    map['plant_counter'] = Variable<int>(plantCounter);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
@@ -212,6 +244,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
       id: Value(id),
       ownerId: Value(ownerId),
       name: Value(name),
+      plantCounter: Value(plantCounter),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
@@ -229,6 +262,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       name: serializer.fromJson<String>(json['name']),
+      plantCounter: serializer.fromJson<int>(json['plantCounter']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
@@ -241,6 +275,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'name': serializer.toJson<String>(name),
+      'plantCounter': serializer.toJson<int>(plantCounter),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
@@ -251,6 +286,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
     String? id,
     String? ownerId,
     String? name,
+    int? plantCounter,
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => GardenRow(
     createdAt: createdAt ?? this.createdAt,
@@ -258,6 +294,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     name: name ?? this.name,
+    plantCounter: plantCounter ?? this.plantCounter,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   GardenRow copyWithCompanion(GardensCompanion data) {
@@ -267,6 +304,9 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       name: data.name.present ? data.name.value : this.name,
+      plantCounter: data.plantCounter.present
+          ? data.plantCounter.value
+          : this.plantCounter,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
@@ -279,14 +319,22 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('name: $name, ')
+          ..write('plantCounter: $plantCounter, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, ownerId, name, deletedAt);
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    ownerId,
+    name,
+    plantCounter,
+    deletedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -296,6 +344,7 @@ class GardenRow extends DataClass implements Insertable<GardenRow> {
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.name == this.name &&
+          other.plantCounter == this.plantCounter &&
           other.deletedAt == this.deletedAt);
 }
 
@@ -305,6 +354,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
   final Value<String> id;
   final Value<String> ownerId;
   final Value<String> name;
+  final Value<int> plantCounter;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
   const GardensCompanion({
@@ -313,6 +363,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.name = const Value.absent(),
+    this.plantCounter = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -322,6 +373,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
     required String id,
     required String ownerId,
     required String name,
+    this.plantCounter = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdAt = Value(createdAt),
@@ -335,6 +387,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? name,
+    Expression<int>? plantCounter,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
@@ -344,6 +397,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (name != null) 'name': name,
+      if (plantCounter != null) 'plant_counter': plantCounter,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -355,6 +409,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
     Value<String>? id,
     Value<String>? ownerId,
     Value<String>? name,
+    Value<int>? plantCounter,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
@@ -364,6 +419,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       name: name ?? this.name,
+      plantCounter: plantCounter ?? this.plantCounter,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -387,6 +443,9 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (plantCounter.present) {
+      map['plant_counter'] = Variable<int>(plantCounter.value);
+    }
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
@@ -404,6 +463,7 @@ class GardensCompanion extends UpdateCompanion<GardenRow> {
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('name: $name, ')
+          ..write('plantCounter: $plantCounter, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -523,6 +583,37 @@ class $LocationsTable extends Locations
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _thumbPathMeta = const VerificationMeta(
+    'thumbPath',
+  );
+  @override
+  late final GeneratedColumn<String> thumbPath = GeneratedColumn<String>(
+    'thumb_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
   );
@@ -558,6 +649,9 @@ class $LocationsTable extends Locations
     light,
     orientation,
     isOutdoor,
+    notes,
+    photoPath,
+    thumbPath,
     sortOrder,
     deletedAt,
   ];
@@ -645,6 +739,24 @@ class $LocationsTable extends Locations
         isOutdoor.isAcceptableOrUnknown(data['is_outdoor']!, _isOutdoorMeta),
       );
     }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('thumb_path')) {
+      context.handle(
+        _thumbPathMeta,
+        thumbPath.isAcceptableOrUnknown(data['thumb_path']!, _thumbPathMeta),
+      );
+    }
     if (data.containsKey('sort_order')) {
       context.handle(
         _sortOrderMeta,
@@ -706,6 +818,18 @@ class $LocationsTable extends Locations
         DriftSqlType.bool,
         data['${effectivePrefix}is_outdoor'],
       )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
+      thumbPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}thumb_path'],
+      ),
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
@@ -734,6 +858,13 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
   final String? light;
   final String? orientation;
   final bool isOutdoor;
+
+  /// Notes libres de l'emplacement (Markdown).
+  final String? notes;
+
+  /// Photo d'illustration : chemins relatifs, comme pour les plantes.
+  final String? photoPath;
+  final String? thumbPath;
   final int sortOrder;
   final DateTime? deletedAt;
   const LocationRow({
@@ -747,6 +878,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     this.light,
     this.orientation,
     required this.isOutdoor,
+    this.notes,
+    this.photoPath,
+    this.thumbPath,
     required this.sortOrder,
     this.deletedAt,
   });
@@ -769,6 +903,15 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       map['orientation'] = Variable<String>(orientation);
     }
     map['is_outdoor'] = Variable<bool>(isOutdoor);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
+    }
+    if (!nullToAbsent || thumbPath != null) {
+      map['thumb_path'] = Variable<String>(thumbPath);
+    }
     map['sort_order'] = Variable<int>(sortOrder);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -794,6 +937,15 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
           ? const Value.absent()
           : Value(orientation),
       isOutdoor: Value(isOutdoor),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
+      thumbPath: thumbPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(thumbPath),
       sortOrder: Value(sortOrder),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
@@ -817,6 +969,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       light: serializer.fromJson<String?>(json['light']),
       orientation: serializer.fromJson<String?>(json['orientation']),
       isOutdoor: serializer.fromJson<bool>(json['isOutdoor']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
+      thumbPath: serializer.fromJson<String?>(json['thumbPath']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
@@ -835,6 +990,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       'light': serializer.toJson<String?>(light),
       'orientation': serializer.toJson<String?>(orientation),
       'isOutdoor': serializer.toJson<bool>(isOutdoor),
+      'notes': serializer.toJson<String?>(notes),
+      'photoPath': serializer.toJson<String?>(photoPath),
+      'thumbPath': serializer.toJson<String?>(thumbPath),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
@@ -851,6 +1009,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     Value<String?> light = const Value.absent(),
     Value<String?> orientation = const Value.absent(),
     bool? isOutdoor,
+    Value<String?> notes = const Value.absent(),
+    Value<String?> photoPath = const Value.absent(),
+    Value<String?> thumbPath = const Value.absent(),
     int? sortOrder,
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => LocationRow(
@@ -864,6 +1025,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     light: light.present ? light.value : this.light,
     orientation: orientation.present ? orientation.value : this.orientation,
     isOutdoor: isOutdoor ?? this.isOutdoor,
+    notes: notes.present ? notes.value : this.notes,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    thumbPath: thumbPath.present ? thumbPath.value : this.thumbPath,
     sortOrder: sortOrder ?? this.sortOrder,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
@@ -881,6 +1045,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
           ? data.orientation.value
           : this.orientation,
       isOutdoor: data.isOutdoor.present ? data.isOutdoor.value : this.isOutdoor,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      thumbPath: data.thumbPath.present ? data.thumbPath.value : this.thumbPath,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
@@ -899,6 +1066,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
           ..write('light: $light, ')
           ..write('orientation: $orientation, ')
           ..write('isOutdoor: $isOutdoor, ')
+          ..write('notes: $notes, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('thumbPath: $thumbPath, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
@@ -917,6 +1087,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     light,
     orientation,
     isOutdoor,
+    notes,
+    photoPath,
+    thumbPath,
     sortOrder,
     deletedAt,
   );
@@ -934,6 +1107,9 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
           other.light == this.light &&
           other.orientation == this.orientation &&
           other.isOutdoor == this.isOutdoor &&
+          other.notes == this.notes &&
+          other.photoPath == this.photoPath &&
+          other.thumbPath == this.thumbPath &&
           other.sortOrder == this.sortOrder &&
           other.deletedAt == this.deletedAt);
 }
@@ -949,6 +1125,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
   final Value<String?> light;
   final Value<String?> orientation;
   final Value<bool> isOutdoor;
+  final Value<String?> notes;
+  final Value<String?> photoPath;
+  final Value<String?> thumbPath;
   final Value<int> sortOrder;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
@@ -963,6 +1142,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     this.light = const Value.absent(),
     this.orientation = const Value.absent(),
     this.isOutdoor = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.thumbPath = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -978,6 +1160,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     this.light = const Value.absent(),
     this.orientation = const Value.absent(),
     this.isOutdoor = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.thumbPath = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -998,6 +1183,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     Expression<String>? light,
     Expression<String>? orientation,
     Expression<bool>? isOutdoor,
+    Expression<String>? notes,
+    Expression<String>? photoPath,
+    Expression<String>? thumbPath,
     Expression<int>? sortOrder,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
@@ -1013,6 +1201,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
       if (light != null) 'light': light,
       if (orientation != null) 'orientation': orientation,
       if (isOutdoor != null) 'is_outdoor': isOutdoor,
+      if (notes != null) 'notes': notes,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (thumbPath != null) 'thumb_path': thumbPath,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1030,6 +1221,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     Value<String?>? light,
     Value<String?>? orientation,
     Value<bool>? isOutdoor,
+    Value<String?>? notes,
+    Value<String?>? photoPath,
+    Value<String?>? thumbPath,
     Value<int>? sortOrder,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
@@ -1045,6 +1239,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
       light: light ?? this.light,
       orientation: orientation ?? this.orientation,
       isOutdoor: isOutdoor ?? this.isOutdoor,
+      notes: notes ?? this.notes,
+      photoPath: photoPath ?? this.photoPath,
+      thumbPath: thumbPath ?? this.thumbPath,
       sortOrder: sortOrder ?? this.sortOrder,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
@@ -1084,6 +1281,15 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     if (isOutdoor.present) {
       map['is_outdoor'] = Variable<bool>(isOutdoor.value);
     }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (thumbPath.present) {
+      map['thumb_path'] = Variable<String>(thumbPath.value);
+    }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
@@ -1109,6 +1315,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
           ..write('light: $light, ')
           ..write('orientation: $orientation, ')
           ..write('isOutdoor: $isOutdoor, ')
+          ..write('notes: $notes, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('thumbPath: $thumbPath, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
@@ -1163,6 +1372,16 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _numberMeta = const VerificationMeta('number');
+  @override
+  late final GeneratedColumn<int> number = GeneratedColumn<int>(
+    'number',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -1340,6 +1559,7 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
     updatedAt,
     id,
     gardenId,
+    number,
     name,
     speciesName,
     locationId,
@@ -1397,6 +1617,12 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
       );
     } else if (isInserting) {
       context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('number')) {
+      context.handle(
+        _numberMeta,
+        number.isAcceptableOrUnknown(data['number']!, _numberMeta),
+      );
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -1533,6 +1759,10 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
         DriftSqlType.string,
         data['${effectivePrefix}garden_id'],
       )!,
+      number: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}number'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -1611,6 +1841,10 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
   final DateTime updatedAt;
   final String id;
   final String gardenId;
+
+  /// Numéro court et lisible, unique par jardin : « #42 ». Sert aux
+  /// étiquettes et à la recherche.
+  final int number;
   final String name;
   final String? speciesName;
   final String? locationId;
@@ -1632,6 +1866,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     required this.updatedAt,
     required this.id,
     required this.gardenId,
+    required this.number,
     required this.name,
     this.speciesName,
     this.locationId,
@@ -1656,6 +1891,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['garden_id'] = Variable<String>(gardenId);
+    map['number'] = Variable<int>(number);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || speciesName != null) {
       map['species_name'] = Variable<String>(speciesName);
@@ -1705,6 +1941,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       gardenId: Value(gardenId),
+      number: Value(number),
       name: Value(name),
       speciesName: speciesName == null && nullToAbsent
           ? const Value.absent()
@@ -1758,6 +1995,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       gardenId: serializer.fromJson<String>(json['gardenId']),
+      number: serializer.fromJson<int>(json['number']),
       name: serializer.fromJson<String>(json['name']),
       speciesName: serializer.fromJson<String?>(json['speciesName']),
       locationId: serializer.fromJson<String?>(json['locationId']),
@@ -1784,6 +2022,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'gardenId': serializer.toJson<String>(gardenId),
+      'number': serializer.toJson<int>(number),
       'name': serializer.toJson<String>(name),
       'speciesName': serializer.toJson<String?>(speciesName),
       'locationId': serializer.toJson<String?>(locationId),
@@ -1808,6 +2047,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     DateTime? updatedAt,
     String? id,
     String? gardenId,
+    int? number,
     String? name,
     Value<String?> speciesName = const Value.absent(),
     Value<String?> locationId = const Value.absent(),
@@ -1829,6 +2069,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     gardenId: gardenId ?? this.gardenId,
+    number: number ?? this.number,
     name: name ?? this.name,
     speciesName: speciesName.present ? speciesName.value : this.speciesName,
     locationId: locationId.present ? locationId.value : this.locationId,
@@ -1858,6 +2099,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      number: data.number.present ? data.number.value : this.number,
       name: data.name.present ? data.name.value : this.name,
       speciesName: data.speciesName.present
           ? data.speciesName.value
@@ -1900,6 +2142,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('gardenId: $gardenId, ')
+          ..write('number: $number, ')
           ..write('name: $name, ')
           ..write('speciesName: $speciesName, ')
           ..write('locationId: $locationId, ')
@@ -1921,11 +2164,12 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     createdAt,
     updatedAt,
     id,
     gardenId,
+    number,
     name,
     speciesName,
     locationId,
@@ -1942,7 +2186,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     archivedAt,
     archiveReason,
     deletedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1951,6 +2195,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.gardenId == this.gardenId &&
+          other.number == this.number &&
           other.name == this.name &&
           other.speciesName == this.speciesName &&
           other.locationId == this.locationId &&
@@ -1974,6 +2219,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
   final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> gardenId;
+  final Value<int> number;
   final Value<String> name;
   final Value<String?> speciesName;
   final Value<String?> locationId;
@@ -1996,6 +2242,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.gardenId = const Value.absent(),
+    this.number = const Value.absent(),
     this.name = const Value.absent(),
     this.speciesName = const Value.absent(),
     this.locationId = const Value.absent(),
@@ -2019,6 +2266,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     required DateTime updatedAt,
     required String id,
     required String gardenId,
+    this.number = const Value.absent(),
     required String name,
     this.speciesName = const Value.absent(),
     this.locationId = const Value.absent(),
@@ -2046,6 +2294,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? gardenId,
+    Expression<int>? number,
     Expression<String>? name,
     Expression<String>? speciesName,
     Expression<String>? locationId,
@@ -2069,6 +2318,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (gardenId != null) 'garden_id': gardenId,
+      if (number != null) 'number': number,
       if (name != null) 'name': name,
       if (speciesName != null) 'species_name': speciesName,
       if (locationId != null) 'location_id': locationId,
@@ -2094,6 +2344,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? gardenId,
+    Value<int>? number,
     Value<String>? name,
     Value<String?>? speciesName,
     Value<String?>? locationId,
@@ -2117,6 +2368,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       gardenId: gardenId ?? this.gardenId,
+      number: number ?? this.number,
       name: name ?? this.name,
       speciesName: speciesName ?? this.speciesName,
       locationId: locationId ?? this.locationId,
@@ -2151,6 +2403,9 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     }
     if (gardenId.present) {
       map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (number.present) {
+      map['number'] = Variable<int>(number.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -2213,6 +2468,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('gardenId: $gardenId, ')
+          ..write('number: $number, ')
           ..write('name: $name, ')
           ..write('speciesName: $speciesName, ')
           ..write('locationId: $locationId, ')
@@ -10022,6 +10278,520 @@ class PlantAttachmentsCompanion extends UpdateCompanion<PlantAttachmentRow> {
   }
 }
 
+class $LocationLogsTable extends LocationLogs
+    with TableInfo<$LocationLogsTable, LocationLogRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocationLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _locationIdMeta = const VerificationMeta(
+    'locationId',
+  );
+  @override
+  late final GeneratedColumn<String> locationId = GeneratedColumn<String>(
+    'location_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    locationId,
+    userId,
+    content,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'location_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocationLogRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('location_id')) {
+      context.handle(
+        _locationIdMeta,
+        locationId.isAcceptableOrUnknown(data['location_id']!, _locationIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_locationIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocationLogRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocationLogRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      locationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $LocationLogsTable createAlias(String alias) {
+    return $LocationLogsTable(attachedDatabase, alias);
+  }
+}
+
+class LocationLogRow extends DataClass implements Insertable<LocationLogRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String gardenId;
+  final String locationId;
+  final String? userId;
+  final String content;
+  final DateTime? deletedAt;
+  const LocationLogRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.gardenId,
+    required this.locationId,
+    this.userId,
+    required this.content,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    map['location_id'] = Variable<String>(locationId);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['content'] = Variable<String>(content);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  LocationLogsCompanion toCompanion(bool nullToAbsent) {
+    return LocationLogsCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      gardenId: Value(gardenId),
+      locationId: Value(locationId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      content: Value(content),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory LocationLogRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocationLogRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      locationId: serializer.fromJson<String>(json['locationId']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      content: serializer.fromJson<String>(json['content']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'locationId': serializer.toJson<String>(locationId),
+      'userId': serializer.toJson<String?>(userId),
+      'content': serializer.toJson<String>(content),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  LocationLogRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? gardenId,
+    String? locationId,
+    Value<String?> userId = const Value.absent(),
+    String? content,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => LocationLogRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    locationId: locationId ?? this.locationId,
+    userId: userId.present ? userId.value : this.userId,
+    content: content ?? this.content,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  LocationLogRow copyWithCompanion(LocationLogsCompanion data) {
+    return LocationLogRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      locationId: data.locationId.present
+          ? data.locationId.value
+          : this.locationId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      content: data.content.present ? data.content.value : this.content,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocationLogRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('locationId: $locationId, ')
+          ..write('userId: $userId, ')
+          ..write('content: $content, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    locationId,
+    userId,
+    content,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocationLogRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.locationId == this.locationId &&
+          other.userId == this.userId &&
+          other.content == this.content &&
+          other.deletedAt == this.deletedAt);
+}
+
+class LocationLogsCompanion extends UpdateCompanion<LocationLogRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String> locationId;
+  final Value<String?> userId;
+  final Value<String> content;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const LocationLogsCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.locationId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.content = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocationLogsCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String gardenId,
+    required String locationId,
+    this.userId = const Value.absent(),
+    required String content,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       gardenId = Value(gardenId),
+       locationId = Value(locationId),
+       content = Value(content);
+  static Insertable<LocationLogRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? locationId,
+    Expression<String>? userId,
+    Expression<String>? content,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (locationId != null) 'location_id': locationId,
+      if (userId != null) 'user_id': userId,
+      if (content != null) 'content': content,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocationLogsCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String>? locationId,
+    Value<String?>? userId,
+    Value<String>? content,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return LocationLogsCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      locationId: locationId ?? this.locationId,
+      userId: userId ?? this.userId,
+      content: content ?? this.content,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (locationId.present) {
+      map['location_id'] = Variable<String>(locationId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocationLogsCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('locationId: $locationId, ')
+          ..write('userId: $userId, ')
+          ..write('content: $content, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -10049,6 +10819,7 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
   late final $PlantAttachmentsTable plantAttachments = $PlantAttachmentsTable(
     this,
   );
+  late final $LocationLogsTable locationLogs = $LocationLogsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -10072,6 +10843,7 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     plantAttributes,
     attributeSchemas,
     plantAttachments,
+    locationLogs,
   ];
 }
 
@@ -10081,6 +10853,7 @@ typedef $$GardensTableCreateCompanionBuilder = GardensCompanion Function({
   required String id,
   required String ownerId,
   required String name,
+  Value<int> plantCounter,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
@@ -10090,6 +10863,7 @@ typedef $$GardensTableUpdateCompanionBuilder = GardensCompanion Function({
   Value<String> id,
   Value<String> ownerId,
   Value<String> name,
+  Value<int> plantCounter,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
@@ -10125,6 +10899,11 @@ class $$GardensTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get plantCounter => $composableBuilder(
+    column: $table.plantCounter,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10168,6 +10947,11 @@ class $$GardensTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get plantCounter => $composableBuilder(
+    column: $table.plantCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
@@ -10197,6 +10981,11 @@ class $$GardensTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get plantCounter => $composableBuilder(
+    column: $table.plantCounter,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
@@ -10238,6 +11027,7 @@ class $$GardensTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<int> plantCounter = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GardensCompanion(
@@ -10246,6 +11036,7 @@ class $$GardensTableTableManager
                 id: id,
                 ownerId: ownerId,
                 name: name,
+                plantCounter: plantCounter,
                 deletedAt: deletedAt,
                 rowid: rowid,
               ),
@@ -10256,6 +11047,7 @@ class $$GardensTableTableManager
                 required String id,
                 required String ownerId,
                 required String name,
+                Value<int> plantCounter = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => GardensCompanion.insert(
@@ -10264,6 +11056,7 @@ class $$GardensTableTableManager
                 id: id,
                 ownerId: ownerId,
                 name: name,
+                plantCounter: plantCounter,
                 deletedAt: deletedAt,
                 rowid: rowid,
               ),
@@ -10309,6 +11102,9 @@ typedef $$LocationsTableCreateCompanionBuilder = LocationsCompanion Function({
   Value<String?> light,
   Value<String?> orientation,
   Value<bool> isOutdoor,
+  Value<String?> notes,
+  Value<String?> photoPath,
+  Value<String?> thumbPath,
   Value<int> sortOrder,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -10324,6 +11120,9 @@ typedef $$LocationsTableUpdateCompanionBuilder = LocationsCompanion Function({
   Value<String?> light,
   Value<String?> orientation,
   Value<bool> isOutdoor,
+  Value<String?> notes,
+  Value<String?> photoPath,
+  Value<String?> thumbPath,
   Value<int> sortOrder,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -10385,6 +11184,21 @@ class $$LocationsTableFilterComposer
 
   ColumnFilters<bool> get isOutdoor => $composableBuilder(
     column: $table.isOutdoor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get thumbPath => $composableBuilder(
+    column: $table.thumbPath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10458,6 +11272,21 @@ class $$LocationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get thumbPath => $composableBuilder(
+    column: $table.thumbPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
@@ -10510,6 +11339,15 @@ class $$LocationsTableAnnotationComposer
   GeneratedColumn<bool> get isOutdoor =>
       $composableBuilder(column: $table.isOutdoor, builder: (column) => column);
 
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get thumbPath =>
+      $composableBuilder(column: $table.thumbPath, builder: (column) => column);
+
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
@@ -10558,6 +11396,9 @@ class $$LocationsTableTableManager
                 Value<String?> light = const Value.absent(),
                 Value<String?> orientation = const Value.absent(),
                 Value<bool> isOutdoor = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
+                Value<String?> thumbPath = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -10572,6 +11413,9 @@ class $$LocationsTableTableManager
                 light: light,
                 orientation: orientation,
                 isOutdoor: isOutdoor,
+                notes: notes,
+                photoPath: photoPath,
+                thumbPath: thumbPath,
                 sortOrder: sortOrder,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -10588,6 +11432,9 @@ class $$LocationsTableTableManager
                 Value<String?> light = const Value.absent(),
                 Value<String?> orientation = const Value.absent(),
                 Value<bool> isOutdoor = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
+                Value<String?> thumbPath = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -10602,6 +11449,9 @@ class $$LocationsTableTableManager
                 light: light,
                 orientation: orientation,
                 isOutdoor: isOutdoor,
+                notes: notes,
+                photoPath: photoPath,
+                thumbPath: thumbPath,
                 sortOrder: sortOrder,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -10645,6 +11495,7 @@ typedef $$PlantsTableCreateCompanionBuilder = PlantsCompanion Function({
   required DateTime updatedAt,
   required String id,
   required String gardenId,
+  Value<int> number,
   required String name,
   Value<String?> speciesName,
   Value<String?> locationId,
@@ -10668,6 +11519,7 @@ typedef $$PlantsTableUpdateCompanionBuilder = PlantsCompanion Function({
   Value<DateTime> updatedAt,
   Value<String> id,
   Value<String> gardenId,
+  Value<int> number,
   Value<String> name,
   Value<String?> speciesName,
   Value<String?> locationId,
@@ -10713,6 +11565,11 @@ class $$PlantsTableFilterComposer
 
   ColumnFilters<String> get gardenId => $composableBuilder(
     column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get number => $composableBuilder(
+    column: $table.number,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10826,6 +11683,11 @@ class $$PlantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get number => $composableBuilder(
+    column: $table.number,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -10928,6 +11790,9 @@ class $$PlantsTableAnnotationComposer
   GeneratedColumn<String> get gardenId =>
       $composableBuilder(column: $table.gardenId, builder: (column) => column);
 
+  GeneratedColumn<int> get number =>
+      $composableBuilder(column: $table.number, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -11025,6 +11890,7 @@ class $$PlantsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> gardenId = const Value.absent(),
+                Value<int> number = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> speciesName = const Value.absent(),
                 Value<String?> locationId = const Value.absent(),
@@ -11047,6 +11913,7 @@ class $$PlantsTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 gardenId: gardenId,
+                number: number,
                 name: name,
                 speciesName: speciesName,
                 locationId: locationId,
@@ -11071,6 +11938,7 @@ class $$PlantsTableTableManager
                 required DateTime updatedAt,
                 required String id,
                 required String gardenId,
+                Value<int> number = const Value.absent(),
                 required String name,
                 Value<String?> speciesName = const Value.absent(),
                 Value<String?> locationId = const Value.absent(),
@@ -11093,6 +11961,7 @@ class $$PlantsTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 gardenId: gardenId,
+                number: number,
                 name: name,
                 speciesName: speciesName,
                 locationId: locationId,
@@ -15235,6 +16104,274 @@ typedef $$PlantAttachmentsTableProcessedTableManager =
       PlantAttachmentRow,
       PrefetchHooks Function()
     >;
+typedef $$LocationLogsTableCreateCompanionBuilder =
+    LocationLogsCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      required String id,
+      required String gardenId,
+      required String locationId,
+      Value<String?> userId,
+      required String content,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$LocationLogsTableUpdateCompanionBuilder =
+    LocationLogsCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> id,
+      Value<String> gardenId,
+      Value<String> locationId,
+      Value<String?> userId,
+      Value<String> content,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$LocationLogsTableFilterComposer
+    extends Composer<_$FloraDatabase, $LocationLogsTable> {
+  $$LocationLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocationLogsTableOrderingComposer
+    extends Composer<_$FloraDatabase, $LocationLogsTable> {
+  $$LocationLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocationLogsTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $LocationLogsTable> {
+  $$LocationLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$LocationLogsTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $LocationLogsTable,
+          LocationLogRow,
+          $$LocationLogsTableFilterComposer,
+          $$LocationLogsTableOrderingComposer,
+          $$LocationLogsTableAnnotationComposer,
+          $$LocationLogsTableCreateCompanionBuilder,
+          $$LocationLogsTableUpdateCompanionBuilder,
+          (
+            LocationLogRow,
+            BaseReferences<_$FloraDatabase, $LocationLogsTable, LocationLogRow>,
+          ),
+          LocationLogRow,
+          PrefetchHooks Function()
+        > {
+  $$LocationLogsTableTableManager(_$FloraDatabase db, $LocationLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocationLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocationLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocationLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String> locationId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocationLogsCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                locationId: locationId,
+                userId: userId,
+                content: content,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String gardenId,
+                required String locationId,
+                Value<String?> userId = const Value.absent(),
+                required String content,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocationLogsCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                locationId: locationId,
+                userId: userId,
+                content: content,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocationLogsTable, LocationLogRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $LocationLogsTable,
+                    LocationLogRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocationLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $LocationLogsTable,
+      LocationLogRow,
+      $$LocationLogsTableFilterComposer,
+      $$LocationLogsTableOrderingComposer,
+      $$LocationLogsTableAnnotationComposer,
+      $$LocationLogsTableCreateCompanionBuilder,
+      $$LocationLogsTableUpdateCompanionBuilder,
+      (
+        LocationLogRow,
+        BaseReferences<_$FloraDatabase, $LocationLogsTable, LocationLogRow>,
+      ),
+      LocationLogRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -15274,4 +16411,6 @@ class $FloraDatabaseManager {
       $$AttributeSchemasTableTableManager(_db, _db.attributeSchemas);
   $$PlantAttachmentsTableTableManager get plantAttachments =>
       $$PlantAttachmentsTableTableManager(_db, _db.plantAttachments);
+  $$LocationLogsTableTableManager get locationLogs =>
+      $$LocationLogsTableTableManager(_db, _db.locationLogs);
 }

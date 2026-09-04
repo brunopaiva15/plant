@@ -870,5 +870,20 @@
   "sharePhoto": "Condividi questa foto",
   "sharePlant": "Condividi questa pianta",
   "notesMarkdownHint": "Formattazione: **grassetto**, *corsivo*, - elenchi, [link](https://…)",
-  "preview": "Anteprima"
+  "preview": "Anteprima",
+  "locationNotes": "Note del luogo",
+  "locationLog": "Diario",
+  "addLogEntry": "Aggiungi una voce",
+  "editLogEntry": "Modifica la voce",
+  "logEntryHint": "Tenda sostituita, serra pulita…",
+  "noLogEntries": "Diario vuoto",
+  "confirmDeleteLogEntry": "Eliminare questa voce?",
+  "locationPhoto": "Foto del luogo",
+  "removeLocationPhoto": "Rimuovi la foto",
+  "careAllPlants": "Cura tutte le piante",
+  "waterAllHere": "Annaffia tutto qui",
+  "fertilizeAllHere": "Concima tutto qui",
+  "repotAllHere": "Rinvasa tutto qui",
+  "plantNumber": "N. {number}",
+  "searchByNumberHint": "Suggerimento: digita #42 per trovare la pianta n. 42."
 }

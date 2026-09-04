@@ -32,6 +32,7 @@ class _LocationEditBody extends ConsumerStatefulWidget {
 
 class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
   late final _name = TextEditingController(text: widget.existing?.name ?? '');
+  late final _notes = TextEditingController(text: widget.existing?.notes ?? '');
   late final _orientation = TextEditingController(text: widget.existing?.orientation ?? '');
   late String _icon = widget.existing?.icon ?? _icons.first;
   late String? _parentId = widget.existing?.parentId ?? widget.initialParentId;
@@ -43,6 +44,7 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
   @override
   void dispose() {
     _name.dispose();
+    _notes.dispose();
     _orientation.dispose();
     super.dispose();
   }
@@ -58,7 +60,7 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
       result = await repo.create(name: name, icon: _icon, parentId: _parentId, light: _light, orientation: orientation, isOutdoor: _outdoor);
       ref.read(analyticsProvider).track(AnalyticsEvents.locationCreated);
     } else {
-      result = widget.existing!.copyWith(name: name, icon: _icon, parentId: () => _parentId, light: () => _light, orientation: () => orientation, isOutdoor: _outdoor);
+      result = widget.existing!.copyWith(name: name, icon: _icon, parentId: () => _parentId, light: () => _light, orientation: () => orientation, isOutdoor: _outdoor, notes: () => _notes.text);
       await repo.update(result);
     }
     Haptics.success();
@@ -182,6 +184,10 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
                       Text(l10n.orientation, style: context.text.caption),
                       const SizedBox(height: Space.xs),
                       FloraTextField(controller: _orientation, hint: l10n.orientationHint, textCapitalization: TextCapitalization.words),
+                      const SizedBox(height: Space.sm),
+                      Text(l10n.locationNotes, style: context.text.caption),
+                      const SizedBox(height: Space.xs),
+                      FloraTextField(controller: _notes, hint: l10n.notesHint, minLines: 2, maxLines: 5),
                     ],
                   ),
           ),

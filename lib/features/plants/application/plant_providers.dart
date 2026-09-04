@@ -8,10 +8,20 @@ import '../../../domain/repositories/repositories.dart';
 /// Filtre courant de l'écran Plantes.
 class PlantFilterController extends Notifier<PlantFilter> {
   @override
-  PlantFilter build() => const PlantFilter();
+  PlantFilter build() {
+    // Le tri choisi la dernière fois est restauré au lancement.
+    final saved = ref.read(preferencesServiceProvider).plantSort;
+    return PlantFilter(sort: PlantSort.values.where((s) => s.name == saved).firstOrNull ?? PlantSort.name);
+  }
 
   void setQuery(String q) => state = state.copyWith(query: q);
-  void update(PlantFilter Function(PlantFilter) fn) => state = fn(state);
+
+  void update(PlantFilter Function(PlantFilter) fn) {
+    final next = fn(state);
+    if (next.sort != state.sort) ref.read(preferencesServiceProvider).setPlantSort(next.sort.name);
+    state = next;
+  }
+
   void clear() => state = PlantFilter(query: state.query, sort: state.sort);
 }
 

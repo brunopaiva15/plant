@@ -2704,4 +2704,52 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get preview => 'Vorschau';
+
+  @override
+  String get locationNotes => 'Notizen zum Ort';
+
+  @override
+  String get locationLog => 'Journal';
+
+  @override
+  String get addLogEntry => 'Eintrag hinzufügen';
+
+  @override
+  String get editLogEntry => 'Eintrag bearbeiten';
+
+  @override
+  String get logEntryHint => 'Rollo gewechselt, Gewächshaus geputzt…';
+
+  @override
+  String get noLogEntries => 'Leeres Journal';
+
+  @override
+  String get confirmDeleteLogEntry => 'Diesen Eintrag löschen?';
+
+  @override
+  String get locationPhoto => 'Foto des Ortes';
+
+  @override
+  String get removeLocationPhoto => 'Foto entfernen';
+
+  @override
+  String get careAllPlants => 'Alle Pflanzen versorgen';
+
+  @override
+  String get waterAllHere => 'Hier alles gießen';
+
+  @override
+  String get fertilizeAllHere => 'Hier alles düngen';
+
+  @override
+  String get repotAllHere => 'Hier alles umtopfen';
+
+  @override
+  String plantNumber(int number) {
+    return 'Nr. $number';
+  }
+
+  @override
+  String get searchByNumberHint =>
+      'Tipp: #42 eingeben, um Pflanze Nr. 42 zu finden.';
 }

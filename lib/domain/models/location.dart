@@ -10,6 +10,9 @@ class Location {
     required this.updatedAt,
     this.parentId,
     this.light,
+    this.notes,
+    this.photoPath,
+    this.thumbPath,
     this.orientation,
     this.isOutdoor = false,
   });
@@ -22,6 +25,13 @@ class Location {
   /// Emoji d'icône (ex. « 🛋️ »).
   final String icon;
   final String? light;
+
+  /// Notes libres (Markdown).
+  final String? notes;
+
+  /// Photo d'illustration : chemins relatifs.
+  final String? photoPath;
+  final String? thumbPath;
   final String? orientation;
 
   /// Balcon, jardin, serre : les plantes y subissent la météo.
@@ -35,6 +45,9 @@ class Location {
     String? icon,
     String? Function()? parentId,
     String? Function()? light,
+    String? Function()? notes,
+    String? Function()? photoPath,
+    String? Function()? thumbPath,
     String? Function()? orientation,
     bool? isOutdoor,
     int? sortOrder,
@@ -47,6 +60,9 @@ class Location {
         icon: icon ?? this.icon,
         parentId: parentId != null ? parentId() : this.parentId,
         light: light != null ? light() : this.light,
+        notes: notes != null ? notes() : this.notes,
+        photoPath: photoPath != null ? photoPath() : this.photoPath,
+        thumbPath: thumbPath != null ? thumbPath() : this.thumbPath,
         orientation: orientation != null ? orientation() : this.orientation,
         isOutdoor: isOutdoor ?? this.isOutdoor,
         sortOrder: sortOrder ?? this.sortOrder,

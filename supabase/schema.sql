@@ -13,6 +13,7 @@ create table if not exists profiles (
 
 create table if not exists gardens (
   id uuid primary key,
+  plant_counter int not null default 0,   -- dernier numéro « #42 » attribué
   owner_id uuid not null references auth.users(id) on delete cascade,
   name text not null,
   created_at timestamptz not null default now(),
@@ -28,6 +29,7 @@ create table if not exists garden_members (
   primary key (garden_id, user_id)
 );
 
+-- v8 : notes, photo et journal d'emplacement ; numéro court de plante.
 create table if not exists locations (
   id uuid primary key,
   garden_id uuid not null references gardens(id) on delete cascade,
@@ -37,6 +39,9 @@ create table if not exists locations (
   light text,
   orientation text,
   is_outdoor boolean not null default false,
+  notes text,
+  photo_path text,
+  thumb_path text,
   sort_order int not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -46,6 +51,7 @@ create table if not exists locations (
 create table if not exists plants (
   id uuid primary key,
   garden_id uuid not null references gardens(id) on delete cascade,
+  number int not null default 0,      -- numéro court « #42 », unique par jardin
   name text not null,
   species_name text,
   location_id uuid references locations(id) on delete set null,
@@ -205,6 +211,18 @@ create table if not exists plant_attributes (
 create index if not exists idx_plant_attributes_plant on plant_attributes(plant_id);
 create index if not exists idx_plant_attributes_garden_updated on plant_attributes(garden_id, updated_at);
 
+create table if not exists location_logs (
+  id uuid primary key,
+  garden_id uuid not null references gardens(id) on delete cascade,
+  location_id uuid not null references locations(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete set null,
+  content text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  deleted_at timestamptz
+);
+create index if not exists idx_location_logs_location on location_logs(location_id, created_at desc);
+
 create table if not exists plant_attachments (
   id uuid primary key,
   garden_id uuid not null references gardens(id) on delete cascade,
@@ -278,6 +296,7 @@ grant execute on function public_shared_link(text) to anon, authenticated;
 
 -- Index de synchronisation (delta par updated_at) et d'accès.
 create index if not exists idx_plants_garden_updated on plants(garden_id, updated_at);
+create unique index if not exists idx_plants_number on plants(garden_id, number) where number > 0;
 create index if not exists idx_locations_garden_updated on locations(garden_id, updated_at);
 create index if not exists idx_actions_plant on plant_actions(plant_id, occurred_at);
 create index if not exists idx_schedules_plant on care_schedules(plant_id);
@@ -288,7 +307,7 @@ create index if not exists idx_inventory_garden on inventory_items(garden_id, up
 create or replace function set_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
 do $$ declare t text; begin
-  foreach t in array array['gardens','locations','plants','care_schedules','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments'] loop
+  foreach t in array array['gardens','locations','plants','care_schedules','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments','location_logs'] loop
     execute format('drop trigger if exists trg_%s_updated on %s', t, t);
     execute format('create trigger trg_%s_updated before update on %s for each row execute function set_updated_at()', t, t);
   end loop;
@@ -330,7 +349,7 @@ create policy "members manage" on garden_members for all
 
 -- Tables portant garden_id.
 do $$ declare t text; begin
-  foreach t in array array['locations','plants','tags','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments'] loop
+  foreach t in array array['locations','plants','tags','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments','location_logs'] loop
     execute format('alter table %s enable row level security', t);
     execute format('drop policy if exists "%s read" on %s', t, t);
     execute format('create policy "%s read" on %s for select using (is_member(garden_id))', t, t);

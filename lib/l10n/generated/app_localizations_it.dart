@@ -2710,4 +2710,52 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get preview => 'Anteprima';
+
+  @override
+  String get locationNotes => 'Note del luogo';
+
+  @override
+  String get locationLog => 'Diario';
+
+  @override
+  String get addLogEntry => 'Aggiungi una voce';
+
+  @override
+  String get editLogEntry => 'Modifica la voce';
+
+  @override
+  String get logEntryHint => 'Tenda sostituita, serra pulita…';
+
+  @override
+  String get noLogEntries => 'Diario vuoto';
+
+  @override
+  String get confirmDeleteLogEntry => 'Eliminare questa voce?';
+
+  @override
+  String get locationPhoto => 'Foto del luogo';
+
+  @override
+  String get removeLocationPhoto => 'Rimuovi la foto';
+
+  @override
+  String get careAllPlants => 'Cura tutte le piante';
+
+  @override
+  String get waterAllHere => 'Annaffia tutto qui';
+
+  @override
+  String get fertilizeAllHere => 'Concima tutto qui';
+
+  @override
+  String get repotAllHere => 'Rinvasa tutto qui';
+
+  @override
+  String plantNumber(int number) {
+    return 'N. $number';
+  }
+
+  @override
+  String get searchByNumberHint =>
+      'Suggerimento: digita #42 per trovare la pianta n. 42.';
 }

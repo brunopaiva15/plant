@@ -66,10 +66,10 @@ class SyncService {
   SyncState get currentState => _current;
 
   /// Tables synchronisées, dans l'ordre des dépendances (parents d'abord).
-  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments'];
+  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments'};
+  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs'};
 
   void _emit(SyncState s) {
     _current = s;
@@ -179,6 +179,7 @@ class SyncService {
         'plant_attributes' => (await _db.select(_db.plantAttributes).get()).map((r) => r.id).toList(),
         'attribute_schemas' => (await _db.select(_db.attributeSchemas).get()).map((r) => r.id).toList(),
         'plant_attachments' => (await _db.select(_db.plantAttachments).get()).map((r) => r.id).toList(),
+        'location_logs' => (await _db.select(_db.locationLogs).get()).map((r) => r.id).toList(),
         _ => const [],
       };
 
@@ -231,6 +232,9 @@ class SyncService {
       case 'plant_attachments':
         final r = await (_db.select(_db.plantAttachments)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r, extra: {'user_id': r.userId ?? _userId});
+      case 'location_logs':
+        final r = await (_db.select(_db.locationLogs)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r, extra: {'user_id': r.userId ?? _userId});
     }
     return null;
   }
@@ -282,6 +286,9 @@ class SyncService {
 
   Future<void> _applyRemote(String table, Map<String, Object?> remote) async {
     final json = RowCodec.toLocalJson(remote, drop: {'owner_id', 'storage_path'});
+    // Une ligne écrite par un client plus ancien n'a pas les colonnes ajoutées
+    // depuis : on comble avec la valeur par défaut plutôt que d'échouer.
+    _fillDefaults(table, json);
     final s = RowCodec.serializer;
     switch (table) {
       case 'gardens':
@@ -325,6 +332,27 @@ class SyncService {
       case 'plant_attachments':
         final row = PlantAttachmentRow.fromJson(json, serializer: s);
         if (await _isNewer('plant_attachments', row.id, row.updatedAt)) await _db.into(_db.plantAttachments).insertOnConflictUpdate(row);
+      case 'location_logs':
+        final row = LocationLogRow.fromJson(json, serializer: s);
+        if (await _isNewer('location_logs', row.id, row.updatedAt)) await _db.into(_db.locationLogs).insertOnConflictUpdate(row);
+    }
+  }
+
+  /// Valeurs par défaut des colonnes non nullables ajoutées après coup.
+  static void _fillDefaults(String table, Map<String, Object?> json) {
+    const defaults = <String, Map<String, Object?>>{
+      'plants': {'number': 0},
+      'gardens': {'plantCounter': 0},
+      'locations': {'sortOrder': 0},
+      'plant_attributes': {'position': 0},
+      'attribute_schemas': {'position': 0, 'active': true},
+      'tasks': {'allDay': true, 'done': false},
+      'plant_photos': {'width': 0, 'height': 0},
+    };
+    final missing = defaults[table];
+    if (missing == null) return;
+    for (final e in missing.entries) {
+      json[e.key] ??= e.value;
     }
   }
 
@@ -366,6 +394,7 @@ class SyncService {
         'plant_attributes' => (await (_db.select(_db.plantAttributes)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'attribute_schemas' => (await (_db.select(_db.attributeSchemas)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'plant_attachments' => (await (_db.select(_db.plantAttachments)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'location_logs' => (await (_db.select(_db.locationLogs)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         _ => null,
       };
 

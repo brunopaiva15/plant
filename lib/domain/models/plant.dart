@@ -9,6 +9,7 @@ class Plant {
     required this.id,
     required this.gardenId,
     required this.name,
+    this.number = 0,
     required this.status,
     required this.health,
     required this.isFavorite,
@@ -29,6 +30,9 @@ class Plant {
 
   final String id;
   final String gardenId;
+
+  /// Numéro court et lisible, unique par jardin : « #42 ».
+  final int number;
   final String name;
   final String? speciesName;
   final String? locationId;
@@ -70,6 +74,7 @@ class Plant {
       Plant(
         id: id,
         gardenId: gardenId,
+        number: number,
         name: name ?? this.name,
         speciesName: speciesName != null ? speciesName() : this.speciesName,
         locationId: locationId != null ? locationId() : this.locationId,

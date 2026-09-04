@@ -8,6 +8,7 @@ extension PlantRowMapper on PlantRow {
   Plant toDomain() => Plant(
         id: id,
         gardenId: gardenId,
+        number: number,
         name: name,
         speciesName: speciesName,
         locationId: locationId,
@@ -36,6 +37,9 @@ extension LocationRowMapper on LocationRow {
         name: name,
         icon: icon,
         light: light,
+        notes: notes,
+        photoPath: photoPath,
+        thumbPath: thumbPath,
         orientation: orientation,
         isOutdoor: isOutdoor,
         sortOrder: sortOrder,
@@ -191,6 +195,18 @@ extension PlantAttachmentRowMapper on PlantAttachmentRow {
         filePath: filePath,
         mimeType: mimeType,
         sizeBytes: sizeBytes,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
+
+extension LocationLogRowMapper on LocationLogRow {
+  LocationLogEntry toDomain() => LocationLogEntry(
+        id: id,
+        gardenId: gardenId,
+        locationId: locationId,
+        userId: userId,
+        content: content,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

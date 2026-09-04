@@ -54,7 +54,7 @@ class SelectionBar extends ConsumerWidget {
       final data = <LabelData>[];
       for (final id in ids) {
         final p = await repo.getPlant(id);
-        if (p != null) data.add(LabelData(plantId: p.id, name: p.name, species: p.speciesName));
+        if (p != null) data.add(LabelData(plantId: p.id, name: p.name, species: p.speciesName, number: p.number));
       }
       if (!context.mounted) return;
       await shareLabels(context, data);

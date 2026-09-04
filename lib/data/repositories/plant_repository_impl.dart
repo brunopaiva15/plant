@@ -72,7 +72,12 @@ class DriftPlantRepository implements PlantRepository {
       vars.add(Variable.withString(filter.tagId!));
     }
     final q = filter.query.trim().toLowerCase();
-    if (q.isNotEmpty) {
+    // « #42 » cherche le numéro exact de la plante, rien d'autre.
+    final number = _numberQuery(q);
+    if (number != null) {
+      where.add('p.number = ?');
+      vars.add(Variable.withInt(number));
+    } else if (q.isNotEmpty) {
       where.add('''(lower(p.name) LIKE ? OR lower(p.species_name) LIKE ? OR lower(l.name) LIKE ?
         OR lower(p.notes) LIKE ?
         OR p.id IN (SELECT pt.plant_id FROM plant_tags pt JOIN tags t ON t.id = pt.tag_id WHERE lower(t.name) LIKE ?)
@@ -139,8 +144,10 @@ class DriftPlantRepository implements PlantRepository {
   Future<Plant> create(NewPlant data) async {
     final now = DateTime.now();
     final id = _uuid.v4();
+    final number = await _nextNumber();
     await _db.transaction(() async {
       await _db.into(_db.plants).insert(PlantsCompanion.insert(
+            number: Value(number),
             id: id,
             gardenId: _gardenId,
             name: data.name.trim(),
@@ -281,6 +288,29 @@ class DriftPlantRepository implements PlantRepository {
       await (_db.delete(_db.plants)..where((p) => p.id.equals(id))).go();
       await _db.enqueueSync('plants', id, 'delete', {});
     });
+  }
+
+  /// Prochain numéro du jardin, pris sur un compteur qui ne recule jamais :
+  /// même après une suppression définitive, un numéro déjà imprimé sur une
+  /// étiquette n'est pas réattribué à une autre plante.
+  Future<int> _nextNumber() async {
+    final garden = await (_db.select(_db.gardens)..where((g) => g.id.equals(_gardenId))).getSingleOrNull();
+    // Les plantes existantes font foi si le compteur est en retard (base
+    // migrée, ou jardin arrivé par synchronisation).
+    final fromPlants = await _db.customSelect(
+      'SELECT COALESCE(MAX(number), 0) AS m FROM plants WHERE garden_id = ?',
+      variables: [Variable.withString(_gardenId)],
+      readsFrom: {_db.plants},
+    ).getSingle();
+    final next = ((garden?.plantCounter ?? 0) > (fromPlants.data['m'] as int? ?? 0) ? garden!.plantCounter : (fromPlants.data['m'] as int? ?? 0)) + 1;
+    await (_db.update(_db.gardens)..where((g) => g.id.equals(_gardenId))).write(GardensCompanion(plantCounter: Value(next)));
+    return next;
+  }
+
+  /// « #42 » → 42, sinon `null`.
+  static int? _numberQuery(String query) {
+    final m = RegExp(r'^#\s*(\d{1,9})$').firstMatch(query);
+    return m == null ? null : int.tryParse(m.group(1)!);
   }
 }
 

@@ -1301,5 +1301,27 @@
   "sharePhoto": "Partager cette photo",
   "sharePlant": "Partager cette plante",
   "notesMarkdownHint": "Mise en forme : **gras**, *italique*, - listes, [liens](https://…)",
-  "preview": "Aperçu"
+  "preview": "Aperçu",
+  "locationNotes": "Notes de l'emplacement",
+  "locationLog": "Journal",
+  "addLogEntry": "Ajouter une entrée",
+  "editLogEntry": "Modifier l'entrée",
+  "logEntryHint": "Store changé, serre nettoyée…",
+  "noLogEntries": "Journal vide",
+  "confirmDeleteLogEntry": "Supprimer cette entrée ?",
+  "locationPhoto": "Photo de l'emplacement",
+  "removeLocationPhoto": "Retirer la photo",
+  "careAllPlants": "Soigner toutes les plantes",
+  "waterAllHere": "Arroser tout ici",
+  "fertilizeAllHere": "Fertiliser tout ici",
+  "repotAllHere": "Rempoter tout ici",
+  "plantNumber": "N° {number}",
+  "@plantNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "searchByNumberHint": "Astuce : tapez #42 pour retrouver la plante n° 42."
 }

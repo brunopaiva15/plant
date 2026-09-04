@@ -81,6 +81,9 @@ class DriftLocationRepository implements LocationRepository {
       light: Value(location.light),
       orientation: Value(location.orientation),
       isOutdoor: Value(location.isOutdoor),
+      notes: Value(_clean(location.notes)),
+      photoPath: Value(location.photoPath),
+      thumbPath: Value(location.thumbPath),
       sortOrder: Value(location.sortOrder),
       updatedAt: Value(DateTime.now()),
     ));
@@ -114,5 +117,49 @@ class DriftLocationRepository implements LocationRepository {
     for (final d in defaults) {
       await create(name: d.name, icon: d.icon, isOutdoor: d.outdoor);
     }
+  }
+
+  // ------------------------------------------------------------- journal
+
+  @override
+  Stream<List<LocationLogEntry>> watchLog(String locationId) => (_db.select(_db.locationLogs)
+        ..where((e) => e.locationId.equals(locationId) & e.deletedAt.isNull())
+        ..orderBy([(e) => OrderingTerm.desc(e.createdAt)]))
+      .watch()
+      .map((rows) => rows.map((r) => r.toDomain()).toList());
+
+  @override
+  Future<LocationLogEntry> addLogEntry(String locationId, String content) async {
+    final now = DateTime.now();
+    final id = _uuid.v4();
+    await _db.into(_db.locationLogs).insert(LocationLogsCompanion.insert(
+          id: id,
+          gardenId: _gardenId,
+          locationId: locationId,
+          content: content.trim(),
+          createdAt: now,
+          updatedAt: now,
+        ));
+    await _db.enqueueSync('location_logs', id, 'upsert', const {});
+    return (await (_db.select(_db.locationLogs)..where((e) => e.id.equals(id))).getSingle()).toDomain();
+  }
+
+  @override
+  Future<void> editLogEntry(String id, String content) async {
+    await (_db.update(_db.locationLogs)..where((e) => e.id.equals(id)))
+        .write(LocationLogsCompanion(content: Value(content.trim()), updatedAt: Value(DateTime.now())));
+    await _db.enqueueSync('location_logs', id, 'upsert', const {});
+  }
+
+  @override
+  Future<void> deleteLogEntry(String id) async {
+    await (_db.update(_db.locationLogs)..where((e) => e.id.equals(id)))
+        .write(LocationLogsCompanion(deletedAt: Value(DateTime.now()), updatedAt: Value(DateTime.now())));
+    await _db.enqueueSync('location_logs', id, 'delete', const {});
+  }
+
+  static String? _clean(String? s) {
+    final t = s?.trim();
+    return t == null || t.isEmpty ? null : t;
   }
 }

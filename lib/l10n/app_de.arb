@@ -870,5 +870,20 @@
   "sharePhoto": "Dieses Foto teilen",
   "sharePlant": "Diese Pflanze teilen",
   "notesMarkdownHint": "Formatierung: **fett**, *kursiv*, - Listen, [Links](https://…)",
-  "preview": "Vorschau"
+  "preview": "Vorschau",
+  "locationNotes": "Notizen zum Ort",
+  "locationLog": "Journal",
+  "addLogEntry": "Eintrag hinzufügen",
+  "editLogEntry": "Eintrag bearbeiten",
+  "logEntryHint": "Rollo gewechselt, Gewächshaus geputzt…",
+  "noLogEntries": "Leeres Journal",
+  "confirmDeleteLogEntry": "Diesen Eintrag löschen?",
+  "locationPhoto": "Foto des Ortes",
+  "removeLocationPhoto": "Foto entfernen",
+  "careAllPlants": "Alle Pflanzen versorgen",
+  "waterAllHere": "Hier alles gießen",
+  "fertilizeAllHere": "Hier alles düngen",
+  "repotAllHere": "Hier alles umtopfen",
+  "plantNumber": "Nr. {number}",
+  "searchByNumberHint": "Tipp: #42 eingeben, um Pflanze Nr. 42 zu finden."
 }

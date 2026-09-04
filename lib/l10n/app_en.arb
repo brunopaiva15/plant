@@ -870,5 +870,20 @@
   "sharePhoto": "Share this photo",
   "sharePlant": "Share this plant",
   "notesMarkdownHint": "Formatting: **bold**, *italic*, - lists, [links](https://…)",
-  "preview": "Preview"
+  "preview": "Preview",
+  "locationNotes": "Location notes",
+  "locationLog": "Log",
+  "addLogEntry": "Add an entry",
+  "editLogEntry": "Edit entry",
+  "logEntryHint": "Blind replaced, greenhouse cleaned…",
+  "noLogEntries": "Empty log",
+  "confirmDeleteLogEntry": "Delete this entry?",
+  "locationPhoto": "Location photo",
+  "removeLocationPhoto": "Remove photo",
+  "careAllPlants": "Care for all plants",
+  "waterAllHere": "Water everything here",
+  "fertilizeAllHere": "Feed everything here",
+  "repotAllHere": "Repot everything here",
+  "plantNumber": "No. {number}",
+  "searchByNumberHint": "Tip: type #42 to find plant no. 42."
 }

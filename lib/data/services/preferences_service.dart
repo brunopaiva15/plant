@@ -40,6 +40,10 @@ class PreferencesService {
   bool get gridView => _prefs.getBool('grid_view') ?? true;
   Future<void> setGridView(bool value) => _prefs.setBool('grid_view', value);
 
+  /// Dernier tri choisi dans la liste des plantes, restauré au lancement.
+  String get plantSort => _prefs.getString('plant_sort') ?? 'name';
+  Future<void> setPlantSort(String value) => _prefs.setString('plant_sort', value);
+
   // Notifications
   bool get notificationsEnabled => _prefs.getBool('notifications_enabled') ?? false;
   Future<void> setNotificationsEnabled(bool value) => _prefs.setBool('notifications_enabled', value);

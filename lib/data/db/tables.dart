@@ -14,6 +14,10 @@ class Gardens extends Table with Timestamps {
   TextColumn get id => text()();
   TextColumn get ownerId => text()();
   TextColumn get name => text()();
+
+  /// Dernier numéro de plante attribué. Ne recule jamais, même après une
+  /// suppression définitive : un numéro imprimé reste unique pour toujours.
+  IntColumn get plantCounter => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
   @override
@@ -30,6 +34,13 @@ class Locations extends Table with Timestamps {
   TextColumn get light => text().nullable()();
   TextColumn get orientation => text().nullable()();
   BoolColumn get isOutdoor => boolean().withDefault(const Constant(false))();
+
+  /// Notes libres de l'emplacement (Markdown).
+  TextColumn get notes => text().nullable()();
+
+  /// Photo d'illustration : chemins relatifs, comme pour les plantes.
+  TextColumn get photoPath => text().nullable()();
+  TextColumn get thumbPath => text().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
@@ -41,6 +52,10 @@ class Locations extends Table with Timestamps {
 class Plants extends Table with Timestamps {
   TextColumn get id => text()();
   TextColumn get gardenId => text()();
+
+  /// Numéro court et lisible, unique par jardin : « #42 ». Sert aux
+  /// étiquettes et à la recherche.
+  IntColumn get number => integer().withDefault(const Constant(0))();
   TextColumn get name => text()();
   TextColumn get speciesName => text().nullable()();
   TextColumn get locationId => text().nullable()();
@@ -282,6 +297,20 @@ class PlantAttachments extends Table {
   IntColumn get sizeBytes => integer().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Entrée du journal d'un emplacement (« serre rempotée », « store changé »).
+@DataClassName('LocationLogRow')
+class LocationLogs extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get locationId => text()();
+  TextColumn get userId => text().nullable()();
+  TextColumn get content => text()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
   @override

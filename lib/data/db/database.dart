@@ -26,12 +26,13 @@ part 'database.g.dart';
   PlantAttributes,
   AttributeSchemas,
   PlantAttachments,
+  LocationLogs,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +65,16 @@ class FloraDatabase extends _$FloraDatabase {
             await m.addColumn(plantPhotos, plantPhotos.label);
             await m.addColumn(plantPhotos, plantPhotos.remoteUrl);
           }
+          if (from < 8) {
+            await m.createTable(locationLogs);
+            await m.addColumn(gardens, gardens.plantCounter);
+            await m.addColumn(locations, locations.notes);
+            await m.addColumn(locations, locations.photoPath);
+            await m.addColumn(locations, locations.thumbPath);
+            await m.addColumn(plants, plants.number);
+            await _numberExistingPlants();
+            await customStatement('UPDATE gardens SET plant_counter = (SELECT COALESCE(MAX(number), 0) FROM plants WHERE plants.garden_id = gardens.id)');
+          }
           await _createIndexes();
         },
         beforeOpen: (details) async {
@@ -83,6 +94,20 @@ class FloraDatabase extends _$FloraDatabase {
     await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_category ON inventory_items(garden_id, category_key)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_tasks_open ON tasks(garden_id, done, due_at)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_tasks_plant ON tasks(plant_id)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_plant_attributes_plant ON plant_attributes(plant_id)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_attachments_plant ON plant_attachments(plant_id)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_location_logs_location ON location_logs(location_id, created_at)');
+    await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_plants_number ON plants(garden_id, number) WHERE number > 0');
+  }
+
+  /// Attribue un numéro aux plantes créées avant la v8, par ordre de création.
+  Future<void> _numberExistingPlants() async {
+    await customStatement('''
+      UPDATE plants SET number = (
+        SELECT COUNT(*) FROM plants AS earlier
+        WHERE earlier.garden_id = plants.garden_id AND earlier.created_at <= plants.created_at
+      ) WHERE number = 0
+    ''');
   }
 
   /// Les types intégrés existent toujours en base pour rester triables avec

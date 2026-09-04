@@ -2695,4 +2695,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get preview => 'Preview';
+
+  @override
+  String get locationNotes => 'Location notes';
+
+  @override
+  String get locationLog => 'Log';
+
+  @override
+  String get addLogEntry => 'Add an entry';
+
+  @override
+  String get editLogEntry => 'Edit entry';
+
+  @override
+  String get logEntryHint => 'Blind replaced, greenhouse cleaned…';
+
+  @override
+  String get noLogEntries => 'Empty log';
+
+  @override
+  String get confirmDeleteLogEntry => 'Delete this entry?';
+
+  @override
+  String get locationPhoto => 'Location photo';
+
+  @override
+  String get removeLocationPhoto => 'Remove photo';
+
+  @override
+  String get careAllPlants => 'Care for all plants';
+
+  @override
+  String get waterAllHere => 'Water everything here';
+
+  @override
+  String get fertilizeAllHere => 'Feed everything here';
+
+  @override
+  String get repotAllHere => 'Repot everything here';
+
+  @override
+  String plantNumber(int number) {
+    return 'No. $number';
+  }
+
+  @override
+  String get searchByNumberHint => 'Tip: type #42 to find plant no. 42.';
 }
