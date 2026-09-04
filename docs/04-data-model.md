@@ -30,8 +30,8 @@ inventory_items  id, garden_id, category_key(fertilizer|soil|substrate|pot|tool|
                  name, quantity, unit, low_threshold?, location_id?, notes?, photo_path?, thumb_path?,
                  created_at, updated_at, deleted_at
 ```
-Les catégories d'inventaire sont un enum localisé (pas de table) ; les QR codes encodent `flora://plant/<id>` sans table dédiée.
-Le calendrier n'est pas stocké : il est projeté à la volée (`CalendarProjector`) à partir des routines et de l'historique.
+Les catégories intégrées de l'inventaire sont un enum localisé ; les groupes personnalisés vivent dans `inventory_groups` (schéma v9).
+Les QR codes encodent `flora://plant/<id>` et `flora://item/<id>`, sans table dédiée.
 
 ## Phase 3 (schémas v3–v4)
 ```
@@ -42,9 +42,29 @@ garden_members (cache)         garden_id, user_id, role
 ```
 Le schéma Postgres complet avec RLS, triggers et fonctions (`invite_member`, `garden_members_with_names`) est dans `supabase/schema.sql`.
 
-## Tables prévues (schéma réservé, UI en P3–P4)
+## Parité HortusFox (schémas v5–v10)
 ```
-tasks, notes, attachments, notifications, devices, shared_links, plant_links(nfc), plant_relationships
+tasks             id, garden_id, plant_id?, title, description?, due_at?, all_day,
+                  recurrence_value?, recurrence_unit?, done, done_at?, …
+plant_attributes  id, garden_id, plant_id, label, datatype(bool|int|double|string|datetime), value?, position
+attribute_schemas id, garden_id, label, datatype, position, active   — modèles réutilisables
+plant_attachments id, garden_id, plant_id, label, file_path, mime?, size?, user_id?
+location_logs     id, garden_id, location_id, user_id?, content      — journal d'un emplacement
+inventory_groups  id, garden_id, label, emoji, position              — v9
+inventory_tags    item_id, tag_id                                    — v9, réutilise `tags`
+event_categories  id, garden_id, label, emoji, color_key?, position  — v10
+calendar_entries  id, garden_id, plant_id?, category_id?, title, notes?,
+                  start_at, end_at?, all_day, reminder_minutes?      — v10
+```
+Colonnes ajoutées au passage : `plants.number` et `gardens.plant_counter` (numéros `#42` jamais réattribués, v8),
+`locations.notes/photo_path/thumb_path` (v8), `plant_photos.label/remote_url` (v7), `inventory_items.group_id` (v9).
+
+Le calendrier mêle deux sources : les événements stockés dans `calendar_entries` et les échéances de soin
+projetées à la volée par `CalendarProjector` à partir des routines et de l'historique.
+
+## Tables prévues (schéma réservé, UI en P4)
+```
+notifications, devices, plant_links(nfc), plant_relationships
 ```
 
 ## Relations

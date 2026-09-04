@@ -54,14 +54,43 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Comptes : e-mail par code, Apple natif (iOS), Google OAuth ; compte local conservé sans connexion | ✅ |
 | Collaboration : membres, invitation par e-mail (RPC), rôles owner / member / viewer, « · par Laura » dans la timeline, lecture seule pour viewer | ✅ |
 | Diagnostic « Ma plante a un problème » : photos + symptômes → pistes classées par vraisemblance avec gestes concrets (API Claude, clé fournie par l'utilisateur, sortie structurée, jamais présenté comme certain) ; enregistrement dans le journal | ✅ |
-| Partage par lien public révocable (table `shared_links` prête) | ⏳ page publique à créer côté backend |
+| Partage par lien public révocable, page publique servie par la fonction Edge `share` | ✅ |
 | Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
+
+## Parité HortusFox ✅ (livrée)
+Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbrendel/hortusfox-web). Les 26 écarts relevés sont comblés.
+
+| Fonction | État |
+|---|---|
+| Tâches libres : titre, description, échéance facultative, plante liée facultative, récurrence en heures / jours / semaines / mois / années, filtres, rappels, section « en retard » sur Aujourd'hui | ✅ |
+| Attributs personnalisés (booléen, entier, décimal, texte, date), schémas réutilisables, copie au clonage, recherche et commandes groupées | ✅ |
+| Pièces jointes par plante : ajout, libellé, ouverture, renommage, partage, suppression, synchronisation | ✅ |
+| Galerie : titre de photo, photo principale, photo par URL externe, aperçu | ✅ |
+| Partage de photos par lien : public ou non indexé, titre, description, expiration, révocation | ✅ |
+| Notes en Markdown : gras, italique, listes, citations, liens cliquables (analyseur maison, sans dépendance) | ✅ |
+| Emplacements : notes, journal, photo d'aperçu, actions groupées | ✅ |
+| Actions groupées : arroser, fertiliser, rempoter, action personnalisée, attribut en masse | ✅ |
+| Tri des plantes mémorisé, recherche par numéro `#123` | ✅ |
+| Inventaire : groupes personnalisés, tags, QR par article (scan compris), planche d'étiquettes PDF, export CSV par sélection | ✅ |
+| Calendrier : événements saisis (nom, début, fin, journée entière, rappel), catégories personnalisées | ✅ |
+| Tableau de bord : statistiques, avertissements (malade, à surveiller, soin en retard), dernières plantes, journal global d'activité | ✅ |
+| Archives : nom personnalisable, recherche, quatre tris, navigation par année, vue liste ou cartes, préférences mémorisées | ✅ |
+| Prévisions météo sur cinq jours : min / max, précipitations, risque de pluie, vent, humidité | ✅ |
+| Sauvegarde : export par sections, restauration avec aperçu, rapport d'import | ✅ |
+| API externe : API REST du projet Supabase, jeton de session, ressources documentées dans l'app | ✅ |
+
+## Au-delà de HortusFox
+| Fonction | État |
+|---|---|
+| Fiche d'entretien par plante : arrosage saisonnier, lumière, humidité, substrat, rempotage, toxicité, bouturage, problèmes fréquents (230 espèces au catalogue) | ✅ |
+| Sélecteur d'espèces : catalogue intégré hors ligne + recherche GBIF paginée | ✅ |
+| Onboarding animé en cinq écrans, illustrations dessinées à la main | ✅ |
 
 ## Phase 4 — « Étendre »
 - NFC (architecture prévue : `PlantTagLink` table `plant_links` type `nfc` / `qr`)
 - Apple Watch
 - Automatisations, Shortcuts / Siri, Home Assistant, capteurs
-- Import HortusFox, export complet (JSON / CSV / ZIP)
+- Import HortusFox (l'export complet JSON / CSV / ZIP est livré)
 
 ## Principes de livraison
 1. Simplicité > élégance > vitesse > clarté > fiabilité > profondeur.
