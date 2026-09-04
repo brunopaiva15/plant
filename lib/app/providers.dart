@@ -34,6 +34,7 @@ import '../domain/species/species_info.dart';
 import '../domain/identification/plant_identifier.dart';
 import '../domain/weather/weather.dart';
 import '../features/export/export_service.dart';
+import '../features/export/import_service.dart';
 import '../domain/models/models.dart';
 import '../domain/repositories/repositories.dart';
 
@@ -194,6 +195,7 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
 
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
+final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 
 /// Diagnostic : API Claude si une clé est configurée, sinon service inactif.
 final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {

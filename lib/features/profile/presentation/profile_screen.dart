@@ -120,6 +120,8 @@ class ProfileScreen extends ConsumerWidget {
                 footer: l10n.exportHint,
                 children: [
                   FloraListRow(leading: Icon(CupertinoIcons.square_arrow_up, size: 20, color: c.inkSecondary), title: l10n.exportData, onTap: () => _export(context, ref)),
+                  FloraListRow(leading: const Text('💾', style: TextStyle(fontSize: 18)), title: l10n.backupTitle, onTap: () => context.push(Routes.backup)),
+                  FloraListRow(leading: const Text('🔌', style: TextStyle(fontSize: 18)), title: l10n.apiTitle, onTap: () => context.push(Routes.api)),
                 ],
               ),
               const SizedBox(height: Space.lg),

@@ -1468,5 +1468,69 @@
   "weatherHumidity": "Humidité",
   "weatherNoPlace": "Choisissez un lieu pour voir les prévisions.",
   "weatherToday": "Aujourd'hui",
-  "weatherFailed": "Prévisions indisponibles pour l'instant."
+  "weatherFailed": "Prévisions indisponibles pour l'instant.",
+  "backupTitle": "Sauvegarde",
+  "backupExplain": "Un fichier .zip contenant vos données et vos photos. Format ouvert : vous restez maître de vos données.",
+  "backupWhatToExport": "Que sauvegarder",
+  "backupWhatToImport": "Que restaurer",
+  "sectionGarden": "Jardin et emplacements",
+  "sectionPlants": "Plantes",
+  "sectionPhotos": "Photos",
+  "sectionCare": "Soins et routines",
+  "sectionInventory": "Inventaire",
+  "sectionTasks": "Tâches",
+  "sectionCalendar": "Calendrier",
+  "importBackup": "Restaurer une sauvegarde",
+  "chooseBackupFile": "Choisir un fichier",
+  "importing": "Restauration…",
+  "importDone": "{count, plural, one{1 élément restauré} other{{count} éléments restaurés}}",
+  "@importDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importSkipped": "{count, plural, one{1 ligne ignorée} other{{count} lignes ignorées}}",
+  "@importSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importConfirm": "Les données du fichier remplacent celles de même identifiant. Rien n'est supprimé.",
+  "importErrorNotAZip": "Ce fichier n'est pas une sauvegarde Flora.",
+  "importErrorWrongApp": "Cette sauvegarde vient d'une autre application.",
+  "importErrorTooRecent": "Cette sauvegarde vient d'une version plus récente de Flora.",
+  "importErrorGeneric": "Restauration impossible.",
+  "backupFrom": "Sauvegarde du {date}",
+  "@backupFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupContains": "{count, plural, one{1 élément} other{{count} éléments}}",
+  "@backupContains": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "apiTitle": "API externe",
+  "apiExplain": "Vos données sont accessibles par l'API REST de votre projet Supabase, avec votre propre clé. Rien n'est exposé sans compte.",
+  "apiNotConnected": "Connectez un compte pour activer l'API.",
+  "apiEndpoints": "Points d'accès",
+  "apiCopyBase": "Copier l'adresse de base",
+  "apiCopied": "Adresse copiée",
+  "apiTokenHint": "Authentifiez-vous avec le jeton de votre session Supabase (en-tête Authorization: Bearer).",
+  "apiCopyToken": "Copier le jeton d'accès",
+  "apiTokenCopied": "Jeton copié",
+  "apiTokenWarning": "Valable quelques heures. Se révoque en vous déconnectant.",
+  "apiReadWrite": "Lecture et écriture",
+  "apiOnlyYourGarden": "Chaque requête ne voit que les jardins dont vous êtes membre.",
+  "apiExample": "Exemple"
 }

@@ -5327,6 +5327,222 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Prévisions indisponibles pour l\'instant.'**
   String get weatherFailed;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarde'**
+  String get backupTitle;
+
+  /// No description provided for @backupExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un fichier .zip contenant vos données et vos photos. Format ouvert : vous restez maître de vos données.'**
+  String get backupExplain;
+
+  /// No description provided for @backupWhatToExport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Que sauvegarder'**
+  String get backupWhatToExport;
+
+  /// No description provided for @backupWhatToImport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Que restaurer'**
+  String get backupWhatToImport;
+
+  /// No description provided for @sectionGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jardin et emplacements'**
+  String get sectionGarden;
+
+  /// No description provided for @sectionPlants.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plantes'**
+  String get sectionPlants;
+
+  /// No description provided for @sectionPhotos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos'**
+  String get sectionPhotos;
+
+  /// No description provided for @sectionCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soins et routines'**
+  String get sectionCare;
+
+  /// No description provided for @sectionInventory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inventaire'**
+  String get sectionInventory;
+
+  /// No description provided for @sectionTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get sectionTasks;
+
+  /// No description provided for @sectionCalendar.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calendrier'**
+  String get sectionCalendar;
+
+  /// No description provided for @importBackup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurer une sauvegarde'**
+  String get importBackup;
+
+  /// No description provided for @chooseBackupFile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir un fichier'**
+  String get chooseBackupFile;
+
+  /// No description provided for @importing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restauration…'**
+  String get importing;
+
+  /// No description provided for @importDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 élément restauré} other{{count} éléments restaurés}}'**
+  String importDone(int count);
+
+  /// No description provided for @importSkipped.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 ligne ignorée} other{{count} lignes ignorées}}'**
+  String importSkipped(int count);
+
+  /// No description provided for @importConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données du fichier remplacent celles de même identifiant. Rien n\'est supprimé.'**
+  String get importConfirm;
+
+  /// No description provided for @importErrorNotAZip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce fichier n\'est pas une sauvegarde Flora.'**
+  String get importErrorNotAZip;
+
+  /// No description provided for @importErrorWrongApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette sauvegarde vient d\'une autre application.'**
+  String get importErrorWrongApp;
+
+  /// No description provided for @importErrorTooRecent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette sauvegarde vient d\'une version plus récente de Flora.'**
+  String get importErrorTooRecent;
+
+  /// No description provided for @importErrorGeneric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restauration impossible.'**
+  String get importErrorGeneric;
+
+  /// No description provided for @backupFrom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sauvegarde du {date}'**
+  String backupFrom(String date);
+
+  /// No description provided for @backupContains.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 élément} other{{count} éléments}}'**
+  String backupContains(int count);
+
+  /// No description provided for @apiTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'API externe'**
+  String get apiTitle;
+
+  /// No description provided for @apiExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données sont accessibles par l\'API REST de votre projet Supabase, avec votre propre clé. Rien n\'est exposé sans compte.'**
+  String get apiExplain;
+
+  /// No description provided for @apiNotConnected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connectez un compte pour activer l\'API.'**
+  String get apiNotConnected;
+
+  /// No description provided for @apiEndpoints.
+  ///
+  /// In fr, this message translates to:
+  /// **'Points d\'accès'**
+  String get apiEndpoints;
+
+  /// No description provided for @apiCopyBase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier l\'adresse de base'**
+  String get apiCopyBase;
+
+  /// No description provided for @apiCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse copiée'**
+  String get apiCopied;
+
+  /// No description provided for @apiTokenHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Authentifiez-vous avec le jeton de votre session Supabase (en-tête Authorization: Bearer).'**
+  String get apiTokenHint;
+
+  /// No description provided for @apiCopyToken.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le jeton d\'accès'**
+  String get apiCopyToken;
+
+  /// No description provided for @apiTokenCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton copié'**
+  String get apiTokenCopied;
+
+  /// No description provided for @apiTokenWarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valable quelques heures. Se révoque en vous déconnectant.'**
+  String get apiTokenWarning;
+
+  /// No description provided for @apiReadWrite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture et écriture'**
+  String get apiReadWrite;
+
+  /// No description provided for @apiOnlyYourGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque requête ne voit que les jardins dont vous êtes membre.'**
+  String get apiOnlyYourGarden;
+
+  /// No description provided for @apiExample.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exemple'**
+  String get apiExample;
 }
 
 class _AppLocalizationsDelegate

@@ -3109,4 +3109,145 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherFailed => 'Previsioni non disponibili al momento.';
+
+  @override
+  String get backupTitle => 'Backup';
+
+  @override
+  String get backupExplain =>
+      'Un file .zip con i tuoi dati e le tue foto. Formato aperto: i dati restano tuoi.';
+
+  @override
+  String get backupWhatToExport => 'Cosa salvare';
+
+  @override
+  String get backupWhatToImport => 'Cosa ripristinare';
+
+  @override
+  String get sectionGarden => 'Giardino e posizioni';
+
+  @override
+  String get sectionPlants => 'Piante';
+
+  @override
+  String get sectionPhotos => 'Foto';
+
+  @override
+  String get sectionCare => 'Cure e routine';
+
+  @override
+  String get sectionInventory => 'Inventario';
+
+  @override
+  String get sectionTasks => 'Attività';
+
+  @override
+  String get sectionCalendar => 'Calendario';
+
+  @override
+  String get importBackup => 'Ripristina un backup';
+
+  @override
+  String get chooseBackupFile => 'Scegli un file';
+
+  @override
+  String get importing => 'Ripristino…';
+
+  @override
+  String importDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count elementi ripristinati',
+      one: '1 elemento ripristinato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String importSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count righe ignorate',
+      one: '1 riga ignorata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importConfirm =>
+      'I dati del file sostituiscono quelli con lo stesso identificatore. Nulla viene eliminato.';
+
+  @override
+  String get importErrorNotAZip => 'Questo file non è un backup Flora.';
+
+  @override
+  String get importErrorWrongApp => 'Questo backup proviene da un\'altra app.';
+
+  @override
+  String get importErrorTooRecent =>
+      'Questo backup proviene da una versione più recente di Flora.';
+
+  @override
+  String get importErrorGeneric => 'Ripristino non riuscito.';
+
+  @override
+  String backupFrom(String date) {
+    return 'Backup del $date';
+  }
+
+  @override
+  String backupContains(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count elementi',
+      one: '1 elemento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiTitle => 'API esterna';
+
+  @override
+  String get apiExplain =>
+      'I tuoi dati sono raggiungibili tramite l\'API REST del tuo progetto Supabase, con la tua chiave. Nulla è esposto senza account.';
+
+  @override
+  String get apiNotConnected => 'Collega un account per abilitare l\'API.';
+
+  @override
+  String get apiEndpoints => 'Endpoint';
+
+  @override
+  String get apiCopyBase => 'Copia l\'URL di base';
+
+  @override
+  String get apiCopied => 'URL copiato';
+
+  @override
+  String get apiTokenHint =>
+      'Autenticati con il token della tua sessione Supabase (intestazione Authorization: Bearer).';
+
+  @override
+  String get apiCopyToken => 'Copia il token di accesso';
+
+  @override
+  String get apiTokenCopied => 'Token copiato';
+
+  @override
+  String get apiTokenWarning =>
+      'Valido per alcune ore. Si revoca disconnettendoti.';
+
+  @override
+  String get apiReadWrite => 'Lettura e scrittura';
+
+  @override
+  String get apiOnlyYourGarden =>
+      'Ogni richiesta vede solo i giardini di cui fai parte.';
+
+  @override
+  String get apiExample => 'Esempio';
 }

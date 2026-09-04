@@ -3103,4 +3103,146 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weatherFailed => 'Vorhersage derzeit nicht verfügbar.';
+
+  @override
+  String get backupTitle => 'Sicherung';
+
+  @override
+  String get backupExplain =>
+      'Eine .zip-Datei mit deinen Daten und Fotos. Offenes Format: Deine Daten bleiben deine.';
+
+  @override
+  String get backupWhatToExport => 'Was sichern';
+
+  @override
+  String get backupWhatToImport => 'Was wiederherstellen';
+
+  @override
+  String get sectionGarden => 'Garten und Standorte';
+
+  @override
+  String get sectionPlants => 'Pflanzen';
+
+  @override
+  String get sectionPhotos => 'Fotos';
+
+  @override
+  String get sectionCare => 'Pflege und Routinen';
+
+  @override
+  String get sectionInventory => 'Vorrat';
+
+  @override
+  String get sectionTasks => 'Aufgaben';
+
+  @override
+  String get sectionCalendar => 'Kalender';
+
+  @override
+  String get importBackup => 'Sicherung wiederherstellen';
+
+  @override
+  String get chooseBackupFile => 'Datei wählen';
+
+  @override
+  String get importing => 'Wird wiederhergestellt…';
+
+  @override
+  String importDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Einträge wiederhergestellt',
+      one: '1 Eintrag wiederhergestellt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String importSkipped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Zeilen übersprungen',
+      one: '1 Zeile übersprungen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importConfirm =>
+      'Daten aus der Datei ersetzen Einträge mit gleicher Kennung. Nichts wird gelöscht.';
+
+  @override
+  String get importErrorNotAZip => 'Diese Datei ist keine Flora-Sicherung.';
+
+  @override
+  String get importErrorWrongApp =>
+      'Diese Sicherung stammt aus einer anderen App.';
+
+  @override
+  String get importErrorTooRecent =>
+      'Diese Sicherung stammt aus einer neueren Version von Flora.';
+
+  @override
+  String get importErrorGeneric => 'Wiederherstellung fehlgeschlagen.';
+
+  @override
+  String backupFrom(String date) {
+    return 'Sicherung vom $date';
+  }
+
+  @override
+  String backupContains(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Einträge',
+      one: '1 Eintrag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiTitle => 'Externe API';
+
+  @override
+  String get apiExplain =>
+      'Deine Daten sind über die REST-API deines Supabase-Projekts mit deinem eigenen Schlüssel erreichbar. Ohne Konto wird nichts freigegeben.';
+
+  @override
+  String get apiNotConnected => 'Verbinde ein Konto, um die API zu aktivieren.';
+
+  @override
+  String get apiEndpoints => 'Endpunkte';
+
+  @override
+  String get apiCopyBase => 'Basis-URL kopieren';
+
+  @override
+  String get apiCopied => 'URL kopiert';
+
+  @override
+  String get apiTokenHint =>
+      'Authentifiziere dich mit dem Token deiner Supabase-Sitzung (Authorization: Bearer).';
+
+  @override
+  String get apiCopyToken => 'Zugriffstoken kopieren';
+
+  @override
+  String get apiTokenCopied => 'Token kopiert';
+
+  @override
+  String get apiTokenWarning =>
+      'Einige Stunden gültig. Wird durch Abmelden widerrufen.';
+
+  @override
+  String get apiReadWrite => 'Lesen und Schreiben';
+
+  @override
+  String get apiOnlyYourGarden =>
+      'Jede Anfrage sieht nur Gärten, in denen du Mitglied bist.';
+
+  @override
+  String get apiExample => 'Beispiel';
 }

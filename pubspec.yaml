@@ -78,6 +78,9 @@ dev_dependencies:
   drift_dev: ^2.34.6
   build_runner: ^2.16.1
   sqlite3: ^3.5.2
+  # Utilisé par les tests pour rediriger les dossiers de l'application.
+  plugin_platform_interface: ^2.1.8
+  path_provider_platform_interface: ^2.1.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

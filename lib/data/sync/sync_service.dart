@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import '../../domain/sync/remote_data_source.dart';
 import '../../domain/sync/sync_state.dart';
 import '../db/database.dart';
+import '../db/row_defaults.dart';
 import 'row_codec.dart';
 
 /// Curseurs de synchronisation (dernier `updated_at` / `created_at` tiré par table).
@@ -311,7 +312,7 @@ class SyncService {
     final json = RowCodec.toLocalJson(remote, drop: {'owner_id', 'storage_path'});
     // Une ligne écrite par un client plus ancien n'a pas les colonnes ajoutées
     // depuis : on comble avec la valeur par défaut plutôt que d'échouer.
-    _fillDefaults(table, json);
+    RowDefaults.fill(table, json);
     final s = RowCodec.serializer;
     switch (table) {
       case 'gardens':
@@ -372,25 +373,6 @@ class SyncService {
     }
   }
 
-  /// Valeurs par défaut des colonnes non nullables ajoutées après coup.
-  static void _fillDefaults(String table, Map<String, Object?> json) {
-    const defaults = <String, Map<String, Object?>>{
-      'plants': {'number': 0},
-      'gardens': {'plantCounter': 0},
-      'locations': {'sortOrder': 0},
-      'plant_attributes': {'position': 0},
-      'attribute_schemas': {'position': 0, 'active': true},
-      'tasks': {'allDay': true, 'done': false},
-      'plant_photos': {'width': 0, 'height': 0},
-      'event_categories': {'position': 0, 'emoji': '📅'},
-      'calendar_entries': {'allDay': true},
-    };
-    final missing = defaults[table];
-    if (missing == null) return;
-    for (final e in missing.entries) {
-      json[e.key] ??= e.value;
-    }
-  }
 
   Future<void> _applyPhoto(Map<String, Object?> remote, Map<String, Object?> json) async {
     final id = remote['id'] as String;
