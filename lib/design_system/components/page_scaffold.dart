@@ -16,7 +16,7 @@ class LargeTitlePage extends StatelessWidget {
     this.leading,
     this.searchField,
     this.controller,
-    this.bottomPadding = 120,
+    this.bottomPadding = 132,
   });
 
   final String title;
@@ -95,13 +95,14 @@ class FloraPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final body = scrollable
+    Widget body(double topInset) => scrollable
         ? SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-            padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, Space.huge),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.fromLTRB(Space.page, topInset + Space.md, Space.page, Space.huge),
             child: child,
           )
-        : child;
+        : Padding(padding: EdgeInsets.only(top: topInset), child: child);
     if (isCupertino(context)) {
       return CupertinoPageScaffold(
         backgroundColor: c.canvas,
@@ -113,13 +114,20 @@ class FloraPage extends StatelessWidget {
           transitionBetweenRoutes: false,
           heroTag: 'page-$title',
         ),
-        child: SafeArea(top: true, bottom: false, child: Column(children: [Expanded(child: body), ?bottom])),
+        // La barre est translucide : le contenu défile dessous, décalé de sa hauteur.
+        child: Builder(
+          builder: (ctx) => SafeArea(
+            top: false,
+            bottom: false,
+            child: Column(children: [Expanded(child: body(MediaQuery.paddingOf(ctx).top)), ?bottom]),
+          ),
+        ),
       );
     }
     return Scaffold(
       backgroundColor: c.canvas,
       appBar: AppBar(title: Text(title), actions: trailing == null ? null : [trailing!]),
-      body: Column(children: [Expanded(child: body), ?bottom]),
+      body: Column(children: [Expanded(child: body(0)), ?bottom]),
     );
   }
 }

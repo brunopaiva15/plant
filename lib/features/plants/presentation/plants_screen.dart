@@ -136,7 +136,8 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
         Positioned(
           left: Space.xl,
           right: Space.xl,
-          bottom: MediaQuery.paddingOf(context).bottom + 88,
+          // Sous extendBody, le padding bas du body correspond déjà à la hauteur de la tab bar.
+          bottom: MediaQuery.paddingOf(context).bottom + Space.sm,
           child: AnimatedSwitcher(
             duration: Motion.of(context, Motion.emphasis),
             switchInCurve: Motion.spring,

@@ -78,27 +78,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       // Écrans plein écran (la barre d'onglets se masque, comme un push iOS immersif).
+      // Routes à plat (pas d'imbrication) : un `push` n'empile qu'une seule page.
       GoRoute(
         path: '/plants/:id',
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => platformPage(c, s, PlantDetailScreen(plantId: s.pathParameters['id']!)),
-        routes: [
-          GoRoute(
-            path: 'timeline',
-            parentNavigatorKey: rootNavigatorKey,
-            pageBuilder: (c, s) => platformPage(c, s, PlantTimelineScreen(plantId: s.pathParameters['id']!)),
-          ),
-          GoRoute(
-            path: 'gallery',
-            parentNavigatorKey: rootNavigatorKey,
-            pageBuilder: (c, s) => platformPage(c, s, PlantGalleryScreen(plantId: s.pathParameters['id']!)),
-          ),
-          GoRoute(
-            path: 'schedule',
-            parentNavigatorKey: rootNavigatorKey,
-            pageBuilder: (c, s) => platformPage(c, s, PlantScheduleScreen(plantId: s.pathParameters['id']!)),
-          ),
-        ],
+      ),
+      GoRoute(
+        path: '/plants/:id/timeline',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, PlantTimelineScreen(plantId: s.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/plants/:id/gallery',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, PlantGalleryScreen(plantId: s.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/plants/:id/schedule',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, PlantScheduleScreen(plantId: s.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/locations/:id',
