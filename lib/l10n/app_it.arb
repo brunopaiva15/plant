@@ -524,5 +524,30 @@
         "type": "String"
       }
     }
+  },
+  "diagnosisTitle": "La mia pianta ha un problema",
+  "diagnosisHint": "Fotografa foglie, fusto o terra da più angolazioni. I risultati sono piste, mai certezze.",
+  "diagnosisSymptomsHint": "Cosa hai notato (facoltativo)…",
+  "analyze": "Analizza",
+  "analyzing": "Analisi in corso…",
+  "diagnosisError": "Analisi impossibile. Controlla la connessione e riprova.",
+  "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
+  "diagnosisUnauthorized": "Chiave API rifiutata. Controllala in Profilo › Diagnosi.",
+  "possibleCauses": "Cause possibili",
+  "urgentHint": "Da trattare rapidamente",
+  "saveToJournal": "Salva nel diario",
+  "markWatch": "Segna “da tenere d'occhio”",
+  "diagnosisSettings": "Diagnosi",
+  "diagnosisSettingsHint": "Analisi delle foto tramite l'API Claude di Anthropic, con la tua chiave (console.anthropic.com). Le foto vengono inviate solo quando avvii un'analisi.",
+  "diagnosisEnabled": "Diagnosi attiva",
+  "addPhotos": "Aggiungi foto",
+  "photosCount": "{count, plural, =1{1 foto} other{{count} foto}}",
+  "diagnosisSaved": "Diagnosi aggiunta al diario",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -524,5 +524,30 @@
         "type": "String"
       }
     }
+  },
+  "diagnosisTitle": "My plant has a problem",
+  "diagnosisHint": "Photograph the leaves, stem or soil from a few angles. Results are leads, never certainties.",
+  "diagnosisSymptomsHint": "What you noticed (optional)…",
+  "analyze": "Analyze",
+  "analyzing": "Analyzing…",
+  "diagnosisError": "Couldn't analyze. Check your connection and try again.",
+  "diagnosisRefused": "This photo couldn't be analyzed.",
+  "diagnosisUnauthorized": "API key rejected. Check it in Profile › Diagnosis.",
+  "possibleCauses": "Possible causes",
+  "urgentHint": "Needs quick attention",
+  "saveToJournal": "Save to journal",
+  "markWatch": "Mark as “keep an eye”",
+  "diagnosisSettings": "Diagnosis",
+  "diagnosisSettingsHint": "Photo analysis by Anthropic's Claude API, with your own key (console.anthropic.com). Photos are only sent when you start an analysis.",
+  "diagnosisEnabled": "Diagnosis enabled",
+  "addPhotos": "Add photos",
+  "photosCount": "{count, plural, =1{1 photo} other{{count} photos}}",
+  "diagnosisSaved": "Diagnosis added to the journal",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

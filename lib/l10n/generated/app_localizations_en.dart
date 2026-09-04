@@ -1499,4 +1499,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get you => 'you';
+
+  @override
+  String get diagnosisTitle => 'My plant has a problem';
+
+  @override
+  String get diagnosisHint =>
+      'Photograph the leaves, stem or soil from a few angles. Results are leads, never certainties.';
+
+  @override
+  String get diagnosisSymptomsHint => 'What you noticed (optional)…';
+
+  @override
+  String get analyze => 'Analyze';
+
+  @override
+  String get analyzing => 'Analyzing…';
+
+  @override
+  String get diagnosisError =>
+      'Couldn\'t analyze. Check your connection and try again.';
+
+  @override
+  String get diagnosisRefused => 'This photo couldn\'t be analyzed.';
+
+  @override
+  String get diagnosisUnauthorized =>
+      'API key rejected. Check it in Profile › Diagnosis.';
+
+  @override
+  String get possibleCauses => 'Possible causes';
+
+  @override
+  String get urgentHint => 'Needs quick attention';
+
+  @override
+  String get saveToJournal => 'Save to journal';
+
+  @override
+  String get markWatch => 'Mark as “keep an eye”';
+
+  @override
+  String get diagnosisSettings => 'Diagnosis';
+
+  @override
+  String get diagnosisSettingsHint =>
+      'Photo analysis by Anthropic\'s Claude API, with your own key (console.anthropic.com). Photos are only sent when you start an analysis.';
+
+  @override
+  String get diagnosisEnabled => 'Diagnosis enabled';
+
+  @override
+  String get addPhotos => 'Add photos';
+
+  @override
+  String photosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get diagnosisSaved => 'Diagnosis added to the journal';
 }

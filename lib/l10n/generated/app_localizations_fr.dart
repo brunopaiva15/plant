@@ -1502,4 +1502,71 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get you => 'vous';
+
+  @override
+  String get diagnosisTitle => 'Ma plante a un problème';
+
+  @override
+  String get diagnosisHint =>
+      'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont des pistes, jamais des certitudes.';
+
+  @override
+  String get diagnosisSymptomsHint => 'Ce que vous avez remarqué (facultatif)…';
+
+  @override
+  String get analyze => 'Analyser';
+
+  @override
+  String get analyzing => 'Analyse en cours…';
+
+  @override
+  String get diagnosisError =>
+      'Analyse impossible. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get diagnosisRefused =>
+      'L\'analyse n\'a pas pu être effectuée pour cette photo.';
+
+  @override
+  String get diagnosisUnauthorized =>
+      'Clé API refusée. Vérifiez-la dans Profil › Diagnostic.';
+
+  @override
+  String get possibleCauses => 'Pistes possibles';
+
+  @override
+  String get urgentHint => 'À traiter rapidement';
+
+  @override
+  String get saveToJournal => 'Enregistrer dans le journal';
+
+  @override
+  String get markWatch => 'Marquer à surveiller';
+
+  @override
+  String get diagnosisSettings => 'Diagnostic';
+
+  @override
+  String get diagnosisSettingsHint =>
+      'Analyse de photos par l\'API Claude d\'Anthropic, avec votre propre clé (console.anthropic.com). Les photos sont envoyées uniquement lors d\'une analyse que vous lancez.';
+
+  @override
+  String get diagnosisEnabled => 'Diagnostic activé';
+
+  @override
+  String get addPhotos => 'Ajouter des photos';
+
+  @override
+  String photosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get diagnosisSaved => 'Diagnostic ajouté au journal';
 }

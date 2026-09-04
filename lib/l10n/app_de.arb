@@ -524,5 +524,30 @@
         "type": "String"
       }
     }
+  },
+  "diagnosisTitle": "Meine Pflanze hat ein Problem",
+  "diagnosisHint": "Fotografiere Blätter, Stängel oder Erde aus mehreren Winkeln. Ergebnisse sind Hinweise, keine Gewissheiten.",
+  "diagnosisSymptomsHint": "Was dir aufgefallen ist (optional)…",
+  "analyze": "Analysieren",
+  "analyzing": "Analyse läuft…",
+  "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
+  "diagnosisRefused": "Dieses Foto konnte nicht analysiert werden.",
+  "diagnosisUnauthorized": "API-Schlüssel abgelehnt. Prüfe ihn unter Profil › Diagnose.",
+  "possibleCauses": "Mögliche Ursachen",
+  "urgentHint": "Schnell handeln",
+  "saveToJournal": "Im Verlauf speichern",
+  "markWatch": "Als „beobachten“ markieren",
+  "diagnosisSettings": "Diagnose",
+  "diagnosisSettingsHint": "Fotoanalyse über die Claude-API von Anthropic mit deinem eigenen Schlüssel (console.anthropic.com). Fotos werden nur gesendet, wenn du eine Analyse startest.",
+  "diagnosisEnabled": "Diagnose aktiviert",
+  "addPhotos": "Fotos hinzufügen",
+  "photosCount": "{count, plural, =1{1 Foto} other{{count} Fotos}}",
+  "diagnosisSaved": "Diagnose im Verlauf gespeichert",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

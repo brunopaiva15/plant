@@ -2687,6 +2687,114 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'vous'**
   String get you;
+
+  /// No description provided for @diagnosisTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ma plante a un problème'**
+  String get diagnosisTitle;
+
+  /// No description provided for @diagnosisHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont des pistes, jamais des certitudes.'**
+  String get diagnosisHint;
+
+  /// No description provided for @diagnosisSymptomsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que vous avez remarqué (facultatif)…'**
+  String get diagnosisSymptomsHint;
+
+  /// No description provided for @analyze.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyser'**
+  String get analyze;
+
+  /// No description provided for @analyzing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse en cours…'**
+  String get analyzing;
+
+  /// No description provided for @diagnosisError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse impossible. Vérifiez votre connexion et réessayez.'**
+  String get diagnosisError;
+
+  /// No description provided for @diagnosisRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse n\'a pas pu être effectuée pour cette photo.'**
+  String get diagnosisRefused;
+
+  /// No description provided for @diagnosisUnauthorized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clé API refusée. Vérifiez-la dans Profil › Diagnostic.'**
+  String get diagnosisUnauthorized;
+
+  /// No description provided for @possibleCauses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pistes possibles'**
+  String get possibleCauses;
+
+  /// No description provided for @urgentHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'À traiter rapidement'**
+  String get urgentHint;
+
+  /// No description provided for @saveToJournal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer dans le journal'**
+  String get saveToJournal;
+
+  /// No description provided for @markWatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marquer à surveiller'**
+  String get markWatch;
+
+  /// No description provided for @diagnosisSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostic'**
+  String get diagnosisSettings;
+
+  /// No description provided for @diagnosisSettingsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse de photos par l\'API Claude d\'Anthropic, avec votre propre clé (console.anthropic.com). Les photos sont envoyées uniquement lors d\'une analyse que vous lancez.'**
+  String get diagnosisSettingsHint;
+
+  /// No description provided for @diagnosisEnabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostic activé'**
+  String get diagnosisEnabled;
+
+  /// No description provided for @addPhotos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter des photos'**
+  String get addPhotos;
+
+  /// No description provided for @photosCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String photosCount(int count);
+
+  /// No description provided for @diagnosisSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostic ajouté au journal'**
+  String get diagnosisSaved;
 }
 
 class _AppLocalizationsDelegate

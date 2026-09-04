@@ -91,6 +91,9 @@ class PreferencesService {
   String? get syncedAccountId => _prefs.getString('synced_account_id');
   Future<void> setSyncedAccountId(String id) => _prefs.setString('synced_account_id', id);
 
+  String get anthropicApiKey => _prefs.getString('anthropic_api_key') ?? '';
+  Future<void> setAnthropicApiKey(String key) => _prefs.setString('anthropic_api_key', key.trim());
+
   String get plantNetApiKey => _prefs.getString('plantnet_api_key') ?? '';
   Future<void> setPlantNetApiKey(String key) => _prefs.setString('plantnet_api_key', key.trim());
 

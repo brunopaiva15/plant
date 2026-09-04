@@ -23,6 +23,7 @@ import 'measurements_section.dart';
 import 'plant_tags_sheet.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
+import '../../diagnosis/presentation/diagnosis_sheet.dart';
 import 'timeline_row.dart';
 
 /// La fiche plante : photo immersive, prochains soins, actions rapides,
@@ -79,6 +80,8 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
         SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
         if (ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
           SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
+        if (ref.read(plantDiagnoserProvider).isConfigured)
+          SheetAction(label: l10n.diagnosisTitle, icon: CupertinoIcons.bandage, onPressed: () => showDiagnosisSheet(context, plant: plant)),
         SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
         SheetAction(
           label: l10n.move,

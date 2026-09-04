@@ -773,5 +773,30 @@
       }
     }
   },
-  "you": "vous"
+  "you": "vous",
+  "diagnosisTitle": "Ma plante a un problème",
+  "diagnosisHint": "Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont des pistes, jamais des certitudes.",
+  "diagnosisSymptomsHint": "Ce que vous avez remarqué (facultatif)…",
+  "analyze": "Analyser",
+  "analyzing": "Analyse en cours…",
+  "diagnosisError": "Analyse impossible. Vérifiez votre connexion et réessayez.",
+  "diagnosisRefused": "L'analyse n'a pas pu être effectuée pour cette photo.",
+  "diagnosisUnauthorized": "Clé API refusée. Vérifiez-la dans Profil › Diagnostic.",
+  "possibleCauses": "Pistes possibles",
+  "urgentHint": "À traiter rapidement",
+  "saveToJournal": "Enregistrer dans le journal",
+  "markWatch": "Marquer à surveiller",
+  "diagnosisSettings": "Diagnostic",
+  "diagnosisSettingsHint": "Analyse de photos par l'API Claude d'Anthropic, avec votre propre clé (console.anthropic.com). Les photos sont envoyées uniquement lors d'une analyse que vous lancez.",
+  "diagnosisEnabled": "Diagnostic activé",
+  "addPhotos": "Ajouter des photos",
+  "photosCount": "{count, plural, =1{1 photo} other{{count} photos}}",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "diagnosisSaved": "Diagnostic ajouté au journal"
 }

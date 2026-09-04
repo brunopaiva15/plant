@@ -12,12 +12,14 @@ import '../data/repositories/location_repository_impl.dart';
 import '../data/repositories/photo_repository_impl.dart';
 import '../data/repositories/plant_repository_impl.dart';
 import '../data/repositories/tag_repository_impl.dart';
+import '../data/services/anthropic_diagnoser.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
 import '../data/services/preferences_service.dart';
 import '../domain/auth/auth_repository.dart';
+import '../domain/diagnosis/plant_diagnoser.dart';
 import '../domain/identification/plant_identifier.dart';
 import '../domain/weather/weather.dart';
 import '../features/export/export_service.dart';
@@ -87,6 +89,7 @@ class AppPreferences {
     required this.onboardingDone,
     required this.displayName,
     required this.plantNetApiKey,
+    required this.anthropicApiKey,
     required this.weatherPlace,
   });
 
@@ -101,6 +104,7 @@ class AppPreferences {
   final bool onboardingDone;
   final String displayName;
   final String plantNetApiKey;
+  final String anthropicApiKey;
   final WeatherPlace? weatherPlace;
 }
 
@@ -125,6 +129,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       onboardingDone: s.onboardingDone,
       displayName: s.displayName ?? '',
       plantNetApiKey: s.plantNetApiKey,
+      anthropicApiKey: s.anthropicApiKey,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
     );
   }
@@ -144,6 +149,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setQuietWeekdays(Set<int> days) => _apply((s) => s.setQuietWeekdays(days));
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
   Future<void> setPlantNetApiKey(String key) => _apply((s) => s.setPlantNetApiKey(key));
+  Future<void> setAnthropicApiKey(String key) => _apply((s) => s.setAnthropicApiKey(key));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
@@ -164,3 +170,9 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
 
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
+
+/// Diagnostic : API Claude si une clé est configurée, sinon service inactif.
+final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
+  final key = ref.watch(preferencesProvider.select((p) => p.anthropicApiKey));
+  return key.isEmpty ? const UnconfiguredDiagnoser() : AnthropicDiagnoser(key);
+});

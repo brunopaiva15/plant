@@ -22,11 +22,12 @@ lib/
 │   ├── repositories/              interfaces
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
+│   ├── diagnosis/                 PlantDiagnoser (interface, causes)
 │   └── auth/                      AuthRepository, AppUser
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, AnthropicDiagnoser, OpenMeteoService
 │   └── auth/                      LocalAuthRepository
 ├── features/
 │   ├── onboarding/
@@ -40,6 +41,7 @@ lib/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, réglage du lieu
+│   ├── diagnosis/                 sheet « Ma plante a un problème », réglage de la clé
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/
