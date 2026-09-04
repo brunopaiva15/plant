@@ -50,3 +50,23 @@ Button · IconButton · PressableScale · Card · PlantCard · CareCard · Actio
 
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
+
+## Icône de l'application
+Le logo est une monstera en papier découpé, dans le pot terracotta du thème.
+
+- Source détourée : `assets/icon/plant.png` (fond blanc retiré au seuil, trous
+  des feuilles compris). C'est le master : tout le reste en dérive.
+- `icon.png` / `icon_dark.png` : la plante à 80 % sur un dégradé `canvas` →
+  `sageSoft` (et son inverse en sombre). Sans alpha : l'App Store la refuse.
+- `icon_foreground.png` : plante à 88 %, fond transparent. Le XML adaptatif
+  d'Android ajoute un retrait de 16 %, d'où la marge apparemment faible.
+- `icon_monochrome.png` : la même silhouette en noir, pour les icônes
+  thématiques d'Android 13+.
+
+Régénérer après toute modification :
+```
+dart run flutter_launcher_icons
+```
+La configuration vit dans `flutter_launcher_icons.yaml`. Les icônes web
+« maskable » et le favicon sont retaillés à part : leur zone de sûreté est
+plus petite que celle d'iOS.

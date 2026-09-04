@@ -1,0 +1,26 @@
+# Icône de l'application : la monstera en papier découpé, sur le fond clair
+# du thème (canvas → sageSoft). Régénérer après modification :
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+
+  android: "ic_launcher"
+  # Fond plein et avant-plan transparent : le masque du lanceur (rond,
+  # squircle, goutte) découpe le fond sans jamais rogner la plante.
+  adaptive_icon_background: "#EBF3ED"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  adaptive_icon_monochrome: "assets/icon/icon_monochrome.png"
+
+  ios: true
+  # iOS refuse toute transparence dans l'icône de l'App Store.
+  remove_alpha_ios: true
+  image_path_ios_dark_transparent: "assets/icon/icon_foreground.png"
+  image_path_ios_tinted_grayscale: "assets/icon/icon_foreground.png"
+  # Le mode teinté d'iOS 18 attend une image en niveaux de gris.
+  desaturate_tinted_to_grayscale_ios: true
+
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#F3F6F1"
+    theme_color: "#2E8B57"
