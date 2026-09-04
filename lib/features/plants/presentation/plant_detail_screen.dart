@@ -15,6 +15,7 @@ import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../../actions/presentation/add_action_sheet.dart';
 import '../../attachments/presentation/attachments_section.dart';
+import '../../sharing/presentation/share_link_sheet.dart';
 import '../../attributes/application/attribute_providers.dart';
 import '../../attributes/presentation/attribute_sheet.dart';
 import '../../tasks/application/task_providers.dart';
@@ -85,6 +86,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
         ),
         SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
         SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
+        SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
         SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
         if (ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
           SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
@@ -689,7 +691,7 @@ class _Info extends ConsumerWidget {
                     padding: const EdgeInsets.all(Space.md),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Text(l10n.notes, style: context.text.caption), const SizedBox(height: 4), Text(p.notes!, style: context.text.body)],
+                      children: [Text(l10n.notes, style: context.text.caption), const SizedBox(height: 4), MarkdownText(p.notes!)],
                     ),
                   ),
               ],

@@ -2630,4 +2630,84 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get confirmDeletePhoto => 'Eliminare questa foto?';
+
+  @override
+  String get shareByLink => 'Condividi con un link';
+
+  @override
+  String get sharedLinks => 'Link condivisi';
+
+  @override
+  String get sharedLinksHint =>
+      'Una pagina web pubblica, revocabile in qualsiasi momento.';
+
+  @override
+  String get noSharedLinks => 'Nessun link condiviso';
+
+  @override
+  String get shareTitle => 'Titolo della pagina';
+
+  @override
+  String get shareDescription => 'Descrizione (facoltativa)';
+
+  @override
+  String get shareKeywords => 'Parole chiave (facoltative)';
+
+  @override
+  String get shareUnlisted => 'Non elencato';
+
+  @override
+  String get shareUnlistedHint =>
+      'La pagina chiede ai motori di ricerca di non indicizzarla. Chi ha il link può comunque vederla.';
+
+  @override
+  String get shareExpiry => 'Scade il';
+
+  @override
+  String get shareNoExpiry => 'Senza scadenza';
+
+  @override
+  String get shareCreate => 'Crea il link';
+
+  @override
+  String get shareCopy => 'Copia il link';
+
+  @override
+  String get shareCopied => 'Link copiato';
+
+  @override
+  String get shareRevoke => 'Revoca';
+
+  @override
+  String get shareRevoked => 'Revocato';
+
+  @override
+  String get shareExpired => 'Scaduto';
+
+  @override
+  String get shareActive => 'Attivo';
+
+  @override
+  String get confirmRevokeLink =>
+      'Revocare questo link? La pagina non sarà più accessibile.';
+
+  @override
+  String get shareNeedsAccount =>
+      'La condivisione tramite link richiede un account.';
+
+  @override
+  String get shareFailed => 'Impossibile creare il link. Riprova.';
+
+  @override
+  String get sharePhoto => 'Condividi questa foto';
+
+  @override
+  String get sharePlant => 'Condividi questa pianta';
+
+  @override
+  String get notesMarkdownHint =>
+      'Formattazione: **grassetto**, *corsivo*, - elenchi, [link](https://…)';
+
+  @override
+  String get preview => 'Anteprima';
 }

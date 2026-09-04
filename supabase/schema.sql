@@ -221,14 +221,60 @@ create table if not exists plant_attachments (
 create index if not exists idx_plant_attachments_plant on plant_attachments(plant_id);
 create index if not exists idx_plant_attachments_garden_updated on plant_attachments(garden_id, updated_at);
 
+-- Partage public d'une photo ou d'une plante par lien révocable.
+-- `kind` vaut 'photo' ou 'plant'. Un lien « non listé » (unlisted) porte un
+-- en-tête noindex sur la page publique.
 create table if not exists shared_links (
   id uuid primary key default gen_random_uuid(),
+  garden_id uuid not null references gardens(id) on delete cascade,
   plant_id uuid not null references plants(id) on delete cascade,
+  photo_id uuid references plant_photos(id) on delete cascade,
+  kind text not null default 'plant',
   token text not null unique,
+  title text,
+  description text,
+  keywords text,
+  unlisted boolean not null default true,
+  expires_at timestamptz,
   created_by uuid references auth.users(id),
   created_at timestamptz not null default now(),
   revoked_at timestamptz
 );
+create index if not exists idx_shared_links_garden on shared_links(garden_id, created_at desc);
+
+alter table shared_links enable row level security;
+drop policy if exists "shared links read" on shared_links;
+create policy "shared links read" on shared_links for select using (is_member(garden_id));
+drop policy if exists "shared links write" on shared_links;
+create policy "shared links write" on shared_links for all using (can_edit(garden_id)) with check (can_edit(garden_id));
+
+-- Lecture publique d'un lien vivant, sans exposer la table : la fonction est
+-- security definer et ne rend que ce qui est nécessaire à la page publique.
+create or replace function public_shared_link(p_token text)
+returns table (
+  kind text,
+  title text,
+  description text,
+  keywords text,
+  unlisted boolean,
+  plant_name text,
+  species_name text,
+  photo_path text,
+  photo_label text,
+  taken_at timestamptz
+) language sql security definer set search_path = public as $$
+  select s.kind, s.title, s.description, s.keywords, s.unlisted,
+         p.name, p.species_name, ph.storage_path, ph.label, ph.taken_at
+  from shared_links s
+  join plants p on p.id = s.plant_id
+  left join plant_photos ph on ph.id = s.photo_id
+  where s.token = p_token
+    and s.revoked_at is null
+    and (s.expires_at is null or s.expires_at > now())
+    and p.deleted_at is null;
+$$;
+revoke all on function public_shared_link(text) from public;
+grant execute on function public_shared_link(text) to anon, authenticated;
 
 -- Index de synchronisation (delta par updated_at) et d'accès.
 create index if not exists idx_plants_garden_updated on plants(garden_id, updated_at);

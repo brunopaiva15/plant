@@ -12,6 +12,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../application/plant_providers.dart';
+import '../../sharing/presentation/share_link_sheet.dart';
 import 'photo_sheets.dart';
 import 'compare_screen.dart';
 import 'timelapse_screen.dart';
@@ -190,6 +191,11 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
             await ref.read(photoRepositoryProvider).setLabel(photo.id, label.isEmpty ? null : label);
             Haptics.success();
           },
+        ),
+        SheetAction(
+          label: l10n.shareByLink,
+          icon: CupertinoIcons.link,
+          onPressed: () => showShareLinkSheet(context, plantId: widget.plantId, photoId: photo.id, suggestedTitle: photo.label),
         ),
         if (widget.primaryId != photo.id)
           SheetAction(

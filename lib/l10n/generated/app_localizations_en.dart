@@ -2617,4 +2617,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmDeletePhoto => 'Delete this photo?';
+
+  @override
+  String get shareByLink => 'Share with a link';
+
+  @override
+  String get sharedLinks => 'Shared links';
+
+  @override
+  String get sharedLinksHint => 'A public web page you can revoke at any time.';
+
+  @override
+  String get noSharedLinks => 'No shared links';
+
+  @override
+  String get shareTitle => 'Page title';
+
+  @override
+  String get shareDescription => 'Description (optional)';
+
+  @override
+  String get shareKeywords => 'Keywords (optional)';
+
+  @override
+  String get shareUnlisted => 'Unlisted';
+
+  @override
+  String get shareUnlistedHint =>
+      'The page asks search engines not to index it. Anyone with the link can still see it.';
+
+  @override
+  String get shareExpiry => 'Expires on';
+
+  @override
+  String get shareNoExpiry => 'No expiry';
+
+  @override
+  String get shareCreate => 'Create link';
+
+  @override
+  String get shareCopy => 'Copy link';
+
+  @override
+  String get shareCopied => 'Link copied';
+
+  @override
+  String get shareRevoke => 'Revoke';
+
+  @override
+  String get shareRevoked => 'Revoked';
+
+  @override
+  String get shareExpired => 'Expired';
+
+  @override
+  String get shareActive => 'Active';
+
+  @override
+  String get confirmRevokeLink =>
+      'Revoke this link? The page will stop working.';
+
+  @override
+  String get shareNeedsAccount => 'Sharing by link needs an account.';
+
+  @override
+  String get shareFailed => 'The link could not be created. Try again.';
+
+  @override
+  String get sharePhoto => 'Share this photo';
+
+  @override
+  String get sharePlant => 'Share this plant';
+
+  @override
+  String get notesMarkdownHint =>
+      'Formatting: **bold**, *italic*, - lists, [links](https://…)';
+
+  @override
+  String get preview => 'Preview';
 }

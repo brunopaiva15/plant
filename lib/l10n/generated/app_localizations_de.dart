@@ -2624,4 +2624,84 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get confirmDeletePhoto => 'Dieses Foto löschen?';
+
+  @override
+  String get shareByLink => 'Per Link teilen';
+
+  @override
+  String get sharedLinks => 'Geteilte Links';
+
+  @override
+  String get sharedLinksHint =>
+      'Eine öffentliche Webseite, jederzeit widerrufbar.';
+
+  @override
+  String get noSharedLinks => 'Keine geteilten Links';
+
+  @override
+  String get shareTitle => 'Seitentitel';
+
+  @override
+  String get shareDescription => 'Beschreibung (optional)';
+
+  @override
+  String get shareKeywords => 'Schlagwörter (optional)';
+
+  @override
+  String get shareUnlisted => 'Nicht gelistet';
+
+  @override
+  String get shareUnlistedHint =>
+      'Die Seite bittet Suchmaschinen, sie nicht zu indexieren. Wer den Link hat, sieht sie trotzdem.';
+
+  @override
+  String get shareExpiry => 'Läuft ab am';
+
+  @override
+  String get shareNoExpiry => 'Ohne Ablauf';
+
+  @override
+  String get shareCreate => 'Link erstellen';
+
+  @override
+  String get shareCopy => 'Link kopieren';
+
+  @override
+  String get shareCopied => 'Link kopiert';
+
+  @override
+  String get shareRevoke => 'Widerrufen';
+
+  @override
+  String get shareRevoked => 'Widerrufen';
+
+  @override
+  String get shareExpired => 'Abgelaufen';
+
+  @override
+  String get shareActive => 'Aktiv';
+
+  @override
+  String get confirmRevokeLink =>
+      'Diesen Link widerrufen? Die Seite ist dann nicht mehr erreichbar.';
+
+  @override
+  String get shareNeedsAccount => 'Das Teilen per Link erfordert ein Konto.';
+
+  @override
+  String get shareFailed =>
+      'Der Link konnte nicht erstellt werden. Erneut versuchen.';
+
+  @override
+  String get sharePhoto => 'Dieses Foto teilen';
+
+  @override
+  String get sharePlant => 'Diese Pflanze teilen';
+
+  @override
+  String get notesMarkdownHint =>
+      'Formatierung: **fett**, *kursiv*, - Listen, [Links](https://…)';
+
+  @override
+  String get preview => 'Vorschau';
 }

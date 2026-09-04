@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/utils/markdown.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../account/application/membership_providers.dart';
@@ -22,7 +23,7 @@ class TimelineRow extends ConsumerWidget {
     final l10n = context.l10n;
     final custom = ref.watch(actionTypeByKeyProvider)[action.typeKey];
     final emoji = custom?.emoji ?? CareKind.fromKey(action.typeKey)?.emoji ?? '✓';
-    final title = action.typeKey == CareKind.note.key ? (action.notes ?? l10n.kindNote) : l10n.kindDone(action.typeKey, custom: custom);
+    final title = action.typeKey == CareKind.note.key ? Markdown.stripped(action.notes ?? l10n.kindNote) : l10n.kindDone(action.typeKey, custom: custom);
     final detail = _detail(l10n);
     final me = ref.watch(currentUserProvider).value;
     final authorName = action.userId != null && action.userId != me?.id ? ref.watch(profileNamesProvider)[action.userId!] : null;
@@ -55,7 +56,7 @@ class TimelineRow extends ConsumerWidget {
                     ],
                   ),
                   if (detail != null) ...[const SizedBox(height: 2), Text(detail, style: context.text.callout)],
-                  if (action.typeKey != CareKind.note.key && action.notes != null) ...[const SizedBox(height: 4), Text(action.notes!, style: context.text.callout)],
+                  if (action.typeKey != CareKind.note.key && action.notes != null) ...[const SizedBox(height: 4), MarkdownText(action.notes!, style: context.text.callout)],
                   if (photo != null) ...[
                     const SizedBox(height: Space.xs),
                     Pressable(

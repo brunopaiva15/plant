@@ -14,6 +14,7 @@ export 'section_header.dart';
 export 'sheets.dart';
 export 'skeleton.dart';
 export 'stepper.dart';
+export 'markdown_text.dart';
 export 'tab_bar.dart';
 export 'text_field.dart';
 export 'toast.dart';

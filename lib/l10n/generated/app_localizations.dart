@@ -4511,6 +4511,156 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Supprimer cette photo ?'**
   String get confirmDeletePhoto;
+
+  /// No description provided for @shareByLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager par lien'**
+  String get shareByLink;
+
+  /// No description provided for @sharedLinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liens partagés'**
+  String get sharedLinks;
+
+  /// No description provided for @sharedLinksHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une page web publique, révocable à tout moment.'**
+  String get sharedLinksHint;
+
+  /// No description provided for @noSharedLinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun lien partagé'**
+  String get noSharedLinks;
+
+  /// No description provided for @shareTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre de la page'**
+  String get shareTitle;
+
+  /// No description provided for @shareDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description (facultatif)'**
+  String get shareDescription;
+
+  /// No description provided for @shareKeywords.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mots-clés (facultatif)'**
+  String get shareKeywords;
+
+  /// No description provided for @shareUnlisted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non référencé'**
+  String get shareUnlisted;
+
+  /// No description provided for @shareUnlistedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La page demande aux moteurs de recherche de ne pas l\'indexer. Toute personne ayant le lien peut la voir.'**
+  String get shareUnlistedHint;
+
+  /// No description provided for @shareExpiry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire le'**
+  String get shareExpiry;
+
+  /// No description provided for @shareNoExpiry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans expiration'**
+  String get shareNoExpiry;
+
+  /// No description provided for @shareCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer le lien'**
+  String get shareCreate;
+
+  /// No description provided for @shareCopy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le lien'**
+  String get shareCopy;
+
+  /// No description provided for @shareCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien copié'**
+  String get shareCopied;
+
+  /// No description provided for @shareRevoke.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer'**
+  String get shareRevoke;
+
+  /// No description provided for @shareRevoked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoqué'**
+  String get shareRevoked;
+
+  /// No description provided for @shareExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expiré'**
+  String get shareExpired;
+
+  /// No description provided for @shareActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get shareActive;
+
+  /// No description provided for @confirmRevokeLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer ce lien ? La page ne sera plus accessible.'**
+  String get confirmRevokeLink;
+
+  /// No description provided for @shareNeedsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le partage par lien nécessite un compte.'**
+  String get shareNeedsAccount;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le lien n\'a pas pu être créé. Réessayez.'**
+  String get shareFailed;
+
+  /// No description provided for @sharePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager cette photo'**
+  String get sharePhoto;
+
+  /// No description provided for @sharePlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager cette plante'**
+  String get sharePlant;
+
+  /// No description provided for @notesMarkdownHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise en forme : **gras**, *italique*, - listes, [liens](https://…)'**
+  String get notesMarkdownHint;
+
+  /// No description provided for @preview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get preview;
 }
 
 class _AppLocalizationsDelegate

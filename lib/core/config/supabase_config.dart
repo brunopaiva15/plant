@@ -10,4 +10,11 @@ abstract final class SupabaseConfig {
   static const String authRedirect = 'flora://login-callback';
 
   static bool get isConfigured => url.isNotEmpty && anonKey.isNotEmpty;
+
+  /// Base des liens de partage public, servie par la fonction Edge `share`.
+  /// Surchargeable pour un domaine personnalisé :
+  /// `--dart-define=SHARE_BASE_URL=https://flora.exemple/s`.
+  static const String _shareBaseOverride = String.fromEnvironment('SHARE_BASE_URL');
+
+  static String get shareBaseUrl => _shareBaseOverride.isNotEmpty ? _shareBaseOverride : '$url/functions/v1/share';
 }
