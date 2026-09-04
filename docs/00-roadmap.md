@@ -1,0 +1,60 @@
+# Flora — Roadmap par phases
+
+> Nom de travail : **Flora** (configurable via `AppConfig.appName`). Aucune dépendance profonde au nom dans le code.
+
+Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque phase livre une application **utilisable et sans bouton mort** : une fonction visible fonctionne, ou elle n'est pas visible.
+
+## Phase 0 — Fondations (livrée avec la Phase 1)
+- Architecture Flutter propre (feature-first, domain / data / presentation)
+- Design system complet (tokens, thème clair / sombre, composants)
+- Navigation native (transitions Cupertino sur iOS, Material 3 sur Android)
+- Base locale SQLite (drift) modélisée sur le schéma Postgres cible
+- Couche i18n (fr, en, de, it) sans texte codé en dur
+- Haptics, animations, `reduced motion`, Dynamic Type
+
+## Phase 1 — MVP « Prendre soin » ✅ (implémentée dans ce dépôt)
+| Fonction | État |
+|---|---|
+| Onboarding interactif (3 écrans max, ajoute la première plante) | ✅ |
+| Compte local (sans inscription) + abstraction `AuthRepository` prête pour Apple / Google / e-mail | ✅ (local) |
+| Plantes : création en < 20 s (photo → nom → emplacement), fiche, édition | ✅ |
+| Photos : caméra / galerie, compression, miniatures, cache local | ✅ |
+| Emplacements hiérarchiques (Maison → Salon…), fiche emplacement | ✅ |
+| Actions rapides (arrosage, engrais, rempotage, taille, nettoyage, traitement, note, photo, mesure, types personnalisés) | ✅ |
+| Timeline / journal de vie par plante | ✅ |
+| Planning d'entretien (fixe, saisonnier, manuel) + moteur de rappels testé | ✅ |
+| Écran Aujourd'hui (à faire, en retard, à venir) avec action en 1 tap + Undo | ✅ |
+| Notifications locales groupées, heure préférée, jours silencieux | ✅ |
+| Recherche instantanée (nom, espèce, emplacement, tags, notes) | ✅ |
+| Dark mode | ✅ |
+| Favoris, tags (optionnels), archives (« Anciennes plantes ») + restauration | ✅ |
+| Sélection multiple (long press) → arroser / déplacer / archiver | ✅ |
+
+## Phase 2 — « Comprendre »
+- Identification par photo (service abstrait `PlantIdentifier`, provider externe branchable)
+- Inventaire (engrais, terreaux, pots, outils…) avec seuil de stock bas
+- Calendrier (agenda prioritaire, vue mois)
+- Mesures et mini-visualisations (hauteur, largeur, feuilles, pot)
+- QR codes par plante (génération, scan, export PDF d'étiquettes)
+- Croissance : galerie chronologique, comparaison avant / après
+- Synchronisation Supabase (adapter `RemoteDataSource`, outbox déjà en place)
+
+## Phase 3 — « Partager »
+- Collaboration (jardin partagé, rôles Owner / Member / Viewer, « Arrosée par Laura à 08:32 »)
+- Météo intelligente pour les plantes extérieures
+- Diagnostic (« Ma plante a un problème »), suggestions non affirmatives
+- Vidéo de croissance, statistiques légères
+- Partage par lien public révocable
+- Widgets iOS / Android, Live Activity « session de soin »
+
+## Phase 4 — « Étendre »
+- NFC (architecture prévue : `PlantTagLink` table `plant_links` type `nfc` / `qr`)
+- Apple Watch
+- Automatisations, Shortcuts / Siri, Home Assistant, capteurs
+- Import HortusFox, export complet (JSON / CSV / ZIP)
+
+## Principes de livraison
+1. Simplicité > élégance > vitesse > clarté > fiabilité > profondeur.
+2. Chaque écran passe la *design review* (`docs/06-design-system.md#design-review`).
+3. Aucun texte en dur ; toute chaîne passe par `AppLocalizations`.
+4. Aucune logique métier dans les widgets : elle vit dans `domain/` et `data/`.

@@ -1,0 +1,88 @@
+import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../domain/models/models.dart';
+import '../../domain/repositories/repositories.dart';
+import '../db/database.dart';
+import '../db/mappers.dart';
+
+class DriftPhotoRepository implements PhotoRepository {
+  DriftPhotoRepository(this._db);
+
+  final FloraDatabase _db;
+  static const _uuid = Uuid();
+
+  @override
+  Stream<List<PlantPhoto>> watchByPlant(String plantId) => (_db.select(_db.plantPhotos)
+        ..where((p) => p.plantId.equals(plantId) & p.deletedAt.isNull())
+        ..orderBy([(p) => OrderingTerm.desc(p.takenAt)]))
+      .watch()
+      .map((rows) => rows.map((r) => r.toDomain()).toList());
+
+  @override
+  Stream<List<PlantPhoto>> watchRecent({int limit = 12}) => (_db.select(_db.plantPhotos)
+        ..where((p) => p.deletedAt.isNull())
+        ..orderBy([(p) => OrderingTerm.desc(p.takenAt)])
+        ..limit(limit))
+      .watch()
+      .map((rows) => rows.map((r) => r.toDomain()).toList());
+
+  @override
+  Future<PlantPhoto> add({
+    required String plantId,
+    required String filePath,
+    required String thumbPath,
+    required int width,
+    required int height,
+    DateTime? takenAt,
+  }) async {
+    final now = DateTime.now();
+    final id = _uuid.v4();
+    await _db.transaction(() async {
+      await _db.into(_db.plantPhotos).insert(PlantPhotosCompanion.insert(
+            id: id,
+            plantId: plantId,
+            filePath: filePath,
+            thumbPath: thumbPath,
+            width: width,
+            height: height,
+            takenAt: takenAt ?? now,
+            createdAt: now,
+          ));
+      // La première photo devient automatiquement la photo principale.
+      await (_db.update(_db.plants)..where((p) => p.id.equals(plantId) & p.primaryPhotoId.isNull()))
+          .write(PlantsCompanion(primaryPhotoId: Value(id), updatedAt: Value(now)));
+      await _db.enqueueSync('plant_photos', id, 'upsert', {});
+    });
+    return (await (_db.select(_db.plantPhotos)..where((p) => p.id.equals(id))).getSingle()).toDomain();
+  }
+
+  @override
+  Future<void> setPrimary(String plantId, String photoId) => (_db.update(_db.plants)..where((p) => p.id.equals(plantId)))
+      .write(PlantsCompanion(primaryPhotoId: Value(photoId), updatedAt: Value(DateTime.now())));
+
+  @override
+  Future<void> delete(String photoId) async {
+    final now = DateTime.now();
+    await _db.transaction(() async {
+      final photo = await (_db.select(_db.plantPhotos)..where((p) => p.id.equals(photoId))).getSingleOrNull();
+      if (photo == null) return;
+      await (_db.update(_db.plantPhotos)..where((p) => p.id.equals(photoId)))
+          .write(PlantPhotosCompanion(deletedAt: Value(now)));
+      // Si c'était la principale, on bascule sur la plus récente restante.
+      final plant = await (_db.select(_db.plants)..where((p) => p.id.equals(photo.plantId))).getSingleOrNull();
+      if (plant?.primaryPhotoId == photoId) {
+        final next = await (_db.select(_db.plantPhotos)
+              ..where((p) => p.plantId.equals(photo.plantId) & p.deletedAt.isNull())
+              ..orderBy([(p) => OrderingTerm.desc(p.takenAt)])
+              ..limit(1))
+            .getSingleOrNull();
+        await (_db.update(_db.plants)..where((p) => p.id.equals(photo.plantId)))
+            .write(PlantsCompanion(primaryPhotoId: Value(next?.id), updatedAt: Value(now)));
+      }
+      await (_db.update(_db.plantActions)..where((a) => a.photoId.equals(photoId)))
+          .write(PlantActionsCompanion(deletedAt: Value(now)));
+      await _db.enqueueSync('plant_photos', photoId, 'delete', {});
+    });
+  }
+}

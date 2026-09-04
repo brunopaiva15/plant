@@ -1,0 +1,129 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../core/observability/observability.dart';
+import '../data/db/database.dart';
+import '../data/repositories/action_repository_impl.dart';
+import '../data/repositories/action_type_repository_impl.dart';
+import '../data/repositories/care_repository_impl.dart';
+import '../data/repositories/location_repository_impl.dart';
+import '../data/repositories/photo_repository_impl.dart';
+import '../data/repositories/plant_repository_impl.dart';
+import '../data/repositories/tag_repository_impl.dart';
+import '../data/services/notification_service.dart';
+import '../data/services/photo_storage_service.dart';
+import '../data/services/preferences_service.dart';
+import '../domain/auth/auth_repository.dart';
+import '../domain/models/models.dart';
+import '../domain/repositories/repositories.dart';
+
+/// Dépendances construites au démarrage (main.dart) et injectées par override.
+final databaseProvider = Provider<FloraDatabase>((ref) => throw UnimplementedError('override in main'));
+final preferencesServiceProvider = Provider<PreferencesService>((ref) => throw UnimplementedError('override in main'));
+final notificationServiceProvider = Provider<NotificationService>((ref) => throw UnimplementedError('override in main'));
+final authRepositoryProvider = Provider<AuthRepository>((ref) => throw UnimplementedError('override in main'));
+final gardenIdProvider = Provider<String>((ref) => throw UnimplementedError('override in main'));
+
+final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorageService());
+final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
+final crashReporterProvider = Provider<CrashReporter>((ref) => const NoopCrashReporter());
+
+final plantRepositoryProvider =
+    Provider<PlantRepository>((ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+final locationRepositoryProvider = Provider<LocationRepository>(
+    (ref) => DriftLocationRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+final actionRepositoryProvider = Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider)));
+final careRepositoryProvider =
+    Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider)));
+final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider)));
+final actionTypeRepositoryProvider =
+    Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));
+final tagRepositoryProvider =
+    Provider<TagRepository>((ref) => DriftTagRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+
+/// Utilisateur courant (compte local en Phase 1).
+final currentUserProvider = StreamProvider<AppUser?>((ref) => ref.watch(authRepositoryProvider).watchUser());
+
+/// Types d'action (intégrés + personnalisés), indexés par clé.
+final actionTypesProvider = StreamProvider<List<ActionType>>((ref) => ref.watch(actionTypeRepositoryProvider).watchAll());
+final actionTypeByKeyProvider = Provider<Map<String, ActionType>>((ref) {
+  final types = ref.watch(actionTypesProvider).value ?? const [];
+  return {for (final t in types) t.key: t};
+});
+
+final locationsProvider = StreamProvider<List<Location>>((ref) => ref.watch(locationRepositoryProvider).watchAll());
+final locationTreeProvider = StreamProvider<List<LocationNode>>((ref) => ref.watch(locationRepositoryProvider).watchTree());
+final tagsProvider = StreamProvider<List<Tag>>((ref) => ref.watch(tagRepositoryProvider).watchAll());
+final activePlantCountProvider = StreamProvider<int>((ref) => ref.watch(plantRepositoryProvider).watchActiveCount());
+
+/// Réglages réactifs (thème, langue, notifications…).
+class AppPreferences {
+  const AppPreferences({
+    required this.themeMode,
+    required this.reduceMotion,
+    required this.locale,
+    required this.metricUnits,
+    required this.gridView,
+    required this.notificationsEnabled,
+    required this.notificationTime,
+    required this.quietWeekdays,
+    required this.onboardingDone,
+    required this.displayName,
+  });
+
+  final ThemeMode themeMode;
+  final bool? reduceMotion;
+  final Locale? locale;
+  final bool metricUnits;
+  final bool gridView;
+  final bool notificationsEnabled;
+  final TimeOfDay notificationTime;
+  final Set<int> quietWeekdays;
+  final bool onboardingDone;
+  final String displayName;
+}
+
+class PreferencesController extends Notifier<AppPreferences> {
+  PreferencesService get _service => ref.read(preferencesServiceProvider);
+
+  @override
+  AppPreferences build() => _read();
+
+  AppPreferences _read() {
+    final s = _service;
+    final code = s.localeCode;
+    return AppPreferences(
+      themeMode: s.themeMode,
+      reduceMotion: s.reduceMotion,
+      locale: code == null ? null : Locale(code),
+      metricUnits: s.metricUnits,
+      gridView: s.gridView,
+      notificationsEnabled: s.notificationsEnabled,
+      notificationTime: s.notificationTime,
+      quietWeekdays: s.quietWeekdays,
+      onboardingDone: s.onboardingDone,
+      displayName: s.displayName ?? '',
+    );
+  }
+
+  Future<void> _apply(Future<void> Function(PreferencesService s) write) async {
+    await write(_service);
+    state = _read();
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) => _apply((s) => s.setThemeMode(mode));
+  Future<void> setReduceMotion(bool? value) => _apply((s) => s.setReduceMotion(value));
+  Future<void> setLocale(Locale? locale) => _apply((s) => s.setLocaleCode(locale?.languageCode));
+  Future<void> setMetricUnits(bool value) => _apply((s) => s.setMetricUnits(value));
+  Future<void> setGridView(bool value) => _apply((s) => s.setGridView(value));
+  Future<void> setNotificationsEnabled(bool value) => _apply((s) => s.setNotificationsEnabled(value));
+  Future<void> setNotificationTime(TimeOfDay time) => _apply((s) => s.setNotificationTime(time));
+  Future<void> setQuietWeekdays(Set<int> days) => _apply((s) => s.setQuietWeekdays(days));
+  Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
+  Future<void> setDisplayName(String name) async {
+    await ref.read(authRepositoryProvider).updateDisplayName(name);
+    state = _read();
+  }
+}
+
+final preferencesProvider = NotifierProvider<PreferencesController, AppPreferences>(PreferencesController.new);
