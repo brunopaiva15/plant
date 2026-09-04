@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 
 import '../../data/db/database.dart';
 import '../../data/repositories/action_repository_impl.dart';
+import '../../data/repositories/calendar_repository_impl.dart';
 import '../../data/repositories/care_repository_impl.dart';
 import '../../data/repositories/inventory_repository_impl.dart';
 import '../../data/repositories/location_repository_impl.dart';
 import '../../data/repositories/plant_repository_impl.dart';
 import '../../data/repositories/tag_repository_impl.dart';
+import '../../data/repositories/task_repository_impl.dart';
 import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
 
@@ -24,6 +26,8 @@ abstract final class DemoSeed {
     final care = DriftCareRepository(db, plants);
     final tags = DriftTagRepository(db, gardenId);
     final inventory = DriftInventoryRepository(db, gardenId);
+    final calendar = DriftCalendarRepository(db, gardenId);
+    final tasks = DriftTaskRepository(db, gardenId);
 
     final all = await locations.watchAll().first;
     String? loc(String name) => all.where((l) => l.name.toLowerCase().startsWith(name)).firstOrNull?.id;
@@ -70,6 +74,27 @@ abstract final class DemoSeed {
     await inventory.create(category: InventoryCategory.soil, name: 'Terreau tropical', quantity: 7, unit: 'L', lowThreshold: 5);
     await inventory.create(category: InventoryCategory.substrate, name: 'Perlite', quantity: 2, unit: 'L', lowThreshold: 3);
     await inventory.create(category: InventoryCategory.pot, name: 'Pots Ø15 cm', quantity: 4, unit: '');
+
+    // Un groupe d'inventaire, avec un article étiqueté.
+    final etagere = await inventory.createGroup(label: 'Étagère du balcon', emoji: '🪟');
+    final graines = await inventory.create(category: InventoryCategory.seed, name: 'Graines de basilic', quantity: 3, unit: '', groupId: etagere.id);
+    await inventory.setItemTags(graines.id, [rare.id]);
+
+    // Deux événements de calendrier et leur catégorie.
+    final sorties = await calendar.createCategory(label: 'Sorties', emoji: '🛒');
+    await calendar.create(NewCalendarEntry(title: 'Marché aux plantes', startAt: now.add(const Duration(days: 3)), categoryId: sorties.id, reminderMinutes: 60));
+    await calendar.create(NewCalendarEntry(
+      title: 'Rempotage de printemps',
+      startAt: now.add(const Duration(days: 9)),
+      endAt: now.add(const Duration(days: 10)),
+      plantId: ficus.id,
+      notes: 'Prévoir du terreau et un pot plus large.',
+    ));
+
+    // Une tâche libre ouverte, et une plante archivée pour les archives.
+    await tasks.create(NewTask(title: 'Commander du terreau', dueAt: now.add(const Duration(days: 1))));
+    final disparue = await mk('Fougère', 'Nephrolepis exaltata', cuisine, acquired: DateTime(now.year - 2, 5, 4));
+    await plants.archive([disparue.id], reason: 'died');
 
     // Une routine saisonnière pour la variété.
     final hoyaSchedules = await care.watchByPlant(hoya.id).first;
