@@ -1,4 +1,5 @@
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,6 +21,10 @@ import 'features/today/application/reminder_scheduler.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Revue visuelle des variantes Cupertino depuis un navigateur : `?ios`.
+  if (!kReleaseMode && kIsWeb && Uri.base.queryParameters.containsKey('ios')) {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+  }
 
   final prefs = await PreferencesService.load();
   final db = FloraDatabase(driftDatabase(

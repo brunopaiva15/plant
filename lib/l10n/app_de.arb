@@ -575,5 +575,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "speciesPickerTitle": "Art auswählen",
+  "speciesSearchHint": "Trivialname, lateinischer Name, Familie…",
+  "speciesInGarden": "In Ihrem Garten",
+  "speciesCommonList": "Gängige Arten",
+  "speciesGbifResults": "Alle Arten (GBIF)",
+  "speciesGbifCount": "{count} passende Arten",
+  "speciesUseText": "„{name}“ verwenden",
+  "speciesNoResults": "Keine Art gefunden",
+  "speciesOffline": "Die vollständige Liste benötigt eine Verbindung. Gängige Arten bleiben verfügbar.",
+  "speciesBrowse": "Vollständige Liste",
+  "speciesCatAll": "Alle",
+  "speciesCatIndoor": "Zimmerpflanzen",
+  "speciesCatSucculent": "Sukkulenten",
+  "speciesCatHerb": "Kräuter",
+  "speciesCatVegetable": "Gemüse",
+  "speciesCatFruit": "Obst",
+  "speciesCatFlower": "Blumen",
+  "speciesCatTree": "Bäume und Sträucher"
 }

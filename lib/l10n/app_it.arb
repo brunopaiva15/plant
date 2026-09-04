@@ -575,5 +575,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "speciesPickerTitle": "Scegli una specie",
+  "speciesSearchHint": "Nome comune, latino, famiglia…",
+  "speciesInGarden": "Nel tuo giardino",
+  "speciesCommonList": "Specie comuni",
+  "speciesGbifResults": "Tutte le specie (GBIF)",
+  "speciesGbifCount": "{count} specie corrispondenti",
+  "speciesUseText": "Usa “{name}”",
+  "speciesNoResults": "Nessuna specie trovata",
+  "speciesOffline": "L'elenco completo richiede una connessione. Le specie comuni restano disponibili.",
+  "speciesBrowse": "Elenco completo",
+  "speciesCatAll": "Tutte",
+  "speciesCatIndoor": "Da interno",
+  "speciesCatSucculent": "Succulente",
+  "speciesCatHerb": "Aromatiche",
+  "speciesCatVegetable": "Orto",
+  "speciesCatFruit": "Da frutto",
+  "speciesCatFlower": "Fiori",
+  "speciesCatTree": "Alberi e arbusti"
 }

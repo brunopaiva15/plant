@@ -2891,6 +2891,114 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Synonyme'**
   String get speciesStatusSynonym;
+
+  /// No description provided for @speciesPickerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir une espèce'**
+  String get speciesPickerTitle;
+
+  /// No description provided for @speciesSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom commun, latin, famille…'**
+  String get speciesSearchHint;
+
+  /// No description provided for @speciesInGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans votre jardin'**
+  String get speciesInGarden;
+
+  /// No description provided for @speciesCommonList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèces courantes'**
+  String get speciesCommonList;
+
+  /// No description provided for @speciesGbifResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les espèces (GBIF)'**
+  String get speciesGbifResults;
+
+  /// No description provided for @speciesGbifCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} espèces correspondantes'**
+  String speciesGbifCount(int count);
+
+  /// No description provided for @speciesUseText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser « {name} »'**
+  String speciesUseText(String name);
+
+  /// No description provided for @speciesNoResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune espèce trouvée'**
+  String get speciesNoResults;
+
+  /// No description provided for @speciesOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'La liste complète nécessite une connexion. Les espèces courantes restent disponibles.'**
+  String get speciesOffline;
+
+  /// No description provided for @speciesBrowse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste complète'**
+  String get speciesBrowse;
+
+  /// No description provided for @speciesCatAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes'**
+  String get speciesCatAll;
+
+  /// No description provided for @speciesCatIndoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intérieur'**
+  String get speciesCatIndoor;
+
+  /// No description provided for @speciesCatSucculent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Succulentes'**
+  String get speciesCatSucculent;
+
+  /// No description provided for @speciesCatHerb.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aromatiques'**
+  String get speciesCatHerb;
+
+  /// No description provided for @speciesCatVegetable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Potager'**
+  String get speciesCatVegetable;
+
+  /// No description provided for @speciesCatFruit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fruitiers'**
+  String get speciesCatFruit;
+
+  /// No description provided for @speciesCatFlower.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fleurs'**
+  String get speciesCatFlower;
+
+  /// No description provided for @speciesCatTree.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arbres et arbustes'**
+  String get speciesCatTree;
 }
 
 class _AppLocalizationsDelegate

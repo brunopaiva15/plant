@@ -36,6 +36,32 @@ class GbifSpeciesService implements SpeciesService {
   }
 
   @override
+  Future<SpeciesSearchPage> search(String query, {int offset = 0, int limit = 30, String? languageCode}) async {
+    final q = query.trim();
+    if (q.length < 2) return const SpeciesSearchPage(results: [], endOfRecords: true, total: 0);
+    final uri = Uri.https(_base, '/v1/species/search', {
+      'q': q,
+      'rank': 'SPECIES',
+      'highertaxonKey': '$plantaeKey',
+      'status': 'ACCEPTED',
+      'limit': '$limit',
+      'offset': '$offset',
+    });
+    final res = await _client.get(uri).timeout(const Duration(seconds: 15));
+    if (res.statusCode != 200) throw Exception('GBIF ${res.statusCode}');
+    return parseSearchPage(res.body, languageCode: languageCode);
+  }
+
+  static SpeciesSearchPage parseSearchPage(String body, {String? languageCode}) {
+    final json = jsonDecode(body) as Map<String, dynamic>;
+    return SpeciesSearchPage(
+      results: parseSuggestions(body, languageCode: languageCode),
+      endOfRecords: (json['endOfRecords'] as bool?) ?? true,
+      total: json['count'] as int?,
+    );
+  }
+
+  @override
   Future<SpeciesInfo?> lookup(String scientificName) async {
     final name = scientificName.trim();
     if (name.isEmpty) return null;

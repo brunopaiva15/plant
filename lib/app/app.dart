@@ -34,9 +34,14 @@ class FloraApp extends ConsumerWidget {
         final media = MediaQuery.of(context);
         // « Réduire les animations » : réglage app, sinon réglage système.
         final reduce = prefs.reduceMotion ?? media.disableAnimations;
+        // Material transparent à la racine : fournit le DefaultTextStyle aux
+        // pages Cupertino (sans lui, iOS souligne les textes en jaune).
         return MediaQuery(
           data: media.copyWith(disableAnimations: reduce),
-          child: ToastHost(child: child ?? const SizedBox.shrink()),
+          child: Material(
+            type: MaterialType.transparency,
+            child: ToastHost(child: child ?? const SizedBox.shrink()),
+          ),
         );
       },
     );

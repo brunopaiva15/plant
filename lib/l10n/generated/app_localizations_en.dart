@@ -1616,4 +1616,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get speciesStatusSynonym => 'Synonym';
+
+  @override
+  String get speciesPickerTitle => 'Choose a species';
+
+  @override
+  String get speciesSearchHint => 'Common name, Latin name, family…';
+
+  @override
+  String get speciesInGarden => 'In your garden';
+
+  @override
+  String get speciesCommonList => 'Common species';
+
+  @override
+  String get speciesGbifResults => 'All species (GBIF)';
+
+  @override
+  String speciesGbifCount(int count) {
+    return '$count matching species';
+  }
+
+  @override
+  String speciesUseText(String name) {
+    return 'Use “$name”';
+  }
+
+  @override
+  String get speciesNoResults => 'No species found';
+
+  @override
+  String get speciesOffline =>
+      'The full list needs a connection. Common species stay available.';
+
+  @override
+  String get speciesBrowse => 'Full list';
+
+  @override
+  String get speciesCatAll => 'All';
+
+  @override
+  String get speciesCatIndoor => 'Houseplants';
+
+  @override
+  String get speciesCatSucculent => 'Succulents';
+
+  @override
+  String get speciesCatHerb => 'Herbs';
+
+  @override
+  String get speciesCatVegetable => 'Vegetables';
+
+  @override
+  String get speciesCatFruit => 'Fruit';
+
+  @override
+  String get speciesCatFlower => 'Flowers';
+
+  @override
+  String get speciesCatTree => 'Trees and shrubs';
 }

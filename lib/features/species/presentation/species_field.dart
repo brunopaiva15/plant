@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
@@ -59,13 +62,25 @@ class _SpeciesFieldState extends ConsumerState<SpeciesField> {
     widget.onPicked?.call(s);
   }
 
+  Future<void> _browse() async {
+    final q = widget.controller.text.trim();
+    final picked = await context.push<SpeciesSuggestion>(Uri(path: Routes.speciesPicker, queryParameters: q.isEmpty ? null : {'q': q}).toString());
+    if (picked != null && mounted) _pick(picked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FloraTextField(controller: widget.controller, hint: widget.hint ?? l10n.speciesHint, onChanged: _onChanged, textInputAction: TextInputAction.done),
+        Row(
+          children: [
+            Expanded(child: FloraTextField(controller: widget.controller, hint: widget.hint ?? l10n.speciesHint, onChanged: _onChanged, textInputAction: TextInputAction.done)),
+            const SizedBox(width: Space.xs),
+            FloraIconButton(icon: CupertinoIcons.list_bullet, semanticLabel: l10n.speciesBrowse, onPressed: _browse, size: 48),
+          ],
+        ),
         AnimatedSize(
           duration: Motion.of(context, Motion.standard),
           curve: Motion.easeOut,

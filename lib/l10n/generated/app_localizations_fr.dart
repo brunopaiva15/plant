@@ -1620,4 +1620,63 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get speciesStatusSynonym => 'Synonyme';
+
+  @override
+  String get speciesPickerTitle => 'Choisir une espèce';
+
+  @override
+  String get speciesSearchHint => 'Nom commun, latin, famille…';
+
+  @override
+  String get speciesInGarden => 'Dans votre jardin';
+
+  @override
+  String get speciesCommonList => 'Espèces courantes';
+
+  @override
+  String get speciesGbifResults => 'Toutes les espèces (GBIF)';
+
+  @override
+  String speciesGbifCount(int count) {
+    return '$count espèces correspondantes';
+  }
+
+  @override
+  String speciesUseText(String name) {
+    return 'Utiliser « $name »';
+  }
+
+  @override
+  String get speciesNoResults => 'Aucune espèce trouvée';
+
+  @override
+  String get speciesOffline =>
+      'La liste complète nécessite une connexion. Les espèces courantes restent disponibles.';
+
+  @override
+  String get speciesBrowse => 'Liste complète';
+
+  @override
+  String get speciesCatAll => 'Toutes';
+
+  @override
+  String get speciesCatIndoor => 'Intérieur';
+
+  @override
+  String get speciesCatSucculent => 'Succulentes';
+
+  @override
+  String get speciesCatHerb => 'Aromatiques';
+
+  @override
+  String get speciesCatVegetable => 'Potager';
+
+  @override
+  String get speciesCatFruit => 'Fruitiers';
+
+  @override
+  String get speciesCatFlower => 'Fleurs';
+
+  @override
+  String get speciesCatTree => 'Arbres et arbustes';
 }

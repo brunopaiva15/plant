@@ -83,8 +83,51 @@ class SpeciesInfo {
 }
 
 /// Service d'information sur les espèces. Implémentation : GBIF (sans clé).
+/// Une page de résultats de recherche (liste complète, défilement infini).
+class SpeciesSearchPage {
+  const SpeciesSearchPage({required this.results, required this.endOfRecords, this.total});
+
+  final List<SpeciesSuggestion> results;
+  final bool endOfRecords;
+  final int? total;
+}
+
+/// Catégorie d'usage d'une espèce du catalogue intégré.
+enum SpeciesCategory { indoor, succulent, herb, vegetable, fruit, flower, tree }
+
+/// Entrée du catalogue intégré : disponible hors ligne, noms communs dans
+/// les quatre langues de l'app.
+class SpeciesCatalogEntry {
+  const SpeciesCatalogEntry(this.scientificName, this.family, this.category, {required this.fr, required this.en, required this.de, required this.it});
+
+  final String scientificName;
+  final String family;
+  final SpeciesCategory category;
+  final String fr;
+  final String en;
+  final String de;
+  final String it;
+
+  String commonName(String languageCode) => switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+
+  bool matches(String query) {
+    final q = query.toLowerCase();
+    return scientificName.toLowerCase().contains(q) ||
+        fr.toLowerCase().contains(q) ||
+        en.toLowerCase().contains(q) ||
+        de.toLowerCase().contains(q) ||
+        it.toLowerCase().contains(q) ||
+        family.toLowerCase().contains(q);
+  }
+
+  SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(key: 0, scientificName: scientificName, family: family, commonName: commonName(languageCode));
+}
+
 abstract class SpeciesService {
   Future<List<SpeciesSuggestion>> suggest(String query, {String? languageCode});
+
+  /// Recherche paginée dans la base complète (GBIF : ~400 000 espèces de plantes).
+  Future<SpeciesSearchPage> search(String query, {int offset = 0, int limit = 30, String? languageCode});
   Future<SpeciesInfo?> lookup(String scientificName);
   Future<SpeciesInfo?> byKey(int key);
 }

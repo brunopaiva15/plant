@@ -575,5 +575,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "speciesPickerTitle": "Choose a species",
+  "speciesSearchHint": "Common name, Latin name, family…",
+  "speciesInGarden": "In your garden",
+  "speciesCommonList": "Common species",
+  "speciesGbifResults": "All species (GBIF)",
+  "speciesGbifCount": "{count} matching species",
+  "speciesUseText": "Use “{name}”",
+  "speciesNoResults": "No species found",
+  "speciesOffline": "The full list needs a connection. Common species stay available.",
+  "speciesBrowse": "Full list",
+  "speciesCatAll": "All",
+  "speciesCatIndoor": "Houseplants",
+  "speciesCatSucculent": "Succulents",
+  "speciesCatHerb": "Herbs",
+  "speciesCatVegetable": "Vegetables",
+  "speciesCatFruit": "Fruit",
+  "speciesCatFlower": "Flowers",
+  "speciesCatTree": "Trees and shrubs"
 }

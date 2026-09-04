@@ -24,6 +24,8 @@ import '../features/profile/presentation/notifications_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/tags_screen.dart';
 import '../features/qr/presentation/scanner_screen.dart';
+import '../domain/species/species_info.dart';
+import '../features/species/presentation/species_picker_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
 import 'providers.dart';
@@ -56,6 +58,7 @@ abstract final class Routes {
   static const about = '/settings/about';
   static const identification = '/settings/identification';
   static const scan = '/scan';
+  static const speciesPicker = '/species/pick';
   static const weather = '/settings/weather';
   static const account = '/settings/account';
   static const members = '/settings/members';
@@ -127,6 +130,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),
       GoRoute(path: Routes.members, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const MembersScreen())),
       GoRoute(path: Routes.diagnosis, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const DiagnosisSettingsScreen())),
+      GoRoute(
+        path: Routes.speciesPicker,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => isCupertino(c)
+            ? CupertinoPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: SpeciesPickerScreen(initialQuery: s.uri.queryParameters['q'] ?? ''))
+            : MaterialPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: SpeciesPickerScreen(initialQuery: s.uri.queryParameters['q'] ?? '')),
+      ),
       GoRoute(
         path: Routes.scan,
         parentNavigatorKey: rootNavigatorKey,

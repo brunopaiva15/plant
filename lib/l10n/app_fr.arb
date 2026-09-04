@@ -824,5 +824,37 @@
   "speciesSuggestions": "Suggestions",
   "speciesUseName": "Utiliser ce nom",
   "speciesStatusAccepted": "Nom accepté",
-  "speciesStatusSynonym": "Synonyme"
+  "speciesStatusSynonym": "Synonyme",
+  "speciesPickerTitle": "Choisir une espèce",
+  "speciesSearchHint": "Nom commun, latin, famille…",
+  "speciesInGarden": "Dans votre jardin",
+  "speciesCommonList": "Espèces courantes",
+  "speciesGbifResults": "Toutes les espèces (GBIF)",
+  "speciesGbifCount": "{count} espèces correspondantes",
+  "@speciesGbifCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speciesUseText": "Utiliser « {name} »",
+  "@speciesUseText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "speciesNoResults": "Aucune espèce trouvée",
+  "speciesOffline": "La liste complète nécessite une connexion. Les espèces courantes restent disponibles.",
+  "speciesBrowse": "Liste complète",
+  "speciesCatAll": "Toutes",
+  "speciesCatIndoor": "Intérieur",
+  "speciesCatSucculent": "Succulentes",
+  "speciesCatHerb": "Aromatiques",
+  "speciesCatVegetable": "Potager",
+  "speciesCatFruit": "Fruitiers",
+  "speciesCatFlower": "Fleurs",
+  "speciesCatTree": "Arbres et arbustes"
 }
