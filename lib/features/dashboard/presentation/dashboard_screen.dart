@@ -42,15 +42,14 @@ class DashboardScreen extends ConsumerWidget {
             FloraGroup(children: [for (final w in warnings.take(8)) _WarningRow(warning: w)]),
           if (recent.isNotEmpty) ...[
             const SizedBox(height: Space.lg),
-            Row(
-              children: [
-                Expanded(child: Text(l10n.recentPlantsSection, style: context.text.title3)),
-                AdaptiveSegmented<RecentPlantsMode>(
-                  segments: {RecentPlantsMode.added: l10n.recentAdded, RecentPlantsMode.updated: l10n.recentUpdated},
-                  value: mode,
-                  onChanged: (m) => ref.read(recentPlantsModeProvider.notifier).set(m),
-                ),
-              ],
+            Text(l10n.recentPlantsSection, style: context.text.title3),
+            const SizedBox(height: Space.sm),
+            // Le contrôle segmenté prend toute la largeur : à côté du titre,
+            // il n'a pas de largeur propre et déborde.
+            AdaptiveSegmented<RecentPlantsMode>(
+              segments: {RecentPlantsMode.added: l10n.recentAdded, RecentPlantsMode.updated: l10n.recentUpdated},
+              value: mode,
+              onChanged: (m) => ref.read(recentPlantsModeProvider.notifier).set(m),
             ),
             const SizedBox(height: Space.sm),
             SizedBox(height: 132, child: _RecentCarousel(plants: recent)),
@@ -98,15 +97,19 @@ class _StatsGrid extends StatelessWidget {
         for (var i = 0; i < tiles.length; i += 2)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.sm),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(child: _StatTile(tile: tiles[i])),
-                const SizedBox(width: Space.sm),
-                // Une ligne impaire garde sa moitié vide plutôt que d'étirer
-                // la dernière tuile sur toute la largeur.
-                Expanded(child: i + 1 < tiles.length ? _StatTile(tile: tiles[i + 1]) : const SizedBox.shrink()),
-              ],
+            // IntrinsicHeight : les deux tuiles d'une ligne partagent la
+            // hauteur de la plus haute, sans contrainte infinie.
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: _StatTile(tile: tiles[i])),
+                  const SizedBox(width: Space.sm),
+                  // Une ligne impaire garde sa moitié vide plutôt que
+                  // d'étirer la dernière tuile sur toute la largeur.
+                  Expanded(child: i + 1 < tiles.length ? _StatTile(tile: tiles[i + 1]) : const SizedBox.shrink()),
+                ],
+              ),
             ),
           ),
       ],

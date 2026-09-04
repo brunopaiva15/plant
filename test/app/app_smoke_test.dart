@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flora/app/app.dart';
 import 'package:flora/app/providers.dart';
+import 'package:flora/app/router.dart';
 import 'package:flora/data/auth/local_auth_repository.dart';
 import 'package:flora/data/db/database.dart';
 import 'package:flora/data/db/mappers.dart';
@@ -214,6 +215,57 @@ void main() {
     // reste en attente à la fin du test.
     await tester.pump(const Duration(seconds: 6));
     await settle(tester);
+  });
+
+  testWidgets('the dashboard lays out its stats, warnings and recent plants', (tester) async {
+    final container = await boot(tester, seed: (c) async {
+      final plants = c.read(plantRepositoryProvider);
+      final salon = await c.read(locationRepositoryProvider).create(name: 'Salon', icon: '🛋️');
+      final monstera = await plants.create(NewPlant(name: 'Monstera', locationId: salon.id, speciesName: 'Monstera deliciosa'));
+      await plants.update(monstera.copyWith(health: PlantHealth.sick));
+      await plants.create(const NewPlant(name: 'Pilea'));
+    });
+    await pumpApp(tester, container);
+
+    // Icône du tableau de bord, à gauche du titre d'Aujourd'hui.
+    await tester.tap(find.byIcon(CupertinoIcons.chart_bar));
+    await settle(tester);
+
+    expect(find.text('Tableau de bord'), findsWidgets);
+    expect(find.text('Plantes'), findsWidgets);
+    // La section des avertissements remonte la plante malade : elle n'est
+    // rendue que si la grille de chiffres au-dessus s'est posée sans erreur.
+    expect(find.text('À surveiller'), findsWidgets);
+    expect(find.text('Malade'), findsOneWidget);
+    expect(find.text('Dernières plantes'), findsOneWidget);
+    expect(find.text('Journal d\'activité'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the pushed screens render without layout errors', (tester) async {
+    final container = await boot(tester, seed: (c) async {
+      final plants = c.read(plantRepositoryProvider);
+      final old = await plants.create(const NewPlant(name: 'Basilic'));
+      await plants.archive([old.id], reason: 'died');
+      await c.read(inventoryRepositoryProvider).create(category: InventoryCategory.fertilizer, name: 'Terreau', quantity: 2, unit: 'L');
+    });
+    await pumpApp(tester, container);
+    final router = container.read(routerProvider);
+
+    for (final entry in <(String, String)>[
+      (Routes.backup, 'Sauvegarde'),
+      (Routes.api, 'API externe'),
+      (Routes.archive, 'Anciennes plantes'),
+      (Routes.activityLog, 'Journal d\'activité'),
+      (Routes.forecast, 'Prévisions'),
+    ]) {
+      router.push(entry.$1);
+      await settle(tester);
+      expect(tester.takeException(), isNull, reason: entry.$1);
+      expect(find.text(entry.$2), findsWidgets, reason: entry.$1);
+      router.pop();
+      await settle(tester);
+    }
   });
 
   testWidgets('onboarding leads to Today after entering a name', (tester) async {
