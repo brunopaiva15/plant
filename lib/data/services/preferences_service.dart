@@ -23,6 +23,11 @@ class PreferencesService {
   bool get onboardingDone => _prefs.getBool('onboarding_done') ?? false;
   Future<void> setOnboardingDone() => _prefs.setBool('onboarding_done', true);
 
+  /// L'utilisateur a-t-il déjà soutenu le développeur ? Ne déverrouille rien :
+  /// sert seulement à ne plus lui proposer, et à dire merci.
+  bool get hasSupported => _prefs.getBool('has_supported') ?? false;
+  Future<void> setSupported(bool value) => _prefs.setBool('has_supported', value);
+
   ThemeMode get themeMode => ThemeMode.values.byName(_prefs.getString('theme_mode') ?? 'system');
   Future<void> setThemeMode(ThemeMode mode) => _prefs.setString('theme_mode', mode.name);
 

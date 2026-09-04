@@ -8,13 +8,13 @@ Tab bar
 ├── Aujourd'hui   (ce qui demande attention)
 ├── Plantes       (la collection)
 ├── Jardin        (emplacements, [inventaire P2], [calendrier P2])
-└── Profil        (apparence, notifications, archives, compte, premium, à propos)
+└── Profil        (apparence, notifications, archives, compte, soutien, à propos)
 ```
 
 ## Hiérarchie des écrans
 ```
 Root
-├── Splash → Onboarding (3 écrans) → Shell
+├── Splash → Onboarding (5 écrans + prénom + soutien) → Shell
 └── Shell (tabs)
     ├── Aujourd'hui
     │   ├── [Plante] → Fiche plante

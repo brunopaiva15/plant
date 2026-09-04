@@ -882,18 +882,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{Tous les jours} other{Tous les {count} jours}}'**
   String everyDays(int count);
 
-  /// No description provided for @freeLimitTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Limite atteinte'**
-  String get freeLimitTitle;
-
-  /// No description provided for @freeLimitBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'offre gratuite permet {count} plantes. Passez à Premium pour une collection illimitée.'**
-  String freeLimitBody(int count);
-
   /// No description provided for @sinceDate.
   ///
   /// In fr, this message translates to:
@@ -1710,24 +1698,6 @@ abstract class AppLocalizations {
   /// **'Version {version}'**
   String version(String version);
 
-  /// No description provided for @premium.
-  ///
-  /// In fr, this message translates to:
-  /// **'Premium'**
-  String get premium;
-
-  /// No description provided for @premiumBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Plantes illimitées, identification, diagnostic, collaboration. Bientôt disponible.'**
-  String get premiumBody;
-
-  /// No description provided for @premiumPlantCount.
-  ///
-  /// In fr, this message translates to:
-  /// **'{count} / {limit} plantes'**
-  String premiumPlantCount(int count, int limit);
-
   /// No description provided for @tags.
   ///
   /// In fr, this message translates to:
@@ -1767,7 +1737,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Prenez soin de vos plantes et gardez leur histoire.'**
+  /// **'Tout ce qu\'il faut, rien de plus.'**
   String get onboardingSubtitle;
 
   /// No description provided for @askNameTitle.
@@ -5553,7 +5523,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbTodayBody.
   ///
   /// In fr, this message translates to:
-  /// **'Aujourd\'hui ne montre que ce qui est dû. Un geste pour arroser, un autre pour annuler.'**
+  /// **'Aujourd\'hui ne montre que ce qui est dû.'**
   String get onbTodayBody;
 
   /// No description provided for @onbCareTitle.
@@ -5565,7 +5535,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbCareBody.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque plante a sa fiche d\'entretien : lumière, humidité, rempotage. Les intervalles s\'allongent en hiver, tout seuls.'**
+  /// **'Les intervalles s\'allongent en hiver, tout seuls.'**
   String get onbCareBody;
 
   /// No description provided for @onbGardenTitle.
@@ -5577,7 +5547,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbGardenBody.
   ///
   /// In fr, this message translates to:
-  /// **'Emplacements, inventaire, tâches et calendrier. Photos, mesures et journal : l\'histoire de chaque plante se garde toute seule.'**
+  /// **'Emplacements, inventaire, tâches, calendrier.'**
   String get onbGardenBody;
 
   /// No description provided for @onbPrivacyTitle.
@@ -5589,7 +5559,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbPrivacyBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tout fonctionne hors ligne. La synchronisation et le partage sont facultatifs, et l\'export est un simple fichier ouvert.'**
+  /// **'Tout fonctionne hors ligne.'**
   String get onbPrivacyBody;
 
   /// No description provided for @onbStart.
@@ -5651,6 +5621,90 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count} espèces consultables hors ligne'**
   String aboutSpeciesCount(String count);
+
+  /// No description provided for @supportTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flora est gratuite'**
+  String get supportTitle;
+
+  /// No description provided for @supportBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les fonctions, sans limite, sans publicité et sans compte obligatoire. Si l\'app vous rend service, vous pouvez soutenir son développeur une fois pour toutes.'**
+  String get supportBody;
+
+  /// No description provided for @supportNothingLocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien n\'est réservé à ceux qui donnent.'**
+  String get supportNothingLocked;
+
+  /// No description provided for @supportGive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soutenir · {price}'**
+  String supportGive(String price);
+
+  /// No description provided for @supportRestore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurer mon soutien'**
+  String get supportRestore;
+
+  /// No description provided for @supportThanksTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci'**
+  String get supportThanksTitle;
+
+  /// No description provided for @supportThanksBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre soutien est enregistré. L\'application ne change pas : elle était déjà entière.'**
+  String get supportThanksBody;
+
+  /// No description provided for @supportUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'achat n\'est pas disponible sur cet appareil.'**
+  String get supportUnavailable;
+
+  /// No description provided for @supportFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'achat n\'a pas abouti.'**
+  String get supportFailed;
+
+  /// No description provided for @supportNothingToRestore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun soutien à restaurer.'**
+  String get supportNothingToRestore;
+
+  /// No description provided for @supportSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soutenir le développeur'**
+  String get supportSettings;
+
+  /// No description provided for @supportFreeForever.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gratuite, sans limite'**
+  String get supportFreeForever;
+
+  /// No description provided for @supportAlready.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci pour votre soutien'**
+  String get supportAlready;
+
+  /// No description provided for @supportNoThanks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer sans'**
+  String get supportNoThanks;
 }
 
 class _AppLocalizationsDelegate

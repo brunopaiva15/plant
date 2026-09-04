@@ -9,8 +9,9 @@ abstract final class AppConfig {
   /// Schéma des liens encodés dans les QR codes (`flora://plant/<id>`).
   static const String linkScheme = 'flora';
 
-  /// Limite de plantes actives de l'offre gratuite (freemium, non agressif).
-  static const int freePlantLimit = 10;
+  /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
+  /// entière et gratuite. Voir `SupportService`.
+  static const String supportProductId = 'ch.vergasta.plant.support';
 
   /// Durée pendant laquelle une action peut être annulée.
   static const Duration undoWindow = Duration(seconds: 5);

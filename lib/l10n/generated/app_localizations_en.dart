@@ -478,14 +478,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get freeLimitTitle => 'Limit reached';
-
-  @override
-  String freeLimitBody(int count) {
-    return 'The free plan includes $count plants. Go Premium for an unlimited collection.';
-  }
-
-  @override
   String sinceDate(String date) {
     return 'Since $date';
   }
@@ -929,18 +921,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get premium => 'Premium';
-
-  @override
-  String get premiumBody =>
-      'Unlimited plants, identification, diagnosis, collaboration. Coming soon.';
-
-  @override
-  String premiumPlantCount(int count, int limit) {
-    return '$count / $limit plants';
-  }
-
-  @override
   String get tags => 'Tags';
 
   @override
@@ -959,7 +939,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingTitle => 'Your garden, simply.';
 
   @override
-  String get onboardingSubtitle => 'Care for your plants and keep their story.';
+  String get onboardingSubtitle => 'Everything you need, nothing more.';
 
   @override
   String get askNameTitle => 'What\'s your name?';
@@ -3238,29 +3218,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbTodayTitle => 'One question each morning';
 
   @override
-  String get onbTodayBody =>
-      'Today shows only what is due. One tap to water, one to undo.';
+  String get onbTodayBody => 'Today shows only what is due.';
 
   @override
   String get onbCareTitle => 'A rhythm that follows the seasons';
 
   @override
-  String get onbCareBody =>
-      'Every plant has a care guide: light, humidity, repotting. Intervals stretch out in winter, on their own.';
+  String get onbCareBody => 'Intervals stretch out in winter, on their own.';
 
   @override
   String get onbGardenTitle => 'Your whole garden in one place';
 
   @override
-  String get onbGardenBody =>
-      'Locations, inventory, tasks and calendar. Photos, measurements and a log: each plant\'s story keeps itself.';
+  String get onbGardenBody => 'Locations, inventory, tasks, calendar.';
 
   @override
   String get onbPrivacyTitle => 'Your data stays yours';
 
   @override
-  String get onbPrivacyBody =>
-      'Everything works offline. Sync and sharing are optional, and the export is a plain open file.';
+  String get onbPrivacyBody => 'Everything works offline.';
 
   @override
   String get onbStart => 'Get started';
@@ -3297,4 +3273,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String aboutSpeciesCount(String count) {
     return '$count species searchable offline';
   }
+
+  @override
+  String get supportTitle => 'Flora is free';
+
+  @override
+  String get supportBody =>
+      'Every feature, no limits, no ads, no account required. If the app is useful to you, you can support its developer once and for all.';
+
+  @override
+  String get supportNothingLocked => 'Nothing is reserved for those who give.';
+
+  @override
+  String supportGive(String price) {
+    return 'Support · $price';
+  }
+
+  @override
+  String get supportRestore => 'Restore my support';
+
+  @override
+  String get supportThanksTitle => 'Thank you';
+
+  @override
+  String get supportThanksBody =>
+      'Your support is recorded. The app does not change: it was already complete.';
+
+  @override
+  String get supportUnavailable =>
+      'The purchase is not available on this device.';
+
+  @override
+  String get supportFailed => 'The purchase did not go through.';
+
+  @override
+  String get supportNothingToRestore => 'No support to restore.';
+
+  @override
+  String get supportSettings => 'Support the developer';
+
+  @override
+  String get supportFreeForever => 'Free, no limits';
+
+  @override
+  String get supportAlready => 'Thank you for your support';
+
+  @override
+  String get supportNoThanks => 'Continue without';
 }

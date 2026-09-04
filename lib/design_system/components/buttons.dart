@@ -20,6 +20,7 @@ class FloraButton extends StatelessWidget {
     this.style = FloraButtonStyle.primary,
     this.size = FloraButtonSize.regular,
     this.icon,
+    this.trailingIcon,
     this.loading = false,
     this.expand = false,
   });
@@ -29,6 +30,9 @@ class FloraButton extends StatelessWidget {
   final FloraButtonStyle style;
   final FloraButtonSize size;
   final IconData? icon;
+
+  /// Icône placée après le libellé — une flèche qui pousse vers la suite.
+  final IconData? trailingIcon;
   final bool loading;
   final bool expand;
 
@@ -77,6 +81,10 @@ class FloraButton extends StatelessWidget {
                     : const SizedBox.shrink(key: ValueKey('none')),
           ),
           Flexible(child: Text(label, style: textStyle, maxLines: 1, overflow: TextOverflow.ellipsis)),
+          if (trailingIcon != null) ...[
+            const SizedBox(width: Space.xs),
+            Icon(trailingIcon, size: small ? 18 : 20, color: fg),
+          ],
         ],
       ),
     );

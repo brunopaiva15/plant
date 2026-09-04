@@ -479,14 +479,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get freeLimitTitle => 'Limite atteinte';
-
-  @override
-  String freeLimitBody(int count) {
-    return 'L\'offre gratuite permet $count plantes. Passez à Premium pour une collection illimitée.';
-  }
-
-  @override
   String sinceDate(String date) {
     return 'Depuis $date';
   }
@@ -930,18 +922,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get premium => 'Premium';
-
-  @override
-  String get premiumBody =>
-      'Plantes illimitées, identification, diagnostic, collaboration. Bientôt disponible.';
-
-  @override
-  String premiumPlantCount(int count, int limit) {
-    return '$count / $limit plantes';
-  }
-
-  @override
   String get tags => 'Tags';
 
   @override
@@ -960,8 +940,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingTitle => 'Votre jardin, simplement.';
 
   @override
-  String get onboardingSubtitle =>
-      'Prenez soin de vos plantes et gardez leur histoire.';
+  String get onboardingSubtitle => 'Tout ce qu\'il faut, rien de plus.';
 
   @override
   String get askNameTitle => 'Comment vous appelez-vous ?';
@@ -3267,29 +3246,26 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onbTodayTitle => 'Une seule question chaque matin';
 
   @override
-  String get onbTodayBody =>
-      'Aujourd\'hui ne montre que ce qui est dû. Un geste pour arroser, un autre pour annuler.';
+  String get onbTodayBody => 'Aujourd\'hui ne montre que ce qui est dû.';
 
   @override
   String get onbCareTitle => 'Un rythme qui suit les saisons';
 
   @override
   String get onbCareBody =>
-      'Chaque plante a sa fiche d\'entretien : lumière, humidité, rempotage. Les intervalles s\'allongent en hiver, tout seuls.';
+      'Les intervalles s\'allongent en hiver, tout seuls.';
 
   @override
   String get onbGardenTitle => 'Tout votre jardin au même endroit';
 
   @override
-  String get onbGardenBody =>
-      'Emplacements, inventaire, tâches et calendrier. Photos, mesures et journal : l\'histoire de chaque plante se garde toute seule.';
+  String get onbGardenBody => 'Emplacements, inventaire, tâches, calendrier.';
 
   @override
   String get onbPrivacyTitle => 'Vos données restent les vôtres';
 
   @override
-  String get onbPrivacyBody =>
-      'Tout fonctionne hors ligne. La synchronisation et le partage sont facultatifs, et l\'export est un simple fichier ouvert.';
+  String get onbPrivacyBody => 'Tout fonctionne hors ligne.';
 
   @override
   String get onbStart => 'Commencer';
@@ -3326,4 +3302,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String aboutSpeciesCount(String count) {
     return '$count espèces consultables hors ligne';
   }
+
+  @override
+  String get supportTitle => 'Flora est gratuite';
+
+  @override
+  String get supportBody =>
+      'Toutes les fonctions, sans limite, sans publicité et sans compte obligatoire. Si l\'app vous rend service, vous pouvez soutenir son développeur une fois pour toutes.';
+
+  @override
+  String get supportNothingLocked => 'Rien n\'est réservé à ceux qui donnent.';
+
+  @override
+  String supportGive(String price) {
+    return 'Soutenir · $price';
+  }
+
+  @override
+  String get supportRestore => 'Restaurer mon soutien';
+
+  @override
+  String get supportThanksTitle => 'Merci';
+
+  @override
+  String get supportThanksBody =>
+      'Votre soutien est enregistré. L\'application ne change pas : elle était déjà entière.';
+
+  @override
+  String get supportUnavailable =>
+      'L\'achat n\'est pas disponible sur cet appareil.';
+
+  @override
+  String get supportFailed => 'L\'achat n\'a pas abouti.';
+
+  @override
+  String get supportNothingToRestore => 'Aucun soutien à restaurer.';
+
+  @override
+  String get supportSettings => 'Soutenir le développeur';
+
+  @override
+  String get supportFreeForever => 'Gratuite, sans limite';
+
+  @override
+  String get supportAlready => 'Merci pour votre soutien';
+
+  @override
+  String get supportNoThanks => 'Continuer sans';
 }

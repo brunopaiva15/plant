@@ -18,7 +18,6 @@ import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
-import '../application/plant_providers.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
@@ -30,16 +29,6 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
   final l10n = context.l10n;
   if (!ref.read(canEditProvider)) {
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.readOnlyHint, emoji: '🔒'));
-    return;
-  }
-  if (ref.read(freeLimitReachedProvider)) {
-    await showAdaptiveConfirm(
-      context,
-      title: l10n.freeLimitTitle,
-      message: l10n.freeLimitBody(AppConfig.freePlantLimit),
-      confirmLabel: l10n.ok,
-      cancelLabel: l10n.cancel,
-    );
     return;
   }
   final plantId = await showFloraFlow<String>(

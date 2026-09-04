@@ -64,6 +64,7 @@ dependencies:
   url_launcher: ^6.3.2
   file_picker: ^12.2.0
   open_filex: ^4.7.0
+  in_app_purchase: ^3.3.0
 
 dev_dependencies:
   flutter_test:
@@ -100,6 +101,14 @@ flutter:
     # Catalogue d'espèces hors ligne (Wikidata CC0 + familles GBIF).
     # Régénéré par tool/harvest_species.py puis tool/build_species_catalog.py.
     - assets/species/catalog.tsv
+    # Illustrations 3D de l'onboarding : une image fixe par écran, et les
+    # 24 images de sa boucle.
+    - assets/onboarding/
+    - assets/onboarding/frames_1/
+    - assets/onboarding/frames_2/
+    - assets/onboarding/frames_3/
+    - assets/onboarding/frames_4/
+    - assets/onboarding/frames_5/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -8,7 +8,7 @@ lib/
 │   ├── router.dart                go_router, shell 4 onglets, routes plein écran
 │   └── providers.dart             providers racine (db, repos, services)
 ├── core/
-│   ├── config/app_config.dart     APP_NAME, limites freemium, flags
+│   ├── config/app_config.dart     APP_NAME, identifiant du soutien, réglages produit
 │   ├── haptics.dart
 │   ├── observability/             Analytics / CrashReporter (interfaces + no-op)
 │   ├── l10n/                      helpers (relative dates, pluriels)

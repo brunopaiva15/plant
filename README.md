@@ -33,6 +33,16 @@ flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co --dart-define=SUP
 ```
 Schéma et politiques RLS : `supabase/schema.sql`. Détails : docs/08.
 
+## Gratuite, avec un soutien facultatif
+Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique
+permet seulement de remercier le développeur — il ne déverrouille rien.
+
+Pour qu'il apparaisse, créer un produit **non consommable** d'identifiant
+`ch.vergasta.plant.support` (5 CHF) dans App Store Connect et dans la Google
+Play Console. Tant qu'il n'existe pas, l'écran de soutien affiche « l'achat
+n'est pas disponible » plutôt qu'un bouton mort ; le reste de l'app est
+inchangé. L'identifiant se change dans `AppConfig.supportProductId`.
+
 ## Tests
 ```bash
 flutter test            # moteur d'entretien, rappels, repositories (SQLite en mémoire), parcours d'app

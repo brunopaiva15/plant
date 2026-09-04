@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,10 +32,12 @@ import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
 import '../data/services/preferences_service.dart';
+import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
 import '../domain/species/species_info.dart';
 import '../domain/identification/plant_identifier.dart';
+import '../domain/support/support_service.dart';
 import '../domain/weather/weather.dart';
 import '../features/export/export_service.dart';
 import '../features/export/import_service.dart';
@@ -109,6 +112,7 @@ class AppPreferences {
     required this.notificationTime,
     required this.quietWeekdays,
     required this.onboardingDone,
+    required this.hasSupported,
     required this.displayName,
     required this.plantNetApiKey,
     required this.anthropicApiKey,
@@ -125,6 +129,10 @@ class AppPreferences {
   final TimeOfDay notificationTime;
   final Set<int> quietWeekdays;
   final bool onboardingDone;
+
+  /// L'utilisateur a déjà soutenu le développeur. Ne change rien à ce que
+  /// l'application sait faire : tout y est, pour tout le monde.
+  final bool hasSupported;
   final String displayName;
   final String plantNetApiKey;
   final String anthropicApiKey;
@@ -153,6 +161,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       notificationTime: s.notificationTime,
       quietWeekdays: s.quietWeekdays,
       onboardingDone: s.onboardingDone,
+      hasSupported: s.hasSupported,
       displayName: s.displayName ?? '',
       plantNetApiKey: s.plantNetApiKey,
       anthropicApiKey: s.anthropicApiKey,
@@ -175,6 +184,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setNotificationTime(TimeOfDay time) => _apply((s) => s.setNotificationTime(time));
   Future<void> setQuietWeekdays(Set<int> days) => _apply((s) => s.setQuietWeekdays(days));
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
+  Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
   Future<void> setPlantNetApiKey(String key) => _apply((s) => s.setPlantNetApiKey(key));
   Future<void> setAnthropicApiKey(String key) => _apply((s) => s.setAnthropicApiKey(key));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
@@ -196,6 +206,22 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
 });
 
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
+
+/// Soutien facultatif : le magasin de la plateforme là où il y en a un.
+/// Ailleurs — le web, le bureau, les tests — l'offre est simplement absente.
+final supportServiceProvider = Provider<SupportService>((ref) {
+  final service = kIsWeb
+      ? const NoStoreSupport()
+      : switch (defaultTargetPlatform) {
+          TargetPlatform.iOS || TargetPlatform.android => StoreSupportService(PluginPurchaseStore()),
+          _ => const NoStoreSupport(),
+        };
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+/// L'offre du magasin, prix compris, ou `null` si l'achat n'est pas proposé.
+final supportOfferProvider = FutureProvider<SupportOffer?>((ref) => ref.watch(supportServiceProvider).offer());
 
 /// Catalogue étendu d'espèces, chargé à la première recherche seulement.
 final speciesIndexLoaderProvider = Provider<SpeciesIndexLoader>((ref) => SpeciesIndexLoader());

@@ -479,14 +479,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get freeLimitTitle => 'Limite raggiunto';
-
-  @override
-  String freeLimitBody(int count) {
-    return 'La versione gratuita include $count piante. Passa a Premium per una collezione illimitata.';
-  }
-
-  @override
   String sinceDate(String date) {
     return 'Dal $date';
   }
@@ -930,18 +922,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get premium => 'Premium';
-
-  @override
-  String get premiumBody =>
-      'Piante illimitate, identificazione, diagnosi, collaborazione. Presto disponibile.';
-
-  @override
-  String premiumPlantCount(int count, int limit) {
-    return '$count / $limit piante';
-  }
-
-  @override
   String get tags => 'Tag';
 
   @override
@@ -960,8 +940,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onboardingTitle => 'Il tuo giardino, semplicemente.';
 
   @override
-  String get onboardingSubtitle =>
-      'Prenditi cura delle tue piante e conserva la loro storia.';
+  String get onboardingSubtitle => 'Tutto il necessario, niente di più.';
 
   @override
   String get askNameTitle => 'Come ti chiami?';
@@ -3255,29 +3234,25 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onbTodayTitle => 'Una sola domanda ogni mattina';
 
   @override
-  String get onbTodayBody =>
-      'Oggi mostra solo ciò che è dovuto. Un tocco per annaffiare, uno per annullare.';
+  String get onbTodayBody => 'Oggi mostra solo ciò che è dovuto.';
 
   @override
   String get onbCareTitle => 'Un ritmo che segue le stagioni';
 
   @override
-  String get onbCareBody =>
-      'Ogni pianta ha la sua scheda di cura: luce, umidità, rinvaso. Gli intervalli si allungano d\'inverno, da soli.';
+  String get onbCareBody => 'In inverno gli intervalli si allungano da soli.';
 
   @override
   String get onbGardenTitle => 'Tutto il tuo giardino in un posto';
 
   @override
-  String get onbGardenBody =>
-      'Posizioni, inventario, attività e calendario. Foto, misure e diario: la storia di ogni pianta si conserva da sola.';
+  String get onbGardenBody => 'Posizioni, inventario, attività, calendario.';
 
   @override
   String get onbPrivacyTitle => 'I tuoi dati restano tuoi';
 
   @override
-  String get onbPrivacyBody =>
-      'Tutto funziona offline. Sincronizzazione e condivisione sono facoltative e l\'esportazione è un semplice file aperto.';
+  String get onbPrivacyBody => 'Tutto funziona offline.';
 
   @override
   String get onbStart => 'Iniziare';
@@ -3315,4 +3290,51 @@ class AppLocalizationsIt extends AppLocalizations {
   String aboutSpeciesCount(String count) {
     return '$count specie consultabili offline';
   }
+
+  @override
+  String get supportTitle => 'Flora è gratuita';
+
+  @override
+  String get supportBody =>
+      'Tutte le funzioni, senza limiti, senza pubblicità e senza account obbligatorio. Se l\'app ti è utile, puoi sostenere il suo sviluppatore una volta per tutte.';
+
+  @override
+  String get supportNothingLocked => 'Niente è riservato a chi dona.';
+
+  @override
+  String supportGive(String price) {
+    return 'Sostieni · $price';
+  }
+
+  @override
+  String get supportRestore => 'Ripristina il mio sostegno';
+
+  @override
+  String get supportThanksTitle => 'Grazie';
+
+  @override
+  String get supportThanksBody =>
+      'Il tuo sostegno è registrato. L\'app non cambia: era già completa.';
+
+  @override
+  String get supportUnavailable =>
+      'L\'acquisto non è disponibile su questo dispositivo.';
+
+  @override
+  String get supportFailed => 'L\'acquisto non è andato a buon fine.';
+
+  @override
+  String get supportNothingToRestore => 'Nessun sostegno da ripristinare.';
+
+  @override
+  String get supportSettings => 'Sostieni lo sviluppatore';
+
+  @override
+  String get supportFreeForever => 'Gratuita, senza limiti';
+
+  @override
+  String get supportAlready => 'Grazie per il tuo sostegno';
+
+  @override
+  String get supportNoThanks => 'Continua senza';
 }

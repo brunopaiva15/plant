@@ -58,15 +58,23 @@ Future<List<PlantActionRow>> actionsOf(ProviderContainer c, String plantId) {
   return (db.select(db.plantActions)..where((a) => a.plantId.equals(plantId))).get();
 }
 
-Future<void> pumpApp(WidgetTester tester, ProviderContainer container) async {
+Future<void> pumpApp(WidgetTester tester, ProviderContainer container, {bool settleAfter = true}) async {
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(UncontrolledProviderScope(container: container, child: const FloraApp()));
-  await settle(tester);
+  if (settleAfter) await settle(tester);
 }
 
 Future<void> settle(WidgetTester tester) => tester.pumpAndSettle(const Duration(milliseconds: 100), EnginePhase.sendSemanticsUpdate, const Duration(seconds: 5));
+
+/// L'onboarding a un fond qui dérive sans fin : on y avance par pas de temps
+/// plutôt qu'en attendant un repos qui ne viendra jamais.
+Future<void> step(WidgetTester tester) async {
+  for (var i = 0; i < 8; i++) {
+    await tester.pump(const Duration(milliseconds: 250));
+  }
+}
 
 void main() {
   testWidgets('empty garden shows the first-plant call to action', (tester) async {
@@ -270,14 +278,21 @@ void main() {
 
   testWidgets('onboarding leads to Today after entering a name', (tester) async {
     final container = await boot(tester, onboardingDone: false);
-    await pumpApp(tester, container);
-    expect(find.text('Votre jardin, simplement.'), findsOneWidget);
+    await pumpApp(tester, container, settleAfter: false);
+    await step(tester);
+    // Le titre est levé mot à mot ; la phrase du dessous, elle, est d'un seul
+    // tenant : c'est elle qui dit que le premier écran est bien là.
+    expect(find.text("Tout ce qu'il faut, rien de plus."), findsOneWidget);
     // « Passer » saute les diapositives et mène droit à la saisie du prénom.
     await tester.tap(find.text('Passer'));
-    await settle(tester);
+    await step(tester);
     expect(find.text('Comment vous appelez-vous\u00a0?'), findsOneWidget);
     await tester.enterText(find.byType(EditableText), 'Bruno');
     await tester.tap(find.text('Plus tard'));
+    await step(tester);
+    // La dernière étape propose de soutenir le développeur, sans obliger.
+    expect(find.text('Flora est gratuite'), findsOneWidget);
+    await tester.tap(find.text('Continuer sans'));
     await settle(tester);
     expect(find.text('Bonjour Bruno'), findsWidgets);
     expect(container.read(preferencesProvider).onboardingDone, isTrue);

@@ -86,9 +86,3 @@ class SelectionController extends Notifier<Set<String>> {
 }
 
 final selectionProvider = NotifierProvider<SelectionController, Set<String>>(SelectionController.new);
-
-/// Le plafond de l'offre gratuite est-il atteint ?
-final freeLimitReachedProvider = Provider<bool>((ref) {
-  final count = ref.watch(activePlantCountProvider).value ?? 0;
-  return count >= AppConfig.freePlantLimit;
-});

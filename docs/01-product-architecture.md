@@ -40,7 +40,14 @@ Les **routines** (ce qui doit se passer) sont strictement séparées des **actio
 | Fiche plante | photo, nom, prochains soins, actions rapides, timeline | informations, relations, fichiers, options avancées |
 | Action | type, « Enregistrer » | date, note, quantité |
 
-## Modèle freemium (prévu, non agressif)
-- Gratuit : 10 plantes, rappels, journal, photos.
-- Premium : illimité, identification, diagnostic, météo, collaboration, croissance avancée.
-- `EntitlementService` abstrait ; aucune popup récurrente, un seul écran *Premium* accessible depuis Profil.
+## Modèle économique : gratuit, avec un soutien facultatif
+- **Tout est gratuit et sans limite.** Aucune fonction réservée, aucune publicité,
+  aucun compte obligatoire, aucun plafond de plantes.
+- Un achat unique, facultatif, permet de remercier le développeur. Il ne
+  déverrouille rien : c'est un pourboire, pas une clé.
+- `SupportService` (domaine) + adaptateur magasin (`StoreSupportService`, produit
+  non consommable `ch.vergasta.plant.support`). Là où le magasin n'existe pas —
+  le web, un appareil sans achat intégré — l'écran le dit au lieu d'afficher un
+  bouton mort.
+- Deux points d'entrée, tous deux évitables d'un geste : la dernière page de
+  l'onboarding, et une ligne dans Profil.

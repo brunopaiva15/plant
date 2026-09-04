@@ -479,14 +479,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get freeLimitTitle => 'Limit erreicht';
-
-  @override
-  String freeLimitBody(int count) {
-    return 'Die kostenlose Version umfasst $count Pflanzen. Mit Premium ist deine Sammlung unbegrenzt.';
-  }
-
-  @override
   String sinceDate(String date) {
     return 'Seit $date';
   }
@@ -933,18 +925,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get premium => 'Premium';
-
-  @override
-  String get premiumBody =>
-      'Unbegrenzt Pflanzen, Bestimmung, Diagnose, Zusammenarbeit. Bald verfügbar.';
-
-  @override
-  String premiumPlantCount(int count, int limit) {
-    return '$count / $limit Pflanzen';
-  }
-
-  @override
   String get tags => 'Tags';
 
   @override
@@ -963,8 +943,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingTitle => 'Dein Garten, ganz einfach.';
 
   @override
-  String get onboardingSubtitle =>
-      'Pflege deine Pflanzen und bewahre ihre Geschichte.';
+  String get onboardingSubtitle => 'Alles, was du brauchst — mehr nicht.';
 
   @override
   String get askNameTitle => 'Wie heißt du?';
@@ -3250,29 +3229,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onbTodayTitle => 'Jeden Morgen eine Frage';
 
   @override
-  String get onbTodayBody =>
-      'Heute zeigt nur, was ansteht. Ein Tippen zum Gießen, eines zum Rückgängigmachen.';
+  String get onbTodayBody => 'Heute zeigt nur, was fällig ist.';
 
   @override
   String get onbCareTitle => 'Ein Rhythmus, der den Jahreszeiten folgt';
 
   @override
-  String get onbCareBody =>
-      'Jede Pflanze hat ihren Pflegeplan: Licht, Feuchtigkeit, Umtopfen. Die Abstände werden im Winter von selbst länger.';
+  String get onbCareBody => 'Im Winter dehnen sich die Abstände von selbst.';
 
   @override
   String get onbGardenTitle => 'Dein ganzer Garten an einem Ort';
 
   @override
-  String get onbGardenBody =>
-      'Standorte, Vorrat, Aufgaben und Kalender. Fotos, Messungen und Protokoll: Die Geschichte jeder Pflanze schreibt sich selbst.';
+  String get onbGardenBody => 'Orte, Inventar, Aufgaben, Kalender.';
 
   @override
   String get onbPrivacyTitle => 'Deine Daten bleiben deine';
 
   @override
-  String get onbPrivacyBody =>
-      'Alles funktioniert offline. Synchronisierung und Teilen sind optional, der Export ist eine einfache offene Datei.';
+  String get onbPrivacyBody => 'Alles läuft offline.';
 
   @override
   String get onbStart => 'Loslegen';
@@ -3309,4 +3284,53 @@ class AppLocalizationsDe extends AppLocalizations {
   String aboutSpeciesCount(String count) {
     return '$count Arten offline durchsuchbar';
   }
+
+  @override
+  String get supportTitle => 'Flora ist kostenlos';
+
+  @override
+  String get supportBody =>
+      'Alle Funktionen, ohne Limit, ohne Werbung, ohne Pflichtkonto. Wenn dir die App hilft, kannst du ihren Entwickler ein einziges Mal unterstützen.';
+
+  @override
+  String get supportNothingLocked =>
+      'Nichts bleibt denen vorbehalten, die geben.';
+
+  @override
+  String supportGive(String price) {
+    return 'Unterstützen · $price';
+  }
+
+  @override
+  String get supportRestore => 'Unterstützung wiederherstellen';
+
+  @override
+  String get supportThanksTitle => 'Danke';
+
+  @override
+  String get supportThanksBody =>
+      'Deine Unterstützung ist gespeichert. Die App ändert sich nicht: Sie war bereits vollständig.';
+
+  @override
+  String get supportUnavailable =>
+      'Der Kauf ist auf diesem Gerät nicht verfügbar.';
+
+  @override
+  String get supportFailed => 'Der Kauf ist nicht zustande gekommen.';
+
+  @override
+  String get supportNothingToRestore =>
+      'Keine Unterstützung zum Wiederherstellen.';
+
+  @override
+  String get supportSettings => 'Entwickler unterstützen';
+
+  @override
+  String get supportFreeForever => 'Kostenlos, ohne Limit';
+
+  @override
+  String get supportAlready => 'Danke für deine Unterstützung';
+
+  @override
+  String get supportNoThanks => 'Ohne fortfahren';
 }

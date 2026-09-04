@@ -33,6 +33,7 @@ import '../features/attributes/presentation/attribute_templates_screen.dart';
 import '../features/sharing/presentation/shared_links_screen.dart';
 import '../features/species/presentation/care_guide_screen.dart';
 import '../features/species/presentation/species_picker_screen.dart';
+import '../features/support/presentation/support_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/weather/presentation/forecast_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
@@ -67,6 +68,7 @@ abstract final class Routes {
   static const tags = '/settings/tags';
   static const archive = '/settings/archive';
   static const about = '/settings/about';
+  static const support = '/settings/support';
   static const identification = '/settings/identification';
   static const scan = '/scan';
   static const speciesPicker = '/species/pick';
@@ -168,6 +170,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.tags, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const TagsScreen())),
       GoRoute(path: Routes.archive, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const ArchiveScreen())),
       GoRoute(path: Routes.about, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AboutScreen())),
+      GoRoute(path: Routes.support, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const SupportScreen())),
       GoRoute(path: Routes.identification, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const IdentificationSettingsScreen())),
       GoRoute(path: Routes.weather, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const WeatherSettingsScreen())),
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),

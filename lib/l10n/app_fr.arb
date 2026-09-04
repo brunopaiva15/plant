@@ -237,15 +237,6 @@
       }
     }
   },
-  "freeLimitTitle": "Limite atteinte",
-  "freeLimitBody": "L'offre gratuite permet {count} plantes. Passez à Premium pour une collection illimitée.",
-  "@freeLimitBody": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sinceDate": "Depuis {date}",
   "@sinceDate": {
     "placeholders": {
@@ -462,26 +453,13 @@
       }
     }
   },
-  "premium": "Premium",
-  "premiumBody": "Plantes illimitées, identification, diagnostic, collaboration. Bientôt disponible.",
-  "premiumPlantCount": "{count} / {limit} plantes",
-  "@premiumPlantCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "limit": {
-        "type": "int"
-      }
-    }
-  },
   "tags": "Tags",
   "newTag": "Nouveau tag",
   "tagNameHint": "Tropicale, Rare, À surveiller…",
   "noTags": "Aucun tag",
   "manageTags": "Gérer les tags",
   "onboardingTitle": "Votre jardin, simplement.",
-  "onboardingSubtitle": "Prenez soin de vos plantes et gardez leur histoire.",
+  "onboardingSubtitle": "Tout ce qu'il faut, rien de plus.",
   "askNameTitle": "Comment vous appelez-vous ?",
   "askNameSubtitle": "Pour vous saluer chaque matin. Vous pourrez changer plus tard.",
   "notificationAskTitle": "Un rappel utile, chaque jour",
@@ -1534,13 +1512,13 @@
   "apiOnlyYourGarden": "Chaque requête ne voit que les jardins dont vous êtes membre.",
   "apiExample": "Exemple",
   "onbTodayTitle": "Une seule question chaque matin",
-  "onbTodayBody": "Aujourd'hui ne montre que ce qui est dû. Un geste pour arroser, un autre pour annuler.",
+  "onbTodayBody": "Aujourd'hui ne montre que ce qui est dû.",
   "onbCareTitle": "Un rythme qui suit les saisons",
-  "onbCareBody": "Chaque plante a sa fiche d'entretien : lumière, humidité, rempotage. Les intervalles s'allongent en hiver, tout seuls.",
+  "onbCareBody": "Les intervalles s'allongent en hiver, tout seuls.",
   "onbGardenTitle": "Tout votre jardin au même endroit",
-  "onbGardenBody": "Emplacements, inventaire, tâches et calendrier. Photos, mesures et journal : l'histoire de chaque plante se garde toute seule.",
+  "onbGardenBody": "Emplacements, inventaire, tâches, calendrier.",
   "onbPrivacyTitle": "Vos données restent les vôtres",
-  "onbPrivacyBody": "Tout fonctionne hors ligne. La synchronisation et le partage sont facultatifs, et l'export est un simple fichier ouvert.",
+  "onbPrivacyBody": "Tout fonctionne hors ligne.",
   "onbStart": "Commencer",
   "replayOnboarding": "Revoir la présentation",
   "onbStepOf": "Étape {current} sur {total}",
@@ -1567,5 +1545,26 @@
         "type": "String"
       }
     }
-  }
+  },
+  "supportTitle": "Flora est gratuite",
+  "supportBody": "Toutes les fonctions, sans limite, sans publicité et sans compte obligatoire. Si l'app vous rend service, vous pouvez soutenir son développeur une fois pour toutes.",
+  "supportNothingLocked": "Rien n'est réservé à ceux qui donnent.",
+  "supportGive": "Soutenir · {price}",
+  "@supportGive": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "supportRestore": "Restaurer mon soutien",
+  "supportThanksTitle": "Merci",
+  "supportThanksBody": "Votre soutien est enregistré. L'application ne change pas : elle était déjà entière.",
+  "supportUnavailable": "L'achat n'est pas disponible sur cet appareil.",
+  "supportFailed": "L'achat n'a pas abouti.",
+  "supportNothingToRestore": "Aucun soutien à restaurer.",
+  "supportSettings": "Soutenir le développeur",
+  "supportFreeForever": "Gratuite, sans limite",
+  "supportAlready": "Merci pour votre soutien",
+  "supportNoThanks": "Continuer sans"
 }

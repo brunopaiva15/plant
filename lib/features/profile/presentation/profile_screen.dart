@@ -7,7 +7,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../archive/presentation/archive_screen.dart' show archiveTitle, editArchiveName;
-import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 
@@ -136,10 +135,10 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push(Routes.account),
                   ),
                   FloraListRow(
-                    leading: Icon(CupertinoIcons.sparkles, size: 20, color: c.sun),
-                    title: l10n.premium,
-                    subtitle: l10n.premiumPlantCount(count, AppConfig.freePlantLimit),
-                    onTap: () => showAdaptiveConfirm(context, title: l10n.premium, message: l10n.premiumBody, confirmLabel: l10n.ok, cancelLabel: l10n.close),
+                    leading: Icon(CupertinoIcons.heart_fill, size: 20, color: c.rose),
+                    title: l10n.supportSettings,
+                    subtitle: prefs.hasSupported ? l10n.supportAlready : l10n.supportFreeForever,
+                    onTap: () => context.push(Routes.support),
                   ),
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.about, onTap: () => context.push(Routes.about)),
