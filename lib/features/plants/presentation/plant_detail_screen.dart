@@ -189,18 +189,32 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
               FloraIconButton(icon: CupertinoIcons.ellipsis, semanticLabel: l10n.more, onPressed: () => _menu(plant)),
               const SizedBox(width: Space.sm),
             ],
-            flexibleSpace: FlexibleSpaceBar(
-              stretchModes: const [StretchMode.zoomBackground],
-              background: Pressable(
-                onTap: primary == null ? _addPhoto : () => context.push(Routes.plantGallery(id)),
-                scale: 1,
-                haptic: false,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    PlantImage(relativePath: primary?.filePath ?? summary.thumbPath, cacheWidth: 1200, heroTag: 'plant-$id', placeholderEmoji: '🪴'),
-                    if (primary == null)
-                      Align(
+            flexibleSpace: Stack(
+              fit: StackFit.expand,
+              children: [
+                // La photo défile en parallaxe derrière ; le fondu, lui, reste
+                // collé au bas de l'en-tête, de sorte qu'aucune ligne ne
+                // sépare jamais l'image du contenu.
+                HeaderFade(
+                  child: FlexibleSpaceBar(
+                    stretchModes: const [StretchMode.zoomBackground],
+                    background: Pressable(
+                      onTap: primary == null ? _addPhoto : () => context.push(Routes.plantGallery(id)),
+                      scale: 1,
+                      haptic: false,
+                      child: PlantImage(relativePath: primary?.filePath ?? summary.thumbPath, cacheWidth: 1200, heroTag: 'plant-$id', placeholderEmoji: '🪴'),
+                    ),
+                  ),
+                ),
+                // L'invite est posée hors du fondu, pour rester franche, mais
+                // dans une seconde barre repliable : elle suit ainsi le même
+                // mouvement que le visuel qu'elle accompagne. Le doigt la
+                // traverse pour atteindre l'image.
+                if (primary == null)
+                  IgnorePointer(
+                    child: FlexibleSpaceBar(
+                      stretchModes: const [StretchMode.zoomBackground],
+                      background: Align(
                         alignment: const Alignment(0, 0.55),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs),
@@ -215,14 +229,9 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                           ),
                         ),
                       ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [c.canvas.withValues(alpha: 0), c.canvas.withValues(alpha: 0), c.canvas], stops: const [0, 0.7, 1]),
-                      ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+              ],
             ),
             toolbarHeight: 56,
             collapsedHeight: 56 + (top > 0 ? 0 : 0),

@@ -6,6 +6,7 @@ export 'cards.dart';
 export 'chips.dart';
 export 'due_badge.dart';
 export 'empty_state.dart';
+export 'header_fade.dart';
 export 'list_row.dart';
 export 'page_scaffold.dart';
 export 'plant_image.dart';
