@@ -27,9 +27,9 @@ class ForecastScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(top: Space.huge),
           child: EmptyState(
             emoji: '🌤️',
-            title: l10n.weather,
+            title: l10n.weatherForecastTitle,
             subtitle: l10n.weatherNoPlace,
-            actionLabel: l10n.weather,
+            actionLabel: l10n.weatherPickPlace,
             onAction: () => context.push(Routes.weather),
             compact: true,
           ),

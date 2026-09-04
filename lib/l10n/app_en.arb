@@ -1028,5 +1028,6 @@
   "onbPrivacyBody": "Everything works offline. Sync and sharing are optional, and the export is a plain open file.",
   "onbStart": "Get started",
   "replayOnboarding": "Replay the intro",
-  "onbStepOf": "Step {current} of {total}"
+  "onbStepOf": "Step {current} of {total}",
+  "weatherPickPlace": "Choose a place"
 }

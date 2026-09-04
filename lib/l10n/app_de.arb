@@ -1028,5 +1028,6 @@
   "onbPrivacyBody": "Alles funktioniert offline. Synchronisierung und Teilen sind optional, der Export ist eine einfache offene Datei.",
   "onbStart": "Loslegen",
   "replayOnboarding": "Einführung erneut ansehen",
-  "onbStepOf": "Schritt {current} von {total}"
+  "onbStepOf": "Schritt {current} von {total}",
+  "weatherPickPlace": "Ort wählen"
 }

@@ -104,10 +104,11 @@ class ProfileScreen extends ConsumerWidget {
                     title: archiveTitle(context, prefs.archiveName),
                     onTap: () => context.push(Routes.archive),
                   ),
+                  // Sans valeur en regard : la ligne au-dessus porte déjà le
+                  // nom, et le titre y perdrait sa fin.
                   FloraListRow(
                     leading: const Text('✏️', style: TextStyle(fontSize: 18)),
                     title: l10n.archiveNameTitle,
-                    trailing: value(archiveTitle(context, prefs.archiveName)),
                     chevron: true,
                     onTap: () => editArchiveName(context, ref),
                   ),

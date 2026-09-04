@@ -5609,6 +5609,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Étape {current} sur {total}'**
   String onbStepOf(int current, int total);
+
+  /// No description provided for @weatherPickPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir un lieu'**
+  String get weatherPickPlace;
 }
 
 class _AppLocalizationsDelegate

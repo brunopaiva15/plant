@@ -73,9 +73,10 @@ class _ActivityRow extends ConsumerWidget {
       ActivityKind.locationNote => ('📝', l10n.activityLocationNote),
       ActivityKind.taskDone => ('📋', l10n.activityTaskDone),
     };
-    // Sous-titre : la plante concernée, le texte libre, puis l'heure.
+    // La plante d'abord quand il y en a une : c'est elle qu'on cherche des
+    // yeux. Le geste et l'heure suivent en sous-titre.
     final parts = <String>[
-      if (entry.plantName != null) entry.plantName!,
+      if (entry.plantName != null) title,
       if (entry.text != null && entry.text!.trim().isNotEmpty) entry.text!.trim(),
       Dates.time(context, entry.at),
     ];
@@ -84,7 +85,7 @@ class _ActivityRow extends ConsumerWidget {
       leading: entry.thumbPath != null
           ? ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: entry.thumbPath, cacheWidth: 96)))
           : EmojiTile(emoji: emoji, size: 32, background: c.surfaceMuted),
-      title: title,
+      title: entry.plantName ?? title,
       subtitle: parts.join(' · '),
       trailing: entry.thumbPath == null ? null : Text(emoji, style: const TextStyle(fontSize: 16)),
       chevron: false,

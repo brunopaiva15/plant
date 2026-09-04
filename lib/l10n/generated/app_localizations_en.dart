@@ -3272,4 +3272,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String onbStepOf(int current, int total) {
     return 'Step $current of $total';
   }
+
+  @override
+  String get weatherPickPlace => 'Choose a place';
 }

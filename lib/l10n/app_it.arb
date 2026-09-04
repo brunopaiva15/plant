@@ -1028,5 +1028,6 @@
   "onbPrivacyBody": "Tutto funziona offline. Sincronizzazione e condivisione sono facoltative e l'esportazione è un semplice file aperto.",
   "onbStart": "Iniziare",
   "replayOnboarding": "Rivedi la presentazione",
-  "onbStepOf": "Passo {current} di {total}"
+  "onbStepOf": "Passo {current} di {total}",
+  "weatherPickPlace": "Scegli un luogo"
 }
