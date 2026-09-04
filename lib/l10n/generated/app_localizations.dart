@@ -1899,7 +1899,7 @@ abstract class AppLocalizations {
   /// No description provided for @gardenLocations.
   ///
   /// In fr, this message translates to:
-  /// **'Emplacements'**
+  /// **'Lieux'**
   String get gardenLocations;
 
   /// No description provided for @gardenInventory.
@@ -2999,6 +2999,270 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Arbres et arbustes'**
   String get speciesCatTree;
+
+  /// No description provided for @gardenTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get gardenTasks;
+
+  /// No description provided for @tasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get tasks;
+
+  /// No description provided for @newTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle tâche'**
+  String get newTask;
+
+  /// No description provided for @editTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la tâche'**
+  String get editTask;
+
+  /// No description provided for @taskTitleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Que faut-il faire ?'**
+  String get taskTitleHint;
+
+  /// No description provided for @taskDescriptionHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails (facultatif)'**
+  String get taskDescriptionHint;
+
+  /// No description provided for @taskPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plante'**
+  String get taskPlant;
+
+  /// No description provided for @taskNoPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans plante'**
+  String get taskNoPlant;
+
+  /// No description provided for @taskDue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échéance'**
+  String get taskDue;
+
+  /// No description provided for @taskNoDue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans date'**
+  String get taskNoDue;
+
+  /// No description provided for @taskTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heure'**
+  String get taskTime;
+
+  /// No description provided for @taskAllDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toute la journée'**
+  String get taskAllDay;
+
+  /// No description provided for @taskRecurrence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Récurrence'**
+  String get taskRecurrence;
+
+  /// No description provided for @taskRecurrenceNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune'**
+  String get taskRecurrenceNone;
+
+  /// No description provided for @taskEvery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les'**
+  String get taskEvery;
+
+  /// No description provided for @recurrenceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{unit, select, hours{{count, plural, =1{Toutes les heures} other{Toutes les {count} heures}}} days{{count, plural, =1{Tous les jours} other{Tous les {count} jours}}} weeks{{count, plural, =1{Toutes les semaines} other{Toutes les {count} semaines}}} months{{count, plural, =1{Tous les mois} other{Tous les {count} mois}}} years{{count, plural, =1{Tous les ans} other{Tous les {count} ans}}} other{—}}'**
+  String recurrenceLabel(String unit, int count);
+
+  /// No description provided for @unitHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'heures'**
+  String get unitHours;
+
+  /// No description provided for @unitDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'jours'**
+  String get unitDays;
+
+  /// No description provided for @unitWeeks.
+  ///
+  /// In fr, this message translates to:
+  /// **'semaines'**
+  String get unitWeeks;
+
+  /// No description provided for @unitMonths.
+  ///
+  /// In fr, this message translates to:
+  /// **'mois'**
+  String get unitMonths;
+
+  /// No description provided for @unitYears.
+  ///
+  /// In fr, this message translates to:
+  /// **'ans'**
+  String get unitYears;
+
+  /// No description provided for @taskFilterOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvertes'**
+  String get taskFilterOpen;
+
+  /// No description provided for @taskFilterOverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard'**
+  String get taskFilterOverdue;
+
+  /// No description provided for @taskFilterDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminées'**
+  String get taskFilterDone;
+
+  /// No description provided for @taskSectionOverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard'**
+  String get taskSectionOverdue;
+
+  /// No description provided for @taskSectionToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get taskSectionToday;
+
+  /// No description provided for @taskSectionUpcoming.
+  ///
+  /// In fr, this message translates to:
+  /// **'À venir'**
+  String get taskSectionUpcoming;
+
+  /// No description provided for @taskSectionNoDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans date'**
+  String get taskSectionNoDate;
+
+  /// No description provided for @noTasksTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune tâche'**
+  String get noTasksTitle;
+
+  /// No description provided for @noTasksSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semis, nettoyage de la serre, commande de terreau : notez tout ici.'**
+  String get noTasksSubtitle;
+
+  /// No description provided for @noDoneTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien de terminé pour l\'instant'**
+  String get noDoneTasks;
+
+  /// No description provided for @taskDoneToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'{title} · Terminée'**
+  String taskDoneToast(String title);
+
+  /// No description provided for @taskNextToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'{title} · Prochaine fois {date}'**
+  String taskNextToast(String title, String date);
+
+  /// No description provided for @taskDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâche supprimée'**
+  String get taskDeleted;
+
+  /// No description provided for @deleteTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la tâche'**
+  String get deleteTask;
+
+  /// No description provided for @reopenTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rouvrir'**
+  String get reopenTask;
+
+  /// No description provided for @taskDoneOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminée {date}'**
+  String taskDoneOn(String date);
+
+  /// No description provided for @taskOverdueSince.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{En retard d\'un jour} other{En retard de {count} jours}}'**
+  String taskOverdueSince(int count);
+
+  /// No description provided for @taskDueIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Demain} other{Dans {count} jours}}'**
+  String taskDueIn(int count);
+
+  /// No description provided for @tasksTodayTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get tasksTodayTitle;
+
+  /// No description provided for @choosePlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir une plante'**
+  String get choosePlant;
+
+  /// No description provided for @notifTasksOne.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâche : {title}.'**
+  String notifTasksOne(String title);
+
+  /// No description provided for @notifTasksMany.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} tâches à faire : {titles}.'**
+  String notifTasksMany(int count, String titles);
+
+  /// No description provided for @notifTaskDue.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est le moment : {title}'**
+  String notifTaskDue(String title);
 }
 
 class _AppLocalizationsDelegate

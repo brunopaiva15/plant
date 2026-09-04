@@ -22,12 +22,13 @@ part 'database.g.dart';
   InventoryItems,
   Profiles,
   GardenMembers,
+  Tasks,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,6 +49,9 @@ class FloraDatabase extends _$FloraDatabase {
             await m.createTable(profiles);
             await m.createTable(gardenMembers);
           }
+          if (from < 5) {
+            await m.createTable(tasks);
+          }
           await _createIndexes();
         },
         beforeOpen: (details) async {
@@ -65,6 +69,8 @@ class FloraDatabase extends _$FloraDatabase {
     await customStatement('CREATE INDEX IF NOT EXISTS idx_photos_plant ON plant_photos(plant_id, taken_at)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_measurements_plant ON measurements(plant_id, kind, measured_at)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_category ON inventory_items(garden_id, category_key)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_tasks_open ON tasks(garden_id, done, due_at)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_tasks_plant ON tasks(plant_id)');
   }
 
   /// Les types intégrés existent toujours en base pour rester triables avec

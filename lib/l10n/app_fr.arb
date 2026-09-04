@@ -548,7 +548,7 @@
     }
   },
   "saved": "Enregistré",
-  "gardenLocations": "Emplacements",
+  "gardenLocations": "Lieux",
   "gardenInventory": "Inventaire",
   "gardenCalendar": "Calendrier",
   "inventoryTitle": "Inventaire",
@@ -856,5 +856,121 @@
   "speciesCatVegetable": "Potager",
   "speciesCatFruit": "Fruitiers",
   "speciesCatFlower": "Fleurs",
-  "speciesCatTree": "Arbres et arbustes"
+  "speciesCatTree": "Arbres et arbustes",
+  "gardenTasks": "Tâches",
+  "tasks": "Tâches",
+  "newTask": "Nouvelle tâche",
+  "editTask": "Modifier la tâche",
+  "taskTitleHint": "Que faut-il faire ?",
+  "taskDescriptionHint": "Détails (facultatif)",
+  "taskPlant": "Plante",
+  "taskNoPlant": "Sans plante",
+  "taskDue": "Échéance",
+  "taskNoDue": "Sans date",
+  "taskTime": "Heure",
+  "taskAllDay": "Toute la journée",
+  "taskRecurrence": "Récurrence",
+  "taskRecurrenceNone": "Aucune",
+  "taskEvery": "Toutes les",
+  "recurrenceLabel": "{unit, select, hours{{count, plural, =1{Toutes les heures} other{Toutes les {count} heures}}} days{{count, plural, =1{Tous les jours} other{Tous les {count} jours}}} weeks{{count, plural, =1{Toutes les semaines} other{Toutes les {count} semaines}}} months{{count, plural, =1{Tous les mois} other{Tous les {count} mois}}} years{{count, plural, =1{Tous les ans} other{Tous les {count} ans}}} other{—}}",
+  "@recurrenceLabel": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unitHours": "heures",
+  "unitDays": "jours",
+  "unitWeeks": "semaines",
+  "unitMonths": "mois",
+  "unitYears": "ans",
+  "taskFilterOpen": "Ouvertes",
+  "taskFilterOverdue": "En retard",
+  "taskFilterDone": "Terminées",
+  "taskSectionOverdue": "En retard",
+  "taskSectionToday": "Aujourd'hui",
+  "taskSectionUpcoming": "À venir",
+  "taskSectionNoDate": "Sans date",
+  "noTasksTitle": "Aucune tâche",
+  "noTasksSubtitle": "Semis, nettoyage de la serre, commande de terreau : notez tout ici.",
+  "noDoneTasks": "Rien de terminé pour l'instant",
+  "taskDoneToast": "{title} · Terminée",
+  "@taskDoneToast": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "taskNextToast": "{title} · Prochaine fois {date}",
+  "@taskNextToast": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "taskDeleted": "Tâche supprimée",
+  "deleteTask": "Supprimer la tâche",
+  "reopenTask": "Rouvrir",
+  "taskDoneOn": "Terminée {date}",
+  "@taskDoneOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "taskOverdueSince": "{count, plural, =1{En retard d'un jour} other{En retard de {count} jours}}",
+  "@taskOverdueSince": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "taskDueIn": "{count, plural, =1{Demain} other{Dans {count} jours}}",
+  "@taskDueIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksTodayTitle": "Tâches",
+  "choosePlant": "Choisir une plante",
+  "notifTasksOne": "Tâche : {title}.",
+  "@notifTasksOne": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "notifTasksMany": "{count} tâches à faire : {titles}.",
+  "@notifTasksMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "titles": {
+        "type": "String"
+      }
+    }
+  },
+  "notifTaskDue": "C'est le moment : {title}",
+  "@notifTaskDue": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

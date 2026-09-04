@@ -134,3 +134,20 @@ extension InventoryItemRowMapper on InventoryItemRow {
         updatedAt: updatedAt,
       );
 }
+
+extension TaskRowMapper on TaskRow {
+  FreeTask toDomain() => FreeTask(
+        id: id,
+        gardenId: gardenId,
+        plantId: plantId,
+        title: title,
+        description: description,
+        dueAt: dueAt,
+        allDay: allDay,
+        recurrence: recurrenceValue == null || recurrenceUnit == null ? null : TaskRecurrence(value: recurrenceValue!, unit: RecurrenceUnit.fromKey(recurrenceUnit) ?? RecurrenceUnit.days),
+        done: done,
+        doneAt: doneAt,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}

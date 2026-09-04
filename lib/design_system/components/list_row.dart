@@ -17,6 +17,8 @@ class FloraListRow extends StatelessWidget {
     this.chevron,
     this.destructive = false,
     this.dense = false,
+    this.subtitleColor,
+    this.strikethrough = false,
   });
 
   final String title;
@@ -27,6 +29,12 @@ class FloraListRow extends StatelessWidget {
   final bool? chevron;
   final bool destructive;
   final bool dense;
+
+  /// Couleur du sous-titre (échéance en retard, par exemple).
+  final Color? subtitleColor;
+
+  /// Titre barré (tâche terminée).
+  final bool strikethrough;
 
   @override
   Widget build(BuildContext context) {

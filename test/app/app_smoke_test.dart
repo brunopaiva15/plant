@@ -8,6 +8,7 @@ import 'package:flora/data/db/mappers.dart';
 import 'package:flora/data/services/notification_service.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/domain/models/models.dart';
+import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/repositories/repositories.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -176,6 +177,43 @@ void main() {
     await tester.tap(find.text('Mois'));
     await settle(tester);
     expect(find.text('Agenda'), findsOneWidget);
+  });
+
+  testWidgets('a due task shows on Today and on the Garden tasks tab, and can be ticked off', (tester) async {
+    late String plantId;
+    final container = await boot(tester, seed: (c) async {
+      final plant = await c.read(plantRepositoryProvider).create(const NewPlant(name: 'Monstera'));
+      plantId = plant.id;
+      final yesterday = DateTime.now().subtract(const Duration(days: 1));
+      await c.read(taskRepositoryProvider).create(NewTask(title: 'Nettoyer la serre', dueAt: yesterday));
+      await c.read(taskRepositoryProvider).create(NewTask(title: 'Bouturer', plantId: plantId, dueAt: yesterday));
+    });
+    await pumpApp(tester, container);
+
+    // Aujourd'hui : les deux tâches échues sont listées.
+    expect(find.text('Nettoyer la serre'), findsOneWidget);
+    expect(find.text('Bouturer'), findsOneWidget);
+
+    // Onglet Jardin > Tâches.
+    await tester.tap(find.text('Jardin'));
+    await settle(tester);
+    await tester.tap(find.text('Tâches').first);
+    await settle(tester);
+    expect(find.text('Nettoyer la serre'), findsOneWidget);
+
+    // Cocher la tâche : la ligne passe en terminée (requête directe : sous
+    // FakeAsync, `stream.first` n'émet jamais).
+    await tester.tap(find.descendant(of: find.widgetWithText(FloraListRow, 'Nettoyer la serre'), matching: find.byType(Pressable)).last);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 2));
+    await settle(tester);
+    final db = container.read(databaseProvider);
+    final rows = await (db.select(db.tasks)..where((t) => t.title.equals('Nettoyer la serre'))).get();
+    expect(rows.single.done, isTrue);
+    // Laisse expirer la fenêtre d'annulation du toast (5 s) : sinon un timer
+    // reste en attente à la fin du test.
+    await tester.pump(const Duration(seconds: 6));
+    await settle(tester);
   });
 
   testWidgets('onboarding leads to Today after entering a name', (tester) async {

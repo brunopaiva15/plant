@@ -205,3 +205,36 @@ abstract class InventoryRepository {
   Future<void> adjustQuantity(String id, double delta);
   Future<void> delete(String id);
 }
+
+/// Données d'une nouvelle tâche libre.
+class NewTask {
+  const NewTask({required this.title, this.description, this.plantId, this.dueAt, this.allDay = true, this.recurrence});
+
+  final String title;
+  final String? description;
+  final String? plantId;
+  final DateTime? dueAt;
+  final bool allDay;
+  final TaskRecurrence? recurrence;
+}
+
+abstract class TaskRepository {
+  /// Toutes les tâches non supprimées (ouvertes d'abord, puis par échéance).
+  Stream<List<FreeTask>> watchAll();
+  Stream<List<FreeTask>> watchOpen();
+  Stream<List<FreeTask>> watchByPlant(String plantId);
+  Future<FreeTask?> get(String id);
+  Future<FreeTask> create(NewTask data);
+  Future<void> update(FreeTask task);
+
+  /// Marque faite. Une tâche récurrente reste ouverte et passe à l'occurrence
+  /// suivante ; retourne l'état précédent pour permettre l'annulation.
+  Future<FreeTask> complete(String id, {DateTime? now});
+
+  /// Rouvre une tâche terminée.
+  Future<void> reopen(String id);
+
+  /// Restaure l'état précédent (Undo de `complete`).
+  Future<void> restore(FreeTask previous);
+  Future<void> delete(String id);
+}

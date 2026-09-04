@@ -10,6 +10,8 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/create_plant_flow.dart';
+import '../../tasks/application/task_providers.dart';
+import '../../tasks/presentation/task_row.dart';
 import '../../weather/presentation/weather_widgets.dart';
 import '../application/completed_tasks.dart';
 import 'care_task_card.dart';
@@ -42,7 +44,8 @@ class TodayScreen extends ConsumerWidget {
     final overdue = all.where((t) => statusOf(t) == DueStatus.overdue).toList();
     final today = all.where((t) => statusOf(t) == DueStatus.today).toList();
     final upcoming = all.where((t) => statusOf(t) == DueStatus.upcoming).toList();
-    final dueCount = live.where((t) => statusOf(t) != DueStatus.upcoming).length;
+    final dueTasks = ref.watch(dueTasksProvider);
+    final dueCount = live.where((t) => statusOf(t) != DueStatus.upcoming).length + dueTasks.length;
 
     return LargeTitlePage(
       title: greeting,
@@ -114,12 +117,38 @@ class TodayScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          if (dueTasks.isNotEmpty) _FreeTaskSection(tasks: dueTasks),
           if (overdue.isNotEmpty) _TaskSection(title: l10n.sectionOverdue, tasks: overdue),
           if (today.isNotEmpty) _TaskSection(title: l10n.sectionToday, tasks: today),
           if (upcoming.isNotEmpty) _TaskSection(title: l10n.sectionUpcoming, tasks: upcoming, compact: true),
           const _GardenSummary(),
           const _RecentPhotos(),
         ],
+      ],
+    );
+  }
+}
+
+/// Tâches libres en retard ou dues aujourd'hui.
+class _FreeTaskSection extends StatelessWidget {
+  const _FreeTaskSection({required this.tasks});
+
+  final List<FreeTask> tasks;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SectionHeader(title: l10n.tasksTodayTitle, actionLabel: l10n.seeAll, onAction: () => context.go(Routes.garden)),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: Space.page),
+          sliver: SliverToBoxAdapter(
+            child: FloraGroup(children: [for (final t in tasks) TaskRow(key: ValueKey(t.id), task: t)]),
+          ),
+        ),
       ],
     );
   }

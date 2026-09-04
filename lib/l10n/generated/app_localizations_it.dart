@@ -1053,7 +1053,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get saved => 'Salvato';
 
   @override
-  String get gardenLocations => 'Posizioni';
+  String get gardenLocations => 'Luoghi';
 
   @override
   String get gardenInventory => 'Inventario';
@@ -1680,4 +1680,205 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get speciesCatTree => 'Alberi e arbusti';
+
+  @override
+  String get gardenTasks => 'Attività';
+
+  @override
+  String get tasks => 'Attività';
+
+  @override
+  String get newTask => 'Nuova attività';
+
+  @override
+  String get editTask => 'Modifica attività';
+
+  @override
+  String get taskTitleHint => 'Cosa c\'è da fare?';
+
+  @override
+  String get taskDescriptionHint => 'Dettagli (facoltativo)';
+
+  @override
+  String get taskPlant => 'Pianta';
+
+  @override
+  String get taskNoPlant => 'Senza pianta';
+
+  @override
+  String get taskDue => 'Scadenza';
+
+  @override
+  String get taskNoDue => 'Senza data';
+
+  @override
+  String get taskTime => 'Ora';
+
+  @override
+  String get taskAllDay => 'Tutto il giorno';
+
+  @override
+  String get taskRecurrence => 'Ripetizione';
+
+  @override
+  String get taskRecurrenceNone => 'Nessuna';
+
+  @override
+  String get taskEvery => 'Ogni';
+
+  @override
+  String recurrenceLabel(String unit, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ogni $count ore',
+      one: 'Ogni ora',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ogni $count giorni',
+      one: 'Ogni giorno',
+    );
+    String _temp2 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ogni $count settimane',
+      one: 'Ogni settimana',
+    );
+    String _temp3 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ogni $count mesi',
+      one: 'Ogni mese',
+    );
+    String _temp4 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ogni $count anni',
+      one: 'Ogni anno',
+    );
+    String _temp5 = intl.Intl.selectLogic(unit, {
+      'hours': '$_temp0',
+      'days': '$_temp1',
+      'weeks': '$_temp2',
+      'months': '$_temp3',
+      'years': '$_temp4',
+      'other': '—',
+    });
+    return '$_temp5';
+  }
+
+  @override
+  String get unitHours => 'ore';
+
+  @override
+  String get unitDays => 'giorni';
+
+  @override
+  String get unitWeeks => 'settimane';
+
+  @override
+  String get unitMonths => 'mesi';
+
+  @override
+  String get unitYears => 'anni';
+
+  @override
+  String get taskFilterOpen => 'Aperte';
+
+  @override
+  String get taskFilterOverdue => 'In ritardo';
+
+  @override
+  String get taskFilterDone => 'Completate';
+
+  @override
+  String get taskSectionOverdue => 'In ritardo';
+
+  @override
+  String get taskSectionToday => 'Oggi';
+
+  @override
+  String get taskSectionUpcoming => 'In arrivo';
+
+  @override
+  String get taskSectionNoDate => 'Senza data';
+
+  @override
+  String get noTasksTitle => 'Nessuna attività';
+
+  @override
+  String get noTasksSubtitle =>
+      'Semine, pulizia della serra, ordine di terriccio: annota tutto qui.';
+
+  @override
+  String get noDoneTasks => 'Niente di completato per ora';
+
+  @override
+  String taskDoneToast(String title) {
+    return '$title · Completata';
+  }
+
+  @override
+  String taskNextToast(String title, String date) {
+    return '$title · Prossima volta $date';
+  }
+
+  @override
+  String get taskDeleted => 'Attività eliminata';
+
+  @override
+  String get deleteTask => 'Elimina attività';
+
+  @override
+  String get reopenTask => 'Riapri';
+
+  @override
+  String taskDoneOn(String date) {
+    return 'Completata $date';
+  }
+
+  @override
+  String taskOverdueSince(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'In ritardo di $count giorni',
+      one: 'In ritardo di un giorno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String taskDueIn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tra $count giorni',
+      one: 'Domani',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tasksTodayTitle => 'Attività';
+
+  @override
+  String get choosePlant => 'Scegli una pianta';
+
+  @override
+  String notifTasksOne(String title) {
+    return 'Attività: $title.';
+  }
+
+  @override
+  String notifTasksMany(int count, String titles) {
+    return '$count attività da fare: $titles.';
+  }
+
+  @override
+  String notifTaskDue(String title) {
+    return 'È il momento: $title';
+  }
 }

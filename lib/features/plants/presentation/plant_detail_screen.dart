@@ -14,6 +14,9 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../../actions/presentation/add_action_sheet.dart';
+import '../../tasks/application/task_providers.dart';
+import '../../tasks/presentation/task_row.dart';
+import '../../tasks/presentation/task_sheet.dart';
 import '../../actions/presentation/add_note_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
@@ -78,6 +81,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           onPressed: () => _toggleFavorite(plant),
         ),
         SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
+        SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
         SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
         if (ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
           SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
@@ -272,6 +276,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
               child: FloraButton(label: l10n.addAction, icon: CupertinoIcons.plus, expand: true, onPressed: () => showAddActionSheet(context, plantId: id, plantName: plant.name)),
             ),
           ),
+          _PlantTasks(plantId: id),
           _RecentHistory(plantId: id),
           _Growth(plantId: id, photos: photos, onAdd: _addPhoto),
           MeasurementsSection(plantId: id, plantName: plant.name),
@@ -367,6 +372,33 @@ class _NextCareState extends ConsumerState<_NextCare> {
                       ],
                     ),
                   ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Tâches libres liées à cette plante.
+class _PlantTasks extends ConsumerWidget {
+  const _PlantTasks({required this.plantId});
+
+  final String plantId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final tasks = ref.watch(plantTasksProvider(plantId)).value ?? const <FreeTask>[];
+    final open = tasks.where((t) => !t.done).toList();
+    if (open.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(title: l10n.tasks, actionLabel: l10n.add, onAction: () => showTaskSheet(context, plantId: plantId)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.page),
+            child: FloraGroup(children: [for (final t in open) TaskRow(key: ValueKey(t.id), task: t, showPlant: false, dense: true)]),
           ),
         ],
       ),

@@ -22,7 +22,7 @@ class FakeRemote implements RemoteDataSource {
   Future<void> upsert(String table, Map<String, Object?> row) async {
     final copy = Map<String, Object?>.from(row);
     // Le serveur pose updated_at à la réception (trigger).
-    if (const {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items'}.contains(table)) {
+    if (const {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks'}.contains(table)) {
       copy['updated_at'] = DateTime.now().toUtc().toIso8601String();
     }
     tables.putIfAbsent(table, () => {})[_key(table, row)] = copy;

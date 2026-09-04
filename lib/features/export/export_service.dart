@@ -52,5 +52,6 @@ class ExportService {
         'plant_tags': (await _db.select(_db.plantTags).get()).map((r) => r.toJson()).toList(),
         'measurements': (await _db.select(_db.measurements).get()).map((r) => r.toJson()).toList(),
         'inventory_items': (await _db.select(_db.inventoryItems).get()).map((r) => r.toJson()).toList(),
+        'tasks': (await _db.select(_db.tasks).get()).map((r) => r.toJson()).toList(),
       };
 }

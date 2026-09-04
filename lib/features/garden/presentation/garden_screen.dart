@@ -12,8 +12,10 @@ import '../../calendar/presentation/calendar_view.dart';
 import '../../inventory/presentation/inventory_item_sheet.dart';
 import '../../inventory/presentation/inventory_list.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
+import '../../tasks/presentation/task_sheet.dart';
+import '../../tasks/presentation/tasks_view.dart';
 
-enum GardenSection { locations, inventory, calendar }
+enum GardenSection { locations, tasks, inventory, calendar }
 
 class GardenSectionController extends Notifier<GardenSection> {
   @override
@@ -33,6 +35,7 @@ class GardenScreen extends ConsumerWidget {
     final section = ref.watch(gardenSectionProvider);
     final trailing = switch (section) {
       GardenSection.locations => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newLocationTitle, onPressed: () => showLocationEditSheet(context)),
+      GardenSection.tasks => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newTask, onPressed: () => showTaskSheet(context)),
       GardenSection.inventory => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newItem, onPressed: () => showInventoryItemSheet(context)),
       GardenSection.calendar => null,
     };
@@ -44,7 +47,12 @@ class GardenScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
             child: AdaptiveSegmented<GardenSection>(
-              segments: {GardenSection.locations: l10n.gardenLocations, GardenSection.inventory: l10n.gardenInventory, GardenSection.calendar: l10n.gardenCalendar},
+              segments: {
+                GardenSection.locations: l10n.gardenLocations,
+                GardenSection.tasks: l10n.gardenTasks,
+                GardenSection.inventory: l10n.gardenInventory,
+                GardenSection.calendar: l10n.gardenCalendar,
+              },
               value: section,
               onChanged: (s) => ref.read(gardenSectionProvider.notifier).set(s),
             ),
@@ -52,6 +60,7 @@ class GardenScreen extends ConsumerWidget {
         ),
         switch (section) {
           GardenSection.locations => const _LocationsSlivers(),
+          GardenSection.tasks => const TasksSlivers(),
           GardenSection.inventory => const InventorySlivers(),
           GardenSection.calendar => const CalendarSlivers(),
         },

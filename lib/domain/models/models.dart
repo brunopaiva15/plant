@@ -5,6 +5,7 @@ export 'measurement.dart';
 export 'care_kind.dart';
 export 'care_schedule.dart';
 export 'care_task.dart';
+export 'free_task.dart';
 export 'location.dart';
 export 'plant.dart';
 export 'plant_action.dart';

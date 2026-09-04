@@ -211,3 +211,24 @@ class GardenMembers extends Table {
   @override
   Set<Column> get primaryKey => {gardenId, userId};
 }
+
+/// Tâches libres (« Nettoyer la serre »), avec ou sans plante, échéance et
+/// récurrence facultatives.
+@DataClassName('TaskRow')
+class Tasks extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get plantId => text().nullable()();
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get dueAt => dateTime().nullable()();
+  BoolColumn get allDay => boolean().withDefault(const Constant(true))();
+  IntColumn get recurrenceValue => integer().nullable()();
+  TextColumn get recurrenceUnit => text().nullable()();
+  BoolColumn get done => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get doneAt => dateTime().nullable()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

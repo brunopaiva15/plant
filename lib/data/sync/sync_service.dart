@@ -66,10 +66,10 @@ class SyncService {
   SyncState get currentState => _current;
 
   /// Tables synchronisées, dans l'ordre des dépendances (parents d'abord).
-  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items'];
+  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items'};
+  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks'};
 
   void _emit(SyncState s) {
     _current = s;
@@ -175,6 +175,7 @@ class SyncService {
         'plant_tags' => (await _db.select(_db.plantTags).get()).map((r) => '${r.plantId}/${r.tagId}').toList(),
         'measurements' => (await _db.select(_db.measurements).get()).map((r) => r.id).toList(),
         'inventory_items' => (await _db.select(_db.inventoryItems).get()).map((r) => r.id).toList(),
+        'tasks' => (await _db.select(_db.tasks).get()).map((r) => r.id).toList(),
         _ => const [],
       };
 
@@ -214,6 +215,9 @@ class SyncService {
         return r == null ? null : RowCodec.toRemote(r);
       case 'inventory_items':
         final r = await (_db.select(_db.inventoryItems)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
+      case 'tasks':
+        final r = await (_db.select(_db.tasks)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r);
     }
     return null;
@@ -297,6 +301,9 @@ class SyncService {
       case 'inventory_items':
         final row = InventoryItemRow.fromJson(json, serializer: s);
         if (await _isNewer('inventory_items', row.id, row.updatedAt)) await _db.into(_db.inventoryItems).insertOnConflictUpdate(row);
+      case 'tasks':
+        final row = TaskRow.fromJson(json, serializer: s);
+        if (await _isNewer('tasks', row.id, row.updatedAt)) await _db.into(_db.tasks).insertOnConflictUpdate(row);
     }
   }
 
@@ -334,6 +341,7 @@ class SyncService {
         'plants' => (await (_db.select(_db.plants)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'care_schedules' => (await (_db.select(_db.careSchedules)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'inventory_items' => (await (_db.select(_db.inventoryItems)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'tasks' => (await (_db.select(_db.tasks)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         _ => null,
       };
 
