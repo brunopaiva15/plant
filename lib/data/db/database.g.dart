@@ -8105,6 +8105,1168 @@ class TasksCompanion extends UpdateCompanion<TaskRow> {
   }
 }
 
+class $PlantAttributesTable extends PlantAttributes
+    with TableInfo<$PlantAttributesTable, PlantAttributeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlantAttributesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _plantIdMeta = const VerificationMeta(
+    'plantId',
+  );
+  @override
+  late final GeneratedColumn<String> plantId = GeneratedColumn<String>(
+    'plant_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _datatypeMeta = const VerificationMeta(
+    'datatype',
+  );
+  @override
+  late final GeneratedColumn<String> datatype = GeneratedColumn<String>(
+    'datatype',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    plantId,
+    label,
+    datatype,
+    value,
+    position,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'plant_attributes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlantAttributeRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('plant_id')) {
+      context.handle(
+        _plantIdMeta,
+        plantId.isAcceptableOrUnknown(data['plant_id']!, _plantIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_plantIdMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('datatype')) {
+      context.handle(
+        _datatypeMeta,
+        datatype.isAcceptableOrUnknown(data['datatype']!, _datatypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_datatypeMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlantAttributeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlantAttributeRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      plantId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plant_id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      datatype: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}datatype'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      ),
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $PlantAttributesTable createAlias(String alias) {
+    return $PlantAttributesTable(attachedDatabase, alias);
+  }
+}
+
+class PlantAttributeRow extends DataClass
+    implements Insertable<PlantAttributeRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String gardenId;
+  final String plantId;
+  final String label;
+  final String datatype;
+  final String? value;
+  final int position;
+  final DateTime? deletedAt;
+  const PlantAttributeRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.gardenId,
+    required this.plantId,
+    required this.label,
+    required this.datatype,
+    this.value,
+    required this.position,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    map['plant_id'] = Variable<String>(plantId);
+    map['label'] = Variable<String>(label);
+    map['datatype'] = Variable<String>(datatype);
+    if (!nullToAbsent || value != null) {
+      map['value'] = Variable<String>(value);
+    }
+    map['position'] = Variable<int>(position);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  PlantAttributesCompanion toCompanion(bool nullToAbsent) {
+    return PlantAttributesCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      gardenId: Value(gardenId),
+      plantId: Value(plantId),
+      label: Value(label),
+      datatype: Value(datatype),
+      value: value == null && nullToAbsent
+          ? const Value.absent()
+          : Value(value),
+      position: Value(position),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory PlantAttributeRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlantAttributeRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      plantId: serializer.fromJson<String>(json['plantId']),
+      label: serializer.fromJson<String>(json['label']),
+      datatype: serializer.fromJson<String>(json['datatype']),
+      value: serializer.fromJson<String?>(json['value']),
+      position: serializer.fromJson<int>(json['position']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'plantId': serializer.toJson<String>(plantId),
+      'label': serializer.toJson<String>(label),
+      'datatype': serializer.toJson<String>(datatype),
+      'value': serializer.toJson<String?>(value),
+      'position': serializer.toJson<int>(position),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  PlantAttributeRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? gardenId,
+    String? plantId,
+    String? label,
+    String? datatype,
+    Value<String?> value = const Value.absent(),
+    int? position,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => PlantAttributeRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    plantId: plantId ?? this.plantId,
+    label: label ?? this.label,
+    datatype: datatype ?? this.datatype,
+    value: value.present ? value.value : this.value,
+    position: position ?? this.position,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  PlantAttributeRow copyWithCompanion(PlantAttributesCompanion data) {
+    return PlantAttributeRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      plantId: data.plantId.present ? data.plantId.value : this.plantId,
+      label: data.label.present ? data.label.value : this.label,
+      datatype: data.datatype.present ? data.datatype.value : this.datatype,
+      value: data.value.present ? data.value.value : this.value,
+      position: data.position.present ? data.position.value : this.position,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlantAttributeRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('plantId: $plantId, ')
+          ..write('label: $label, ')
+          ..write('datatype: $datatype, ')
+          ..write('value: $value, ')
+          ..write('position: $position, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    plantId,
+    label,
+    datatype,
+    value,
+    position,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlantAttributeRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.plantId == this.plantId &&
+          other.label == this.label &&
+          other.datatype == this.datatype &&
+          other.value == this.value &&
+          other.position == this.position &&
+          other.deletedAt == this.deletedAt);
+}
+
+class PlantAttributesCompanion extends UpdateCompanion<PlantAttributeRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String> plantId;
+  final Value<String> label;
+  final Value<String> datatype;
+  final Value<String?> value;
+  final Value<int> position;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const PlantAttributesCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.plantId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.datatype = const Value.absent(),
+    this.value = const Value.absent(),
+    this.position = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlantAttributesCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String gardenId,
+    required String plantId,
+    required String label,
+    required String datatype,
+    this.value = const Value.absent(),
+    this.position = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       gardenId = Value(gardenId),
+       plantId = Value(plantId),
+       label = Value(label),
+       datatype = Value(datatype);
+  static Insertable<PlantAttributeRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? plantId,
+    Expression<String>? label,
+    Expression<String>? datatype,
+    Expression<String>? value,
+    Expression<int>? position,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (plantId != null) 'plant_id': plantId,
+      if (label != null) 'label': label,
+      if (datatype != null) 'datatype': datatype,
+      if (value != null) 'value': value,
+      if (position != null) 'position': position,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlantAttributesCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String>? plantId,
+    Value<String>? label,
+    Value<String>? datatype,
+    Value<String?>? value,
+    Value<int>? position,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return PlantAttributesCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      plantId: plantId ?? this.plantId,
+      label: label ?? this.label,
+      datatype: datatype ?? this.datatype,
+      value: value ?? this.value,
+      position: position ?? this.position,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (plantId.present) {
+      map['plant_id'] = Variable<String>(plantId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (datatype.present) {
+      map['datatype'] = Variable<String>(datatype.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlantAttributesCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('plantId: $plantId, ')
+          ..write('label: $label, ')
+          ..write('datatype: $datatype, ')
+          ..write('value: $value, ')
+          ..write('position: $position, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AttributeSchemasTable extends AttributeSchemas
+    with TableInfo<$AttributeSchemasTable, AttributeSchemaRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AttributeSchemasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _datatypeMeta = const VerificationMeta(
+    'datatype',
+  );
+  @override
+  late final GeneratedColumn<String> datatype = GeneratedColumn<String>(
+    'datatype',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    label,
+    datatype,
+    active,
+    position,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'attribute_schemas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AttributeSchemaRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('datatype')) {
+      context.handle(
+        _datatypeMeta,
+        datatype.isAcceptableOrUnknown(data['datatype']!, _datatypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_datatypeMeta);
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AttributeSchemaRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AttributeSchemaRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      datatype: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}datatype'],
+      )!,
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $AttributeSchemasTable createAlias(String alias) {
+    return $AttributeSchemasTable(attachedDatabase, alias);
+  }
+}
+
+class AttributeSchemaRow extends DataClass
+    implements Insertable<AttributeSchemaRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String gardenId;
+  final String label;
+  final String datatype;
+  final bool active;
+  final int position;
+  final DateTime? deletedAt;
+  const AttributeSchemaRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.gardenId,
+    required this.label,
+    required this.datatype,
+    required this.active,
+    required this.position,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    map['label'] = Variable<String>(label);
+    map['datatype'] = Variable<String>(datatype);
+    map['active'] = Variable<bool>(active);
+    map['position'] = Variable<int>(position);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  AttributeSchemasCompanion toCompanion(bool nullToAbsent) {
+    return AttributeSchemasCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      gardenId: Value(gardenId),
+      label: Value(label),
+      datatype: Value(datatype),
+      active: Value(active),
+      position: Value(position),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory AttributeSchemaRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AttributeSchemaRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      label: serializer.fromJson<String>(json['label']),
+      datatype: serializer.fromJson<String>(json['datatype']),
+      active: serializer.fromJson<bool>(json['active']),
+      position: serializer.fromJson<int>(json['position']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'label': serializer.toJson<String>(label),
+      'datatype': serializer.toJson<String>(datatype),
+      'active': serializer.toJson<bool>(active),
+      'position': serializer.toJson<int>(position),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  AttributeSchemaRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? gardenId,
+    String? label,
+    String? datatype,
+    bool? active,
+    int? position,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => AttributeSchemaRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    label: label ?? this.label,
+    datatype: datatype ?? this.datatype,
+    active: active ?? this.active,
+    position: position ?? this.position,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  AttributeSchemaRow copyWithCompanion(AttributeSchemasCompanion data) {
+    return AttributeSchemaRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      label: data.label.present ? data.label.value : this.label,
+      datatype: data.datatype.present ? data.datatype.value : this.datatype,
+      active: data.active.present ? data.active.value : this.active,
+      position: data.position.present ? data.position.value : this.position,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AttributeSchemaRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('label: $label, ')
+          ..write('datatype: $datatype, ')
+          ..write('active: $active, ')
+          ..write('position: $position, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    label,
+    datatype,
+    active,
+    position,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AttributeSchemaRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.label == this.label &&
+          other.datatype == this.datatype &&
+          other.active == this.active &&
+          other.position == this.position &&
+          other.deletedAt == this.deletedAt);
+}
+
+class AttributeSchemasCompanion extends UpdateCompanion<AttributeSchemaRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String> label;
+  final Value<String> datatype;
+  final Value<bool> active;
+  final Value<int> position;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const AttributeSchemasCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.datatype = const Value.absent(),
+    this.active = const Value.absent(),
+    this.position = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AttributeSchemasCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String gardenId,
+    required String label,
+    required String datatype,
+    this.active = const Value.absent(),
+    this.position = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       gardenId = Value(gardenId),
+       label = Value(label),
+       datatype = Value(datatype);
+  static Insertable<AttributeSchemaRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? label,
+    Expression<String>? datatype,
+    Expression<bool>? active,
+    Expression<int>? position,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (label != null) 'label': label,
+      if (datatype != null) 'datatype': datatype,
+      if (active != null) 'active': active,
+      if (position != null) 'position': position,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AttributeSchemasCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String>? label,
+    Value<String>? datatype,
+    Value<bool>? active,
+    Value<int>? position,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return AttributeSchemasCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      label: label ?? this.label,
+      datatype: datatype ?? this.datatype,
+      active: active ?? this.active,
+      position: position ?? this.position,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (datatype.present) {
+      map['datatype'] = Variable<String>(datatype.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AttributeSchemasCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('label: $label, ')
+          ..write('datatype: $datatype, ')
+          ..write('active: $active, ')
+          ..write('position: $position, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -8123,6 +9285,12 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
   late final $ProfilesTable profiles = $ProfilesTable(this);
   late final $GardenMembersTable gardenMembers = $GardenMembersTable(this);
   late final $TasksTable tasks = $TasksTable(this);
+  late final $PlantAttributesTable plantAttributes = $PlantAttributesTable(
+    this,
+  );
+  late final $AttributeSchemasTable attributeSchemas = $AttributeSchemasTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8143,6 +9311,8 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     profiles,
     gardenMembers,
     tasks,
+    plantAttributes,
+    attributeSchemas,
   ];
 }
 
@@ -12322,6 +13492,617 @@ typedef $$TasksTableProcessedTableManager =
       TaskRow,
       PrefetchHooks Function()
     >;
+typedef $$PlantAttributesTableCreateCompanionBuilder =
+    PlantAttributesCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      required String id,
+      required String gardenId,
+      required String plantId,
+      required String label,
+      required String datatype,
+      Value<String?> value,
+      Value<int> position,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$PlantAttributesTableUpdateCompanionBuilder =
+    PlantAttributesCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> id,
+      Value<String> gardenId,
+      Value<String> plantId,
+      Value<String> label,
+      Value<String> datatype,
+      Value<String?> value,
+      Value<int> position,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$PlantAttributesTableFilterComposer
+    extends Composer<_$FloraDatabase, $PlantAttributesTable> {
+  $$PlantAttributesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get plantId => $composableBuilder(
+    column: $table.plantId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get datatype => $composableBuilder(
+    column: $table.datatype,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlantAttributesTableOrderingComposer
+    extends Composer<_$FloraDatabase, $PlantAttributesTable> {
+  $$PlantAttributesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get plantId => $composableBuilder(
+    column: $table.plantId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get datatype => $composableBuilder(
+    column: $table.datatype,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlantAttributesTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $PlantAttributesTable> {
+  $$PlantAttributesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get plantId =>
+      $composableBuilder(column: $table.plantId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get datatype =>
+      $composableBuilder(column: $table.datatype, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$PlantAttributesTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $PlantAttributesTable,
+          PlantAttributeRow,
+          $$PlantAttributesTableFilterComposer,
+          $$PlantAttributesTableOrderingComposer,
+          $$PlantAttributesTableAnnotationComposer,
+          $$PlantAttributesTableCreateCompanionBuilder,
+          $$PlantAttributesTableUpdateCompanionBuilder,
+          (
+            PlantAttributeRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $PlantAttributesTable,
+              PlantAttributeRow
+            >,
+          ),
+          PlantAttributeRow,
+          PrefetchHooks Function()
+        > {
+  $$PlantAttributesTableTableManager(
+    _$FloraDatabase db,
+    $PlantAttributesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlantAttributesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlantAttributesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlantAttributesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String> plantId = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> datatype = const Value.absent(),
+                Value<String?> value = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlantAttributesCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                plantId: plantId,
+                label: label,
+                datatype: datatype,
+                value: value,
+                position: position,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String gardenId,
+                required String plantId,
+                required String label,
+                required String datatype,
+                Value<String?> value = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlantAttributesCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                plantId: plantId,
+                label: label,
+                datatype: datatype,
+                value: value,
+                position: position,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlantAttributesTable, PlantAttributeRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $PlantAttributesTable,
+                    PlantAttributeRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlantAttributesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $PlantAttributesTable,
+      PlantAttributeRow,
+      $$PlantAttributesTableFilterComposer,
+      $$PlantAttributesTableOrderingComposer,
+      $$PlantAttributesTableAnnotationComposer,
+      $$PlantAttributesTableCreateCompanionBuilder,
+      $$PlantAttributesTableUpdateCompanionBuilder,
+      (
+        PlantAttributeRow,
+        BaseReferences<
+          _$FloraDatabase,
+          $PlantAttributesTable,
+          PlantAttributeRow
+        >,
+      ),
+      PlantAttributeRow,
+      PrefetchHooks Function()
+    >;
+typedef $$AttributeSchemasTableCreateCompanionBuilder =
+    AttributeSchemasCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      required String id,
+      required String gardenId,
+      required String label,
+      required String datatype,
+      Value<bool> active,
+      Value<int> position,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$AttributeSchemasTableUpdateCompanionBuilder =
+    AttributeSchemasCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> id,
+      Value<String> gardenId,
+      Value<String> label,
+      Value<String> datatype,
+      Value<bool> active,
+      Value<int> position,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$AttributeSchemasTableFilterComposer
+    extends Composer<_$FloraDatabase, $AttributeSchemasTable> {
+  $$AttributeSchemasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get datatype => $composableBuilder(
+    column: $table.datatype,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AttributeSchemasTableOrderingComposer
+    extends Composer<_$FloraDatabase, $AttributeSchemasTable> {
+  $$AttributeSchemasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get datatype => $composableBuilder(
+    column: $table.datatype,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AttributeSchemasTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $AttributeSchemasTable> {
+  $$AttributeSchemasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get datatype =>
+      $composableBuilder(column: $table.datatype, builder: (column) => column);
+
+  GeneratedColumn<bool> get active =>
+      $composableBuilder(column: $table.active, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$AttributeSchemasTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $AttributeSchemasTable,
+          AttributeSchemaRow,
+          $$AttributeSchemasTableFilterComposer,
+          $$AttributeSchemasTableOrderingComposer,
+          $$AttributeSchemasTableAnnotationComposer,
+          $$AttributeSchemasTableCreateCompanionBuilder,
+          $$AttributeSchemasTableUpdateCompanionBuilder,
+          (
+            AttributeSchemaRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $AttributeSchemasTable,
+              AttributeSchemaRow
+            >,
+          ),
+          AttributeSchemaRow,
+          PrefetchHooks Function()
+        > {
+  $$AttributeSchemasTableTableManager(
+    _$FloraDatabase db,
+    $AttributeSchemasTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AttributeSchemasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AttributeSchemasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AttributeSchemasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> datatype = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AttributeSchemasCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                label: label,
+                datatype: datatype,
+                active: active,
+                position: position,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String gardenId,
+                required String label,
+                required String datatype,
+                Value<bool> active = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AttributeSchemasCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                label: label,
+                datatype: datatype,
+                active: active,
+                position: position,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AttributeSchemasTable, AttributeSchemaRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $AttributeSchemasTable,
+                    AttributeSchemaRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AttributeSchemasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $AttributeSchemasTable,
+      AttributeSchemaRow,
+      $$AttributeSchemasTableFilterComposer,
+      $$AttributeSchemasTableOrderingComposer,
+      $$AttributeSchemasTableAnnotationComposer,
+      $$AttributeSchemasTableCreateCompanionBuilder,
+      $$AttributeSchemasTableUpdateCompanionBuilder,
+      (
+        AttributeSchemaRow,
+        BaseReferences<
+          _$FloraDatabase,
+          $AttributeSchemasTable,
+          AttributeSchemaRow
+        >,
+      ),
+      AttributeSchemaRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -12355,4 +14136,8 @@ class $FloraDatabaseManager {
       $$GardenMembersTableTableManager(_db, _db.gardenMembers);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
+  $$PlantAttributesTableTableManager get plantAttributes =>
+      $$PlantAttributesTableTableManager(_db, _db.plantAttributes);
+  $$AttributeSchemasTableTableManager get attributeSchemas =>
+      $$AttributeSchemasTableTableManager(_db, _db.attributeSchemas);
 }

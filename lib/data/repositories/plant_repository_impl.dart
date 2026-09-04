@@ -35,7 +35,7 @@ class DriftPlantRepository implements PlantRepository {
   ''';
 
   Set<ResultSetImplementation> get _summaryTables =>
-      {_db.plants, _db.locations, _db.plantPhotos, _db.careSchedules, _db.plantTags, _db.tags};
+      {_db.plants, _db.locations, _db.plantPhotos, _db.careSchedules, _db.plantTags, _db.tags, _db.plantAttributes};
 
   PlantSummary _mapSummary(QueryRow row) {
     final data = Map<String, Object?>.from(row.data)
@@ -76,9 +76,10 @@ class DriftPlantRepository implements PlantRepository {
       where.add('''(lower(p.name) LIKE ? OR lower(p.species_name) LIKE ? OR lower(l.name) LIKE ?
         OR lower(p.notes) LIKE ?
         OR p.id IN (SELECT pt.plant_id FROM plant_tags pt JOIN tags t ON t.id = pt.tag_id WHERE lower(t.name) LIKE ?)
-        OR p.id IN (SELECT a.plant_id FROM plant_actions a WHERE a.deleted_at IS NULL AND lower(a.notes) LIKE ?))''');
+        OR p.id IN (SELECT a.plant_id FROM plant_actions a WHERE a.deleted_at IS NULL AND lower(a.notes) LIKE ?)
+        OR p.id IN (SELECT pa.plant_id FROM plant_attributes pa WHERE pa.deleted_at IS NULL AND (lower(pa.value) LIKE ? OR lower(pa.label) LIKE ?)))''');
       final like = Variable.withString('%$q%');
-      vars.addAll([like, like, like, like, like, like]);
+      vars.addAll([like, like, like, like, like, like, like, like]);
     }
     final order = switch (filter.sort) {
       PlantSort.name => 'lower(p.name) ASC',

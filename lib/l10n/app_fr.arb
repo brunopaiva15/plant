@@ -1223,5 +1223,39 @@
   "careTipVeryToxic": "Toutes ses parties sont très toxiques, y compris la fumée si on la brûle.",
   "careTipSharpSpines": "Ses pointes sont dangereuses : éloignez-la des passages.",
   "careTipSplitsAreNormal": "Les feuilles se fendent avec l'âge : c'est normal, pas une maladie.",
-  "careTipDryToBloom": "Un léger stress hydrique déclenche la floraison."
+  "careTipDryToBloom": "Un léger stress hydrique déclenche la floraison.",
+  "customFields": "Champs personnalisés",
+  "addCustomField": "Ajouter un champ",
+  "editCustomField": "Modifier le champ",
+  "deleteCustomField": "Supprimer le champ",
+  "fieldLabel": "Nom du champ",
+  "fieldLabelHint": "Provenance, prix, exposition…",
+  "fieldType": "Type",
+  "fieldValue": "Valeur",
+  "fieldTypeBool": "Oui / non",
+  "fieldTypeInt": "Nombre entier",
+  "fieldTypeDouble": "Nombre décimal",
+  "fieldTypeText": "Texte",
+  "fieldTypeDate": "Date",
+  "fieldEmpty": "Non renseigné",
+  "noCustomFields": "Aucun champ personnalisé",
+  "fieldTemplates": "Modèles de champs",
+  "fieldTemplatesHint": "Créez ici les champs que vous réutilisez sur plusieurs plantes : ils vous seront proposés en un tap.",
+  "newFieldTemplate": "Nouveau modèle",
+  "noFieldTemplates": "Aucun modèle",
+  "fieldTemplateInactive": "Masqué",
+  "fieldFromTemplate": "Depuis un modèle",
+  "bulkSetField": "Renseigner un champ",
+  "bulkFieldApplied": "{count, plural, =1{Champ appliqué à 1 plante} other{Champ appliqué à {count} plantes}}",
+  "@bulkFieldApplied": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmDeleteField": "Supprimer ce champ et sa valeur ?",
+  "confirmDeleteTemplate": "Supprimer ce modèle ? Les champs déjà renseignés sont conservés.",
+  "yes": "Oui",
+  "no": "Non"
 }

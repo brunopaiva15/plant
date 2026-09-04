@@ -151,3 +151,30 @@ extension TaskRowMapper on TaskRow {
         updatedAt: updatedAt,
       );
 }
+
+extension PlantAttributeRowMapper on PlantAttributeRow {
+  PlantAttribute toDomain() => PlantAttribute(
+        id: id,
+        gardenId: gardenId,
+        plantId: plantId,
+        label: label,
+        type: AttributeType.fromKey(datatype),
+        value: value,
+        position: position,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
+
+extension AttributeSchemaRowMapper on AttributeSchemaRow {
+  AttributeSchema toDomain() => AttributeSchema(
+        id: id,
+        gardenId: gardenId,
+        label: label,
+        type: AttributeType.fromKey(datatype),
+        active: active,
+        position: position,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}

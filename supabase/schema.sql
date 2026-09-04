@@ -174,6 +174,34 @@ create table if not exists tasks (
 );
 create index if not exists idx_tasks_garden_updated on tasks(garden_id, updated_at);
 
+create table if not exists attribute_schemas (
+  id uuid primary key,
+  garden_id uuid not null references gardens(id) on delete cascade,
+  label text not null,
+  datatype text not null,
+  active boolean not null default true,
+  position integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  deleted_at timestamptz
+);
+create index if not exists idx_attr_schemas_garden_updated on attribute_schemas(garden_id, updated_at);
+
+create table if not exists plant_attributes (
+  id uuid primary key,
+  garden_id uuid not null references gardens(id) on delete cascade,
+  plant_id uuid not null references plants(id) on delete cascade,
+  label text not null,
+  datatype text not null,
+  value text,
+  position integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  deleted_at timestamptz
+);
+create index if not exists idx_plant_attributes_plant on plant_attributes(plant_id);
+create index if not exists idx_plant_attributes_garden_updated on plant_attributes(garden_id, updated_at);
+
 create table if not exists shared_links (
   id uuid primary key default gen_random_uuid(),
   plant_id uuid not null references plants(id) on delete cascade,
@@ -195,7 +223,7 @@ create index if not exists idx_inventory_garden on inventory_items(garden_id, up
 create or replace function set_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
 do $$ declare t text; begin
-  foreach t in array array['gardens','locations','plants','care_schedules','inventory_items','tasks'] loop
+  foreach t in array array['gardens','locations','plants','care_schedules','inventory_items','tasks','attribute_schemas','plant_attributes'] loop
     execute format('drop trigger if exists trg_%s_updated on %s', t, t);
     execute format('create trigger trg_%s_updated before update on %s for each row execute function set_updated_at()', t, t);
   end loop;
@@ -237,7 +265,7 @@ create policy "members manage" on garden_members for all
 
 -- Tables portant garden_id.
 do $$ declare t text; begin
-  foreach t in array array['locations','plants','tags','inventory_items','tasks'] loop
+  foreach t in array array['locations','plants','tags','inventory_items','tasks','attribute_schemas','plant_attributes'] loop
     execute format('alter table %s enable row level security', t);
     execute format('drop policy if exists "%s read" on %s', t, t);
     execute format('create policy "%s read" on %s for select using (is_member(garden_id))', t, t);

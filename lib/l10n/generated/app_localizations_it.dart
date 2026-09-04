@@ -2479,4 +2479,95 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get careTipDryToBloom =>
       'Un leggero stress idrico stimola la fioritura.';
+
+  @override
+  String get customFields => 'Campi personalizzati';
+
+  @override
+  String get addCustomField => 'Aggiungi un campo';
+
+  @override
+  String get editCustomField => 'Modifica campo';
+
+  @override
+  String get deleteCustomField => 'Elimina campo';
+
+  @override
+  String get fieldLabel => 'Nome del campo';
+
+  @override
+  String get fieldLabelHint => 'Provenienza, prezzo, esposizione…';
+
+  @override
+  String get fieldType => 'Tipo';
+
+  @override
+  String get fieldValue => 'Valore';
+
+  @override
+  String get fieldTypeBool => 'Sì / no';
+
+  @override
+  String get fieldTypeInt => 'Numero intero';
+
+  @override
+  String get fieldTypeDouble => 'Numero decimale';
+
+  @override
+  String get fieldTypeText => 'Testo';
+
+  @override
+  String get fieldTypeDate => 'Data';
+
+  @override
+  String get fieldEmpty => 'Non indicato';
+
+  @override
+  String get noCustomFields => 'Nessun campo personalizzato';
+
+  @override
+  String get fieldTemplates => 'Modelli di campo';
+
+  @override
+  String get fieldTemplatesHint =>
+      'Crea qui i campi che riutilizzi su più piante: te li proporremo con un tocco.';
+
+  @override
+  String get newFieldTemplate => 'Nuovo modello';
+
+  @override
+  String get noFieldTemplates => 'Nessun modello';
+
+  @override
+  String get fieldTemplateInactive => 'Nascosto';
+
+  @override
+  String get fieldFromTemplate => 'Da un modello';
+
+  @override
+  String get bulkSetField => 'Imposta un campo';
+
+  @override
+  String bulkFieldApplied(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Campo applicato a $count piante',
+      one: 'Campo applicato a 1 pianta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirmDeleteField => 'Eliminare questo campo e il suo valore?';
+
+  @override
+  String get confirmDeleteTemplate =>
+      'Eliminare questo modello? I campi già compilati restano.';
+
+  @override
+  String get yes => 'Sì';
+
+  @override
+  String get no => 'No';
 }

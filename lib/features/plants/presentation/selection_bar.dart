@@ -9,6 +9,7 @@ import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
+import '../../attributes/presentation/bulk_attribute_sheet.dart';
 import 'plant_tags_sheet.dart';
 import '../../qr/application/label_pdf.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
@@ -24,10 +25,12 @@ class SelectionBar extends ConsumerWidget {
     final ids = ref.watch(selectionProvider).toList();
     final ctrl = ref.read(selectionProvider.notifier);
 
-    Future<void> water() async {
-      await ref.read(careActionsProvider).logMany(context, plantIds: ids, typeKey: CareKind.watering.key);
+    Future<void> logKind(String typeKey) async {
+      await ref.read(careActionsProvider).logMany(context, plantIds: ids, typeKey: typeKey);
       ctrl.clear();
     }
+
+    Future<void> water() => logKind(CareKind.watering.key);
 
     Future<void> move() async {
       final choice = await showLocationPicker(context);
@@ -55,6 +58,13 @@ class SelectionBar extends ConsumerWidget {
       }
       if (!context.mounted) return;
       await shareLabels(context, data);
+      ctrl.clear();
+    }
+
+    Future<void> setField() async {
+      final applied = await showBulkAttributeSheet(context, plantIds: ids);
+      if (applied != true) return;
+      ref.read(toastProvider.notifier).show(ToastData(message: l10n.bulkFieldApplied(ids.length), emoji: '🏷️'));
       ctrl.clear();
     }
 
@@ -88,8 +98,21 @@ class SelectionBar extends ConsumerWidget {
               _Action(emoji: '💧', label: l10n.verbWatering, onTap: water),
               _Action(emoji: '📍', label: l10n.move, onTap: move),
               _Action(emoji: '🏷️', label: l10n.addTag, onTap: tag),
-              _Action(emoji: '🔲', label: l10n.labels, onTap: labels),
-              _Action(emoji: '🗂', label: l10n.archive, onTap: archive),
+              _Action(
+                emoji: '···',
+                label: l10n.moreOptions,
+                onTap: () => showAdaptiveActionSheet(
+                  context,
+                  cancelLabel: l10n.cancel,
+                  actions: [
+                    SheetAction(label: l10n.verbFertilizing, icon: CupertinoIcons.drop_triangle, onPressed: () => logKind(CareKind.fertilizing.key)),
+                    SheetAction(label: l10n.verbRepotting, icon: CupertinoIcons.arrow_2_squarepath, onPressed: () => logKind(CareKind.repotting.key)),
+                    SheetAction(label: l10n.bulkSetField, icon: CupertinoIcons.tag, onPressed: setField),
+                    SheetAction(label: l10n.labels, icon: CupertinoIcons.qrcode, onPressed: labels),
+                    SheetAction(label: l10n.archive, icon: CupertinoIcons.archivebox, destructive: true, onPressed: archive),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

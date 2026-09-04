@@ -232,3 +232,35 @@ class Tasks extends Table with Timestamps {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+/// Attribut personnalisé d'une plante (« Provenance », « Bouturée le »…).
+/// La valeur est stockée en texte et interprétée selon [datatype].
+@DataClassName('PlantAttributeRow')
+class PlantAttributes extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get plantId => text()();
+  TextColumn get label => text()();
+  TextColumn get datatype => text()();
+  TextColumn get value => text().nullable()();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Modèle d'attribut réutilisable, proposé sur toutes les plantes du jardin.
+@DataClassName('AttributeSchemaRow')
+class AttributeSchemas extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get label => text()();
+  TextColumn get datatype => text()();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

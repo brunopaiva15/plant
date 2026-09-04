@@ -23,12 +23,14 @@ part 'database.g.dart';
   Profiles,
   GardenMembers,
   Tasks,
+  PlantAttributes,
+  AttributeSchemas,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -51,6 +53,10 @@ class FloraDatabase extends _$FloraDatabase {
           }
           if (from < 5) {
             await m.createTable(tasks);
+          }
+          if (from < 6) {
+            await m.createTable(plantAttributes);
+            await m.createTable(attributeSchemas);
           }
           await _createIndexes();
         },

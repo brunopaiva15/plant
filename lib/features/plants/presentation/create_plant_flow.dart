@@ -161,6 +161,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           wateringIntervalDays: _watering,
           fertilizingIntervalDays: _fertilizing,
         ));
+    // Bouture : la fille hérite des champs personnalisés de la plante mère.
+    if (widget.parentPlantId != null) {
+      await ref.read(attributeRepositoryProvider).cloneAttributes(fromPlantId: widget.parentPlantId!, toPlantId: plant.id);
+    }
     if (_photo != null) {
       final photo = await ref.read(photoRepositoryProvider).add(
             plantId: plant.id,

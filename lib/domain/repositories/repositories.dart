@@ -218,6 +218,31 @@ class NewTask {
   final TaskRecurrence? recurrence;
 }
 
+abstract class AttributeRepository {
+  /// Attributs d'une plante, dans l'ordre d'affichage.
+  Stream<List<PlantAttribute>> watchForPlant(String plantId);
+
+  /// Modèles réutilisables du jardin (actifs d'abord).
+  Stream<List<AttributeSchema>> watchSchemas({bool activeOnly = false});
+
+  Future<PlantAttribute> add({required String plantId, required String label, required AttributeType type, String? value});
+  Future<void> update(PlantAttribute attribute);
+  Future<void> delete(String id);
+
+  /// Applique un modèle (ou un couple libellé / type) à plusieurs plantes.
+  Future<void> applyToPlants(List<String> plantIds, {required String label, required AttributeType type, String? value});
+
+  /// Recopie les attributs d'une plante vers une autre (bouturage, clonage).
+  Future<void> cloneAttributes({required String fromPlantId, required String toPlantId});
+
+  /// Identifiants des plantes dont un attribut contient [query].
+  Future<Set<String>> searchPlantIds(String query);
+
+  Future<AttributeSchema> createSchema({required String label, required AttributeType type});
+  Future<void> updateSchema(AttributeSchema schema);
+  Future<void> deleteSchema(String id);
+}
+
 abstract class TaskRepository {
   /// Toutes les tâches non supprimées (ouvertes d'abord, puis par échéance).
   Stream<List<FreeTask>> watchAll();

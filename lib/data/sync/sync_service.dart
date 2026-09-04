@@ -66,10 +66,10 @@ class SyncService {
   SyncState get currentState => _current;
 
   /// Tables synchronisées, dans l'ordre des dépendances (parents d'abord).
-  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks'];
+  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks'};
+  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes'};
 
   void _emit(SyncState s) {
     _current = s;
@@ -176,6 +176,8 @@ class SyncService {
         'measurements' => (await _db.select(_db.measurements).get()).map((r) => r.id).toList(),
         'inventory_items' => (await _db.select(_db.inventoryItems).get()).map((r) => r.id).toList(),
         'tasks' => (await _db.select(_db.tasks).get()).map((r) => r.id).toList(),
+        'plant_attributes' => (await _db.select(_db.plantAttributes).get()).map((r) => r.id).toList(),
+        'attribute_schemas' => (await _db.select(_db.attributeSchemas).get()).map((r) => r.id).toList(),
         _ => const [],
       };
 
@@ -218,6 +220,12 @@ class SyncService {
         return r == null ? null : RowCodec.toRemote(r);
       case 'tasks':
         final r = await (_db.select(_db.tasks)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
+      case 'plant_attributes':
+        final r = await (_db.select(_db.plantAttributes)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
+      case 'attribute_schemas':
+        final r = await (_db.select(_db.attributeSchemas)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r);
     }
     return null;
@@ -304,6 +312,12 @@ class SyncService {
       case 'tasks':
         final row = TaskRow.fromJson(json, serializer: s);
         if (await _isNewer('tasks', row.id, row.updatedAt)) await _db.into(_db.tasks).insertOnConflictUpdate(row);
+      case 'plant_attributes':
+        final row = PlantAttributeRow.fromJson(json, serializer: s);
+        if (await _isNewer('plant_attributes', row.id, row.updatedAt)) await _db.into(_db.plantAttributes).insertOnConflictUpdate(row);
+      case 'attribute_schemas':
+        final row = AttributeSchemaRow.fromJson(json, serializer: s);
+        if (await _isNewer('attribute_schemas', row.id, row.updatedAt)) await _db.into(_db.attributeSchemas).insertOnConflictUpdate(row);
     }
   }
 
@@ -342,6 +356,8 @@ class SyncService {
         'care_schedules' => (await (_db.select(_db.careSchedules)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'inventory_items' => (await (_db.select(_db.inventoryItems)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'tasks' => (await (_db.select(_db.tasks)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'plant_attributes' => (await (_db.select(_db.plantAttributes)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'attribute_schemas' => (await (_db.select(_db.attributeSchemas)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         _ => null,
       };
 

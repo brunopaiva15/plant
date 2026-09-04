@@ -4235,6 +4235,168 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Un léger stress hydrique déclenche la floraison.'**
   String get careTipDryToBloom;
+
+  /// No description provided for @customFields.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champs personnalisés'**
+  String get customFields;
+
+  /// No description provided for @addCustomField.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un champ'**
+  String get addCustomField;
+
+  /// No description provided for @editCustomField.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le champ'**
+  String get editCustomField;
+
+  /// No description provided for @deleteCustomField.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le champ'**
+  String get deleteCustomField;
+
+  /// No description provided for @fieldLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du champ'**
+  String get fieldLabel;
+
+  /// No description provided for @fieldLabelHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Provenance, prix, exposition…'**
+  String get fieldLabelHint;
+
+  /// No description provided for @fieldType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get fieldType;
+
+  /// No description provided for @fieldValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur'**
+  String get fieldValue;
+
+  /// No description provided for @fieldTypeBool.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui / non'**
+  String get fieldTypeBool;
+
+  /// No description provided for @fieldTypeInt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre entier'**
+  String get fieldTypeInt;
+
+  /// No description provided for @fieldTypeDouble.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre décimal'**
+  String get fieldTypeDouble;
+
+  /// No description provided for @fieldTypeText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Texte'**
+  String get fieldTypeText;
+
+  /// No description provided for @fieldTypeDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get fieldTypeDate;
+
+  /// No description provided for @fieldEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non renseigné'**
+  String get fieldEmpty;
+
+  /// No description provided for @noCustomFields.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun champ personnalisé'**
+  String get noCustomFields;
+
+  /// No description provided for @fieldTemplates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modèles de champs'**
+  String get fieldTemplates;
+
+  /// No description provided for @fieldTemplatesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez ici les champs que vous réutilisez sur plusieurs plantes : ils vous seront proposés en un tap.'**
+  String get fieldTemplatesHint;
+
+  /// No description provided for @newFieldTemplate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau modèle'**
+  String get newFieldTemplate;
+
+  /// No description provided for @noFieldTemplates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun modèle'**
+  String get noFieldTemplates;
+
+  /// No description provided for @fieldTemplateInactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masqué'**
+  String get fieldTemplateInactive;
+
+  /// No description provided for @fieldFromTemplate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Depuis un modèle'**
+  String get fieldFromTemplate;
+
+  /// No description provided for @bulkSetField.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renseigner un champ'**
+  String get bulkSetField;
+
+  /// No description provided for @bulkFieldApplied.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Champ appliqué à 1 plante} other{Champ appliqué à {count} plantes}}'**
+  String bulkFieldApplied(int count);
+
+  /// No description provided for @confirmDeleteField.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce champ et sa valeur ?'**
+  String get confirmDeleteField;
+
+  /// No description provided for @confirmDeleteTemplate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce modèle ? Les champs déjà renseignés sont conservés.'**
+  String get confirmDeleteTemplate;
+
+  /// No description provided for @yes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non'**
+  String get no;
 }
 
 class _AppLocalizationsDelegate

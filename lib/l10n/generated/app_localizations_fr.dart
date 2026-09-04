@@ -2489,4 +2489,95 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careTipDryToBloom =>
       'Un léger stress hydrique déclenche la floraison.';
+
+  @override
+  String get customFields => 'Champs personnalisés';
+
+  @override
+  String get addCustomField => 'Ajouter un champ';
+
+  @override
+  String get editCustomField => 'Modifier le champ';
+
+  @override
+  String get deleteCustomField => 'Supprimer le champ';
+
+  @override
+  String get fieldLabel => 'Nom du champ';
+
+  @override
+  String get fieldLabelHint => 'Provenance, prix, exposition…';
+
+  @override
+  String get fieldType => 'Type';
+
+  @override
+  String get fieldValue => 'Valeur';
+
+  @override
+  String get fieldTypeBool => 'Oui / non';
+
+  @override
+  String get fieldTypeInt => 'Nombre entier';
+
+  @override
+  String get fieldTypeDouble => 'Nombre décimal';
+
+  @override
+  String get fieldTypeText => 'Texte';
+
+  @override
+  String get fieldTypeDate => 'Date';
+
+  @override
+  String get fieldEmpty => 'Non renseigné';
+
+  @override
+  String get noCustomFields => 'Aucun champ personnalisé';
+
+  @override
+  String get fieldTemplates => 'Modèles de champs';
+
+  @override
+  String get fieldTemplatesHint =>
+      'Créez ici les champs que vous réutilisez sur plusieurs plantes : ils vous seront proposés en un tap.';
+
+  @override
+  String get newFieldTemplate => 'Nouveau modèle';
+
+  @override
+  String get noFieldTemplates => 'Aucun modèle';
+
+  @override
+  String get fieldTemplateInactive => 'Masqué';
+
+  @override
+  String get fieldFromTemplate => 'Depuis un modèle';
+
+  @override
+  String get bulkSetField => 'Renseigner un champ';
+
+  @override
+  String bulkFieldApplied(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Champ appliqué à $count plantes',
+      one: 'Champ appliqué à 1 plante',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirmDeleteField => 'Supprimer ce champ et sa valeur ?';
+
+  @override
+  String get confirmDeleteTemplate =>
+      'Supprimer ce modèle ? Les champs déjà renseignés sont conservés.';
+
+  @override
+  String get yes => 'Oui';
+
+  @override
+  String get no => 'Non';
 }

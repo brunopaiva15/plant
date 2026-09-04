@@ -2474,4 +2474,95 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careTipDryToBloom => 'Leichter Trockenstress löst die Blüte aus.';
+
+  @override
+  String get customFields => 'Eigene Felder';
+
+  @override
+  String get addCustomField => 'Feld hinzufügen';
+
+  @override
+  String get editCustomField => 'Feld bearbeiten';
+
+  @override
+  String get deleteCustomField => 'Feld löschen';
+
+  @override
+  String get fieldLabel => 'Feldname';
+
+  @override
+  String get fieldLabelHint => 'Herkunft, Preis, Lage…';
+
+  @override
+  String get fieldType => 'Typ';
+
+  @override
+  String get fieldValue => 'Wert';
+
+  @override
+  String get fieldTypeBool => 'Ja / nein';
+
+  @override
+  String get fieldTypeInt => 'Ganze Zahl';
+
+  @override
+  String get fieldTypeDouble => 'Dezimalzahl';
+
+  @override
+  String get fieldTypeText => 'Text';
+
+  @override
+  String get fieldTypeDate => 'Datum';
+
+  @override
+  String get fieldEmpty => 'Nicht angegeben';
+
+  @override
+  String get noCustomFields => 'Keine eigenen Felder';
+
+  @override
+  String get fieldTemplates => 'Feldvorlagen';
+
+  @override
+  String get fieldTemplatesHint =>
+      'Legen Sie hier Felder an, die Sie mehrfach nutzen: ein Tipp genügt später.';
+
+  @override
+  String get newFieldTemplate => 'Neue Vorlage';
+
+  @override
+  String get noFieldTemplates => 'Keine Vorlagen';
+
+  @override
+  String get fieldTemplateInactive => 'Ausgeblendet';
+
+  @override
+  String get fieldFromTemplate => 'Aus einer Vorlage';
+
+  @override
+  String get bulkSetField => 'Feld setzen';
+
+  @override
+  String bulkFieldApplied(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Feld für $count Pflanzen gesetzt',
+      one: 'Feld für 1 Pflanze gesetzt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirmDeleteField => 'Dieses Feld und seinen Wert löschen?';
+
+  @override
+  String get confirmDeleteTemplate =>
+      'Vorlage löschen? Bereits ausgefüllte Felder bleiben erhalten.';
+
+  @override
+  String get yes => 'Ja';
+
+  @override
+  String get no => 'Nein';
 }

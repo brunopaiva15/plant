@@ -9,6 +9,7 @@ export 'free_task.dart';
 export 'location.dart';
 export 'plant.dart';
 export 'plant_action.dart';
+export 'plant_attribute.dart';
 export 'plant_photo.dart';
 export 'plant_summary.dart';
 export 'tag.dart';

@@ -14,6 +14,8 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../../actions/presentation/add_action_sheet.dart';
+import '../../attributes/application/attribute_providers.dart';
+import '../../attributes/presentation/attribute_sheet.dart';
 import '../../tasks/application/task_providers.dart';
 import '../../tasks/presentation/task_row.dart';
 import '../../tasks/presentation/task_sheet.dart';
@@ -282,6 +284,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           _Growth(plantId: id, photos: photos, onAdd: _addPhoto),
           MeasurementsSection(plantId: id, plantName: plant.name),
           _Info(summary: summary),
+          _CustomFields(plantId: id),
           _Cuttings(plantId: id, plant: plant),
           const SliverPadding(padding: EdgeInsets.only(bottom: Space.huge)),
         ],
@@ -372,6 +375,55 @@ class _NextCareState extends ConsumerState<_NextCare> {
                         ],
                       ],
                     ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Champs personnalisés de la plante.
+class _CustomFields extends ConsumerWidget {
+  const _CustomFields({required this.plantId});
+
+  final String plantId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final attrs = ref.watch(plantAttributesProvider(plantId)).value ?? const <PlantAttribute>[];
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(title: l10n.customFields, actionLabel: l10n.add, onAction: () => showAttributeSheet(context, plantId: plantId)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.page),
+            child: attrs.isEmpty
+                ? FloraCard(
+                    child: FloraListRow(
+                      leading: const Text('🏷️', style: TextStyle(fontSize: 18)),
+                      title: l10n.noCustomFields,
+                      subtitle: l10n.fieldLabelHint,
+                      onTap: () => showAttributeSheet(context, plantId: plantId),
+                    ),
+                  )
+                : FloraGroup(
+                    children: [
+                      for (final a in attrs)
+                        FloraListRow(
+                          title: a.label,
+                          dense: true,
+                          chevron: false,
+                          trailing: Text(
+                            attributeValueLabel(context, a),
+                            style: context.text.callout.copyWith(color: a.isEmpty ? context.colors.inkTertiary : context.colors.ink, fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.end,
+                          ),
+                          onTap: () => showAttributeSheet(context, plantId: plantId, existing: a),
+                        ),
+                    ],
                   ),
           ),
         ],

@@ -2468,4 +2468,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipDryToBloom => 'A little drought stress triggers flowering.';
+
+  @override
+  String get customFields => 'Custom fields';
+
+  @override
+  String get addCustomField => 'Add a field';
+
+  @override
+  String get editCustomField => 'Edit field';
+
+  @override
+  String get deleteCustomField => 'Delete field';
+
+  @override
+  String get fieldLabel => 'Field name';
+
+  @override
+  String get fieldLabelHint => 'Source, price, aspect…';
+
+  @override
+  String get fieldType => 'Type';
+
+  @override
+  String get fieldValue => 'Value';
+
+  @override
+  String get fieldTypeBool => 'Yes / no';
+
+  @override
+  String get fieldTypeInt => 'Whole number';
+
+  @override
+  String get fieldTypeDouble => 'Decimal number';
+
+  @override
+  String get fieldTypeText => 'Text';
+
+  @override
+  String get fieldTypeDate => 'Date';
+
+  @override
+  String get fieldEmpty => 'Not set';
+
+  @override
+  String get noCustomFields => 'No custom fields';
+
+  @override
+  String get fieldTemplates => 'Field templates';
+
+  @override
+  String get fieldTemplatesHint =>
+      'Create the fields you reuse across plants: they will be one tap away.';
+
+  @override
+  String get newFieldTemplate => 'New template';
+
+  @override
+  String get noFieldTemplates => 'No templates';
+
+  @override
+  String get fieldTemplateInactive => 'Hidden';
+
+  @override
+  String get fieldFromTemplate => 'From a template';
+
+  @override
+  String get bulkSetField => 'Set a field';
+
+  @override
+  String bulkFieldApplied(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Field set on $count plants',
+      one: 'Field set on 1 plant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get confirmDeleteField => 'Delete this field and its value?';
+
+  @override
+  String get confirmDeleteTemplate =>
+      'Delete this template? Fields already filled in are kept.';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
 }

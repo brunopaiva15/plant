@@ -25,6 +25,7 @@ import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/tags_screen.dart';
 import '../features/qr/presentation/scanner_screen.dart';
 import '../domain/species/species_info.dart';
+import '../features/attributes/presentation/attribute_templates_screen.dart';
 import '../features/species/presentation/care_guide_screen.dart';
 import '../features/species/presentation/species_picker_screen.dart';
 import '../features/today/presentation/today_screen.dart';
@@ -55,6 +56,7 @@ abstract final class Routes {
   static const appearance = '/settings/appearance';
   static const notifications = '/settings/notifications';
   static const actionTypes = '/settings/action-types';
+  static const fieldTemplates = '/settings/field-templates';
   static const tags = '/settings/tags';
   static const archive = '/settings/archive';
   static const about = '/settings/about';
@@ -124,6 +126,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.appearance, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AppearanceScreen())),
       GoRoute(path: Routes.notifications, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const NotificationsScreen())),
       GoRoute(path: Routes.actionTypes, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const ActionTypesScreen())),
+      GoRoute(path: Routes.fieldTemplates, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AttributeTemplatesScreen())),
       GoRoute(path: Routes.tags, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const TagsScreen())),
       GoRoute(path: Routes.archive, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const ArchiveScreen())),
       GoRoute(path: Routes.about, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AboutScreen())),

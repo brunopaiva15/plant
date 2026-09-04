@@ -12,6 +12,7 @@ import '../data/repositories/location_repository_impl.dart';
 import '../data/repositories/photo_repository_impl.dart';
 import '../data/repositories/plant_repository_impl.dart';
 import '../data/repositories/tag_repository_impl.dart';
+import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
 import '../data/services/anthropic_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
@@ -62,6 +63,7 @@ final measurementRepositoryProvider =
     Provider<MeasurementRepository>((ref) => DriftMeasurementRepository(ref.watch(databaseProvider)));
 final inventoryRepositoryProvider =
     Provider<InventoryRepository>((ref) => DriftInventoryRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+final attributeRepositoryProvider = Provider<AttributeRepository>((ref) => DriftAttributeRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final taskRepositoryProvider = Provider<TaskRepository>((ref) => DriftTaskRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final tagRepositoryProvider =
     Provider<TagRepository>((ref) => DriftTagRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
