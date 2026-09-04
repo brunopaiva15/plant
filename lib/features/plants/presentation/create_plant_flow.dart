@@ -291,7 +291,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             autofocus: _step == 1,
             large: true,
             textInputAction: TextInputAction.next,
-            textCapitalization: TextCapitalization.words,
+            // Une majuscule à la première lettre seulement : « Monstera du
+            // salon », pas « Monstera Du Salon ».
+            textCapitalization: TextCapitalization.sentences,
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: Space.sm),

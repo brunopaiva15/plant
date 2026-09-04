@@ -78,7 +78,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SheetHeader(title: l10n.editPlant),
-          FloraTextField(controller: _name, hint: l10n.plantNameHint, textCapitalization: TextCapitalization.words),
+          FloraTextField(controller: _name, hint: l10n.plantNameHint, textCapitalization: TextCapitalization.sentences),
           const SizedBox(height: Space.xs),
           SpeciesField(controller: _species),
           const SizedBox(height: Space.md),
