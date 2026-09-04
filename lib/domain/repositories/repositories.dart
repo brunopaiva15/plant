@@ -247,6 +247,49 @@ abstract class InventoryRepository {
   Future<void> reorderGroups(List<String> orderedIds);
 }
 
+/// Événements saisis à la main et leurs catégories.
+abstract class CalendarRepository {
+  /// Événements qui touchent la plage, bornes comprises. Un événement de
+  /// plusieurs jours remonte dès qu'il chevauche la plage.
+  Stream<List<CalendarEntry>> watchBetween(DateTime from, DateTime to);
+  Stream<List<CalendarEntry>> watchForPlant(String plantId);
+  Future<CalendarEntry?> get(String id);
+  Future<CalendarEntry> create(NewCalendarEntry entry);
+  Future<void> update(CalendarEntry entry);
+  Future<void> delete(String id);
+
+  Stream<List<EventCategory>> watchCategories();
+  Future<EventCategory> createCategory({required String label, String emoji = '📅', String? colorKey});
+  Future<void> updateCategory(EventCategory category);
+
+  /// Supprime une catégorie. Les événements la perdent, jamais l'inverse.
+  Future<void> deleteCategory(String id);
+  Future<void> reorderCategories(List<String> orderedIds);
+}
+
+/// Données d'un nouvel événement de calendrier.
+class NewCalendarEntry {
+  const NewCalendarEntry({
+    required this.title,
+    required this.startAt,
+    this.endAt,
+    this.allDay = true,
+    this.plantId,
+    this.categoryId,
+    this.notes,
+    this.reminderMinutes,
+  });
+
+  final String title;
+  final DateTime startAt;
+  final DateTime? endAt;
+  final bool allDay;
+  final String? plantId;
+  final String? categoryId;
+  final String? notes;
+  final int? reminderMinutes;
+}
+
 /// Données d'une nouvelle tâche libre.
 class NewTask {
   const NewTask({required this.title, this.description, this.plantId, this.dueAt, this.allDay = true, this.recurrence});

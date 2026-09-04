@@ -9,6 +9,8 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../calendar/presentation/calendar_view.dart';
+import '../../calendar/presentation/event_categories_sheet.dart';
+import '../../calendar/presentation/event_sheet.dart';
 import '../../inventory/application/inventory_export.dart';
 import '../../inventory/presentation/inventory_groups_sheet.dart';
 import '../../inventory/presentation/inventory_item_sheet.dart';
@@ -39,7 +41,7 @@ class GardenScreen extends ConsumerWidget {
       GardenSection.locations => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newLocationTitle, onPressed: () => showLocationEditSheet(context)),
       GardenSection.tasks => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newTask, onPressed: () => showTaskSheet(context)),
       GardenSection.inventory => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newItem, onPressed: () => _inventoryMenu(context, ref)),
-      GardenSection.calendar => null,
+      GardenSection.calendar => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newEvent, onPressed: () => _calendarMenu(context)),
     };
     return LargeTitlePage(
       title: l10n.gardenTitle,
@@ -81,6 +83,19 @@ Future<void> _inventoryMenu(BuildContext context, WidgetRef ref) async {
       SheetAction(label: l10n.newItem, onPressed: () => showInventoryItemSheet(context)),
       SheetAction(label: l10n.manageGroups, onPressed: () => showInventoryGroupsSheet(context)),
       if (items.isNotEmpty) SheetAction(label: l10n.exportCsv, onPressed: () => shareInventoryCsv(context, items)),
+    ],
+    cancelLabel: l10n.cancel,
+  );
+}
+
+/// Bouton « + » du calendrier : nouvel événement, ou gestion des catégories.
+Future<void> _calendarMenu(BuildContext context) async {
+  final l10n = context.l10n;
+  await showAdaptiveActionSheet(
+    context,
+    actions: [
+      SheetAction(label: l10n.newEvent, onPressed: () => showEventSheet(context)),
+      SheetAction(label: l10n.manageEventCategories, onPressed: () => showEventCategoriesSheet(context)),
     ],
     cancelLabel: l10n.cancel,
   );

@@ -13,6 +13,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/calendar_projector.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
+import 'event_sheet.dart';
 
 enum CalendarMode { agenda, month }
 
@@ -49,13 +50,22 @@ final calendarEventsProvider = StreamProvider.autoDispose.family<List<CalendarEv
   final schedules = ref.watch(careRepositoryProvider).watchAllEnabled();
   final actions = ref.watch(actionRepositoryProvider).watchBetween(range.from, range.to);
   final plants = ref.watch(plantRepositoryProvider).watchSummaries(const PlantFilter());
+  final entries = ref.watch(calendarRepositoryProvider).watchBetween(range.from, range.to);
   List<CareSchedule>? s;
   List<PlantAction>? a;
   List<PlantSummary>? p;
+  List<CalendarEntry>? e;
   final controller = StreamController<List<CalendarEvent>>();
   void emit() {
-    if (s == null || a == null || p == null) return;
-    controller.add(CalendarProjector.project(schedules: s!, actions: a!, plants: {for (final x in p!) x.plant.id: x}, from: range.from, to: range.to));
+    if (s == null || a == null || p == null || e == null) return;
+    controller.add(CalendarProjector.project(
+      schedules: s!,
+      actions: a!,
+      plants: {for (final x in p!) x.plant.id: x},
+      entries: e!,
+      from: range.from,
+      to: range.to,
+    ));
   }
 
   final subs = [
@@ -69,6 +79,10 @@ final calendarEventsProvider = StreamProvider.autoDispose.family<List<CalendarEv
     }),
     plants.listen((v) {
       p = v;
+      emit();
+    }),
+    entries.listen((v) {
+      e = v;
       emit();
     }),
   ];
@@ -167,19 +181,43 @@ class _EventRow extends ConsumerWidget {
     final c = context.colors;
     final types = ref.watch(actionTypeByKeyProvider);
     final custom = types[event.typeKey];
+
+    if (event.kind == CalendarEventKind.custom) {
+      final categories = ref.watch(eventCategoriesProvider).value ?? const <EventCategory>[];
+      final category = categories.where((cat) => cat.id == event.categoryId).firstOrNull;
+      // Sous-titre : la catégorie, la plante liée, l'heure — ce qui existe.
+      final parts = <String>[
+        if (category != null) category.label,
+        if (event.plantName != null) event.plantName!,
+        if (!event.allDay) Dates.time(context, event.date),
+      ];
+      return FloraListRow(
+        leading: EmojiTile(emoji: category?.emoji ?? '📅', size: 32, background: c.sageSoft),
+        title: event.title ?? '',
+        subtitle: parts.isEmpty ? null : parts.join(' · '),
+        chevron: false,
+        dense: true,
+        onTap: () async {
+          final entry = await ref.read(calendarRepositoryProvider).get(event.entryId!);
+          if (entry != null && context.mounted) await showEventSheet(context, existing: entry);
+        },
+      );
+    }
+
     final label = switch (event.kind) {
       CalendarEventKind.past => '${l10n.kindDone(event.typeKey, custom: custom)} · ${Dates.time(context, event.date)}',
       CalendarEventKind.due => l10n.kindName(event.typeKey, custom: custom),
       CalendarEventKind.projected => '${l10n.kindName(event.typeKey, custom: custom)} · ${l10n.projected}',
+      CalendarEventKind.custom => '',
     };
     return FloraListRow(
       leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: event.thumbPath, cacheWidth: 96))),
-      title: event.plantName,
+      title: event.plantName ?? '',
       subtitle: label,
       trailing: Text(custom?.emoji ?? CareKind.fromKey(event.typeKey)?.emoji ?? '✓', style: TextStyle(fontSize: 18, color: event.kind == CalendarEventKind.projected ? c.inkTertiary : null)),
       chevron: false,
       dense: true,
-      onTap: () => context.push(Routes.plant(event.plantId)),
+      onTap: event.plantId == null ? null : () => context.push(Routes.plant(event.plantId!)),
     );
   }
 }
@@ -276,6 +314,14 @@ class _MonthView extends ConsumerWidget {
             Padding(padding: const EdgeInsets.only(left: Space.xxs), child: Text(l10n.noEventsTitle, style: context.text.callout))
           else
             FloraGroup(children: [for (final e in selectedEvents) _EventRow(event: e)]),
+          const SizedBox(height: Space.sm),
+          FloraButton(
+            label: l10n.newEvent,
+            icon: CupertinoIcons.plus,
+            style: FloraButtonStyle.secondary,
+            expand: true,
+            onPressed: () => showEventSheet(context, day: selected),
+          ),
         ],
       ),
     );

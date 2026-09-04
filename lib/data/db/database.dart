@@ -29,12 +29,14 @@ part 'database.g.dart';
   LocationLogs,
   InventoryGroups,
   InventoryTags,
+  EventCategories,
+  CalendarEntries,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -81,6 +83,10 @@ class FloraDatabase extends _$FloraDatabase {
             await m.createTable(inventoryGroups);
             await m.createTable(inventoryTags);
             await m.addColumn(inventoryItems, inventoryItems.groupId);
+          }
+          if (from < 10) {
+            await m.createTable(eventCategories);
+            await m.createTable(calendarEntries);
           }
           await _createIndexes();
         },

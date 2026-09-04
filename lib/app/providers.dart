@@ -5,6 +5,7 @@ import '../core/observability/observability.dart';
 import '../data/db/database.dart';
 import '../data/repositories/action_repository_impl.dart';
 import '../data/repositories/action_type_repository_impl.dart';
+import '../data/repositories/calendar_repository_impl.dart';
 import '../data/repositories/care_repository_impl.dart';
 import '../data/repositories/inventory_repository_impl.dart';
 import '../data/repositories/measurement_repository_impl.dart';
@@ -73,6 +74,8 @@ final attributeRepositoryProvider = Provider<AttributeRepository>((ref) => Drift
 final taskRepositoryProvider = Provider<TaskRepository>((ref) => DriftTaskRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final tagRepositoryProvider =
     Provider<TagRepository>((ref) => DriftTagRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+final calendarRepositoryProvider =
+    Provider<CalendarRepository>((ref) => DriftCalendarRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 
 /// Utilisateur courant (compte local en Phase 1).
 final currentUserProvider = StreamProvider<AppUser?>((ref) => ref.watch(authRepositoryProvider).watchUser());
@@ -87,6 +90,7 @@ final actionTypeByKeyProvider = Provider<Map<String, ActionType>>((ref) {
 final locationsProvider = StreamProvider<List<Location>>((ref) => ref.watch(locationRepositoryProvider).watchAll());
 final locationTreeProvider = StreamProvider<List<LocationNode>>((ref) => ref.watch(locationRepositoryProvider).watchTree());
 final tagsProvider = StreamProvider<List<Tag>>((ref) => ref.watch(tagRepositoryProvider).watchAll());
+final eventCategoriesProvider = StreamProvider<List<EventCategory>>((ref) => ref.watch(calendarRepositoryProvider).watchCategories());
 final activePlantCountProvider = StreamProvider<int>((ref) => ref.watch(plantRepositoryProvider).watchActiveCount());
 
 /// Réglages réactifs (thème, langue, notifications…).

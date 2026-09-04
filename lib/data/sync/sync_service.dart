@@ -66,10 +66,10 @@ class SyncService {
   SyncState get currentState => _current;
 
   /// Tables synchronisées, dans l'ordre des dépendances (parents d'abord).
-  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'inventory_tags'];
+  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'inventory_tags', 'event_categories', 'calendar_entries'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups'};
+  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'event_categories', 'calendar_entries'};
 
   void _emit(SyncState s) {
     _current = s;
@@ -186,6 +186,8 @@ class SyncService {
         'location_logs' => (await _db.select(_db.locationLogs).get()).map((r) => r.id).toList(),
         'inventory_groups' => (await _db.select(_db.inventoryGroups).get()).map((r) => r.id).toList(),
         'inventory_tags' => (await _db.select(_db.inventoryTags).get()).map((r) => '${r.itemId}/${r.tagId}').toList(),
+        'event_categories' => (await _db.select(_db.eventCategories).get()).map((r) => r.id).toList(),
+        'calendar_entries' => (await _db.select(_db.calendarEntries).get()).map((r) => r.id).toList(),
         _ => const [],
       };
 
@@ -249,6 +251,12 @@ class SyncService {
         final r = await (_db.select(_db.inventoryTags)
               ..where((x) => x.itemId.equals(keys['item_id'] as String) & x.tagId.equals(keys['tag_id'] as String)))
             .getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
+      case 'event_categories':
+        final r = await (_db.select(_db.eventCategories)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
+      case 'calendar_entries':
+        final r = await (_db.select(_db.calendarEntries)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r);
     }
     return null;
@@ -355,6 +363,12 @@ class SyncService {
         if (await _isNewer('inventory_groups', row.id, row.updatedAt)) await _db.into(_db.inventoryGroups).insertOnConflictUpdate(row);
       case 'inventory_tags':
         await _db.into(_db.inventoryTags).insert(InventoryTagRow.fromJson(json, serializer: s), mode: InsertMode.insertOrIgnore);
+      case 'event_categories':
+        final row = EventCategoryRow.fromJson(json, serializer: s);
+        if (await _isNewer('event_categories', row.id, row.updatedAt)) await _db.into(_db.eventCategories).insertOnConflictUpdate(row);
+      case 'calendar_entries':
+        final row = CalendarEntryRow.fromJson(json, serializer: s);
+        if (await _isNewer('calendar_entries', row.id, row.updatedAt)) await _db.into(_db.calendarEntries).insertOnConflictUpdate(row);
     }
   }
 
@@ -368,6 +382,8 @@ class SyncService {
       'attribute_schemas': {'position': 0, 'active': true},
       'tasks': {'allDay': true, 'done': false},
       'plant_photos': {'width': 0, 'height': 0},
+      'event_categories': {'position': 0, 'emoji': '📅'},
+      'calendar_entries': {'allDay': true},
     };
     final missing = defaults[table];
     if (missing == null) return;
@@ -416,6 +432,8 @@ class SyncService {
         'plant_attachments' => (await (_db.select(_db.plantAttachments)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'location_logs' => (await (_db.select(_db.locationLogs)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'inventory_groups' => (await (_db.select(_db.inventoryGroups)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'event_categories' => (await (_db.select(_db.eventCategories)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'calendar_entries' => (await (_db.select(_db.calendarEntries)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         _ => null,
       };
 

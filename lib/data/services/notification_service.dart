@@ -11,6 +11,11 @@ class NotificationService {
 
   final _plugin = FlutterLocalNotificationsPlugin();
   static const _dailyId = 1;
+
+  /// Les rappels d'événements occupent leurs propres identifiants, pour être
+  /// remplacés sans toucher à la notification quotidienne.
+  static const _eventIdBase = 1000;
+  static const _maxEventReminders = 32;
   static const _channelId = 'care_reminders';
 
   /// Callback quand l'utilisateur ouvre une notification (payload = route).
@@ -80,5 +85,45 @@ class NotificationService {
     );
   }
 
+  /// Remplace tous les rappels d'événements par [reminders], au plus
+  /// [_maxEventReminders] : au-delà, le système en oublierait de toute façon.
+  Future<void> scheduleEventReminders(List<ScheduledReminder> reminders, {required String channelName}) async {
+    for (var i = 0; i < _maxEventReminders; i++) {
+      await _plugin.cancel(id: _eventIdBase + i);
+    }
+    final now = DateTime.now();
+    final upcoming = reminders.where((r) => r.at.isAfter(now)).take(_maxEventReminders).toList();
+    for (final (i, r) in upcoming.indexed) {
+      await _plugin.zonedSchedule(
+        id: _eventIdBase + i,
+        scheduledDate: tz.TZDateTime.from(r.at, tz.local),
+        title: r.title,
+        body: r.body,
+        payload: r.payload,
+        notificationDetails: NotificationDetails(
+          android: AndroidNotificationDetails(
+            _channelId,
+            channelName,
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+            styleInformation: BigTextStyleInformation(r.body),
+          ),
+          iOS: const DarwinNotificationDetails(interruptionLevel: InterruptionLevel.active),
+        ),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      );
+    }
+  }
+
   Future<void> cancelAll() => _plugin.cancelAll();
+}
+
+/// Un rappel ponctuel à planifier (événement de calendrier).
+class ScheduledReminder {
+  const ScheduledReminder({required this.at, required this.title, required this.body, this.payload});
+
+  final DateTime at;
+  final String title;
+  final String body;
+  final String? payload;
 }

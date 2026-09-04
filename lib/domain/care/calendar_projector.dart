@@ -15,6 +15,7 @@ abstract final class CalendarProjector {
     required Map<String, PlantSummary> plants,
     required DateTime from,
     required DateTime to,
+    List<CalendarEntry> entries = const [],
     int maxPerSchedule = 60,
   }) {
     final events = <CalendarEvent>[];
@@ -42,6 +43,29 @@ abstract final class CalendarProjector {
         final interval = CareEngine.effectiveInterval(s, occurrence);
         occurrence = occurrence.addDays(interval);
         kind = CalendarEventKind.projected;
+      }
+    }
+
+    for (final e in entries) {
+      // Un événement de plusieurs jours apparaît chaque jour qu'il couvre,
+      // dans la plage seulement.
+      for (final day in e.daysCovered()) {
+        if (day.isBefore(start) || day.isAfter(end)) continue;
+        final p = e.plantId == null ? null : plants[e.plantId];
+        events.add(CalendarEvent(
+          // Le premier jour garde l'heure saisie ; les suivants commencent
+          // au matin, pour rester en tête de journée.
+          date: e.allDay || day.isAfter(e.firstDay) ? day : e.startAt,
+          plantId: p?.plant.id,
+          plantName: p?.plant.name,
+          thumbPath: p?.thumbPath,
+          title: e.title,
+          typeKey: 'event',
+          kind: CalendarEventKind.custom,
+          entryId: e.id,
+          categoryId: e.categoryId,
+          allDay: e.allDay,
+        ));
       }
     }
 

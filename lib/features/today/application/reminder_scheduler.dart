@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/services/notification_service.dart';
 import '../../../domain/care/reminder_planner.dart';
 import '../../../domain/models/models.dart';
 
@@ -23,6 +25,7 @@ class ReminderScheduler {
       return;
     }
     final now = DateTime.now();
+    await _rescheduleEvents(now, prefs);
     final fireAt = ReminderPlanner.nextFireTime(
       now,
       hour: prefs.notificationTime.hour,
@@ -54,6 +57,28 @@ class ReminderScheduler {
       channelName: l10n.notificationChannel,
       payload: '/today',
     );
+  }
+
+  /// Rappels ponctuels des événements du calendrier, à leur propre heure.
+  /// Un mois d'avance suffit : le planificateur repasse à chaque changement.
+  Future<void> _rescheduleEvents(DateTime now, AppPreferences prefs) async {
+    final entries = await _ref.read(calendarRepositoryProvider).watchBetween(now, now.add(const Duration(days: 30))).first;
+    final l10n = resolveLocalizations(prefs.locale);
+    final reminders = [
+      for (final e in entries)
+        if (e.remindAt case final at? when at.isAfter(now))
+          ScheduledReminder(at: at, title: e.title, body: eventReminderBody(l10n, e), payload: '/garden'),
+    ]..sort((a, b) => a.at.compareTo(b.at));
+    await _ref.read(notificationServiceProvider).scheduleEventReminders(reminders, channelName: l10n.notificationChannel);
+  }
+
+  /// Corps du rappel : les notes si l'utilisateur en a écrit, sinon l'heure
+  /// de début — la seule chose qu'il ne voit pas déjà dans le titre.
+  static String eventReminderBody(AppLocalizations l10n, CalendarEntry entry) {
+    final notes = entry.notes?.trim();
+    if (notes != null && notes.isNotEmpty) return notes;
+    if (entry.allDay) return l10n.today;
+    return DateFormat.jm(l10n.localeName).format(entry.startAt);
   }
 
   /// Texte humain, sans jargon : arrosage d'abord, le reste compté.

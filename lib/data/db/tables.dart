@@ -333,6 +333,50 @@ class InventoryGroups extends Table with Timestamps {
   Set<Column> get primaryKey => {id};
 }
 
+/// Catégorie d'événement du calendrier : « Marché aux plantes », « Taille »…
+/// Purement décorative, mais propre au jardin.
+@DataClassName('EventCategoryRow')
+class EventCategories extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get label => text()();
+  TextColumn get emoji => text().withDefault(const Constant('📅'))();
+
+  /// Clé de couleur du jeton de design (`sage`, `water`, `terracotta`…).
+  TextColumn get colorKey => text().nullable()();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Événement saisi à la main, à côté des échéances de soin projetées.
+@DataClassName('CalendarEntryRow')
+class CalendarEntries extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+
+  /// Plante concernée, facultative : un événement peut être libre.
+  TextColumn get plantId => text().nullable()();
+  TextColumn get categoryId => text().nullable()();
+  TextColumn get title => text()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get startAt => dateTime()();
+
+  /// Fin facultative. Pour un événement de plusieurs jours, elle porte le
+  /// dernier jour ; l'heure est ignorée quand [allDay] est vrai.
+  DateTimeColumn get endAt => dateTime().nullable()();
+  BoolColumn get allDay => boolean().withDefault(const Constant(true))();
+
+  /// Rappel : minutes avant le début, `null` = pas de notification.
+  IntColumn get reminderMinutes => integer().nullable()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Tags d'un article d'inventaire (réutilise la table `tags`).
 @DataClassName('InventoryTagRow')
 class InventoryTags extends Table {

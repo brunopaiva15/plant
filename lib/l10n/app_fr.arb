@@ -1352,5 +1352,53 @@
   "filterByTag": "Filtrer par tag",
   "itemNotFound": "Article introuvable",
   "noGroupsYet": "Aucun groupe pour l'instant. Créez-en un pour ranger vos articles à votre façon.",
-  "deleteGroupExplain": "Les articles ne sont pas supprimés : ils redeviennent sans groupe."
+  "deleteGroupExplain": "Les articles ne sont pas supprimés : ils redeviennent sans groupe.",
+  "newEvent": "Nouvel événement",
+  "editEvent": "Modifier l'événement",
+  "deleteEvent": "Supprimer l'événement",
+  "eventTitleHint": "Marché aux plantes",
+  "eventNotesHint": "Notes (facultatif)",
+  "eventStart": "Début",
+  "eventEnd": "Fin",
+  "eventNoEnd": "Même jour",
+  "eventAllDay": "Journée entière",
+  "eventCategory": "Catégorie",
+  "eventNoCategory": "Aucune",
+  "eventReminder": "Rappel",
+  "eventNoReminder": "Aucun",
+  "eventReminderAtStart": "À l'heure",
+  "eventReminderMinutes": "{count, plural, one{1 minute avant} other{{count} minutes avant}}",
+  "@eventReminderMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eventReminderHours": "{count, plural, one{1 heure avant} other{{count} heures avant}}",
+  "@eventReminderHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eventReminderDays": "{count, plural, one{1 jour avant} other{{count} jours avant}}",
+  "@eventReminderDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageEventCategories": "Catégories d'événements",
+  "newEventCategory": "Nouvelle catégorie",
+  "editEventCategory": "Modifier la catégorie",
+  "deleteEventCategory": "Supprimer la catégorie",
+  "deleteEventCategoryExplain": "Les événements ne sont pas supprimés : ils perdent simplement leur catégorie.",
+  "noEventCategoriesYet": "Aucune catégorie. Créez-en une pour colorer vos événements.",
+  "categoryNameHint": "Nom de la catégorie",
+  "eventPlant": "Plante liée",
+  "eventNoPlant": "Aucune",
+  "eventsOfDay": "Événements"
 }

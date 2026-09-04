@@ -225,3 +225,33 @@ extension InventoryGroupRowMapper on InventoryGroupRow {
         updatedAt: updatedAt,
       );
 }
+
+extension EventCategoryRowMapper on EventCategoryRow {
+  EventCategory toDomain() => EventCategory(
+        id: id,
+        gardenId: gardenId,
+        label: label,
+        emoji: emoji,
+        colorKey: colorKey,
+        position: position,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
+
+extension CalendarEntryRowMapper on CalendarEntryRow {
+  CalendarEntry toDomain() => CalendarEntry(
+        id: id,
+        gardenId: gardenId,
+        plantId: plantId,
+        categoryId: categoryId,
+        title: title,
+        notes: notes,
+        startAt: startAt,
+        endAt: endAt,
+        allDay: allDay,
+        reminderMinutes: reminderMinutes,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}

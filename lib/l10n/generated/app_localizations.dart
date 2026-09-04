@@ -4883,6 +4883,168 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Les articles ne sont pas supprimés : ils redeviennent sans groupe.'**
   String get deleteGroupExplain;
+
+  /// No description provided for @newEvent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvel événement'**
+  String get newEvent;
+
+  /// No description provided for @editEvent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'événement'**
+  String get editEvent;
+
+  /// No description provided for @deleteEvent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer l\'événement'**
+  String get deleteEvent;
+
+  /// No description provided for @eventTitleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marché aux plantes'**
+  String get eventTitleHint;
+
+  /// No description provided for @eventNotesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes (facultatif)'**
+  String get eventNotesHint;
+
+  /// No description provided for @eventStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get eventStart;
+
+  /// No description provided for @eventEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get eventEnd;
+
+  /// No description provided for @eventNoEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Même jour'**
+  String get eventNoEnd;
+
+  /// No description provided for @eventAllDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journée entière'**
+  String get eventAllDay;
+
+  /// No description provided for @eventCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get eventCategory;
+
+  /// No description provided for @eventNoCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune'**
+  String get eventNoCategory;
+
+  /// No description provided for @eventReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel'**
+  String get eventReminder;
+
+  /// No description provided for @eventNoReminder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun'**
+  String get eventNoReminder;
+
+  /// No description provided for @eventReminderAtStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'À l\'heure'**
+  String get eventReminderAtStart;
+
+  /// No description provided for @eventReminderMinutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 minute avant} other{{count} minutes avant}}'**
+  String eventReminderMinutes(int count);
+
+  /// No description provided for @eventReminderHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 heure avant} other{{count} heures avant}}'**
+  String eventReminderHours(int count);
+
+  /// No description provided for @eventReminderDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 jour avant} other{{count} jours avant}}'**
+  String eventReminderDays(int count);
+
+  /// No description provided for @manageEventCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégories d\'événements'**
+  String get manageEventCategories;
+
+  /// No description provided for @newEventCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle catégorie'**
+  String get newEventCategory;
+
+  /// No description provided for @editEventCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la catégorie'**
+  String get editEventCategory;
+
+  /// No description provided for @deleteEventCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la catégorie'**
+  String get deleteEventCategory;
+
+  /// No description provided for @deleteEventCategoryExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les événements ne sont pas supprimés : ils perdent simplement leur catégorie.'**
+  String get deleteEventCategoryExplain;
+
+  /// No description provided for @noEventCategoriesYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune catégorie. Créez-en une pour colorer vos événements.'**
+  String get noEventCategoriesYet;
+
+  /// No description provided for @categoryNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la catégorie'**
+  String get categoryNameHint;
+
+  /// No description provided for @eventPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plante liée'**
+  String get eventPlant;
+
+  /// No description provided for @eventNoPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune'**
+  String get eventNoPlant;
+
+  /// No description provided for @eventsOfDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Événements'**
+  String get eventsOfDay;
 }
 
 class _AppLocalizationsDelegate

@@ -223,6 +223,36 @@ create table if not exists plant_attributes (
 create index if not exists idx_plant_attributes_plant on plant_attributes(plant_id);
 create index if not exists idx_plant_attributes_garden_updated on plant_attributes(garden_id, updated_at);
 
+create table if not exists event_categories (
+  id uuid primary key,
+  garden_id uuid not null references gardens(id) on delete cascade,
+  label text not null,
+  emoji text not null default '📅',
+  color_key text,
+  position integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  deleted_at timestamptz
+);
+create index if not exists idx_event_categories_garden on event_categories(garden_id, updated_at);
+
+create table if not exists calendar_entries (
+  id uuid primary key,
+  garden_id uuid not null references gardens(id) on delete cascade,
+  plant_id uuid references plants(id) on delete set null,
+  category_id uuid references event_categories(id) on delete set null,
+  title text not null,
+  notes text,
+  start_at timestamptz not null,
+  end_at timestamptz,
+  all_day boolean not null default true,
+  reminder_minutes integer,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  deleted_at timestamptz
+);
+create index if not exists idx_calendar_entries_garden on calendar_entries(garden_id, start_at);
+
 create table if not exists inventory_tags (
   item_id uuid not null references inventory_items(id) on delete cascade,
   tag_id uuid not null references tags(id) on delete cascade,
@@ -325,7 +355,7 @@ create index if not exists idx_inventory_garden on inventory_items(garden_id, up
 create or replace function set_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
 do $$ declare t text; begin
-  foreach t in array array['gardens','locations','plants','care_schedules','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments','location_logs','inventory_groups'] loop
+  foreach t in array array['gardens','locations','plants','care_schedules','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments','location_logs','inventory_groups','event_categories','calendar_entries'] loop
     execute format('drop trigger if exists trg_%s_updated on %s', t, t);
     execute format('create trigger trg_%s_updated before update on %s for each row execute function set_updated_at()', t, t);
   end loop;
@@ -367,7 +397,7 @@ create policy "members manage" on garden_members for all
 
 -- Tables portant garden_id.
 do $$ declare t text; begin
-  foreach t in array array['locations','plants','tags','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments','location_logs','inventory_groups'] loop
+  foreach t in array array['locations','plants','tags','inventory_items','tasks','attribute_schemas','plant_attributes','plant_attachments','location_logs','inventory_groups','event_categories','calendar_entries'] loop
     execute format('alter table %s enable row level security', t);
     execute format('drop policy if exists "%s read" on %s', t, t);
     execute format('create policy "%s read" on %s for select using (is_member(garden_id))', t, t);

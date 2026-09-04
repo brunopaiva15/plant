@@ -59,5 +59,7 @@ class ExportService {
         'location_logs': (await _db.select(_db.locationLogs).get()).map((r) => r.toJson()).toList(),
         'inventory_groups': (await _db.select(_db.inventoryGroups).get()).map((r) => r.toJson()).toList(),
         'inventory_tags': (await _db.select(_db.inventoryTags).get()).map((r) => r.toJson()).toList(),
+        'event_categories': (await _db.select(_db.eventCategories).get()).map((r) => r.toJson()).toList(),
+        'calendar_entries': (await _db.select(_db.calendarEntries).get()).map((r) => r.toJson()).toList(),
       };
 }

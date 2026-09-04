@@ -2845,4 +2845,111 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get deleteGroupExplain =>
       'Les articles ne sont pas supprimés : ils redeviennent sans groupe.';
+
+  @override
+  String get newEvent => 'Nouvel événement';
+
+  @override
+  String get editEvent => 'Modifier l\'événement';
+
+  @override
+  String get deleteEvent => 'Supprimer l\'événement';
+
+  @override
+  String get eventTitleHint => 'Marché aux plantes';
+
+  @override
+  String get eventNotesHint => 'Notes (facultatif)';
+
+  @override
+  String get eventStart => 'Début';
+
+  @override
+  String get eventEnd => 'Fin';
+
+  @override
+  String get eventNoEnd => 'Même jour';
+
+  @override
+  String get eventAllDay => 'Journée entière';
+
+  @override
+  String get eventCategory => 'Catégorie';
+
+  @override
+  String get eventNoCategory => 'Aucune';
+
+  @override
+  String get eventReminder => 'Rappel';
+
+  @override
+  String get eventNoReminder => 'Aucun';
+
+  @override
+  String get eventReminderAtStart => 'À l\'heure';
+
+  @override
+  String eventReminderMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes avant',
+      one: '1 minute avant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventReminderHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count heures avant',
+      one: '1 heure avant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventReminderDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours avant',
+      one: '1 jour avant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get manageEventCategories => 'Catégories d\'événements';
+
+  @override
+  String get newEventCategory => 'Nouvelle catégorie';
+
+  @override
+  String get editEventCategory => 'Modifier la catégorie';
+
+  @override
+  String get deleteEventCategory => 'Supprimer la catégorie';
+
+  @override
+  String get deleteEventCategoryExplain =>
+      'Les événements ne sont pas supprimés : ils perdent simplement leur catégorie.';
+
+  @override
+  String get noEventCategoriesYet =>
+      'Aucune catégorie. Créez-en une pour colorer vos événements.';
+
+  @override
+  String get categoryNameHint => 'Nom de la catégorie';
+
+  @override
+  String get eventPlant => 'Plante liée';
+
+  @override
+  String get eventNoPlant => 'Aucune';
+
+  @override
+  String get eventsOfDay => 'Événements';
 }
