@@ -49,6 +49,12 @@ class TodayScreen extends ConsumerWidget {
 
     return LargeTitlePage(
       title: greeting,
+      leading: FloraIconButton(
+        icon: CupertinoIcons.chart_bar,
+        semanticLabel: l10n.dashboardTitle,
+        filled: false,
+        onPressed: () => context.push(Routes.dashboard),
+      ),
       trailing: FloraIconButton(
         icon: CupertinoIcons.plus,
         semanticLabel: l10n.addPlant,

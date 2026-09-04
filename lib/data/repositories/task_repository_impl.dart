@@ -31,6 +31,14 @@ class DriftTaskRepository implements TaskRepository {
   Stream<List<FreeTask>> watchOpen() => (_all..where((t) => t.done.equals(false))).watch().map(_map);
 
   @override
+  Stream<List<FreeTask>> watchDone({int limit = 50}) => ((_db.select(_db.tasks)
+        ..where((t) => t.gardenId.equals(_gardenId) & t.deletedAt.isNull() & t.done.equals(true))
+        ..orderBy([(t) => OrderingTerm.desc(t.doneAt)])
+        ..limit(limit)))
+      .watch()
+      .map(_map);
+
+  @override
   Stream<List<FreeTask>> watchByPlant(String plantId) => (_all..where((t) => t.plantId.equals(plantId))).watch().map(_map);
 
   @override

@@ -2926,4 +2926,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventsOfDay => 'Events';
+
+  @override
+  String get dashboardTitle => 'Dashboard';
+
+  @override
+  String get statsSection => 'Numbers';
+
+  @override
+  String get statPlants => 'Plants';
+
+  @override
+  String get statSpecies => 'Species';
+
+  @override
+  String get statLocations => 'Locations';
+
+  @override
+  String get statFavorites => 'Favourites';
+
+  @override
+  String get statArchived => 'Archived';
+
+  @override
+  String get statNeedingCare => 'Need care';
+
+  @override
+  String get statOpenTasks => 'Open tasks';
+
+  @override
+  String get statLowStock => 'Low stock';
+
+  @override
+  String get statActionsThisMonth => 'Care this month';
+
+  @override
+  String get statWateringsThisMonth => 'Waterings this month';
+
+  @override
+  String get statOldest => 'Longest with you';
+
+  @override
+  String get warningsSection => 'Needs attention';
+
+  @override
+  String get warningSick => 'Sick';
+
+  @override
+  String get warningWatch => 'Watch';
+
+  @override
+  String warningOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days late',
+      one: '1 day late',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noWarnings => 'All is well in the garden.';
+
+  @override
+  String get recentPlantsSection => 'Recent plants';
+
+  @override
+  String get recentAdded => 'Added';
+
+  @override
+  String get recentUpdated => 'Updated';
+
+  @override
+  String get activityLogTitle => 'Activity log';
+
+  @override
+  String get activityEmpty =>
+      'Nothing yet. The log fills up with your first care action.';
+
+  @override
+  String get activityPlantAdded => 'Added to the garden';
+
+  @override
+  String get activityPlantArchived => 'Archived';
+
+  @override
+  String get activityLocationNote => 'Location note';
+
+  @override
+  String get activityTaskDone => 'Task completed';
 }

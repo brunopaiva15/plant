@@ -110,6 +110,9 @@ abstract class LocationRepository {
 
   /// Journal de l'emplacement, du plus récent au plus ancien.
   Stream<List<LocationLogEntry>> watchLog(String locationId);
+
+  /// Dernières notes de journal, tous emplacements confondus.
+  Stream<List<LocationLogEntry>> watchRecentLog({int limit = 50});
   Future<LocationLogEntry> addLogEntry(String locationId, String content);
   Future<void> editLogEntry(String id, String content);
   Future<void> deleteLogEntry(String id);
@@ -331,6 +334,9 @@ abstract class TaskRepository {
   /// Toutes les tâches non supprimées (ouvertes d'abord, puis par échéance).
   Stream<List<FreeTask>> watchAll();
   Stream<List<FreeTask>> watchOpen();
+
+  /// Tâches terminées, de la plus récente à la plus ancienne.
+  Stream<List<FreeTask>> watchDone({int limit = 50});
   Stream<List<FreeTask>> watchByPlant(String plantId);
   Future<FreeTask?> get(String id);
   Future<FreeTask> create(NewTask data);

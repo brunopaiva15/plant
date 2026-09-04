@@ -1400,5 +1400,39 @@
   "categoryNameHint": "Nom de la catégorie",
   "eventPlant": "Plante liée",
   "eventNoPlant": "Aucune",
-  "eventsOfDay": "Événements"
+  "eventsOfDay": "Événements",
+  "dashboardTitle": "Tableau de bord",
+  "statsSection": "Chiffres",
+  "statPlants": "Plantes",
+  "statSpecies": "Espèces",
+  "statLocations": "Emplacements",
+  "statFavorites": "Favorites",
+  "statArchived": "Archivées",
+  "statNeedingCare": "À soigner",
+  "statOpenTasks": "Tâches ouvertes",
+  "statLowStock": "Stock bas",
+  "statActionsThisMonth": "Soins ce mois",
+  "statWateringsThisMonth": "Arrosages ce mois",
+  "statOldest": "La doyenne",
+  "warningsSection": "À surveiller",
+  "warningSick": "Malade",
+  "warningWatch": "À surveiller",
+  "warningOverdue": "{count, plural, one{1 jour de retard} other{{count} jours de retard}}",
+  "@warningOverdue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noWarnings": "Tout va bien dans le jardin.",
+  "recentPlantsSection": "Dernières plantes",
+  "recentAdded": "Ajoutées",
+  "recentUpdated": "Modifiées",
+  "activityLogTitle": "Journal d'activité",
+  "activityEmpty": "Rien encore. Le journal se remplit dès le premier soin.",
+  "activityPlantAdded": "Ajoutée au jardin",
+  "activityPlantArchived": "Archivée",
+  "activityLocationNote": "Note d'emplacement",
+  "activityTaskDone": "Tâche terminée"
 }

@@ -2936,4 +2936,94 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get eventsOfDay => 'Termine';
+
+  @override
+  String get dashboardTitle => 'Übersicht';
+
+  @override
+  String get statsSection => 'Zahlen';
+
+  @override
+  String get statPlants => 'Pflanzen';
+
+  @override
+  String get statSpecies => 'Arten';
+
+  @override
+  String get statLocations => 'Standorte';
+
+  @override
+  String get statFavorites => 'Favoriten';
+
+  @override
+  String get statArchived => 'Archiviert';
+
+  @override
+  String get statNeedingCare => 'Pflege nötig';
+
+  @override
+  String get statOpenTasks => 'Offene Aufgaben';
+
+  @override
+  String get statLowStock => 'Wenig Vorrat';
+
+  @override
+  String get statActionsThisMonth => 'Pflege diesen Monat';
+
+  @override
+  String get statWateringsThisMonth => 'Gießvorgänge diesen Monat';
+
+  @override
+  String get statOldest => 'Am längsten dabei';
+
+  @override
+  String get warningsSection => 'Braucht Aufmerksamkeit';
+
+  @override
+  String get warningSick => 'Krank';
+
+  @override
+  String get warningWatch => 'Beobachten';
+
+  @override
+  String warningOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage überfällig',
+      one: '1 Tag überfällig',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noWarnings => 'Im Garten ist alles in Ordnung.';
+
+  @override
+  String get recentPlantsSection => 'Neueste Pflanzen';
+
+  @override
+  String get recentAdded => 'Hinzugefügt';
+
+  @override
+  String get recentUpdated => 'Geändert';
+
+  @override
+  String get activityLogTitle => 'Aktivitätsprotokoll';
+
+  @override
+  String get activityEmpty =>
+      'Noch nichts. Das Protokoll füllt sich mit der ersten Pflege.';
+
+  @override
+  String get activityPlantAdded => 'Zum Garten hinzugefügt';
+
+  @override
+  String get activityPlantArchived => 'Archiviert';
+
+  @override
+  String get activityLocationNote => 'Standortnotiz';
+
+  @override
+  String get activityTaskDone => 'Aufgabe erledigt';
 }

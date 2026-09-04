@@ -2942,4 +2942,94 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get eventsOfDay => 'Eventi';
+
+  @override
+  String get dashboardTitle => 'Cruscotto';
+
+  @override
+  String get statsSection => 'Numeri';
+
+  @override
+  String get statPlants => 'Piante';
+
+  @override
+  String get statSpecies => 'Specie';
+
+  @override
+  String get statLocations => 'Posizioni';
+
+  @override
+  String get statFavorites => 'Preferite';
+
+  @override
+  String get statArchived => 'Archiviate';
+
+  @override
+  String get statNeedingCare => 'Da curare';
+
+  @override
+  String get statOpenTasks => 'Attività aperte';
+
+  @override
+  String get statLowStock => 'Scorte basse';
+
+  @override
+  String get statActionsThisMonth => 'Cure questo mese';
+
+  @override
+  String get statWateringsThisMonth => 'Annaffiature questo mese';
+
+  @override
+  String get statOldest => 'La più anziana';
+
+  @override
+  String get warningsSection => 'Da tenere d\'occhio';
+
+  @override
+  String get warningSick => 'Malata';
+
+  @override
+  String get warningWatch => 'Da osservare';
+
+  @override
+  String warningOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count giorni di ritardo',
+      one: '1 giorno di ritardo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noWarnings => 'Va tutto bene nel giardino.';
+
+  @override
+  String get recentPlantsSection => 'Piante recenti';
+
+  @override
+  String get recentAdded => 'Aggiunte';
+
+  @override
+  String get recentUpdated => 'Modificate';
+
+  @override
+  String get activityLogTitle => 'Registro attività';
+
+  @override
+  String get activityEmpty =>
+      'Ancora nulla. Il registro si riempie dalla prima cura.';
+
+  @override
+  String get activityPlantAdded => 'Aggiunta al giardino';
+
+  @override
+  String get activityPlantArchived => 'Archiviata';
+
+  @override
+  String get activityLocationNote => 'Nota di posizione';
+
+  @override
+  String get activityTaskDone => 'Attività completata';
 }

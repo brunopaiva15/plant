@@ -129,6 +129,14 @@ class DriftLocationRepository implements LocationRepository {
       .map((rows) => rows.map((r) => r.toDomain()).toList());
 
   @override
+  Stream<List<LocationLogEntry>> watchRecentLog({int limit = 50}) => (_db.select(_db.locationLogs)
+        ..where((e) => e.gardenId.equals(_gardenId) & e.deletedAt.isNull())
+        ..orderBy([(e) => OrderingTerm.desc(e.createdAt)])
+        ..limit(limit))
+      .watch()
+      .map((rows) => rows.map((r) => r.toDomain()).toList());
+
+  @override
   Future<LocationLogEntry> addLogEntry(String locationId, String content) async {
     final now = DateTime.now();
     final id = _uuid.v4();

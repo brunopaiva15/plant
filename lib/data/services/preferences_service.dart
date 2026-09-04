@@ -44,6 +44,11 @@ class PreferencesService {
   String get plantSort => _prefs.getString('plant_sort') ?? 'name';
   Future<void> setPlantSort(String value) => _prefs.setString('plant_sort', value);
 
+  /// Ce que le carrousel « dernières plantes » du tableau de bord montre :
+  /// les dernières ajoutées, ou les dernières modifiées.
+  String get recentPlantsMode => _prefs.getString('recent_plants_mode') ?? 'added';
+  Future<void> setRecentPlantsMode(String value) => _prefs.setString('recent_plants_mode', value);
+
   // Notifications
   bool get notificationsEnabled => _prefs.getBool('notifications_enabled') ?? false;
   Future<void> setNotificationsEnabled(bool value) => _prefs.setBool('notifications_enabled', value);

@@ -2952,4 +2952,94 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get eventsOfDay => 'Événements';
+
+  @override
+  String get dashboardTitle => 'Tableau de bord';
+
+  @override
+  String get statsSection => 'Chiffres';
+
+  @override
+  String get statPlants => 'Plantes';
+
+  @override
+  String get statSpecies => 'Espèces';
+
+  @override
+  String get statLocations => 'Emplacements';
+
+  @override
+  String get statFavorites => 'Favorites';
+
+  @override
+  String get statArchived => 'Archivées';
+
+  @override
+  String get statNeedingCare => 'À soigner';
+
+  @override
+  String get statOpenTasks => 'Tâches ouvertes';
+
+  @override
+  String get statLowStock => 'Stock bas';
+
+  @override
+  String get statActionsThisMonth => 'Soins ce mois';
+
+  @override
+  String get statWateringsThisMonth => 'Arrosages ce mois';
+
+  @override
+  String get statOldest => 'La doyenne';
+
+  @override
+  String get warningsSection => 'À surveiller';
+
+  @override
+  String get warningSick => 'Malade';
+
+  @override
+  String get warningWatch => 'À surveiller';
+
+  @override
+  String warningOverdue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours de retard',
+      one: '1 jour de retard',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noWarnings => 'Tout va bien dans le jardin.';
+
+  @override
+  String get recentPlantsSection => 'Dernières plantes';
+
+  @override
+  String get recentAdded => 'Ajoutées';
+
+  @override
+  String get recentUpdated => 'Modifiées';
+
+  @override
+  String get activityLogTitle => 'Journal d\'activité';
+
+  @override
+  String get activityEmpty =>
+      'Rien encore. Le journal se remplit dès le premier soin.';
+
+  @override
+  String get activityPlantAdded => 'Ajoutée au jardin';
+
+  @override
+  String get activityPlantArchived => 'Archivée';
+
+  @override
+  String get activityLocationNote => 'Note d\'emplacement';
+
+  @override
+  String get activityTaskDone => 'Tâche terminée';
 }

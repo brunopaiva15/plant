@@ -1,4 +1,5 @@
 export 'action_type.dart';
+export 'activity_entry.dart';
 export 'calendar_event.dart';
 export 'calendar_entry.dart';
 export 'inventory_item.dart';

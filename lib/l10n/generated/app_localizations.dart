@@ -5045,6 +5045,168 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Événements'**
   String get eventsOfDay;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord'**
+  String get dashboardTitle;
+
+  /// No description provided for @statsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chiffres'**
+  String get statsSection;
+
+  /// No description provided for @statPlants.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plantes'**
+  String get statPlants;
+
+  /// No description provided for @statSpecies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèces'**
+  String get statSpecies;
+
+  /// No description provided for @statLocations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements'**
+  String get statLocations;
+
+  /// No description provided for @statFavorites.
+  ///
+  /// In fr, this message translates to:
+  /// **'Favorites'**
+  String get statFavorites;
+
+  /// No description provided for @statArchived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Archivées'**
+  String get statArchived;
+
+  /// No description provided for @statNeedingCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'À soigner'**
+  String get statNeedingCare;
+
+  /// No description provided for @statOpenTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches ouvertes'**
+  String get statOpenTasks;
+
+  /// No description provided for @statLowStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock bas'**
+  String get statLowStock;
+
+  /// No description provided for @statActionsThisMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soins ce mois'**
+  String get statActionsThisMonth;
+
+  /// No description provided for @statWateringsThisMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosages ce mois'**
+  String get statWateringsThisMonth;
+
+  /// No description provided for @statOldest.
+  ///
+  /// In fr, this message translates to:
+  /// **'La doyenne'**
+  String get statOldest;
+
+  /// No description provided for @warningsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'À surveiller'**
+  String get warningsSection;
+
+  /// No description provided for @warningSick.
+  ///
+  /// In fr, this message translates to:
+  /// **'Malade'**
+  String get warningSick;
+
+  /// No description provided for @warningWatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'À surveiller'**
+  String get warningWatch;
+
+  /// No description provided for @warningOverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{1 jour de retard} other{{count} jours de retard}}'**
+  String warningOverdue(int count);
+
+  /// No description provided for @noWarnings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout va bien dans le jardin.'**
+  String get noWarnings;
+
+  /// No description provided for @recentPlantsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernières plantes'**
+  String get recentPlantsSection;
+
+  /// No description provided for @recentAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutées'**
+  String get recentAdded;
+
+  /// No description provided for @recentUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifiées'**
+  String get recentUpdated;
+
+  /// No description provided for @activityLogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal d\'activité'**
+  String get activityLogTitle;
+
+  /// No description provided for @activityEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien encore. Le journal se remplit dès le premier soin.'**
+  String get activityEmpty;
+
+  /// No description provided for @activityPlantAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutée au jardin'**
+  String get activityPlantAdded;
+
+  /// No description provided for @activityPlantArchived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Archivée'**
+  String get activityPlantArchived;
+
+  /// No description provided for @activityLocationNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note d\'emplacement'**
+  String get activityLocationNote;
+
+  /// No description provided for @activityTaskDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâche terminée'**
+  String get activityTaskDone;
 }
 
 class _AppLocalizationsDelegate

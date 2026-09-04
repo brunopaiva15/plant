@@ -7,6 +7,8 @@ import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
 import '../features/account/presentation/members_screen.dart';
 import '../features/archive/presentation/archive_screen.dart';
+import '../features/dashboard/presentation/activity_log_screen.dart';
+import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
 import '../features/garden/presentation/garden_screen.dart';
 import '../features/identification/presentation/identification_settings_screen.dart';
@@ -69,6 +71,8 @@ abstract final class Routes {
   static const account = '/settings/account';
   static const members = '/settings/members';
   static const diagnosis = '/settings/diagnosis';
+  static const dashboard = '/dashboard';
+  static const activityLog = '/activity';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -100,6 +104,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       // Écrans plein écran (la barre d'onglets se masque, comme un push iOS immersif).
       // Routes à plat (pas d'imbrication) : un `push` n'empile qu'une seule page.
+      GoRoute(
+        path: Routes.dashboard,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, const DashboardScreen()),
+      ),
+      GoRoute(
+        path: Routes.activityLog,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, const ActivityLogScreen()),
+      ),
       GoRoute(
         path: '/plants/:id',
         parentNavigatorKey: rootNavigatorKey,

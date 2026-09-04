@@ -99,6 +99,7 @@ class ProfileScreen extends ConsumerWidget {
                   FloraListRow(leading: const Text('🗒️', style: TextStyle(fontSize: 18)), title: l10n.fieldTemplates, onTap: () => context.push(Routes.fieldTemplates)),
                   FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
                   FloraListRow(leading: const Text('🍂', style: TextStyle(fontSize: 18)), title: l10n.archives, onTap: () => context.push(Routes.archive)),
+                  FloraListRow(leading: const Text('📜', style: TextStyle(fontSize: 18)), title: l10n.activityLogTitle, onTap: () => context.push(Routes.activityLog)),
                 ],
               ),
               const SizedBox(height: Space.lg),
