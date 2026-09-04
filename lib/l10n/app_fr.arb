@@ -1434,5 +1434,39 @@
   "activityPlantAdded": "Ajoutée au jardin",
   "activityPlantArchived": "Archivée",
   "activityLocationNote": "Note d'emplacement",
-  "activityTaskDone": "Tâche terminée"
+  "activityTaskDone": "Tâche terminée",
+  "archiveNameTitle": "Nom des archives",
+  "archiveNameHint": "Mémorial, Le passé…",
+  "archiveNameExplain": "Laissez vide pour garder le nom par défaut.",
+  "searchArchives": "Rechercher dans les archives",
+  "archiveSortArchivedDesc": "Archivées récemment",
+  "archiveSortArchivedAsc": "Archivées d'abord",
+  "archiveSortName": "Nom",
+  "archiveSortLongestKept": "Gardées le plus longtemps",
+  "allYears": "Toutes",
+  "keptForDays": "{count, plural, one{Gardée 1 jour} other{Gardée {count} jours}}",
+  "@keptForDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "keptForYears": "{count, plural, one{Gardée 1 an} other{Gardée {count} ans}}",
+  "@keptForYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noArchiveMatch": "Aucune plante ne correspond.",
+  "weatherForecastTitle": "Prévisions",
+  "weatherPrecipitation": "Précipitations",
+  "weatherRainChance": "Risque de pluie",
+  "weatherWind": "Vent",
+  "weatherHumidity": "Humidité",
+  "weatherNoPlace": "Choisissez un lieu pour voir les prévisions.",
+  "weatherToday": "Aujourd'hui",
+  "weatherFailed": "Prévisions indisponibles pour l'instant."
 }

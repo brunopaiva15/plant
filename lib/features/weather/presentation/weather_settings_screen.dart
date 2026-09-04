@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -85,6 +87,12 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
                       ),
                 chevron: false,
               ),
+              if (place != null)
+                FloraListRow(
+                  leading: const Text('📅', style: TextStyle(fontSize: 18)),
+                  title: l10n.weatherForecastTitle,
+                  onTap: () => context.push(Routes.forecast),
+                ),
             ],
           ),
           const SizedBox(height: Space.lg),

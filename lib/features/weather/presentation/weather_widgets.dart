@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -24,28 +26,36 @@ class WeatherLine extends ConsumerWidget {
     final parts = [temp, l10n.conditionName(weather.condition), if (weather.precipitationProbability >= 30) l10n.rainChance(weather.precipitationProbability)].where((s) => s.isNotEmpty);
     return Padding(
       padding: const EdgeInsets.only(top: 2),
-      child: Row(
-        children: [
-          Text(_emoji(weather.condition), style: const TextStyle(fontSize: 13)),
-          const SizedBox(width: 4),
-          Flexible(child: Text(parts.join(' · '), style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis)),
-        ],
+      child: Pressable(
+        onTap: () => context.push(Routes.forecast),
+        scale: 1,
+        child: Row(
+          children: [
+            Text(weatherEmoji(weather.condition), style: const TextStyle(fontSize: 13)),
+            const SizedBox(width: 4),
+            Flexible(child: Text(parts.join(' · '), style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis)),
+            const SizedBox(width: 2),
+            Icon(CupertinoIcons.chevron_right, size: 11, color: context.colors.inkTertiary),
+          ],
+        ),
       ),
     );
   }
 
-  static String _emoji(WeatherCondition c) => switch (c) {
-        WeatherCondition.clear => '☀️',
-        WeatherCondition.partlyCloudy => '🌤️',
-        WeatherCondition.cloudy => '☁️',
-        WeatherCondition.fog => '🌫️',
-        WeatherCondition.drizzle => '🌦️',
-        WeatherCondition.rain => '🌧️',
-        WeatherCondition.snow => '🌨️',
-        WeatherCondition.thunderstorm => '⛈️',
-        WeatherCondition.unknown => '🌡️',
-      };
 }
+
+/// Emoji du temps, partagé par la ligne du jour et l'écran de prévisions.
+String weatherEmoji(WeatherCondition c) => switch (c) {
+      WeatherCondition.clear => '☀️',
+      WeatherCondition.partlyCloudy => '🌤️',
+      WeatherCondition.cloudy => '☁️',
+      WeatherCondition.fog => '🌫️',
+      WeatherCondition.drizzle => '🌦️',
+      WeatherCondition.rain => '🌧️',
+      WeatherCondition.snow => '🌨️',
+      WeatherCondition.thunderstorm => '⛈️',
+      WeatherCondition.unknown => '🌡️',
+    };
 
 /// « Pluie prévue : pas besoin d'arroser Balcon aujourd'hui. » [Reporter]
 class WeatherAdviceCard extends ConsumerWidget {

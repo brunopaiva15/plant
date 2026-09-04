@@ -5207,6 +5207,126 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Tâche terminée'**
   String get activityTaskDone;
+
+  /// No description provided for @archiveNameTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom des archives'**
+  String get archiveNameTitle;
+
+  /// No description provided for @archiveNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mémorial, Le passé…'**
+  String get archiveNameHint;
+
+  /// No description provided for @archiveNameExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laissez vide pour garder le nom par défaut.'**
+  String get archiveNameExplain;
+
+  /// No description provided for @searchArchives.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher dans les archives'**
+  String get searchArchives;
+
+  /// No description provided for @archiveSortArchivedDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Archivées récemment'**
+  String get archiveSortArchivedDesc;
+
+  /// No description provided for @archiveSortArchivedAsc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Archivées d\'abord'**
+  String get archiveSortArchivedAsc;
+
+  /// No description provided for @archiveSortName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get archiveSortName;
+
+  /// No description provided for @archiveSortLongestKept.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gardées le plus longtemps'**
+  String get archiveSortLongestKept;
+
+  /// No description provided for @allYears.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes'**
+  String get allYears;
+
+  /// No description provided for @keptForDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{Gardée 1 jour} other{Gardée {count} jours}}'**
+  String keptForDays(int count);
+
+  /// No description provided for @keptForYears.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, one{Gardée 1 an} other{Gardée {count} ans}}'**
+  String keptForYears(int count);
+
+  /// No description provided for @noArchiveMatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune plante ne correspond.'**
+  String get noArchiveMatch;
+
+  /// No description provided for @weatherForecastTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prévisions'**
+  String get weatherForecastTitle;
+
+  /// No description provided for @weatherPrecipitation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précipitations'**
+  String get weatherPrecipitation;
+
+  /// No description provided for @weatherRainChance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Risque de pluie'**
+  String get weatherRainChance;
+
+  /// No description provided for @weatherWind.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vent'**
+  String get weatherWind;
+
+  /// No description provided for @weatherHumidity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humidité'**
+  String get weatherHumidity;
+
+  /// No description provided for @weatherNoPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez un lieu pour voir les prévisions.'**
+  String get weatherNoPlace;
+
+  /// No description provided for @weatherToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get weatherToday;
+
+  /// No description provided for @weatherFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prévisions indisponibles pour l\'instant.'**
+  String get weatherFailed;
 }
 
 class _AppLocalizationsDelegate

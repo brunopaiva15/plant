@@ -20,18 +20,22 @@ class OpenMeteoService implements WeatherService {
   }
 
   @override
-  Future<DailyWeather> today(WeatherPlace place) async {
+  Future<DailyWeather> today(WeatherPlace place) async => (await forecast(place, days: 1)).first;
+
+  @override
+  Future<List<DailyWeather>> forecast(WeatherPlace place, {int days = 5}) async {
     final uri = Uri.https('api.open-meteo.com', '/v1/forecast', {
       'latitude': place.latitude.toString(),
       'longitude': place.longitude.toString(),
       'current': 'temperature_2m,weather_code',
-      'daily': 'temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,weather_code',
+      'daily': 'temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,'
+          'weather_code,wind_speed_10m_max,relative_humidity_2m_mean',
       'timezone': 'auto',
-      'forecast_days': '1',
+      'forecast_days': days.clamp(1, 16).toString(),
     });
     final res = await _client.get(uri).timeout(const Duration(seconds: 15));
     if (res.statusCode != 200) throw Exception('open-meteo ${res.statusCode}');
-    return parseToday(res.body);
+    return parseForecast(res.body);
   }
 
   static List<WeatherPlace> parsePlaces(String body) {
@@ -47,20 +51,52 @@ class OpenMeteoService implements WeatherService {
     ];
   }
 
-  static DailyWeather parseToday(String body) {
+  static DailyWeather parseToday(String body) => parseForecast(body).first;
+
+  /// Une entrée par jour. La température « maintenant » n'existe que pour le
+  /// premier jour : les suivants prennent leur maximum.
+  static List<DailyWeather> parseForecast(String body) {
     final json = jsonDecode(body) as Map<String, dynamic>;
     final current = json['current'] as Map<String, dynamic>? ?? const {};
     final daily = json['daily'] as Map<String, dynamic>? ?? const {};
-    double first(String key, [double fallback = 0]) => ((daily[key] as List?)?.firstOrNull as num?)?.toDouble() ?? fallback;
-    return DailyWeather(
-      date: DateTime.tryParse(((daily['time'] as List?)?.firstOrNull as String?) ?? '') ?? DateTime.now(),
-      temperatureNow: (current['temperature_2m'] as num?)?.toDouble() ?? first('temperature_2m_max'),
-      temperatureMax: first('temperature_2m_max'),
-      temperatureMin: first('temperature_2m_min'),
-      precipitationMm: first('precipitation_sum'),
-      precipitationProbability: first('precipitation_probability_max').round(),
-      condition: conditionFromCode((current['weather_code'] as num?)?.toInt() ?? first('weather_code').toInt()),
-    );
+    final times = (daily['time'] as List?) ?? const [];
+    double at(String key, int i, [double fallback = 0]) {
+      final list = daily[key] as List?;
+      if (list == null || i >= list.length) return fallback;
+      return (list[i] as num?)?.toDouble() ?? fallback;
+    }
+
+    if (times.isEmpty) {
+      // Réponse sans bloc journalier : on retourne au moins le temps présent.
+      return [
+        DailyWeather(
+          date: DateTime.now(),
+          temperatureNow: (current['temperature_2m'] as num?)?.toDouble() ?? 0,
+          temperatureMax: 0,
+          temperatureMin: 0,
+          precipitationMm: 0,
+          precipitationProbability: 0,
+          condition: conditionFromCode((current['weather_code'] as num?)?.toInt() ?? -1),
+        ),
+      ];
+    }
+
+    return [
+      for (var i = 0; i < times.length; i++)
+        DailyWeather(
+          date: DateTime.tryParse(times[i] as String? ?? '') ?? DateTime.now().add(Duration(days: i)),
+          temperatureNow: i == 0 ? (current['temperature_2m'] as num?)?.toDouble() ?? at('temperature_2m_max', i) : at('temperature_2m_max', i),
+          temperatureMax: at('temperature_2m_max', i),
+          temperatureMin: at('temperature_2m_min', i),
+          precipitationMm: at('precipitation_sum', i),
+          precipitationProbability: at('precipitation_probability_max', i).round(),
+          condition: conditionFromCode(
+            i == 0 ? (current['weather_code'] as num?)?.toInt() ?? at('weather_code', i, -1).toInt() : at('weather_code', i, -1).toInt(),
+          ),
+          windKph: at('wind_speed_10m_max', i),
+          humidity: at('relative_humidity_2m_mean', i).round(),
+        ),
+    ];
   }
 
   /// Codes WMO utilisés par Open-Meteo.

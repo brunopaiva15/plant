@@ -19,6 +19,13 @@ final todayWeatherProvider = FutureProvider<DailyWeather?>((ref) async {
   }
 });
 
+/// Prévisions sur cinq jours, rafraîchies toutes les heures comme le jour même.
+final forecastProvider = FutureProvider.autoDispose<List<DailyWeather>>((ref) async {
+  final place = ref.watch(preferencesProvider.select((p) => p.weatherPlace));
+  if (place == null) return const [];
+  return ref.watch(weatherServiceProvider).forecast(place);
+});
+
 /// Emplacements marqués « extérieur » (id).
 final outdoorLocationIdsProvider = Provider<Set<String>>((ref) {
   final locations = ref.watch(locationsProvider).value ?? const [];

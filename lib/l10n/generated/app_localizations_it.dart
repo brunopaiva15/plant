@@ -3032,4 +3032,81 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get activityTaskDone => 'Attività completata';
+
+  @override
+  String get archiveNameTitle => 'Nome dell\'archivio';
+
+  @override
+  String get archiveNameHint => 'Memoriale, Il passato…';
+
+  @override
+  String get archiveNameExplain =>
+      'Lascia vuoto per mantenere il nome predefinito.';
+
+  @override
+  String get searchArchives => 'Cerca negli archivi';
+
+  @override
+  String get archiveSortArchivedDesc => 'Archiviate di recente';
+
+  @override
+  String get archiveSortArchivedAsc => 'Archiviate per prime';
+
+  @override
+  String get archiveSortName => 'Nome';
+
+  @override
+  String get archiveSortLongestKept => 'Tenute più a lungo';
+
+  @override
+  String get allYears => 'Tutte';
+
+  @override
+  String keptForDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tenuta $count giorni',
+      one: 'Tenuta 1 giorno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String keptForYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tenuta $count anni',
+      one: 'Tenuta 1 anno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noArchiveMatch => 'Nessuna pianta corrisponde.';
+
+  @override
+  String get weatherForecastTitle => 'Previsioni';
+
+  @override
+  String get weatherPrecipitation => 'Precipitazioni';
+
+  @override
+  String get weatherRainChance => 'Probabilità di pioggia';
+
+  @override
+  String get weatherWind => 'Vento';
+
+  @override
+  String get weatherHumidity => 'Umidità';
+
+  @override
+  String get weatherNoPlace => 'Scegli un luogo per vedere le previsioni.';
+
+  @override
+  String get weatherToday => 'Oggi';
+
+  @override
+  String get weatherFailed => 'Previsioni non disponibili al momento.';
 }

@@ -109,6 +109,7 @@ class AppPreferences {
     required this.plantNetApiKey,
     required this.anthropicApiKey,
     required this.weatherPlace,
+    required this.archiveName,
   });
 
   final ThemeMode themeMode;
@@ -124,6 +125,9 @@ class AppPreferences {
   final String plantNetApiKey;
   final String anthropicApiKey;
   final WeatherPlace? weatherPlace;
+
+  /// Nom donné aux archives, vide si l'utilisateur garde celui par défaut.
+  final String archiveName;
 }
 
 class PreferencesController extends Notifier<AppPreferences> {
@@ -149,6 +153,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       plantNetApiKey: s.plantNetApiKey,
       anthropicApiKey: s.anthropicApiKey,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
+      archiveName: s.archiveName,
     );
   }
 
@@ -171,6 +176,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
+  Future<void> setArchiveName(String name) => _apply((s) => s.setArchiveName(name));
   Future<void> setDisplayName(String name) async {
     await ref.read(authRepositoryProvider).updateDisplayName(name);
     state = _read();

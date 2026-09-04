@@ -44,6 +44,18 @@ class PreferencesService {
   String get plantSort => _prefs.getString('plant_sort') ?? 'name';
   Future<void> setPlantSort(String value) => _prefs.setString('plant_sort', value);
 
+  /// Nom donné aux archives par l'utilisateur (« Mémorial », « Le passé »…).
+  /// Vide = le libellé traduit par défaut.
+  String get archiveName => _prefs.getString('archive_name') ?? '';
+  Future<void> setArchiveName(String value) => _prefs.setString('archive_name', value.trim());
+
+  /// Tri et vue des archives, mémorisés d'une session à l'autre.
+  String get archiveSort => _prefs.getString('archive_sort') ?? 'archivedDesc';
+  Future<void> setArchiveSort(String value) => _prefs.setString('archive_sort', value);
+
+  bool get archiveGridView => _prefs.getBool('archive_grid_view') ?? false;
+  Future<void> setArchiveGridView(bool value) => _prefs.setBool('archive_grid_view', value);
+
   /// Ce que le carrousel « dernières plantes » du tableau de bord montre :
   /// les dernières ajoutées, ou les dernières modifiées.
   String get recentPlantsMode => _prefs.getString('recent_plants_mode') ?? 'added';

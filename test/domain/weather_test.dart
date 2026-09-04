@@ -49,4 +49,58 @@ void main() {
     final dry = DailyWeather(date: DateTime(2026, 9, 4), temperatureNow: 28, temperatureMax: 30, temperatureMin: 18, precipitationMm: 0, precipitationProbability: 10, condition: WeatherCondition.clear);
     expect(WeatherAdvisor.advise(weather: dry, dueTasks: tasks, outdoorLocationIds: {'balcon'}).isEmpty, isTrue);
   });
+
+  group('prévisions Open-Meteo', () {
+    const body = '''
+{
+  "current": {"temperature_2m": 21.4, "weather_code": 61},
+  "daily": {
+    "time": ["2026-09-04", "2026-09-05", "2026-09-06"],
+    "temperature_2m_max": [24.0, 26.5, 19.0],
+    "temperature_2m_min": [14.0, 15.5, 12.0],
+    "precipitation_sum": [8.2, 0.0, 1.5],
+    "precipitation_probability_max": [90, 5, 40],
+    "weather_code": [61, 0, 3],
+    "wind_speed_10m_max": [18.0, 9.0, 25.0],
+    "relative_humidity_2m_mean": [82, 55, 70]
+  }
+}''';
+
+    test('un jour par entrée de la liste', () {
+      final days = OpenMeteoService.parseForecast(body);
+      expect(days, hasLength(3));
+      expect(days.map((d) => d.date.day), [4, 5, 6]);
+    });
+
+    test('le premier jour porte la température du moment', () {
+      final days = OpenMeteoService.parseForecast(body);
+      expect(days.first.temperatureNow, 21.4);
+      expect(days[1].temperatureNow, 26.5, reason: 'les jours suivants prennent leur maximum');
+    });
+
+    test('vent et humidité sont lus quand ils existent', () {
+      final day = OpenMeteoService.parseForecast(body).first;
+      expect(day.windKph, 18.0);
+      expect(day.humidity, 82);
+    });
+
+    test('parseToday reste le premier jour', () {
+      expect(OpenMeteoService.parseToday(body).precipitationMm, 8.2);
+    });
+
+    test('une réponse sans bloc journalier ne jette pas', () {
+      final days = OpenMeteoService.parseForecast('{"current": {"temperature_2m": 12.0, "weather_code": 0}}');
+      expect(days, hasLength(1));
+      expect(days.single.temperatureNow, 12.0);
+      expect(days.single.condition, WeatherCondition.clear);
+    });
+
+    test('une journée plus courte que les autres ne fait pas planter', () {
+      const partial = '''
+{"daily": {"time": ["2026-09-04", "2026-09-05"], "temperature_2m_max": [24.0]}}''';
+      final days = OpenMeteoService.parseForecast(partial);
+      expect(days, hasLength(2));
+      expect(days[1].temperatureMax, 0, reason: 'valeur manquante = zéro, pas une exception');
+    });
+  });
 }

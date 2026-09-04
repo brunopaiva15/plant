@@ -4,6 +4,7 @@ import '../../../app/providers.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
+import '../../plants/application/plant_providers.dart';
 import '../../tasks/application/task_providers.dart';
 
 /// Chiffres du jardin, calculés à partir des flux déjà en mémoire.
@@ -70,10 +71,6 @@ class GardenStats {
 /// Toutes les plantes actives, sans filtre : socle des statistiques.
 final _allPlantsProvider = StreamProvider.autoDispose<List<PlantSummary>>(
   (ref) => ref.watch(plantRepositoryProvider).watchSummaries(const PlantFilter()),
-);
-
-final archivedPlantsProvider = StreamProvider.autoDispose<List<PlantSummary>>(
-  (ref) => ref.watch(plantRepositoryProvider).watchArchived(),
 );
 
 final _recentActionsProvider = StreamProvider.autoDispose<List<PlantAction>>(

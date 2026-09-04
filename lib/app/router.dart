@@ -32,6 +32,7 @@ import '../features/sharing/presentation/shared_links_screen.dart';
 import '../features/species/presentation/care_guide_screen.dart';
 import '../features/species/presentation/species_picker_screen.dart';
 import '../features/today/presentation/today_screen.dart';
+import '../features/weather/presentation/forecast_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
 import 'providers.dart';
 import 'shell.dart';
@@ -73,6 +74,7 @@ abstract final class Routes {
   static const diagnosis = '/settings/diagnosis';
   static const dashboard = '/dashboard';
   static const activityLog = '/activity';
+  static const forecast = '/weather/forecast';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -108,6 +110,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.dashboard,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => platformPage(c, s, const DashboardScreen()),
+      ),
+      GoRoute(
+        path: Routes.forecast,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, const ForecastScreen()),
       ),
       GoRoute(
         path: Routes.activityLog,
