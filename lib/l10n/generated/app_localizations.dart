@@ -1773,7 +1773,7 @@ abstract class AppLocalizations {
   /// No description provided for @askNameTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Comment vous appelez-vous ?'**
+  /// **'Comment vous appelez-vous ?'**
   String get askNameTitle;
 
   /// No description provided for @askNameSubtitle.
@@ -5543,6 +5543,72 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Exemple'**
   String get apiExample;
+
+  /// No description provided for @onbTodayTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une seule question chaque matin'**
+  String get onbTodayTitle;
+
+  /// No description provided for @onbTodayBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui ne montre que ce qui est dû. Un geste pour arroser, un autre pour annuler.'**
+  String get onbTodayBody;
+
+  /// No description provided for @onbCareTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un rythme qui suit les saisons'**
+  String get onbCareTitle;
+
+  /// No description provided for @onbCareBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque plante a sa fiche d\'entretien : lumière, humidité, rempotage. Les intervalles s\'allongent en hiver, tout seuls.'**
+  String get onbCareBody;
+
+  /// No description provided for @onbGardenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout votre jardin au même endroit'**
+  String get onbGardenTitle;
+
+  /// No description provided for @onbGardenBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements, inventaire, tâches et calendrier. Photos, mesures et journal : l\'histoire de chaque plante se garde toute seule.'**
+  String get onbGardenBody;
+
+  /// No description provided for @onbPrivacyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données restent les vôtres'**
+  String get onbPrivacyTitle;
+
+  /// No description provided for @onbPrivacyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout fonctionne hors ligne. La synchronisation et le partage sont facultatifs, et l\'export est un simple fichier ouvert.'**
+  String get onbPrivacyBody;
+
+  /// No description provided for @onbStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer'**
+  String get onbStart;
+
+  /// No description provided for @replayOnboarding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revoir la présentation'**
+  String get replayOnboarding;
+
+  /// No description provided for @onbStepOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étape {current} sur {total}'**
+  String onbStepOf(int current, int total);
 }
 
 class _AppLocalizationsDelegate

@@ -140,6 +140,7 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: l10n.premiumPlantCount(count, AppConfig.freePlantLimit),
                     onTap: () => showAdaptiveConfirm(context, title: l10n.premium, message: l10n.premiumBody, confirmLabel: l10n.ok, cancelLabel: l10n.close),
                   ),
+                  FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.about, onTap: () => context.push(Routes.about)),
                 ],
               ),

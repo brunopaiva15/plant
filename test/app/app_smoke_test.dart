@@ -220,8 +220,10 @@ void main() {
     final container = await boot(tester, onboardingDone: false);
     await pumpApp(tester, container);
     expect(find.text('Votre jardin, simplement.'), findsOneWidget);
-    await tester.tap(find.text('Continuer'));
+    // « Passer » saute les diapositives et mène droit à la saisie du prénom.
+    await tester.tap(find.text('Passer'));
     await settle(tester);
+    expect(find.text('Comment vous appelez-vous\u00a0?'), findsOneWidget);
     await tester.enterText(find.byType(EditableText), 'Bruno');
     await tester.tap(find.text('Plus tard'));
     await settle(tester);

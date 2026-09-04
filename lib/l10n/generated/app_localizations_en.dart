@@ -3233,4 +3233,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiExample => 'Example';
+
+  @override
+  String get onbTodayTitle => 'One question each morning';
+
+  @override
+  String get onbTodayBody =>
+      'Today shows only what is due. One tap to water, one to undo.';
+
+  @override
+  String get onbCareTitle => 'A rhythm that follows the seasons';
+
+  @override
+  String get onbCareBody =>
+      'Every plant has a care guide: light, humidity, repotting. Intervals stretch out in winter, on their own.';
+
+  @override
+  String get onbGardenTitle => 'Your whole garden in one place';
+
+  @override
+  String get onbGardenBody =>
+      'Locations, inventory, tasks and calendar. Photos, measurements and a log: each plant\'s story keeps itself.';
+
+  @override
+  String get onbPrivacyTitle => 'Your data stays yours';
+
+  @override
+  String get onbPrivacyBody =>
+      'Everything works offline. Sync and sharing are optional, and the export is a plain open file.';
+
+  @override
+  String get onbStart => 'Get started';
+
+  @override
+  String get replayOnboarding => 'Replay the intro';
+
+  @override
+  String onbStepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
 }

@@ -964,7 +964,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Prenez soin de vos plantes et gardez leur histoire.';
 
   @override
-  String get askNameTitle => 'Comment vous appelez-vous ?';
+  String get askNameTitle => 'Comment vous appelez-vous ?';
 
   @override
   String get askNameSubtitle =>
@@ -3262,4 +3262,43 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get apiExample => 'Exemple';
+
+  @override
+  String get onbTodayTitle => 'Une seule question chaque matin';
+
+  @override
+  String get onbTodayBody =>
+      'Aujourd\'hui ne montre que ce qui est dû. Un geste pour arroser, un autre pour annuler.';
+
+  @override
+  String get onbCareTitle => 'Un rythme qui suit les saisons';
+
+  @override
+  String get onbCareBody =>
+      'Chaque plante a sa fiche d\'entretien : lumière, humidité, rempotage. Les intervalles s\'allongent en hiver, tout seuls.';
+
+  @override
+  String get onbGardenTitle => 'Tout votre jardin au même endroit';
+
+  @override
+  String get onbGardenBody =>
+      'Emplacements, inventaire, tâches et calendrier. Photos, mesures et journal : l\'histoire de chaque plante se garde toute seule.';
+
+  @override
+  String get onbPrivacyTitle => 'Vos données restent les vôtres';
+
+  @override
+  String get onbPrivacyBody =>
+      'Tout fonctionne hors ligne. La synchronisation et le partage sont facultatifs, et l\'export est un simple fichier ouvert.';
+
+  @override
+  String get onbStart => 'Commencer';
+
+  @override
+  String get replayOnboarding => 'Revoir la présentation';
+
+  @override
+  String onbStepOf(int current, int total) {
+    return 'Étape $current sur $total';
+  }
 }

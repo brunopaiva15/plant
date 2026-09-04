@@ -1017,5 +1017,16 @@
   "apiTokenWarning": "Valid for a few hours. Revoked by signing out.",
   "apiReadWrite": "Read and write",
   "apiOnlyYourGarden": "Every request only sees gardens you belong to.",
-  "apiExample": "Example"
+  "apiExample": "Example",
+  "onbTodayTitle": "One question each morning",
+  "onbTodayBody": "Today shows only what is due. One tap to water, one to undo.",
+  "onbCareTitle": "A rhythm that follows the seasons",
+  "onbCareBody": "Every plant has a care guide: light, humidity, repotting. Intervals stretch out in winter, on their own.",
+  "onbGardenTitle": "Your whole garden in one place",
+  "onbGardenBody": "Locations, inventory, tasks and calendar. Photos, measurements and a log: each plant's story keeps itself.",
+  "onbPrivacyTitle": "Your data stays yours",
+  "onbPrivacyBody": "Everything works offline. Sync and sharing are optional, and the export is a plain open file.",
+  "onbStart": "Get started",
+  "replayOnboarding": "Replay the intro",
+  "onbStepOf": "Step {current} of {total}"
 }

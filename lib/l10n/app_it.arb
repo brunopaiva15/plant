@@ -1017,5 +1017,16 @@
   "apiTokenWarning": "Valido per alcune ore. Si revoca disconnettendoti.",
   "apiReadWrite": "Lettura e scrittura",
   "apiOnlyYourGarden": "Ogni richiesta vede solo i giardini di cui fai parte.",
-  "apiExample": "Esempio"
+  "apiExample": "Esempio",
+  "onbTodayTitle": "Una sola domanda ogni mattina",
+  "onbTodayBody": "Oggi mostra solo ciò che è dovuto. Un tocco per annaffiare, uno per annullare.",
+  "onbCareTitle": "Un ritmo che segue le stagioni",
+  "onbCareBody": "Ogni pianta ha la sua scheda di cura: luce, umidità, rinvaso. Gli intervalli si allungano d'inverno, da soli.",
+  "onbGardenTitle": "Tutto il tuo giardino in un posto",
+  "onbGardenBody": "Posizioni, inventario, attività e calendario. Foto, misure e diario: la storia di ogni pianta si conserva da sola.",
+  "onbPrivacyTitle": "I tuoi dati restano tuoi",
+  "onbPrivacyBody": "Tutto funziona offline. Sincronizzazione e condivisione sono facoltative e l'esportazione è un semplice file aperto.",
+  "onbStart": "Iniziare",
+  "replayOnboarding": "Rivedi la presentazione",
+  "onbStepOf": "Passo {current} di {total}"
 }

@@ -22,7 +22,8 @@ import 'features/today/application/reminder_scheduler.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Revue visuelle des variantes Cupertino depuis un navigateur : `?ios`.
-  if (!kReleaseMode && kIsWeb && Uri.base.queryParameters.containsKey('ios')) {
+  // Réservé au mode debug : le setter jette une assertion ailleurs.
+  if (kDebugMode && kIsWeb && Uri.base.queryParameters.containsKey('ios')) {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
 

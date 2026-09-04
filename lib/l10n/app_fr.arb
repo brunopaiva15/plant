@@ -482,7 +482,7 @@
   "manageTags": "Gérer les tags",
   "onboardingTitle": "Votre jardin, simplement.",
   "onboardingSubtitle": "Prenez soin de vos plantes et gardez leur histoire.",
-  "askNameTitle": "Comment vous appelez-vous ?",
+  "askNameTitle": "Comment vous appelez-vous ?",
   "askNameSubtitle": "Pour vous saluer chaque matin. Vous pourrez changer plus tard.",
   "notificationAskTitle": "Un rappel utile, chaque jour",
   "notificationAskBody": "Une seule notification par jour, à l'heure que vous choisissez, seulement quand une plante en a besoin.",
@@ -1532,5 +1532,26 @@
   "apiTokenWarning": "Valable quelques heures. Se révoque en vous déconnectant.",
   "apiReadWrite": "Lecture et écriture",
   "apiOnlyYourGarden": "Chaque requête ne voit que les jardins dont vous êtes membre.",
-  "apiExample": "Exemple"
+  "apiExample": "Exemple",
+  "onbTodayTitle": "Une seule question chaque matin",
+  "onbTodayBody": "Aujourd'hui ne montre que ce qui est dû. Un geste pour arroser, un autre pour annuler.",
+  "onbCareTitle": "Un rythme qui suit les saisons",
+  "onbCareBody": "Chaque plante a sa fiche d'entretien : lumière, humidité, rempotage. Les intervalles s'allongent en hiver, tout seuls.",
+  "onbGardenTitle": "Tout votre jardin au même endroit",
+  "onbGardenBody": "Emplacements, inventaire, tâches et calendrier. Photos, mesures et journal : l'histoire de chaque plante se garde toute seule.",
+  "onbPrivacyTitle": "Vos données restent les vôtres",
+  "onbPrivacyBody": "Tout fonctionne hors ligne. La synchronisation et le partage sont facultatifs, et l'export est un simple fichier ouvert.",
+  "onbStart": "Commencer",
+  "replayOnboarding": "Revoir la présentation",
+  "onbStepOf": "Étape {current} sur {total}",
+  "@onbStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

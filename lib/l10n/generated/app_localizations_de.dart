@@ -3245,4 +3245,43 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get apiExample => 'Beispiel';
+
+  @override
+  String get onbTodayTitle => 'Jeden Morgen eine Frage';
+
+  @override
+  String get onbTodayBody =>
+      'Heute zeigt nur, was ansteht. Ein Tippen zum Gießen, eines zum Rückgängigmachen.';
+
+  @override
+  String get onbCareTitle => 'Ein Rhythmus, der den Jahreszeiten folgt';
+
+  @override
+  String get onbCareBody =>
+      'Jede Pflanze hat ihren Pflegeplan: Licht, Feuchtigkeit, Umtopfen. Die Abstände werden im Winter von selbst länger.';
+
+  @override
+  String get onbGardenTitle => 'Dein ganzer Garten an einem Ort';
+
+  @override
+  String get onbGardenBody =>
+      'Standorte, Vorrat, Aufgaben und Kalender. Fotos, Messungen und Protokoll: Die Geschichte jeder Pflanze schreibt sich selbst.';
+
+  @override
+  String get onbPrivacyTitle => 'Deine Daten bleiben deine';
+
+  @override
+  String get onbPrivacyBody =>
+      'Alles funktioniert offline. Synchronisierung und Teilen sind optional, der Export ist eine einfache offene Datei.';
+
+  @override
+  String get onbStart => 'Loslegen';
+
+  @override
+  String get replayOnboarding => 'Einführung erneut ansehen';
+
+  @override
+  String onbStepOf(int current, int total) {
+    return 'Schritt $current von $total';
+  }
 }
