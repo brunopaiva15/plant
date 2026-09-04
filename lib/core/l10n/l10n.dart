@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
+import '../../domain/weather/weather.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../utils/dates.dart';
 
@@ -101,6 +102,18 @@ extension ActionTypeLabels on AppLocalizations {
         MeasurementKind.width => measureWidth,
         MeasurementKind.leaves => measureLeaves,
         MeasurementKind.pot => measurePot,
+      };
+
+  String conditionName(WeatherCondition c) => switch (c) {
+        WeatherCondition.clear => condClear,
+        WeatherCondition.partlyCloudy => condPartlyCloudy,
+        WeatherCondition.cloudy => condCloudy,
+        WeatherCondition.fog => condFog,
+        WeatherCondition.drizzle => condDrizzle,
+        WeatherCondition.rain => condRain,
+        WeatherCondition.snow => condSnow,
+        WeatherCondition.thunderstorm => condThunderstorm,
+        WeatherCondition.unknown => '',
       };
 
   /// « 42 cm », « 9 » (sans unité), « 1,5 L ».

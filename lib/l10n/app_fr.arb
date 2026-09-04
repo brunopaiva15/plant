@@ -643,5 +643,70 @@
   "compareHint": "Glissez pour comparer.",
   "before": "Avant",
   "after": "Après",
-  "comparePickFirst": "Choisissez deux photos."
+  "comparePickFirst": "Choisissez deux photos.",
+  "outdoor": "Extérieur",
+  "outdoorHint": "Balcon, jardin, serre : la météo compte.",
+  "weather": "Météo",
+  "weatherHint": "Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.",
+  "weatherPlace": "Lieu",
+  "weatherSearchHint": "Ville…",
+  "weatherNone": "Aucun lieu",
+  "weatherRemove": "Retirer le lieu",
+  "weatherNoResults": "Aucun lieu trouvé.",
+  "weatherRainSkip": "Pluie prévue : pas besoin d'arroser {names} aujourd'hui.",
+  "@weatherRainSkip": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "postpone": "Reporter",
+  "postponedCount": "{count, plural, =1{1 arrosage reporté à demain} other{{count} arrosages reportés à demain}}",
+  "@postponedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "condClear": "Ciel dégagé",
+  "condPartlyCloudy": "Éclaircies",
+  "condCloudy": "Nuageux",
+  "condFog": "Brouillard",
+  "condDrizzle": "Bruine",
+  "condRain": "Pluie",
+  "condSnow": "Neige",
+  "condThunderstorm": "Orage",
+  "rainChance": "{percent} % de pluie",
+  "@rainChance": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "dataSection": "Données",
+  "exportData": "Exporter mes données",
+  "exportHint": "Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos. Vos données vous appartiennent.",
+  "exporting": "Préparation de l'export…",
+  "exportError": "Export impossible. Réessayez.",
+  "play": "Lire",
+  "timelapseHint": "Touchez pour mettre en pause.",
+  "notifLowStockOne": "Il ne vous reste presque plus de {name}.",
+  "@notifLowStockOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notifLowStockMany": "{count} articles sont presque épuisés.",
+  "@notifLowStockMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

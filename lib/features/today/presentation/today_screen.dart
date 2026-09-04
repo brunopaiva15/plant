@@ -10,6 +10,7 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/create_plant_flow.dart';
+import '../../weather/presentation/weather_widgets.dart';
 import '../application/completed_tasks.dart';
 import 'care_task_card.dart';
 import 'notification_prompt.dart';
@@ -55,8 +56,14 @@ class TodayScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xs),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: Text(Dates.longDate(context, now), style: context.text.callout)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [Text(Dates.longDate(context, now), style: context.text.callout), const WeatherLine()],
+                  ),
+                ),
                 if (plantCount > 0)
                   AnimatedSwitcher(
                     duration: Motion.of(context, Motion.standard),
@@ -66,6 +73,7 @@ class TodayScreen extends ConsumerWidget {
             ),
           ),
         ),
+        const SliverToBoxAdapter(child: WeatherAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
         if (plantCount == 0 && tasks.hasValue)
           SliverFillRemaining(

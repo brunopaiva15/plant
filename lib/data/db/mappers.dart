@@ -37,6 +37,7 @@ extension LocationRowMapper on LocationRow {
         icon: icon,
         light: light,
         orientation: orientation,
+        isOutdoor: isOutdoor,
         sortOrder: sortOrder,
         createdAt: createdAt,
         updatedAt: updatedAt,

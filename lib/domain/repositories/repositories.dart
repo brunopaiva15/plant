@@ -102,11 +102,11 @@ abstract class LocationRepository {
   Stream<List<Location>> watchAll();
   Stream<List<LocationNode>> watchTree();
   Stream<Location?> watch(String id);
-  Future<Location> create({required String name, required String icon, String? parentId, String? light, String? orientation});
+  Future<Location> create({required String name, required String icon, String? parentId, String? light, String? orientation, bool isOutdoor = false});
   Future<void> update(Location location);
   Future<void> delete(String id);
   /// Crée les emplacements de départ si aucun n'existe.
-  Future<void> ensureDefaults(List<({String name, String icon})> defaults);
+  Future<void> ensureDefaults(List<({String name, String icon, bool outdoor})> defaults);
 }
 
 /// Données d'une nouvelle action.

@@ -42,13 +42,18 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Synchronisation Supabase (adapter `RemoteDataSource`, outbox déjà en place) | → Phase 3 |
 | Notification « stock bas » (regroupée au rappel quotidien) | → Phase 3 |
 
-## Phase 3 — « Partager »
-- Collaboration (jardin partagé, rôles Owner / Member / Viewer, « Arrosée par Laura à 08:32 »)
-- Météo intelligente pour les plantes extérieures
-- Diagnostic (« Ma plante a un problème »), suggestions non affirmatives
-- Vidéo de croissance, statistiques légères
-- Partage par lien public révocable
-- Widgets iOS / Android, Live Activity « session de soin »
+## Phase 3 — « Partager » (en cours)
+| Fonction | État |
+|---|---|
+| Météo (Open-Meteo, sans clé) : emplacements « extérieur », ligne météo sur Aujourd'hui, conseil « pluie prévue : pas besoin d'arroser » avec report en un tap | ✅ |
+| Export complet (ZIP : `data.json` de toutes les tables + photos), partage natif | ✅ |
+| Timelapse de croissance (photos en fondu, chronologiques) | ✅ |
+| Stock bas regroupé dans le rappel quotidien | ✅ |
+| Collaboration (jardin partagé, rôles Owner / Member / Viewer, « Arrosée par Laura à 08:32 ») | ⏳ nécessite le backend (Supabase) |
+| Synchronisation multi-appareils (outbox → `RemoteDataSource`) | ⏳ nécessite le backend |
+| Diagnostic (« Ma plante a un problème »), suggestions non affirmatives | ⏳ nécessite un fournisseur d'IA (clé utilisateur, même modèle que l'identification) |
+| Partage par lien public révocable | ⏳ nécessite le backend |
+| Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
 
 ## Phase 4 — « Étendre »
 - NFC (architecture prévue : `PlantTagLink` table `plant_links` type `nfc` / `qr`)

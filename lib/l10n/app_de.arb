@@ -394,5 +394,70 @@
         "type": "int"
       }
     }
+  },
+  "outdoor": "Draußen",
+  "outdoorHint": "Balkon, Garten, Gewächshaus: das Wetter zählt.",
+  "weather": "Wetter",
+  "weatherHint": "Für deine Pflanzen draußen prüft Flora den Regen des Tages und erspart dir unnötiges Gießen. Open-Meteo-Daten, ohne Konto oder Schlüssel.",
+  "weatherPlace": "Ort",
+  "weatherSearchHint": "Stadt…",
+  "weatherNone": "Kein Ort",
+  "weatherRemove": "Ort entfernen",
+  "weatherNoResults": "Kein Ort gefunden.",
+  "weatherRainSkip": "Regen erwartet: {names} muss heute nicht gegossen werden.",
+  "postpone": "Verschieben",
+  "postponedCount": "{count, plural, =1{1 Gießen auf morgen verschoben} other{{count} Gießvorgänge auf morgen verschoben}}",
+  "condClear": "Klar",
+  "condPartlyCloudy": "Teils bewölkt",
+  "condCloudy": "Bewölkt",
+  "condFog": "Nebel",
+  "condDrizzle": "Nieselregen",
+  "condRain": "Regen",
+  "condSnow": "Schnee",
+  "condThunderstorm": "Gewitter",
+  "rainChance": "{percent} % Regen",
+  "dataSection": "Daten",
+  "exportData": "Meine Daten exportieren",
+  "exportHint": "Eine ZIP-Datei mit deinen Pflanzen, Verläufen, Inventar, Einstellungen und Fotos. Deine Daten gehören dir.",
+  "exporting": "Export wird vorbereitet…",
+  "exportError": "Export fehlgeschlagen. Bitte erneut versuchen.",
+  "play": "Abspielen",
+  "timelapseHint": "Tippen zum Pausieren.",
+  "notifLowStockOne": "{name} ist fast aufgebraucht.",
+  "notifLowStockMany": "{count} Artikel sind fast aufgebraucht.",
+  "@weatherRainSkip": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "@postponedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@rainChance": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@notifLowStockOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@notifLowStockMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

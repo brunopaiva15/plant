@@ -1262,4 +1262,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get comparePickFirst => 'Pick two photos.';
+
+  @override
+  String get outdoor => 'Outdoor';
+
+  @override
+  String get outdoorHint => 'Balcony, garden, greenhouse: weather matters.';
+
+  @override
+  String get weather => 'Weather';
+
+  @override
+  String get weatherHint =>
+      'For your outdoor plants, Flora checks today\'s rain and spares you a useless watering. Open-Meteo data, no account or key.';
+
+  @override
+  String get weatherPlace => 'Place';
+
+  @override
+  String get weatherSearchHint => 'City…';
+
+  @override
+  String get weatherNone => 'No place';
+
+  @override
+  String get weatherRemove => 'Remove place';
+
+  @override
+  String get weatherNoResults => 'No place found.';
+
+  @override
+  String weatherRainSkip(String names) {
+    return 'Rain expected: no need to water $names today.';
+  }
+
+  @override
+  String get postpone => 'Postpone';
+
+  @override
+  String postponedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count waterings postponed to tomorrow',
+      one: '1 watering postponed to tomorrow',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get condClear => 'Clear sky';
+
+  @override
+  String get condPartlyCloudy => 'Partly cloudy';
+
+  @override
+  String get condCloudy => 'Cloudy';
+
+  @override
+  String get condFog => 'Fog';
+
+  @override
+  String get condDrizzle => 'Drizzle';
+
+  @override
+  String get condRain => 'Rain';
+
+  @override
+  String get condSnow => 'Snow';
+
+  @override
+  String get condThunderstorm => 'Thunderstorm';
+
+  @override
+  String rainChance(int percent) {
+    return '$percent% rain';
+  }
+
+  @override
+  String get dataSection => 'Data';
+
+  @override
+  String get exportData => 'Export my data';
+
+  @override
+  String get exportHint =>
+      'A ZIP file with your plants, history, inventory, settings and photos. Your data is yours.';
+
+  @override
+  String get exporting => 'Preparing export…';
+
+  @override
+  String get exportError => 'Export failed. Please try again.';
+
+  @override
+  String get play => 'Play';
+
+  @override
+  String get timelapseHint => 'Tap to pause.';
+
+  @override
+  String notifLowStockOne(String name) {
+    return 'You\'re almost out of $name.';
+  }
+
+  @override
+  String notifLowStockMany(int count) {
+    return '$count items are almost out.';
+  }
 }

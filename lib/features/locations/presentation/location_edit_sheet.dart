@@ -36,6 +36,7 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
   late String _icon = widget.existing?.icon ?? _icons.first;
   late String? _parentId = widget.existing?.parentId ?? widget.initialParentId;
   late String? _light = widget.existing?.light;
+  late bool _outdoor = widget.existing?.isOutdoor ?? false;
   bool _more = false;
   bool _saving = false;
 
@@ -54,10 +55,10 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
     final orientation = _orientation.text.trim().isEmpty ? null : _orientation.text.trim();
     final Location result;
     if (widget.existing == null) {
-      result = await repo.create(name: name, icon: _icon, parentId: _parentId, light: _light, orientation: orientation);
+      result = await repo.create(name: name, icon: _icon, parentId: _parentId, light: _light, orientation: orientation, isOutdoor: _outdoor);
       ref.read(analyticsProvider).track(AnalyticsEvents.locationCreated);
     } else {
-      result = widget.existing!.copyWith(name: name, icon: _icon, parentId: () => _parentId, light: () => _light, orientation: () => orientation);
+      result = widget.existing!.copyWith(name: name, icon: _icon, parentId: () => _parentId, light: () => _light, orientation: () => orientation, isOutdoor: _outdoor);
       await repo.update(result);
     }
     Haptics.success();
@@ -116,6 +117,12 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
                     child: Text(icon, style: const TextStyle(fontSize: 20)),
                   ),
                 ),
+            ],
+          ),
+          const SizedBox(height: Space.md),
+          FloraGroup(
+            children: [
+              FloraListRow(leading: const Text('🌤️', style: TextStyle(fontSize: 18)), title: l10n.outdoor, subtitle: l10n.outdoorHint, trailing: AdaptiveSwitch(value: _outdoor, onChanged: (v) => setState(() => _outdoor = v))),
             ],
           ),
           if (candidates.isNotEmpty) ...[

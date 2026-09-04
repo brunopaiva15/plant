@@ -33,10 +33,10 @@ Future<void> main() async {
   // Emplacements de départ, dans la langue de l'appareil.
   final l10n = resolveLocalizations(prefs.localeCode == null ? null : Locale(prefs.localeCode!));
   await container.read(locationRepositoryProvider).ensureDefaults([
-    (name: l10n.defaultLivingRoom, icon: '🛋️'),
-    (name: l10n.defaultKitchen, icon: '🍳'),
-    (name: l10n.defaultBedroom, icon: '🛏️'),
-    (name: l10n.defaultBalcony, icon: '🌤️'),
+    (name: l10n.defaultLivingRoom, icon: '🛋️', outdoor: false),
+    (name: l10n.defaultKitchen, icon: '🍳', outdoor: false),
+    (name: l10n.defaultBedroom, icon: '🛏️', outdoor: false),
+    (name: l10n.defaultBalcony, icon: '🌤️', outdoor: true),
   ]);
 
   notifications.onOpen = (payload) {

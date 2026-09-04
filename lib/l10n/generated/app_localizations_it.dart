@@ -1265,4 +1265,112 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get comparePickFirst => 'Scegli due foto.';
+
+  @override
+  String get outdoor => 'Esterno';
+
+  @override
+  String get outdoorHint => 'Balcone, giardino, serra: il meteo conta.';
+
+  @override
+  String get weather => 'Meteo';
+
+  @override
+  String get weatherHint =>
+      'Per le piante all\'aperto, Flora controlla la pioggia del giorno e ti evita un\'annaffiatura inutile. Dati Open-Meteo, senza account né chiave.';
+
+  @override
+  String get weatherPlace => 'Luogo';
+
+  @override
+  String get weatherSearchHint => 'Città…';
+
+  @override
+  String get weatherNone => 'Nessun luogo';
+
+  @override
+  String get weatherRemove => 'Rimuovi luogo';
+
+  @override
+  String get weatherNoResults => 'Nessun luogo trovato.';
+
+  @override
+  String weatherRainSkip(String names) {
+    return 'Pioggia prevista: oggi non serve annaffiare $names.';
+  }
+
+  @override
+  String get postpone => 'Rimanda';
+
+  @override
+  String postponedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count annaffiature rimandate a domani',
+      one: '1 annaffiatura rimandata a domani',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get condClear => 'Sereno';
+
+  @override
+  String get condPartlyCloudy => 'Parzialmente nuvoloso';
+
+  @override
+  String get condCloudy => 'Nuvoloso';
+
+  @override
+  String get condFog => 'Nebbia';
+
+  @override
+  String get condDrizzle => 'Pioviggine';
+
+  @override
+  String get condRain => 'Pioggia';
+
+  @override
+  String get condSnow => 'Neve';
+
+  @override
+  String get condThunderstorm => 'Temporale';
+
+  @override
+  String rainChance(int percent) {
+    return '$percent% di pioggia';
+  }
+
+  @override
+  String get dataSection => 'Dati';
+
+  @override
+  String get exportData => 'Esporta i miei dati';
+
+  @override
+  String get exportHint =>
+      'Un file ZIP con piante, cronologia, inventario, impostazioni e foto. I tuoi dati sono tuoi.';
+
+  @override
+  String get exporting => 'Preparazione dell\'esportazione…';
+
+  @override
+  String get exportError => 'Esportazione non riuscita. Riprova.';
+
+  @override
+  String get play => 'Riproduci';
+
+  @override
+  String get timelapseHint => 'Tocca per mettere in pausa.';
+
+  @override
+  String notifLowStockOne(String name) {
+    return '$name è quasi finito.';
+  }
+
+  @override
+  String notifLowStockMany(int count) {
+    return '$count articoli sono quasi finiti.';
+  }
 }

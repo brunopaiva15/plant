@@ -508,6 +508,21 @@ class $LocationsTable extends Locations
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isOutdoorMeta = const VerificationMeta(
+    'isOutdoor',
+  );
+  @override
+  late final GeneratedColumn<bool> isOutdoor = GeneratedColumn<bool>(
+    'is_outdoor',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_outdoor" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _sortOrderMeta = const VerificationMeta(
     'sortOrder',
   );
@@ -542,6 +557,7 @@ class $LocationsTable extends Locations
     icon,
     light,
     orientation,
+    isOutdoor,
     sortOrder,
     deletedAt,
   ];
@@ -623,6 +639,12 @@ class $LocationsTable extends Locations
         ),
       );
     }
+    if (data.containsKey('is_outdoor')) {
+      context.handle(
+        _isOutdoorMeta,
+        isOutdoor.isAcceptableOrUnknown(data['is_outdoor']!, _isOutdoorMeta),
+      );
+    }
     if (data.containsKey('sort_order')) {
       context.handle(
         _sortOrderMeta,
@@ -680,6 +702,10 @@ class $LocationsTable extends Locations
         DriftSqlType.string,
         data['${effectivePrefix}orientation'],
       ),
+      isOutdoor: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_outdoor'],
+      )!,
       sortOrder: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
@@ -707,6 +733,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
   final String icon;
   final String? light;
   final String? orientation;
+  final bool isOutdoor;
   final int sortOrder;
   final DateTime? deletedAt;
   const LocationRow({
@@ -719,6 +746,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     required this.icon,
     this.light,
     this.orientation,
+    required this.isOutdoor,
     required this.sortOrder,
     this.deletedAt,
   });
@@ -740,6 +768,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     if (!nullToAbsent || orientation != null) {
       map['orientation'] = Variable<String>(orientation);
     }
+    map['is_outdoor'] = Variable<bool>(isOutdoor);
     map['sort_order'] = Variable<int>(sortOrder);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -764,6 +793,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       orientation: orientation == null && nullToAbsent
           ? const Value.absent()
           : Value(orientation),
+      isOutdoor: Value(isOutdoor),
       sortOrder: Value(sortOrder),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
@@ -786,6 +816,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       icon: serializer.fromJson<String>(json['icon']),
       light: serializer.fromJson<String?>(json['light']),
       orientation: serializer.fromJson<String?>(json['orientation']),
+      isOutdoor: serializer.fromJson<bool>(json['isOutdoor']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
@@ -803,6 +834,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       'icon': serializer.toJson<String>(icon),
       'light': serializer.toJson<String?>(light),
       'orientation': serializer.toJson<String?>(orientation),
+      'isOutdoor': serializer.toJson<bool>(isOutdoor),
       'sortOrder': serializer.toJson<int>(sortOrder),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
@@ -818,6 +850,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     String? icon,
     Value<String?> light = const Value.absent(),
     Value<String?> orientation = const Value.absent(),
+    bool? isOutdoor,
     int? sortOrder,
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => LocationRow(
@@ -830,6 +863,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     icon: icon ?? this.icon,
     light: light.present ? light.value : this.light,
     orientation: orientation.present ? orientation.value : this.orientation,
+    isOutdoor: isOutdoor ?? this.isOutdoor,
     sortOrder: sortOrder ?? this.sortOrder,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
@@ -846,6 +880,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
       orientation: data.orientation.present
           ? data.orientation.value
           : this.orientation,
+      isOutdoor: data.isOutdoor.present ? data.isOutdoor.value : this.isOutdoor,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
@@ -863,6 +898,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
           ..write('icon: $icon, ')
           ..write('light: $light, ')
           ..write('orientation: $orientation, ')
+          ..write('isOutdoor: $isOutdoor, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
@@ -880,6 +916,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
     icon,
     light,
     orientation,
+    isOutdoor,
     sortOrder,
     deletedAt,
   );
@@ -896,6 +933,7 @@ class LocationRow extends DataClass implements Insertable<LocationRow> {
           other.icon == this.icon &&
           other.light == this.light &&
           other.orientation == this.orientation &&
+          other.isOutdoor == this.isOutdoor &&
           other.sortOrder == this.sortOrder &&
           other.deletedAt == this.deletedAt);
 }
@@ -910,6 +948,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
   final Value<String> icon;
   final Value<String?> light;
   final Value<String?> orientation;
+  final Value<bool> isOutdoor;
   final Value<int> sortOrder;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
@@ -923,6 +962,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     this.icon = const Value.absent(),
     this.light = const Value.absent(),
     this.orientation = const Value.absent(),
+    this.isOutdoor = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -937,6 +977,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     required String icon,
     this.light = const Value.absent(),
     this.orientation = const Value.absent(),
+    this.isOutdoor = const Value.absent(),
     this.sortOrder = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -956,6 +997,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     Expression<String>? icon,
     Expression<String>? light,
     Expression<String>? orientation,
+    Expression<bool>? isOutdoor,
     Expression<int>? sortOrder,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
@@ -970,6 +1012,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
       if (icon != null) 'icon': icon,
       if (light != null) 'light': light,
       if (orientation != null) 'orientation': orientation,
+      if (isOutdoor != null) 'is_outdoor': isOutdoor,
       if (sortOrder != null) 'sort_order': sortOrder,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
@@ -986,6 +1029,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     Value<String>? icon,
     Value<String?>? light,
     Value<String?>? orientation,
+    Value<bool>? isOutdoor,
     Value<int>? sortOrder,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
@@ -1000,6 +1044,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
       icon: icon ?? this.icon,
       light: light ?? this.light,
       orientation: orientation ?? this.orientation,
+      isOutdoor: isOutdoor ?? this.isOutdoor,
       sortOrder: sortOrder ?? this.sortOrder,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
@@ -1036,6 +1081,9 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
     if (orientation.present) {
       map['orientation'] = Variable<String>(orientation.value);
     }
+    if (isOutdoor.present) {
+      map['is_outdoor'] = Variable<bool>(isOutdoor.value);
+    }
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
@@ -1060,6 +1108,7 @@ class LocationsCompanion extends UpdateCompanion<LocationRow> {
           ..write('icon: $icon, ')
           ..write('light: $light, ')
           ..write('orientation: $orientation, ')
+          ..write('isOutdoor: $isOutdoor, ')
           ..write('sortOrder: $sortOrder, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
@@ -6889,6 +6938,7 @@ typedef $$LocationsTableCreateCompanionBuilder = LocationsCompanion Function({
   required String icon,
   Value<String?> light,
   Value<String?> orientation,
+  Value<bool> isOutdoor,
   Value<int> sortOrder,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -6903,6 +6953,7 @@ typedef $$LocationsTableUpdateCompanionBuilder = LocationsCompanion Function({
   Value<String> icon,
   Value<String?> light,
   Value<String?> orientation,
+  Value<bool> isOutdoor,
   Value<int> sortOrder,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
@@ -6959,6 +7010,11 @@ class $$LocationsTableFilterComposer
 
   ColumnFilters<String> get orientation => $composableBuilder(
     column: $table.orientation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isOutdoor => $composableBuilder(
+    column: $table.isOutdoor,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7027,6 +7083,11 @@ class $$LocationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isOutdoor => $composableBuilder(
+    column: $table.isOutdoor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
@@ -7076,6 +7137,9 @@ class $$LocationsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isOutdoor =>
+      $composableBuilder(column: $table.isOutdoor, builder: (column) => column);
+
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
 
@@ -7123,6 +7187,7 @@ class $$LocationsTableTableManager
                 Value<String> icon = const Value.absent(),
                 Value<String?> light = const Value.absent(),
                 Value<String?> orientation = const Value.absent(),
+                Value<bool> isOutdoor = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7136,6 +7201,7 @@ class $$LocationsTableTableManager
                 icon: icon,
                 light: light,
                 orientation: orientation,
+                isOutdoor: isOutdoor,
                 sortOrder: sortOrder,
                 deletedAt: deletedAt,
                 rowid: rowid,
@@ -7151,6 +7217,7 @@ class $$LocationsTableTableManager
                 required String icon,
                 Value<String?> light = const Value.absent(),
                 Value<String?> orientation = const Value.absent(),
+                Value<bool> isOutdoor = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7164,6 +7231,7 @@ class $$LocationsTableTableManager
                 icon: icon,
                 light: light,
                 orientation: orientation,
+                isOutdoor: isOutdoor,
                 sortOrder: sortOrder,
                 deletedAt: deletedAt,
                 rowid: rowid,

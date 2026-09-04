@@ -32,7 +32,8 @@ class ReminderScheduler {
     // On évalue les soins qui seront dus au moment de la notification.
     final tasks = await _ref.read(careRepositoryProvider).watchTasks(until: DateTime(fireAt.year, fireAt.month, fireAt.day, 23, 59, 59)).first;
     final digest = ReminderPlanner.digest(tasks, fireAt);
-    if (digest.isEmpty) {
+    final lowStock = await _ref.read(inventoryRepositoryProvider).watchLowStock().first;
+    if (digest.isEmpty && lowStock.isEmpty) {
       await notifications.cancelAll();
       return;
     }
@@ -40,20 +41,22 @@ class ReminderScheduler {
     await notifications.scheduleDaily(
       at: fireAt,
       title: l10n.notificationTitle,
-      body: buildBody(l10n, digest),
+      body: buildBody(l10n, digest, lowStockNames: lowStock.map((i) => i.name).toList()),
       channelName: l10n.notificationChannel,
       payload: '/today',
     );
   }
 
   /// Texte humain, sans jargon : arrosage d'abord, le reste compté.
-  static String buildBody(AppLocalizations l10n, ReminderDigest digest) {
+  static String buildBody(AppLocalizations l10n, ReminderDigest digest, {List<String> lowStockNames = const []}) {
     final water = digest.byType[CareKind.watering.key] ?? const [];
     final others = digest.byType.entries.where((e) => e.key != CareKind.watering.key).fold(0, (s, e) => s + e.value.length);
     final parts = <String>[];
     if (water.length == 1) parts.add(l10n.notifWaterOne(water.first));
     if (water.length > 1) parts.add(l10n.notifWaterMany(l10n.joinNames(water.take(3).toList())));
     if (others > 0) parts.add(water.isEmpty ? l10n.notifOnlyOther(others) : l10n.notifOther(others));
+    if (lowStockNames.length == 1) parts.add(l10n.notifLowStockOne(lowStockNames.first));
+    if (lowStockNames.length > 1) parts.add(l10n.notifLowStockMany(lowStockNames.length));
     return parts.join(' ');
   }
 }

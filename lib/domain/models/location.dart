@@ -11,6 +11,7 @@ class Location {
     this.parentId,
     this.light,
     this.orientation,
+    this.isOutdoor = false,
   });
 
   final String id;
@@ -22,6 +23,9 @@ class Location {
   final String icon;
   final String? light;
   final String? orientation;
+
+  /// Balcon, jardin, serre : les plantes y subissent la météo.
+  final bool isOutdoor;
   final int sortOrder;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -32,6 +36,7 @@ class Location {
     String? Function()? parentId,
     String? Function()? light,
     String? Function()? orientation,
+    bool? isOutdoor,
     int? sortOrder,
     DateTime? updatedAt,
   }) =>
@@ -43,6 +48,7 @@ class Location {
         parentId: parentId != null ? parentId() : this.parentId,
         light: light != null ? light() : this.light,
         orientation: orientation != null ? orientation() : this.orientation,
+        isOutdoor: isOutdoor ?? this.isOutdoor,
         sortOrder: sortOrder ?? this.sortOrder,
         createdAt: createdAt,
         updatedAt: updatedAt ?? this.updatedAt,

@@ -51,7 +51,7 @@ class DriftLocationRepository implements LocationRepository {
       (_db.select(_db.locations)..where((l) => l.id.equals(id))).watchSingleOrNull().map((r) => r?.toDomain());
 
   @override
-  Future<Location> create({required String name, required String icon, String? parentId, String? light, String? orientation}) async {
+  Future<Location> create({required String name, required String icon, String? parentId, String? light, String? orientation, bool isOutdoor = false}) async {
     final now = DateTime.now();
     final id = _uuid.v4();
     final count = await _all.get();
@@ -63,6 +63,7 @@ class DriftLocationRepository implements LocationRepository {
           icon: icon,
           light: Value(light),
           orientation: Value(orientation),
+          isOutdoor: Value(isOutdoor),
           sortOrder: Value(count.length),
           createdAt: now,
           updatedAt: now,
@@ -79,6 +80,7 @@ class DriftLocationRepository implements LocationRepository {
       parentId: Value(location.parentId),
       light: Value(location.light),
       orientation: Value(location.orientation),
+      isOutdoor: Value(location.isOutdoor),
       sortOrder: Value(location.sortOrder),
       updatedAt: Value(DateTime.now()),
     ));
@@ -102,11 +104,11 @@ class DriftLocationRepository implements LocationRepository {
   }
 
   @override
-  Future<void> ensureDefaults(List<({String name, String icon})> defaults) async {
+  Future<void> ensureDefaults(List<({String name, String icon, bool outdoor})> defaults) async {
     final existing = await _all.get();
     if (existing.isNotEmpty) return;
     for (final d in defaults) {
-      await create(name: d.name, icon: d.icon);
+      await create(name: d.name, icon: d.icon, isOutdoor: d.outdoor);
     }
   }
 }

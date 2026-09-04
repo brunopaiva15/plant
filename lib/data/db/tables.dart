@@ -29,6 +29,7 @@ class Locations extends Table with Timestamps {
   TextColumn get icon => text()();
   TextColumn get light => text().nullable()();
   TextColumn get orientation => text().nullable()();
+  BoolColumn get isOutdoor => boolean().withDefault(const Constant(false))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 

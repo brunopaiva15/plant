@@ -1265,4 +1265,112 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get comparePickFirst => 'Choisissez deux photos.';
+
+  @override
+  String get outdoor => 'Extérieur';
+
+  @override
+  String get outdoorHint => 'Balcon, jardin, serre : la météo compte.';
+
+  @override
+  String get weather => 'Météo';
+
+  @override
+  String get weatherHint =>
+      'Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
+
+  @override
+  String get weatherPlace => 'Lieu';
+
+  @override
+  String get weatherSearchHint => 'Ville…';
+
+  @override
+  String get weatherNone => 'Aucun lieu';
+
+  @override
+  String get weatherRemove => 'Retirer le lieu';
+
+  @override
+  String get weatherNoResults => 'Aucun lieu trouvé.';
+
+  @override
+  String weatherRainSkip(String names) {
+    return 'Pluie prévue : pas besoin d\'arroser $names aujourd\'hui.';
+  }
+
+  @override
+  String get postpone => 'Reporter';
+
+  @override
+  String postponedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count arrosages reportés à demain',
+      one: '1 arrosage reporté à demain',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get condClear => 'Ciel dégagé';
+
+  @override
+  String get condPartlyCloudy => 'Éclaircies';
+
+  @override
+  String get condCloudy => 'Nuageux';
+
+  @override
+  String get condFog => 'Brouillard';
+
+  @override
+  String get condDrizzle => 'Bruine';
+
+  @override
+  String get condRain => 'Pluie';
+
+  @override
+  String get condSnow => 'Neige';
+
+  @override
+  String get condThunderstorm => 'Orage';
+
+  @override
+  String rainChance(int percent) {
+    return '$percent % de pluie';
+  }
+
+  @override
+  String get dataSection => 'Données';
+
+  @override
+  String get exportData => 'Exporter mes données';
+
+  @override
+  String get exportHint =>
+      'Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos. Vos données vous appartiennent.';
+
+  @override
+  String get exporting => 'Préparation de l\'export…';
+
+  @override
+  String get exportError => 'Export impossible. Réessayez.';
+
+  @override
+  String get play => 'Lire';
+
+  @override
+  String get timelapseHint => 'Touchez pour mettre en pause.';
+
+  @override
+  String notifLowStockOne(String name) {
+    return 'Il ne vous reste presque plus de $name.';
+  }
+
+  @override
+  String notifLowStockMany(int count) {
+    return '$count articles sont presque épuisés.';
+  }
 }

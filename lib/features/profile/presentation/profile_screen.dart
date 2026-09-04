@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
@@ -72,6 +73,7 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   FloraListRow(leading: const Text('🌍', style: TextStyle(fontSize: 18)), title: l10n.language, trailing: value(languageLabel), chevron: true, onTap: () => _pickLanguage(context, ref)),
+                  FloraListRow(leading: const Text('🌤️', style: TextStyle(fontSize: 18)), title: l10n.weather, trailing: value(prefs.weatherPlace?.name.split(',').first ?? l10n.none), chevron: true, onTap: () => context.push(Routes.weather)),
                 ],
               ),
               const SizedBox(height: Space.lg),
@@ -87,6 +89,14 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   FloraListRow(leading: const Text('🏷️', style: TextStyle(fontSize: 18)), title: l10n.tags, onTap: () => context.push(Routes.tags)),
                   FloraListRow(leading: const Text('🍂', style: TextStyle(fontSize: 18)), title: l10n.archives, onTap: () => context.push(Routes.archive)),
+                ],
+              ),
+              const SizedBox(height: Space.lg),
+              FloraGroup(
+                header: l10n.dataSection,
+                footer: l10n.exportHint,
+                children: [
+                  FloraListRow(leading: Icon(CupertinoIcons.square_arrow_up, size: 20, color: c.inkSecondary), title: l10n.exportData, onTap: () => _export(context, ref)),
                 ],
               ),
               const SizedBox(height: Space.lg),
@@ -108,6 +118,20 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _export(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+    final toast = ref.read(toastProvider.notifier);
+    toast.show(ToastData(message: l10n.exporting, emoji: '⏳'));
+    try {
+      final file = await ref.read(exportServiceProvider).buildZip();
+      toast.dismiss();
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], subject: l10n.exportData));
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'export');
+      toast.show(ToastData(message: l10n.exportError, emoji: '!'));
+    }
   }
 
   String _time(BuildContext context, TimeOfDay t) => MaterialLocalizations.of(context).formatTimeOfDay(t, alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context));

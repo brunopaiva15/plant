@@ -2285,6 +2285,186 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Choisissez deux photos.'**
   String get comparePickFirst;
+
+  /// No description provided for @outdoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Extérieur'**
+  String get outdoor;
+
+  /// No description provided for @outdoorHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Balcon, jardin, serre : la météo compte.'**
+  String get outdoorHint;
+
+  /// No description provided for @weather.
+  ///
+  /// In fr, this message translates to:
+  /// **'Météo'**
+  String get weather;
+
+  /// No description provided for @weatherHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
+  String get weatherHint;
+
+  /// No description provided for @weatherPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lieu'**
+  String get weatherPlace;
+
+  /// No description provided for @weatherSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville…'**
+  String get weatherSearchHint;
+
+  /// No description provided for @weatherNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun lieu'**
+  String get weatherNone;
+
+  /// No description provided for @weatherRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer le lieu'**
+  String get weatherRemove;
+
+  /// No description provided for @weatherNoResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun lieu trouvé.'**
+  String get weatherNoResults;
+
+  /// No description provided for @weatherRainSkip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pluie prévue : pas besoin d\'arroser {names} aujourd\'hui.'**
+  String weatherRainSkip(String names);
+
+  /// No description provided for @postpone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reporter'**
+  String get postpone;
+
+  /// No description provided for @postponedCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 arrosage reporté à demain} other{{count} arrosages reportés à demain}}'**
+  String postponedCount(int count);
+
+  /// No description provided for @condClear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ciel dégagé'**
+  String get condClear;
+
+  /// No description provided for @condPartlyCloudy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Éclaircies'**
+  String get condPartlyCloudy;
+
+  /// No description provided for @condCloudy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nuageux'**
+  String get condCloudy;
+
+  /// No description provided for @condFog.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillard'**
+  String get condFog;
+
+  /// No description provided for @condDrizzle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bruine'**
+  String get condDrizzle;
+
+  /// No description provided for @condRain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pluie'**
+  String get condRain;
+
+  /// No description provided for @condSnow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Neige'**
+  String get condSnow;
+
+  /// No description provided for @condThunderstorm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Orage'**
+  String get condThunderstorm;
+
+  /// No description provided for @rainChance.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent} % de pluie'**
+  String rainChance(int percent);
+
+  /// No description provided for @dataSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données'**
+  String get dataSection;
+
+  /// No description provided for @exportData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter mes données'**
+  String get exportData;
+
+  /// No description provided for @exportHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos. Vos données vous appartiennent.'**
+  String get exportHint;
+
+  /// No description provided for @exporting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préparation de l\'export…'**
+  String get exporting;
+
+  /// No description provided for @exportError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export impossible. Réessayez.'**
+  String get exportError;
+
+  /// No description provided for @play.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire'**
+  String get play;
+
+  /// No description provided for @timelapseHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez pour mettre en pause.'**
+  String get timelapseHint;
+
+  /// No description provided for @notifLowStockOne.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il ne vous reste presque plus de {name}.'**
+  String notifLowStockOne(String name);
+
+  /// No description provided for @notifLowStockMany.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} articles sont presque épuisés.'**
+  String notifLowStockMany(int count);
 }
 
 class _AppLocalizationsDelegate

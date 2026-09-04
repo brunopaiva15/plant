@@ -394,5 +394,70 @@
         "type": "int"
       }
     }
+  },
+  "outdoor": "Outdoor",
+  "outdoorHint": "Balcony, garden, greenhouse: weather matters.",
+  "weather": "Weather",
+  "weatherHint": "For your outdoor plants, Flora checks today's rain and spares you a useless watering. Open-Meteo data, no account or key.",
+  "weatherPlace": "Place",
+  "weatherSearchHint": "City…",
+  "weatherNone": "No place",
+  "weatherRemove": "Remove place",
+  "weatherNoResults": "No place found.",
+  "weatherRainSkip": "Rain expected: no need to water {names} today.",
+  "postpone": "Postpone",
+  "postponedCount": "{count, plural, =1{1 watering postponed to tomorrow} other{{count} waterings postponed to tomorrow}}",
+  "condClear": "Clear sky",
+  "condPartlyCloudy": "Partly cloudy",
+  "condCloudy": "Cloudy",
+  "condFog": "Fog",
+  "condDrizzle": "Drizzle",
+  "condRain": "Rain",
+  "condSnow": "Snow",
+  "condThunderstorm": "Thunderstorm",
+  "rainChance": "{percent}% rain",
+  "dataSection": "Data",
+  "exportData": "Export my data",
+  "exportHint": "A ZIP file with your plants, history, inventory, settings and photos. Your data is yours.",
+  "exporting": "Preparing export…",
+  "exportError": "Export failed. Please try again.",
+  "play": "Play",
+  "timelapseHint": "Tap to pause.",
+  "notifLowStockOne": "You're almost out of {name}.",
+  "notifLowStockMany": "{count} items are almost out.",
+  "@weatherRainSkip": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "@postponedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@rainChance": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@notifLowStockOne": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@notifLowStockMany": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

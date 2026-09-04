@@ -13,6 +13,7 @@ import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../application/plant_providers.dart';
 import 'compare_screen.dart';
+import 'timelapse_screen.dart';
 
 /// Croissance : toutes les photos, groupées par mois, plein écran au tap.
 class PlantGalleryScreen extends ConsumerWidget {
@@ -40,6 +41,19 @@ class PlantGalleryScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (photos.length >= 2) ...[
+            FloraIconButton(
+              icon: CupertinoIcons.play_fill,
+              semanticLabel: l10n.play,
+              onPressed: () => Navigator.of(context, rootNavigator: true).push(
+                PageRouteBuilder(
+                  opaque: false,
+                  barrierColor: Colors.black,
+                  transitionDuration: Motion.of(context, Motion.emphasis),
+                  pageBuilder: (_, anim, _) => FadeTransition(opacity: anim, child: TimelapseScreen(photos: photos)),
+                ),
+              ),
+            ),
+            const SizedBox(width: Space.xs),
             FloraIconButton(
               icon: CupertinoIcons.rectangle_split_3x1,
               semanticLabel: l10n.compare,

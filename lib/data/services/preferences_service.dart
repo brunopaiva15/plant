@@ -58,6 +58,22 @@ class PreferencesService {
   Future<void> setQuietWeekdays(Set<int> days) =>
       _prefs.setStringList('quiet_weekdays', days.map((d) => d.toString()).toList());
 
+  /// Lieu météo : « nom|lat|lon ».
+  ({String name, double lat, double lon})? get weatherPlace {
+    final raw = _prefs.getString('weather_place');
+    if (raw == null) return null;
+    final parts = raw.split('|');
+    if (parts.length != 3) return null;
+    final lat = double.tryParse(parts[1]);
+    final lon = double.tryParse(parts[2]);
+    if (lat == null || lon == null) return null;
+    return (name: parts[0], lat: lat, lon: lon);
+  }
+
+  Future<void> setWeatherPlace({required String name, required double lat, required double lon}) =>
+      _prefs.setString('weather_place', '${name.replaceAll('|', ' ')}|$lat|$lon');
+  Future<void> clearWeatherPlace() => _prefs.remove('weather_place');
+
   String get plantNetApiKey => _prefs.getString('plantnet_api_key') ?? '';
   Future<void> setPlantNetApiKey(String key) => _prefs.setString('plantnet_api_key', key.trim());
 

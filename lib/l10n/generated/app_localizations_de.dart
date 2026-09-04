@@ -1268,4 +1268,112 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get comparePickFirst => 'Wähle zwei Fotos.';
+
+  @override
+  String get outdoor => 'Draußen';
+
+  @override
+  String get outdoorHint => 'Balkon, Garten, Gewächshaus: das Wetter zählt.';
+
+  @override
+  String get weather => 'Wetter';
+
+  @override
+  String get weatherHint =>
+      'Für deine Pflanzen draußen prüft Flora den Regen des Tages und erspart dir unnötiges Gießen. Open-Meteo-Daten, ohne Konto oder Schlüssel.';
+
+  @override
+  String get weatherPlace => 'Ort';
+
+  @override
+  String get weatherSearchHint => 'Stadt…';
+
+  @override
+  String get weatherNone => 'Kein Ort';
+
+  @override
+  String get weatherRemove => 'Ort entfernen';
+
+  @override
+  String get weatherNoResults => 'Kein Ort gefunden.';
+
+  @override
+  String weatherRainSkip(String names) {
+    return 'Regen erwartet: $names muss heute nicht gegossen werden.';
+  }
+
+  @override
+  String get postpone => 'Verschieben';
+
+  @override
+  String postponedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Gießvorgänge auf morgen verschoben',
+      one: '1 Gießen auf morgen verschoben',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get condClear => 'Klar';
+
+  @override
+  String get condPartlyCloudy => 'Teils bewölkt';
+
+  @override
+  String get condCloudy => 'Bewölkt';
+
+  @override
+  String get condFog => 'Nebel';
+
+  @override
+  String get condDrizzle => 'Nieselregen';
+
+  @override
+  String get condRain => 'Regen';
+
+  @override
+  String get condSnow => 'Schnee';
+
+  @override
+  String get condThunderstorm => 'Gewitter';
+
+  @override
+  String rainChance(int percent) {
+    return '$percent % Regen';
+  }
+
+  @override
+  String get dataSection => 'Daten';
+
+  @override
+  String get exportData => 'Meine Daten exportieren';
+
+  @override
+  String get exportHint =>
+      'Eine ZIP-Datei mit deinen Pflanzen, Verläufen, Inventar, Einstellungen und Fotos. Deine Daten gehören dir.';
+
+  @override
+  String get exporting => 'Export wird vorbereitet…';
+
+  @override
+  String get exportError => 'Export fehlgeschlagen. Bitte erneut versuchen.';
+
+  @override
+  String get play => 'Abspielen';
+
+  @override
+  String get timelapseHint => 'Tippen zum Pausieren.';
+
+  @override
+  String notifLowStockOne(String name) {
+    return '$name ist fast aufgebraucht.';
+  }
+
+  @override
+  String notifLowStockMany(int count) {
+    return '$count Artikel sind fast aufgebraucht.';
+  }
 }
