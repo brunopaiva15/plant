@@ -451,7 +451,7 @@ class _CareGuideCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
-    final care = ref.watch(careGuideProvider).resolve(speciesName);
+    final care = ref.watch(careGuideProvider).resolve(speciesName, family: speciesFamilyLookup(ref)(speciesName));
     final days = care.profile.wateringDaysFor(DateTime.now().month);
     return SliverToBoxAdapter(
       child: Padding(

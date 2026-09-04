@@ -26,7 +26,8 @@ class CareGuideScreen extends ConsumerWidget {
     final summary = ref.watch(plantSummaryProvider(plantId)).value;
     final plant = summary?.plant;
     final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
-    final care = ref.watch(careGuideProvider).resolve(plant?.speciesName);
+    final family = speciesFamilyLookup(ref)(plant?.speciesName);
+    final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family);
     return FloraPage(
       title: l10n.careGuide,
       child: CareGuideBody(care: care, plantName: plant?.name, location: location),

@@ -5615,6 +5615,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Choisir un lieu'**
   String get weatherPickPlace;
+
+  /// No description provided for @speciesMoreOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autres espèces'**
+  String get speciesMoreOffline;
+
+  /// No description provided for @aboutSources.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sources des données'**
+  String get aboutSources;
+
+  /// No description provided for @aboutSourceWikidata.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noms d\'espèces en quatre langues, domaine public'**
+  String get aboutSourceWikidata;
+
+  /// No description provided for @aboutSourceGbif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taxonomie, familles et observations photographiées'**
+  String get aboutSourceGbif;
+
+  /// No description provided for @aboutSourceOpenMeteo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Météo et prévisions, sans compte ni clé'**
+  String get aboutSourceOpenMeteo;
+
+  /// No description provided for @aboutSpeciesCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} espèces consultables hors ligne'**
+  String aboutSpeciesCount(String count);
 }
 
 class _AppLocalizationsDelegate

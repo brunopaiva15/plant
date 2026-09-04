@@ -1,3 +1,5 @@
+import '../../core/utils/search_text.dart';
+
 /// Une espèce candidate lors de la saisie (suggestion GBIF).
 class SpeciesSuggestion {
   const SpeciesSuggestion({required this.key, required this.scientificName, this.family, this.commonName});
@@ -110,14 +112,12 @@ class SpeciesCatalogEntry {
 
   String commonName(String languageCode) => switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
 
+  /// Recherche sans accents ni casse : « erable » doit trouver « Érable »,
+  /// et « edelweiss » l'« Edelweiß ».
   bool matches(String query) {
-    final q = query.toLowerCase();
-    return scientificName.toLowerCase().contains(q) ||
-        fr.toLowerCase().contains(q) ||
-        en.toLowerCase().contains(q) ||
-        de.toLowerCase().contains(q) ||
-        it.toLowerCase().contains(q) ||
-        family.toLowerCase().contains(q);
+    final q = foldSpeciesName(query);
+    if (q.isEmpty) return true;
+    return foldSpeciesName('$scientificName $fr $en $de $it $family').contains(q);
   }
 
   SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(key: 0, scientificName: scientificName, family: family, commonName: commonName(languageCode));

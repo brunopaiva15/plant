@@ -3304,4 +3304,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherPickPlace => 'Choisir un lieu';
+
+  @override
+  String get speciesMoreOffline => 'Autres espèces';
+
+  @override
+  String get aboutSources => 'Sources des données';
+
+  @override
+  String get aboutSourceWikidata =>
+      'Noms d\'espèces en quatre langues, domaine public';
+
+  @override
+  String get aboutSourceGbif =>
+      'Taxonomie, familles et observations photographiées';
+
+  @override
+  String get aboutSourceOpenMeteo => 'Météo et prévisions, sans compte ni clé';
+
+  @override
+  String aboutSpeciesCount(String count) {
+    return '$count espèces consultables hors ligne';
+  }
 }

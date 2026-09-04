@@ -1554,5 +1554,18 @@
       }
     }
   },
-  "weatherPickPlace": "Choisir un lieu"
+  "weatherPickPlace": "Choisir un lieu",
+  "speciesMoreOffline": "Autres espèces",
+  "aboutSources": "Sources des données",
+  "aboutSourceWikidata": "Noms d'espèces en quatre langues, domaine public",
+  "aboutSourceGbif": "Taxonomie, familles et observations photographiées",
+  "aboutSourceOpenMeteo": "Météo et prévisions, sans compte ni clé",
+  "aboutSpeciesCount": "{count} espèces consultables hors ligne",
+  "@aboutSpeciesCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -87,3 +87,21 @@ species 1─n plants
 - RLS : `garden_members` détermine l'accès à tout ce qui porte `garden_id` (via `plants.garden_id` pour les tables filles).
 - Storage : bucket privé `plant-photos/{garden_id}/{plant_id}/{photo_id}.jpg`, URLs signées, validation MIME + taille.
 - Aucune confiance au client : triggers `updated_at`, contraintes de rôle en base.
+
+## Catalogue d'espèces (hors base locale)
+Deux étages, plus la recherche en ligne :
+
+| Étage | Où | Volume | Rôle |
+|---|---|---|---|
+| Trié à la main | `lib/data/species/species_catalog.dart` | ~300 espèces avec catégorie | Parcours par thème, fiches d'entretien précises |
+| Étendu | `assets/species/catalog.tsv` | ~40 000 espèces | Recherche hors ligne, quatre langues |
+| En ligne | API GBIF | ~450 000 espèces | Le reste, paginé |
+
+L'actif étendu est un TSV chargé à la demande dans un isolat, jamais au
+démarrage : `nom · famille · fr · en · de · it · autres noms`. Les « autres
+noms » ne s'affichent pas, ils rendent la recherche tolérante (« Edelweiß »,
+« stella alpina »). La recherche compare des chaînes normalisées sans accents
+ni casse (`core/utils/search_text.dart`).
+
+Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
+GBIF (CC BY) pour les familles.

@@ -8,6 +8,7 @@ import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/species/species_catalog.dart';
+import '../../../data/species/species_index.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../../domain/species/species_info.dart';
@@ -139,7 +140,13 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
     final catalog = (searching ? SpeciesCatalog.search(raw) : SpeciesCatalog.byCategory(_category)).toList()
       ..sort((a, b) => a.commonName(lang).toLowerCase().compareTo(b.commonName(lang).toLowerCase()));
     final catalogNames = catalog.map((e) => e.scientificName.toLowerCase()).toSet();
-    final remote = _remote.where((s) => !catalogNames.contains(s.scientificName.toLowerCase())).toList();
+
+    // Catalogue étendu : ~30 000 espèces hors ligne, sans catégorie, qui
+    // prennent le relais dès que la liste triée à la main ne suffit plus.
+    final index = ref.watch(speciesIndexProvider).value;
+    final extended = searching && index != null ? index.search(raw, limit: 30, exclude: catalogNames) : const <SpeciesRecord>[];
+    final offlineNames = {...catalogNames, ...extended.map((e) => e.scientificName.toLowerCase())};
+    final remote = _remote.where((s) => !offlineNames.contains(s.scientificName.toLowerCase())).toList();
 
     final searchField = isCupertino(context)
         ? CupertinoSearchTextField(controller: _search, placeholder: l10n.speciesSearchHint, onChanged: _onChanged, autofocus: widget.initialQuery.isEmpty)
@@ -202,6 +209,25 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
                   leading: Text(_emojiFor(e.category), style: const TextStyle(fontSize: 18)),
                   title: e.commonName(lang),
                   subtitle: '${e.scientificName} · ${e.family}',
+                  dense: true,
+                  chevron: false,
+                  onTap: () => _pick(e.toSuggestion(lang)),
+                ),
+            ],
+          ),
+        ),
+      ],
+      if (extended.isNotEmpty) ...[
+        SectionHeader(title: l10n.speciesMoreOffline, padding: const EdgeInsets.fromLTRB(Space.page, Space.lg, Space.page, Space.sm)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Space.page),
+          child: FloraGroup(
+            children: [
+              for (final e in extended)
+                FloraListRow(
+                  leading: const Text('🌿', style: TextStyle(fontSize: 18)),
+                  title: e.commonName(lang),
+                  subtitle: '${e.scientificName}${e.family.isEmpty ? '' : ' · ${e.family}'}',
                   dense: true,
                   chevron: false,
                   onTap: () => _pick(e.toSuggestion(lang)),

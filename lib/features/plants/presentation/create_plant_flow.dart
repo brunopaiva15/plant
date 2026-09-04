@@ -516,7 +516,7 @@ class _CarePreview extends ConsumerWidget {
     final l10n = context.l10n;
     final c = context.colors;
     if (speciesName.trim().length < 3) return const SizedBox.shrink();
-    final care = ref.watch(careGuideProvider).resolve(speciesName);
+    final care = ref.watch(careGuideProvider).resolve(speciesName, family: speciesFamilyLookup(ref)(speciesName));
     if (care.match == CareMatch.generic) return const SizedBox.shrink();
     final p = care.profile;
     return Padding(

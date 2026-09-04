@@ -3275,4 +3275,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherPickPlace => 'Choose a place';
+
+  @override
+  String get speciesMoreOffline => 'More species';
+
+  @override
+  String get aboutSources => 'Data sources';
+
+  @override
+  String get aboutSourceWikidata =>
+      'Species names in four languages, public domain';
+
+  @override
+  String get aboutSourceGbif =>
+      'Taxonomy, families and photographed occurrences';
+
+  @override
+  String get aboutSourceOpenMeteo => 'Weather and forecast, no account or key';
+
+  @override
+  String aboutSpeciesCount(String count) {
+    return '$count species searchable offline';
+  }
 }

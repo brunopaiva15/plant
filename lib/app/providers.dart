@@ -21,6 +21,9 @@ import '../data/services/gbif_species_service.dart';
 import '../core/config/supabase_config.dart';
 import '../data/sharing/supabase_sharing_service.dart';
 import '../data/species/catalog_care_guide.dart';
+import '../data/species/species_catalog.dart';
+import '../data/species/species_index.dart';
+import '../data/species/species_index_loader.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
@@ -194,6 +197,10 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
 
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
 
+/// Catalogue étendu d'espèces, chargé à la première recherche seulement.
+final speciesIndexLoaderProvider = Provider<SpeciesIndexLoader>((ref) => SpeciesIndexLoader());
+final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(speciesIndexLoaderProvider).load());
+
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 
@@ -213,3 +220,17 @@ final sharingServiceProvider = Provider<SharingService>((ref) {
 });
 
 final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide());
+
+/// Famille d'une espèce : le catalogue trié à la main d'abord, puis le
+/// catalogue étendu s'il est déjà chargé. Sans lui, la fiche d'entretien
+/// d'une plante hors catalogue retomberait sur le profil générique.
+String? Function(String?) speciesFamilyLookup(WidgetRef ref) {
+  final index = ref.watch(speciesIndexProvider).value;
+  return (name) {
+    if (name == null || name.trim().isEmpty) return null;
+    final curated = SpeciesCatalog.find(name)?.family;
+    if (curated != null) return curated;
+    final found = index?.find(name)?.family;
+    return found == null || found.isEmpty ? null : found;
+  };
+}

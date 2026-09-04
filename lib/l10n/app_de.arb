@@ -1029,5 +1029,11 @@
   "onbStart": "Loslegen",
   "replayOnboarding": "Einführung erneut ansehen",
   "onbStepOf": "Schritt {current} von {total}",
-  "weatherPickPlace": "Ort wählen"
+  "weatherPickPlace": "Ort wählen",
+  "speciesMoreOffline": "Weitere Arten",
+  "aboutSources": "Datenquellen",
+  "aboutSourceWikidata": "Artnamen in vier Sprachen, gemeinfrei",
+  "aboutSourceGbif": "Taxonomie, Familien und fotografierte Nachweise",
+  "aboutSourceOpenMeteo": "Wetter und Vorhersage, ohne Konto oder Schlüssel",
+  "aboutSpeciesCount": "{count} Arten offline durchsuchbar"
 }

@@ -1029,5 +1029,11 @@
   "onbStart": "Get started",
   "replayOnboarding": "Replay the intro",
   "onbStepOf": "Step {current} of {total}",
-  "weatherPickPlace": "Choose a place"
+  "weatherPickPlace": "Choose a place",
+  "speciesMoreOffline": "More species",
+  "aboutSources": "Data sources",
+  "aboutSourceWikidata": "Species names in four languages, public domain",
+  "aboutSourceGbif": "Taxonomy, families and photographed occurrences",
+  "aboutSourceOpenMeteo": "Weather and forecast, no account or key",
+  "aboutSpeciesCount": "{count} species searchable offline"
 }
