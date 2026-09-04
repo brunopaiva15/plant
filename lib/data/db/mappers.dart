@@ -124,9 +124,11 @@ extension MeasurementRowMapper on MeasurementRow {
 }
 
 extension InventoryItemRowMapper on InventoryItemRow {
-  InventoryItem toDomain() => InventoryItem(
+  InventoryItem toDomain({List<String> tags = const []}) => InventoryItem(
         id: id,
         gardenId: gardenId,
+        groupId: groupId,
+        tags: tags,
         category: InventoryCategory.fromKey(categoryKey),
         name: name,
         quantity: quantity,
@@ -207,6 +209,18 @@ extension LocationLogRowMapper on LocationLogRow {
         locationId: locationId,
         userId: userId,
         content: content,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
+
+extension InventoryGroupRowMapper on InventoryGroupRow {
+  InventoryGroup toDomain() => InventoryGroup(
+        id: id,
+        gardenId: gardenId,
+        label: label,
+        emoji: emoji,
+        position: position,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

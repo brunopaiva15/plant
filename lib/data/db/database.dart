@@ -27,12 +27,14 @@ part 'database.g.dart';
   AttributeSchemas,
   PlantAttachments,
   LocationLogs,
+  InventoryGroups,
+  InventoryTags,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +77,11 @@ class FloraDatabase extends _$FloraDatabase {
             await _numberExistingPlants();
             await customStatement('UPDATE gardens SET plant_counter = (SELECT COALESCE(MAX(number), 0) FROM plants WHERE plants.garden_id = gardens.id)');
           }
+          if (from < 9) {
+            await m.createTable(inventoryGroups);
+            await m.createTable(inventoryTags);
+            await m.addColumn(inventoryItems, inventoryItems.groupId);
+          }
           await _createIndexes();
         },
         beforeOpen: (details) async {
@@ -98,6 +105,8 @@ class FloraDatabase extends _$FloraDatabase {
     await customStatement('CREATE INDEX IF NOT EXISTS idx_attachments_plant ON plant_attachments(plant_id)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_location_logs_location ON location_logs(location_id, created_at)');
     await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_plants_number ON plants(garden_id, number) WHERE number > 0');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_group ON inventory_items(group_id)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_tags_item ON inventory_tags(item_id)');
   }
 
   /// Attribue un numéro aux plantes créées avant la v8, par ordre de création.

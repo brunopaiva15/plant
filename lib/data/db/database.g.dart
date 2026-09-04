@@ -6337,6 +6337,17 @@ class $InventoryItemsTable extends InventoryItems
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -6467,6 +6478,7 @@ class $InventoryItemsTable extends InventoryItems
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
+    groupId,
     id,
     gardenId,
     categoryKey,
@@ -6507,6 +6519,12 @@ class $InventoryItemsTable extends InventoryItems
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
     }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
@@ -6608,6 +6626,10 @@ class $InventoryItemsTable extends InventoryItems
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -6669,6 +6691,9 @@ class InventoryItemRow extends DataClass
     implements Insertable<InventoryItemRow> {
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Groupe personnalisé. `null` = groupe déduit de [categoryKey] (héritage).
+  final String? groupId;
   final String id;
   final String gardenId;
   final String categoryKey;
@@ -6684,6 +6709,7 @@ class InventoryItemRow extends DataClass
   const InventoryItemRow({
     required this.createdAt,
     required this.updatedAt,
+    this.groupId,
     required this.id,
     required this.gardenId,
     required this.categoryKey,
@@ -6702,6 +6728,9 @@ class InventoryItemRow extends DataClass
     final map = <String, Expression>{};
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || groupId != null) {
+      map['group_id'] = Variable<String>(groupId);
+    }
     map['id'] = Variable<String>(id);
     map['garden_id'] = Variable<String>(gardenId);
     map['category_key'] = Variable<String>(categoryKey);
@@ -6733,6 +6762,9 @@ class InventoryItemRow extends DataClass
     return InventoryItemsCompanion(
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      groupId: groupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(groupId),
       id: Value(id),
       gardenId: Value(gardenId),
       categoryKey: Value(categoryKey),
@@ -6768,6 +6800,7 @@ class InventoryItemRow extends DataClass
     return InventoryItemRow(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      groupId: serializer.fromJson<String?>(json['groupId']),
       id: serializer.fromJson<String>(json['id']),
       gardenId: serializer.fromJson<String>(json['gardenId']),
       categoryKey: serializer.fromJson<String>(json['categoryKey']),
@@ -6788,6 +6821,7 @@ class InventoryItemRow extends DataClass
     return <String, dynamic>{
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'groupId': serializer.toJson<String?>(groupId),
       'id': serializer.toJson<String>(id),
       'gardenId': serializer.toJson<String>(gardenId),
       'categoryKey': serializer.toJson<String>(categoryKey),
@@ -6806,6 +6840,7 @@ class InventoryItemRow extends DataClass
   InventoryItemRow copyWith({
     DateTime? createdAt,
     DateTime? updatedAt,
+    Value<String?> groupId = const Value.absent(),
     String? id,
     String? gardenId,
     String? categoryKey,
@@ -6821,6 +6856,7 @@ class InventoryItemRow extends DataClass
   }) => InventoryItemRow(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    groupId: groupId.present ? groupId.value : this.groupId,
     id: id ?? this.id,
     gardenId: gardenId ?? this.gardenId,
     categoryKey: categoryKey ?? this.categoryKey,
@@ -6838,6 +6874,7 @@ class InventoryItemRow extends DataClass
     return InventoryItemRow(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
       id: data.id.present ? data.id.value : this.id,
       gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
       categoryKey: data.categoryKey.present
@@ -6864,6 +6901,7 @@ class InventoryItemRow extends DataClass
     return (StringBuffer('InventoryItemRow(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('groupId: $groupId, ')
           ..write('id: $id, ')
           ..write('gardenId: $gardenId, ')
           ..write('categoryKey: $categoryKey, ')
@@ -6884,6 +6922,7 @@ class InventoryItemRow extends DataClass
   int get hashCode => Object.hash(
     createdAt,
     updatedAt,
+    groupId,
     id,
     gardenId,
     categoryKey,
@@ -6903,6 +6942,7 @@ class InventoryItemRow extends DataClass
       (other is InventoryItemRow &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.groupId == this.groupId &&
           other.id == this.id &&
           other.gardenId == this.gardenId &&
           other.categoryKey == this.categoryKey &&
@@ -6920,6 +6960,7 @@ class InventoryItemRow extends DataClass
 class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<String?> groupId;
   final Value<String> id;
   final Value<String> gardenId;
   final Value<String> categoryKey;
@@ -6936,6 +6977,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   const InventoryItemsCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.groupId = const Value.absent(),
     this.id = const Value.absent(),
     this.gardenId = const Value.absent(),
     this.categoryKey = const Value.absent(),
@@ -6953,6 +6995,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   InventoryItemsCompanion.insert({
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.groupId = const Value.absent(),
     required String id,
     required String gardenId,
     required String categoryKey,
@@ -6975,6 +7018,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   static Insertable<InventoryItemRow> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<String>? groupId,
     Expression<String>? id,
     Expression<String>? gardenId,
     Expression<String>? categoryKey,
@@ -6992,6 +7036,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (groupId != null) 'group_id': groupId,
       if (id != null) 'id': id,
       if (gardenId != null) 'garden_id': gardenId,
       if (categoryKey != null) 'category_key': categoryKey,
@@ -7011,6 +7056,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   InventoryItemsCompanion copyWith({
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<String?>? groupId,
     Value<String>? id,
     Value<String>? gardenId,
     Value<String>? categoryKey,
@@ -7028,6 +7074,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     return InventoryItemsCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      groupId: groupId ?? this.groupId,
       id: id ?? this.id,
       gardenId: gardenId ?? this.gardenId,
       categoryKey: categoryKey ?? this.categoryKey,
@@ -7052,6 +7099,9 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -7100,6 +7150,7 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     return (StringBuffer('InventoryItemsCompanion(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('groupId: $groupId, ')
           ..write('id: $id, ')
           ..write('gardenId: $gardenId, ')
           ..write('categoryKey: $categoryKey, ')
@@ -10792,6 +10843,722 @@ class LocationLogsCompanion extends UpdateCompanion<LocationLogRow> {
   }
 }
 
+class $InventoryGroupsTable extends InventoryGroups
+    with TableInfo<$InventoryGroupsTable, InventoryGroupRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InventoryGroupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
+  @override
+  late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
+    'emoji',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('📦'),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    label,
+    emoji,
+    position,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inventory_groups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InventoryGroupRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('emoji')) {
+      context.handle(
+        _emojiMeta,
+        emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InventoryGroupRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InventoryGroupRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      emoji: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emoji'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $InventoryGroupsTable createAlias(String alias) {
+    return $InventoryGroupsTable(attachedDatabase, alias);
+  }
+}
+
+class InventoryGroupRow extends DataClass
+    implements Insertable<InventoryGroupRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String gardenId;
+  final String label;
+  final String emoji;
+  final int position;
+  final DateTime? deletedAt;
+  const InventoryGroupRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.gardenId,
+    required this.label,
+    required this.emoji,
+    required this.position,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    map['label'] = Variable<String>(label);
+    map['emoji'] = Variable<String>(emoji);
+    map['position'] = Variable<int>(position);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  InventoryGroupsCompanion toCompanion(bool nullToAbsent) {
+    return InventoryGroupsCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      gardenId: Value(gardenId),
+      label: Value(label),
+      emoji: Value(emoji),
+      position: Value(position),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory InventoryGroupRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InventoryGroupRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      label: serializer.fromJson<String>(json['label']),
+      emoji: serializer.fromJson<String>(json['emoji']),
+      position: serializer.fromJson<int>(json['position']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'label': serializer.toJson<String>(label),
+      'emoji': serializer.toJson<String>(emoji),
+      'position': serializer.toJson<int>(position),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  InventoryGroupRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? gardenId,
+    String? label,
+    String? emoji,
+    int? position,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => InventoryGroupRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    label: label ?? this.label,
+    emoji: emoji ?? this.emoji,
+    position: position ?? this.position,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  InventoryGroupRow copyWithCompanion(InventoryGroupsCompanion data) {
+    return InventoryGroupRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      label: data.label.present ? data.label.value : this.label,
+      emoji: data.emoji.present ? data.emoji.value : this.emoji,
+      position: data.position.present ? data.position.value : this.position,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryGroupRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('label: $label, ')
+          ..write('emoji: $emoji, ')
+          ..write('position: $position, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    label,
+    emoji,
+    position,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InventoryGroupRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.label == this.label &&
+          other.emoji == this.emoji &&
+          other.position == this.position &&
+          other.deletedAt == this.deletedAt);
+}
+
+class InventoryGroupsCompanion extends UpdateCompanion<InventoryGroupRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String> label;
+  final Value<String> emoji;
+  final Value<int> position;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const InventoryGroupsCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.position = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InventoryGroupsCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String gardenId,
+    required String label,
+    this.emoji = const Value.absent(),
+    this.position = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       gardenId = Value(gardenId),
+       label = Value(label);
+  static Insertable<InventoryGroupRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? label,
+    Expression<String>? emoji,
+    Expression<int>? position,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (label != null) 'label': label,
+      if (emoji != null) 'emoji': emoji,
+      if (position != null) 'position': position,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InventoryGroupsCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String>? label,
+    Value<String>? emoji,
+    Value<int>? position,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return InventoryGroupsCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      label: label ?? this.label,
+      emoji: emoji ?? this.emoji,
+      position: position ?? this.position,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (emoji.present) {
+      map['emoji'] = Variable<String>(emoji.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryGroupsCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('label: $label, ')
+          ..write('emoji: $emoji, ')
+          ..write('position: $position, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $InventoryTagsTable extends InventoryTags
+    with TableInfo<$InventoryTagsTable, InventoryTagRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InventoryTagsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
+  @override
+  late final GeneratedColumn<String> tagId = GeneratedColumn<String>(
+    'tag_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [itemId, tagId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inventory_tags';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InventoryTagRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('tag_id')) {
+      context.handle(
+        _tagIdMeta,
+        tagId.isAcceptableOrUnknown(data['tag_id']!, _tagIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tagIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {itemId, tagId};
+  @override
+  InventoryTagRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InventoryTagRow(
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      tagId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tag_id'],
+      )!,
+    );
+  }
+
+  @override
+  $InventoryTagsTable createAlias(String alias) {
+    return $InventoryTagsTable(attachedDatabase, alias);
+  }
+}
+
+class InventoryTagRow extends DataClass implements Insertable<InventoryTagRow> {
+  final String itemId;
+  final String tagId;
+  const InventoryTagRow({required this.itemId, required this.tagId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['item_id'] = Variable<String>(itemId);
+    map['tag_id'] = Variable<String>(tagId);
+    return map;
+  }
+
+  InventoryTagsCompanion toCompanion(bool nullToAbsent) {
+    return InventoryTagsCompanion(itemId: Value(itemId), tagId: Value(tagId));
+  }
+
+  factory InventoryTagRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InventoryTagRow(
+      itemId: serializer.fromJson<String>(json['itemId']),
+      tagId: serializer.fromJson<String>(json['tagId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'itemId': serializer.toJson<String>(itemId),
+      'tagId': serializer.toJson<String>(tagId),
+    };
+  }
+
+  InventoryTagRow copyWith({String? itemId, String? tagId}) => InventoryTagRow(
+    itemId: itemId ?? this.itemId,
+    tagId: tagId ?? this.tagId,
+  );
+  InventoryTagRow copyWithCompanion(InventoryTagsCompanion data) {
+    return InventoryTagRow(
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      tagId: data.tagId.present ? data.tagId.value : this.tagId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryTagRow(')
+          ..write('itemId: $itemId, ')
+          ..write('tagId: $tagId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(itemId, tagId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InventoryTagRow &&
+          other.itemId == this.itemId &&
+          other.tagId == this.tagId);
+}
+
+class InventoryTagsCompanion extends UpdateCompanion<InventoryTagRow> {
+  final Value<String> itemId;
+  final Value<String> tagId;
+  final Value<int> rowid;
+  const InventoryTagsCompanion({
+    this.itemId = const Value.absent(),
+    this.tagId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InventoryTagsCompanion.insert({
+    required String itemId,
+    required String tagId,
+    this.rowid = const Value.absent(),
+  }) : itemId = Value(itemId),
+       tagId = Value(tagId);
+  static Insertable<InventoryTagRow> custom({
+    Expression<String>? itemId,
+    Expression<String>? tagId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (itemId != null) 'item_id': itemId,
+      if (tagId != null) 'tag_id': tagId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InventoryTagsCompanion copyWith({
+    Value<String>? itemId,
+    Value<String>? tagId,
+    Value<int>? rowid,
+  }) {
+    return InventoryTagsCompanion(
+      itemId: itemId ?? this.itemId,
+      tagId: tagId ?? this.tagId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (tagId.present) {
+      map['tag_id'] = Variable<String>(tagId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryTagsCompanion(')
+          ..write('itemId: $itemId, ')
+          ..write('tagId: $tagId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -10820,6 +11587,10 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     this,
   );
   late final $LocationLogsTable locationLogs = $LocationLogsTable(this);
+  late final $InventoryGroupsTable inventoryGroups = $InventoryGroupsTable(
+    this,
+  );
+  late final $InventoryTagsTable inventoryTags = $InventoryTagsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -10844,6 +11615,8 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     attributeSchemas,
     plantAttachments,
     locationLogs,
+    inventoryGroups,
+    inventoryTags,
   ];
 }
 
@@ -14047,6 +14820,7 @@ typedef $$InventoryItemsTableCreateCompanionBuilder =
     InventoryItemsCompanion Function({
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<String?> groupId,
       required String id,
       required String gardenId,
       required String categoryKey,
@@ -14065,6 +14839,7 @@ typedef $$InventoryItemsTableUpdateCompanionBuilder =
     InventoryItemsCompanion Function({
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<String?> groupId,
       Value<String> id,
       Value<String> gardenId,
       Value<String> categoryKey,
@@ -14096,6 +14871,11 @@ class $$InventoryItemsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupId => $composableBuilder(
+    column: $table.groupId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14179,6 +14959,11 @@ class $$InventoryItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -14254,6 +15039,9 @@ class $$InventoryItemsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
@@ -14337,6 +15125,7 @@ class $$InventoryItemsTableTableManager
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<String?> groupId = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> gardenId = const Value.absent(),
                 Value<String> categoryKey = const Value.absent(),
@@ -14353,6 +15142,7 @@ class $$InventoryItemsTableTableManager
               }) => InventoryItemsCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                groupId: groupId,
                 id: id,
                 gardenId: gardenId,
                 categoryKey: categoryKey,
@@ -14371,6 +15161,7 @@ class $$InventoryItemsTableTableManager
               ({
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<String?> groupId = const Value.absent(),
                 required String id,
                 required String gardenId,
                 required String categoryKey,
@@ -14387,6 +15178,7 @@ class $$InventoryItemsTableTableManager
               }) => InventoryItemsCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                groupId: groupId,
                 id: id,
                 gardenId: gardenId,
                 categoryKey: categoryKey,
@@ -16372,6 +17164,440 @@ typedef $$LocationLogsTableProcessedTableManager =
       LocationLogRow,
       PrefetchHooks Function()
     >;
+typedef $$InventoryGroupsTableCreateCompanionBuilder =
+    InventoryGroupsCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      required String id,
+      required String gardenId,
+      required String label,
+      Value<String> emoji,
+      Value<int> position,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$InventoryGroupsTableUpdateCompanionBuilder =
+    InventoryGroupsCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> id,
+      Value<String> gardenId,
+      Value<String> label,
+      Value<String> emoji,
+      Value<int> position,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$InventoryGroupsTableFilterComposer
+    extends Composer<_$FloraDatabase, $InventoryGroupsTable> {
+  $$InventoryGroupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emoji => $composableBuilder(
+    column: $table.emoji,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InventoryGroupsTableOrderingComposer
+    extends Composer<_$FloraDatabase, $InventoryGroupsTable> {
+  $$InventoryGroupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emoji => $composableBuilder(
+    column: $table.emoji,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InventoryGroupsTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $InventoryGroupsTable> {
+  $$InventoryGroupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get emoji =>
+      $composableBuilder(column: $table.emoji, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$InventoryGroupsTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $InventoryGroupsTable,
+          InventoryGroupRow,
+          $$InventoryGroupsTableFilterComposer,
+          $$InventoryGroupsTableOrderingComposer,
+          $$InventoryGroupsTableAnnotationComposer,
+          $$InventoryGroupsTableCreateCompanionBuilder,
+          $$InventoryGroupsTableUpdateCompanionBuilder,
+          (
+            InventoryGroupRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $InventoryGroupsTable,
+              InventoryGroupRow
+            >,
+          ),
+          InventoryGroupRow,
+          PrefetchHooks Function()
+        > {
+  $$InventoryGroupsTableTableManager(
+    _$FloraDatabase db,
+    $InventoryGroupsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InventoryGroupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InventoryGroupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InventoryGroupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> emoji = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InventoryGroupsCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                label: label,
+                emoji: emoji,
+                position: position,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String gardenId,
+                required String label,
+                Value<String> emoji = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InventoryGroupsCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                label: label,
+                emoji: emoji,
+                position: position,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$InventoryGroupsTable, InventoryGroupRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $InventoryGroupsTable,
+                    InventoryGroupRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InventoryGroupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $InventoryGroupsTable,
+      InventoryGroupRow,
+      $$InventoryGroupsTableFilterComposer,
+      $$InventoryGroupsTableOrderingComposer,
+      $$InventoryGroupsTableAnnotationComposer,
+      $$InventoryGroupsTableCreateCompanionBuilder,
+      $$InventoryGroupsTableUpdateCompanionBuilder,
+      (
+        InventoryGroupRow,
+        BaseReferences<
+          _$FloraDatabase,
+          $InventoryGroupsTable,
+          InventoryGroupRow
+        >,
+      ),
+      InventoryGroupRow,
+      PrefetchHooks Function()
+    >;
+typedef $$InventoryTagsTableCreateCompanionBuilder =
+    InventoryTagsCompanion Function({
+      required String itemId,
+      required String tagId,
+      Value<int> rowid,
+    });
+typedef $$InventoryTagsTableUpdateCompanionBuilder =
+    InventoryTagsCompanion Function({
+      Value<String> itemId,
+      Value<String> tagId,
+      Value<int> rowid,
+    });
+
+class $$InventoryTagsTableFilterComposer
+    extends Composer<_$FloraDatabase, $InventoryTagsTable> {
+  $$InventoryTagsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tagId => $composableBuilder(
+    column: $table.tagId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InventoryTagsTableOrderingComposer
+    extends Composer<_$FloraDatabase, $InventoryTagsTable> {
+  $$InventoryTagsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tagId => $composableBuilder(
+    column: $table.tagId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InventoryTagsTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $InventoryTagsTable> {
+  $$InventoryTagsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<String> get tagId =>
+      $composableBuilder(column: $table.tagId, builder: (column) => column);
+}
+
+class $$InventoryTagsTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $InventoryTagsTable,
+          InventoryTagRow,
+          $$InventoryTagsTableFilterComposer,
+          $$InventoryTagsTableOrderingComposer,
+          $$InventoryTagsTableAnnotationComposer,
+          $$InventoryTagsTableCreateCompanionBuilder,
+          $$InventoryTagsTableUpdateCompanionBuilder,
+          (
+            InventoryTagRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $InventoryTagsTable,
+              InventoryTagRow
+            >,
+          ),
+          InventoryTagRow,
+          PrefetchHooks Function()
+        > {
+  $$InventoryTagsTableTableManager(
+    _$FloraDatabase db,
+    $InventoryTagsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InventoryTagsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InventoryTagsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InventoryTagsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> itemId = const Value.absent(),
+                Value<String> tagId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InventoryTagsCompanion(
+                itemId: itemId,
+                tagId: tagId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String itemId,
+                required String tagId,
+                Value<int> rowid = const Value.absent(),
+              }) => InventoryTagsCompanion.insert(
+                itemId: itemId,
+                tagId: tagId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$InventoryTagsTable, InventoryTagRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $InventoryTagsTable,
+                    InventoryTagRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InventoryTagsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $InventoryTagsTable,
+      InventoryTagRow,
+      $$InventoryTagsTableFilterComposer,
+      $$InventoryTagsTableOrderingComposer,
+      $$InventoryTagsTableAnnotationComposer,
+      $$InventoryTagsTableCreateCompanionBuilder,
+      $$InventoryTagsTableUpdateCompanionBuilder,
+      (
+        InventoryTagRow,
+        BaseReferences<_$FloraDatabase, $InventoryTagsTable, InventoryTagRow>,
+      ),
+      InventoryTagRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -16413,4 +17639,8 @@ class $FloraDatabaseManager {
       $$PlantAttachmentsTableTableManager(_db, _db.plantAttachments);
   $$LocationLogsTableTableManager get locationLogs =>
       $$LocationLogsTableTableManager(_db, _db.locationLogs);
+  $$InventoryGroupsTableTableManager get inventoryGroups =>
+      $$InventoryGroupsTableTableManager(_db, _db.inventoryGroups);
+  $$InventoryTagsTableTableManager get inventoryTags =>
+      $$InventoryTagsTableTableManager(_db, _db.inventoryTags);
 }

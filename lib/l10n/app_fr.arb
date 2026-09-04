@@ -1323,5 +1323,34 @@
       }
     }
   },
-  "searchByNumberHint": "Astuce : tapez #42 pour retrouver la plante n° 42."
+  "searchByNumberHint": "Astuce : tapez #42 pour retrouver la plante n° 42.",
+  "inventoryGroups": "Groupes",
+  "manageGroups": "Gérer les groupes",
+  "newGroup": "Nouveau groupe",
+  "editGroup": "Modifier le groupe",
+  "groupName": "Nom du groupe",
+  "groupNameHint": "Engrais, outils, poteries…",
+  "deleteGroup": "Supprimer le groupe",
+  "deleteGroupHint": "Les articles ne sont pas supprimés : ils rejoignent le groupe choisi.",
+  "moveItemsTo": "Déplacer les articles vers",
+  "noGroup": "Sans groupe",
+  "noGroups": "Aucun groupe personnalisé",
+  "itemGroup": "Groupe",
+  "itemTags": "Tags",
+  "itemQr": "QR de l'article",
+  "exportSelection": "Exporter la sélection",
+  "exportCsv": "Exporter en CSV",
+  "selectItems": "Sélectionner",
+  "itemsSelected": "{count, plural, =1{1 article} other{{count} articles}}",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterByTag": "Filtrer par tag",
+  "itemNotFound": "Article introuvable",
+  "noGroupsYet": "Aucun groupe pour l'instant. Créez-en un pour ranger vos articles à votre façon.",
+  "deleteGroupExplain": "Les articles ne sont pas supprimés : ils redeviennent sans groupe."
 }

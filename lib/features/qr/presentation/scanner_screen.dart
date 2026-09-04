@@ -9,6 +9,8 @@ import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/models/models.dart';
+import '../../inventory/presentation/inventory_item_sheet.dart';
 import '../application/plant_links.dart';
 
 /// Scanner de QR codes : ouvre directement la fiche de la plante reconnue.
@@ -34,10 +36,20 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     if (_handling) return;
     final raw = capture.barcodes.map((b) => b.rawValue).whereType<String>().firstOrNull;
     if (raw == null) return;
-    final id = PlantLinks.decode(raw);
-    final plant = id == null ? null : await ref.read(plantRepositoryProvider).getPlant(id);
+    final link = PlantLinks.decodeLink(raw);
+    if (link == null) {
+      Haptics.warning();
+      if (mounted) setState(() => _message = context.l10n.unknownQr);
+      return;
+    }
+    // Une étiquette peut viser une plante ou un article d'inventaire : on
+    // vérifie que la cible existe encore avant de quitter le scanner.
+    final target = switch (link.kind) {
+      FloraLinkKind.plant => await ref.read(plantRepositoryProvider).getPlant(link.id),
+      FloraLinkKind.item => await ref.read(inventoryRepositoryProvider).get(link.id),
+    };
     if (!mounted) return;
-    if (plant == null) {
+    if (target == null) {
       Haptics.warning();
       setState(() => _message = context.l10n.unknownQr);
       return;
@@ -47,7 +59,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     await _controller.stop();
     if (!mounted) return;
     context.pop();
-    context.push(Routes.plant(plant.id));
+    switch (target) {
+      case InventoryItem item:
+        await showInventoryItemSheet(context, existing: item);
+      case _:
+        context.push(Routes.plant(link.id));
+    }
   }
 
   @override

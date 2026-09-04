@@ -14,6 +14,7 @@ class FloraListRow extends StatelessWidget {
     this.leading,
     this.trailing,
     this.onTap,
+    this.onLongPress,
     this.chevron,
     this.destructive = false,
     this.dense = false,
@@ -27,6 +28,7 @@ class FloraListRow extends StatelessWidget {
   final Widget? leading;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool? chevron;
   final bool destructive;
   final bool dense;

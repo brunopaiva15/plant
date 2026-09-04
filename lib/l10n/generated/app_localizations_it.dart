@@ -2758,4 +2758,81 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get searchByNumberHint =>
       'Suggerimento: digita #42 per trovare la pianta n. 42.';
+
+  @override
+  String get inventoryGroups => 'Gruppi';
+
+  @override
+  String get manageGroups => 'Gestisci i gruppi';
+
+  @override
+  String get newGroup => 'Nuovo gruppo';
+
+  @override
+  String get editGroup => 'Modifica gruppo';
+
+  @override
+  String get groupName => 'Nome del gruppo';
+
+  @override
+  String get groupNameHint => 'Concimi, attrezzi, vasi…';
+
+  @override
+  String get deleteGroup => 'Elimina gruppo';
+
+  @override
+  String get deleteGroupHint =>
+      'Gli articoli non vengono eliminati: passano al gruppo scelto.';
+
+  @override
+  String get moveItemsTo => 'Sposta gli articoli in';
+
+  @override
+  String get noGroup => 'Senza gruppo';
+
+  @override
+  String get noGroups => 'Nessun gruppo personalizzato';
+
+  @override
+  String get itemGroup => 'Gruppo';
+
+  @override
+  String get itemTags => 'Tag';
+
+  @override
+  String get itemQr => 'QR dell\'articolo';
+
+  @override
+  String get exportSelection => 'Esporta la selezione';
+
+  @override
+  String get exportCsv => 'Esporta in CSV';
+
+  @override
+  String get selectItems => 'Seleziona';
+
+  @override
+  String itemsSelected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articoli',
+      one: '1 articolo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterByTag => 'Filtra per tag';
+
+  @override
+  String get itemNotFound => 'Articolo non trovato';
+
+  @override
+  String get noGroupsYet =>
+      'Nessun gruppo per ora. Creane uno per organizzare gli articoli a modo tuo.';
+
+  @override
+  String get deleteGroupExplain =>
+      'Gli articoli non vengono eliminati: tornano semplicemente senza gruppo.';
 }

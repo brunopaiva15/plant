@@ -7,7 +7,7 @@ import 'plant_links.dart';
 
 /// Une étiquette : nom, espèce éventuelle, QR code.
 class LabelData {
-  const LabelData({required this.plantId, required this.name, this.species, this.number = 0});
+  const LabelData({required this.plantId, required this.name, this.species, this.number = 0, this.link});
 
   final String plantId;
   final String name;
@@ -15,6 +15,9 @@ class LabelData {
 
   /// Numéro court « #42 », imprimé pour retrouver la plante d'un coup d'œil.
   final int number;
+
+  /// Lien encodé dans le QR. Par défaut, celui de la plante.
+  final String? link;
 }
 
 /// Planche d'étiquettes A4 (3 colonnes × 8 lignes), prêtes à découper.
@@ -46,7 +49,7 @@ abstract final class LabelPdf {
         padding: const pw.EdgeInsets.all(6),
         child: pw.Row(
           children: [
-            pw.BarcodeWidget(data: PlantLinks.encode(l.plantId), barcode: pw.Barcode.qrCode(), width: 22 * PdfPageFormat.mm, height: 22 * PdfPageFormat.mm),
+            pw.BarcodeWidget(data: l.link ?? PlantLinks.encode(l.plantId), barcode: pw.Barcode.qrCode(), width: 22 * PdfPageFormat.mm, height: 22 * PdfPageFormat.mm),
             pw.SizedBox(width: 6),
             pw.Expanded(
               child: pw.Column(

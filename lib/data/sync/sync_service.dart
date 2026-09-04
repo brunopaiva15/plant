@@ -66,10 +66,10 @@ class SyncService {
   SyncState get currentState => _current;
 
   /// Tables synchronisées, dans l'ordre des dépendances (parents d'abord).
-  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs'];
+  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'inventory_tags'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs'};
+  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups'};
 
   void _emit(SyncState s) {
     _current = s;
@@ -159,6 +159,10 @@ class SyncService {
       final parts = id.split('/');
       return {'plant_id': parts.first, 'tag_id': parts.length > 1 ? parts[1] : ''};
     }
+    if (table == 'inventory_tags') {
+      final parts = id.split('/');
+      return {'item_id': parts.first, 'tag_id': parts.length > 1 ? parts[1] : ''};
+    }
     if (table == 'action_types') return {'key': id};
     return {'id': id};
   }
@@ -180,6 +184,8 @@ class SyncService {
         'attribute_schemas' => (await _db.select(_db.attributeSchemas).get()).map((r) => r.id).toList(),
         'plant_attachments' => (await _db.select(_db.plantAttachments).get()).map((r) => r.id).toList(),
         'location_logs' => (await _db.select(_db.locationLogs).get()).map((r) => r.id).toList(),
+        'inventory_groups' => (await _db.select(_db.inventoryGroups).get()).map((r) => r.id).toList(),
+        'inventory_tags' => (await _db.select(_db.inventoryTags).get()).map((r) => '${r.itemId}/${r.tagId}').toList(),
         _ => const [],
       };
 
@@ -235,6 +241,15 @@ class SyncService {
       case 'location_logs':
         final r = await (_db.select(_db.locationLogs)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r, extra: {'user_id': r.userId ?? _userId});
+      case 'inventory_groups':
+        final r = await (_db.select(_db.inventoryGroups)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
+      case 'inventory_tags':
+        final keys = _keysFor(table, id);
+        final r = await (_db.select(_db.inventoryTags)
+              ..where((x) => x.itemId.equals(keys['item_id'] as String) & x.tagId.equals(keys['tag_id'] as String)))
+            .getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r);
     }
     return null;
   }
@@ -335,6 +350,11 @@ class SyncService {
       case 'location_logs':
         final row = LocationLogRow.fromJson(json, serializer: s);
         if (await _isNewer('location_logs', row.id, row.updatedAt)) await _db.into(_db.locationLogs).insertOnConflictUpdate(row);
+      case 'inventory_groups':
+        final row = InventoryGroupRow.fromJson(json, serializer: s);
+        if (await _isNewer('inventory_groups', row.id, row.updatedAt)) await _db.into(_db.inventoryGroups).insertOnConflictUpdate(row);
+      case 'inventory_tags':
+        await _db.into(_db.inventoryTags).insert(InventoryTagRow.fromJson(json, serializer: s), mode: InsertMode.insertOrIgnore);
     }
   }
 
@@ -395,6 +415,7 @@ class SyncService {
         'attribute_schemas' => (await (_db.select(_db.attributeSchemas)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'plant_attachments' => (await (_db.select(_db.plantAttachments)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'location_logs' => (await (_db.select(_db.locationLogs)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'inventory_groups' => (await (_db.select(_db.inventoryGroups)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         _ => null,
       };
 

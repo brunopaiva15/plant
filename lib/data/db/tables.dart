@@ -192,6 +192,8 @@ class SyncOutbox extends Table {
 
 @DataClassName('InventoryItemRow')
 class InventoryItems extends Table with Timestamps {
+  /// Groupe personnalisé. `null` = groupe déduit de [categoryKey] (héritage).
+  TextColumn get groupId => text().nullable()();
   TextColumn get id => text()();
   TextColumn get gardenId => text()();
   TextColumn get categoryKey => text()();
@@ -315,4 +317,28 @@ class LocationLogs extends Table with Timestamps {
 
   @override
   Set<Column> get primaryKey => {id};
+}
+
+/// Groupe d'inventaire, librement nommé par l'utilisateur.
+@DataClassName('InventoryGroupRow')
+class InventoryGroups extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get label => text()();
+  TextColumn get emoji => text().withDefault(const Constant('📦'))();
+  IntColumn get position => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Tags d'un article d'inventaire (réutilise la table `tags`).
+@DataClassName('InventoryTagRow')
+class InventoryTags extends Table {
+  TextColumn get itemId => text()();
+  TextColumn get tagId => text()();
+
+  @override
+  Set<Column> get primaryKey => {itemId, tagId};
 }

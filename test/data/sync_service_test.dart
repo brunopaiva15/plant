@@ -16,13 +16,17 @@ class FakeRemote implements RemoteDataSource {
   final tables = <String, Map<String, Map<String, Object?>>>{};
   final uploads = <String>[];
 
-  String _key(String table, Map<String, Object?> row) => table == 'plant_tags' ? '${row['plant_id']}/${row['tag_id']}' : (row['id'] ?? row['key']).toString();
+  String _key(String table, Map<String, Object?> row) => switch (table) {
+        'plant_tags' => '${row['plant_id']}/${row['tag_id']}',
+        'inventory_tags' => '${row['item_id']}/${row['tag_id']}',
+        _ => (row['id'] ?? row['key']).toString(),
+      };
 
   @override
   Future<void> upsert(String table, Map<String, Object?> row) async {
     final copy = Map<String, Object?>.from(row);
     // Le serveur pose updated_at à la réception (trigger).
-    if (const {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs'}.contains(table)) {
+    if (const {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups'}.contains(table)) {
       copy['updated_at'] = DateTime.now().toUtc().toIso8601String();
     }
     tables.putIfAbsent(table, () => {})[_key(table, row)] = copy;
@@ -30,7 +34,7 @@ class FakeRemote implements RemoteDataSource {
 
   @override
   Future<void> delete(String table, Map<String, Object?> keys) async {
-    tables[table]?.remove(table == 'plant_tags' ? '${keys['plant_id']}/${keys['tag_id']}' : (keys['id'] ?? keys['key']).toString());
+    tables[table]?.remove(_key(table, keys));
   }
 
   @override

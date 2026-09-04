@@ -1,5 +1,10 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
+import 'inventory_list.dart';
+import 'inventory_qr_sheet.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
@@ -9,14 +14,15 @@ import '../../../domain/models/models.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 
 /// Création / édition d'un article d'inventaire.
-Future<void> showInventoryItemSheet(BuildContext context, {InventoryItem? existing, InventoryCategory? category}) =>
-    showFloraSheet<void>(context, scrollable: true, builder: (_) => _ItemBody(existing: existing, initialCategory: category));
+Future<void> showInventoryItemSheet(BuildContext context, {InventoryItem? existing, InventoryCategory? category, String? groupId}) =>
+    showFloraSheet<void>(context, scrollable: true, builder: (_) => _ItemBody(existing: existing, initialCategory: category, initialGroupId: groupId));
 
 class _ItemBody extends ConsumerStatefulWidget {
-  const _ItemBody({this.existing, this.initialCategory});
+  const _ItemBody({this.existing, this.initialCategory, this.initialGroupId});
 
   final InventoryItem? existing;
   final InventoryCategory? initialCategory;
+  final String? initialGroupId;
 
   @override
   ConsumerState<_ItemBody> createState() => _ItemBodyState();
@@ -24,6 +30,9 @@ class _ItemBody extends ConsumerStatefulWidget {
 
 class _ItemBodyState extends ConsumerState<_ItemBody> {
   late InventoryCategory _category = widget.existing?.category ?? widget.initialCategory ?? InventoryCategory.fertilizer;
+  late String? _groupId = widget.existing?.groupId ?? widget.initialGroupId;
+  late List<String> _tagIds = const [];
+  bool _tagsLoaded = false;
   late final _name = TextEditingController(text: widget.existing?.name ?? '');
   late final _quantity = TextEditingController(text: widget.existing == null ? '' : _fmt(widget.existing!.quantity));
   late final _threshold = TextEditingController(text: widget.existing?.lowThreshold == null ? '' : _fmt(widget.existing!.lowThreshold!));
@@ -51,10 +60,13 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
     final qty = _parse(_quantity.text) ?? 0;
     final threshold = _parse(_threshold.text);
     if (widget.existing == null) {
-      await repo.create(category: _category, name: _name.text, quantity: qty, unit: _unit, lowThreshold: threshold, locationId: _locationId, notes: _notes.text);
+      final created = await repo.create(category: _category, groupId: _groupId, name: _name.text, quantity: qty, unit: _unit, lowThreshold: threshold, locationId: _locationId, notes: _notes.text);
+      await repo.setItemTags(created.id, _tagIds);
     } else {
+      await repo.setItemTags(widget.existing!.id, _tagIds);
       await repo.update(widget.existing!.copyWith(
         category: _category,
+        groupId: () => _groupId,
         name: _name.text,
         quantity: qty,
         unit: _unit,
@@ -88,7 +100,18 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SheetHeader(title: widget.existing == null ? l10n.newItem : l10n.editItem),
+          SheetHeader(
+            title: widget.existing == null ? l10n.newItem : l10n.editItem,
+            trailing: widget.existing == null
+                ? null
+                : FloraIconButton(
+                    icon: CupertinoIcons.qrcode,
+                    semanticLabel: l10n.itemQr,
+                    size: 32,
+                    filled: false,
+                    onPressed: () => showInventoryQrSheet(context, widget.existing!),
+                  ),
+          ),
           Wrap(
             spacing: Space.xs,
             runSpacing: Space.xs,
@@ -104,6 +127,21 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
                   }),
                 ),
             ],
+          ),
+          const SizedBox(height: Space.md),
+          _GroupPicker(selected: _groupId, onChanged: (id) => setState(() => _groupId = id)),
+          const SizedBox(height: Space.md),
+          _TagPicker(
+            itemId: widget.existing?.id,
+            selected: _tagIds,
+            onLoaded: (ids) {
+              if (_tagsLoaded) return;
+              _tagsLoaded = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) setState(() => _tagIds = ids);
+              });
+            },
+            onChanged: (ids) => setState(() => _tagIds = ids),
           ),
           const SizedBox(height: Space.md),
           FloraTextField(controller: _name, hint: l10n.itemNameHint, autofocus: widget.existing == null, textCapitalization: TextCapitalization.sentences),
@@ -197,3 +235,85 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
     );
   }
 }
+
+/// Choix du groupe : les groupes personnalisés, plus « sans groupe ».
+class _GroupPicker extends ConsumerWidget {
+  const _GroupPicker({required this.selected, required this.onChanged});
+
+  final String? selected;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final groups = ref.watch(inventoryGroupsProvider).value ?? const <InventoryGroup>[];
+    if (groups.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.itemGroup, style: context.text.caption),
+        const SizedBox(height: Space.xs),
+        Wrap(
+          spacing: Space.xs,
+          runSpacing: Space.xs,
+          children: [
+            FloraChip(label: l10n.noGroup, selected: selected == null, onTap: () => onChanged(null)),
+            for (final g in groups) FloraChip(emoji: g.emoji, label: g.label, selected: selected == g.id, onTap: () => onChanged(g.id)),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Tags de l'article, avec création à la volée.
+class _TagPicker extends ConsumerWidget {
+  const _TagPicker({required this.itemId, required this.selected, required this.onChanged, required this.onLoaded});
+
+  final String? itemId;
+  final List<String> selected;
+  final ValueChanged<List<String>> onChanged;
+  final ValueChanged<List<String>> onLoaded;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final tags = ref.watch(tagsProvider).value ?? const <Tag>[];
+    if (itemId != null) {
+      final current = ref.watch(_itemTagsProvider(itemId!)).value;
+      if (current != null) onLoaded(current.map((t) => t.id).toList());
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.itemTags, style: context.text.caption),
+        const SizedBox(height: Space.xs),
+        Wrap(
+          spacing: Space.xs,
+          runSpacing: Space.xs,
+          children: [
+            for (final t in tags)
+              FloraChip(
+                label: t.name,
+                emoji: '🏷️',
+                selected: selected.contains(t.id),
+                onTap: () => onChanged(selected.contains(t.id) ? ([...selected]..remove(t.id)) : [...selected, t.id]),
+              ),
+            FloraChip(
+              label: l10n.newTag,
+              dashed: true,
+              onTap: () async {
+                final name = await showRenameSheet(context, title: l10n.newTag, hint: l10n.tagNameHint);
+                if (name == null || name.isEmpty) return;
+                final tag = await ref.read(tagRepositoryProvider).create(name);
+                onChanged([...selected, tag.id]);
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+final _itemTagsProvider = StreamProvider.autoDispose.family<List<Tag>, String>((ref, id) => ref.watch(inventoryRepositoryProvider).watchItemTags(id));

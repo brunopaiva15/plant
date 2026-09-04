@@ -4751,6 +4751,138 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Astuce : tapez #42 pour retrouver la plante n° 42.'**
   String get searchByNumberHint;
+
+  /// No description provided for @inventoryGroups.
+  ///
+  /// In fr, this message translates to:
+  /// **'Groupes'**
+  String get inventoryGroups;
+
+  /// No description provided for @manageGroups.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les groupes'**
+  String get manageGroups;
+
+  /// No description provided for @newGroup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau groupe'**
+  String get newGroup;
+
+  /// No description provided for @editGroup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le groupe'**
+  String get editGroup;
+
+  /// No description provided for @groupName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du groupe'**
+  String get groupName;
+
+  /// No description provided for @groupNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais, outils, poteries…'**
+  String get groupNameHint;
+
+  /// No description provided for @deleteGroup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le groupe'**
+  String get deleteGroup;
+
+  /// No description provided for @deleteGroupHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les articles ne sont pas supprimés : ils rejoignent le groupe choisi.'**
+  String get deleteGroupHint;
+
+  /// No description provided for @moveItemsTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déplacer les articles vers'**
+  String get moveItemsTo;
+
+  /// No description provided for @noGroup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans groupe'**
+  String get noGroup;
+
+  /// No description provided for @noGroups.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun groupe personnalisé'**
+  String get noGroups;
+
+  /// No description provided for @itemGroup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Groupe'**
+  String get itemGroup;
+
+  /// No description provided for @itemTags.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tags'**
+  String get itemTags;
+
+  /// No description provided for @itemQr.
+  ///
+  /// In fr, this message translates to:
+  /// **'QR de l\'article'**
+  String get itemQr;
+
+  /// No description provided for @exportSelection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter la sélection'**
+  String get exportSelection;
+
+  /// No description provided for @exportCsv.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter en CSV'**
+  String get exportCsv;
+
+  /// No description provided for @selectItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner'**
+  String get selectItems;
+
+  /// No description provided for @itemsSelected.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 article} other{{count} articles}}'**
+  String itemsSelected(int count);
+
+  /// No description provided for @filterByTag.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par tag'**
+  String get filterByTag;
+
+  /// No description provided for @itemNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Article introuvable'**
+  String get itemNotFound;
+
+  /// No description provided for @noGroupsYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun groupe pour l\'instant. Créez-en un pour ranger vos articles à votre façon.'**
+  String get noGroupsYet;
+
+  /// No description provided for @deleteGroupExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les articles ne sont pas supprimés : ils redeviennent sans groupe.'**
+  String get deleteGroupExplain;
 }
 
 class _AppLocalizationsDelegate

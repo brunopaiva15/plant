@@ -213,11 +213,13 @@ abstract class MeasurementRepository {
 abstract class InventoryRepository {
   Stream<List<InventoryItem>> watchAll();
   Stream<List<InventoryItem>> watchLowStock();
+  Future<InventoryItem?> get(String id);
   Future<InventoryItem> create({
     required InventoryCategory category,
     required String name,
     required double quantity,
     required String unit,
+    String? groupId,
     double? lowThreshold,
     String? locationId,
     String? notes,
@@ -227,6 +229,22 @@ abstract class InventoryRepository {
   Future<void> update(InventoryItem item);
   Future<void> adjustQuantity(String id, double delta);
   Future<void> delete(String id);
+
+  /// Tags d'un article : la liste remplace l'existante.
+  Future<void> setItemTags(String itemId, List<String> tagIds);
+  Stream<List<Tag>> watchItemTags(String itemId);
+
+  // --------------------------------------------------------------- groupes
+
+  Stream<List<InventoryGroup>> watchGroups();
+  Future<InventoryGroup> createGroup({required String label, String emoji = '📦'});
+  Future<void> updateGroup(InventoryGroup group);
+
+  /// Supprime un groupe. Les articles sont déplacés vers [moveTo] (ou rendus
+  /// sans groupe), jamais supprimés avec lui.
+  Future<void> deleteGroup(String id, {String? moveTo});
+
+  Future<void> reorderGroups(List<String> orderedIds);
 }
 
 /// Données d'une nouvelle tâche libre.
