@@ -67,6 +67,10 @@ class PlantPhotos extends Table {
   TextColumn get id => text()();
   TextColumn get plantId => text()();
   TextColumn get userId => text().nullable()();
+  TextColumn get label => text().nullable()();
+
+  /// Photo hébergée ailleurs : `filePath` reste vide et l'URL fait foi.
+  TextColumn get remoteUrl => text().nullable()();
   TextColumn get filePath => text()();
   TextColumn get thumbPath => text()();
   IntColumn get width => integer()();
@@ -259,6 +263,25 @@ class AttributeSchemas extends Table with Timestamps {
   TextColumn get datatype => text()();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
   IntColumn get position => integer().withDefault(const Constant(0))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Pièce jointe d'une plante : facture, fiche du producteur, analyse de sol.
+@DataClassName('PlantAttachmentRow')
+class PlantAttachments extends Table {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get plantId => text()();
+  TextColumn get userId => text().nullable()();
+  TextColumn get label => text()();
+  TextColumn get filePath => text()();
+  TextColumn get mimeType => text().nullable()();
+  IntColumn get sizeBytes => integer().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
   @override

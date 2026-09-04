@@ -61,6 +61,44 @@ class DriftPhotoRepository implements PhotoRepository {
   }
 
   @override
+  Future<PlantPhoto> addFromUrl({required String plantId, required String url, String? label}) async {
+    final now = DateTime.now();
+    final id = _uuid.v4();
+    await _db.transaction(() async {
+      await _db.into(_db.plantPhotos).insert(PlantPhotosCompanion.insert(
+            id: id,
+            plantId: plantId,
+            userId: Value(_currentUserId()),
+            label: Value(_clean(label)),
+            remoteUrl: Value(url.trim()),
+            // Une photo distante n'a pas de fichier local ni de dimensions connues.
+            filePath: '',
+            thumbPath: '',
+            width: 0,
+            height: 0,
+            takenAt: now,
+            createdAt: now,
+          ));
+      await (_db.update(_db.plants)..where((p) => p.id.equals(plantId) & p.primaryPhotoId.isNull()))
+          .write(PlantsCompanion(primaryPhotoId: Value(id), updatedAt: Value(now)));
+      await _db.enqueueSync('plant_photos', id, 'upsert', {});
+      await _db.enqueueSync('plants', plantId, 'upsert', {});
+    });
+    return (await (_db.select(_db.plantPhotos)..where((p) => p.id.equals(id))).getSingle()).toDomain();
+  }
+
+  @override
+  Future<void> setLabel(String photoId, String? label) async {
+    await (_db.update(_db.plantPhotos)..where((p) => p.id.equals(photoId))).write(PlantPhotosCompanion(label: Value(_clean(label))));
+    await _db.enqueueSync('plant_photos', photoId, 'upsert', {});
+  }
+
+  static String? _clean(String? s) {
+    final t = s?.trim();
+    return t == null || t.isEmpty ? null : t;
+  }
+
+  @override
   Future<void> setPrimary(String plantId, String photoId) async {
     await (_db.update(_db.plants)..where((p) => p.id.equals(plantId))).write(PlantsCompanion(primaryPhotoId: Value(photoId), updatedAt: Value(DateTime.now())));
     await _db.enqueueSync('plants', plantId, 'upsert', {});

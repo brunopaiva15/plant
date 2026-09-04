@@ -164,8 +164,25 @@ abstract class PhotoRepository {
     required int height,
     DateTime? takenAt,
   });
+  /// Ajoute une photo hébergée ailleurs (URL) sans rien télécharger.
+  Future<PlantPhoto> addFromUrl({required String plantId, required String url, String? label});
+
+  Future<void> setLabel(String photoId, String? label);
   Future<void> setPrimary(String plantId, String photoId);
   Future<void> delete(String photoId);
+}
+
+abstract class AttachmentRepository {
+  Stream<List<PlantAttachment>> watchForPlant(String plantId);
+
+  /// Copie [sourcePath] dans le stockage de l'app et enregistre la pièce jointe.
+  Future<PlantAttachment> add({required String plantId, required String sourcePath, required String label, String? mimeType});
+
+  Future<void> rename(String id, String label);
+  Future<void> delete(String id);
+
+  /// Chemin absolu du fichier, pour l'ouvrir ou le partager.
+  Future<String> absolutePath(PlantAttachment attachment);
 }
 
 abstract class ActionTypeRepository {

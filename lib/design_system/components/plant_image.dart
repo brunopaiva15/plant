@@ -8,9 +8,12 @@ import '../theme/flora_theme.dart';
 
 /// Photo d'une plante (chemin relatif) ou placeholder doux avec emoji.
 class PlantImage extends ConsumerWidget {
-  const PlantImage({super.key, this.relativePath, this.fit = BoxFit.cover, this.cacheWidth, this.placeholderEmoji = '🪴', this.heroTag});
+  const PlantImage({super.key, this.relativePath, this.remoteUrl, this.fit = BoxFit.cover, this.cacheWidth, this.placeholderEmoji = '🪴', this.heroTag});
 
   final String? relativePath;
+
+  /// Photo hébergée ailleurs : chargée depuis le réseau, jamais copiée.
+  final String? remoteUrl;
   final BoxFit fit;
   final int? cacheWidth;
   final String placeholderEmoji;
@@ -20,7 +23,16 @@ class PlantImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
     Widget child;
-    if (relativePath == null) {
+    if (remoteUrl != null && remoteUrl!.isNotEmpty) {
+      child = Image.network(
+        remoteUrl!,
+        fit: fit,
+        cacheWidth: cacheWidth,
+        gaplessPlayback: true,
+        loadingBuilder: (context, w, progress) => progress == null ? w : ColoredBox(color: c.surfaceMuted),
+        errorBuilder: (_, _, _) => Container(color: c.surfaceMuted, alignment: Alignment.center, child: const Text('🔗', style: TextStyle(fontSize: 24))),
+      );
+    } else if (relativePath == null || relativePath!.isEmpty) {
       child = Container(
         color: c.sageSoft,
         alignment: Alignment.center,

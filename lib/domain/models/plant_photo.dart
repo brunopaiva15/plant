@@ -9,6 +9,8 @@ class PlantPhoto {
     required this.takenAt,
     required this.createdAt,
     this.userId,
+    this.label,
+    this.remoteUrl,
   });
 
   final String id;
@@ -24,4 +26,26 @@ class PlantPhoto {
   final int height;
   final DateTime takenAt;
   final DateTime createdAt;
+
+  /// Titre libre donné par l'utilisateur (« Avant rempotage »).
+  final String? label;
+
+  /// Photo hébergée ailleurs : rien n'est stocké sur l'appareil.
+  final String? remoteUrl;
+
+  bool get isRemote => remoteUrl != null && remoteUrl!.isNotEmpty;
+
+  PlantPhoto copyWith({String? Function()? label}) => PlantPhoto(
+        id: id,
+        plantId: plantId,
+        userId: userId,
+        filePath: filePath,
+        thumbPath: thumbPath,
+        width: width,
+        height: height,
+        takenAt: takenAt,
+        createdAt: createdAt,
+        label: label != null ? label() : this.label,
+        remoteUrl: remoteUrl,
+      );
 }

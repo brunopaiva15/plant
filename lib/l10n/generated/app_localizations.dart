@@ -4397,6 +4397,120 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Non'**
   String get no;
+
+  /// No description provided for @attachments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents'**
+  String get attachments;
+
+  /// No description provided for @addAttachment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un document'**
+  String get addAttachment;
+
+  /// No description provided for @noAttachments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun document'**
+  String get noAttachments;
+
+  /// No description provided for @noAttachmentsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facture, fiche du producteur, analyse de sol…'**
+  String get noAttachmentsHint;
+
+  /// No description provided for @attachmentLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du document'**
+  String get attachmentLabel;
+
+  /// No description provided for @renameAttachment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renommer'**
+  String get renameAttachment;
+
+  /// No description provided for @deleteAttachment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le document'**
+  String get deleteAttachment;
+
+  /// No description provided for @confirmDeleteAttachment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce document ? Le fichier sera effacé de l\'appareil.'**
+  String get confirmDeleteAttachment;
+
+  /// No description provided for @openAttachment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir'**
+  String get openAttachment;
+
+  /// No description provided for @attachmentOpenFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune application ne peut ouvrir ce fichier.'**
+  String get attachmentOpenFailed;
+
+  /// No description provided for @photoLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre de la photo'**
+  String get photoLabel;
+
+  /// No description provided for @photoLabelHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant rempotage, nouvelle feuille…'**
+  String get photoLabelHint;
+
+  /// No description provided for @setAsMainPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo principale'**
+  String get setAsMainPhoto;
+
+  /// No description provided for @mainPhotoSet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo principale mise à jour'**
+  String get mainPhotoSet;
+
+  /// No description provided for @addPhotoByUrl.
+  ///
+  /// In fr, this message translates to:
+  /// **'Depuis une adresse web'**
+  String get addPhotoByUrl;
+
+  /// No description provided for @photoUrlHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'https://…'**
+  String get photoUrlHint;
+
+  /// No description provided for @photoUrlInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse invalide : elle doit commencer par https://'**
+  String get photoUrlInvalid;
+
+  /// No description provided for @photoRemote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo distante'**
+  String get photoRemote;
+
+  /// No description provided for @confirmDeletePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cette photo ?'**
+  String get confirmDeletePhoto;
 }
 
 class _AppLocalizationsDelegate

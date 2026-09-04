@@ -2559,4 +2559,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get no => 'No';
+
+  @override
+  String get attachments => 'Documents';
+
+  @override
+  String get addAttachment => 'Add a document';
+
+  @override
+  String get noAttachments => 'No documents';
+
+  @override
+  String get noAttachmentsHint => 'Receipt, grower\'s sheet, soil analysis…';
+
+  @override
+  String get attachmentLabel => 'Document name';
+
+  @override
+  String get renameAttachment => 'Rename';
+
+  @override
+  String get deleteAttachment => 'Delete document';
+
+  @override
+  String get confirmDeleteAttachment =>
+      'Delete this document? The file will be removed from the device.';
+
+  @override
+  String get openAttachment => 'Open';
+
+  @override
+  String get attachmentOpenFailed => 'No app can open this file.';
+
+  @override
+  String get photoLabel => 'Photo title';
+
+  @override
+  String get photoLabelHint => 'Before repotting, new leaf…';
+
+  @override
+  String get setAsMainPhoto => 'Set as main photo';
+
+  @override
+  String get mainPhotoSet => 'Main photo updated';
+
+  @override
+  String get addPhotoByUrl => 'From a web address';
+
+  @override
+  String get photoUrlHint => 'https://…';
+
+  @override
+  String get photoUrlInvalid => 'Invalid address: it must start with https://';
+
+  @override
+  String get photoRemote => 'Remote photo';
+
+  @override
+  String get confirmDeletePhoto => 'Delete this photo?';
 }

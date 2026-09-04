@@ -66,10 +66,10 @@ class SyncService {
   SyncState get currentState => _current;
 
   /// Tables synchronisées, dans l'ordre des dépendances (parents d'abord).
-  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes'];
+  static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes'};
+  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments'};
 
   void _emit(SyncState s) {
     _current = s;
@@ -178,6 +178,7 @@ class SyncService {
         'tasks' => (await _db.select(_db.tasks).get()).map((r) => r.id).toList(),
         'plant_attributes' => (await _db.select(_db.plantAttributes).get()).map((r) => r.id).toList(),
         'attribute_schemas' => (await _db.select(_db.attributeSchemas).get()).map((r) => r.id).toList(),
+        'plant_attachments' => (await _db.select(_db.plantAttachments).get()).map((r) => r.id).toList(),
         _ => const [],
       };
 
@@ -227,6 +228,9 @@ class SyncService {
       case 'attribute_schemas':
         final r = await (_db.select(_db.attributeSchemas)..where((x) => x.id.equals(id))).getSingleOrNull();
         return r == null ? null : RowCodec.toRemote(r);
+      case 'plant_attachments':
+        final r = await (_db.select(_db.plantAttachments)..where((x) => x.id.equals(id))).getSingleOrNull();
+        return r == null ? null : RowCodec.toRemote(r, extra: {'user_id': r.userId ?? _userId});
     }
     return null;
   }
@@ -318,6 +322,9 @@ class SyncService {
       case 'attribute_schemas':
         final row = AttributeSchemaRow.fromJson(json, serializer: s);
         if (await _isNewer('attribute_schemas', row.id, row.updatedAt)) await _db.into(_db.attributeSchemas).insertOnConflictUpdate(row);
+      case 'plant_attachments':
+        final row = PlantAttachmentRow.fromJson(json, serializer: s);
+        if (await _isNewer('plant_attachments', row.id, row.updatedAt)) await _db.into(_db.plantAttachments).insertOnConflictUpdate(row);
     }
   }
 
@@ -358,6 +365,7 @@ class SyncService {
         'tasks' => (await (_db.select(_db.tasks)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'plant_attributes' => (await (_db.select(_db.plantAttributes)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         'attribute_schemas' => (await (_db.select(_db.attributeSchemas)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
+        'plant_attachments' => (await (_db.select(_db.plantAttachments)..where((x) => x.id.equals(id))).getSingleOrNull())?.updatedAt,
         _ => null,
       };
 

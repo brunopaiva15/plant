@@ -12,6 +12,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../application/plant_providers.dart';
+import 'photo_sheets.dart';
 import 'compare_screen.dart';
 import 'timelapse_screen.dart';
 
@@ -74,6 +75,7 @@ class PlantGalleryScreen extends ConsumerWidget {
           actions: [
             SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.camera)),
             SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.gallery)),
+            SheetAction(label: l10n.addPhotoByUrl, icon: CupertinoIcons.link, onPressed: () => showPhotoUrlSheet(context, plantId: plantId)),
           ],
         ),
           ),
@@ -100,7 +102,7 @@ class PlantGalleryScreen extends ConsumerWidget {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            ClipRRect(borderRadius: Radii.mediumAll, child: PlantImage(relativePath: p.thumbPath, cacheWidth: 400, heroTag: 'photo-${p.id}')),
+                            ClipRRect(borderRadius: Radii.mediumAll, child: PlantImage(relativePath: p.thumbPath, remoteUrl: p.remoteUrl, cacheWidth: 400, heroTag: 'photo-${p.id}')),
                             if (isPrimary)
                               Positioned(
                                 top: 6,
@@ -179,9 +181,19 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
       context,
       cancelLabel: l10n.cancel,
       actions: [
+        SheetAction(
+          label: l10n.photoLabel,
+          icon: CupertinoIcons.textformat,
+          onPressed: () async {
+            final label = await showPhotoLabelSheet(context, initial: photo.label);
+            if (label == null) return;
+            await ref.read(photoRepositoryProvider).setLabel(photo.id, label.isEmpty ? null : label);
+            Haptics.success();
+          },
+        ),
         if (widget.primaryId != photo.id)
           SheetAction(
-            label: l10n.setAsPrimary,
+            label: l10n.setAsMainPhoto,
             icon: CupertinoIcons.star,
             onPressed: () async {
               await ref.read(photoRepositoryProvider).setPrimary(widget.plantId, photo.id);
@@ -197,7 +209,8 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
             final ok = await showAdaptiveConfirm(context, title: l10n.deletePhoto, confirmLabel: l10n.delete, cancelLabel: l10n.cancel, destructive: true);
             if (!ok) return;
             await ref.read(photoRepositoryProvider).delete(photo.id);
-            await ref.read(photoStorageProvider).deleteFiles(photo.filePath, photo.thumbPath);
+            // Une photo distante n'a pas de fichier local à effacer.
+            if (!photo.isRemote) await ref.read(photoStorageProvider).deleteFiles(photo.filePath, photo.thumbPath);
             Haptics.warning();
             if (mounted) Navigator.of(context).pop();
           },
@@ -228,10 +241,12 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
                     maxScale: 4,
                     child: Hero(
                       tag: 'photo-${p.id}',
-                      child: FutureBuilder<String>(
-                        future: storage.absolutePath(p.filePath),
-                        builder: (context, snap) => snap.hasData ? Image.file(File(snap.data!), fit: BoxFit.contain) : const SizedBox.shrink(),
-                      ),
+                      child: p.isRemote
+                          ? Image.network(p.remoteUrl!, fit: BoxFit.contain, errorBuilder: (_, _, _) => const Icon(CupertinoIcons.link, color: Colors.white54, size: 48))
+                          : FutureBuilder<String>(
+                              future: storage.absolutePath(p.filePath),
+                              builder: (context, snap) => snap.hasData ? Image.file(File(snap.data!), fit: BoxFit.contain) : const SizedBox.shrink(),
+                            ),
                     ),
                   ),
                 ),
@@ -245,7 +260,13 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
                 children: [
                   FloraIconButton(icon: CupertinoIcons.xmark, semanticLabel: context.l10n.close, onPressed: () => Navigator.of(context).pop(), background: Colors.white24, color: Colors.white),
                   const Spacer(),
-                  Text(Dates.dayYear(context, photo.takenAt), style: context.text.callout.copyWith(color: Colors.white)),
+                  Column(
+                    children: [
+                      Text(Dates.dayYear(context, photo.takenAt), style: context.text.callout.copyWith(color: Colors.white)),
+                      if (photo.label != null)
+                        Text(photo.label!, style: context.text.caption.copyWith(color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
                   const Spacer(),
                   FloraIconButton(icon: CupertinoIcons.ellipsis, semanticLabel: context.l10n.more, onPressed: _menu, background: Colors.white24, color: Colors.white),
                 ],

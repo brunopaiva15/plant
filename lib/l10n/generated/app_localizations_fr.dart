@@ -2580,4 +2580,65 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get no => 'Non';
+
+  @override
+  String get attachments => 'Documents';
+
+  @override
+  String get addAttachment => 'Ajouter un document';
+
+  @override
+  String get noAttachments => 'Aucun document';
+
+  @override
+  String get noAttachmentsHint =>
+      'Facture, fiche du producteur, analyse de sol…';
+
+  @override
+  String get attachmentLabel => 'Nom du document';
+
+  @override
+  String get renameAttachment => 'Renommer';
+
+  @override
+  String get deleteAttachment => 'Supprimer le document';
+
+  @override
+  String get confirmDeleteAttachment =>
+      'Supprimer ce document ? Le fichier sera effacé de l\'appareil.';
+
+  @override
+  String get openAttachment => 'Ouvrir';
+
+  @override
+  String get attachmentOpenFailed =>
+      'Aucune application ne peut ouvrir ce fichier.';
+
+  @override
+  String get photoLabel => 'Titre de la photo';
+
+  @override
+  String get photoLabelHint => 'Avant rempotage, nouvelle feuille…';
+
+  @override
+  String get setAsMainPhoto => 'Photo principale';
+
+  @override
+  String get mainPhotoSet => 'Photo principale mise à jour';
+
+  @override
+  String get addPhotoByUrl => 'Depuis une adresse web';
+
+  @override
+  String get photoUrlHint => 'https://…';
+
+  @override
+  String get photoUrlInvalid =>
+      'Adresse invalide : elle doit commencer par https://';
+
+  @override
+  String get photoRemote => 'Photo distante';
+
+  @override
+  String get confirmDeletePhoto => 'Supprimer cette photo ?';
 }

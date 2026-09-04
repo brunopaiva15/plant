@@ -55,6 +55,8 @@ extension PlantPhotoRowMapper on PlantPhotoRow {
         height: height,
         takenAt: takenAt,
         createdAt: createdAt,
+        label: label,
+        remoteUrl: remoteUrl,
       );
 }
 
@@ -174,6 +176,21 @@ extension AttributeSchemaRowMapper on AttributeSchemaRow {
         type: AttributeType.fromKey(datatype),
         active: active,
         position: position,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
+
+extension PlantAttachmentRowMapper on PlantAttachmentRow {
+  PlantAttachment toDomain() => PlantAttachment(
+        id: id,
+        gardenId: gardenId,
+        plantId: plantId,
+        userId: userId,
+        label: label,
+        filePath: filePath,
+        mimeType: mimeType,
+        sizeBytes: sizeBytes,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

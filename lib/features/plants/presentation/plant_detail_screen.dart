@@ -14,6 +14,7 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/application/care_actions.dart';
 import '../../actions/presentation/add_action_sheet.dart';
+import '../../attachments/presentation/attachments_section.dart';
 import '../../attributes/application/attribute_providers.dart';
 import '../../attributes/presentation/attribute_sheet.dart';
 import '../../tasks/application/task_providers.dart';
@@ -285,6 +286,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           MeasurementsSection(plantId: id, plantName: plant.name),
           _Info(summary: summary),
           _CustomFields(plantId: id),
+          AttachmentsSection(plantId: id),
           _Cuttings(plantId: id, plant: plant),
           const SliverPadding(padding: EdgeInsets.only(bottom: Space.huge)),
         ],

@@ -2270,6 +2270,26 @@ class $PlantPhotosTable extends PlantPhotos
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _remoteUrlMeta = const VerificationMeta(
+    'remoteUrl',
+  );
+  @override
+  late final GeneratedColumn<String> remoteUrl = GeneratedColumn<String>(
+    'remote_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _filePathMeta = const VerificationMeta(
     'filePath',
   );
@@ -2348,6 +2368,8 @@ class $PlantPhotosTable extends PlantPhotos
     id,
     plantId,
     userId,
+    label,
+    remoteUrl,
     filePath,
     thumbPath,
     width,
@@ -2385,6 +2407,18 @@ class $PlantPhotosTable extends PlantPhotos
       context.handle(
         _userIdMeta,
         userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('remote_url')) {
+      context.handle(
+        _remoteUrlMeta,
+        remoteUrl.isAcceptableOrUnknown(data['remote_url']!, _remoteUrlMeta),
       );
     }
     if (data.containsKey('file_path')) {
@@ -2462,6 +2496,14 @@ class $PlantPhotosTable extends PlantPhotos
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
       ),
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      remoteUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_url'],
+      ),
       filePath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}file_path'],
@@ -2503,6 +2545,10 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
   final String id;
   final String plantId;
   final String? userId;
+  final String? label;
+
+  /// Photo hébergée ailleurs : `filePath` reste vide et l'URL fait foi.
+  final String? remoteUrl;
   final String filePath;
   final String thumbPath;
   final int width;
@@ -2514,6 +2560,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     required this.id,
     required this.plantId,
     this.userId,
+    this.label,
+    this.remoteUrl,
     required this.filePath,
     required this.thumbPath,
     required this.width,
@@ -2529,6 +2577,12 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     map['plant_id'] = Variable<String>(plantId);
     if (!nullToAbsent || userId != null) {
       map['user_id'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    if (!nullToAbsent || remoteUrl != null) {
+      map['remote_url'] = Variable<String>(remoteUrl);
     }
     map['file_path'] = Variable<String>(filePath);
     map['thumb_path'] = Variable<String>(thumbPath);
@@ -2549,6 +2603,12 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
       userId: userId == null && nullToAbsent
           ? const Value.absent()
           : Value(userId),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      remoteUrl: remoteUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteUrl),
       filePath: Value(filePath),
       thumbPath: Value(thumbPath),
       width: Value(width),
@@ -2570,6 +2630,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
       id: serializer.fromJson<String>(json['id']),
       plantId: serializer.fromJson<String>(json['plantId']),
       userId: serializer.fromJson<String?>(json['userId']),
+      label: serializer.fromJson<String?>(json['label']),
+      remoteUrl: serializer.fromJson<String?>(json['remoteUrl']),
       filePath: serializer.fromJson<String>(json['filePath']),
       thumbPath: serializer.fromJson<String>(json['thumbPath']),
       width: serializer.fromJson<int>(json['width']),
@@ -2586,6 +2648,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
       'id': serializer.toJson<String>(id),
       'plantId': serializer.toJson<String>(plantId),
       'userId': serializer.toJson<String?>(userId),
+      'label': serializer.toJson<String?>(label),
+      'remoteUrl': serializer.toJson<String?>(remoteUrl),
       'filePath': serializer.toJson<String>(filePath),
       'thumbPath': serializer.toJson<String>(thumbPath),
       'width': serializer.toJson<int>(width),
@@ -2600,6 +2664,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     String? id,
     String? plantId,
     Value<String?> userId = const Value.absent(),
+    Value<String?> label = const Value.absent(),
+    Value<String?> remoteUrl = const Value.absent(),
     String? filePath,
     String? thumbPath,
     int? width,
@@ -2611,6 +2677,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     id: id ?? this.id,
     plantId: plantId ?? this.plantId,
     userId: userId.present ? userId.value : this.userId,
+    label: label.present ? label.value : this.label,
+    remoteUrl: remoteUrl.present ? remoteUrl.value : this.remoteUrl,
     filePath: filePath ?? this.filePath,
     thumbPath: thumbPath ?? this.thumbPath,
     width: width ?? this.width,
@@ -2624,6 +2692,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
       id: data.id.present ? data.id.value : this.id,
       plantId: data.plantId.present ? data.plantId.value : this.plantId,
       userId: data.userId.present ? data.userId.value : this.userId,
+      label: data.label.present ? data.label.value : this.label,
+      remoteUrl: data.remoteUrl.present ? data.remoteUrl.value : this.remoteUrl,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
       thumbPath: data.thumbPath.present ? data.thumbPath.value : this.thumbPath,
       width: data.width.present ? data.width.value : this.width,
@@ -2640,6 +2710,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
           ..write('id: $id, ')
           ..write('plantId: $plantId, ')
           ..write('userId: $userId, ')
+          ..write('label: $label, ')
+          ..write('remoteUrl: $remoteUrl, ')
           ..write('filePath: $filePath, ')
           ..write('thumbPath: $thumbPath, ')
           ..write('width: $width, ')
@@ -2656,6 +2728,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
     id,
     plantId,
     userId,
+    label,
+    remoteUrl,
     filePath,
     thumbPath,
     width,
@@ -2671,6 +2745,8 @@ class PlantPhotoRow extends DataClass implements Insertable<PlantPhotoRow> {
           other.id == this.id &&
           other.plantId == this.plantId &&
           other.userId == this.userId &&
+          other.label == this.label &&
+          other.remoteUrl == this.remoteUrl &&
           other.filePath == this.filePath &&
           other.thumbPath == this.thumbPath &&
           other.width == this.width &&
@@ -2684,6 +2760,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
   final Value<String> id;
   final Value<String> plantId;
   final Value<String?> userId;
+  final Value<String?> label;
+  final Value<String?> remoteUrl;
   final Value<String> filePath;
   final Value<String> thumbPath;
   final Value<int> width;
@@ -2696,6 +2774,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     this.id = const Value.absent(),
     this.plantId = const Value.absent(),
     this.userId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.remoteUrl = const Value.absent(),
     this.filePath = const Value.absent(),
     this.thumbPath = const Value.absent(),
     this.width = const Value.absent(),
@@ -2709,6 +2789,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     required String id,
     required String plantId,
     this.userId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.remoteUrl = const Value.absent(),
     required String filePath,
     required String thumbPath,
     required int width,
@@ -2729,6 +2811,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     Expression<String>? id,
     Expression<String>? plantId,
     Expression<String>? userId,
+    Expression<String>? label,
+    Expression<String>? remoteUrl,
     Expression<String>? filePath,
     Expression<String>? thumbPath,
     Expression<int>? width,
@@ -2742,6 +2826,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
       if (id != null) 'id': id,
       if (plantId != null) 'plant_id': plantId,
       if (userId != null) 'user_id': userId,
+      if (label != null) 'label': label,
+      if (remoteUrl != null) 'remote_url': remoteUrl,
       if (filePath != null) 'file_path': filePath,
       if (thumbPath != null) 'thumb_path': thumbPath,
       if (width != null) 'width': width,
@@ -2757,6 +2843,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     Value<String>? id,
     Value<String>? plantId,
     Value<String?>? userId,
+    Value<String?>? label,
+    Value<String?>? remoteUrl,
     Value<String>? filePath,
     Value<String>? thumbPath,
     Value<int>? width,
@@ -2770,6 +2858,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
       id: id ?? this.id,
       plantId: plantId ?? this.plantId,
       userId: userId ?? this.userId,
+      label: label ?? this.label,
+      remoteUrl: remoteUrl ?? this.remoteUrl,
       filePath: filePath ?? this.filePath,
       thumbPath: thumbPath ?? this.thumbPath,
       width: width ?? this.width,
@@ -2792,6 +2882,12 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
     }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (remoteUrl.present) {
+      map['remote_url'] = Variable<String>(remoteUrl.value);
     }
     if (filePath.present) {
       map['file_path'] = Variable<String>(filePath.value);
@@ -2826,6 +2922,8 @@ class PlantPhotosCompanion extends UpdateCompanion<PlantPhotoRow> {
           ..write('id: $id, ')
           ..write('plantId: $plantId, ')
           ..write('userId: $userId, ')
+          ..write('label: $label, ')
+          ..write('remoteUrl: $remoteUrl, ')
           ..write('filePath: $filePath, ')
           ..write('thumbPath: $thumbPath, ')
           ..write('width: $width, ')
@@ -9267,6 +9365,663 @@ class AttributeSchemasCompanion extends UpdateCompanion<AttributeSchemaRow> {
   }
 }
 
+class $PlantAttachmentsTable extends PlantAttachments
+    with TableInfo<$PlantAttachmentsTable, PlantAttachmentRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlantAttachmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _plantIdMeta = const VerificationMeta(
+    'plantId',
+  );
+  @override
+  late final GeneratedColumn<String> plantId = GeneratedColumn<String>(
+    'plant_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _filePathMeta = const VerificationMeta(
+    'filePath',
+  );
+  @override
+  late final GeneratedColumn<String> filePath = GeneratedColumn<String>(
+    'file_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
+    'mimeType',
+  );
+  @override
+  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
+    'mime_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
+    'sizeBytes',
+  );
+  @override
+  late final GeneratedColumn<int> sizeBytes = GeneratedColumn<int>(
+    'size_bytes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    gardenId,
+    plantId,
+    userId,
+    label,
+    filePath,
+    mimeType,
+    sizeBytes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'plant_attachments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PlantAttachmentRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('plant_id')) {
+      context.handle(
+        _plantIdMeta,
+        plantId.isAcceptableOrUnknown(data['plant_id']!, _plantIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_plantIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('file_path')) {
+      context.handle(
+        _filePathMeta,
+        filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_filePathMeta);
+    }
+    if (data.containsKey('mime_type')) {
+      context.handle(
+        _mimeTypeMeta,
+        mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta),
+      );
+    }
+    if (data.containsKey('size_bytes')) {
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PlantAttachmentRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlantAttachmentRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      plantId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plant_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      filePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_path'],
+      )!,
+      mimeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mime_type'],
+      ),
+      sizeBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}size_bytes'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $PlantAttachmentsTable createAlias(String alias) {
+    return $PlantAttachmentsTable(attachedDatabase, alias);
+  }
+}
+
+class PlantAttachmentRow extends DataClass
+    implements Insertable<PlantAttachmentRow> {
+  final String id;
+  final String gardenId;
+  final String plantId;
+  final String? userId;
+  final String label;
+  final String filePath;
+  final String? mimeType;
+  final int? sizeBytes;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const PlantAttachmentRow({
+    required this.id,
+    required this.gardenId,
+    required this.plantId,
+    this.userId,
+    required this.label,
+    required this.filePath,
+    this.mimeType,
+    this.sizeBytes,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    map['plant_id'] = Variable<String>(plantId);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['label'] = Variable<String>(label);
+    map['file_path'] = Variable<String>(filePath);
+    if (!nullToAbsent || mimeType != null) {
+      map['mime_type'] = Variable<String>(mimeType);
+    }
+    if (!nullToAbsent || sizeBytes != null) {
+      map['size_bytes'] = Variable<int>(sizeBytes);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  PlantAttachmentsCompanion toCompanion(bool nullToAbsent) {
+    return PlantAttachmentsCompanion(
+      id: Value(id),
+      gardenId: Value(gardenId),
+      plantId: Value(plantId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      label: Value(label),
+      filePath: Value(filePath),
+      mimeType: mimeType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mimeType),
+      sizeBytes: sizeBytes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sizeBytes),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory PlantAttachmentRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlantAttachmentRow(
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      plantId: serializer.fromJson<String>(json['plantId']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      label: serializer.fromJson<String>(json['label']),
+      filePath: serializer.fromJson<String>(json['filePath']),
+      mimeType: serializer.fromJson<String?>(json['mimeType']),
+      sizeBytes: serializer.fromJson<int?>(json['sizeBytes']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'plantId': serializer.toJson<String>(plantId),
+      'userId': serializer.toJson<String?>(userId),
+      'label': serializer.toJson<String>(label),
+      'filePath': serializer.toJson<String>(filePath),
+      'mimeType': serializer.toJson<String?>(mimeType),
+      'sizeBytes': serializer.toJson<int?>(sizeBytes),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  PlantAttachmentRow copyWith({
+    String? id,
+    String? gardenId,
+    String? plantId,
+    Value<String?> userId = const Value.absent(),
+    String? label,
+    String? filePath,
+    Value<String?> mimeType = const Value.absent(),
+    Value<int?> sizeBytes = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => PlantAttachmentRow(
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    plantId: plantId ?? this.plantId,
+    userId: userId.present ? userId.value : this.userId,
+    label: label ?? this.label,
+    filePath: filePath ?? this.filePath,
+    mimeType: mimeType.present ? mimeType.value : this.mimeType,
+    sizeBytes: sizeBytes.present ? sizeBytes.value : this.sizeBytes,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  PlantAttachmentRow copyWithCompanion(PlantAttachmentsCompanion data) {
+    return PlantAttachmentRow(
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      plantId: data.plantId.present ? data.plantId.value : this.plantId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      label: data.label.present ? data.label.value : this.label,
+      filePath: data.filePath.present ? data.filePath.value : this.filePath,
+      mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
+      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlantAttachmentRow(')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('plantId: $plantId, ')
+          ..write('userId: $userId, ')
+          ..write('label: $label, ')
+          ..write('filePath: $filePath, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    gardenId,
+    plantId,
+    userId,
+    label,
+    filePath,
+    mimeType,
+    sizeBytes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlantAttachmentRow &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.plantId == this.plantId &&
+          other.userId == this.userId &&
+          other.label == this.label &&
+          other.filePath == this.filePath &&
+          other.mimeType == this.mimeType &&
+          other.sizeBytes == this.sizeBytes &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class PlantAttachmentsCompanion extends UpdateCompanion<PlantAttachmentRow> {
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String> plantId;
+  final Value<String?> userId;
+  final Value<String> label;
+  final Value<String> filePath;
+  final Value<String?> mimeType;
+  final Value<int?> sizeBytes;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const PlantAttachmentsCompanion({
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.plantId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.filePath = const Value.absent(),
+    this.mimeType = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlantAttachmentsCompanion.insert({
+    required String id,
+    required String gardenId,
+    required String plantId,
+    this.userId = const Value.absent(),
+    required String label,
+    required String filePath,
+    this.mimeType = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       gardenId = Value(gardenId),
+       plantId = Value(plantId),
+       label = Value(label),
+       filePath = Value(filePath),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<PlantAttachmentRow> custom({
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? plantId,
+    Expression<String>? userId,
+    Expression<String>? label,
+    Expression<String>? filePath,
+    Expression<String>? mimeType,
+    Expression<int>? sizeBytes,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (plantId != null) 'plant_id': plantId,
+      if (userId != null) 'user_id': userId,
+      if (label != null) 'label': label,
+      if (filePath != null) 'file_path': filePath,
+      if (mimeType != null) 'mime_type': mimeType,
+      if (sizeBytes != null) 'size_bytes': sizeBytes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlantAttachmentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String>? plantId,
+    Value<String?>? userId,
+    Value<String>? label,
+    Value<String>? filePath,
+    Value<String?>? mimeType,
+    Value<int?>? sizeBytes,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return PlantAttachmentsCompanion(
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      plantId: plantId ?? this.plantId,
+      userId: userId ?? this.userId,
+      label: label ?? this.label,
+      filePath: filePath ?? this.filePath,
+      mimeType: mimeType ?? this.mimeType,
+      sizeBytes: sizeBytes ?? this.sizeBytes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (plantId.present) {
+      map['plant_id'] = Variable<String>(plantId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (filePath.present) {
+      map['file_path'] = Variable<String>(filePath.value);
+    }
+    if (mimeType.present) {
+      map['mime_type'] = Variable<String>(mimeType.value);
+    }
+    if (sizeBytes.present) {
+      map['size_bytes'] = Variable<int>(sizeBytes.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlantAttachmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('plantId: $plantId, ')
+          ..write('userId: $userId, ')
+          ..write('label: $label, ')
+          ..write('filePath: $filePath, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -9291,6 +10046,9 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
   late final $AttributeSchemasTable attributeSchemas = $AttributeSchemasTable(
     this,
   );
+  late final $PlantAttachmentsTable plantAttachments = $PlantAttachmentsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -9313,6 +10071,7 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     tasks,
     plantAttributes,
     attributeSchemas,
+    plantAttachments,
   ];
 }
 
@@ -10388,6 +11147,8 @@ typedef $$PlantPhotosTableCreateCompanionBuilder =
       required String id,
       required String plantId,
       Value<String?> userId,
+      Value<String?> label,
+      Value<String?> remoteUrl,
       required String filePath,
       required String thumbPath,
       required int width,
@@ -10402,6 +11163,8 @@ typedef $$PlantPhotosTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> plantId,
       Value<String?> userId,
+      Value<String?> label,
+      Value<String?> remoteUrl,
       Value<String> filePath,
       Value<String> thumbPath,
       Value<int> width,
@@ -10433,6 +11196,16 @@ class $$PlantPhotosTableFilterComposer
 
   ColumnFilters<String> get userId => $composableBuilder(
     column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteUrl => $composableBuilder(
+    column: $table.remoteUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10496,6 +11269,16 @@ class $$PlantPhotosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteUrl => $composableBuilder(
+    column: $table.remoteUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get filePath => $composableBuilder(
     column: $table.filePath,
     builder: (column) => ColumnOrderings(column),
@@ -10549,6 +11332,12 @@ class $$PlantPhotosTableAnnotationComposer
 
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteUrl =>
+      $composableBuilder(column: $table.remoteUrl, builder: (column) => column);
 
   GeneratedColumn<String> get filePath =>
       $composableBuilder(column: $table.filePath, builder: (column) => column);
@@ -10606,6 +11395,8 @@ class $$PlantPhotosTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> plantId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String?> remoteUrl = const Value.absent(),
                 Value<String> filePath = const Value.absent(),
                 Value<String> thumbPath = const Value.absent(),
                 Value<int> width = const Value.absent(),
@@ -10618,6 +11409,8 @@ class $$PlantPhotosTableTableManager
                 id: id,
                 plantId: plantId,
                 userId: userId,
+                label: label,
+                remoteUrl: remoteUrl,
                 filePath: filePath,
                 thumbPath: thumbPath,
                 width: width,
@@ -10632,6 +11425,8 @@ class $$PlantPhotosTableTableManager
                 required String id,
                 required String plantId,
                 Value<String?> userId = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String?> remoteUrl = const Value.absent(),
                 required String filePath,
                 required String thumbPath,
                 required int width,
@@ -10644,6 +11439,8 @@ class $$PlantPhotosTableTableManager
                 id: id,
                 plantId: plantId,
                 userId: userId,
+                label: label,
+                remoteUrl: remoteUrl,
                 filePath: filePath,
                 thumbPath: thumbPath,
                 width: width,
@@ -14103,6 +14900,341 @@ typedef $$AttributeSchemasTableProcessedTableManager =
       AttributeSchemaRow,
       PrefetchHooks Function()
     >;
+typedef $$PlantAttachmentsTableCreateCompanionBuilder =
+    PlantAttachmentsCompanion Function({
+      required String id,
+      required String gardenId,
+      required String plantId,
+      Value<String?> userId,
+      required String label,
+      required String filePath,
+      Value<String?> mimeType,
+      Value<int?> sizeBytes,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$PlantAttachmentsTableUpdateCompanionBuilder =
+    PlantAttachmentsCompanion Function({
+      Value<String> id,
+      Value<String> gardenId,
+      Value<String> plantId,
+      Value<String?> userId,
+      Value<String> label,
+      Value<String> filePath,
+      Value<String?> mimeType,
+      Value<int?> sizeBytes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$PlantAttachmentsTableFilterComposer
+    extends Composer<_$FloraDatabase, $PlantAttachmentsTable> {
+  $$PlantAttachmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get plantId => $composableBuilder(
+    column: $table.plantId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get filePath => $composableBuilder(
+    column: $table.filePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlantAttachmentsTableOrderingComposer
+    extends Composer<_$FloraDatabase, $PlantAttachmentsTable> {
+  $$PlantAttachmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get plantId => $composableBuilder(
+    column: $table.plantId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get filePath => $composableBuilder(
+    column: $table.filePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlantAttachmentsTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $PlantAttachmentsTable> {
+  $$PlantAttachmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get plantId =>
+      $composableBuilder(column: $table.plantId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get filePath =>
+      $composableBuilder(column: $table.filePath, builder: (column) => column);
+
+  GeneratedColumn<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => column);
+
+  GeneratedColumn<int> get sizeBytes =>
+      $composableBuilder(column: $table.sizeBytes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$PlantAttachmentsTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $PlantAttachmentsTable,
+          PlantAttachmentRow,
+          $$PlantAttachmentsTableFilterComposer,
+          $$PlantAttachmentsTableOrderingComposer,
+          $$PlantAttachmentsTableAnnotationComposer,
+          $$PlantAttachmentsTableCreateCompanionBuilder,
+          $$PlantAttachmentsTableUpdateCompanionBuilder,
+          (
+            PlantAttachmentRow,
+            BaseReferences<
+              _$FloraDatabase,
+              $PlantAttachmentsTable,
+              PlantAttachmentRow
+            >,
+          ),
+          PlantAttachmentRow,
+          PrefetchHooks Function()
+        > {
+  $$PlantAttachmentsTableTableManager(
+    _$FloraDatabase db,
+    $PlantAttachmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlantAttachmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlantAttachmentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlantAttachmentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String> plantId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> filePath = const Value.absent(),
+                Value<String?> mimeType = const Value.absent(),
+                Value<int?> sizeBytes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlantAttachmentsCompanion(
+                id: id,
+                gardenId: gardenId,
+                plantId: plantId,
+                userId: userId,
+                label: label,
+                filePath: filePath,
+                mimeType: mimeType,
+                sizeBytes: sizeBytes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String gardenId,
+                required String plantId,
+                Value<String?> userId = const Value.absent(),
+                required String label,
+                required String filePath,
+                Value<String?> mimeType = const Value.absent(),
+                Value<int?> sizeBytes = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlantAttachmentsCompanion.insert(
+                id: id,
+                gardenId: gardenId,
+                plantId: plantId,
+                userId: userId,
+                label: label,
+                filePath: filePath,
+                mimeType: mimeType,
+                sizeBytes: sizeBytes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlantAttachmentsTable, PlantAttachmentRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $PlantAttachmentsTable,
+                    PlantAttachmentRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlantAttachmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $PlantAttachmentsTable,
+      PlantAttachmentRow,
+      $$PlantAttachmentsTableFilterComposer,
+      $$PlantAttachmentsTableOrderingComposer,
+      $$PlantAttachmentsTableAnnotationComposer,
+      $$PlantAttachmentsTableCreateCompanionBuilder,
+      $$PlantAttachmentsTableUpdateCompanionBuilder,
+      (
+        PlantAttachmentRow,
+        BaseReferences<
+          _$FloraDatabase,
+          $PlantAttachmentsTable,
+          PlantAttachmentRow
+        >,
+      ),
+      PlantAttachmentRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -14140,4 +15272,6 @@ class $FloraDatabaseManager {
       $$PlantAttributesTableTableManager(_db, _db.plantAttributes);
   $$AttributeSchemasTableTableManager get attributeSchemas =>
       $$AttributeSchemasTableTableManager(_db, _db.attributeSchemas);
+  $$PlantAttachmentsTableTableManager get plantAttachments =>
+      $$PlantAttachmentsTableTableManager(_db, _db.plantAttachments);
 }
