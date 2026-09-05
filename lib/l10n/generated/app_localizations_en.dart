@@ -1193,6 +1193,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get identifyHint => 'Suggestions to confirm, never certainties.';
 
   @override
+  String get searchOnline => 'None of these? Search online';
+
+  @override
+  String get searchingOnline => 'Searching online…';
+
+  @override
+  String get suggestionsLocal => 'Suggested by your device, with no network.';
+
+  @override
+  String get suggestionsRemote => 'Suggested online by Pl@ntNet.';
+
+  @override
   String get identifyOnDevice =>
       'Recognised on your device. Pick the matching species.';
 

@@ -1195,6 +1195,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifyHint => 'Suggerimenti da confermare, mai certezze.';
 
   @override
+  String get searchOnline => 'Nessuna corrisponde? Cerca online';
+
+  @override
+  String get searchingOnline => 'Ricerca online…';
+
+  @override
+  String get suggestionsLocal => 'Proposto dal tuo dispositivo, senza rete.';
+
+  @override
+  String get suggestionsRemote => 'Proposto online da Pl@ntNet.';
+
+  @override
   String get identifyOnDevice =>
       'Riconosciuta sul tuo dispositivo. Scegli la specie corrispondente.';
 

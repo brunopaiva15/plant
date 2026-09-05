@@ -1198,6 +1198,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get identifyHint => 'Vorschläge zum Bestätigen, keine Gewissheiten.';
 
   @override
+  String get searchOnline => 'Keine passt? Online suchen';
+
+  @override
+  String get searchingOnline => 'Online-Suche…';
+
+  @override
+  String get suggestionsLocal => 'Von deinem Gerät vorgeschlagen, ohne Netz.';
+
+  @override
+  String get suggestionsRemote => 'Online von Pl@ntNet vorgeschlagen.';
+
+  @override
   String get identifyOnDevice =>
       'Auf deinem Gerät erkannt. Wähle die passende Art.';
 

@@ -2160,6 +2160,30 @@ abstract class AppLocalizations {
   /// **'Suggestions à confirmer, jamais des certitudes.'**
   String get identifyHint;
 
+  /// No description provided for @searchOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune ne correspond ? Chercher en ligne'**
+  String get searchOnline;
+
+  /// No description provided for @searchingOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche en ligne…'**
+  String get searchingOnline;
+
+  /// No description provided for @suggestionsLocal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Proposé par votre appareil, sans réseau.'**
+  String get suggestionsLocal;
+
+  /// No description provided for @suggestionsRemote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Proposé en ligne par Pl@ntNet.'**
+  String get suggestionsRemote;
+
   /// No description provided for @identifyOnDevice.
   ///
   /// In fr, this message translates to:

@@ -73,7 +73,8 @@ void main() {
   tearDown(() => dir.delete(recursive: true));
 
   final sure = [c('Monstera deliciosa Liebm.', 0.96), c('Monstera adansonii', 0.02)];
-  final hesitant = [c('Monstera deliciosa', 0.55), c('Monstera adansonii', 0.40)];
+  final plausible = [c('Monstera deliciosa', 0.40), c('Monstera adansonii', 0.30)];
+  final hesitant = [c('Monstera deliciosa', 0.15), c('Monstera adansonii', 0.12)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
   CascadeIdentifier build(FakeLocal local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogMapper? mapper}) =>
@@ -105,6 +106,49 @@ void main() {
     expect(m.remote, 0);
     expect(m.remoteCallsSaved, 1);
     expect(m.averageConfidence, closeTo(0.96, 1e-9));
+  });
+
+  test('a plausible local list is shown without paying for a remote call', () async {
+    // C'est tout l'objet du changement : le modèle n'est pas sûr, mais sa
+    // liste vaut d'être montrée, et l'appel distant attend qu'on le demande.
+    final local = FakeLocal(plausible);
+    final remote = FakeRemote(remoteAnswer);
+    final cascade = build(local, remote);
+    final result = await cascade.identify([photo]);
+    expect(remote.calls, 0, reason: 'aucun appel distant sur une liste plausible');
+    expect(result.first.scientificName, 'Monstera deliciosa');
+    expect(result.first.source, IdentificationSource.local);
+    expect(cascade.metrics.localAccepted, 1);
+  });
+
+  test('the online search asked for explicitly does call the service', () async {
+    final remote = FakeRemote(remoteAnswer);
+    final cascade = build(FakeLocal(plausible), remote);
+    await cascade.identify([photo]);
+    expect(remote.calls, 0);
+    final online = await cascade.identifyRemotely([photo], language: 'fr');
+    expect(remote.calls, 1);
+    expect(remote.lastLanguage, 'fr');
+    expect(online.first.source, IdentificationSource.remote);
+    expect(cascade.metrics.remote, 1);
+  });
+
+  test('the explicit online search respects the daily quota', () async {
+    var day = DateTime(2026, 9, 5, 10);
+    final remote = FakeRemote(remoteAnswer);
+    final store = InMemoryMetricsStore();
+    final cascade = build(FakeLocal(plausible), remote, store: store, limit: 1, now: () => day);
+    expect((await cascade.identifyRemotely([photo])).length, 2);
+    expect((await cascade.identifyRemotely([other])), isEmpty, reason: 'quota atteint');
+    expect(remote.calls, 1);
+    expect(store.read().quotaRefusals, 1);
+  });
+
+  test('the explicit online search does nothing when the fallback is off', () async {
+    final remote = FakeRemote(remoteAnswer);
+    final cascade = build(FakeLocal(plausible), remote, fallbackEnabled: false);
+    expect(await cascade.identifyRemotely([photo]), isEmpty);
+    expect(remote.calls, 0);
   });
 
   test('hesitant local answer falls back to the remote service', () async {

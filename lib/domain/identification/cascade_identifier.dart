@@ -70,6 +70,31 @@ class CascadeIdentifier implements PlantIdentifier {
     return m.remoteDay != _today() || m.remoteToday < dailyRemoteLimit;
   }
 
+  /// Interroge le service distant sans repasser par le modèle local.
+  /// Appelée quand l'utilisateur demande explicitement une recherche en
+  /// ligne, parce qu'aucune proposition locale ne lui convient.
+  Future<List<IdentificationCandidate>> identifyRemotely(List<File> images, {String? language}) async {
+    if (images.isEmpty) return const [];
+    if (!fallbackEnabled || !fallback.isConfigured) return const [];
+    var m = metricsStore.read();
+    final today = _today();
+    final todayCount = m.remoteDay == today ? m.remoteToday : 0;
+    if (todayCount >= dailyRemoteLimit) {
+      await metricsStore.write(m.copyWith(quotaRefusals: m.quotaRefusals + 1));
+      return const [];
+    }
+    m = m.copyWith(remote: m.remote + 1, remoteDay: today, remoteToday: todayCount + 1);
+    try {
+      final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote);
+      await metricsStore.write(m);
+      _cache[await _cacheKey(images)] = remote;
+      return remote;
+    } on Object {
+      await metricsStore.write(m.copyWith(errors: m.errors + 1));
+      rethrow;
+    }
+  }
+
   @override
   Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async {
     if (images.isEmpty) return const [];
@@ -95,8 +120,17 @@ class CascadeIdentifier implements PlantIdentifier {
       }
     }
 
-    if (verdict == IdentificationVerdict.accepted) {
-      m = m.copyWith(localAccepted: m.localAccepted + 1, confidenceSum: m.confidenceSum + localResult.first.score);
+    // Réponse sûre, ou seulement plausible : dans les deux cas on s'arrête
+    // là. Une liste plausible est utile telle quelle — l'écran en montre
+    // cinq et l'utilisateur choisit — et il peut demander une recherche en
+    // ligne si rien ne lui convient. Payer l'appel d'avance reviendrait à
+    // le faire pour toutes les photos, y compris celles où le modèle avait
+    // déjà proposé la bonne espèce.
+    if (verdict == IdentificationVerdict.accepted || verdict == IdentificationVerdict.plausible) {
+      m = m.copyWith(
+        localAccepted: m.localAccepted + 1,
+        confidenceSum: m.confidenceSum + localResult.first.score,
+      );
       await metricsStore.write(m);
       return _remember(key, localResult);
     }

@@ -7,6 +7,7 @@ import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/plant_identifier.dart';
 
 /// Lance l'identification sur une photo et laisse l'utilisateur choisir.
@@ -31,7 +32,16 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     super.initState();
     final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
     _future = ref.read(plantIdentifierProvider).identify([File(widget.path)], language: lang);
+  }
 
+  /// Relance la recherche, cette fois en ligne, parce qu'aucune proposition
+  /// de l'appareil ne convenait. L'appel se fait sur ce geste et pas avant :
+  /// c'est ce qui évite de payer un appel pour chaque photo.
+  Future<void> _searchOnline() async {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier) return;
+    final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    setState(() => _future = identifier.identifyRemotely([File(widget.path)], language: lang));
   }
 
   /// D'où vient la réponse : sur l'appareil, ou par le service en ligne.
@@ -41,6 +51,13 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         IdentificationSource.remote => l10n.identifyViaPlantNet,
         IdentificationSource.unknown => l10n.identifyHint,
       };
+
+  /// Le service distant est-il utilisable ? Sans clé, ou repli coupé, le
+  /// bouton n'aurait rien à proposer.
+  bool get _canSearchOnline {
+    final identifier = ref.read(plantIdentifierProvider);
+    return identifier is CascadeIdentifier && identifier.fallbackEnabled && identifier.fallback.isConfigured;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +87,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   Text(_sourceHint(l10n, results.first.source), style: context.text.caption),
                   const SizedBox(height: Space.sm),
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => Navigator.of(context).pop(c))]),
+                  if (results.first.source == IdentificationSource.local && _canSearchOnline) ...[
+                    const SizedBox(height: Space.md),
+                    FloraButton(label: l10n.searchOnline, expand: true, style: FloraButtonStyle.secondary, onPressed: _searchOnline),
+                  ],
                 ],
               );
             },
