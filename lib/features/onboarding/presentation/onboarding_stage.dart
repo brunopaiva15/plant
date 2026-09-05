@@ -48,12 +48,12 @@ class OnboardingStage extends StatelessWidget {
   /// geste. Sans elle, la dalle prend le vert de l'app.
   final Color? tint;
 
-  /// Côté de l'objet central pour une hauteur de scène donnée : il déborde
-  /// franchement de la dalle, c'est lui qu'on regarde.
-  static double sideOf(double height) => (height * 0.80).roundToDouble();
+  /// Côté de l'objet central pour une hauteur de scène donnée : il occupe
+  /// presque toute la carte, c'est lui qu'on regarde.
+  static double sideOf(double height) => (height * 0.90).roundToDouble();
 
-  /// Côté de la dalle : un peu moins que l'objet, pour qu'il la déborde.
-  static double tileOf(double height) => (height * 0.64).roundToDouble();
+  /// Marge de la carte d'argile par rapport aux bords de l'écran.
+  static const double inset = Space.page;
 
   double get side => sideOf(height);
 
@@ -64,9 +64,9 @@ class OnboardingStage extends StatelessWidget {
   /// De 0 à 1 quand on passe des présentations à la page du prénom.
   double get _leaving => (offset - (count - 1)).clamp(0.0, 1.0);
 
-  /// Chaque dalle penche d'un rien, tantôt à gauche, tantôt à droite : posée,
-  /// pas alignée. Entre deux écrans, elle bascule de l'un à l'autre.
-  static const _tilts = <double>[-0.055, 0.045, -0.04, 0.05, -0.045];
+  /// Chaque carte penche d'un rien, tantôt à gauche, tantôt à droite : posée,
+  /// pas alignée. Entre deux écrans, elle bascule de l'une à l'autre.
+  static const _tilts = <double>[-0.03, 0.025, -0.02, 0.03, -0.025];
 
   double get _tilt {
     final o = offset.clamp(0.0, (count - 1).toDouble());
@@ -99,11 +99,21 @@ class OnboardingStage extends StatelessWidget {
                     clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: [
+                      // La carte garde une marge dans la scène : penchée, ses
+                      // coins ne doivent pas en sortir, et son ombre non plus.
                       Transform.translate(
-                        offset: Offset(0, height * 0.06),
+                        offset: const Offset(0, 6),
                         child: Transform.scale(
                           scale: settle,
-                          child: ClayTile(size: tileOf(height), color: tint ?? c.sage, angle: reduceMotion ? 0 : _tilt),
+                          child: Transform.rotate(
+                            angle: reduceMotion ? 0 : _tilt,
+                            child: ClaySurface(
+                              color: tint ?? c.sage,
+                              radius: 44,
+                              depth: 1.6,
+                              child: SizedBox(width: width - 2 * inset - 8, height: height - 48),
+                            ),
+                          ),
                         ),
                       ),
                       for (var i = count - 1; i >= 0; i--) _object(context, i, width, rise),
@@ -148,107 +158,98 @@ class OnboardingStage extends StatelessWidget {
   }
 }
 
-/// Une dalle d'argile : un carré aux coins très ronds, dans la couleur de
-/// l'écran, avec la lumière qui vient d'en haut. Le relief est peint, pas
-/// simulé par une ombre plate : un bord clair en haut, une ombre logée en
-/// bas, et l'ombre portée teintée de la même couleur.
-class ClayTile extends StatelessWidget {
-  const ClayTile({super.key, required this.size, required this.color, this.angle = 0});
+/// Une surface d'argile : une forme gonflée, dans une couleur pastel
+/// saturée, avec la lumière qui vient d'en haut à gauche.
+///
+/// La recette est celle du claymorphisme : une ombre portée dans la teinte
+/// de la surface, un bord clair logé en haut à gauche, une ombre logée en
+/// bas à droite. Les deux ombres intérieures sont ce qui fait la pâte —
+/// sans elles il ne reste qu'un aplat arrondi. [depth] multiplie décalages
+/// et flous : une grande carte a un relief plus profond qu'un bouton.
+class ClaySurface extends StatelessWidget {
+  const ClaySurface({super.key, required this.color, required this.child, this.radius = 24, this.depth = 1});
 
-  final double size;
+  /// La teinte de base : la surface en est une version pastel, l'ombre une
+  /// version foncée.
   final Color color;
+  final Widget child;
+  final double radius;
+  final double depth;
 
-  /// Inclinaison, en radians.
-  final double angle;
+  /// La couleur de la surface pour une teinte donnée : coupée de blanc en
+  /// clair, à peine assombrie en sombre, où les teintes sont déjà claires.
+  static Color surfaceOf(FloraColors c, Color tint) => Color.lerp(tint, c.isDark ? c.canvas : Colors.white, c.isDark ? 0.18 : 0.30)!;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    // La couleur brute serait criarde sur toute une dalle : on la coupe de
-    // blanc en clair, de fond en sombre, pour garder une pâte pastel.
-    final body = Color.lerp(color, c.isDark ? c.canvas : Colors.white, c.isDark ? 0.40 : 0.34)!;
-    return Transform.rotate(
-      angle: angle,
-      child: RepaintBoundary(
-        child: CustomPaint(
-          size: Size.square(size),
-          painter: _ClayTilePainter(body: body, shadow: color, dark: c.isDark),
-          isComplex: true,
-        ),
-      ),
+    return CustomPaint(
+      painter: _ClayPainter(surface: surfaceOf(c, color), tint: color, radius: radius, depth: depth, dark: c.isDark),
+      isComplex: true,
+      child: child,
     );
   }
 }
 
-class _ClayTilePainter extends CustomPainter {
-  const _ClayTilePainter({required this.body, required this.shadow, required this.dark});
+class _ClayPainter extends CustomPainter {
+  const _ClayPainter({required this.surface, required this.tint, required this.radius, required this.depth, required this.dark});
 
-  final Color body;
-  final Color shadow;
+  final Color surface;
+  final Color tint;
+  final double radius;
+  final double depth;
   final bool dark;
 
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    final radius = size.shortestSide * 0.36;
     final path = RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(radius)).getOuterPath(rect);
+    final shade = Color.lerp(tint, Colors.black, 0.25)!;
 
-    // L'ombre portée, dans la couleur de la dalle : une ombre grise sur un
-    // fond teinté ferait sale.
+    // L'ombre portée, décalée aussi en x : la lumière vient d'un coin.
     canvas.drawPath(
-      path.shift(Offset(0, size.height * 0.07)),
+      path.shift(Offset(8 * depth, 8 * depth)),
       Paint()
-        ..color = shadow.withValues(alpha: dark ? 0.35 : 0.42)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.shortestSide * 0.09),
+        ..color = shade.withValues(alpha: dark ? 0.30 : 0.35)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 12 * depth),
     );
 
-    // La matière : un dégradé à peine perceptible, du haut éclairé au bas.
-    final light = Color.lerp(body, Colors.white, dark ? 0.10 : 0.16)!;
-    final deep = Color.lerp(body, Colors.black, dark ? 0.16 : 0.08)!;
-    canvas.drawPath(
-      path,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [light, body, deep],
-          stops: const [0, 0.55, 1],
-        ).createShader(rect),
-    );
+    // La surface : un pastel plein. Le relief vient des ombres, pas d'un
+    // dégradé.
+    canvas.drawPath(path, Paint()..color = surface);
 
-    // Le relief : tout ce qui est hors de la dalle, décalé et flouté, puis
-    // rogné à la dalle. Décalé vers le bas, il éclaire le bord haut ; vers le
-    // haut, il ombre le bord bas. C'est ce creux qui fait la pâte.
+    // Les ombres intérieures : tout ce qui est hors de la forme, décalé et
+    // flouté, puis rogné à la forme. Décalé vers le bas à droite, le trou
+    // laisse une lumière en haut à gauche ; vers le haut à gauche, une ombre
+    // en bas à droite.
     final outside = rect.inflate(size.shortestSide);
     Path rim(Offset by) => Path.combine(PathOperation.difference, Path()..addRect(outside), path.shift(by));
-    final edge = size.shortestSide;
     canvas.save();
     canvas.clipPath(path);
     canvas.drawPath(
-      rim(Offset(0, edge * 0.05)),
+      rim(Offset(6 * depth, 6 * depth)),
       Paint()
-        ..color = Colors.white.withValues(alpha: dark ? 0.28 : 0.85)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, edge * 0.05),
+        ..color = Colors.white.withValues(alpha: dark ? 0.35 : 0.55)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 8 * depth),
     );
     canvas.drawPath(
-      rim(Offset(0, -edge * 0.06)),
+      rim(Offset(-6 * depth, -6 * depth)),
       Paint()
-        ..color = Color.lerp(shadow, Colors.black, dark ? 0.55 : 0.30)!.withValues(alpha: dark ? 0.55 : 0.38)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, edge * 0.07),
+        ..color = shade.withValues(alpha: dark ? 0.45 : 0.25)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 8 * depth),
     );
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(_ClayTilePainter old) => old.body != body || old.shadow != shadow || old.dark != dark;
+  bool shouldRepaint(_ClayPainter old) => old.surface != surface || old.tint != tint || old.radius != radius || old.depth != depth || old.dark != dark;
 }
 
-/// Le fond : tout l'écran prend la couleur de l'écran courant, coupée de
-/// fond pour rester lisible, et une lueur plus franche monte derrière la
-/// scène à l'arrivée, puis se pose. Rien n'a de bord : c'est ce qui distingue
-/// une ambiance d'un aplat.
+/// Le fond : presque blanc, à peine teinté de la couleur de l'écran — c'est
+/// la carte d'argile qui porte la couleur, pas la page. Une lueur douce
+/// monte derrière la scène à l'arrivée, puis se pose.
 class OnboardingBackdrop extends StatelessWidget {
-  const OnboardingBackdrop({super.key, required this.tint, required this.drift, required this.reduceMotion});
+  const OnboardingBackdrop({super.key, required this.tint, required this.drift, required this.reduceMotion, this.glow = 1});
 
   /// La couleur de l'écran courant, déjà interpolée entre deux écrans.
   final Color tint;
@@ -258,9 +259,13 @@ class OnboardingBackdrop extends StatelessWidget {
   final double drift;
   final bool reduceMotion;
 
+  /// Force de la lueur, de 0 à 1 : elle s'éteint avec la scène quand on
+  /// quitte les écrans de présentation.
+  final double glow;
+
   /// Le fond d'un écran pour une couleur donnée : c'est aussi la couleur
   /// qu'on donne au [Scaffold], pour que rien ne dépasse aux bords.
-  static Color wash(FloraColors c, Color tint) => Color.lerp(c.canvas, tint, c.isDark ? 0.16 : 0.13)!;
+  static Color wash(FloraColors c, Color tint) => Color.lerp(c.canvas, tint, c.isDark ? 0.08 : 0.05)!;
 
   @override
   Widget build(BuildContext context) {
@@ -274,13 +279,13 @@ class OnboardingBackdrop extends StatelessWidget {
             // La lueur derrière la scène : elle monte de quelques points à
             // l'arrivée sur chaque écran.
             _Glow(
-              color: tint.withValues(alpha: c.isDark ? 0.30 : 0.34),
-              size: 560,
-              at: Alignment(0, -0.62 + 0.08 * (1 - t)),
+              color: tint.withValues(alpha: (c.isDark ? 0.16 : 0.18) * glow),
+              size: 620,
+              at: Alignment(0, -0.55 + 0.08 * (1 - t)),
             ),
             // Un halo bas, plus discret, qui répond au premier.
             _Glow(
-              color: tint.withValues(alpha: c.isDark ? 0.14 : 0.16),
+              color: tint.withValues(alpha: (c.isDark ? 0.08 : 0.10) * glow),
               size: 620,
               at: Alignment(0.9, 1.15 - 0.05 * t),
             ),
@@ -314,81 +319,59 @@ class _Glow extends StatelessWidget {
   }
 }
 
-/// Le bouton de l'onboarding : une dalle d'encre aux coins ronds, posée sur
-/// une ombre de la couleur de l'écran. Plus haut et plus franc que la pilule
-/// de l'app — ici il n'y a qu'un geste à faire, il doit s'imposer.
+/// Le bouton de l'onboarding : une pilule d'argile dans la couleur de
+/// l'écran, texte en encre. Plus haut que la pilule de l'app — ici il n'y a
+/// qu'un geste à faire, il doit s'imposer.
 class ClayButton extends StatelessWidget {
   const ClayButton({super.key, required this.label, required this.onPressed, required this.tint, this.trailingIcon, this.filled = true});
 
   final String label;
   final VoidCallback onPressed;
 
-  /// La couleur de l'écran : elle colore l'ombre du bouton plein, et le
-  /// bouton discret tout entier.
+  /// La couleur de l'écran : celle de la pâte du bouton plein, et du texte
+  /// du bouton discret.
   final Color tint;
   final IconData? trailingIcon;
 
-  /// Plein : encre sur fond, le geste principal. Sinon : un bouton discret,
-  /// dans la couleur de l'écran, pour le choix secondaire.
+  /// Plein : la pilule d'argile, le geste principal. Sinon : un bouton
+  /// discret, sans matière, pour le choix secondaire.
   final bool filled;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final fg = filled ? c.canvas : Color.lerp(tint, c.ink, c.isDark ? 0.0 : 0.25)!;
+    // Le texte est toujours en encre : sur ces pastels, l'encre passe
+    // partout, là où le blanc échouerait sur le jaune.
+    final fg = filled ? FloraColors.light.ink : Color.lerp(tint, c.ink, c.isDark ? 0.0 : 0.25)!;
     final style = context.text.body.copyWith(color: fg, fontWeight: FontWeight.w700, fontSize: 18, letterSpacing: -0.2);
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(label, style: style, maxLines: 1),
+          ),
+        ),
+        if (trailingIcon != null) ...[const SizedBox(width: Space.xs), Icon(trailingIcon, size: 22, color: fg)],
+      ],
+    );
     return Pressable(
       onTap: onPressed,
       scale: 0.965,
       semanticLabel: label,
-      child: Container(
-        height: filled ? 62 : 52,
-        alignment: Alignment.center,
-        decoration: ShapeDecoration(
-          color: filled ? c.ink : Colors.transparent,
-          shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(filled ? 24 : 20)),
-          shadows: filled
-              ? [
-                  BoxShadow(
-                    color: tint.withValues(alpha: c.isDark ? 0.30 : 0.42),
-                    blurRadius: 30,
-                    offset: const Offset(0, 14),
-                  ),
-                  BoxShadow(
-                    color: c.ink.withValues(alpha: c.isDark ? 0.0 : 0.16),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : const [],
-        ),
-        foregroundDecoration: filled
-            ? ShapeDecoration(
-                shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(24)),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withValues(alpha: c.isDark ? 0.22 : 0.14),
-                    Colors.white.withValues(alpha: 0),
-                  ],
-                  stops: const [0, 0.55],
-                ),
-              )
-            : null,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(label, style: style, maxLines: 1),
+      child: filled
+          ? ClaySurface(
+              color: tint,
+              radius: 22,
+              child: Container(
+                height: 62,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: Space.xl),
+                child: row,
               ),
-            ),
-            if (trailingIcon != null) ...[const SizedBox(width: Space.xs), Icon(trailingIcon, size: 22, color: fg)],
-          ],
-        ),
-      ),
+            )
+          : Container(height: 52, alignment: Alignment.center, child: row),
     );
   }
 }

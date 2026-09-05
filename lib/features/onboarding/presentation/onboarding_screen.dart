@@ -184,7 +184,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _float,
-              builder: (context, _) => OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce),
+              builder: (context, _) =>
+                  OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce, glow: 1 - (_offset - (_slides.length - 1)).clamp(0.0, 1.0)),
             ),
           ),
           SafeArea(
