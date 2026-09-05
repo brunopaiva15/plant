@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -84,11 +86,13 @@ class FloraListRow extends StatelessWidget {
             ),
             if (trailing != null) ...[
               const SizedBox(width: Space.sm),
-              // Borné à la moitié de la ligne : le titre garde la priorité, sans
-              // que le trailing ne partage l'espace libre (il reste calé à droite).
+              // Le trailing prend ce qu'il lui faut, à deux réserves près : au
+              // moins la moitié de la ligne revient au titre sur un large
+              // écran, et une centaine de points lui restent sur un écran étroit —
+              // de quoi lire « Arrosage » sans que le « + » ne sorte du cadre.
               ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: constraints.maxWidth * 0.5,
+                  maxWidth: math.max(constraints.maxWidth * 0.5, constraints.maxWidth - 96),
                 ),
                 child: trailing!,
               ),

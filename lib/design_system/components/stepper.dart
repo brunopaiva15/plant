@@ -37,18 +37,29 @@ class QuantityStepper extends StatelessWidget {
           enabled: enabled,
           haptic: false,
           scale: 0.85,
-          child: SizedBox(width: 44, height: 40, child: Icon(icon, size: 18, color: c.ink)),
+          child: SizedBox(width: 40, height: 40, child: Icon(icon, size: 18, color: c.ink)),
         );
+    final text = ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 64),
+      child: Text(
+        label,
+        style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600),
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
     return Container(
       decoration: BoxDecoration(color: c.surfaceMuted, borderRadius: Radii.fullAll),
       child: Row(
+        // Au plus juste, et le libellé plie avant les boutons : à l'étroit il
+        // se resserre, mais le « + » ne sort jamais de la pilule. Sans borne
+        // de largeur, il reprend sa taille naturelle — c'est ce que permet la
+        // rangée au plus juste avec un enfant souple.
         mainAxisSize: MainAxisSize.min,
         children: [
           button(CupertinoIcons.minus, value - step >= min, -step),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 80),
-            child: Text(label, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600), textAlign: TextAlign.center),
-          ),
+          Flexible(child: text),
           button(CupertinoIcons.plus, value + step <= max, step),
         ],
       ),

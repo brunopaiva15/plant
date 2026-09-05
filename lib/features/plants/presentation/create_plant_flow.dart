@@ -320,12 +320,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                         FloraListRow(
                           leading: const Text('💧', style: TextStyle(fontSize: 18)),
                           title: l10n.wateringEvery,
-                          trailing: QuantityStepper(value: _watering, min: 0, max: 120, label: l10n.everyDays(_watering), onChanged: (v) => setState(() { _watering = v; _intervalsTouched = true; })),
+                          trailing: QuantityStepper(value: _watering, min: 0, max: 120, label: _watering == 0 ? l10n.none : l10n.daysCount(_watering), onChanged: (v) => setState(() { _watering = v; _intervalsTouched = true; })),
                         ),
                         FloraListRow(
                           leading: const Text('🌱', style: TextStyle(fontSize: 18)),
                           title: l10n.fertilizingEvery,
-                          trailing: QuantityStepper(value: _fertilizing, min: 0, max: 365, step: 5, label: l10n.everyDays(_fertilizing), onChanged: (v) => setState(() { _fertilizing = v; _intervalsTouched = true; })),
+                          trailing: QuantityStepper(value: _fertilizing, min: 0, max: 365, step: 5, label: _fertilizing == 0 ? l10n.none : l10n.daysCount(_fertilizing), onChanged: (v) => setState(() { _fertilizing = v; _intervalsTouched = true; })),
                         ),
                         FloraListRow(
                           leading: Icon(CupertinoIcons.calendar, size: 20, color: c.inkSecondary),
