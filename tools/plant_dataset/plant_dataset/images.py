@@ -18,10 +18,17 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 MIN_SIDE = 320             # en dessous, c'est une miniature
 # Au-delà, l'image est réduite. Les modèles mobiles s'entraînent en 224, au
-# plus 384 ; 640 px laisse de quoi recadrer et redimensionner sans perte
-# visible, pour trois fois moins de disque qu'en 1024 px — ce qui décide
-# du nombre d'espèces qu'on peut collecter.
-MAX_SIDE = 640
+# plus 384 ; 448 px laisse encore de quoi recadrer, pour cinq fois moins de
+# disque qu'en 1024 px — ce qui décide du nombre d'espèces qu'on peut
+# collecter, et le nombre d'espèces compte plus que la finesse d'images
+# qu'on réduira de toute façon.
+#
+# Le jeu contient donc trois générations (1024, 640, 448 px) selon la date
+# de collecte. Comme la résolution est corrélée aux lots d'espèces, elle
+# pourrait servir de raccourci au modèle : l'augmentation « jitter de
+# résolution » à l'entraînement (tools/plant_model/train.py) est là pour
+# lui retirer cette possibilité.
+MAX_SIDE = 448
 MAX_BYTES = 25 * 1024 * 1024
 ALLOWED_FORMATS = {'JPEG', 'PNG', 'WEBP'}
 JPEG_QUALITY = 92

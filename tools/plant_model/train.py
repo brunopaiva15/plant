@@ -78,14 +78,35 @@ def load_all(pairs, classes: list[str]) -> tuple[np.ndarray, np.ndarray]:
 
 
 def augment(image, label):
-    """Recadrage aléatoire, miroir, légère variation de lumière et de
-    couleur. Pas de rotation forte : un pot est droit sur une photo."""
+    """Recadrage aléatoire, miroir, variation de lumière, de couleur et de
+    netteté. Pas de rotation forte : un pot est droit sur une photo."""
     image = tf.image.random_crop(image, [IMAGE_SIZE, IMAGE_SIZE, 3])
     image = tf.image.random_flip_left_right(image)
     image = tf.cast(image, tf.float32)
     image = tf.image.random_brightness(image, 20.0)
     image = tf.image.random_saturation(image, 0.8, 1.25)
+    image = resolution_jitter(image)
     return tf.clip_by_value(image, 0.0, 255.0), label
+
+
+def resolution_jitter(image):
+    """Réduit puis réagrandit l'image, à une échelle tirée au hasard.
+
+    Le jeu a été collecté en trois fois, avec des tailles de stockage
+    différentes (1024, 640 puis 448 px). La résolution est donc corrélée aux
+    lots d'espèces, et un réseau saisit ce genre de raccourci avant
+    d'apprendre la botanique : il lui suffirait de reconnaître la netteté
+    pour éliminer les deux tiers des classes. Brouiller la netteté à
+    l'entraînement lui retire cette possibilité — et rend au passage le
+    modèle plus robuste aux photos floues, qui sont le quotidien.
+    """
+    def blurred():
+        scale = tf.random.uniform([], 0.4, 1.0)
+        small = tf.maximum(tf.cast(tf.cast(IMAGE_SIZE, tf.float32) * scale, tf.int32), 32)
+        down = tf.image.resize(image, [small, small], method='bilinear')
+        return tf.image.resize(down, [IMAGE_SIZE, IMAGE_SIZE], method='bilinear')
+
+    return tf.cond(tf.random.uniform([]) < 0.5, blurred, lambda: image)
 
 
 def center(image, label):

@@ -9,22 +9,28 @@ from plant_dataset.images import ImageRejected, hamming, phash64, prepare
 from plant_dataset.manifest import STATUS_DUPLICATE, STATUS_KEPT, STATUS_REVIEW, ImageRecord, now_iso
 
 
-def picture(seed: int, size=(640, 480), fmt='JPEG', **save) -> bytes:
-    """Une image de test : un dégradé bruité, différent à chaque graine.
-    Ce n'est pas une plante, c'est un fichier dont on connaît la vérité."""
+def picture(seed: int, size=(440, 360), fmt='JPEG', **save) -> bytes:
+    """Une image de test : un champ aléatoire lisse, propre à chaque graine.
+
+    Ce n'est pas une plante, c'est un fichier dont on connaît la vérité. Le
+    champ est tiré en basse résolution puis agrandi : deux graines donnent
+    des images franchement différentes — ce que des sinusoïdes de fréquences
+    voisines ne garantissaient pas — tandis qu'une même graine réencodée
+    reste la même image.
+    """
     rng = np.random.default_rng(seed)
-    y, x = np.mgrid[0:size[1], 0:size[0]]
-    base = (np.sin(x / (30 + seed % 17)) * 80 + np.cos(y / (23 + seed % 11)) * 80 + 128)
-    noise = rng.normal(0, 12, size=(size[1], size[0]))
-    arr = np.clip(np.stack([base + noise, base * 0.7 + noise, base * 0.4 + noise], -1), 0, 255).astype(np.uint8)
+    coarse = rng.uniform(0, 255, size=(6, 7, 3))
+    img = Image.fromarray(coarse.astype(np.uint8), 'RGB').resize(size, Image.BICUBIC)
+    arr = np.clip(np.asarray(img, dtype=np.float64) + rng.normal(0, 6, size=(size[1], size[0], 3)), 0, 255)
     out = io.BytesIO()
-    Image.fromarray(arr, 'RGB').save(out, fmt, **save)
+    Image.fromarray(arr.astype(np.uint8), 'RGB').save(out, fmt, **save)
     return out.getvalue()
 
 
 def test_prepare_accepts_a_sound_jpeg():
+    # Sous MAX_SIDE : l'image traverse le préparateur sans être touchée.
     p = prepare(picture(1))
-    assert p.width == 640 and p.height == 480
+    assert p.width == 440 and p.height == 360
     assert len(p.sha256) == 64 and len(p.phash) == 16
     assert p.source_format == 'JPEG'
 
@@ -41,24 +47,24 @@ def test_prepare_rejects_corrupt_small_and_odd_formats():
 
 
 def test_prepare_applies_exif_orientation():
-    data = picture(5, size=(640, 400))
+    data = picture(5, size=(440, 360))
     img = Image.open(io.BytesIO(data))
     exif = img.getexif()
     exif[0x0112] = 6  # tourner de 90°
     out = io.BytesIO()
     img.save(out, 'JPEG', exif=exif.tobytes())
     p = prepare(out.getvalue())
-    assert (p.width, p.height) == (400, 640)
+    assert (p.width, p.height) == (360, 440)
     assert Image.open(io.BytesIO(p.data)).getexif().get(0x0112, 1) == 1
 
 
 def test_large_image_is_downscaled_to_max_side():
     p = prepare(picture(12, size=(3000, 2000)))
-    assert (p.width, p.height) == (640, 427)
-    assert Image.open(io.BytesIO(p.data)).size == (640, 427)
+    assert (p.width, p.height) == (448, 299)
+    assert Image.open(io.BytesIO(p.data)).size == (448, 299)
     # Une image déjà sous la limite est stockée telle quelle, octet pour
     # octet : pas de réencodage, donc pas de perte de génération.
-    small = picture(13, size=(600, 450))
+    small = picture(13, size=(440, 360))
     assert prepare(small).data == small
 
 
