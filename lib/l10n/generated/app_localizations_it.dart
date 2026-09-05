@@ -3293,7 +3293,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onbGardenTitle => 'Stanze, foto, calendario';
 
   @override
-  String get onbGardenBody => 'La storia di ogni pianta si conserva da sola.';
+  String get onbGardenBody =>
+      'Ogni annaffiatura, ogni rinvaso è datato e archiviato con la pianta.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';

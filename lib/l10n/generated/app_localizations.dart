@@ -5619,7 +5619,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbGardenBody.
   ///
   /// In fr, this message translates to:
-  /// **'L\'histoire de chaque plante se garde toute seule.'**
+  /// **'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.'**
   String get onbGardenBody;
 
   /// No description provided for @onbPrivacyTitle.

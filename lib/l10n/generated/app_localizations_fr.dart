@@ -3305,7 +3305,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbGardenBody =>
-      'L\'histoire de chaque plante se garde toute seule.';
+      'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.';
 
   @override
   String get onbPrivacyTitle => 'Tout reste sur votre téléphone';

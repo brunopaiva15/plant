@@ -3289,7 +3289,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbGardenBody =>
-      'Die Geschichte jeder Pflanze schreibt sich von allein.';
+      'Jedes Gießen, jedes Umtopfen wird datiert und bei der Pflanze abgelegt.';
 
   @override
   String get onbPrivacyTitle => 'Alles bleibt auf deinem Handy';

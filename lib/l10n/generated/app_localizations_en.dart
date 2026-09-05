@@ -3276,7 +3276,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbGardenTitle => 'Rooms, photos, calendar';
 
   @override
-  String get onbGardenBody => 'Each plant\'s history keeps itself.';
+  String get onbGardenBody =>
+      'Every watering and repotting is dated and filed with the plant.';
 
   @override
   String get onbPrivacyTitle => 'Everything stays on your phone';
