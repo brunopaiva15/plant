@@ -741,7 +741,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepPhotoSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Elle deviendra le visage de votre plante.'**
+  /// **'Pour la reconnaître, et la retrouver dans votre liste.'**
   String get stepPhotoSubtitle;
 
   /// No description provided for @takePhoto.
@@ -861,7 +861,7 @@ abstract class AppLocalizations {
   /// No description provided for @notesHint.
   ///
   /// In fr, this message translates to:
-  /// **'Tout ce qui vous semble utile…'**
+  /// **'Exposition, rempotage, remarques…'**
   String get notesHint;
 
   /// No description provided for @wateringEvery.
@@ -2157,7 +2157,7 @@ abstract class AppLocalizations {
   /// No description provided for @identifyHint.
   ///
   /// In fr, this message translates to:
-  /// **'Suggestions à confirmer, jamais des certitudes.'**
+  /// **'Suggestions d\'espèce, à confirmer.'**
   String get identifyHint;
 
   /// No description provided for @searchOnline.
@@ -2175,7 +2175,7 @@ abstract class AppLocalizations {
   /// No description provided for @suggestionsLocal.
   ///
   /// In fr, this message translates to:
-  /// **'Proposé par votre appareil, sans réseau.'**
+  /// **'Trouvé sur votre appareil, sans réseau.'**
   String get suggestionsLocal;
 
   /// No description provided for @suggestionsRemote.

@@ -397,7 +397,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stepPhotoTitle => 'Une photo ?';
 
   @override
-  String get stepPhotoSubtitle => 'Elle deviendra le visage de votre plante.';
+  String get stepPhotoSubtitle =>
+      'Pour la reconnaître, et la retrouver dans votre liste.';
 
   @override
   String get takePhoto => 'Prendre une photo';
@@ -459,7 +460,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notes => 'Notes';
 
   @override
-  String get notesHint => 'Tout ce qui vous semble utile…';
+  String get notesHint => 'Exposition, rempotage, remarques…';
 
   @override
   String get wateringEvery => 'Arrosage';
@@ -1192,7 +1193,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get identifyTitle => 'Est-ce bien…';
 
   @override
-  String get identifyHint => 'Suggestions à confirmer, jamais des certitudes.';
+  String get identifyHint => 'Suggestions d\'espèce, à confirmer.';
 
   @override
   String get searchOnline => 'Aucune ne correspond ? Chercher en ligne';
@@ -1201,7 +1202,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchingOnline => 'Recherche en ligne…';
 
   @override
-  String get suggestionsLocal => 'Proposé par votre appareil, sans réseau.';
+  String get suggestionsLocal => 'Trouvé sur votre appareil, sans réseau.';
 
   @override
   String get suggestionsRemote => 'Proposé en ligne par Pl@ntNet.';

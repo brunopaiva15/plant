@@ -396,7 +396,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepPhotoTitle => 'A photo?';
 
   @override
-  String get stepPhotoSubtitle => 'It becomes the face of your plant.';
+  String get stepPhotoSubtitle =>
+      'To recognise it, and to find it in your list.';
 
   @override
   String get takePhoto => 'Take a photo';
@@ -458,7 +459,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notes => 'Notes';
 
   @override
-  String get notesHint => 'Anything useful…';
+  String get notesHint => 'Light, repotting, remarks…';
 
   @override
   String get wateringEvery => 'Watering';
@@ -1190,7 +1191,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get identifyTitle => 'Is it…';
 
   @override
-  String get identifyHint => 'Suggestions to confirm, never certainties.';
+  String get identifyHint => 'Species suggestions, to confirm.';
 
   @override
   String get searchOnline => 'None of these? Search online';
@@ -1199,7 +1200,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchingOnline => 'Searching online…';
 
   @override
-  String get suggestionsLocal => 'Suggested by your device, with no network.';
+  String get suggestionsLocal => 'Found on your device, no network.';
 
   @override
   String get suggestionsRemote => 'Suggested online by Pl@ntNet.';
