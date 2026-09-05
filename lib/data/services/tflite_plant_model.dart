@@ -42,8 +42,11 @@ class TflitePlantModel implements LocalPlantModel {
   bool _failed = false;
   String? _loadError;
 
+  /// Vrai tant qu'un chargement n'a pas échoué : avant le premier appel, le
+  /// modèle est présumé présent, et c'est la cascade qui le charge. Ne pas
+  /// confondre avec « chargé », que dit [speciesCount] ou [version].
   @override
-  bool get isAvailable => _interpreter != null;
+  bool get isAvailable => !_failed;
 
   @override
   String? get version => _version;

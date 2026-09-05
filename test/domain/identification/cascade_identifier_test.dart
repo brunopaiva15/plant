@@ -29,8 +29,14 @@ class FakeLocal implements LocalPlantModel {
   @override
   String? get loadError => null;
 
+  int warmUps = 0;
+  bool loadFails = false;
+
   @override
-  Future<bool> warmUp() async => available;
+  Future<bool> warmUp() async {
+    warmUps++;
+    return available && !loadFails;
+  }
 
   @override
   Future<List<IdentificationCandidate>> classify(File image) async {
@@ -173,6 +179,32 @@ void main() {
     final cascade = build(FakeLocal(const [], available: false), remote);
     final result = await cascade.identify([photo], language: 'fr');
     expect(result.first.commonName, 'Faux philodendron');
+  });
+
+  test('the local model is loaded by the cascade itself before deciding', () async {
+    // Le bug d'origine : le modèle n'était consulté que si autre chose
+    // l'avait chargé avant — ouvrir les réglages, par exemple. Sinon la
+    // photo partait en ligne sans qu'il l'ait vue.
+    final local = FakeLocal(sure);
+    final remote = FakeRemote(remoteAnswer);
+    final cascade = build(local, remote);
+    await cascade.identify([photo]);
+    expect(local.warmUps, 1, reason: 'chargé par la cascade');
+    expect(local.calls, 1, reason: 'puis consulté');
+    expect(remote.calls, 0);
+    expect(cascade.metrics.local, 1);
+  });
+
+  test('a model whose loading fails is skipped, not counted as run', () async {
+    final local = FakeLocal(sure, )..loadFails = true;
+    final remote = FakeRemote(remoteAnswer);
+    final cascade = build(local, remote);
+    final result = await cascade.identify([photo]);
+    expect(local.calls, 0);
+    expect(remote.calls, 1);
+    expect(result.first.source, IdentificationSource.remote);
+    expect(cascade.metrics.local, 0);
+    expect(cascade.metrics.fallbacks, 0, reason: 'un appel direct n\'est pas un repli');
   });
 
   test('hesitant local answer falls back to the remote service', () async {

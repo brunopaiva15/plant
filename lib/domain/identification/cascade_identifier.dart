@@ -120,7 +120,13 @@ class CascadeIdentifier implements PlantIdentifier {
     var m = metricsStore.read().copyWith(total: metricsStore.read().total + 1);
     List<IdentificationCandidate> localResult = const [];
     var verdict = IdentificationVerdict.noCandidate;
-    if (local.isAvailable) {
+    // Le modèle se charge à la première demande. Décider sur `isAvailable`
+    // seul revenait à l'ignorer tant que rien d'autre ne l'avait chargé — en
+    // pratique, tant que l'utilisateur n'avait pas ouvert les réglages — et
+    // à payer un appel distant pour une photo que le modèle n'avait jamais
+    // vue. On le charge donc ici, dans le même délai que la classification.
+    final localRan = local.isAvailable && await _warmUp();
+    if (localRan) {
       m = m.copyWith(local: m.local + 1);
       try {
         localResult = _mark(await _classifyAll(images), IdentificationSource.local, language);
@@ -156,7 +162,7 @@ class CascadeIdentifier implements PlantIdentifier {
       } else {
         m = m.copyWith(
           remote: m.remote + 1,
-          fallbacks: m.fallbacks + (local.isAvailable ? 1 : 0),
+          fallbacks: m.fallbacks + (localRan ? 1 : 0),
           remoteDay: today,
           remoteToday: todayCount + 1,
         );
@@ -179,6 +185,16 @@ class CascadeIdentifier implements PlantIdentifier {
     if (localResult.isNotEmpty) m = m.copyWith(confidenceSum: m.confidenceSum + localResult.first.score);
     await metricsStore.write(m);
     return _remember(key, localResult);
+  }
+
+  /// Charge le modèle si ce n'est pas déjà fait. Faux si le chargement
+  /// échoue ou traîne : la cascade continue alors sans lui.
+  Future<bool> _warmUp() async {
+    try {
+      return await local.warmUp().timeout(localTimeout);
+    } on Object {
+      return false;
+    }
   }
 
   Future<List<IdentificationCandidate>> _classifyAll(List<File> images) async {
