@@ -777,7 +777,7 @@ abstract class AppLocalizations {
   /// No description provided for @plantNameHint.
   ///
   /// In fr, this message translates to:
-  /// **'Monstera du salon'**
+  /// **'Nom de la plante'**
   String get plantNameHint;
 
   /// No description provided for @speciesHint.

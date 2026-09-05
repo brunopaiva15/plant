@@ -416,7 +416,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get stepNameTitle => 'Come si chiama?';
 
   @override
-  String get plantNameHint => 'Monstera del salotto';
+  String get plantNameHint => 'Nome della pianta';
 
   @override
   String get speciesHint => 'Specie (facoltativo)';
