@@ -119,11 +119,8 @@ class _LocationsSlivers extends ConsumerWidget {
           ),
         ),
         if (tree.hasValue && nodes.isEmpty)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(
-              child: EmptyState(emoji: '🏡', title: l10n.noLocationsTitle, subtitle: l10n.noLocationsSubtitle, actionLabel: l10n.newLocationTitle, onAction: () => showLocationEditSheet(context)),
-            ),
+          SliverCentered(
+            child: EmptyState(emoji: '🏡', title: l10n.noLocationsTitle, subtitle: l10n.noLocationsSubtitle, actionLabel: l10n.newLocationTitle, onAction: () => showLocationEditSheet(context)),
           )
         else
           SliverPadding(

@@ -58,11 +58,8 @@ class InventorySlivers extends ConsumerWidget {
     final selection = ref.watch(inventorySelectionProvider);
 
     if (items.hasValue && all.isEmpty) {
-      return SliverFillRemaining(
-        hasScrollBody: false,
-        child: Center(
+      return SliverCentered(
           child: EmptyState(emoji: '🧰', title: l10n.noInventoryTitle, subtitle: l10n.noInventorySubtitle, actionLabel: l10n.newItem, onAction: () => showInventoryItemSheet(context)),
-        ),
       );
     }
 

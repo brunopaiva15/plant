@@ -68,13 +68,10 @@ class TasksSlivers extends ConsumerWidget {
           ),
         ),
         if (all.hasValue && sections.isEmpty)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(
-              child: filter == TaskFilter.done
-                  ? EmptyState(emoji: '☑️', title: l10n.noDoneTasks, compact: true)
-                  : EmptyState(emoji: '📝', title: l10n.noTasksTitle, subtitle: l10n.noTasksSubtitle, actionLabel: l10n.newTask, onAction: () => showTaskSheet(context)),
-            ),
+          SliverCentered(
+            child: filter == TaskFilter.done
+                ? EmptyState(emoji: '☑️', title: l10n.noDoneTasks, compact: true)
+                : EmptyState(emoji: '📝', title: l10n.noTasksTitle, subtitle: l10n.noTasksSubtitle, actionLabel: l10n.newTask, onAction: () => showTaskSheet(context)),
           )
         else
           for (final (title, list) in sections)

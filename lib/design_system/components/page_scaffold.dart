@@ -5,6 +5,30 @@ import '../theme/flora_theme.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
 
+/// Un état vide posé au milieu de ce que l'œil voit : entre le bas de
+/// l'en-tête et le haut de la barre d'onglets.
+///
+/// `SliverFillRemaining` seul centre dans tout ce qui reste du viewport — or
+/// le contenu passe sous la barre flottante, et le Scaffold signale cette
+/// bande dans le padding bas du MediaQuery. On la retire du calcul, sans
+/// quoi le bloc tombe trop bas, comme aimanté par la barre.
+class SliverCentered extends StatelessWidget {
+  const SliverCentered({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        child: Center(child: child),
+      ),
+    );
+  }
+}
+
 /// Page à grand titre (onglets) : CupertinoSliverNavigationBar natif sur iOS,
 /// SliverAppBar.large sur Android. Le contenu est une liste de slivers.
 class LargeTitlePage extends StatelessWidget {

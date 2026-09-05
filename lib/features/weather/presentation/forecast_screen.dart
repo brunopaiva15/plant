@@ -23,15 +23,14 @@ class ForecastScreen extends ConsumerWidget {
     if (place == null) {
       return FloraPage(
         title: l10n.weatherForecastTitle,
-        child: Padding(
-          padding: const EdgeInsets.only(top: Space.huge),
+        scrollable: false,
+        child: Center(
           child: EmptyState(
             emoji: '🌤️',
             title: l10n.weatherForecastTitle,
             subtitle: l10n.weatherNoPlace,
             actionLabel: l10n.weatherPickPlace,
             onAction: () => context.push(Routes.weather),
-            compact: true,
           ),
         ),
       );

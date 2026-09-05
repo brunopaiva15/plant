@@ -85,16 +85,13 @@ class TodayScreen extends ConsumerWidget {
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
         if (plantCount == 0 && tasks.hasValue)
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(
-              child: EmptyState(
-                emoji: '🌱',
-                title: l10n.emptyGardenTitle,
-                subtitle: l10n.emptyGardenSubtitle,
-                actionLabel: l10n.addFirstPlant,
-                onAction: () => startCreatePlantFlow(context, ref),
-              ),
+          SliverCentered(
+            child: EmptyState(
+              emoji: '🌱',
+              title: l10n.emptyGardenTitle,
+              subtitle: l10n.emptyGardenSubtitle,
+              actionLabel: l10n.addFirstPlant,
+              onAction: () => startCreatePlantFlow(context, ref),
             ),
           )
         else ...[

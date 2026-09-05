@@ -107,13 +107,10 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
           ),
           slivers: [
             if (plants.hasValue && list.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(
-                  child: total == 0
-                      ? EmptyState(emoji: '🪴', title: l10n.emptyPlantsTitle, subtitle: l10n.emptyPlantsSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref))
-                      : EmptyState(emoji: '🔍', title: l10n.noResultsTitle, subtitle: l10n.noResultsSubtitle, compact: true),
-                ),
+              SliverCentered(
+                child: total == 0
+                    ? EmptyState(emoji: '🪴', title: l10n.emptyPlantsTitle, subtitle: l10n.emptyPlantsSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref))
+                    : EmptyState(emoji: '🔍', title: l10n.noResultsTitle, subtitle: l10n.noResultsSubtitle, compact: true),
               )
             else if (grid)
               SliverPadding(
