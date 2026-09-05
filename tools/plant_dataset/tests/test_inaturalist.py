@@ -105,3 +105,36 @@ def test_image_candidates_asks_only_for_allowed_licences():
     assert params['photo_license'] == 'cc0,cc-by'
     assert params['quality_grade'] == 'any', 'les plantes en pot sont « casual »'
     assert params['taxon_id'] == 125439
+
+
+def test_synonym_is_accepted_when_inaturalist_matched_that_exact_name():
+    """« Schefflera arboricola » est vendu partout sous ce nom ; iNaturalist
+    le connaît comme synonyme de « Heptapleurum arboricola »."""
+    c = client({'/taxa': load('inat_taxa_schefflera.json')})
+    t = c.match('Schefflera arboricola')
+    assert t is not None
+    assert t.name == 'Heptapleurum arboricola'
+    assert t.rank == 'species'
+    assert t.is_synonym and t.matched_as == 'Schefflera arboricola'
+    assert t.observations > 1000
+
+
+def test_a_genus_is_not_an_answer():
+    """« Alocasia amazonica » ne ramène que le genre : ce n'est pas une
+    espèce, on préfère aucune image à des images de n'importe quel Alocasia."""
+    c = client({'/taxa': load('inat_taxa_alocasia.json')})
+    assert c.match('Alocasia amazonica') is None
+
+
+def test_exact_name_wins_over_a_synonym_match():
+    payload = {'results': [
+        {'id': 1, 'name': 'Other species', 'rank': 'species', 'is_active': True, 'matched_term': 'Pilea peperomioides', 'observations_count': 9},
+        {'id': 2, 'name': 'Pilea peperomioides', 'rank': 'species', 'is_active': True, 'matched_term': 'Pilea peperomioides', 'observations_count': 3},
+    ]}
+    t = client({'/taxa': payload}).match('Pilea peperomioides')
+    assert t.id == 2 and not t.is_synonym
+
+
+def test_inactive_taxa_are_ignored():
+    payload = {'results': [{'id': 3, 'name': 'Zombie plantus', 'rank': 'species', 'is_active': False, 'matched_term': 'Zombie plantus'}]}
+    assert client({'/taxa': payload}).match('Zombie plantus') is None

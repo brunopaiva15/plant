@@ -30,12 +30,22 @@ PHOTO_LICENSES_WITH_SA = 'cc0,cc-by,cc-by-sa'
 _PHOTO_ID = re.compile(r'/photos/(\d+)/')
 
 
+SPECIES_RANKS = {'species', 'subspecies', 'variety', 'form', 'hybrid'}
+
+
 @dataclass
 class InatTaxon:
     id: int
     name: str
     rank: str
     observations: int
+
+    #: Le nom demandé, quand il diffère du nom accepté (synonyme).
+    matched_as: str = ''
+
+    @property
+    def is_synonym(self) -> bool:
+        return bool(self.matched_as) and self.matched_as.lower() != self.name.lower()
 
 
 def photo_id_of(url: str) -> str | None:
@@ -69,13 +79,34 @@ class InatClient:
         raise RuntimeError('unreachable')
 
     def match(self, name: str) -> InatTaxon | None:
-        """Le taxon dont le nom est exactement celui demandé, au rang espèce."""
-        d = self._get('/taxa', q=name, rank='species', per_page=10)
+        """Le taxon correspondant au nom demandé, au rang de l'espèce ou en dessous.
+
+        Beaucoup de plantes d'intérieur sont vendues sous un nom que la
+        taxonomie a depuis abandonné : « Schefflera arboricola » est devenu
+        « Heptapleurum arboricola », « Saintpaulia ionantha » est devenu
+        « Streptocarpus ionanthus ». iNaturalist connaît ces synonymes et
+        répond avec le nom accepté, en indiquant dans `matched_term` le nom
+        qui a servi à trouver. Refuser ces réponses reviendrait à se priver
+        des espèces les plus courantes du catalogue.
+
+        Un synonyme n'est accepté que si `matched_term` est exactement le nom
+        demandé — jamais sur une simple ressemblance — et que le rang est
+        celui d'une espèce. « Alocasia amazonica » ramène le *genre* Alocasia :
+        ce n'est pas une réponse, c'est un aveu d'ignorance.
+        """
+        d = self._get('/taxa', q=name, per_page=10)
         wanted = name.strip().lower()
+        fallback = None
         for r in d.get('results', []):
-            if (r.get('name') or '').lower() == wanted and r.get('is_active', True):
-                return InatTaxon(id=r['id'], name=r['name'], rank=r.get('rank', ''), observations=int(r.get('observations_count') or 0))
-        return None
+            if not r.get('is_active', True) or (r.get('rank') or '') not in SPECIES_RANKS:
+                continue
+            taxon = InatTaxon(id=r['id'], name=r.get('name', ''), rank=r.get('rank', ''),
+                              observations=int(r.get('observations_count') or 0), matched_as=name.strip())
+            if taxon.name.lower() == wanted:
+                return taxon
+            if fallback is None and (r.get('matched_term') or '').strip().lower() == wanted:
+                fallback = taxon
+        return fallback
 
     def image_candidates(self, taxon_id: int, max_observations: int = 2000, allow_share_alike: bool = False) -> Iterator[ImageCandidate]:
         licenses = PHOTO_LICENSES_WITH_SA if allow_share_alike else PHOTO_LICENSES

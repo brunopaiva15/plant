@@ -67,7 +67,8 @@ def resolve_inat(client: InatClient, plant: PlantEntry, cache: dict) -> dict | N
     if plant.scientific_name in cache:
         return cache[plant.scientific_name]
     t = client.match(plant.scientific_name)
-    entry = None if t is None else {'id': t.id, 'name': t.name, 'rank': t.rank, 'observations': t.observations}
+    entry = None if t is None else {'id': t.id, 'name': t.name, 'rank': t.rank, 'observations': t.observations,
+                                    'matched_as': t.matched_as, 'synonym': t.is_synonym}
     cache[plant.scientific_name] = entry
     return entry
 
