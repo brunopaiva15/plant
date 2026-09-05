@@ -275,15 +275,44 @@ quasi-doublons ne se séparent jamais), déterministe par empreinte.
 
 Comment lancer, options, résultat attendu : `tools/plant_dataset/README.md`.
 
-## 6. Plan d'entraînement
+## 6. Entraînement
+
+### 6.1 Collecte phase 1 — résultat réel
+
+Lancée sur les 95 plantes d'intérieur et succulentes du catalogue
+(`SpeciesCategory.indoor` + `succulent`), cible 120 images par espèce :
+
+| | |
+|---|---|
+| Images gardées | **8 825** sur 9 309 téléchargées |
+| Espèces avec des images | 87 sur 95 |
+| Licences | 5 401 CC BY 4.0, 3 424 CC0 1.0 — **aucune autre** |
+| Sources | 6 129 GBIF, 2 696 iNaturalist en direct |
+| Doublons | 0 exact, 380 quasi (écartés) |
+| Étiquettes douteuses | 0 |
+| Répartition | 7 077 train / 863 val / 885 test |
+| Disque | 2,8 Go |
+
+Répartition par espèce : 66 au-dessus de 100 images, 10 entre 50 et 99,
+6 entre 25 et 49, 5 en dessous de 25. Les plus pauvres — *Echinocactus
+grusonii* (1), *Begonia rex* (8), *Cissus rhombifolia* (8) — sont écartées
+du modèle par le seuil `--min-train` : une classe à 8 images n'apprend rien
+et fausse la mesure. Elles restent identifiables par Pl@ntNet.
+
+Les 8 espèces sans aucune image sont des noms horticoles que ni GBIF ni
+iNaturalist ne connaissent sous cette forme (`Dracaena marginata`,
+`Saintpaulia ionantha`…). Elles seront rattachées à leur nom accepté lors
+d'une prochaine passe.
+
+### 6.2 Recette
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
-| 1 | 50 plantes d'intérieur les plus courantes | 100 → 300 | prouver le pipeline de bout en bout, premier `.tflite` |
-| 2 | 297 (catalogue trié) | 300 → 500 | modèle livré dans l'app |
+| 1 ✅ | 95 plantes d'intérieur et succulentes | 120 | premier `.tflite` livré |
+| 2 | 297 (catalogue trié) | 300 → 500 | couverture du catalogue |
 | 3 | 1 000 – 1 500 (catalogue étendu, sélection) | 300 | couverture large |
 
-Recette (à écrire dans `tools/plant_model/`, après la phase de collecte) :
+`tools/plant_model/train.py` :
 
 - **Architecture** : MobileNetV3-Large ou EfficientNet-Lite0, pré-entraîné
   ImageNet (puis PlantNet-300K en option), tête remplacée par N + 1 classes
