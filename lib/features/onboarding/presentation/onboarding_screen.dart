@@ -72,9 +72,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   final _pages = PageController();
   late final _entry = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..forward();
 
-  /// La dérive du fond et le flottement des éclats : une boucle lente qui ne
-  /// s'arrête jamais.
-  late final _float = AnimationController(vsync: this, duration: const Duration(seconds: 9))..repeat();
+  /// La dérive du fond : un souffle d'une seconde et demie à l'arrivée sur
+  /// chaque écran, qui ralentit et se pose. Rien ne bouge à perpétuité.
+  late final _float = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..forward();
 
   int _page = 0;
 
@@ -101,18 +101,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _keepIllustrations(0);
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Un fond qui dérive sans fin est exactement ce que « réduire les
-    // animations » demande d'arrêter.
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _float.stop();
-    } else if (!_float.isAnimating) {
-      _float.repeat();
-    }
   }
 
   @override
@@ -153,8 +141,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   void _onPageChanged(int page) {
     setState(() => _page = page);
     _keepIllustrations(page);
-    // Chaque écran rejoue son entrée à l'arrivée, jamais avant.
+    // Chaque écran rejoue son entrée à l'arrivée, jamais avant ; le fond
+    // reprend son souffle en même temps.
     _entry
+      ..reset()
+      ..forward();
+    _float
       ..reset()
       ..forward();
   }
@@ -199,7 +191,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _float,
-              builder: (context, _) => OnboardingAurora(tint: _tint(c), drift: _float.value, reduceMotion: reduce),
+              builder: (context, _) => OnboardingAurora(tint: _tint(c), drift: Curves.easeOutCubic.transform(_float.value), reduceMotion: reduce),
             ),
           ),
           SafeArea(

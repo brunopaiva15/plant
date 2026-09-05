@@ -115,22 +115,25 @@ class OnboardingStage extends StatelessWidget {
   }
 }
 
-/// Le fond : trois souffles de couleur qui dérivent lentement et changent de
-/// teinte d'un écran à l'autre. Rien n'a de bord : c'est ce qui distingue une
-/// ambiance d'un aplat.
+/// Le fond : trois souffles de couleur qui glissent un peu à l'arrivée, puis
+/// se posent, et changent de teinte d'un écran à l'autre. Rien n'a de bord :
+/// c'est ce qui distingue une ambiance d'un aplat.
 class OnboardingAurora extends StatelessWidget {
   const OnboardingAurora({super.key, required this.tint, required this.drift, required this.reduceMotion});
 
   /// La couleur de l'écran courant, déjà interpolée entre deux écrans.
   final Color tint;
 
+  /// Avancement du souffle d'arrivée, de 0 à 1 : les taches glissent d'un
+  /// rien et s'arrêtent.
   final double drift;
   final bool reduceMotion;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final phase = reduceMotion ? 0.0 : drift * 2 * math.pi;
+    // Un demi-radian de course en tout : le fond respire, il ne tourne pas.
+    final phase = reduceMotion ? 0.5 : drift * 0.5;
     return IgnorePointer(
       child: Stack(
         children: [

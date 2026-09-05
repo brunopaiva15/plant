@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 /// Une illustration 3D de l'onboarding : une image fixe, et une boucle de 24
-/// images jouée à 24 im/s tant que l'écran est à l'affichage.
+/// images jouée à 24 im/s à l'arrivée sur l'écran.
 ///
 /// Le principe est celui d'`UIImageView.animationImages` : les 24 images sont
 /// décodées à l'avance, puis échangées au rythme du ticker. L'image fixe reste
 /// le repli — c'est elle que l'on voit avant le décodage, et c'est la seule
 /// chose affichée si le système demande de réduire les animations.
+///
+/// La boucle ne tourne pas sans fin : elle joue [playFor], puis termine son
+/// cycle et se pose sur l'image de repos. Un objet qui respire à perpétuité
+/// finit par fatiguer l'œil ; un objet qui bouge à l'arrivée, puis se tient
+/// tranquille, ressemble à quelque chose de vivant.
 class ClayIllustration extends StatefulWidget {
-  const ClayIllustration({super.key, required this.slide, required this.side, this.animate = true});
+  const ClayIllustration({super.key, required this.slide, required this.side, this.animate = true, this.playFor = const Duration(milliseconds: 1500)});
 
   /// Numéro de l'écran, de 1 à 5.
   final int slide;
@@ -20,6 +25,10 @@ class ClayIllustration extends StatefulWidget {
 
   /// L'écran est-il à l'affichage ? À `false`, la boucle s'arrête.
   final bool animate;
+
+  /// Temps de jeu de la boucle. Passé ce délai, elle finit son cycle en cours
+  /// — s'arrêter au milieu ferait sauter l'objet — puis s'immobilise.
+  final Duration playFor;
 
   /// Nombre d'images de la boucle. La 24e enchaîne sur la 1re sans coupure.
   static const int frameCount = 24;
@@ -80,6 +89,10 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   /// une boucle qui saute des images se voit plus qu'une image immobile.
   var _ready = false;
 
+  /// La boucle a joué son temps et s'est posée : elle ne repart qu'à la
+  /// prochaine arrivée sur l'écran.
+  var _played = false;
+
   @override
   void initState() {
     super.initState();
@@ -106,6 +119,8 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
       // L'objet arrive au centre : c'est maintenant qu'il faut ses images.
       _load();
     }
+    // Quitter l'écran remet la boucle à zéro : elle rejouera au retour.
+    if (!widget.animate) _played = false;
     _sync();
   }
 
@@ -126,7 +141,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   /// depuis les points où une reconstruction suit de toute façon, elle change
   /// l'image courante sans `setState`.
   void _sync() {
-    final wanted = _ready && widget.animate && !_reduceMotion;
+    final wanted = _ready && widget.animate && !_played && !_reduceMotion;
     if (wanted && !_ticker.isActive) {
       _ticker.start();
     } else if (!wanted && _ticker.isActive) {
@@ -140,6 +155,16 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   void _tick(Duration elapsed) {
     final micros = ClayIllustration._loop.inMicroseconds;
     final next = elapsed.inMicroseconds % micros * ClayIllustration.frameCount ~/ micros;
+    // Le temps est écoulé et le cycle revient à son début : on se pose là,
+    // sur la même pose que l'image fixe, sans le moindre saut.
+    if (elapsed >= widget.playFor && next < _frame) {
+      _ticker.stop();
+      setState(() {
+        _played = true;
+        _frame = 0;
+      });
+      return;
+    }
     if (next != _frame) setState(() => _frame = next);
   }
 
@@ -151,7 +176,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    final playing = _ready && widget.animate && !_reduceMotion;
+    final playing = _ticker.isActive;
     final path = playing ? ClayIllustration.frame(widget.slide, _frame) : ClayIllustration.still(widget.slide);
     return SizedBox.square(
       dimension: widget.side,
