@@ -21,12 +21,23 @@ enum IdentificationVerdict {
 class FallbackPolicy {
   const FallbackPolicy({this.acceptThreshold = 0.90, this.minMargin = 0.25, this.floor = 0.10});
 
-  /// Score minimal du premier candidat pour l'accepter seul. Valeur de
-  /// départ volontairement prudente : elle se recale sur le jeu de test
-  /// une fois le modèle entraîné (voir docs/09-plant-recognition.md).
+  /// Score minimal du premier candidat pour l'accepter seul.
+  ///
+  /// Mesuré sur le jeu de test du modèle v1 (862 images, 78 espèces) :
+  /// à 0,90 le modèle répond seul dans 30 % des cas, et il a raison
+  /// 96,9 % de ces fois-là. À 0,95 la précision monte à 97,9 % mais
+  /// l'acceptation tombe à 22 %. L'écart entre les deux précisions est
+  /// à peine plus grand que l'incertitude de la mesure (±1 point sur
+  /// 259 réponses acceptées) : on garde 0,90, qui économise un tiers
+  /// d'appels distants de plus.
   final double acceptThreshold;
 
   /// Écart minimal entre le premier et le deuxième score.
+  ///
+  /// Sans effet tant que [acceptThreshold] dépasse 0,625 : les scores d'un
+  /// softmax somment à 1, donc un premier à 0,90 laisse au plus 0,10 au
+  /// deuxième, soit une marge de 0,80. La règle ne mord que si l'on baisse
+  /// le seuil, ou avec un modèle dont les sorties ne somment pas à 1.
   final double minMargin;
 
   /// Sous ce score, un candidat ne compte même pas comme « incertain » :

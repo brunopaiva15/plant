@@ -185,6 +185,11 @@ def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: di
     meta = {
         'version': metrics.get('version', '1'),
         'input_size': IMAGE_SIZE,
+        # La recette de prétraitement, pour que l'application applique
+        # exactement la même : redimensionner le carré central à `load_size`
+        # puis recadrer au centre à `input_size`. Redimensionner directement
+        # à 224 change le cadrage et coûte plusieurs points de précision.
+        'load_size': LOAD_SIZE,
         'classes': len(classes),
         'architecture': 'MobileNetV3Small',
         'preprocessing': 'included_in_graph_uint8_0_255',

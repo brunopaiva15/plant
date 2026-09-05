@@ -36,6 +36,7 @@ class TflitePlantModel implements LocalPlantModel {
   List<String> _labels = const [];
   String? _version;
   int _inputSize = 224;
+  int _loadSize = 256;
   Future<bool>? _loading;
   bool _failed = false;
 
@@ -59,6 +60,8 @@ class TflitePlantModel implements LocalPlantModel {
         _version = RegExp(r'"version"\s*:\s*"([^"]+)"').firstMatch(meta)?.group(1);
         final size = RegExp(r'"input_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);
         if (size != null) _inputSize = int.parse(size);
+        final load = RegExp(r'"load_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);
+        _loadSize = load != null ? int.parse(load) : _inputSize;
       } on Object {
         // Les métadonnées sont un confort : sans elles, les valeurs par défaut
         // du graphe suffisent.
@@ -82,7 +85,7 @@ class TflitePlantModel implements LocalPlantModel {
     final interpreter = _interpreter;
     if (interpreter == null) return const [];
 
-    final input = await _prepare(image, _inputSize);
+    final input = await _prepare(image, _inputSize, _loadSize);
     if (input == null) return const [];
 
     final output = [List<double>.filled(_labels.length, 0)];
@@ -119,21 +122,40 @@ class TflitePlantModel implements LocalPlantModel {
     return normalizeScientificName('$genus $rest'.trim());
   }
 
-  /// Décodage, recadrage central au carré, redimensionnement. Fait dans un
-  /// isolat : une photo de 12 Mpx bloquerait sinon l'interface une seconde.
-  static Future<List<List<List<List<double>>>>?> _prepare(File file, int size) async {
+  /// Décodage et cadrage, dans un isolat : une photo de 12 Mpx bloquerait
+  /// sinon l'interface pendant une seconde.
+  ///
+  /// La recette doit être **exactement** celle de l'entraînement — carré
+  /// central, redimensionnement à `loadSize`, puis recadrage central à
+  /// `size`. Redimensionner directement à 224 donne un cadrage plus large
+  /// et coûte plusieurs points de précision, mesurés sur le jeu de test.
+  static Future<List<List<List<List<double>>>>?> _prepare(File file, int size, int loadSize) async {
     final bytes = await file.readAsBytes();
-    return Isolate.run(() => _decode(bytes, size));
+    return Isolate.run(() => _decode(bytes, size, loadSize));
   }
 
-  static List<List<List<List<double>>>>? _decode(Uint8List bytes, int size) {
-    final decoded = img.decodeImage(bytes);
+  @visibleForTesting
+  static List<List<List<List<double>>>>? decodeForTest(Uint8List bytes, int size, int loadSize) => _decode(bytes, size, loadSize);
+
+  static List<List<List<List<double>>>>? _decode(Uint8List bytes, int size, int loadSize) {
+    // Un fichier tronqué ou dans un format inattendu n'est pas une panne du
+    // modèle : c'est une photo sans candidat, et la cascade ira au service
+    // distant. Le décodeur lève sur certaines entrées au lieu de rendre null.
+    final img.Image? decoded;
+    try {
+      decoded = img.decodeImage(bytes);
+    } on Object {
+      return null;
+    }
     if (decoded == null) return null;
     final oriented = img.bakeOrientation(decoded);
     final side = oriented.width < oriented.height ? oriented.width : oriented.height;
     final square = img.copyCrop(oriented,
         x: (oriented.width - side) ~/ 2, y: (oriented.height - side) ~/ 2, width: side, height: side);
-    final small = img.copyResize(square, width: size, height: size, interpolation: img.Interpolation.linear);
+    final load = loadSize < size ? size : loadSize;
+    final resized = img.copyResize(square, width: load, height: load, interpolation: img.Interpolation.linear);
+    final offset = (load - size) ~/ 2;
+    final small = load == size ? resized : img.copyCrop(resized, x: offset, y: offset, width: size, height: size);
     // Forme [1, size, size, 3], en octets 0–255 : le graphe normalise lui-même.
     final rows = <List<List<double>>>[];
     for (var y = 0; y < size; y++) {

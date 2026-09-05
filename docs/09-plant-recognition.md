@@ -84,10 +84,23 @@ Réponse locale **acceptée** si, et seulement si :
 Un modèle qui donne 0,91 / 0,89 n'a rien décidé ; on demande à Pl@ntNet.
 Sous **0,10**, la liste ne vaut rien (image hors sujet) : `noCandidate`.
 
-Ces valeurs sont un **point de départ** choisi prudemment : elles seront
-recalées sur le jeu de test du premier modèle en cherchant le seuil qui
-donne ≥ 97 % de précision sur les réponses acceptées, et on mesurera le
-taux de repli qui en découle (cible : < 30 % sur les plantes du catalogue).
+**Recalage sur le modèle v1** (862 images de test, 78 espèces) :
+
+| Seuil | Réponses acceptées | Précision sur ces réponses |
+|---|---|---|
+| 0,80 | 39 % | 92,6 % |
+| **0,90** | **30 %** | **96,9 %** |
+| 0,95 | 22 % | 97,9 % |
+
+On garde **0,90**. La précision à 0,95 est meilleure d'un point, mais
+l'incertitude de la mesure est du même ordre (±1 point sur 259 réponses
+acceptées) alors que l'acceptation chute d'un tiers.
+
+**La marge est aujourd'hui sans effet** : les scores d'un softmax somment
+à 1, donc un premier candidat à 0,90 laisse au plus 0,10 au deuxième —
+la marge vaut toujours au moins 0,80. Elle ne mordrait qu'avec un seuil
+sous 0,625, ou un modèle dont les sorties ne somment pas à 1. Elle est
+conservée pour cela, pas parce qu'elle travaille.
 
 ### 3.2 Inconnu / hors distribution
 
@@ -304,7 +317,36 @@ iNaturalist ne connaissent sous cette forme (`Dracaena marginata`,
 `Saintpaulia ionantha`…). Elles seront rattachées à leur nom accepté lors
 d'une prochaine passe.
 
-### 6.2 Recette
+### 6.2 Résultats du modèle v1
+
+| | |
+|---|---|
+| Architecture | MobileNetV3-Small, transfert ImageNet |
+| Classes retenues | **78** (seuil de 25 images d'entraînement) |
+| Fichier | **2,0 Mo** en TFLite float16 |
+| Top-1 sur le test | **63,8 %** |
+| Top-3 sur le test | **81,3 %** |
+| Macro-F1 | 0,642 |
+| Entraînement | 16 époques, ~10 min sur 4 cœurs |
+
+Top-3 à 81 % est le chiffre qui compte pour l'usage réel : l'écran propose
+cinq candidats et l'utilisateur choisit. La bonne espèce est dans la liste
+quatre fois sur cinq.
+
+Deux enseignements de cet entraînement, tous deux corrigés :
+
+1. **Normalisations par lots dégelées** — la validation est tombée de
+   48,4 % à 39,8 % dès la première époque de réglage fin, pendant que
+   l'entraînement montait. Elles sont désormais figées et le taux
+   d'apprentissage divisé par deux.
+2. **Prétraitement désaccordé** — l'entraînement redimensionne le carré
+   central à 256 puis recadre à 224 ; l'application redimensionnait
+   directement à 224. Mesuré sur le `.tflite` exporté, cet écart coûtait
+   **4,4 points** de top-1 (55,6 % contre 60,0 % sur le même échantillon).
+   La recette est maintenant écrite dans `model.json` (`input_size`,
+   `load_size`) et lue par l'application, plutôt que codée des deux côtés.
+
+### 6.3 Recette
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|

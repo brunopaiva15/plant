@@ -1,0 +1,268 @@
+{
+ "version": "1",
+ "input_size": 224,
+ "load_size": 256,
+ "classes": 78,
+ "architecture": "MobileNetV3Small",
+ "preprocessing": "included_in_graph_uint8_0_255",
+ "sha256": "226dd248e0c05ff54a8ba8051334d86b2bfed252b2da882be236200eb0db4ac3",
+ "bytes": 2030596,
+ "metrics": {
+  "images": 862,
+  "top1": 0.6381,
+  "top3": 0.8132,
+  "macro_f1": 0.6424,
+  "mean_confidence": 0.6453,
+  "version": "1"
+ },
+ "threshold_curve": [
+  {
+   "threshold": 0.5,
+   "min_margin": 0.0,
+   "accepted_rate": 0.6218,
+   "precision_when_accepted": 0.8377
+  },
+  {
+   "threshold": 0.5,
+   "min_margin": 0.15,
+   "accepted_rate": 0.6125,
+   "precision_when_accepted": 0.8409
+  },
+  {
+   "threshold": 0.5,
+   "min_margin": 0.25,
+   "accepted_rate": 0.6067,
+   "precision_when_accepted": 0.8432
+  },
+  {
+   "threshold": 0.5,
+   "min_margin": 0.4,
+   "accepted_rate": 0.5626,
+   "precision_when_accepted": 0.8701
+  },
+  {
+   "threshold": 0.6,
+   "min_margin": 0.0,
+   "accepted_rate": 0.5534,
+   "precision_when_accepted": 0.8721
+  },
+  {
+   "threshold": 0.6,
+   "min_margin": 0.15,
+   "accepted_rate": 0.5534,
+   "precision_when_accepted": 0.8721
+  },
+  {
+   "threshold": 0.6,
+   "min_margin": 0.25,
+   "accepted_rate": 0.5522,
+   "precision_when_accepted": 0.8718
+  },
+  {
+   "threshold": 0.6,
+   "min_margin": 0.4,
+   "accepted_rate": 0.5441,
+   "precision_when_accepted": 0.8785
+  },
+  {
+   "threshold": 0.7,
+   "min_margin": 0.0,
+   "accepted_rate": 0.4791,
+   "precision_when_accepted": 0.908
+  },
+  {
+   "threshold": 0.7,
+   "min_margin": 0.15,
+   "accepted_rate": 0.4791,
+   "precision_when_accepted": 0.908
+  },
+  {
+   "threshold": 0.7,
+   "min_margin": 0.25,
+   "accepted_rate": 0.4791,
+   "precision_when_accepted": 0.908
+  },
+  {
+   "threshold": 0.7,
+   "min_margin": 0.4,
+   "accepted_rate": 0.4791,
+   "precision_when_accepted": 0.908
+  },
+  {
+   "threshold": 0.8,
+   "min_margin": 0.0,
+   "accepted_rate": 0.3933,
+   "precision_when_accepted": 0.9263
+  },
+  {
+   "threshold": 0.8,
+   "min_margin": 0.15,
+   "accepted_rate": 0.3933,
+   "precision_when_accepted": 0.9263
+  },
+  {
+   "threshold": 0.8,
+   "min_margin": 0.25,
+   "accepted_rate": 0.3933,
+   "precision_when_accepted": 0.9263
+  },
+  {
+   "threshold": 0.8,
+   "min_margin": 0.4,
+   "accepted_rate": 0.3933,
+   "precision_when_accepted": 0.9263
+  },
+  {
+   "threshold": 0.85,
+   "min_margin": 0.0,
+   "accepted_rate": 0.3411,
+   "precision_when_accepted": 0.9456
+  },
+  {
+   "threshold": 0.85,
+   "min_margin": 0.15,
+   "accepted_rate": 0.3411,
+   "precision_when_accepted": 0.9456
+  },
+  {
+   "threshold": 0.85,
+   "min_margin": 0.25,
+   "accepted_rate": 0.3411,
+   "precision_when_accepted": 0.9456
+  },
+  {
+   "threshold": 0.85,
+   "min_margin": 0.4,
+   "accepted_rate": 0.3411,
+   "precision_when_accepted": 0.9456
+  },
+  {
+   "threshold": 0.9,
+   "min_margin": 0.0,
+   "accepted_rate": 0.2981,
+   "precision_when_accepted": 0.9689
+  },
+  {
+   "threshold": 0.9,
+   "min_margin": 0.15,
+   "accepted_rate": 0.2981,
+   "precision_when_accepted": 0.9689
+  },
+  {
+   "threshold": 0.9,
+   "min_margin": 0.25,
+   "accepted_rate": 0.2981,
+   "precision_when_accepted": 0.9689
+  },
+  {
+   "threshold": 0.9,
+   "min_margin": 0.4,
+   "accepted_rate": 0.2981,
+   "precision_when_accepted": 0.9689
+  },
+  {
+   "threshold": 0.95,
+   "min_margin": 0.0,
+   "accepted_rate": 0.2158,
+   "precision_when_accepted": 0.9785
+  },
+  {
+   "threshold": 0.95,
+   "min_margin": 0.15,
+   "accepted_rate": 0.2158,
+   "precision_when_accepted": 0.9785
+  },
+  {
+   "threshold": 0.95,
+   "min_margin": 0.25,
+   "accepted_rate": 0.2158,
+   "precision_when_accepted": 0.9785
+  },
+  {
+   "threshold": 0.95,
+   "min_margin": 0.4,
+   "accepted_rate": 0.2158,
+   "precision_when_accepted": 0.9785
+  }
+ ],
+ "species": {
+  "adiantum-raddianum": "Adiantum raddianum",
+  "aechmea-fasciata": "Aechmea fasciata",
+  "aeonium-arboreum": "Aeonium arboreum",
+  "agave-americana": "Agave americana",
+  "aglaonema-commutatum": "Aglaonema commutatum",
+  "alocasia-macrorrhizos": "Alocasia macrorrhizos",
+  "aloe-vera": "Aloe vera",
+  "anthurium-andraeanum": "Anthurium andraeanum",
+  "aspidistra-elatior": "Aspidistra elatior",
+  "asplenium-nidus": "Asplenium nidus",
+  "beaucarnea-recurvata": "Beaucarnea recurvata",
+  "begonia-maculata": "Begonia maculata",
+  "cereus-repandus": "Cereus repandus",
+  "ceropegia-woodii": "Ceropegia woodii",
+  "chamaedorea-elegans": "Chamaedorea elegans",
+  "chlorophytum-comosum": "Chlorophytum comosum",
+  "codiaeum-variegatum": "Codiaeum variegatum",
+  "coffea-arabica": "Coffea arabica",
+  "cordyline-fruticosa": "Cordyline fruticosa",
+  "crassula-ovata": "Crassula ovata",
+  "ctenanthe-burle-marxii": "Ctenanthe burle-marxii",
+  "curio-rowleyanus": "Curio rowleyanus",
+  "cyclamen-persicum": "Cyclamen persicum",
+  "dendrobium-nobile": "Dendrobium nobile",
+  "dieffenbachia-seguine": "Dieffenbachia seguine",
+  "dracaena-fragrans": "Dracaena fragrans",
+  "dracaena-trifasciata": "Dracaena trifasciata",
+  "dypsis-lutescens": "Dypsis lutescens",
+  "echeveria-elegans": "Echeveria elegans",
+  "epiphyllum-oxypetalum": "Epiphyllum oxypetalum",
+  "epipremnum-aureum": "Epipremnum aureum",
+  "euphorbia-milii": "Euphorbia milii",
+  "euphorbia-pulcherrima": "Euphorbia pulcherrima",
+  "euphorbia-trigona": "Euphorbia trigona",
+  "fatsia-japonica": "Fatsia japonica",
+  "ficus-benjamina": "Ficus benjamina",
+  "ficus-elastica": "Ficus elastica",
+  "ficus-lyrata": "Ficus lyrata",
+  "fittonia-albivenis": "Fittonia albivenis",
+  "goeppertia-makoyana": "Goeppertia makoyana",
+  "graptopetalum-paraguayense": "Graptopetalum paraguayense",
+  "guzmania-lingulata": "Guzmania lingulata",
+  "haworthiopsis-attenuata": "Haworthiopsis attenuata",
+  "hedera-helix": "Hedera helix",
+  "hoya-carnosa": "Hoya carnosa",
+  "kalanchoe-blossfeldiana": "Kalanchoe blossfeldiana",
+  "kalanchoe-daigremontiana": "Kalanchoe daigremontiana",
+  "mammillaria-hahniana": "Mammillaria hahniana",
+  "maranta-leuconeura": "Maranta leuconeura",
+  "monstera-adansonii": "Monstera adansonii",
+  "monstera-deliciosa": "Monstera deliciosa",
+  "musa-acuminata": "Musa acuminata",
+  "nephrolepis-exaltata": "Nephrolepis exaltata",
+  "opuntia-ficus-indica": "Opuntia ficus-indica",
+  "oxalis-triangularis": "Oxalis triangularis",
+  "pachira-aquatica": "Pachira aquatica",
+  "peperomia-obtusifolia": "Peperomia obtusifolia",
+  "philodendron-hederaceum": "Philodendron hederaceum",
+  "phoenix-roebelenii": "Phoenix roebelenii",
+  "pilea-peperomioides": "Pilea peperomioides",
+  "platycerium-bifurcatum": "Platycerium bifurcatum",
+  "polyscias-fruticosa": "Polyscias fruticosa",
+  "portulacaria-afra": "Portulacaria afra",
+  "rhapis-excelsa": "Rhapis excelsa",
+  "rhipsalis-baccifera": "Rhipsalis baccifera",
+  "sansevieria-cylindrica": "Sansevieria cylindrica",
+  "schlumbergera-truncata": "Schlumbergera truncata",
+  "scindapsus-pictus": "Scindapsus pictus",
+  "sedum-morganianum": "Sedum morganianum",
+  "sempervivum-tectorum": "Sempervivum tectorum",
+  "spathiphyllum-wallisii": "Spathiphyllum wallisii",
+  "strelitzia-nicolai": "Strelitzia nicolai",
+  "strelitzia-reginae": "Strelitzia reginae",
+  "syngonium-podophyllum": "Syngonium podophyllum",
+  "tillandsia-ionantha": "Tillandsia ionantha",
+  "tradescantia-zebrina": "Tradescantia zebrina",
+  "yucca-gigantea": "Yucca gigantea",
+  "zamioculcas-zamiifolia": "Zamioculcas zamiifolia"
+ }
+}
