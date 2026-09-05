@@ -15,7 +15,7 @@ const _photo = Color(0xFF6E6A66);
 
 const _expanded = 400.0;
 
-Widget _page({required bool fade}) {
+Widget _page({required bool fade, double expanded = _expanded}) {
   Widget header = const FlexibleSpaceBar(
     stretchModes: [StretchMode.zoomBackground],
     background: ColoredBox(color: _photo),
@@ -30,7 +30,7 @@ Widget _page({required bool fade}) {
         backgroundColor: _canvas,
         body: CustomScrollView(
           slivers: [
-            SliverAppBar(expandedHeight: _expanded, pinned: true, backgroundColor: _canvas, surfaceTintColor: Colors.transparent, toolbarHeight: 56, flexibleSpace: header),
+            SliverAppBar(expandedHeight: expanded, pinned: true, backgroundColor: _canvas, surfaceTintColor: Colors.transparent, toolbarHeight: 56, flexibleSpace: header),
             const SliverToBoxAdapter(child: SizedBox(height: 1200)),
           ],
         ),
@@ -54,11 +54,11 @@ Future<List<int>> _column(WidgetTester tester) async {
   return column;
 }
 
-Future<List<int>> _render(WidgetTester tester, {required bool fade, required double offset}) async {
+Future<List<int>> _render(WidgetTester tester, {required bool fade, required double offset, double expanded = _expanded}) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  await tester.pumpWidget(_page(fade: fade));
+  await tester.pumpWidget(_page(fade: fade, expanded: expanded));
   await tester.pumpAndSettle();
   if (offset > 0) {
     tester.state<ScrollableState>(find.byType(Scrollable)).position.jumpTo(offset);
@@ -93,6 +93,18 @@ void main() {
         // l'autre. Une coupure franche, elle, saute d'un coup.
         expect(_biggestStep(column), lessThan(8), reason: 'le fondu doit rester progressif');
       });
+    }
+
+    // Sur un iPhone, la hauteur de l'en-tête vaut la largeur × 1,05 : elle
+    // tombe presque toujours sur une fraction de pixel, et c'est là que la
+    // ligne se cachait — une rangée où la photo passait sans fondu.
+    for (final expanded in [412.65, 409.5, 400.25]) {
+      for (final offset in [0.0, 37.5, 120.0]) {
+        testWidgets('aucune rupture à $expanded px de haut, défilé de $offset', (tester) async {
+          final column = await _render(tester, fade: true, offset: offset, expanded: expanded);
+          expect(_biggestStep(column), lessThan(8), reason: 'la ligne au bord fractionnaire');
+        });
+      }
     }
 
     testWidgets('sans fondu, la coupure est bien là (le test mesure ce qu il faut)', (tester) async {
