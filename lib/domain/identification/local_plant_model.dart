@@ -31,6 +31,9 @@ abstract class LocalPlantModel {
   /// se fait pendant que l'utilisateur cadre. Rend `false` s'il n'y a pas
   /// de modèle utilisable.
   Future<bool> warmUp();
+
+  /// Libère l'interpréteur natif. Sans effet s'il n'y en a pas.
+  void dispose();
 }
 
 class NoLocalModel implements LocalPlantModel {
@@ -53,4 +56,7 @@ class NoLocalModel implements LocalPlantModel {
 
   @override
   Future<bool> warmUp() async => false;
+
+  @override
+  void dispose() {}
 }

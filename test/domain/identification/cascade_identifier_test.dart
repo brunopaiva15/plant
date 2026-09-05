@@ -29,6 +29,9 @@ class FakeLocal implements LocalPlantModel {
   @override
   String? get loadError => null;
 
+  @override
+  void dispose() {}
+
   int warmUps = 0;
   bool loadFails = false;
 

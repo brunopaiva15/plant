@@ -39,7 +39,7 @@ import '../domain/diagnosis/plant_diagnoser.dart';
 import '../domain/species/species_info.dart';
 import '../core/utils/scientific_name.dart';
 import '../data/services/preferences_metrics_store.dart';
-import '../data/services/tflite_plant_model.dart';
+import '../data/services/local_plant_model_factory.dart';
 import '../domain/identification/cascade_identifier.dart';
 import '../domain/identification/identification_metrics.dart';
 import '../domain/identification/local_plant_model.dart';
@@ -212,8 +212,7 @@ final preferencesProvider = NotifierProvider<PreferencesController, AppPreferenc
 /// moteur n'existe pas, la cascade passe directement au service distant.
 /// Le chargement est paresseux : rien n'est lu tant qu'on n'identifie pas.
 final localPlantModelProvider = Provider<LocalPlantModel>((ref) {
-  if (kIsWeb) return const NoLocalModel();
-  final model = TflitePlantModel();
+  final model = createLocalPlantModel();
   ref.onDispose(model.dispose);
   return model;
 });

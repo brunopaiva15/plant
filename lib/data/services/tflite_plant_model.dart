@@ -120,6 +120,7 @@ class TflitePlantModel implements LocalPlantModel {
     return candidates.take(5).toList();
   }
 
+  @override
   void dispose() {
     _interpreter?.close();
     _interpreter = null;

@@ -283,7 +283,7 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
       scrollable: false,
       child: ListView(
         controller: _scroll,
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: floraScrollPhysics,
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: EdgeInsets.only(top: Space.sm),
         children: children,

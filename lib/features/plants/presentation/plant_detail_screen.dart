@@ -169,7 +169,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     return Scaffold(
       backgroundColor: c.canvas,
       body: CustomScrollView(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: floraScrollPhysics,
         slivers: [
           SliverAppBar(
             expandedHeight: primary == null ? width * 0.62 : width * 1.05,

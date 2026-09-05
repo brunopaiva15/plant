@@ -5,6 +5,19 @@ import '../theme/flora_theme.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
 
+
+/// La physique de défilement de toutes les pages : le rebond d'iOS, et rien
+/// d'autre.
+///
+/// Surtout pas `AlwaysScrollableScrollPhysics` : elle accepte le geste même
+/// quand le contenu tient à l'écran, et une page vide se laissait alors
+/// pousser, grand titre replié dans la barre comme s'il y avait quelque
+/// chose dessous. Sur iOS, une page qui tient ne bouge pas. La règle par
+/// défaut de Flutter fait exactement cela ; il suffisait de ne pas la
+/// contourner. Elle n'aurait de raison d'être qu'avec un « tirer pour
+/// rafraîchir », que l'application n'a pas.
+const ScrollPhysics floraScrollPhysics = BouncingScrollPhysics();
+
 /// Un état vide posé au milieu de ce que l'œil voit : entre le bas de
 /// l'en-tête et le haut de la barre d'onglets.
 ///
@@ -95,7 +108,7 @@ class LargeTitlePage extends StatelessWidget {
       backgroundColor: c.canvas,
       body: CustomScrollView(
         controller: controller,
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: floraScrollPhysics,
         slivers: [
           header,
           ...slivers,
@@ -121,7 +134,7 @@ class FloraPage extends StatelessWidget {
     final c = context.colors;
     Widget body(double topInset) => scrollable
         ? SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+            physics: floraScrollPhysics,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: EdgeInsets.fromLTRB(Space.page, topInset + Space.md, Space.page, Space.huge),
             child: child,
