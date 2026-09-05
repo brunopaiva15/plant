@@ -110,3 +110,51 @@ def test_cross_species_near_duplicate_goes_to_review():
     assert flag_cross_species(records) == 2
     assert all(r.status == STATUS_REVIEW for r in records)
     assert 'Ficus elastica' in records[0].reason
+
+
+def test_band_bucketing_finds_exactly_the_same_pairs_as_brute_force():
+    """L'optimisation ne doit rien perdre : sur des empreintes tirées au
+    hasard, les paires proches trouvées par bandes sont exactement celles
+    qu'une comparaison exhaustive aurait trouvées."""
+    from plant_dataset.dedup import candidate_pairs
+    from plant_dataset.images import hamming
+
+    rng = np.random.default_rng(1234)
+    values = [int(rng.integers(0, 2 ** 63)) for _ in range(400)]
+    # Quelques voisins délibérés, à 1 à 6 bits du premier.
+    for bits in range(1, 7):
+        flip = 0
+        for b in rng.choice(64, size=bits, replace=False):
+            flip |= 1 << int(b)
+        values.append(values[0] ^ flip)
+    # Et un voisin à 7 bits, qui ne doit surtout pas être compté.
+    flip = 0
+    for b in rng.choice(64, size=7, replace=False):
+        flip |= 1 << int(b)
+    values.append(values[1] ^ flip)
+
+    items = [(None, v) for v in values]
+    threshold = 6
+    brute = {(i, j) for i in range(len(values)) for j in range(i + 1, len(values))
+             if hamming(values[i], values[j]) <= threshold}
+    fast = {tuple(sorted(p)) for p in candidate_pairs(items, threshold)
+            if hamming(values[p[0]], values[p[1]]) <= threshold}
+    assert fast == brute
+    assert len(brute) >= 6, 'les voisins fabriqués doivent bien être trouvés'
+
+
+def test_band_bucketing_examines_far_fewer_pairs():
+    """L'économie doit croître avec la taille : c'est à grande échelle que le
+    coût quadratique faisait tomber la collecte, pas sur quelques centaines
+    d'images."""
+    from plant_dataset.dedup import candidate_pairs
+
+    rng = np.random.default_rng(7)
+
+    def ratio(n: int) -> float:
+        items = [(None, int(rng.integers(0, 2 ** 63))) for _ in range(n)]
+        return sum(1 for _ in candidate_pairs(items, 6)) / (n * (n - 1) / 2)
+
+    small, large = ratio(1000), ratio(8000)
+    assert large < small, 'la proportion de paires examinées doit baisser quand le jeu grandit'
+    assert large < 0.05, f'{large:.1%} des paires encore examinées à 8 000 images'
