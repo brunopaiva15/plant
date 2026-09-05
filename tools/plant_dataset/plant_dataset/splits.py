@@ -61,9 +61,12 @@ def write_splits(records: list[ImageRecord], path: str | Path, threshold: int = 
     counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     with open(path, 'w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
-        w.writerow(['path', 'species', 'internal_plant_id', 'split', 'group'])
+        # `captive` : la photo vient d'une plante cultivée (iNaturalist). Une
+        # précision mesurée sur ces images-là est la seule qui décrit ce que
+        # l'application fera sur les photos de ses utilisateurs.
+        w.writerow(['path', 'species', 'internal_plant_id', 'split', 'group', 'captive'])
         for r in sorted((r for r in records if r.status == STATUS_KEPT), key=lambda r: (r.species, r.path)):
             s = splits[r.checksum]
-            w.writerow([r.path, r.species, r.internal_plant_id, s, groups[r.checksum]])
+            w.writerow([r.path, r.species, r.internal_plant_id, s, groups[r.checksum], '1' if (r.extra or {}).get('captive') else '0'])
             counts[r.species][s] += 1
     return {k: dict(v) for k, v in counts.items()}

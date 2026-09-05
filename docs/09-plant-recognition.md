@@ -416,7 +416,34 @@ temps — moyenne de zone jusqu'à 448 px au stockage, puis bilinéaire jusqu'à
 téléphone de 4 000 px, ramenée d'un coup à 256, arriverait bien plus
 crénelée que tout ce que le modèle a vu.
 
-### 6.3 Résultats du modèle v1
+### 6.3 Le yucca de salon : ce que le modèle n'avait jamais vu
+
+Sur une photo idéale d'un yucca en pot — plein jour, fond blanc, spécimen
+typique — le modèle v3 a répondu *maïs* à 59 %, sans aucun Yucca dans les
+trois premiers. Pl@ntNet : *Yucca gigantea* à 96 %. L'espèce est pourtant
+une de ses 542 classes, avec 120 images d'entraînement.
+
+Les 120 images viennent toutes de GBIF, et douze tirées au hasard montrent
+douze arbres sauvages — broussailles, ciel, hampes florales. GBIF ne reçoit
+que les observations de plantes sauvages, et le collecteur ne demandait
+iNaturalist qu'en complément, quand GBIF ne suffisait pas. Pour toutes les
+plantes d'intérieur que GBIF pouvait fournir seul, le modèle a donc appris
+la forme sauvage et jamais la forme cultivée. C'est un défaut de conception
+de la collecte, et il touche précisément les espèces que les utilisateurs
+photographient.
+
+Correction, dans `build_dataset.py` :
+
+- `--captive-file` / `--captive-share` : pour les espèces listées, une part
+  de la cible (50 % par défaut) est réservée **d'abord** à iNaturalist avec
+  le filtre `captive=true` — des plantes en pot, chez des gens. GBIF vient
+  ensuite, puis iNaturalist sans filtre s'il manque encore des images.
+- `splits.csv` porte une colonne `captive`, et l'entraînement mesure la
+  précision **séparément sur ces photos** : c'est le seul chiffre qui décrit
+  ce que l'application fera sur les photos de ses utilisateurs. Les seuils
+  de `FallbackPolicy` seront recalés dessus, pas sur les plantes sauvages.
+
+### 6.4 Résultats du modèle v1
 
 | | |
 |---|---|

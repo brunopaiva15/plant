@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from train import SHUFFLE_SEED  # noqa: E402
+from train import SHUFFLE_SEED, read_splits  # noqa: E402
 
 
 def species_sorted_pairs(species: int = 500, per_species: int = 100):
@@ -59,3 +59,19 @@ def test_shuffle_is_reproducible():
     a = shuffle_like_training(species_sorted_pairs(50, 20))
     b = shuffle_like_training(species_sorted_pairs(50, 20))
     assert a == b, 'deux exécutions doivent partir du même ordre'
+
+
+def test_read_splits_returns_the_cultivated_photos(tmp_path):
+    (tmp_path / 'Yucca_gigantea').mkdir()
+    for name in ('a.jpg', 'b.jpg', 'c.jpg'):
+        (tmp_path / 'Yucca_gigantea' / name).write_bytes(b'x')
+    (tmp_path / 'splits.csv').write_text(
+        'path,species,internal_plant_id,split,group,captive\n'
+        'Yucca_gigantea/a.jpg,Yucca gigantea,yucca-gigantea,test,g1,1\n'
+        'Yucca_gigantea/b.jpg,Yucca gigantea,yucca-gigantea,test,g2,0\n'
+        'Yucca_gigantea/c.jpg,Yucca gigantea,yucca-gigantea,train,g3,1\n'
+        'Yucca_gigantea/absent.jpg,Yucca gigantea,yucca-gigantea,test,g4,1\n'
+    )
+    rows, captive = read_splits(tmp_path)
+    assert [p.endswith('a.jpg') or p.endswith('b.jpg') for p, _ in rows['test']] == [True, True]
+    assert {p.rsplit('/', 1)[1] for p in captive} == {'a.jpg', 'c.jpg'}, 'absente du disque : ignorée'

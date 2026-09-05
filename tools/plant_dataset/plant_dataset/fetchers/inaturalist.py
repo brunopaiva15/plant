@@ -109,13 +109,23 @@ class InatClient:
                 fallback = taxon
         return fallback
 
-    def image_candidates(self, taxon_id: int, max_observations: int = 2000, allow_share_alike: bool = False) -> Iterator[ImageCandidate]:
+    def image_candidates(self, taxon_id: int, max_observations: int = 2000, allow_share_alike: bool = False,
+                         captive: bool | None = None) -> Iterator[ImageCandidate]:
+        """Les photos d'un taxon, filtrées sur leur licence.
+
+        `captive=True` ne rend que les observations de plantes cultivées —
+        en pot, chez des gens, sous une lampe de salon. C'est ce que les
+        utilisateurs photographient, et ce que GBIF n'a presque jamais : ses
+        Yucca sont des arbres de six mètres dans la broussaille, et un modèle
+        entraîné dessus ne reconnaît pas le yucca canne du salon.
+        """
         licenses = PHOTO_LICENSES_WITH_SA if allow_share_alike else PHOTO_LICENSES
+        extra = {'captive': 'true'} if captive else {}
         page = 1
         seen = 0
         while seen < max_observations:
             d = self._get('/observations', taxon_id=taxon_id, photo_license=licenses, quality_grade='any', photos='true',
-                          per_page=PAGE, page=page, order_by='id', order='asc')
+                          per_page=PAGE, page=page, order_by='id', order='asc', **extra)
             results = d.get('results', [])
             if not results:
                 break

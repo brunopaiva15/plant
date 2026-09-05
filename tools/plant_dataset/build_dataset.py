@@ -180,32 +180,72 @@ def relocate(manifest: Manifest, out: Path) -> None:
 def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: requests.Session, manifest: Manifest,
                 out: Path, species_cache: dict, inat_cache: dict, species_path: Path, inat_path: Path,
                 license_codes: list[str], args, t0: float, total: int) -> None:
-    """Collecte une espèce, de la résolution du nom aux images."""
+    """Collecte une espèce, de la résolution du nom aux images.
+
+    Trois passes, dans cet ordre :
+
+    1. **Plantes cultivées** (iNaturalist, `captive=true`), pour les espèces
+       de la liste `--captive-file` seulement, jusqu'à `--captive-share` de
+       la cible. Le modèle v3 ne reconnaissait pas un yucca de salon parce
+       que ses 120 images de Yucca gigantea, toutes venues de GBIF, étaient
+       des arbres sauvages dans la broussaille : GBIF ne reçoit que les
+       observations de plantes sauvages, et le collecteur ne demandait
+       iNaturalist qu'en complément, quand GBIF ne suffisait pas. Pour les
+       plantes d'intérieur — celles que les utilisateurs photographient —
+       la part cultivée est réservée avant tout le reste.
+    2. **GBIF**, jusqu'à la cible.
+    3. **iNaturalist, toutes observations**, s'il manque encore des images.
+    """
     taxon = resolve(client, plant, species_cache)
     species_path.write_text(json.dumps(species_cache, ensure_ascii=False, indent=1))
     if taxon is None or not taxon['usable']:
         log(f'[{i}/{total}] {plant.scientific_name}: nom non résolu chez GBIF ({taxon and taxon["match"]}), à revoir')
         return
-    gbif_candidates = client.image_candidates(taxon['key'], license_codes, max_occurrences=args.max_candidates,
-                                              allow_share_alike=args.allow_sa)
-    res = collect_species(gbif_candidates, http, plant, manifest, out, args.target_per_species, workers=args.workers)
-    sources = f'gbif {res["kept"]}'
+    target = args.target_per_species
+    sources: list[str] = []
+    res = {'kept': 0, 'new': 0, 'tried': 0, 'rejected': 0}
 
-    # GBIF ne reçoit d'iNaturalist que les observations « research »,
-    # donc presque aucune plante en pot. L'API directe complète.
-    if inat is not None and res['kept'] < args.target_per_species:
-        taxon_inat = resolve_inat(inat, plant, inat_cache)
+    def run(candidates, goal: int) -> int:
+        nonlocal res
+        r = collect_species(candidates, http, plant, manifest, out, goal, workers=args.workers)
+        res = {'kept': r['kept'], 'new': res['new'] + r['new'],
+               'tried': res['tried'] + r['tried'], 'rejected': res['rejected'] + r['rejected']}
+        return r['new']
+
+    def inat_taxon():
+        t = resolve_inat(inat, plant, inat_cache)
         inat_path.write_text(json.dumps(inat_cache, ensure_ascii=False, indent=1))
-        if taxon_inat is not None:
-            before = res['kept']
-            extra = collect_species(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
-                                                          allow_share_alike=args.allow_sa),
-                                    http, plant, manifest, out, args.target_per_species, workers=args.workers)
-            res = {'kept': extra['kept'], 'new': res['new'] + extra['new'],
-                   'tried': res['tried'] + extra['tried'], 'rejected': res['rejected'] + extra['rejected']}
-            sources += f' + inat {extra["kept"] - before}'
+        return t
 
-    log(f'[{i}/{total}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {sources}), '
+    taxon_inat = None
+    if inat is not None and plant.scientific_name.lower() in args.captive_set:
+        taxon_inat = inat_taxon()
+        if taxon_inat is not None:
+            quota = round(args.captive_share * target)
+            kept = [r for r in manifest if r.species == plant.scientific_name and r.status == STATUS_KEPT]
+            have = sum(1 for r in kept if (r.extra or {}).get('captive'))
+            if have < quota:
+                # La cible passée est un total ; on l'exprime à partir de ce
+                # qui est déjà là pour obtenir exactement `quota - have`
+                # images cultivées de plus, même sur une reprise.
+                added = run(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
+                                                  allow_share_alike=args.allow_sa, captive=True),
+                            len(kept) + (quota - have))
+                sources.append(f'inat cultivées {added}')
+
+    added = run(client.image_candidates(taxon['key'], license_codes, max_occurrences=args.max_candidates,
+                                        allow_share_alike=args.allow_sa), target)
+    sources.append(f'gbif {added}')
+
+    if inat is not None and res['kept'] < target:
+        if taxon_inat is None:
+            taxon_inat = inat_taxon()
+        if taxon_inat is not None:
+            added = run(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
+                                              allow_share_alike=args.allow_sa), target)
+            sources.append(f'inat {added}')
+
+    log(f'[{i}/{total}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {" + ".join(sources)}), '
         f'{res["rejected"]} rejetées sur {res["tried"]} essayées, {time.time() - t0:.0f} s')
 
 
@@ -223,7 +263,11 @@ def main() -> int:
     ap.add_argument('--only-file', help='fichier avec un nom scientifique par ligne (comme --only)')
     ap.add_argument('--no-inaturalist', action='store_true', help='ne pas compléter par l\'API iNaturalist')
     ap.add_argument('--inat-pause', type=float, default=1.0, help='pause entre requêtes iNaturalist, en secondes')
+    ap.add_argument('--captive-file', help='espèces (une par ligne) pour lesquelles réserver une part de plantes cultivées')
+    ap.add_argument('--captive-share', type=float, default=0.5, help='part de la cible réservée aux plantes cultivées (iNaturalist captive=true)')
     args = ap.parse_args()
+    args.captive_set = ({line.strip().lower() for line in Path(args.captive_file).read_text().splitlines() if line.strip()}
+                        if args.captive_file else set())
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

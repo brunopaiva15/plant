@@ -42,6 +42,16 @@ def test_rejected_records_have_no_split(tmp_path):
     counts = write_splits(records, tmp_path / 'splits.csv')
     rows = list(csv.DictReader(open(tmp_path / 'splits.csv')))
     assert [r['path'] for r in rows] == ['Ficus elastica/3.jpg', 'Monstera deliciosa/1.jpg']
-    assert set(rows[0]) == {'path', 'species', 'internal_plant_id', 'split', 'group'}
+    assert set(rows[0]) == {'path', 'species', 'internal_plant_id', 'split', 'group', 'captive'}
     assert sum(sum(v.values()) for v in counts.values()) == 2
     assert 'Ficus elastica' in counts and 'Monstera deliciosa' in counts
+
+
+def test_captive_column_marks_cultivated_photos(tmp_path):
+    potted = rec(7, species='Yucca gigantea')
+    potted.extra = {'captive': True}
+    wild = rec(8, species='Yucca gigantea')
+    write_splits([potted, wild], tmp_path / 'splits.csv')
+    rows = {r['path']: r['captive'] for r in csv.DictReader(open(tmp_path / 'splits.csv'))}
+    assert rows[potted.path] == '1'
+    assert rows[wild.path] == '0'

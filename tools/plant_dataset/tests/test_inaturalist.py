@@ -138,3 +138,18 @@ def test_exact_name_wins_over_a_synonym_match():
 def test_inactive_taxa_are_ignored():
     payload = {'results': [{'id': 3, 'name': 'Zombie plantus', 'rank': 'species', 'is_active': False, 'matched_term': 'Zombie plantus'}]}
     assert client({'/taxa': payload}).match('Zombie plantus') is None
+
+
+def test_captive_filter_is_only_sent_when_asked():
+    """Les plantes en pot sont « captives » chez iNaturalist ; c'est le
+    filtre qui rapproche le jeu d'entraînement des photos des utilisateurs."""
+    page = load('inat_observations_pilea.json')
+    c = client({'/observations': page})
+    list(c.image_candidates(125439, captive=True))
+    (_, params), = c.session.calls
+    assert params['captive'] == 'true'
+
+    c = client({'/observations': page})
+    list(c.image_candidates(125439))
+    (_, params), = c.session.calls
+    assert 'captive' not in params, 'sans demande, toutes les observations'

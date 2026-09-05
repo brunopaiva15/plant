@@ -33,15 +33,21 @@ UNKNOWN = '_unknown'
 SHUFFLE_SEED = 20260905
 
 
-def read_splits(dataset: Path) -> dict[str, list[tuple[str, str]]]:
-    """{split: [(chemin absolu, internal_id)]}, tel qu'écrit par build_dataset."""
+def read_splits(dataset: Path) -> tuple[dict[str, list[tuple[str, str]]], set[str]]:
+    """{split: [(chemin absolu, internal_id)]} tel qu'écrit par build_dataset,
+    et l'ensemble des chemins de photos de plantes cultivées (colonne
+    `captive`) : la précision sur celles-là est la seule qui décrit ce que
+    l'application fera sur les photos de ses utilisateurs."""
     rows: dict[str, list[tuple[str, str]]] = {'train': [], 'val': [], 'test': []}
+    captive: set[str] = set()
     with open(dataset / 'splits.csv', newline='', encoding='utf-8') as f:
         for row in csv.DictReader(f):
             path = dataset / row['path']
             if path.exists():
                 rows[row['split']].append((str(path), row['internal_plant_id']))
-    return rows
+                if row.get('captive') == '1':
+                    captive.add(str(path))
+    return rows, captive
 
 
 def usable_classes(rows: dict, min_train: int, min_val: int) -> list[str]:
@@ -191,7 +197,7 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
         ds = ds.map(augment, num_parallel_calls=AUTOTUNE)
     else:
         ds = ds.map(center, num_parallel_calls=AUTOTUNE)
-    return ds.batch(batch).prefetch(AUTOTUNE), counts
+    return ds.batch(batch).prefetch(AUTOTUNE), counts, [p for p, _ in usable]
 
 
 def build_model(n_classes: int, dropout: float) -> tf.keras.Model:
@@ -216,7 +222,7 @@ def class_weights(counts: Counter, n_classes: int) -> dict[int, float]:
     return {i: total / (n_classes * max(1, counts.get(i, 0))) for i in range(n_classes)}
 
 
-def evaluate(model, ds, classes: list[str]) -> dict:
+def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     """Top-1, top-3, macro-F1, et la courbe seuil / taux de repli qui sert à
     régler FallbackPolicy côté application."""
     probs, truth = [], []
@@ -245,6 +251,23 @@ def evaluate(model, ds, classes: list[str]) -> dict:
 
     best = np.take_along_axis(probs, order[:, :2], axis=1)
     margin = best[:, 0] - best[:, 1]
+
+    # Le chiffre qui compte pour l'application : sur les seules photos de
+    # plantes cultivées, en pot, chez des gens. Le reste du jeu est fait de
+    # plantes sauvages, que personne ne photographie dans son salon.
+    captive_metrics = None
+    if captive_mask is not None:
+        mask = np.asarray(list(captive_mask), dtype=bool)[:len(truth)]
+        if int(mask.sum()) > 0:
+            c_top3 = np.mean([t in o[:3] for t, o in zip(truth[mask], order[mask])])
+            c_rows = []
+            for threshold in (0.5, 0.7, 0.9):
+                acc = (best[mask][:, 0] >= threshold)
+                n = int(acc.sum())
+                c_rows.append({'threshold': threshold, 'accepted_rate': round(n / int(mask.sum()), 4),
+                               'precision_when_accepted': round(float(np.mean(correct[mask][acc])), 4) if n else None})
+            captive_metrics = {'images': int(mask.sum()), 'top1': round(float(np.mean(correct[mask])), 4),
+                               'top3': round(float(c_top3), 4), 'threshold_curve': c_rows}
     curve = []
     for threshold in (0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95):
         for min_margin in (0.0, 0.15, 0.25, 0.4):
@@ -260,6 +283,7 @@ def evaluate(model, ds, classes: list[str]) -> dict:
         'macro_f1': round(float(np.mean(f1s)), 4) if f1s else None,
         'mean_confidence': round(float(np.mean(best[:, 0])), 4),
         'threshold_curve': curve,
+        'captive': captive_metrics,
     }
 
 
@@ -325,16 +349,16 @@ def main() -> int:
     args = ap.parse_args()
 
     dataset = Path(args.dataset)
-    rows = read_splits(dataset)
+    rows, captive = read_splits(dataset)
     classes = usable_classes(rows, args.min_train, args.min_val)
     if len(classes) < 2:
         raise SystemExit(f'{len(classes)} classe(s) exploitable(s) : collecte insuffisante')
     names = species_names(dataset)
     print(f'{len(classes)} classes, {len(rows["train"])} train / {len(rows["val"])} val / {len(rows["test"])} test')
 
-    train_ds, counts = make_dataset(rows['train'], classes, args.batch, training=True, ram_budget_gb=args.ram_budget)
-    val_ds, _ = make_dataset(rows['val'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
-    test_ds, _ = make_dataset(rows['test'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
+    train_ds, counts, _ = make_dataset(rows['train'], classes, args.batch, training=True, ram_budget_gb=args.ram_budget)
+    val_ds, _, _ = make_dataset(rows['val'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
+    test_ds, _, test_paths = make_dataset(rows['test'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
 
     model = build_model(len(classes), args.dropout)
     weights = class_weights(counts, len(classes))
@@ -361,9 +385,12 @@ def main() -> int:
     model.fit(train_ds, validation_data=val_ds, epochs=args.fine_epochs, class_weight=weights, verbose=2,
               callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=4, restore_best_weights=True)])
 
-    metrics = evaluate(model, test_ds, classes)
+    metrics = evaluate(model, test_ds, classes, captive_mask=[p in captive for p in test_paths])
     metrics['version'] = args.version
     print(json.dumps({k: v for k, v in metrics.items() if k != 'threshold_curve'}, indent=1))
+    if metrics.get('captive'):
+        c = metrics['captive']
+        print(f"plantes cultivées ({c['images']} images de test) : top1 {c['top1']}, top3 {c['top3']}")
 
     meta = export_tflite(model, Path(args.out), classes, names, metrics)
     print(f'modèle écrit : {args.out}/plants.tflite — {meta["bytes"] / 1e6:.1f} Mo, {meta["classes"]} classes')
