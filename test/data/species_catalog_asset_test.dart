@@ -59,6 +59,27 @@ void main() {
     });
   });
 
+  test("aucun homonyme d'un autre règne", () {
+    // Un nom de genre n'est pas unique entre les règnes : « Batis » est un
+    // arbuste et un gobe-mouches, « Oenanthe » une ombellifère et un traquet.
+    // Moissonné par nom de genre seul, le catalogue avait accueilli des
+    // oiseaux, des poissons et des papillons. Quelques-uns servent de témoins.
+    const animals = [
+      'Batis capensis', // gobe-mouches du Cap
+      'Oenanthe oenanthe', // traquet motteux
+      'Glaucidium passerinum', // chevêchette d'Europe
+      'Coris julis', // girelle
+      'Morelia viridis', // python vert
+      'Pieris brassicae', // piéride du chou
+      'Morus bassanus', // fou de Bassan
+      'Prunella modularis', // accenteur mouchet
+      'Linaria cannabina', // linotte mélodieuse
+      'Arenaria interpres', // tournepierre à collier
+    ];
+    final present = animals.where((n) => index.find(n) != null).toList();
+    expect(present, isEmpty, reason: present.join(', '));
+  }, skip: 'le catalogue est en cours de nettoyage : à réactiver avec le nouvel actif');
+
   test('les noms courants ne sont pas de simples binômes latins', () {
     // Un nom vernaculaire qui répète le nom scientifique n'apporte rien :
     // le filtre du générateur doit les avoir écartés.
