@@ -50,8 +50,15 @@ def log(msg: str) -> None:
 
 
 def resolve(client: GbifClient, plant: PlantEntry, cache: dict) -> dict | None:
-    """Le taxon GBIF d'une plante, mémorisé dans species.json."""
-    if plant.scientific_name in cache:
+    """Le taxon GBIF d'une plante, mémorisé dans species.json.
+
+    Les échecs ne sont pas mémorisés : un nom qui n'a rien donné hier peut
+    en donner aujourd'hui, parce que la source a changé ou — plus souvent —
+    parce que notre façon de chercher s'est améliorée. Un cache d'échecs
+    rend les corrections invisibles ; une requête par nom irrésolu et par
+    exécution est un prix négligeable.
+    """
+    if cache.get(plant.scientific_name) is not None:
         return cache[plant.scientific_name]
     m = client.match(plant.scientific_name)
     entry = None if m is None else {
@@ -63,8 +70,13 @@ def resolve(client: GbifClient, plant: PlantEntry, cache: dict) -> dict | None:
 
 
 def resolve_inat(client: InatClient, plant: PlantEntry, cache: dict) -> dict | None:
-    """Le taxon iNaturalist d'une plante, mémorisé dans species_inat.json."""
-    if plant.scientific_name in cache:
+    """Le taxon iNaturalist d'une plante, mémorisé dans species_inat.json.
+
+    Comme pour GBIF, les échecs ne sont pas mémorisés — c'est précisément ce
+    qui avait masqué la prise en charge des synonymes : les `null` écrits
+    avant la correction empêchaient de réessayer.
+    """
+    if cache.get(plant.scientific_name) is not None:
         return cache[plant.scientific_name]
     t = client.match(plant.scientific_name)
     entry = None if t is None else {'id': t.id, 'name': t.name, 'rank': t.rank, 'observations': t.observations,

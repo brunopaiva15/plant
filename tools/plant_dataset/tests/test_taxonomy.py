@@ -56,3 +56,25 @@ def test_match_to_catalog_by_name_and_synonym():
     assert match_to_catalog('Sansevieria trifasciata', entries) is entries[1]
     assert match_to_catalog('Plantus imaginarius', entries) is None
     assert match_to_catalog('', entries) is None
+
+
+def test_negative_resolutions_are_not_trusted_from_the_cache():
+    """Un échec mémorisé rendrait invisible toute amélioration de la
+    recherche : c'est ce qui avait masqué la prise en charge des synonymes."""
+    import build_dataset
+
+    calls = []
+
+    class Client:
+        def match(self, name):
+            calls.append(name)
+            return None
+
+    cache = {'Deja vue': None}
+    entry = PlantEntry.from_name('Deja vue')
+    assert build_dataset.resolve(Client(), entry, cache) is None
+    assert calls == ['Deja vue'], 'le nom doit être redemandé malgré le null en cache'
+
+    cache_ok = {'Deja vue': {'key': 1, 'usable': True}}
+    assert build_dataset.resolve(Client(), entry, cache_ok) == {'key': 1, 'usable': True}
+    assert calls == ['Deja vue'], 'une résolution réussie reste mémorisée'
