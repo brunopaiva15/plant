@@ -2160,6 +2160,18 @@ abstract class AppLocalizations {
   /// **'Suggestions à confirmer, jamais des certitudes.'**
   String get identifyHint;
 
+  /// No description provided for @identifyOnDevice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reconnu sur votre appareil. Choisissez l\'espèce qui correspond.'**
+  String get identifyOnDevice;
+
+  /// No description provided for @identifyViaPlantNet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.'**
+  String get identifyViaPlantNet;
+
   /// No description provided for @identifyNone.
   ///
   /// In fr, this message translates to:

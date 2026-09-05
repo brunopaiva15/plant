@@ -31,7 +31,16 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     super.initState();
     final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
     _future = ref.read(plantIdentifierProvider).identify([File(widget.path)], language: lang);
+
   }
+
+  /// D'où vient la réponse : sur l'appareil, ou par le service en ligne.
+  /// L'utilisateur a le droit de savoir si sa photo est partie sur le réseau.
+  String _sourceHint(AppLocalizations l10n, IdentificationSource source) => switch (source) {
+        IdentificationSource.local => l10n.identifyOnDevice,
+        IdentificationSource.remote => l10n.identifyViaPlantNet,
+        IdentificationSource.unknown => l10n.identifyHint,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +67,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(l10n.identifyHint, style: context.text.caption),
+                  Text(_sourceHint(l10n, results.first.source), style: context.text.caption),
                   const SizedBox(height: Space.sm),
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => Navigator.of(context).pop(c))]),
                 ],

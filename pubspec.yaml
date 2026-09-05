@@ -65,6 +65,7 @@ dependencies:
   file_picker: ^12.2.0
   open_filex: ^4.7.0
   in_app_purchase: ^3.3.0
+  tflite_flutter: ^0.12.1
 
 dev_dependencies:
   flutter_test:
@@ -109,6 +110,9 @@ flutter:
     - assets/onboarding/frames_3/
     - assets/onboarding/frames_4/
     - assets/onboarding/frames_5/
+    # Modèle de reconnaissance d'espèces (TFLite) : poids, classes, métadonnées.
+    # Produit par tools/plant_model/train.py, voir docs/09-plant-recognition.md.
+    - assets/model/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

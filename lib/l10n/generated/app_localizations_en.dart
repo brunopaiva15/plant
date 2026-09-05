@@ -1193,6 +1193,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get identifyHint => 'Suggestions to confirm, never certainties.';
 
   @override
+  String get identifyOnDevice =>
+      'Recognised on your device. Pick the matching species.';
+
+  @override
+  String get identifyViaPlantNet =>
+      'Recognised online by Pl@ntNet. Pick the matching species.';
+
+  @override
   String get identifyNone => 'No reliable match.';
 
   @override

@@ -18,6 +18,7 @@ import requests
 
 from ..licenses import GBIF_LICENSE_CODES, is_allowed, parse_license
 from . import ImageCandidate
+from .inaturalist import photo_id_of
 
 API = 'https://api.gbif.org/v1'
 DEFAULT_UA = 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant; dataset builder)'
@@ -140,5 +141,5 @@ def candidates_from_occurrence(occ: dict, allow_share_alike: bool = False) -> It
             publisher=m.get('publisher') or occ.get('publishingOrgKey', '') or '',
             dataset_key=occ.get('datasetKey', ''),
             extra={'format': m.get('format', ''), 'basisOfRecord': occ.get('basisOfRecord', ''),
-                   'inaturalist': occ.get('datasetKey') == INATURALIST_DATASET},
+                   'inaturalist': occ.get('datasetKey') == INATURALIST_DATASET, 'photo_id': photo_id_of(url) or ''},
         )

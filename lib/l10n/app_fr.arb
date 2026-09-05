@@ -599,6 +599,8 @@
   "identifying": "Analyse en cours…",
   "identifyTitle": "Est-ce bien…",
   "identifyHint": "Suggestions à confirmer, jamais des certitudes.",
+  "identifyOnDevice": "Reconnu sur votre appareil. Choisissez l'espèce qui correspond.",
+  "identifyViaPlantNet": "Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.",
   "identifyNone": "Aucune correspondance fiable.",
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
   "useThis": "Utiliser",

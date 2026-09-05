@@ -1,10 +1,9 @@
 # 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
 
-> État au 5 septembre 2026 : pipeline de données validé sur 5 espèces
-> (100 images réelles, licences CC0 / CC BY), cascade d'identification
-> câblée dans l'app **sans modèle livré** — elle passe donc par Pl@ntNet
-> exactement comme avant. Rien n'est en production. Le premier modèle
-> entraîné viendra après la collecte complète (voir « Plan »).
+> État au 5 septembre 2026 : collecte phase 1 sur 95 plantes d'intérieur et
+> succulentes (GBIF + iNaturalist, CC0 / CC BY), modèle MobileNetV3
+> entraîné et livré dans l'app en TFLite. La cascade identifie donc
+> **sur l'appareil**, et n'appelle Pl@ntNet que sur hésitation.
 
 ## 1. Pourquoi
 
@@ -183,13 +182,29 @@ de test, 100 % venaient de là, hébergées sur `inaturalist-open-data`.
 Mesuré sur *Monstera deliciosa* : 125 occurrences CC0, 423 CC BY, 3 535 NC
 (refusées).
 
-### 4.3 iNaturalist direct et Wikimedia Commons (à faire après validation)
+### 4.3 iNaturalist en direct (fait) — et pourquoi il était indispensable
 
-Même interface `ImageCandidate`. iNaturalist direct apporte les observations
-« research grade » les plus récentes, avec la licence photo par photo ;
-Wikimedia apporte des photos de plantes d'intérieur en pot, sous-représentées
-dans les observations de terrain. Écrits seulement une fois le pipeline
-validé sur plus d'espèces.
+GBIF ne reçoit d'iNaturalist que les observations de qualité **« research »**,
+c'est-à-dire des plantes **sauvages** confirmées par plusieurs personnes. Une
+plante d'intérieur en pot est marquée « captive / cultivated », reste
+**« casual »**, et n'arrive donc jamais chez GBIF.
+
+C'est exactement le trou constaté à la collecte : *Pilea peperomioides*,
+*Calathea orbifolia*, *Zamioculcas zamiifolia* rendaient 0 ou 14 images par
+GBIF. Par l'API iNaturalist directe, avec `quality_grade=any` :
+Pilea 0 → 56, Zamioculcas 14 → 120, Aspidistra 36 → 120.
+
+`fetchers/inaturalist.py` interroge `api.inaturalist.org/v1`, filtre
+`photo_license=cc0,cc-by` côté serveur puis la licence de **chaque photo**
+côté client, ignore les photos masquées par la modération, et remplace la
+miniature `square` (75 px) par `large` (1024 px).
+
+**Dédoublonnage entre sources** : GBIF relaie les URL iNaturalist telles
+quelles, donc la même photo peut arriver deux fois. L'identifiant de photo
+extrait de l'URL (`/photos/726492519/`) est stocké dans `extra.photo_id` des
+deux côtés et sert de clé — la photo est reconnue **avant** téléchargement.
+
+Wikimedia Commons reste à faire ; c'est la même interface `ImageCandidate`.
 
 ### 4.4 PlantNet-300K — étude et décision
 

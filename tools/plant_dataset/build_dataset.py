@@ -27,11 +27,13 @@ import argparse
 import json
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import requests
 
 from plant_dataset.fetchers.gbif import GbifClient
+from plant_dataset.fetchers.inaturalist import InatClient
 from plant_dataset.images import ImageRejected, download, prepare, store
 from plant_dataset.licenses import GBIF_LICENSE_CODES, GBIF_LICENSE_CODES_WITH_SA, parse_license
 from plant_dataset.manifest import (STATUS_DUPLICATE, STATUS_KEPT, STATUS_REJECTED, STATUS_REVIEW, ImageRecord, Manifest,
@@ -60,18 +62,37 @@ def resolve(client: GbifClient, plant: PlantEntry, cache: dict) -> dict | None:
     return entry
 
 
-def collect_species(client: GbifClient, http: requests.Session, plant: PlantEntry, taxon_key: int, manifest: Manifest, out: Path,
-                    target: int, license_codes: list[str], allow_sa: bool, max_candidates: int) -> dict:
+def resolve_inat(client: InatClient, plant: PlantEntry, cache: dict) -> dict | None:
+    """Le taxon iNaturalist d'une plante, mémorisé dans species_inat.json."""
+    if plant.scientific_name in cache:
+        return cache[plant.scientific_name]
+    t = client.match(plant.scientific_name)
+    entry = None if t is None else {'id': t.id, 'name': t.name, 'rank': t.rank, 'observations': t.observations}
+    cache[plant.scientific_name] = entry
+    return entry
+
+
+def collect_species(candidates, http: requests.Session, plant: PlantEntry, manifest: Manifest, out: Path,
+                    target: int, workers: int = 6) -> dict:
+    """Collecte une espèce depuis un itérateur de candidats, quelle que soit
+    la source. Les téléchargements se font par petits lots en parallèle (le
+    réseau est le goulot) ; l'écriture du manifeste reste séquentielle, dans
+    l'ordre des candidats."""
     kept_before = sum(1 for r in manifest if r.species == plant.scientific_name and r.status == STATUS_KEPT)
-    kept = kept_before
-    tried = rejected = 0
+    state = {'kept': kept_before, 'tried': 0, 'rejected': 0}
     slug = species_slug(plant.scientific_name)
-    for cand in client.image_candidates(taxon_key, license_codes, max_occurrences=max_candidates, allow_share_alike=allow_sa):
-        if kept >= target:
-            break
-        if manifest.has_source(cand.source, cand.source_id):
-            continue
-        tried += 1
+    # Une même photo iNaturalist arrive par GBIF *et* par l'API directe :
+    # son identifiant de photo la reconnaît avant tout téléchargement.
+    known_photos = {r.extra.get('photo_id') for r in manifest if r.extra.get('photo_id')}
+
+    def fetch(cand):
+        try:
+            return cand, prepare(download(cand.image_url, http)), None
+        except (ImageRejected, requests.RequestException) as e:
+            return cand, None, e
+
+    def handle(cand, prepared, error) -> None:
+        state['tried'] += 1
         lic = parse_license(cand.license_raw)
         base = dict(
             species=plant.scientific_name, internal_plant_id=plant.internal_id, source=cand.source, source_id=cand.source_id,
@@ -79,13 +100,10 @@ def collect_species(client: GbifClient, http: requests.Session, plant: PlantEntr
             license_url=lic.url if lic else '', downloaded_at=now_iso(), observation_id=cand.observation_id,
             publisher=cand.publisher, dataset_key=cand.dataset_key, extra=cand.extra or {},
         )
-        try:
-            data = download(cand.image_url, http)
-            prepared = prepare(data)
-        except (ImageRejected, requests.RequestException) as e:
-            rejected += 1
-            manifest.append(ImageRecord(checksum='', status=STATUS_REJECTED, reason=str(e)[:200], **base))
-            continue
+        if error is not None:
+            state['rejected'] += 1
+            manifest.append(ImageRecord(checksum='', status=STATUS_REJECTED, reason=str(error)[:200], **base))
+            return
         existing = manifest.by_checksum(prepared.sha256)
         rel = f'{slug}/{prepared.sha256[:16]}.jpg'
         record = ImageRecord(checksum=prepared.sha256, path=rel, width=prepared.width, height=prepared.height, phash=prepared.phash, **base)
@@ -95,10 +113,35 @@ def collect_species(client: GbifClient, http: requests.Session, plant: PlantEntr
             record.reason = 'doublon exact'
             record.path = f'{STATUS_DIR[STATUS_DUPLICATE]}/{rel}'
         else:
-            kept += 1
+            state['kept'] += 1
         store(prepared, out / record.path)
         manifest.append(record)
-    return {'kept': kept, 'new': kept - kept_before, 'tried': tried, 'rejected': rejected}
+
+    batch: list = []
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        def flush() -> None:
+            for cand, prepared, error in pool.map(fetch, batch):
+                if state['kept'] >= target:
+                    break
+                handle(cand, prepared, error)
+            batch.clear()
+
+        for cand in candidates:
+            if state['kept'] >= target:
+                break
+            if manifest.has_source(cand.source, cand.source_id):
+                continue
+            photo_id = (cand.extra or {}).get('photo_id')
+            if photo_id and photo_id in known_photos:
+                continue
+            if photo_id:
+                known_photos.add(photo_id)
+            batch.append(cand)
+            if len(batch) >= max(1, workers) * 2:
+                flush()
+        if batch and state['kept'] < target:
+            flush()
+    return {'kept': state['kept'], 'new': state['kept'] - kept_before, 'tried': state['tried'], 'rejected': state['rejected']}
 
 
 def relocate(manifest: Manifest, out: Path) -> None:
@@ -131,13 +174,19 @@ def main() -> int:
     ap.add_argument('--allow-sa', action='store_true', help='accepter aussi CC BY-SA (refusé par défaut)')
     ap.add_argument('--max-candidates', type=int, default=1500, help='occurrences GBIF parcourues au plus, par licence')
     ap.add_argument('--skip-fetch', action='store_true', help='ne rien télécharger : dédupliquer, répartir, compter')
+    ap.add_argument('--workers', type=int, default=6, help='téléchargements en parallèle')
+    ap.add_argument('--only-file', help='fichier avec un nom scientifique par ligne (comme --only)')
+    ap.add_argument('--no-inaturalist', action='store_true', help='ne pas compléter par l\'API iNaturalist')
+    ap.add_argument('--inat-pause', type=float, default=1.0, help='pause entre requêtes iNaturalist, en secondes')
     args = ap.parse_args()
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     plants = load_plants(args.plants)
-    if args.only:
-        wanted = {n.strip().lower() for n in args.only.split(',')}
+    wanted = {n.strip().lower() for n in (args.only or '').split(',') if n.strip()}
+    if args.only_file:
+        wanted |= {line.strip().lower() for line in Path(args.only_file).read_text().splitlines() if line.strip()}
+    if wanted:
         plants = [p for p in plants if p.scientific_name.lower() in wanted]
     if args.limit_species:
         plants = plants[:args.limit_species]
@@ -150,8 +199,12 @@ def main() -> int:
     species_cache = json.loads(species_path.read_text()) if species_path.exists() else {}
     license_codes = GBIF_LICENSE_CODES_WITH_SA if args.allow_sa else GBIF_LICENSE_CODES
 
+    inat_path = out / 'species_inat.json'
+    inat_cache = json.loads(inat_path.read_text()) if inat_path.exists() else {}
+
     if not args.skip_fetch:
         client = GbifClient()
+        inat = None if args.no_inaturalist else InatClient(pause=args.inat_pause)
         http = requests.Session()
         http.headers['User-Agent'] = client.session.headers['User-Agent']
         for i, plant in enumerate(plants, 1):
@@ -161,9 +214,26 @@ def main() -> int:
             if taxon is None or not taxon['usable']:
                 log(f'[{i}/{len(plants)}] {plant.scientific_name}: nom non résolu chez GBIF ({taxon and taxon["match"]}), à revoir')
                 continue
-            res = collect_species(client, http, plant, taxon['key'], manifest, out, args.target_per_species, license_codes,
-                                  args.allow_sa, args.max_candidates)
-            log(f'[{i}/{len(plants)}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}), '
+            gbif_candidates = client.image_candidates(taxon['key'], license_codes, max_occurrences=args.max_candidates,
+                                                      allow_share_alike=args.allow_sa)
+            res = collect_species(gbif_candidates, http, plant, manifest, out, args.target_per_species, workers=args.workers)
+            sources = f'gbif {res["kept"]}'
+
+            # GBIF ne reçoit d'iNaturalist que les observations « research »,
+            # donc presque aucune plante en pot. L'API directe complète.
+            if inat is not None and res['kept'] < args.target_per_species:
+                taxon_inat = resolve_inat(inat, plant, inat_cache)
+                inat_path.write_text(json.dumps(inat_cache, ensure_ascii=False, indent=1))
+                if taxon_inat is not None:
+                    before = res['kept']
+                    extra = collect_species(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
+                                                                  allow_share_alike=args.allow_sa),
+                                            http, plant, manifest, out, args.target_per_species, workers=args.workers)
+                    res = {'kept': extra['kept'], 'new': res['new'] + extra['new'],
+                           'tried': res['tried'] + extra['tried'], 'rejected': res['rejected'] + extra['rejected']}
+                    sources += f' + inat {extra["kept"] - before}'
+
+            log(f'[{i}/{len(plants)}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {sources}), '
                 f'{res["rejected"]} rejetées sur {res["tried"]} essayées, {time.time() - t0:.0f} s')
 
     dups = mark_duplicates(manifest.records)

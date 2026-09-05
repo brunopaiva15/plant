@@ -24,6 +24,9 @@ class FakeLocal implements LocalPlantModel {
   String? get version => available ? 'test-1' : null;
 
   @override
+  Future<bool> warmUp() async => available;
+
+  @override
   Future<List<IdentificationCandidate>> classify(File image) async {
     calls++;
     if (delay > Duration.zero) await Future<void>.delayed(delay);

@@ -1198,6 +1198,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get identifyHint => 'Vorschläge zum Bestätigen, keine Gewissheiten.';
 
   @override
+  String get identifyOnDevice =>
+      'Auf deinem Gerät erkannt. Wähle die passende Art.';
+
+  @override
+  String get identifyViaPlantNet =>
+      'Online von Pl@ntNet erkannt. Wähle die passende Art.';
+
+  @override
   String get identifyNone => 'Keine zuverlässige Übereinstimmung.';
 
   @override

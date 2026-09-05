@@ -58,6 +58,9 @@ class CascadeIdentifier implements PlantIdentifier {
 
   IdentificationMetrics get metrics => metricsStore.read();
 
+  /// Charge le modèle local à l'avance, sans rien identifier.
+  Future<void> warmUp() => local.warmUp().then((_) {}, onError: (_) {});
+
   @override
   bool get isConfigured => local.isAvailable || (fallbackEnabled && fallback.isConfigured);
 

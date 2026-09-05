@@ -1195,6 +1195,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifyHint => 'Suggerimenti da confermare, mai certezze.';
 
   @override
+  String get identifyOnDevice =>
+      'Riconosciuta sul tuo dispositivo. Scegli la specie corrispondente.';
+
+  @override
+  String get identifyViaPlantNet =>
+      'Riconosciuta online da Pl@ntNet. Scegli la specie corrispondente.';
+
+  @override
   String get identifyNone => 'Nessuna corrispondenza affidabile.';
 
   @override
