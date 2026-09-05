@@ -936,10 +936,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageTags => 'Manage tags';
 
   @override
-  String get onboardingTitle => 'Your garden, simply.';
+  String get onboardingTitle => 'All your plants, here';
 
   @override
-  String get onboardingSubtitle => 'Everything you need, nothing more.';
+  String get onboardingSubtitle =>
+      'Add them one by one, with a photo if you like.';
 
   @override
   String get askNameTitle => 'What\'s your name?';
@@ -3215,28 +3216,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get apiExample => 'Example';
 
   @override
-  String get onbTodayTitle => 'One question each morning';
+  String get onbTodayTitle => 'Each morning, what needs doing';
 
   @override
-  String get onbTodayBody => 'Today shows only what is due.';
+  String get onbTodayBody => 'Watered? One tap, and it\'s noted.';
 
   @override
-  String get onbCareTitle => 'A rhythm that follows the seasons';
+  String get onbCareTitle => 'Less watering in winter';
 
   @override
-  String get onbCareBody => 'Intervals stretch out in winter, on their own.';
+  String get onbCareBody =>
+      'Intervals adjust on their own as the days get shorter.';
 
   @override
-  String get onbGardenTitle => 'Your whole garden in one place';
+  String get onbGardenTitle => 'Rooms, photos, calendar';
 
   @override
-  String get onbGardenBody => 'Locations, inventory, tasks, calendar.';
+  String get onbGardenBody => 'Each plant\'s history keeps itself.';
 
   @override
-  String get onbPrivacyTitle => 'Your data stays yours';
+  String get onbPrivacyTitle => 'Everything stays on your phone';
 
   @override
-  String get onbPrivacyBody => 'Everything works offline.';
+  String get onbPrivacyBody => 'No account required, no ads.';
 
   @override
   String get onbStart => 'Get started';
@@ -3279,7 +3281,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Every feature, no limits, no ads, no account required. If the app is useful to you, you can support its developer once and for all.';
+      'Every feature is free. If the app is useful to you, you can give its developer a hand — once, no subscription.';
 
   @override
   String get supportNothingLocked => 'Nothing is reserved for those who give.';
@@ -3320,4 +3322,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportNoThanks => 'Continue without';
+
+  @override
+  String get aboutTagline => 'Care for your plants and keep their story.';
+
+  @override
+  String get emptyGardenSubtitle =>
+      'Add your first plant, with a photo if you like.';
 }

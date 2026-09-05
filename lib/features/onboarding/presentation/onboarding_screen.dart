@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
-import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -18,64 +17,40 @@ import 'onboarding_stage.dart';
 
 /// Un écran de présentation : un objet du jardin, un titre, une phrase.
 class _Slide {
-  const _Slide({required this.title, required this.body, required this.tint, required this.chips});
+  const _Slide({required this.title, required this.body, required this.tint});
 
   final String Function(AppLocalizations) title;
   final String Function(AppLocalizations) body;
 
-  /// Couleur d'ambiance de l'écran : le fond, et la teinte des éclats.
+  /// Couleur d'ambiance de l'écran.
   final Color Function(FloraColors) tint;
-  final List<SceneChip> Function(AppLocalizations) chips;
 }
-
-SceneChip _chip(IconData icon, String label, Color Function(FloraColors) tint, Alignment at, double depth) =>
-    SceneChip(icon: icon, label: label, tint: tint, at: at, depth: depth);
 
 final _slides = <_Slide>[
   _Slide(
     title: (l) => l.onboardingTitle,
     body: (l) => l.onboardingSubtitle,
     tint: (c) => c.sage,
-    chips: (l) => [
-      _chip(CupertinoIcons.drop_fill, l.careWatering, (c) => c.water, const Alignment(-1, -0.58), 1),
-      _chip(CupertinoIcons.camera_fill, l.photos, (c) => c.sage, const Alignment(1, 0.72), 0.7),
-    ],
   ),
   _Slide(
     title: (l) => l.onbTodayTitle,
     body: (l) => l.onbTodayBody,
     tint: (c) => c.water,
-    chips: (l) => [
-      _chip(CupertinoIcons.sun_max_fill, l.today, (c) => c.sun, const Alignment(-1, -0.66), 0.75),
-      _chip(CupertinoIcons.checkmark_alt, l.done, (c) => c.sage, const Alignment(1, 0.66), 1),
-    ],
   ),
   _Slide(
     title: (l) => l.onbCareTitle,
     body: (l) => l.onbCareBody,
     tint: (c) => c.sun,
-    chips: (l) => [
-      _chip(CupertinoIcons.snow, l.careBadgeDormant, (c) => c.water, const Alignment(-1, 0.7), 1),
-      _chip(CupertinoIcons.leaf_arrow_circlepath, l.careFertilizing, (c) => c.sun, const Alignment(1, -0.62), 0.7),
-    ],
   ),
   _Slide(
     title: (l) => l.onbGardenTitle,
     body: (l) => l.onbGardenBody,
     tint: (c) => c.terracotta,
-    chips: (l) => [
-      _chip(CupertinoIcons.location_solid, l.locations, (c) => c.terracotta, const Alignment(-1, -0.62), 0.75),
-      _chip(CupertinoIcons.calendar, l.calendarTitle, (c) => c.water, const Alignment(1, 0.7), 1),
-    ],
   ),
   _Slide(
     title: (l) => l.onbPrivacyTitle,
     body: (l) => l.onbPrivacyBody,
     tint: (c) => c.rose,
-    chips: (l) => [
-      _chip(CupertinoIcons.lock_fill, l.localAccount, (c) => c.sage, const Alignment(-1, 0.7), 1),
-      _chip(CupertinoIcons.tray_arrow_down_fill, l.backupTitle, (c) => c.inkSecondary, const Alignment(1, -0.62), 0.7),
-    ],
   ),
 ];
 
@@ -262,8 +237,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                     offset: _offset,
                     page: current,
                     entry: reduce ? 1 : _entry.value,
-                    drift: _float.value,
-                    chips: _slides[current].chips(l10n),
                     height: _stageHeight(context),
                     reduceMotion: reduce,
                   ),
@@ -314,7 +287,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   }
 }
 
-/// Le texte d'un écran : la marque, le titre qui se lève mot à mot, la phrase.
+/// Le texte d'un écran : le titre qui se lève mot à mot, puis la phrase.
 class _SlideText extends StatelessWidget {
   const _SlideText({required this.slide, required this.t, required this.parallax});
 
@@ -340,15 +313,6 @@ class _SlideText extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Stagger(
-                t: t,
-                index: 1,
-                child: Text(
-                  AppConfig.appName.toUpperCase(),
-                  style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w700, letterSpacing: 2.4),
-                ),
-              ),
-              const SizedBox(height: Space.sm),
               RisingTitle(
                 text: slide.title(l10n),
                 style: context.text.display.copyWith(fontSize: 38, height: 1.1, letterSpacing: -1),

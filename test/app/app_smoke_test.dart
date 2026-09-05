@@ -282,7 +282,7 @@ void main() {
     await step(tester);
     // Le titre est levé mot à mot ; la phrase du dessous, elle, est d'un seul
     // tenant : c'est elle qui dit que le premier écran est bien là.
-    expect(find.text("Tout ce qu'il faut, rien de plus."), findsOneWidget);
+    expect(find.text('Ajoutez-les une par une, avec une photo si vous voulez.'), findsOneWidget);
     // « Passer » saute les diapositives et mène droit à la saisie du prénom.
     await tester.tap(find.text('Passer'));
     await step(tester);

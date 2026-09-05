@@ -36,7 +36,7 @@ class AboutScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(l10n.version(version), style: context.text.caption),
           const SizedBox(height: Space.md),
-          Text(l10n.onboardingSubtitle, style: context.text.callout, textAlign: TextAlign.center),
+          Text(l10n.aboutTagline, style: context.text.callout, textAlign: TextAlign.center),
           if (species != null) ...[
             const SizedBox(height: Space.xs),
             Text(l10n.aboutSpeciesCount('$species'), style: context.text.caption.copyWith(color: c.inkSecondary)),

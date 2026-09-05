@@ -1731,13 +1731,13 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Votre jardin, simplement.'**
+  /// **'Toutes vos plantes, ici'**
   String get onboardingTitle;
 
   /// No description provided for @onboardingSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Tout ce qu\'il faut, rien de plus.'**
+  /// **'Ajoutez-les une par une, avec une photo si vous voulez.'**
   String get onboardingSubtitle;
 
   /// No description provided for @askNameTitle.
@@ -5517,49 +5517,49 @@ abstract class AppLocalizations {
   /// No description provided for @onbTodayTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une seule question chaque matin'**
+  /// **'Chaque matin, ce qu\'il y a à faire'**
   String get onbTodayTitle;
 
   /// No description provided for @onbTodayBody.
   ///
   /// In fr, this message translates to:
-  /// **'Aujourd\'hui ne montre que ce qui est dû.'**
+  /// **'Arrosé ? Un geste, et c\'est noté.'**
   String get onbTodayBody;
 
   /// No description provided for @onbCareTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Un rythme qui suit les saisons'**
+  /// **'Moins d\'arrosages en hiver'**
   String get onbCareTitle;
 
   /// No description provided for @onbCareBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les intervalles s\'allongent en hiver, tout seuls.'**
+  /// **'Les intervalles s\'ajustent tout seuls quand les jours raccourcissent.'**
   String get onbCareBody;
 
   /// No description provided for @onbGardenTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Tout votre jardin au même endroit'**
+  /// **'Emplacements, photos, calendrier'**
   String get onbGardenTitle;
 
   /// No description provided for @onbGardenBody.
   ///
   /// In fr, this message translates to:
-  /// **'Emplacements, inventaire, tâches, calendrier.'**
+  /// **'L\'histoire de chaque plante se garde toute seule.'**
   String get onbGardenBody;
 
   /// No description provided for @onbPrivacyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Vos données restent les vôtres'**
+  /// **'Tout reste sur votre téléphone'**
   String get onbPrivacyTitle;
 
   /// No description provided for @onbPrivacyBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tout fonctionne hors ligne.'**
+  /// **'Pas de compte obligatoire, pas de publicité.'**
   String get onbPrivacyBody;
 
   /// No description provided for @onbStart.
@@ -5631,7 +5631,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportBody.
   ///
   /// In fr, this message translates to:
-  /// **'Toutes les fonctions, sans limite, sans publicité et sans compte obligatoire. Si l\'app vous rend service, vous pouvez soutenir son développeur une fois pour toutes.'**
+  /// **'Toutes les fonctions sont gratuites. Si l\'app vous est utile, vous pouvez donner un coup de pouce à son développeur — une fois, sans abonnement.'**
   String get supportBody;
 
   /// No description provided for @supportNothingLocked.
@@ -5705,6 +5705,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Continuer sans'**
   String get supportNoThanks;
+
+  /// No description provided for @aboutTagline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenez soin de vos plantes et gardez leur histoire.'**
+  String get aboutTagline;
+
+  /// No description provided for @emptyGardenSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez votre première plante, avec une photo si vous voulez.'**
+  String get emptyGardenSubtitle;
 }
 
 class _AppLocalizationsDelegate

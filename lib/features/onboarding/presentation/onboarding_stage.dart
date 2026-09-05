@@ -8,32 +8,13 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import 'clay_illustration.dart';
 
-/// Un éclat d'interface : l'icône et le mot d'une fonction de l'app, sur une
-/// pastille blanche posée en l'air.
-class SceneChip {
-  const SceneChip({required this.icon, required this.label, required this.tint, required this.at, this.depth = 1});
-
-  final IconData icon;
-  final String label;
-
-  /// Teinte de la pastille d'icône.
-  final Color Function(FloraColors) tint;
-
-  /// Position dans la scène, en fractions de sa largeur et de sa hauteur.
-  final Alignment at;
-
-  /// Plus la valeur est basse, plus l'éclat est « loin » : il flotte plus
-  /// lentement et se décale moins. C'est ce retard qui donne la profondeur.
-  final double depth;
-}
-
 /// La scène de l'onboarding : les cinq objets du jardin, en orbite.
 ///
 /// Les écrans ne défilent pas l'un après l'autre comme des diapositives : les
 /// objets, eux, restent là et changent de place. Celui de l'écran courant est
-/// au centre, net et animé ; les autres attendent sur les côtés, plus petits,
-/// flous et pâles. Le geste de l'utilisateur les fait tourner en continu — le
-/// mouvement suit le doigt, il n'est pas joué après coup.
+/// au centre, net et animé ; les autres attendent hors champ et traversent
+/// l'écran au rythme du doigt — le mouvement suit le geste, il n'est pas joué
+/// après coup.
 class OnboardingStage extends StatelessWidget {
   const OnboardingStage({
     super.key,
@@ -41,8 +22,6 @@ class OnboardingStage extends StatelessWidget {
     required this.offset,
     required this.page,
     required this.entry,
-    required this.drift,
-    required this.chips,
     required this.height,
     required this.reduceMotion,
   });
@@ -58,12 +37,6 @@ class OnboardingStage extends StatelessWidget {
 
   /// Avancement de l'entrée de la page courante (0 → 1).
   final double entry;
-
-  /// Phase du flottement, de 0 à 1, qui boucle sans fin.
-  final double drift;
-
-  /// Les éclats de l'écran courant.
-  final List<SceneChip> chips;
 
   /// Hauteur de la scène, accordée à celle de l'écran.
   final double height;
@@ -101,14 +74,6 @@ class OnboardingStage extends StatelessWidget {
                     alignment: Alignment.center,
                     children: [
                       for (var i = count - 1; i >= 0; i--) _object(context, i, width),
-                      // Les éclats n'existent qu'au repos : pendant le geste,
-                      // la scène appartient aux objets.
-                      for (final (i, chip) in chips.indexed)
-                        _FloatingChip(
-                          chip: chip,
-                          t: (entry - 0.35 - i * 0.12).clamp(0.0, 0.5) * 2 * _focus,
-                          drift: reduceMotion ? 0 : drift + i * 0.37,
-                        ),
                     ],
                   ),
                 ),
@@ -116,9 +81,6 @@ class OnboardingStage extends StatelessWidget {
             ),
     );
   }
-
-  /// Netteté de l'écran courant : 1 au repos, 0 dès que le doigt l'emporte.
-  double get _focus => (1 - (offset - page).abs() * 2.5).clamp(0.0, 1.0);
 
   Widget _object(BuildContext context, int index, double width) {
     // Distance continue à la place centrale, en écrans.
@@ -198,62 +160,6 @@ class _Blob extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
-        ),
-      ),
-    );
-  }
-}
-
-class _FloatingChip extends StatelessWidget {
-  const _FloatingChip({required this.chip, required this.t, required this.drift});
-
-  final SceneChip chip;
-  final double t;
-  final double drift;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    if (t <= 0.01) return const SizedBox.shrink();
-    final eased = Curves.easeOutBack.transform(t.clamp(0.0, 1.0));
-    final float = math.sin(drift * 2 * math.pi) * 5 * chip.depth;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.page),
-      child: Align(
-        alignment: chip.at,
-        child: Transform.translate(
-          offset: Offset(0, float + 14 * (1 - t)),
-          child: Opacity(
-            opacity: t.clamp(0.0, 1.0),
-            child: Transform.scale(
-              scale: 0.8 + 0.2 * eased,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(6, 6, 14, 6),
-                decoration: BoxDecoration(
-                  color: c.surface,
-                  borderRadius: Radii.fullAll,
-                  boxShadow: [BoxShadow(color: c.shadow.withValues(alpha: 0.10), blurRadius: 18, offset: const Offset(0, 8))],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(color: chip.tint(c).withValues(alpha: 0.16), shape: BoxShape.circle),
-                      alignment: Alignment.center,
-                      child: Icon(chip.icon, size: 15, color: chip.tint(c)),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      chip.label,
-                      style: context.text.caption.copyWith(color: c.ink, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );

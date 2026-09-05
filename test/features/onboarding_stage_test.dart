@@ -1,20 +1,11 @@
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/clay_illustration.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_stage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flora/l10n/generated/app_localizations.dart';
-
-const _chips = [
-  SceneChip(icon: CupertinoIcons.drop_fill, label: 'Arrosage', tint: _water, at: Alignment(-1, -0.6)),
-  SceneChip(icon: CupertinoIcons.camera_fill, label: 'Photos', tint: _sage, at: Alignment(1, 0.7)),
-];
-
-Color _water(FloraColors c) => c.water;
-Color _sage(FloraColors c) => c.sage;
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -40,8 +31,6 @@ Future<void> _pump(
           offset: offset,
           page: page,
           entry: entry,
-          drift: 0.25,
-          chips: _chips,
           height: 360,
           reduceMotion: reduceMotion,
         ),
@@ -87,24 +76,6 @@ void main() {
     testWidgets("la scène se referme à mesure qu'on la quitte", (tester) async {
       await _pump(tester, offset: 4.5, page: 4);
       expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(180, 1));
-    });
-  });
-
-  group('les éclats', () {
-    testWidgets("se posent une fois l'écran arrivé", (tester) async {
-      await _pump(tester, offset: 1, page: 1);
-      expect(find.text('Arrosage'), findsOneWidget);
-      expect(find.text('Photos'), findsOneWidget);
-    });
-
-    testWidgets('disparaissent dès que le doigt emporte la page', (tester) async {
-      await _pump(tester, offset: 1.4, page: 1);
-      expect(find.text('Arrosage'), findsNothing);
-    });
-
-    testWidgets("n'apparaissent pas avant la fin de l'entrée", (tester) async {
-      await _pump(tester, offset: 1, page: 1, entry: 0.2);
-      expect(find.text('Arrosage'), findsNothing);
     });
   });
 

@@ -91,7 +91,7 @@ class TodayScreen extends ConsumerWidget {
               child: EmptyState(
                 emoji: '🌱',
                 title: l10n.emptyGardenTitle,
-                subtitle: l10n.onboardingSubtitle,
+                subtitle: l10n.emptyGardenSubtitle,
                 actionLabel: l10n.addFirstPlant,
                 onAction: () => startCreatePlantFlow(context, ref),
               ),

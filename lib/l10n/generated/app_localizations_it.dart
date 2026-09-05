@@ -937,10 +937,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get manageTags => 'Gestisci tag';
 
   @override
-  String get onboardingTitle => 'Il tuo giardino, semplicemente.';
+  String get onboardingTitle => 'Tutte le tue piante, qui';
 
   @override
-  String get onboardingSubtitle => 'Tutto il necessario, niente di più.';
+  String get onboardingSubtitle =>
+      'Aggiungile una alla volta, con una foto se vuoi.';
 
   @override
   String get askNameTitle => 'Come ti chiami?';
@@ -3231,28 +3232,30 @@ class AppLocalizationsIt extends AppLocalizations {
   String get apiExample => 'Esempio';
 
   @override
-  String get onbTodayTitle => 'Una sola domanda ogni mattina';
+  String get onbTodayTitle => 'Ogni mattina, cosa c\'è da fare';
 
   @override
-  String get onbTodayBody => 'Oggi mostra solo ciò che è dovuto.';
+  String get onbTodayBody => 'Annaffiata? Un tocco, ed è segnato.';
 
   @override
-  String get onbCareTitle => 'Un ritmo che segue le stagioni';
+  String get onbCareTitle => 'Meno annaffiature d\'inverno';
 
   @override
-  String get onbCareBody => 'In inverno gli intervalli si allungano da soli.';
+  String get onbCareBody =>
+      'Gli intervalli si adattano da soli quando le giornate si accorciano.';
 
   @override
-  String get onbGardenTitle => 'Tutto il tuo giardino in un posto';
+  String get onbGardenTitle => 'Stanze, foto, calendario';
 
   @override
-  String get onbGardenBody => 'Posizioni, inventario, attività, calendario.';
+  String get onbGardenBody => 'La storia di ogni pianta si conserva da sola.';
 
   @override
-  String get onbPrivacyTitle => 'I tuoi dati restano tuoi';
+  String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';
 
   @override
-  String get onbPrivacyBody => 'Tutto funziona offline.';
+  String get onbPrivacyBody =>
+      'Nessun account obbligatorio, nessuna pubblicità.';
 
   @override
   String get onbStart => 'Iniziare';
@@ -3296,7 +3299,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Tutte le funzioni, senza limiti, senza pubblicità e senza account obbligatorio. Se l\'app ti è utile, puoi sostenere il suo sviluppatore una volta per tutte.';
+      'Tutte le funzioni sono gratuite. Se l\'app ti è utile, puoi dare una mano al suo sviluppatore — una volta, senza abbonamento.';
 
   @override
   String get supportNothingLocked => 'Niente è riservato a chi dona.';
@@ -3337,4 +3340,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get supportNoThanks => 'Continua senza';
+
+  @override
+  String get aboutTagline =>
+      'Prenditi cura delle tue piante e conserva la loro storia.';
+
+  @override
+  String get emptyGardenSubtitle =>
+      'Aggiungi la tua prima pianta, con una foto se vuoi.';
 }
