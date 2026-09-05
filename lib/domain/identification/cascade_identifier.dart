@@ -7,9 +7,21 @@ import 'identification_policy.dart';
 import 'local_plant_model.dart';
 import 'plant_identifier.dart';
 
-/// Relie un nom d'espèce venu d'un modèle ou d'un service à l'identifiant
-/// interne du catalogue de l'app, ou `null` si la plante n'y est pas.
-typedef CatalogMapper = String? Function(String scientificName);
+/// Ce que le catalogue de l'app sait d'une espèce nommée par un modèle ou un
+/// service : son identifiant interne, et son nom courant dans la langue de
+/// l'utilisateur. Un nom scientifique seul ne dit rien à la plupart des gens ;
+/// « Spathiphyllum wallisii » ne devient une plante qu'en lisant « Fleur de
+/// lune » en dessous.
+class CatalogMatch {
+  const CatalogMatch({required this.internalId, this.commonName});
+
+  final String internalId;
+  final String? commonName;
+}
+
+/// Relie un nom d'espèce au catalogue, dans une langue donnée, ou rend
+/// `null` si la plante n'y est pas.
+typedef CatalogLookup = CatalogMatch? Function(String scientificName, String languageCode);
 
 /// Modèle local d'abord, service distant ensuite si le local hésite.
 ///
@@ -31,11 +43,11 @@ class CascadeIdentifier implements PlantIdentifier {
     this.fallbackEnabled = true,
     this.dailyRemoteLimit = 200,
     this.localTimeout = const Duration(seconds: 4),
-    CatalogMapper? mapper,
+    CatalogLookup? lookup,
     DateTime Function()? now,
     this.cacheSize = 24,
   })  : metricsStore = metrics ?? InMemoryMetricsStore(),
-        _mapper = mapper ?? ((_) => null),
+        _lookup = lookup ?? ((_, _) => null),
         _now = now ?? DateTime.now;
 
   final LocalPlantModel local;
@@ -52,7 +64,7 @@ class CascadeIdentifier implements PlantIdentifier {
   final int dailyRemoteLimit;
   final Duration localTimeout;
   final int cacheSize;
-  final CatalogMapper _mapper;
+  final CatalogLookup _lookup;
   final DateTime Function() _now;
   final _cache = <String, List<IdentificationCandidate>>{};
 
@@ -85,7 +97,7 @@ class CascadeIdentifier implements PlantIdentifier {
     }
     m = m.copyWith(remote: m.remote + 1, remoteDay: today, remoteToday: todayCount + 1);
     try {
-      final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote);
+      final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote, language);
       await metricsStore.write(m);
       _cache[await _cacheKey(images)] = remote;
       return remote;
@@ -111,7 +123,7 @@ class CascadeIdentifier implements PlantIdentifier {
     if (local.isAvailable) {
       m = m.copyWith(local: m.local + 1);
       try {
-        localResult = _mark(await _classifyAll(images), IdentificationSource.local);
+        localResult = _mark(await _classifyAll(images), IdentificationSource.local, language);
         verdict = policy.decide(localResult);
       } on Object {
         // Un modèle qui plante ou dépasse le délai ne doit pas bloquer
@@ -149,7 +161,7 @@ class CascadeIdentifier implements PlantIdentifier {
           remoteToday: todayCount + 1,
         );
         try {
-          final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote);
+          final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote, language);
           if (remote.isNotEmpty) m = m.copyWith(confidenceSum: m.confidenceSum + remote.first.score);
           await metricsStore.write(m);
           return _remember(key, remote);
@@ -187,13 +199,22 @@ class CascadeIdentifier implements PlantIdentifier {
     return merged;
   }
 
-  List<IdentificationCandidate> _mark(List<IdentificationCandidate> candidates, IdentificationSource source) => [
+  /// Normalise les noms, note la provenance, rattache au catalogue. Le nom
+  /// courant vient du catalogue quand la source n'en donne pas : le modèle
+  /// local ne connaît que les noms scientifiques, Pl@ntNet fournit le sien
+  /// et on le garde.
+  List<IdentificationCandidate> _mark(List<IdentificationCandidate> candidates, IdentificationSource source, String? language) => [
         for (final c in candidates)
-          c.copyWith(
-            scientificName: normalizeScientificName(c.scientificName).isEmpty ? c.scientificName : normalizeScientificName(c.scientificName),
-            source: source,
-            internalId: () => _mapper(c.scientificName),
-          ),
+          () {
+            final canonical = normalizeScientificName(c.scientificName);
+            final match = _lookup(c.scientificName, language ?? 'en');
+            return c.copyWith(
+              scientificName: canonical.isEmpty ? c.scientificName : canonical,
+              commonName: (c.commonName?.isNotEmpty ?? false) ? c.commonName : match?.commonName,
+              source: source,
+              internalId: () => match?.internalId,
+            );
+          }(),
       ];
 
   List<IdentificationCandidate> _remember(String key, List<IdentificationCandidate> result) {

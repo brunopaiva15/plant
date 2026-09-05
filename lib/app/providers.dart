@@ -256,16 +256,29 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
     fallback: remote,
     fallbackEnabled: fallbackEnabled,
     metrics: ref.watch(identificationMetricsStoreProvider),
-    mapper: (name) => catalogPlantId(name, ref.read(speciesIndexProvider).value),
+    lookup: (name, language) => catalogLookup(name, ref.read(speciesIndexProvider).value, language),
   );
 });
 
 /// Identifiant interne d'une espèce si l'app la connaît : catalogue trié à
 /// la main d'abord, puis catalogue étendu s'il est déjà chargé.
-String? catalogPlantId(String scientificName, SpeciesIndex? index) {
+String? catalogPlantId(String scientificName, SpeciesIndex? index) => catalogLookup(scientificName, index, 'en')?.internalId;
+
+/// Identifiant interne et nom courant d'une espèce, dans la langue demandée :
+/// catalogue trié à la main d'abord, catalogue étendu s'il est déjà chargé.
+CatalogMatch? catalogLookup(String scientificName, SpeciesIndex? index, String languageCode) {
   final canonical = normalizeScientificName(scientificName);
   if (canonical.isEmpty) return null;
-  if (SpeciesCatalog.find(canonical) != null || index?.find(canonical) != null) return internalPlantId(canonical);
+  final curated = SpeciesCatalog.find(canonical);
+  if (curated != null) {
+    final name = curated.commonName(languageCode);
+    return CatalogMatch(internalId: internalPlantId(canonical), commonName: name.isEmpty ? null : name);
+  }
+  final extended = index?.find(canonical);
+  if (extended != null) {
+    final name = extended.commonName(languageCode);
+    return CatalogMatch(internalId: internalPlantId(canonical), commonName: name.isEmpty ? null : name);
+  }
   return null;
 }
 

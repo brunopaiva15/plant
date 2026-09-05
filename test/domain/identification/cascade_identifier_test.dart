@@ -80,7 +80,7 @@ void main() {
   final hesitant = [c('Monstera deliciosa', 0.15), c('Monstera adansonii', 0.12)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
-  CascadeIdentifier build(FakeLocal local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogMapper? mapper}) =>
+  CascadeIdentifier build(FakeLocal local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
       CascadeIdentifier(
         local: local,
         fallback: remote,
@@ -88,7 +88,10 @@ void main() {
         fallbackEnabled: fallbackEnabled,
         dailyRemoteLimit: limit,
         now: now,
-        mapper: mapper ?? (name) => name.startsWith('Monstera deliciosa') ? 'monstera-deliciosa' : null,
+        lookup: lookup ??
+            (name, language) => name.startsWith('Monstera deliciosa')
+                ? CatalogMatch(internalId: 'monstera-deliciosa', commonName: language == 'fr' ? 'Monstera' : 'Swiss cheese plant')
+                : null,
         localTimeout: const Duration(milliseconds: 200),
       );
 
@@ -152,6 +155,24 @@ void main() {
     final cascade = build(FakeLocal(plausible), remote, fallbackEnabled: false);
     expect(await cascade.identifyRemotely([photo]), isEmpty);
     expect(remote.calls, 0);
+  });
+
+  test('a local candidate gets its common name from the catalogue, in the user\'s language', () async {
+    // Le modèle ne connaît que les noms scientifiques ; « Monstera
+    // deliciosa » ne parle pas à tout le monde, « Monstera » si.
+    final cascade = build(FakeLocal(sure), FakeRemote(remoteAnswer));
+    final fr = await cascade.identify([photo], language: 'fr');
+    expect(fr.first.commonName, 'Monstera');
+    final en = await cascade.identify([other], language: 'en');
+    expect(en.first.commonName, 'Swiss cheese plant');
+    expect(fr[1].commonName, isNull, reason: 'hors catalogue : pas de nom inventé');
+  });
+
+  test('a remote candidate keeps the common name the service gave', () async {
+    final remote = FakeRemote([IdentificationCandidate(scientificName: 'Monstera deliciosa', score: 0.9, commonName: 'Faux philodendron')]);
+    final cascade = build(FakeLocal(const [], available: false), remote);
+    final result = await cascade.identify([photo], language: 'fr');
+    expect(result.first.commonName, 'Faux philodendron');
   });
 
   test('hesitant local answer falls back to the remote service', () async {

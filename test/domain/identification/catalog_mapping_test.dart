@@ -10,6 +10,15 @@ void main() {
     expect(catalogPlantId('', null), isNull);
   });
 
+  test('the common name follows the language of the user', () {
+    expect(catalogLookup('Monstera deliciosa Liebm.', null, 'fr')?.commonName, 'Monstera');
+    expect(catalogLookup('Monstera deliciosa', null, 'en')?.commonName, 'Swiss cheese plant');
+    expect(catalogLookup('Monstera deliciosa', null, 'xx')?.commonName, 'Swiss cheese plant', reason: 'langue inconnue : anglais');
+    final index = SpeciesIndex.parse('Quercus petraea\tFagaceae\tChêne sessile\tSessile oak\tTraubeneiche\tRovere\n');
+    expect(catalogLookup('Quercus petraea', index, 'de')?.commonName, 'Traubeneiche');
+    expect(catalogLookup('Plantus imaginarius', index, 'fr'), isNull);
+  });
+
   test('the extended index is consulted when it is loaded', () {
     final index = SpeciesIndex.parse('Quercus petraea\tFagaceae\tChêne sessile\tSessile oak\tTraubeneiche\tRovere\n');
     expect(catalogPlantId('Quercus petraea (Matt.) Liebl.', index), 'quercus-petraea');

@@ -12,6 +12,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
+import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -58,6 +59,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _picking = false;
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
+  StoredPhoto? _identifiedPhoto;
 
   late final _name = TextEditingController(text: widget.parentName == null ? '' : context.l10n.cuttingOf(widget.parentName!));
   final _species = TextEditingController();
@@ -113,9 +115,32 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   void _startIdentification(StoredPhoto photo) {
     final identifier = ref.read(plantIdentifierProvider);
     if (!identifier.isConfigured) return;
-    final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    final lang = _identificationLanguage;
+    _identifiedPhoto = photo;
     setState(() {
       _identification = ref.read(photoStorageProvider).absolutePath(photo.filePath).then((path) => identifier.identify([File(path)], language: lang)).catchError((_) => <IdentificationCandidate>[]);
+    });
+  }
+
+  String get _identificationLanguage =>
+      ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+
+  /// Le service en ligne est-il utilisable ? Sans clé, ou repli coupé, le
+  /// bouton n'aurait rien à proposer.
+  bool get _canSearchOnline {
+    final identifier = ref.read(plantIdentifierProvider);
+    return identifier is CascadeIdentifier && identifier.fallbackEnabled && identifier.fallback.isConfigured;
+  }
+
+  /// Relance la recherche en ligne, parce qu'aucune proposition de
+  /// l'appareil ne convenait. L'appel n'a lieu que sur ce geste.
+  void _searchOnline() {
+    final identifier = ref.read(plantIdentifierProvider);
+    final photo = _identifiedPhoto;
+    if (identifier is! CascadeIdentifier || photo == null) return;
+    final lang = _identificationLanguage;
+    setState(() {
+      _identification = ref.read(photoStorageProvider).absolutePath(photo.filePath).then((path) => identifier.identifyRemotely([File(path)], language: lang)).catchError((_) => <IdentificationCandidate>[]);
     });
   }
 
@@ -294,7 +319,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             },
           ),
           _CarePreview(speciesName: _species.text),
-          if (_identification != null) _IdentificationSuggestions(future: _identification!, onPick: _applyCandidate),
+          if (_identification != null)
+            _IdentificationSuggestions(future: _identification!, onPick: _applyCandidate, onSearchOnline: _canSearchOnline ? _searchOnline : null),
           const SizedBox(height: Space.lg),
           Pressable(
             onTap: () => setState(() => _more = !_more),
@@ -392,10 +418,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 }
 
 class _IdentificationSuggestions extends StatelessWidget {
-  const _IdentificationSuggestions({required this.future, required this.onPick});
+  const _IdentificationSuggestions({required this.future, required this.onPick, this.onSearchOnline});
 
   final Future<List<IdentificationCandidate>> future;
   final ValueChanged<IdentificationCandidate> onPick;
+
+  /// Présent quand une recherche en ligne est possible ; le bouton ne
+  /// s'affiche que si la liste vient de l'appareil.
+  final VoidCallback? onSearchOnline;
 
   @override
   Widget build(BuildContext context) {
@@ -416,9 +446,22 @@ class _IdentificationSuggestions extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.identifyHint, style: context.text.caption),
+              // D'où viennent ces noms : l'utilisateur a le droit de savoir si
+              // sa photo est partie sur le réseau, et de le demander sinon.
+              Text(
+                switch (results.first.source) {
+                  IdentificationSource.local => l10n.suggestionsLocal,
+                  IdentificationSource.remote => l10n.suggestionsRemote,
+                  IdentificationSource.unknown => l10n.identifyHint,
+                },
+                style: context.text.caption,
+              ),
               const SizedBox(height: Space.xs),
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
+              if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
+                const SizedBox(height: Space.sm),
+                FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.secondary, size: FloraButtonSize.small, onPressed: onSearchOnline),
+              ],
             ],
           ),
         );
