@@ -64,6 +64,7 @@ Fichiers :
 | `lib/core/utils/scientific_name.dart` | `normalizeScientificName`, `internalPlantId` — même règle que l'outil Python |
 | `lib/domain/identification/identification_policy.dart` | `FallbackPolicy` (seuil, marge, plancher) |
 | `lib/domain/identification/local_plant_model.dart` | interface `LocalPlantModel` + `NoLocalModel` |
+| `lib/data/services/tflite_plant_model.dart` | le modèle embarqué, exécuté par TensorFlow Lite |
 | `lib/domain/identification/cascade_identifier.dart` | la cascade |
 | `lib/domain/identification/identification_metrics.dart` | compteurs + magasin |
 | `lib/data/services/preferences_metrics_store.dart` | compteurs persistés dans `SharedPreferences` |
