@@ -54,10 +54,11 @@ def test_prepare_applies_exif_orientation():
 
 def test_large_image_is_downscaled_to_max_side():
     p = prepare(picture(12, size=(3000, 2000)))
-    assert (p.width, p.height) == (1024, 683)
-    assert Image.open(io.BytesIO(p.data)).size == (1024, 683)
-    # Une image déjà petite est stockée telle quelle, octet pour octet.
-    small = picture(13, size=(800, 600))
+    assert (p.width, p.height) == (640, 427)
+    assert Image.open(io.BytesIO(p.data)).size == (640, 427)
+    # Une image déjà sous la limite est stockée telle quelle, octet pour
+    # octet : pas de réencodage, donc pas de perte de génération.
+    small = picture(13, size=(600, 450))
     assert prepare(small).data == small
 
 

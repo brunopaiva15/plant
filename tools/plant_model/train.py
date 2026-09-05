@@ -94,14 +94,46 @@ def center(image, label):
     return tf.cast(image, tf.float32), label
 
 
-def make_dataset(pairs, classes: list[str], batch: int, training: bool):
-    images, labels = load_all(pairs, classes)
-    ds = tf.data.Dataset.from_tensor_slices((images, labels))
+def read_and_square(path, label):
+    """Lit un JPEG et le ramène au carré central de LOAD_SIZE, comme le
+    préchargement en mémoire. Les deux chemins doivent donner la même image,
+    sinon les mesures ne veulent plus rien dire."""
+    image = tf.io.decode_jpeg(tf.io.read_file(path), channels=3)
+    side = tf.reduce_min(tf.shape(image)[:2])
+    image = tf.image.resize_with_crop_or_pad(image, side, side)
+    image = tf.image.resize(image, [LOAD_SIZE, LOAD_SIZE])
+    return tf.cast(image, tf.uint8), label
+
+
+def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0):
+    """Précharge en mémoire tant que ça tient dans le budget, sinon relit les
+    fichiers à chaque époque.
+
+    Le préchargement évite de redécoder les JPEG seize fois, mais 30 000
+    images en 256×256 font 5,6 Go : au-delà du budget, mieux vaut une époque
+    plus lente qu'un entraînement tué par le système.
+    """
+    index = {c: i for i, c in enumerate(classes)}
+    usable = [(p, index[pid]) for p, pid in pairs if pid in index]
+    if not usable:
+        raise SystemExit('aucune image utilisable ; le jeu de données est-il construit ?')
+    counts = Counter(label for _, label in usable)
+    estimate = len(usable) * LOAD_SIZE * LOAD_SIZE * 3 / 1e9
+
+    if estimate <= ram_budget_gb:
+        images, labels = load_all(pairs, classes)
+        ds = tf.data.Dataset.from_tensor_slices((images, labels))
+    else:
+        print(f'  {len(usable)} images = {estimate:.1f} Go > budget {ram_budget_gb} Go : lecture depuis les fichiers')
+        paths = [p for p, _ in usable]
+        labels = [l for _, l in usable]
+        ds = tf.data.Dataset.from_tensor_slices((paths, labels)).map(read_and_square, num_parallel_calls=AUTOTUNE)
+
     if training:
-        ds = ds.shuffle(len(labels), reshuffle_each_iteration=True).map(augment, num_parallel_calls=AUTOTUNE)
+        ds = ds.shuffle(min(len(usable), 4096), reshuffle_each_iteration=True).map(augment, num_parallel_calls=AUTOTUNE)
     else:
         ds = ds.map(center, num_parallel_calls=AUTOTUNE)
-    return ds.batch(batch).prefetch(AUTOTUNE), Counter(labels.tolist())
+    return ds.batch(batch).prefetch(AUTOTUNE), counts
 
 
 def build_model(n_classes: int, dropout: float) -> tf.keras.Model:
@@ -226,6 +258,7 @@ def main() -> int:
     ap.add_argument('--unfreeze', type=int, default=60, help='couches dégelées en fin de réseau')
     ap.add_argument('--fine-lr', type=float, default=5e-5, help='taux d\'apprentissage du réglage fin')
     ap.add_argument('--version', default='1')
+    ap.add_argument('--ram-budget', type=float, default=6.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
     args = ap.parse_args()
 
     dataset = Path(args.dataset)
@@ -236,9 +269,9 @@ def main() -> int:
     names = species_names(dataset)
     print(f'{len(classes)} classes, {len(rows["train"])} train / {len(rows["val"])} val / {len(rows["test"])} test')
 
-    train_ds, counts = make_dataset(rows['train'], classes, args.batch, training=True)
-    val_ds, _ = make_dataset(rows['val'], classes, args.batch, training=False)
-    test_ds, _ = make_dataset(rows['test'], classes, args.batch, training=False)
+    train_ds, counts = make_dataset(rows['train'], classes, args.batch, training=True, ram_budget_gb=args.ram_budget)
+    val_ds, _ = make_dataset(rows['val'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
+    test_ds, _ = make_dataset(rows['test'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
 
     model = build_model(len(classes), args.dropout)
     weights = class_weights(counts, len(classes))

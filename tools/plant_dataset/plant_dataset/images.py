@@ -17,9 +17,11 @@ import requests
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 MIN_SIDE = 320             # en dessous, c'est une miniature
-# Au-delà, l'image est réduite : les modèles mobiles s'entraînent en 224–384 px,
-# et 1024 px laisse de quoi recadrer. Divise le disque par quatre environ.
-MAX_SIDE = 1024
+# Au-delà, l'image est réduite. Les modèles mobiles s'entraînent en 224, au
+# plus 384 ; 640 px laisse de quoi recadrer et redimensionner sans perte
+# visible, pour trois fois moins de disque qu'en 1024 px — ce qui décide
+# du nombre d'espèces qu'on peut collecter.
+MAX_SIDE = 640
 MAX_BYTES = 25 * 1024 * 1024
 ALLOWED_FORMATS = {'JPEG', 'PNG', 'WEBP'}
 JPEG_QUALITY = 92
