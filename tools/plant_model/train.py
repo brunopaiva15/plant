@@ -52,7 +52,8 @@ def usable_classes(rows: dict, min_train: int, min_val: int) -> list[str]:
     return sorted(c for c in train if train[c] >= min_train and val[c] >= min_val)
 
 
-LOAD_SIZE = 256  # on garde un peu de marge autour de 224 pour le recadrage
+LOAD_SIZE = 256    # on garde un peu de marge autour de 224 pour le recadrage
+SOURCE_SIZE = 448  # taille de stockage du jeu (plant_dataset/images.py, MAX_SIDE)
 
 
 def load_all(usable: list[tuple[str, int]]) -> tuple[np.ndarray, np.ndarray]:
@@ -279,6 +280,11 @@ def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: di
         # puis recadrer au centre à `input_size`. Redimensionner directement
         # à 224 change le cadrage et coûte plusieurs points de précision.
         'load_size': LOAD_SIZE,
+        # Taille à laquelle les images du jeu ont été réduites au stockage.
+        # L'application refait la même réduction en deux temps sur les photos
+        # de l'appareil, sans quoi elle nourrirait le modèle d'images plus
+        # crénelées que tout ce qu'il a vu.
+        'source_size': SOURCE_SIZE,
         'classes': len(classes),
         'architecture': 'MobileNetV3Small',
         'preprocessing': 'included_in_graph_uint8_0_255',

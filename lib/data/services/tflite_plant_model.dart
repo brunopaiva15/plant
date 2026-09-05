@@ -37,6 +37,7 @@ class TflitePlantModel implements LocalPlantModel {
   String? _version;
   int _inputSize = 224;
   int _loadSize = 256;
+  int _sourceSize = 448;
   Future<bool>? _loading;
   bool _failed = false;
 
@@ -62,6 +63,8 @@ class TflitePlantModel implements LocalPlantModel {
         if (size != null) _inputSize = int.parse(size);
         final load = RegExp(r'"load_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);
         _loadSize = load != null ? int.parse(load) : _inputSize;
+        final source = RegExp(r'"source_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);
+        _sourceSize = source != null ? int.parse(source) : _loadSize;
       } on Object {
         // Les métadonnées sont un confort : sans elles, les valeurs par défaut
         // du graphe suffisent.
@@ -85,7 +88,7 @@ class TflitePlantModel implements LocalPlantModel {
     final interpreter = _interpreter;
     if (interpreter == null) return const [];
 
-    final input = await _prepare(image, _inputSize, _loadSize);
+    final input = await _prepare(image, _inputSize, _loadSize, _sourceSize);
     if (input == null) return const [];
 
     final output = [List<double>.filled(_labels.length, 0)];
@@ -129,15 +132,16 @@ class TflitePlantModel implements LocalPlantModel {
   /// central, redimensionnement à `loadSize`, puis recadrage central à
   /// `size`. Redimensionner directement à 224 donne un cadrage plus large
   /// et coûte plusieurs points de précision, mesurés sur le jeu de test.
-  static Future<List<List<List<List<double>>>>?> _prepare(File file, int size, int loadSize) async {
+  static Future<List<List<List<List<double>>>>?> _prepare(File file, int size, int loadSize, int sourceSize) async {
     final bytes = await file.readAsBytes();
-    return Isolate.run(() => _decode(bytes, size, loadSize));
+    return Isolate.run(() => _decode(bytes, size, loadSize, sourceSize));
   }
 
   @visibleForTesting
-  static List<List<List<List<double>>>>? decodeForTest(Uint8List bytes, int size, int loadSize) => _decode(bytes, size, loadSize);
+  static List<List<List<List<double>>>>? decodeForTest(Uint8List bytes, int size, int loadSize, [int sourceSize = 448]) =>
+      _decode(bytes, size, loadSize, sourceSize);
 
-  static List<List<List<List<double>>>>? _decode(Uint8List bytes, int size, int loadSize) {
+  static List<List<List<List<double>>>>? _decode(Uint8List bytes, int size, int loadSize, int sourceSize) {
     // Un fichier tronqué ou dans un format inattendu n'est pas une panne du
     // modèle : c'est une photo sans candidat, et la cascade ira au service
     // distant. Le décodeur lève sur certaines entrées au lieu de rendre null.
@@ -152,8 +156,18 @@ class TflitePlantModel implements LocalPlantModel {
     final side = oriented.width < oriented.height ? oriented.width : oriented.height;
     final square = img.copyCrop(oriented,
         x: (oriented.width - side) ~/ 2, y: (oriented.height - side) ~/ 2, width: side, height: side);
+    // Les images d'entraînement ont été réduites en deux temps : d'abord à
+    // `sourceSize` par une réduction de qualité (moyenne de zone), puis à
+    // `loadSize` par un simple bilinéaire. Une photo de téléphone fait
+    // 4000 px : la ramener d'un coup à 256 par bilinéaire produit un
+    // crénelage que le modèle n'a jamais vu à l'entraînement. On refait donc
+    // exactement les deux étapes.
     final load = loadSize < size ? size : loadSize;
-    final resized = img.copyResize(square, width: load, height: load, interpolation: img.Interpolation.linear);
+    var source = square;
+    if (source.width > sourceSize && sourceSize > load) {
+      source = img.copyResize(source, width: sourceSize, height: sourceSize, interpolation: img.Interpolation.average);
+    }
+    final resized = img.copyResize(source, width: load, height: load, interpolation: img.Interpolation.linear);
     final offset = (load - size) ~/ 2;
     final small = load == size ? resized : img.copyCrop(resized, x: offset, y: offset, width: size, height: size);
     // Forme [1, size, size, 3], en octets 0–255 : le graphe normalise lui-même.

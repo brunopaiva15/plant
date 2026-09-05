@@ -1,9 +1,9 @@
 # 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
 
-> État au 5 septembre 2026 : collecte phase 1 sur 95 plantes d'intérieur et
-> succulentes (GBIF + iNaturalist, CC0 / CC BY), modèle MobileNetV3
-> entraîné et livré dans l'app en TFLite. La cascade identifie donc
-> **sur l'appareil**, et n'appelle Pl@ntNet que sur hésitation.
+> État au 5 septembre 2026 : 600 espèces au catalogue de collecte, 65 999
+> images sous CC0 ou CC BY, modèle MobileNetV3 à **542 classes** livré dans
+> l'app en TFLite (2,6 Mo). La cascade identifie **sur l'appareil** et
+> n'appelle Pl@ntNet que sur hésitation.
 
 ## 1. Pourquoi
 
@@ -360,7 +360,63 @@ iNaturalist ne connaissent sous cette forme (`Dracaena marginata`,
 `Saintpaulia ionantha`…). Elles seront rattachées à leur nom accepté lors
 d'une prochaine passe.
 
-### 6.2 Résultats du modèle v1
+### 6.2 Résultats du modèle v3 — catalogue complet
+
+| | v1 | **v3** |
+|---|---|---|
+| Espèces collectées | 87 | **585** |
+| Images | 8 825 | **65 999** |
+| Classes du modèle | 78 | **542** |
+| Taille TFLite | 2,0 Mo | **2,6 Mo** |
+| Top-1 (test) | 63,8 % | **44,2 %** |
+| Top-3 (test) | 81,3 % | **60,0 %** |
+| Macro-F1 | 0,642 | **0,425** |
+
+La baisse était attendue et annoncée : sept fois plus de classes, dont
+beaucoup de plantes sauvages proches entre elles (érables, sapins, chênes).
+Ce qu'on gagne est la couverture — 542 espèces nommables au lieu de 78.
+
+Courbe seuil / repli mesurée sur 6 284 images de test :
+
+| Seuil | Acceptées | Précision |
+|---|---|---|
+| 0,80 | 23 % | 89,5 % |
+| 0,90 | 16 % | 94,7 % |
+| 0,95 | 11 % | 97,4 % |
+
+À 0,90 le modèle ne tranche seul que dans 16 % des cas, contre 30 % au v1.
+Le reste part chez Pl@ntNet, comme avant.
+
+**Trois défauts trouvés pendant cet entraînement**, tous corrigés :
+
+1. **Mémoire** — `from_tensor_slices` recopie le tableau numpy dans le
+   graphe : 13,9 Go pour un tableau de 4,9, et le processus tué. Remplacé
+   par un générateur qui lit le tableau en place.
+2. **Mélange** — `splits.csv` est trié par espèce, et le tampon de mélange
+   de 4 096 éléments ne couvrait que 38 espèces sur 542. Chaque lot était
+   quasi monospécifique : 31 % à l'entraînement contre 9 % en validation.
+   Mélange global de la liste avant `tf.data` ; la validation à la première
+   époque est passée de 6,2 % à 23,5 %.
+3. **Déduplication** — comparaison de toutes les paires, soit un milliard
+   pour 45 000 images. Remplacée par un partitionnement en bandes
+   (principe des tiroirs) : 13,7 millions de paires en neuf secondes.
+
+**Le prétraitement de service, mesuré sur le `.tflite` exporté** :
+
+| Chaîne appliquée à la photo | Top-1 |
+|---|---|
+| comme l'entraînement (bilinéaire sans anticrénelage) | **42,2 %** |
+| avec anticrénelage (PIL, ImageMagick…) | 38,5 % |
+
+3,7 points séparent les deux : la façon de réduire l'image compte autant
+qu'un choix d'architecture. Les images du jeu ont été réduites en deux
+temps — moyenne de zone jusqu'à 448 px au stockage, puis bilinéaire jusqu'à
+256 à l'entraînement. L'application refait exactement ces deux étapes
+(`source_size`, `load_size` dans `model.json`) ; sans quoi une photo de
+téléphone de 4 000 px, ramenée d'un coup à 256, arriverait bien plus
+crénelée que tout ce que le modèle a vu.
+
+### 6.3 Résultats du modèle v1
 
 | | |
 |---|---|

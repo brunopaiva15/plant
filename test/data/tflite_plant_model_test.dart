@@ -55,12 +55,13 @@ void main() {
   group('cadrage de la photo', () {
     /// Une image dont on connaît la vérité : fond noir, bande rouge sur le
     /// bord gauche, carré vert au centre.
-    Uint8List picture(int width, int height) {
+    Uint8List picture(int seed, {int width = 640, int height = 480}) {
       final im = img.Image(width: width, height: height);
       img.fill(im, color: img.ColorRgb8(0, 0, 0));
       img.fillRect(im, x1: 0, y1: 0, x2: width ~/ 40, y2: height - 1, color: img.ColorRgb8(255, 0, 0));
       final cx = width ~/ 2, cy = height ~/ 2;
-      img.fillRect(im, x1: cx - 20, y1: cy - 20, x2: cx + 20, y2: cy + 20, color: img.ColorRgb8(0, 255, 0));
+      final half = (width ~/ 16).clamp(20, 400);
+      img.fillRect(im, x1: cx - half, y1: cy - half, x2: cx + half, y2: cy + half, color: img.ColorRgb8(0, 255, 0));
       return img.encodeJpg(im, quality: 95);
     }
 
@@ -74,7 +75,7 @@ void main() {
     }
 
     test('la sortie a la forme attendue par le modèle', () {
-      final out = TflitePlantModel.decodeForTest(picture(640, 480), 224, 256)!;
+      final out = TflitePlantModel.decodeForTest(picture(1), 224, 256)!;
       expect(out.length, 1);
       expect(out.first.length, 224);
       expect(out.first.first.length, 224);
@@ -86,17 +87,27 @@ void main() {
     });
 
     test('le carré central est conservé, les bords sont écartés', () {
-      final out = TflitePlantModel.decodeForTest(picture(640, 480), 224, 256)!;
+      final out = TflitePlantModel.decodeForTest(picture(1), 224, 256)!;
       // Le vert du centre survit ; le rouge du bord gauche est hors du carré
       // central puis hors du recadrage 256 → 224.
       expect(hasChannel(out, 1), isTrue, reason: 'le sujet au centre doit rester');
       expect(hasChannel(out, 0), isFalse, reason: 'le bord de l\'image doit être écarté');
     });
 
+    test('une grande photo passe par la réduction en deux temps', () {
+      // 3000 px ramenés d'un coup à 224 par bilinéaire créeraient un
+      // crénelage que le modèle n'a jamais vu ; la réduction intermédiaire
+      // conserve la couleur moyenne des zones.
+      final out = TflitePlantModel.decodeForTest(picture(20, width: 3000, height: 2400), 224, 256, 448)!;
+      expect(out.first.length, 224);
+      expect(hasChannel(out, 1), isTrue, reason: 'le sujet central survit à la réduction');
+      expect(hasChannel(out, 0), isFalse, reason: 'le bord reste écarté');
+    });
+
     test('sans recadrage supplémentaire, la recette reste valide', () {
       // loadSize == inputSize : redimensionnement direct, pour un modèle
       // futur entraîné ainsi.
-      final out = TflitePlantModel.decodeForTest(picture(640, 480), 224, 224)!;
+      final out = TflitePlantModel.decodeForTest(picture(1), 224, 224)!;
       expect(out.first.length, 224);
     });
 
