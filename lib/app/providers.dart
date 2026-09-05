@@ -36,6 +36,11 @@ import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
 import '../domain/species/species_info.dart';
+import '../core/utils/scientific_name.dart';
+import '../data/services/preferences_metrics_store.dart';
+import '../domain/identification/cascade_identifier.dart';
+import '../domain/identification/identification_metrics.dart';
+import '../domain/identification/local_plant_model.dart';
 import '../domain/identification/plant_identifier.dart';
 import '../domain/support/support_service.dart';
 import '../domain/weather/weather.dart';
@@ -115,6 +120,7 @@ class AppPreferences {
     required this.hasSupported,
     required this.displayName,
     required this.plantNetApiKey,
+    required this.identificationFallbackEnabled,
     required this.anthropicApiKey,
     required this.weatherPlace,
     required this.archiveName,
@@ -135,6 +141,9 @@ class AppPreferences {
   final bool hasSupported;
   final String displayName;
   final String plantNetApiKey;
+
+  /// Repli Pl@ntNet autorisé quand le modèle local hésite.
+  final bool identificationFallbackEnabled;
   final String anthropicApiKey;
   final WeatherPlace? weatherPlace;
 
@@ -164,6 +173,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       hasSupported: s.hasSupported,
       displayName: s.displayName ?? '',
       plantNetApiKey: s.plantNetApiKey,
+      identificationFallbackEnabled: s.identificationFallbackEnabled,
       anthropicApiKey: s.anthropicApiKey,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       archiveName: s.archiveName,
@@ -186,6 +196,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
   Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
   Future<void> setPlantNetApiKey(String key) => _apply((s) => s.setPlantNetApiKey(key));
+  Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
   Future<void> setAnthropicApiKey(String key) => _apply((s) => s.setAnthropicApiKey(key));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
@@ -199,11 +210,39 @@ class PreferencesController extends Notifier<AppPreferences> {
 
 final preferencesProvider = NotifierProvider<PreferencesController, AppPreferences>(PreferencesController.new);
 
-/// Identification : Pl@ntNet si une clé est configurée, sinon service inactif.
+/// Modèle de reconnaissance embarqué. Aucun modèle n'est livré pour l'instant :
+/// la cascade passe directement au service distant. Le premier modèle
+/// entraîné (docs/09-plant-recognition.md) remplacera [NoLocalModel] ici.
+final localPlantModelProvider = Provider<LocalPlantModel>((ref) => const NoLocalModel());
+
+/// Compteurs de la cascade, persistés dans les réglages.
+final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>((ref) => PreferencesMetricsStore(ref.watch(preferencesServiceProvider)));
+
+/// Identification : modèle local puis Pl@ntNet en repli si une clé est
+/// configurée. Sans modèle ni clé, service inactif.
 final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
   final key = ref.watch(preferencesProvider.select((p) => p.plantNetApiKey));
-  return key.isEmpty ? const UnconfiguredIdentifier() : PlantNetIdentifier(key);
+  final fallbackEnabled = ref.watch(preferencesProvider.select((p) => p.identificationFallbackEnabled));
+  final local = ref.watch(localPlantModelProvider);
+  final remote = key.isEmpty ? const UnconfiguredIdentifier() as PlantIdentifier : PlantNetIdentifier(key);
+  if (!local.isAvailable && !remote.isConfigured) return const UnconfiguredIdentifier();
+  return CascadeIdentifier(
+    local: local,
+    fallback: remote,
+    fallbackEnabled: fallbackEnabled,
+    metrics: ref.watch(identificationMetricsStoreProvider),
+    mapper: (name) => catalogPlantId(name, ref.read(speciesIndexProvider).value),
+  );
 });
+
+/// Identifiant interne d'une espèce si l'app la connaît : catalogue trié à
+/// la main d'abord, puis catalogue étendu s'il est déjà chargé.
+String? catalogPlantId(String scientificName, SpeciesIndex? index) {
+  final canonical = normalizeScientificName(scientificName);
+  if (canonical.isEmpty) return null;
+  if (SpeciesCatalog.find(canonical) != null || index?.find(canonical) != null) return internalPlantId(canonical);
+  return null;
+}
 
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
 

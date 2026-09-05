@@ -17,6 +17,7 @@ Nom de travail : **Flora** — identifiant `ch.vergasta.plant`.
 | [docs/06-design-system.md](docs/06-design-system.md) | F. Couleurs, typographie, spacing, composants |
 | [docs/07-project-structure.md](docs/07-project-structure.md) | G. Arborescence du projet |
 | [docs/08-sync-and-collaboration.md](docs/08-sync-and-collaboration.md) | Synchronisation, comptes, collaboration (Supabase) |
+| [docs/09-plant-recognition.md](docs/09-plant-recognition.md) | Reconnaissance de plantes : jeu de données, modèle local, repli Pl@ntNet |
 
 ## Démarrer
 ```bash

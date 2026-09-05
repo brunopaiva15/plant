@@ -33,6 +33,7 @@ class _IdentificationSettingsScreenState extends ConsumerState<IdentificationSet
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final configured = ref.watch(plantIdentifierProvider).isConfigured;
+    final metrics = ref.watch(identificationMetricsStoreProvider).read();
     return FloraPage(
       title: l10n.identificationSettings,
       child: Column(
@@ -55,6 +56,22 @@ class _IdentificationSettingsScreenState extends ConsumerState<IdentificationSet
           FloraTextField(controller: _key, hint: l10n.apiKeyHint, textCapitalization: TextCapitalization.none, keyboardType: TextInputType.visiblePassword, onSubmitted: (_) => _save()),
           const SizedBox(height: Space.md),
           FloraButton(label: l10n.save, expand: true, onPressed: _save),
+          const SizedBox(height: Space.lg),
+          FloraGroup(
+            children: [
+              FloraListRow(
+                title: l10n.identificationFallback,
+                trailing: AdaptiveSwitch(
+                  value: ref.watch(preferencesProvider.select((p) => p.identificationFallbackEnabled)),
+                  onChanged: (v) => ref.read(preferencesProvider.notifier).setIdentificationFallbackEnabled(v),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+          Text(l10n.identificationFallbackHint, style: context.text.caption),
+          const SizedBox(height: Space.sm),
+          Text(l10n.identificationStats(metrics.localAccepted, metrics.remote, metrics.remoteCallsSaved), style: context.text.caption),
         ],
       ),
     );

@@ -2214,6 +2214,24 @@ abstract class AppLocalizations {
   /// **'Non configurée'**
   String get identificationDisabled;
 
+  /// No description provided for @identificationFallback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repli en ligne'**
+  String get identificationFallback;
+
+  /// No description provided for @identificationFallbackHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand le modèle intégré hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.'**
+  String get identificationFallbackHint;
+
+  /// No description provided for @identificationStats.
+  ///
+  /// In fr, this message translates to:
+  /// **'{local} identifications locales, {remote} en ligne, {saved} appels évités'**
+  String identificationStats(int local, int remote, int saved);
+
   /// No description provided for @confidence.
   ///
   /// In fr, this message translates to:

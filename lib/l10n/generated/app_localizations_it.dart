@@ -1224,6 +1224,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identificationDisabled => 'Non configurata';
 
   @override
+  String get identificationFallback => 'Fallback online';
+
+  @override
+  String get identificationFallbackHint =>
+      'Quando il modello integrato è incerto, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
+
+  @override
+  String identificationStats(int local, int remote, int saved) {
+    return '$local identificazioni locali, $remote online, $saved chiamate risparmiate';
+  }
+
+  @override
   String confidence(int percent) {
     return '$percent%';
   }

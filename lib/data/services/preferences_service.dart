@@ -28,6 +28,15 @@ class PreferencesService {
   bool get hasSupported => _prefs.getBool('has_supported') ?? false;
   Future<void> setSupported(bool value) => _prefs.setBool('has_supported', value);
 
+  /// Repli vers Pl@ntNet quand le modèle local hésite. Coupé, tout reste
+  /// sur l'appareil.
+  bool get identificationFallbackEnabled => _prefs.getBool('identification_fallback') ?? true;
+  Future<void> setIdentificationFallbackEnabled(bool value) => _prefs.setBool('identification_fallback', value);
+
+  /// Compteurs de la cascade d'identification, en JSON.
+  String? get identificationMetrics => _prefs.getString('identification_metrics');
+  Future<void> setIdentificationMetrics(String json) => _prefs.setString('identification_metrics', json);
+
   ThemeMode get themeMode => ThemeMode.values.byName(_prefs.getString('theme_mode') ?? 'system');
   Future<void> setThemeMode(ThemeMode mode) => _prefs.setString('theme_mode', mode.name);
 
