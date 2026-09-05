@@ -40,6 +40,7 @@ class TflitePlantModel implements LocalPlantModel {
   int _sourceSize = 448;
   Future<bool>? _loading;
   bool _failed = false;
+  String? _loadError;
 
   @override
   bool get isAvailable => _interpreter != null;
@@ -49,6 +50,9 @@ class TflitePlantModel implements LocalPlantModel {
 
   @override
   int get speciesCount => _interpreter == null ? 0 : _labels.length;
+
+  @override
+  String? get loadError => _loadError;
 
   @override
   Future<bool> warmUp() => _loading ??= _load();
@@ -79,6 +83,7 @@ class TflitePlantModel implements LocalPlantModel {
       // Pas de modèle livré, fichier illisible, plateforme sans TFLite :
       // l'app doit continuer de fonctionner par le service distant.
       debugPrint('modèle local indisponible : $e');
+      _loadError = e.toString();
       _failed = true;
       _interpreter = null;
       return false;

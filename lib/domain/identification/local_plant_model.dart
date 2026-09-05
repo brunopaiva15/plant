@@ -16,6 +16,12 @@ abstract class LocalPlantModel {
   /// Nombre d'espèces que le modèle sait nommer, 0 s'il n'est pas chargé.
   int get speciesCount;
 
+  /// Pourquoi le chargement a échoué, `null` s'il a réussi ou n'a pas eu
+  /// lieu. Montré tel quel dans les réglages : sans lui, « indisponible »
+  /// ne dit pas si l'asset manque ou si la bibliothèque native n'est pas
+  /// liée, et ce sont deux corrections très différentes.
+  String? get loadError;
+
   /// Classe une image. Les noms rendus sont les noms canoniques des classes
   /// (voir `tools/plant_dataset/plants.csv`), scores entre 0 et 1, somme ≤ 1.
   Future<List<IdentificationCandidate>> classify(File image);
@@ -38,6 +44,9 @@ class NoLocalModel implements LocalPlantModel {
 
   @override
   int get speciesCount => 0;
+
+  @override
+  String? get loadError => null;
 
   @override
   Future<List<IdentificationCandidate>> classify(File image) async => const [];

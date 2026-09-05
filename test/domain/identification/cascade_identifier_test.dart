@@ -27,6 +27,9 @@ class FakeLocal implements LocalPlantModel {
   int get speciesCount => available ? 3 : 0;
 
   @override
+  String? get loadError => null;
+
+  @override
   Future<bool> warmUp() async => available;
 
   @override

@@ -55,6 +55,12 @@ class IdentificationSettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          if (status != null && !status.ready && status.error != null) ...[
+            const SizedBox(height: Space.xs),
+            // Le message natif, brut : c'est lui qui distingue un asset
+            // absent d'une bibliothèque non liée, et il est copiable.
+            SelectableText(status.error!, style: context.text.caption),
+          ],
           const SizedBox(height: Space.md),
           Text(l10n.identificationHint, style: context.text.callout),
           const SizedBox(height: Space.lg),

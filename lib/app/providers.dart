@@ -226,15 +226,18 @@ final localPlantModelProvider = Provider<LocalPlantModel>((ref) {
 final localModelStatusProvider = FutureProvider<LocalModelStatus>((ref) async {
   final model = ref.watch(localPlantModelProvider);
   final ready = await model.warmUp();
-  return LocalModelStatus(ready: ready, version: model.version, speciesCount: model.speciesCount);
+  return LocalModelStatus(ready: ready, version: model.version, speciesCount: model.speciesCount, error: model.loadError);
 });
 
 class LocalModelStatus {
-  const LocalModelStatus({required this.ready, required this.version, required this.speciesCount});
+  const LocalModelStatus({required this.ready, required this.version, required this.speciesCount, this.error});
 
   final bool ready;
   final String? version;
   final int speciesCount;
+
+  /// La raison d'un échec de chargement, à montrer telle quelle.
+  final String? error;
 }
 
 /// Compteurs de la cascade, persistés dans les réglages.
