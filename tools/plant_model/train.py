@@ -115,6 +115,31 @@ def center(image, label):
     return tf.cast(image, tf.float32), label
 
 
+def array_dataset(images: np.ndarray, labels: np.ndarray, training: bool):
+    """Un jeu de données au-dessus du tableau préchargé, sans le recopier.
+
+    `from_tensor_slices` sur un tableau numpy en fait une constante du
+    graphe : la mémoire est doublée. Sur 25 000 images en 256×256, cela
+    fait 4,9 Go de tableau plus 4,9 Go de copie, et le système tue le
+    processus. Un générateur lit le tableau en place ; il permute lui-même
+    l'ordre à chaque époque, ce qui mélange mieux qu'un tampon glissant.
+    """
+    n = len(labels)
+
+    def generate():
+        order = np.random.permutation(n) if training else np.arange(n)
+        for i in order:
+            yield images[i], labels[i]
+
+    return tf.data.Dataset.from_generator(
+        generate,
+        output_signature=(
+            tf.TensorSpec(shape=(LOAD_SIZE, LOAD_SIZE, 3), dtype=tf.uint8),
+            tf.TensorSpec(shape=(), dtype=tf.int32),
+        ),
+    )
+
+
 def read_and_square(path, label):
     """Lit un JPEG et le ramène au carré central de LOAD_SIZE, comme le
     préchargement en mémoire. Les deux chemins doivent donner la même image,
@@ -143,7 +168,7 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
 
     if estimate <= ram_budget_gb:
         images, labels = load_all(pairs, classes)
-        ds = tf.data.Dataset.from_tensor_slices((images, labels))
+        ds = array_dataset(images, labels, training)
     else:
         print(f'  {len(usable)} images = {estimate:.1f} Go > budget {ram_budget_gb} Go : lecture depuis les fichiers')
         paths = [p for p, _ in usable]
@@ -151,7 +176,11 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
         ds = tf.data.Dataset.from_tensor_slices((paths, labels)).map(read_and_square, num_parallel_calls=AUTOTUNE)
 
     if training:
-        ds = ds.shuffle(min(len(usable), 4096), reshuffle_each_iteration=True).map(augment, num_parallel_calls=AUTOTUNE)
+        # Le mélange est fait à la source pour le chemin en mémoire (voir
+        # array_dataset) ; pour la lecture de fichiers, un tampon suffit.
+        if estimate > ram_budget_gb:
+            ds = ds.shuffle(min(len(usable), 4096), reshuffle_each_iteration=True)
+        ds = ds.map(augment, num_parallel_calls=AUTOTUNE)
     else:
         ds = ds.map(center, num_parallel_calls=AUTOTUNE)
     return ds.batch(batch).prefetch(AUTOTUNE), counts
@@ -279,7 +308,7 @@ def main() -> int:
     ap.add_argument('--unfreeze', type=int, default=60, help='couches dégelées en fin de réseau')
     ap.add_argument('--fine-lr', type=float, default=5e-5, help='taux d\'apprentissage du réglage fin')
     ap.add_argument('--version', default='1')
-    ap.add_argument('--ram-budget', type=float, default=6.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
+    ap.add_argument('--ram-budget', type=float, default=5.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
     args = ap.parse_args()
 
     dataset = Path(args.dataset)
