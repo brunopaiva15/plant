@@ -19,6 +19,7 @@ import argparse
 import csv
 import json
 import hashlib
+import random
 from collections import Counter
 from pathlib import Path
 
@@ -28,6 +29,8 @@ import tensorflow as tf
 IMAGE_SIZE = 224
 AUTOTUNE = tf.data.AUTOTUNE
 UNKNOWN = '_unknown'
+# Mélange reproductible : deux exécutions partent du même ordre.
+SHUFFLE_SEED = 20260905
 
 
 def read_splits(dataset: Path) -> dict[str, list[tuple[str, str]]]:
@@ -52,17 +55,13 @@ def usable_classes(rows: dict, min_train: int, min_val: int) -> list[str]:
 LOAD_SIZE = 256  # on garde un peu de marge autour de 224 pour le recadrage
 
 
-def load_all(pairs, classes: list[str]) -> tuple[np.ndarray, np.ndarray]:
+def load_all(usable: list[tuple[str, int]]) -> tuple[np.ndarray, np.ndarray]:
     """Décode une fois pour toutes en mémoire, en 256×256 uint8.
 
     Décoder un JPEG de 1024 px coûte ~15 ms ; le refaire à chaque époque
     ferait passer l'essentiel du temps d'entraînement dans le décodeur.
     9 000 images tiennent dans 1,8 Go — c'est le bon compromis ici.
     """
-    index = {c: i for i, c in enumerate(classes)}
-    usable = [(p, index[pid]) for p, pid in pairs if pid in index]
-    if not usable:
-        raise SystemExit('aucune image utilisable ; le jeu de données est-il construit ?')
     images = np.zeros((len(usable), LOAD_SIZE, LOAD_SIZE, 3), dtype=np.uint8)
     labels = np.zeros(len(usable), dtype=np.int32)
     for i, (path, label) in enumerate(usable):
@@ -163,11 +162,18 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
     usable = [(p, index[pid]) for p, pid in pairs if pid in index]
     if not usable:
         raise SystemExit('aucune image utilisable ; le jeu de données est-il construit ?')
+    # splits.csv est trié par espèce. Laissé dans cet ordre, un tampon de
+    # mélange de quelques milliers d'éléments ne contient qu'une poignée
+    # d'espèces à la fois : chaque lot devient presque monospécifique, le
+    # modèle marque des points en devinant parmi dix classes, et ne
+    # généralise pas — c'est ce qu'on a observé, 31 % à l'entraînement contre
+    # 9 % en validation. On mélange donc la liste entière avant tf.data.
+    random.Random(SHUFFLE_SEED).shuffle(usable)
     counts = Counter(label for _, label in usable)
     estimate = len(usable) * LOAD_SIZE * LOAD_SIZE * 3 / 1e9
 
     if estimate <= ram_budget_gb:
-        images, labels = load_all(pairs, classes)
+        images, labels = load_all(usable)
         ds = array_dataset(images, labels, training)
     else:
         print(f'  {len(usable)} images = {estimate:.1f} Go > budget {ram_budget_gb} Go : lecture depuis les fichiers')
@@ -176,10 +182,11 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
         ds = tf.data.Dataset.from_tensor_slices((paths, labels)).map(read_and_square, num_parallel_calls=AUTOTUNE)
 
     if training:
-        # Le mélange est fait à la source pour le chemin en mémoire (voir
-        # array_dataset) ; pour la lecture de fichiers, un tampon suffit.
+        # La liste est déjà mélangée globalement ; le tampon ne sert plus qu'à
+        # varier l'ordre d'une époque à l'autre pour la lecture de fichiers
+        # (le chemin en mémoire permute lui-même, voir array_dataset).
         if estimate > ram_budget_gb:
-            ds = ds.shuffle(min(len(usable), 4096), reshuffle_each_iteration=True)
+            ds = ds.shuffle(min(len(usable), 8192), reshuffle_each_iteration=True)
         ds = ds.map(augment, num_parallel_calls=AUTOTUNE)
     else:
         ds = ds.map(center, num_parallel_calls=AUTOTUNE)
