@@ -129,9 +129,6 @@ class PreferencesService {
   String get anthropicApiKey => _prefs.getString('anthropic_api_key') ?? '';
   Future<void> setAnthropicApiKey(String key) => _prefs.setString('anthropic_api_key', key.trim());
 
-  String get plantNetApiKey => _prefs.getString('plantnet_api_key') ?? '';
-  Future<void> setPlantNetApiKey(String key) => _prefs.setString('plantnet_api_key', key.trim());
-
   bool get notificationPromptShown => _prefs.getBool('notification_prompt_shown') ?? false;
   Future<void> setNotificationPromptShown() => _prefs.setBool('notification_prompt_shown', true);
 }

@@ -1220,7 +1220,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get identificationHint =>
-      'Artbestimmung anhand eines Fotos über Pl@ntNet. Erstelle einen kostenlosen Schlüssel auf my.plantnet.org und füge ihn hier ein.';
+      'Die Arterkennung läuft zuerst auf deinem Gerät, ohne Netz. Wenn das Modell unsicher ist, kann das Foto zur Klärung an Pl@ntNet gehen.';
 
   @override
   String get apiKey => 'API-Schlüssel';

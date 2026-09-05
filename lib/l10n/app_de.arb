@@ -349,7 +349,7 @@
   "identifyError": "Bestimmung nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "useThis": "Verwenden",
   "identificationSettings": "Bestimmung",
-  "identificationHint": "Artbestimmung anhand eines Fotos über Pl@ntNet. Erstelle einen kostenlosen Schlüssel auf my.plantnet.org und füge ihn hier ein.",
+  "identificationHint": "Die Arterkennung läuft zuerst auf deinem Gerät, ohne Netz. Wenn das Modell unsicher ist, kann das Foto zur Klärung an Pl@ntNet gehen.",
   "apiKey": "API-Schlüssel",
   "apiKeyHint": "Schlüssel einfügen",
   "identificationEnabled": "Bestimmung aktiviert",

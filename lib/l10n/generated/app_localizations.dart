@@ -2199,7 +2199,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnaissance d\'espèce à partir d\'une photo, via le service Pl@ntNet. Créez une clé gratuite sur my.plantnet.org et collez-la ici.'**
+  /// **'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau. Quand le modèle hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
   String get identificationHint;
 
   /// No description provided for @apiKey.

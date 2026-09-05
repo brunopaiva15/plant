@@ -19,6 +19,7 @@ import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
 import '../data/services/anthropic_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
+import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
 import '../data/sharing/supabase_sharing_service.dart';
 import '../data/species/catalog_care_guide.dart';
@@ -120,7 +121,6 @@ class AppPreferences {
     required this.onboardingDone,
     required this.hasSupported,
     required this.displayName,
-    required this.plantNetApiKey,
     required this.identificationFallbackEnabled,
     required this.anthropicApiKey,
     required this.weatherPlace,
@@ -141,7 +141,6 @@ class AppPreferences {
   /// l'application sait faire : tout y est, pour tout le monde.
   final bool hasSupported;
   final String displayName;
-  final String plantNetApiKey;
 
   /// Repli Pl@ntNet autorisé quand le modèle local hésite.
   final bool identificationFallbackEnabled;
@@ -173,7 +172,6 @@ class PreferencesController extends Notifier<AppPreferences> {
       onboardingDone: s.onboardingDone,
       hasSupported: s.hasSupported,
       displayName: s.displayName ?? '',
-      plantNetApiKey: s.plantNetApiKey,
       identificationFallbackEnabled: s.identificationFallbackEnabled,
       anthropicApiKey: s.anthropicApiKey,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
@@ -196,7 +194,6 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setQuietWeekdays(Set<int> days) => _apply((s) => s.setQuietWeekdays(days));
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
   Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
-  Future<void> setPlantNetApiKey(String key) => _apply((s) => s.setPlantNetApiKey(key));
   Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
   Future<void> setAnthropicApiKey(String key) => _apply((s) => s.setAnthropicApiKey(key));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
@@ -227,7 +224,7 @@ final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>(
 /// Identification : modèle local puis Pl@ntNet en repli si une clé est
 /// configurée. Sans modèle ni clé, service inactif.
 final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
-  final key = ref.watch(preferencesProvider.select((p) => p.plantNetApiKey));
+  const key = IdentificationConfig.plantNetApiKey;
   final fallbackEnabled = ref.watch(preferencesProvider.select((p) => p.identificationFallbackEnabled));
   final local = ref.watch(localPlantModelProvider);
   final remote = key.isEmpty ? const UnconfiguredIdentifier() as PlantIdentifier : PlantNetIdentifier(key);

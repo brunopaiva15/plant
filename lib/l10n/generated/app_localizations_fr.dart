@@ -1217,7 +1217,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get identificationHint =>
-      'Reconnaissance d\'espèce à partir d\'une photo, via le service Pl@ntNet. Créez une clé gratuite sur my.plantnet.org et collez-la ici.';
+      'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau. Quand le modèle hésite, la photo peut être envoyée à Pl@ntNet pour trancher.';
 
   @override
   String get apiKey => 'Clé API';

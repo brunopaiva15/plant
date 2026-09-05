@@ -120,6 +120,49 @@ appliquée sans un geste de sa part.
 
 ### 3.3 Repli Pl@ntNet
 
+**La clé est celle de l'éditeur, fournie au build**, pas celle de
+l'utilisateur : l'identification en ligne fait partie de l'application,
+personne n'a à ouvrir un compte chez un tiers pour s'en servir.
+
+```bash
+flutter build ipa --dart-define=PLANTNET_API_KEY=xxxxxxxx
+```
+
+Elle est lue par `IdentificationConfig` (`lib/core/config/identification_config.dart`),
+sur le même modèle que `SupabaseConfig`. Sans clé au build, le repli est
+simplement absent et l'application se contente du modèle embarqué.
+
+Une clé compilée dans un binaire mobile est extractible par qui démonte le
+paquet — c'est vrai de toute application qui en embarque une. Ce qui limite
+le risque ici : le modèle local absorbe la majorité des demandes, et le
+quota journalier par appareil borne la casse. Le jour où l'usage le
+justifie, la parade est un relais côté serveur qui garde la clé et signe les
+requêtes ; `PlantNetIdentifier` n'aurait alors qu'à changer d'URL.
+
+**Configuration dans Codemagic**
+
+1. Codemagic → l'application → **Environment variables**.
+2. Nom `PLANTNET_API_KEY`, valeur la clé, groupe par exemple `flora_secrets`,
+   **Secure** coché — une variable sécurisée est chiffrée et masquée dans les
+   journaux de build.
+3. Le groupe doit être attaché au workflow (`groups:` dans `codemagic.yaml`,
+   ou la case du groupe dans l'éditeur d'interface).
+4. Passer la variable au build :
+
+```yaml
+environment:
+  groups:
+    - flora_secrets          # contient PLANTNET_API_KEY
+scripts:
+  - name: Build iOS
+    script: |
+      flutter build ipa --release \
+        --dart-define=PLANTNET_API_KEY=$PLANTNET_API_KEY
+```
+
+Le `--dart-define` est indispensable : une variable d'environnement de CI
+n'entre pas toute seule dans le binaire Flutter.
+
 - Déclenché seulement sur `uncertain` / `noCandidate`, ou sans modèle local.
 - Coupable par l'utilisateur (réglage « Repli en ligne ») : tout reste alors
   sur l'appareil.

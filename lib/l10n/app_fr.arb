@@ -605,7 +605,7 @@
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
   "useThis": "Utiliser",
   "identificationSettings": "Identification",
-  "identificationHint": "Reconnaissance d'espèce à partir d'une photo, via le service Pl@ntNet. Créez une clé gratuite sur my.plantnet.org et collez-la ici.",
+  "identificationHint": "La reconnaissance d'espèce fonctionne d'abord sur votre appareil, sans réseau. Quand le modèle hésite, la photo peut être envoyée à Pl@ntNet pour trancher.",
   "apiKey": "Clé API",
   "apiKeyHint": "Collez votre clé",
   "identificationEnabled": "Identification activée",

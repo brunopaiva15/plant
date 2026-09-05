@@ -1215,7 +1215,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get identificationHint =>
-      'Species recognition from a photo, powered by Pl@ntNet. Create a free key on my.plantnet.org and paste it here.';
+      'Species recognition runs on your device first, with no network. When the model is unsure, the photo can be sent to Pl@ntNet to decide.';
 
   @override
   String get apiKey => 'API key';
