@@ -118,3 +118,39 @@ def test_image_candidates_pages_and_filters_by_licence_code():
     assert len(cands) == 5
     (_, params), = c.session.calls
     assert params['license'] == 'CC_BY_4_0' and params['mediaType'] == 'StillImage' and params['taxonKey'] == 2868241
+
+
+def test_transient_errors_are_retried_then_given_up_on():
+    """Une coupure réseau se traverse ; une panne durable finit par remonter,
+    et c'est l'appelant qui décide de sauter l'espèce."""
+    import requests as rq
+
+    class Flaky:
+        def __init__(self, failures):
+            self.failures = failures
+            self.headers = {}
+            self.calls = 0
+
+        def get(self, url, params=None, timeout=None):
+            self.calls += 1
+            if self.calls <= self.failures:
+                raise rq.ConnectionError('Connection reset by peer')
+            return FakeResponse(load('gbif_match_monstera.json'))
+
+    import plant_dataset.fetchers.gbif as g
+    pause = g.time.sleep
+    g.time.sleep = lambda _: None            # pas d'attente réelle dans un test
+    try:
+        c = GbifClient(session=Flaky(3), pause=0)
+        assert c.match('Monstera deliciosa').key == 2868241
+        assert c.session.calls == 4, 'trois échecs traversés, la quatrième réussit'
+
+        dead = GbifClient(session=Flaky(99), pause=0)
+        try:
+            dead.match('Monstera deliciosa')
+            assert False, 'une panne durable doit remonter'
+        except rq.ConnectionError:
+            pass
+        assert dead.session.calls == g.RETRIES
+    finally:
+        g.time.sleep = pause

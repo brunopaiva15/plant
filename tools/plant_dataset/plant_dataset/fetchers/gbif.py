@@ -23,6 +23,11 @@ from .inaturalist import photo_id_of
 API = 'https://api.gbif.org/v1'
 DEFAULT_UA = 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant; dataset builder)'
 PAGE = 100
+# Sept secondes de patience ne traversent pas une coupure réseau : une
+# collecte de plusieurs heures en rencontre, et abandonner une espèce pour
+# quelques secondes d'indisponibilité serait absurde. Six essais montent à
+# une minute d'attente cumulée.
+RETRIES = 6
 INATURALIST_DATASET = '50c9509d-22c7-4a22-a47d-8c48425ef4a7'
 
 
@@ -58,7 +63,7 @@ class GbifClient:
         self.timeout = timeout
 
     def _get(self, path: str, **params) -> dict:
-        for attempt in range(4):
+        for attempt in range(RETRIES):
             try:
                 r = self.session.get(f'{API}{path}', params=params, timeout=self.timeout)
                 if r.status_code == 429 or r.status_code >= 500:
@@ -67,9 +72,9 @@ class GbifClient:
                 time.sleep(self.pause)
                 return r.json()
             except (requests.ConnectionError, requests.Timeout, requests.HTTPError):
-                if attempt == 3:
+                if attempt == RETRIES - 1:
                     raise
-                time.sleep(2 ** attempt)
+                time.sleep(min(2 ** attempt, 30))
         raise RuntimeError('unreachable')
 
     def match(self, name: str) -> TaxonMatch | None:

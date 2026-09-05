@@ -177,6 +177,38 @@ def relocate(manifest: Manifest, out: Path) -> None:
             r.path = wanted
 
 
+def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: requests.Session, manifest: Manifest,
+                out: Path, species_cache: dict, inat_cache: dict, species_path: Path, inat_path: Path,
+                license_codes: list[str], args, t0: float, total: int) -> None:
+    """Collecte une espèce, de la résolution du nom aux images."""
+    taxon = resolve(client, plant, species_cache)
+    species_path.write_text(json.dumps(species_cache, ensure_ascii=False, indent=1))
+    if taxon is None or not taxon['usable']:
+        log(f'[{i}/{total}] {plant.scientific_name}: nom non résolu chez GBIF ({taxon and taxon["match"]}), à revoir')
+        return
+    gbif_candidates = client.image_candidates(taxon['key'], license_codes, max_occurrences=args.max_candidates,
+                                              allow_share_alike=args.allow_sa)
+    res = collect_species(gbif_candidates, http, plant, manifest, out, args.target_per_species, workers=args.workers)
+    sources = f'gbif {res["kept"]}'
+
+    # GBIF ne reçoit d'iNaturalist que les observations « research »,
+    # donc presque aucune plante en pot. L'API directe complète.
+    if inat is not None and res['kept'] < args.target_per_species:
+        taxon_inat = resolve_inat(inat, plant, inat_cache)
+        inat_path.write_text(json.dumps(inat_cache, ensure_ascii=False, indent=1))
+        if taxon_inat is not None:
+            before = res['kept']
+            extra = collect_species(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
+                                                          allow_share_alike=args.allow_sa),
+                                    http, plant, manifest, out, args.target_per_species, workers=args.workers)
+            res = {'kept': extra['kept'], 'new': res['new'] + extra['new'],
+                   'tried': res['tried'] + extra['tried'], 'rejected': res['rejected'] + extra['rejected']}
+            sources += f' + inat {extra["kept"] - before}'
+
+    log(f'[{i}/{total}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {sources}), '
+        f'{res["rejected"]} rejetées sur {res["tried"]} essayées, {time.time() - t0:.0f} s')
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--plants', default='plants.csv')
@@ -222,32 +254,16 @@ def main() -> int:
         http.headers['User-Agent'] = client.session.headers['User-Agent']
         for i, plant in enumerate(plants, 1):
             t0 = time.time()
-            taxon = resolve(client, plant, species_cache)
-            species_path.write_text(json.dumps(species_cache, ensure_ascii=False, indent=1))
-            if taxon is None or not taxon['usable']:
-                log(f'[{i}/{len(plants)}] {plant.scientific_name}: nom non résolu chez GBIF ({taxon and taxon["match"]}), à revoir')
-                continue
-            gbif_candidates = client.image_candidates(taxon['key'], license_codes, max_occurrences=args.max_candidates,
-                                                      allow_share_alike=args.allow_sa)
-            res = collect_species(gbif_candidates, http, plant, manifest, out, args.target_per_species, workers=args.workers)
-            sources = f'gbif {res["kept"]}'
-
-            # GBIF ne reçoit d'iNaturalist que les observations « research »,
-            # donc presque aucune plante en pot. L'API directe complète.
-            if inat is not None and res['kept'] < args.target_per_species:
-                taxon_inat = resolve_inat(inat, plant, inat_cache)
-                inat_path.write_text(json.dumps(inat_cache, ensure_ascii=False, indent=1))
-                if taxon_inat is not None:
-                    before = res['kept']
-                    extra = collect_species(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
-                                                                  allow_share_alike=args.allow_sa),
-                                            http, plant, manifest, out, args.target_per_species, workers=args.workers)
-                    res = {'kept': extra['kept'], 'new': res['new'] + extra['new'],
-                           'tried': res['tried'] + extra['tried'], 'rejected': res['rejected'] + extra['rejected']}
-                    sources += f' + inat {extra["kept"] - before}'
-
-            log(f'[{i}/{len(plants)}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {sources}), '
-                f'{res["rejected"]} rejetées sur {res["tried"]} essayées, {time.time() - t0:.0f} s')
+            try:
+                collect_one(i, plant, client, inat, http, manifest, out, species_cache, inat_cache,
+                            species_path, inat_path, license_codes, args, t0, len(plants))
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                # Le réseau tombe, une source renvoie une réponse absurde :
+                # c'est le problème de cette espèce, pas des 300 autres. On
+                # note et on continue ; la reprise rattrapera celles-ci.
+                log(f'[{i}/{len(plants)}] {plant.scientific_name}: ÉCHEC ({type(e).__name__}: {e}), espèce sautée')
 
     dups = mark_duplicates(manifest.records)
     flagged = flag_cross_species(manifest.records)

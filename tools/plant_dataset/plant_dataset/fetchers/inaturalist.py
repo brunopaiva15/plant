@@ -25,6 +25,7 @@ from . import ImageCandidate
 API = 'https://api.inaturalist.org/v1'
 DEFAULT_UA = 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant; dataset builder)'
 PAGE = 200
+RETRIES = 6
 PHOTO_LICENSES = 'cc0,cc-by'
 PHOTO_LICENSES_WITH_SA = 'cc0,cc-by,cc-by-sa'
 _PHOTO_ID = re.compile(r'/photos/(\d+)/')
@@ -64,7 +65,7 @@ class InatClient:
         self.timeout = timeout
 
     def _get(self, path: str, **params) -> dict:
-        for attempt in range(4):
+        for attempt in range(RETRIES):
             try:
                 r = self.session.get(f'{API}{path}', params=params, timeout=self.timeout)
                 if r.status_code == 429 or r.status_code >= 500:
@@ -73,9 +74,9 @@ class InatClient:
                 time.sleep(self.pause)
                 return r.json()
             except (requests.ConnectionError, requests.Timeout, requests.HTTPError):
-                if attempt == 3:
+                if attempt == RETRIES - 1:
                     raise
-                time.sleep(3 * 2 ** attempt)
+                time.sleep(min(3 * 2 ** attempt, 45))
         raise RuntimeError('unreachable')
 
     def match(self, name: str) -> InatTaxon | None:
