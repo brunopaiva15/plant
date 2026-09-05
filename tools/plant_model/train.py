@@ -219,6 +219,7 @@ def main() -> int:
     ap.add_argument('--min-train', type=int, default=25, help='images d\'entraînement minimales par classe')
     ap.add_argument('--min-val', type=int, default=3)
     ap.add_argument('--unfreeze', type=int, default=60, help='couches dégelées en fin de réseau')
+    ap.add_argument('--fine-lr', type=float, default=5e-5, help='taux d\'apprentissage du réglage fin')
     ap.add_argument('--version', default='1')
     args = ap.parse_args()
 
@@ -244,7 +245,17 @@ def main() -> int:
     model.base.trainable = True
     for layer in model.base.layers[:-args.unfreeze]:
         layer.trainable = False
-    model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
+    # Les couches de normalisation par lots restent figées : dégelées, elles
+    # recalculent leurs moyennes sur des lots de 32 images et détruisent en
+    # une époque ce que le pré-entraînement ImageNet avait établi. C'est la
+    # cause classique d'une validation qui chute au début du réglage fin.
+    frozen_bn = 0
+    for layer in model.base.layers:
+        if isinstance(layer, tf.keras.layers.BatchNormalization):
+            layer.trainable = False
+            frozen_bn += 1
+    print(f'réglage fin : {args.unfreeze} couches dégelées, {frozen_bn} normalisations figées')
+    model.compile(optimizer=tf.keras.optimizers.Adam(args.fine_lr),
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model.fit(train_ds, validation_data=val_ds, epochs=args.fine_epochs, class_weight=weights, verbose=2,
               callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=4, restore_best_weights=True)])
