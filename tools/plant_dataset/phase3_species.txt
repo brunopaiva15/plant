@@ -29,7 +29,6 @@ Anemonastrum narcissiflorum
 Annona muricata
 Anthriscus cerefolium
 Anthyllis vulneraria
-Aotus trivirgatus
 Arabidopsis thaliana
 Arabis glabra
 Arctium lappa
@@ -85,7 +84,6 @@ Chenopodium album
 Chenopodium polyspermum
 Chenopodium quinoa
 Chenopodium rubrum
-Chlamyphorus truncatus
 Chloris chloris
 Chondrus crispus
 Chrysosplenium alternifolium
@@ -100,7 +98,6 @@ Colchicum autumnale
 Colocasia esculenta
 Commiphora wightii
 Convolvulus arvensis
-Coris julis
 Cornus sanguinea
 Crataegus azarolus
 Crataegus monogyna
@@ -120,7 +117,6 @@ Datura stramonium
 Delonix regia
 Dictamnus albus
 Dracaena draco
-Dracunculus medinensis
 Ecballium elaterium
 Echinochloa crus-galli
 Echinops sphaerocephalus
@@ -144,7 +140,6 @@ Galium mollugo
 Galium verum
 Gentiana verna
 Geranium robertianum
-Glaucidium minutissimum
 Glechoma hederacea
 Gleditsia triacanthos
 Glycine max
@@ -195,7 +190,6 @@ Melilotus officinalis
 Mentha arvensis
 Menyanthes trifoliata
 Mespilus germanica
-Morelia viridis
 Musa textilis
 Muscari comosum
 Myrrhis odorata
@@ -217,7 +211,6 @@ Phaseolus coccineus
 Phragmites australis
 Picea orientalis
 Picea pungens
-Pieris rapae
 Pimenta dioica
 Pinguicula vulgaris
 Pinus pinaster

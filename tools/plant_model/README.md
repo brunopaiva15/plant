@@ -31,6 +31,7 @@ Sorties, directement dans les assets de l'app :
 | Option | Défaut | Sens |
 |---|---|---|
 | `--batch` | 32 | |
+| `--backbone` | `small` | `small` (MobileNetV3-Small, v1 à v3) ou `large` (v4 : trois fois plus de calcul, mieux sur les espèces proches) |
 | `--head-epochs` | 4 | époques avec le réseau gelé |
 | `--fine-epochs` | 12 | époques de réglage fin, arrêt anticipé sur la validation |
 | `--min-train` | 25 | une classe sous ce seuil est écartée du modèle |

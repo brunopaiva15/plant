@@ -30,8 +30,10 @@ python3 tool/fetch_genera.py /tmp/genus_family.json /tmp/all_genera.txt
 # 2. Écarter les genres sans article dans nos langues (~3 min)
 python3 tool/screen_genera.py /tmp/all_genera.txt /tmp/notable.txt
 
-# 3. Moissonner les espèces et leurs noms (~45 min à trois processus)
-python3 tool/harvest_species.py /tmp/notable.txt /tmp/harvest.tsv
+# 3. Moissonner les espèces et leurs noms (~45 min à trois processus).
+#    Le troisième argument est indispensable : il apparie chaque genre à sa
+#    famille GBIF, ce qui écarte les homonymes d'autres règnes.
+python3 tool/harvest_species.py /tmp/notable.txt /tmp/harvest.tsv /tmp/genus_family.json
 
 # 4. Filtrer, choisir le nom principal par langue, écrire l'actif
 python3 tool/build_species_catalog.py /tmp/harvest.tsv /tmp/genus_family.json \
@@ -42,6 +44,17 @@ L'étape 3 est reprenable : elle note les genres traités dans
 `<sortie>.done` et saute ceux-là au relancement. Pour aller plus vite, on
 découpe la liste de genres en trois et on lance trois processus vers des
 fichiers de sortie distincts, puis on les concatène.
+
+## Les homonymes d'autres règnes
+
+Un nom de genre n'est pas unique entre les règnes : « Batis » est un arbuste
+halophile et un gobe-mouches africain, « Oenanthe » une ombellifère et un
+traquet, « Glaucidium » une renonculacée et une chevêchette, « Morelia » une
+rubiacée et un python. Moissonnée par nom de genre seul, la première version
+du catalogue a fait entrer environ 160 oiseaux, poissons et papillons, avec
+la famille de la plante homonyme. La moisson exige désormais que le genre
+Wikidata remonte à une famille du même nom que celle donnée par GBIF, et le
+test de l'actif vérifie qu'aucun de ces noms n'y figure.
 
 ## Ce que fait le filtre
 

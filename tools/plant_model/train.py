@@ -200,8 +200,19 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
     return ds.batch(batch).prefetch(AUTOTUNE), counts, [p for p, _ in usable]
 
 
-def build_model(n_classes: int, dropout: float) -> tf.keras.Model:
-    base = tf.keras.applications.MobileNetV3Small(
+BACKBONES = {
+    'small': ('MobileNetV3Small', tf.keras.applications.MobileNetV3Small),
+    'large': ('MobileNetV3Large', tf.keras.applications.MobileNetV3Large),
+}
+
+
+def build_model(n_classes: int, dropout: float, backbone: str = 'small') -> tf.keras.Model:
+    """Le réseau : un MobileNetV3 pré-entraîné ImageNet, sans sa tête, puis
+    la nôtre. `small` (2,5 Mo en float16, ~15 ms sur un téléphone récent)
+    a servi jusqu'à la v3 ; `large` (≈ 11 Mo, trois fois plus de calcul)
+    voit mieux les détails qui séparent deux espèces proches."""
+    name, factory = BACKBONES[backbone]
+    base = factory(
         input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), include_top=False, weights='imagenet',
         include_preprocessing=True, minimalistic=False)
     base.trainable = False
@@ -212,6 +223,7 @@ def build_model(n_classes: int, dropout: float) -> tf.keras.Model:
     outputs = tf.keras.layers.Dense(n_classes, activation='softmax', name='species')(x)
     model = tf.keras.Model(inputs, outputs)
     model.base = base
+    model.architecture = name
     return model
 
 
@@ -310,7 +322,7 @@ def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: di
         # crénelées que tout ce qu'il a vu.
         'source_size': SOURCE_SIZE,
         'classes': len(classes),
-        'architecture': 'MobileNetV3Small',
+        'architecture': getattr(model, 'architecture', 'MobileNetV3Small'),
         'preprocessing': 'included_in_graph_uint8_0_255',
         'sha256': hashlib.sha256(blob).hexdigest(),
         'bytes': len(blob),
@@ -345,6 +357,7 @@ def main() -> int:
     ap.add_argument('--unfreeze', type=int, default=60, help='couches dégelées en fin de réseau')
     ap.add_argument('--fine-lr', type=float, default=5e-5, help='taux d\'apprentissage du réglage fin')
     ap.add_argument('--version', default='1')
+    ap.add_argument('--backbone', choices=sorted(BACKBONES), default='small', help='MobileNetV3 small (v1 à v3) ou large')
     ap.add_argument('--ram-budget', type=float, default=5.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
     args = ap.parse_args()
 
@@ -360,7 +373,7 @@ def main() -> int:
     val_ds, _, _ = make_dataset(rows['val'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
     test_ds, _, test_paths = make_dataset(rows['test'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
 
-    model = build_model(len(classes), args.dropout)
+    model = build_model(len(classes), args.dropout, args.backbone)
     weights = class_weights(counts, len(classes))
 
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-3),

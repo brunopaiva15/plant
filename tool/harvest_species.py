@@ -17,6 +17,7 @@ import os
 import sys
 import time
 import urllib.parse
+import json
 import urllib.request
 
 ENDPOINT = 'https://query.wikidata.org/sparql'
@@ -25,8 +26,22 @@ LANGS = ('fr', 'de', 'it', 'en')
 BATCH = 40
 
 
-def build_query(genera):
-    values = ' '.join('"%s"' % g for g in genera)
+def build_query(genera, families=None):
+    """La requête d'un lot de genres.
+
+    Un nom de genre n'est pas unique entre les règnes : « Batis » est un
+    arbuste et un gobe-mouches, « Oenanthe » une ombellifère et un traquet,
+    « Glaucidium » une renonculacée et une chevêchette. Quand on connaît la
+    famille GBIF du genre (`families`), on exige que le genre Wikidata remonte
+    à une famille du même nom : c'est ce qui écarte les oiseaux.
+    """
+    if families:
+        values = ' '.join('("%s" "%s")' % (g, families[g]) for g in genera if g in families)
+        head = 'VALUES (?g ?famName) { %s }' % values
+        lineage = '?genus wdt:P171+ ?fam . ?fam wdt:P105 wd:Q35409 ; wdt:P225 ?famName .'
+    else:
+        head = 'VALUES ?g { %s }' % ' '.join('"%s"' % g for g in genera)
+        lineage = ''
     blocks, columns = [], []
     for i, lang in enumerate(LANGS):
         label, alt = '?l_%s' % lang, '?a_%s' % lang
@@ -39,15 +54,16 @@ def build_query(genera):
         columns.append('(SAMPLE(%s) AS ?%s)' % (label, lang))
         columns.append('(GROUP_CONCAT(DISTINCT %s; separator="~") AS ?%s_alt)' % (alt, lang))
     return '''SELECT ?name %s WHERE {
-  VALUES ?g { %s }
+  %s
   ?genus wdt:P225 ?g ; wdt:P105 wd:Q34740 .
+  %s
   ?t wdt:P171 ?genus ; wdt:P105 wd:Q7432 ; wdt:P225 ?name .
   %s
-} GROUP BY ?name''' % (' '.join(columns), values, '\n  '.join(blocks))
+} GROUP BY ?name''' % (' '.join(columns), head, lineage, '\n  '.join(blocks))
 
 
-def run(genera, depth=0):
-    url = ENDPOINT + '?' + urllib.parse.urlencode({'query': build_query(genera)})
+def run(genera, depth=0, families=None):
+    url = ENDPOINT + '?' + urllib.parse.urlencode({'query': build_query(genera, families)})
     req = urllib.request.Request(
         url, headers={'Accept': 'text/tab-separated-values', 'User-Agent': UA})
     try:
@@ -58,12 +74,15 @@ def run(genera, depth=0):
             return None
         mid = len(genera) // 2
         time.sleep(1)
-        halves = [run(genera[:mid], depth + 1), run(genera[mid:], depth + 1)]
+        halves = [run(genera[:mid], depth + 1, families), run(genera[mid:], depth + 1, families)]
         return '\n'.join(h for h in halves if h)
 
 
-def main(genus_file, out_file):
+def main(genus_file, out_file, family_file=None):
     genera = [l.strip() for l in open(genus_file) if l.strip()]
+    # Le fichier genre → famille de fetch_genera.py. Sans lui, la moisson
+    # accepte les homonymes d'autres règnes : à ne faire qu'en connaissance.
+    families = json.load(open(family_file)) if family_file else None
     done_file = out_file + '.done'
     done = set(open(done_file).read().split()) if os.path.exists(done_file) else set()
     todo = [g for g in genera if g not in done]
@@ -71,7 +90,7 @@ def main(genus_file, out_file):
     with open(out_file, 'a', encoding='utf-8') as out, open(done_file, 'a') as marks:
         for i in range(0, len(todo), BATCH):
             chunk = todo[i:i + BATCH]
-            body = run(chunk)
+            body = run(chunk, families=families)
             if body:
                 for line in body.splitlines():
                     if line.strip() and not line.startswith('?name'):
@@ -84,4 +103,4 @@ def main(genus_file, out_file):
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:3])
+    main(*sys.argv[1:4])
