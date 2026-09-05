@@ -9,7 +9,7 @@ from plant_dataset.images import ImageRejected, hamming, phash64, prepare
 from plant_dataset.manifest import STATUS_DUPLICATE, STATUS_KEPT, STATUS_REVIEW, ImageRecord, now_iso
 
 
-def picture(seed: int, size=(440, 360), fmt='JPEG', **save) -> bytes:
+def picture(seed: int, size=(380, 340), fmt='JPEG', **save) -> bytes:
     """Une image de test : un champ aléatoire lisse, propre à chaque graine.
 
     Ce n'est pas une plante, c'est un fichier dont on connaît la vérité. Le
@@ -30,7 +30,7 @@ def picture(seed: int, size=(440, 360), fmt='JPEG', **save) -> bytes:
 def test_prepare_accepts_a_sound_jpeg():
     # Sous MAX_SIDE : l'image traverse le préparateur sans être touchée.
     p = prepare(picture(1))
-    assert p.width == 440 and p.height == 360
+    assert p.width == 380 and p.height == 340
     assert len(p.sha256) == 64 and len(p.phash) == 16
     assert p.source_format == 'JPEG'
 
@@ -47,24 +47,24 @@ def test_prepare_rejects_corrupt_small_and_odd_formats():
 
 
 def test_prepare_applies_exif_orientation():
-    data = picture(5, size=(440, 360))
+    data = picture(5, size=(380, 340))
     img = Image.open(io.BytesIO(data))
     exif = img.getexif()
     exif[0x0112] = 6  # tourner de 90°
     out = io.BytesIO()
     img.save(out, 'JPEG', exif=exif.tobytes())
     p = prepare(out.getvalue())
-    assert (p.width, p.height) == (360, 440)
+    assert (p.width, p.height) == (340, 380)
     assert Image.open(io.BytesIO(p.data)).getexif().get(0x0112, 1) == 1
 
 
 def test_large_image_is_downscaled_to_max_side():
     p = prepare(picture(12, size=(3000, 2000)))
-    assert (p.width, p.height) == (448, 299)
-    assert Image.open(io.BytesIO(p.data)).size == (448, 299)
+    assert (p.width, p.height) == (384, 256)
+    assert Image.open(io.BytesIO(p.data)).size == (384, 256)
     # Une image déjà sous la limite est stockée telle quelle, octet pour
     # octet : pas de réencodage, donc pas de perte de génération.
-    small = picture(13, size=(440, 360))
+    small = picture(13, size=(380, 340))
     assert prepare(small).data == small
 
 
