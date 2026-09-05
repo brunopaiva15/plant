@@ -46,3 +46,20 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Reconnaissance de plantes : jeux d'images, modèles, caches — jamais dans Git
+/dataset/
+/tools/plant_dataset/dataset/
+/tools/plant_dataset/.cache/
+/tools/plant_dataset/.pytest_cache/
+/models/
+/checkpoints/
+*.tflite
+*.mlmodel
+*.mlpackage
+*.onnx
+*.pt
+*.pth
+*.h5
+*.safetensors
+__pycache__/
