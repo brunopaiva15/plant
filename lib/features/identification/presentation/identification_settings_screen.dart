@@ -16,6 +16,8 @@ class IdentificationSettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final configured = ref.watch(plantIdentifierProvider).isConfigured;
     final metrics = ref.watch(identificationMetricsStoreProvider).read();
+    final model = ref.watch(localModelStatusProvider);
+    final status = model.asData?.value;
     return FloraPage(
       title: l10n.identificationSettings,
       child: Column(
@@ -27,6 +29,29 @@ class IdentificationSettingsScreen extends ConsumerWidget {
                 EmojiTile(emoji: configured ? '🔬' : '🔒', background: configured ? context.colors.sageSoft : null),
                 const SizedBox(width: Space.sm),
                 Expanded(child: Text(configured ? l10n.identificationEnabled : l10n.identificationDisabled, style: context.text.title3)),
+              ],
+            ),
+          ),
+          const SizedBox(height: Space.sm),
+          // Sans cette ligne, rien ne distingue « le modèle a hésité » de
+          // « le modèle ne s'est jamais chargé » : les deux donnent zéro
+          // identification locale.
+          FloraCard(
+            child: Row(
+              children: [
+                EmojiTile(
+                  emoji: status?.ready == true ? '📦' : (model.isLoading ? '⏳' : '⚠️'),
+                  background: status?.ready == true ? context.colors.sageSoft : null,
+                ),
+                const SizedBox(width: Space.sm),
+                Expanded(
+                  child: Text(
+                    model.isLoading
+                        ? l10n.modelLoading
+                        : (status != null && status.ready ? l10n.modelLoaded(status.speciesCount) : l10n.modelMissing),
+                    style: context.text.callout,
+                  ),
+                ),
               ],
             ),
           ),
@@ -47,7 +72,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           const SizedBox(height: Space.xs),
           Text(l10n.identificationFallbackHint, style: context.text.caption),
           const SizedBox(height: Space.sm),
-          Text(l10n.identificationStats(metrics.localAccepted, metrics.remote, metrics.remoteCallsSaved), style: context.text.caption),
+          Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
         ],
       ),
     );

@@ -48,6 +48,9 @@ class TflitePlantModel implements LocalPlantModel {
   String? get version => _version;
 
   @override
+  int get speciesCount => _interpreter == null ? 0 : _labels.length;
+
+  @override
   Future<bool> warmUp() => _loading ??= _load();
 
   Future<bool> _load() async {

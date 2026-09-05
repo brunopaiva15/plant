@@ -2238,11 +2238,29 @@ abstract class AppLocalizations {
   /// **'Quand le modèle intégré hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.'**
   String get identificationFallbackHint;
 
+  /// No description provided for @modelLoaded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modèle embarqué : {count} espèces'**
+  String modelLoaded(int count);
+
+  /// No description provided for @modelMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modèle embarqué indisponible sur cet appareil'**
+  String get modelMissing;
+
+  /// No description provided for @modelLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du modèle…'**
+  String get modelLoading;
+
   /// No description provided for @identificationStats.
   ///
   /// In fr, this message translates to:
-  /// **'{local} identifications locales, {remote} en ligne, {saved} appels évités'**
-  String identificationStats(int local, int remote, int saved);
+  /// **'{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne'**
+  String identificationStats(int local, int accepted, int remote);
 
   /// No description provided for @confidence.
   ///

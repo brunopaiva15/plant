@@ -218,6 +218,25 @@ final localPlantModelProvider = Provider<LocalPlantModel>((ref) {
   return model;
 });
 
+/// État du modèle embarqué : chargé ou non, et ce qu'il sait nommer.
+/// Le chargement est déclenché à la lecture, ce qui permet à l'écran des
+/// réglages de dire si le modèle fonctionne vraiment sur cet appareil —
+/// autrement rien ne distingue « le modèle a hésité » de « le modèle n'est
+/// jamais parti ».
+final localModelStatusProvider = FutureProvider<LocalModelStatus>((ref) async {
+  final model = ref.watch(localPlantModelProvider);
+  final ready = await model.warmUp();
+  return LocalModelStatus(ready: ready, version: model.version, speciesCount: model.speciesCount);
+});
+
+class LocalModelStatus {
+  const LocalModelStatus({required this.ready, required this.version, required this.speciesCount});
+
+  final bool ready;
+  final String? version;
+  final int speciesCount;
+}
+
 /// Compteurs de la cascade, persistés dans les réglages.
 final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>((ref) => PreferencesMetricsStore(ref.watch(preferencesServiceProvider)));
 

@@ -1237,8 +1237,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'When the built-in model is unsure, the photo is sent to Pl@ntNet. Turned off, everything stays on the device.';
 
   @override
-  String identificationStats(int local, int remote, int saved) {
-    return '$local local identifications, $remote online, $saved calls saved';
+  String modelLoaded(int count) {
+    return 'Built-in model: $count species';
+  }
+
+  @override
+  String get modelMissing => 'Built-in model unavailable on this device';
+
+  @override
+  String get modelLoading => 'Loading the model…';
+
+  @override
+  String identificationStats(int local, int accepted, int remote) {
+    return '$local analysed on device, $accepted decided here; $remote sent online';
   }
 
   @override

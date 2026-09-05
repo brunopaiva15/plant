@@ -612,8 +612,12 @@
   "identificationDisabled": "Non configurée",
   "identificationFallback": "Repli en ligne",
   "identificationFallbackHint": "Quand le modèle intégré hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l'appareil.",
-  "identificationStats": "{local} identifications locales, {remote} en ligne, {saved} appels évités",
-  "@identificationStats": {"placeholders": {"local": {"type": "int"}, "remote": {"type": "int"}, "saved": {"type": "int"}}},
+  "modelLoaded": "Modèle embarqué : {count} espèces",
+  "modelMissing": "Modèle embarqué indisponible sur cet appareil",
+  "modelLoading": "Chargement du modèle…",
+  "identificationStats": "{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne",
+  "@modelLoaded": {"placeholders": {"count": {"type": "int"}}},
+  "@identificationStats": {"placeholders": {"local": {"type": "int"}, "accepted": {"type": "int"}, "remote": {"type": "int"}}},
   "confidence": "{percent} %",
   "@confidence": {
     "placeholders": {

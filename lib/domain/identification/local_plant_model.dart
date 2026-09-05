@@ -13,6 +13,9 @@ abstract class LocalPlantModel {
   /// les mises à jour.
   String? get version;
 
+  /// Nombre d'espèces que le modèle sait nommer, 0 s'il n'est pas chargé.
+  int get speciesCount;
+
   /// Classe une image. Les noms rendus sont les noms canoniques des classes
   /// (voir `tools/plant_dataset/plants.csv`), scores entre 0 et 1, somme ≤ 1.
   Future<List<IdentificationCandidate>> classify(File image);
@@ -32,6 +35,9 @@ class NoLocalModel implements LocalPlantModel {
 
   @override
   String? get version => null;
+
+  @override
+  int get speciesCount => 0;
 
   @override
   Future<List<IdentificationCandidate>> classify(File image) async => const [];

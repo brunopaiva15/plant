@@ -1242,8 +1242,20 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn das integrierte Modell unsicher ist, wird das Foto an Pl@ntNet gesendet. Ausgeschaltet bleibt alles auf dem Gerät.';
 
   @override
-  String identificationStats(int local, int remote, int saved) {
-    return '$local lokale Bestimmungen, $remote online, $saved Anfragen gespart';
+  String modelLoaded(int count) {
+    return 'Integriertes Modell: $count Arten';
+  }
+
+  @override
+  String get modelMissing =>
+      'Integriertes Modell auf diesem Gerät nicht verfügbar';
+
+  @override
+  String get modelLoading => 'Modell wird geladen…';
+
+  @override
+  String identificationStats(int local, int accepted, int remote) {
+    return '$local auf dem Gerät analysiert, $accepted hier entschieden; $remote online gesendet';
   }
 
   @override

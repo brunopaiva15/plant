@@ -1239,8 +1239,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Quand le modèle intégré hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.';
 
   @override
-  String identificationStats(int local, int remote, int saved) {
-    return '$local identifications locales, $remote en ligne, $saved appels évités';
+  String modelLoaded(int count) {
+    return 'Modèle embarqué : $count espèces';
+  }
+
+  @override
+  String get modelMissing => 'Modèle embarqué indisponible sur cet appareil';
+
+  @override
+  String get modelLoading => 'Chargement du modèle…';
+
+  @override
+  String identificationStats(int local, int accepted, int remote) {
+    return '$local analysées sur l’appareil, dont $accepted tranchées ici ; $remote envoyées en ligne';
   }
 
   @override
