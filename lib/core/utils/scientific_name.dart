@@ -14,7 +14,10 @@ const _hybrid = '×';
 const _ranks = {'subsp', 'ssp', 'var', 'f', 'forma', 'cv', 'subvar'};
 
 String normalizeScientificName(String raw) {
-  final s = raw.replaceAll('_', ' ').trim().replaceAll(RegExp(r'\s+'), ' ');
+  // Le signe d'hybride est parfois collé à l'épithète (« Citrus ×sinensis »
+  // chez GBIF comme dans les flores) : sans ce décollement, le nom donnerait
+  // une clé différente de « Citrus × sinensis », donc une autre plante.
+  final s = raw.replaceAll('_', ' ').replaceAll(RegExp('$_hybrid(?=\\S)'), '$_hybrid ').trim().replaceAll(RegExp(r'\s+'), ' ');
   if (s.isEmpty) return '';
   final out = <String>[];
   var expectingEpithet = false;

@@ -19,6 +19,15 @@ void main() {
     expect(normalizeScientificName('Quercus robur SUBSP. robur'), 'Quercus robur subsp. robur');
   });
 
+  test('hybrid sign glued to the epithet is separated', () {
+    // Même vérité que le normaliseur Python : les deux doivent rendre la
+    // même clé, sinon la même plante devient deux classes du modèle.
+    expect(normalizeScientificName('Citrus ×sinensis'), 'Citrus × sinensis');
+    expect(normalizeScientificName('Mentha ×piperita L.'), 'Mentha × piperita');
+    expect(internalPlantId('Citrus ×sinensis'), internalPlantId('Citrus × sinensis'));
+    expect(internalPlantId('Citrus ×sinensis'), 'citrus-x-sinensis');
+  });
+
   test('cultivar keeps its capitals', () {
     expect(normalizeScientificName("Rosa 'Peace'"), "Rosa 'Peace'");
   });

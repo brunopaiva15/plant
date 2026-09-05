@@ -14,6 +14,15 @@ def test_hybrid_sign_and_case():
     assert normalize_scientific_name('  Ficus   elastica ') == 'Ficus elastica'
 
 
+def test_hybrid_sign_glued_to_the_epithet_is_separated():
+    """« Citrus ×sinensis » et « Citrus × sinensis » sont la même plante ;
+    les laisser différer en ferait deux classes du modèle."""
+    assert normalize_scientific_name('Citrus ×sinensis') == 'Citrus × sinensis'
+    assert normalize_scientific_name('Citrus ×sinensis') == normalize_scientific_name('Citrus × sinensis')
+    assert normalize_scientific_name('Mentha ×piperita L.') == 'Mentha × piperita'
+    assert internal_id('Citrus ×sinensis') == internal_id('Citrus × sinensis')
+
+
 def test_cultivar_keeps_its_capitals():
     assert normalize_scientific_name("Rosa 'Peace'") == "Rosa 'Peace'"
 

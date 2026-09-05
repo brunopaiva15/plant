@@ -33,6 +33,11 @@ def normalize_scientific_name(raw: str) -> str:
     'Ficus benjamina var. nuda'
     """
     s = _fold(raw or '').replace('_', ' ').strip()
+    # Le signe d'hybride est parfois collé à l'épithète (« Citrus ×sinensis »
+    # chez GBIF comme dans les flores). Sans ce décollement, le nom donne une
+    # classe distincte de « Citrus × sinensis » : la même plante apprise deux
+    # fois, sous deux étiquettes.
+    s = re.sub(r'×(?=\S)', '× ', s)
     s = re.sub(r'\s+', ' ', s)
     if not s:
         return ''
@@ -84,9 +89,14 @@ def species_slug(canonical: str) -> str:
     return s
 
 
-def internal_id(canonical: str) -> str:
-    """Identifiant interne stable : le nom canonique en minuscules, tirets."""
-    return species_slug(canonical).lower().replace('_', '-')
+def internal_id(name: str) -> str:
+    """Identifiant interne stable : le nom canonique en minuscules, tirets.
+
+    Le nom est normalisé d'abord, comme le fait `internalPlantId` côté Dart :
+    les deux implémentations doivent rendre la même clé pour la même plante,
+    y compris quand on leur donne un nom brut.
+    """
+    return species_slug(normalize_scientific_name(name)).lower().replace('_', '-')
 
 
 def genus_of(canonical: str) -> str:
