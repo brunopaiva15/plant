@@ -936,6 +936,12 @@ abstract class AppLocalizations {
   /// **'Boutures'**
   String get cuttings;
 
+  /// No description provided for @editSchedule.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le planning'**
+  String get editSchedule;
+
   /// No description provided for @createCutting.
   ///
   /// In fr, this message translates to:

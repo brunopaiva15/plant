@@ -509,6 +509,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cuttings => 'Boutures';
 
   @override
+  String get editSchedule => 'Modifier le planning';
+
+  @override
   String get createCutting => 'Créer une bouture';
 
   @override

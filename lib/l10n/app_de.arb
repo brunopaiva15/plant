@@ -139,6 +139,7 @@
   "photos": "Fotos",
   "info": "Details",
   "cuttings": "Ableger",
+  "editSchedule": "Pflegeplan anpassen",
   "createCutting": "Ableger anlegen",
   "cuttingOf": "Ableger von {name}",
   "parentPlant": "Mutterpflanze",

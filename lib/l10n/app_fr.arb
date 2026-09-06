@@ -253,6 +253,7 @@
   "photos": "Photos",
   "info": "Informations",
   "cuttings": "Boutures",
+  "editSchedule": "Modifier le planning",
   "createCutting": "Créer une bouture",
   "cuttingOf": "Bouture de {name}",
   "@cuttingOf": {

@@ -305,6 +305,30 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       onPressed: () => showDiagnosisSheet(context, plant: plant),
                     ),
                   ],
+                  // Les deux gestes qu'on cherche sans les trouver dans un
+                  // menu : revoir le rythme des soins, et bouturer.
+                  const SizedBox(height: Space.sm),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _PracticalTile(
+                          icon: CupertinoIcons.clock,
+                          label: l10n.editSchedule,
+                          tint: c.water,
+                          onTap: () => context.push(Routes.plantSchedule(id)),
+                        ),
+                      ),
+                      const SizedBox(width: Space.sm),
+                      Expanded(
+                        child: _PracticalTile(
+                          icon: CupertinoIcons.leaf_arrow_circlepath,
+                          label: l10n.createCutting,
+                          tint: c.sage,
+                          onTap: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, locationId: plant.locationId),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -769,6 +793,39 @@ class _Cuttings extends ConsumerWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Une option pratique de la fiche : une icône teintée et un libellé, sur
+/// une carte d'argile. Deux côte à côte sous les boutons principaux.
+class _PracticalTile extends StatelessWidget {
+  const _PracticalTile({required this.icon, required this.label, required this.tint, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final Color tint;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return FloraCard(
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.sm),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(color: tint.withValues(alpha: c.isDark ? 0.22 : 0.14), shape: BoxShape.circle),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 18, color: tint),
+          ),
+          const SizedBox(width: Space.xs),
+          Expanded(child: Text(label, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );

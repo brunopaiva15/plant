@@ -509,6 +509,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get cuttings => 'Talee';
 
   @override
+  String get editSchedule => 'Modifica il programma';
+
+  @override
   String get createCutting => 'Crea una talea';
 
   @override

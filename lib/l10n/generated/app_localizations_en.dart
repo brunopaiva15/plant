@@ -508,6 +508,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cuttings => 'Cuttings';
 
   @override
+  String get editSchedule => 'Edit the schedule';
+
+  @override
   String get createCutting => 'Create a cutting';
 
   @override

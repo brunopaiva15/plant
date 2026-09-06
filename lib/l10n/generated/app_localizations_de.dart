@@ -509,6 +509,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cuttings => 'Ableger';
 
   @override
+  String get editSchedule => 'Pflegeplan anpassen';
+
+  @override
   String get createCutting => 'Ableger anlegen';
 
   @override

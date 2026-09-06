@@ -139,6 +139,7 @@
   "photos": "Foto",
   "info": "Informazioni",
   "cuttings": "Talee",
+  "editSchedule": "Modifica il programma",
   "createCutting": "Crea una talea",
   "cuttingOf": "Talea di {name}",
   "parentPlant": "Pianta madre",

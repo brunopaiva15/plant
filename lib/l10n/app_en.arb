@@ -139,6 +139,7 @@
   "photos": "Photos",
   "info": "Details",
   "cuttings": "Cuttings",
+  "editSchedule": "Edit the schedule",
   "createCutting": "Create a cutting",
   "cuttingOf": "Cutting of {name}",
   "parentPlant": "Parent plant",
