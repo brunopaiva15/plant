@@ -1,211 +1,211 @@
 {
- "version": "4",
+ "version": "5",
  "input_size": 224,
  "load_size": 256,
  "source_size": 448,
- "classes": 846,
+ "classes": 894,
  "architecture": "MobileNetV3Large",
  "preprocessing": "included_in_graph_uint8_0_255",
- "sha256": "6b553f1567ad9d25a16eef903502e51372912f4975d50d8d411115b4ee551a38",
- "bytes": 7661652,
+ "sha256": "c2530fd1606281ec7a67717bd3cb06a37f2a4fbbd5df2d1337b87c3f35a99e55",
+ "bytes": 7753908,
  "metrics": {
-  "images": 10582,
-  "top1": 0.5021,
-  "top3": 0.6588,
-  "macro_f1": 0.4763,
-  "mean_confidence": 0.6503,
+  "images": 12661,
+  "top1": 0.5187,
+  "top3": 0.6716,
+  "macro_f1": 0.4774,
+  "mean_confidence": 0.6493,
   "captive": {
-   "images": 1384,
-   "top1": 0.5838,
-   "top3": 0.7348,
+   "images": 2795,
+   "top1": 0.5971,
+   "top3": 0.7381,
    "threshold_curve": [
     {
      "threshold": 0.5,
-     "accepted_rate": 0.7204,
-     "precision_when_accepted": 0.7322
+     "accepted_rate": 0.7041,
+     "precision_when_accepted": 0.7566
     },
     {
      "threshold": 0.7,
-     "accepted_rate": 0.5658,
-     "precision_when_accepted": 0.8289
+     "accepted_rate": 0.5546,
+     "precision_when_accepted": 0.8484
     },
     {
      "threshold": 0.9,
-     "accepted_rate": 0.4053,
-     "precision_when_accepted": 0.9216
+     "accepted_rate": 0.3986,
+     "precision_when_accepted": 0.9354
     }
    ]
   },
-  "version": "4"
+  "version": "5"
  },
  "threshold_curve": [
   {
    "threshold": 0.5,
    "min_margin": 0.0,
-   "accepted_rate": 0.647,
-   "precision_when_accepted": 0.6785
+   "accepted_rate": 0.6408,
+   "precision_when_accepted": 0.7016
   },
   {
    "threshold": 0.5,
    "min_margin": 0.15,
-   "accepted_rate": 0.6392,
-   "precision_when_accepted": 0.6823
+   "accepted_rate": 0.633,
+   "precision_when_accepted": 0.7044
   },
   {
    "threshold": 0.5,
    "min_margin": 0.25,
-   "accepted_rate": 0.6241,
-   "precision_when_accepted": 0.6897
+   "accepted_rate": 0.6195,
+   "precision_when_accepted": 0.7111
   },
   {
    "threshold": 0.5,
    "min_margin": 0.4,
-   "accepted_rate": 0.5669,
-   "precision_when_accepted": 0.7166
+   "accepted_rate": 0.5675,
+   "precision_when_accepted": 0.7367
   },
   {
    "threshold": 0.6,
    "min_margin": 0.0,
-   "accepted_rate": 0.5527,
-   "precision_when_accepted": 0.7335
+   "accepted_rate": 0.5537,
+   "precision_when_accepted": 0.7562
   },
   {
    "threshold": 0.6,
    "min_margin": 0.15,
-   "accepted_rate": 0.5527,
-   "precision_when_accepted": 0.7335
+   "accepted_rate": 0.5537,
+   "precision_when_accepted": 0.7562
   },
   {
    "threshold": 0.6,
    "min_margin": 0.25,
-   "accepted_rate": 0.5522,
-   "precision_when_accepted": 0.7335
+   "accepted_rate": 0.5528,
+   "precision_when_accepted": 0.7565
   },
   {
    "threshold": 0.6,
    "min_margin": 0.4,
-   "accepted_rate": 0.5356,
-   "precision_when_accepted": 0.7414
+   "accepted_rate": 0.5363,
+   "precision_when_accepted": 0.7616
   },
   {
    "threshold": 0.7,
    "min_margin": 0.0,
-   "accepted_rate": 0.4741,
-   "precision_when_accepted": 0.7871
+   "accepted_rate": 0.479,
+   "precision_when_accepted": 0.8038
   },
   {
    "threshold": 0.7,
    "min_margin": 0.15,
-   "accepted_rate": 0.4741,
-   "precision_when_accepted": 0.7871
+   "accepted_rate": 0.479,
+   "precision_when_accepted": 0.8038
   },
   {
    "threshold": 0.7,
    "min_margin": 0.25,
-   "accepted_rate": 0.4741,
-   "precision_when_accepted": 0.7871
+   "accepted_rate": 0.479,
+   "precision_when_accepted": 0.8038
   },
   {
    "threshold": 0.7,
    "min_margin": 0.4,
-   "accepted_rate": 0.4741,
-   "precision_when_accepted": 0.7871
+   "accepted_rate": 0.479,
+   "precision_when_accepted": 0.8038
   },
   {
    "threshold": 0.8,
    "min_margin": 0.0,
-   "accepted_rate": 0.3978,
-   "precision_when_accepted": 0.8406
+   "accepted_rate": 0.4072,
+   "precision_when_accepted": 0.8559
   },
   {
    "threshold": 0.8,
    "min_margin": 0.15,
-   "accepted_rate": 0.3978,
-   "precision_when_accepted": 0.8406
+   "accepted_rate": 0.4072,
+   "precision_when_accepted": 0.8559
   },
   {
    "threshold": 0.8,
    "min_margin": 0.25,
-   "accepted_rate": 0.3978,
-   "precision_when_accepted": 0.8406
+   "accepted_rate": 0.4072,
+   "precision_when_accepted": 0.8559
   },
   {
    "threshold": 0.8,
    "min_margin": 0.4,
-   "accepted_rate": 0.3978,
-   "precision_when_accepted": 0.8406
+   "accepted_rate": 0.4072,
+   "precision_when_accepted": 0.8559
   },
   {
    "threshold": 0.85,
    "min_margin": 0.0,
-   "accepted_rate": 0.36,
-   "precision_when_accepted": 0.8703
+   "accepted_rate": 0.3659,
+   "precision_when_accepted": 0.8828
   },
   {
    "threshold": 0.85,
    "min_margin": 0.15,
-   "accepted_rate": 0.36,
-   "precision_when_accepted": 0.8703
+   "accepted_rate": 0.3659,
+   "precision_when_accepted": 0.8828
   },
   {
    "threshold": 0.85,
    "min_margin": 0.25,
-   "accepted_rate": 0.36,
-   "precision_when_accepted": 0.8703
+   "accepted_rate": 0.3659,
+   "precision_when_accepted": 0.8828
   },
   {
    "threshold": 0.85,
    "min_margin": 0.4,
-   "accepted_rate": 0.36,
-   "precision_when_accepted": 0.8703
+   "accepted_rate": 0.3659,
+   "precision_when_accepted": 0.8828
   },
   {
    "threshold": 0.9,
    "min_margin": 0.0,
-   "accepted_rate": 0.3154,
-   "precision_when_accepted": 0.8945
+   "accepted_rate": 0.3225,
+   "precision_when_accepted": 0.9069
   },
   {
    "threshold": 0.9,
    "min_margin": 0.15,
-   "accepted_rate": 0.3154,
-   "precision_when_accepted": 0.8945
+   "accepted_rate": 0.3225,
+   "precision_when_accepted": 0.9069
   },
   {
    "threshold": 0.9,
    "min_margin": 0.25,
-   "accepted_rate": 0.3154,
-   "precision_when_accepted": 0.8945
+   "accepted_rate": 0.3225,
+   "precision_when_accepted": 0.9069
   },
   {
    "threshold": 0.9,
    "min_margin": 0.4,
-   "accepted_rate": 0.3154,
-   "precision_when_accepted": 0.8945
+   "accepted_rate": 0.3225,
+   "precision_when_accepted": 0.9069
   },
   {
    "threshold": 0.95,
    "min_margin": 0.0,
-   "accepted_rate": 0.252,
-   "precision_when_accepted": 0.9295
+   "accepted_rate": 0.2629,
+   "precision_when_accepted": 0.9399
   },
   {
    "threshold": 0.95,
    "min_margin": 0.15,
-   "accepted_rate": 0.252,
-   "precision_when_accepted": 0.9295
+   "accepted_rate": 0.2629,
+   "precision_when_accepted": 0.9399
   },
   {
    "threshold": 0.95,
    "min_margin": 0.25,
-   "accepted_rate": 0.252,
-   "precision_when_accepted": 0.9295
+   "accepted_rate": 0.2629,
+   "precision_when_accepted": 0.9399
   },
   {
    "threshold": 0.95,
    "min_margin": 0.4,
-   "accepted_rate": 0.252,
-   "precision_when_accepted": 0.9295
+   "accepted_rate": 0.2629,
+   "precision_when_accepted": 0.9399
   }
  ],
  "species": {
@@ -236,12 +236,14 @@
   "acorus-calamus": "Acorus calamus",
   "actaea-spicata": "Actaea spicata",
   "adansonia-digitata": "Adansonia digitata",
+  "adenium-obesum": "Adenium obesum",
   "adiantum-capillus-veneris": "Adiantum capillus-veneris",
   "adiantum-raddianum": "Adiantum raddianum",
   "adonis-aestivalis": "Adonis aestivalis",
   "adonis-vernalis": "Adonis vernalis",
   "aechmea-fasciata": "Aechmea fasciata",
   "aeonium-arboreum": "Aeonium arboreum",
+  "aeschynanthus-radicans": "Aeschynanthus radicans",
   "agastache-foeniculum": "Agastache foeniculum",
   "agave-americana": "Agave americana",
   "aglaonema-commutatum": "Aglaonema commutatum",
@@ -264,12 +266,14 @@
   "alnus-rubra": "Alnus rubra",
   "alnus-viridis": "Alnus viridis",
   "alocasia-macrorrhizos": "Alocasia macrorrhizos",
+  "aloe-arborescens": "Aloe arborescens",
   "aloe-vera": "Aloe vera",
   "aloysia-citrodora": "Aloysia citrodora",
   "amelanchier-ovalis": "Amelanchier ovalis",
   "amorphophallus-titanum": "Amorphophallus titanum",
   "anacamptis-morio": "Anacamptis morio",
   "anacardium-occidentale": "Anacardium occidentale",
+  "ananas-comosus": "Ananas comosus",
   "anemonastrum-narcissiflorum": "Anemonastrum narcissiflorum",
   "anemone-nemorosa": "Anemone nemorosa",
   "anethum-graveolens": "Anethum graveolens",
@@ -312,6 +316,7 @@
   "aster-alpinus": "Aster alpinus",
   "astianthus-viminalis": "Astianthus viminalis",
   "astrantia-major": "Astrantia major",
+  "astrophytum-myriostigma": "Astrophytum myriostigma",
   "atriplex-hortensis": "Atriplex hortensis",
   "atropa-bella-donna": "Atropa bella-donna",
   "azadirachta-indica": "Azadirachta indica",
@@ -339,8 +344,10 @@
   "buxus-sempervirens": "Buxus sempervirens",
   "caesalpinia-echinata": "Caesalpinia echinata",
   "cajanus-cajan": "Cajanus cajan",
+  "caladium-bicolor": "Caladium bicolor",
   "calendula-arvensis": "Calendula arvensis",
   "calendula-officinalis": "Calendula officinalis",
+  "callisia-repens": "Callisia repens",
   "callistemon-citrinus": "Callistemon citrinus",
   "callitriche-stagnalis": "Callitriche stagnalis",
   "calluna-vulgaris": "Calluna vulgaris",
@@ -366,6 +373,7 @@
   "carthamus-tinctorius": "Carthamus tinctorius",
   "carum-carvi": "Carum carvi",
   "carya-illinoinensis": "Carya illinoinensis",
+  "caryota-mitis": "Caryota mitis",
   "castanea-sativa": "Castanea sativa",
   "catananche-caerulea": "Catananche caerulea",
   "cedrus-deodara": "Cedrus deodara",
@@ -425,6 +433,7 @@
   "clematis-flammula": "Clematis flammula",
   "clematis-vitalba": "Clematis vitalba",
   "clematis-viticella": "Clematis viticella",
+  "clivia-miniata": "Clivia miniata",
   "codiaeum-variegatum": "Codiaeum variegatum",
   "coffea-arabica": "Coffea arabica",
   "coix-lacryma-jobi": "Coix lacryma-jobi",
@@ -442,6 +451,7 @@
   "corylus-avellana": "Corylus avellana",
   "cosmos-bipinnatus": "Cosmos bipinnatus",
   "crassula-ovata": "Crassula ovata",
+  "crassula-perforata": "Crassula perforata",
   "crataegus-azarolus": "Crataegus azarolus",
   "crataegus-laevigata": "Crataegus laevigata",
   "crataegus-monogyna": "Crataegus monogyna",
@@ -466,6 +476,7 @@
   "curcuma-longa": "Curcuma longa",
   "curio-rowleyanus": "Curio rowleyanus",
   "cybistax-antisyphilitica": "Cybistax antisyphilitica",
+  "cycas-revoluta": "Cycas revoluta",
   "cyclamen-persicum": "Cyclamen persicum",
   "cyclamen-purpurascens": "Cyclamen purpurascens",
   "cydonia-oblonga": "Cydonia oblonga",
@@ -474,6 +485,7 @@
   "cynara-cardunculus": "Cynara cardunculus",
   "cynara-scolymus": "Cynara scolymus",
   "cynodon-dactylon": "Cynodon dactylon",
+  "cyperus-alternifolius": "Cyperus alternifolius",
   "cyperus-esculentus": "Cyperus esculentus",
   "cyperus-papyrus": "Cyperus papyrus",
   "cypripedium-calceolus": "Cypripedium calceolus",
@@ -499,12 +511,15 @@
   "dracaena-draco": "Dracaena draco",
   "dracaena-fragrans": "Dracaena fragrans",
   "dracaena-marginata": "Dracaena marginata",
+  "dracaena-reflexa": "Dracaena reflexa",
+  "dracaena-sanderiana": "Dracaena sanderiana",
   "dracaena-trifasciata": "Dracaena trifasciata",
   "dryopteris-carthusiana": "Dryopteris carthusiana",
   "dryopteris-filix-mas": "Dryopteris filix-mas",
   "dryopteris-tavelii": "Dryopteris tavelii",
   "dypsis-lutescens": "Dypsis lutescens",
   "ecballium-elaterium": "Ecballium elaterium",
+  "echeveria-agavoides": "Echeveria agavoides",
   "echeveria-elegans": "Echeveria elegans",
   "echinacea-purpurea": "Echinacea purpurea",
   "echinocactus-grusonii": "Echinocactus grusonii",
@@ -530,6 +545,8 @@
   "epiphyllum-oxypetalum": "Epiphyllum oxypetalum",
   "epipogium-aphyllum": "Epipogium aphyllum",
   "epipremnum-aureum": "Epipremnum aureum",
+  "epipremnum-pinnatum": "Epipremnum pinnatum",
+  "episcia-cupreata": "Episcia cupreata",
   "equisetum-arvense": "Equisetum arvense",
   "equisetum-telmateia": "Equisetum telmateia",
   "equisetum-variegatum": "Equisetum variegatum",
@@ -545,21 +562,27 @@
   "erythroxylum-coca": "Erythroxylum coca",
   "eucalyptus-gunnii": "Eucalyptus gunnii",
   "euonymus-europaeus": "Euonymus europaeus",
+  "euphorbia-lactea": "Euphorbia lactea",
   "euphorbia-milii": "Euphorbia milii",
   "euphorbia-pulcherrima": "Euphorbia pulcherrima",
+  "euphorbia-tirucalli": "Euphorbia tirucalli",
   "euphorbia-trigona": "Euphorbia trigona",
   "euphrasia-rostkoviana": "Euphrasia rostkoviana",
   "euterpe-oleracea": "Euterpe oleracea",
   "fagopyrum-esculentum": "Fagopyrum esculentum",
   "fagus-sylvatica": "Fagus sylvatica",
   "fatsia-japonica": "Fatsia japonica",
+  "ferocactus-latispinus": "Ferocactus latispinus",
   "ferula-communis": "Ferula communis",
   "ficaria-verna": "Ficaria verna",
+  "ficus-benghalensis": "Ficus benghalensis",
   "ficus-benjamina": "Ficus benjamina",
   "ficus-carica": "Ficus carica",
   "ficus-elastica": "Ficus elastica",
   "ficus-lyrata": "Ficus lyrata",
+  "ficus-maclellandii": "Ficus maclellandii",
   "ficus-microcarpa": "Ficus microcarpa",
+  "ficus-pumila": "Ficus pumila",
   "filipendula-ulmaria": "Filipendula ulmaria",
   "fittonia-albivenis": "Fittonia albivenis",
   "foeniculum-vulgare": "Foeniculum vulgare",
@@ -580,6 +603,8 @@
   "galium-mollugo": "Galium mollugo",
   "galium-verum": "Galium verum",
   "gardenia-jasminoides": "Gardenia jasminoides",
+  "gasteria-bicolor": "Gasteria bicolor",
+  "gasteria-carinata": "Gasteria carinata",
   "gentiana-acaulis": "Gentiana acaulis",
   "gentiana-lutea": "Gentiana lutea",
   "gentiana-verna": "Gentiana verna",
@@ -606,8 +631,10 @@
   "gymnadenia-conopsea": "Gymnadenia conopsea",
   "gymnadenia-nigra": "Gymnadenia nigra",
   "gymnadenia-stiriaca": "Gymnadenia stiriaca",
+  "gymnocalycium-mihanovichii": "Gymnocalycium mihanovichii",
   "hamamelis-virginiana": "Hamamelis virginiana",
   "hamamelis-x-intermedia": "Hamamelis × intermedia",
+  "hatiora-salicornioides": "Hatiora salicornioides",
   "haworthiopsis-attenuata": "Haworthiopsis attenuata",
   "hedera-helix": "Hedera helix",
   "helianthemum-nummularium": "Helianthemum nummularium",
@@ -645,6 +672,7 @@
   "hypericum-calycinum": "Hypericum calycinum",
   "hypericum-humifusum": "Hypericum humifusum",
   "hypericum-perforatum": "Hypericum perforatum",
+  "hypoestes-phyllostachya": "Hypoestes phyllostachya",
   "hyssopus-officinalis": "Hyssopus officinalis",
   "ilex-aquifolium": "Ilex aquifolium",
   "ilex-paraguariensis": "Ilex paraguariensis",
@@ -656,6 +684,7 @@
   "isatis-tinctoria": "Isatis tinctoria",
   "jacobaea-maritima": "Jacobaea maritima",
   "jasminum-officinale": "Jasminum officinale",
+  "jasminum-polyanthum": "Jasminum polyanthum",
   "jatropha-curcas": "Jatropha curcas",
   "juglans-nigra": "Juglans nigra",
   "juglans-regia": "Juglans regia",
@@ -664,6 +693,7 @@
   "juncus-effusus": "Juncus effusus",
   "kalanchoe-blossfeldiana": "Kalanchoe blossfeldiana",
   "kalanchoe-daigremontiana": "Kalanchoe daigremontiana",
+  "kalanchoe-tomentosa": "Kalanchoe tomentosa",
   "knautia-arvensis": "Knautia arvensis",
   "kroenleinia-grusonii": "Kroenleinia grusonii",
   "lablab-purpureus": "Lablab purpureus",
@@ -697,6 +727,7 @@
   "linum-usitatissimum": "Linum usitatissimum",
   "liparis-loeselii": "Liparis loeselii",
   "liquidambar-styraciflua": "Liquidambar styraciflua",
+  "livistona-chinensis": "Livistona chinensis",
   "lolium-multiflorum": "Lolium multiflorum",
   "lonicera-alpigena": "Lonicera alpigena",
   "lonicera-caprifolium": "Lonicera caprifolium",
@@ -722,6 +753,7 @@
   "matthiola-incana": "Matthiola incana",
   "matthiola-longipetala": "Matthiola longipetala",
   "medicago-sativa": "Medicago sativa",
+  "medinilla-magnifica": "Medinilla magnifica",
   "melaleuca-quinquenervia": "Melaleuca quinquenervia",
   "melia-azedarach": "Melia azedarach",
   "melilotus-officinalis": "Melilotus officinalis",
@@ -766,12 +798,14 @@
   "ophrys-sphegodes": "Ophrys sphegodes",
   "ophrys-tenthredinifera": "Ophrys tenthredinifera",
   "opuntia-ficus-indica": "Opuntia ficus-indica",
+  "opuntia-microdasys": "Opuntia microdasys",
   "origanum-majorana": "Origanum majorana",
   "osmanthus-fragrans": "Osmanthus fragrans",
   "ostrya-carpinifolia": "Ostrya carpinifolia",
   "oxalis-acetosella": "Oxalis acetosella",
   "oxalis-triangularis": "Oxalis triangularis",
   "pachira-aquatica": "Pachira aquatica",
+  "pachypodium-lamerei": "Pachypodium lamerei",
   "paeonia-lactiflora": "Paeonia lactiflora",
   "paeonia-mascula": "Paeonia mascula",
   "palmaria-palmata": "Palmaria palmata",
@@ -784,8 +818,10 @@
   "passiflora-caerulea": "Passiflora caerulea",
   "passiflora-edulis": "Passiflora edulis",
   "pelargonium-graveolens": "Pelargonium graveolens",
+  "pelargonium-peltatum": "Pelargonium peltatum",
   "pelargonium-x-citrosum": "Pelargonium × citrosum",
   "pelargonium-x-hortorum": "Pelargonium × hortorum",
+  "pelargonium-zonale": "Pelargonium zonale",
   "peperomia-obtusifolia": "Peperomia obtusifolia",
   "persea-americana": "Persea americana",
   "persicaria-lapathifolia": "Persicaria lapathifolia",
@@ -798,7 +834,9 @@
   "phaseolus-lunatus": "Phaseolus lunatus",
   "phaseolus-vulgaris": "Phaseolus vulgaris",
   "philodendron-bipinnatifidum": "Philodendron bipinnatifidum",
+  "philodendron-erubescens": "Philodendron erubescens",
   "philodendron-hederaceum": "Philodendron hederaceum",
+  "phlebodium-aureum": "Phlebodium aureum",
   "phlomis-fruticosa": "Phlomis fruticosa",
   "phoenix-canariensis": "Phoenix canariensis",
   "phoenix-dactylifera": "Phoenix dactylifera",
@@ -833,6 +871,8 @@
   "platanthera-chlorantha": "Platanthera chlorantha",
   "platanus-occidentalis": "Platanus occidentalis",
   "platycerium-bifurcatum": "Platycerium bifurcatum",
+  "plectranthus-scutellarioides": "Plectranthus scutellarioides",
+  "plumeria-rubra": "Plumeria rubra",
   "poa-palustris": "Poa palustris",
   "poa-pratensis": "Poa pratensis",
   "polygala-vulgaris": "Polygala vulgaris",
@@ -867,6 +907,7 @@
   "pseudotsuga-menziesii": "Pseudotsuga menziesii",
   "psidium-guajava": "Psidium guajava",
   "psophocarpus-tetragonolobus": "Psophocarpus tetragonolobus",
+  "pteris-cretica": "Pteris cretica",
   "pterocarya-fraxinifolia": "Pterocarya fraxinifolia",
   "pulicaria-vulgaris": "Pulicaria vulgaris",
   "pulsatilla-vulgaris": "Pulsatilla vulgaris",
@@ -944,6 +985,7 @@
   "sedum-acre": "Sedum acre",
   "sedum-dasyphyllum": "Sedum dasyphyllum",
   "sedum-morganianum": "Sedum morganianum",
+  "selenicereus-undatus": "Selenicereus undatus",
   "sempervivum-tectorum": "Sempervivum tectorum",
   "senecio-jacobaea": "Senecio jacobaea",
   "senecio-ovatus": "Senecio ovatus",
@@ -963,6 +1005,7 @@
   "solanum-nigrum": "Solanum nigrum",
   "solanum-tuberosum": "Solanum tuberosum",
   "soldanella-alpina": "Soldanella alpina",
+  "soleirolia-soleirolii": "Soleirolia soleirolii",
   "sonchus-asper": "Sonchus asper",
   "sonchus-oleraceus": "Sonchus oleraceus",
   "sorbus-aucuparia": "Sorbus aucuparia",
@@ -970,6 +1013,7 @@
   "sorbus-torminalis": "Sorbus torminalis",
   "sorghum-bicolor": "Sorghum bicolor",
   "sparganium-erectum": "Sparganium erectum",
+  "sparrmannia-africana": "Sparrmannia africana",
   "spathiphyllum-wallisii": "Spathiphyllum wallisii",
   "spinacia-oleracea": "Spinacia oleracea",
   "spiranthes-aestivalis": "Spiranthes aestivalis",
@@ -978,6 +1022,7 @@
   "stangeria-eriopus": "Stangeria eriopus",
   "staphylea-pinnata": "Staphylea pinnata",
   "stellaria-media": "Stellaria media",
+  "stephanotis-floribunda": "Stephanotis floribunda",
   "stevia-rebaudiana": "Stevia rebaudiana",
   "strelitzia-nicolai": "Strelitzia nicolai",
   "strelitzia-reginae": "Strelitzia reginae",
@@ -1007,6 +1052,7 @@
   "tordylium-apulum": "Tordylium apulum",
   "trachelospermum-jasminoides": "Trachelospermum jasminoides",
   "trachycarpus-fortunei": "Trachycarpus fortunei",
+  "tradescantia-pallida": "Tradescantia pallida",
   "tradescantia-zebrina": "Tradescantia zebrina",
   "tragopogon-pratensis": "Tragopogon pratensis",
   "trapa-natans": "Trapa natans",
@@ -1045,11 +1091,13 @@
   "viola-x-wittrockiana": "Viola × wittrockiana",
   "viscum-album": "Viscum album",
   "vitis-vinifera": "Vitis vinifera",
+  "vriesea-splendens": "Vriesea splendens",
   "wisteria-sinensis": "Wisteria sinensis",
   "withania-somnifera": "Withania somnifera",
   "wollemia-nobilis": "Wollemia nobilis",
   "yucca-gigantea": "Yucca gigantea",
   "zamioculcas-zamiifolia": "Zamioculcas zamiifolia",
+  "zantedeschia-aethiopica": "Zantedeschia aethiopica",
   "zea-mays": "Zea mays",
   "zelkova-carpinifolia": "Zelkova carpinifolia",
   "zingiber-officinale": "Zingiber officinale",

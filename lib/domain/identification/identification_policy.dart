@@ -36,11 +36,11 @@ class FallbackPolicy {
 
   /// Score minimal du premier candidat pour l'accepter sans discuter.
   ///
-  /// Mesuré sur le jeu de test du modèle v4 (10 582 images, 846 espèces),
-  /// et surtout sur ses 1 384 photos de plantes cultivées, celles que les
-  /// utilisateurs prennent : à 0,90 le modèle ne répond seul que dans 41 %
-  /// des cas ; à 0,70 il le fait dans 57 %, avec 83 % de justesse sur ces
-  /// réponses au lieu de 92 %. Comme l'écran propose cinq candidats et que
+  /// Mesuré sur le jeu de test du modèle v5 (12 661 images, 894 espèces),
+  /// et surtout sur ses 2 795 photos de plantes cultivées, celles que les
+  /// utilisateurs prennent : à 0,90 le modèle ne répond seul que dans 40 %
+  /// des cas ; à 0,70 il le fait dans 55 %, avec 85 % de justesse sur ces
+  /// réponses au lieu de 94 %. Comme l'écran propose cinq candidats et que
   /// l'utilisateur tranche, une première ligne parfois fausse coûte bien
   /// moins qu'un appel réseau systématique.
   final double acceptThreshold;

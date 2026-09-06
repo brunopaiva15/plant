@@ -1,10 +1,9 @@
 # 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
 
-> État au 6 septembre 2026 : 970 plantes au catalogue de collecte, 110 625
-> images sous CC0 ou CC BY dont 14 715 de plantes cultivées, modèle
-> MobileNetV3-Large à **846 classes** livré dans l'app en TFLite (7,7 Mo).
-> La cascade identifie **sur l'appareil** et n'appelle Pl@ntNet que sur
-> hésitation.
+> État au 6 septembre 2026 : 1 032 plantes au catalogue de collecte, 130 783
+> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **894
+> classes** livré dans l'app en TFLite (7,8 Mo). La cascade identifie **sur
+> l'appareil** et n'appelle Pl@ntNet que sur hésitation.
 
 ## 1. Pourquoi
 
@@ -523,7 +522,61 @@ l'application (recadrage carré, réduction à 448 puis 256, découpe centrale
 cultivées de l'échantillon 66 % et 80 %. Ce que le téléphone calcule est
 bien ce que l'entraînement a mesuré.
 
-### 6.5 Résultats du modèle v1
+### 6.5 Résultats du modèle v5 — plus de plantes d'appartement, CC BY-SA
+
+| | v4 | **v5** |
+|---|---|---|
+| Plantes au catalogue de collecte | 970 | **1 032** |
+| Images | 110 625 | **130 783** |
+| Classes du modèle | 846 | **894** |
+| Top-1 (test, 12 661 images) | 50,2 % | **51,9 %** |
+| Top-3 (test) | 65,9 % | **67,2 %** |
+| Macro-F1 | 0,476 | **0,477** |
+| Top-1 sur plantes cultivées (2 795 images) | 58,4 % | **59,7 %** |
+| Top-3 sur plantes cultivées | 73,5 % | **73,8 %** |
+| Entraînement | 4 + 14 époques, 3 h 40 | 4 + 12 époques, 5 h 15 |
+
+Entre les deux : 62 plantes d'appartement courantes ajoutées au catalogue
+(pothos, calathéas, philodendrons, dracaenas, rose du désert, cactus de
+salon…), dix espèces recollectées en pot, une passe « cultivé en Europe »,
+et l'entrée de CC BY-SA. Le gain global est modeste, un point et demi de
+top-1 sur un problème plus large de 48 classes ; ce qui compte davantage,
+c'est que ces 48 plantes existent désormais pour le modèle.
+
+Ce que l'on sait des espèces testées par l'éditeur sur ses propres
+plantes, mesuré sur les photos cultivées de validation et de test :
+
+| Espèce | Top-1 | Top-3 | Ce qui se passe |
+|---|---|---|---|
+| Adenium obesum (rose du désert) | 69 % | 88 % | absente de la v4, apprise |
+| Pilea peperomioides | 92 % | 100 % | 56 images seulement, forme unique |
+| Zamioculcas zamiifolia | 65 % | 81 % | |
+| Beaucarnea recurvata | 56 % | 77 % | |
+| Yucca gigantea | 52 % | 59 % | photos « cultivées » = arbres de jardin |
+| Ficus microcarpa (ficus ginseng) | 27 % | 59 % | l'arbre de rue et le bonsaï dans une classe |
+
+Le ficus ginseng est le cas d'école : la même espèce est un arbre de rue de
+vingt mètres à Taïwan et un bonsaï à racines renflées chez un fleuriste
+européen, et le modèle doit les mettre dans la même case. Les rejeux des
+photos de l'éditeur (recadrées depuis des captures d'écran, donc
+approximatifs) donnent : oiseau du paradis reconnu à 88 % ; yucca, ficus
+ginseng et rose du désert toujours faux, sous le seuil de 70 % pour les
+deux premiers — l'app montre alors ses doutes et propose la recherche en
+ligne — mais à 63 % pour un « Ficus benjamina » devant la rose du désert,
+juste sous le seuil. Le vrai remède reste des photos de plantes en pot
+dans des salons, rares sous licence libre (§ 6.3).
+
+Courbe seuil / repli sur les plantes cultivées : à 0,70 le modèle répond
+seul dans 55 % des cas avec 85 % de justesse ; à 0,90, 40 % et 94 %. Le
+seuil reste à 0,70.
+
+Trois espèces n'ont reçu aucune image faute de nom reconnu par les
+sources : Citrus limon (GBIF sans occurrence sous ce nom, iNaturalist sans
+correspondance), Goeppertia orbifolia (connue comme Calathea orbifolia) et
+Streptocarpus ionanthus (Saintpaulia ionantha). À résoudre par
+`synonyms.txt` avant la v6.
+
+### 6.6 Résultats du modèle v1
 
 | | |
 |---|---|
@@ -552,7 +605,7 @@ Deux enseignements de cet entraînement, tous deux corrigés :
    La recette est maintenant écrite dans `model.json` (`input_size`,
    `load_size`) et lue par l'application, plutôt que codée des deux côtés.
 
-### 6.6 Recette
+### 6.7 Recette
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
