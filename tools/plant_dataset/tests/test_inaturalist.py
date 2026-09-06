@@ -153,3 +153,20 @@ def test_captive_filter_is_only_sent_when_asked():
     list(c.image_candidates(125439))
     (_, params), = c.session.calls
     assert 'captive' not in params, 'sans demande, toutes les observations'
+
+
+def test_place_filter_is_sent_and_recorded():
+    """En Europe, un yucca observé est une plante d'appartement : le filtre
+    de lieu se transmet à l'API, et chaque image en garde la trace pour que
+    la reprise sache ce qu'elle a déjà."""
+    page = load('inat_observations_pilea.json')
+    c = client({'/observations': page})
+    found = list(c.image_candidates(125439, captive=True, place_id=97391))
+    (_, params), = c.session.calls
+    assert params['captive'] == 'true'
+    assert params['place_id'] == 97391
+    assert found and all(f.extra['place_id'] == 97391 for f in found)
+
+    c = client({'/observations': page})
+    found = list(c.image_candidates(125439))
+    assert found and all('place_id' not in f.extra for f in found)

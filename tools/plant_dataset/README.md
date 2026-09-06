@@ -70,6 +70,10 @@ Puis vérifier à la main :
 | `--limit-species N` | | ne traiter que les N premières plantes du CSV |
 | `--max-candidates N` | 1500 | occurrences GBIF parcourues au plus, par licence |
 | `--allow-sa` | non | accepter aussi CC BY-SA (voir licences ci-dessous) |
+| `--captive-file F` | | espèces (une par ligne) pour lesquelles réserver une part de plantes cultivées (iNaturalist `captive=true`) |
+| `--captive-share` | 0,5 | part de la cible réservée aux plantes cultivées |
+| `--captive-place ID` | | lieu iNaturalist (97391 = Europe) : les plantes cultivées de cette région sont collectées **en premier**, en plus de la cible |
+| `--place-share` | 0,25 | part de la cible ajoutée en plantes cultivées de la région |
 | `--skip-fetch` | | ne rien télécharger : dédupliquer, répartir, compter ce qui est déjà là |
 
 L'outil est relançable : ce qui figure déjà dans `manifest.jsonl` n'est pas

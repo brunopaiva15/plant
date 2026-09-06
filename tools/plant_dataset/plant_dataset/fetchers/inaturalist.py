@@ -110,17 +110,23 @@ class InatClient:
         return fallback
 
     def image_candidates(self, taxon_id: int, max_observations: int = 2000, allow_share_alike: bool = False,
-                         captive: bool | None = None) -> Iterator[ImageCandidate]:
+                         captive: bool | None = None, place_id: int | None = None) -> Iterator[ImageCandidate]:
         """Les photos d'un taxon, filtrées sur leur licence.
 
-        `captive=True` ne rend que les observations de plantes cultivées —
-        en pot, chez des gens, sous une lampe de salon. C'est ce que les
-        utilisateurs photographient, et ce que GBIF n'a presque jamais : ses
-        Yucca sont des arbres de six mètres dans la broussaille, et un modèle
-        entraîné dessus ne reconnaît pas le yucca canne du salon.
+        `captive=True` ne rend que les observations de plantes cultivées.
+        Mais « cultivé » chez iNaturalist veut dire planté par l'homme, pas
+        « en pot dans un salon » : les Yucca gigantea cultivés sont surtout
+        des arbres de jardin en Californie, contre un ciel bleu, et le modèle
+        v4 entraîné dessus ne reconnaissait toujours pas le yucca canne du
+        salon. `place_id` restreint à une région : en Europe (97391), un
+        yucca, un monstera ou un ficus observé est presque toujours une
+        plante d'appartement, sur un rebord de fenêtre — ce que les
+        utilisateurs photographient.
         """
         licenses = PHOTO_LICENSES_WITH_SA if allow_share_alike else PHOTO_LICENSES
         extra = {'captive': 'true'} if captive else {}
+        if place_id is not None:
+            extra['place_id'] = place_id
         page = 1
         seen = 0
         while seen < max_observations:
@@ -131,7 +137,10 @@ class InatClient:
                 break
             for obs in results:
                 seen += 1
-                yield from candidates_from_observation(obs, allow_share_alike=allow_share_alike)
+                for c in candidates_from_observation(obs, allow_share_alike=allow_share_alike):
+                    if place_id is not None:
+                        c.extra['place_id'] = place_id
+                    yield c
             if len(results) < PAGE:
                 break
             page += 1

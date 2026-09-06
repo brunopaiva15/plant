@@ -182,8 +182,15 @@ def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: reque
                 license_codes: list[str], args, t0: float, total: int) -> None:
     """Collecte une espèce, de la résolution du nom aux images.
 
-    Trois passes, dans cet ordre :
+    Quatre passes, dans cet ordre :
 
+    0. **Plantes cultivées d'une région** (iNaturalist, `captive=true` et
+       `place_id`), pour les espèces de `--captive-file`, jusqu'à
+       `--place-share` de la cible **en plus** de celle-ci. « Cultivé » seul
+       ne suffisait pas : les yuccas cultivés d'iNaturalist sont des arbres
+       de jardin californiens, et le modèle v4 ne reconnaissait toujours pas
+       un yucca en pot. En Europe, la même espèce observée est une plante
+       d'appartement.
     1. **Plantes cultivées** (iNaturalist, `captive=true`), pour les espèces
        de la liste `--captive-file` seulement, jusqu'à `--captive-share` de
        la cible. Le modèle v3 ne reconnaissait pas un yucca de salon parce
@@ -220,6 +227,17 @@ def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: reque
     taxon_inat = None
     if inat is not None and plant.scientific_name.lower() in args.captive_set:
         taxon_inat = inat_taxon()
+        if taxon_inat is not None and args.captive_place is not None:
+            quota = round(args.place_share * target)
+            kept = [r for r in manifest if r.species == plant.scientific_name and r.status == STATUS_KEPT]
+            have = sum(1 for r in kept if (r.extra or {}).get('place_id') == args.captive_place)
+            if have < quota:
+                # En plus de la cible : ces images s'ajoutent à ce qui est
+                # là, elles ne remplacent pas les plantes sauvages.
+                added = run(inat.image_candidates(taxon_inat['id'], max_observations=args.max_candidates,
+                                                  allow_share_alike=args.allow_sa, captive=True, place_id=args.captive_place),
+                            len(kept) + (quota - have))
+                sources.append(f'inat cultivées région {added}')
         if taxon_inat is not None:
             quota = round(args.captive_share * target)
             kept = [r for r in manifest if r.species == plant.scientific_name and r.status == STATUS_KEPT]
@@ -265,6 +283,8 @@ def main() -> int:
     ap.add_argument('--inat-pause', type=float, default=1.0, help='pause entre requêtes iNaturalist, en secondes')
     ap.add_argument('--captive-file', help='espèces (une par ligne) pour lesquelles réserver une part de plantes cultivées')
     ap.add_argument('--captive-share', type=float, default=0.5, help='part de la cible réservée aux plantes cultivées (iNaturalist captive=true)')
+    ap.add_argument('--captive-place', type=int, help='identifiant de lieu iNaturalist (97391 = Europe) : plantes cultivées de cette région, collectées en premier')
+    ap.add_argument('--place-share', type=float, default=0.25, help='part de la cible ajoutée en plantes cultivées de la région, en plus de la cible')
     args = ap.parse_args()
     args.captive_set = ({line.strip().lower() for line in Path(args.captive_file).read_text().splitlines() if line.strip()}
                         if args.captive_file else set())
