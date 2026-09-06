@@ -198,21 +198,17 @@ def phone(shot_path):
 
 # --- argile -------------------------------------------------------------------
 
-def shadow_of(layer, blur=40, offset=(0, 30), alpha=0.28):
-    """L'ombre portée d'un calque à transparence : brune, comme dans l'app."""
-    a = layer.split()[-1].point(lambda v: int(v * alpha))
-    sh = Image.new('RGBA', layer.size, SHADOW + (0,))
-    sh.putalpha(a)
-    sh = sh.filter(ImageFilter.GaussianBlur(blur))
-    return sh, offset
-
-
 def paste_with_shadow(canvas, layer, pos, blur=40, offset=(0, 30), alpha=0.28):
-    sh, off = shadow_of(layer, blur, offset, alpha)
+    """Pose un calque avec son ombre portée, brune comme dans l'app. L'ombre
+    est floutée dans un calque plus grand que l'élément : floutée à sa
+    taille exacte, elle serait coupée net sur ses bords et laisserait un
+    rectangle translucide derrière lui."""
     pad = blur * 3
-    big = Image.new('RGBA', (layer.width + 2 * pad, layer.height + 2 * pad), (0, 0, 0, 0))
-    big.alpha_composite(sh, (pad + off[0], pad + off[1]))
-    canvas.alpha_composite(big, (pos[0] - pad, pos[1] - pad))
+    a = Image.new('L', (layer.width + 2 * pad, layer.height + 2 * pad), 0)
+    a.paste(layer.split()[-1].point(lambda v: int(v * alpha)), (pad + offset[0], pad + offset[1]))
+    sh = Image.new('RGBA', a.size, SHADOW + (0,))
+    sh.putalpha(a.filter(ImageFilter.GaussianBlur(blur)))
+    canvas.alpha_composite(sh, (pos[0] - pad, pos[1] - pad))
     canvas.alpha_composite(layer, pos)
 
 
