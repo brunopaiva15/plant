@@ -7,6 +7,7 @@ import '../../core/haptics.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
+import 'clay_loader.dart';
 
 /// Composants qui suivent les conventions de la plateforme tout en gardant
 /// l'identité visuelle Flora. Sur iOS : composants Cupertino natifs.
@@ -34,17 +35,16 @@ class AdaptiveSwitch extends StatelessWidget {
   }
 }
 
-/// Indicateur d'activité natif.
+/// Indicateur d'activité : la motte d'argile de [ClayLoader], sur toutes les
+/// plateformes. [size] est le diamètre de la motte au repos.
 class AdaptiveProgress extends StatelessWidget {
-  const AdaptiveProgress({super.key, this.color});
+  const AdaptiveProgress({super.key, this.color, this.size = 36});
 
   final Color? color;
+  final double size;
 
   @override
-  Widget build(BuildContext context) {
-    if (isCupertino(context)) return CupertinoActivityIndicator(color: color);
-    return SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: color));
-  }
+  Widget build(BuildContext context) => ClayLoader(size: size, color: color);
 }
 
 /// Contrôle segmenté (CupertinoSlidingSegmentedControl sur iOS, SegmentedButton sur Android).
@@ -75,7 +75,11 @@ class AdaptiveSegmented<T extends Object> extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: Space.xxs, vertical: 4),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Text(e.value, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600), maxLines: 1),
+                child: Text(
+                  e.value,
+                  style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600),
+                  maxLines: 1,
+                ),
               ),
             ),
         },
@@ -85,7 +89,10 @@ class AdaptiveSegmented<T extends Object> extends StatelessWidget {
     return SegmentedButton<T>(
       segments: [
         for (final e in segments.entries)
-          ButtonSegment(value: e.key, label: FittedBox(fit: BoxFit.scaleDown, child: Text(e.value, maxLines: 1, softWrap: false))),
+          ButtonSegment(
+            value: e.key,
+            label: FittedBox(fit: BoxFit.scaleDown, child: Text(e.value, maxLines: 1, softWrap: false)),
+          ),
       ],
       selected: {value},
       showSelectedIcon: false,
@@ -114,13 +121,7 @@ class SheetAction {
 }
 
 /// Action sheet natif : CupertinoActionSheet sur iOS, bottom sheet liste sur Android.
-Future<void> showAdaptiveActionSheet(
-  BuildContext context, {
-  String? title,
-  String? message,
-  required List<SheetAction> actions,
-  required String cancelLabel,
-}) async {
+Future<void> showAdaptiveActionSheet(BuildContext context, {String? title, String? message, required List<SheetAction> actions, required String cancelLabel}) async {
   Haptics.light();
   if (isCupertino(context)) {
     await showCupertinoModalPopup<void>(
@@ -139,11 +140,7 @@ Future<void> showAdaptiveActionSheet(
               child: Text(a.label),
             ),
         ],
-        cancelButton: CupertinoActionSheetAction(
-          isDefaultAction: true,
-          onPressed: () => Navigator.of(ctx).pop(),
-          child: Text(cancelLabel),
-        ),
+        cancelButton: CupertinoActionSheetAction(isDefaultAction: true, onPressed: () => Navigator.of(ctx).pop(), child: Text(cancelLabel)),
       ),
     );
     return;
@@ -185,14 +182,7 @@ Future<void> showAdaptiveActionSheet(
 }
 
 /// Dialogue de confirmation natif. Retourne `true` si confirmé.
-Future<bool> showAdaptiveConfirm(
-  BuildContext context, {
-  required String title,
-  String? message,
-  required String confirmLabel,
-  required String cancelLabel,
-  bool destructive = false,
-}) async {
+Future<bool> showAdaptiveConfirm(BuildContext context, {required String title, String? message, required String confirmLabel, required String cancelLabel, bool destructive = false}) async {
   if (isCupertino(context)) {
     final r = await showCupertinoDialog<bool>(
       context: context,
@@ -201,12 +191,7 @@ Future<bool> showAdaptiveConfirm(
         content: message == null ? null : Padding(padding: const EdgeInsets.only(top: 6), child: Text(message)),
         actions: [
           CupertinoDialogAction(onPressed: () => Navigator.of(ctx).pop(false), child: Text(cancelLabel)),
-          CupertinoDialogAction(
-            isDestructiveAction: destructive,
-            isDefaultAction: !destructive,
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(confirmLabel),
-          ),
+          CupertinoDialogAction(isDestructiveAction: destructive, isDefaultAction: !destructive, onPressed: () => Navigator.of(ctx).pop(true), child: Text(confirmLabel)),
         ],
       ),
     );
@@ -230,13 +215,7 @@ Future<bool> showAdaptiveConfirm(
 }
 
 /// Sélecteur de date natif (roue Cupertino sur iOS, calendrier Material sur Android).
-Future<DateTime?> showAdaptiveDatePicker(
-  BuildContext context, {
-  required DateTime initial,
-  DateTime? first,
-  DateTime? last,
-  required String doneLabel,
-}) async {
+Future<DateTime?> showAdaptiveDatePicker(BuildContext context, {required DateTime initial, DateTime? first, DateTime? last, required String doneLabel}) async {
   final firstDate = first ?? DateTime(2000);
   final lastDate = last ?? DateTime.now().add(const Duration(days: 365 * 5));
   if (isCupertino(context)) {
@@ -246,13 +225,7 @@ Future<DateTime?> showAdaptiveDatePicker(
       builder: (ctx) => _CupertinoPickerFrame(
         doneLabel: doneLabel,
         onDone: () => Navigator.of(ctx).pop(value),
-        child: CupertinoDatePicker(
-          mode: CupertinoDatePickerMode.date,
-          initialDateTime: initial,
-          minimumDate: firstDate,
-          maximumDate: lastDate,
-          onDateTimeChanged: (d) => value = d,
-        ),
+        child: CupertinoDatePicker(mode: CupertinoDatePickerMode.date, initialDateTime: initial, minimumDate: firstDate, maximumDate: lastDate, onDateTimeChanged: (d) => value = d),
       ),
     );
     return r;
@@ -302,9 +275,20 @@ class _CupertinoPickerFrame extends StatelessWidget {
           children: [
             Align(
               alignment: Alignment.centerRight,
-              child: CupertinoButton(onPressed: onDone, child: Text(doneLabel, style: TextStyle(color: c.sage, fontWeight: FontWeight.w600))),
+              child: CupertinoButton(
+                onPressed: onDone,
+                child: Text(
+                  doneLabel,
+                  style: TextStyle(color: c.sage, fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
-            Expanded(child: CupertinoTheme(data: CupertinoThemeData(brightness: c.brightness), child: child)),
+            Expanded(
+              child: CupertinoTheme(
+                data: CupertinoThemeData(brightness: c.brightness),
+                child: child,
+              ),
+            ),
           ],
         ),
       ),
@@ -328,7 +312,10 @@ class FrostedSurface extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
         child: DecoratedBox(
-          decoration: BoxDecoration(color: c.surface.withValues(alpha: opacity), borderRadius: borderRadius),
+          decoration: BoxDecoration(
+            color: c.surface.withValues(alpha: opacity),
+            borderRadius: borderRadius,
+          ),
           child: child,
         ),
       ),

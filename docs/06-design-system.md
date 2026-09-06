@@ -30,6 +30,18 @@ un héros de 300 px ont le même rendu.
 `SelectionBar` et le toast reposent tous sur `ClayBox` : un composant ne
 dessine jamais sa propre ombre.
 
+### Chargement : la motte (`clay_loader.dart`)
+Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
+image, comme dans *Art Attack* : elle tombe, s'écrase au sol en projetant
+six gouttes, rebondit en tremblant de moins en moins, respire en se
+remodelant, se ramasse et repart. Un cycle dure 1,6 s. La silhouette ondule
+en permanence (trois harmoniques lentes), l'ombre au sol rétrécit quand elle
+saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
+
+`AdaptiveProgress` (toutes les attentes de l'app) et l'état `loading` de
+`FloraButton` l'utilisent ; `size` est le diamètre au repos (36 par défaut,
+14 dans un bouton). Avec *reduced motion*, la motte reste posée.
+
 ## Couleurs (`design_system/tokens/colors.dart`)
 | Token | Clair | Sombre | Usage |
 |---|---|---|---|
@@ -79,7 +91,7 @@ Dynamic Type : toutes les tailles suivent `MediaQuery.textScaler`.
 - `selection` : changement de chip / onglet · `light` : tap bouton · `success` : action enregistrée · `warning` : archivage.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · Card · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · PhotoGrid · QuantityStepper · DatePicker (natif) · PlantPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · PhotoGrid · QuantityStepper · DatePicker (natif) · PlantPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader
 
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.

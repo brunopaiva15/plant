@@ -4,6 +4,7 @@ export 'avatar.dart';
 export 'buttons.dart';
 export 'cards.dart';
 export 'clay.dart';
+export 'clay_loader.dart';
 export 'chips.dart';
 export 'due_badge.dart';
 export 'empty_state.dart';

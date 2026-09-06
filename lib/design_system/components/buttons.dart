@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
 import 'clay.dart';
+import 'clay_loader.dart';
 import 'pressable.dart';
 
 enum FloraButtonStyle { primary, secondary, tonal, ghost, destructive }
@@ -49,38 +49,33 @@ class FloraButton extends StatelessWidget {
       FloraButtonStyle.destructive => (c.danger, Colors.white),
     };
     final small = size == FloraButtonSize.small;
-    final textStyle = (small ? context.text.callout : context.text.body).copyWith(
-      color: fg,
-      fontWeight: FontWeight.w600,
-    );
+    final textStyle = (small ? context.text.callout : context.text.body).copyWith(color: fg, fontWeight: FontWeight.w600);
     final row = Row(
-        mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedSwitcher(
-            duration: Motion.of(context, Motion.standard),
-            child: loading
-                ? SizedBox(
-                    key: const ValueKey('loading'),
-                    width: 18,
-                    height: 18,
-                    child: CupertinoActivityIndicator(color: fg, radius: 8),
-                  )
-                : icon != null
-                    ? Padding(
-                        key: ValueKey(icon),
-                        padding: const EdgeInsets.only(right: Space.xs),
-                        child: Icon(icon, size: small ? 18 : 20, color: fg),
-                      )
-                    : const SizedBox.shrink(key: ValueKey('none')),
-          ),
-          Flexible(child: Text(label, style: textStyle, maxLines: 1, overflow: TextOverflow.ellipsis)),
-          if (trailingIcon != null) ...[
-            const SizedBox(width: Space.xs),
-            Icon(trailingIcon, size: small ? 18 : 20, color: fg),
-          ],
-        ],
-      );
+      mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AnimatedSwitcher(
+          duration: Motion.of(context, Motion.standard),
+          child: loading
+              ? SizedBox(
+                  key: const ValueKey('loading'),
+                  height: 22,
+                  child: ClayLoader(size: 14, color: fg),
+                )
+              : icon != null
+              ? Padding(
+                  key: ValueKey(icon),
+                  padding: const EdgeInsets.only(right: Space.xs),
+                  child: Icon(icon, size: small ? 18 : 20, color: fg),
+                )
+              : const SizedBox.shrink(key: ValueKey('none')),
+        ),
+        Flexible(
+          child: Text(label, style: textStyle, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        if (trailingIcon != null) ...[const SizedBox(width: Space.xs), Icon(trailingIcon, size: small ? 18 : 20, color: fg)],
+      ],
+    );
     final padding = EdgeInsets.symmetric(horizontal: small ? Space.md : Space.xl);
     final height = small ? 40.0 : 52.0;
     final child = style == FloraButtonStyle.ghost
@@ -93,27 +88,13 @@ class FloraButton extends StatelessWidget {
             padding: padding,
             child: row,
           );
-    return Pressable(
-      onTap: loading ? null : onPressed,
-      enabled: onPressed != null && !loading,
-      semanticLabel: label,
-      child: child,
-    );
+    return Pressable(onTap: loading ? null : onPressed, enabled: onPressed != null && !loading, semanticLabel: label, child: child);
   }
 }
 
 /// Bouton icône circulaire (barres de navigation, cartes).
 class FloraIconButton extends StatelessWidget {
-  const FloraIconButton({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-    required this.semanticLabel,
-    this.size = 40,
-    this.filled = true,
-    this.color,
-    this.background,
-  });
+  const FloraIconButton({super.key, required this.icon, required this.onPressed, required this.semanticLabel, this.size = 40, this.filled = true, this.color, this.background});
 
   final IconData icon;
   final VoidCallback? onPressed;

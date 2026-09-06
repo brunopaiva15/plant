@@ -12,15 +12,11 @@ enum ClayDepth { light, deep }
 class ClayShape {
   const ClayShape.rounded(this.radius) : blob = -1;
 
-  const ClayShape.pill()
-      : radius = 999,
-        blob = -1;
+  const ClayShape.pill() : radius = 999, blob = -1;
 
   /// Une forme de pâte. [variant] choisit parmi quatre gabarits ; passer un
   /// index de liste suffit à varier les tuiles d'une rangée.
-  const ClayShape.blob([int variant = 0])
-      : radius = 0,
-        blob = variant;
+  const ClayShape.blob([int variant = 0]) : radius = 0, blob = variant;
 
   final double radius;
   final int blob;
@@ -131,16 +127,27 @@ class ClayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    final rrect = shape.toRRect(rect);
-    final path = Path()..addRRect(rrect);
-    final deep = depth == ClayDepth.deep;
-    // Le relief s'accorde à la taille : une tuile de 40 points n'a pas
-    // l'ombre d'une carte de 300.
-    final unit = (size.shortestSide / 48).clamp(0.6, 1.6);
-    final shade = Color.lerp(color, Colors.black, 0.3)!;
+    paintClay(canvas, Path()..addRRect(shape.toRRect(rect)), bounds: rect, color: color, depth: depth, dark: dark);
+  }
 
-    // L'ombre portée, dans la teinte de la pièce, décalée en bas à droite :
-    // la lumière vient d'un coin.
+  @override
+  bool shouldRepaint(ClayPainter old) => old.color != color || old.shape.radius != shape.radius || old.shape.blob != shape.blob || old.depth != depth || old.dark != dark;
+}
+
+/// La recette de l'argile, sur n'importe quel [path] : ombre portée teintée
+/// (sauf si [dropShadow] est faux), aplat, reflet en haut à gauche, ombre en
+/// bas à droite. [bounds] sert à proportionner le relief et à rogner les
+/// ombres intérieures.
+void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color color, required ClayDepth depth, required bool dark, bool dropShadow = true}) {
+  final deep = depth == ClayDepth.deep;
+  // Le relief s'accorde à la taille : une tuile de 40 points n'a pas
+  // l'ombre d'une carte de 300.
+  final unit = (bounds.shortestSide / 48).clamp(0.6, 1.6);
+  final shade = Color.lerp(color, Colors.black, 0.3)!;
+
+  // L'ombre portée, dans la teinte de la pièce, décalée en bas à droite :
+  // la lumière vient d'un coin.
+  if (dropShadow) {
     final drop = deep ? (dark ? 0.32 : 0.24) : (dark ? 0.28 : 0.14);
     canvas.drawPath(
       path.shift(Offset(5 * unit, 7 * unit)),
@@ -148,34 +155,30 @@ class ClayPainter extends CustomPainter {
         ..color = (dark ? Colors.black : shade).withValues(alpha: drop)
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, 9 * unit),
     );
-    canvas.drawPath(path, Paint()..color = color);
-
-    // Les ombres intérieures : tout ce qui est hors de la forme, décalé et
-    // flouté, rogné à la forme. Décalé vers le bas à droite, le trou laisse
-    // une lumière en haut à gauche ; vers le haut à gauche, une ombre en
-    // bas à droite.
-    final outside = rect.inflate(size.shortestSide);
-    Path rim(Offset by) => Path.combine(PathOperation.difference, Path()..addRect(outside), path.shift(by));
-    canvas.save();
-    canvas.clipPath(path);
-    canvas.drawPath(
-      rim(Offset(3 * unit, 3 * unit)),
-      Paint()
-        ..color = Colors.white.withValues(alpha: deep ? (dark ? 0.22 : 0.30) : (dark ? 0.10 : 0.75))
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * unit),
-    );
-    canvas.drawPath(
-      rim(Offset(-4 * unit, -5 * unit)),
-      Paint()
-        ..color = shade.withValues(alpha: deep ? (dark ? 0.40 : 0.28) : (dark ? 0.35 : 0.10))
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 7 * unit),
-    );
-    canvas.restore();
   }
+  canvas.drawPath(path, Paint()..color = color);
 
-  @override
-  bool shouldRepaint(ClayPainter old) =>
-      old.color != color || old.shape.radius != shape.radius || old.shape.blob != shape.blob || old.depth != depth || old.dark != dark;
+  // Les ombres intérieures : tout ce qui est hors de la forme, décalé et
+  // flouté, rogné à la forme. Décalé vers le bas à droite, le trou laisse
+  // une lumière en haut à gauche ; vers le haut à gauche, une ombre en
+  // bas à droite.
+  final outside = bounds.inflate(bounds.shortestSide + 16);
+  Path rim(Offset by) => Path.combine(PathOperation.difference, Path()..addRect(outside), path.shift(by));
+  canvas.save();
+  canvas.clipPath(path);
+  canvas.drawPath(
+    rim(Offset(3 * unit, 3 * unit)),
+    Paint()
+      ..color = Colors.white.withValues(alpha: deep ? (dark ? 0.22 : 0.30) : (dark ? 0.10 : 0.75))
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * unit),
+  );
+  canvas.drawPath(
+    rim(Offset(-4 * unit, -5 * unit)),
+    Paint()
+      ..color = shade.withValues(alpha: deep ? (dark ? 0.40 : 0.28) : (dark ? 0.35 : 0.10))
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 7 * unit),
+  );
+  canvas.restore();
 }
 
 /// Le grain du papier : un bruit très léger posé par-dessus l'écran, comme
