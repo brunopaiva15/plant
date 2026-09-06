@@ -82,12 +82,14 @@ retéléchargé, et les identifiants de source (`gbif`, `<clé d'occurrence>#<n>
 
 ## Licences acceptées
 
-Seules les images sous **CC0 1.0**, **Public Domain Mark** ou **CC BY** (toutes
-versions) sont gardées. **CC BY-SA** est refusée par défaut (le partage à
-l'identique obligerait à publier le modèle sous la même licence — question
-juridique ouverte, tranchée plus tard). **NC**, **ND**, licence inconnue ou
-absente, tout contenu propriétaire ou venu d'un moteur d'images : refusés,
-sans exception.
+Les images sous **CC0 1.0**, **Public Domain Mark** ou **CC BY** (toutes
+versions) sont gardées. **CC BY-SA** l'est aussi avec `--allow-sa`, et c'est
+ainsi que le jeu est collecté depuis le 6 septembre 2026 : la décision a été
+prise au motif qu'un modèle entraîné n'est pas une adaptation des photos, il
+n'en reproduit aucune, et que les photos ne sont jamais redistribuées.
+Chacune reste attribuée avec sa licence dans `ATTRIBUTIONS.md`. **NC**,
+**ND**, licence inconnue ou absente, tout contenu propriétaire ou venu d'un
+moteur d'images : refusés, sans exception.
 
 Le filtre est appliqué deux fois : dans la requête GBIF (`license=CC0_1_0`
 puis `license=CC_BY_4_0`), puis sur **la licence propre de chaque média**,

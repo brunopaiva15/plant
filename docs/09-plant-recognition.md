@@ -223,7 +223,7 @@ de nom d'espèce.
 |---|---|
 | CC0 1.0, Public Domain Mark | ✅ |
 | CC BY (2.0 → 4.0) | ✅ avec attribution livrée |
-| CC BY-SA | ❌ pour l'instant (`--allow-sa` existe, désactivé) — le partage à l'identique pourrait s'étendre au modèle ; question ouverte |
+| CC BY-SA | ✅ depuis le 6 septembre 2026 (`--allow-sa`), avec attribution livrée — décision prise au motif qu'un modèle entraîné n'est pas une adaptation des photos : il n'en reproduit aucune, et elles ne sont jamais redistribuées |
 | CC BY-NC, BY-ND, BY-NC-SA, BY-NC-ND | ❌ |
 | inconnue, absente, propriétaire, Google Images, scraping | ❌ |
 

@@ -2,10 +2,11 @@
 
 Par défaut, seules les licences qui permettent un usage commercial sans
 condition de partage à l'identique entrent dans le jeu : CC0, domaine public,
-CC BY (toutes versions). CC BY-SA est refusée pour l'instant — elle est
-compatible avec un usage commercial, mais impose des obligations sur les
-œuvres dérivées que le projet préfère ne pas porter. Tout le reste est refusé :
-NC, ND, licence inconnue, droits réservés.
+CC BY (toutes versions). CC BY-SA s'y ajoute sur demande (`--allow-sa`) :
+décision prise le 6 septembre 2026, au motif qu'un modèle entraîné n'est pas
+une adaptation des photos — il n'en reproduit aucune. Les photos elles-mêmes
+ne sont jamais redistribuées, et chacune reste attribuée avec sa licence.
+Tout le reste est refusé : NC, ND, licence inconnue, droits réservés.
 
 Une licence qu'on ne sait pas lire est une licence refusée.
 """
