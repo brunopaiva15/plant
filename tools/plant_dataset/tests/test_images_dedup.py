@@ -143,18 +143,21 @@ def test_band_bucketing_finds_exactly_the_same_pairs_as_brute_force():
     assert len(brute) >= 6, 'les voisins fabriqués doivent bien être trouvés'
 
 
-def test_band_bucketing_examines_far_fewer_pairs():
-    """L'économie doit croître avec la taille : c'est à grande échelle que le
-    coût quadratique faisait tomber la collecte, pas sur quelques centaines
-    d'images."""
+def test_band_bucketing_finds_planted_near_pairs_at_scale():
+    """À grande échelle, la recherche ne rend que les paires proches, les
+    trouve toutes, et ne garde pas les millions de paires d'un même seau en
+    mémoire : c'est ce qui a tué la fin de collecte de la v6."""
     from plant_dataset.dedup import candidate_pairs
 
     rng = np.random.default_rng(7)
-
-    def ratio(n: int) -> float:
-        items = [(None, int(rng.integers(0, 2 ** 63))) for _ in range(n)]
-        return sum(1 for _ in candidate_pairs(items, 6)) / (n * (n - 1) / 2)
-
-    small, large = ratio(1000), ratio(8000)
-    assert large < small, 'la proportion de paires examinées doit baisser quand le jeu grandit'
-    assert large < 0.05, f'{large:.1%} des paires encore examinées à 8 000 images'
+    values = [int(v) for v in rng.integers(0, 2 ** 63, size=8000)]
+    planted = set()
+    for k in range(0, 200, 2):
+        # un jumeau à 3 bits près, pour cent paires
+        values[k + 1] = values[k] ^ 0b101 ^ (1 << 40)
+        planted.add((k, k + 1))
+    items = [(None, v) for v in values]
+    found = set(candidate_pairs(items, 6))
+    assert planted <= found
+    # des empreintes aléatoires de 63 bits ne sont jamais proches par hasard
+    assert len(found - planted) < 5, f'{len(found - planted)} paires parasites'

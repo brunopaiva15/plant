@@ -17,7 +17,7 @@ HASH_BITS = 64
 
 
 def candidate_pairs(items: list[tuple[ImageRecord, int]], threshold: int):
-    """Les paires qui valent la peine d'être comparées.
+    """Les paires d'empreintes à `threshold` bits ou moins l'une de l'autre.
 
     Comparer toutes les paires coûte n² : sur 45 000 images cela fait un
     milliard de comparaisons, soit des heures — la collecte du catalogue
@@ -30,7 +30,16 @@ def candidate_pairs(items: list[tuple[ImageRecord, int]], threshold: int):
     suffit donc de grouper par bande et de ne comparer qu'à l'intérieur des
     groupes. Aucune paire vraie n'est perdue ; on économise seulement les
     comparaisons qui n'avaient aucune chance.
+
+    Chaque seau est comparé d'un bloc avec numpy, et seules les paires
+    réellement proches sont rendues. La version précédente rendait toutes
+    les paires d'un même seau et mémorisait celles déjà vues pour ne pas
+    les répéter : à 236 000 images, cela faisait des centaines de millions
+    de tuples en mémoire, et le processus mourait à la fin de la collecte
+    de la v6.
     """
+    import numpy as np
+
     bands = threshold + 1
     # Les bits sont répartis équitablement : découper en tranches de largeur
     # fixe laisserait une dernière bande de quelques bits seulement, donc peu
@@ -42,20 +51,31 @@ def candidate_pairs(items: list[tuple[ImageRecord, int]], threshold: int):
         width = (HASH_BITS - start) // (bands - band)
         offsets.append((start, width))
         start += width
+    values = np.array([v for _, v in items], dtype=np.uint64)
     buckets: dict[tuple[int, int], list[int]] = defaultdict(list)
-    for index, (_, value) in enumerate(items):
+    for index, value in enumerate(values.tolist()):
         for band, (start, width) in enumerate(offsets):
             buckets[(band, (value >> start) & ((1 << width) - 1))].append(index)
     seen: set[tuple[int, int]] = set()
     for group in buckets.values():
         if len(group) < 2:
             continue
-        for a in range(len(group)):
-            for b in range(a + 1, len(group)):
-                pair = (group[a], group[b])
-                if pair not in seen:
-                    seen.add(pair)
-                    yield pair
+        idx = np.array(group)
+        h = values[idx]
+        # Distance de Hamming de toutes les paires du seau, d'un coup.
+        x = np.bitwise_xor.outer(h, h)
+        d = np.zeros(x.shape, dtype=np.uint8)
+        for shift in range(0, 64, 8):
+            d += _POPCOUNT[((x >> np.uint64(shift)) & np.uint64(0xFF)).astype(np.uint8)]
+        ai, bi = np.nonzero(np.triu(d <= threshold, k=1))
+        for a, b in zip(idx[ai].tolist(), idx[bi].tolist()):
+            pair = (a, b) if a < b else (b, a)
+            if pair not in seen:
+                seen.add(pair)
+                yield pair
+
+
+_POPCOUNT = __import__('numpy').array([bin(i).count('1') for i in range(256)], dtype='uint8')
 
 
 class UnionFind:
