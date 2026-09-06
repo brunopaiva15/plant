@@ -15,7 +15,7 @@ noires.
 | 3 | Fiche d'entretien | anneau et goutte | soleil |
 | 4 | Jardin, calendrier, avec quatre tuiles du tableau de bord en avant | quatre tuiles | terre cuite |
 | 5 | Sauvegarde | carte, cadenas, nuage | rose |
-| 6 | Fiche d'une plante, avec la feuille « Est-ce bien… » en avant | — | terre |
+| 6 | Ajout d'une plante, étape « Une photo ? », avec la feuille « Est-ce bien… » en avant | — | terre |
 
 Le sixième montre l'identification sur l'appareil. La feuille est redessinée
 à plat par `compose.py`, mais ce qu'elle affiche est vrai : la photo est une

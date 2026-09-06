@@ -444,9 +444,11 @@ def build(shots, out, lang):
     # 6 — l'identification, sur l'appareil
     img = background('earth')
     draw_text_block(img, *copy[5], size)
-    place_phone(img, S('plant'), y=1120, angle=-3)
+    # Derrière, l'étape « Une photo ? » de l'ajout d'une plante ; devant, ce
+    # que l'app répond une fois la photo prise.
+    place_phone(img, S('add-plant'), y=1120, angle=-3)
     card = ident_card(lang).rotate(3, resample=Image.BICUBIC, expand=True)
-    paste_with_shadow(img, card, (150, 1560), blur=55, offset=(12, 44), alpha=0.32)
+    paste_with_shadow(img, card, (150, 1620), blur=55, offset=(12, 44), alpha=0.32)
     img.convert('RGB').save(os.path.join(out, '6.png'), optimize=True)
 
 
