@@ -2274,6 +2274,12 @@ abstract class AppLocalizations {
   /// **'{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne'**
   String identificationStats(int local, int accepted, int remote);
 
+  /// No description provided for @onlineSearchesMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherches en ligne ce mois-ci : {used} sur {limit}.'**
+  String onlineSearchesMonth(int used, int limit);
+
   /// No description provided for @confidence.
   ///
   /// In fr, this message translates to:
@@ -2813,18 +2819,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Diagnostic indisponible'**
   String get diagnosisUnavailable;
-
-  /// No description provided for @diagnosisQuota.
-  ///
-  /// In fr, this message translates to:
-  /// **'Limite du jour atteinte. Réessayez demain.'**
-  String get diagnosisQuota;
-
-  /// No description provided for @diagnosisQuotaToday.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aujourd\'hui : {used} analyse(s) sur {limit}.'**
-  String diagnosisQuotaToday(int used, int limit);
 
   /// No description provided for @addPhotos.
   ///

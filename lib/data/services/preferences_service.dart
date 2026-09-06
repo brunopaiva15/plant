@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'infomaniak_diagnoser.dart';
 
 /// Réglages utilisateur persistés localement.
-class PreferencesService implements DiagnosisQuotaStore {
+class PreferencesService {
   PreferencesService(this._prefs);
 
   final SharedPreferences _prefs;
@@ -128,16 +127,6 @@ class PreferencesService implements DiagnosisQuotaStore {
   String? get syncedAccountId => _prefs.getString('synced_account_id');
   Future<void> setSyncedAccountId(String id) => _prefs.setString('synced_account_id', id);
 
-  // Plafond journalier du diagnostic : le jour et le nombre déjà fait.
-  @override
-  String get day => _prefs.getString('diagnosis_day') ?? '';
-  @override
-  int get count => _prefs.getInt('diagnosis_count') ?? 0;
-  @override
-  Future<void> write({required String day, required int count}) async {
-    await _prefs.setString('diagnosis_day', day);
-    await _prefs.setInt('diagnosis_count', count);
-  }
 
   bool get notificationPromptShown => _prefs.getBool('notification_prompt_shown') ?? false;
   Future<void> setNotificationPromptShown() => _prefs.setBool('notification_prompt_shown', true);

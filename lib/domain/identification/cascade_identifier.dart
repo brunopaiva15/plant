@@ -41,7 +41,7 @@ class CascadeIdentifier implements PlantIdentifier {
     this.policy = const FallbackPolicy(),
     IdentificationMetricsStore? metrics,
     this.fallbackEnabled = true,
-    this.dailyRemoteLimit = 200,
+    this.monthlyRemoteLimit = 30,
     this.localTimeout = const Duration(seconds: 4),
     CatalogLookup? lookup,
     DateTime Function()? now,
@@ -61,7 +61,10 @@ class CascadeIdentifier implements PlantIdentifier {
 
   /// Plafond d'appels distants par jour civil, en dessous du quota gratuit
   /// de Pl@ntNet (500 / jour) pour garder une marge aux autres usages.
-  final int dailyRemoteLimit;
+  /// Appels distants par appareil et par mois civil. Trente, parce qu'un
+  /// appel Pl@ntNet se paie et que le modèle embarqué doit suffire au
+  /// quotidien ; la recherche en ligne est le recours, pas la règle.
+  final int monthlyRemoteLimit;
   final Duration localTimeout;
   final int cacheSize;
   final CatalogLookup _lookup;
@@ -76,11 +79,14 @@ class CascadeIdentifier implements PlantIdentifier {
   @override
   bool get isConfigured => local.isAvailable || (fallbackEnabled && fallback.isConfigured);
 
-  /// Reste-t-il du quota distant aujourd'hui ?
-  bool get remoteAllowedToday {
+  /// Appels distants déjà faits ce mois-ci.
+  int get remoteUsedThisMonth {
     final m = metricsStore.read();
-    return m.remoteDay != _today() || m.remoteToday < dailyRemoteLimit;
+    return m.remotePeriod == _month() ? m.remoteInPeriod : 0;
   }
+
+  /// Reste-t-il du quota distant ce mois-ci ?
+  bool get remoteAllowedThisMonth => remoteUsedThisMonth < monthlyRemoteLimit;
 
   /// Interroge le service distant sans repasser par le modèle local.
   /// Appelée quand l'utilisateur demande explicitement une recherche en
@@ -89,13 +95,13 @@ class CascadeIdentifier implements PlantIdentifier {
     if (images.isEmpty) return const [];
     if (!fallbackEnabled || !fallback.isConfigured) return const [];
     var m = metricsStore.read();
-    final today = _today();
-    final todayCount = m.remoteDay == today ? m.remoteToday : 0;
-    if (todayCount >= dailyRemoteLimit) {
+    final month = _month();
+    final used = m.remotePeriod == month ? m.remoteInPeriod : 0;
+    if (used >= monthlyRemoteLimit) {
       await metricsStore.write(m.copyWith(quotaRefusals: m.quotaRefusals + 1));
       return const [];
     }
-    m = m.copyWith(remote: m.remote + 1, remoteDay: today, remoteToday: todayCount + 1);
+    m = m.copyWith(remote: m.remote + 1, remotePeriod: month, remoteInPeriod: used + 1);
     try {
       final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote, language);
       await metricsStore.write(m);
@@ -155,16 +161,16 @@ class CascadeIdentifier implements PlantIdentifier {
 
     final canFallback = fallbackEnabled && fallback.isConfigured;
     if (canFallback) {
-      final today = _today();
-      final todayCount = m.remoteDay == today ? m.remoteToday : 0;
-      if (todayCount >= dailyRemoteLimit) {
+      final month = _month();
+      final used = m.remotePeriod == month ? m.remoteInPeriod : 0;
+      if (used >= monthlyRemoteLimit) {
         m = m.copyWith(quotaRefusals: m.quotaRefusals + 1);
       } else {
         m = m.copyWith(
           remote: m.remote + 1,
           fallbacks: m.fallbacks + (localRan ? 1 : 0),
-          remoteDay: today,
-          remoteToday: todayCount + 1,
+          remotePeriod: month,
+          remoteInPeriod: used + 1,
         );
         try {
           final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote, language);
@@ -250,8 +256,9 @@ class CascadeIdentifier implements PlantIdentifier {
     return parts.join(';');
   }
 
-  String _today() {
+  /// Le mois civil de l'appareil, clé du compteur distant.
+  String _month() {
     final d = _now();
-    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    return '${d.year}-${d.month.toString().padLeft(2, '0')}';
   }
 }

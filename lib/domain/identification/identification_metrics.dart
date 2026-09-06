@@ -16,8 +16,8 @@ class IdentificationMetrics {
     this.errors = 0,
     this.quotaRefusals = 0,
     this.confidenceSum = 0,
-    this.remoteDay = '',
-    this.remoteToday = 0,
+    this.remotePeriod = '',
+    this.remoteInPeriod = 0,
   });
 
   /// Identifications demandées (hors cache).
@@ -43,9 +43,9 @@ class IdentificationMetrics {
   /// Somme des meilleurs scores rendus, pour la moyenne.
   final double confidenceSum;
 
-  /// Jour (AAAA-MM-JJ) du compteur [remoteToday].
-  final String remoteDay;
-  final int remoteToday;
+  /// Mois civil (AAAA-MM) du compteur [remoteInPeriod].
+  final String remotePeriod;
+  final int remoteInPeriod;
 
   double get localSuccessRate => local == 0 ? 0 : localAccepted / local;
   double get fallbackRate => local == 0 ? 0 : fallbacks / local;
@@ -64,8 +64,8 @@ class IdentificationMetrics {
     int? errors,
     int? quotaRefusals,
     double? confidenceSum,
-    String? remoteDay,
-    int? remoteToday,
+    String? remotePeriod,
+    int? remoteInPeriod,
   }) =>
       IdentificationMetrics(
         total: total ?? this.total,
@@ -77,8 +77,8 @@ class IdentificationMetrics {
         errors: errors ?? this.errors,
         quotaRefusals: quotaRefusals ?? this.quotaRefusals,
         confidenceSum: confidenceSum ?? this.confidenceSum,
-        remoteDay: remoteDay ?? this.remoteDay,
-        remoteToday: remoteToday ?? this.remoteToday,
+        remotePeriod: remotePeriod ?? this.remotePeriod,
+        remoteInPeriod: remoteInPeriod ?? this.remoteInPeriod,
       );
 
   Map<String, Object> toJson() => {
@@ -91,8 +91,8 @@ class IdentificationMetrics {
         'errors': errors,
         'quotaRefusals': quotaRefusals,
         'confidenceSum': confidenceSum,
-        'remoteDay': remoteDay,
-        'remoteToday': remoteToday,
+        'remotePeriod': remotePeriod,
+        'remoteInPeriod': remoteInPeriod,
       };
 
   static IdentificationMetrics fromJson(Map<String, dynamic> json) {
@@ -107,8 +107,8 @@ class IdentificationMetrics {
       errors: i('errors'),
       quotaRefusals: i('quotaRefusals'),
       confidenceSum: (json['confidenceSum'] as num?)?.toDouble() ?? 0,
-      remoteDay: (json['remoteDay'] as String?) ?? '',
-      remoteToday: i('remoteToday'),
+      remotePeriod: (json['remotePeriod'] as String?) ?? '',
+      remoteInPeriod: i('remoteInPeriod'),
     );
   }
 

@@ -95,7 +95,7 @@ void main() {
         fallback: remote,
         metrics: store ?? InMemoryMetricsStore(),
         fallbackEnabled: fallbackEnabled,
-        dailyRemoteLimit: limit,
+        monthlyRemoteLimit: limit,
         now: now,
         lookup: lookup ??
             (name, language) => name.startsWith('Monstera deliciosa')
@@ -291,7 +291,7 @@ void main() {
     expect(cascade.metrics.total, 2);
   });
 
-  test('daily remote quota is enforced and resets the next day', () async {
+  test('monthly remote quota is enforced and resets the next month', () async {
     var day = DateTime(2026, 9, 5, 10);
     final remote = FakeRemote(remoteAnswer);
     final store = InMemoryMetricsStore();
@@ -299,20 +299,25 @@ void main() {
     await cascade.identify([photo]);
     await cascade.identify([other]);
     expect(remote.calls, 2);
-    expect(cascade.remoteAllowedToday, isFalse);
+    expect(cascade.remoteUsedThisMonth, 2);
+    expect(cascade.remoteAllowedThisMonth, isFalse);
     final third = File('${dir.path}/c.jpg')..writeAsBytesSync([9]);
     final result = await cascade.identify([third]);
     expect(remote.calls, 2, reason: 'quota atteint : pas d\'appel');
     expect(result.first.source, IdentificationSource.local, reason: 'la réponse locale, même incertaine, est rendue');
     expect(store.read().quotaRefusals, 1);
 
+    // Le lendemain, toujours le même mois : rien ne se rouvre.
     day = DateTime(2026, 9, 6, 8);
-    expect(cascade.remoteAllowedToday, isTrue);
+    expect(cascade.remoteAllowedThisMonth, isFalse);
+
+    day = DateTime(2026, 10, 1, 8);
+    expect(cascade.remoteAllowedThisMonth, isTrue);
     final fourth = File('${dir.path}/d.jpg')..writeAsBytesSync([10]);
     await cascade.identify([fourth]);
     expect(remote.calls, 3);
-    expect(store.read().remoteDay, '2026-09-06');
-    expect(store.read().remoteToday, 1);
+    expect(store.read().remotePeriod, '2026-10');
+    expect(store.read().remoteInPeriod, 1);
   });
 
   test('several photos are merged by species before the verdict', () async {
@@ -325,7 +330,7 @@ void main() {
   });
 
   test('metrics survive a JSON round trip', () {
-    const m = IdentificationMetrics(total: 5, local: 4, localAccepted: 3, remote: 2, fallbacks: 1, cacheHits: 7, errors: 1, quotaRefusals: 0, confidenceSum: 4.2, remoteDay: '2026-09-05', remoteToday: 2);
+    const m = IdentificationMetrics(total: 5, local: 4, localAccepted: 3, remote: 2, fallbacks: 1, cacheHits: 7, errors: 1, quotaRefusals: 0, confidenceSum: 4.2, remotePeriod: '2026-09-05', remoteInPeriod: 2);
     final back = IdentificationMetrics.decode(m.encode());
     expect(back.toJson(), m.toJson());
     expect(IdentificationMetrics.decode(null).total, 0);

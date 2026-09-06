@@ -304,19 +304,11 @@ final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 
 /// Diagnostic : AI Services d'Infomaniak avec la clé de l'éditeur fournie au
-/// build, borné à [DiagnosisConfig.dailyLimit] par jour ; sans clé, service
-/// inactif et entrée absente des écrans.
+/// build, sans plafond ; sans clé, service inactif et entrée absente des
+/// écrans.
 final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
   if (!DiagnosisConfig.isConfigured) return const UnconfiguredDiagnoser();
-  final inner = InfomaniakDiagnoser(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
-  return DailyCappedDiagnoser(inner, ref.watch(preferencesServiceProvider), limit: DiagnosisConfig.dailyLimit);
-});
-
-/// Diagnostics déjà faits aujourd'hui, pour l'écran de réglage. Le compteur
-/// vit dans les préférences ; on le relit à chaque affichage.
-final diagnosisUsedTodayProvider = Provider<int>((ref) {
-  final d = ref.watch(plantDiagnoserProvider);
-  return d is DailyCappedDiagnoser ? d.usedToday : 0;
+  return InfomaniakDiagnoser(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
 });
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.

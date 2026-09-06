@@ -22,9 +22,5 @@ abstract final class DiagnosisConfig {
   /// modèles de sa taille : environ un millième de franc par diagnostic.
   static const String model = String.fromEnvironment('INFOMANIAK_AI_MODEL', defaultValue: 'mistralai/Mistral-Small-4-119B-2603');
 
-  /// Diagnostics par appareil et par jour civil. Bien au-dessus d'un usage
-  /// normal, assez bas pour qu'une clé extraite du binaire ne coûte rien.
-  static const int dailyLimit = 30;
-
   static bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
 }

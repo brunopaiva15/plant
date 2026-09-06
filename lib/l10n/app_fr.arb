@@ -620,6 +620,8 @@
   "identificationStats": "{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne",
   "@modelLoaded": {"placeholders": {"count": {"type": "int"}}},
   "@identificationStats": {"placeholders": {"local": {"type": "int"}, "accepted": {"type": "int"}, "remote": {"type": "int"}}},
+  "onlineSearchesMonth": "Recherches en ligne ce mois-ci : {used} sur {limit}.",
+  "@onlineSearchesMonth": {"placeholders": {"used": {"type": "int"}, "limit": {"type": "int"}}},
   "confidence": "{percent} %",
   "@confidence": {
     "placeholders": {
@@ -780,18 +782,6 @@
   "diagnosisSettingsHint": "Les photos sont analysées par un modèle hébergé en Suisse (AI Services d'Infomaniak). Elles ne partent que lorsque vous lancez une analyse, et ne sont pas conservées.",
   "diagnosisEnabled": "Diagnostic activé",
   "diagnosisUnavailable": "Diagnostic indisponible",
-  "diagnosisQuota": "Limite du jour atteinte. Réessayez demain.",
-  "diagnosisQuotaToday": "Aujourd'hui : {used} analyse(s) sur {limit}.",
-  "@diagnosisQuotaToday": {
-    "placeholders": {
-      "used": {
-        "type": "int"
-      },
-      "limit": {
-        "type": "int"
-      }
-    }
-  },
   "addPhotos": "Ajouter des photos",
   "photosCount": "{count, plural, =1{1 photo} other{{count} photos}}",
   "@photosCount": {

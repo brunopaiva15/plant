@@ -71,7 +71,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
       final message = switch (e.message) {
         'refusal' => l10n.diagnosisRefused,
         'unauthorized' => l10n.diagnosisUnauthorized,
-        'quota' => l10n.diagnosisQuota,
+        'quota' => l10n.diagnosisUnauthorized,
         _ => l10n.diagnosisError,
       };
       ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '!'));

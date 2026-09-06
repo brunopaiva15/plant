@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/identification/cascade_identifier.dart';
 
 /// Réglages de l'identification. Rien à configurer : le modèle est embarqué
 /// et le service en ligne est fourni avec l'application. L'utilisateur décide
@@ -13,6 +14,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final identifier = ref.watch(plantIdentifierProvider);
     final l10n = context.l10n;
     final configured = ref.watch(plantIdentifierProvider).isConfigured;
     final metrics = ref.watch(identificationMetricsStoreProvider).read();
@@ -79,6 +81,10 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           Text(l10n.identificationFallbackHint, style: context.text.caption),
           const SizedBox(height: Space.sm),
           Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
+          if (identifier is CascadeIdentifier) ...[
+            const SizedBox(height: Space.xxs),
+            Text(l10n.onlineSearchesMonth(identifier.remoteUsedThisMonth, identifier.monthlyRemoteLimit), style: context.text.caption),
+          ],
         ],
       ),
     );

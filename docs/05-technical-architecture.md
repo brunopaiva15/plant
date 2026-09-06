@@ -14,7 +14,7 @@
 | Backend (P3) | Supabase derrière `RemoteDataSource` | Postgres + Auth + Storage + Realtime, mais remplaçable |
 | Espèces | GBIF (`SpeciesService`) | gratuit, sans clé, taxonomie de référence, images d'observations avec attribution |
 | Identification | cascade `CascadeIdentifier` : modèle local (à venir) puis Pl@ntNet (`PlantIdentifier`) | clé de l'utilisateur, repli coupable, voir [09](09-plant-recognition.md) |
-| Diagnostic | AI Services d'Infomaniak, route compatible OpenAI (`PlantDiagnoser`) | clé de l'éditeur au build, modèle choisi au build, 30 analyses par appareil et par jour |
+| Diagnostic | AI Services d'Infomaniak, route compatible OpenAI (`PlantDiagnoser`) | clé de l'éditeur au build, modèle choisi au build, sans plafond |
 | Météo | Open-Meteo (`WeatherService`) | gratuit, sans compte |
 
 ## Couches

@@ -49,7 +49,7 @@ CascadeIdentifier  (lib/domain/identification/cascade_identifier.dart)
    │  3. FallbackPolicy.decide()
    │        accepted  → réponse locale, fin, aucun réseau
    │        uncertain / noCandidate ↓
-   │  4. repli autorisé ? (réglage utilisateur, clé Pl@ntNet, quota du jour)
+   │  4. repli autorisé ? (réglage utilisateur, clé Pl@ntNet, quota du mois)
    │        oui → PlantNetIdentifier.identify()
    │        non → réponse locale telle quelle (ou vide)
    │  5. normalisation des noms + rattachement au catalogue (internalId)
@@ -136,7 +136,7 @@ simplement absent et l'application se contente du modèle embarqué.
 Une clé compilée dans un binaire mobile est extractible par qui démonte le
 paquet — c'est vrai de toute application qui en embarque une. Ce qui limite
 le risque ici : le modèle local absorbe la majorité des demandes, et le
-quota journalier par appareil borne la casse. Le jour où l'usage le
+quota mensuel par appareil borne la casse. Le jour où l'usage le
 justifie, la parade est un relais côté serveur qui garde la clé et signe les
 requêtes ; `PlantNetIdentifier` n'aurait alors qu'à changer d'URL.
 
@@ -182,9 +182,12 @@ n'entre pas toute seule dans le binaire Flutter.
 - Déclenché seulement sur `uncertain` / `noCandidate`, ou sans modèle local.
 - Coupable par l'utilisateur (réglage « Repli en ligne ») : tout reste alors
   sur l'appareil.
-- **Quota journalier** de 200 appels par appareil (`dailyRemoteLimit`), sous
-  le quota gratuit de Pl@ntNet, remis à zéro chaque jour civil. Au-delà, la
-  réponse locale est rendue et `quotaRefusals` est incrémenté.
+- **Quota mensuel** de 30 appels par appareil (`monthlyRemoteLimit`), remis
+  à zéro chaque mois civil : un appel Pl@ntNet se paie, le modèle embarqué
+  doit suffire au quotidien et la recherche en ligne reste le recours. Au-delà,
+  la réponse locale est rendue, le bouton « Chercher en ligne » disparaît,
+  `quotaRefusals` est incrémenté, et l'écran de réglage montre le compte du
+  mois.
 - Échec réseau après une réponse locale incertaine → la réponse locale est
   rendue, l'erreur comptée. Échec sans rien de local → exception, comme
   aujourd'hui (l'écran affiche « Identification impossible »).
@@ -211,7 +214,7 @@ Sur l'appareil, dans les réglages, sans réseau (`IdentificationMetrics`) :
 | `remote`, `fallbacks` | appels Pl@ntNet ; ceux qui suivent une hésitation locale |
 | `cacheHits`, `errors`, `quotaRefusals` | |
 | `confidenceSum` | pour la confiance moyenne |
-| `remoteDay`, `remoteToday` | quota du jour |
+| `remotePeriod`, `remoteInPeriod` | quota du mois |
 
 Dérivés : `localSuccessRate`, `fallbackRate`, `averageConfidence`,
 `remoteCallsSaved` (= `localAccepted + cacheHits`, l'économie estimée en
@@ -631,11 +634,11 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   (`INFOMANIAK_AI_MODEL`), sans toucher au code.
 - **Clé** : celle de l'éditeur, au build, comme Pl@ntNet (§ 3.3). Aucun
   réglage côté utilisateur ; l'écran « Diagnostic » dit seulement si le
-  service est là, où partent les photos et ce qu'il reste pour la journée.
-- **Plafond** : 30 diagnostics par appareil et par jour civil
-  (`DailyCappedDiagnoser`), compté dans les préférences avant tout appel.
-  Bien au-dessus d'un usage normal ; une clé extraite du binaire ne peut
-  pas coûter plus que cela par appareil.
+  service est là et où partent les photos.
+- **Pas de plafond** : décision de l'éditeur, le diagnostic se veut
+  toujours disponible. La seule limite de l'application est celle du repli
+  en ligne de l'identification (§ 3.3). Une clé extraite du binaire est
+  donc à surveiller côté facturation Infomaniak.
 - **Réponse** : un JSON demandé par la consigne et par `response_format`
   (`json_object`) ; si le service refuse ce paramètre, la même demande
   repart sans lui et le lecteur extrait le JSON du texte, balises Markdown

@@ -1262,6 +1262,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String onlineSearchesMonth(int used, int limit) {
+    return 'Recherches en ligne ce mois-ci : $used sur $limit.';
+  }
+
+  @override
   String confidence(int percent) {
     return '$percent %';
   }
@@ -1573,14 +1578,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisUnavailable => 'Diagnostic indisponible';
-
-  @override
-  String get diagnosisQuota => 'Limite du jour atteinte. Réessayez demain.';
-
-  @override
-  String diagnosisQuotaToday(int used, int limit) {
-    return 'Aujourd\'hui : $used analyse(s) sur $limit.';
-  }
 
   @override
   String get addPhotos => 'Ajouter des photos';

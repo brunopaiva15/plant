@@ -362,6 +362,8 @@
   "modelMissing": "Modello integrato non disponibile su questo dispositivo",
   "modelLoading": "Caricamento del modello…",
   "identificationStats": "{local} analizzate sul dispositivo, {accepted} decise qui; {remote} inviate online",
+  "onlineSearchesMonth": "Ricerche online questo mese: {used} su {limit}.",
+  "@onlineSearchesMonth": {"placeholders": {"used": {"type": "int"}, "limit": {"type": "int"}}},
   "confidence": "{percent}%",
   "speciesSet": "Specie aggiornata",
   "compare": "Confronta",
@@ -546,18 +548,6 @@
   "diagnosisSettingsHint": "Le foto sono analizzate da un modello ospitato in Svizzera (AI Services di Infomaniak). Vengono inviate solo quando avvii un'analisi e non vengono conservate.",
   "diagnosisEnabled": "Diagnosi attiva",
   "diagnosisUnavailable": "Diagnosi non disponibile",
-  "diagnosisQuota": "Limite giornaliero raggiunto. Riprova domani.",
-  "diagnosisQuotaToday": "Oggi: {used} analisi su {limit}.",
-  "@diagnosisQuotaToday": {
-    "placeholders": {
-      "used": {
-        "type": "int"
-      },
-      "limit": {
-        "type": "int"
-      }
-    }
-  },
   "addPhotos": "Aggiungi foto",
   "photosCount": "{count, plural, =1{1 foto} other{{count} foto}}",
   "diagnosisSaved": "Diagnosi aggiunta al diario",

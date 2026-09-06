@@ -56,7 +56,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// bouton n'aurait rien à proposer.
   bool get _canSearchOnline {
     final identifier = ref.read(plantIdentifierProvider);
-    return identifier is CascadeIdentifier && identifier.fallbackEnabled && identifier.fallback.isConfigured;
+    return identifier is CascadeIdentifier && identifier.fallbackEnabled && identifier.fallback.isConfigured && identifier.remoteAllowedThisMonth;
   }
 
   @override
