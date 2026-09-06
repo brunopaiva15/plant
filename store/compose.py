@@ -371,20 +371,20 @@ def ident_card(lang, width=930):
 
 COPY = {
     'fr': [
-        ('Toutes vos plantes,\nau même endroit', "Photos, espèce, emplacement, et l'histoire de chacune."),
-        ("Chaque matin,\nce qu'il y a à faire", 'Arrosé ? Un geste, et c’est noté.'),
-        ("Une fiche d'entretien\npour chaque plante", 'Lumière, arrosage, engrais, rempotage. Les bons repères, selon la saison.'),
-        ('Lieux, calendrier,\ninventaire', 'Votre jardin s’organise tout seul.'),
-        ('Tout reste sur\nvotre téléphone', 'Sans compte obligatoire, sans publicité. Vos données vous appartiennent.'),
-        ('Quelle est\ncette plante ?', 'Une photo, et l’app propose l’espèce. Ça se passe sur votre téléphone, rien n’est envoyé.'),
+        ('Toutes vos plantes,\nau même endroit', 'Sa photo, son espèce, sa pièce, et tout ce que vous avez fait pour elle.'),
+        ("Chaque matin,\nce qu'il y a à faire", 'Vous arrosez, vous appuyez, c’est noté.'),
+        ("Une fiche d'entretien\npour chaque plante", 'Combien d’eau, quelle lumière, quand rempoter. Et ça change avec les saisons.'),
+        ('Lieux, calendrier,\ninventaire', 'Chaque plante à sa place, chaque soin à sa date, et le terreau qu’il vous reste.'),
+        ('Tout reste sur\nvotre téléphone', 'Pas de compte à créer, pas de publicité. Une sauvegarde, c’est un fichier zip.'),
+        ('Quelle est\ncette plante ?', 'Prenez-la en photo, l’app vous dit laquelle c’est. Même sans réseau.'),
     ],
     'en': [
-        ('All your plants,\nin one place', 'Photos, species, room, and each one’s story.'),
-        ('Each morning,\nwhat needs doing', 'Watered? One tap, and it’s noted.'),
-        ('A care guide\nfor every plant', 'Light, watering, feeding, repotting. The right cues, season by season.'),
-        ('Rooms, calendar,\ninventory', 'Your garden organises itself.'),
-        ('Everything stays\non your phone', 'No account required, no ads. Your data is yours.'),
-        ('What plant\nis this?', 'One photo, and the app suggests the species. It happens on your phone, nothing is sent.'),
+        ('All your plants,\nin one place', 'Its photo, its species, its room, and everything you’ve done for it.'),
+        ('Each morning,\nwhat needs doing', 'You water, you tap, it’s noted.'),
+        ('A care guide\nfor every plant', 'How much water, what light, when to repot. And it changes with the seasons.'),
+        ('Rooms, calendar,\ninventory', 'Every plant in its room, every task on its date, and how much soil is left.'),
+        ('Everything stays\non your phone', 'No account to create, no ads. A backup is a zip file.'),
+        ('What plant\nis this?', 'Take a photo, the app tells you which one it is. Even without signal.'),
     ],
 }
 
