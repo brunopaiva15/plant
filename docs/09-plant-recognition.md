@@ -29,7 +29,7 @@ tiers. L'objectif :
 | `PlantNetIdentifier` | `lib/data/services/plantnet_identifier.dart` | adaptateur HTTP Pl@ntNet, clé utilisateur |
 | `plantIdentifierProvider` | `lib/app/providers.dart` | choisit le service selon la clé |
 | Catalogue trié | `lib/data/species/species_catalog.dart` | 297 espèces avec noms en 4 langues, famille, catégorie |
-| Catalogue étendu | `assets/species/catalog.tsv` → `SpeciesIndex` | 38 155 espèces, noms courants, chargé à la demande |
+| Catalogue étendu | `assets/species/catalog.tsv` → `SpeciesIndex` | 36 364 espèces, noms courants, chargé à la demande |
 | Appelants | création de plante, feuille « Identifier », fiche plante | affichent 5 candidats et laissent choisir |
 
 Les appelants n'ont **pas** changé : ils reçoivent toujours une liste de

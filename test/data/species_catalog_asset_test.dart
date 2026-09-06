@@ -78,7 +78,7 @@ void main() {
     ];
     final present = animals.where((n) => index.find(n) != null).toList();
     expect(present, isEmpty, reason: present.join(', '));
-  }, skip: 'le catalogue est en cours de nettoyage : à réactiver avec le nouvel actif');
+  });
 
   test('les noms courants ne sont pas de simples binômes latins', () {
     // Un nom vernaculaire qui répète le nom scientifique n'apporte rien :
