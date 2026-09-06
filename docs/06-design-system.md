@@ -1,44 +1,77 @@
 # F. Design system
 
-Identité : **calme, chaleureux, naturel, précis**. Le vert n'est qu'un accent.
+Identité : **argile, terre cuite, fait main**. L'app ressemble à l'atelier
+d'un potier : fond de papier crème, cartes qui semblent modelées, grands titres
+tracés à la main. Le vert reste l'accent du soin, la terre cuite celui de
+l'urgence.
+
+Ce qu'on garde du design précédent : la grille, les cartes très arrondies, la
+tab bar en pilule, les pastels par type de soin. Ce qui change : la matière.
+
+## Matière : le clay (`design_system/components/clay.dart`)
+Chaque surface est un `ClayBox`, peint par `ClayPainter` :
+- une **ombre portée teintée** (brun terre en clair, noir en sombre), décalée
+  en bas à droite ;
+- un **reflet intérieur** blanc en haut à gauche et une **ombre intérieure** en
+  bas à droite : c'est ce qui donne le relief modelé.
+Tout est proportionné au plus petit côté (`unit`), donc une tuile de 56 px et
+un héros de 300 px ont le même rendu.
+
+- `ClayShape.rounded(r)` (cartes), `.pill()` (boutons, tab bar, barre de
+  sélection, toast), `.blob(variant)` : quatre jeux de coins elliptiques,
+  choisis par index pour que deux tuiles voisines ne soient jamais identiques
+  (tuiles d'emoji, actions rapides).
+- `ClayDepth.light` (cartes) · `deep` (boutons principaux, héros, éléments
+  flottants).
+- `GrainOverlay` : `assets/textures/grain.png` répété par-dessus l'app à 7 %
+  (10 % en sombre). C'est le grain du papier ; il est ignoré par le pointeur.
+
+`FloraCard`, `FloraButton`, `EmojiTile`, `QuickActionChip`, `FloraTabBar`,
+`SelectionBar` et le toast reposent tous sur `ClayBox` : un composant ne
+dessine jamais sa propre ombre.
 
 ## Couleurs (`design_system/tokens/colors.dart`)
-Direction (références fournies) : fond très clair teinté menthe, cartes blanches très arrondies, vert franc en accent, pastels bleu / jaune / rose pour les indicateurs, tab bar flottante en pilule.
-
 | Token | Clair | Sombre | Usage |
 |---|---|---|---|
-| `canvas` | #F3F6F1 | #0F1411 | fond d'écran |
-| `surface` | #FFFFFF | #181E1A | cartes, sheets |
-| `surfaceMuted` | #EDF1EB | #222925 | chips, champs |
-| `ink` | #1A1F1B | #F1F4F0 | texte principal |
-| `inkSecondary` | #66706A | #A3ACA5 | texte secondaire |
-| `inkTertiary` | #98A19B | #6F7872 | captions, placeholders |
-| `line` | #E2E8E0 | #2B332E | séparateurs (rares) |
-| `sage` | #2E8B57 | #5FC787 | accent, boutons principaux |
-| `sageSoft` | #E3F2E8 | #1F3327 | fond positif, chip active |
-| `water` / `waterSoft` | #3E7FC4 / #E3EEFA | #7FB2E5 / #1C2A3A | arrosage |
-| `sun` / `sunSoft` | #C99A00 / #FFF4D3 | #E9C043 / #34301A | lumière, engrais |
-| `rose` / `roseSoft` | #D1506C / #FDE8EE | #E87A94 / #3A2129 | favoris, santé |
-| `terracotta` / `terracottaSoft` | #C8752A / #FBEEDD | #E39A5B / #3A2A1C | retard, attention |
-| `danger` | #C0392B | #E06B5E | destructif |
+| `canvas` | #F6EFE4 | #221A15 | papier crème / terre sombre |
+| `surface` | #FBF6EE | #2E2219 | cartes, sheets |
+| `surfaceMuted` | #EFE4D4 | #3A2C22 | chips, champs |
+| `surfaceElevated` | #FFFBF5 | #443428 | éléments flottants |
+| `ink` | #2E241E | #F6EFE4 | texte principal (brun, jamais noir) |
+| `inkSecondary` | #6F5A4E | #C2AE9C | texte secondaire |
+| `inkTertiary` | #9A8577 | #9C8878 | captions, placeholders |
+| `line` | #E6D9C8 | #4A3A2E | séparateurs (rares) |
+| `sage` | #2F7F53 | #6DC48D | accent, boutons principaux |
+| `sageSoft` | #E4EFE6 | #2C3D31 | fond positif, chip active |
+| `terracotta` / `terracottaSoft` | #BD5836 / #F2D9CB | #E59A70 / #4A2E22 | retard, héros du matin |
+| `water` / `waterSoft` | #4A82BC / #DCE7F3 | #8FB8E4 / #2B3644 | arrosage |
+| `sun` / `sunSoft` | #C4903A / #F3E3C2 | #E7C15C / #45391F | lumière, engrais |
+| `rose` / `roseSoft` | #C4566A / #F5DDE0 | #EC8A9B / #4A2C31 | favoris, santé |
+| `danger` | #C0392B | #E47064 | destructif |
+| `shadow` | #5E2C14 à 14 % | — | ombre portée du clay |
 
-Contrastes texte/fond ≥ 4.5:1 (ink sur canvas ≈ 15:1 ; inkSecondary sur canvas ≈ 5:1 ; blanc sur sage ≈ 4.6:1).
+Contrastes texte/fond ≥ 4.5:1 (ink sur canvas ≈ 13:1 ; inkSecondary sur canvas ≈ 5.7:1 ; blanc sur sage ≈ 4.9:1).
 
-## Typographie (`typography.dart`) — police système (SF sur iOS, Roboto sur Android)
-| Style | Taille / poids | Usage |
-|---|---|---|
-| Display | 34 / 700, -0.6 | grand titre d'onglet |
-| Title1 | 28 / 700, -0.4 | nom de plante (fiche) |
-| Title2 | 22 / 600, -0.3 | sections |
-| Title3 | 17 / 600 | titres de cartes |
-| Body | 17 / 400 | texte |
-| Callout | 15 / 400 | secondaire |
-| Caption | 13 / 500 | métadonnées |
+## Typographie (`typography.dart`)
+Deux voix : la **main** pour ce qui est grand (Shantell Sans, police variable
+sous licence OFL, `assets/fonts/`), le **système** pour tout ce qui se lit
+(SF sur iOS, Roboto sur Android). La graisse de Shantell se règle par
+`FontVariation('wght', …)`, pas par `fontWeight`.
+
+| Style | Police | Taille / poids | Usage |
+|---|---|---|---|
+| Display | Shantell | 34 / 700 | grand titre d'onglet, chiffre du héros |
+| Title1 | Shantell | 28 / 700 | nom de plante (fiche) |
+| Title2 | Shantell | 22 / 600 | sections |
+| Title3 | système | 17 / 600 | titres de cartes |
+| Body | système | 17 / 400 | texte |
+| Callout | système | 15 / 400 | secondaire |
+| Caption | système | 13 / 500 | métadonnées |
 Dynamic Type : toutes les tailles suivent `MediaQuery.textScaler`.
 
 ## Spacing (`spacing.dart`) : 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48
 ## Radius (`radius.dart`) : small 10 · medium 16 · large 24 (cartes) · xl 32 (sheets, héros) · full (boutons, chips, tab bar)
-## Élévation : une seule ombre douce (`0 8 24 rgba(27,26,23,0.06)`), jamais en dark mode (on utilise la teinte de surface).
+## Élévation : c'est le clay qui fait le relief (voir *Matière*). `shadows.dart` ne sert plus qu'aux rares éléments hors design system.
 ## Motion (`motion.dart`)
 - Durées : 150 (micro) · 250 (standard) · 400 (emphase). Courbes : `easeOutCubic`, `Curves.easeInOutCubicEmphasized` pour les sheets.
 - `reduced motion` : durées → 0, pas de translation, uniquement fondu.

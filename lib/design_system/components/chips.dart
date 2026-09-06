@@ -5,6 +5,7 @@ import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
+import 'clay.dart';
 import 'pressable.dart';
 
 /// Chip sélectionnable en pilule (filtres, emplacements, types).
@@ -68,14 +69,16 @@ class FloraChip extends StatelessWidget {
   }
 }
 
-/// Action rapide : pastille emoji ronde + libellé dessous.
+/// Action rapide : une tuile d'argile aux coins irréguliers, l'emoji dedans,
+/// le libellé dessous. [variant] varie la forme d'une tuile à l'autre.
 class QuickActionChip extends StatelessWidget {
-  const QuickActionChip({super.key, required this.emoji, required this.label, required this.onTap, this.background});
+  const QuickActionChip({super.key, required this.emoji, required this.label, required this.onTap, this.background, this.variant = 0});
 
   final String emoji;
   final String label;
   final VoidCallback onTap;
   final Color? background;
+  final int variant;
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +92,11 @@ class QuickActionChip extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
+            ClayBox(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(color: background ?? c.surface, shape: BoxShape.circle, border: Border.all(color: c.line.withValues(alpha: 0.6))),
+              color: background ?? c.surface,
+              shape: ClayShape.blob(variant),
               alignment: Alignment.center,
               child: Text(emoji, style: const TextStyle(fontSize: 24, height: 1)),
             ),

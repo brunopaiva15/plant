@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Palette Flora. Fond très clair teinté menthe, surfaces blanches, vert franc
-/// en accent, pastels (bleu, jaune, rose) pour les indicateurs de soin.
+/// Palette Flora : de l'argile et de la terre cuite. Fond crème grainé,
+/// surfaces crème claire, encre brune ; le vert reste la couleur de l'action,
+/// la terre cuite devient la couleur phare ; ocre, bleu poussière et rose
+/// pour les indicateurs de soin.
 ///
-/// Tous les contrastes texte / fond sont ≥ 4.5:1 (WCAG AA).
+/// Encre et encre secondaire passent AA (≥ 4.5:1) sur le fond et les
+/// surfaces ; le vert et la terre cuite passent 4.3 à 4.9:1 avec du blanc
+/// dessus, les indicateurs ne portent jamais de texte petit à eux seuls.
 class FloraColors {
   const FloraColors({
     required this.canvas,
@@ -56,53 +60,52 @@ class FloraColors {
   bool get isDark => brightness == Brightness.dark;
 
   static const light = FloraColors(
-    canvas: Color(0xFFF3F6F1),
-    surface: Color(0xFFFFFFFF),
-    surfaceMuted: Color(0xFFEDF1EB),
-    surfaceElevated: Color(0xFFFFFFFF),
-    ink: Color(0xFF1A1F1B),
-    inkSecondary: Color(0xFF66706A),
-    inkTertiary: Color(0xFF98A19B),
-    line: Color(0xFFE2E8E0),
-    sage: Color(0xFF2E8B57),
-    sageSoft: Color(0xFFE3F2E8),
+    canvas: Color(0xFFF6EFE4),
+    surface: Color(0xFFFBF6EE),
+    surfaceMuted: Color(0xFFEFE4D4),
+    surfaceElevated: Color(0xFFFFFBF5),
+    ink: Color(0xFF2E241E),
+    inkSecondary: Color(0xFF6F5A4E),
+    inkTertiary: Color(0xFF9A8577),
+    line: Color(0xFFE6D9C8),
+    sage: Color(0xFF2F7F53),
+    sageSoft: Color(0xFFE4EFE6),
     onSage: Color(0xFFFFFFFF),
-    terracotta: Color(0xFFC8752A),
-    terracottaSoft: Color(0xFFFBEEDD),
-    water: Color(0xFF3E7FC4),
-    waterSoft: Color(0xFFE3EEFA),
-    sun: Color(0xFFC99A00),
-    sunSoft: Color(0xFFFFF4D3),
-    rose: Color(0xFFD1506C),
-    roseSoft: Color(0xFFFDE8EE),
+    terracotta: Color(0xFFBD5836),
+    terracottaSoft: Color(0xFFF2D9CB),
+    water: Color(0xFF4A82BC),
+    waterSoft: Color(0xFFDCE7F3),
+    sun: Color(0xFFC4903A),
+    sunSoft: Color(0xFFF3E3C2),
+    rose: Color(0xFFC4566A),
+    roseSoft: Color(0xFFF5DDE0),
     danger: Color(0xFFC0392B),
-    shadow: Color(0x0D1A1F1B),
+    shadow: Color(0x245E2C14),
     brightness: Brightness.light,
   );
 
-  /// Sombre : un brun profond, chaud comme une terre cuite dans l'ombre,
-  /// plutôt que le noir verdâtre attendu. Le vert sauge y ressort mieux, et
-  /// les pastels gardent chacun leur teinte sur ce fond neutre et chaud.
+  /// Sombre : la même terre, dans l'ombre. Un brun profond, chaud, sur
+  /// lequel le vert et la terre cuite s'éclaircissent pour rester lisibles.
   static const dark = FloraColors(
-    canvas: Color(0xFF1F1611),
-    surface: Color(0xFF2B1F19),
-    surfaceMuted: Color(0xFF372A22),
-    surfaceElevated: Color(0xFF3E3027),
-    ink: Color(0xFFF5EFE9),
-    inkSecondary: Color(0xFFB5A697),
-    inkTertiary: Color(0xFF96887A),
-    line: Color(0xFF47382E),
-    sage: Color(0xFF66CB8B),
-    sageSoft: Color(0xFF2B3D2F),
+    canvas: Color(0xFF221A15),
+    surface: Color(0xFF2E2219),
+    surfaceMuted: Color(0xFF3A2C22),
+    surfaceElevated: Color(0xFF443428),
+    ink: Color(0xFFF6EFE4),
+    inkSecondary: Color(0xFFC2AE9C),
+    inkTertiary: Color(0xFF9C8878),
+    line: Color(0xFF4A3A2E),
+    sage: Color(0xFF6DC48D),
+    sageSoft: Color(0xFF2C3D31),
     onSage: Color(0xFF0B1A10),
-    terracotta: Color(0xFFEBA36A),
-    terracottaSoft: Color(0xFF4A2F20),
-    water: Color(0xFF84B6E6),
-    waterSoft: Color(0xFF2A3644),
-    sun: Color(0xFFEBC44A),
-    sunSoft: Color(0xFF433925),
-    rose: Color(0xFFEA7F98),
-    roseSoft: Color(0xFF482A2E),
+    terracotta: Color(0xFFE59A70),
+    terracottaSoft: Color(0xFF4A2E22),
+    water: Color(0xFF8FB8E4),
+    waterSoft: Color(0xFF2B3644),
+    sun: Color(0xFFE7C15C),
+    sunSoft: Color(0xFF45391F),
+    rose: Color(0xFFEC8A9B),
+    roseSoft: Color(0xFF4A2C31),
     danger: Color(0xFFE47064),
     shadow: Color(0x00000000),
     brightness: Brightness.dark,

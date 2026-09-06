@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
 import '../tokens/radius.dart';
-import '../tokens/shadows.dart';
 import '../tokens/spacing.dart';
+import 'clay.dart';
 import 'pressable.dart';
 
-/// Carte blanche très arrondie, ombre à peine visible en clair, aucune en sombre.
+/// Carte d'argile crème, très arrondie : bord clair, ombre logée, ombre portée
+/// dans sa teinte. [depth] passe au relief franc pour une carte de couleur.
 class FloraCard extends StatelessWidget {
   const FloraCard({
     super.key,
@@ -17,6 +18,7 @@ class FloraCard extends StatelessWidget {
     this.radius = Radii.large,
     this.color,
     this.clip = false,
+    this.depth = ClayDepth.light,
   });
 
   final Widget child;
@@ -26,17 +28,16 @@ class FloraCard extends StatelessWidget {
   final double radius;
   final Color? color;
   final bool clip;
+  final ClayDepth depth;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final box = Container(
-      clipBehavior: clip ? Clip.antiAlias : Clip.none,
-      decoration: BoxDecoration(
-        color: color ?? c.surface,
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: c.isDark ? null : Shadows.soft(c.shadow),
-      ),
+    final box = ClayBox(
+      color: color ?? c.surface,
+      shape: ClayShape.rounded(radius),
+      depth: depth,
+      clip: clip,
       padding: padding,
       child: child,
     );

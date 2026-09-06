@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Hiérarchie typographique. Police système (SF Pro sur iOS, Roboto sur Android).
+/// Hiérarchie typographique. Les grands titres et les titres de section sont
+/// en Shantell Sans, une police à la main ; tout le reste — listes, boutons,
+/// champs — garde la police du système (SF Pro sur iOS, Roboto sur Android).
+/// C'est ce partage qui donne le côté fait-main sans tomber dans le carnet
+/// d'enfant sur quarante écrans.
 ///
 /// Sept styles seulement : trop de tailles nuit à la cohérence.
 class FloraTypography {
@@ -12,27 +16,39 @@ class FloraTypography {
   factory FloraTypography.forColors({required Color ink, required Color secondary}) =>
       FloraTypography._(ink, secondary);
 
+  /// La police à la main des titres. Fonte variable : le poids se règle
+  /// par [FontVariation], le [FontWeight] sert de repli.
+  static const String handFamily = 'ShantellSans';
+  static const List<FontVariation> _bold = [FontVariation('wght', 700)];
+  static const List<FontVariation> _semibold = [FontVariation('wght', 600)];
+
   TextStyle get display => TextStyle(
+        fontFamily: handFamily,
+        fontVariations: _bold,
         fontSize: 34,
         height: 1.15,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.6,
+        letterSpacing: -0.3,
         color: _ink,
       );
 
   TextStyle get title1 => TextStyle(
+        fontFamily: handFamily,
+        fontVariations: _bold,
         fontSize: 28,
         height: 1.2,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.4,
+        letterSpacing: -0.2,
         color: _ink,
       );
 
   TextStyle get title2 => TextStyle(
+        fontFamily: handFamily,
+        fontVariations: _semibold,
         fontSize: 22,
         height: 1.25,
         fontWeight: FontWeight.w600,
-        letterSpacing: -0.3,
+        letterSpacing: -0.1,
         color: _ink,
       );
 

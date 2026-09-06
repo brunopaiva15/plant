@@ -40,7 +40,7 @@ class FloraApp extends ConsumerWidget {
           data: media.copyWith(disableAnimations: reduce),
           child: Material(
             type: MaterialType.transparency,
-            child: ToastHost(child: child ?? const SizedBox.shrink()),
+            child: GrainOverlay(child: ToastHost(child: child ?? const SizedBox.shrink())),
           ),
         );
       },

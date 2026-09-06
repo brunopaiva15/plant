@@ -106,9 +106,18 @@ flutter:
     - assets/species/catalog.tsv
     # Illustrations 3D de l'onboarding : une image par écran, animée par l'app.
     - assets/onboarding/
+    # Le grain du papier, posé par-dessus l'écran.
+    - assets/textures/
     # Modèle de reconnaissance d'espèces (TFLite) : poids, classes, métadonnées.
     # Produit par tools/plant_model/train.py, voir docs/09-plant-recognition.md.
     - assets/model/
+
+  # Police « main » des grands titres (Shantell Sans, OFL, cf. assets/fonts/OFL.txt).
+  # Police variable : la graisse se règle via FontVariation('wght', …).
+  fonts:
+    - family: ShantellSans
+      fonts:
+        - asset: assets/fonts/ShantellSans-VF.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
-import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
+import 'clay.dart';
 import 'pressable.dart';
 
 enum FloraButtonStyle { primary, secondary, tonal, ghost, destructive }
 
 enum FloraButtonSize { regular, small }
 
-/// Bouton en pilule. Une seule famille de boutons pour toute l'app.
+/// Bouton en pilule d'argile. Une seule famille de boutons pour toute l'app :
+/// plein et en relief franc pour le geste principal, crème ou pastel en
+/// relief léger pour les autres, sans matière pour le bouton discret.
 class FloraButton extends StatelessWidget {
   const FloraButton({
     super.key,
@@ -51,15 +53,7 @@ class FloraButton extends StatelessWidget {
       color: fg,
       fontWeight: FontWeight.w600,
     );
-    final child = Container(
-      height: small ? 40 : 52,
-      padding: EdgeInsets.symmetric(horizontal: small ? Space.md : Space.xl),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: Radii.fullAll,
-        border: style == FloraButtonStyle.secondary ? Border.all(color: c.line) : null,
-      ),
-      child: Row(
+    final row = Row(
         mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -86,8 +80,19 @@ class FloraButton extends StatelessWidget {
             Icon(trailingIcon, size: small ? 18 : 20, color: fg),
           ],
         ],
-      ),
-    );
+      );
+    final padding = EdgeInsets.symmetric(horizontal: small ? Space.md : Space.xl);
+    final height = small ? 40.0 : 52.0;
+    final child = style == FloraButtonStyle.ghost
+        ? Container(height: height, padding: padding, child: row)
+        : ClayBox(
+            color: bg,
+            shape: const ClayShape.pill(),
+            depth: style == FloraButtonStyle.primary || style == FloraButtonStyle.destructive ? ClayDepth.deep : ClayDepth.light,
+            height: height,
+            padding: padding,
+            child: row,
+          );
     return Pressable(
       onTap: loading ? null : onPressed,
       enabled: onPressed != null && !loading,

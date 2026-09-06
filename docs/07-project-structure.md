@@ -14,9 +14,9 @@ lib/
 │   ├── l10n/                      helpers (relative dates, pluriels)
 │   └── utils/                     date helpers, extensions
 ├── design_system/
-│   ├── tokens/                    colors, typography, spacing, radius, motion, shadows
+│   ├── tokens/                    colors, typography (Shantell Sans + système), spacing, radius, motion
 │   ├── theme/                     ThemeData clair / sombre, FloraTheme extension
-│   └── components/                composants réutilisables
+│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay
 ├── domain/
 │   ├── models/                    Plant, Location, PlantAction, CareSchedule, PlantPhoto, ActionType, Tag…
 │   ├── repositories/              interfaces

@@ -88,6 +88,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Onboarding animé en cinq écrans : objets 3D sur un halo de couleur, boucle qui ralentit jusqu'à se poser sur l'image nette, objets en orbite au rythme du doigt, titres levés ligne à ligne, texte mesuré pour ne jamais être coupé | ✅ |
 | Application 100 % gratuite : plus aucun plafond ni fonction réservée | ✅ |
 | Soutien facultatif au développeur (achat unique, App Store / Play), à la fin de l'onboarding et dans Profil | ✅ |
+| Direction « argile » : papier crème, cartes et boutons modelés (ombre teintée, reflet et ombre intérieurs), grain du papier, titres à la main en Shantell Sans, héros terre cuite du matin — [docs/06-design-system.md](06-design-system.md) | ✅ |
 
 ## Phase 4 — « Étendre »
 - NFC (architecture prévue : `PlantTagLink` table `plant_links` type `nfc` / `qr`)

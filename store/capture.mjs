@@ -5,11 +5,12 @@
 // et le mode iOS (`&ios`) viennent de l'app elle-même.
 //
 // Usage : node store/capture.mjs <dossier de sortie> [fr-FR|en-US]
+// Mode sombre : DARK=1 node store/capture.mjs …
 import { chromium } from 'playwright';
 import { execSync } from 'node:child_process';
 const out = process.argv[2], locale = process.argv[3] || 'fr-FR';
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--no-sandbox'] });
-const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, locale });
+const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, locale, colorScheme: process.env.DARK ? 'dark' : 'light' });
 await p.route(/fonts\.gstatic\.com|fonts\.googleapis\.com/, async route => {
   try {
     const body = execSync(`curl -sS --max-time 30 "${route.request().url()}"`, { maxBuffer: 64 * 1024 * 1024 });

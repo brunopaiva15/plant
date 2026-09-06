@@ -73,49 +73,44 @@ class SelectionBar extends ConsumerWidget {
       if (!ok) return;
       await ref.read(plantRepositoryProvider).archive(ids);
       Haptics.warning();
-      ref.read(toastProvider.notifier).show(ToastData(
-        message: l10n.archivedCount(ids.length),
-        emoji: '🗂',
-        undoLabel: l10n.undo,
-        onUndo: () => ref.read(plantRepositoryProvider).restore(ids),
-      ));
+      ref.read(toastProvider.notifier).show(ToastData(message: l10n.archivedCount(ids.length), emoji: '🗂', undoLabel: l10n.undo, onUndo: () => ref.read(plantRepositoryProvider).restore(ids)));
       ctrl.clear();
     }
 
-    return Container(
-      decoration: BoxDecoration(borderRadius: Radii.fullAll, boxShadow: Shadows.floating(c.isDark ? const Color(0x55000000) : c.shadow)),
-      child: FrostedSurface(
-        borderRadius: Radii.fullAll,
-        opacity: 0.9,
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: Space.xs),
-          decoration: BoxDecoration(borderRadius: Radii.fullAll, border: Border.all(color: c.line.withValues(alpha: 0.7))),
-          child: Row(
-            children: [
-              FloraIconButton(icon: CupertinoIcons.xmark, semanticLabel: l10n.cancel, onPressed: ctrl.clear, filled: false),
-              Expanded(child: Text(l10n.selectedCount(ids.length), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600))),
-              _Action(emoji: '💧', label: l10n.verbWatering, onTap: water),
-              _Action(emoji: '📍', label: l10n.move, onTap: move),
-              _Action(emoji: '🏷️', label: l10n.addTag, onTap: tag),
-              _Action(
-                emoji: '···',
-                label: l10n.moreOptions,
-                onTap: () => showAdaptiveActionSheet(
-                  context,
-                  cancelLabel: l10n.cancel,
-                  actions: [
-                    SheetAction(label: l10n.verbFertilizing, icon: CupertinoIcons.drop_triangle, onPressed: () => logKind(CareKind.fertilizing.key)),
-                    SheetAction(label: l10n.verbRepotting, icon: CupertinoIcons.arrow_2_squarepath, onPressed: () => logKind(CareKind.repotting.key)),
-                    SheetAction(label: l10n.bulkSetField, icon: CupertinoIcons.tag, onPressed: setField),
-                    SheetAction(label: l10n.labels, icon: CupertinoIcons.qrcode, onPressed: labels),
-                    SheetAction(label: l10n.archive, icon: CupertinoIcons.archivebox, destructive: true, onPressed: archive),
-                  ],
-                ),
-              ),
-            ],
+    return ClayBox(
+      color: c.surfaceElevated,
+      shape: const ClayShape.pill(),
+      depth: ClayDepth.deep,
+      height: 60,
+      padding: const EdgeInsets.symmetric(horizontal: Space.xs),
+      child: Row(
+        children: [
+          FloraIconButton(icon: CupertinoIcons.xmark, semanticLabel: l10n.cancel, onPressed: ctrl.clear, filled: false),
+          Expanded(
+            child: Text(
+              l10n.selectedCount(ids.length),
+              style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600),
+            ),
           ),
-        ),
+          _Action(emoji: '💧', label: l10n.verbWatering, onTap: water),
+          _Action(emoji: '📍', label: l10n.move, onTap: move),
+          _Action(emoji: '🏷️', label: l10n.addTag, onTap: tag),
+          _Action(
+            emoji: '···',
+            label: l10n.moreOptions,
+            onTap: () => showAdaptiveActionSheet(
+              context,
+              cancelLabel: l10n.cancel,
+              actions: [
+                SheetAction(label: l10n.verbFertilizing, icon: CupertinoIcons.drop_triangle, onPressed: () => logKind(CareKind.fertilizing.key)),
+                SheetAction(label: l10n.verbRepotting, icon: CupertinoIcons.arrow_2_squarepath, onPressed: () => logKind(CareKind.repotting.key)),
+                SheetAction(label: l10n.bulkSetField, icon: CupertinoIcons.tag, onPressed: setField),
+                SheetAction(label: l10n.labels, icon: CupertinoIcons.qrcode, onPressed: labels),
+                SheetAction(label: l10n.archive, icon: CupertinoIcons.archivebox, destructive: true, onPressed: archive),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

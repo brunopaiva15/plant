@@ -66,24 +66,21 @@ class TodayScreen extends ConsumerWidget {
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xs),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text(Dates.longDate(context, now), style: context.text.callout), const WeatherLine()],
-                  ),
-                ),
-                if (plantCount > 0)
-                  AnimatedSwitcher(
-                    duration: Motion.of(context, Motion.standard),
-                    child: Text(l10n.careCount(dueCount), key: ValueKey(dueCount), style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
-                  ),
-              ],
+              children: [Text(Dates.longDate(context, now), style: context.text.callout), const WeatherLine()],
             ),
           ),
         ),
+        // La carte du jour : la seule pièce de terre cuite pleine de l'écran,
+        // celle qui compte. Elle s'efface quand tout est fait.
+        if (plantCount > 0 && dueCount > 0)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.page, 0),
+              child: _DueHero(count: dueCount),
+            ),
+          ),
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
         if (plantCount == 0 && tasks.hasValue)
@@ -310,6 +307,35 @@ class _RecentActivity extends ConsumerWidget {
             child: FloraGroup(children: [for (final e in entries.take(4)) ActivityRow(entry: e)]),
           ),
           const SizedBox(height: Space.lg),
+        ],
+      ),
+    );
+  }
+}
+
+/// « 3 soins » en grand, sur la terre cuite : le chiffre du matin.
+class _DueHero extends StatelessWidget {
+  const _DueHero({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    // La chaîne pluralisée porte le nombre ; on le met à part, en grand.
+    final label = l10n.careCount(count).replaceFirst(RegExp(r'^\d+\s*'), '');
+    final fg = c.isDark ? c.ink : const Color(0xFFFBEFE3);
+    return ClayBox(
+      color: c.terracotta,
+      shape: const ClayShape.rounded(28),
+      depth: ClayDepth.deep,
+      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
+      child: Row(
+        children: [
+          Text('$count', style: context.text.display.copyWith(fontSize: 52, height: 1, color: fg)),
+          const SizedBox(width: Space.md),
+          Expanded(child: Text(label, style: context.text.title3.copyWith(color: fg, fontWeight: FontWeight.w700))),
         ],
       ),
     );

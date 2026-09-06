@@ -9,8 +9,8 @@ import '../../core/haptics.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
-import '../tokens/shadows.dart';
 import '../tokens/spacing.dart';
+import 'clay.dart';
 import 'pressable.dart';
 
 /// Toast avec action d'annulation. Un seul toast à la fois ; le suivant
@@ -86,9 +86,7 @@ class ToastHost extends ConsumerWidget {
                   child: ScaleTransition(scale: Tween(begin: 0.95, end: 1.0).animate(anim), child: child),
                 ),
               ),
-              child: toast == null
-                  ? const SizedBox.shrink()
-                  : _ToastCard(key: ValueKey(toast.id), data: toast, onUndo: () => ref.read(toastProvider.notifier).undo()),
+              child: toast == null ? const SizedBox.shrink() : _ToastCard(key: ValueKey(toast.id), data: toast, onUndo: () => ref.read(toastProvider.notifier).undo()),
             ),
           ),
         ),
@@ -108,13 +106,11 @@ class _ToastCard extends StatelessWidget {
     final c = context.colors;
     return Material(
       color: Colors.transparent,
-      child: Container(
+      child: ClayBox(
+        color: c.ink,
+        shape: const ClayShape.pill(),
+        depth: ClayDepth.deep,
         padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.sm, Space.sm),
-        decoration: BoxDecoration(
-          color: c.ink,
-          borderRadius: Radii.fullAll,
-          boxShadow: Shadows.floating(c.isDark ? const Color(0x33000000) : c.shadow),
-        ),
         child: Row(
           children: [
             Container(
@@ -122,7 +118,10 @@ class _ToastCard extends StatelessWidget {
               height: 26,
               decoration: BoxDecoration(color: c.sage, shape: BoxShape.circle),
               alignment: Alignment.center,
-              child: Text(data.emoji, style: TextStyle(fontSize: 13, color: c.onSage, fontWeight: FontWeight.w700, height: 1)),
+              child: Text(
+                data.emoji,
+                style: TextStyle(fontSize: 13, color: c.onSage, fontWeight: FontWeight.w700, height: 1),
+              ),
             ),
             const SizedBox(width: Space.sm),
             Expanded(
@@ -145,7 +144,10 @@ class _ToastCard extends StatelessWidget {
                     children: [
                       Icon(CupertinoIcons.arrow_uturn_left, size: 14, color: c.canvas),
                       const SizedBox(width: 4),
-                      Text(data.undoLabel!, style: context.text.caption.copyWith(color: c.canvas, fontWeight: FontWeight.w600)),
+                      Text(
+                        data.undoLabel!,
+                        style: context.text.caption.copyWith(color: c.canvas, fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 ),

@@ -28,76 +28,78 @@ class PlantGridCard extends ConsumerWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       scale: 0.97,
-      child: AnimatedContainer(
-        duration: Motion.of(context, Motion.standard),
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: c.surface,
-          borderRadius: Radii.largeAll,
-          border: Border.all(color: selected ? c.sage : Colors.transparent, width: 2),
-          boxShadow: c.isDark ? null : Shadows.soft(c.shadow),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(18)),
-                      child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 480, heroTag: 'plant-${summary.plant.id}'),
-                    ),
-                  ),
-                  if (summary.plant.isFavorite && !selecting)
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(color: c.surface.withValues(alpha: 0.9), shape: BoxShape.circle),
-                        child: Icon(CupertinoIcons.heart_fill, size: 14, color: c.rose),
+      child: ClayBox(
+        color: c.surface,
+        shape: const ClayShape.rounded(Radii.large),
+        clip: true,
+        child: AnimatedContainer(
+          duration: Motion.of(context, Motion.standard),
+          decoration: BoxDecoration(
+            borderRadius: Radii.largeAll,
+            border: Border.all(color: selected ? c.sage : Colors.transparent, width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(18)),
+                        child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 480, heroTag: 'plant-${summary.plant.id}'),
                       ),
                     ),
-                  if (selecting)
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: AnimatedContainer(
-                        duration: Motion.of(context, Motion.micro),
-                        width: 26,
-                        height: 26,
-                        decoration: BoxDecoration(
-                          color: selected ? c.sage : c.surface.withValues(alpha: 0.9),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: selected ? c.sage : c.line, width: 1.5),
+                    if (summary.plant.isFavorite && !selecting)
+                      Positioned(
+                        top: 12,
+                        right: 12,
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(color: c.surface.withValues(alpha: 0.9), shape: BoxShape.circle),
+                          child: Icon(CupertinoIcons.heart_fill, size: 14, color: c.rose),
                         ),
-                        child: selected ? Icon(CupertinoIcons.checkmark_alt, size: 15, color: c.onSage) : null,
                       ),
-                    ),
-                ],
+                    if (selecting)
+                      Positioned(
+                        top: 12,
+                        right: 12,
+                        child: AnimatedContainer(
+                          duration: Motion.of(context, Motion.micro),
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: selected ? c.sage : c.surface.withValues(alpha: 0.9),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: selected ? c.sage : c.line, width: 1.5),
+                          ),
+                          child: selected ? Icon(CupertinoIcons.checkmark_alt, size: 15, color: c.onSage) : null,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(Space.sm, Space.xs, Space.sm, Space.sm),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(summary.plant.name, style: context.text.title3, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 2),
-                  Text(summary.locationName ?? summary.plant.speciesName ?? '', style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: Space.xs),
-                  if (summary.nextDueAt != null && emoji != null)
-                    DueBadge(emoji: emoji, label: l10n.dueLabel(summary.nextDueAt, now), status: summary.dueStatus(now), compact: true)
-                  else
-                    const SizedBox(height: 20),
-                ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(Space.sm, Space.xs, Space.sm, Space.sm),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(summary.plant.name, style: context.text.title3, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 2),
+                    Text(summary.locationName ?? summary.plant.speciesName ?? '', style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: Space.xs),
+                    if (summary.nextDueAt != null && emoji != null)
+                      DueBadge(emoji: emoji, label: l10n.dueLabel(summary.nextDueAt, now), status: summary.dueStatus(now), compact: true)
+                    else
+                      const SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -129,7 +131,11 @@ class PlantListRow extends ConsumerWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: SizedBox(width: 60, height: 60, child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 180, heroTag: 'plant-${summary.plant.id}')),
+            child: SizedBox(
+              width: 60,
+              height: 60,
+              child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 180, heroTag: 'plant-${summary.plant.id}'),
+            ),
           ),
           const SizedBox(width: Space.sm),
           Expanded(
@@ -149,7 +155,11 @@ class PlantListRow extends ConsumerWidget {
               width: 26,
               height: 26,
               margin: const EdgeInsets.only(right: Space.xs),
-              decoration: BoxDecoration(color: selected ? c.sage : Colors.transparent, shape: BoxShape.circle, border: Border.all(color: selected ? c.sage : c.line, width: 1.5)),
+              decoration: BoxDecoration(
+                color: selected ? c.sage : Colors.transparent,
+                shape: BoxShape.circle,
+                border: Border.all(color: selected ? c.sage : c.line, width: 1.5),
+              ),
               child: selected ? Icon(CupertinoIcons.checkmark_alt, size: 15, color: c.onSage) : null,
             )
           else if (summary.nextDueAt != null && emoji != null)

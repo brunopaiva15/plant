@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
 import '../tokens/spacing.dart';
+import 'clay.dart';
 import 'pressable.dart';
 
 /// Ligne de liste : leading (emoji ou icône), titre, sous-titre, trailing.
@@ -118,28 +119,29 @@ class FloraListRow extends StatelessWidget {
   }
 }
 
-/// Pastille d'emoji sur fond pastel, pour les leading de listes et cartes.
+/// Tuile d'emoji en argile pastel, aux coins irréguliers, pour les leading
+/// de listes et cartes. [variant] varie la forme d'une tuile à l'autre.
 class EmojiTile extends StatelessWidget {
   const EmojiTile({
     super.key,
     required this.emoji,
     this.size = 40,
     this.background,
+    this.variant = 0,
   });
 
   final String emoji;
   final double size;
   final Color? background;
+  final int variant;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ClayBox(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: background ?? context.colors.surfaceMuted,
-        borderRadius: BorderRadius.circular(size * 0.32),
-      ),
+      color: background ?? context.colors.surfaceMuted,
+      shape: ClayShape.blob(variant),
       alignment: Alignment.center,
       child: Text(emoji, style: TextStyle(fontSize: size * 0.48, height: 1)),
     );

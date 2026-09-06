@@ -4,9 +4,8 @@ import '../../core/haptics.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
-import '../tokens/shadows.dart';
 import '../tokens/spacing.dart';
-import 'adaptive.dart';
+import 'clay.dart';
 
 class FloraTab {
   const FloraTab({required this.icon, required this.activeIcon, required this.label});
@@ -30,16 +29,14 @@ class FloraTabBar extends StatelessWidget {
     final c = context.colors;
     return Padding(
       padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, MediaQuery.paddingOf(context).bottom + Space.sm),
-      child: Container(
-        decoration: BoxDecoration(borderRadius: Radii.fullAll, boxShadow: Shadows.floating(c.isDark ? const Color(0x55000000) : c.shadow)),
-        child: FrostedSurface(
-          borderRadius: Radii.fullAll,
-          opacity: c.isDark ? 0.82 : 0.86,
-          child: Container(
-            height: 64,
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(borderRadius: Radii.fullAll, border: Border.all(color: c.line.withValues(alpha: 0.7))),
-            child: Row(
+      // Une barre d'argile crème, opaque : la matière de l'app, posée sur le
+      // contenu qui défile dessous.
+      child: ClayBox(
+        color: c.surface,
+        shape: const ClayShape.pill(),
+        height: 64,
+        padding: const EdgeInsets.all(6),
+        child: Row(
               children: [
                 for (final (i, tab) in tabs.indexed)
                   Expanded(
@@ -54,8 +51,6 @@ class FloraTabBar extends StatelessWidget {
                   ),
               ],
             ),
-          ),
-        ),
       ),
     );
   }
