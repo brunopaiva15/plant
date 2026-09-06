@@ -39,8 +39,6 @@ await p.mouse.click(193, 347); await p.waitForTimeout(800);
 await p.mouse.click(168, 327); await p.waitForTimeout(1500);
 await shot('today');
 await go('/plants', 4000); await shot('plants');
-await p.mouse.click(362, 22); await p.waitForTimeout(3000); await shot('add-plant');   // + : « Une photo ? »
-await go('/plants', 4000);
 await p.mouse.click(104, 375); await p.waitForTimeout(3000);          // Basilic
 await shot('plant');
 await p.mouse.click(195, 765); await p.waitForTimeout(3500); await shot('care');       // Comment en prendre soin
@@ -53,4 +51,6 @@ await p.mouse.click(240, 168); await p.waitForTimeout(2500); await shot('garden-
 await go('/dashboard', 4000); await shot('dashboard');
 await go('/settings/backup', 4000); await shot('backup');
 await go('/profile', 4000); await shot('profile');
+// En dernier : la feuille « Une photo ? » de l'ajout reste ouverte par-dessus tout.
+await go('/plants', 4000); await p.mouse.click(362, 22); await p.waitForTimeout(3000); await shot('add-plant');
 await b.close();
