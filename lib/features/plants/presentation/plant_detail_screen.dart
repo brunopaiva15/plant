@@ -90,8 +90,6 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
         SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
         if (ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
           SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
-        if (ref.read(plantDiagnoserProvider).isConfigured)
-          SheetAction(label: l10n.diagnosisTitle, icon: CupertinoIcons.bandage, onPressed: () => showDiagnosisSheet(context, plant: plant)),
         SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
         SheetAction(
           label: l10n.move,
@@ -291,7 +289,24 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(Space.page, Space.lg, Space.page, 0),
-              child: FloraButton(label: l10n.addAction, icon: CupertinoIcons.plus, expand: true, onPressed: () => showAddActionSheet(context, plantId: id, plantName: plant.name)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FloraButton(label: l10n.addAction, icon: CupertinoIcons.plus, expand: true, onPressed: () => showAddActionSheet(context, plantId: id, plantName: plant.name)),
+                  // Le diagnostic se cherche quand la plante va mal, pas dans
+                  // un menu : il a sa place sous les gestes du quotidien.
+                  if (ref.watch(plantDiagnoserProvider).isConfigured) ...[
+                    const SizedBox(height: Space.xs),
+                    FloraButton(
+                      label: l10n.diagnosisTitle,
+                      icon: CupertinoIcons.bandage,
+                      style: FloraButtonStyle.tonal,
+                      expand: true,
+                      onPressed: () => showDiagnosisSheet(context, plant: plant),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
           _CareGuideCard(plantId: id, speciesName: plant.speciesName),
