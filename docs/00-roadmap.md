@@ -85,7 +85,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Fiche d'entretien par plante : arrosage saisonnier, lumière, humidité, substrat, rempotage, toxicité, bouturage, problèmes fréquents (230 espèces au catalogue) | ✅ |
 | Sélecteur d'espèces : catalogue intégré hors ligne + recherche GBIF paginée | ✅ |
 | Catalogue étendu : ~40 000 espèces avec leurs noms courants en fr/de/it/en, cherchables hors ligne et sans accents (Wikidata CC0 + familles GBIF) | ✅ |
-| Onboarding animé en cinq écrans, illustrations 3D en boucle (24 im/s), objets en orbite, fond qui vire de teinte, titres levés mot à mot | ✅ |
+| Onboarding animé en cinq écrans : objets 3D sur un halo de couleur, boucle qui ralentit jusqu'à se poser sur l'image nette, objets en orbite au rythme du doigt, titres levés ligne à ligne, texte mesuré pour ne jamais être coupé | ✅ |
 | Application 100 % gratuite : plus aucun plafond ni fonction réservée | ✅ |
 | Soutien facultatif au développeur (achat unique, App Store / Play), à la fin de l'onboarding et dans Profil | ✅ |
 
