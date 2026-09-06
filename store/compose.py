@@ -394,7 +394,7 @@ COPY = {
 # La ligne « Calathea · Arroser » dans la capture d'Aujourd'hui, par langue.
 TODAY_ROW = {'fr': (54, 1638, 1116, 1920), 'en': (54, 1578, 1116, 1860)}
 # Les quatre premières tuiles du tableau de bord, identiques dans les deux langues.
-DASHBOARD_TILES = [(54, 216, 567, 540), (603, 216, 1116, 540), (54, 576, 567, 819), (603, 576, 1116, 819)]
+DASHBOARD_TILES = [(54, 216, 567, 540), (603, 216, 1116, 540), (54, 576, 567, 900), (603, 576, 1116, 900)]
 
 
 def build(shots, out, lang):

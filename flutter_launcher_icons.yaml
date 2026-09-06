@@ -1,5 +1,5 @@
-# Icône de l'application : la monstera en papier découpé, sur le fond clair
-# du thème (canvas → sageSoft). Régénérer après modification :
+# Icône de l'application : la pousse en pot de l'onboarding, en argile, sur
+# fond blanc. Régénérer après modification :
 #   dart run flutter_launcher_icons
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"
@@ -7,7 +7,7 @@ flutter_launcher_icons:
   android: "ic_launcher"
   # Fond plein et avant-plan transparent : le masque du lanceur (rond,
   # squircle, goutte) découpe le fond sans jamais rogner la plante.
-  adaptive_icon_background: "#EBF3ED"
+  adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/icon/icon_foreground.png"
   adaptive_icon_monochrome: "assets/icon/icon_monochrome.png"
 
@@ -22,5 +22,5 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "assets/icon/icon.png"
-    background_color: "#F3F6F1"
-    theme_color: "#2E8B57"
+    background_color: "#FFFFFF"
+    theme_color: "#2F7F53"
