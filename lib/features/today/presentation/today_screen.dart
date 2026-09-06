@@ -307,7 +307,7 @@ class _RecentActivity extends ConsumerWidget {
           SectionHeader(title: l10n.activityLogTitle, actionLabel: l10n.seeAll, onAction: () => context.push(Routes.activityLog)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.page),
-            child: FloraGroup(children: [for (final e in entries.take(4)) ActivityRow(key: ValueKey(e.at), entry: e)]),
+            child: FloraGroup(children: [for (final e in entries.take(4)) ActivityRow(entry: e)]),
           ),
           const SizedBox(height: Space.lg),
         ],
