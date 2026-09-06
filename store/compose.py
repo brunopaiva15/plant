@@ -369,22 +369,24 @@ def ident_card(lang, width=930):
 
 # --- les six visuels ---------------------------------------------------------
 
+# Le registre des fiches App Store : un titre court, puis un fragment en
+# minuscules, sans point. Pas de phrase.
 COPY = {
     'fr': [
-        ('Toutes vos plantes,\nau même endroit', 'Sa photo, son espèce, sa pièce, et tout ce que vous avez fait pour elle.'),
-        ("Chaque matin,\nce qu'il y a à faire", 'Vous arrosez, vous appuyez, c’est noté.'),
-        ("Une fiche d'entretien\npour chaque plante", 'Combien d’eau, quelle lumière, quand rempoter. Et ça change avec les saisons.'),
-        ('Lieux, calendrier,\ninventaire', 'Chaque plante à sa place, chaque soin à sa date, et le terreau qu’il vous reste.'),
-        ('Tout reste sur\nvotre téléphone', 'Pas de compte à créer, pas de publicité. Une sauvegarde, c’est un fichier zip.'),
-        ('Quelle est\ncette plante ?', 'Prenez-la en photo, l’app vous dit laquelle c’est. Même sans réseau.'),
+        ('Toutes vos plantes,\nau même endroit', 'avec leur photo, leur espèce et leur pièce'),
+        ("Chaque matin,\nce qu'il y a à faire", 'les soins du jour, à cocher'),
+        ("Une fiche d'entretien\npour chaque plante", 'arrosage, lumière, engrais, rempotage'),
+        ('Lieux, calendrier,\ninventaire', 'pour un appartement ou un jardin entier'),
+        ('Tout reste sur\nvotre téléphone', 'sans compte, sans publicité'),
+        ('Quelle est\ncette plante ?', 'une photo suffit, même sans réseau'),
     ],
     'en': [
-        ('All your plants,\nin one place', 'Its photo, its species, its room, and everything you’ve done for it.'),
-        ('Each morning,\nwhat needs doing', 'You water, you tap, it’s noted.'),
-        ('A care guide\nfor every plant', 'How much water, what light, when to repot. And it changes with the seasons.'),
-        ('Rooms, calendar,\ninventory', 'Every plant in its room, every task on its date, and how much soil is left.'),
-        ('Everything stays\non your phone', 'No account to create, no ads. A backup is a zip file.'),
-        ('What plant\nis this?', 'Take a photo, the app tells you which one it is. Even without signal.'),
+        ('All your plants,\nin one place', 'with their photo, species and room'),
+        ('Each morning,\nwhat needs doing', 'the day’s care, to tick off'),
+        ('A care guide\nfor every plant', 'watering, light, feeding, repotting'),
+        ('Rooms, calendar,\ninventory', 'for a whole flat or garden'),
+        ('Everything stays\non your phone', 'no account, no ads'),
+        ('What plant\nis this?', 'one photo is enough, even offline'),
     ],
 }
 
