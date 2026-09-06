@@ -55,11 +55,21 @@ class OnboardingStage extends StatelessWidget {
   /// Marge de la scène par rapport aux bords de l'écran.
   static const double inset = Space.page;
 
-  /// Taille visible de la scène : elle se referme quand on quitte les écrans
-  /// de présentation, pour laisser toute la hauteur au prénom.
-  double get visibleHeight => height * (1 - _leaving);
+  /// Taille visible de la scène : elle rapetisse à l'approche du dernier
+  /// écran, qui a ses propres boutons sous le texte, puis se referme quand on
+  /// le quitte, pour laisser toute la hauteur au prénom.
+  double get visibleHeight => height * shrink * (1 - _leaving);
 
-  /// De 0 à 1 quand on passe des présentations à la page du prénom.
+  /// Part de sa taille que garde la scène sur le dernier écran.
+  static const double compact = 0.62;
+
+  /// De 1 (pleine taille) à [compact] entre l'avant-dernier et le dernier
+  /// écran.
+  double get shrink => 1 - (1 - compact) * _compacting;
+
+  double get _compacting => count < 2 ? 0 : (offset - (count - 2)).clamp(0.0, 1.0);
+
+  /// De 0 à 1 quand on passe du dernier écran à la page du prénom.
   double get _leaving => (offset - (count - 1)).clamp(0.0, 1.0);
 
   @override
@@ -80,18 +90,24 @@ class OnboardingStage extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 child: Opacity(
                   opacity: 1 - leaving,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      // Le halo : une tache de couleur douce, sans bord, qui
-                      // s'épanouit à l'arrivée sur l'écran.
-                      Transform.scale(
-                        scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
-                        child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark),
-                      ),
-                      for (var i = count - 1; i >= 0; i--) _object(context, i, width, side, rise),
-                    ],
+                  // La scène rapetisse d'un bloc, halo et objet ensemble,
+                  // depuis son bord haut : ce qui est en dessous suit.
+                  child: Transform.scale(
+                    scale: shrink,
+                    alignment: Alignment.topCenter,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        // Le halo : une tache de couleur douce, sans bord, qui
+                        // s'épanouit à l'arrivée sur l'écran.
+                        Transform.scale(
+                          scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
+                          child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark),
+                        ),
+                        for (var i = count - 1; i >= 0; i--) _object(context, i, width, side, rise),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -279,7 +295,13 @@ class OnboardingButton extends StatelessWidget {
               decoration: ShapeDecoration(
                 color: c.ink,
                 shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(18)),
-                shadows: [BoxShadow(color: c.ink.withValues(alpha: c.isDark ? 0.0 : 0.18), blurRadius: 24, offset: const Offset(0, 10))],
+                shadows: [
+                  BoxShadow(
+                    color: c.ink.withValues(alpha: c.isDark ? 0.0 : 0.18),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: row,
             )
@@ -359,7 +381,11 @@ class RisingTitle extends StatelessWidget {
   /// c'est ce qui vaut sur tous les moteurs, là où la frontière de ligne du
   /// paragraphe ne compte pas les retours à la ligne automatiques partout.
   static List<TitleLine> layoutLines(String text, TextStyle style, double width, TextScaler scaler, TextDirection direction) {
-    final painter = TextPainter(text: TextSpan(text: text, style: style), textDirection: direction, textScaler: scaler)..layout(maxWidth: width);
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: direction,
+      textScaler: scaler,
+    )..layout(maxWidth: width);
     final lines = <TitleLine>[];
     var start = 0;
     var top = 0.0;

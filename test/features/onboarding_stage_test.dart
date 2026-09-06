@@ -73,9 +73,18 @@ void main() {
       expect(tester.getSize(find.byType(OnboardingStage)).height, 0);
     });
 
+    testWidgets("la scène rapetisse à l'approche du dernier écran, qui a ses boutons", (tester) async {
+      await _pump(tester, offset: 3, page: 3);
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360, 1));
+      await _pump(tester, offset: 3.5, page: 3);
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * (1 - 0.19), 1));
+      await _pump(tester, offset: 4, page: 4);
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * OnboardingStage.compact, 1));
+    });
+
     testWidgets("la scène se referme à mesure qu'on la quitte", (tester) async {
       await _pump(tester, offset: 4.5, page: 4);
-      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(180, 1));
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * OnboardingStage.compact * 0.5, 1));
     });
   });
 
