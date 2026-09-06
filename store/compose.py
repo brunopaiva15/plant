@@ -376,6 +376,10 @@ COPY = {
 }
 
 
+# La ligne « Calathea · Arroser » dans la capture d'Aujourd'hui, par langue.
+TODAY_ROW = {'fr': (54, 1636, 1116, 1916), 'en': (54, 1574, 1116, 1856)}
+
+
 def build(shots, out, lang):
     os.makedirs(out, exist_ok=True)
     n = model_classes()
@@ -396,7 +400,8 @@ def build(shots, out, lang):
     place_phone(img, S('today'), y=1060, angle=-3.5)
     place_clay(img, 2, 520, (60, 700))
     # la ligne « Calathea · Arroser », découpée dans la capture
-    sticker(img, S('today'), (54, 1636, 1116, 1916), 900, (330, 2060), angle=4)
+    # La ligne monte en anglais : la carte de rappel y tient sur une ligne de moins.
+    sticker(img, S('today'), TODAY_ROW[lang], 900, (330, 2060), angle=4)
     img.convert('RGB').save(os.path.join(out, '2.png'), optimize=True)
 
     # 3 — la fiche d'entretien

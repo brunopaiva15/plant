@@ -1,9 +1,12 @@
 # Visuels du magasin
 
-Cinq visuels par langue, au format iPhone 6,7 pouces (1290 × 2796), sans le
+Six visuels par langue, au format iPhone 6,7 pouces (1290 × 2796), sans le
 nom de l'application. Chacun montre une capture réelle de l'app dans un
-iPhone dessiné, un objet 3D de la série clay de l'onboarding, un titre, et
-parfois un morceau d'interface découpé dans la capture et posé en avant.
+iPhone dessiné, un titre tracé en Shantell Sans (la police « main » de
+l'app), souvent un objet 3D de la série clay de l'onboarding, et parfois un
+morceau d'interface découpé dans la capture et posé en avant. Le fond est
+le papier crème de l'app, avec son grain ; les ombres sont brunes, jamais
+noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
@@ -12,6 +15,16 @@ parfois un morceau d'interface découpé dans la capture et posé en avant.
 | 3 | Fiche d'entretien | anneau et goutte | soleil |
 | 4 | Jardin, calendrier, avec quatre tuiles du tableau de bord en avant | quatre tuiles | terre cuite |
 | 5 | Sauvegarde | carte, cadenas, nuage | rose |
+| 6 | Fiche d'une plante, avec la feuille « Est-ce bien… » en avant | — | terre |
+
+Le sixième montre l'identification sur l'appareil. La feuille est redessinée
+à plat par `compose.py`, mais ce qu'elle affiche est vrai : la photo est une
+observation iNaturalist en CC0 (`ident/ficus-lyrata.jpg`, observation
+359128431, photo 655212161), absente du jeu d'entraînement, et les trois
+propositions avec leurs scores sont la réponse du modèle livré, obtenue par
+`ident/score.py`. Le nombre d'espèces vient de `assets/model/model.json`.
+Après chaque nouveau modèle : relancer `score.py`, reporter ses résultats
+dans `IDENT_RESULTS`, régénérer.
 
 `fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect.
 
@@ -37,7 +50,7 @@ web depuis Google Fonts : quand le navigateur ne peut pas y aller directement,
 le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 
 `compose.py` télécharge la police Inter (SIL OFL) dans `store/fonts/` au
-premier lancement. Les captures et les polices ne sont pas versionnées.
+premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
-que chaque titre tienne sur deux lignes ; la taille est commune aux cinq.
+que chaque titre tienne sur deux lignes ; la taille est commune aux six.
