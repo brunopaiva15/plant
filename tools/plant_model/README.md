@@ -48,7 +48,8 @@ Sorties, directement dans les assets de l'app :
 2. **Augmentation** : recadrage aléatoire en 224, miroir horizontal, légère
    variation de lumière et de saturation. Pas de rotation forte : sur une
    photo, un pot est droit.
-3. **Transfert** : MobileNetV3-Small pré-entraîné ImageNet, tête remplacée,
+3. **Transfert** : MobileNetV3 (Small jusqu'à la v3, Large depuis la v4)
+   pré-entraîné ImageNet, tête remplacée,
    entraînée seule d'abord, puis les 60 dernières couches dégelées à
    faible taux d'apprentissage.
 4. **Déséquilibre** : poids par classe inversement proportionnels au

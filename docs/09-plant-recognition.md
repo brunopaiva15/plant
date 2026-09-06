@@ -1,9 +1,10 @@
 # 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
 
-> État au 5 septembre 2026 : 600 espèces au catalogue de collecte, 65 999
-> images sous CC0 ou CC BY, modèle MobileNetV3 à **542 classes** livré dans
-> l'app en TFLite (2,6 Mo). La cascade identifie **sur l'appareil** et
-> n'appelle Pl@ntNet que sur hésitation.
+> État au 6 septembre 2026 : 970 plantes au catalogue de collecte, 110 625
+> images sous CC0 ou CC BY dont 14 715 de plantes cultivées, modèle
+> MobileNetV3-Large à **846 classes** livré dans l'app en TFLite (7,7 Mo).
+> La cascade identifie **sur l'appareil** et n'appelle Pl@ntNet que sur
+> hésitation.
 
 ## 1. Pourquoi
 
@@ -443,7 +444,68 @@ Correction, dans `build_dataset.py` :
   ce que l'application fera sur les photos de ses utilisateurs. Les seuils
   de `FallbackPolicy` seront recalés dessus, pas sur les plantes sauvages.
 
-### 6.4 Résultats du modèle v1
+### 6.4 Résultats du modèle v4 — plantes cultivées et réseau large
+
+| | v3 | **v4** |
+|---|---|---|
+| Plantes au catalogue de collecte | 600 | **970** |
+| Images | 65 999 | **110 625** (14 715 cultivées) |
+| Classes du modèle | 542 | **846** |
+| Réseau | MobileNetV3-Small | **MobileNetV3-Large** |
+| Taille TFLite | 2,6 Mo | **7,7 Mo** |
+| Top-1 (test, 10 582 images) | 44,2 % | **50,2 %** |
+| Top-3 (test) | 60,0 % | **65,9 %** |
+| Macro-F1 | 0,425 | **0,476** |
+| Top-1 sur plantes cultivées (1 384 images) | — | **58,4 %** |
+| Top-3 sur plantes cultivées | — | **73,5 %** |
+| Entraînement | | 4 + 14 époques, 3 h 40 sur 4 cœurs |
+
+Trois choses ont changé en même temps, et il faut les lire ensemble :
+
+1. **Le catalogue de collecte a été nettoyé.** L'extension à 1 097 espèces
+   avait fait entrer 127 animaux par homonymie de genre — « Batis » est un
+   arbuste et un gobe-mouches, « Oenanthe » une ombellifère et un traquet.
+   GBIF les avait tous rejetés au rang du genre, aucun n'a reçu d'image, et
+   les 925 espèces avec images sont toutes vérifiées du règne Plantae. Le
+   même défaut touchait le catalogue étendu de l'app (`catalog.tsv`) :
+   1 242 animaux, champignons et chromistes écartés après vérification de
+   chaque nom auprès de GBIF (voir `tool/README.md`).
+2. **Les plantes d'intérieur ont été recollectées en pot** (§ 6.3) : 7 560
+   images ajoutées sur les 95 espèces d'intérieur, dont 5 581 photos de
+   plantes cultivées. Le chiffre qui compte est la dernière ligne du
+   tableau : sur des photos de plantes en pot, chez des gens, la bonne
+   espèce est première une fois sur deux et dans les trois premières trois
+   fois sur quatre.
+3. **Le réseau est passé en Large**, trois fois plus de calcul et cinq
+   mégaoctets de plus dans l'app, contre six points de top-1 sur un
+   problème pourtant plus dur (846 classes au lieu de 542). Sur l'iPhone,
+   l'inférence reste sous la demi-seconde.
+
+Le sur-apprentissage est net à partir de la dixième époque de réglage fin
+(entraînement 79 %, validation 51 %) : la prochaine marge est dans les
+données et l'augmentation, pas dans les époques.
+
+Courbe seuil / repli mesurée sur le test complet, puis sur les plantes
+cultivées seules :
+
+| Seuil | Acceptées (test) | Justesse | Acceptées (cultivées) | Justesse |
+|---|---|---|---|---|
+| 0,50 | 65 % | 68 % | 72 % | 73 % |
+| 0,70 | 47 % | 79 % | 57 % | 83 % |
+| 0,80 | 40 % | 84 % | — | — |
+| 0,90 | 32 % | 89 % | 41 % | 92 % |
+
+Le seuil d'acceptation reste à 0,70 : sur une plante en pot, le modèle
+répond seul une fois sur deux et a raison cinq fois sur six. L'écran
+propose de toute façon cinq candidats et la recherche en ligne à un geste.
+
+Le modèle exporté a été rejoué en TFLite avec le prétraitement exact de
+l'application (recadrage carré, réduction à 448 puis 256, découpe centrale
+224) sur 288 images de test : top-1 52 %, top-3 64 %, et sur les 41 plantes
+cultivées de l'échantillon 66 % et 80 %. Ce que le téléphone calcule est
+bien ce que l'entraînement a mesuré.
+
+### 6.5 Résultats du modèle v1
 
 | | |
 |---|---|
@@ -472,7 +534,7 @@ Deux enseignements de cet entraînement, tous deux corrigés :
    La recette est maintenant écrite dans `model.json` (`input_size`,
    `load_size`) et lue par l'application, plutôt que codée des deux côtés.
 
-### 6.3 Recette
+### 6.6 Recette
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
