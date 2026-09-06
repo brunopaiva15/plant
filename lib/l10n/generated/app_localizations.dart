@@ -2226,18 +2226,6 @@ abstract class AppLocalizations {
   /// **'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau. Quand le modèle hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
   String get identificationHint;
 
-  /// No description provided for @apiKey.
-  ///
-  /// In fr, this message translates to:
-  /// **'Clé API'**
-  String get apiKey;
-
-  /// No description provided for @apiKeyHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Collez votre clé'**
-  String get apiKeyHint;
-
   /// No description provided for @identificationEnabled.
   ///
   /// In fr, this message translates to:
@@ -2775,7 +2763,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisUnauthorized.
   ///
   /// In fr, this message translates to:
-  /// **'Clé API refusée. Vérifiez-la dans Profil › Diagnostic.'**
+  /// **'Le diagnostic est indisponible pour le moment. Réessayez plus tard.'**
   String get diagnosisUnauthorized;
 
   /// No description provided for @possibleCauses.
@@ -2811,7 +2799,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisSettingsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Analyse de photos par l\'API Claude d\'Anthropic, avec votre propre clé (console.anthropic.com). Les photos sont envoyées uniquement lors d\'une analyse que vous lancez.'**
+  /// **'Les photos sont analysées par un modèle hébergé en Suisse (AI Services d\'Infomaniak). Elles ne partent que lorsque vous lancez une analyse, et ne sont pas conservées.'**
   String get diagnosisSettingsHint;
 
   /// No description provided for @diagnosisEnabled.
@@ -2819,6 +2807,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Diagnostic activé'**
   String get diagnosisEnabled;
+
+  /// No description provided for @diagnosisUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostic indisponible'**
+  String get diagnosisUnavailable;
+
+  /// No description provided for @diagnosisQuota.
+  ///
+  /// In fr, this message translates to:
+  /// **'Limite du jour atteinte. Réessayez demain.'**
+  String get diagnosisQuota;
+
+  /// No description provided for @diagnosisQuotaToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui : {used} analyse(s) sur {limit}.'**
+  String diagnosisQuotaToday(int used, int limit);
 
   /// No description provided for @addPhotos.
   ///

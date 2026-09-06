@@ -27,7 +27,7 @@ lib/
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, AnthropicDiagnoser, OpenMeteoService
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, OpenMeteoService
 │   └── auth/                      LocalAuthRepository
 ├── features/
 │   ├── onboarding/
@@ -41,7 +41,7 @@ lib/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, réglage du lieu
-│   ├── diagnosis/                 sheet « Ma plante a un problème », réglage de la clé
+│   ├── diagnosis/                 sheet « Ma plante a un problème », état du service
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/

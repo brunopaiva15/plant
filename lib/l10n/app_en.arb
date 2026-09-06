@@ -354,8 +354,6 @@
   "useThis": "Use",
   "identificationSettings": "Identification",
   "identificationHint": "Species recognition runs on your device first, with no network. When the model is unsure, the photo can be sent to Pl@ntNet to decide.",
-  "apiKey": "API key",
-  "apiKeyHint": "Paste your key",
   "identificationEnabled": "Identification enabled",
   "identificationDisabled": "Not configured",
   "identificationFallback": "Online fallback",
@@ -539,14 +537,27 @@
   "analyzing": "Analyzing…",
   "diagnosisError": "Couldn't analyze. Check your connection and try again.",
   "diagnosisRefused": "This photo couldn't be analyzed.",
-  "diagnosisUnauthorized": "API key rejected. Check it in Profile › Diagnosis.",
+  "diagnosisUnauthorized": "Diagnosis is unavailable right now. Try again later.",
   "possibleCauses": "Possible causes",
   "urgentHint": "Needs quick attention",
   "saveToJournal": "Save to journal",
   "markWatch": "Mark as “keep an eye”",
   "diagnosisSettings": "Diagnosis",
-  "diagnosisSettingsHint": "Photo analysis by Anthropic's Claude API, with your own key (console.anthropic.com). Photos are only sent when you start an analysis.",
+  "diagnosisSettingsHint": "Photos are analysed by a model hosted in Switzerland (Infomaniak AI Services). They are only sent when you start an analysis, and are not kept.",
   "diagnosisEnabled": "Diagnosis enabled",
+  "diagnosisUnavailable": "Diagnosis unavailable",
+  "diagnosisQuota": "Daily limit reached. Try again tomorrow.",
+  "diagnosisQuotaToday": "Today: {used} of {limit} analyses.",
+  "@diagnosisQuotaToday": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
   "addPhotos": "Add photos",
   "photosCount": "{count, plural, =1{1 photo} other{{count} photos}}",
   "diagnosisSaved": "Diagnosis added to the journal",

@@ -68,7 +68,12 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
       Haptics.success();
       if (mounted) setState(() => _result = result);
     } on DiagnosisException catch (e) {
-      final message = switch (e.message) { 'refusal' => l10n.diagnosisRefused, 'unauthorized' => l10n.diagnosisUnauthorized, _ => l10n.diagnosisError };
+      final message = switch (e.message) {
+        'refusal' => l10n.diagnosisRefused,
+        'unauthorized' => l10n.diagnosisUnauthorized,
+        'quota' => l10n.diagnosisQuota,
+        _ => l10n.diagnosisError,
+      };
       ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '!'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'diagnosis');
@@ -121,7 +126,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
                       padding: const EdgeInsets.only(right: Space.xs),
                       child: ClipRRect(borderRadius: Radii.mediumAll, child: SizedBox(width: 92, height: 92, child: PlantImage(relativePath: p.thumbPath, cacheWidth: 300))),
                     ),
-                  if (_photos.length < AnthropicDiagnoserLimits.maxImages)
+                  if (_photos.length < DiagnosisLimits.maxImages)
                     Pressable(
                       onTap: () => showAdaptiveActionSheet(
                         context,
@@ -172,7 +177,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
 }
 
 /// Plafond de photos par analyse (aligné sur l'adaptateur).
-abstract final class AnthropicDiagnoserLimits {
+abstract final class DiagnosisLimits {
   static const maxImages = 3;
 }
 

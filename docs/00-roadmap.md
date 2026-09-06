@@ -53,7 +53,7 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Synchronisation multi-appareils : `SyncService` (push depuis l'outbox, pull delta, last-write-wins, photos), adaptateur Supabase, temps réel, coordinateur (démarrage / premier plan / après écriture) | ✅ code + tests ; activé par `--dart-define` (voir docs/08) |
 | Comptes : e-mail par code, Apple natif (iOS), Google OAuth ; compte local conservé sans connexion | ✅ |
 | Collaboration : membres, invitation par e-mail (RPC), rôles owner / member / viewer, « · par Laura » dans la timeline, lecture seule pour viewer | ✅ |
-| Diagnostic « Ma plante a un problème » : photos + symptômes → pistes classées par vraisemblance avec gestes concrets (API Claude, clé fournie par l'utilisateur, sortie structurée, jamais présenté comme certain) ; enregistrement dans le journal | ✅ |
+| Diagnostic « Ma plante a un problème » : photos + symptômes → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, 30 analyses par appareil et par jour, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |
 | Partage par lien public révocable, page publique servie par la fonction Edge `share` | ✅ |
 | Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
 

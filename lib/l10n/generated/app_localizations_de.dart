@@ -1236,12 +1236,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Arterkennung läuft zuerst auf deinem Gerät, ohne Netz. Wenn das Modell unsicher ist, kann das Foto zur Klärung an Pl@ntNet gehen.';
 
   @override
-  String get apiKey => 'API-Schlüssel';
-
-  @override
-  String get apiKeyHint => 'Schlüssel einfügen';
-
-  @override
   String get identificationEnabled => 'Bestimmung aktiviert';
 
   @override
@@ -1557,7 +1551,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisUnauthorized =>
-      'API-Schlüssel abgelehnt. Prüfe ihn unter Profil › Diagnose.';
+      'Die Diagnose ist im Moment nicht verfügbar. Versuche es später noch einmal.';
 
   @override
   String get possibleCauses => 'Mögliche Ursachen';
@@ -1576,10 +1570,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Fotoanalyse über die Claude-API von Anthropic mit deinem eigenen Schlüssel (console.anthropic.com). Fotos werden nur gesendet, wenn du eine Analyse startest.';
+      'Die Fotos werden von einem in der Schweiz gehosteten Modell analysiert (Infomaniak AI Services). Sie werden nur gesendet, wenn du eine Analyse startest, und nicht gespeichert.';
 
   @override
   String get diagnosisEnabled => 'Diagnose aktiviert';
+
+  @override
+  String get diagnosisUnavailable => 'Diagnose nicht verfügbar';
+
+  @override
+  String get diagnosisQuota =>
+      'Tageslimit erreicht. Versuche es morgen noch einmal.';
+
+  @override
+  String diagnosisQuotaToday(int used, int limit) {
+    return 'Heute: $used von $limit Analysen.';
+  }
 
   @override
   String get addPhotos => 'Fotos hinzufügen';

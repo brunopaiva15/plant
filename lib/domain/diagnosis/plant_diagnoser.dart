@@ -33,7 +33,8 @@ class DiagnosisException implements Exception {
   String toString() => 'DiagnosisException: $message';
 }
 
-/// Service de diagnostic. Implémentation : API Claude (clé de l'utilisateur).
+/// Service de diagnostic. Implémentation : AI Services d'Infomaniak, avec la
+/// clé de l'éditeur fournie au build.
 abstract class PlantDiagnoser {
   bool get isConfigured;
   Future<Diagnosis> diagnose({

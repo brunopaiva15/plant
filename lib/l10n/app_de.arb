@@ -354,8 +354,6 @@
   "useThis": "Verwenden",
   "identificationSettings": "Bestimmung",
   "identificationHint": "Die Arterkennung läuft zuerst auf deinem Gerät, ohne Netz. Wenn das Modell unsicher ist, kann das Foto zur Klärung an Pl@ntNet gehen.",
-  "apiKey": "API-Schlüssel",
-  "apiKeyHint": "Schlüssel einfügen",
   "identificationEnabled": "Bestimmung aktiviert",
   "identificationDisabled": "Nicht konfiguriert",
   "identificationFallback": "Online-Rückfall",
@@ -539,14 +537,27 @@
   "analyzing": "Analyse läuft…",
   "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "diagnosisRefused": "Dieses Foto konnte nicht analysiert werden.",
-  "diagnosisUnauthorized": "API-Schlüssel abgelehnt. Prüfe ihn unter Profil › Diagnose.",
+  "diagnosisUnauthorized": "Die Diagnose ist im Moment nicht verfügbar. Versuche es später noch einmal.",
   "possibleCauses": "Mögliche Ursachen",
   "urgentHint": "Schnell handeln",
   "saveToJournal": "Im Verlauf speichern",
   "markWatch": "Als „beobachten“ markieren",
   "diagnosisSettings": "Diagnose",
-  "diagnosisSettingsHint": "Fotoanalyse über die Claude-API von Anthropic mit deinem eigenen Schlüssel (console.anthropic.com). Fotos werden nur gesendet, wenn du eine Analyse startest.",
+  "diagnosisSettingsHint": "Die Fotos werden von einem in der Schweiz gehosteten Modell analysiert (Infomaniak AI Services). Sie werden nur gesendet, wenn du eine Analyse startest, und nicht gespeichert.",
   "diagnosisEnabled": "Diagnose aktiviert",
+  "diagnosisUnavailable": "Diagnose nicht verfügbar",
+  "diagnosisQuota": "Tageslimit erreicht. Versuche es morgen noch einmal.",
+  "diagnosisQuotaToday": "Heute: {used} von {limit} Analysen.",
+  "@diagnosisQuotaToday": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
   "addPhotos": "Fotos hinzufügen",
   "photosCount": "{count, plural, =1{1 Foto} other{{count} Fotos}}",
   "diagnosisSaved": "Diagnose im Verlauf gespeichert",

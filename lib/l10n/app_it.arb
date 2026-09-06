@@ -354,8 +354,6 @@
   "useThis": "Usa",
   "identificationSettings": "Identificazione",
   "identificationHint": "Il riconoscimento della specie funziona prima sul tuo dispositivo, senza rete. Quando il modello è incerto, la foto può essere inviata a Pl@ntNet.",
-  "apiKey": "Chiave API",
-  "apiKeyHint": "Incolla la chiave",
   "identificationEnabled": "Identificazione attiva",
   "identificationDisabled": "Non configurata",
   "identificationFallback": "Fallback online",
@@ -539,14 +537,27 @@
   "analyzing": "Analisi in corso…",
   "diagnosisError": "Analisi impossibile. Controlla la connessione e riprova.",
   "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
-  "diagnosisUnauthorized": "Chiave API rifiutata. Controllala in Profilo › Diagnosi.",
+  "diagnosisUnauthorized": "La diagnosi non è disponibile al momento. Riprova più tardi.",
   "possibleCauses": "Cause possibili",
   "urgentHint": "Da trattare rapidamente",
   "saveToJournal": "Salva nel diario",
   "markWatch": "Segna “da tenere d'occhio”",
   "diagnosisSettings": "Diagnosi",
-  "diagnosisSettingsHint": "Analisi delle foto tramite l'API Claude di Anthropic, con la tua chiave (console.anthropic.com). Le foto vengono inviate solo quando avvii un'analisi.",
+  "diagnosisSettingsHint": "Le foto sono analizzate da un modello ospitato in Svizzera (AI Services di Infomaniak). Vengono inviate solo quando avvii un'analisi e non vengono conservate.",
   "diagnosisEnabled": "Diagnosi attiva",
+  "diagnosisUnavailable": "Diagnosi non disponibile",
+  "diagnosisQuota": "Limite giornaliero raggiunto. Riprova domani.",
+  "diagnosisQuotaToday": "Oggi: {used} analisi su {limit}.",
+  "@diagnosisQuotaToday": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
   "addPhotos": "Aggiungi foto",
   "photosCount": "{count, plural, =1{1 foto} other{{count} foto}}",
   "diagnosisSaved": "Diagnosi aggiunta al diario",

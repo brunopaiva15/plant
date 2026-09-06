@@ -153,13 +153,28 @@ requêtes ; `PlantNetIdentifier` n'aurait alors qu'à changer d'URL.
 ```yaml
 environment:
   groups:
-    - flora_secrets          # contient PLANTNET_API_KEY
+    - flora_secrets          # contient les variables ci-dessous
 scripts:
   - name: Build iOS
     script: |
       flutter build ipa --release \
-        --dart-define=PLANTNET_API_KEY=$PLANTNET_API_KEY
+        --dart-define=PLANTNET_API_KEY=$PLANTNET_API_KEY \
+        --dart-define=INFOMANIAK_AI_API_KEY=$INFOMANIAK_AI_API_KEY \
+        --dart-define=INFOMANIAK_AI_PRODUCT_ID=$INFOMANIAK_AI_PRODUCT_ID \
+        --dart-define=INFOMANIAK_AI_MODEL=$INFOMANIAK_AI_MODEL
 ```
+
+Toutes les variables de build de l'application, à mettre dans le même
+groupe :
+
+| Variable | Sert à | Sans elle |
+|---|---|---|
+| `PLANTNET_API_KEY` | repli Pl@ntNet de l'identification | modèle embarqué seul |
+| `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » (jeton d'API Infomaniak, portée AI Services) | diagnostic absent |
+| `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
+| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
+| `SHARE_BASE_URL` | base des liens de partage ; facultatif | l'URL Supabase |
 
 Le `--dart-define` est indispensable : une variable d'environnement de CI
 n'entre pas toute seule dans le binaire Flutter.
@@ -599,13 +614,36 @@ Deux options, à trancher au moment de la phase 2 :
    modèle de poids n'est pas du code, mais à documenter dans la fiche de
    revue.
 
-## 9. Maladies : plus tard, séparément
+## 9. Maladies : un service distant, pas le modèle embarqué
 
-La détection de maladies est un **autre problème** (données rares, étiquettes
-subjectives, conséquences d'une erreur plus lourdes). Elle gardera son
-propre pipeline et son propre modèle, et continuera de passer par le
-diagnostic distant existant (`PlantDiagnoser`) d'ici là. Rien de ce
-document ne s'y applique.
+Le diagnostic « Ma plante a un problème » (photos + symptômes → pistes
+classées par vraisemblance, avec des gestes) ne passe pas par le modèle
+embarqué, qui ne sait que nommer une espèce. Il envoie les photos aux AI
+Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
+(`lib/data/services/infomaniak_diagnoser.dart`) :
+
+- **Modèle** : `mistralai/Mistral-Small-4-119B-2603` par défaut, choisi
+  parce qu'il voit les images, qu'il est stable, qu'il parle bien français
+  et qu'il est le moins cher de sa taille en sortie (0,20 / 0,75 CHF par
+  million de jetons). Un diagnostic — une à trois photos réduites à
+  1 024 px, la consigne, 300 à 500 jetons de réponse — coûte de l'ordre
+  d'un millième de franc. Le modèle se change au build
+  (`INFOMANIAK_AI_MODEL`), sans toucher au code.
+- **Clé** : celle de l'éditeur, au build, comme Pl@ntNet (§ 3.3). Aucun
+  réglage côté utilisateur ; l'écran « Diagnostic » dit seulement si le
+  service est là, où partent les photos et ce qu'il reste pour la journée.
+- **Plafond** : 30 diagnostics par appareil et par jour civil
+  (`DailyCappedDiagnoser`), compté dans les préférences avant tout appel.
+  Bien au-dessus d'un usage normal ; une clé extraite du binaire ne peut
+  pas coûter plus que cela par appareil.
+- **Réponse** : un JSON demandé par la consigne et par `response_format`
+  (`json_object`) ; si le service refuse ce paramètre, la même demande
+  repart sans lui et le lecteur extrait le JSON du texte, balises Markdown
+  comprises. Une photo sans plante lisible rend un résumé et aucune cause.
+- **Ce qui n'est pas mesuré** : la justesse de ces modèles sur des maladies
+  de plantes. La seule façon de choisir entre Mistral Small 4, Qwen 3.5 et
+  Kimi est un jeu d'essai de vingt à trente photos de plantes à problème
+  connu, envoyées avec la même consigne. Il reste à constituer.
 
 ## 10. Ajouter une espèce
 

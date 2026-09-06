@@ -17,7 +17,8 @@ import '../data/repositories/tag_repository_impl.dart';
 import '../data/repositories/attachment_repository_impl.dart';
 import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
-import '../data/services/anthropic_diagnoser.dart';
+import '../core/config/diagnosis_config.dart';
+import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
@@ -122,7 +123,6 @@ class AppPreferences {
     required this.hasSupported,
     required this.displayName,
     required this.identificationFallbackEnabled,
-    required this.anthropicApiKey,
     required this.weatherPlace,
     required this.archiveName,
   });
@@ -144,7 +144,6 @@ class AppPreferences {
 
   /// Repli Pl@ntNet autorisé quand le modèle local hésite.
   final bool identificationFallbackEnabled;
-  final String anthropicApiKey;
   final WeatherPlace? weatherPlace;
 
   /// Nom donné aux archives, vide si l'utilisateur garde celui par défaut.
@@ -173,7 +172,6 @@ class PreferencesController extends Notifier<AppPreferences> {
       hasSupported: s.hasSupported,
       displayName: s.displayName ?? '',
       identificationFallbackEnabled: s.identificationFallbackEnabled,
-      anthropicApiKey: s.anthropicApiKey,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       archiveName: s.archiveName,
     );
@@ -195,7 +193,6 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
   Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
   Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
-  Future<void> setAnthropicApiKey(String key) => _apply((s) => s.setAnthropicApiKey(key));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
@@ -306,10 +303,20 @@ final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(spe
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 
-/// Diagnostic : API Claude si une clé est configurée, sinon service inactif.
+/// Diagnostic : AI Services d'Infomaniak avec la clé de l'éditeur fournie au
+/// build, borné à [DiagnosisConfig.dailyLimit] par jour ; sans clé, service
+/// inactif et entrée absente des écrans.
 final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
-  final key = ref.watch(preferencesProvider.select((p) => p.anthropicApiKey));
-  return key.isEmpty ? const UnconfiguredDiagnoser() : AnthropicDiagnoser(key);
+  if (!DiagnosisConfig.isConfigured) return const UnconfiguredDiagnoser();
+  final inner = InfomaniakDiagnoser(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+  return DailyCappedDiagnoser(inner, ref.watch(preferencesServiceProvider), limit: DiagnosisConfig.dailyLimit);
+});
+
+/// Diagnostics déjà faits aujourd'hui, pour l'écran de réglage. Le compteur
+/// vit dans les préférences ; on le relit à chaque affichage.
+final diagnosisUsedTodayProvider = Provider<int>((ref) {
+  final d = ref.watch(plantDiagnoserProvider);
+  return d is DailyCappedDiagnoser ? d.usedToday : 0;
 });
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.

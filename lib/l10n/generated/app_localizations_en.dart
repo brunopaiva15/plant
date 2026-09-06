@@ -1231,12 +1231,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Species recognition runs on your device first, with no network. When the model is unsure, the photo can be sent to Pl@ntNet to decide.';
 
   @override
-  String get apiKey => 'API key';
-
-  @override
-  String get apiKeyHint => 'Paste your key';
-
-  @override
   String get identificationEnabled => 'Identification enabled';
 
   @override
@@ -1550,7 +1544,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisUnauthorized =>
-      'API key rejected. Check it in Profile › Diagnosis.';
+      'Diagnosis is unavailable right now. Try again later.';
 
   @override
   String get possibleCauses => 'Possible causes';
@@ -1569,10 +1563,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Photo analysis by Anthropic\'s Claude API, with your own key (console.anthropic.com). Photos are only sent when you start an analysis.';
+      'Photos are analysed by a model hosted in Switzerland (Infomaniak AI Services). They are only sent when you start an analysis, and are not kept.';
 
   @override
   String get diagnosisEnabled => 'Diagnosis enabled';
+
+  @override
+  String get diagnosisUnavailable => 'Diagnosis unavailable';
+
+  @override
+  String get diagnosisQuota => 'Daily limit reached. Try again tomorrow.';
+
+  @override
+  String diagnosisQuotaToday(int used, int limit) {
+    return 'Today: $used of $limit analyses.';
+  }
 
   @override
   String get addPhotos => 'Add photos';
