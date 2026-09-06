@@ -49,6 +49,18 @@ def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
 
 
+def _first_usable(match, plant: PlantEntry):
+    """Le nom canonique d'abord, puis les synonymes du catalogue, jusqu'à
+    une réponse au rang de l'espèce. « Sorbus aria » ne donne à GBIF qu'une
+    famille (le nom est ambigu) ; « Aria edulis », son nom accepté, donne
+    l'espèce. Les synonymes de `plants.csv` servent à ça."""
+    for name in [plant.scientific_name, *plant.synonyms]:
+        m = match(name)
+        if m is not None and getattr(m, 'usable', True):
+            return m
+    return None
+
+
 def resolve(client: GbifClient, plant: PlantEntry, cache: dict) -> dict | None:
     """Le taxon GBIF d'une plante, mémorisé dans species.json.
 
@@ -60,7 +72,7 @@ def resolve(client: GbifClient, plant: PlantEntry, cache: dict) -> dict | None:
     """
     if cache.get(plant.scientific_name) is not None:
         return cache[plant.scientific_name]
-    m = client.match(plant.scientific_name)
+    m = _first_usable(client.match, plant)
     entry = None if m is None else {
         'key': m.accepted_key or m.key, 'matched_key': m.key, 'canonical': m.canonical_name, 'scientific': m.scientific_name,
         'rank': m.rank, 'status': m.status, 'match': m.match_type, 'confidence': m.confidence, 'family': m.family, 'usable': m.usable,
@@ -78,7 +90,7 @@ def resolve_inat(client: InatClient, plant: PlantEntry, cache: dict) -> dict | N
     """
     if cache.get(plant.scientific_name) is not None:
         return cache[plant.scientific_name]
-    t = client.match(plant.scientific_name)
+    t = _first_usable(client.match, plant)
     entry = None if t is None else {'id': t.id, 'name': t.name, 'rank': t.rank, 'observations': t.observations,
                                     'matched_as': t.matched_as, 'synonym': t.is_synonym}
     cache[plant.scientific_name] = entry

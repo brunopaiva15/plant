@@ -86,6 +86,11 @@ def is_allowed(lic: License | None, *, allow_share_alike: bool = False) -> bool:
 
 
 # Codes du filtre `license=` de l'API d'occurrences GBIF, dans l'ordre où on
-# les demande : le domaine public d'abord, l'attribution ensuite.
+# les demande : le domaine public d'abord, l'attribution ensuite. GBIF ne
+# connaît que CC0, CC BY et CC BY-NC : demander « CC_BY_SA_4_0 » lui fait
+# répondre 400, et l'espèce entière était sautée — c'est arrivé à 89 espèces
+# pendant la passe CC BY-SA de la v5. La part BY-SA vient d'iNaturalist en
+# direct ; côté GBIF, la licence de chaque média est de toute façon vérifiée
+# une à une.
 GBIF_LICENSE_CODES = ['CC0_1_0', 'CC_BY_4_0']
-GBIF_LICENSE_CODES_WITH_SA = GBIF_LICENSE_CODES + ['CC_BY_SA_4_0']
+GBIF_LICENSE_CODES_WITH_SA = GBIF_LICENSE_CODES

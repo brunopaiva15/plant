@@ -30,9 +30,9 @@ def enrich_gbif(entries) -> list[str]:
     for i, e in enumerate(entries, 1):
         if e.gbif_key:
             continue
-        m = client.match(e.scientific_name)
-        if m is None or not m.usable:
-            doubtful.append(f'{e.scientific_name} → {m.match_type if m else "aucune"} {m.scientific_name if m else ""}')
+        m = next((m for m in (client.match(n) for n in [e.scientific_name, *e.synonyms]) if m is not None and m.usable), None)
+        if m is None:
+            doubtful.append(f'{e.scientific_name} → aucune espèce nette, synonymes compris')
             continue
         e.gbif_key = m.accepted_key or m.key
         if not e.family and m.family:

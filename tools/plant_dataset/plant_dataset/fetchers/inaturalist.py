@@ -49,6 +49,17 @@ class InatTaxon:
         return bool(self.matched_as) and self.matched_as.lower() != self.name.lower()
 
 
+_HYBRID = re.compile(r'\s*(?:×|\bx\b)\s*')
+
+
+def _comparable(name: str) -> str:
+    """Le nom tel qu'on le compare : minuscules, espaces réduits, et sans le
+    signe d'hybride. Le citronnier est « Citrus limon » au catalogue et
+    « Citrus × limon » chez iNaturalist : c'est la même plante, et la v5 est
+    partie sans une seule photo de citronnier à cause de ce signe."""
+    return ' '.join(_HYBRID.sub(' ', (name or '').strip().lower()).split())
+
+
 def photo_id_of(url: str) -> str | None:
     """L'identifiant iNaturalist d'une photo, depuis n'importe laquelle de ses
     URL (`.../photos/726492519/square.jpg`). Le même pour GBIF, qui relaie
@@ -96,16 +107,16 @@ class InatClient:
         ce n'est pas une réponse, c'est un aveu d'ignorance.
         """
         d = self._get('/taxa', q=name, per_page=10)
-        wanted = name.strip().lower()
+        wanted = _comparable(name)
         fallback = None
         for r in d.get('results', []):
             if not r.get('is_active', True) or (r.get('rank') or '') not in SPECIES_RANKS:
                 continue
             taxon = InatTaxon(id=r['id'], name=r.get('name', ''), rank=r.get('rank', ''),
                               observations=int(r.get('observations_count') or 0), matched_as=name.strip())
-            if taxon.name.lower() == wanted:
+            if _comparable(taxon.name) == wanted:
                 return taxon
-            if fallback is None and (r.get('matched_term') or '').strip().lower() == wanted:
+            if fallback is None and _comparable(r.get('matched_term') or '') == wanted:
                 fallback = taxon
         return fallback
 

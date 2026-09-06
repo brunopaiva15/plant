@@ -126,6 +126,17 @@ def test_a_genus_is_not_an_answer():
     assert c.match('Alocasia amazonica') is None
 
 
+def test_hybrid_sign_does_not_block_the_match():
+    payload = {'results': [
+        {'id': 331124, 'name': 'Citrus × limon', 'rank': 'hybrid', 'is_active': True, 'matched_term': 'Citrus × limon', 'observations_count': 17479},
+        {'id': 1275720, 'name': 'Citrus × limonia', 'rank': 'hybrid', 'is_active': True, 'matched_term': 'Citrus × limonia', 'observations_count': 436},
+    ]}
+    c = client({'/taxa': payload})
+    t = c.match('Citrus limon')
+    assert t is not None and t.id == 331124 and t.rank == 'hybrid'
+    assert c.match('Citrus x limon').id == 331124
+
+
 def test_exact_name_wins_over_a_synonym_match():
     payload = {'results': [
         {'id': 1, 'name': 'Other species', 'rank': 'species', 'is_active': True, 'matched_term': 'Pilea peperomioides', 'observations_count': 9},

@@ -87,3 +87,17 @@ def test_negative_resolutions_are_not_trusted_from_the_cache():
     cache_ok = {'Deja vue': {'key': 1, 'usable': True}}
     assert build_dataset.resolve(Client(), entry, cache_ok) == {'key': 1, 'usable': True}
     assert calls == ['Deja vue'], 'une résolution réussie reste mémorisée'
+
+
+def test_first_usable_falls_back_on_the_catalog_synonyms():
+    from build_dataset import _first_usable
+    from plant_dataset.taxonomy import PlantEntry
+
+    class M:
+        def __init__(self, usable):
+            self.usable = usable
+
+    answers = {'Sorbus aria': M(False), 'Aria edulis': M(True)}
+    plant = PlantEntry(internal_id='sorbus-aria', scientific_name='Sorbus aria', genus='Sorbus', epithet='aria', family='Rosaceae', synonyms=['Aria edulis'])
+    assert _first_usable(lambda n: answers.get(n), plant) is answers['Aria edulis']
+    assert _first_usable(lambda n: None, plant) is None
