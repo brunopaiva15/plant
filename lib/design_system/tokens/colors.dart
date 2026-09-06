@@ -64,7 +64,7 @@ class FloraColors {
     surface: Color(0xFFFBF6EE),
     surfaceMuted: Color(0xFFEFE4D4),
     surfaceElevated: Color(0xFFFFFBF5),
-    ink: Color(0xFF2E241E),
+    ink: Color(0xFF4A3528),
     inkSecondary: Color(0xFF6F5A4E),
     inkTertiary: Color(0xFF9A8577),
     line: Color(0xFFE6D9C8),

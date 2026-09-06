@@ -49,7 +49,7 @@ saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
 | `surface` | #FBF6EE | #2E2219 | cartes, sheets |
 | `surfaceMuted` | #EFE4D4 | #3A2C22 | chips, champs |
 | `surfaceElevated` | #FFFBF5 | #443428 | éléments flottants |
-| `ink` | #2E241E | #F6EFE4 | texte principal (brun, jamais noir) |
+| `ink` | #4A3528 | #F6EFE4 | texte principal : un brun franc, jamais noir |
 | `inkSecondary` | #6F5A4E | #C2AE9C | texte secondaire |
 | `inkTertiary` | #9A8577 | #9C8878 | captions, placeholders |
 | `line` | #E6D9C8 | #4A3A2E | séparateurs (rares) |
@@ -62,7 +62,7 @@ saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
 | `danger` | #C0392B | #E47064 | destructif |
 | `shadow` | #5E2C14 à 14 % | — | ombre portée du clay |
 
-Contrastes texte/fond ≥ 4.5:1 (ink sur canvas ≈ 13:1 ; inkSecondary sur canvas ≈ 5.7:1 ; blanc sur sage ≈ 4.9:1).
+Contrastes texte/fond ≥ 4.5:1 (ink sur canvas ≈ 10:1 ; inkSecondary sur canvas ≈ 5.7:1 ; blanc sur sage ≈ 4.9:1).
 
 ## Typographie (`typography.dart`)
 Deux voix : la **main** pour ce qui est grand (Shantell Sans, police variable
