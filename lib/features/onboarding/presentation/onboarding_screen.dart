@@ -50,10 +50,10 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with TickerProviderStateMixin {
   final _name = TextEditingController();
   final _pages = PageController();
-  late final _entry = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..forward();
+  late final _entry = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..forward();
 
-  /// La dérive du fond : un souffle d'une seconde et demie à l'arrivée sur
-  /// chaque écran, qui ralentit et se pose. Rien ne bouge à perpétuité.
+  /// Le souffle du fond : une seconde et demie à l'arrivée sur chaque écran,
+  /// qui ralentit et se pose. Rien ne bouge à perpétuité.
   late final _float = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..forward();
 
   int _page = 0;
@@ -65,25 +65,58 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// Le choix fait sur la page du prénom, à honorer une fois l'onboarding fini.
   bool _addPlant = false;
 
+  /// Hauteur du bloc de texte, mesurée sur le plus long des écrans, et la
+  /// clé de mesure qui l'a produite : la largeur, la taille de police et la
+  /// langue. Elle ne se recalcule que si l'un des trois change.
+  double _textBlock = 0;
+  Object? _textBlockKey;
+
   int get _nameIndex => _slides.length;
   int get _supportIndex => _slides.length + 1;
   int get _pageCount => _slides.length + 2;
 
-  /// La scène prend ce que la hauteur laisse une fois le texte servi : un
-  /// titre de trois lignes et sa phrase tiennent toujours, sur un petit
-  /// téléphone la dalle rapetisse, sur un grand elle s'arrête avant de
+  /// En-tête (« Passer ») et pied (points, bouton), avec leurs marges.
+  static const double _topHeight = Space.sm + 40;
+  static const double _bottomHeight = Space.md + 7 + Space.lg + 56 + Space.md;
+
+  /// La scène prend ce que la hauteur laisse une fois le texte servi. Le
+  /// texte est mesuré, pas estimé : le titre le plus long, dans la langue et
+  /// à la taille de police de l'utilisateur, tient toujours en entier. Sur un
+  /// petit téléphone la scène rapetisse ; sur un grand elle s'arrête avant de
   /// devenir énorme.
   double _stageHeight(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final free = mq.size.height - mq.padding.vertical - _chromeHeight - _textReserve;
-    return free.clamp(240.0, 460.0);
+    final free = mq.size.height - mq.padding.vertical - _topHeight - _bottomHeight - _textBlockHeight(context);
+    return free.clamp(200.0, 440.0);
   }
 
-  /// En-tête (progression) et pied (bouton), avec leurs marges.
-  static const double _chromeHeight = 52 + 78;
+  double _textBlockHeight(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final width = mq.size.width - 2 * Space.page;
+    final key = (width, mq.textScaler.scale(100), Localizations.localeOf(context).toString());
+    if (key != _textBlockKey) {
+      _textBlockKey = key;
+      _textBlock = _measureTextBlock(context, width);
+    }
+    return _textBlock;
+  }
 
-  /// Hauteur garantie au texte d'un écran.
-  static const double _textReserve = 230;
+  double _measureTextBlock(BuildContext context, double width) {
+    final l10n = context.l10n;
+    final scaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    final base = DefaultTextStyle.of(context).style;
+    final title = base.merge(onboardingTitleStyle(context));
+    final body = base.merge(onboardingBodyStyle(context));
+    var tallest = 0.0;
+    for (final slide in _slides) {
+      final t = RisingTitle.layoutLines(slide.title(l10n), title, width, scaler, direction).fold(0.0, (h, line) => h + line.height);
+      final painter = TextPainter(text: TextSpan(text: slide.body(l10n), style: body), textDirection: direction, textScaler: scaler)..layout(maxWidth: width);
+      tallest = math.max(tallest, t + Space.sm + painter.height);
+      painter.dispose();
+    }
+    return _SlideText.top + tallest + _SlideText.bottom;
+  }
 
   @override
   void initState() {
@@ -115,7 +148,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// compte. Les objets en orbite n'ont besoin que de leur image fixe.
   void _keepIllustrations(int page) {
     final keep = {page, page + 1};
-    final side = OnboardingStage.sideOf(_stageHeight(context));
+    final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (var i = 0; i < _slides.length; i++) {
       if (keep.contains(i)) {
         ClayIllustration.precache(context, i + 1, side);
@@ -176,6 +209,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final onSlides = _page < _slides.length;
     final current = math.min(_page, _slides.length - 1);
     final tint = _tint(c);
+    final stageHeight = _stageHeight(context);
 
     return Scaffold(
       backgroundColor: OnboardingBackdrop.wash(c, tint),
@@ -195,22 +229,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                   padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.md, 0),
                   child: SizedBox(
                     height: 40,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: OnboardingProgress(count: _pageCount, index: _page, color: tint),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: AnimatedOpacity(
+                        opacity: onSlides ? 1 : 0,
+                        duration: Motion.of(context, Motion.standard),
+                        child: IgnorePointer(
+                          ignoring: !onSlides,
+                          child: _SkipButton(label: l10n.skip, onPressed: () => _goTo(_nameIndex)),
                         ),
-                        const SizedBox(width: Space.md),
-                        SizedBox(
-                          width: 80,
-                          child: onSlides
-                              ? Align(
-                                  alignment: Alignment.centerRight,
-                                  child: _SkipButton(label: l10n.skip, onPressed: () => _goTo(_nameIndex)),
-                                )
-                              : const SizedBox.shrink(),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -221,7 +249,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                     offset: _offset,
                     page: current,
                     entry: reduce ? 1 : _entry.value,
-                    height: _stageHeight(context),
+                    height: stageHeight,
                     reduceMotion: reduce,
                     tint: tint,
                   ),
@@ -237,23 +265,30 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                           builder: (context, _) =>
                               _SlideText(slide: slide, t: reduce || i != _page ? 1.0 : _entry.value, parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
                         ),
-                      _NamePage(controller: _name, tint: tint, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),
+                      _NamePage(controller: _name, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),
                       _SupportPage(onDone: _finish),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
-                  child: AnimatedSize(
-                    duration: Motion.of(context, Motion.standard),
-                    child: onSlides
-                        ? ClayButton(
-                            label: _page == _slides.length - 1 ? l10n.onbStart : l10n.continueLabel,
-                            trailingIcon: CupertinoIcons.arrow_right,
-                            tint: tint,
-                            onPressed: () => _goTo(_page + 1),
-                          )
-                        : const SizedBox(width: double.infinity),
+                  padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, Space.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(child: OnboardingProgress(count: _pageCount, index: _page, color: tint)),
+                      const SizedBox(height: Space.lg),
+                      AnimatedSize(
+                        duration: Motion.of(context, Motion.standard),
+                        curve: Motion.easeOut,
+                        child: onSlides
+                            ? OnboardingButton(
+                                label: _page == _slides.length - 1 ? l10n.onbStart : l10n.continueLabel,
+                                trailingIcon: CupertinoIcons.arrow_right,
+                                onPressed: () => _goTo(_page + 1),
+                              )
+                            : const SizedBox(width: double.infinity),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -265,8 +300,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   }
 }
 
-/// « Passer » : un mot, en encre, sans cadre. Il ne se dispute pas la place
-/// avec le bouton du bas.
+/// « Passer » : un mot dans une capsule de verre, comme les boutons de barre
+/// du système. Il ne se dispute pas la place avec le bouton du bas.
 class _SkipButton extends StatelessWidget {
   const _SkipButton({required this.label, required this.onPressed});
 
@@ -279,18 +314,27 @@ class _SkipButton extends StatelessWidget {
     return Pressable(
       onTap: onPressed,
       semanticLabel: label,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: Space.xs),
-        child: Text(
-          label,
-          style: context.text.body.copyWith(fontWeight: FontWeight.w600, color: c.ink.withValues(alpha: 0.72)),
+      child: Container(
+        height: 34,
+        padding: const EdgeInsets.symmetric(horizontal: Space.md),
+        decoration: BoxDecoration(
+          color: c.isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.6),
+          borderRadius: Radii.fullAll,
+          border: Border.all(color: c.ink.withValues(alpha: c.isDark ? 0.10 : 0.06), width: 0.5),
+        ),
+        child: Center(
+          widthFactor: 1,
+          child: Text(
+            label,
+            style: context.text.callout.copyWith(fontWeight: FontWeight.w600, color: c.ink.withValues(alpha: 0.8)),
+          ),
         ),
       ),
     );
   }
 }
 
-/// Le texte d'un écran : le titre qui se lève mot à mot, puis la phrase.
+/// Le texte d'un écran : le titre qui se lève ligne à ligne, puis la phrase.
 /// Rangé à gauche, sous la scène — un titre d'affiche, pas une légende.
 class _SlideText extends StatelessWidget {
   const _SlideText({required this.slide, required this.t, required this.parallax});
@@ -299,35 +343,41 @@ class _SlideText extends StatelessWidget {
   final double t;
   final double parallax;
 
+  /// Marges au-dessus et au-dessous du texte, comptées dans sa hauteur.
+  static const double top = Space.xl;
+  static const double bottom = Space.md;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final c = context.colors;
     final width = MediaQuery.sizeOf(context).width;
     // Le texte suit le geste de moins près que la page : c'est ce décalage qui
     // creuse la profondeur.
     final fade = (1 - parallax.abs() * 1.6).clamp(0.0, 1.0);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.page, Space.xl, Space.page, 0),
+      padding: const EdgeInsets.fromLTRB(Space.page, top, Space.page, 0),
       child: Opacity(
         opacity: fade,
         child: Transform.translate(
           offset: Offset(parallax * -width * 0.18, 0),
-          // Un texte qui tient ne défile pas ; un titre trop long pour un
-          // très petit écran se lit quand même, au lieu d'être coupé.
+          // La place du texte est mesurée sur le plus long des écrans : il
+          // tient. Le défilement n'est là que pour une taille de police hors
+          // du commun, et il ne coupe rien.
           child: SingleChildScrollView(
             physics: floraScrollPhysics,
+            padding: const EdgeInsets.only(bottom: bottom),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                RisingTitle(text: slide.title(l10n), style: onboardingTitleStyle(context), t: t, alignment: WrapAlignment.start),
-                const SizedBox(height: Space.md),
+                RisingTitle(text: slide.title(l10n), style: onboardingTitleStyle(context), t: t),
+                const SizedBox(height: Space.sm),
                 Stagger(
                   t: t,
-                  index: 4,
-                  count: 5,
-                  child: Text(slide.body(l10n), style: context.text.body.copyWith(fontSize: 19, height: 1.35, color: c.ink.withValues(alpha: 0.72))),
+                  index: 3,
+                  count: 4,
+                  slide: 10,
+                  child: Text(slide.body(l10n), style: onboardingBodyStyle(context)),
                 ),
               ],
             ),
@@ -338,47 +388,58 @@ class _SlideText extends StatelessWidget {
   }
 }
 
-/// Le titre d'un écran d'onboarding : plus grand et plus serré que le
-/// `display` de l'app, parce qu'ici il est seul sur sa page.
+/// Le titre d'un écran d'onboarding : le grand titre du système, un peu plus
+/// grand et plus serré, parce qu'ici il est seul sur sa page.
 TextStyle onboardingTitleStyle(BuildContext context) =>
-    context.text.display.copyWith(fontSize: 44, height: 1.04, letterSpacing: -1.8, fontWeight: FontWeight.w800);
+    context.text.display.copyWith(fontSize: 36, height: 1.1, letterSpacing: -1.0, fontWeight: FontWeight.w700);
+
+/// La phrase sous le titre : le corps de texte, en encre secondaire.
+TextStyle onboardingBodyStyle(BuildContext context) => context.text.body.copyWith(fontSize: 17, height: 1.4, color: context.colors.inkSecondary);
 
 class _NamePage extends StatelessWidget {
-  const _NamePage({required this.controller, required this.tint, required this.onSubmit, required this.onSkip});
+  const _NamePage({required this.controller, required this.onSubmit, required this.onSkip});
 
   final TextEditingController controller;
-  final Color tint;
   final VoidCallback onSubmit;
   final VoidCallback onSkip;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final c = context.colors;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.page),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: Space.xxl),
-          Text(l10n.askNameTitle, style: onboardingTitleStyle(context)),
-          const SizedBox(height: Space.sm),
-          Text(l10n.askNameSubtitle, style: context.text.body.copyWith(fontSize: 19, height: 1.35, color: c.ink.withValues(alpha: 0.72))),
-          const SizedBox(height: Space.xl),
-          FloraTextField(
-            controller: controller,
-            hint: l10n.yourNameHint,
-            large: true,
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => onSubmit(),
+    // La page tient à l'écran ; clavier ouvert, elle défile au lieu de se
+    // couper.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: floraScrollPhysics,
+        padding: const EdgeInsets.symmetric(horizontal: Space.page),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: Space.xl),
+                Text(l10n.askNameTitle, style: onboardingTitleStyle(context)),
+                const SizedBox(height: Space.sm),
+                Text(l10n.askNameSubtitle, style: onboardingBodyStyle(context)),
+                const SizedBox(height: Space.xl),
+                FloraTextField(
+                  controller: controller,
+                  hint: l10n.yourNameHint,
+                  large: true,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => onSubmit(),
+                ),
+                const Spacer(),
+                const SizedBox(height: Space.xl),
+                OnboardingButton(label: l10n.addFirstPlant, trailingIcon: CupertinoIcons.arrow_right, onPressed: onSubmit),
+                const SizedBox(height: Space.xs),
+                OnboardingButton(label: l10n.later, filled: false, onPressed: onSkip),
+              ],
+            ),
           ),
-          const Spacer(),
-          ClayButton(label: l10n.addFirstPlant, trailingIcon: CupertinoIcons.arrow_right, tint: tint, onPressed: onSubmit),
-          const SizedBox(height: Space.xs),
-          ClayButton(label: l10n.later, tint: tint, filled: false, onPressed: onSkip),
-          const SizedBox(height: Space.md),
-        ],
+        ),
       ),
     );
   }

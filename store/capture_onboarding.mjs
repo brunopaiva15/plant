@@ -23,9 +23,10 @@ for (const scheme of ['light', 'dark']) {
   await p.waitForTimeout(7000);
   const shot = (n) => p.screenshot({ path: `${out}/${scheme}-${n}.png` });
   await shot('1');
-  // « Continuer » : le bouton plein du bas.
-  for (let i = 2; i <= 5; i++) { await p.mouse.click(195, 800); await p.waitForTimeout(2600); await shot(String(i)); }
-  await p.mouse.click(195, 800); await p.waitForTimeout(2600); await shot('name');
+  // « Continuer » : le bouton plein du bas. L'objet met trois secondes à se
+  // poser : on attend qu'il soit net.
+  for (let i = 2; i <= 5; i++) { await p.mouse.click(195, 798); await p.waitForTimeout(4000); await shot(String(i)); }
+  await p.mouse.click(195, 798); await p.waitForTimeout(2600); await shot('name');
   await p.close();
 }
 await b.close();
