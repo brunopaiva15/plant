@@ -51,7 +51,10 @@ class PlantGalleryScreen extends ConsumerWidget {
                   opaque: false,
                   barrierColor: Colors.black,
                   transitionDuration: Motion.of(context, Motion.emphasis),
-                  pageBuilder: (_, anim, _) => FadeTransition(opacity: anim, child: TimelapseScreen(photos: photos)),
+                  pageBuilder: (_, anim, _) => FadeTransition(
+                    opacity: anim,
+                    child: TimelapseScreen(photos: photos),
+                  ),
                 ),
               ),
             ),
@@ -59,26 +62,36 @@ class PlantGalleryScreen extends ConsumerWidget {
             FloraIconButton(
               icon: CupertinoIcons.rectangle_split_3x1,
               semanticLabel: l10n.compare,
-              onPressed: () => Navigator.of(context).push(
-                isCupertino(context)
-                    ? CupertinoPageRoute<void>(builder: (_) => CompareScreen(photos: photos))
-                    : MaterialPageRoute<void>(builder: (_) => CompareScreen(photos: photos)),
-              ),
+              onPressed: () =>
+                  Navigator.of(context)
+                      .push(isCupertino(context) ? CupertinoPageRoute<void>(builder: (_) => CompareScreen(photos: photos)) : MaterialPageRoute<void>(builder: (_) => CompareScreen(photos: photos))),
             ),
             const SizedBox(width: Space.xs),
           ],
           FloraIconButton(
-        icon: CupertinoIcons.camera,
-        semanticLabel: l10n.addPhoto,
-        onPressed: () => showAdaptiveActionSheet(
-          context,
-          cancelLabel: l10n.cancel,
-          actions: [
-            SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.camera)),
-            SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.gallery)),
-            SheetAction(label: l10n.addPhotoByUrl, icon: CupertinoIcons.link, onPressed: () => showPhotoUrlSheet(context, plantId: plantId)),
-          ],
-        ),
+            icon: CupertinoIcons.camera,
+            semanticLabel: l10n.addPhoto,
+            onPressed: () => showAdaptiveActionSheet(
+              context,
+              cancelLabel: l10n.cancel,
+              actions: [
+                SheetAction(
+                  label: l10n.camera,
+                  icon: CupertinoIcons.camera,
+                  onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.camera),
+                ),
+                SheetAction(
+                  label: l10n.gallery,
+                  icon: CupertinoIcons.photo,
+                  onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: plantId, source: PhotoSource.gallery),
+                ),
+                SheetAction(
+                  label: l10n.addPhotoByUrl,
+                  icon: CupertinoIcons.link,
+                  onPressed: () => showPhotoUrlSheet(context, plantId: plantId),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -103,7 +116,10 @@ class PlantGalleryScreen extends ConsumerWidget {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            ClipRRect(borderRadius: Radii.mediumAll, child: PlantImage(relativePath: p.thumbPath, remoteUrl: p.remoteUrl, cacheWidth: 400, heroTag: 'photo-${p.id}')),
+                            ClipRRect(
+                              borderRadius: Radii.mediumAll,
+                              child: PlantImage(relativePath: p.thumbPath, remoteUrl: p.remoteUrl, cacheWidth: 400, heroTag: 'photo-${p.id}', heroRadius: Radii.mediumAll),
+                            ),
                             if (isPrimary)
                               Positioned(
                                 top: 6,
@@ -135,7 +151,10 @@ class PlantGalleryScreen extends ConsumerWidget {
         barrierColor: Colors.black,
         transitionDuration: Motion.of(context, Motion.emphasis),
         reverseTransitionDuration: Motion.of(context, Motion.standard),
-        pageBuilder: (_, anim, _) => FadeTransition(opacity: anim, child: _PhotoViewer(photos: photos, index: index, plantId: plantId, primaryId: plant?.primaryPhotoId)),
+        pageBuilder: (_, anim, _) => FadeTransition(
+          opacity: anim,
+          child: _PhotoViewer(photos: photos, index: index, plantId: plantId, primaryId: plant?.primaryPhotoId),
+        ),
       ),
     );
   }
@@ -149,7 +168,10 @@ class TimelineDayLabelLike extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = label[0].toUpperCase() + label.substring(1);
-    return Padding(padding: const EdgeInsets.only(bottom: Space.sm, top: Space.xs), child: Text(s, style: context.text.title3));
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.sm, top: Space.xs),
+      child: Text(s, style: context.text.title3),
+    );
   }
 }
 
@@ -241,17 +263,26 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
               final p = widget.photos[i];
               return GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
-                child: Center(
-                  child: InteractiveViewer(
-                    minScale: 1,
-                    maxScale: 4,
-                    child: Hero(
-                      tag: 'photo-${p.id}',
+                child: InteractiveViewer(
+                  minScale: 1,
+                  maxScale: 4,
+                  // Le héros occupe tout l'écran, la photo est contenue
+                  // dedans : la vignette de la grille grandit jusqu'à la
+                  // page entière. Mesuré sur l'image seule, le héros
+                  // atterrissait sur un rectangle plus petit, ou vide tant
+                  // que le fichier n'était pas lu, et la photo rétrécissait.
+                  child: PlantHero(
+                    tag: 'photo-${p.id}',
+                    child: SizedBox.expand(
                       child: p.isRemote
-                          ? Image.network(p.remoteUrl!, fit: BoxFit.contain, errorBuilder: (_, _, _) => const Icon(CupertinoIcons.link, color: Colors.white54, size: 48))
+                          ? Image.network(
+                              p.remoteUrl!,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, _, _) => const Icon(CupertinoIcons.link, color: Colors.white54, size: 48),
+                            )
                           : FutureBuilder<String>(
                               future: storage.absolutePath(p.filePath),
-                              builder: (context, snap) => snap.hasData ? Image.file(File(snap.data!), fit: BoxFit.contain) : const SizedBox.shrink(),
+                              builder: (context, snap) => snap.hasData ? Image.file(File(snap.data!), fit: BoxFit.contain, gaplessPlayback: true) : const SizedBox.expand(),
                             ),
                     ),
                   ),
@@ -270,7 +301,12 @@ class _PhotoViewerState extends ConsumerState<_PhotoViewer> {
                     children: [
                       Text(Dates.dayYear(context, photo.takenAt), style: context.text.callout.copyWith(color: Colors.white)),
                       if (photo.label != null)
-                        Text(photo.label!, style: context.text.caption.copyWith(color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(
+                          photo.label!,
+                          style: context.text.caption.copyWith(color: Colors.white70),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                     ],
                   ),
                   const Spacer(),

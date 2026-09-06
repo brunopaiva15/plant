@@ -64,7 +64,7 @@ class TimelineRow extends ConsumerWidget {
                       scale: 0.97,
                       child: ClipRRect(
                         borderRadius: Radii.mediumAll,
-                        child: SizedBox(height: 160, width: double.infinity, child: PlantImage(relativePath: photo!.thumbPath, cacheWidth: 600, heroTag: 'photo-${photo!.id}')),
+                        child: SizedBox(height: 160, width: double.infinity, child: PlantImage(relativePath: photo!.thumbPath, cacheWidth: 600, heroTag: 'photo-${photo!.id}', heroRadius: Radii.mediumAll)),
                       ),
                     ),
                   ],
