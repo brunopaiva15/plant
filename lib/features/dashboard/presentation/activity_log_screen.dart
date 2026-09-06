@@ -42,7 +42,7 @@ class ActivityLogScreen extends ConsumerWidget {
               padding: const EdgeInsets.only(left: Space.xxs, bottom: Space.xs),
               child: Text(Dates.relativeDay(context, day.key), style: context.text.title3),
             ),
-            FloraGroup(children: [for (final e in day.value) _ActivityRow(entry: e)]),
+            FloraGroup(children: [for (final e in day.value) ActivityRow(entry: e)]),
             const SizedBox(height: Space.lg),
           ],
         ],
@@ -51,8 +51,10 @@ class ActivityLogScreen extends ConsumerWidget {
   }
 }
 
-class _ActivityRow extends ConsumerWidget {
-  const _ActivityRow({required this.entry});
+/// Une entrée du journal : la plante d'abord, le geste et l'heure en
+/// sous-titre. Sert aussi à l'aperçu sur l'écran Aujourd'hui.
+class ActivityRow extends ConsumerWidget {
+  const ActivityRow({super.key, required this.entry});
 
   final ActivityEntry entry;
 

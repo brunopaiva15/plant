@@ -6,6 +6,8 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../dashboard/application/dashboard_providers.dart';
+import '../../dashboard/presentation/activity_log_screen.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../../plants/application/plant_providers.dart';
@@ -126,6 +128,7 @@ class TodayScreen extends ConsumerWidget {
           if (upcoming.isNotEmpty) _TaskSection(title: l10n.sectionUpcoming, tasks: upcoming, compact: true),
           const _GardenSummary(),
           const _RecentPhotos(),
+          const _RecentActivity(),
         ],
       ],
     );
@@ -281,6 +284,32 @@ class _RecentPhotos extends ConsumerWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Les dernières entrées du journal, et le chemin vers tout le reste. Le
+/// journal se cherche depuis l'écran du matin, pas depuis les réglages.
+class _RecentActivity extends ConsumerWidget {
+  const _RecentActivity();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final entries = ref.watch(activityLogProvider);
+    if (entries.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+    return SliverToBoxAdapter(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(title: l10n.activityLogTitle, actionLabel: l10n.seeAll, onAction: () => context.push(Routes.activityLog)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.page),
+            child: FloraGroup(children: [for (final e in entries.take(4)) ActivityRow(key: ValueKey(e.at), entry: e)]),
+          ),
+          const SizedBox(height: Space.lg),
         ],
       ),
     );
