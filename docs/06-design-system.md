@@ -97,14 +97,14 @@ Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · Plant
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
 
 ## Icône de l'application
-Le logo est la pousse en pot de l'onboarding, en argile, sur fond blanc.
+Le logo est la monstera en papier découpé, dans son pot terracotta, sur
+fond blanc.
 
-- Source détourée : `assets/icon/plant.png`, l'objet de
-  `assets/onboarding/onboarding_1.png` recadré sur ses bords. C'est le
-  master : tout le reste en dérive.
-- `icon.png` / `icon_dark.png` : la pousse à 78 % sur blanc. Sans alpha :
+- Source détourée : `assets/icon/plant.png`. C'est le master : tout le
+  reste en dérive.
+- `icon.png` / `icon_dark.png` : la plante à 84 % sur blanc. Sans alpha :
   l'App Store la refuse.
-- `icon_foreground.png` : pousse à 56 %, fond transparent. Le XML adaptatif
+- `icon_foreground.png` : plante à 62 %, fond transparent. Le XML adaptatif
   d'Android ajoute un retrait de 16 %, d'où la marge apparemment large.
 - `icon_monochrome.png` : la même silhouette en noir, pour les icônes
   thématiques d'Android 13+.
