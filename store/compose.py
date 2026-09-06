@@ -11,7 +11,6 @@ l'atelier, pas celle d'un studio.
 Usage : compose.py <dossier captures> <dossier sortie> [fr|en]
 """
 import csv
-import json
 import os
 import sys
 
@@ -285,11 +284,6 @@ IDENT_PHOTO = os.path.join(HERE, 'ident', 'ficus-lyrata.jpg')
 IDENT_RESULTS = [('Ficus lyrata', 0.804), ('Epipremnum aureum', 0.063), ('Euphorbia lactea', 0.039)]
 
 
-def model_classes():
-    with open(os.path.join(ROOT, 'assets', 'model', 'model.json')) as f:
-        return json.load(f)['classes']
-
-
 def common_names(lang):
     with open(os.path.join(ROOT, 'tools', 'plant_dataset', 'plants.csv'), newline='', encoding='utf-8') as f:
         return {r['scientific_name']: r.get(f'common_{lang}', '') for r in csv.DictReader(f)}
@@ -360,18 +354,18 @@ COPY = {
     'fr': [
         ('Toutes vos plantes,\nau même endroit', "Photos, espèce, emplacement, et l'histoire de chacune."),
         ("Chaque matin,\nce qu'il y a à faire", 'Arrosé ? Un geste, et c’est noté.'),
-        ("Une fiche d'entretien\npour chaque plante", 'Lumière, arrosage, engrais, rempotage : les bons repères, selon la saison.'),
+        ("Une fiche d'entretien\npour chaque plante", 'Lumière, arrosage, engrais, rempotage. Les bons repères, selon la saison.'),
         ('Lieux, calendrier,\ninventaire', 'Votre jardin s’organise tout seul.'),
         ('Tout reste sur\nvotre téléphone', 'Sans compte obligatoire, sans publicité. Vos données vous appartiennent.'),
-        ('Quelle est\ncette plante ?', 'Une photo, et l’app propose l’espèce parmi {n}. Ça se passe sur votre téléphone : rien n’est envoyé.'),
+        ('Quelle est\ncette plante ?', 'Une photo, et l’app propose l’espèce. Ça se passe sur votre téléphone, rien n’est envoyé.'),
     ],
     'en': [
         ('All your plants,\nin one place', 'Photos, species, room, and each one’s story.'),
         ('Each morning,\nwhat needs doing', 'Watered? One tap, and it’s noted.'),
-        ('A care guide\nfor every plant', 'Light, watering, feeding, repotting: the right cues, season by season.'),
+        ('A care guide\nfor every plant', 'Light, watering, feeding, repotting. The right cues, season by season.'),
         ('Rooms, calendar,\ninventory', 'Your garden organises itself.'),
         ('Everything stays\non your phone', 'No account required, no ads. Your data is yours.'),
-        ('What plant\nis this?', 'One photo, and the app suggests the species out of {n}. It happens on your phone: nothing is sent.'),
+        ('What plant\nis this?', 'One photo, and the app suggests the species. It happens on your phone, nothing is sent.'),
     ],
 }
 
@@ -382,8 +376,7 @@ TODAY_ROW = {'fr': (54, 1636, 1116, 1916), 'en': (54, 1574, 1116, 1856)}
 
 def build(shots, out, lang):
     os.makedirs(out, exist_ok=True)
-    n = model_classes()
-    copy = [(t, s.replace('{n}', f'{n:,}'.replace(',', ' '))) for t, s in COPY[lang]]
+    copy = COPY[lang]
     size = title_size([t for t, _ in copy])
     S = lambda name: os.path.join(shots, f'{name}.png')
 

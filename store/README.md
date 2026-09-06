@@ -22,7 +22,7 @@ Le sixième montre l'identification sur l'appareil. La feuille est redessinée
 observation iNaturalist en CC0 (`ident/ficus-lyrata.jpg`, observation
 359128431, photo 655212161), absente du jeu d'entraînement, et les trois
 propositions avec leurs scores sont la réponse du modèle livré, obtenue par
-`ident/score.py`. Le nombre d'espèces vient de `assets/model/model.json`.
+`ident/score.py`.
 Après chaque nouveau modèle : relancer `score.py`, reporter ses résultats
 dans `IDENT_RESULTS`, régénérer.
 
