@@ -66,6 +66,8 @@ dependencies:
   open_filex: ^4.7.0
   in_app_purchase: ^3.3.0
   tflite_flutter: ^0.12.1
+  geolocator: ^14.0.3
+  geocoding: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -102,14 +104,8 @@ flutter:
     # Catalogue d'espèces hors ligne (Wikidata CC0 + familles GBIF).
     # Régénéré par tool/harvest_species.py puis tool/build_species_catalog.py.
     - assets/species/catalog.tsv
-    # Illustrations 3D de l'onboarding : une image fixe par écran, et les
-    # 24 images de sa boucle.
+    # Illustrations 3D de l'onboarding : une image par écran, animée par l'app.
     - assets/onboarding/
-    - assets/onboarding/frames_1/
-    - assets/onboarding/frames_2/
-    - assets/onboarding/frames_3/
-    - assets/onboarding/frames_4/
-    - assets/onboarding/frames_5/
     # Modèle de reconnaissance d'espèces (TFLite) : poids, classes, métadonnées.
     # Produit par tools/plant_model/train.py, voir docs/09-plant-recognition.md.
     - assets/model/

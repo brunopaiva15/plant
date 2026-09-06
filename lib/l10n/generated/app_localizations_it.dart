@@ -945,6 +945,28 @@ class AppLocalizationsIt extends AppLocalizations {
       'Aggiungile una alla volta, con una foto se vuoi.';
 
   @override
+  String get onbPlaceTitle => 'Dove sono le tue piante?';
+
+  @override
+  String get onbPlaceBody =>
+      'Per il meteo del giorno e l\'annaffiatura all\'aperto. Basta una città; la tua posizione esatta non viene né conservata né condivisa.';
+
+  @override
+  String get useMyLocation => 'Usa la mia posizione';
+
+  @override
+  String get locating => 'Ricerca della tua città…';
+
+  @override
+  String get locationFailed =>
+      'Posizione non disponibile. Potrai scegliere una città in Profilo › Meteo.';
+
+  @override
+  String placeChosen(String place) {
+    return 'Meteo impostato su $place.';
+  }
+
+  @override
   String get askNameTitle => 'Come ti chiami?';
 
   @override

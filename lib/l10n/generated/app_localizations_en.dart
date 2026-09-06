@@ -944,6 +944,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add them one by one, with a photo if you like.';
 
   @override
+  String get onbPlaceTitle => 'Where are your plants?';
+
+  @override
+  String get onbPlaceBody =>
+      'For today\'s weather and watering outdoors. A town is enough; your exact position is neither kept nor shared.';
+
+  @override
+  String get useMyLocation => 'Use my location';
+
+  @override
+  String get locating => 'Finding your town…';
+
+  @override
+  String get locationFailed =>
+      'Location unavailable. You can pick a town in Profile › Weather.';
+
+  @override
+  String placeChosen(String place) {
+    return 'Weather set to $place.';
+  }
+
+  @override
   String get askNameTitle => 'What\'s your name?';
 
   @override

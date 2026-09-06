@@ -10,6 +10,7 @@ import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/weather/weather.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
@@ -34,7 +35,11 @@ final _slides = <_Slide>[
   _Slide(title: (l) => l.onbPrivacyTitle, body: (l) => l.onbPrivacyBody, tint: (c) => c.rose),
 ];
 
-/// Présentation animée, le prénom, puis le soutien facultatif au développeur.
+/// Couleur de l'étape « Où sont vos plantes ? », qui suit les présentations.
+Color _placeTint(FloraColors c) => c.water;
+
+/// Présentation animée, le lieu de la météo, le prénom, puis le soutien
+/// facultatif au développeur.
 ///
 /// Les écrans ne se remplacent pas l'un l'autre comme des diapositives : le
 /// fond change de teinte, les objets du jardin tournent autour de la place
@@ -71,9 +76,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   double _textBlock = 0;
   Object? _textBlockKey;
 
-  int get _nameIndex => _slides.length;
-  int get _supportIndex => _slides.length + 1;
-  int get _pageCount => _slides.length + 2;
+  /// L'étape du lieu vient après les présentations : elle garde la scène et
+  /// son objet, mais a ses propres boutons.
+  int get _placeIndex => _slides.length;
+  int get _nameIndex => _slides.length + 1;
+  int get _supportIndex => _slides.length + 2;
+  int get _pageCount => _slides.length + 3;
+
+  /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu.
+  int get _objectCount => _slides.length + 1;
 
   /// En-tête (« Passer ») et pied (points, bouton), avec leurs marges.
   static const double _topHeight = Space.sm + 40;
@@ -143,18 +154,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     if (page != null && page != _offset) setState(() => _offset = page);
   }
 
-  /// Garde en mémoire les images animées de l'écran courant et du suivant, et
-  /// rend celles des autres : vingt-quatre images décodées par écran, cela
-  /// compte. Les objets en orbite n'ont besoin que de leur image fixe.
+  /// Décode d'avance l'image de l'écran courant et du suivant, pour qu'un
+  /// objet arrive net au centre plutôt qu'après un temps.
   void _keepIllustrations(int page) {
-    final keep = {page, page + 1};
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
-    for (var i = 0; i < _slides.length; i++) {
-      if (keep.contains(i)) {
-        ClayIllustration.precache(context, i + 1, side);
-      } else {
-        ClayIllustration.evictFrames(context, i + 1, side);
-      }
+    for (final i in {page, page + 1}) {
+      if (i < _objectCount) ClayIllustration.precache(context, i + 1, side);
     }
   }
 
@@ -195,10 +200,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
 
   /// La couleur de l'écran, déjà mêlée à celle du suivant pendant le geste.
   Color _tint(FloraColors c) {
-    final o = _offset.clamp(0.0, (_slides.length - 1).toDouble());
+    final tints = [for (final slide in _slides) slide.tint(c), _placeTint(c)];
+    final o = _offset.clamp(0.0, (tints.length - 1).toDouble());
     final i = o.floor();
-    final next = math.min(i + 1, _slides.length - 1);
-    return Color.lerp(_slides[i].tint(c), _slides[next].tint(c), o - i)!;
+    final next = math.min(i + 1, tints.length - 1);
+    return Color.lerp(tints[i], tints[next], o - i)!;
   }
 
   @override
@@ -207,7 +213,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final c = context.colors;
     final reduce = MediaQuery.disableAnimationsOf(context);
     final onSlides = _page < _slides.length;
-    final current = math.min(_page, _slides.length - 1);
+    final current = math.min(_page, _objectCount - 1);
     final tint = _tint(c);
     final stageHeight = _stageHeight(context);
 
@@ -219,7 +225,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
             child: AnimatedBuilder(
               animation: _float,
               builder: (context, _) =>
-                  OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce, glow: 1 - (_offset - (_slides.length - 1)).clamp(0.0, 1.0)),
+                  OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce, glow: 1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)),
             ),
           ),
           SafeArea(
@@ -236,7 +242,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                         duration: Motion.of(context, Motion.standard),
                         child: IgnorePointer(
                           ignoring: !onSlides,
-                          child: _SkipButton(label: l10n.skip, onPressed: () => _goTo(_nameIndex)),
+                          child: _SkipButton(label: l10n.skip, onPressed: () => _goTo(_placeIndex)),
                         ),
                       ),
                     ),
@@ -245,7 +251,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                 AnimatedBuilder(
                   animation: Listenable.merge([_entry, _float]),
                   builder: (context, _) => OnboardingStage(
-                    count: _slides.length,
+                    count: _objectCount,
                     offset: _offset,
                     page: current,
                     entry: reduce ? 1 : _entry.value,
@@ -265,6 +271,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                           builder: (context, _) =>
                               _SlideText(slide: slide, t: reduce || i != _page ? 1.0 : _entry.value, parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
                         ),
+                      _PlacePage(onDone: () => _goTo(_nameIndex)),
                       _NamePage(controller: _name, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),
                       _SupportPage(onDone: _finish),
                     ],
@@ -395,6 +402,96 @@ TextStyle onboardingTitleStyle(BuildContext context) =>
 
 /// La phrase sous le titre : le corps de texte, en encre secondaire.
 TextStyle onboardingBodyStyle(BuildContext context) => context.text.body.copyWith(fontSize: 17, height: 1.4, color: context.colors.inkSecondary);
+
+/// « Où sont vos plantes ? » : un bouton, et la ville est trouvée. Le lieu
+/// sert à la météo ; sans lui, rien ne manque, on le choisira plus tard.
+class _PlacePage extends ConsumerStatefulWidget {
+  const _PlacePage({required this.onDone});
+
+  final VoidCallback onDone;
+
+  @override
+  ConsumerState<_PlacePage> createState() => _PlacePageState();
+}
+
+class _PlacePageState extends ConsumerState<_PlacePage> {
+  bool _busy = false;
+  WeatherPlace? _found;
+
+  Future<void> _locate() async {
+    if (_busy) return;
+    final l10n = context.l10n;
+    setState(() => _busy = true);
+    final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    WeatherPlace? place;
+    try {
+      place = await ref.read(locationServiceProvider).currentPlace(language: lang);
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'onboarding_location');
+    }
+    if (!mounted) return;
+    if (place == null) {
+      setState(() => _busy = false);
+      ref.read(toastProvider.notifier).show(ToastData(message: l10n.locationFailed, emoji: '!'));
+      return;
+    }
+    await ref.read(preferencesProvider.notifier).setWeatherPlace(place);
+    Haptics.success();
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _found = place;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final found = _found ?? ref.watch(preferencesProvider.select((p) => p.weatherPlace));
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: floraScrollPhysics,
+        padding: const EdgeInsets.symmetric(horizontal: Space.page),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: Space.xl),
+                Text(l10n.onbPlaceTitle, style: onboardingTitleStyle(context)),
+                const SizedBox(height: Space.sm),
+                Text(l10n.onbPlaceBody, style: onboardingBodyStyle(context)),
+                if (found != null) ...[
+                  const SizedBox(height: Space.lg),
+                  FloraCard(
+                    child: Row(
+                      children: [
+                        EmojiTile(emoji: '📍', background: c.waterSoft),
+                        const SizedBox(width: Space.sm),
+                        Expanded(child: Text(found.name, style: context.text.title3)),
+                        Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage),
+                      ],
+                    ),
+                  ),
+                ],
+                const Spacer(),
+                const SizedBox(height: Space.xl),
+                if (found != null)
+                  OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
+                else
+                  OnboardingButton(label: _busy ? l10n.locating : l10n.useMyLocation, trailingIcon: _busy ? null : CupertinoIcons.location_fill, onPressed: _locate),
+                const SizedBox(height: Space.xs),
+                OnboardingButton(label: l10n.later, filled: false, onPressed: widget.onDone),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _NamePage extends StatelessWidget {
   const _NamePage({required this.controller, required this.onSubmit, required this.onSkip});

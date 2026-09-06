@@ -26,7 +26,9 @@ for (const scheme of ['light', 'dark']) {
   // « Continuer » : le bouton plein du bas. L'objet met trois secondes à se
   // poser : on attend qu'il soit net.
   for (let i = 2; i <= 5; i++) { await p.mouse.click(195, 798); await p.waitForTimeout(4000); await shot(String(i)); }
-  await p.mouse.click(195, 798); await p.waitForTimeout(2600); await shot('name');
+  // Après les cinq présentations vient l'étape du lieu, avec ses propres
+  // boutons ; « Plus tard » mène au prénom.
+  await p.mouse.click(195, 798); await p.waitForTimeout(2600); await shot('place');
   await p.close();
 }
 await b.close();

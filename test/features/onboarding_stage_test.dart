@@ -158,53 +158,25 @@ void main() {
     });
   });
 
-  group("l'horloge de la boucle", () {
-    const clock = LoopClock(playFor: Duration(seconds: 1));
-
-    test('joue à pleine vitesse le temps demandé', () {
-      expect(clock.phase(Duration.zero), 0);
-      expect(clock.phase(const Duration(milliseconds: 500)), 0.5);
-      expect(clock.phase(const Duration(seconds: 1)), 1);
+  group('la respiration', () {
+    test('part du repos et y revient à chaque tour', () {
+      expect(const BreathPose(0).lift, closeTo(0, 1e-9));
+      expect(const BreathPose(1).lift, closeTo(0, 1e-9));
+      expect(const BreathPose(0.25).lift, closeTo(1, 1e-9));
+      expect(const BreathPose(0.75).lift, closeTo(-1, 1e-9));
     });
 
-    test('freine ensuite sans à-coup, deux fois plus longtemps que la distance restante', () {
-      // Un tour à parcourir, deux secondes pour le faire.
-      expect(clock.brakingDuration, const Duration(seconds: 2));
-      expect(clock.total, const Duration(seconds: 3));
-      // Juste après le début du freinage, la vitesse est encore celle de la
-      // pleine vitesse : un tour par seconde.
-      final before = clock.phase(const Duration(milliseconds: 1000));
-      final after = clock.phase(const Duration(milliseconds: 1010));
-      expect((after - before) / 0.010, closeTo(1, 0.02));
-      // Juste avant la fin, l'objet ne bouge presque plus.
-      final near = clock.phase(const Duration(milliseconds: 2990));
-      final end = clock.phase(const Duration(milliseconds: 3000));
-      expect((end - near) / 0.010, lessThan(0.02));
+    test("l'inclinaison est en retard d'un quart de tour sur la hauteur", () {
+      expect(const BreathPose(0.25).tilt, closeTo(0, 1e-9));
+      expect(const BreathPose(0.5).tilt, closeTo(1, 1e-9));
     });
 
-    test('se pose sur un tour entier, la pose de repos', () {
-      expect(clock.phase(clock.total), 2);
-      expect(clock.frame(clock.total), 0);
-      expect(clock.done(clock.total), isTrue);
-      expect(clock.done(clock.total - const Duration(milliseconds: 1)), isFalse);
-    });
-
-    test("ne recule jamais", () {
-      var last = -1.0;
-      for (var ms = 0; ms <= 3000; ms += 10) {
-        final p = clock.phase(Duration(milliseconds: ms));
-        expect(p, greaterThanOrEqualTo(last));
-        last = p;
-      }
-    });
-
-    test("montre l'image fixe au départ, la cache au milieu, la ramène à la fin", () {
-      expect(clock.still(Duration.zero), 1);
-      expect(clock.still(const Duration(milliseconds: 500)), 0);
-      expect(clock.still(const Duration(milliseconds: 2000)), 0);
-      expect(clock.still(const Duration(milliseconds: 2700)), greaterThan(0));
-      expect(clock.still(const Duration(milliseconds: 2700)), lessThan(1));
-      expect(clock.still(clock.total), 1);
+    test("l'ombre se resserre et pâlit quand l'objet monte", () {
+      final low = const BreathPose(0.75), high = const BreathPose(0.25);
+      expect(high.shadowScale, lessThan(low.shadowScale));
+      expect(high.shadowOpacity, lessThan(low.shadowOpacity));
+      expect(low.shadowScale, closeTo(1, 1e-9));
+      expect(low.shadowOpacity, closeTo(1, 1e-9));
     });
   });
 }

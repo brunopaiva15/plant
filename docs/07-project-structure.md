@@ -23,11 +23,12 @@ lib/
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
 │   ├── diagnosis/                 PlantDiagnoser (interface, causes)
+│   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
 │   └── auth/                      AuthRepository, AppUser
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, OpenMeteoService
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService
 │   └── auth/                      LocalAuthRepository
 ├── features/
 │   ├── onboarding/

@@ -18,6 +18,7 @@ import '../data/repositories/attachment_repository_impl.dart';
 import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
 import '../core/config/diagnosis_config.dart';
+import '../data/services/device_location_service.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
@@ -37,6 +38,7 @@ import '../data/services/preferences_service.dart';
 import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
+import '../domain/location/location_service.dart';
 import '../domain/species/species_info.dart';
 import '../core/utils/scientific_name.dart';
 import '../data/services/preferences_metrics_store.dart';
@@ -279,6 +281,10 @@ CatalogMatch? catalogLookup(String scientificName, SpeciesIndex? index, String l
 }
 
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
+
+/// La position de l'appareil, pour proposer le lieu de la météo à
+/// l'onboarding. Remplacée dans les tests par un service muet.
+final locationServiceProvider = Provider<LocationService>((ref) => const DeviceLocationService());
 
 /// Soutien facultatif : le magasin de la plateforme là où il y en a un.
 /// Ailleurs — le web, le bureau, les tests — l'offre est simplement absente.

@@ -948,6 +948,28 @@ class AppLocalizationsDe extends AppLocalizations {
       'Füge sie eine nach der anderen hinzu, mit Foto, wenn du magst.';
 
   @override
+  String get onbPlaceTitle => 'Wo stehen deine Pflanzen?';
+
+  @override
+  String get onbPlaceBody =>
+      'Für das Wetter des Tages und das Gießen draußen. Eine Stadt genügt; dein genauer Standort wird weder gespeichert noch geteilt.';
+
+  @override
+  String get useMyLocation => 'Meinen Standort verwenden';
+
+  @override
+  String get locating => 'Deine Stadt wird gesucht…';
+
+  @override
+  String get locationFailed =>
+      'Standort nicht verfügbar. Du kannst unter Profil › Wetter eine Stadt wählen.';
+
+  @override
+  String placeChosen(String place) {
+    return 'Wetter auf $place eingestellt.';
+  }
+
+  @override
   String get askNameTitle => 'Wie heißt du?';
 
   @override

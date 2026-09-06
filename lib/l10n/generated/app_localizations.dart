@@ -1740,6 +1740,42 @@ abstract class AppLocalizations {
   /// **'Ajoutez-les une par une, avec une photo si vous voulez.'**
   String get onboardingSubtitle;
 
+  /// No description provided for @onbPlaceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où sont vos plantes ?'**
+  String get onbPlaceTitle;
+
+  /// No description provided for @onbPlaceBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour la météo du jour et l\'arrosage dehors. Une ville suffit ; votre position exacte n\'est ni gardée ni partagée.'**
+  String get onbPlaceBody;
+
+  /// No description provided for @useMyLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser ma position'**
+  String get useMyLocation;
+
+  /// No description provided for @locating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche de votre ville…'**
+  String get locating;
+
+  /// No description provided for @locationFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.'**
+  String get locationFailed;
+
+  /// No description provided for @placeChosen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Météo réglée sur {place}.'**
+  String placeChosen(String place);
+
   /// No description provided for @askNameTitle.
   ///
   /// In fr, this message translates to:

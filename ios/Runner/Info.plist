@@ -77,6 +77,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Flora utilise votre position, une fois, pour trouver la ville de la météo. Elle n'est ni gardée ni partagée.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Flora utilise l'appareil photo pour photographier vos plantes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
