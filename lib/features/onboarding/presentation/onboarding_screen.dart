@@ -165,10 +165,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
 
   void _goTo(int page) {
     Haptics.light();
+    // Le clavier du prénom ne doit pas suivre sur l'écran suivant.
+    if (page != _nameIndex) FocusManager.instance.primaryFocus?.unfocus();
     _pages.animateToPage(page, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
   }
 
   void _onPageChanged(int page) {
+    if (page != _nameIndex) FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _page = page);
     _keepIllustrations(page);
     // Chaque écran rejoue son entrée à l'arrivée, jamais avant ; le fond
