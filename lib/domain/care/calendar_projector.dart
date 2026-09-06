@@ -27,7 +27,7 @@ abstract final class CalendarProjector {
       if (p == null) continue;
       final d = a.occurredAt.dateOnly;
       if (d.isBefore(start) || d.isAfter(end)) continue;
-      events.add(CalendarEvent(date: a.occurredAt, plantId: a.plantId, plantName: p.plant.name, thumbPath: p.thumbPath, typeKey: a.typeKey, kind: CalendarEventKind.past, actionId: a.id));
+      events.add(CalendarEvent(date: a.occurredAt, plantId: a.plantId, plantName: p.plant.name, thumbPath: p.thumbPath, thumbUrl: p.thumbUrl, typeKey: a.typeKey, kind: CalendarEventKind.past, actionId: a.id));
     }
 
     for (final s in schedules) {
@@ -38,7 +38,7 @@ abstract final class CalendarProjector {
       var guard = 0;
       while (!occurrence.isAfter(end) && guard++ < maxPerSchedule) {
         if (!occurrence.isBefore(start)) {
-          events.add(CalendarEvent(date: occurrence, plantId: s.plantId, plantName: p.plant.name, thumbPath: p.thumbPath, typeKey: s.typeKey, kind: kind, scheduleId: s.id));
+          events.add(CalendarEvent(date: occurrence, plantId: s.plantId, plantName: p.plant.name, thumbPath: p.thumbPath, thumbUrl: p.thumbUrl, typeKey: s.typeKey, kind: kind, scheduleId: s.id));
         }
         final interval = CareEngine.effectiveInterval(s, occurrence);
         occurrence = occurrence.addDays(interval);
@@ -59,6 +59,7 @@ abstract final class CalendarProjector {
           plantId: p?.plant.id,
           plantName: p?.plant.name,
           thumbPath: p?.thumbPath,
+          thumbUrl: p?.thumbUrl,
           title: e.title,
           typeKey: 'event',
           kind: CalendarEventKind.custom,

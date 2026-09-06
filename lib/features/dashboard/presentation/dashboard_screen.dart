@@ -158,7 +158,7 @@ class _WarningRow extends StatelessWidget {
     return FloraListRow(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: SizedBox(width: 34, height: 34, child: PlantImage(relativePath: warning.plant.thumbPath, cacheWidth: 102)),
+        child: SizedBox(width: 34, height: 34, child: PlantImage(relativePath: warning.plant.thumbPath, remoteUrl: warning.plant.thumbUrl, cacheWidth: 102)),
       ),
       title: warning.plant.plant.name,
       subtitle: label,
@@ -194,7 +194,7 @@ class _RecentCarousel extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: Radii.largeAll,
-                  child: SizedBox(width: 96, height: 96, child: PlantImage(relativePath: p.thumbPath, cacheWidth: 288)),
+                  child: SizedBox(width: 96, height: 96, child: PlantImage(relativePath: p.thumbPath, remoteUrl: p.thumbUrl, cacheWidth: 288)),
                 ),
                 const SizedBox(height: Space.xxs),
                 Text(p.plant.name, style: context.text.caption.copyWith(color: c.ink), maxLines: 1, overflow: TextOverflow.ellipsis),

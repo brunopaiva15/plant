@@ -20,7 +20,7 @@ class DriftPlantRepository implements PlantRepository {
 
   /// Requête unique pour les cartes : plante + emplacement + miniature + prochain soin.
   static const _summarySql = '''
-    SELECT p.*, l.name AS location_name, ph.thumb_path AS thumb_path,
+    SELECT p.*, l.name AS location_name, ph.thumb_path AS thumb_path, ph.remote_url AS thumb_url,
       (SELECT cs.next_due_at FROM care_schedules cs
          WHERE cs.plant_id = p.id AND cs.enabled = 1 AND cs.next_due_at IS NOT NULL
          ORDER BY cs.next_due_at ASC LIMIT 1) AS next_due_at,
@@ -41,6 +41,7 @@ class DriftPlantRepository implements PlantRepository {
     final data = Map<String, Object?>.from(row.data)
       ..remove('location_name')
       ..remove('thumb_path')
+      ..remove('thumb_url')
       ..remove('next_due_at')
       ..remove('next_type')
       ..remove('tag_names');
@@ -50,6 +51,7 @@ class DriftPlantRepository implements PlantRepository {
       plant: plant,
       locationName: row.readNullable<String>('location_name'),
       thumbPath: row.readNullable<String>('thumb_path'),
+      thumbUrl: row.readNullable<String>('thumb_url'),
       nextDueAt: row.readNullable<DateTime>('next_due_at'),
       nextDueTypeKey: row.readNullable<String>('next_type'),
       tags: rawTags == null || rawTags.isEmpty ? const [] : rawTags.split(tagSeparator),

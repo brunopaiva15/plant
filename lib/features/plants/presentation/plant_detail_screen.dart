@@ -200,7 +200,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       onTap: primary == null ? _addPhoto : () => context.push(Routes.plantGallery(id)),
                       scale: 1,
                       haptic: false,
-                      child: PlantImage(relativePath: primary?.filePath ?? summary.thumbPath, cacheWidth: 1200, heroTag: 'plant-$id', placeholderEmoji: '🪴'),
+                      child: PlantImage(relativePath: primary?.filePath ?? summary.thumbPath, remoteUrl: primary?.remoteUrl ?? summary.thumbUrl, cacheWidth: 1200, heroTag: 'plant-$id', placeholderEmoji: '🪴'),
                     ),
                   ),
                 ),
@@ -685,7 +685,7 @@ class _Growth extends StatelessWidget {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          PlantImage(relativePath: p.thumbPath, cacheWidth: 300),
+                          PlantImage(relativePath: p.thumbPath, remoteUrl: p.remoteUrl, cacheWidth: 300),
                           Positioned(
                             left: 6,
                             bottom: 6,
@@ -778,14 +778,14 @@ class _Cuttings extends ConsumerWidget {
               children: [
                 if (parent != null)
                   FloraListRow(
-                    leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: parent.thumbPath, cacheWidth: 96))),
+                    leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: parent.thumbPath, remoteUrl: parent.thumbUrl, cacheWidth: 96))),
                     title: parent.plant.name,
                     subtitle: l10n.parentPlant,
                     onTap: () => context.push(Routes.plant(parent.plant.id)),
                   ),
                 for (final child in children)
                   FloraListRow(
-                    leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: child.thumbPath, cacheWidth: 96))),
+                    leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: child.thumbPath, remoteUrl: child.thumbUrl, cacheWidth: 96))),
                     title: child.plant.name,
                     subtitle: child.locationName,
                     onTap: () => context.push(Routes.plant(child.plant.id)),

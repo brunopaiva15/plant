@@ -41,9 +41,12 @@ await shot('today');
 await go('/plants', 4000); await shot('plants');
 await p.mouse.click(104, 375); await p.waitForTimeout(3000);          // Basilic
 await shot('plant');
-await p.mouse.click(195, 765); await p.waitForTimeout(3500); await shot('care');       // Comment en prendre soin
-await p.goBack(); await p.waitForTimeout(2500);
-await p.mouse.click(330, 376); await p.waitForTimeout(3500); await shot('schedule');   // Planning
+// Sous l'en-tête photo, la carte d'entretien est hors écran : on descend à la molette
+// (un glissement de souris ne fait pas défiler Flutter web), puis on tape dessus.
+await p.mouse.move(195, 500); for (let i = 0; i < 6; i++) { await p.mouse.wheel(0, 400); await p.waitForTimeout(250); }
+await p.waitForTimeout(1200); await p.mouse.click(195, 745); await p.waitForTimeout(3500); await shot('care');
+await go('/plants', 4000); await p.mouse.click(104, 375); await p.waitForTimeout(3000);
+await p.mouse.click(340, 543); await p.waitForTimeout(3500); await shot('schedule');   // Planning
 await go('/garden', 4000); await shot('garden');
 await p.mouse.click(326, 168); await p.waitForTimeout(2500); await shot('garden-calendar');
 await p.mouse.click(150, 168); await p.waitForTimeout(2500); await shot('garden-tasks');

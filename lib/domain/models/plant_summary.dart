@@ -8,6 +8,7 @@ class PlantSummary {
     required this.plant,
     this.locationName,
     this.thumbPath,
+    this.thumbUrl,
     this.nextDueAt,
     this.nextDueTypeKey,
     this.tags = const [],
@@ -16,6 +17,9 @@ class PlantSummary {
   final Plant plant;
   final String? locationName;
   final String? thumbPath;
+
+  /// Photo principale hébergée ailleurs, quand elle n'a pas de fichier local.
+  final String? thumbUrl;
   final DateTime? nextDueAt;
   final String? nextDueTypeKey;
   final List<String> tags;

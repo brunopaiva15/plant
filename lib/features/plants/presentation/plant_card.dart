@@ -49,7 +49,7 @@ class PlantGridCard extends ConsumerWidget {
                       padding: const EdgeInsets.all(6),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.all(Radius.circular(18)),
-                        child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 480, heroTag: 'plant-${summary.plant.id}', heroRadius: const BorderRadius.all(Radius.circular(18))),
+                        child: PlantImage(relativePath: summary.thumbPath, remoteUrl: summary.thumbUrl, cacheWidth: 480, heroTag: 'plant-${summary.plant.id}', heroRadius: const BorderRadius.all(Radius.circular(18))),
                       ),
                     ),
                     if (summary.plant.isFavorite && !selecting)
@@ -134,7 +134,7 @@ class PlantListRow extends ConsumerWidget {
             child: SizedBox(
               width: 60,
               height: 60,
-              child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 180, heroTag: 'plant-${summary.plant.id}', heroRadius: Radii.mediumAll),
+              child: PlantImage(relativePath: summary.thumbPath, remoteUrl: summary.thumbUrl, cacheWidth: 180, heroTag: 'plant-${summary.plant.id}', heroRadius: Radii.mediumAll),
             ),
           ),
           const SizedBox(width: Space.sm),

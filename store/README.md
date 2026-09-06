@@ -34,6 +34,9 @@ dans `IDENT_RESULTS`, régénérer.
 flutter build web --profile --no-web-resources-cdn
 python3 store/serve.py 8081 build/web &
 
+# Les photos de démo (CC0, voir demo-photos/SOURCES.md) à côté du build
+cp -r store/demo-photos build/web/
+
 # Captures réelles (390 × 844 à 3×), données de démo, iOS
 node store/capture.mjs store/shots-fr fr-FR
 node store/capture.mjs store/shots-en en-US

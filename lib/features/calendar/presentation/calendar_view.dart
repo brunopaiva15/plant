@@ -211,7 +211,7 @@ class _EventRow extends ConsumerWidget {
       CalendarEventKind.custom => '',
     };
     return FloraListRow(
-      leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: event.thumbPath, cacheWidth: 96))),
+      leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: event.thumbPath, remoteUrl: event.thumbUrl, cacheWidth: 96))),
       title: event.plantName ?? '',
       subtitle: label,
       trailing: Text(custom?.emoji ?? CareKind.fromKey(event.typeKey)?.emoji ?? '✓', style: TextStyle(fontSize: 18, color: event.kind == CalendarEventKind.projected ? c.inkTertiary : null)),

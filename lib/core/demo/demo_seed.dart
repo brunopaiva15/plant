@@ -6,6 +6,7 @@ import '../../data/repositories/calendar_repository_impl.dart';
 import '../../data/repositories/care_repository_impl.dart';
 import '../../data/repositories/inventory_repository_impl.dart';
 import '../../data/repositories/location_repository_impl.dart';
+import '../../data/repositories/photo_repository_impl.dart';
 import '../../data/repositories/plant_repository_impl.dart';
 import '../../data/repositories/tag_repository_impl.dart';
 import '../../data/repositories/task_repository_impl.dart';
@@ -13,8 +14,8 @@ import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
 
 /// Jeu de données de démonstration pour la revue visuelle sur le web
-/// (`?demo`), jamais en release. Aucune photo : les vignettes restent des
-/// placeholders.
+/// (`?demo`), jamais en release. Les photos sont des liens vers des
+/// fichiers CC0 servis à côté du build (store/demo-photos).
 abstract final class DemoSeed {
   static bool get requested => !kReleaseMode && kIsWeb && Uri.base.queryParameters.containsKey('demo');
 
@@ -48,6 +49,15 @@ abstract final class DemoSeed {
     final basilic = await mk('Basilic', 'Ocimum basilicum', balcon, water: 2, fert: 14);
     final pothos = await mk('Pothos', 'Epipremnum aureum', bureau, water: 9);
     final hoya = await mk('Hoya', 'Hoya carnosa', salon, water: 12, fert: 60);
+
+    // Des photos, pour que la démo ressemble à une vraie collection : des
+    // observations iNaturalist en CC0 (store/demo-photos, avec leurs
+    // sources), servies à côté du build web. Distantes, donc jamais copiées.
+    final photos = DriftPhotoRepository(db);
+    for (final (plant, slug) in [(monstera, 'monstera'), (pilea, 'pilea'), (ficus, 'ficus'), (calathea, 'calathea'), (olivier, 'olivier'), (basilic, 'basilic'), (pothos, 'pothos'), (hoya, 'hoya')]) {
+      final photo = await photos.addFromUrl(plantId: plant.id, url: '${Uri.base.origin}/demo-photos/$slug.jpg');
+      await photos.setPrimary(plant.id, photo.id);
+    }
 
     // Historique : arrosages passés qui rendent certains soins dus aujourd'hui / en retard.
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 8))));

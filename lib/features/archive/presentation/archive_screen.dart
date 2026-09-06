@@ -211,7 +211,7 @@ class _ArchiveRow extends ConsumerWidget {
     return FloraListRow(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: SizedBox(width: 44, height: 44, child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 132)),
+        child: SizedBox(width: 44, height: 44, child: PlantImage(relativePath: summary.thumbPath, remoteUrl: summary.thumbUrl, cacheWidth: 132)),
       ),
       title: summary.plant.name,
       subtitle: _subtitle(context, summary),
@@ -238,7 +238,7 @@ class _ArchiveCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: PlantImage(relativePath: summary.thumbPath, cacheWidth: 400)),
+            Expanded(child: PlantImage(relativePath: summary.thumbPath, remoteUrl: summary.thumbUrl, cacheWidth: 400)),
             Padding(
               padding: const EdgeInsets.all(Space.sm),
               child: Column(

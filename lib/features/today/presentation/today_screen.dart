@@ -276,7 +276,7 @@ class _RecentPhotos extends ConsumerWidget {
                 scale: 0.96,
                 child: ClipRRect(
                   borderRadius: Radii.mediumAll,
-                  child: SizedBox(width: 100, height: 128, child: PlantImage(relativePath: photos[i].thumbPath, cacheWidth: 300)),
+                  child: SizedBox(width: 100, height: 128, child: PlantImage(relativePath: photos[i].thumbPath, remoteUrl: photos[i].remoteUrl, cacheWidth: 300)),
                 ),
               ),
             ),

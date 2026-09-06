@@ -68,7 +68,7 @@ class _CareTaskCardState extends ConsumerState<CareTaskCard> {
             child: SizedBox(
               width: widget.compact ? 52 : 64,
               height: widget.compact ? 52 : 64,
-              child: PlantImage(relativePath: t.summary.thumbPath, cacheWidth: 192),
+              child: PlantImage(relativePath: t.summary.thumbPath, remoteUrl: t.summary.thumbUrl, cacheWidth: 192),
             ),
           ),
           const SizedBox(width: Space.sm),

@@ -70,7 +70,7 @@ class _PlantPickerBodyState extends ConsumerState<_PlantPickerBody> {
                 ),
               for (final p in plants)
                 FloraListRow(
-                  leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: p.thumbPath, cacheWidth: 96))),
+                  leading: ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: p.thumbPath, remoteUrl: p.thumbUrl, cacheWidth: 96))),
                   title: p.plant.name,
                   subtitle: p.locationName,
                   dense: true,

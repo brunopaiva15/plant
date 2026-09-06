@@ -20,6 +20,7 @@ class CalendarEvent {
     this.plantId,
     this.plantName,
     this.thumbPath,
+    this.thumbUrl,
     this.title,
     this.scheduleId,
     this.actionId,
@@ -35,6 +36,7 @@ class CalendarEvent {
   final String? plantId;
   final String? plantName;
   final String? thumbPath;
+  final String? thumbUrl;
 
   /// Titre d'un événement saisi à la main.
   final String? title;
