@@ -258,19 +258,42 @@ def place_clay(canvas, index, size, pos):
     paste_with_shadow(canvas, obj, pos, blur=50, offset=(10, 40), alpha=0.24)
 
 
-def sticker(canvas, shot_path, box, width, pos, radius=54, angle=0.0):
-    """Un morceau d'interface découpé dans la capture et posé en avant."""
-    shot = Image.open(shot_path).convert('RGB')
+def cutout(shot, box, radius):
+    """Une carte découpée dans la capture, exactement sur ses bords, avec
+    ses coins : rien du fond de l'écran ne vient avec elle."""
     crop = shot.crop(box)
-    scale = width / crop.width
-    crop = crop.resize((width, int(crop.height * scale)), Image.LANCZOS)
     mask = Image.new('L', crop.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, crop.width - 1, crop.height - 1), radius=radius, fill=255)
     layer = Image.new('RGBA', crop.size, (0, 0, 0, 0))
     layer.paste(crop, (0, 0), mask)
+    return layer
+
+
+def place_layer(canvas, layer, width, pos, angle):
+    scale = width / layer.width
+    layer = layer.resize((width, int(layer.height * scale)), Image.LANCZOS)
     if angle:
         layer = layer.rotate(angle, resample=Image.BICUBIC, expand=True)
     paste_with_shadow(canvas, layer, pos, blur=45, offset=(10, 34), alpha=0.30)
+
+
+def sticker(canvas, shot_path, box, width, pos, radius=76, angle=0.0):
+    """Un morceau d'interface découpé dans la capture et posé en avant.
+    [radius] est celui de la carte dans la capture (24 pt × 3)."""
+    shot = Image.open(shot_path).convert('RGB')
+    place_layer(canvas, cutout(shot, box, radius), width, pos, angle)
+
+
+def stickers(canvas, shot_path, boxes, width, pos, radius=76, angle=0.0):
+    """Plusieurs cartes de la même capture, gardant leurs positions
+    relatives, sans le fond entre elles."""
+    shot = Image.open(shot_path).convert('RGB')
+    x0 = min(b[0] for b in boxes)
+    y0 = min(b[1] for b in boxes)
+    layer = Image.new('RGBA', (max(b[2] for b in boxes) - x0, max(b[3] for b in boxes) - y0), (0, 0, 0, 0))
+    for b in boxes:
+        layer.alpha_composite(cutout(shot, b, radius), (b[0] - x0, b[1] - y0))
+    place_layer(canvas, layer, width, pos, angle)
 
 
 # --- la carte d'identification ----------------------------------------------------
@@ -371,7 +394,9 @@ COPY = {
 
 
 # La ligne « Calathea · Arroser » dans la capture d'Aujourd'hui, par langue.
-TODAY_ROW = {'fr': (54, 1636, 1116, 1916), 'en': (54, 1574, 1116, 1856)}
+TODAY_ROW = {'fr': (54, 1638, 1116, 1920), 'en': (54, 1578, 1116, 1860)}
+# Les quatre premières tuiles du tableau de bord, identiques dans les deux langues.
+DASHBOARD_TILES = [(54, 216, 567, 540), (603, 216, 1116, 540), (54, 576, 567, 819), (603, 576, 1116, 819)]
 
 
 def build(shots, out, lang):
@@ -410,7 +435,7 @@ def build(shots, out, lang):
     place_phone(img, S('garden-calendar'), y=1060, angle=3.5)
     place_clay(img, 4, 540, (40, 660))
     # quatre tuiles du tableau de bord
-    sticker(img, S('dashboard'), (54, 215, 1116, 905), 660, (640, 1880), angle=-4)
+    stickers(img, S('dashboard'), DASHBOARD_TILES, 660, (640, 1880), angle=-4)
     img.convert('RGB').save(os.path.join(out, '4.png'), optimize=True)
 
     # 5 — les données
