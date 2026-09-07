@@ -15,7 +15,7 @@ Ce fichier ne dit que comment lancer l'outil.
 ```bash
 cd tools/plant_dataset
 python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
-python3 -m pytest -q                          # 52 tests, sans réseau
+python3 -m pytest -q                          # 78 tests, sans réseau
 ```
 
 ## Fichiers
@@ -26,6 +26,7 @@ python3 -m pytest -q                          # 52 tests, sans réseau
 | `export_plants.py` | Régénère `plants.csv` depuis le catalogue de l'app (`lib/data/species/species_catalog.dart`) sans perdre les identifiants déjà résolus. |
 | `enrich_plants.py` | Remplit `gbif_key` et `wikidata_id` (réseau). |
 | `build_dataset.py` | Collecte les images, vérifie, déduplique, répartit, attribue. |
+| `merge_shards.py` | Recolle des collectes menées en parallèle sur des parts disjointes du catalogue. |
 | `plant_dataset/` | Le paquet : `taxonomy` (noms), `licenses`, `manifest`, `images`, `dedup`, `splits`, `fetchers/gbif`. |
 | `tests/` | Tests unitaires, avec des réponses GBIF réelles enregistrées dans `tests/fixtures/`. |
 | `dataset/` | Sortie. **Ignorée par Git.** |
@@ -75,10 +76,56 @@ Puis vérifier à la main :
 | `--captive-place ID` | | lieu iNaturalist (97391 = Europe) : les plantes cultivées de cette région sont collectées **en premier**, en plus de la cible |
 | `--place-share` | 0,25 | part de la cible ajoutée en plantes cultivées de la région |
 | `--skip-fetch` | | ne rien télécharger : dédupliquer, répartir, compter ce qui est déjà là |
+| `--workers N` | 6 | téléchargements en parallèle |
+| `--gbif-pause` / `--inat-pause` | 0,25 / 1 | cadence des requêtes, en secondes ; à augmenter quand plusieurs collectes tournent |
 
 L'outil est relançable : ce qui figure déjà dans `manifest.jsonl` n'est pas
 retéléchargé, et les identifiants de source (`gbif`, `<clé d'occurrence>#<n>`)
 évitent tout doublon d'origine.
+
+## Collecter le catalogue entier, en parallèle
+
+Une collecte d'un seul tenant occupe un cœur et laisse le réseau attendre :
+1 558 espèces prennent près de sept heures. Découpée en parts disjointes,
+elle tient sur les quatre cœurs de la machine et descend sous les trois
+heures. Les parts ne se chevauchent pas, donc la fusion est un déplacement
+de dossiers.
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+noms = [l.strip() for l in Path('all_species.txt').read_text().splitlines() if l.strip()]
+interieur = {l.strip() for l in Path('phase1_species.txt').read_text().splitlines() if l.strip()}
+# Les plantes d'intérieur coûtent deux fois plus (passes « en pot ») : on les
+# met en tête pour que les trois parts durent le même temps.
+ordre = [n for n in noms if n in interieur] + [n for n in noms if n not in interieur]
+for i in range(3):
+    Path(f'shard{i}.txt').write_text('\n'.join(ordre[i::3]) + '\n')
+PY
+
+for i in 0 1 2; do
+  mkdir -p shard$i && cp cache/species.json cache/species_inat.json shard$i/
+  nohup python3 build_dataset.py --plants plants.csv --out shard$i --only-file shard$i.txt \
+    --target-per-species 200 --allow-sa \
+    --captive-file phase1_species.txt --captive-share 0.5 \
+    --captive-place 97391 --place-share 0.25 \
+    --workers 8 --gbif-pause 0.6 --inat-pause 2.0 > shard$i.log 2>&1 &
+done
+wait
+
+python3 merge_shards.py --out dataset shard0 shard1 shard2
+python3 build_dataset.py --out dataset --plants plants.csv --skip-fetch
+```
+
+La dernière ligne n'est pas facultative : déduplication entre espèces,
+répartition et statistiques portent sur l'ensemble, et aucune part ne peut
+les faire seule.
+
+C'est la recette qui produit le jeu de la v6 (§ 6.6 de
+[`docs/09`](../../docs/09-plant-recognition.md)). Une seconde passe sur
+`phase1_species.txt` à `--target-per-species 300` ajoute ensuite les photos
+de plantes en pot par-dessus la cible : ce sont celles qui décrivent l'usage
+réel de l'application.
 
 ## Licences acceptées
 
