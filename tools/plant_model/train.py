@@ -157,7 +157,7 @@ def read_and_square(path, label):
     return tf.cast(image, tf.uint8), label
 
 
-def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0):
+def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0, preload: bool = True):
     """Précharge en mémoire tant que ça tient dans le budget, sinon relit les
     fichiers à chaque époque.
 
@@ -179,11 +179,12 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
     counts = Counter(label for _, label in usable)
     estimate = len(usable) * LOAD_SIZE * LOAD_SIZE * 3 / 1e9
 
-    if estimate <= ram_budget_gb:
+    if preload and estimate <= ram_budget_gb:
         images, labels = load_all(usable)
         ds = array_dataset(images, labels, training)
     else:
-        print(f'  {len(usable)} images = {estimate:.1f} Go > budget {ram_budget_gb} Go : lecture depuis les fichiers')
+        if preload:
+            print(f'  {len(usable)} images = {estimate:.1f} Go > budget {ram_budget_gb} Go : lecture depuis les fichiers')
         paths = [p for p, _ in usable]
         labels = [l for _, l in usable]
         ds = tf.data.Dataset.from_tensor_slices((paths, labels)).map(read_and_square, num_parallel_calls=AUTOTUNE)
@@ -192,7 +193,7 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
         # La liste est déjà mélangée globalement ; le tampon ne sert plus qu'à
         # varier l'ordre d'une époque à l'autre pour la lecture de fichiers
         # (le chemin en mémoire permute lui-même, voir array_dataset).
-        if estimate > ram_budget_gb:
+        if not preload or estimate > ram_budget_gb:
             ds = ds.shuffle(min(len(usable), 8192), reshuffle_each_iteration=True)
         ds = ds.map(augment, num_parallel_calls=AUTOTUNE)
     else:
@@ -359,6 +360,8 @@ def main() -> int:
     ap.add_argument('--version', default='1')
     ap.add_argument('--backbone', choices=sorted(BACKBONES), default='small', help='MobileNetV3 small (v1 à v3) ou large')
     ap.add_argument('--ram-budget', type=float, default=5.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
+    ap.add_argument('--steps-per-epoch', type=int, help='lots par époque ; une époque courte = des points de sauvegarde fréquents')
+    ap.add_argument('--val-max', type=int, default=6000, help='images de validation pendant l\'entraînement ; l\'évaluation finale reste complète')
     ap.add_argument('--checkpoint', help='dossier où les poids sont sauvés après chaque époque, et d\'où l\'entraînement reprend')
     args = ap.parse_args()
 
@@ -371,8 +374,15 @@ def main() -> int:
     print(f'{len(classes)} classes, {len(rows["train"])} train / {len(rows["val"])} val / {len(rows["test"])} test')
 
     train_ds, counts, _ = make_dataset(rows['train'], classes, args.batch, training=True, ram_budget_gb=args.ram_budget)
-    val_ds, _, _ = make_dataset(rows['val'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
-    test_ds, _, test_paths = make_dataset(rows['test'], classes, args.batch, training=False, ram_budget_gb=args.ram_budget)
+    # La validation d'époque se fait sur un échantillon : elle sert à suivre
+    # la courbe et à décider de l'arrêt, pas à mesurer le modèle. La mesure,
+    # c'est le jeu de test à la fin, entier. Les deux se lisent depuis les
+    # fichiers : précharger 47 000 JPEG coûtait dix minutes au démarrage, et
+    # cette machine redémarre souvent.
+    val_rows = rows['val']
+    if args.val_max and len(val_rows) > args.val_max:
+        val_rows = random.Random(SHUFFLE_SEED).sample(val_rows, args.val_max)
+    val_ds, _, _ = make_dataset(val_rows, classes, args.batch, training=False, ram_budget_gb=args.ram_budget, preload=False)
 
     model = build_model(len(classes), args.dropout, args.backbone)
     weights = class_weights(counts, len(classes))
@@ -423,7 +433,7 @@ def main() -> int:
         print(f'reprise : tête, {head_done} époque(s) terminée(s)')
     if not in_fine and head_done < args.head_epochs:
         model.fit(train_ds, validation_data=val_ds, initial_epoch=head_done, epochs=args.head_epochs,
-                  class_weight=weights, verbose=2,
+                  steps_per_epoch=args.steps_per_epoch, class_weight=weights, verbose=2,
                   callbacks=[_Checkpoint(head_w, 'head_epochs_done')] if ckpt else [])
 
     model.base.trainable = True
@@ -448,8 +458,10 @@ def main() -> int:
         callbacks.append(_Checkpoint(fine_w, 'fine_epochs_done'))
     if fine_done < args.fine_epochs:
         model.fit(train_ds, validation_data=val_ds, initial_epoch=fine_done, epochs=args.fine_epochs,
-                  class_weight=weights, verbose=2, callbacks=callbacks)
+                  steps_per_epoch=args.steps_per_epoch, class_weight=weights, verbose=2, callbacks=callbacks)
 
+    test_ds, _, test_paths = make_dataset(rows['test'], classes, args.batch, training=False,
+                                          ram_budget_gb=args.ram_budget, preload=False)
     metrics = evaluate(model, test_ds, classes, captive_mask=[p in captive for p in test_paths])
     metrics['version'] = args.version
     print(json.dumps({k: v for k, v in metrics.items() if k != 'threshold_curve'}, indent=1))
