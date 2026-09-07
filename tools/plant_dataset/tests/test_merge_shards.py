@@ -14,7 +14,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from merge_shards import merge, merge_caches  # noqa: E402
+from merge_shards import merge, merge_caches, move_into  # noqa: E402
 
 
 def make_shard(root: Path, species: dict[str, list[str]], caches: dict | None = None) -> Path:
@@ -96,3 +96,58 @@ def test_une_part_sans_manifeste_arrete_la_fusion(tmp_path):
 
     with pytest.raises(SystemExit):
         merge([a, vide], tmp_path / 'dataset')
+
+
+def test_une_espece_presente_dans_deux_parts_ne_perd_pas_ses_images(tmp_path):
+    """Deux noms du catalogue peuvent donner le même dossier — `Citrus ×
+    sinensis` y figurait deux fois — et le découpage les envoie à des parts
+    différentes. Écraser le dossier perdrait la moitié des images."""
+    a = make_shard(tmp_path / 'a', {'Citrus_x_sinensis': ['aa', 'bb']})
+    b = make_shard(tmp_path / 'b', {'Citrus_x_sinensis': ['cc']})
+    out = tmp_path / 'dataset'
+
+    merge([a, b], out)
+
+    assert sorted(p.name for p in (out / 'Citrus_x_sinensis').iterdir()) == ['aa.jpg', 'bb.jpg', 'cc.jpg']
+
+
+def test_deux_fichiers_de_meme_nom_sont_la_meme_image(tmp_path):
+    """Le nom d'un fichier est le début de son empreinte : deux parts qui ont
+    téléchargé la même image écrivent le même nom. Écraser est sans effet, et
+    la fusion ne doit pas s'en plaindre."""
+    a = make_shard(tmp_path / 'a', {'Citrus_x_sinensis': ['aa']})
+    b = make_shard(tmp_path / 'b', {'Citrus_x_sinensis': ['aa']})
+    out = tmp_path / 'dataset'
+
+    merge([a, b], out)
+
+    assert [p.name for p in (out / 'Citrus_x_sinensis').iterdir()] == ['aa.jpg']
+
+
+def test_les_sous_dossiers_de_statut_fusionnent_en_profondeur(tmp_path):
+    """`_rejected/<espèce>/<image>` : la collision est à deux niveaux."""
+    a = tmp_path / 'a'
+    make_shard(a, {'Monstera_deliciosa': ['aa']})
+    (a / '_rejected' / 'Rosa_x_hybrida').mkdir(parents=True)
+    (a / '_rejected' / 'Rosa_x_hybrida' / 'x.jpg').write_bytes(b'jpeg')
+    b = tmp_path / 'b'
+    make_shard(b, {'Aloe_vera': ['cc']})
+    (b / '_rejected' / 'Rosa_x_hybrida').mkdir(parents=True)
+    (b / '_rejected' / 'Rosa_x_hybrida' / 'y.jpg').write_bytes(b'jpeg')
+    out = tmp_path / 'dataset'
+
+    merge([a, b], out)
+
+    assert sorted(p.name for p in (out / '_rejected' / 'Rosa_x_hybrida').iterdir()) == ['x.jpg', 'y.jpg']
+
+
+def test_move_into_compte_les_fichiers_pas_les_dossiers(tmp_path):
+    source, target = tmp_path / 's', tmp_path / 't'
+    (source / 'sub').mkdir(parents=True)
+    (source / 'sub' / 'a.jpg').write_bytes(b'1')
+    (source / 'sub' / 'b.jpg').write_bytes(b'2')
+    target.mkdir()
+    (target / 'sub').mkdir()
+
+    assert move_into(source, target) == 2
+    assert not source.exists()

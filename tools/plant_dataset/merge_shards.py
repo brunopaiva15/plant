@@ -19,13 +19,38 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
 import sys
 from pathlib import Path
 
 # Écrits par la finalisation de chaque part ; refaits sur l'ensemble.
 PER_RUN = {'manifest.jsonl', 'splits.csv', 'stats.json', 'ATTRIBUTIONS.md', 'attributions.csv'}
 CACHES = ('species.json', 'species_inat.json')
+
+
+def move_into(source: Path, target: Path) -> int:
+    """Déplace `source` sur `target`, en fusionnant ce qui existe des deux
+    côtés. Rend le nombre de fichiers déplacés.
+
+    Deux dossiers portent le même nom dans plusieurs parts, pour deux raisons
+    différentes. Les dossiers de statut (`_rejected`, `_duplicates`,
+    `_review`) existent dans chacune. Et deux noms du catalogue peuvent
+    donner le même dossier d'espèce : `Citrus × sinensis` y figurait deux
+    fois, et le découpage en parts a envoyé les deux copies à des parts
+    différentes. Dans les deux cas, écraser la destination perdrait des
+    images ; on descend donc dans l'arbre.
+
+    Quand deux fichiers portent le même nom, c'est la même image : le nom est
+    le début de son empreinte SHA-256. Écraser est alors sans effet.
+    """
+    if source.is_dir() and target.is_dir():
+        moved = 0
+        for child in sorted(source.iterdir()):
+            moved += move_into(child, target / child.name)
+        source.rmdir()
+        return moved
+    target.parent.mkdir(parents=True, exist_ok=True)
+    source.replace(target)
+    return 1
 
 
 def merge_caches(shards: list[Path], out: Path) -> dict[str, int]:
@@ -58,23 +83,7 @@ def merge(shards: list[Path], out: Path) -> dict:
             for entry in sorted(shard.iterdir()):
                 if entry.name in PER_RUN or entry.name in CACHES:
                     continue
-                target = out / entry.name
-                if entry.is_dir() and target.exists():
-                    # Les dossiers de statut (_rejected, _duplicates, _review)
-                    # existent dans chaque part : on fusionne leur contenu.
-                    for child in entry.iterdir():
-                        dest = target / child.name
-                        if dest.exists():
-                            for f in child.iterdir():
-                                f.replace(dest / f.name)
-                            shutil.rmtree(child)
-                        else:
-                            child.replace(dest)
-                        moved += 1
-                    entry.rmdir()
-                else:
-                    entry.replace(target)
-                    moved += 1
+                moved += move_into(entry, out / entry.name)
     return {'lignes': lines, 'dossiers': moved}
 
 

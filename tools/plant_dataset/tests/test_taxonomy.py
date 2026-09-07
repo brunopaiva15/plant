@@ -101,3 +101,27 @@ def test_first_usable_falls_back_on_the_catalog_synonyms():
     plant = PlantEntry(internal_id='sorbus-aria', scientific_name='Sorbus aria', genus='Sorbus', epithet='aria', family='Rosaceae', synonyms=['Aria edulis'])
     assert _first_usable(lambda n: answers.get(n), plant) is answers['Aria edulis']
     assert _first_usable(lambda n: None, plant) is None
+
+
+def test_le_catalogue_de_collecte_n_a_pas_de_doublon():
+    """Un nom en double envoie la même espèce à deux parts de collecte, qui
+    téléchargent deux fois et se disputent le même dossier à la fusion.
+    `Citrus × sinensis` y figurait deux fois."""
+    from pathlib import Path
+    lignes = [l.strip() for l in (Path(__file__).resolve().parents[1] / 'all_species.txt').read_text().splitlines() if l.strip()]
+    doublons = {n for n in lignes if lignes.count(n) > 1}
+    assert not doublons, f'noms en double dans all_species.txt : {sorted(doublons)}'
+
+
+def test_deux_noms_du_catalogue_ne_partagent_pas_un_dossier():
+    """Le dossier d'une espèce vient de son nom : deux noms qui donnent le
+    même dossier mélangeraient leurs images sans qu'on le voie."""
+    from collections import defaultdict
+    from pathlib import Path
+    from plant_dataset.taxonomy import species_slug
+    lignes = [l.strip() for l in (Path(__file__).resolve().parents[1] / 'all_species.txt').read_text().splitlines() if l.strip()]
+    par_slug = defaultdict(list)
+    for nom in lignes:
+        par_slug[species_slug(nom)].append(nom)
+    partages = {k: v for k, v in par_slug.items() if len(v) > 1}
+    assert not partages, f'dossiers partagés : {partages}'
