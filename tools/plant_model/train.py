@@ -20,6 +20,7 @@ import csv
 import json
 import hashlib
 import random
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -157,7 +158,7 @@ def read_and_square(path, label):
     return tf.cast(image, tf.uint8), label
 
 
-def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0, preload: bool = True):
+def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0, preload: bool = True, repeat: bool = False):
     """Précharge en mémoire tant que ça tient dans le budget, sinon relit les
     fichiers à chaque époque.
 
@@ -182,19 +183,26 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
     if preload and estimate <= ram_budget_gb:
         images, labels = load_all(usable)
         ds = array_dataset(images, labels, training)
+        if training and repeat:
+            ds = ds.repeat()
     else:
         if preload:
             print(f'  {len(usable)} images = {estimate:.1f} Go > budget {ram_budget_gb} Go : lecture depuis les fichiers')
         paths = [p for p, _ in usable]
         labels = [l for _, l in usable]
-        ds = tf.data.Dataset.from_tensor_slices((paths, labels)).map(read_and_square, num_parallel_calls=AUTOTUNE)
+        ds = tf.data.Dataset.from_tensor_slices((paths, labels))
+        if training:
+            # On mélange les *chemins*, avant de décoder. Mélanger après le
+            # décodage obligeait à lire huit mille JPEG avant le premier lot,
+            # sept minutes à chaque époque : invisible sur une époque longue,
+            # ruineux sur une époque courte. Des chaînes de caractères se
+            # mélangent gratuitement, et toute la liste tient dans le tampon.
+            ds = ds.shuffle(len(usable), reshuffle_each_iteration=True)
+            if repeat:
+                ds = ds.repeat()
+        ds = ds.map(read_and_square, num_parallel_calls=AUTOTUNE)
 
     if training:
-        # La liste est déjà mélangée globalement ; le tampon ne sert plus qu'à
-        # varier l'ordre d'une époque à l'autre pour la lecture de fichiers
-        # (le chemin en mémoire permute lui-même, voir array_dataset).
-        if not preload or estimate > ram_budget_gb:
-            ds = ds.shuffle(min(len(usable), 8192), reshuffle_each_iteration=True)
         ds = ds.map(augment, num_parallel_calls=AUTOTUNE)
     else:
         ds = ds.map(center, num_parallel_calls=AUTOTUNE)
@@ -373,7 +381,8 @@ def main() -> int:
     names = species_names(dataset)
     print(f'{len(classes)} classes, {len(rows["train"])} train / {len(rows["val"])} val / {len(rows["test"])} test')
 
-    train_ds, counts, _ = make_dataset(rows['train'], classes, args.batch, training=True, ram_budget_gb=args.ram_budget)
+    train_ds, counts, _ = make_dataset(rows['train'], classes, args.batch, training=True, ram_budget_gb=args.ram_budget,
+                                       repeat=bool(args.steps_per_epoch))
     # La validation d'époque se fait sur un échantillon : elle sert à suivre
     # la courbe et à décider de l'arrêt, pas à mesurer le modèle. La mesure,
     # c'est le jeu de test à la fin, entier. Les deux se lisent depuis les
@@ -411,13 +420,17 @@ def main() -> int:
         state_p.write_text(json.dumps(state))
 
     class _Checkpoint(tf.keras.callbacks.Callback):
-        def __init__(self, path, key, every=800):
+        def __init__(self, path, key, every=200):
             super().__init__()
             self.path, self.key, self.every = path, key, every
+            self.t0 = time.time()
 
         def on_train_batch_end(self, batch, logs=None):
             if batch and batch % self.every == 0:
                 self.model.save_weights(self.path)
+                # Un battement de cœur : sur une machine qui redémarre, c'est
+                # la seule façon de savoir si l'entraînement avance vraiment.
+                print(f'  lot {batch} sauvé, {time.time() - self.t0:.0f} s', flush=True)
 
         def on_epoch_end(self, epoch, logs=None):
             self.model.save_weights(self.path)
