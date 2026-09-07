@@ -60,8 +60,12 @@ Sorties, directement dans les assets de l'app :
 ## Ce que fait la recette
 
 1. **Chargement en mémoire** : chaque image est décodée une seule fois, en
-   256×256 uint8. Décoder les JPEG à chaque époque ferait passer l'essentiel
-   du temps dans le décodeur.
+   256×256 uint8 — tant que le jeu tient dans `--ram-budget`. Au-delà, les
+   images sont relues à chaque époque, et ce n'est pas grave : mesuré sur
+   quatre cœurs, le tuyau de données rend 630 images/s cache froid, quand le
+   réseau, lui, en avale 70. Le décodeur n'est pas le goulot à cette taille,
+   le réseau l'est. Le préchargement ne sert que les petits jeux, où il
+   économise quelques minutes.
 2. **Augmentation** : recadrage aléatoire en 224, miroir horizontal, légère
    variation de lumière et de saturation. Pas de rotation forte : sur une
    photo, un pot est droit.
