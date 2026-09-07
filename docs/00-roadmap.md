@@ -95,7 +95,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 - Apple Watch
 - Automatisations, Shortcuts / Siri, Home Assistant, capteurs
 - Import HortusFox (l'export complet JSON / CSV / ZIP est livré)
-- Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : pipeline de données validé, cascade câblée, modèle à entraîner — [docs/09-plant-recognition.md](09-plant-recognition.md)
+- Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : livrée avec le modèle v5 (894 espèces). Le jeu de la v6 (1 427 espèces) est collecté et attend une machine avec carte graphique — [docs/09-plant-recognition.md](09-plant-recognition.md)
 
 ## Principes de livraison
 1. Simplicité > élégance > vitesse > clarté > fiabilité > profondeur.

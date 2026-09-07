@@ -576,6 +576,51 @@ correspondance), Goeppertia orbifolia (connue comme Calathea orbifolia) et
 Streptocarpus ionanthus (Saintpaulia ionantha). À résoudre par
 `synonyms.txt` avant la v6.
 
+### 6.6 v6 — le jeu est prêt, l'entraînement attend une machine
+
+Le catalogue de collecte est passé à 1 558 plantes (les 530 espèces
+cultivées les plus observées en Europe sur iNaturalist s'ajoutant aux
+1 030 d'avant), et la collecte a tourné jusqu'au bout le 6 septembre 2026 :
+
+| | v5 | **jeu v6** |
+|---|---|---|
+| Plantes au catalogue de collecte | 1 032 | **1 558** |
+| Espèces avec au moins une image | 984 | **1 513** |
+| Images gardées | 130 783 | **235 909** |
+| Classes exploitables (≥ 25 images d'entraînement) | 894 | **1 427** |
+| Licences | CC0, CC BY, CC BY-SA | CC0 115 341, CC BY 110 152, CC BY-SA 10 416 |
+
+**Le modèle, lui, n'est pas entraîné.** Trois passes ont été tentées ; la
+machine de développement les a toutes interrompues. Ce qu'on en a appris,
+et qui est corrigé dans le code :
+
+- `candidate_pairs` gardait en mémoire toutes les paires d'un même seau :
+  des centaines de millions de tuples à 236 000 images, et la consolidation
+  mourait. Les seaux sont maintenant comparés d'un bloc avec numpy.
+- Le tampon de mélange était posé après le décodage : huit mille JPEG lus
+  avant le premier lot. Le mélange porte sur les chemins, avant décodage.
+- Précharger validation et test coûtait dix minutes au démarrage. Les deux
+  se lisent depuis les fichiers, et le test n'est construit qu'à
+  l'évaluation.
+- `--checkpoint` sauve les poids toutes les 200 lots et à chaque fin
+  d'époque ; `--steps-per-epoch` découpe l'entraînement en époques courtes.
+  Une reprise repart du dernier point.
+
+Reste que neuf heures de calcul sur quatre cœurs sans carte graphique ne
+tiennent pas sur une machine recyclée dès que la session s'endort. La
+progression atteinte, 6 époques de tête sur 20 et 24 % de validation sur
+1 427 classes, n'était pas exploitable.
+
+**Décision du 7 septembre 2026 : l'app garde le modèle v5** (894 espèces,
+top-1 51,9 %). Le jeu v6 est prêt ; l'entraînement se fera sur une machine
+avec carte graphique, avec la recette de la v5 (MobileNetV3-Large,
+4 + 12 époques complètes). `tools/plant_dataset/cache/` conserve les
+résolutions de noms GBIF et iNaturalist, qui coûtent des heures de réseau.
+
+Trois hybrides horticoles n'ont aucune image, faute de nom reconnu par
+GBIF : Hylotelephium × mottramianum, Salvia × floriferior et
+Amelanchier × spicata.
+
 ### 6.6 Résultats du modèle v1
 
 | | |
@@ -735,9 +780,10 @@ flutter test                                        # dont 33 pour l'identificat
 
 ## 12. Reste à faire, dans l'ordre
 
-1. Collecte phase 1 (50 espèces × 100), contrôle manuel de `_review/`.
-2. Connecteurs iNaturalist direct et Wikimedia Commons.
-3. `tools/plant_model/` : entraînement, évaluation, courbe seuil / repli.
-4. Conversion TFLite + `TfliteLocalPlantModel`, tests avec images de référence.
-5. Recalage de `FallbackPolicy` sur le jeu de test ; décision BY-SA ;
-   décision mise à jour du modèle (§8).
+1. Entraîner la v6 sur une machine avec carte graphique : le jeu est
+   collecté (1 427 classes, 235 909 images, § 6.6), la recette est celle de
+   la v5. Recopier `cache/*.json` dans `dataset/` avant toute recollecte.
+2. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
+3. Photos de plantes en pot dans des intérieurs : c'est ce qui manque au
+   yucca et au ficus ginseng, et les licences libres en offrent peu (§ 6.5).
+4. Recalage de `FallbackPolicy` sur le jeu de test de la v6.
