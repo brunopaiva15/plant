@@ -381,6 +381,11 @@ def main() -> int:
     # peut redémarrer sans prévenir. Les poids sont écrits après la tête,
     # puis après chaque époque du réglage fin, avec le compte des époques
     # faites ; au relancement avec le même dossier, on reprend là.
+    # Points de sauvegarde. Cette machine peut disparaître à tout moment et
+    # une époque coûte une demi-heure : les poids sont donc écrits aussi en
+    # cours d'époque, et pas seulement à la fin. Seule la fin fait avancer le
+    # compteur d'époques ; reprendre au milieu d'une époque revient à la
+    # refaire depuis des poids un peu plus avancés, ce qui ne coûte rien.
     ckpt = Path(args.checkpoint) if args.checkpoint else None
     head_w = ckpt / 'head.weights.h5' if ckpt else None
     fine_w = ckpt / 'fine.weights.h5' if ckpt else None
@@ -395,20 +400,31 @@ def main() -> int:
         state.update(kw)
         state_p.write_text(json.dumps(state))
 
+    class _Checkpoint(tf.keras.callbacks.Callback):
+        def __init__(self, path, key, every=800):
+            super().__init__()
+            self.path, self.key, self.every = path, key, every
+
+        def on_train_batch_end(self, batch, logs=None):
+            if batch and batch % self.every == 0:
+                self.model.save_weights(self.path)
+
+        def on_epoch_end(self, epoch, logs=None):
+            self.model.save_weights(self.path)
+            _save_state(**{self.key: epoch + 1, 'val_accuracy': float((logs or {}).get('val_accuracy', 0))})
+
+    in_fine = bool(fine_w and fine_w.exists())
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    if head_w and head_w.exists() and head_done:
+    if in_fine:
+        print(f'reprise : réglage fin, {fine_done} époque(s) terminée(s)')
+    elif head_w and head_w.exists():
         model.load_weights(head_w)
-        print(f'reprise : tête, {head_done} époque(s) déjà faites ({head_w})')
-    if head_done < args.head_epochs and not fine_done:
-        head_cb = []
-        if ckpt:
-            def _save_head(epoch, logs):
-                model.save_weights(head_w)
-                _save_state(head_epochs_done=epoch + 1)
-            head_cb.append(tf.keras.callbacks.LambdaCallback(on_epoch_end=_save_head))
-        model.fit(train_ds, validation_data=val_ds, initial_epoch=head_done, epochs=args.head_epochs, class_weight=weights, verbose=2,
-                  callbacks=head_cb)
+        print(f'reprise : tête, {head_done} époque(s) terminée(s)')
+    if not in_fine and head_done < args.head_epochs:
+        model.fit(train_ds, validation_data=val_ds, initial_epoch=head_done, epochs=args.head_epochs,
+                  class_weight=weights, verbose=2,
+                  callbacks=[_Checkpoint(head_w, 'head_epochs_done')] if ckpt else [])
 
     model.base.trainable = True
     for layer in model.base.layers[:-args.unfreeze]:
@@ -425,20 +441,14 @@ def main() -> int:
     print(f'réglage fin : {args.unfreeze} couches dégelées, {frozen_bn} normalisations figées')
     model.compile(optimizer=tf.keras.optimizers.Adam(args.fine_lr),
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    if in_fine:
+        model.load_weights(fine_w)
     callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=4, restore_best_weights=True)]
     if ckpt:
-        if fine_w.exists() and fine_done:
-            model.load_weights(fine_w)
-            print(f'reprise : {fine_done} époque(s) de réglage fin déjà faites ({fine_w})')
-
-        def _save(epoch, logs):
-            model.save_weights(fine_w)
-            _save_state(fine_epochs_done=epoch + 1, val_accuracy=float((logs or {}).get('val_accuracy', 0)))
-
-        callbacks.append(tf.keras.callbacks.LambdaCallback(on_epoch_end=_save))
+        callbacks.append(_Checkpoint(fine_w, 'fine_epochs_done'))
     if fine_done < args.fine_epochs:
-        model.fit(train_ds, validation_data=val_ds, initial_epoch=fine_done, epochs=args.fine_epochs, class_weight=weights, verbose=2,
-                  callbacks=callbacks)
+        model.fit(train_ds, validation_data=val_ds, initial_epoch=fine_done, epochs=args.fine_epochs,
+                  class_weight=weights, verbose=2, callbacks=callbacks)
 
     metrics = evaluate(model, test_ds, classes, captive_mask=[p in captive for p in test_paths])
     metrics['version'] = args.version
