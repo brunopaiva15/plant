@@ -18,6 +18,19 @@ python3 -m pip install -r requirements.txt   # tensorflow-cpu, numpy, Pillow
 python3 train.py --dataset ../plant_dataset/dataset --out ../../assets/model
 ```
 
+Sur une machine sans carte graphique, une passe complète dure des heures et
+peut être interrompue. La forme reprenable :
+
+```bash
+python3 train.py --dataset ../plant_dataset/dataset --out ../../assets/model \
+  --backbone large --head-epochs 40 --fine-epochs 12 \
+  --feature-cache .cache/features --checkpoint .cache/ckpt --version 6
+```
+
+Relancer la même ligne reprend au dernier point de sauvegarde. Avec
+`--fine-epochs 0`, l'entraînement est sauté : le modèle est évalué et
+exporté depuis le point de sauvegarde tel quel.
+
 Sorties, directement dans les assets de l'app :
 
 | Fichier | Contenu |
@@ -39,6 +52,10 @@ Sorties, directement dans les assets de l'app :
 | `--unfreeze` | 60 | couches dégelées en fin de réseau |
 | `--dropout` | 0.3 | |
 | `--version` | `1` | version écrite dans `model.json` |
+| `--checkpoint DIR` | | poids sauvés toutes les 200 lots et à chaque époque ; relancer avec le même dossier reprend là |
+| `--feature-cache DIR` | | active les vecteurs du réseau gelé pour la phase de tête (voir ci-dessous) |
+| `--steps-per-epoch N` | | lots par époque : des époques courtes, donc des points de sauvegarde fréquents |
+| `--ram-budget` | 5 | Go de préchargement au plus ; au-delà, les images sont relues des fichiers |
 
 ## Ce que fait la recette
 
@@ -51,7 +68,15 @@ Sorties, directement dans les assets de l'app :
 3. **Transfert** : MobileNetV3 (Small jusqu'à la v3, Large depuis la v4)
    pré-entraîné ImageNet, tête remplacée,
    entraînée seule d'abord, puis les 60 dernières couches dégelées à
-   faible taux d'apprentissage.
+   faible taux d'apprentissage. Avec `--feature-cache`, la phase de
+   tête ne repasse pas les images dans le réseau à chaque époque : le
+   réseau est gelé, ses sorties ne changent pas, on les calcule une fois
+   (un vecteur de 960 nombres par image) et la tête s'entraîne dessus en
+   quelques minutes. Sur le jeu de la v6, cela remplace quatre époques de
+   trente minutes par une passe de vingt minutes — et la tête peut aller
+   jusqu'à convergence, ce qui donne au réglage fin un meilleur départ. Les
+   vecteurs sont ceux du carré central, sans augmentation ; le réglage fin,
+   lui, garde toutes les siennes.
 4. **Déséquilibre** : poids par classe inversement proportionnels au
    nombre d'images. Sans cela le modèle apprend à répondre l'espèce la
    plus fréquente.

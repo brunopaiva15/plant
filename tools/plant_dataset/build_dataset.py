@@ -293,6 +293,7 @@ def main() -> int:
     ap.add_argument('--only-file', help='fichier avec un nom scientifique par ligne (comme --only)')
     ap.add_argument('--no-inaturalist', action='store_true', help='ne pas compléter par l\'API iNaturalist')
     ap.add_argument('--inat-pause', type=float, default=1.0, help='pause entre requêtes iNaturalist, en secondes')
+    ap.add_argument('--gbif-pause', type=float, default=0.25, help='pause entre requêtes GBIF, en secondes ; à augmenter quand plusieurs collectes tournent en parallèle')
     ap.add_argument('--captive-file', help='espèces (une par ligne) pour lesquelles réserver une part de plantes cultivées')
     ap.add_argument('--captive-share', type=float, default=0.5, help='part de la cible réservée aux plantes cultivées (iNaturalist captive=true)')
     ap.add_argument('--captive-place', type=int, help='identifiant de lieu iNaturalist (97391 = Europe) : plantes cultivées de cette région, collectées en premier')
@@ -324,7 +325,7 @@ def main() -> int:
     inat_cache = json.loads(inat_path.read_text()) if inat_path.exists() else {}
 
     if not args.skip_fetch:
-        client = GbifClient()
+        client = GbifClient(pause=args.gbif_pause)
         inat = None if args.no_inaturalist else InatClient(pause=args.inat_pause)
         http = requests.Session()
         http.headers['User-Agent'] = client.session.headers['User-Agent']

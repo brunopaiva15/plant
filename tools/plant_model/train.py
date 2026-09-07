@@ -215,6 +215,84 @@ BACKBONES = {
 }
 
 
+def frozen_backbone(backbone: str) -> tf.keras.Model:
+    """Le réseau pré-entraîné, gelé, suivi de sa moyenne globale : une image
+    en 224, un vecteur en sortie. C'est exactement la partie de `build_model`
+    qui ne bouge pas pendant la phase de tête."""
+    _, factory = BACKBONES[backbone]
+    base = factory(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), include_top=False, weights='imagenet',
+                   include_preprocessing=True, minimalistic=False)
+    base.trainable = False
+    inputs = tf.keras.Input(shape=(IMAGE_SIZE, IMAGE_SIZE, 3), name='image')
+    x = base(inputs, training=False)
+    return tf.keras.Model(inputs, tf.keras.layers.GlobalAveragePooling2D()(x))
+
+
+def encode(pairs, classes: list[str], batch: int, backbone: str, ram_budget_gb: float, label: str):
+    """Passe les images dans le réseau gelé une fois pour toutes.
+
+    Pendant la phase de tête, le réseau ne bouge pas : réencoder les mêmes
+    images à chaque époque, c'est refaire quatre fois le même calcul. Une
+    passe avant produit un vecteur par image ; la tête s'entraîne ensuite sur
+    ces vecteurs, en secondes au lieu d'une demi-heure par époque.
+
+    Le prix est le recadrage : les vecteurs sont ceux du carré central, sans
+    augmentation. Pour une tête linéaire dont le seul rôle est de partir
+    d'ailleurs que du hasard avant le réglage fin, c'est sans conséquence —
+    et le réglage fin, lui, garde toutes ses augmentations.
+    """
+    ds, counts, paths = make_dataset(pairs, classes, batch, training=False,
+                                     ram_budget_gb=ram_budget_gb, preload=False)
+    model = frozen_backbone(backbone)
+    chunks, labels, done, t0 = [], [], 0, time.time()
+    for images, y in ds:
+        chunks.append(model(images, training=False).numpy().astype(np.float16))
+        labels.append(y.numpy())
+        done += int(y.shape[0])
+        if done % (batch * 100) < batch:
+            rate = done / max(1e-6, time.time() - t0)
+            print(f'  {label} : {done}/{len(paths)} encodées, {rate:.0f} img/s, '
+                  f'reste {(len(paths) - done) / rate / 60:.0f} min', flush=True)
+    return np.concatenate(chunks), np.concatenate(labels), counts
+
+
+def encoded(cache: Path | None, name: str, signature: dict, build):
+    """Lit les vecteurs du disque quand la signature correspond, sinon les
+    calcule et les écrit. Une reprise ne réencode pas 185 000 images."""
+    if cache is None:
+        return build()
+    cache.mkdir(parents=True, exist_ok=True)
+    meta_p, x_p, y_p = cache / f'{name}.json', cache / f'{name}.x.npy', cache / f'{name}.y.npy'
+    if meta_p.exists() and x_p.exists() and y_p.exists():
+        if json.loads(meta_p.read_text()) == signature:
+            print(f'  {name} : vecteurs relus du cache')
+            return np.load(x_p), np.load(y_p)
+        print(f'  {name} : cache périmé, réencodage')
+    x, y = build()
+    np.save(x_p, x)
+    np.save(y_p, y)
+    meta_p.write_text(json.dumps(signature))
+    return x, y
+
+
+def fit_head(x, y, val, n_classes: int, dropout: float, epochs: int, weights: dict, batch: int):
+    """La tête seule, sur les vecteurs déjà calculés. Rend ses poids, à
+    reposer dans le modèle complet avant le réglage fin."""
+    head = tf.keras.Sequential([
+        tf.keras.Input(shape=(x.shape[1],)),
+        tf.keras.layers.Dropout(dropout),
+        tf.keras.layers.Dense(n_classes, activation='softmax', name='species'),
+    ])
+    head.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
+                 loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    head.fit(x.astype(np.float32), y, validation_data=(val[0].astype(np.float32), val[1]),
+             epochs=epochs, batch_size=batch * 8, class_weight=weights, verbose=2,
+             callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=3,
+                                                         restore_best_weights=True)])
+    return head.get_layer('species').get_weights()
+
+
+
 def build_model(n_classes: int, dropout: float, backbone: str = 'small') -> tf.keras.Model:
     """Le réseau : un MobileNetV3 pré-entraîné ImageNet, sans sa tête, puis
     la nôtre. `small` (2,5 Mo en float16, ~15 ms sur un téléphone récent)
@@ -371,6 +449,7 @@ def main() -> int:
     ap.add_argument('--steps-per-epoch', type=int, help='lots par époque ; une époque courte = des points de sauvegarde fréquents')
     ap.add_argument('--val-max', type=int, default=6000, help='images de validation pendant l\'entraînement ; l\'évaluation finale reste complète')
     ap.add_argument('--checkpoint', help='dossier où les poids sont sauvés après chaque époque, et d\'où l\'entraînement reprend')
+    ap.add_argument('--feature-cache', help='dossier où garder les activations du réseau gelé ; la phase de tête devient une passe avant au lieu de N époques')
     args = ap.parse_args()
 
     dataset = Path(args.dataset)
@@ -445,9 +524,32 @@ def main() -> int:
         model.load_weights(head_w)
         print(f'reprise : tête, {head_done} époque(s) terminée(s)')
     if not in_fine and head_done < args.head_epochs:
-        model.fit(train_ds, validation_data=val_ds, initial_epoch=head_done, epochs=args.head_epochs,
-                  steps_per_epoch=args.steps_per_epoch, class_weight=weights, verbose=2,
-                  callbacks=[_Checkpoint(head_w, 'head_epochs_done')] if ckpt else [])
+        if args.feature_cache:
+            # Le réseau est gelé : les vecteurs qu'il produit ne changent pas
+            # d'une époque à l'autre. On les calcule une fois, puis la tête
+            # s'entraîne dessus en quelques minutes au lieu d'une demi-heure
+            # par époque — et peut aller jusqu'à convergence, ce qui donne au
+            # réglage fin un bien meilleur point de départ que quatre époques.
+            cache = Path(args.feature_cache)
+            signature = {'backbone': args.backbone, 'input': IMAGE_SIZE, 'classes': len(classes),
+                         'fingerprint': hashlib.sha256('\n'.join(classes).encode()).hexdigest()[:16]}
+            x, y = encoded(cache, 'train', {**signature, 'images': len(rows['train'])},
+                           lambda: encode(rows['train'], classes, args.batch, args.backbone,
+                                          args.ram_budget, 'entraînement')[:2])
+            xv, yv = encoded(cache, 'val', {**signature, 'images': len(val_rows)},
+                             lambda: encode(val_rows, classes, args.batch, args.backbone,
+                                            args.ram_budget, 'validation')[:2])
+            print(f'tête sur vecteurs : {x.shape[0]} × {x.shape[1]}, validation {xv.shape[0]}')
+            model.get_layer('species').set_weights(
+                fit_head(x, y, (xv, yv), len(classes), args.dropout, args.head_epochs, weights, args.batch))
+            del x, y, xv, yv
+            if ckpt:
+                model.save_weights(head_w)
+                _save_state(head_epochs_done=args.head_epochs)
+        else:
+            model.fit(train_ds, validation_data=val_ds, initial_epoch=head_done, epochs=args.head_epochs,
+                      steps_per_epoch=args.steps_per_epoch, class_weight=weights, verbose=2,
+                      callbacks=[_Checkpoint(head_w, 'head_epochs_done')] if ckpt else [])
 
     model.base.trainable = True
     for layer in model.base.layers[:-args.unfreeze]:
