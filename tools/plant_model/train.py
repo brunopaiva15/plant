@@ -385,18 +385,30 @@ def main() -> int:
     head_w = ckpt / 'head.weights.h5' if ckpt else None
     fine_w = ckpt / 'fine.weights.h5' if ckpt else None
     state_p = ckpt / 'state.json' if ckpt else None
-    fine_done = json.loads(state_p.read_text())['fine_epochs_done'] if state_p and state_p.exists() else 0
+    state = json.loads(state_p.read_text()) if state_p and state_p.exists() else {}
+    head_done = state.get('head_epochs_done', 0)
+    fine_done = state.get('fine_epochs_done', 0)
     if ckpt:
         ckpt.mkdir(parents=True, exist_ok=True)
 
+    def _save_state(**kw):
+        state.update(kw)
+        state_p.write_text(json.dumps(state))
+
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    if head_w and head_w.exists():
-        print(f'reprise : tête déjà entraînée ({head_w})')
-    else:
-        model.fit(train_ds, validation_data=val_ds, epochs=args.head_epochs, class_weight=weights, verbose=2)
-        if head_w:
-            model.save_weights(head_w)
+    if head_w and head_w.exists() and head_done:
+        model.load_weights(head_w)
+        print(f'reprise : tête, {head_done} époque(s) déjà faites ({head_w})')
+    if head_done < args.head_epochs and not fine_done:
+        head_cb = []
+        if ckpt:
+            def _save_head(epoch, logs):
+                model.save_weights(head_w)
+                _save_state(head_epochs_done=epoch + 1)
+            head_cb.append(tf.keras.callbacks.LambdaCallback(on_epoch_end=_save_head))
+        model.fit(train_ds, validation_data=val_ds, initial_epoch=head_done, epochs=args.head_epochs, class_weight=weights, verbose=2,
+                  callbacks=head_cb)
 
     model.base.trainable = True
     for layer in model.base.layers[:-args.unfreeze]:
@@ -421,7 +433,7 @@ def main() -> int:
 
         def _save(epoch, logs):
             model.save_weights(fine_w)
-            state_p.write_text(json.dumps({'fine_epochs_done': epoch + 1, 'val_accuracy': float((logs or {}).get('val_accuracy', 0))}))
+            _save_state(fine_epochs_done=epoch + 1, val_accuracy=float((logs or {}).get('val_accuracy', 0)))
 
         callbacks.append(tf.keras.callbacks.LambdaCallback(on_epoch_end=_save))
     if fine_done < args.fine_epochs:
