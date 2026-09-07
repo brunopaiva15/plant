@@ -359,6 +359,7 @@ def main() -> int:
     ap.add_argument('--version', default='1')
     ap.add_argument('--backbone', choices=sorted(BACKBONES), default='small', help='MobileNetV3 small (v1 à v3) ou large')
     ap.add_argument('--ram-budget', type=float, default=5.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
+    ap.add_argument('--checkpoint', help='dossier où les poids sont sauvés après chaque époque, et d\'où l\'entraînement reprend')
     args = ap.parse_args()
 
     dataset = Path(args.dataset)
@@ -376,9 +377,26 @@ def main() -> int:
     model = build_model(len(classes), args.dropout, args.backbone)
     weights = class_weights(counts, len(classes))
 
+    # Points de sauvegarde : dix heures d'entraînement sur une machine qui
+    # peut redémarrer sans prévenir. Les poids sont écrits après la tête,
+    # puis après chaque époque du réglage fin, avec le compte des époques
+    # faites ; au relancement avec le même dossier, on reprend là.
+    ckpt = Path(args.checkpoint) if args.checkpoint else None
+    head_w = ckpt / 'head.weights.h5' if ckpt else None
+    fine_w = ckpt / 'fine.weights.h5' if ckpt else None
+    state_p = ckpt / 'state.json' if ckpt else None
+    fine_done = json.loads(state_p.read_text())['fine_epochs_done'] if state_p and state_p.exists() else 0
+    if ckpt:
+        ckpt.mkdir(parents=True, exist_ok=True)
+
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(train_ds, validation_data=val_ds, epochs=args.head_epochs, class_weight=weights, verbose=2)
+    if head_w and head_w.exists():
+        print(f'reprise : tête déjà entraînée ({head_w})')
+    else:
+        model.fit(train_ds, validation_data=val_ds, epochs=args.head_epochs, class_weight=weights, verbose=2)
+        if head_w:
+            model.save_weights(head_w)
 
     model.base.trainable = True
     for layer in model.base.layers[:-args.unfreeze]:
@@ -395,8 +413,20 @@ def main() -> int:
     print(f'réglage fin : {args.unfreeze} couches dégelées, {frozen_bn} normalisations figées')
     model.compile(optimizer=tf.keras.optimizers.Adam(args.fine_lr),
                   loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(train_ds, validation_data=val_ds, epochs=args.fine_epochs, class_weight=weights, verbose=2,
-              callbacks=[tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=4, restore_best_weights=True)])
+    callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=4, restore_best_weights=True)]
+    if ckpt:
+        if fine_w.exists() and fine_done:
+            model.load_weights(fine_w)
+            print(f'reprise : {fine_done} époque(s) de réglage fin déjà faites ({fine_w})')
+
+        def _save(epoch, logs):
+            model.save_weights(fine_w)
+            state_p.write_text(json.dumps({'fine_epochs_done': epoch + 1, 'val_accuracy': float((logs or {}).get('val_accuracy', 0))}))
+
+        callbacks.append(tf.keras.callbacks.LambdaCallback(on_epoch_end=_save))
+    if fine_done < args.fine_epochs:
+        model.fit(train_ds, validation_data=val_ds, initial_epoch=fine_done, epochs=args.fine_epochs, class_weight=weights, verbose=2,
+                  callbacks=callbacks)
 
     metrics = evaluate(model, test_ds, classes, captive_mask=[p in captive for p in test_paths])
     metrics['version'] = args.version
