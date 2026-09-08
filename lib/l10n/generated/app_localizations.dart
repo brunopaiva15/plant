@@ -1692,11 +1692,6 @@ abstract class AppLocalizations {
   /// **'Vos plantes et photos restent privées, sur ce téléphone. Les comptes et la synchronisation arriveront dans une prochaine version.'**
   String get localAccountHint;
 
-  /// No description provided for @about.
-  ///
-  /// In fr, this message translates to:
-  /// **'À propos'**
-  String get about;
 
   /// No description provided for @version.
   ///
@@ -5802,6 +5797,12 @@ abstract class AppLocalizations {
   /// **'Sources des données'**
   String get aboutSources;
 
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get privacyPolicy;
+
   /// No description provided for @aboutSourceWikidata.
   ///
   /// In fr, this message translates to:
@@ -5910,11 +5911,6 @@ abstract class AppLocalizations {
   /// **'Continuer sans'**
   String get supportNoThanks;
 
-  /// No description provided for @aboutTagline.
-  ///
-  /// In fr, this message translates to:
-  /// **'Prenez soin de vos plantes et gardez leur histoire.'**
-  String get aboutTagline;
 
   /// No description provided for @emptyGardenSubtitle.
   ///

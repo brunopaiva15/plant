@@ -38,6 +38,10 @@ class DiagnosisSettingsScreen extends ConsumerWidget {
                 FloraListRow(
                   leading: const Text('📖', style: TextStyle(fontSize: 18)),
                   title: l10n.careAssistSetting,
+                  // « Compléter les fiches avec l'IA » ne tient pas sur une
+                  // ligne à côté de l'interrupteur, et en allemand encore
+                  // moins. Mieux vaut deux lignes qu'une phrase coupée.
+                  titleMaxLines: 2,
                   trailing: AdaptiveSwitch(
                     value: ref.watch(preferencesProvider.select((p) => p.careAssistEnabled)),
                     onChanged: (v) => ref.read(preferencesProvider.notifier).setCareAssistEnabled(v),

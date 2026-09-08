@@ -21,4 +21,31 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.widgetList<ClipRRect>(find.byType(ClipRRect)).map((c) => (c.borderRadius as BorderRadius).topLeft.x), contains(0.0));
   });
+
+  testWidgets('un héros caché ne se propose pas comme destination', (tester) async {
+    // Le shell garde ses quatre onglets dans un IndexedStack : la carte de
+    // l'onglet « Plantes » est dans l'arbre, mesurée et placée, même quand on
+    // regarde « Aujourd'hui ». Elle ne doit pas attirer le vol.
+    await tester.pumpWidget(const MaterialApp(
+      home: TickerMode(
+        enabled: false,
+        child: Center(child: SizedBox(width: 80, height: 80, child: PlantHero(tag: 'p', child: ColoredBox(color: Colors.green)))),
+      ),
+    ));
+    expect(find.byType(Hero), findsNothing);
+    expect(find.byType(ClipRRect), findsOneWidget, reason: 'l\'image reste affichée, seul le héros se retire');
+  });
+
+  testWidgets('il revient dès que son onglet reprend la main', (tester) async {
+    Widget arbre({required bool visible}) => MaterialApp(
+          home: TickerMode(
+            enabled: visible,
+            child: const Center(child: SizedBox(width: 80, height: 80, child: PlantHero(tag: 'p', child: ColoredBox(color: Colors.green)))),
+          ),
+        );
+    await tester.pumpWidget(arbre(visible: false));
+    expect(find.byType(Hero), findsNothing);
+    await tester.pumpWidget(arbre(visible: true));
+    expect(find.byType(Hero), findsOneWidget);
+  });
 }

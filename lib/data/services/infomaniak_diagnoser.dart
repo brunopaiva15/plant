@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
+import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
 import '../../domain/problems/plant_problem.dart';
 
@@ -75,7 +76,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (response.statusCode != 200) throw DiagnosisException('http ${response.statusCode}');
     // Un numéro qu'on n'a pas soumis ne vaut rien : soit le modèle l'a
     // inventé, soit il désigne un problème qu'on a écarté pour cette plante.
-    return parseResponse(response.body, allowed: {for (final p in candidates) p.id});
+    return parseResponse(
+      response.body,
+      allowed: {for (final p in candidates) p.id},
+      byName: namesOf(candidates, language),
+    );
   }
 
   Future<http.Response> _post(Map<String, Object?> body) => _client
@@ -123,13 +128,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
       'If the plant looks healthy, say so with a single "unlikely" cause at most. Set "urgent" only for pests, rot or rapid decline. '
       'If the photos do not show a plant clearly enough, say so in "summary" and return no cause. '
-      'The message may list known problems, each as a three-digit number and a name. When a cause is one of them, put that number in "problem"; '
-      'use only numbers from that list, and omit "problem" for anything else. The list is a shortlist, not a closed set: a cause outside it is a '
-      'perfectly good answer, and picking a number that does not fit what you see is worse than picking none. '
+      'The message lists known problems for this plant, each as a three-digit number and a name. Read that list before you name anything. '
+      'For every cause, decide "problem" first, before writing its title: the number of the listed problem it is, or null when it is none of them. '
+      'Always include the key, never write a number that is not on the list, and when a listed problem fits, use its number even if you would '
+      'have worded the name differently. '
+      'One cause is one listed problem. When two listed problems both fit what you see, give them as two causes, each with its own number, '
+      'instead of merging them into a single title of the form "A or B": they call for different actions, and the reader has to choose anyway. '
+      'The list is a shortlist, not a closed set: a cause outside it takes "problem": null, and that is a perfectly good answer. '
       'Write every text field in the language with code "$language", in a warm, plain, human tone, without jargon. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
-      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "title" (string), "likelihood" (string), '
-      '"problem" (string, optional), "explanation" (string), "actions" (array of strings)).';
+      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "problem" (string or null), "title" (string), '
+      '"likelihood" (string), "explanation" (string), "actions" (array of strings)).';
 
   static String userPrompt({
     required String language,
@@ -145,24 +154,50 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // La base locale, réduite à ce qui peut concerner cette plante. Elle
       // donne au modèle un vocabulaire au lieu de le laisser improviser un
       // nom à chaque analyse, et c'est ce nom-là que l'application affichera.
-      ...shortlist(candidates, frequentIds),
+      ...shortlist(candidates, frequentIds, language),
       if (symptoms != null && symptoms.trim().isNotEmpty) 'What the owner noticed: ${symptoms.trim()}',
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
   }
 
+  /// Les noms des pistes soumises, normalisés, pour le filet de rattrapage.
+  ///
+  /// Un nom qui se normalise comme un autre est écarté des deux côtés : mieux
+  /// vaut ne rien rattraper que de trancher au hasard entre deux pistes.
+  static Map<String, String> namesOf(List<PlantProblem> candidates, String language) {
+    final vus = <String, String?>{};
+    for (final p in candidates) {
+      final clef = normaliseName(p.nameIn(language));
+      if (clef.isEmpty) continue;
+      vus[clef] = vus.containsKey(clef) ? null : p.id;
+    }
+    return {
+      for (final e in vus.entries)
+        if (e.value != null) e.key: e.value!,
+    };
+  }
+
+  /// Casse, accents et ponctuation retirés. Sert des deux côtés de la
+  /// comparaison, jamais à l'affichage.
+  static String normaliseName(String raw) => foldSpeciesName(raw).replaceAll(RegExp('[^a-z0-9]+'), '');
+
   /// La liste de pistes telle qu'elle part, groupée par nature.
   ///
   /// Les troubles d'abord : ce sont les plus fréquents sur une plante de
   /// balcon ou de salon, et ceux qu'un modèle a le plus tendance à oublier au
   /// profit d'un ravageur spectaculaire.
-  static List<String> shortlist(List<PlantProblem> candidates, Set<String> frequentIds) {
+  ///
+  /// Les noms partent dans la langue de la réponse, pas en anglais. Le modèle
+  /// doit écrire son titre dans cette langue : lui donner la liste dans une
+  /// autre l'obligeait à traduire, et une traduction libre ne retombe pas sur
+  /// le nom de la base.
+  static List<String> shortlist(List<PlantProblem> candidates, Set<String> frequentIds, String language) {
     if (candidates.isEmpty) return const [];
     String? group(String label, ProblemKind kind) {
       final of = candidates.where((p) => p.kind == kind);
       if (of.isEmpty) return null;
-      return '$label: ${of.map((p) => '${p.id} ${p.en}').join('; ')}.';
+      return '$label: ${of.map((p) => '${p.id} ${p.nameIn(language)}').join('; ')}.';
     }
 
     final frequent = candidates.where((p) => frequentIds.contains(p.id)).map((p) => p.id).toList();
@@ -183,10 +218,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   /// Extrait le diagnostic d'une réponse chat completions. Le contenu peut
   /// être une chaîne ou une liste de fragments ; du JSON entouré de
   /// balises Markdown ou d'une phrase est accepté.
+  ///
   /// [allowed] borne les numéros acceptés à ceux qu'on a soumis. `null`
   /// laisse passer n'importe quel numéro à trois chiffres, ce qui n'a de sens
-  /// que hors appel réel.
-  static Diagnosis parseResponse(String body, {Set<String>? allowed}) {
+  /// que hors appel réel. [byName] rattrape les pistes nommées sans numéro.
+  static Diagnosis parseResponse(String body, {Set<String>? allowed, Map<String, String> byName = const {}}) {
     final json = jsonDecode(body) as Map<String, dynamic>;
     final choices = (json['choices'] as List?) ?? const [];
     if (choices.isEmpty) throw const DiagnosisException('empty');
@@ -208,7 +244,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
               likelihood: Likelihood.parse(c['likelihood']),
               explanation: (c['explanation'] as String?) ?? '',
               actions: ((c['actions'] as List?) ?? const []).whereType<String>().toList(),
-              problemId: _problemId(c['problem'], allowed),
+              problemId: _problemId(c['problem'], allowed) ?? _problemByName(c['title'], byName),
             ))
         // Une cause sans titre reste lisible si elle porte un numéro : la
         // base lui en donnera un, dans la bonne langue.
@@ -237,6 +273,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     final id = digits.padLeft(3, '0');
     if (id == '000') return null;
     return allowed == null || allowed.contains(id) ? id : null;
+  }
+
+  /// Dernier recours : le service a écrit le nom exact d'une piste soumise
+  /// sans en donner le numéro.
+  ///
+  /// La comparaison est stricte — accents, casse et ponctuation mis à part,
+  /// le titre doit être ce nom et rien d'autre. Un rapprochement approximatif
+  /// poserait un mauvais nom sur une carte, ce qui est pire que pas de nom.
+  static String? _problemByName(Object? raw, Map<String, String> byName) {
+    if (byName.isEmpty || raw is! String) return null;
+    return byName[normaliseName(raw)];
   }
 
   static Map<String, dynamic>? _extractJson(String text) {
