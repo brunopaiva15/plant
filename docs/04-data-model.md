@@ -135,6 +135,18 @@ lignes. Sur les 297 espèces du catalogue trié à la main, la médiane est d'un
 entrée et la moitié n'en a aucune — la section disparaît alors, plutôt que de
 meubler.
 
+Chaque entrée peut avoir sa propre illustration, dans
+`assets/problems/icons/<id>.webp`. Elles arrivent par lots et la base en
+compte deux cents : celles qui n'en ont pas encore retombent sur le symbole de
+leur famille, ce qui est l'état normal de la plupart des entrées et non un cas
+d'erreur. `illustrated_problems.dart`, écrit par le même outil que les images,
+dit lesquelles existent sans interroger le disque.
+
+Elles ne servent qu'aux cartes de diagnostic, à cinquante-deux points. En
+dessous de quarante elles se valent toutes — une plante en pot reste une
+plante en pot —, d'où les lignes sans vignette et le regroupement par famille
+sur la fiche de soin.
+
 Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
 exemples, un genre ne rend pas toutes ses espèces sensibles, et la
 vérification GBIF porte sur les noms de plantes, pas sur les relations

@@ -225,7 +225,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
                 return _CauseCard(
                   cause: cause,
                   title: _titleOf(cause, catalog, Localizations.localeOf(context).languageCode),
-                  kind: _problemOf(cause, catalog)?.kind,
+                  problem: _problemOf(cause, catalog),
                 );
               }(),
             const SizedBox(height: Space.md),
@@ -245,17 +245,17 @@ abstract final class DiagnosisLimits {
 }
 
 class _CauseCard extends StatelessWidget {
-  const _CauseCard({required this.cause, required this.title, this.kind});
+  const _CauseCard({required this.cause, required this.title, this.problem});
 
   final DiagnosisCause cause;
 
   /// Déjà résolu par la base : la carte n'a plus qu'à l'afficher.
   final String title;
 
-  /// La famille du problème, quand la base l'a reconnu. `null` pour une
-  /// cause hors base, qui n'a alors pas de symbole plutôt qu'un symbole
-  /// approximatif.
-  final ProblemKind? kind;
+  /// L'entrée de la base, quand le service en a reconnu une. `null` pour une
+  /// cause hors base, qui n'a alors pas d'image plutôt qu'une image
+  /// approximative.
+  final PlantProblem? problem;
 
   @override
   Widget build(BuildContext context) {
@@ -268,8 +268,8 @@ class _CauseCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (kind != null) ...[
-                  ProblemKindIcon(kind: kind!, side: 44),
+                if (problem != null) ...[
+                  ProblemIcon(problem: problem!),
                   const SizedBox(width: Space.sm),
                 ],
                 Expanded(child: Text(title, style: context.text.title3)),
