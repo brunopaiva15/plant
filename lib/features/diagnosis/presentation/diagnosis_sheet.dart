@@ -91,6 +91,10 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   /// Le catalogue le sait déjà pour un bon millier d'espèces ; le taire
   /// reviendrait à faire chercher au modèle ce qui est écrit à côté. Une
   /// fiche générique n'a rien à dire et n'envoie rien.
+  ///
+  /// La fiche est relue telle que le catalogue la donne, sans le complément
+  /// de l'IA : lui souffler ses propres suppositions les lui ferait
+  /// confirmer.
   List<CommonIssue> _knownIssues() {
     final species = widget.plant.speciesName;
     if (species == null || species.isEmpty) return const [];
