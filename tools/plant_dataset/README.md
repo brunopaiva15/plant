@@ -15,7 +15,7 @@ Ce fichier ne dit que comment lancer l'outil.
 ```bash
 cd tools/plant_dataset
 python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
-python3 -m pytest -q                          # 78 tests, sans réseau
+python3 -m pytest -q                          # 91 tests, sans réseau
 ```
 
 ## Fichiers
@@ -78,6 +78,8 @@ Puis vérifier à la main :
 | `--skip-fetch` | | ne rien télécharger : dédupliquer, répartir, compter ce qui est déjà là |
 | `--workers N` | 6 | téléchargements en parallèle |
 | `--gbif-pause` / `--inat-pause` | 0,25 / 1 | cadence des requêtes, en secondes ; à augmenter quand plusieurs collectes tournent |
+| `--wikimedia` | non | compléter par Wikimedia Commons (voir ci-dessous) |
+| `--commons-pause` | 1 | cadence Commons ; en dessous d'une seconde l'API répond 429 |
 
 L'outil est relançable : ce qui figure déjà dans `manifest.jsonl` n'est pas
 retéléchargé, et les identifiants de source (`gbif`, `<clé d'occurrence>#<n>`)
@@ -126,6 +128,40 @@ C'est la recette qui produit le jeu de la v6 (§ 6.6 de
 `phase1_species.txt` à `--target-per-species 300` ajoute ensuite les photos
 de plantes en pot par-dessus la cible : ce sont celles qui décrivent l'usage
 réel de l'application.
+
+## Wikimedia Commons, en complément
+
+GBIF et iNaturalist décrivent des observations de terrain. Commons est une
+médiathèque : on y photographie son monstera dans son salon, un ficus chez
+un fleuriste. C'est la distribution qui manque au modèle — le yucca pris
+pour du maïs et le ficus ginseng illisibles viennent de là (§ 6.3 et 6.5 de
+[`docs/09`](../../docs/09-plant-recognition.md)).
+
+Deux chiffres mesurés avant d'écrire le connecteur, sur nos propres
+espèces : **97 % des fichiers portent une licence utilisable**, contre 18 %
+chez GBIF où les licences non commerciales écrasent tout ; et une catégorie
+d'espèce contient de l'ordre de la centaine de fichiers. C'est un
+complément, pas un remplacement.
+
+```bash
+python3 build_dataset.py --plants plants.csv --out dataset \
+  --target-per-species 200 --allow-sa --wikimedia
+```
+
+Commons passe en dernier, après GBIF et iNaturalist, et seulement si la
+cible n'est pas atteinte. Il n'a pas de notion d'observation : chaque
+fichier est son propre groupe de répartition.
+
+Deux filtres lui sont propres. Les fichiers qui ne sont pas des photos —
+planches botaniques, scans d'herbier, cartes, schémas — sont écartés sur
+leur titre ; c'est grossier et assumé comme tel. Et la licence est lue sur
+l'URL plutôt que sur le libellé : « CC BY 3.0 us » ou « CC-BY 4.0 Int » se
+lisent mal, l'URL jamais.
+
+**L'API limite le débit.** En dessous d'une seconde entre requêtes elle
+répond 429. Le connecteur attend et réessaie, puis **laisse l'erreur
+remonter** : une source qui tombe doit s'écrire `ÉCHEC` dans le journal, pas
+se déguiser en « cette espèce n'a pas d'images ».
 
 ## Licences acceptées
 
