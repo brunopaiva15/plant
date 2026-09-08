@@ -19,6 +19,7 @@ import '../../../domain/problems/plant_problem.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../actions/application/care_actions.dart';
+import 'analysis_wait.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
 
 /// « Ma plante a un problème » : photos, symptômes, analyse, pistes.
@@ -161,7 +162,16 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SheetHeader(title: l10n.diagnosisTitle),
-          if (_result == null) ...[
+          if (_busy) ...[
+            // Pendant l'analyse, le formulaire n'a plus rien à offrir : la
+            // photo prend toute la place, dans son propre halo, entourée de
+            // ce que la machine est en train de chercher.
+            const SizedBox(height: Space.lg),
+            Center(child: AnalysisWait(photo: PlantImage(relativePath: _photos.first.thumbPath, cacheWidth: 500))),
+            const SizedBox(height: Space.lg),
+            Text(l10n.analyzing, style: context.text.callout, textAlign: TextAlign.center),
+            const SizedBox(height: Space.lg),
+          ] else if (_result == null) ...[
             Text(l10n.diagnosisHint, style: context.text.callout),
             const SizedBox(height: Space.md),
             SizedBox(
@@ -199,10 +209,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             const SizedBox(height: Space.sm),
             FloraTextField(controller: _symptoms, hint: l10n.diagnosisSymptomsHint, minLines: 1, maxLines: 3),
             const SizedBox(height: Space.lg),
-            if (_busy)
-              Column(children: [const AdaptiveProgress(), const SizedBox(height: Space.xs), Text(l10n.analyzing, style: context.text.caption)])
-            else
-              FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
+            FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
           ] else ...[
             if (_result!.urgent) DueBadge(emoji: '⚠️', label: l10n.urgentHint, status: DueStatus.overdue),
             if (_result!.urgent) const SizedBox(height: Space.xs),
