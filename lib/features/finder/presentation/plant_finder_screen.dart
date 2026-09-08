@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
@@ -32,11 +33,22 @@ class PlantFinderScreen extends ConsumerStatefulWidget {
 }
 
 class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
+  /// La page qui dit de quoi il s'agit, avant les questions.
+  static const _intro = 0;
+
+  /// Rang de la première question, et nombre de questions.
+  static const _premiere = 1;
   static const _questions = 4;
+
+  /// L'étape au champ libre, la seule à ouvrir le clavier.
+  static const _libre = _premiere + 3;
+
+  /// Les propositions, après la dernière question.
+  static const _resultats = _premiere + _questions;
 
   final _page = PageController();
   final _note = TextEditingController();
-  int _step = 0;
+  int _step = _intro;
   FinderCriteria _criteria = const FinderCriteria();
   List<FinderMatch> _matches = const [];
   List<AdvisorSuggestion> _suggestions = const [];
@@ -52,7 +64,7 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
   void _go(int step) {
     Haptics.selection();
     // Le clavier du champ libre ne doit pas suivre sur les autres étapes.
-    if (step != 3) FocusManager.instance.primaryFocus?.unfocus();
+    if (step != _libre) FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _step = step);
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
   }
@@ -71,7 +83,7 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
       _matches = ref.read(plantFinderProvider).search(criteria);
       _suggestions = const [];
     });
-    _go(_questions);
+    _go(_resultats);
   }
 
   void _restart() {
@@ -81,7 +93,8 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
       _suggestions = const [];
       _note.clear();
     });
-    _go(0);
+    // On repart à la première question : l'explication a été lue.
+    _go(_premiere);
   }
 
   Future<void> _askAdvisor() async {
@@ -125,12 +138,15 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
               child: Row(
                 children: [
                   FloraIconButton(
-                    icon: _step == 0 ? CupertinoIcons.xmark : CupertinoIcons.chevron_left,
-                    semanticLabel: _step == 0 ? l10n.close : l10n.back,
-                    onPressed: () => _step == 0 ? context.pop() : _go(_step - 1),
+                    icon: _step == _intro ? CupertinoIcons.xmark : CupertinoIcons.chevron_left,
+                    semanticLabel: _step == _intro ? l10n.close : l10n.back,
+                    onPressed: () => _step == _intro ? context.pop() : _go(_step - 1),
                   ),
                   const Spacer(),
-                  if (_step < _questions) _StepDots(count: _questions, index: _step) else Text(l10n.finderTitle, style: context.text.callout.copyWith(fontWeight: FontWeight.w600)),
+                  if (_step >= _premiere && _step < _resultats)
+                    _StepDots(count: _questions, index: _step - _premiere)
+                  else
+                    Text(l10n.finderTitle, style: context.text.callout.copyWith(fontWeight: FontWeight.w600)),
                   const Spacer(),
                   const SizedBox(width: 40),
                 ],
@@ -140,12 +156,36 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
               child: PageView(
                 controller: _page,
                 physics: const NeverScrollableScrollPhysics(),
-                children: [_spotStep(), _effortStep(), _safetyStep(), _kindStep(), _resultsStep()],
+                children: [_introStep(), _spotStep(), _effortStep(), _safetyStep(), _kindStep(), _resultsStep()],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  /// Ce que la boussole promet, avant de commencer à demander. Sans elle,
+  /// l'écran s'ouvrait sur « Où va-t-elle vivre ? » sans avoir dit de quoi
+  /// il retournait.
+  Widget _introStep() {
+    final l10n = context.l10n;
+    final c = context.colors;
+    return _StepLayout(
+      title: l10n.finderTitle,
+      subtitle: l10n.finderIntro,
+      body: Center(
+        child: Container(
+          width: 96,
+          height: 96,
+          decoration: BoxDecoration(color: c.sageSoft, shape: BoxShape.circle),
+          alignment: Alignment.center,
+          child: const Text('🧭', style: TextStyle(fontSize: 44, height: 1)),
+        ),
+      ),
+      actions: [
+        FloraButton(label: l10n.continueLabel, expand: true, trailingIcon: CupertinoIcons.arrow_right, onPressed: () => _go(_premiere)),
+      ],
     );
   }
 
@@ -367,6 +407,7 @@ class _SpeciesSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final care = ref.watch(careGuideProvider).resolve(scientificName, family: family ?? speciesFamilyLookup(ref)(scientificName));
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
@@ -382,6 +423,21 @@ class _SpeciesSheet extends ConsumerWidget {
           CareGuideBody(care: care),
           const SizedBox(height: Space.lg),
           FloraButton(label: actionLabel, icon: actionIcon, expand: true, onPressed: () => Navigator.of(context).pop(true)),
+          const SizedBox(height: Space.xs),
+          // La fiche d'entretien dit comment s'en occuper ; GBIF dit ce que
+          // c'est, avec des photos d'observation et sa taxonomie. Le
+          // catalogue ne connaît pas la clé GBIF de l'espèce, donc on ouvre
+          // la recherche par nom, qui tombe juste sur un nom accepté.
+          FloraButton(
+            label: l10n.speciesOpenGbif,
+            icon: CupertinoIcons.arrow_up_right_square,
+            style: FloraButtonStyle.secondary,
+            expand: true,
+            onPressed: () => launchUrl(
+              Uri.https('www.gbif.org', '/species/search', {'q': scientificName}),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
         ],
       ),
     );

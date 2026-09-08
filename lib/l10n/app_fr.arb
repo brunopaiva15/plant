@@ -1624,7 +1624,7 @@
   "finderCare": "Voir la fiche",
   "finderAskAi": "Demander à l'IA",
   "finderAiSection": "Propositions de l'IA",
-  "finderAiHint": "Hors catalogue : à vérifier avant d'acheter.",
+  "finderAiHint": "Hors catalogue, à vérifier avant d'acheter.",
   "finderAiError": "L'IA n'a rien pu proposer.",
   "finderReasonLight": "Aime cette lumière",
   "finderReasonLowLight": "Supporte l'ombre",
@@ -1634,5 +1634,6 @@
   "finderReasonOutdoor": "Tient dehors",
   "finderAnyAnswer": "Peu importe",
   "onbWelcomeTitle": "Bienvenue sur Auxin",
-  "onbWelcomeBody": "Le carnet de vos plantes, du premier arrosage à la nouvelle feuille."
+  "onbWelcomeBody": "Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.",
+  "finderIntro": "Quatre questions sur l'endroit et sur vos habitudes, puis des plantes qui s'y plairont, chacune avec sa fiche d'entretien."
 }

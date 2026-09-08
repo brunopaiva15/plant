@@ -1100,7 +1100,7 @@
   "finderCare": "View care sheet",
   "finderAskAi": "Ask the AI",
   "finderAiSection": "AI suggestions",
-  "finderAiHint": "Outside the catalogue: check before buying.",
+  "finderAiHint": "Outside the catalogue, worth checking before buying.",
   "finderAiError": "The AI could not suggest anything.",
   "finderReasonLight": "Likes this light",
   "finderReasonLowLight": "Tolerates shade",
@@ -1110,5 +1110,6 @@
   "finderReasonOutdoor": "Happy outdoors",
   "finderAnyAnswer": "No preference",
   "onbWelcomeTitle": "Welcome to Auxin",
-  "onbWelcomeBody": "The journal of your plants, from the first watering to the newest leaf."
+  "onbWelcomeBody": "The journal of your plants, from the first watering to the newest leaf.",
+  "finderIntro": "Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet."
 }

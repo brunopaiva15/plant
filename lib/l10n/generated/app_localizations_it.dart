@@ -3519,7 +3519,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderAiSection => 'Proposte dell\'IA';
 
   @override
-  String get finderAiHint => 'Fuori catalogo: da verificare prima di acquistare.';
+  String get finderAiHint => 'Fuori catalogo, da verificare prima di acquistare.';
 
   @override
   String get finderAiError => 'L\'IA non è riuscita a proporre nulla.';
@@ -3550,4 +3550,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbWelcomeBody => 'Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia.';
+
+  @override
+  String get finderIntro => 'Quattro domande sul posto e sulle tue abitudini, poi piante che ci staranno bene, ognuna con la sua scheda di cura.';
 }

@@ -3514,7 +3514,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderAiSection => 'KI-Vorschläge';
 
   @override
-  String get finderAiHint => 'Außerhalb des Katalogs: vor dem Kauf prüfen.';
+  String get finderAiHint => 'Außerhalb des Katalogs, vor dem Kauf prüfen.';
 
   @override
   String get finderAiError => 'Die KI konnte nichts vorschlagen.';
@@ -3545,4 +3545,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbWelcomeBody => 'Das Tagebuch deiner Pflanzen, vom ersten Gießen bis zum neuen Blatt.';
+
+  @override
+  String get finderIntro => 'Vier Fragen zum Standort und zu deinen Gewohnheiten, dann Pflanzen, die sich dort wohlfühlen, jede mit ihren Pflegeinfos.';
 }

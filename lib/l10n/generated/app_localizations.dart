@@ -6090,6 +6090,12 @@ abstract class AppLocalizations {
   /// **'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.'**
   String get onbWelcomeBody;
 
+  /// No description provided for @finderIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.'**
+  String get finderIntro;
+
 }
 
 class _AppLocalizationsDelegate

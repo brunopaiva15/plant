@@ -1100,7 +1100,7 @@
   "finderCare": "Pflegeinfos ansehen",
   "finderAskAi": "Die KI fragen",
   "finderAiSection": "KI-Vorschläge",
-  "finderAiHint": "Außerhalb des Katalogs: vor dem Kauf prüfen.",
+  "finderAiHint": "Außerhalb des Katalogs, vor dem Kauf prüfen.",
   "finderAiError": "Die KI konnte nichts vorschlagen.",
   "finderReasonLight": "Mag dieses Licht",
   "finderReasonLowLight": "Verträgt Schatten",
@@ -1110,5 +1110,6 @@
   "finderReasonOutdoor": "Hält es draußen aus",
   "finderAnyAnswer": "Egal",
   "onbWelcomeTitle": "Willkommen bei Auxin",
-  "onbWelcomeBody": "Das Tagebuch deiner Pflanzen, vom ersten Gießen bis zum neuen Blatt."
+  "onbWelcomeBody": "Das Tagebuch deiner Pflanzen, vom ersten Gießen bis zum neuen Blatt.",
+  "finderIntro": "Vier Fragen zum Standort und zu deinen Gewohnheiten, dann Pflanzen, die sich dort wohlfühlen, jede mit ihren Pflegeinfos."
 }

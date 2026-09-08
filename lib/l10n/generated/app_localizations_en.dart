@@ -3499,7 +3499,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderAiSection => 'AI suggestions';
 
   @override
-  String get finderAiHint => 'Outside the catalogue: check before buying.';
+  String get finderAiHint => 'Outside the catalogue, worth checking before buying.';
 
   @override
   String get finderAiError => 'The AI could not suggest anything.';
@@ -3530,4 +3530,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbWelcomeBody => 'The journal of your plants, from the first watering to the newest leaf.';
+
+  @override
+  String get finderIntro => 'Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet.';
 }

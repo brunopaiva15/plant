@@ -1100,7 +1100,7 @@
   "finderCare": "Vedi la scheda",
   "finderAskAi": "Chiedi all'IA",
   "finderAiSection": "Proposte dell'IA",
-  "finderAiHint": "Fuori catalogo: da verificare prima di acquistare.",
+  "finderAiHint": "Fuori catalogo, da verificare prima di acquistare.",
   "finderAiError": "L'IA non è riuscita a proporre nulla.",
   "finderReasonLight": "Ama questa luce",
   "finderReasonLowLight": "Tollera l'ombra",
@@ -1110,5 +1110,6 @@
   "finderReasonOutdoor": "Sta bene all'aperto",
   "finderAnyAnswer": "Non importa",
   "onbWelcomeTitle": "Benvenuto in Auxin",
-  "onbWelcomeBody": "Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia."
+  "onbWelcomeBody": "Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia.",
+  "finderIntro": "Quattro domande sul posto e sulle tue abitudini, poi piante che ci staranno bene, ognuna con la sua scheda di cura."
 }

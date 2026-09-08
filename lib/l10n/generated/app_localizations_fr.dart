@@ -3559,4 +3559,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbWelcomeBody => 'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.';
+
+  @override
+  String get finderIntro => 'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.';
 }
