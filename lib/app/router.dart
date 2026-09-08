@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/config/app_config.dart';
 import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
 import '../features/account/presentation/members_screen.dart';
@@ -28,6 +29,7 @@ import '../features/profile/presentation/appearance_screen.dart';
 import '../features/profile/presentation/notifications_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/tags_screen.dart';
+import '../features/qr/application/plant_links.dart';
 import '../features/qr/presentation/scanner_screen.dart';
 import '../domain/species/species_info.dart';
 import '../features/attributes/presentation/attribute_templates_screen.dart';
@@ -38,6 +40,7 @@ import '../features/support/presentation/support_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/weather/presentation/forecast_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
+import 'deep_links.dart';
 import 'providers.dart';
 import 'shell.dart';
 
@@ -87,9 +90,27 @@ abstract final class Routes {
 
 final routerProvider = Provider<GoRouter>((ref) {
   final onboardingDone = ref.read(preferencesProvider).onboardingDone;
-  return GoRouter(
+  late final GoRouter router;
+  router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: onboardingDone ? Routes.today : Routes.onboarding,
+    redirect: (context, state) {
+      // Un lien `flora://…` — QR scanné depuis l'appareil photo du système,
+      // retour de connexion — est livré tel quel : le routeur n'y voit
+      // aucune route et affichait « Page Not Found ». Les emplacements
+      // internes, eux, n'ont jamais de schéma.
+      final raw = state.uri.toString();
+      if (!raw.startsWith('${AppConfig.linkScheme}:')) return null;
+      if (!ref.read(preferencesProvider).onboardingDone) return Routes.onboarding;
+      final link = PlantLinks.decodeLink(raw);
+      // La cible s'ouvre une fois la redirection faite : elle se pose alors
+      // sur l'accueil, avec un retour qui mène quelque part. Un lien qu'on ne
+      // sait pas lire (retour de connexion) laisse simplement l'accueil.
+      if (link != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => openFloraLink(ref, router, link));
+      }
+      return Routes.today;
+    },
     routes: [
       GoRoute(
         path: Routes.onboarding,
@@ -211,4 +232,5 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+  return router;
 });

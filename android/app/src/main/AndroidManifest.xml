@@ -36,6 +36,15 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="flora" android:host="login-callback"/>
             </intent-filter>
+            <!-- Étiquettes QR : flora://plant/<id> et flora://item/<id>,
+                 scannées depuis l'appareil photo du système. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="flora" android:host="plant"/>
+                <data android:scheme="flora" android:host="item"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
