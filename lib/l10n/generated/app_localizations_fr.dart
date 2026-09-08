@@ -10,7 +10,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appName => 'Auxin';
+  String get appName => 'Auxine';
 
   @override
   String get ok => 'OK';
@@ -853,7 +853,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Par défaut, Auxin suit le réglage du système.';
+      'Par défaut, Auxine suit le réglage du système.';
 
   @override
   String get notifications => 'Notifications';
@@ -1325,7 +1325,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Pour vos plantes dehors, Auxin regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
+      'Pour vos plantes dehors, Auxine regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
 
   @override
   String get weatherPlace => 'Lieu';
@@ -1519,7 +1519,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'L\'invité doit déjà avoir un compte Auxin avec cette adresse.';
+      'L\'invité doit déjà avoir un compte Auxine avec cette adresse.';
 
   @override
   String get roleOwner => 'Propriétaire';
@@ -3242,7 +3242,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importErrorNotAZip =>
-      'Ce fichier n\'est pas une sauvegarde Auxin.';
+      'Ce fichier n\'est pas une sauvegarde Auxine.';
 
   @override
   String get importErrorWrongApp =>
@@ -3250,7 +3250,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importErrorTooRecent =>
-      'Cette sauvegarde vient d\'une version plus récente d\'Auxin.';
+      'Cette sauvegarde vient d\'une version plus récente d\'Auxine.';
 
   @override
   String get importErrorGeneric => 'Restauration impossible.';
@@ -3377,7 +3377,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get supportTitle => 'Auxin est gratuit';
+  String get supportTitle => 'Auxine est gratuite';
 
   @override
   String get supportBody =>
@@ -3555,7 +3555,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get finderAnyAnswer => 'Peu importe';
 
   @override
-  String get onbWelcomeTitle => 'Bienvenue sur Auxin';
+  String get onbWelcomeTitle => 'Bienvenue sur Auxine';
 
   @override
   String get onbWelcomeBody => 'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.';

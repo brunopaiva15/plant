@@ -1,6 +1,6 @@
 # Outils de construction du catalogue d'espèces
 
-Le catalogue hors ligne d'Auxin a deux étages :
+Le catalogue hors ligne d'Auxine a deux étages :
 
 | Étage | Fichier | Contenu | Rôle |
 |---|---|---|---|

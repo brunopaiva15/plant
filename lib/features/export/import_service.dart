@@ -91,7 +91,7 @@ class ImportService {
     final archive = await _openArchive(zip);
     final data = await _readData(zip, archive: archive);
     final manifest = _manifest(data);
-    if (manifest.app.isNotEmpty && manifest.app != AppConfig.appName && manifest.app != AppConfig.legacyAppName) {
+    if (manifest.app.isNotEmpty && manifest.app != AppConfig.appName && !AppConfig.legacyAppNames.contains(manifest.app)) {
       throw const ImportException(ImportFailure.wrongApp);
     }
     if (manifest.schemaVersion > _db.schemaVersion) {

@@ -1,4 +1,4 @@
-# Auxin
+# Auxine
 
 Application mobile premium de gestion de plantes (Flutter, iOS & Android).
 Identifiant `ch.vergasta.plant`. Le code garde son nom de travail, « Flora » :

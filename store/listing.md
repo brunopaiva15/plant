@@ -12,7 +12,7 @@ d'espace après les virgules, qui coûterait un caractère pour rien.
 
 | Champ | Valeur | Longueur |
 |---|---|---|
-| Titre | `Auxin : Carnet de plantes` | 25 / 30 |
+| Titre | `Auxine : Carnet de plantes` | 26 / 30 |
 | Sous-titre | `Journal, soins, identification` | 30 / 30 |
 | Mots-clés | `rappel,arrosage,fleurs,jardinage,entretien,arroser,botanique,malade,calendrier,rempotage,photo,pot` | 98 / 100 |
 
@@ -20,7 +20,7 @@ d'espace après les virgules, qui coûterait un caractère pour rien.
 
 | Champ | Valeur | Longueur |
 |---|---|---|
-| Titre | `Auxin: Pflanzenjournal` | 22 / 30 |
+| Titre | `Auxine: Pflanzenjournal` | 23 / 30 |
 | Sous-titre | `Pflege, Gießen, Erkennung` | 25 / 30 |
 | Mots-clés | `tagebuch,erinnerung,garten,blumen,umpflanzen,dünger,zimmerpflanze,wachstum,kalender,botanik,tracker` | 99 / 100 |
 
@@ -28,7 +28,7 @@ d'espace après les virgules, qui coûterait un caractère pour rien.
 
 | Champ | Valeur | Longueur |
 |---|---|---|
-| Titre | `Auxin: Plant Journal` | 20 / 30 |
+| Titre | `Auxine: Plant Journal` | 21 / 30 |
 | Sous-titre | `Care, watering, identification` | 30 / 30 |
 | Mots-clés | `diary,reminder,garden,flowers,repotting,fertilizer,indoor,houseplant,growth,tracker,calendar,botany` | 99 / 100 |
 
@@ -36,7 +36,7 @@ d'espace après les virgules, qui coûterait un caractère pour rien.
 
 | Champ | Valeur | Longueur |
 |---|---|---|
-| Titre | `Auxin: Diario delle piante` | 26 / 30 |
+| Titre | `Auxine: Diario delle piante` | 27 / 30 |
 | Sous-titre | `Cura, acqua, riconoscimento` | 27 / 30 |
 | Mots-clés | `promemoria,giardino,fiori,annaffiatura,rinvaso,fertilizzante,crescita,calendario,botanica,tracker` | 97 / 100 |
 

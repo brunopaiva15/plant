@@ -1,6 +1,6 @@
-# Auxin — Roadmap par phases
+# Auxine — Roadmap par phases
 
-> Le produit s'appelle **Auxin** (`AppConfig.appName`) ; le code garde son nom de travail, « Flora ». Aucune dépendance profonde au nom.
+> Le produit s'appelle **Auxine** (`AppConfig.appName`) ; le code garde son nom de travail, « Flora ». Aucune dépendance profonde au nom.
 
 Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque phase livre une application **utilisable et sans bouton mort** : une fonction visible fonctionne, ou elle n'est pas visible.
 

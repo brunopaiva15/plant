@@ -120,15 +120,17 @@ void main() {
 
     test('l\'aperçu annonce ce que contient le fichier', () async {
       final manifest = await importer.inspect(await exporter.buildZip());
-      expect(manifest.app, 'Auxin');
+      expect(manifest.app, 'Auxine');
       expect(manifest.counts['plants'], 1);
       expect(manifest.sections, contains(BackupSection.plants));
     });
 
-    test('une sauvegarde faite du temps de « Flora » reste importable', () async {
-      final legacy = await _reissued(await exporter.buildZip(), app: AppConfig.legacyAppName);
-      await importer.import(legacy);
-      expect((await target.select(target.plants).get()).single.name, 'Monstera');
+    test('les sauvegardes des noms précédents restent importables', () async {
+      for (final ancien in AppConfig.legacyAppNames) {
+        final legacy = await _reissued(await exporter.buildZip(), app: ancien);
+        await importer.import(legacy);
+        expect((await target.select(target.plants).get()).single.name, 'Monstera', reason: ancien);
+      }
     });
 
     test('une sauvegarde d\'une autre application est refusée', () async {
