@@ -158,7 +158,7 @@ def read_and_square(path, label):
     return tf.cast(image, tf.uint8), label
 
 
-def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0, preload: bool = True, repeat: bool = False):
+def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budget_gb: float = 6.0, preload: bool = True, repeat: bool = False, skip: int = 0):
     """Précharge en mémoire tant que ça tient dans le budget, sinon relit les
     fichiers à chaque époque.
 
@@ -178,6 +178,11 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
     # 9 % en validation. On mélange donc la liste entière avant tf.data.
     random.Random(SHUFFLE_SEED).shuffle(usable)
     counts = Counter(label for _, label in usable)
+    if skip:
+        # Reprise d'un encodage interrompu. Le mélange est fait, donc l'ordre
+        # est le même qu'à la passe précédente : couper le préfixe déjà
+        # calculé revient exactement à reprendre où l'on s'était arrêté.
+        usable = usable[skip:]
     estimate = len(usable) * LOAD_SIZE * LOAD_SIZE * 3 / 1e9
 
     if preload and estimate <= ram_budget_gb:
@@ -209,10 +214,21 @@ def make_dataset(pairs, classes: list[str], batch: int, training: bool, ram_budg
     return ds.batch(batch).prefetch(AUTOTUNE), counts, [p for p, _ in usable]
 
 
+# Largeur du vecteur rendu par la moyenne globale, par réseau.
+FEATURE_DIM = {'small': 576, 'large': 960}
+
 BACKBONES = {
     'small': ('MobileNetV3Small', tf.keras.applications.MobileNetV3Small),
     'large': ('MobileNetV3Large', tf.keras.applications.MobileNetV3Large),
 }
+
+
+def usable_count(pairs, classes: list[str]) -> int:
+    """Le nombre d'images que `make_dataset` gardera : celles dont la classe
+    est retenue. C'est ce compte, et non celui de `splits.csv`, qui dit
+    combien de vecteurs le cache doit contenir."""
+    index = set(classes)
+    return sum(1 for _, pid in pairs if pid in index)
 
 
 def frozen_backbone(backbone: str) -> tf.keras.Model:
@@ -228,7 +244,9 @@ def frozen_backbone(backbone: str) -> tf.keras.Model:
     return tf.keras.Model(inputs, tf.keras.layers.GlobalAveragePooling2D()(x))
 
 
-def encode(pairs, classes: list[str], batch: int, backbone: str, ram_budget_gb: float, label: str):
+def encode(pairs, classes: list[str], batch: int, backbone: str, ram_budget_gb: float,
+           label: str, x_path: Path | None = None, y_path: Path | None = None,
+           mark=None, done: int = 0):
     """Passe les images dans le réseau gelé une fois pour toutes.
 
     Pendant la phase de tête, le réseau ne bouge pas : réencoder les mêmes
@@ -236,42 +254,82 @@ def encode(pairs, classes: list[str], batch: int, backbone: str, ram_budget_gb: 
     passe avant produit un vecteur par image ; la tête s'entraîne ensuite sur
     ces vecteurs, en secondes au lieu d'une demi-heure par époque.
 
+    Les vecteurs sont écrits au fur et à mesure, pas à la fin. Cette passe
+    dure plus d'une heure sur 232 000 images et la machine peut disparaître
+    entre-temps : tout garder en mémoire jusqu'au bout, c'est tout perdre. On
+    reprend au vecteur près.
+
     Le prix est le recadrage : les vecteurs sont ceux du carré central, sans
     augmentation. Pour une tête linéaire dont le seul rôle est de partir
     d'ailleurs que du hasard avant le réglage fin, c'est sans conséquence —
     et le réglage fin, lui, garde toutes ses augmentations.
     """
     ds, counts, paths = make_dataset(pairs, classes, batch, training=False,
-                                     ram_budget_gb=ram_budget_gb, preload=False)
+                                     ram_budget_gb=ram_budget_gb, preload=False, skip=done)
     model = frozen_backbone(backbone)
-    chunks, labels, done, t0 = [], [], 0, time.time()
-    for images, y in ds:
-        chunks.append(model(images, training=False).numpy().astype(np.float16))
-        labels.append(y.numpy())
-        done += int(y.shape[0])
-        if done % (batch * 100) < batch:
-            rate = done / max(1e-6, time.time() - t0)
-            print(f'  {label} : {done}/{len(paths)} encodées, {rate:.0f} img/s, '
-                  f'reste {(len(paths) - done) / rate / 60:.0f} min', flush=True)
+    total = done + len(paths)
+    chunks, labels, at, t0 = [], [], done, time.time()
+    x = np.lib.format.open_memmap(x_path, mode='r+' if done else 'w+', dtype=np.float16,
+                                  shape=(total, FEATURE_DIM[backbone])) if x_path else None
+    y = np.lib.format.open_memmap(y_path, mode='r+' if done else 'w+', dtype=np.int32,
+                                  shape=(total,)) if y_path else None
+    for images, batch_labels in ds:
+        vectors = model(images, training=False).numpy().astype(np.float16)
+        n = int(batch_labels.shape[0])
+        if x is not None:
+            x[at:at + n] = vectors
+            y[at:at + n] = batch_labels.numpy()
+        else:
+            chunks.append(vectors)
+            labels.append(batch_labels.numpy())
+        at += n
+        if (at - done) % (batch * 100) < batch:
+            if x is not None:
+                x.flush()
+                y.flush()
+                if mark:
+                    mark(at)
+            rate = (at - done) / max(1e-6, time.time() - t0)
+            print(f'  {label} : {at}/{total} encodées, {rate:.0f} img/s, '
+                  f'reste {(total - at) / rate / 60:.0f} min', flush=True)
+    if x is not None:
+        x.flush()
+        y.flush()
+        if mark:
+            mark(at)
+        return x, y, counts
     return np.concatenate(chunks), np.concatenate(labels), counts
 
 
-def encoded(cache: Path | None, name: str, signature: dict, build):
-    """Lit les vecteurs du disque quand la signature correspond, sinon les
-    calcule et les écrit. Une reprise ne réencode pas 185 000 images."""
+def encoded(cache: Path | None, name: str, signature: dict, encode_from):
+    """Rend les vecteurs, en reprenant l'encodage là où il s'était arrêté.
+
+    Le fichier de signature dit sur quel jeu et quel réseau les vecteurs ont
+    été calculés, et combien sont écrits. Une signature qui ne correspond
+    plus repart de zéro : mieux vaut une heure de calcul qu'une tête
+    entraînée sur les vecteurs d'un autre jeu.
+    """
     if cache is None:
-        return build()
+        x, y, _ = encode_from(None, None, None, 0)
+        return x, y
     cache.mkdir(parents=True, exist_ok=True)
     meta_p, x_p, y_p = cache / f'{name}.json', cache / f'{name}.x.npy', cache / f'{name}.y.npy'
+    done, total = 0, signature['images']
     if meta_p.exists() and x_p.exists() and y_p.exists():
-        if json.loads(meta_p.read_text()) == signature:
-            print(f'  {name} : vecteurs relus du cache')
-            return np.load(x_p), np.load(y_p)
-        print(f'  {name} : cache périmé, réencodage')
-    x, y = build()
-    np.save(x_p, x)
-    np.save(y_p, y)
-    meta_p.write_text(json.dumps(signature))
+        meta = json.loads(meta_p.read_text())
+        if {k: v for k, v in meta.items() if k != 'done'} == signature:
+            done = int(meta.get('done', 0))
+            if done >= total:
+                print(f'  {name} : vecteurs relus du cache')
+                return np.load(x_p, mmap_mode='r'), np.load(y_p, mmap_mode='r')
+            print(f'  {name} : reprise à {done}/{total} vecteurs')
+        else:
+            print(f'  {name} : cache périmé, réencodage')
+
+    def mark(at):
+        meta_p.write_text(json.dumps({**signature, 'done': at}))
+
+    x, y, _ = encode_from(x_p, y_p, mark, done)
     return x, y
 
 
@@ -533,12 +591,16 @@ def main() -> int:
             cache = Path(args.feature_cache)
             signature = {'backbone': args.backbone, 'input': IMAGE_SIZE, 'classes': len(classes),
                          'fingerprint': hashlib.sha256('\n'.join(classes).encode()).hexdigest()[:16]}
-            x, y = encoded(cache, 'train', {**signature, 'images': len(rows['train'])},
-                           lambda: encode(rows['train'], classes, args.batch, args.backbone,
-                                          args.ram_budget, 'entraînement')[:2])
-            xv, yv = encoded(cache, 'val', {**signature, 'images': len(val_rows)},
-                             lambda: encode(val_rows, classes, args.batch, args.backbone,
-                                            args.ram_budget, 'validation')[:2])
+            def encoder(pairs, label):
+                def run(x_p, y_p, mark, done):
+                    return encode(pairs, classes, args.batch, args.backbone, args.ram_budget,
+                                  label, x_p, y_p, mark, done)
+                return run
+
+            x, y = encoded(cache, 'train', {**signature, 'images': usable_count(rows['train'], classes)},
+                           encoder(rows['train'], 'entraînement'))
+            xv, yv = encoded(cache, 'val', {**signature, 'images': usable_count(val_rows, classes)},
+                             encoder(val_rows, 'validation'))
             print(f'tête sur vecteurs : {x.shape[0]} × {x.shape[1]}, validation {xv.shape[0]}')
             model.get_layer('species').set_weights(
                 fit_head(x, y, (xv, yv), len(classes), args.dropout, args.head_epochs, weights, args.batch))
