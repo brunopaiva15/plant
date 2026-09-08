@@ -34,6 +34,7 @@ import requests
 
 from plant_dataset.fetchers.gbif import GbifClient
 from plant_dataset.fetchers.inaturalist import InatClient
+from plant_dataset.fetchers.wikimedia import CommonsClient
 from plant_dataset.images import ImageRejected, download, prepare, store
 from plant_dataset.licenses import GBIF_LICENSE_CODES, GBIF_LICENSE_CODES_WITH_SA, parse_license
 from plant_dataset.manifest import (STATUS_DUPLICATE, STATUS_KEPT, STATUS_REJECTED, STATUS_REVIEW, ImageRecord, Manifest,
@@ -191,7 +192,7 @@ def relocate(manifest: Manifest, out: Path) -> None:
 
 def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: requests.Session, manifest: Manifest,
                 out: Path, species_cache: dict, inat_cache: dict, species_path: Path, inat_path: Path,
-                license_codes: list[str], args, t0: float, total: int) -> None:
+                license_codes: list[str], args, t0: float, total: int, commons=None) -> None:
     """Collecte une espèce, de la résolution du nom aux images.
 
     Quatre passes, dans cet ordre :
@@ -275,6 +276,16 @@ def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: reque
                                               allow_share_alike=args.allow_sa), target)
             sources.append(f'inat {added}')
 
+    if commons is not None and res['kept'] < target:
+        # Commons en dernier : c'est un complément. GBIF et iNaturalist
+        # décrivent des observations, avec une observation par groupe de
+        # répartition ; Commons donne des fichiers isolés, souvent des
+        # plantes cultivées, et c'est précisément ce qui manque au modèle
+        # sur les photos d'intérieur (§ 6.3 et 6.5 de docs/09).
+        added = run(commons.image_candidates(plant.scientific_name, max_files=args.max_candidates,
+                                             allow_share_alike=args.allow_sa), target)
+        sources.append(f'commons {added}')
+
     log(f'[{i}/{total}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {" + ".join(sources)}), '
         f'{res["rejected"]} rejetées sur {res["tried"]} essayées, {time.time() - t0:.0f} s')
 
@@ -292,6 +303,10 @@ def main() -> int:
     ap.add_argument('--workers', type=int, default=6, help='téléchargements en parallèle')
     ap.add_argument('--only-file', help='fichier avec un nom scientifique par ligne (comme --only)')
     ap.add_argument('--no-inaturalist', action='store_true', help='ne pas compléter par l\'API iNaturalist')
+    ap.add_argument('--wikimedia', action='store_true',
+                    help='compléter par Wikimedia Commons : des plantes cultivées, photographiées chez des gens')
+    ap.add_argument('--commons-pause', type=float, default=1.0,
+                    help='pause entre requêtes Commons, en secondes ; en dessous de 1 s l\'API répond 429')
     ap.add_argument('--inat-pause', type=float, default=1.0, help='pause entre requêtes iNaturalist, en secondes')
     ap.add_argument('--gbif-pause', type=float, default=0.25, help='pause entre requêtes GBIF, en secondes ; à augmenter quand plusieurs collectes tournent en parallèle')
     ap.add_argument('--captive-file', help='espèces (une par ligne) pour lesquelles réserver une part de plantes cultivées')
@@ -327,13 +342,14 @@ def main() -> int:
     if not args.skip_fetch:
         client = GbifClient(pause=args.gbif_pause)
         inat = None if args.no_inaturalist else InatClient(pause=args.inat_pause)
+        commons = CommonsClient(pause=args.commons_pause) if args.wikimedia else None
         http = requests.Session()
         http.headers['User-Agent'] = client.session.headers['User-Agent']
         for i, plant in enumerate(plants, 1):
             t0 = time.time()
             try:
                 collect_one(i, plant, client, inat, http, manifest, out, species_cache, inat_cache,
-                            species_path, inat_path, license_codes, args, t0, len(plants))
+                            species_path, inat_path, license_codes, args, t0, len(plants), commons)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
