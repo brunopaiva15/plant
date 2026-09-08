@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/problems/problem_catalog.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
@@ -60,13 +61,20 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
     try {
       final files = [for (final p in _photos) File(await storage.absolutePath(p.filePath))];
+      final frequent = ProblemCatalog.idsForIssues(_knownIssues()).toSet();
+      final catalog = await ref.read(problemCatalogProvider.future);
       final result = await ref.read(plantDiagnoserProvider).diagnose(
             images: files,
             language: lang,
             plantName: widget.plant.name,
             species: widget.plant.speciesName,
             symptoms: _symptoms.text,
-            knownIssues: _knownIssues(),
+            candidates: catalog.candidatesFor(
+              species: widget.plant.speciesName,
+              family: speciesFamilyOf(ref, widget.plant.speciesName),
+              pinned: frequent,
+            ),
+            frequentIds: frequent,
           );
       Haptics.success();
       if (mounted) setState(() => _result = result);
@@ -102,10 +110,25 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     return care.match == CareMatch.generic ? const [] : care.profile.issues;
   }
 
+  /// Le nom de la piste : celui de la base quand le service en a reconnu une,
+  /// sinon le titre qu'il a écrit lui-même.
+  ///
+  /// C'est tout l'intérêt de la base. Le même excès d'eau s'appelait
+  /// « Arrosage trop fréquent », « Trop d'eau » ou « Excès d'humidité au
+  /// niveau des racines » d'une analyse à l'autre ; il s'appelle désormais
+  /// pareil à chaque fois, et dans la langue de l'application.
+  String _titleOf(DiagnosisCause cause, ProblemCatalog? catalog, String language) =>
+      catalog?[cause.problemId]?.nameIn(language) ?? cause.title;
+
   Future<void> _save() async {
     final l10n = context.l10n;
     final r = _result!;
-    final text = [r.summary, ...r.causes.take(3).map((c) => '• ${c.title} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})')].join('\n');
+    final catalog = ref.read(problemCatalogProvider).value;
+    final language = Localizations.localeOf(context).languageCode;
+    final text = [
+      r.summary,
+      ...r.causes.take(3).map((c) => '• ${_titleOf(c, catalog, language)} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
+    ].join('\n');
     await ref.read(careActionsProvider).log(
           NewAction(plantId: widget.plant.id, typeKey: CareKind.note.key, notes: text),
           message: l10n.diagnosisSaved,
@@ -183,7 +206,11 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             const SizedBox(height: Space.xxs),
             Text(l10n.identifyHint, style: context.text.caption),
             const SizedBox(height: Space.sm),
-            for (final cause in _result!.causes) _CauseCard(cause: cause),
+            for (final cause in _result!.causes)
+              _CauseCard(
+                cause: cause,
+                title: _titleOf(cause, ref.watch(problemCatalogProvider).value, Localizations.localeOf(context).languageCode),
+              ),
             const SizedBox(height: Space.md),
             FloraButton(label: l10n.saveToJournal, icon: CupertinoIcons.book, expand: true, onPressed: _save),
             const SizedBox(height: Space.xs),
@@ -210,9 +237,12 @@ extension LikelihoodLabel on AppLocalizations {
 }
 
 class _CauseCard extends StatelessWidget {
-  const _CauseCard({required this.cause});
+  const _CauseCard({required this.cause, required this.title});
 
   final DiagnosisCause cause;
+
+  /// Déjà résolu par la base : la carte n'a plus qu'à l'afficher.
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +255,7 @@ class _CauseCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text(cause.title, style: context.text.title3)),
+                Expanded(child: Text(title, style: context.text.title3)),
                 const SizedBox(width: Space.xs),
                 // Trois crans, pas de barre : il n'y a rien à remplir quand
                 // il n'y a rien à mesurer.

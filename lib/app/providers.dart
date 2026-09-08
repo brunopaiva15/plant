@@ -26,6 +26,8 @@ import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
 import '../data/sharing/supabase_sharing_service.dart';
+import '../data/problems/problem_catalog.dart';
+import '../data/problems/problem_catalog_loader.dart';
 import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
@@ -332,6 +334,12 @@ final supportOfferProvider = FutureProvider<SupportOffer?>((ref) => ref.watch(su
 /// Catalogue étendu d'espèces, chargé à la première recherche seulement.
 final speciesIndexLoaderProvider = Provider<SpeciesIndexLoader>((ref) => SpeciesIndexLoader());
 final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(speciesIndexLoaderProvider).load());
+
+/// Base locale des troubles, ravageurs et maladies, chargée au premier
+/// diagnostic. C'est le vocabulaire commun : ce que l'IA a le droit de
+/// nommer, et le nom que l'application affiche ensuite.
+final problemCatalogLoaderProvider = Provider<ProblemCatalogLoader>((ref) => ProblemCatalogLoader());
+final problemCatalogProvider = FutureProvider<ProblemCatalog>((ref) => ref.watch(problemCatalogLoaderProvider).load());
 
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));

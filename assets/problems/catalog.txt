@@ -1,0 +1,217 @@
+# BASE_200_PROBLEMES_PLANTES_FR_EN_IT_DE
+# Encodage: UTF-8. Separateur de champs: |. Separateur de taxons: ;.
+# Les identifiants correspondent aux 200 problemes de la liste initiale.
+# Les noms scientifiques des plantes sont communs aux quatre langues.
+# GENERAL: probleme possible sur les plantes vasculaires selon les conditions et le stade de developpement.
+# LARGE: nombreux hotes; les taxons indiques sont des exemples non exhaustifs.
+# CIBLE: hotes principaux ou exemples dans un groupe cible; liste non exhaustive.
+# Un genre ou une famille ne signifie pas que toutes ses especes ou varietes sont sensibles.
+# Tracheophyta = plantes vasculaires. Les symptomes et la sensibilite dependent de l'espece et du contexte.
+# Taxonomie: 159 noms rapproches exactement de GBIF; Streptocarpus confirme par la classification GBIF de S. ionanthus.
+# Six noms conserves sous leur nom scientifique, sans correspondance GBIF automatique definitive: Allium porrum;Cedrus;Goeppertia;Hosta;Prunus dulcis;Schlumbergera.
+# Synonymes pour la recherche: Pisum sativum -> Lathyrus oleraceus; Eriobotrya japonica -> Rhaphiolepis bibas.
+# La verification GBIF porte sur les noms des plantes, pas sur les relations hote-probleme.
+# 118: les perce-oreilles sont aussi des auxiliaires; entree reservee aux degats observes.
+# 142: Juniperus est un hote alternant. 144: Epilobium et Abies sont des hotes alternants.
+# 175: concerne les semis. 181: champignons superficiels sur miellat, sans parasitisme direct de la plante.
+id|type|nom_fr|nom_en|nom_it|nom_de|portee|taxons_hotes_scientifiques
+001|ABIOTIQUE|Manque d'eau|Water deficit|Carenza d'acqua|Wassermangel|GENERAL|Tracheophyta
+002|ABIOTIQUE|Excès d'eau et asphyxie racinaire|Waterlogging and root oxygen deficiency|Ristagno idrico e asfissia radicale|Staunässe und Sauerstoffmangel an den Wurzeln|GENERAL|Tracheophyta
+003|ABIOTIQUE|Motte hydrophobe|Water-repellent root ball|Zolla idrofoba|Wasserabweisender Wurzelballen|GENERAL|Tracheophyta
+004|ABIOTIQUE|Sol ou substrat compacté|Soil or growing-medium compaction|Compattazione del terreno o del substrato|Boden- oder Substratverdichtung|GENERAL|Tracheophyta
+005|ABIOTIQUE|Pot trop étroit et chignon racinaire|Pot-bound roots and root circling|Radici costrette nel vaso e spiralizzate|Zu kleiner Topf und kreisende Wurzeln|GENERAL|Tracheophyta
+006|ABIOTIQUE|Plantation trop profonde|Planting too deeply|Impianto troppo profondo|Zu tiefe Pflanzung|GENERAL|Tracheophyta
+007|ABIOTIQUE|Choc de transplantation ou de rempotage|Transplanting or repotting shock|Shock da trapianto o rinvaso|Umpflanz- oder Umtopfschock|GENERAL|Tracheophyta
+008|ABIOTIQUE|Manque de lumière et étiolement|Insufficient light and etiolation|Carenza di luce ed eziolamento|Lichtmangel und Vergeilung|GENERAL|Tracheophyta
+009|ABIOTIQUE|Brûlure solaire|Sunscald|Scottature solari|Sonnenbrand|GENERAL|Tracheophyta
+010|ABIOTIQUE|Stress de chaleur|Heat stress|Stress da caldo|Hitzestress|GENERAL|Tracheophyta
+011|ABIOTIQUE|Dégâts de froid sans gel|Chilling injury|Danni da freddo senza gelo|Kälteschäden ohne Frost|LARGE|Ficus;Monstera;Dieffenbachia
+012|ABIOTIQUE|Dégâts de gel|Frost damage|Danni da gelo|Frostschäden|GENERAL|Tracheophyta
+013|ABIOTIQUE|Air trop sec|Low air humidity|Umidità dell'aria insufficiente|Zu geringe Luftfeuchtigkeit|LARGE|Goeppertia;Maranta;Adiantum
+014|ABIOTIQUE|Dessèchement par le vent|Wind desiccation|Disseccamento da vento|Austrocknung durch Wind|GENERAL|Tracheophyta
+015|ABIOTIQUE|Dessiccation hivernale|Winter desiccation|Disseccamento invernale|Frosttrocknis|LARGE|Rhododendron;Buxus;Prunus laurocerasus;Thuja occidentalis
+016|ABIOTIQUE|Dégâts de grêle|Hail damage|Danni da grandine|Hagelschäden|GENERAL|Tracheophyta
+017|ABIOTIQUE|Blessures mécaniques|Mechanical injury|Lesioni meccaniche|Mechanische Verletzungen|GENERAL|Tracheophyta
+018|ABIOTIQUE|Étranglement par une attache|Girdling by ties or wires|Strozzatura da legacci o fili|Einschnürung durch Bindematerial|GENERAL|Tracheophyta
+019|ABIOTIQUE|Concurrence des adventices|Weed competition|Competizione delle infestanti|Konkurrenz durch Beikräuter|GENERAL|Tracheophyta
+020|ABIOTIQUE|Taille inadaptée|Improper pruning|Potatura inadeguata|Unsachgemäßer Rückschnitt|GENERAL|Tracheophyta
+021|ABIOTIQUE|pH trop élevé|Excessively high pH|pH troppo elevato|Zu hoher pH-Wert|LARGE|Rhododendron;Camellia;Vaccinium corymbosum;Gardenia jasminoides
+022|ABIOTIQUE|pH trop bas|Excessively low pH|pH troppo basso|Zu niedriger pH-Wert|LARGE|Lavandula angustifolia;Syringa vulgaris;Brassica oleracea;Dianthus caryophyllus
+023|ABIOTIQUE|Accumulation de sels|Salt accumulation|Accumulo di sali|Salzanreicherung|GENERAL|Tracheophyta
+024|ABIOTIQUE|Excès d'azote|Excess nitrogen|Eccesso di azoto|Stickstoffüberschuss|GENERAL|Tracheophyta
+025|ABIOTIQUE|Carence en azote|Nitrogen deficiency|Carenza di azoto|Stickstoffmangel|GENERAL|Tracheophyta
+026|ABIOTIQUE|Carence en potassium|Potassium deficiency|Carenza di potassio|Kaliummangel|GENERAL|Tracheophyta
+027|ABIOTIQUE|Carence en magnésium|Magnesium deficiency|Carenza di magnesio|Magnesiummangel|GENERAL|Tracheophyta
+028|ABIOTIQUE|Carence en fer et chlorose ferrique|Iron deficiency and iron chlorosis|Carenza di ferro e clorosi ferrica|Eisenmangel und Eisenchlorose|GENERAL|Tracheophyta
+029|ABIOTIQUE|Carence ou défaut d'approvisionnement en calcium|Calcium deficiency or impaired calcium supply|Carenza o insufficiente apporto di calcio ai tessuti|Calciummangel oder gestörte Calciumversorgung|GENERAL|Tracheophyta
+030|ABIOTIQUE|Carence en phosphore|Phosphorus deficiency|Carenza di fosforo|Phosphormangel|GENERAL|Tracheophyta
+031|ABIOTIQUE|Carence en soufre|Sulfur deficiency|Carenza di zolfo|Schwefelmangel|GENERAL|Tracheophyta
+032|ABIOTIQUE|Carence en manganèse|Manganese deficiency|Carenza di manganese|Manganmangel|GENERAL|Tracheophyta
+033|ABIOTIQUE|Carence en bore|Boron deficiency|Carenza di boro|Bormangel|GENERAL|Tracheophyta
+034|ABIOTIQUE|Toxicité des fluorures|Fluoride toxicity|Tossicità da fluoruri|Fluoridtoxizität|LARGE|Dracaena;Chlorophytum comosum
+035|ABIOTIQUE|Phytotoxicité des produits ménagers|Household-product phytotoxicity|Fitotossicità dei prodotti domestici|Pflanzenschäden durch Haushaltsprodukte|GENERAL|Tracheophyta
+036|ABIOTIQUE|Phytotoxicité des traitements horticoles|Phytotoxicity from plant treatments|Fitotossicità dei trattamenti sulle piante|Phytotoxische Schäden durch Pflanzenbehandlungen|GENERAL|Tracheophyta
+037|ABIOTIQUE|Dégâts d'herbicides|Herbicide injury|Danni da erbicidi|Herbizidschäden|GENERAL|Tracheophyta
+038|ABIOTIQUE|Œdème physiologique|Physiological oedema|Edema fisiologico|Physiologische Ödeme|LARGE|Pelargonium;Camellia;Crassula;Eucalyptus
+039|ABIOTIQUE|Nécrose apicale des fruits|Blossom-end rot|Marciume apicale dei frutti|Blütenendfäule|CIBLE|Solanum lycopersicum;Capsicum annuum;Solanum melongena;Cucurbita pepo
+040|ABIOTIQUE|Brûlure marginale de la laitue et des choux|Lettuce and cabbage tipburn|Necrosi marginale della lattuga e dei cavoli|Blattrandnekrose bei Salat und Kohl|CIBLE|Lactuca sativa;Brassica oleracea
+041|ABIOTIQUE|Taches amères de la pomme|Apple bitter pit|Butteratura amara del melo|Stippigkeit des Apfels|CIBLE|Malus domestica
+042|ABIOTIQUE|Éclatement physiologique des fruits|Physiological fruit splitting|Spaccatura fisiologica dei frutti|Physiologisches Aufplatzen der Früchte|LARGE|Solanum lycopersicum;Prunus avium;Prunus domestica
+043|ABIOTIQUE|Collet vert ou jaune de la tomate|Tomato greenback or yellow shoulder|Colletto verde o giallo del pomodoro|Grün- oder Gelbkragen der Tomate|CIBLE|Solanum lycopersicum
+044|ABIOTIQUE|Enroulement physiologique de la tomate|Physiological tomato leaf roll|Accartocciamento fisiologico delle foglie del pomodoro|Physiologisches Blattrollen der Tomate|CIBLE|Solanum lycopersicum
+045|ABIOTIQUE|Pollinisation insuffisante|Insufficient pollination|Impollinazione insufficiente|Unzureichende Bestäubung|LARGE|Cucurbita pepo;Cucumis sativus;Malus domestica;Pyrus communis
+046|ABIOTIQUE|Chute des boutons floraux liée au stress|Stress-induced flower bud drop|Caduta dei boccioli da stress|Stressbedingter Knospenfall|LARGE|Camellia;Gardenia jasminoides;Hibiscus rosa-sinensis;Phalaenopsis
+047|ABIOTIQUE|Montaison prématurée|Premature bolting|Montata a seme precoce|Vorzeitiges Schossen|LARGE|Lactuca sativa;Spinacia oleracea;Raphanus sativus;Brassica rapa
+048|ABIOTIQUE|Photopériode inadaptée|Unsuitable photoperiod|Fotoperiodo inadeguato|Ungeeignete Tageslänge|LARGE|Kalanchoe blossfeldiana;Euphorbia pulcherrima;Chrysanthemum;Schlumbergera
+049|ABIOTIQUE|Besoin de froid non satisfait|Insufficient chilling|Fabbisogno di freddo non soddisfatto|Nicht erfüllter Kältebedarf|LARGE|Tulipa;Hyacinthus orientalis;Malus domestica;Pyrus communis
+050|ABIOTIQUE|Épuisement des réserves des bulbes|Depleted bulb reserves|Esaurimento delle riserve dei bulbi|Erschöpfte Reserven der Blumenzwiebeln|LARGE|Narcissus;Tulipa;Hyacinthus orientalis
+051|RAVAGEUR|Pucerons des feuilles et pousses|Leaf and shoot aphids|Afidi delle foglie e dei germogli|Blattläuse an Blättern und Trieben|LARGE|Rosa;Solanum lycopersicum;Vicia faba;Hibiscus rosa-sinensis
+052|RAVAGEUR|Puceron lanigère du pommier|Woolly apple aphid|Afide lanigero del melo|Apfelblutlaus|CIBLE|Malus
+053|RAVAGEUR|Pucerons des racines|Root aphids|Afidi delle radici|Wurzelläuse|LARGE|Lactuca sativa;Primula
+054|RAVAGEUR|Cochenilles farineuses aériennes|Above-ground mealybugs|Cocciniglie farinose delle parti aeree|Wollläuse an oberirdischen Pflanzenteilen|LARGE|Phalaenopsis;Ficus;Citrus;Crassula ovata
+055|RAVAGEUR|Cochenilles à bouclier|Armoured scale insects|Cocciniglie a scudetto|Deckelschildläuse|LARGE|Citrus;Nerium oleander;Euonymus japonicus;Orchidaceae
+056|RAVAGEUR|Cochenilles à carapace|Soft scale insects|Cocciniglie a scudo molle|Napfschildläuse|LARGE|Ficus;Citrus;Nerium oleander;Olea europaea
+057|RAVAGEUR|Cochenilles des racines|Root mealybugs|Cocciniglie delle radici|Wurzelwollläuse|LARGE|Cactaceae;Crassula;Echeveria;Streptocarpus ionanthus
+058|RAVAGEUR|Aleurodes|Whiteflies|Aleurodidi o mosche bianche|Weiße Fliegen|LARGE|Euphorbia pulcherrima;Hibiscus rosa-sinensis;Solanum lycopersicum;Cucumis sativus
+059|RAVAGEUR|Thrips|Thrips|Tripidi|Thripse|LARGE|Monstera;Phalaenopsis;Cyclamen;Allium porrum
+060|RAVAGEUR|Tétranyques|Spider mites|Acari tetranichidi|Spinnmilben|LARGE|Solanum lycopersicum;Phaseolus vulgaris;Rosa;Ficus
+061|RAVAGEUR|Tarsonèmes|Tarsonemid mites|Acari tarsonemidi|Weichhautmilben|LARGE|Cyclamen;Fragaria;Streptocarpus;Impatiens
+062|RAVAGEUR|Acariens des galles et de l'érinose|Gall and erineum mites|Acari delle galle e dell'erinosi|Gall- und Filzmilben|LARGE|Vitis vinifera;Pyrus communis;Tilia;Fuchsia
+063|RAVAGEUR|Acarien de l'acariose bronzée de la tomate|Tomato russet mite|Eriofide rugginoso del pomodoro|Tomatenrostmilbe|CIBLE|Solanum lycopersicum;Solanum melongena;Petunia
+064|RAVAGEUR|Acariens des bulbes|Bulb mites|Acari dei bulbi|Zwiebelmilben|LARGE|Narcissus;Tulipa;Hyacinthus orientalis;Allium cepa
+065|RAVAGEUR|Sciarides et moucherons du terreau|Fungus gnats|Sciaridi o moscerini del terriccio|Trauermücken|LARGE|Pelargonium;Cyclamen;Begonia
+066|RAVAGEUR|Mouches mineuses Liriomyza|Liriomyza leaf-mining flies|Mosche minatrici Liriomyza|Liriomyza-Minierfliegen|LARGE|Solanum lycopersicum;Chrysanthemum;Gerbera;Phaseolus vulgaris
+067|RAVAGEUR|Cicadelles|Leafhoppers|Cicaline|Zwergzikaden|LARGE|Salvia;Rosa;Vitis vinifera
+068|RAVAGEUR|Flatide pruineux|Citrus flatid planthopper|Metcalfa pruinosa|Bläulingszikade|LARGE|Citrus;Vitis vinifera;Acer;Hibiscus
+069|RAVAGEUR|Psylles|Psyllids|Psille|Blattflöhe|LARGE|Pyrus communis;Elaeagnus;Buxus;Albizia julibrissin
+070|RAVAGEUR|Tigres et punaises réticulées|Lace bugs|Tingidi|Netzwanzen|LARGE|Rhododendron;Pieris japonica;Platanus
+071|RAVAGEUR|Punaises pentatomides phytophages|Plant-feeding stink bugs|Pentatomidi fitofagi|Pflanzensaugende Baumwanzen|LARGE|Solanum lycopersicum;Capsicum annuum;Malus domestica;Pyrus communis
+072|RAVAGEUR|Punaises mirides phytophages|Plant-feeding mirid bugs|Miridi fitofagi|Pflanzensaugende Weichwanzen|LARGE|Rosa;Chrysanthemum;Dahlia;Phaseolus vulgaris
+073|RAVAGEUR|Otiorhynques|Vine weevils|Oziorrinchi|Dickmaulrüssler|LARGE|Rhododendron;Cyclamen;Heuchera;Fragaria
+074|RAVAGEUR|Anthonomes des boutons floraux|Blossom weevils|Antonomi dei boccioli|Blütenstecher|CIBLE|Fragaria;Rubus idaeus
+075|RAVAGEUR|Sitones|Pea and bean weevils|Sitone|Blattrandkäfer|CIBLE|Lathyrus oleraceus;Vicia faba
+076|RAVAGEUR|Balanin des noisettes|Hazelnut weevil|Balanino del nocciolo|Haselnussbohrer|CIBLE|Corylus avellana
+077|RAVAGEUR|Doryphore|Colorado potato beetle|Dorifora della patata|Kartoffelkäfer|CIBLE|Solanum tuberosum;Solanum melongena
+078|RAVAGEUR|Criocère du lis|Lily beetle|Criocera del giglio|Lilienhähnchen|CIBLE|Lilium;Fritillaria
+079|RAVAGEUR|Criocères de l'asperge|Asparagus beetles|Criocere dell'asparago|Spargelkäfer|CIBLE|Asparagus officinalis
+080|RAVAGEUR|Chrysomèles des plantes aromatiques|Leaf beetles of aromatic herbs|Crisomelidi delle piante aromatiche|Blattkäfer an Gewürzkräutern|CIBLE|Lavandula;Salvia rosmarinus;Mentha;Salvia officinalis
+081|RAVAGEUR|Galéruque de la viorne|Viburnum leaf beetle|Galerucella del viburno|Schneeballblattkäfer|CIBLE|Viburnum opulus;Viburnum tinus
+082|RAVAGEUR|Altises|Flea beetles|Altiche|Erdflöhe|LARGE|Brassica;Raphanus sativus;Eruca
+083|RAVAGEUR|Larves de hannetons phytophages|Root-feeding chafer grubs|Larve fitofaghe di maggiolini|Wurzelfressende Engerlinge|LARGE|Fragaria;Lactuca sativa;Solanum tuberosum;Poaceae
+084|RAVAGEUR|Taupins et vers fil-de-fer|Click beetles and wireworms|Elateridi e ferretti|Schnellkäfer und Drahtwürmer|LARGE|Solanum tuberosum;Daucus carota;Lactuca sativa
+085|RAVAGEUR|Larves de tipules|Leatherjackets|Larve di tipula|Schnakenlarven|LARGE|Lactuca sativa;Brassica oleracea;Poaceae
+086|RAVAGEUR|Courtilières|Mole crickets|Grillotalpe|Maulwurfsgrillen|LARGE|Solanum lycopersicum;Lactuca sativa;Solanum tuberosum;Allium cepa
+087|RAVAGEUR|Limaces|Slugs|Limacce|Nacktschnecken|LARGE|Hosta;Delphinium;Lactuca sativa;Tagetes
+088|RAVAGEUR|Escargots|Snails|Chiocciole|Gehäuseschnecken|LARGE|Hosta;Delphinium;Lactuca sativa;Tagetes
+089|RAVAGEUR|Pyrale du buis|Box-tree moth|Piralide del bosso|Buchsbaumzünsler|CIBLE|Buxus
+090|RAVAGEUR|Brun du pélargonium|Geranium bronze butterfly|Licenide del geranio|Pelargonien-Bläuling|CIBLE|Pelargonium
+091|RAVAGEUR|Piérides du chou|Cabbage white butterflies|Cavolaie|Kohlweißlinge|CIBLE|Brassica;Raphanus sativus;Tropaeolum majus
+092|RAVAGEUR|Teigne des crucifères|Diamondback moth|Tignola delle crucifere|Kohlmotte|CIBLE|Brassicaceae
+093|RAVAGEUR|Teigne du poireau|Leek moth|Tignola del porro|Lauchmotte|CIBLE|Allium porrum;Allium cepa;Allium sativum
+094|RAVAGEUR|Noctuelles terricoles et vers gris|Cutworms|Nottue terricole|Erdraupen|LARGE|Lactuca sativa;Brassica oleracea;Solanum lycopersicum
+095|RAVAGEUR|Noctuelles défoliatrices et des fruits|Leaf- and fruit-feeding noctuid caterpillars|Nottue defogliatrici e dei frutti|Blatt- und fruchtfressende Eulenfalterraupen|LARGE|Solanum lycopersicum;Capsicum annuum;Pelargonium;Chrysanthemum
+096|RAVAGEUR|Tordeuses enrouleuses des feuilles|Leaf-rolling tortrix moths|Tortricidi arrotolatori delle foglie|Blattwickler|LARGE|Rosa;Malus domestica;Prunus domestica
+097|RAVAGEUR|Carpocapse des pommes et des poires|Codling moth|Carpocapsa del melo e del pero|Apfelwickler|CIBLE|Malus domestica;Pyrus communis;Cydonia oblonga;Juglans regia
+098|RAVAGEUR|Carpocapse des prunes|Plum fruit moth|Cidia del susino|Pflaumenwickler|CIBLE|Prunus domestica;Prunus salicina
+099|RAVAGEUR|Tordeuse orientale du pêcher|Oriental fruit moth|Tignola orientale del pesco|Pfirsichtriebwickler|CIBLE|Prunus persica;Malus domestica;Pyrus communis
+100|RAVAGEUR|Mineuse de la tomate|Tomato leafminer|Tignola del pomodoro|Tomatenminiermotte|CIBLE|Solanum lycopersicum;Solanum melongena;Solanum tuberosum
+101|RAVAGEUR|Mineuse des agrumes|Citrus leafminer|Minatrice serpentina degli agrumi|Zitrusminiermotte|CIBLE|Citrus
+102|RAVAGEUR|Mineuse du marronnier|Horse-chestnut leafminer|Minatrice dell'ippocastano|Rosskastanienminiermotte|CIBLE|Aesculus hippocastanum
+103|RAVAGEUR|Hyponomeutes|Small ermine moths|Iponomeute|Gespinstmotten|LARGE|Euonymus europaeus;Malus domestica;Prunus padus
+104|RAVAGEUR|Chenilles processionnaires|Processionary caterpillars|Bruchi delle processionarie|Prozessionsspinnerraupen|CIBLE|Pinus;Quercus;Cedrus
+105|RAVAGEUR|Tenthrèdes du rosier|Rose sawflies|Tentredini della rosa|Rosenblattwespen|CIBLE|Rosa
+106|RAVAGEUR|Tenthrèdes des groseilliers|Gooseberry and currant sawflies|Tentredini del ribes e dell'uva spina|Stachelbeer- und Johannisbeerblattwespen|CIBLE|Ribes uva-crispa;Ribes rubrum
+107|RAVAGEUR|Tenthrède du sceau-de-Salomon|Solomon's-seal sawfly|Tentredine del sigillo di Salomone|Salomonssiegel-Blattwespe|CIBLE|Polygonatum
+108|RAVAGEUR|Mouche de la carotte|Carrot fly|Mosca della carota|Möhrenfliege|CIBLE|Daucus carota;Apium graveolens;Petroselinum crispum;Pastinaca sativa
+109|RAVAGEUR|Mouche du chou|Cabbage root fly|Mosca del cavolo|Kleine Kohlfliege|CIBLE|Brassica oleracea;Brassica rapa;Raphanus sativus
+110|RAVAGEUR|Mouche de l'oignon|Onion fly|Mosca della cipolla|Zwiebelfliege|CIBLE|Allium cepa;Allium sativum;Allium porrum
+111|RAVAGEUR|Mouche des semis|Seedcorn maggot fly|Mosca dei semi|Bohnenfliege|LARGE|Phaseolus vulgaris;Lathyrus oleraceus;Cucumis sativus;Solanum lycopersicum
+112|RAVAGEUR|Mouche mineuse du poireau|Allium leafminer|Mosca minatrice del porro|Lauchminierfliege|CIBLE|Allium porrum;Allium cepa;Allium sativum
+113|RAVAGEUR|Mouche de la cerise|European cherry fruit fly|Mosca delle ciliegie|Kirschfruchtfliege|CIBLE|Prunus avium;Prunus cerasus
+114|RAVAGEUR|Drosophile asiatique|Spotted-wing drosophila|Moscerino dei piccoli frutti|Kirschessigfliege|LARGE|Fragaria;Rubus idaeus;Prunus avium;Vaccinium corymbosum
+115|RAVAGEUR|Byture des framboises|Raspberry beetle|Verme del lampone|Himbeerkäfer|CIBLE|Rubus idaeus
+116|RAVAGEUR|Mouche du narcisse|Narcissus bulb fly|Mosca del narciso|Große Narzissenfliege|CIBLE|Narcissus;Hippeastrum
+117|RAVAGEUR|Cécidomyie de l'hémérocalle|Daylily gall midge|Cecidomia dell'emerocallide|Taglilien-Gallmücke|CIBLE|Hemerocallis
+118|RAVAGEUR|Dégâts floraux de perce-oreilles|Earwig damage to flowers|Danni delle forbicine ai fiori|Blütenschäden durch Ohrwürmer|LARGE|Dahlia;Chrysanthemum;Clematis
+119|RAVAGEUR|Nématodes à galles|Root-knot nematodes|Nematodi galligeni|Wurzelgallennematoden|LARGE|Solanum lycopersicum;Solanum melongena;Cucumis sativus;Rosa
+120|RAVAGEUR|Nématodes foliaires|Foliar nematodes|Nematodi fogliari|Blattälchen|LARGE|Hosta;Chrysanthemum;Begonia;Fragaria
+121|RAVAGEUR|Nématodes des tiges et bulbes|Stem and bulb nematodes|Nematodi degli steli e dei bulbi|Stängel- und Zwiebelälchen|LARGE|Narcissus;Tulipa;Allium cepa;Allium sativum
+122|RAVAGEUR|Dégâts de campagnols|Vole damage|Danni da arvicole|Wühlmausschäden|LARGE|Tulipa;Crocus;Daucus carota;Malus domestica
+123|RAVAGEUR|Dégâts de lapins et lièvres|Rabbit and hare damage|Danni da conigli e lepri|Kaninchen- und Hasenschäden|LARGE|Rosa;Lactuca sativa;Lathyrus oleraceus;Malus domestica
+124|RAVAGEUR|Dégâts de chevreuils et autres cervidés|Deer damage|Danni da caprioli e altri cervidi|Schäden durch Rehe und andere Hirsche|LARGE|Rosa;Hosta;Tulipa;Malus domestica
+125|RAVAGEUR|Dégâts d'oiseaux sur les cultures|Bird damage to crops|Danni degli uccelli alle colture|Vogelschäden an Kulturpflanzen|LARGE|Brassica oleracea;Lathyrus oleraceus;Prunus avium;Fragaria
+126|MALADIE|Oïdiums|Powdery mildews|Oidi|Echter Mehltau|LARGE|Rosa;Cucurbita pepo;Vitis vinifera;Begonia
+127|MALADIE|Mildiou de la tomate et de la pomme de terre|Tomato and potato late blight|Peronospora del pomodoro e della patata|Kraut-, Braun- und Knollenfäule|CIBLE|Solanum lycopersicum;Solanum tuberosum
+128|MALADIE|Mildiou de la vigne|Grapevine downy mildew|Peronospora della vite|Falscher Mehltau der Weinrebe|CIBLE|Vitis vinifera
+129|MALADIE|Mildiou des cucurbitacées|Cucurbit downy mildew|Peronospora delle cucurbitacee|Falscher Mehltau der Kürbisgewächse|CIBLE|Cucumis sativus;Cucurbita pepo;Cucumis melo
+130|MALADIE|Mildiou du basilic|Basil downy mildew|Peronospora del basilico|Falscher Mehltau des Basilikums|CIBLE|Ocimum basilicum
+131|MALADIE|Mildiou de l'impatiens|Impatiens downy mildew|Peronospora dell'impatiens|Falscher Mehltau am Fleißigen Lieschen|CIBLE|Impatiens walleriana;Impatiens balsamina
+132|MALADIE|Mildiou du rosier|Rose downy mildew|Peronospora della rosa|Falscher Mehltau der Rose|CIBLE|Rosa
+133|MALADIE|Mildiou de la laitue|Lettuce downy mildew|Peronospora della lattuga|Falscher Mehltau des Salats|CIBLE|Lactuca sativa
+134|MALADIE|Mildiou de l'oignon|Onion downy mildew|Peronospora della cipolla|Falscher Mehltau der Zwiebel|CIBLE|Allium cepa;Allium fistulosum
+135|MALADIE|Pourriture grise à Botrytis cinerea|Botrytis cinerea grey mould|Muffa grigia da Botrytis cinerea|Grauschimmel durch Botrytis cinerea|LARGE|Cyclamen;Pelargonium;Fragaria;Vitis vinifera
+136|MALADIE|Feu de la tulipe|Tulip fire|Fuoco del tulipano|Tulpenfeuer|CIBLE|Tulipa
+137|MALADIE|Botrytis du lis|Lily Botrytis blight|Botrite del giglio|Botrytis-Blattfleckenkrankheit der Lilie|CIBLE|Lilium
+138|MALADIE|Rouille du rosier|Rose rust|Ruggine della rosa|Rosenrost|CIBLE|Rosa
+139|MALADIE|Rouille du pélargonium|Pelargonium rust|Ruggine del pelargonio|Pelargonienrost|CIBLE|Pelargonium
+140|MALADIE|Rouille de la rose trémière|Hollyhock rust|Ruggine della malvarosa|Malvenrost|CIBLE|Alcea rosea;Malva
+141|MALADIE|Rouille du poireau et de l'ail|Leek and garlic rust|Ruggine del porro e dell'aglio|Lauch- und Knoblauchrost|CIBLE|Allium porrum;Allium sativum;Allium schoenoprasum
+142|MALADIE|Rouille grillagée du poirier|Pear rust|Ruggine del pero|Birnengitterrost|CIBLE|Pyrus communis;Juniperus
+143|MALADIE|Rouille de la menthe|Mint rust|Ruggine della menta|Minzenrost|CIBLE|Mentha
+144|MALADIE|Rouille du fuchsia|Fuchsia rust|Ruggine della fucsia|Fuchsienrost|CIBLE|Fuchsia;Epilobium;Abies
+145|MALADIE|Pourriture des fleurs du camélia|Camellia flower blight|Marciume dei fiori della camelia|Kamelienblütenfäule|CIBLE|Camellia
+146|MALADIE|Galles fongiques des azalées et exobasidiose|Azalea leaf gall|Galle fogliari dell'azalea o esobasidiosi|Ohrläppchenkrankheit der Azalee|CIBLE|Rhododendron
+147|MALADIE|Taches noires du rosier et marsonia|Rose black spot|Ticchiolatura della rosa|Sternrußtau der Rose|CIBLE|Rosa
+148|MALADIE|Tavelure du pommier|Apple scab|Ticchiolatura del melo|Apfelschorf|CIBLE|Malus
+149|MALADIE|Tavelure du poirier|Pear scab|Ticchiolatura del pero|Birnenschorf|CIBLE|Pyrus
+150|MALADIE|Alternariose de la tomate|Tomato early blight|Alternariosi del pomodoro|Dürrfleckenkrankheit der Tomate|CIBLE|Solanum lycopersicum;Solanum tuberosum
+151|MALADIE|Alternariose de la carotte|Carrot Alternaria leaf blight|Alternariosi della carota|Alternaria-Blattbräune der Möhre|CIBLE|Daucus carota;Petroselinum crispum
+152|MALADIE|Septoriose de la tomate|Septoria leaf spot of tomato|Septoriosi del pomodoro|Septoria-Blattfleckenkrankheit der Tomate|CIBLE|Solanum lycopersicum
+153|MALADIE|Septorioses du céleri et du persil|Septoria leaf spots of celery and parsley|Septoriosi del sedano e del prezzemolo|Septoria-Blattflecken an Sellerie und Petersilie|CIBLE|Apium graveolens;Petroselinum crispum
+154|MALADIE|Cercosporioses|Cercospora leaf spots|Cercosporiosi|Cercospora-Blattfleckenkrankheiten|LARGE|Hydrangea;Beta vulgaris
+155|MALADIE|Entomosporiose|Entomosporium leaf spot|Entomosporiosi|Entomosporium-Blattfleckenkrankheit|CIBLE|Photinia;Cydonia oblonga;Pyrus;Rhaphiolepis bibas
+156|MALADIE|Anthracnoses à Colletotrichum|Colletotrichum anthracnoses|Antracnosi da Colletotrichum|Colletotrichum-Anthraknosen|LARGE|Fragaria;Anthurium;Capsicum annuum;Cucumis sativus
+157|MALADIE|Cladosporiose de la tomate|Tomato leaf mould|Cladosporiosi del pomodoro|Samtfleckenkrankheit der Tomate|CIBLE|Solanum lycopersicum
+158|MALADIE|Maladie criblée fongique des Prunus|Fungal shot-hole disease of Prunus|Corineo delle drupacee|Pilzliche Schrotschusskrankheit an Prunus|CIBLE|Prunus
+159|MALADIE|Cloque du pêcher|Peach leaf curl|Bolla del pesco|Kräuselkrankheit des Pfirsichs|CIBLE|Prunus persica;Prunus dulcis
+160|MALADIE|Pochettes du prunier|Plum pockets|Bozzacchioni del susino|Narrentaschenkrankheit der Pflaume|CIBLE|Prunus domestica;Prunus spinosa
+161|MALADIE|Cylindrocladiose du buis|Box blight|Cilindrocladiosi del bosso|Buchsbaumtriebsterben|CIBLE|Buxus
+162|MALADIE|Volutellose du buis|Volutella blight of box|Volutellosi del bosso|Volutella-Zweigsterben am Buchsbaum|CIBLE|Buxus
+163|MALADIE|Flétrissement infectieux de la clématite|Fungal clematis wilt|Avvizzimento fungino della clematide|Pilzliche Clematiswelke|CIBLE|Clematis
+164|MALADIE|Brunissement infectieux des boutons du rhododendron|Rhododendron bud blast|Disseccamento infettivo dei boccioli del rododendro|Knospensterben des Rhododendrons|CIBLE|Rhododendron
+165|MALADIE|Hétérosporiose de l'iris|Iris leaf spot|Eterosporiosi dell'iris|Blattfleckenkrankheit der Schwertlilie|CIBLE|Iris
+166|MALADIE|Chancre du cyprès|Cypress canker|Cancro del cipresso|Zypressenkrebs|CIBLE|Cupressus;Chamaecyparis;Juniperus
+167|MALADIE|Chancre européen des fruitiers|European fruit-tree canker|Cancro europeo dei fruttiferi|Obstbaumkrebs|CIBLE|Malus domestica;Pyrus communis
+168|MALADIE|Maladie du corail|Coral spot|Malattia del corallo|Rotpustelkrankheit|LARGE|Acer;Ribes;Fagus
+169|MALADIE|Monilioses|Monilinia blossom blight and brown rot|Moniliosi|Monilia-Spitzendürre und Fruchtfäule|CIBLE|Malus domestica;Pyrus communis;Prunus domestica;Prunus avium
+170|MALADIE|Verticilliose|Verticillium wilt|Verticilliosi|Verticillium-Welke|LARGE|Acer;Solanum melongena;Dahlia;Chrysanthemum
+171|MALADIE|Fusariose vasculaire|Fusarium wilt|Fusariosi vascolare|Fusarium-Welke|LARGE|Solanum lycopersicum;Cyclamen;Dianthus caryophyllus;Callistephus chinensis
+172|MALADIE|Pourritures racinaires et du collet à Phytophthora|Phytophthora root and collar rots|Marciumi radicali e del colletto da Phytophthora|Phytophthora-Wurzel- und Wurzelhalsfäulen|LARGE|Rhododendron;Camellia;Chamaecyparis;Fragaria
+173|MALADIE|Pourritures racinaires à Pythium et apparentés|Pythium and related root rots|Marciumi radicali da Pythium e generi affini|Wurzelfäulen durch Pythium und verwandte Gattungen|LARGE|Pelargonium;Cyclamen;Cucumis sativus;Solanum lycopersicum
+174|MALADIE|Rhizoctone|Rhizoctonia diseases|Rizottoniosi|Rhizoctonia-Erkrankungen|LARGE|Solanum tuberosum;Lactuca sativa;Pelargonium
+175|MALADIE|Fonte des semis|Damping-off|Moria delle piantine|Umfallkrankheit|GENERAL|Tracheophyta
+176|MALADIE|Sclérotiniose|Sclerotinia white mould|Sclerotiniosi|Sclerotinia-Weißfäule|LARGE|Lactuca sativa;Phaseolus vulgaris;Helianthus annuus
+177|MALADIE|Pourriture blanche de l'ail et de l'oignon|Allium white rot|Marciume bianco dell'aglio e della cipolla|Weißfäule an Knoblauch und Zwiebel|CIBLE|Allium cepa;Allium sativum;Allium porrum
+178|MALADIE|Armillariose et pourridié à armillaire|Armillaria root rot|Marciume radicale da Armillaria|Hallimasch-Wurzelfäule|LARGE|Rosa;Ligustrum;Viburnum;Malus
+179|MALADIE|Pourriture noire des racines à Berkeleyomyces|Berkeleyomyces black root rot|Marciume radicale nero da Berkeleyomyces|Schwarze Wurzelfäule durch Berkeleyomyces|LARGE|Viola;Petunia;Nicotiana
+180|MALADIE|Fusariose des bulbes|Fusarium basal rot of bulbs|Fusariosi basale dei bulbi|Fusarium-Basalfäule der Zwiebeln|LARGE|Narcissus;Tulipa;Iris;Lilium
+181|AFFECTION|Fumagine|Sooty mould|Fumaggine|Rußtau|LARGE|Citrus;Nerium oleander;Ficus;Olea europaea
+182|MALADIE|Feu bactérien|Fire blight|Colpo di fuoco batterico|Feuerbrand|CIBLE|Malus;Pyrus;Cotoneaster;Pyracantha;Crataegus
+183|MALADIE|Chancre bactérien des Prunus|Bacterial canker of Prunus|Cancro batterico delle drupacee|Bakterienbrand an Prunus|CIBLE|Prunus
+184|MALADIE|Taches et brûlures bactériennes à Xanthomonas|Xanthomonas bacterial leaf spots and blights|Maculature e disseccamenti batterici da Xanthomonas|Bakterielle Blattflecken und Blattnekrosen durch Xanthomonas|LARGE|Anthurium;Pelargonium;Hedera helix;Dieffenbachia
+185|MALADIE|Taches bactériennes à Pseudomonas|Pseudomonas bacterial leaf spots|Maculature batteriche da Pseudomonas|Bakterielle Blattflecken durch Pseudomonas|LARGE|Monstera;Dracaena;Epipremnum
+186|MALADIE|Pourritures molles bactériennes|Bacterial soft rots|Marciumi molli batterici|Bakterielle Weichfäulen|LARGE|Aglaonema;Dieffenbachia;Phalaenopsis;Solanum tuberosum
+187|MALADIE|Galle du collet|Crown gall|Tumore batterico del colletto|Wurzelkropf|LARGE|Rosa;Malus;Prunus;Vitis vinifera
+188|MALADIE|Galle feuillue à Rhodococcus fascians|Rhodococcus fascians leafy gall|Proliferazione dei germogli da Rhodococcus fascians|Sprossproliferation durch Rhodococcus fascians|LARGE|Dahlia;Pelargonium;Chrysanthemum;Fragaria
+189|MALADIE|Hernie des crucifères|Clubroot|Ernia delle crucifere|Kohlhernie|CIBLE|Brassicaceae
+190|MALADIE|Gale commune de la pomme de terre|Potato common scab|Scabbia comune della patata|Gewöhnlicher Kartoffelschorf|CIBLE|Solanum tuberosum
+191|MALADIE|Mosaïque du concombre (CMV)|Cucumber mosaic (CMV)|Mosaico del cetriolo (CMV)|Gurkenmosaik (CMV)|LARGE|Cucumis sativus;Cucurbita pepo;Solanum lycopersicum;Petunia
+192|MALADIE|Mosaïques du tabac et de la tomate (TMV/ToMV)|Tobacco and tomato mosaics (TMV/ToMV)|Mosaici del tabacco e del pomodoro (TMV/ToMV)|Tabak- und Tomatenmosaik (TMV/ToMV)|LARGE|Solanum lycopersicum;Nicotiana tabacum;Capsicum annuum;Petunia
+193|MALADIE|Maladie bronzée de la tomate (TSWV)|Tomato spotted wilt (TSWV)|Bronzatura del pomodoro (TSWV)|Tomatenbronzefleckenkrankheit (TSWV)|LARGE|Solanum lycopersicum;Capsicum annuum;Chrysanthemum;Dahlia
+194|MALADIE|Taches nécrotiques de l'impatiens (INSV)|Impatiens necrotic spot (INSV)|Maculatura necrotica dell'impatiens (INSV)|Nekrotische Fleckenkrankheit an Impatiens (INSV)|LARGE|Impatiens walleriana;Cyclamen;Begonia;Lactuca sativa
+195|MALADIE|Mosaïque jaune de la courgette (ZYMV)|Zucchini yellow mosaic (ZYMV)|Mosaico giallo dello zucchino (ZYMV)|Zucchini-Gelbmosaik (ZYMV)|CIBLE|Cucurbita pepo;Cucumis sativus;Cucumis melo
+196|MALADIE|Mosaïque commune du haricot (BCMV)|Bean common mosaic (BCMV)|Mosaico comune del fagiolo (BCMV)|Gewöhnliches Bohnenmosaik (BCMV)|CIBLE|Phaseolus vulgaris
+197|MALADIE|Mosaïque du rosier|Rose mosaic|Mosaico della rosa|Rosenmosaik|CIBLE|Rosa
+198|MALADIE|Viroses des orchidées (CymMV/ORSV)|Orchid virus diseases (CymMV/ORSV)|Virosi delle orchidee (CymMV/ORSV)|Viruskrankheiten der Orchideen (CymMV/ORSV)|LARGE|Phalaenopsis;Cymbidium;Cattleya;Dendrobium
+199|MALADIE|Virus X de l'hosta (HVX)|Hosta virus X disease (HVX)|Virosi da Hosta virus X (HVX)|Hosta-Virus-X-Krankheit (HVX)|CIBLE|Hosta
+200|MALADIE|Jaunisse de l'aster et phytoplasmoses apparentées|Aster yellows and related phytoplasma diseases|Giallume dell'astro e fitoplasmosi correlate|Asternvergilbung und verwandte Phytoplasmosen|LARGE|Callistephus chinensis;Echinacea purpurea;Daucus carota;Chrysanthemum

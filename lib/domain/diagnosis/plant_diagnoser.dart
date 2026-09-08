@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../care/care_profile.dart';
+import '../problems/plant_problem.dart';
 
 /// À quel point une piste tient debout, en trois crans.
 ///
@@ -30,12 +30,21 @@ enum Likelihood {
 
 /// Une cause possible, avec sa vraisemblance et des gestes concrets.
 class DiagnosisCause {
-  const DiagnosisCause({required this.title, required this.likelihood, required this.explanation, required this.actions});
+  const DiagnosisCause({required this.title, required this.likelihood, required this.explanation, required this.actions, this.problemId});
 
+  /// Le titre rendu par le service. Sert de repli quand la cause ne
+  /// correspond à rien de la base ; sinon c'est le nom de la base qui
+  /// s'affiche.
   final String title;
   final Likelihood likelihood;
   final String explanation;
   final List<String> actions;
+
+  /// Numéro du problème dans la base locale, quand le service en a reconnu
+  /// un parmi ceux qu'on lui a soumis. `null` pour tout le reste : la base
+  /// couvre beaucoup, pas tout, et forcer une correspondance vaudrait moins
+  /// que de l'admettre.
+  final String? problemId;
 }
 
 /// Résultat d'un diagnostic : toujours des suggestions, jamais des certitudes.
@@ -72,10 +81,13 @@ abstract class PlantDiagnoser {
     String? species,
     String? symptoms,
 
-    /// Ce dont l'espèce souffre habituellement, d'après sa fiche
-    /// d'entretien. Une piste de départ, pas une liste de réponses : la
-    /// plante peut très bien avoir autre chose.
-    List<CommonIssue> knownIssues = const [],
+    /// Les problèmes de la base locale qui peuvent concerner cette plante.
+    /// Une liste de pistes soumise au service, pas une liste de réponses :
+    /// la plante peut très bien avoir autre chose.
+    List<PlantProblem> candidates = const [],
+
+    /// Parmi eux, ceux que la fiche d'entretien signale pour l'espèce.
+    Set<String> frequentIds = const {},
   });
 }
 
@@ -90,7 +102,8 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     String? plantName,
     String? species,
     String? symptoms,
-    List<CommonIssue> knownIssues = const [],
+    List<PlantProblem> candidates = const [],
+    Set<String> frequentIds = const {},
   }) =>
       throw const DiagnosisException('unconfigured');
 }

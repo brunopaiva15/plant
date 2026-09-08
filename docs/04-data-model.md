@@ -105,3 +105,30 @@ ni casse (`core/utils/search_text.dart`).
 
 Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
 GBIF (CC BY) pour les familles.
+
+## Base des problèmes (hors base locale)
+`assets/problems/catalog.txt` : 200 troubles, ravageurs et maladies couvrant
+l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
+à séparateurs `|`, écrit à la main, chargé à la demande dans un isolat
+(`ProblemCatalogLoader`) et lu par `ProblemCatalog`.
+
+| Champ | Contenu |
+|---|---|
+| `id` | Trois chiffres, `001` à `200`. C'est lui qui circule. |
+| `type` | `ABIOTIQUE` (trouble), `RAVAGEUR`, `MALADIE`, `AFFECTION` |
+| `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
+| `portee` | `GENERAL` (toutes les plantes vasculaires), `LARGE` (beaucoup d'hôtes, exemples), `CIBLE` (hôtes principaux) |
+| `taxons_hotes_scientifiques` | Hôtes séparés par `;`, à tous les rangs : espèce, genre, famille, ou `Tracheophyta` |
+
+Elle sert de vocabulaire commun au diagnostic. `candidatesFor` réduit la base
+aux pistes qui peuvent concerner une plante — l'universel, plus ce qui vise son
+espèce, son genre ou sa famille, plus ce que sa fiche d'entretien signale —,
+soit trente à soixante-cinq entrées. Cette liste part avec la demande ; le
+service rend un numéro, l'application n'accepte que ceux qu'elle a soumis et
+affiche son propre nom. Deux analyses de la même chose se lisent donc pareil,
+dans la langue de l'utilisateur.
+
+Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
+exemples, un genre ne rend pas toutes ses espèces sensibles, et la
+vérification GBIF porte sur les noms de plantes, pas sur les relations
+hôte-problème.
