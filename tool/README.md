@@ -1,6 +1,6 @@
 # Outils de construction du catalogue d'espèces
 
-Le catalogue hors ligne de Flora a deux étages :
+Le catalogue hors ligne d'Auxine a deux étages :
 
 | Étage | Fichier | Contenu | Rôle |
 |---|---|---|---|
@@ -69,3 +69,73 @@ personne à chercher, et la recherche GBIF la couvre déjà.
 Le test `test/data/species_catalog_asset_test.dart` vérifie l'actif produit :
 volume, absence de doublons, absence de faux noms vernaculaires, et présence
 de quelques espèces témoins.
+
+# La plante qui pousse (écran de bienvenue)
+
+`build_monstera.py` construit l'icône de l'application : la scène, les
+matériaux « pâte à modeler », la caméra orthographique et l'éclairage studio.
+`grow_monstera.py` reprend tout cela et rend la même plante à quarante âges,
+de la terre nue à l'adulte ; `pack_growth.py` en fait l'image animée que joue
+le premier écran de l'onboarding. Seule la plante change d'une image à
+l'autre — la dernière est exactement l'icône.
+
+Ce qui bouge entre deux images vient de la vraie plante : les feuilles sortent
+l'une après l'autre, la plus vieille d'abord ; chacune émerge en fuseau
+presque vertical, étroite et entière ; elle s'allonge, s'écarte, s'élargit,
+puis se découpe — fentes d'abord, fenestrations ensuite. Une jeune feuille de
+Monstera n'a ni fente ni trou, ils viennent avec l'âge.
+
+Le fond est transparent et sans ombre portée : l'ombre au sol et le
+flottement sont dessinés par l'application, qui les accorde à son thème.
+
+```bash
+# ~15 min sur quatre cœurs (Cycles, CPU)
+blender -b -noaudio -P tool/grow_monstera.py -- 40 1024 40 /tmp/pousse
+python3 tool/pack_growth.py /tmp/pousse assets/onboarding/pousse.webp --fps 14
+```
+
+La caméra est cadrée une fois pour toutes sur la plante adulte : sans cela,
+le cadrage automatique suivrait la plante qui grandit et elle semblerait
+immobile pendant que le monde rétrécit autour d'elle.
+
+# La collection qui gravite (« Toutes vos plantes, ici »)
+
+`build_collection.py` rend cinq plantes, chacune seule dans son image : un
+monstera, un caoutchouc à feuilles entières, une sansevieria en lames droites,
+une petite plante ronde, un semis. Les cinq sortent des mêmes primitives que
+l'icône — c'est la largeur relative du limbe, sa longueur et son nombre de
+fentes qui changent la silhouette. L'application les pose ensuite côte à côte
+et les fait dériver, chacune sur son ellipse et à son rythme.
+
+```bash
+# ~2 min sur quatre cœurs
+blender -b -noaudio -P tool/build_collection.py -- 640 48 /tmp/collection
+# puis, en WebP (30 Ko par plante au lieu de 370 Ko en PNG) :
+python3 -c "from PIL import Image; import glob, os
+for f in glob.glob('/tmp/collection/*.png'):
+    Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
+```
+
+# Les quatre familles de problèmes
+
+`build_category_logos.py` rend les symboles des quatre valeurs du champ `type`
+de `assets/problems/catalog.txt` : une feuille au soleil avec sa goutte pour
+les troubles abiotiques, un charançon pour les ravageurs, une feuille à
+lésions pour les maladies, un dépôt sombre pour les affections. Aucun texte,
+donc valables dans les quatre langues.
+
+```bash
+# ~3 min sur quatre cœurs
+blender -b -noaudio -t 4 -P tool/build_category_logos.py -- --output build/category_logos
+# puis recadrage commun et réduction en WebP 512 (~25 Ko par symbole)
+python3 tool/pack_category_logos.py build/category_logos/renders
+```
+
+Le cadrage des rendus réserve de la place au mouvement, dont l'application n'a
+pas besoin : `pack_category_logos.py` recadre sur le contenu avant de réduire.
+Le recadrage est commun aux quatre, sans quoi le charançon grandirait et la
+feuille rétrécirait, et la famille perdrait son unité d'échelle.
+
+`clay_scene.py` tient ce que ces scripts ont en commun : les primitives de
+géométrie, les matériaux mats, le studio d'éclairage et le grain. Rien ne s'y
+exécute à l'import.

@@ -105,7 +105,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In fr, this message translates to:
-  /// **'Flora'**
+  /// **'Auxine'**
   String get appName;
 
   /// No description provided for @ok.
@@ -1575,7 +1575,7 @@ abstract class AppLocalizations {
   /// No description provided for @reduceMotionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Par défaut, Flora suit le réglage du système.'**
+  /// **'Par défaut, Auxine suit le réglage du système.'**
   String get reduceMotionHint;
 
   /// No description provided for @notifications.
@@ -1692,11 +1692,6 @@ abstract class AppLocalizations {
   /// **'Vos plantes et photos restent privées, sur ce téléphone. Les comptes et la synchronisation arriveront dans une prochaine version.'**
   String get localAccountHint;
 
-  /// No description provided for @about.
-  ///
-  /// In fr, this message translates to:
-  /// **'À propos'**
-  String get about;
 
   /// No description provided for @version.
   ///
@@ -2208,6 +2203,18 @@ abstract class AppLocalizations {
   /// **'Aucune ne correspond ? Chercher en ligne'**
   String get searchOnline;
 
+  /// No description provided for @identifyAnotherPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get identifyAnotherPhoto;
+
+  /// No description provided for @identifyAnotherPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.'**
+  String get identifyAnotherPhotoHint;
+
   /// No description provided for @searchingOnline.
   ///
   /// In fr, this message translates to:
@@ -2385,7 +2392,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour vos plantes dehors, Auxine regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -2709,7 +2716,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteHint.
   ///
   /// In fr, this message translates to:
-  /// **'L\'invité doit déjà avoir un compte Flora avec cette adresse.'**
+  /// **'L\'invité doit déjà avoir un compte Auxine avec cette adresse.'**
   String get inviteHint;
 
   /// No description provided for @roleOwner.
@@ -2819,6 +2826,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pistes possibles'**
   String get possibleCauses;
+
+  /// No description provided for @likelihoodLikely.
+  ///
+  /// In fr, this message translates to:
+  /// **'Probable'**
+  String get likelihoodLikely;
+
+  /// No description provided for @likelihoodPossible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Possible'**
+  String get likelihoodPossible;
+
+  /// No description provided for @likelihoodUnlikely.
+  ///
+  /// In fr, this message translates to:
+  /// **'Peu probable'**
+  String get likelihoodUnlikely;
 
   /// No description provided for @urgentHint.
   ///
@@ -3431,6 +3456,66 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'À surveiller'**
   String get careIssues;
+
+  /// No description provided for @careKnownProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problèmes connus sur cette plante'**
+  String get careKnownProblems;
+
+  /// No description provided for @careKnownProblemsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.'**
+  String get careKnownProblemsNote;
+
+  /// No description provided for @problemKindDisorder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trouble'**
+  String get problemKindDisorder;
+
+  /// No description provided for @problemKindPest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ravageur'**
+  String get problemKindPest;
+
+  /// No description provided for @problemKindDisease.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maladie'**
+  String get problemKindDisease;
+
+  /// No description provided for @problemKindCondition.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affection'**
+  String get problemKindCondition;
+
+  /// No description provided for @problemKindDisorders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Troubles'**
+  String get problemKindDisorders;
+
+  /// No description provided for @problemKindPests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ravageurs'**
+  String get problemKindPests;
+
+  /// No description provided for @problemKindDiseases.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maladies'**
+  String get problemKindDiseases;
+
+  /// No description provided for @problemKindConditions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affections'**
+  String get problemKindConditions;
 
   /// No description provided for @careTips.
   ///
@@ -5517,7 +5602,7 @@ abstract class AppLocalizations {
   /// No description provided for @importErrorNotAZip.
   ///
   /// In fr, this message translates to:
-  /// **'Ce fichier n\'est pas une sauvegarde Flora.'**
+  /// **'Ce fichier n\'est pas une sauvegarde Auxine.'**
   String get importErrorNotAZip;
 
   /// No description provided for @importErrorWrongApp.
@@ -5529,7 +5614,7 @@ abstract class AppLocalizations {
   /// No description provided for @importErrorTooRecent.
   ///
   /// In fr, this message translates to:
-  /// **'Cette sauvegarde vient d\'une version plus récente de Flora.'**
+  /// **'Cette sauvegarde vient d\'une version plus récente d\'Auxine.'**
   String get importErrorTooRecent;
 
   /// No description provided for @importErrorGeneric.
@@ -5712,6 +5797,12 @@ abstract class AppLocalizations {
   /// **'Sources des données'**
   String get aboutSources;
 
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get privacyPolicy;
+
   /// No description provided for @aboutSourceWikidata.
   ///
   /// In fr, this message translates to:
@@ -5739,7 +5830,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Flora est gratuite'**
+  /// **'Auxine est gratuite'**
   String get supportTitle;
 
   /// No description provided for @supportBody.
@@ -5820,17 +5911,301 @@ abstract class AppLocalizations {
   /// **'Continuer sans'**
   String get supportNoThanks;
 
-  /// No description provided for @aboutTagline.
-  ///
-  /// In fr, this message translates to:
-  /// **'Prenez soin de vos plantes et gardez leur histoire.'**
-  String get aboutTagline;
 
   /// No description provided for @emptyGardenSubtitle.
   ///
   /// In fr, this message translates to:
   /// **'Ajoutez votre première plante, avec une photo si vous voulez.'**
   String get emptyGardenSubtitle;
+
+  /// No description provided for @finderTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trouver une plante'**
+  String get finderTitle;
+
+  /// No description provided for @finderEntryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne savez pas quoi choisir ?'**
+  String get finderEntryHint;
+
+  /// No description provided for @finderStepSpot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où va-t-elle vivre ?'**
+  String get finderStepSpot;
+
+  /// No description provided for @finderStepSpotHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La lumière décide de presque tout.'**
+  String get finderStepSpotHint;
+
+  /// No description provided for @finderSpotBright.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce lumineuse'**
+  String get finderSpotBright;
+
+  /// No description provided for @finderSpotMedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière moyenne'**
+  String get finderSpotMedium;
+
+  /// No description provided for @finderSpotDark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coin sombre'**
+  String get finderSpotDark;
+
+  /// No description provided for @finderSpotOutdoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dehors, balcon ou jardin'**
+  String get finderSpotOutdoor;
+
+  /// No description provided for @finderStepEffort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel entretien ?'**
+  String get finderStepEffort;
+
+  /// No description provided for @finderStepEffortHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Répondez honnêtement, personne ne vous juge.'**
+  String get finderStepEffortHint;
+
+  /// No description provided for @finderEffortForgiving.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'oublie souvent d\'arroser'**
+  String get finderEffortForgiving;
+
+  /// No description provided for @finderEffortNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un arrosage régulier, sans plus'**
+  String get finderEffortNormal;
+
+  /// No description provided for @finderEffortAttentive.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'aime m\'en occuper'**
+  String get finderEffortAttentive;
+
+  /// No description provided for @finderStepSafety.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des animaux ou des enfants ?'**
+  String get finderStepSafety;
+
+  /// No description provided for @finderStepSafetyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Beaucoup de plantes d\'intérieur sont toxiques si on les mordille.'**
+  String get finderStepSafetyHint;
+
+  /// No description provided for @finderSafetyYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, sans risque de préférence'**
+  String get finderSafetyYes;
+
+  /// No description provided for @finderSafetyNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de contrainte'**
+  String get finderSafetyNo;
+
+  /// No description provided for @finderStepKind.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel genre de plante ?'**
+  String get finderStepKind;
+
+  /// No description provided for @finderStepKindHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plusieurs choix possibles, ou aucun.'**
+  String get finderStepKindHint;
+
+  /// No description provided for @finderNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre chose ?'**
+  String get finderNote;
+
+  /// No description provided for @finderNoteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une salle de bain sans fenêtre, un chat qui mordille tout…'**
+  String get finderNoteHint;
+
+  /// No description provided for @finderNoteFooter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisé seulement si vous demandez l\'avis de l\'IA.'**
+  String get finderNoteFooter;
+
+  /// No description provided for @finderSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les propositions'**
+  String get finderSubmit;
+
+  /// No description provided for @finderResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nos propositions'**
+  String get finderResults;
+
+  /// No description provided for @finderResultsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'après la fiche d\'entretien de chaque espèce.'**
+  String get finderResultsHint;
+
+  /// No description provided for @finderEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien de convaincant'**
+  String get finderEmptyTitle;
+
+  /// No description provided for @finderEmptySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l\'IA.'**
+  String get finderEmptySubtitle;
+
+  /// No description provided for @finderRestart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommencer'**
+  String get finderRestart;
+
+  /// No description provided for @finderAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter au jardin'**
+  String get finderAdd;
+
+  /// No description provided for @finderCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la fiche'**
+  String get finderCare;
+
+  /// No description provided for @finderAskAi.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander à l\'IA'**
+  String get finderAskAi;
+
+  /// No description provided for @finderAiSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Propositions de l\'IA'**
+  String get finderAiSection;
+
+  /// No description provided for @finderAiHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors catalogue : à vérifier avant d\'acheter.'**
+  String get finderAiHint;
+
+  /// No description provided for @finderAiError.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'IA n\'a rien pu proposer.'**
+  String get finderAiError;
+
+  /// No description provided for @finderReasonLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aime cette lumière'**
+  String get finderReasonLight;
+
+  /// No description provided for @finderReasonLowLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supporte l\'ombre'**
+  String get finderReasonLowLight;
+
+  /// No description provided for @finderReasonForgiving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pardonne les oublis d\'arrosage'**
+  String get finderReasonForgiving;
+
+  /// No description provided for @finderReasonEasy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facile à vivre'**
+  String get finderReasonEasy;
+
+  /// No description provided for @finderReasonSafe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non toxique'**
+  String get finderReasonSafe;
+
+  /// No description provided for @finderReasonOutdoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tient dehors'**
+  String get finderReasonOutdoor;
+
+  /// No description provided for @finderAnyAnswer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Peu importe'**
+  String get finderAnyAnswer;
+
+  /// No description provided for @onbWelcomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bienvenue sur Auxine'**
+  String get onbWelcomeTitle;
+
+  /// No description provided for @onbWelcomeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.'**
+  String get onbWelcomeBody;
+
+  /// No description provided for @finderIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.'**
+  String get finderIntro;
+
+  /// No description provided for @careMatchAssisted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complétée par l\'IA'**
+  String get careMatchAssisted;
+
+  /// No description provided for @careAssistedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l\'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n\'en fait pas partie.'**
+  String get careAssistedNote;
+
+  /// No description provided for @careAssistSetting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compléter les fiches avec l\'IA'**
+  String get careAssistSetting;
+
+  /// No description provided for @careAssistHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil, et la réponse est gardée pour ne pas la redemander.'**
+  String get careAssistHint;
+
 }
 
 class _AppLocalizationsDelegate

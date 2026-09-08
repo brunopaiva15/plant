@@ -112,7 +112,7 @@ chat. Trois garde-fous, du moins cher au plus cher :
 2. **une classe « autre »** entraînée sur des images de plantes hors
    catalogue *et* de non-plantes (prévue au premier entraînement, images
    CC0 tirées de GBIF pour d'autres familles + photos de scènes d'intérieur) ;
-3. plus tard, si nécessaire, **calibration de température** sur le jeu de
+2. plus tard, si nécessaire, **calibration de température** sur le jeu de
    validation, pour que 0,90 veuille dire 90 %.
 
 Dans tous les cas, l'interface continue de présenter **plusieurs candidats
@@ -148,7 +148,7 @@ requêtes ; `PlantNetIdentifier` n'aurait alors qu'à changer d'URL.
    journaux de build.
 3. Le groupe doit être attaché au workflow (`groups:` dans `codemagic.yaml`,
    ou la case du groupe dans l'éditeur d'interface).
-4. Passer la variable au build :
+3. Passer la variable au build :
 
 ```yaml
 environment:
@@ -301,7 +301,7 @@ NeurIPS 2021 Datasets & Benchmarks).
 **Décision : ne pas en faire la base du modèle de l'app.** Trois raisons :
 
 1. **Couverture** : ses 1 081 espèces sont celles de la flore sauvage
-   d'Europe de l'Ouest ; un test sur les 297 plantes du catalogue Flora
+   d'Europe de l'Ouest ; un test sur les 297 plantes du catalogue Auxine
    (plantes d'intérieur, tropicales, horticoles) reste à faire, mais
    *Monstera*, *Epipremnum*, *Spathiphyllum* n'y ont aucune raison d'être
    bien représentés. GBIF nous donne des images de ces plantes précises.
@@ -636,9 +636,9 @@ calcul exact que fait la cascade :
 
 | seuil | une photo | deux photos |
 |---|---|---|
-| 0,70 | 42 % de réponses seules, 86,0 % justes | 37 %, 93,1 % |
-| **0,60** | **47 %, 82,8 %** | **43 %, 90,8 %** |
-| 0,50 | 55 %, 74,3 % | 49 %, 85,9 % |
+| 0,70 | 42 % de réponses seules, 86,0 % justes | 34 %, 93,5 % |
+| **0,60** | **47 %, 82,8 %** | **38 %, 92,3 %** |
+| 0,50 | 55 %, 74,3 % | 44 %, 88,4 % |
 
 `acceptThreshold` passe donc à **0,60**.
 
@@ -652,11 +652,19 @@ entraînement. `splits.csv` regroupe les photos d'une même observation ;
 |---|---|---|---|
 | Top-1, toutes espèces | 47,6 % | 61,5 % | **66,4 %** |
 | Top-1, plantes cultivées | 48,5 % | 59,5 % | **67,5 %** |
+| Justesse quand le modèle répond seul (0,60) | 82,8 % | 92,3 % | 92,9 % |
 
 Dix-neuf points, contre 8,7 pour dix heures de calcul et 160 000 images de
 plus. La fusion se fait par **moyenne géométrique** — elle exige que les
 photos soient d'accord, là où la moyenne arithmétique pardonne à une photo
-ratée, et elle vaut cinq points de plus qu'elle. Détails et précautions :
+ratée, et elle vaut cinq points de plus qu'elle.
+
+Deux pièges, tous deux tenus par des tests. Une espèce absente de la liste
+d'une photo ne vaut pas zéro, sinon le produit s'annule et elle disparaît :
+elle vaut la borne connue, sous le plus petit score rendu. Et le résultat
+est remis à l'échelle de la masse que les listes couvraient **en moyenne**,
+non à 1 : viser 1 fabriquerait de la confiance, deux photos ne rendant qu'un
+candidat à 0,30 puis 0,90 en sortiraient à 1,00 au lieu de 0,60. Détails :
 `tools/plant_model/multi_photo.py` et `cascade_identifier.dart`.
 
 Le chiffre est un plafond optimiste : les photos d'une observation viennent
@@ -809,6 +817,38 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   Kimi est un jeu d'essai de vingt à trente photos de plantes à problème
   connu, envoyées avec la même consigne. Il reste à constituer.
 
+## 9 bis. Compléter une fiche d'entretien que le catalogue ne connaît pas
+
+Le catalogue intégré ne renseigne à la main que treize profils d'espèce ;
+tout le reste passe par le genre, la famille, la catégorie, ou finit sur des
+repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
+(« Repères généraux »), et c'est exactement le trou que l'IA comble
+(`lib/data/services/infomaniak_care_completer.dart`) :
+
+- **Quand** : seulement si la fiche n'a que des repères généraux, seulement
+  si la plante porte un nom d'espèce, seulement si l'utilisateur laisse le
+  réglage actif. Une fiche de l'espèce, du genre ou de la famille est
+  renseignée à la main et n'est jamais remplacée.
+- **Ce qui part** : le nom scientifique, rien d'autre. Ni photo, ni nom de
+  plante, ni donnée de l'utilisateur.
+- **Ce qui revient** : des nombres et des mots d'un vocabulaire fermé (les
+  valeurs des énumérations de `CareProfile`), à `temperature` 0. Tout ce qui
+  n'entre pas dans le vocabulaire est jeté, et les nombres invraisemblables
+  aussi (arrosage hors 1–120 jours, rempotage hors 6–120 mois, plage de
+  température à l'envers, hiver plus fréquent que l'été). Un champ absent
+  vaut mieux qu'un champ inventé, la consigne le dit et le lecteur s'y tient.
+- **Ce qui ne revient jamais** : la toxicité. Tout le reste est un avis sur
+  le confort d'une plante ; « non toxique pour le chat » est une affirmation
+  sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue.
+- **Une fois** : la réponse est gardée sur l'appareil, par espèce et par
+  langue, réponse vide comprise, pour qu'une espèce que l'IA ne connaît pas
+  ne soit pas redemandée à chaque ouverture de la fiche. Le cache est borné
+  à 120 entrées et ne part ni en sauvegarde ni en synchronisation.
+- **La provenance est dite** : la ligne du bas passe de « Repères généraux »
+  à « Complétée par l'IA », avec ce qui a été envoyé et ce qui ne l'a pas
+  été. Sans cela, l'application perdrait ce qui la distingue d'un moteur de
+  texte, savoir d'où viennent ses chiffres.
+
 ## 10. Ajouter une espèce
 
 1. L'ajouter au catalogue trié (`species_catalog.dart`) ou, à défaut, à
@@ -817,7 +857,7 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
    GBIF répond `EXACT` au rang espèce.
 3. `python3 build_dataset.py --only "Nom scientifique" --target-per-species 300`.
 4. Contrôler `_review/` et quelques images à la main.
-5. Réentraîner, réévaluer, recaler les seuils, livrer avec
+4. Réentraîner, réévaluer, recaler les seuils, livrer avec
    `ATTRIBUTIONS.md`.
 
 ## 11. Tests
@@ -843,16 +883,13 @@ flutter test                                        # dont 33 pour l'identificat
 
 ## 12. Reste à faire, dans l'ordre
 
-1. **Faire prendre deux photos** : le gain est mesuré et la cascade sait déjà
-   les fusionner, mais rien dans l'interface ne les demande. C'est dix-neuf
-   points qui attendent un écran.
-2. Pré-entraînement PlantNet-300K (§ 4.4, option a), jamais essayé. Vérifier
+1. Pré-entraînement PlantNet-300K (§ 4.4, option a), jamais essayé. Vérifier
    d'abord s'il existe un poids MobileNet publié — sans quoi c'est une
    seconde passe complète — et le recouvrement d'espèces, qui a beaucoup
    augmenté avec les 530 plantes de jardin de la v6.
-3. Régularisation : à la douzième époque, l'entraînement est à 70,5 % et la
+2. Régularisation : à la douzième époque, l'entraînement est à 70,5 % et la
    validation à 52,2 %. Dix-huit points d'écart, c'est elle qui limite, pas
    le nombre d'époques.
-4. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
-5. Photos de plantes en pot dans des intérieurs : c'est ce qui manque encore
+3. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
+4. Photos de plantes en pot dans des intérieurs : c'est ce qui manque encore
    au ficus ginseng, et les licences libres en offrent peu (§ 6.5).

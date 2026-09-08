@@ -50,20 +50,31 @@ class FakeLocal implements LocalPlantModel {
   }
 }
 
-/// Un modèle local qui rend une liste différente à chaque appel : c'est ce
-/// qu'il faut pour éprouver la fusion, [FakeLocal] rendant toujours la même.
-class _ByCall extends FakeLocal {
-  _ByCall(this.lists, this.onCall) : super(const []);
+/// Un modèle qui répond différemment selon la photo, pour éprouver
+/// l'agrégation de plusieurs clichés de la même plante.
+class FakePerImage implements LocalPlantModel {
+  FakePerImage(this.byName);
 
-  final List<List<IdentificationCandidate>> lists;
-  final void Function() onCall;
-  int _at = 0;
+  final Map<String, List<IdentificationCandidate>> byName;
+  int calls = 0;
+
+  @override
+  bool get isAvailable => true;
+  @override
+  String? get version => 'test-1';
+  @override
+  int get speciesCount => 3;
+  @override
+  String? get loadError => null;
+  @override
+  void dispose() {}
+  @override
+  Future<bool> warmUp() async => true;
 
   @override
   Future<List<IdentificationCandidate>> classify(File image) async {
-    onCall();
     calls++;
-    return lists[_at++ % lists.length];
+    return byName[image.uri.pathSegments.last] ?? const [];
   }
 }
 
@@ -106,7 +117,7 @@ void main() {
   final hesitant = [c('Monstera deliciosa', 0.15), c('Monstera adansonii', 0.12)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
-  CascadeIdentifier build(FakeLocal local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
+  CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
       CascadeIdentifier(
         local: local,
         fallback: remote,
@@ -120,6 +131,48 @@ void main() {
                 : null,
         localTimeout: const Duration(milliseconds: 200),
       );
+
+  group('plusieurs photos de la même plante', () {
+    test('l\'espèce vue sur les deux passe devant celle vue sur une seule', () async {
+      // Première photo : le modèle hésite et penche du mauvais côté.
+      // Deuxième : il retrouve la bonne espèce. La moyenne tranche.
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera adansonii', 0.45), c('Monstera deliciosa', 0.35)],
+        'b.jpg': [c('Monstera deliciosa', 0.80), c('Monstera adansonii', 0.05)],
+      });
+      final remote = FakeRemote(remoteAnswer);
+      final result = await build(local, remote).identify([photo, other], language: 'fr');
+      expect(local.calls, 2, reason: 'chaque photo est classée');
+      expect(result.first.scientificName, 'Monstera deliciosa');
+      // Moyenne géométrique, remise à l'échelle de la masse moyenne des
+      // deux listes : √(0,35 × 0,80) et √(0,45 × 0,05), puis × 0,825/0,679.
+      expect(result.first.score, closeTo(0.6428, 1e-4));
+      expect(result[1].score, closeTo(0.1822, 1e-4));
+    });
+
+    test('une espèce absente d\'une photo compte quand même pour zéro', () async {
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera deliciosa', 0.90)],
+        'b.jpg': [c('Ficus lyrata', 0.90)],
+      });
+      final result = await build(local, FakeRemote(remoteAnswer, configured: false)).identify([photo, other]);
+      // Chacune n'a été vue qu'une fois sur deux : aucune ne reste sûre, et
+      // c'est bien ce qu'on veut d'une moyenne.
+      expect(result.map((r) => r.score), everyElement(closeTo(0.45, 1e-9)));
+    });
+
+    test('deux photos ne sont pas le même résultat qu\'une seule en cache', () async {
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera deliciosa', 0.30)],
+        'b.jpg': [c('Monstera deliciosa', 0.90)],
+      });
+      final cascade = build(local, FakeRemote(remoteAnswer, configured: false));
+      final une = await cascade.identify([photo]);
+      final deux = await cascade.identify([photo, other]);
+      expect(une.first.score, closeTo(0.30, 1e-9));
+      expect(deux.first.score, closeTo(0.60, 1e-9), reason: 'la clé de cache tient compte de toutes les photos');
+    });
+  });
 
   test('confident local answer never calls the remote service', () async {
     final local = FakeLocal(sure);
@@ -343,10 +396,11 @@ void main() {
     final result = await cascade.identify([photo, other]);
     expect(local.calls, 2);
     expect(result.length, 2);
-    // Deux photos d'accord : la moyenne géométrique rend les mêmes scores,
-    // que la renormalisation ramène à une somme de 1 (0,96 / 0,98).
+    // Deux photos d'accord ne changent rien : la moyenne géométrique de
+    // deux valeurs égales les rend telles quelles, et la masse couverte est
+    // la même des deux côtés. La fusion est ici l'identité.
     expect(result.first.scientificName, 'Monstera deliciosa');
-    expect(result.first.score, closeTo(0.96 / 0.98, 1e-6));
+    expect(result.first.score, closeTo(0.96, 1e-6));
   });
 
   test('one photo alone is classified as before, untouched', () async {
@@ -364,11 +418,10 @@ void main() {
     // vue à 0,96 puis 0,04, et la placerait devant celle que les deux
     // photos voient à 0,45. La géométrique la ramène à √(0,96 × 0,04) ≈ 0,20
     // et laisse passer celle sur laquelle elles s'accordent.
-    var call = 0;
-    final local = _ByCall([
-      [c('Monstera deliciosa', 0.96), c('Monstera adansonii', 0.45)],
-      [c('Monstera deliciosa', 0.04), c('Monstera adansonii', 0.45)],
-    ], () => call++);
+    final local = FakePerImage({
+      'a.jpg': [c('Monstera deliciosa', 0.96), c('Monstera adansonii', 0.45)],
+      'b.jpg': [c('Monstera deliciosa', 0.04), c('Monstera adansonii', 0.45)],
+    });
     final cascade = build(local, FakeRemote(remoteAnswer));
     final result = await cascade.identify([photo, other]);
     expect(result.first.scientificName, 'Monstera adansonii',
@@ -380,10 +433,10 @@ void main() {
     // Le modèle tronque sa liste : une espèce absente n'y vaut pas zéro,
     // sinon le produit s'annulerait et elle disparaîtrait pour toujours.
     // Elle vaut la borne connue — sous le plus petit score rendu.
-    final local = _ByCall([
-      [c('Monstera deliciosa', 0.90), c('Monstera adansonii', 0.05)],
-      [c('Monstera adansonii', 0.90)],
-    ], () {});
+    final local = FakePerImage({
+      'a.jpg': [c('Monstera deliciosa', 0.90), c('Monstera adansonii', 0.05)],
+      'b.jpg': [c('Monstera adansonii', 0.90)],
+    });
     final cascade = build(local, FakeRemote(remoteAnswer));
     final result = await cascade.identify([photo, other]);
     expect(result.map((r) => r.scientificName), contains('Monstera deliciosa'),
@@ -391,19 +444,34 @@ void main() {
     expect(result.first.scientificName, 'Monstera adansonii');
   });
 
-  test('merged scores sum to one, so the threshold still means something', () async {
-    // Moyenner aplatit la distribution. Sans renormalisation le premier
+  test('merging keeps the mass the photos expressed, no more', () async {
+    // Moyenner aplatit la distribution : sans remise à l'échelle, le premier
     // candidat passerait sous le seuil de FallbackPolicy et l'app irait
-    // consulter Pl@ntNet pour une réponse pourtant meilleure.
-    final local = _ByCall([
-      [c('Monstera deliciosa', 0.80), c('Monstera adansonii', 0.10)],
-      [c('Monstera deliciosa', 0.70), c('Monstera adansonii', 0.20)],
-    ], () {});
+    // consulter Pl@ntNet pour une réponse pourtant meilleure. Mais l'échelle
+    // visée est la masse moyenne des listes d'entrée (0,90 ici), pas 1 :
+    // la fusion redresse, elle n'invente pas de certitude.
+    final local = FakePerImage({
+      'a.jpg': [c('Monstera deliciosa', 0.80), c('Monstera adansonii', 0.10)],
+      'b.jpg': [c('Monstera deliciosa', 0.70), c('Monstera adansonii', 0.20)],
+    });
     final cascade = build(local, FakeRemote(remoteAnswer));
     final result = await cascade.identify([photo, other]);
     final total = result.fold<double>(0, (sum, r) => sum + r.score);
-    expect(total, closeTo(1.0, 1e-9));
-    expect(result.first.score, greaterThan(0.70), reason: 'la réponse reste acceptée');
+    expect(total, closeTo(0.90, 1e-9));
+    expect(result.first.score, closeTo(0.7569, 1e-4));
+    expect(result.first.score, greaterThan(0.60), reason: 'la réponse reste acceptée');
+  });
+
+  test('two photos that agree on a single species do not reach certainty', () async {
+    // Le piège de la remise à l'échelle : avec une seule espèce dans
+    // l'union, viser une somme de 1 lui donnerait 100 % de confiance, quoi
+    // qu'aient dit les photos. Elle vaut ici √(0,30 × 0,90) remis à 0,60.
+    final local = FakePerImage({
+      'a.jpg': [c('Monstera deliciosa', 0.30)],
+      'b.jpg': [c('Monstera deliciosa', 0.90)],
+    });
+    final result = await build(local, FakeRemote(remoteAnswer, configured: false)).identify([photo, other]);
+    expect(result.single.score, closeTo(0.60, 1e-9));
   });
 
   test('metrics survive a JSON round trip', () {

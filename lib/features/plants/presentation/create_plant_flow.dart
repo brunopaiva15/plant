@@ -19,6 +19,7 @@ import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
+import '../../../domain/identification/identification_policy.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
@@ -26,7 +27,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../species/presentation/species_field.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
-Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? locationId}) async {
+Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? speciesName, String? locationId}) async {
   final l10n = context.l10n;
   if (!ref.read(canEditProvider)) {
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.readOnlyHint, emoji: '🔒'));
@@ -34,7 +35,7 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
   }
   final plantId = await showFloraFlow<String>(
     context,
-    builder: (ctx) => CreatePlantFlow(parentPlantId: parentPlantId, parentName: parentName, initialLocationId: locationId),
+    builder: (ctx) => CreatePlantFlow(parentPlantId: parentPlantId, parentName: parentName, speciesName: speciesName, initialLocationId: locationId),
   );
   if (plantId != null && context.mounted) {
     context.push(Routes.plant(plantId));
@@ -42,10 +43,14 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
 }
 
 class CreatePlantFlow extends ConsumerStatefulWidget {
-  const CreatePlantFlow({super.key, this.parentPlantId, this.parentName, this.initialLocationId});
+  const CreatePlantFlow({super.key, this.parentPlantId, this.parentName, this.speciesName, this.initialLocationId});
 
   final String? parentPlantId;
   final String? parentName;
+
+  /// Espèce déjà connue : celle de la plante mère pour une bouture, celle
+  /// retenue dans « Trouver une plante ». L'utilisateur peut la corriger.
+  final String? speciesName;
   final String? initialLocationId;
 
   @override
@@ -59,7 +64,18 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _picking = false;
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
-  StoredPhoto? _identifiedPhoto;
+
+  /// Photos prises en plus, seulement pour lever un doute d'identification.
+  /// Ce ne sont pas des photos de la plante : elles s'effacent en partant,
+  /// que la création aboutisse ou non.
+  final _identificationExtras = <StoredPhoto>[];
+
+  /// Chemins absolus envoyés au moteur : la photo de la plante, puis les
+  /// autres. Le moteur additionne les scores par espèce.
+  final _identificationPaths = <String>[];
+
+  /// Au-delà, une photo de plus n'apporte plus grand-chose.
+  static const int maxIdentificationPhotos = 3;
 
   late final _name = TextEditingController(text: widget.parentName == null ? '' : context.l10n.cuttingOf(widget.parentName!));
   final _species = TextEditingController();
@@ -76,16 +92,45 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _noLocation = false;
 
   @override
+  void initState() {
+    super.initState();
+    // L'espèce est déjà connue (bouture, proposition retenue) : elle apporte
+    // avec elle le rythme de soins conseillé par sa fiche.
+    final inherited = widget.speciesName?.trim() ?? '';
+    if (inherited.isEmpty) return;
+    _species.text = inherited;
+    final care = ref.read(careGuideProvider).resolve(inherited, family: speciesFamilyOf(ref, inherited));
+    _watering = care.profile.wateringDaysFor(DateTime.now().month, south: ref.read(southernHemisphereProvider));
+    _fertilizing = care.profile.fertilizingDays ?? 0;
+  }
+
+  @override
   void dispose() {
     _page.dispose();
     _name.dispose();
     _species.dispose();
     _notes.dispose();
+    _dropIdentificationExtras();
     super.dispose();
+  }
+
+  /// Efface les photos prises pour identifier. Appelée en partant, et à
+  /// chaque nouvelle photo de plante : les anciennes ne montrent alors plus
+  /// le bon sujet.
+  void _dropIdentificationExtras() {
+    if (_identificationExtras.isEmpty) return;
+    final storage = ref.read(photoStorageProvider);
+    for (final p in _identificationExtras) {
+      storage.deleteFiles(p.filePath, p.thumbPath);
+    }
+    _identificationExtras.clear();
   }
 
   void _go(int step) {
     Haptics.selection();
+    // Le clavier de l'étape du nom ne doit pas suivre : ouvert, il écrase la
+    // mise en page des autres étapes (l'aperçu photo notamment).
+    if (step != 1) FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _step = step);
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
   }
@@ -99,8 +144,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         if (_photo != null) await ref.read(photoStorageProvider).deleteFiles(_photo!.filePath, _photo!.thumbPath);
         setState(() => _photo = stored);
         Haptics.success();
-        _startIdentification(stored);
         _go(1);
+        await _startIdentification(stored);
       }
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.pick');
@@ -112,14 +157,71 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   /// Identification en arrière-plan dès qu'une photo existe (si un service est configuré).
   /// Les suggestions apparaissent à l'étape du nom, sans étape supplémentaire.
-  void _startIdentification(StoredPhoto photo) {
+  ///
+  /// Le chemin est résolu avant de poser le futur, pour que la liste des
+  /// photos soumises soit à jour dans le même `setState` : c'est elle qui dit
+  /// combien de photos sont parties et s'il en reste une à proposer.
+  Future<void> _startIdentification(StoredPhoto photo) async {
     final identifier = ref.read(plantIdentifierProvider);
     if (!identifier.isConfigured) return;
     final lang = _identificationLanguage;
-    _identifiedPhoto = photo;
+    _dropIdentificationExtras();
+    final path = await ref.read(photoStorageProvider).absolutePath(photo.filePath);
+    if (!mounted) return;
     setState(() {
-      _identification = ref.read(photoStorageProvider).absolutePath(photo.filePath).then((path) => identifier.identify([File(path)], language: lang)).catchError((_) => <IdentificationCandidate>[]);
+      _identificationPaths
+        ..clear()
+        ..add(path);
+      _identification = identifier.identify([File(path)], language: lang).catchError((_) => <IdentificationCandidate>[]);
     });
+  }
+
+  /// Le modèle hésite-t-il ? La politique de la cascade le dit, celle-là
+  /// même qui décide d'appeler ou non le service distant.
+  bool _identificationAmbiguous(List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier || results.isEmpty) return false;
+    if (results.first.source != IdentificationSource.local) return false;
+    return identifier.policy.decide(results) != IdentificationVerdict.accepted;
+  }
+
+  /// Une photo de plus pour trancher. Gratuite, hors ligne et immédiate, là
+  /// où la recherche en ligne se prend sur un quota mensuel.
+  Future<void> _addIdentificationPhoto(PhotoSource source) async {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (_picking || !identifier.isConfigured || _identificationPaths.isEmpty) return;
+    setState(() => _picking = true);
+    try {
+      final stored = await ref.read(photoStorageProvider).pick(source);
+      if (stored == null) return;
+      final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
+      if (!mounted) return;
+      final lang = _identificationLanguage;
+      _identificationExtras.add(stored);
+      _identificationPaths.add(path);
+      setState(() {
+        _identification = identifier
+            .identify([for (final p in _identificationPaths) File(p)], language: lang)
+            .catchError((_) => <IdentificationCandidate>[]);
+      });
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'createPlant.identifyMore');
+      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+    } finally {
+      if (mounted) setState(() => _picking = false);
+    }
+  }
+
+  void _chooseIdentificationSource() {
+    final l10n = context.l10n;
+    showAdaptiveActionSheet(
+      context,
+      cancelLabel: l10n.cancel,
+      actions: [
+        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addIdentificationPhoto(PhotoSource.camera)),
+        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addIdentificationPhoto(PhotoSource.gallery)),
+      ],
+    );
   }
 
   String get _identificationLanguage =>
@@ -136,11 +238,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// l'appareil ne convenait. L'appel n'a lieu que sur ce geste.
   void _searchOnline() {
     final identifier = ref.read(plantIdentifierProvider);
-    final photo = _identifiedPhoto;
-    if (identifier is! CascadeIdentifier || photo == null) return;
+    if (identifier is! CascadeIdentifier || _identificationPaths.isEmpty) return;
     final lang = _identificationLanguage;
     setState(() {
-      _identification = ref.read(photoStorageProvider).absolutePath(photo.filePath).then((path) => identifier.identifyRemotely([File(path)], language: lang)).catchError((_) => <IdentificationCandidate>[]);
+      // Toutes les photos partent : le quota se compte à l'appel, pas à
+      // l'image, et Pl@ntNet en accepte plusieurs.
+      _identification = identifier
+          .identifyRemotely([for (final p in _identificationPaths) File(p)], language: lang)
+          .catchError((_) => <IdentificationCandidate>[]);
     });
   }
 
@@ -150,7 +255,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final care = ref.read(careGuideProvider).resolve(scientificName, family: family);
     setState(() {
       if (_intervalsTouched) return;
-      _watering = care.profile.wateringDaysFor(DateTime.now().month);
+      _watering = care.profile.wateringDaysFor(DateTime.now().month, south: ref.read(southernHemisphereProvider));
       _fertilizing = care.profile.fertilizingDays ?? 0;
     });
   }
@@ -249,13 +354,18 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
               child: _photo == null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(CupertinoIcons.camera, size: 44, color: c.sage),
-                        const SizedBox(height: Space.sm),
-                        Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
-                      ],
+                  // Le cadre rétrécit quand la place manque (petit écran) :
+                  // l'invite se met à l'échelle plutôt que de déborder.
+                  ? FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(CupertinoIcons.camera, size: 44, color: c.sage),
+                          const SizedBox(height: Space.sm),
+                          Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
                     )
                   : PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900),
             ),
@@ -320,7 +430,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           ),
           _CarePreview(speciesName: _species.text),
           if (_identification != null)
-            _IdentificationSuggestions(future: _identification!, onPick: _applyCandidate, onSearchOnline: _canSearchOnline ? _searchOnline : null),
+            _IdentificationSuggestions(
+              future: _identification!,
+              onPick: _applyCandidate,
+              onSearchOnline: _canSearchOnline ? _searchOnline : null,
+              photoCount: _identificationPaths.length,
+              onAddPhoto: _identificationPaths.length < maxIdentificationPhotos && !_picking ? _chooseIdentificationSource : null,
+              ambiguous: _identificationAmbiguous,
+            ),
           const SizedBox(height: Space.lg),
           Pressable(
             onTap: () => setState(() => _more = !_more),
@@ -418,7 +535,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 }
 
 class _IdentificationSuggestions extends StatelessWidget {
-  const _IdentificationSuggestions({required this.future, required this.onPick, this.onSearchOnline});
+  const _IdentificationSuggestions({
+    required this.future,
+    required this.onPick,
+    this.onSearchOnline,
+    this.onAddPhoto,
+    this.photoCount = 1,
+    this.ambiguous,
+  });
 
   final Future<List<IdentificationCandidate>> future;
   final ValueChanged<IdentificationCandidate> onPick;
@@ -426,6 +550,15 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Présent quand une recherche en ligne est possible ; le bouton ne
   /// s'affiche que si la liste vient de l'appareil.
   final VoidCallback? onSearchOnline;
+
+  /// Présent tant qu'une photo de plus est acceptée.
+  final VoidCallback? onAddPhoto;
+
+  /// Nombre de photos déjà soumises au moteur.
+  final int photoCount;
+
+  /// Le modèle hésite-t-il sur cette liste ? Décidé par la cascade.
+  final bool Function(List<IdentificationCandidate>)? ambiguous;
 
   @override
   Widget build(BuildContext context) {
@@ -449,18 +582,37 @@ class _IdentificationSuggestions extends StatelessWidget {
               // D'où viennent ces noms : l'utilisateur a le droit de savoir si
               // sa photo est partie sur le réseau, et de le demander sinon.
               Text(
-                switch (results.first.source) {
-                  IdentificationSource.local => l10n.suggestionsLocal,
-                  IdentificationSource.remote => l10n.suggestionsRemote,
-                  IdentificationSource.unknown => l10n.identifyHint,
-                },
+                () {
+                  final source = switch (results.first.source) {
+                    IdentificationSource.local => l10n.suggestionsLocal,
+                    IdentificationSource.remote => l10n.suggestionsRemote,
+                    IdentificationSource.unknown => l10n.identifyHint,
+                  };
+                  // Le nombre de photos n'apparaît qu'une fois qu'il y en a
+                  // plusieurs : « 1 photo » n'apprendrait rien.
+                  return photoCount > 1 ? '$source · ${l10n.photosCount(photoCount)}' : source;
+                }(),
                 style: context.text.caption,
               ),
               const SizedBox(height: Space.xs),
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
+              // La photo d'abord, l'appel réseau ensuite : l'une est gratuite
+              // et immédiate, l'autre se prend sur un quota mensuel.
+              if (onAddPhoto != null && (ambiguous?.call(results) ?? false)) ...[
+                const SizedBox(height: Space.sm),
+                Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                const SizedBox(height: Space.xs),
+                FloraButton(
+                  label: l10n.identifyAnotherPhoto,
+                  icon: CupertinoIcons.camera,
+                  style: FloraButtonStyle.secondary,
+                  size: FloraButtonSize.small,
+                  onPressed: onAddPhoto,
+                ),
+              ],
               if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
                 const SizedBox(height: Space.sm),
-                FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.secondary, size: FloraButtonSize.small, onPressed: onSearchOnline),
+                FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.ghost, size: FloraButtonSize.small, onPressed: onSearchOnline),
               ],
             ],
           ),
@@ -566,7 +718,7 @@ class _CarePreview extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.careWateringNow(p.wateringDaysFor(DateTime.now().month)), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
+                  Text(l10n.careWateringNow(p.wateringDaysFor(DateTime.now().month, south: ref.watch(southernHemisphereProvider))), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
                   Text('${l10n.lightName(p.light)} · ${l10n.careMatchLabel(care)}', style: context.text.caption),
                 ],

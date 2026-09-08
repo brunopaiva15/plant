@@ -10,10 +10,16 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftActionRepository implements ActionRepository {
-  DriftActionRepository(this._db, {String? Function()? currentUserId}) : _currentUserId = currentUserId ?? (() => null);
+  DriftActionRepository(this._db, {String? Function()? currentUserId, bool Function()? southernHemisphere})
+      : _currentUserId = currentUserId ?? (() => null),
+        _south = southernHemisphere ?? (() => false);
 
   final FloraDatabase _db;
   final String? Function() _currentUserId;
+
+  /// L'hémisphère du jardin, relu à chaque complétion : il peut changer si
+  /// l'utilisateur déménage, ou renseigne son lieu après coup.
+  final bool Function() _south;
   static const _uuid = Uuid();
 
   @override
@@ -52,7 +58,7 @@ class DriftActionRepository implements ActionRepository {
       if (schedule != null) {
         metadata['_prev_next_due'] = schedule.nextDueAt?.toIso8601String();
         metadata['_prev_last_completed'] = schedule.lastCompletedAt?.toIso8601String();
-        final completed = CareEngine.complete(schedule, occurredAt);
+        final completed = CareEngine.complete(schedule, occurredAt, south: _south());
         await (_db.update(_db.careSchedules)..where((s) => s.id.equals(schedule.id))).write(CareSchedulesCompanion(
           nextDueAt: Value(completed.nextDueAt),
           lastCompletedAt: Value(completed.lastCompletedAt),

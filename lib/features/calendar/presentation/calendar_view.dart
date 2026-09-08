@@ -51,6 +51,7 @@ final calendarEventsProvider = StreamProvider.autoDispose.family<List<CalendarEv
   final actions = ref.watch(actionRepositoryProvider).watchBetween(range.from, range.to);
   final plants = ref.watch(plantRepositoryProvider).watchSummaries(const PlantFilter());
   final entries = ref.watch(calendarRepositoryProvider).watchBetween(range.from, range.to);
+  final south = ref.watch(southernHemisphereProvider);
   List<CareSchedule>? s;
   List<PlantAction>? a;
   List<PlantSummary>? p;
@@ -65,6 +66,7 @@ final calendarEventsProvider = StreamProvider.autoDispose.family<List<CalendarEv
       entries: e!,
       from: range.from,
       to: range.to,
+      south: south,
     ));
   }
 

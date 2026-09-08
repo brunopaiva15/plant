@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
+import 'package:flora/core/config/app_config.dart';
 import 'package:flora/data/db/database.dart';
 import 'package:flora/data/services/photo_storage_service.dart';
 import 'package:flora/features/export/backup_sections.dart';
@@ -117,9 +120,25 @@ void main() {
 
     test('l\'aperçu annonce ce que contient le fichier', () async {
       final manifest = await importer.inspect(await exporter.buildZip());
-      expect(manifest.app, 'Flora');
+      expect(manifest.app, 'Auxine');
       expect(manifest.counts['plants'], 1);
       expect(manifest.sections, contains(BackupSection.plants));
+    });
+
+    test('les sauvegardes des noms précédents restent importables', () async {
+      for (final ancien in AppConfig.legacyAppNames) {
+        final legacy = await _reissued(await exporter.buildZip(), app: ancien);
+        await importer.import(legacy);
+        expect((await target.select(target.plants).get()).single.name, 'Monstera', reason: ancien);
+      }
+    });
+
+    test('une sauvegarde d\'une autre application est refusée', () async {
+      final foreign = await _reissued(await exporter.buildZip(), app: 'Autre chose');
+      await expectLater(
+        importer.import(foreign),
+        throwsA(predicate((e) => e is ImportException && e.reason == ImportFailure.wrongApp)),
+      );
     });
 
     test('un export sélectif ne contient que sa section et ses dépendances', () async {
@@ -185,4 +204,18 @@ void main() {
       expect(report.skipped.values.fold(0, (a, b) => a + b) + report.totalImported, greaterThan(0));
     });
   });
+}
+
+/// Réécrit une sauvegarde au nom d'une autre application : de quoi rejouer une
+/// sauvegarde d'avant le changement de nom, sans figer le format ici.
+Future<File> _reissued(File zip, {required String app}) async {
+  final archive = ZipDecoder().decodeBytes(await zip.readAsBytes());
+  final entry = archive.files.firstWhere((f) => p.basename(f.name) == 'data.json');
+  final data = jsonDecode(utf8.decode(entry.content as List<int>)) as Map<String, Object?>;
+  data['app'] = app;
+  final out = File('${zip.path}.reissued.zip');
+  final encoder = ZipFileEncoder()..create(out.path);
+  encoder.addArchiveFile(ArchiveFile.string('data.json', jsonEncode(data)));
+  await encoder.close();
+  return out;
 }

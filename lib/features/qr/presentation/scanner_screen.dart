@@ -58,12 +58,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     Haptics.success();
     await _controller.stop();
     if (!mounted) return;
+    // Le routeur et le contexte racine sont pris avant de fermer le scanner :
+    // celui de cet écran s'en va avec lui.
+    final router = GoRouter.of(context);
     context.pop();
+    final root = rootNavigatorKey.currentContext;
     switch (target) {
       case InventoryItem item:
-        await showInventoryItemSheet(context, existing: item);
+        if (root != null && root.mounted) await showInventoryItemSheet(root, existing: item);
       case _:
-        context.push(Routes.plant(link.id));
+        router.push(Routes.plant(link.id));
     }
   }
 

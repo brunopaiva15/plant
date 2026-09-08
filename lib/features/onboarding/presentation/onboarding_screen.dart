@@ -15,6 +15,7 @@ import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
 import 'onboarding_stage.dart';
+import 'plant_cluster.dart';
 
 /// Un écran de présentation : un objet du jardin, un titre, une phrase.
 class _Slide {
@@ -28,6 +29,8 @@ class _Slide {
 }
 
 final _slides = <_Slide>[
+  // La bienvenue : la plante de l'icône y pousse, de la terre nue à l'adulte.
+  _Slide(title: (l) => l.onbWelcomeTitle, body: (l) => l.onbWelcomeBody, tint: (c) => c.sage),
   _Slide(title: (l) => l.onboardingTitle, body: (l) => l.onboardingSubtitle, tint: (c) => c.sage),
   _Slide(title: (l) => l.onbTodayTitle, body: (l) => l.onbTodayBody, tint: (c) => c.water),
   _Slide(title: (l) => l.onbCareTitle, body: (l) => l.onbCareBody, tint: (c) => c.sun),
@@ -159,7 +162,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   void _keepIllustrations(int page) {
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (final i in {page, page + 1}) {
-      if (i < _objectCount) ClayIllustration.precache(context, i + 1, side);
+      if (i >= _objectCount) continue;
+      // Le premier objet charge sa propre séquence ; le deuxième a cinq
+      // images plutôt qu'une.
+      if (i == 1) {
+        PlantCluster.precache(context, side);
+      } else if (i >= 2) {
+        ClayIllustration.precache(context, i, side);
+      }
     }
   }
 

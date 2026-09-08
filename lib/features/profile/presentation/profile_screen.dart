@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../archive/presentation/archive_screen.dart' show archiveTitle, editArchiveName;
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 
-/// Profil : prénom, apparence, notifications, données, à propos.
+/// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -141,9 +143,12 @@ class ProfileScreen extends ConsumerWidget {
                     onTap: () => context.push(Routes.support),
                   ),
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
-                  FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.about, onTap: () => context.push(Routes.about)),
+                  FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],
               ),
+              const SizedBox(height: Space.xl),
+              const _AppFooter(),
+              const SizedBox(height: Space.lg),
             ],
           ),
         ),
@@ -201,6 +206,44 @@ class ProfileScreen extends ConsumerWidget {
         SheetAction(label: l10n.languageSystem, onPressed: () => ref.read(preferencesProvider.notifier).setLocale(null)),
         for (final locale in AppLocalizations.supportedLocales)
           SheetAction(label: _languageName(locale.languageCode), onPressed: () => ref.read(preferencesProvider.notifier).setLocale(locale)),
+      ],
+    );
+  }
+}
+
+/// Le pied des réglages : qui édite l'application, où lire sa politique de
+/// confidentialité, et quelle version tourne.
+///
+/// Tout en bas et sans le nom de l'application : on ne vient pas ici pour
+/// apprendre comment elle s'appelle, mais pour retrouver un numéro de version
+/// avant d'écrire au support.
+class _AppFooter extends StatelessWidget {
+  const _AppFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final style = context.text.caption.copyWith(color: c.inkTertiary);
+    return Column(
+      children: [
+        // L'année suit l'horloge de l'appareil : un millésime figé dans le
+        // code se périme au premier janvier, sans que personne le voie.
+        Text('© ${DateTime.now().year} ${AppConfig.publisher}', style: style),
+        const SizedBox(height: Space.xs),
+        Pressable(
+          onTap: () => launchUrl(Uri.parse(AppConfig.privacyUrl), mode: LaunchMode.externalApplication),
+          scale: 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text(
+              l10n.privacyPolicy,
+              style: context.text.caption.copyWith(color: c.sage, decoration: TextDecoration.underline, decorationColor: c.sage),
+            ),
+          ),
+        ),
+        const SizedBox(height: Space.xs),
+        Text(l10n.version('${AppConfig.version} (${AppConfig.build})'), style: style),
       ],
     );
   }

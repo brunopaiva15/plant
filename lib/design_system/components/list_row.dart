@@ -69,15 +69,17 @@ class FloraListRow extends StatelessWidget {
                     title,
                     style: context.text.body.copyWith(
                       color: destructive ? c.danger : c.ink,
+                      decoration: strikethrough ? TextDecoration.lineThrough : null,
+                      decorationColor: c.inkTertiary,
                     ),
-                    maxLines: 1,
+                    maxLines: titleMaxLines,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       subtitle!,
-                      style: context.text.caption,
+                      style: context.text.caption.copyWith(color: subtitleColor),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),

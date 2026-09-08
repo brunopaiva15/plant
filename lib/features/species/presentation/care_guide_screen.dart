@@ -8,7 +8,9 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
+import '../../../domain/problems/plant_problem.dart';
 import '../../plants/application/plant_providers.dart';
+import '../../problems/presentation/problem_kind_icon.dart';
 
 /// Fiche d'entretien d'une plante : quand l'arroser, quelle lumière lui
 /// donner, quel substrat, quand rempoter, ce qu'il faut surveiller.
@@ -27,31 +29,61 @@ class CareGuideScreen extends ConsumerWidget {
     final plant = summary?.plant;
     final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
     final family = speciesFamilyLookup(ref)(plant?.speciesName);
-    final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family);
+    final care = _completed(context, ref, ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family), plant?.speciesName);
     return FloraPage(
       title: l10n.careGuide,
-      child: CareGuideBody(care: care, plantName: plant?.name, location: location),
+      // La fiche s'affiche tout de suite avec ce que le catalogue sait ; si
+      // l'IA la complète, elle se repose en fondu plutôt que de changer
+      // sèchement sous les yeux.
+      child: AnimatedSwitcher(
+        duration: Motion.of(context, Motion.standard),
+        child: KeyedSubtree(
+          key: ValueKey(care.match),
+          child: CareGuideBody(care: care, plantName: plant?.name, speciesName: plant?.speciesName, location: location),
+        ),
+      ),
     );
+  }
+
+  /// La fiche, complétée par l'IA quand le catalogue n'a que des repères
+  /// généraux à offrir.
+  ///
+  /// Une fiche de l'espèce, du genre ou de la famille a été renseignée à la
+  /// main : on n'y touche pas. C'est seulement quand la fiche avoue ne rien
+  /// savoir de particulier que la question part, une fois, en silence.
+  ResolvedCare _completed(BuildContext context, WidgetRef ref, ResolvedCare care, String? species) {
+    if (care.match != CareMatch.generic && care.match != CareMatch.category) return care;
+    final name = species?.trim() ?? '';
+    if (name.isEmpty) return care;
+    final language = Localizations.localeOf(context).languageCode;
+    final completion = ref.watch(careCompletionProvider((species: name, language: language))).value;
+    if (completion == null) return care;
+    return ResolvedCare(profile: completion.applyTo(care.profile), match: CareMatch.assisted);
   }
 }
 
 /// Corps de la fiche, réutilisable en sheet (création de plante, espèce).
-class CareGuideBody extends StatelessWidget {
-  const CareGuideBody({super.key, required this.care, this.plantName, this.location, this.header});
+class CareGuideBody extends ConsumerWidget {
+  const CareGuideBody({super.key, required this.care, this.plantName, this.speciesName, this.location, this.header});
 
   final ResolvedCare care;
   final String? plantName;
+
+  /// Nom scientifique, quand il est connu : c'est par lui que la base des
+  /// problèmes retrouve ce qui touche cette plante.
+  final String? speciesName;
   final Location? location;
   final Widget? header;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
     final p = care.profile;
     final now = DateTime.now();
+    final south = ref.watch(southernHemisphereProvider);
     final actualLight = _lightOf(location);
-    final currentDays = p.wateringDaysFor(now.month, actualLight: actualLight);
+    final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
 
     final badges = <(String, String)>[
       if (p.mistLeaves) ('💦', l10n.careBadgeMist),
@@ -111,7 +143,7 @@ class CareGuideBody extends StatelessWidget {
               '🧪',
               l10n.careFertilizing,
               p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow, context.localeTag),
+              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
             ),
             _row('🪴', l10n.careRepotting, l10n.repotLabel(p.repotEveryMonths)),
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),
@@ -153,6 +185,8 @@ class CareGuideBody extends StatelessWidget {
           FloraGroup(children: [for (final i in p.issues) FloraListRow(leading: const Text('👀', style: TextStyle(fontSize: 16)), title: l10n.issueName(i), dense: true, chevron: false, titleMaxLines: 2)]),
         ],
 
+        if (speciesName != null && speciesName!.trim().isNotEmpty) _KnownProblems(speciesName: speciesName!, issues: p.issues),
+
         if (p.propagation.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
           Text(l10n.carePropagation, style: context.text.title3),
@@ -167,7 +201,14 @@ class CareGuideBody extends StatelessWidget {
         const SizedBox(height: Space.lg),
         Text(l10n.careMatchLabel(care), style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
-        Text(care.isSpecific ? l10n.careDisclaimer : l10n.careMatchNote, style: context.text.caption),
+        Text(
+          switch (care.match) {
+            CareMatch.assisted => l10n.careAssistedNote,
+            CareMatch.species || CareMatch.genus => l10n.careDisclaimer,
+            _ => l10n.careMatchNote,
+          },
+          style: context.text.caption,
+        ),
       ],
     );
   }
@@ -191,10 +232,91 @@ class CareGuideBody extends StatelessWidget {
 
   /// Lumière réelle de l'emplacement (« faible / moyenne / forte »), quand
   /// elle est renseignée : une plante en pleine lumière boit plus vite.
-  static LightNeed? _lightOf(Location? location) => switch (location?.light) {
-        'high' => LightNeed.someSun,
-        'medium' => LightNeed.brightIndirect,
-        'low' => LightNeed.lowLight,
-        _ => null,
-      };
+  static LightNeed? _lightOf(Location? location) => lightNeedFromCode(location?.light);
+}
+
+/// Ce que la base locale connaît de cette plante en particulier.
+///
+/// Elle sert déjà de vocabulaire au diagnostic ; elle a autant sa place ici,
+/// à froid, quand on lit la fiche sans avoir de problème. Les troubles
+/// universels en sont retirés — « manque d'eau » vaut pour tout le monde et
+/// n'apprend rien sur l'espèce —, tout comme ce que « À surveiller » vient de
+/// dire juste au-dessus.
+class _KnownProblems extends ConsumerStatefulWidget {
+  const _KnownProblems({required this.speciesName, required this.issues});
+
+  final String speciesName;
+
+  /// Les soucis déjà listés par la fiche, pour ne pas les redire.
+  final List<CommonIssue> issues;
+
+  @override
+  ConsumerState<_KnownProblems> createState() => _KnownProblemsState();
+}
+
+class _KnownProblemsState extends ConsumerState<_KnownProblems> {
+  /// Au-delà, la liste se replie. Une tomate en accumule une trentaine, et
+  /// une fiche n'est pas un catalogue de malheurs.
+  static const int preview = 6;
+
+  bool _all = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final catalog = ref.watch(problemCatalogProvider).value;
+    if (catalog == null) return const SizedBox.shrink();
+    final found = catalog.specificTo(
+      species: widget.speciesName,
+      family: speciesFamilyLookup(ref)(widget.speciesName),
+      covered: widget.issues,
+    );
+    if (found.isEmpty) return const SizedBox.shrink();
+    final shown = _all ? found : found.take(preview).toList();
+    final language = Localizations.localeOf(context).languageCode;
+    // Groupées par famille : le symbole se montre alors une fois par groupe,
+    // assez grand pour se lire, et il porte le mot qui va avec.
+    final familles = <ProblemKind, List<PlantProblem>>{};
+    for (final p in shown) {
+      (familles[p.kind] ??= []).add(p);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: Space.lg),
+        Text(l10n.careKnownProblems, style: context.text.title3),
+        const SizedBox(height: Space.xxs),
+        // La base le dit elle-même : les hôtes cités sont des exemples, et un
+        // genre ne rend pas toutes ses espèces sensibles.
+        Text(l10n.careKnownProblemsNote, style: context.text.caption),
+        for (final entry in familles.entries) ...[
+          const SizedBox(height: Space.md),
+          Row(
+            children: [
+              ProblemKindIcon(kind: entry.key),
+              const SizedBox(width: Space.sm),
+              Text(l10n.problemKindPlural(entry.key), style: context.text.callout.copyWith(fontWeight: FontWeight.w600)),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+          FloraGroup(
+            children: [
+              for (final p in entry.value)
+                FloraListRow(title: p.nameIn(language), dense: true, chevron: false, titleMaxLines: 2),
+            ],
+          ),
+        ],
+        if (shown.length < found.length) ...[
+          const SizedBox(height: Space.sm),
+          FloraButton(
+            label: l10n.seeAll,
+            style: FloraButtonStyle.ghost,
+            size: FloraButtonSize.small,
+            onPressed: () => setState(() => _all = true),
+          ),
+        ],
+      ],
+    );
+  }
+
 }

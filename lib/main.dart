@@ -1,6 +1,7 @@
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,7 +28,14 @@ Future<void> main() async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
 
+  // L'application se tient en portrait : chaque écran est une colonne, et le
+  // paysage n'apporterait qu'une mise en page étirée. Le verrou natif (Info.plist,
+  // manifeste) fait le gros du travail ; celui-ci couvre le reste.
+  if (!kIsWeb) await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   final prefs = await PreferencesService.load();
+  // Le nom du fichier de base ne suit pas celui du produit : le changer
+  // laisserait les données des utilisateurs derrière lui.
   final db = FloraDatabase(driftDatabase(
     name: 'flora',
     web: DriftWebOptions(sqlite3Wasm: Uri.parse('sqlite3.wasm'), driftWorker: Uri.parse('drift_worker.js')),

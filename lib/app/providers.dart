@@ -19,25 +19,33 @@ import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
 import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
+import '../data/services/infomaniak_advisor.dart';
+import '../data/services/infomaniak_care_completer.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
 import '../data/sharing/supabase_sharing_service.dart';
+import '../data/problems/problem_catalog.dart';
+import '../data/problems/problem_catalog_loader.dart';
 import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
 import '../data/species/species_index_loader.dart';
 import '../domain/sharing/shared_link.dart';
+import '../domain/care/care_completion.dart';
 import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
+import '../data/services/preferences_care_store.dart';
 import '../data/services/preferences_service.dart';
 import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
+import '../domain/species/plant_advisor.dart';
+import '../domain/species/plant_finder.dart';
 import '../domain/location/location_service.dart';
 import '../domain/species/species_info.dart';
 import '../core/utils/scientific_name.dart';
@@ -65,8 +73,23 @@ final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorage
 final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
 final crashReporterProvider = Provider<CrashReporter>((ref) => const NoopCrashReporter());
 
-final plantRepositoryProvider =
-    Provider<PlantRepository>((ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+/// Le jardin est-il dans l'hémisphère sud ? La latitude du lieu météo le dit
+/// quand il est renseigné ; sinon on suppose le nord, faute de mieux.
+///
+/// Sans cela, décembre serait un mois de repos à Melbourne comme à Paris :
+/// les intervalles saisonniers et les repères d'arrosage tomberaient à
+/// contretemps six mois par an.
+final southernHemisphereProvider = Provider<bool>((ref) {
+  final place = ref.watch(preferencesProvider.select((p) => p.weatherPlace));
+  return place != null && place.latitude < 0;
+});
+
+/// Lu et non observé : les dépôts recalculent une échéance au moment où ils
+/// écrivent, et doivent voir l'hémisphère du jour sans être reconstruits.
+bool _south(Ref ref) => ref.read(southernHemisphereProvider);
+
+final plantRepositoryProvider = Provider<PlantRepository>(
+    (ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref)));
 final locationRepositoryProvider = Provider<LocationRepository>(
     (ref) => DriftLocationRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 String? _remoteUserId(Ref ref) {
@@ -74,10 +97,10 @@ String? _remoteUserId(Ref ref) {
   return u == null || u.isLocal ? null : u.id;
 }
 
-final actionRepositoryProvider =
-    Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
-final careRepositoryProvider =
-    Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider)));
+final actionRepositoryProvider = Provider<ActionRepository>((ref) =>
+    DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref), southernHemisphere: () => _south(ref)));
+final careRepositoryProvider = Provider<CareRepository>((ref) =>
+    DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider), southernHemisphere: () => _south(ref)));
 final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
 final actionTypeRepositoryProvider =
     Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));
@@ -125,6 +148,7 @@ class AppPreferences {
     required this.hasSupported,
     required this.displayName,
     required this.identificationFallbackEnabled,
+    required this.careAssistEnabled,
     required this.weatherPlace,
     required this.archiveName,
   });
@@ -146,6 +170,9 @@ class AppPreferences {
 
   /// Repli Pl@ntNet autorisé quand le modèle local hésite.
   final bool identificationFallbackEnabled;
+
+  /// Complément des fiches d'entretien par l'IA autorisé.
+  final bool careAssistEnabled;
   final WeatherPlace? weatherPlace;
 
   /// Nom donné aux archives, vide si l'utilisateur garde celui par défaut.
@@ -174,6 +201,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       hasSupported: s.hasSupported,
       displayName: s.displayName ?? '',
       identificationFallbackEnabled: s.identificationFallbackEnabled,
+      careAssistEnabled: s.careAssistEnabled,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       archiveName: s.archiveName,
     );
@@ -195,6 +223,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setOnboardingDone() => _apply((s) => s.setOnboardingDone());
   Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
   Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
+  Future<void> setCareAssistEnabled(bool value) => _apply((s) => s.setCareAssistEnabled(value));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
@@ -306,6 +335,12 @@ final supportOfferProvider = FutureProvider<SupportOffer?>((ref) => ref.watch(su
 final speciesIndexLoaderProvider = Provider<SpeciesIndexLoader>((ref) => SpeciesIndexLoader());
 final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(speciesIndexLoaderProvider).load());
 
+/// Base locale des troubles, ravageurs et maladies, chargée au premier
+/// diagnostic. C'est le vocabulaire commun : ce que l'IA a le droit de
+/// nommer, et le nom que l'application affiche ensuite.
+final problemCatalogLoaderProvider = Provider<ProblemCatalogLoader>((ref) => ProblemCatalogLoader());
+final problemCatalogProvider = FutureProvider<ProblemCatalog>((ref) => ref.watch(problemCatalogLoaderProvider).load());
+
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 
@@ -315,6 +350,56 @@ final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref
 final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
   if (!DiagnosisConfig.isConfigured) return const UnconfiguredDiagnoser();
   return InfomaniakDiagnoser(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+});
+
+/// « Trouver une plante » : le catalogue intégré et les fiches d'entretien
+/// répondent seuls, hors ligne et sans appel réseau.
+final plantFinderProvider = Provider<PlantFinder>(
+    (ref) => PlantFinder(entries: SpeciesCatalog.entries, guide: ref.watch(careGuideProvider)));
+
+/// Second tour de « Trouver une plante », quand le catalogue n'a rien de
+/// convaincant : même clé Infomaniak que le diagnostic, appelée seulement si
+/// l'utilisateur le demande. Sans clé, le bouton n'apparaît pas.
+final plantAdvisorProvider = Provider<PlantAdvisor>((ref) {
+  if (!DiagnosisConfig.isConfigured) return const UnconfiguredAdvisor();
+  return InfomaniakAdvisor(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+});
+
+/// Complément des fiches d'entretien par l'IA, pour les espèces dont le
+/// catalogue n'a que des repères généraux. Même clé Infomaniak que le
+/// diagnostic ; sans clé, la fiche s'en tient à ce qu'elle sait.
+final careCompleterProvider = Provider<CareCompleter>((ref) {
+  if (!DiagnosisConfig.isConfigured) return const UnconfiguredCareCompleter();
+  return InfomaniakCareCompleter(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+});
+
+/// Les réponses déjà obtenues, gardées sur l'appareil.
+final careCompletionStoreProvider = Provider<CareCompletionStore>((ref) => PreferencesCareStore(ref.watch(preferencesServiceProvider)));
+
+/// Ce que l'IA sait d'une espèce, ou `null` si la question ne se pose pas.
+///
+/// La réponse déjà obtenue est rendue telle quelle, sans réseau. Sinon, et
+/// seulement si l'utilisateur laisse faire, la question part une fois, et la
+/// réponse est gardée — même vide, pour ne pas la reposer.
+final careCompletionProvider = FutureProvider.autoDispose.family<CareCompletion?, ({String species, String language})>((ref, q) async {
+  final species = q.species.trim();
+  if (species.isEmpty) return null;
+  final store = ref.watch(careCompletionStoreProvider);
+  final known = store.read(species, q.language);
+  if (known != null) return known.isEmpty ? null : known;
+  if (!ref.watch(preferencesProvider.select((p) => p.careAssistEnabled))) return null;
+  final completer = ref.watch(careCompleterProvider);
+  if (!completer.isConfigured) return null;
+  try {
+    final completion = await completer.complete(scientificName: species, language: q.language);
+    await store.write(species, q.language, completion);
+    return completion.isEmpty ? null : completion;
+  } catch (e, st) {
+    // Une fiche sans complément reste une fiche : l'échec ne se voit pas, et
+    // ne se garde pas non plus, pour que la question puisse repartir plus tard.
+    ref.read(crashReporterProvider).report(e, st, context: 'care.completion');
+    return null;
+  }
 });
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.
@@ -331,8 +416,13 @@ final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide())
 /// Famille d'une espèce : le catalogue trié à la main d'abord, puis le
 /// catalogue étendu s'il est déjà chargé. Sans lui, la fiche d'entretien
 /// d'une plante hors catalogue retomberait sur le profil générique.
-String? Function(String?) speciesFamilyLookup(WidgetRef ref) {
-  final index = ref.watch(speciesIndexProvider).value;
+String? Function(String?) speciesFamilyLookup(WidgetRef ref) => _familyIn(ref.watch(speciesIndexProvider).value);
+
+/// Même recherche, mais hors `build` (initialisation d'un écran), là où
+/// `watch` n'a pas cours.
+String? speciesFamilyOf(WidgetRef ref, String? name) => _familyIn(ref.read(speciesIndexProvider).value)(name);
+
+String? Function(String?) _familyIn(SpeciesIndex? index) {
   return (name) {
     if (name == null || name.trim().isEmpty) return null;
     final curated = SpeciesCatalog.find(name)?.family;

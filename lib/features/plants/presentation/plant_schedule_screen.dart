@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_profile.dart';
+import '../../../domain/care/care_suggestions.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/presentation/action_type_sheet.dart';
 import '../../today/application/reminder_scheduler.dart';
@@ -23,6 +26,12 @@ class PlantScheduleScreen extends ConsumerWidget {
     final schedules = ref.watch(plantSchedulesProvider(plantId)).value ?? const <CareSchedule>[];
     final types = ref.watch(actionTypeByKeyProvider);
     final now = DateTime.now();
+    // Fiche d'entretien de la plante : elle donne l'intervalle de départ des
+    // routines qu'on ajoute, plutôt qu'un chiffre rond sorti de nulle part.
+    final plant = ref.watch(plantSummaryProvider(plantId)).value?.plant;
+    final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: speciesFamilyLookup(ref)(plant?.speciesName));
+    final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
+    final advice = _Advice(profile: care.profile, light: lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
     return FloraPage(
       title: l10n.schedule,
       child: Column(
@@ -56,14 +65,14 @@ class PlantScheduleScreen extends ConsumerWidget {
             label: l10n.addRoutine,
             icon: CupertinoIcons.plus,
             style: FloraButtonStyle.tonal,
-            onPressed: () => _addRoutine(context, ref, schedules),
+            onPressed: () => _addRoutine(context, ref, schedules, advice),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _addRoutine(BuildContext context, WidgetRef ref, List<CareSchedule> existing) async {
+  Future<void> _addRoutine(BuildContext context, WidgetRef ref, List<CareSchedule> existing, _Advice advice) async {
     final l10n = context.l10n;
     final types = (ref.read(actionTypesProvider).value ?? const <ActionType>[])
         .where((t) => t.schedulable && !existing.any((s) => s.typeKey == t.key))
@@ -76,21 +85,21 @@ class PlantScheduleScreen extends ConsumerWidget {
         for (final t in types)
           SheetAction(
             label: '${t.emoji}  ${l10n.kindName(t.key, custom: t)}',
-            onPressed: () => _createFor(context, t.key),
+            onPressed: () => _createFor(context, t.key, advice),
           ),
         SheetAction(
           label: l10n.newActionType,
           icon: CupertinoIcons.plus,
           onPressed: () async {
             final created = await showNewActionTypeSheet(context);
-            if (created != null && context.mounted) _createFor(context, created.key);
+            if (created != null && context.mounted) _createFor(context, created.key, advice);
           },
         ),
       ],
     );
   }
 
-  void _createFor(BuildContext context, String typeKey) {
+  void _createFor(BuildContext context, String typeKey, _Advice advice) {
     final now = DateTime.now();
     showScheduleEditSheet(
       context,
@@ -99,13 +108,31 @@ class PlantScheduleScreen extends ConsumerWidget {
         plantId: plantId,
         typeKey: typeKey,
         strategy: CareStrategy.fixed,
-        intervalDays: typeKey == CareKind.watering.key ? 7 : 30,
+        intervalDays: advice.intervalFor(typeKey, now),
         enabled: true,
         createdAt: now,
         updatedAt: now,
       ),
     );
   }
+}
+
+/// Ce que la fiche d'entretien de la plante conseille, prêt à préremplir une
+/// nouvelle routine. Sans fiche parlante (type personnalisé, espèce inconnue),
+/// on retombe sur les intervalles par défaut de l'application.
+class _Advice {
+  const _Advice({required this.profile, this.light, this.south = false});
+
+  final CareProfile profile;
+  final LightNeed? light;
+
+  /// Le jardin est dans l'hémisphère sud : l'arrosage conseillé suit ses
+  /// saisons, pas celles du calendrier européen.
+  final bool south;
+
+  int intervalFor(String typeKey, DateTime now) =>
+      profile.suggestedIntervalDays(typeKey, now: now, actualLight: light, south: south) ??
+      (typeKey == CareKind.watering.key ? AppConfig.defaultWateringInterval : AppConfig.defaultFertilizingInterval);
 }
 
 Future<void> showScheduleEditSheet(BuildContext context, {required CareSchedule schedule}) =>
@@ -125,6 +152,10 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
   late int _interval = widget.schedule.intervalDays;
   late bool _enabled = widget.schedule.enabled;
   bool _saving = false;
+
+  /// Le rempotage se compte en mois, pas en jours : le pas et la borne haute
+  /// suivent, sinon « tous les deux ans » serait hors d'atteinte au bouton.
+  late final bool _monthly = widget.schedule.typeKey == CareKind.repotting.key;
 
   Future<void> _save() async {
     if (_saving) return;
@@ -178,7 +209,14 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
                 children: [
                   FloraListRow(
                     title: l10n.interval,
-                    trailing: QuantityStepper(value: _interval, min: 1, max: 365, label: l10n.daysCount(_interval), onChanged: (v) => setState(() => _interval = v)),
+                    trailing: QuantityStepper(
+                      value: _interval,
+                      min: _monthly ? 30 : 1,
+                      max: _monthly ? 1825 : 365,
+                      step: _monthly ? 30 : 1,
+                      label: l10n.daysCount(_interval),
+                      onChanged: (v) => setState(() => _interval = v),
+                    ),
                   ),
                   FloraListRow(title: l10n.enabled, trailing: AdaptiveSwitch(value: _enabled, onChanged: (v) => setState(() => _enabled = v))),
                 ],

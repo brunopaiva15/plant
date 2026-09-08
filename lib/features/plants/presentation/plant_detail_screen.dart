@@ -99,7 +99,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
           },
         ),
-        SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, locationId: plant.locationId)),
+        SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
         SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
       ],
     );
@@ -275,7 +275,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       runSpacing: 6,
                       children: [
                         if (plant.health != PlantHealth.healthy)
-                          DueBadge(emoji: plant.health == PlantHealth.sick ? '🤒' : '👀', label: l10n.healthName(plant.health), status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today, compact: true),
+                          DueBadge(emoji: plant.health.emoji, label: l10n.healthName(plant.health), status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today, compact: true),
                         for (final t in summary.tags) DueBadge(emoji: '🏷️', label: t, status: DueStatus.upcoming, compact: true),
                       ],
                     ),
@@ -324,7 +324,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                           icon: CupertinoIcons.leaf_arrow_circlepath,
                           label: l10n.createCutting,
                           tint: c.sage,
-                          onTap: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, locationId: plant.locationId),
+                          onTap: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId),
                         ),
                       ),
                     ],
@@ -500,7 +500,7 @@ class _CareGuideCard extends ConsumerWidget {
     final l10n = context.l10n;
     final c = context.colors;
     final care = ref.watch(careGuideProvider).resolve(speciesName, family: speciesFamilyLookup(ref)(speciesName));
-    final days = care.profile.wateringDaysFor(DateTime.now().month);
+    final days = care.profile.wateringDaysFor(DateTime.now().month, south: ref.watch(southernHemisphereProvider));
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(Space.page, Space.lg, Space.page, 0),
@@ -721,7 +721,7 @@ class _Info extends ConsumerWidget {
     final rows = <(String, String)>[
       if (p.speciesName != null) (l10n.speciesHint.split(' ').first, p.speciesName!),
       (l10n.filterLocation, summary.locationName ?? l10n.noLocation),
-      (l10n.health, l10n.healthName(p.health)),
+      (l10n.health, '${p.health.emoji} ${l10n.healthName(p.health)}'),
       if (p.acquiredAt != null) (l10n.acquiredAt, Dates.dayYear(context, p.acquiredAt!)),
       if (p.source != null) (l10n.source, p.source!),
       if (p.price != null) (l10n.price, p.price!.toStringAsFixed(p.price! == p.price!.roundToDouble() ? 0 : 2)),
@@ -771,7 +771,7 @@ class _Cuttings extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: l10n.cuttings, actionLabel: l10n.createCutting, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, locationId: plant.locationId)),
+          SectionHeader(title: l10n.cuttings, actionLabel: l10n.createCutting, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.page),
             child: FloraGroup(

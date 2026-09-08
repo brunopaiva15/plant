@@ -17,6 +17,7 @@ abstract final class CalendarProjector {
     required DateTime to,
     List<CalendarEntry> entries = const [],
     int maxPerSchedule = 60,
+    bool south = false,
   }) {
     final events = <CalendarEvent>[];
     final start = from.dateOnly;
@@ -40,7 +41,7 @@ abstract final class CalendarProjector {
         if (!occurrence.isBefore(start)) {
           events.add(CalendarEvent(date: occurrence, plantId: s.plantId, plantName: p.plant.name, thumbPath: p.thumbPath, thumbUrl: p.thumbUrl, typeKey: s.typeKey, kind: kind, scheduleId: s.id));
         }
-        final interval = CareEngine.effectiveInterval(s, occurrence);
+        final interval = CareEngine.effectiveInterval(s, occurrence, south: south);
         occurrence = occurrence.addDays(interval);
         kind = CalendarEventKind.projected;
       }

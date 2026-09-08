@@ -1,4 +1,4 @@
--- Flora — schéma Postgres (Supabase). Miroir du schéma local (docs/04-data-model.md).
+-- Auxine — schéma Postgres (Supabase). Miroir du schéma local (docs/04-data-model.md).
 -- Toutes les tables portent garden_id (directement ou via plant_id) ; l'accès est
 -- gouverné par garden_members via RLS. Les IDs sont générés côté client (UUID v4).
 

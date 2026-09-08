@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/config/app_config.dart';
 import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
 import '../features/account/presentation/members_screen.dart';
@@ -12,6 +13,7 @@ import '../features/dashboard/presentation/activity_log_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
 import '../features/export/presentation/backup_screen.dart';
+import '../features/finder/presentation/plant_finder_screen.dart';
 import '../features/garden/presentation/garden_screen.dart';
 import '../features/identification/presentation/identification_settings_screen.dart';
 import '../features/locations/presentation/location_detail_screen.dart';
@@ -27,6 +29,7 @@ import '../features/profile/presentation/appearance_screen.dart';
 import '../features/profile/presentation/notifications_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/profile/presentation/tags_screen.dart';
+import '../features/qr/application/plant_links.dart';
 import '../features/qr/presentation/scanner_screen.dart';
 import '../domain/species/species_info.dart';
 import '../features/attributes/presentation/attribute_templates_screen.dart';
@@ -37,6 +40,7 @@ import '../features/support/presentation/support_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/weather/presentation/forecast_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
+import 'deep_links.dart';
 import 'providers.dart';
 import 'shell.dart';
 
@@ -72,6 +76,7 @@ abstract final class Routes {
   static const identification = '/settings/identification';
   static const scan = '/scan';
   static const speciesPicker = '/species/pick';
+  static const finder = '/species/finder';
   static const weather = '/settings/weather';
   static const account = '/settings/account';
   static const members = '/settings/members';
@@ -85,9 +90,27 @@ abstract final class Routes {
 
 final routerProvider = Provider<GoRouter>((ref) {
   final onboardingDone = ref.read(preferencesProvider).onboardingDone;
-  return GoRouter(
+  late final GoRouter router;
+  router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: onboardingDone ? Routes.today : Routes.onboarding,
+    redirect: (context, state) {
+      // Un lien `flora://…` — QR scanné depuis l'appareil photo du système,
+      // retour de connexion — est livré tel quel : le routeur n'y voit
+      // aucune route et affichait « Page Not Found ». Les emplacements
+      // internes, eux, n'ont jamais de schéma.
+      final raw = state.uri.toString();
+      if (!raw.startsWith('${AppConfig.linkScheme}:')) return null;
+      if (!ref.read(preferencesProvider).onboardingDone) return Routes.onboarding;
+      final link = PlantLinks.decodeLink(raw);
+      // La cible s'ouvre une fois la redirection faite : elle se pose alors
+      // sur l'accueil, avec un retour qui mène quelque part. Un lien qu'on ne
+      // sait pas lire (retour de connexion) laisse simplement l'accueil.
+      if (link != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => openFloraLink(ref, router, link));
+      }
+      return Routes.today;
+    },
     routes: [
       GoRoute(
         path: Routes.onboarding,
@@ -189,6 +212,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             : MaterialPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: SpeciesPickerScreen(initialQuery: s.uri.queryParameters['q'] ?? '')),
       ),
       GoRoute(
+        path: Routes.finder,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) {
+          // `?pick=1` : ouvert depuis le sélecteur d'espèce, qui attend en
+          // retour l'espèce retenue.
+          final screen = PlantFinderScreen(picking: s.uri.queryParameters['pick'] == '1');
+          return isCupertino(c)
+              ? CupertinoPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: screen)
+              : MaterialPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: screen);
+        },
+      ),
+      GoRoute(
         path: Routes.scan,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => isCupertino(c)
@@ -197,4 +232,5 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+  return router;
 });

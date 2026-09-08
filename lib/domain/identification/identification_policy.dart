@@ -45,12 +45,12 @@ class FallbackPolicy {
   ///
   /// | seuil | une photo | deux photos |
   /// |---|---|---|
-  /// | 0,70 | 42 % de réponses seules, 86,0 % justes | 37 %, 93,1 % |
-  /// | 0,60 | 47 %, 82,8 % | 43 %, 90,8 % |
-  /// | 0,50 | 55 %, 74,3 % | 49 %, 85,9 % |
+  /// | 0,70 | 42 % de réponses seules, 86,0 % justes | 34 %, 93,5 % |
+  /// | 0,60 | 47 %, 82,8 % | 38 %, 92,3 % |
+  /// | 0,50 | 55 %, 74,3 % | 44 %, 88,4 % |
   ///
   /// À 0,60 la v6 cède trois points de justesse à une photo et en gagne cinq
-  /// d'autonomie ; avec deux photos elle remonte à 90,8 %. C'est le même
+  /// d'autonomie ; avec deux photos elle remonte à 92,3 %. C'est le même
   /// arbitrage qu'à la v5 : l'écran propose cinq candidats et l'utilisateur
   /// tranche, donc une première ligne parfois fausse coûte bien moins qu'un
   /// appel réseau systématique.

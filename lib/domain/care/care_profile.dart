@@ -1,6 +1,16 @@
 /// Besoin en lumière, du plus sombre au plus ensoleillé.
 enum LightNeed { shade, lowLight, indirect, brightIndirect, someSun, fullSun }
 
+/// Lumière réelle d'un emplacement, depuis le code stocké sur celui-ci
+/// (`high`, `medium`, `low`) : une plante au soleil boit plus vite que ce que
+/// dit la fiche de son espèce.
+LightNeed? lightNeedFromCode(String? code) => switch (code) {
+      'high' => LightNeed.someSun,
+      'medium' => LightNeed.brightIndirect,
+      'low' => LightNeed.lowLight,
+      _ => null,
+    };
+
 /// Besoin en humidité de l'air.
 enum HumidityNeed { low, average, high }
 
@@ -48,6 +58,13 @@ class MonthWindow {
   final int to;
 
   bool contains(int month) => from <= to ? month >= from && month <= to : month >= from || month <= to;
+
+  /// La même fenêtre vue de l'autre hémisphère, décalée de six mois : la
+  /// saison de croissance d'un jardin de Sydney tombe quand celle d'un jardin
+  /// de Lyon s'arrête.
+  MonthWindow forHemisphere({bool south = false}) => south ? MonthWindow(_mirror(from), _mirror(to)) : this;
+
+  static int _mirror(int month) => (month + 5) % 12 + 1;
 }
 
 /// Fiche d'entretien d'une espèce : quand arroser, quelle lumière, quel

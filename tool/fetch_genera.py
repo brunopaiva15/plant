@@ -15,7 +15,7 @@ import urllib.request
 
 BACKBONE = 'd7dddbf4-2cf0-4f39-9b2a-bb099caae36c'
 PLANTAE = 6
-UA = {'User-Agent': 'FloraApp/1.0 (offline species catalogue; github.com/brunopaiva15/plant)'}
+UA = {'User-Agent': 'AuxineApp/1.0 (offline species catalogue; github.com/brunopaiva15/plant)'}
 
 
 def fetch_page(offset):

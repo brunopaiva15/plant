@@ -229,12 +229,14 @@ class CascadeIdentifier implements PlantIdentifier {
     final scores = <Map<String, double>>[];
     final floors = <double>[];
     final commons = <String, String?>{};
+    var coveredMass = 0.0;
     for (final image in images) {
       final result = await local.classify(image).timeout(localTimeout);
       final byName = {for (final c in result) c.scientificName: c.score};
       var floor = _absentScore;
       for (final s in byName.values) {
         if (s < floor) floor = s;
+        coveredMass += s;
       }
       scores.add(byName);
       floors.add(floor);
@@ -242,6 +244,7 @@ class CascadeIdentifier implements PlantIdentifier {
         commons.putIfAbsent(c.scientificName, () => c.commonName);
       }
     }
+    coveredMass /= images.length;
 
     final names = {for (final s in scores) ...s.keys};
     if (names.isEmpty) return const [];
@@ -257,18 +260,24 @@ class CascadeIdentifier implements PlantIdentifier {
       total += score;
     }
 
-    // Renormalisation. Moyenner aplatit la distribution : le premier
+    // Remise à l'échelle. Moyenner aplatit la distribution : le premier
     // candidat perd de la confiance alors même que le classement s'améliore,
     // et il passe sous le seuil de [FallbackPolicy] — l'app irait consulter
-    // Pl@ntNet pour une réponse devenue *meilleure*. Diviser par la somme ne
-    // change aucun ordre ; cela rend seulement les scores comparables à ceux
-    // d'une photo seule, pour lesquels le seuil a été réglé.
+    // Pl@ntNet pour une réponse devenue *meilleure*.
+    //
+    // La cible est la masse que les listes d'entrée couvraient en moyenne,
+    // et non 1. Ramener à 1 fabriquerait de la confiance : deux photos qui
+    // ne rendent qu'un seul candidat, à 0,30 puis 0,90, en sortiraient à
+    // 1,00 — une certitude que personne n'a exprimée. Avec la masse
+    // moyenne, elles en sortent à 0,60. La fusion redresse l'échelle, elle
+    // n'invente rien. Multiplier par une constante ne change aucun ordre.
+    final scale = total > 0 ? coveredMass / total : 1.0;
     return [
       for (final e in merged.entries)
         IdentificationCandidate(
           scientificName: e.key,
           commonName: commons[e.key],
-          score: total > 0 ? e.value / total : e.value,
+          score: (e.value * scale).clamp(0.0, 1.0),
         ),
     ]..sort((a, b) => b.score.compareTo(a.score));
   }

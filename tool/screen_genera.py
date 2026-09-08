@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 
 ENDPOINT = 'https://query.wikidata.org/sparql'
-UA = 'FloraApp/1.0 (offline species catalogue; github.com/brunopaiva15/plant)'
+UA = 'AuxineApp/1.0 (offline species catalogue; github.com/brunopaiva15/plant)'
 BATCH = 400
 
 

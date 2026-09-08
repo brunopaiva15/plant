@@ -74,12 +74,14 @@ def like_app(probs: list[np.ndarray], top_k: int, cut: float = 0.01) -> np.ndarr
     plus petit score rendu, et au plus `cut`. On lui donne cette borne, qui
     la pénalise sans l'annuler.
 
-    Le résultat est renormalisé. Moyenner aplatit la distribution et fait
+    Le résultat est remis à l'échelle de la masse que les listes d'entrée
+    couvraient en moyenne — pas à 1. Moyenner aplatit la distribution et fait
     chuter la confiance du premier candidat, donc le taux d'acceptation,
-    alors même que le classement s'améliore. La renormalisation est une
-    division par une constante : elle ne change aucun ordre, elle rend
-    seulement les scores comparables à ceux d'une photo seule — et donc au
-    seuil de `FallbackPolicy`.
+    alors même que le classement s'améliore ; il faut donc redresser. Mais
+    ramener à 1 fabriquerait de la confiance : deux photos qui ne rendent
+    qu'un candidat, à 0,30 puis 0,90, en sortiraient à 1,00. Avec la masse
+    moyenne elles en sortent à 0,60. Multiplier par une constante ne change
+    aucun ordre.
     """
     if len(probs) == 1:
         # Une seule photo : la cascade rend les scores du modèle tels quels,
@@ -99,8 +101,9 @@ def like_app(probs: list[np.ndarray], top_k: int, cut: float = 0.01) -> np.ndarr
     merged = np.zeros_like(probs[0])
     for i in union:
         merged[i] = np.exp(np.mean([np.log(max(d.get(i, floor), 1e-9)) for d, floor in kept]))
+    covered = float(np.mean([sum(d.values()) for d, _ in kept]))
     total = merged.sum()
-    return merged / total if total > 0 else merged
+    return np.clip(merged * (covered / total), 0.0, 1.0) if total > 0 else merged
 
 
 def measure(cached, labels, k: int, geometric: bool, only_captive: bool | None = None,

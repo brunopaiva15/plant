@@ -1,6 +1,16 @@
 enum PlantStatus { active, archived }
 
-enum PlantHealth { healthy, watch, sick }
+/// État de santé, avec l'icône qui le dit d'un coup d'œil. Le nom (`healthy`,
+/// `watch`, `sick`) est ce qui est stocké et synchronisé : il ne bouge pas.
+enum PlantHealth {
+  healthy('💚'),
+  watch('👀'),
+  sick('🤒');
+
+  const PlantHealth(this.emoji);
+
+  final String emoji;
+}
 
 /// La plante. Seuls `name` et `gardenId` sont obligatoires : l'utilisateur ne
 /// remplit jamais un formulaire complet.

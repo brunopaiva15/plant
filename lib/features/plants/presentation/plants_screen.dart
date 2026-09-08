@@ -102,6 +102,11 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
                 onPressed: () => showPlantFilterSheet(context),
               ),
               const SizedBox(width: Space.xs),
+              // « Trouver une plante » vit à côté du « + » : c'est ici qu'on
+              // vient quand on veut une plante de plus, en sachant laquelle
+              // ou non.
+              FloraIconButton(icon: CupertinoIcons.lightbulb, semanticLabel: l10n.finderTitle, onPressed: () => context.push(Routes.finder)),
+              const SizedBox(width: Space.xs),
               FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.addPlant, onPressed: () => startCreatePlantFlow(context, ref)),
             ],
           ),
@@ -109,7 +114,7 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
             if (plants.hasValue && list.isEmpty)
               SliverCentered(
                 child: total == 0
-                    ? EmptyState(emoji: '🪴', title: l10n.emptyPlantsTitle, subtitle: l10n.emptyPlantsSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref))
+                    ? EmptyState(emoji: '🪴', title: l10n.emptyPlantsTitle, subtitle: l10n.emptyPlantsSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref), secondaryLabel: l10n.finderTitle, onSecondary: () => context.push(Routes.finder))
                     : EmptyState(emoji: '🔍', title: l10n.noResultsTitle, subtitle: l10n.noResultsSubtitle, compact: true),
               )
             else if (grid)

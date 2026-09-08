@@ -281,8 +281,8 @@ void main() {
     await pumpApp(tester, container, settleAfter: false);
     await step(tester);
     // Le titre est levé mot à mot ; la phrase du dessous, elle, est d'un seul
-    // tenant : c'est elle qui dit que le premier écran est bien là.
-    expect(find.text('Ajoutez-les une par une, avec une photo si vous voulez.'), findsOneWidget);
+    // tenant : c'est elle qui dit que l'écran de bienvenue est bien là.
+    expect(find.text('Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.'), findsOneWidget);
     // « Passer » saute les diapositives et mène à l'étape du lieu, qu'on
     // peut remettre à plus tard ; puis vient le prénom.
     await tester.tap(find.text('Passer'));
@@ -304,7 +304,7 @@ void main() {
     await tester.tap(laterOnName);
     await step(tester);
     // La dernière étape propose de soutenir le développeur, sans obliger.
-    expect(find.text('Flora est gratuite'), findsOneWidget);
+    expect(find.text('Auxine est gratuite'), findsOneWidget);
     await tester.tap(find.text('Continuer sans'));
     await settle(tester);
     expect(find.text('Bonjour Bruno'), findsWidgets);

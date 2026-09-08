@@ -10,7 +10,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appName => 'Flora';
+  String get appName => 'Auxine';
 
   @override
   String get ok => 'OK';
@@ -853,7 +853,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Par défaut, Flora suit le réglage du système.';
+      'Par défaut, Auxine suit le réglage du système.';
 
   @override
   String get notifications => 'Notifications';
@@ -917,8 +917,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get localAccountHint =>
       'Vos plantes et photos restent privées, sur ce téléphone. Les comptes et la synchronisation arriveront dans une prochaine version.';
 
-  @override
-  String get about => 'À propos';
 
   @override
   String version(String version) {
@@ -1224,6 +1222,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchOnline => 'Aucune ne correspond ? Chercher en ligne';
 
   @override
+  String get identifyAnotherPhoto => 'Ajouter une photo';
+
+  @override
+  String get identifyAnotherPhotoHint => 'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.';
+
+  @override
   String get searchingOnline => 'Recherche en ligne…';
 
   @override
@@ -1325,7 +1329,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
+      'Pour vos plantes dehors, Auxine regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
 
   @override
   String get weatherPlace => 'Lieu';
@@ -1519,7 +1523,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'L\'invité doit déjà avoir un compte Flora avec cette adresse.';
+      'L\'invité doit déjà avoir un compte Auxine avec cette adresse.';
 
   @override
   String get roleOwner => 'Propriétaire';
@@ -1581,6 +1585,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get possibleCauses => 'Pistes possibles';
+
+  @override
+  String get likelihoodLikely => 'Probable';
+
+  @override
+  String get likelihoodPossible => 'Possible';
+
+  @override
+  String get likelihoodUnlikely => 'Peu probable';
 
   @override
   String get urgentHint => 'À traiter rapidement';
@@ -1974,6 +1987,36 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careIssues => 'À surveiller';
+
+  @override
+  String get careKnownProblems => 'Problèmes connus sur cette plante';
+
+  @override
+  String get careKnownProblemsNote => 'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.';
+
+  @override
+  String get problemKindDisorder => 'Trouble';
+
+  @override
+  String get problemKindPest => 'Ravageur';
+
+  @override
+  String get problemKindDisease => 'Maladie';
+
+  @override
+  String get problemKindCondition => 'Affection';
+
+  @override
+  String get problemKindDisorders => 'Troubles';
+
+  @override
+  String get problemKindPests => 'Ravageurs';
+
+  @override
+  String get problemKindDiseases => 'Maladies';
+
+  @override
+  String get problemKindConditions => 'Affections';
 
   @override
   String get careTips => 'Bons réflexes';
@@ -3242,7 +3285,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importErrorNotAZip =>
-      'Ce fichier n\'est pas une sauvegarde Flora.';
+      'Ce fichier n\'est pas une sauvegarde Auxine.';
 
   @override
   String get importErrorWrongApp =>
@@ -3250,7 +3293,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importErrorTooRecent =>
-      'Cette sauvegarde vient d\'une version plus récente de Flora.';
+      'Cette sauvegarde vient d\'une version plus récente d\'Auxine.';
 
   @override
   String get importErrorGeneric => 'Restauration impossible.';
@@ -3361,6 +3404,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aboutSources => 'Sources des données';
 
   @override
+  String get privacyPolicy => 'Politique de confidentialité';
+
+  @override
   String get aboutSourceWikidata =>
       'Noms d\'espèces en quatre langues, domaine public';
 
@@ -3377,7 +3423,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get supportTitle => 'Flora est gratuite';
+  String get supportTitle => 'Auxine est gratuite';
 
   @override
   String get supportBody =>
@@ -3423,11 +3469,152 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get supportNoThanks => 'Continuer sans';
 
-  @override
-  String get aboutTagline =>
-      'Prenez soin de vos plantes et gardez leur histoire.';
 
   @override
   String get emptyGardenSubtitle =>
       'Ajoutez votre première plante, avec une photo si vous voulez.';
+
+  @override
+  String get finderTitle => 'Trouver une plante';
+
+  @override
+  String get finderEntryHint => 'Vous ne savez pas quoi choisir ?';
+
+  @override
+  String get finderStepSpot => 'Où va-t-elle vivre ?';
+
+  @override
+  String get finderStepSpotHint => 'La lumière décide de presque tout.';
+
+  @override
+  String get finderSpotBright => 'Pièce lumineuse';
+
+  @override
+  String get finderSpotMedium => 'Lumière moyenne';
+
+  @override
+  String get finderSpotDark => 'Coin sombre';
+
+  @override
+  String get finderSpotOutdoor => 'Dehors, balcon ou jardin';
+
+  @override
+  String get finderStepEffort => 'Quel entretien ?';
+
+  @override
+  String get finderStepEffortHint => 'Répondez honnêtement, personne ne vous juge.';
+
+  @override
+  String get finderEffortForgiving => 'J\'oublie souvent d\'arroser';
+
+  @override
+  String get finderEffortNormal => 'Un arrosage régulier, sans plus';
+
+  @override
+  String get finderEffortAttentive => 'J\'aime m\'en occuper';
+
+  @override
+  String get finderStepSafety => 'Des animaux ou des enfants ?';
+
+  @override
+  String get finderStepSafetyHint => 'Beaucoup de plantes d\'intérieur sont toxiques si on les mordille.';
+
+  @override
+  String get finderSafetyYes => 'Oui, sans risque de préférence';
+
+  @override
+  String get finderSafetyNo => 'Pas de contrainte';
+
+  @override
+  String get finderStepKind => 'Quel genre de plante ?';
+
+  @override
+  String get finderStepKindHint => 'Plusieurs choix possibles, ou aucun.';
+
+  @override
+  String get finderNote => 'Autre chose ?';
+
+  @override
+  String get finderNoteHint => 'Une salle de bain sans fenêtre, un chat qui mordille tout…';
+
+  @override
+  String get finderNoteFooter => 'Utilisé seulement si vous demandez l\'avis de l\'IA.';
+
+  @override
+  String get finderSubmit => 'Voir les propositions';
+
+  @override
+  String get finderResults => 'Nos propositions';
+
+  @override
+  String get finderResultsHint => 'D\'après la fiche d\'entretien de chaque espèce.';
+
+  @override
+  String get finderEmptyTitle => 'Rien de convaincant';
+
+  @override
+  String get finderEmptySubtitle => 'Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l\'IA.';
+
+  @override
+  String get finderRestart => 'Recommencer';
+
+  @override
+  String get finderAdd => 'Ajouter au jardin';
+
+  @override
+  String get finderCare => 'Voir la fiche';
+
+  @override
+  String get finderAskAi => 'Demander à l\'IA';
+
+  @override
+  String get finderAiSection => 'Propositions de l\'IA';
+
+  @override
+  String get finderAiHint => 'Hors catalogue : à vérifier avant d\'acheter.';
+
+  @override
+  String get finderAiError => 'L\'IA n\'a rien pu proposer.';
+
+  @override
+  String get finderReasonLight => 'Aime cette lumière';
+
+  @override
+  String get finderReasonLowLight => 'Supporte l\'ombre';
+
+  @override
+  String get finderReasonForgiving => 'Pardonne les oublis d\'arrosage';
+
+  @override
+  String get finderReasonEasy => 'Facile à vivre';
+
+  @override
+  String get finderReasonSafe => 'Non toxique';
+
+  @override
+  String get finderReasonOutdoor => 'Tient dehors';
+
+  @override
+  String get finderAnyAnswer => 'Peu importe';
+
+  @override
+  String get onbWelcomeTitle => 'Bienvenue sur Auxine';
+
+  @override
+  String get onbWelcomeBody => 'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.';
+
+  @override
+  String get finderIntro => 'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.';
+
+  @override
+  String get careMatchAssisted => 'Complétée par l\'IA';
+
+  @override
+  String get careAssistedNote => 'Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l\'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n\'en fait pas partie.';
+
+  @override
+  String get careAssistSetting => 'Compléter les fiches avec l\'IA';
+
+  @override
+  String get careAssistHint => 'Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil, et la réponse est gardée pour ne pas la redemander.';
 }
