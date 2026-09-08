@@ -1,5 +1,6 @@
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/clay_illustration.dart';
+import 'package:flora/features/onboarding/presentation/growing_plant.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_stage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -47,6 +48,12 @@ void main() {
       expect(find.byType(ClayIllustration), findsOneWidget);
     });
 
+    testWidgets("le premier objet est la plante qui pousse, pas une image posée", (tester) async {
+      await _pump(tester, offset: 0, page: 0);
+      expect(find.byType(GrowingPlant), findsOneWidget);
+      expect(find.byType(ClayIllustration), findsNothing);
+    });
+
     testWidgets('pendant le geste, le voisin entre en scène', (tester) async {
       await _pump(tester, offset: 2.4, page: 2);
       expect(find.byType(ClayIllustration), findsNWidgets(2));
@@ -55,7 +62,7 @@ void main() {
     testWidgets("l'objet du milieu est le seul animé", (tester) async {
       await _pump(tester, offset: 2, page: 2);
       final art = tester.widget<ClayIllustration>(find.byType(ClayIllustration));
-      expect(art.slide, 3);
+      expect(art.slide, 2);
       expect(art.animate, isTrue);
     });
 

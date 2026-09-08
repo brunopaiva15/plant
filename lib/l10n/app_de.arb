@@ -1108,5 +1108,7 @@
   "finderReasonEasy": "Pflegeleicht",
   "finderReasonSafe": "Ungiftig",
   "finderReasonOutdoor": "Hält es draußen aus",
-  "finderAnyAnswer": "Egal"
+  "finderAnyAnswer": "Egal",
+  "onbWelcomeTitle": "Willkommen bei Auxin",
+  "onbWelcomeBody": "Das Tagebuch deiner Pflanzen, vom ersten Gießen bis zum neuen Blatt."
 }

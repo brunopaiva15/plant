@@ -6078,6 +6078,18 @@ abstract class AppLocalizations {
   /// **'Peu importe'**
   String get finderAnyAnswer;
 
+  /// No description provided for @onbWelcomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bienvenue sur Auxin'**
+  String get onbWelcomeTitle;
+
+  /// No description provided for @onbWelcomeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.'**
+  String get onbWelcomeBody;
+
 }
 
 class _AppLocalizationsDelegate

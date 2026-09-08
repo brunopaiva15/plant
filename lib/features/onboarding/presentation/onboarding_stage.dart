@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import 'clay_illustration.dart';
+import 'growing_plant.dart';
 
 /// La scène de l'onboarding : les cinq objets du jardin, qui se succèdent
 /// au centre de l'écran sur un halo de couleur.
@@ -133,7 +134,13 @@ class OnboardingStage extends StatelessWidget {
     // L'objet arrive un peu petit et prend sa place, comme posé.
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
 
-    Widget object = ClayIllustration(slide: index + 1, side: side, animate: index == page && near < 0.02);
+    final vivant = index == page && near < 0.02;
+    // Le premier objet n'est pas une image posée : c'est la plante de l'icône,
+    // qui pousse à l'arrivée sur l'écran de bienvenue. Les suivants sont les
+    // objets d'argile, dans l'ordre des écrans.
+    Widget object = index == 0
+        ? GrowingPlant(side: side, animate: vivant)
+        : ClayIllustration(slide: index, side: side, animate: vivant);
     if (blur > 0.05) {
       object = ImageFiltered(
         imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),

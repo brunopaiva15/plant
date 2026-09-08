@@ -104,7 +104,8 @@ flutter:
     # Catalogue d'espèces hors ligne (Wikidata CC0 + familles GBIF).
     # Régénéré par tool/harvest_species.py puis tool/build_species_catalog.py.
     - assets/species/catalog.tsv
-    # Illustrations 3D de l'onboarding : une image par écran, animée par l'app.
+    # Illustrations 3D de l'onboarding : une image par écran, animée par l'app,
+    # et la séquence de pousse du premier écran (tool/grow_monstera.py).
     - assets/onboarding/
     # Le grain du papier, posé par-dessus l'écran.
     - assets/textures/

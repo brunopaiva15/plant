@@ -3524,4 +3524,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finderAnyAnswer => 'No preference';
+
+  @override
+  String get onbWelcomeTitle => 'Welcome to Auxin';
+
+  @override
+  String get onbWelcomeBody => 'The journal of your plants, from the first watering to the newest leaf.';
 }

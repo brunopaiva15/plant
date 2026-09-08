@@ -60,7 +60,6 @@ class ClayIllustration extends StatefulWidget {
 /// monte pas et ne penche pas en même temps : c'est ce décalage qui donne
 /// l'impression d'un objet qui flotte plutôt que d'un objet qui oscille.
 /// L'ombre au sol se resserre et pâlit quand l'objet monte.
-@visibleForTesting
 class BreathPose {
   const BreathPose(this.phase);
 
@@ -133,7 +132,34 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   Widget build(BuildContext context) {
     final side = widget.side;
     final ratio = MediaQuery.devicePixelRatioOf(context);
-    final pose = _pose;
+    return ClayFloat(
+      side: side,
+      pose: _pose,
+      child: Image(
+        image: ClayIllustration.provider(ClayIllustration.still(widget.slide), side, ratio),
+        width: side,
+        height: side,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.high,
+        excludeFromSemantics: true,
+      ),
+    );
+  }
+}
+
+/// L'objet posé sur la scène : son ombre au sol, et la respiration qui les
+/// lie. Ce qui flotte est donné par l'appelant — une image d'argile, ou la
+/// plante de l'icône qui pousse.
+class ClayFloat extends StatelessWidget {
+  const ClayFloat({super.key, required this.side, required this.pose, required this.child});
+
+  final double side;
+  final BreathPose pose;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
     // Quelques points de course et un degré d'angle : assez pour vivre,
     // pas assez pour distraire du titre.
     final dy = -pose.lift * side * 0.02;
@@ -167,18 +193,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
           ),
           Transform.translate(
             offset: Offset(0, dy),
-            child: Transform.rotate(
-              angle: angle,
-              child: Image(
-                image: ClayIllustration.provider(ClayIllustration.still(widget.slide), side, ratio),
-                width: side,
-                height: side,
-                fit: BoxFit.contain,
-                gaplessPlayback: true,
-                filterQuality: FilterQuality.high,
-                excludeFromSemantics: true,
-              ),
-            ),
+            child: Transform.rotate(angle: angle, child: child),
           ),
         ],
       ),

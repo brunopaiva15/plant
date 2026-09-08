@@ -69,3 +69,31 @@ personne à chercher, et la recherche GBIF la couvre déjà.
 Le test `test/data/species_catalog_asset_test.dart` vérifie l'actif produit :
 volume, absence de doublons, absence de faux noms vernaculaires, et présence
 de quelques espèces témoins.
+
+# La plante qui pousse (écran de bienvenue)
+
+`build_monstera.py` construit l'icône de l'application : la scène, les
+matériaux « pâte à modeler », la caméra orthographique et l'éclairage studio.
+`grow_monstera.py` reprend tout cela et rend la même plante à quarante âges,
+de la terre nue à l'adulte ; `pack_growth.py` en fait l'image animée que joue
+le premier écran de l'onboarding. Seule la plante change d'une image à
+l'autre — la dernière est exactement l'icône.
+
+Ce qui bouge entre deux images vient de la vraie plante : les feuilles sortent
+l'une après l'autre, la plus vieille d'abord ; chacune émerge en fuseau
+presque vertical, étroite et entière ; elle s'allonge, s'écarte, s'élargit,
+puis se découpe — fentes d'abord, fenestrations ensuite. Une jeune feuille de
+Monstera n'a ni fente ni trou, ils viennent avec l'âge.
+
+Le fond est transparent et sans ombre portée : l'ombre au sol et le
+flottement sont dessinés par l'application, qui les accorde à son thème.
+
+```bash
+# ~15 min sur quatre cœurs (Cycles, CPU)
+blender -b -noaudio -P tool/grow_monstera.py -- 40 1024 40 /tmp/pousse
+python3 tool/pack_growth.py /tmp/pousse assets/onboarding/pousse.webp --fps 14
+```
+
+La caméra est cadrée une fois pour toutes sur la plante adulte : sans cela,
+le cadrage automatique suivrait la plante qui grandit et elle semblerait
+immobile pendant que le monde rétrécit autour d'elle.

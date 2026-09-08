@@ -1632,5 +1632,7 @@
   "finderReasonEasy": "Facile à vivre",
   "finderReasonSafe": "Non toxique",
   "finderReasonOutdoor": "Tient dehors",
-  "finderAnyAnswer": "Peu importe"
+  "finderAnyAnswer": "Peu importe",
+  "onbWelcomeTitle": "Bienvenue sur Auxin",
+  "onbWelcomeBody": "Le carnet de vos plantes, du premier arrosage à la nouvelle feuille."
 }

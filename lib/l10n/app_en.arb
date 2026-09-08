@@ -1108,5 +1108,7 @@
   "finderReasonEasy": "Easy-going",
   "finderReasonSafe": "Non-toxic",
   "finderReasonOutdoor": "Happy outdoors",
-  "finderAnyAnswer": "No preference"
+  "finderAnyAnswer": "No preference",
+  "onbWelcomeTitle": "Welcome to Auxin",
+  "onbWelcomeBody": "The journal of your plants, from the first watering to the newest leaf."
 }

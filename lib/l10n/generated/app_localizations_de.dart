@@ -3539,4 +3539,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get finderAnyAnswer => 'Egal';
+
+  @override
+  String get onbWelcomeTitle => 'Willkommen bei Auxin';
+
+  @override
+  String get onbWelcomeBody => 'Das Tagebuch deiner Pflanzen, vom ersten Gießen bis zum neuen Blatt.';
 }

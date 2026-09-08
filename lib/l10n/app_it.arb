@@ -1108,5 +1108,7 @@
   "finderReasonEasy": "Facile da coltivare",
   "finderReasonSafe": "Non tossica",
   "finderReasonOutdoor": "Sta bene all'aperto",
-  "finderAnyAnswer": "Non importa"
+  "finderAnyAnswer": "Non importa",
+  "onbWelcomeTitle": "Benvenuto in Auxin",
+  "onbWelcomeBody": "Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia."
 }

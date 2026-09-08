@@ -28,6 +28,8 @@ class _Slide {
 }
 
 final _slides = <_Slide>[
+  // La bienvenue : la plante de l'icône y pousse, de la terre nue à l'adulte.
+  _Slide(title: (l) => l.onbWelcomeTitle, body: (l) => l.onbWelcomeBody, tint: (c) => c.sage),
   _Slide(title: (l) => l.onboardingTitle, body: (l) => l.onboardingSubtitle, tint: (c) => c.sage),
   _Slide(title: (l) => l.onbTodayTitle, body: (l) => l.onbTodayBody, tint: (c) => c.water),
   _Slide(title: (l) => l.onbCareTitle, body: (l) => l.onbCareBody, tint: (c) => c.sun),
@@ -159,7 +161,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   void _keepIllustrations(int page) {
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (final i in {page, page + 1}) {
-      if (i < _objectCount) ClayIllustration.precache(context, i + 1, side);
+      // Le premier objet est la séquence de pousse : elle charge la sienne.
+      if (i >= 1 && i < _objectCount) ClayIllustration.precache(context, i, side);
     }
   }
 
