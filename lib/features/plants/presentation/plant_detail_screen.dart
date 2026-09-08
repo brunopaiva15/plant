@@ -275,7 +275,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       runSpacing: 6,
                       children: [
                         if (plant.health != PlantHealth.healthy)
-                          DueBadge(emoji: plant.health == PlantHealth.sick ? '🤒' : '👀', label: l10n.healthName(plant.health), status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today, compact: true),
+                          DueBadge(emoji: plant.health.emoji, label: l10n.healthName(plant.health), status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today, compact: true),
                         for (final t in summary.tags) DueBadge(emoji: '🏷️', label: t, status: DueStatus.upcoming, compact: true),
                       ],
                     ),
@@ -721,7 +721,7 @@ class _Info extends ConsumerWidget {
     final rows = <(String, String)>[
       if (p.speciesName != null) (l10n.speciesHint.split(' ').first, p.speciesName!),
       (l10n.filterLocation, summary.locationName ?? l10n.noLocation),
-      (l10n.health, l10n.healthName(p.health)),
+      (l10n.health, '${p.health.emoji} ${l10n.healthName(p.health)}'),
       if (p.acquiredAt != null) (l10n.acquiredAt, Dates.dayYear(context, p.acquiredAt!)),
       if (p.source != null) (l10n.source, p.source!),
       if (p.price != null) (l10n.price, p.price!.toStringAsFixed(p.price! == p.price!.roundToDouble() ? 0 : 2)),

@@ -151,8 +151,8 @@ class _WarningRow extends StatelessWidget {
     final l10n = context.l10n;
     final c = context.colors;
     final (emoji, label, color) = switch (warning.reason) {
-      WarningReason.sick => ('🩹', l10n.warningSick, c.danger),
-      WarningReason.watch => ('👀', l10n.warningWatch, c.terracotta),
+      WarningReason.sick => (PlantHealth.sick.emoji, l10n.warningSick, c.danger),
+      WarningReason.watch => (PlantHealth.watch.emoji, l10n.warningWatch, c.terracotta),
       WarningReason.overdue => ('⏰', l10n.warningOverdue(warning.overdueDays), c.terracotta),
     };
     return FloraListRow(

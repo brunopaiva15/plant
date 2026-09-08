@@ -102,7 +102,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                     Text(l10n.health, style: context.text.caption),
                     const SizedBox(height: 6),
                     AdaptiveSegmented<PlantHealth>(
-                      segments: {for (final h in PlantHealth.values) h: l10n.healthName(h)},
+                      segments: {for (final h in PlantHealth.values) h: '${h.emoji} ${l10n.healthName(h)}'},
                       value: _health,
                       onChanged: (v) => setState(() => _health = v),
                     ),
