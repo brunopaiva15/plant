@@ -52,6 +52,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get later => 'Later';
 
   @override
+  String get openSettings => 'Open Settings';
+
+  @override
   String get skip => 'Skip';
 
   @override
@@ -916,7 +919,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get localAccountHint =>
       'Your plants and photos stay private, on this phone. Accounts and sync will come in a future version.';
 
-
   @override
   String version(String version) {
     return 'Version $version';
@@ -1223,7 +1225,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get identifyAnotherPhoto => 'Add a photo';
 
   @override
-  String get identifyAnotherPhotoHint => 'Another photo would help decide. A leaf, a flower, or the whole plant.';
+  String get identifyAnotherPhotoHint =>
+      'Another photo would help decide. A leaf, a flower, or the whole plant.';
 
   @override
   String get searchingOnline => 'Searching online…';
@@ -1989,7 +1992,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careKnownProblems => 'Known problems on this plant';
 
   @override
-  String get careKnownProblemsNote => 'Reported on this species or its close relatives. Not all of them will affect it.';
+  String get careKnownProblemsNote =>
+      'Reported on this species or its close relatives. Not all of them will affect it.';
 
   @override
   String get problemKindDisorder => 'Disorder';
@@ -3441,7 +3445,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get supportNoThanks => 'Continue without';
 
-
   @override
   String get emptyGardenSubtitle =>
       'Add your first plant, with a photo if you like.';
@@ -3507,7 +3510,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderNote => 'Anything else?';
 
   @override
-  String get finderNoteHint => 'A windowless bathroom, a cat that chews everything…';
+  String get finderNoteHint =>
+      'A windowless bathroom, a cat that chews everything…';
 
   @override
   String get finderNoteFooter => 'Used only if you ask the AI.';
@@ -3525,7 +3529,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderEmptyTitle => 'Nothing convincing';
 
   @override
-  String get finderEmptySubtitle => 'No species in the catalogue ticks every box. Widen a little, or ask the AI.';
+  String get finderEmptySubtitle =>
+      'No species in the catalogue ticks every box. Widen a little, or ask the AI.';
 
   @override
   String get finderRestart => 'Start over';
@@ -3543,7 +3548,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderAiSection => 'AI suggestions';
 
   @override
-  String get finderAiHint => 'Outside the catalogue, worth checking before buying.';
+  String get finderAiHint =>
+      'Outside the catalogue, worth checking before buying.';
 
   @override
   String get finderAiError => 'The AI could not suggest anything.';
@@ -3573,28 +3579,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onbWelcomeTitle => 'Welcome to Auxine';
 
   @override
-  String get onbWelcomeBody => 'The journal of your plants, from the first watering to the newest leaf.';
+  String get onbWelcomeBody =>
+      'The journal of your plants, from the first watering to the newest leaf.';
 
   @override
-  String get finderIntro => 'Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet.';
+  String get finderIntro =>
+      'Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet.';
 
   @override
   String get careMatchAssisted => 'Completed by AI';
 
   @override
-  String get careAssistedNote => 'The catalogue does not know this species, so these figures come from the AI. Only the scientific name was sent, and toxicity is not part of the answer.';
+  String get careAssistedNote =>
+      'The catalogue does not know this species, so these figures come from the AI. Only the scientific name was sent, and toxicity is not part of the answer.';
 
   @override
   String get careAssistSetting => 'Complete care sheets with AI';
 
   @override
-  String get careAssistHint => 'When the catalogue does not know a species, its scientific name goes to the AI to fill in the sheet. Nothing else leaves the device, and the answer is kept so it is not asked twice.';
+  String get careAssistHint =>
+      'When the catalogue does not know a species, its scientific name goes to the AI to fill in the sheet. Nothing else leaves the device, and the answer is kept so it is not asked twice.';
 
   @override
   String get gardensTitle => 'My gardens';
 
   @override
-  String get gardensHint => 'The open garden is the one you see everywhere in the app. Switch between them whenever you like.';
+  String get gardensHint =>
+      'The open garden is the one you see everywhere in the app. Switch between them whenever you like.';
 
   @override
   String get gardenMine => 'My garden';
@@ -3630,7 +3641,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get renameGarden => 'Rename the garden';
 
   @override
-  String get renameGardenHint => 'This is the name the people you invite will see.';
+  String get renameGardenHint =>
+      'This is the name the people you invite will see.';
 
   @override
   String get gardenNameHint => 'The garden at home';
@@ -3639,7 +3651,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinGarden => 'Join a garden';
 
   @override
-  String get joinGardenHint => 'Enter the code you were given, or open the invitation link you received.';
+  String get joinGardenHint =>
+      'Enter the code you were given, or open the invitation link you received.';
 
   @override
   String get inviteCodeHint => 'Invitation code';
@@ -3651,10 +3664,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinConfirm => 'Join';
 
   @override
-  String get joinInvalid => 'This code is no longer valid: it has been used, has expired, or never existed.';
+  String get joinInvalid =>
+      'This code is no longer valid: it has been used, has expired, or never existed.';
 
   @override
-  String get joinWrongEmail => 'This invitation is reserved for another email address.';
+  String get joinWrongEmail =>
+      'This invitation is reserved for another email address.';
 
   @override
   String get joinNeedsAccount => 'You need an account to join a garden.';
@@ -3673,7 +3688,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinAsMember => 'You will be able to add, edit and delete plants.';
 
   @override
-  String get joinAsViewer => 'You will be able to see everything, without changing anything.';
+  String get joinAsViewer =>
+      'You will be able to see everything, without changing anything.';
 
   @override
   String get joinAlreadyMember => 'You are already part of this garden.';
@@ -3706,19 +3722,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteReady => 'Invitation ready';
 
   @override
-  String get inviteRoleHint => 'A member adds, edits and deletes plants. A viewer only looks.';
+  String get inviteRoleHint =>
+      'A member adds, edits and deletes plants. A viewer only looks.';
 
   @override
   String get inviteEmailOptional => 'Email address (optional)';
 
   @override
-  String get inviteEmailHint => 'If given, only that account can accept the invitation.';
+  String get inviteEmailHint =>
+      'If given, only that account can accept the invitation.';
 
   @override
   String get inviteCreate => 'Create the invitation';
 
   @override
-  String get inviteShareHint => 'Send this link or code to the person. They do not need the app yet.';
+  String get inviteShareHint =>
+      'Send this link or code to the person. They do not need the app yet.';
 
   @override
   String get inviteShare => 'Share the link';
@@ -3752,13 +3771,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteRevoked => 'Invitation revoked';
 
   @override
-  String get membersHint => 'The people you invite see the same plants as you, and can care for them.';
+  String get membersHint =>
+      'The people you invite see the same plants as you, and can care for them.';
 
   @override
-  String get membersGuestHint => 'This garden belongs to someone else. Here is who tends it.';
+  String get membersGuestHint =>
+      'This garden belongs to someone else. Here is who tends it.';
 
   @override
-  String get memberRoleHint => 'A member adds, edits and deletes. A viewer only looks.';
+  String get memberRoleHint =>
+      'A member adds, edits and deletes. A viewer only looks.';
 
   @override
   String makeRole(String role) {

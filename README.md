@@ -56,3 +56,9 @@ flutter analyze
 Flutter 3.47 · Dart 3.13 · Riverpod 3 · go_router · drift (SQLite) · flutter_local_notifications · image_picker · ARB / gen-l10n (fr, en, de, it).
 
 Sur iOS l'app s'appuie sur les composants Cupertino natifs (grands titres, sheets, action sheets, pickers, switches, segmented controls, menus) ; sur Android sur Material 3. L'identité visuelle (tokens, cartes, tab bar flottante) est commune.
+
+Accessibilité : cibles tactiles de 44 pt garanties par `Pressable`, Dynamic Type
+de 82 % à 350 % sans rognage, *Texte en gras* et *Augmenter le contraste*
+suivis, contrastes AA tenus par un test. Détails et invariants :
+[docs/06-design-system.md](docs/06-design-system.md). Sur iPad, l'app tourne et
+accepte le multitâche ; le contenu se recentre au-delà de 700 pt de large.

@@ -133,7 +133,7 @@ class _ArchiveScreenState extends ConsumerState<ArchiveScreen> {
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.page, Space.xl),
               sliver: SliverGrid.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: Space.sm, crossAxisSpacing: Space.sm, childAspectRatio: 0.78),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: Space.sm, crossAxisSpacing: Space.sm, childAspectRatio: 0.78),
                 itemCount: plants.length,
                 itemBuilder: (context, i) => _ArchiveCard(summary: plants[i]),
               ),

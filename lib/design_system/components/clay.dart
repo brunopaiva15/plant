@@ -62,6 +62,7 @@ class ClayBox extends StatelessWidget {
     this.clip = false,
     this.width,
     this.height,
+    this.minHeight,
     this.alignment,
   });
 
@@ -73,6 +74,11 @@ class ClayBox extends StatelessWidget {
   final bool clip;
   final double? width;
   final double? height;
+
+  /// Hauteur plancher : la pièce ne descend pas en dessous, mais grandit si
+  /// son contenu le demande — un libellé qui passe à deux lignes quand
+  /// l'utilisateur agrandit le texte, par exemple.
+  final double? minHeight;
   final AlignmentGeometry? alignment;
 
   @override
@@ -84,7 +90,12 @@ class ClayBox extends StatelessWidget {
     return RepaintBoundary(
       child: CustomPaint(
         painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark),
-        child: SizedBox(width: width, height: height, child: content),
+        child: minHeight == null
+            ? SizedBox(width: width, height: height, child: content)
+            : ConstrainedBox(
+                constraints: BoxConstraints(minHeight: minHeight!),
+                child: SizedBox(width: width, height: height, child: content),
+              ),
       ),
     );
   }

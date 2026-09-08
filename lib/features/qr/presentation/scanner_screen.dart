@@ -8,6 +8,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../../account/presentation/join_garden_sheet.dart';
@@ -100,7 +101,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
             errorBuilder: (context, error) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(Space.xl),
-                child: Text(l10n.cameraPermission, style: context.text.body.copyWith(color: Colors.white), textAlign: TextAlign.center),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.cameraPermission, style: context.text.body.copyWith(color: Colors.white), textAlign: TextAlign.center),
+                    if (SystemSettings.isSupported) ...[
+                      const SizedBox(height: Space.lg),
+                      FloraButton(label: l10n.openSettings, style: FloraButtonStyle.secondary, onPressed: SystemSettings.open),
+                    ],
+                  ],
+                ),
               ),
             ),
           ),

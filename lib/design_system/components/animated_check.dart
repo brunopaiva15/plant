@@ -56,7 +56,7 @@ class CompletableButton extends StatelessWidget {
               Text(
                 done ? doneLabel : label,
                 style: (compact ? context.text.caption : context.text.callout).copyWith(
-                  color: done ? c.sage : Colors.white,
+                  color: done ? c.sage : c.onAccent,
                   fontWeight: FontWeight.w700,
                 ),
               ),

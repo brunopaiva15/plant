@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/haptics.dart';
@@ -24,44 +26,70 @@ class FloraTabBar extends StatelessWidget {
   final int index;
   final ValueChanged<int> onSelect;
 
+  /// Le libellé d'onglet ne suit Dynamic Type que jusqu'ici. Au-delà, quatre
+  /// mots ne tiennent plus côte à côte quelle que soit la hauteur de la
+  /// barre — iOS lui-même plafonne ses barres d'onglets.
+  static const double _maxLabelScale = 1.6;
+
+  static const double _labelSize = 11;
+  static const double _iconSize = 22;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final scaler = MediaQuery.textScalerOf(context).clamp(maxScaleFactor: _maxLabelScale);
+    final lineHeight = scaler.scale(_labelSize) * 1.3;
+    // Deux lignes dès que le texte grossit : « Aujourd'hui » à 17 pt ne tient
+    // pas dans un quart d'écran, et le couper vaut moins que le plier.
+    final lines = scaler.scale(_labelSize) > _labelSize * 1.2 ? 2 : 1;
+    // La barre grandit avec son contenu au lieu de le rogner.
+    final height = math.max(64.0, 12 + _iconSize + 2 + lineHeight * lines + 12);
     return Padding(
       padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, MediaQuery.paddingOf(context).bottom + Space.sm),
       // Une barre d'argile crème, opaque : la matière de l'app, posée sur le
-      // contenu qui défile dessous.
-      child: ClayBox(
-        color: c.surface,
-        shape: const ClayShape.pill(),
-        height: 64,
-        padding: const EdgeInsets.all(6),
-        child: Row(
-              children: [
-                for (final (i, tab) in tabs.indexed)
-                  Expanded(
-                    child: _TabItem(
-                      tab: tab,
-                      selected: i == index,
-                      onTap: () {
-                        if (i != index) Haptics.selection();
-                        onSelect(i);
-                      },
+      // contenu qui défile dessous. Bornée en largeur : sur un iPad en
+      // paysage, une pilule de mille points serait ridicule.
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: MediaQuery.withClampedTextScaling(
+            maxScaleFactor: _maxLabelScale,
+            child: ClayBox(
+              color: c.surface,
+              shape: const ClayShape.pill(),
+              height: height,
+              padding: const EdgeInsets.all(6),
+              child: Row(
+                children: [
+                  for (final (i, tab) in tabs.indexed)
+                    Expanded(
+                      child: _TabItem(
+                        tab: tab,
+                        selected: i == index,
+                        labelLines: lines,
+                        onTap: () {
+                          if (i != index) Haptics.selection();
+                          onSelect(i);
+                        },
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
+          ),
+        ),
       ),
     );
   }
 }
 
 class _TabItem extends StatelessWidget {
-  const _TabItem({required this.tab, required this.selected, required this.onTap});
+  const _TabItem({required this.tab, required this.selected, required this.onTap, this.labelLines = 1});
 
   final FloraTab tab;
   final bool selected;
   final VoidCallback onTap;
+  final int labelLines;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +113,7 @@ class _TabItem extends StatelessWidget {
                 child: Icon(
                   selected ? tab.activeIcon : tab.icon,
                   key: ValueKey(selected),
-                  size: 22,
+                  size: FloraTabBar._iconSize,
                   color: selected ? c.onSage : c.inkSecondary,
                 ),
               ),
@@ -93,11 +121,12 @@ class _TabItem extends StatelessWidget {
               Text(
                 tab.label,
                 style: context.text.caption.copyWith(
-                  fontSize: 11,
+                  fontSize: FloraTabBar._labelSize,
                   color: selected ? c.onSage : c.inkSecondary,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 ),
-                maxLines: 1,
+                textAlign: TextAlign.center,
+                maxLines: labelLines,
                 overflow: TextOverflow.ellipsis,
               ),
             ],

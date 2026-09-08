@@ -190,7 +190,9 @@ Future<bool> showAdaptiveConfirm(BuildContext context, {required String title, S
         title: Text(title),
         content: message == null ? null : Padding(padding: const EdgeInsets.only(top: 6), child: Text(message)),
         actions: [
-          CupertinoDialogAction(onPressed: () => Navigator.of(ctx).pop(false), child: Text(cancelLabel)),
+          // Devant une action destructive, c'est le bouton sûr qui est mis en
+          // avant : iOS met « Annuler » en gras, jamais « Supprimer ».
+          CupertinoDialogAction(isDefaultAction: destructive, onPressed: () => Navigator.of(ctx).pop(false), child: Text(cancelLabel)),
           CupertinoDialogAction(isDestructiveAction: destructive, isDefaultAction: !destructive, onPressed: () => Navigator.of(ctx).pop(true), child: Text(confirmLabel)),
         ],
       ),

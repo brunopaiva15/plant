@@ -105,7 +105,7 @@ class PlantGalleryScreen extends ConsumerWidget {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 0.8),
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 140, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 0.8),
                     itemCount: items.length,
                     itemBuilder: (context, i) {
                       final p = items[i];

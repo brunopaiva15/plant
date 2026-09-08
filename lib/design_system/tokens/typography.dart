@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// Hiérarchie typographique. Les grands titres et les titres de section sont
@@ -8,19 +10,35 @@ import 'package:flutter/material.dart';
 ///
 /// Sept styles seulement : trop de tailles nuit à la cohérence.
 class FloraTypography {
-  const FloraTypography._(this._ink, this._secondary);
+  const FloraTypography._(this._ink, this._secondary, this._boost);
 
   final Color _ink;
   final Color _secondary;
 
+  /// Ce qu'on ajoute à l'axe de graisse de la fonte variable.
+  final double _boost;
+
   factory FloraTypography.forColors({required Color ink, required Color secondary}) =>
-      FloraTypography._(ink, secondary);
+      FloraTypography._(ink, secondary, 0);
+
+  /// La variante « Texte en gras » (Réglages > Accessibilité > Affichage).
+  ///
+  /// Flutter épaissit tout seul les styles à [FontWeight], mais la fonte
+  /// variable des titres ne l'écoute pas : sur elle, c'est [FontVariation] qui
+  /// décide, et un `fontWeight` posé à côté reste lettre morte. Sans ce
+  /// décalage explicite, activer le réglage épaississait les listes et
+  /// laissait les grands titres exactement comme avant.
+  FloraTypography get bolder => FloraTypography._(_ink, _secondary, 100);
 
   /// La police à la main des titres. Fonte variable : le poids se règle
   /// par [FontVariation], le [FontWeight] sert de repli.
   static const String handFamily = 'ShantellSans';
-  static const List<FontVariation> _bold = [FontVariation('wght', 700)];
-  static const List<FontVariation> _semibold = [FontVariation('wght', 600)];
+
+  List<FontVariation> _wght(double weight) => [FontVariation('wght', math.min(800, weight + _boost))];
+
+  List<FontVariation> get _bold => _wght(700);
+
+  List<FontVariation> get _semibold => _wght(600);
 
   TextStyle get display => TextStyle(
         fontFamily: handFamily,

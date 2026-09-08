@@ -328,7 +328,7 @@ class _DueHero extends StatelessWidget {
     final c = context.colors;
     // La chaîne pluralisée porte le nombre ; on le met à part, en grand.
     final label = l10n.careCount(count).replaceFirst(RegExp(r'^\d+\s*'), '');
-    final fg = c.isDark ? c.ink : const Color(0xFFFBEFE3);
+    final fg = c.onAccent;
     return ClayBox(
       color: c.terracotta,
       shape: const ClayShape.rounded(28),

@@ -18,6 +18,19 @@ import 'adaptive.dart';
 /// rafraîchir », que l'application n'a pas.
 const ScrollPhysics floraScrollPhysics = BouncingScrollPhysics();
 
+/// Marge qui recentre le contenu quand l'écran dépasse une colonne de lecture.
+///
+/// Depuis qu'iPadOS fait tourner et cohabiter les applications, une fiche peut
+/// s'ouvrir sur mille points de large : une ligne de texte y traverse l'écran
+/// et devient pénible à suivre. Au-delà de [maxWidth], on rend le surplus en
+/// marges plutôt qu'en longueur de ligne.
+///
+/// Sur téléphone, la fonction rend zéro et rien ne bouge.
+double readableInset(BuildContext context, {double maxWidth = 700}) {
+  final width = MediaQuery.sizeOf(context).width;
+  return width <= maxWidth ? 0 : (width - maxWidth) / 2;
+}
+
 /// Un état vide posé au milieu de ce que l'œil voit : entre le bas de
 /// l'en-tête et le haut de la barre d'onglets.
 ///
@@ -104,6 +117,10 @@ class LargeTitlePage extends StatelessWidget {
               ),
       );
     }
+    // La barre garde toute la largeur — c'est ce que fait iOS —, seul le
+    // contenu se recentre. Sur téléphone l'encart vaut zéro et la liste de
+    // slivers reste exactement celle d'avant.
+    final inset = readableInset(context);
     return Scaffold(
       backgroundColor: c.canvas,
       body: CustomScrollView(
@@ -111,7 +128,13 @@ class LargeTitlePage extends StatelessWidget {
         physics: floraScrollPhysics,
         slivers: [
           header,
-          ...slivers,
+          if (inset == 0)
+            ...slivers
+          else
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: inset),
+              sliver: SliverMainAxisGroup(slivers: slivers),
+            ),
           SliverPadding(padding: EdgeInsets.only(bottom: bottomPadding)),
         ],
       ),
@@ -132,11 +155,12 @@ class FloraPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final side = Space.page + readableInset(context);
     Widget body(double topInset) => scrollable
         ? SingleChildScrollView(
             physics: floraScrollPhysics,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: EdgeInsets.fromLTRB(Space.page, topInset + Space.md, Space.page, Space.huge),
+            padding: EdgeInsets.fromLTRB(side, topInset + Space.md, side, Space.huge),
             child: child,
           )
         : Padding(padding: EdgeInsets.only(top: topInset), child: child);

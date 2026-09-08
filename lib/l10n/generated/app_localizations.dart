@@ -186,6 +186,12 @@ abstract class AppLocalizations {
   /// **'Plus tard'**
   String get later;
 
+  /// No description provided for @openSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les Réglages'**
+  String get openSettings;
+
   /// No description provided for @skip.
   ///
   /// In fr, this message translates to:
@@ -1691,7 +1697,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vos plantes et photos restent privées, sur ce téléphone. Les comptes et la synchronisation arriveront dans une prochaine version.'**
   String get localAccountHint;
-
 
   /// No description provided for @version.
   ///
@@ -5911,7 +5916,6 @@ abstract class AppLocalizations {
   /// **'Continuer sans'**
   String get supportNoThanks;
 
-
   /// No description provided for @emptyGardenSubtitle.
   ///
   /// In fr, this message translates to:
@@ -6113,7 +6117,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderAiHint.
   ///
   /// In fr, this message translates to:
-  /// **'Hors catalogue : à vérifier avant d\'acheter.'**
+  /// **'Hors catalogue, à vérifier avant d\'acheter.'**
   String get finderAiHint;
 
   /// No description provided for @finderAiError.
@@ -6205,7 +6209,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil, et la réponse est gardée pour ne pas la redemander.'**
   String get careAssistHint;
-
 
   /// No description provided for @gardensTitle.
   ///

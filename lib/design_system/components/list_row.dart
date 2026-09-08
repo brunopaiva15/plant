@@ -112,11 +112,22 @@ class FloraListRow extends StatelessWidget {
         ),
       ),
     );
-    if (onTap == null) return row;
-    return Pressable(
-      onTap: onTap,
-      scale: 1,
-      child: ColoredBox(color: Colors.transparent, child: row),
+    if (onTap == null && onLongPress == null) return MergeSemantics(child: row);
+    // Un seul nœud pour VoiceOver — « Monstera, arrosée il y a trois jours »
+    // plutôt qu'un bouton sans nom suivi de deux fragments de texte —, et le
+    // voile gris que toute liste iOS pose sous le doigt.
+    //
+    // Le libellé se compose des textes de la ligne, sans en réécrire un :
+    // le dire deux fois ferait bégayer la synthèse vocale, et un libellé
+    // recopié à la main oublierait toujours la pastille d'échéance.
+    return MergeSemantics(
+      child: Pressable(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        scale: 1,
+        highlightColor: c.ink.withValues(alpha: 0.06),
+        child: row,
+      ),
     );
   }
 }

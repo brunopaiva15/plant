@@ -28,10 +28,24 @@ Future<void> main() async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
 
-  // L'application se tient en portrait : chaque écran est une colonne, et le
-  // paysage n'apporterait qu'une mise en page étirée. Le verrou natif (Info.plist,
-  // manifeste) fait le gros du travail ; celui-ci couvre le reste.
-  if (!kIsWeb) await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Sur téléphone, l'application se tient en portrait : chaque écran est une
+  // colonne, et le paysage n'apporterait qu'une mise en page étirée. Sur
+  // tablette, en revanche, on ne verrouille rien : iPadOS attend qu'une
+  // application tourne et cohabite avec une autre, et le refuser est un motif
+  // de rejet.
+  //
+  // `Info.plist` dit déjà la même chose côté iOS ; ce code couvre le reste.
+  // Le manifeste Android, lui, reste en portrait sur tous les appareils :
+  // c'est un choix propre à cette plateforme, et il l'emporte sur ces lignes.
+  if (!kIsWeb) {
+    final views = WidgetsBinding.instance.platformDispatcher.views;
+    final size = views.isEmpty ? Size.zero : views.first.physicalSize / views.first.devicePixelRatio;
+    // Tant que la fenêtre n'est pas mesurable, on ne verrouille pas : mieux
+    // vaut une tablette libre qu'un téléphone bloqué par erreur.
+    if (!size.isEmpty && size.shortestSide < 600) {
+      await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
+  }
 
   final prefs = await PreferencesService.load();
   // Le nom du fichier de base ne suit pas celui du produit : le changer

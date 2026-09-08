@@ -52,6 +52,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get later => 'Più tardi';
 
   @override
+  String get openSettings => 'Apri Impostazioni';
+
+  @override
   String get skip => 'Salta';
 
   @override
@@ -917,7 +920,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localAccountHint =>
       'Le tue piante e foto restano private, su questo telefono. Account e sincronizzazione arriveranno in una versione futura.';
 
-
   @override
   String version(String version) {
     return 'Versione $version';
@@ -1225,7 +1227,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifyAnotherPhoto => 'Aggiungi una foto';
 
   @override
-  String get identifyAnotherPhotoHint => 'Un\'altra foto aiuterebbe a decidere. Una foglia, un fiore o la pianta intera.';
+  String get identifyAnotherPhotoHint =>
+      'Un\'altra foto aiuterebbe a decidere. Una foglia, un fiore o la pianta intera.';
 
   @override
   String get searchingOnline => 'Ricerca online…';
@@ -1994,7 +1997,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careKnownProblems => 'Problemi noti su questa pianta';
 
   @override
-  String get careKnownProblemsNote => 'Segnalati su questa specie o su quelle affini. Non tutti la riguardano.';
+  String get careKnownProblemsNote =>
+      'Segnalati su questa specie o su quelle affini. Non tutti la riguardano.';
 
   @override
   String get problemKindDisorder => 'Disturbo';
@@ -3460,7 +3464,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get supportNoThanks => 'Continua senza';
 
-
   @override
   String get emptyGardenSubtitle =>
       'Aggiungi la tua prima pianta, con una foto se vuoi.';
@@ -3493,7 +3496,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderStepEffort => 'Quanta cura?';
 
   @override
-  String get finderStepEffortHint => 'Risponda sinceramente, nessuno la giudica.';
+  String get finderStepEffortHint =>
+      'Risponda sinceramente, nessuno la giudica.';
 
   @override
   String get finderEffortForgiving => 'Dimentico spesso di annaffiare';
@@ -3508,7 +3512,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderStepSafety => 'Animali o bambini?';
 
   @override
-  String get finderStepSafetyHint => 'Molte piante da appartamento sono tossiche se masticate.';
+  String get finderStepSafetyHint =>
+      'Molte piante da appartamento sono tossiche se masticate.';
 
   @override
   String get finderSafetyYes => 'Sì, meglio non tossica';
@@ -3526,7 +3531,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderNote => 'Altro?';
 
   @override
-  String get finderNoteHint => 'Un bagno senza finestre, un gatto che mordicchia tutto…';
+  String get finderNoteHint =>
+      'Un bagno senza finestre, un gatto che mordicchia tutto…';
 
   @override
   String get finderNoteFooter => 'Usato solo se chiede all\'IA.';
@@ -3544,7 +3550,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderEmptyTitle => 'Niente di convincente';
 
   @override
-  String get finderEmptySubtitle => 'Nessuna specie del catalogo soddisfa tutti i criteri. Allarghi un po\', o chieda all\'IA.';
+  String get finderEmptySubtitle =>
+      'Nessuna specie del catalogo soddisfa tutti i criteri. Allarghi un po\', o chieda all\'IA.';
 
   @override
   String get finderRestart => 'Ricomincia';
@@ -3562,7 +3569,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderAiSection => 'Proposte dell\'IA';
 
   @override
-  String get finderAiHint => 'Fuori catalogo, da verificare prima di acquistare.';
+  String get finderAiHint =>
+      'Fuori catalogo, da verificare prima di acquistare.';
 
   @override
   String get finderAiError => 'L\'IA non è riuscita a proporre nulla.';
@@ -3592,28 +3600,33 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onbWelcomeTitle => 'Benvenuto in Auxine';
 
   @override
-  String get onbWelcomeBody => 'Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia.';
+  String get onbWelcomeBody =>
+      'Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia.';
 
   @override
-  String get finderIntro => 'Quattro domande sul posto e sulle tue abitudini, poi piante che ci staranno bene, ognuna con la sua scheda di cura.';
+  String get finderIntro =>
+      'Quattro domande sul posto e sulle tue abitudini, poi piante che ci staranno bene, ognuna con la sua scheda di cura.';
 
   @override
   String get careMatchAssisted => 'Completata dall\'IA';
 
   @override
-  String get careAssistedNote => 'Il catalogo non conosce questa specie, quindi questi valori vengono dall\'IA. È stato inviato solo il nome scientifico, e la tossicità non ne fa parte.';
+  String get careAssistedNote =>
+      'Il catalogo non conosce questa specie, quindi questi valori vengono dall\'IA. È stato inviato solo il nome scientifico, e la tossicità non ne fa parte.';
 
   @override
   String get careAssistSetting => 'Completa le schede con l\'IA';
 
   @override
-  String get careAssistHint => 'Quando il catalogo non conosce una specie, il suo nome scientifico va all\'IA per completare la scheda. Nient\'altro lascia il dispositivo, e la risposta viene conservata.';
+  String get careAssistHint =>
+      'Quando il catalogo non conosce una specie, il suo nome scientifico va all\'IA per completare la scheda. Nient\'altro lascia il dispositivo, e la risposta viene conservata.';
 
   @override
   String get gardensTitle => 'I miei giardini';
 
   @override
-  String get gardensHint => 'Il giardino aperto è quello che vedete ovunque nell\'app. Potete passare dall\'uno all\'altro quando volete.';
+  String get gardensHint =>
+      'Il giardino aperto è quello che vedete ovunque nell\'app. Potete passare dall\'uno all\'altro quando volete.';
 
   @override
   String get gardenMine => 'Il mio giardino';
@@ -3658,7 +3671,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinGarden => 'Unirsi a un giardino';
 
   @override
-  String get joinGardenHint => 'Inserite il codice ricevuto, o aprite il link d\'invito.';
+  String get joinGardenHint =>
+      'Inserite il codice ricevuto, o aprite il link d\'invito.';
 
   @override
   String get inviteCodeHint => 'Codice d\'invito';
@@ -3670,10 +3684,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinConfirm => 'Unisciti';
 
   @override
-  String get joinInvalid => 'Questo codice non vale più: già usato, scaduto o inesistente.';
+  String get joinInvalid =>
+      'Questo codice non vale più: già usato, scaduto o inesistente.';
 
   @override
-  String get joinWrongEmail => 'Questo invito è riservato a un altro indirizzo e-mail.';
+  String get joinWrongEmail =>
+      'Questo invito è riservato a un altro indirizzo e-mail.';
 
   @override
   String get joinNeedsAccount => 'Serve un account per unirsi a un giardino.';
@@ -3689,7 +3705,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get joinAsMember => 'Potrete aggiungere, modificare ed eliminare piante.';
+  String get joinAsMember =>
+      'Potrete aggiungere, modificare ed eliminare piante.';
 
   @override
   String get joinAsViewer => 'Potrete vedere tutto, senza modificare nulla.';
@@ -3716,7 +3733,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get collaborationNeedsAccount => 'Per condividere un giardino serve un account';
+  String get collaborationNeedsAccount =>
+      'Per condividere un giardino serve un account';
 
   @override
   String get inviteSomeone => 'Invita qualcuno';
@@ -3725,19 +3743,22 @@ class AppLocalizationsIt extends AppLocalizations {
   String get inviteReady => 'Invito pronto';
 
   @override
-  String get inviteRoleHint => 'Un membro aggiunge, modifica ed elimina piante. Un lettore guarda soltanto.';
+  String get inviteRoleHint =>
+      'Un membro aggiunge, modifica ed elimina piante. Un lettore guarda soltanto.';
 
   @override
   String get inviteEmailOptional => 'Indirizzo e-mail (facoltativo)';
 
   @override
-  String get inviteEmailHint => 'Se indicato, solo quell\'account potrà accettare l\'invito.';
+  String get inviteEmailHint =>
+      'Se indicato, solo quell\'account potrà accettare l\'invito.';
 
   @override
   String get inviteCreate => 'Crea l\'invito';
 
   @override
-  String get inviteShareHint => 'Inviate questo link o codice alla persona. Non serve che abbia già l\'app.';
+  String get inviteShareHint =>
+      'Inviate questo link o codice alla persona. Non serve che abbia già l\'app.';
 
   @override
   String get inviteShare => 'Condividi il link';
@@ -3771,13 +3792,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get inviteRevoked => 'Invito revocato';
 
   @override
-  String get membersHint => 'Le persone che invitate vedono le stesse piante e possono occuparsene.';
+  String get membersHint =>
+      'Le persone che invitate vedono le stesse piante e possono occuparsene.';
 
   @override
-  String get membersGuestHint => 'Questo giardino è di qualcun altro. Ecco chi se ne occupa.';
+  String get membersGuestHint =>
+      'Questo giardino è di qualcun altro. Ecco chi se ne occupa.';
 
   @override
-  String get memberRoleHint => 'Un membro aggiunge, modifica ed elimina. Un lettore guarda.';
+  String get memberRoleHint =>
+      'Un membro aggiunge, modifica ed elimina. Un lettore guarda.';
 
   @override
   String makeRole(String role) {

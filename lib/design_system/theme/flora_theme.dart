@@ -31,13 +31,26 @@ class FloraTheme extends ThemeExtension<FloraTheme> {
 extension FloraThemeContext on BuildContext {
   FloraTheme get flora => Theme.of(this).extension<FloraTheme>()!;
   FloraColors get colors => flora.colors;
-  FloraTypography get text => flora.text;
+  /// La typographie du thème, épaissie si « Texte en gras » est actif.
+  ///
+  /// Le passage se fait ici, au seul endroit où toute l'application lit ses
+  /// styles : les grands titres suivent alors le réglage comme le reste.
+  FloraTypography get text => MediaQuery.boldTextOf(this) ? flora.text.bolder : flora.text;
   bool get isIOS => Theme.of(this).platform == TargetPlatform.iOS;
 }
 
 /// Construit le [ThemeData] Material 3 aligné sur les tokens Flora.
-ThemeData buildFloraTheme(Brightness brightness) {
-  final c = brightness == Brightness.dark ? FloraColors.dark : FloraColors.light;
+///
+/// [highContrast] sert les thèmes que `MaterialApp` choisit quand
+/// « Augmenter le contraste » est actif dans les réglages d'accessibilité.
+ThemeData buildFloraTheme(Brightness brightness, {bool highContrast = false}) {
+  final dark = brightness == Brightness.dark;
+  final c = switch ((dark, highContrast)) {
+    (true, true) => FloraColors.darkHighContrast,
+    (true, false) => FloraColors.dark,
+    (false, true) => FloraColors.lightHighContrast,
+    (false, false) => FloraColors.light,
+  };
   final ext = FloraTheme.fromColors(c);
   final scheme = ColorScheme(
     brightness: brightness,

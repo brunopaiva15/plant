@@ -21,6 +21,10 @@ class FloraApp extends ConsumerWidget {
       routerConfig: router,
       theme: buildFloraTheme(Brightness.light),
       darkTheme: buildFloraTheme(Brightness.dark),
+      // « Augmenter le contraste » (Réglages > Accessibilité > Écran) : le
+      // système bascule sur ces deux-là. Mêmes teintes, plus de séparation.
+      highContrastTheme: buildFloraTheme(Brightness.light, highContrast: true),
+      highContrastDarkTheme: buildFloraTheme(Brightness.dark, highContrast: true),
       themeMode: prefs.themeMode,
       locale: prefs.locale,
       supportedLocales: AppLocalizations.supportedLocales,

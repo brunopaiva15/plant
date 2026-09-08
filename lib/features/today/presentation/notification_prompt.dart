@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../application/reminder_scheduler.dart';
 
@@ -24,10 +25,21 @@ class _NotificationPromptState extends ConsumerState<NotificationPrompt> {
   }
 
   Future<void> _enable() async {
+    final l10n = context.l10n;
     final granted = await ref.read(notificationServiceProvider).requestPermission();
     if (granted) {
       await ref.read(preferencesProvider.notifier).setNotificationsEnabled(true);
       await ref.read(reminderSchedulerProvider).reschedule();
+    } else if (mounted && SystemSettings.isSupported) {
+      // Refus définitif : on propose le seul chemin qui reste.
+      final go = await showAdaptiveConfirm(
+        context,
+        title: l10n.notificationAskTitle,
+        message: l10n.notificationPermissionDenied,
+        confirmLabel: l10n.openSettings,
+        cancelLabel: l10n.later,
+      );
+      if (go) await SystemSettings.open();
     }
     await _dismiss();
   }

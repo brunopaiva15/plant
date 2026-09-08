@@ -46,7 +46,7 @@ class FloraButton extends StatelessWidget {
       FloraButtonStyle.secondary => (c.surface, c.ink),
       FloraButtonStyle.tonal => (c.sageSoft, c.sage),
       FloraButtonStyle.ghost => (Colors.transparent, c.sage),
-      FloraButtonStyle.destructive => (c.danger, Colors.white),
+      FloraButtonStyle.destructive => (c.danger, c.onAccent),
     };
     final small = size == FloraButtonSize.small;
     final textStyle = (small ? context.text.callout : context.text.body).copyWith(color: fg, fontWeight: FontWeight.w600);
@@ -71,7 +71,9 @@ class FloraButton extends StatelessWidget {
               : const SizedBox.shrink(key: ValueKey('none')),
         ),
         Flexible(
-          child: Text(label, style: textStyle, maxLines: 1, overflow: TextOverflow.ellipsis),
+          // Deux lignes autorisées : à 200 % de Dynamic Type, « Enregistrer le
+          // soin » doit plier, pas se faire couper au milieu d'un mot.
+          child: Text(label, style: textStyle, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
         ),
         if (trailingIcon != null) ...[const SizedBox(width: Space.xs), Icon(trailingIcon, size: small ? 18 : 20, color: fg)],
       ],
@@ -79,12 +81,12 @@ class FloraButton extends StatelessWidget {
     final padding = EdgeInsets.symmetric(horizontal: small ? Space.md : Space.xl);
     final height = small ? 40.0 : 52.0;
     final child = style == FloraButtonStyle.ghost
-        ? Container(height: height, padding: padding, child: row)
+        ? Container(constraints: BoxConstraints(minHeight: height), padding: padding, child: row)
         : ClayBox(
             color: bg,
             shape: const ClayShape.pill(),
             depth: style == FloraButtonStyle.primary || style == FloraButtonStyle.destructive ? ClayDepth.deep : ClayDepth.light,
-            height: height,
+            minHeight: height,
             padding: padding,
             child: row,
           );

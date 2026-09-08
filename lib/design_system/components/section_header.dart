@@ -19,7 +19,14 @@ class SectionHeader extends StatelessWidget {
       padding: padding ?? const EdgeInsets.fromLTRB(Space.page, Space.xl, Space.page, Space.sm),
       child: Row(
         children: [
-          Expanded(child: Text(title, style: context.text.title2)),
+          // Un en-tête déclaré comme tel : le rotor « Titres » de VoiceOver
+          // saute alors de section en section au lieu de tout parcourir.
+          Expanded(
+            child: Semantics(
+              header: true,
+              child: Text(title, style: context.text.title2),
+            ),
+          ),
           ?trailing,
           if (actionLabel != null && onAction != null)
             Pressable(
