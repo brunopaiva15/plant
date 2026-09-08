@@ -50,6 +50,34 @@ class FakeLocal implements LocalPlantModel {
   }
 }
 
+/// Un modèle qui répond différemment selon la photo, pour éprouver
+/// l'agrégation de plusieurs clichés de la même plante.
+class FakePerImage implements LocalPlantModel {
+  FakePerImage(this.byName);
+
+  final Map<String, List<IdentificationCandidate>> byName;
+  int calls = 0;
+
+  @override
+  bool get isAvailable => true;
+  @override
+  String? get version => 'test-1';
+  @override
+  int get speciesCount => 3;
+  @override
+  String? get loadError => null;
+  @override
+  void dispose() {}
+  @override
+  Future<bool> warmUp() async => true;
+
+  @override
+  Future<List<IdentificationCandidate>> classify(File image) async {
+    calls++;
+    return byName[image.uri.pathSegments.last] ?? const [];
+  }
+}
+
 class FakeRemote implements PlantIdentifier {
   FakeRemote(this.result, {this.configured = true, this.error});
 
@@ -89,7 +117,7 @@ void main() {
   final hesitant = [c('Monstera deliciosa', 0.15), c('Monstera adansonii', 0.12)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
-  CascadeIdentifier build(FakeLocal local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
+  CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
       CascadeIdentifier(
         local: local,
         fallback: remote,
@@ -103,6 +131,46 @@ void main() {
                 : null,
         localTimeout: const Duration(milliseconds: 200),
       );
+
+  group('plusieurs photos de la même plante', () {
+    test('l\'espèce vue sur les deux passe devant celle vue sur une seule', () async {
+      // Première photo : le modèle hésite et penche du mauvais côté.
+      // Deuxième : il retrouve la bonne espèce. La moyenne tranche.
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera adansonii', 0.45), c('Monstera deliciosa', 0.35)],
+        'b.jpg': [c('Monstera deliciosa', 0.80), c('Monstera adansonii', 0.05)],
+      });
+      final remote = FakeRemote(remoteAnswer);
+      final result = await build(local, remote).identify([photo, other], language: 'fr');
+      expect(local.calls, 2, reason: 'chaque photo est classée');
+      expect(result.first.scientificName, 'Monstera deliciosa');
+      expect(result.first.score, closeTo((0.35 + 0.80) / 2, 1e-9));
+      expect(result[1].score, closeTo((0.45 + 0.05) / 2, 1e-9));
+    });
+
+    test('une espèce absente d\'une photo compte quand même pour zéro', () async {
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera deliciosa', 0.90)],
+        'b.jpg': [c('Ficus lyrata', 0.90)],
+      });
+      final result = await build(local, FakeRemote(remoteAnswer, configured: false)).identify([photo, other]);
+      // Chacune n'a été vue qu'une fois sur deux : aucune ne reste sûre, et
+      // c'est bien ce qu'on veut d'une moyenne.
+      expect(result.map((r) => r.score), everyElement(closeTo(0.45, 1e-9)));
+    });
+
+    test('deux photos ne sont pas le même résultat qu\'une seule en cache', () async {
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera deliciosa', 0.30)],
+        'b.jpg': [c('Monstera deliciosa', 0.90)],
+      });
+      final cascade = build(local, FakeRemote(remoteAnswer, configured: false));
+      final une = await cascade.identify([photo]);
+      final deux = await cascade.identify([photo, other]);
+      expect(une.first.score, closeTo(0.30, 1e-9));
+      expect(deux.first.score, closeTo(0.60, 1e-9), reason: 'la clé de cache tient compte de toutes les photos');
+    });
+  });
 
   test('confident local answer never calls the remote service', () async {
     final local = FakeLocal(sure);

@@ -1224,6 +1224,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchOnline => 'Aucune ne correspond ? Chercher en ligne';
 
   @override
+  String get identifyAnotherPhoto => 'Ajouter une photo';
+
+  @override
+  String get identifyAnotherPhotoHint => 'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.';
+
+  @override
   String get searchingOnline => 'Recherche en ligne…';
 
   @override
@@ -1989,6 +1995,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careKnownProblemsNote => 'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.';
+
+  @override
+  String get problemKindDisorder => 'Trouble';
+
+  @override
+  String get problemKindPest => 'Ravageur';
+
+  @override
+  String get problemKindDisease => 'Maladie';
+
+  @override
+  String get problemKindCondition => 'Affection';
+
+  @override
+  String get problemKindDisorders => 'Troubles';
+
+  @override
+  String get problemKindPests => 'Ravageurs';
+
+  @override
+  String get problemKindDiseases => 'Maladies';
+
+  @override
+  String get problemKindConditions => 'Affections';
 
   @override
   String get careTips => 'Bons réflexes';

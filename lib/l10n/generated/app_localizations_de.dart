@@ -1227,6 +1227,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get searchOnline => 'Keine passt? Online suchen';
 
   @override
+  String get identifyAnotherPhoto => 'Foto hinzufügen';
+
+  @override
+  String get identifyAnotherPhotoHint => 'Ein weiteres Foto würde helfen. Ein Blatt, eine Blüte oder die ganze Pflanze.';
+
+  @override
   String get searchingOnline => 'Online-Suche…';
 
   @override
@@ -1992,6 +1998,30 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careKnownProblemsNote => 'An dieser Art oder ihren nahen Verwandten gemeldet. Nicht alle treffen sie.';
+
+  @override
+  String get problemKindDisorder => 'Störung';
+
+  @override
+  String get problemKindPest => 'Schädling';
+
+  @override
+  String get problemKindDisease => 'Krankheit';
+
+  @override
+  String get problemKindCondition => 'Belag';
+
+  @override
+  String get problemKindDisorders => 'Störungen';
+
+  @override
+  String get problemKindPests => 'Schädlinge';
+
+  @override
+  String get problemKindDiseases => 'Krankheiten';
+
+  @override
+  String get problemKindConditions => 'Beläge';
 
   @override
   String get careTips => 'Gute Gewohnheiten';

@@ -194,6 +194,18 @@ void main() {
       expect(const BreathPose(0.5).tilt, closeTo(1, 1e-9));
     });
 
+    test('la pose de repos ne penche pas, et son ombre est entière', () {
+      // Aucune phase ne la donne : à la phase zéro la hauteur est nulle mais
+      // l'inclinaison est à son extrême, ce qui laissait l'objet penché d'un
+      // degré quand « réduire les animations » était actif.
+      expect(const BreathPose(0).tilt, closeTo(-1, 1e-9));
+      const repos = BreathPose.rest();
+      expect(repos.lift, 0);
+      expect(repos.tilt, 0);
+      expect(repos.shadowScale, 1);
+      expect(repos.shadowOpacity, 1);
+    });
+
     test("l'ombre se resserre et pâlit quand l'objet monte", () {
       final low = const BreathPose(0.75), high = const BreathPose(0.25);
       expect(high.shadowScale, lessThan(low.shadowScale));

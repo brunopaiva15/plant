@@ -1222,6 +1222,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchOnline => 'None of these? Search online';
 
   @override
+  String get identifyAnotherPhoto => 'Add a photo';
+
+  @override
+  String get identifyAnotherPhotoHint => 'Another photo would help decide. A leaf, a flower, or the whole plant.';
+
+  @override
   String get searchingOnline => 'Searching online…';
 
   @override
@@ -1986,6 +1992,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careKnownProblemsNote => 'Reported on this species or its close relatives. Not all of them will affect it.';
+
+  @override
+  String get problemKindDisorder => 'Disorder';
+
+  @override
+  String get problemKindPest => 'Pest';
+
+  @override
+  String get problemKindDisease => 'Disease';
+
+  @override
+  String get problemKindCondition => 'Condition';
+
+  @override
+  String get problemKindDisorders => 'Disorders';
+
+  @override
+  String get problemKindPests => 'Pests';
+
+  @override
+  String get problemKindDiseases => 'Diseases';
+
+  @override
+  String get problemKindConditions => 'Conditions';
 
   @override
   String get careTips => 'Good habits';
