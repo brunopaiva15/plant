@@ -1653,5 +1653,153 @@
   "careMatchAssisted": "Complétée par l'IA",
   "careAssistedNote": "Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n'en fait pas partie.",
   "careAssistSetting": "Compléter les fiches avec l'IA",
-  "careAssistHint": "Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l'IA pour compléter la fiche. Rien d'autre ne quitte l'appareil, et la réponse est gardée pour ne pas la redemander."
+  "careAssistHint": "Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l'IA pour compléter la fiche. Rien d'autre ne quitte l'appareil, et la réponse est gardée pour ne pas la redemander.",
+  "gardensTitle": "Mes jardins",
+  "gardensHint": "Le jardin ouvert est celui que vous voyez partout dans l'application. Vous passez de l'un à l'autre quand vous voulez.",
+  "gardenMine": "Mon jardin",
+  "gardenUnnamed": "Jardin partagé",
+  "gardenSharedBy": "Partagé par {name}",
+  "@gardenSharedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "gardenOpened": "Vous êtes dans « {name} »",
+  "@gardenOpened": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "someone": "quelqu'un",
+  "memberCount": "{count, plural, =1{1 membre} other{{count} membres}}",
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "renameGarden": "Renommer le jardin",
+  "renameGardenHint": "C'est ce nom que verront les personnes invitées.",
+  "gardenNameHint": "Le jardin de la maison",
+  "joinGarden": "Rejoindre un jardin",
+  "joinGardenHint": "Saisissez le code reçu, ou ouvrez le lien d'invitation qu'on vous a envoyé.",
+  "inviteCodeHint": "Code d'invitation",
+  "joinLook": "Voir l'invitation",
+  "joinConfirm": "Rejoindre",
+  "joinInvalid": "Ce code ne vaut plus rien : il a déjà servi, a expiré, ou n'existe pas.",
+  "joinWrongEmail": "Cette invitation est réservée à une autre adresse e-mail.",
+  "joinNeedsAccount": "Il faut un compte pour rejoindre un jardin.",
+  "joinInvitedBy": "{name} vous invite dans « {garden} »",
+  "@joinInvitedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "garden": {
+        "type": "String"
+      }
+    }
+  },
+  "joinGardenName": "Invitation dans « {garden} »",
+  "@joinGardenName": {
+    "placeholders": {
+      "garden": {
+        "type": "String"
+      }
+    }
+  },
+  "joinAsMember": "Vous pourrez ajouter, modifier et supprimer des plantes.",
+  "joinAsViewer": "Vous pourrez tout consulter, sans rien y changer.",
+  "joinAlreadyMember": "Vous faites déjà partie de ce jardin.",
+  "joined": "Bienvenue dans « {name} »",
+  "@joined": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveGarden": "Quitter ce jardin",
+  "leaveGardenConfirm": "Vous n'aurez plus accès à « {name} ». Les plantes restent chez leur propriétaire.",
+  "@leaveGardenConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leftGarden": "Vous avez quitté « {name} »",
+  "@leftGarden": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "collaborationNeedsAccount": "Il faut un compte pour partager un jardin",
+  "inviteSomeone": "Inviter quelqu'un",
+  "inviteReady": "Invitation prête",
+  "inviteRoleHint": "Un membre ajoute, modifie et supprime des plantes. Un lecteur regarde, sans rien changer.",
+  "inviteEmailOptional": "Adresse e-mail (facultatif)",
+  "inviteEmailHint": "Renseignée, l'invitation ne pourra être acceptée que par ce compte.",
+  "inviteCreate": "Créer l'invitation",
+  "inviteShareHint": "Envoyez ce lien ou ce code à la personne. Elle n'a pas besoin d'avoir déjà l'application.",
+  "inviteShare": "Partager le lien",
+  "inviteMessage": "Je vous invite dans mon jardin sur Auxine : {link}",
+  "@inviteMessage": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteOnceHint": "Une invitation ne sert qu'une fois.",
+  "inviteExpires": "Expire le {date}",
+  "@inviteExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteFailed": "Impossible de créer l'invitation.",
+  "invitesTitle": "Invitations en attente",
+  "inviteRevoke": "Révoquer",
+  "inviteRevokeConfirm": "Le code cessera aussitôt de fonctionner.",
+  "inviteRevoked": "Invitation révoquée",
+  "membersHint": "Les personnes que vous invitez voient les mêmes plantes que vous, et peuvent s'en occuper.",
+  "membersGuestHint": "Ce jardin appartient à quelqu'un d'autre. Voici qui s'en occupe.",
+  "memberRoleHint": "Un membre ajoute, modifie et supprime. Un lecteur regarde.",
+  "makeRole": "Passer en « {role} »",
+  "@makeRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "roleChanged": "{name} est maintenant « {role} »",
+  "@roleChanged": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "removeMemberConfirm": "{name} n'aura plus accès à ce jardin.",
+  "@removeMemberConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

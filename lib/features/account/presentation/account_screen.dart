@@ -11,6 +11,8 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/sync/sync_state.dart';
+import '../application/membership_providers.dart';
+import 'gardens_screen.dart' show gardenLabel;
 
 /// Compte : connexion (Apple, Google, e-mail par code), état de synchronisation.
 class AccountScreen extends ConsumerStatefulWidget {
@@ -170,7 +172,23 @@ class _SignedIn extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: Space.lg),
-        FloraGroup(children: [FloraListRow(leading: Icon(CupertinoIcons.person_2, size: 20, color: c.inkSecondary), title: l10n.membersTitle, subtitle: l10n.shareGarden, onTap: () => context.push(Routes.members))]),
+        FloraGroup(
+          footer: l10n.gardensHint,
+          children: [
+            FloraListRow(
+              leading: const Text('🏡', style: TextStyle(fontSize: 18)),
+              title: l10n.gardensTitle,
+              subtitle: gardenLabel(context, ref.watch(activeGardenNameProvider).value ?? '', isMine: ref.watch(canManageMembersProvider)),
+              onTap: () => context.push(Routes.gardens),
+            ),
+            FloraListRow(
+              leading: Icon(CupertinoIcons.person_2, size: 20, color: c.inkSecondary),
+              title: l10n.membersTitle,
+              subtitle: l10n.shareGarden,
+              onTap: () => context.push(Routes.members),
+            ),
+          ],
+        ),
         const SizedBox(height: Space.lg),
         FloraGroup(children: [FloraListRow(title: l10n.signOut, destructive: true, onTap: onSignOut, chevron: false)]),
       ],

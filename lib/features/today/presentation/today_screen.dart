@@ -6,6 +6,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../account/application/membership_providers.dart';
 import '../../dashboard/application/dashboard_providers.dart';
 import '../../dashboard/presentation/activity_log_screen.dart';
 import '../../../domain/care/care_engine.dart';
@@ -57,11 +58,13 @@ class TodayScreen extends ConsumerWidget {
         filled: false,
         onPressed: () => context.push(Routes.dashboard),
       ),
-      trailing: FloraIconButton(
-        icon: CupertinoIcons.plus,
-        semanticLabel: l10n.addPlant,
-        onPressed: () => startCreatePlantFlow(context, ref),
-      ),
+      trailing: !ref.watch(canEditProvider)
+          ? null
+          : FloraIconButton(
+              icon: CupertinoIcons.plus,
+              semanticLabel: l10n.addPlant,
+              onPressed: () => startCreatePlantFlow(context, ref),
+            ),
       slivers: [
         SliverToBoxAdapter(
           child: Padding(

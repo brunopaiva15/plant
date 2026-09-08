@@ -11,11 +11,15 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftCareRepository implements CareRepository {
-  DriftCareRepository(this._db, this._plants, {bool Function()? southernHemisphere})
-      : _south = southernHemisphere ?? (() => false);
+  DriftCareRepository(this._db, this._plants, {String? gardenId, bool Function()? southernHemisphere})
+      : _gardenId = gardenId,
+        _south = southernHemisphere ?? (() => false);
 
   final FloraDatabase _db;
   final PlantRepository _plants;
+
+  /// Jardin ouvert : les rappels ne portent que sur ses plantes.
+  final String? _gardenId;
 
   /// L'hémisphère du jardin, relu à chaque calcul d'échéance.
   final bool Function() _south;
@@ -28,10 +32,14 @@ class DriftCareRepository implements CareRepository {
       .watch()
       .map((rows) => rows.map((r) => r.toDomain()).toList());
 
+  /// Jointes à leur plante : les rappels ne portent que sur le jardin ouvert.
   @override
-  Stream<List<CareSchedule>> watchAllEnabled() => (_db.select(_db.careSchedules)..where((s) => s.enabled.equals(true)))
-      .watch()
-      .map((rows) => rows.map((r) => r.toDomain()).toList());
+  Stream<List<CareSchedule>> watchAllEnabled() {
+    final q = _db.select(_db.careSchedules).join([innerJoin(_db.plants, _db.plants.id.equalsExp(_db.careSchedules.plantId))])
+      ..where(_db.careSchedules.enabled.equals(true));
+    if (_gardenId != null) q.where(_db.plants.gardenId.equals(_gardenId!));
+    return q.watch().map((rows) => rows.map((r) => r.readTable(_db.careSchedules).toDomain()).toList());
+  }
 
   /// Routines actives dont l'échéance est ≤ [until], jointes à leurs plantes actives.
   @override

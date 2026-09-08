@@ -8,6 +8,7 @@ import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
+import '../../account/application/membership_providers.dart';
 import '../../calendar/presentation/calendar_view.dart';
 import '../../calendar/presentation/event_categories_sheet.dart';
 import '../../calendar/presentation/event_sheet.dart';
@@ -37,12 +38,15 @@ class GardenScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final section = ref.watch(gardenSectionProvider);
-    final trailing = switch (section) {
-      GardenSection.locations => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newLocationTitle, onPressed: () => showLocationEditSheet(context)),
-      GardenSection.tasks => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newTask, onPressed: () => showTaskSheet(context)),
-      GardenSection.inventory => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newItem, onPressed: () => _inventoryMenu(context, ref)),
-      GardenSection.calendar => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newEvent, onPressed: () => _calendarMenu(context)),
-    };
+    // Lecture seule dans un jardin partagé : rien à ajouter ici.
+    final trailing = !ref.watch(canEditProvider)
+        ? null
+        : switch (section) {
+            GardenSection.locations => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newLocationTitle, onPressed: () => showLocationEditSheet(context)),
+            GardenSection.tasks => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newTask, onPressed: () => showTaskSheet(context)),
+            GardenSection.inventory => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newItem, onPressed: () => _inventoryMenu(context, ref)),
+            GardenSection.calendar => FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.newEvent, onPressed: () => _calendarMenu(context)),
+          };
     return LargeTitlePage(
       title: l10n.gardenTitle,
       trailing: trailing,

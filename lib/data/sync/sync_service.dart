@@ -44,19 +44,27 @@ class SyncService {
     required LocalFileResolver localFile,
     required String gardenId,
     String? userId,
+    String? ownedGardenId,
   })  : _db = db,
         _remote = remote,
         _cursors = cursors,
         _localFile = localFile,
         _gardenId = gardenId,
-        _userId = userId;
+        _userId = userId,
+        _ownedGardenId = ownedGardenId;
 
   final FloraDatabase _db;
   final RemoteDataSource _remote;
   final SyncCursorStore _cursors;
   final LocalFileResolver _localFile;
+
+  /// Jardin ouvert : celui qu'on synchronise.
   final String _gardenId;
   final String? _userId;
+
+  /// Jardin créé sur cet appareil, celui dont le compte est propriétaire.
+  /// Les autres sont partagés : leur ligne `gardens` ne nous appartient pas.
+  final String? _ownedGardenId;
 
   final _state = StreamController<SyncState>.broadcast();
   SyncState _current = SyncState.initial;
@@ -70,23 +78,37 @@ class SyncService {
   static const tables = ['gardens', 'locations', 'plants', 'action_types', 'plant_photos', 'plant_actions', 'care_schedules', 'tags', 'plant_tags', 'measurements', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'inventory_tags', 'event_categories', 'calendar_entries'];
 
   /// Tables avec `updated_at` (last-write-wins) ; les autres sont append-only.
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'event_categories', 'calendar_entries'};
+  /// Le delta se lit sur cette colonne : une table absente d'ici verrait ses
+  /// modifications passer inaperçues, seules ses créations arrivant.
+  static const lwwTables = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items', 'tasks', 'attribute_schemas', 'plant_attributes', 'plant_attachments', 'location_logs', 'inventory_groups', 'event_categories', 'calendar_entries'};
 
   void _emit(SyncState s) {
     _current = s;
     if (!_state.isClosed) _state.add(s);
   }
 
-  /// Marque toute la base « à pousser » (première connexion à un compte).
-  Future<void> enqueueEverything() async {
+  /// Marque le jardin « à pousser » (première connexion à un compte).
+  ///
+  /// Seulement celui-là : depuis le partage, la base peut contenir les plantes
+  /// d'un jardin qui appartient à quelqu'un d'autre, et qu'on n'a pas à
+  /// renvoyer en bloc.
+  Future<void> enqueueEverything({String? gardenId}) async {
+    final garden = gardenId ?? _ownedGardenId ?? _gardenId;
     await _db.transaction(() async {
       for (final t in tables) {
-        final ids = await _idsOf(t);
+        final ids = await _idsOf(t, garden);
         for (final id in ids) {
           await _db.enqueueSync(t, id, 'upsert', const {});
         }
       }
     });
+  }
+
+  /// Rattache le jardin de l'appareil au compte qui vient de se connecter :
+  /// c'est lui, désormais, qui en est propriétaire — localement comme sur le
+  /// serveur, où la ligne partira avec son `owner_id`.
+  Future<void> claimGarden(String gardenId, String userId) async {
+    await (_db.update(_db.gardens)..where((g) => g.id.equals(gardenId))).write(GardensCompanion(ownerId: Value(userId)));
   }
 
   /// Un cycle complet : push puis pull. Les appels concurrents sont fusionnés.
@@ -132,6 +154,9 @@ class SyncService {
   }
 
   Future<void> _pushOne(SyncOutboxRow e) async {
+    // La ligne d'un jardin partagé ne se pousse pas : elle appartient à son
+    // propriétaire, et le serveur refuserait qu'un invité la réécrive.
+    if (e.entity == 'gardens' && _ownedGardenId != null && e.entityId != _ownedGardenId) return;
     final row = await _remoteRowFor(e.entity, e.entityId);
     if (row == null) {
       // La ligne n'existe plus localement : suppression physique distante.
@@ -168,29 +193,43 @@ class SyncService {
     return {'id': id};
   }
 
-  Future<List<String>> _idsOf(String table) async => switch (table) {
-        'gardens' => (await _db.select(_db.gardens).get()).map((r) => r.id).toList(),
-        'locations' => (await _db.select(_db.locations).get()).map((r) => r.id).toList(),
-        'plants' => (await _db.select(_db.plants).get()).map((r) => r.id).toList(),
-        'action_types' => (await (_db.select(_db.actionTypes)..where((t) => t.isBuiltin.equals(false))).get()).map((r) => r.key).toList(),
-        'plant_photos' => (await _db.select(_db.plantPhotos).get()).map((r) => r.id).toList(),
-        'plant_actions' => (await _db.select(_db.plantActions).get()).map((r) => r.id).toList(),
-        'care_schedules' => (await _db.select(_db.careSchedules).get()).map((r) => r.id).toList(),
-        'tags' => (await _db.select(_db.tags).get()).map((r) => r.id).toList(),
-        'plant_tags' => (await _db.select(_db.plantTags).get()).map((r) => '${r.plantId}/${r.tagId}').toList(),
-        'measurements' => (await _db.select(_db.measurements).get()).map((r) => r.id).toList(),
-        'inventory_items' => (await _db.select(_db.inventoryItems).get()).map((r) => r.id).toList(),
-        'tasks' => (await _db.select(_db.tasks).get()).map((r) => r.id).toList(),
-        'plant_attributes' => (await _db.select(_db.plantAttributes).get()).map((r) => r.id).toList(),
-        'attribute_schemas' => (await _db.select(_db.attributeSchemas).get()).map((r) => r.id).toList(),
-        'plant_attachments' => (await _db.select(_db.plantAttachments).get()).map((r) => r.id).toList(),
-        'location_logs' => (await _db.select(_db.locationLogs).get()).map((r) => r.id).toList(),
-        'inventory_groups' => (await _db.select(_db.inventoryGroups).get()).map((r) => r.id).toList(),
-        'inventory_tags' => (await _db.select(_db.inventoryTags).get()).map((r) => '${r.itemId}/${r.tagId}').toList(),
-        'event_categories' => (await _db.select(_db.eventCategories).get()).map((r) => r.id).toList(),
-        'calendar_entries' => (await _db.select(_db.calendarEntries).get()).map((r) => r.id).toList(),
-        _ => const [],
-      };
+  /// Identifiants des lignes de [table] appartenant à [garden].
+  ///
+  /// Les tables filles de `plants` n'ont pas de colonne `garden_id` : elles se
+  /// filtrent sur les plantes du jardin, relevées une fois pour toutes.
+  Future<List<String>> _idsOf(String table, String garden) async {
+    final plantIds = (await (_db.select(_db.plants)..where((p) => p.gardenId.equals(garden))).get()).map((p) => p.id).toList();
+    return switch (table) {
+      'gardens' => (await (_db.select(_db.gardens)..where((r) => r.id.equals(garden))).get()).map((r) => r.id).toList(),
+      'locations' => (await (_db.select(_db.locations)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'plants' => (await (_db.select(_db.plants)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'action_types' => (await (_db.select(_db.actionTypes)..where((t) => t.isBuiltin.equals(false))).get()).map((r) => r.key).toList(),
+      'plant_photos' => (await (_db.select(_db.plantPhotos)..where((r) => r.plantId.isIn(plantIds))).get()).map((r) => r.id).toList(),
+      'plant_actions' => (await (_db.select(_db.plantActions)..where((r) => r.plantId.isIn(plantIds))).get()).map((r) => r.id).toList(),
+      'care_schedules' => (await (_db.select(_db.careSchedules)..where((r) => r.plantId.isIn(plantIds))).get()).map((r) => r.id).toList(),
+      'tags' => (await (_db.select(_db.tags)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'plant_tags' => (await (_db.select(_db.plantTags)..where((r) => r.plantId.isIn(plantIds))).get()).map((r) => '${r.plantId}/${r.tagId}').toList(),
+      'measurements' => (await (_db.select(_db.measurements)..where((r) => r.plantId.isIn(plantIds))).get()).map((r) => r.id).toList(),
+      'inventory_items' => (await (_db.select(_db.inventoryItems)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'tasks' => (await (_db.select(_db.tasks)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'plant_attributes' => (await (_db.select(_db.plantAttributes)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'attribute_schemas' => (await (_db.select(_db.attributeSchemas)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'plant_attachments' => (await (_db.select(_db.plantAttachments)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'location_logs' => (await (_db.select(_db.locationLogs)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'inventory_groups' => (await (_db.select(_db.inventoryGroups)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'inventory_tags' => await _inventoryTagIds(garden),
+      'event_categories' => (await (_db.select(_db.eventCategories)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      'calendar_entries' => (await (_db.select(_db.calendarEntries)..where((r) => r.gardenId.equals(garden))).get()).map((r) => r.id).toList(),
+      _ => const [],
+    };
+  }
+
+  /// Étiquettes d'inventaire du jardin, identifiées par « article/étiquette ».
+  Future<List<String>> _inventoryTagIds(String garden) async {
+    final items = (await (_db.select(_db.inventoryItems)..where((i) => i.gardenId.equals(garden))).get()).map((i) => i.id).toList();
+    final rows = await (_db.select(_db.inventoryTags)..where((t) => t.itemId.isIn(items))).get();
+    return rows.map((r) => '${r.itemId}/${r.tagId}').toList();
+  }
 
   /// Ligne distante correspondant à la ligne locale courante (`null` si absente).
   Future<Map<String, Object?>?> _remoteRowFor(String table, String id) async {
@@ -309,7 +348,9 @@ class SyncService {
   }
 
   Future<void> _applyRemote(String table, Map<String, Object?> remote) async {
-    final json = RowCodec.toLocalJson(remote, drop: {'owner_id', 'storage_path'});
+    // `owner_id` est gardé : c'est lui qui dit si le jardin est le nôtre ou
+    // celui de quelqu'un qui nous y a invités.
+    final json = RowCodec.toLocalJson(remote, drop: {'storage_path'});
     // Une ligne écrite par un client plus ancien n'a pas les colonnes ajoutées
     // depuis : on comble avec la valeur par défaut plutôt que d'échouer.
     RowDefaults.fill(table, json);
@@ -395,7 +436,7 @@ class SyncService {
   /// Last-write-wins : n'écrase la ligne locale que si la distante est plus récente
   /// et que la locale n'a pas de modification en attente de push.
   Future<bool> _isNewer(String table, String id, DateTime remoteUpdatedAt) async {
-    if (!_lww.contains(table)) return true;
+    if (!lwwTables.contains(table)) return true;
     final pending = await (_db.select(_db.syncOutbox)..where((o) => o.entity.equals(table) & o.entityId.equals(id))).get();
     if (pending.isNotEmpty) return false;
     final local = await _localUpdatedAt(table, id);

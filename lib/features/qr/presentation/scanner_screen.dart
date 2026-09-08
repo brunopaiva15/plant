@@ -10,6 +10,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
+import '../../account/presentation/join_garden_sheet.dart';
 import '../../inventory/presentation/inventory_item_sheet.dart';
 import '../application/plant_links.dart';
 
@@ -42,11 +43,24 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       if (mounted) setState(() => _message = context.l10n.unknownQr);
       return;
     }
+    // Une invitation ne désigne rien de local : elle se lit auprès du serveur,
+    // dans la feuille qui dit qui invite avant qu'on accepte.
+    if (link.kind == FloraLinkKind.join) {
+      _handling = true;
+      Haptics.success();
+      await _controller.stop();
+      if (!mounted) return;
+      context.pop();
+      final root = rootNavigatorKey.currentContext;
+      if (root != null && root.mounted) await showJoinGardenSheet(root, code: link.id);
+      return;
+    }
     // Une étiquette peut viser une plante ou un article d'inventaire : on
     // vérifie que la cible existe encore avant de quitter le scanner.
     final target = switch (link.kind) {
       FloraLinkKind.plant => await ref.read(plantRepositoryProvider).getPlant(link.id),
       FloraLinkKind.item => await ref.read(inventoryRepositoryProvider).get(link.id),
+      FloraLinkKind.join => null, // traité juste au-dessus
     };
     if (!mounted) return;
     if (target == null) {

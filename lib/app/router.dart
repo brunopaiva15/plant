@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../core/config/app_config.dart';
 import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
+import '../features/account/presentation/gardens_screen.dart';
 import '../features/account/presentation/members_screen.dart';
 import '../features/archive/presentation/archive_screen.dart';
 import '../features/api/presentation/api_screen.dart';
@@ -79,6 +80,7 @@ abstract final class Routes {
   static const finder = '/species/finder';
   static const weather = '/settings/weather';
   static const account = '/settings/account';
+  static const gardens = '/settings/gardens';
   static const members = '/settings/members';
   static const diagnosis = '/settings/diagnosis';
   static const dashboard = '/dashboard';
@@ -197,6 +199,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.identification, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const IdentificationSettingsScreen())),
       GoRoute(path: Routes.weather, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const WeatherSettingsScreen())),
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),
+      GoRoute(path: Routes.gardens, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const GardensScreen())),
       GoRoute(path: Routes.members, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const MembersScreen())),
       GoRoute(path: Routes.diagnosis, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const DiagnosisSettingsScreen())),
       GoRoute(

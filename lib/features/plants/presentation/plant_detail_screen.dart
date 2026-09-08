@@ -12,6 +12,7 @@ import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
+import '../../account/application/membership_providers.dart';
 import '../../actions/application/care_actions.dart';
 import '../../actions/presentation/add_action_sheet.dart';
 import '../../attachments/presentation/attachments_section.dart';
@@ -74,33 +75,38 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
 
   Future<void> _menu(Plant plant) async {
     final l10n = context.l10n;
+    // Invité en lecture seule : le menu se réduit à ce qui ne touche à rien.
+    final canEdit = ref.read(canEditProvider);
     await showAdaptiveActionSheet(
       context,
       cancelLabel: l10n.cancel,
       actions: [
-        SheetAction(label: l10n.editPlant, icon: CupertinoIcons.pencil, onPressed: () => showEditPlantSheet(context, plant: plant)),
-        SheetAction(
-          label: plant.isFavorite ? l10n.unfavorite : l10n.favorite,
-          icon: plant.isFavorite ? CupertinoIcons.heart_slash : CupertinoIcons.heart,
-          onPressed: () => _toggleFavorite(plant),
-        ),
+        if (canEdit) SheetAction(label: l10n.editPlant, icon: CupertinoIcons.pencil, onPressed: () => showEditPlantSheet(context, plant: plant)),
+        if (canEdit)
+          SheetAction(
+            label: plant.isFavorite ? l10n.unfavorite : l10n.favorite,
+            icon: plant.isFavorite ? CupertinoIcons.heart_slash : CupertinoIcons.heart,
+            onPressed: () => _toggleFavorite(plant),
+          ),
         SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
-        SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
-        SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
+        if (canEdit) SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
+        if (canEdit) SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
         SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
-        if (ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
+        if (canEdit && ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
           SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
-        SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
-        SheetAction(
-          label: l10n.move,
-          icon: CupertinoIcons.location,
-          onPressed: () async {
-            final choice = await showLocationPicker(context, selectedId: plant.locationId);
-            if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
-          },
-        ),
-        SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
-        SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
+        if (canEdit) SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
+        if (canEdit)
+          SheetAction(
+            label: l10n.move,
+            icon: CupertinoIcons.location,
+            onPressed: () async {
+              final choice = await showLocationPicker(context, selectedId: plant.locationId);
+              if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
+            },
+          ),
+        if (canEdit)
+          SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
+        if (canEdit) SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
       ],
     );
   }

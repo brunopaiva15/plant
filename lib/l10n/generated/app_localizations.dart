@@ -6206,6 +6206,312 @@ abstract class AppLocalizations {
   /// **'Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil, et la réponse est gardée pour ne pas la redemander.'**
   String get careAssistHint;
 
+
+  /// No description provided for @gardensTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes jardins'**
+  String get gardensTitle;
+
+  /// No description provided for @gardensHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le jardin ouvert est celui que vous voyez partout dans l\'application. Vous passez de l\'un à l\'autre quand vous voulez.'**
+  String get gardensHint;
+
+  /// No description provided for @gardenMine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon jardin'**
+  String get gardenMine;
+
+  /// No description provided for @gardenUnnamed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jardin partagé'**
+  String get gardenUnnamed;
+
+  /// No description provided for @gardenSharedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partagé par {name}'**
+  String gardenSharedBy(String name);
+
+  /// No description provided for @gardenOpened.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous êtes dans « {name} »'**
+  String gardenOpened(String name);
+
+  /// No description provided for @someone.
+  ///
+  /// In fr, this message translates to:
+  /// **'quelqu\'un'**
+  String get someone;
+
+  /// No description provided for @memberCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 membre} other{{count} membres}}'**
+  String memberCount(int count);
+
+  /// No description provided for @renameGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renommer le jardin'**
+  String get renameGarden;
+
+  /// No description provided for @renameGardenHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est ce nom que verront les personnes invitées.'**
+  String get renameGardenHint;
+
+  /// No description provided for @gardenNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le jardin de la maison'**
+  String get gardenNameHint;
+
+  /// No description provided for @joinGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoindre un jardin'**
+  String get joinGarden;
+
+  /// No description provided for @joinGardenHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez le code reçu, ou ouvrez le lien d\'invitation qu\'on vous a envoyé.'**
+  String get joinGardenHint;
+
+  /// No description provided for @inviteCodeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code d\'invitation'**
+  String get inviteCodeHint;
+
+  /// No description provided for @joinLook.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir l\'invitation'**
+  String get joinLook;
+
+  /// No description provided for @joinConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoindre'**
+  String get joinConfirm;
+
+  /// No description provided for @joinInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce code ne vaut plus rien : il a déjà servi, a expiré, ou n\'existe pas.'**
+  String get joinInvalid;
+
+  /// No description provided for @joinWrongEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette invitation est réservée à une autre adresse e-mail.'**
+  String get joinWrongEmail;
+
+  /// No description provided for @joinNeedsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il faut un compte pour rejoindre un jardin.'**
+  String get joinNeedsAccount;
+
+  /// No description provided for @joinInvitedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} vous invite dans « {garden} »'**
+  String joinInvitedBy(String name, String garden);
+
+  /// No description provided for @joinGardenName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation dans « {garden} »'**
+  String joinGardenName(String garden);
+
+  /// No description provided for @joinAsMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pourrez ajouter, modifier et supprimer des plantes.'**
+  String get joinAsMember;
+
+  /// No description provided for @joinAsViewer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pourrez tout consulter, sans rien y changer.'**
+  String get joinAsViewer;
+
+  /// No description provided for @joinAlreadyMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous faites déjà partie de ce jardin.'**
+  String get joinAlreadyMember;
+
+  /// No description provided for @joined.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bienvenue dans « {name} »'**
+  String joined(String name);
+
+  /// No description provided for @leaveGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quitter ce jardin'**
+  String get leaveGarden;
+
+  /// No description provided for @leaveGardenConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'aurez plus accès à « {name} ». Les plantes restent chez leur propriétaire.'**
+  String leaveGardenConfirm(String name);
+
+  /// No description provided for @leftGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez quitté « {name} »'**
+  String leftGarden(String name);
+
+  /// No description provided for @collaborationNeedsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il faut un compte pour partager un jardin'**
+  String get collaborationNeedsAccount;
+
+  /// No description provided for @inviteSomeone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inviter quelqu\'un'**
+  String get inviteSomeone;
+
+  /// No description provided for @inviteReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation prête'**
+  String get inviteReady;
+
+  /// No description provided for @inviteRoleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un membre ajoute, modifie et supprime des plantes. Un lecteur regarde, sans rien changer.'**
+  String get inviteRoleHint;
+
+  /// No description provided for @inviteEmailOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse e-mail (facultatif)'**
+  String get inviteEmailOptional;
+
+  /// No description provided for @inviteEmailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renseignée, l\'invitation ne pourra être acceptée que par ce compte.'**
+  String get inviteEmailHint;
+
+  /// No description provided for @inviteCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer l\'invitation'**
+  String get inviteCreate;
+
+  /// No description provided for @inviteShareHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyez ce lien ou ce code à la personne. Elle n\'a pas besoin d\'avoir déjà l\'application.'**
+  String get inviteShareHint;
+
+  /// No description provided for @inviteShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager le lien'**
+  String get inviteShare;
+
+  /// No description provided for @inviteMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je vous invite dans mon jardin sur Auxine : {link}'**
+  String inviteMessage(String link);
+
+  /// No description provided for @inviteOnceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une invitation ne sert qu\'une fois.'**
+  String get inviteOnceHint;
+
+  /// No description provided for @inviteExpires.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire le {date}'**
+  String inviteExpires(String date);
+
+  /// No description provided for @inviteFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de créer l\'invitation.'**
+  String get inviteFailed;
+
+  /// No description provided for @invitesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitations en attente'**
+  String get invitesTitle;
+
+  /// No description provided for @inviteRevoke.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer'**
+  String get inviteRevoke;
+
+  /// No description provided for @inviteRevokeConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code cessera aussitôt de fonctionner.'**
+  String get inviteRevokeConfirm;
+
+  /// No description provided for @inviteRevoked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invitation révoquée'**
+  String get inviteRevoked;
+
+  /// No description provided for @membersHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les personnes que vous invitez voient les mêmes plantes que vous, et peuvent s\'en occuper.'**
+  String get membersHint;
+
+  /// No description provided for @membersGuestHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce jardin appartient à quelqu\'un d\'autre. Voici qui s\'en occupe.'**
+  String get membersGuestHint;
+
+  /// No description provided for @memberRoleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un membre ajoute, modifie et supprime. Un lecteur regarde.'**
+  String get memberRoleHint;
+
+  /// No description provided for @makeRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passer en « {role} »'**
+  String makeRole(String role);
+
+  /// No description provided for @roleChanged.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} est maintenant « {role} »'**
+  String roleChanged(String name, String role);
+
+  /// No description provided for @removeMemberConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} n\'aura plus accès à ce jardin.'**
+  String removeMemberConfirm(String name);
 }
 
 class _AppLocalizationsDelegate

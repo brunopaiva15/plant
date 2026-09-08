@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../core/haptics.dart';
 import '../core/l10n/l10n.dart';
 import '../design_system/design_system.dart';
+import '../features/account/presentation/join_garden_sheet.dart';
 import '../features/inventory/presentation/inventory_item_sheet.dart';
 import '../features/qr/application/plant_links.dart';
 import 'providers.dart';
@@ -30,6 +31,12 @@ Future<void> openFloraLink(Ref ref, GoRouter router, FloraLink link) async {
       if (context == null || !context.mounted) return;
       Haptics.success();
       await showInventoryItemSheet(context, existing: item);
+    case FloraLinkKind.join:
+      // Invitation reçue par lien : la feuille dit qui invite et dans quel
+      // jardin avant que l'utilisateur accepte quoi que ce soit.
+      final inviteContext = rootNavigatorKey.currentContext;
+      if (inviteContext == null || !inviteContext.mounted) return;
+      await showJoinGardenSheet(inviteContext, code: link.id);
   }
 }
 

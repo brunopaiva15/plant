@@ -7,9 +7,14 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftPhotoRepository implements PhotoRepository {
-  DriftPhotoRepository(this._db, {String? Function()? currentUserId}) : _currentUserId = currentUserId ?? (() => null);
+  DriftPhotoRepository(this._db, {String? gardenId, String? Function()? currentUserId})
+      : _gardenId = gardenId,
+        _currentUserId = currentUserId ?? (() => null);
 
   final FloraDatabase _db;
+
+  /// Jardin ouvert : la galerie récente ne mélange pas les jardins partagés.
+  final String? _gardenId;
   final String? Function() _currentUserId;
   static const _uuid = Uuid();
 
@@ -20,13 +25,16 @@ class DriftPhotoRepository implements PhotoRepository {
       .watch()
       .map((rows) => rows.map((r) => r.toDomain()).toList());
 
+  /// Jointe à la plante : la galerie récente ne mélange pas les jardins.
   @override
-  Stream<List<PlantPhoto>> watchRecent({int limit = 12}) => (_db.select(_db.plantPhotos)
-        ..where((p) => p.deletedAt.isNull())
-        ..orderBy([(p) => OrderingTerm.desc(p.takenAt)])
-        ..limit(limit))
-      .watch()
-      .map((rows) => rows.map((r) => r.toDomain()).toList());
+  Stream<List<PlantPhoto>> watchRecent({int limit = 12}) {
+    final q = _db.select(_db.plantPhotos).join([innerJoin(_db.plants, _db.plants.id.equalsExp(_db.plantPhotos.plantId))])
+      ..where(_db.plantPhotos.deletedAt.isNull())
+      ..orderBy([OrderingTerm.desc(_db.plantPhotos.takenAt)])
+      ..limit(limit);
+    if (_gardenId != null) q.where(_db.plants.gardenId.equals(_gardenId!));
+    return q.watch().map((rows) => rows.map((r) => r.readTable(_db.plantPhotos).toDomain()).toList());
+  }
 
   @override
   Future<PlantPhoto> add({

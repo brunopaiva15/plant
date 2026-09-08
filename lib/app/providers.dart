@@ -25,6 +25,7 @@ import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
+import '../data/sharing/supabase_collaboration_service.dart';
 import '../data/sharing/supabase_sharing_service.dart';
 import '../data/problems/problem_catalog.dart';
 import '../data/problems/problem_catalog_loader.dart';
@@ -32,6 +33,7 @@ import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
 import '../data/species/species_index_loader.dart';
+import '../domain/sharing/garden_collaboration.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
 import '../domain/care/care_guide.dart';
@@ -67,7 +69,52 @@ final databaseProvider = Provider<FloraDatabase>((ref) => throw UnimplementedErr
 final preferencesServiceProvider = Provider<PreferencesService>((ref) => throw UnimplementedError('override in main'));
 final notificationServiceProvider = Provider<NotificationService>((ref) => throw UnimplementedError('override in main'));
 final authRepositoryProvider = Provider<AuthRepository>((ref) => throw UnimplementedError('override in main'));
-final gardenIdProvider = Provider<String>((ref) => throw UnimplementedError('override in main'));
+
+/// Le jardin ouvert. Celui de l'appareil tant que l'utilisateur n'en a pas
+/// choisi un autre ; un jardin partagé dès qu'il bascule dessus.
+///
+/// Tout ce qui lit ou écrit passe par lui : les dépôts se reconstruisent au
+/// changement, la synchronisation change de jardin, et l'écran suivant montre
+/// les plantes de l'autre.
+class ActiveGarden extends Notifier<String> {
+  @override
+  String build() {
+    final prefs = ref.watch(preferencesServiceProvider);
+    // Le flux d'authentification met un instant à livrer sa première valeur ;
+    // le dépôt, lui, répond tout de suite. Sans cela l'application s'ouvrirait
+    // une fraction de seconde sur le mauvais jardin.
+    final user = ref.watch(currentUserProvider).value ?? ref.read(authRepositoryProvider).currentUser;
+    final own = prefs.gardenId!;
+    // Sans compte distant, il n'y a qu'un jardin : celui de l'appareil.
+    if (user == null || user.isLocal) return own;
+    final active = prefs.activeGardenId;
+    if (active == null || active == own) return own;
+    // Un autre compte s'est connecté sur cet appareil : son jardin partagé
+    // n'est pas le nôtre, on repart du jardin local.
+    if (prefs.syncedAccountId != null && prefs.syncedAccountId != user.id) return own;
+    return active;
+  }
+
+  /// Bascule sur un autre jardin, et s'en souvient au prochain lancement.
+  Future<void> select(String gardenId) async {
+    if (gardenId == state) return;
+    await ref.read(preferencesServiceProvider).setActiveGardenId(gardenId);
+    state = gardenId;
+  }
+
+  /// Revient au jardin de l'appareil (déconnexion, départ d'un jardin partagé).
+  Future<void> reset() async {
+    final prefs = ref.read(preferencesServiceProvider);
+    await prefs.setActiveGardenId(null);
+    state = prefs.gardenId!;
+  }
+}
+
+final activeGardenProvider = NotifierProvider<ActiveGarden, String>(ActiveGarden.new);
+
+/// Identifiant du jardin courant. Indirection volontaire : les tests le
+/// surchargent par une valeur fixe, sans passer par les préférences.
+final gardenIdProvider = Provider<String>((ref) => ref.watch(activeGardenProvider));
 
 final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorageService());
 final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
@@ -97,11 +144,15 @@ String? _remoteUserId(Ref ref) {
   return u == null || u.isLocal ? null : u.id;
 }
 
-final actionRepositoryProvider = Provider<ActionRepository>((ref) =>
-    DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref), southernHemisphere: () => _south(ref)));
-final careRepositoryProvider = Provider<CareRepository>((ref) =>
-    DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider), southernHemisphere: () => _south(ref)));
-final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
+// La base peut contenir plusieurs jardins depuis le partage : les dépôts qui
+// interrogent les plantes de tout l'appareil (journal, galerie, routines) se
+// limitent au jardin ouvert.
+final actionRepositoryProvider = Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider),
+    gardenId: ref.watch(gardenIdProvider), currentUserId: () => _remoteUserId(ref), southernHemisphere: () => _south(ref)));
+final careRepositoryProvider = Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider),
+    gardenId: ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref)));
+final photoRepositoryProvider = Provider<PhotoRepository>(
+    (ref) => DriftPhotoRepository(ref.watch(databaseProvider), gardenId: ref.watch(gardenIdProvider), currentUserId: () => _remoteUserId(ref)));
 final actionTypeRepositoryProvider =
     Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));
 final measurementRepositoryProvider =
@@ -404,6 +455,12 @@ final careCompletionProvider = FutureProvider.autoDispose.family<CareCompletion?
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.
 final speciesServiceProvider = Provider<SpeciesService>((ref) => GbifSpeciesService());
+
+/// Partage d'un jardin entre comptes : invitations, membres, rôles.
+final collaborationServiceProvider = Provider<CollaborationService>((ref) {
+  if (!SupabaseConfig.isConfigured) return const UnavailableCollaborationService();
+  return SupabaseCollaborationService();
+});
 
 /// Fiches d'entretien (catalogue intégré, hors ligne).
 final sharingServiceProvider = Provider<SharingService>((ref) {

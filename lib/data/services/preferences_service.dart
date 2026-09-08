@@ -18,6 +18,18 @@ class PreferencesService {
     await _prefs.setString('garden_id', gardenId);
   }
 
+  /// Jardin ouvert dans l'application. Celui de l'appareil par défaut ; un
+  /// jardin partagé quand l'utilisateur bascule dessus, et jusqu'à ce qu'il
+  /// en change ou se déconnecte.
+  String? get activeGardenId => _prefs.getString('active_garden_id');
+  Future<void> setActiveGardenId(String? id) async {
+    if (id == null) {
+      await _prefs.remove('active_garden_id');
+    } else {
+      await _prefs.setString('active_garden_id', id);
+    }
+  }
+
   String? get displayName => _prefs.getString('display_name');
   Future<void> setDisplayName(String value) => _prefs.setString('display_name', value);
 
