@@ -105,7 +105,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In fr, this message translates to:
-  /// **'Flora'**
+  /// **'Auxin'**
   String get appName;
 
   /// No description provided for @ok.
@@ -1575,7 +1575,7 @@ abstract class AppLocalizations {
   /// No description provided for @reduceMotionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Par défaut, Flora suit le réglage du système.'**
+  /// **'Par défaut, Auxin suit le réglage du système.'**
   String get reduceMotionHint;
 
   /// No description provided for @notifications.
@@ -2385,7 +2385,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour vos plantes dehors, Auxin regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -2709,7 +2709,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteHint.
   ///
   /// In fr, this message translates to:
-  /// **'L\'invité doit déjà avoir un compte Flora avec cette adresse.'**
+  /// **'L\'invité doit déjà avoir un compte Auxin avec cette adresse.'**
   String get inviteHint;
 
   /// No description provided for @roleOwner.
@@ -5517,7 +5517,7 @@ abstract class AppLocalizations {
   /// No description provided for @importErrorNotAZip.
   ///
   /// In fr, this message translates to:
-  /// **'Ce fichier n\'est pas une sauvegarde Flora.'**
+  /// **'Ce fichier n\'est pas une sauvegarde Auxin.'**
   String get importErrorNotAZip;
 
   /// No description provided for @importErrorWrongApp.
@@ -5529,7 +5529,7 @@ abstract class AppLocalizations {
   /// No description provided for @importErrorTooRecent.
   ///
   /// In fr, this message translates to:
-  /// **'Cette sauvegarde vient d\'une version plus récente de Flora.'**
+  /// **'Cette sauvegarde vient d\'une version plus récente d\'Auxin.'**
   String get importErrorTooRecent;
 
   /// No description provided for @importErrorGeneric.
@@ -5739,7 +5739,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Flora est gratuite'**
+  /// **'Auxin est gratuit'**
   String get supportTitle;
 
   /// No description provided for @supportBody.

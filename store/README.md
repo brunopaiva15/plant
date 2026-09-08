@@ -26,7 +26,8 @@ propositions avec leurs scores sont la réponse du modèle livré, obtenue par
 Après chaque nouveau modèle : relancer `score.py`, reporter ses résultats
 dans `IDENT_RESULTS`, régénérer.
 
-`fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect.
+`fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect ;
+les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](listing.md).
 
 ## Régénérer
 

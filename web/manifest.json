@@ -1,11 +1,11 @@
 {
-    "name": "flora",
-    "short_name": "flora",
+    "name": "Auxin",
+    "short_name": "Auxin",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#2F7F53",
-    "description": "A new Flutter project.",
+    "description": "Carnet de plantes : journal, soins, identification.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

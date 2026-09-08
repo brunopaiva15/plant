@@ -304,7 +304,7 @@ void main() {
     await tester.tap(laterOnName);
     await step(tester);
     // La dernière étape propose de soutenir le développeur, sans obliger.
-    expect(find.text('Flora est gratuite'), findsOneWidget);
+    expect(find.text('Auxin est gratuit'), findsOneWidget);
     await tester.tap(find.text('Continuer sans'));
     await settle(tester);
     expect(find.text('Bonjour Bruno'), findsWidgets);

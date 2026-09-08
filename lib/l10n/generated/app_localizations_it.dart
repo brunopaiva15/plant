@@ -10,7 +10,7 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get appName => 'Flora';
+  String get appName => 'Auxin';
 
   @override
   String get ok => 'OK';
@@ -853,7 +853,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Per impostazione predefinita, Flora segue il sistema.';
+      'Per impostazione predefinita, Auxin segue il sistema.';
 
   @override
   String get notifications => 'Notifiche';
@@ -1326,7 +1326,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto, Flora controlla la pioggia del giorno e ti evita un\'annaffiatura inutile. Dati Open-Meteo, senza account né chiave.';
+      'Per le piante all\'aperto, Auxin controlla la pioggia del giorno e ti evita un\'annaffiatura inutile. Dati Open-Meteo, senza account né chiave.';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -1521,7 +1521,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'La persona deve già avere un account Flora con questo indirizzo.';
+      'La persona deve già avere un account Auxin con questo indirizzo.';
 
   @override
   String get roleOwner => 'Proprietario';
@@ -3232,14 +3232,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'I dati del file sostituiscono quelli con lo stesso identificatore. Nulla viene eliminato.';
 
   @override
-  String get importErrorNotAZip => 'Questo file non è un backup Flora.';
+  String get importErrorNotAZip => 'Questo file non è un backup Auxin.';
 
   @override
   String get importErrorWrongApp => 'Questo backup proviene da un\'altra app.';
 
   @override
   String get importErrorTooRecent =>
-      'Questo backup proviene da una versione più recente di Flora.';
+      'Questo backup proviene da una versione più recente di Auxin.';
 
   @override
   String get importErrorGeneric => 'Ripristino non riuscito.';
@@ -3368,7 +3368,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get supportTitle => 'Flora è gratuita';
+  String get supportTitle => 'Auxin è gratuito';
 
   @override
   String get supportBody =>

@@ -1,7 +1,8 @@
-# Flora
+# Auxin
 
 Application mobile premium de gestion de plantes (Flutter, iOS & Android).
-Nom de travail : **Flora** — identifiant `ch.vergasta.plant`.
+Identifiant `ch.vergasta.plant`. Le code garde son nom de travail, « Flora » :
+seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 
 > Comprendre l'état de toutes ses plantes en quelques secondes, enregistrer un soin en un ou deux gestes.
 

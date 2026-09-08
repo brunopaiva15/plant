@@ -34,6 +34,8 @@ Future<void> main() async {
   if (!kIsWeb) await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   final prefs = await PreferencesService.load();
+  // Le nom du fichier de base ne suit pas celui du produit : le changer
+  // laisserait les données des utilisateurs derrière lui.
   final db = FloraDatabase(driftDatabase(
     name: 'flora',
     web: DriftWebOptions(sqlite3Wasm: Uri.parse('sqlite3.wasm'), driftWorker: Uri.parse('drift_worker.js')),

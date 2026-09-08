@@ -1,4 +1,4 @@
-// Page publique d'un lien de partage Flora.
+// Page publique d'un lien de partage Auxin.
 //
 // GET /functions/v1/share/<token>
 //
@@ -56,7 +56,7 @@ ${opts.image ? `<meta property="og:image" content="${esc(opts.image)}">` : ''}
   footer b { color:var(--sage); }
 </style>
 </head>
-<body><main>${body}<footer>Partagé depuis <b>Flora</b></footer></main></body>
+<body><main>${body}<footer>Partagé depuis <b>Auxin</b></footer></main></body>
 </html>`;
   return new Response(html, {
     status: opts.status ?? 200,

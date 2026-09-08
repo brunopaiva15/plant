@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Flora</string>
+	<string>Auxin</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Flora</string>
+	<string>Auxin</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -75,12 +75,12 @@
 		</dict>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Flora utilise votre position, une fois, pour trouver la ville de la météo. Elle n'est ni gardée ni partagée.</string>
+	<string>Auxin utilise votre position, une fois, pour trouver la ville de la météo. Elle n'est ni gardée ni partagée.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Flora utilise l'appareil photo pour photographier vos plantes.</string>
+	<string>Auxin utilise l'appareil photo pour photographier vos plantes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Flora accède à vos photos pour illustrer vos plantes.</string>
+	<string>Auxin accède à vos photos pour illustrer vos plantes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Flora peut enregistrer des photos de vos plantes.</string>
+	<string>Auxin peut enregistrer des photos de vos plantes.</string>
 </dict>
 </plist>

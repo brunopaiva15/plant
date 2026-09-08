@@ -10,7 +10,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appName => 'Flora';
+  String get appName => 'Auxin';
 
   @override
   String get ok => 'OK';
@@ -853,7 +853,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Par défaut, Flora suit le réglage du système.';
+      'Par défaut, Auxin suit le réglage du système.';
 
   @override
   String get notifications => 'Notifications';
@@ -1325,7 +1325,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
+      'Pour vos plantes dehors, Auxin regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.';
 
   @override
   String get weatherPlace => 'Lieu';
@@ -1519,7 +1519,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'L\'invité doit déjà avoir un compte Flora avec cette adresse.';
+      'L\'invité doit déjà avoir un compte Auxin avec cette adresse.';
 
   @override
   String get roleOwner => 'Propriétaire';
@@ -3242,7 +3242,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importErrorNotAZip =>
-      'Ce fichier n\'est pas une sauvegarde Flora.';
+      'Ce fichier n\'est pas une sauvegarde Auxin.';
 
   @override
   String get importErrorWrongApp =>
@@ -3250,7 +3250,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importErrorTooRecent =>
-      'Cette sauvegarde vient d\'une version plus récente de Flora.';
+      'Cette sauvegarde vient d\'une version plus récente d\'Auxin.';
 
   @override
   String get importErrorGeneric => 'Restauration impossible.';
@@ -3377,7 +3377,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get supportTitle => 'Flora est gratuite';
+  String get supportTitle => 'Auxin est gratuit';
 
   @override
   String get supportBody =>

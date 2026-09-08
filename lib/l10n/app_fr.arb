@@ -1,6 +1,6 @@
 {
   "@@locale": "fr",
-  "appName": "Flora",
+  "appName": "Auxin",
   "ok": "OK",
   "cancel": "Annuler",
   "save": "Enregistrer",
@@ -418,7 +418,7 @@
   "themeLight": "Clair",
   "themeDark": "Sombre",
   "reduceMotion": "Réduire les animations",
-  "reduceMotionHint": "Par défaut, Flora suit le réglage du système.",
+  "reduceMotionHint": "Par défaut, Auxin suit le réglage du système.",
   "notifications": "Notifications",
   "enableNotifications": "Rappel quotidien",
   "notificationTime": "Heure",
@@ -647,7 +647,7 @@
   "outdoor": "Extérieur",
   "outdoorHint": "Balcon, jardin, serre : la météo compte.",
   "weather": "Météo",
-  "weatherHint": "Pour vos plantes dehors, Flora regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.",
+  "weatherHint": "Pour vos plantes dehors, Auxin regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.",
   "weatherPlace": "Lieu",
   "weatherSearchHint": "Ville…",
   "weatherNone": "Aucun lieu",
@@ -757,7 +757,7 @@
   "membersTitle": "Membres",
   "shareGarden": "Partager le jardin",
   "inviteMember": "Inviter",
-  "inviteHint": "L'invité doit déjà avoir un compte Flora avec cette adresse.",
+  "inviteHint": "L'invité doit déjà avoir un compte Auxin avec cette adresse.",
   "roleOwner": "Propriétaire",
   "roleMember": "Membre",
   "roleViewer": "Lecture seule",
@@ -1501,9 +1501,9 @@
     }
   },
   "importConfirm": "Les données du fichier remplacent celles de même identifiant. Rien n'est supprimé.",
-  "importErrorNotAZip": "Ce fichier n'est pas une sauvegarde Flora.",
+  "importErrorNotAZip": "Ce fichier n'est pas une sauvegarde Auxin.",
   "importErrorWrongApp": "Cette sauvegarde vient d'une autre application.",
-  "importErrorTooRecent": "Cette sauvegarde vient d'une version plus récente de Flora.",
+  "importErrorTooRecent": "Cette sauvegarde vient d'une version plus récente d'Auxin.",
   "importErrorGeneric": "Restauration impossible.",
   "backupFrom": "Sauvegarde du {date}",
   "@backupFrom": {
@@ -1569,7 +1569,7 @@
       }
     }
   },
-  "supportTitle": "Flora est gratuite",
+  "supportTitle": "Auxin est gratuit",
   "supportBody": "Toutes les fonctions sont gratuites. Si l'app vous est utile, vous pouvez donner un coup de pouce à son développeur — une fois, sans abonnement.",
   "supportNothingLocked": "Rien n'est réservé à ceux qui donnent.",
   "supportGive": "Soutenir · {price}",

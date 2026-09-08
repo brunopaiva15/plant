@@ -11,7 +11,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../data/sync/sync_service.dart';
 import '../../../design_system/design_system.dart';
 
-/// Les données de Flora sont accessibles par l'API REST du projet Supabase.
+/// Les données d'Auxin sont accessibles par l'API REST du projet Supabase.
 /// Cet écran documente l'adresse, les ressources et l'authentification :
 /// aucun serveur n'est lancé sur le téléphone.
 class ApiScreen extends ConsumerWidget {

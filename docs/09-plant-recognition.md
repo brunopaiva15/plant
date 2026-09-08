@@ -300,7 +300,7 @@ NeurIPS 2021 Datasets & Benchmarks).
 **Décision : ne pas en faire la base du modèle de l'app.** Trois raisons :
 
 1. **Couverture** : ses 1 081 espèces sont celles de la flore sauvage
-   d'Europe de l'Ouest ; un test sur les 297 plantes du catalogue Flora
+   d'Europe de l'Ouest ; un test sur les 297 plantes du catalogue Auxin
    (plantes d'intérieur, tropicales, horticoles) reste à faire, mais
    *Monstera*, *Epipremnum*, *Spathiphyllum* n'y ont aucune raison d'être
    bien représentés. GBIF nous donne des images de ces plantes précises.
