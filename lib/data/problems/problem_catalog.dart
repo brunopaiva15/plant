@@ -41,6 +41,22 @@ class ProblemCatalog {
     return keep.values.toList()..sort((a, b) => a.id.compareTo(b.id));
   }
 
+  /// Ce que la base connaît de cette plante en propre, pour la fiche de soin.
+  ///
+  /// Les troubles universels en sont retirés : « manque d'eau » vaut pour
+  /// tout le monde et n'apprend rien sur l'espèce. [covered] retire ce que la
+  /// fiche vient de dire ailleurs, pour ne pas le redire.
+  ///
+  /// La liste est souvent vide, et c'est bien ainsi : la base ne connaît rien
+  /// de particulier à la moitié des plantes du catalogue, et le taire vaut
+  /// mieux que de meubler.
+  List<PlantProblem> specificTo({String? species, String? family, Iterable<CommonIssue> covered = const []}) {
+    final deja = idsForIssues(covered).toSet();
+    return candidatesFor(species: species, family: family)
+        .where((p) => p.scope != ProblemScope.general && !deja.contains(p.id))
+        .toList();
+  }
+
   /// Le problème de la base qui correspond à un souci noté sur la fiche
   /// d'entretien, quand il y en a un sans ambiguïté.
   ///

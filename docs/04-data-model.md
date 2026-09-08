@@ -128,6 +128,13 @@ service rend un numéro, l'application n'accepte que ceux qu'elle a soumis et
 affiche son propre nom. Deux analyses de la même chose se lisent donc pareil,
 dans la langue de l'utilisateur.
 
+La fiche de soin s'en sert à froid : `specificTo` garde les entrées qui
+nomment l'espèce, son genre ou sa famille, retire les troubles universels et
+ce que « À surveiller » dit déjà, et affiche le reste replié au-delà de six
+lignes. Sur les 297 espèces du catalogue trié à la main, la médiane est d'une
+entrée et la moitié n'en a aucune — la section disparaît alors, plutôt que de
+meubler.
+
 Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
 exemples, un genre ne rend pas toutes ses espèces sensibles, et la
 vérification GBIF porte sur les noms de plantes, pas sur les relations

@@ -1985,6 +1985,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careIssues => 'À surveiller';
 
   @override
+  String get careKnownProblems => 'Problèmes connus sur cette plante';
+
+  @override
+  String get careKnownProblemsNote => 'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.';
+
+  @override
   String get careTips => 'Bons réflexes';
 
   @override

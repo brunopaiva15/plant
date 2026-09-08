@@ -105,6 +105,40 @@ void main() {
     });
   });
 
+  group('ce que la fiche de soin affiche', () {
+    List<String> propres(String species, {String? family, List<CommonIssue> covered = const []}) =>
+        catalog.specificTo(species: species, family: family, covered: covered).map((p) => p.id).toList();
+
+    test('l\'universel est écarté, seul le particulier reste', () {
+      final monstera = propres('Monstera deliciosa', family: 'Araceae');
+      expect(monstera, isNot(contains('001')), reason: 'le manque d\'eau n\'apprend rien sur l\'espèce');
+      expect(monstera, ['011', '059', '185'], reason: 'froid, thrips, taches à Pseudomonas');
+    });
+
+    test('les entrées visant l\'espèce sont nommées, pas devinées', () {
+      expect(propres('Buxus sempervirens', family: 'Buxaceae'), containsAll(['089', '161', '162']));
+      expect(propres('Dracaena marginata', family: 'Asparagaceae'), contains('034'));
+      expect(propres('Ocimum basilicum', family: 'Lamiaceae'), ['130']);
+    });
+
+    test('ce que « À surveiller » dit déjà n\'est pas redit', () {
+      expect(propres('Ficus lyrata', family: 'Moraceae'), contains('060'));
+      expect(propres('Ficus lyrata', family: 'Moraceae', covered: const [CommonIssue.spiderMites]), isNot(contains('060')));
+    });
+
+    test('rien de particulier, donc rien à afficher', () {
+      // La moitié du catalogue est dans ce cas : la section disparaît plutôt
+      // que de meubler.
+      expect(propres('Zamioculcas zamiifolia', family: 'Araceae'), isEmpty);
+    });
+
+    test('même une plante très attaquée reste lisible une fois repliée', () {
+      final tomate = propres('Solanum lycopersicum', family: 'Solanaceae');
+      expect(tomate.length, greaterThan(20));
+      expect(tomate.take(6), hasLength(6), reason: 'les six premières suffisent avant « Tout voir »');
+    });
+  });
+
   group('la passerelle depuis la fiche d\'entretien', () {
     test('les soucis sans équivalent unique restent sans numéro', () {
       expect(ProblemCatalog.idForIssue(CommonIssue.leafSpot), isNull);

@@ -3450,6 +3450,18 @@ abstract class AppLocalizations {
   /// **'À surveiller'**
   String get careIssues;
 
+  /// No description provided for @careKnownProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problèmes connus sur cette plante'**
+  String get careKnownProblems;
+
+  /// No description provided for @careKnownProblemsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.'**
+  String get careKnownProblemsNote;
+
   /// No description provided for @careTips.
   ///
   /// In fr, this message translates to:

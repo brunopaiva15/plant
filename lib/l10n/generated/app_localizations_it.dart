@@ -1987,6 +1987,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careIssues => 'Da tenere d\'occhio';
 
   @override
+  String get careKnownProblems => 'Problemi noti su questa pianta';
+
+  @override
+  String get careKnownProblemsNote => 'Segnalati su questa specie o su quelle affini. Non tutti la riguardano.';
+
+  @override
   String get careTips => 'Buone abitudini';
 
   @override

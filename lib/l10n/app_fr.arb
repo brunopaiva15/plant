@@ -991,6 +991,8 @@
   "careDifficulty": "Difficulté",
   "carePropagation": "Multiplication",
   "careIssues": "À surveiller",
+  "careKnownProblems": "Problèmes connus sur cette plante",
+  "careKnownProblemsNote": "Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.",
   "careTips": "Bons réflexes",
   "careEveryDays": "{count, plural, =1{Tous les jours} other{Tous les {count} jours}}",
   "@careEveryDays": {

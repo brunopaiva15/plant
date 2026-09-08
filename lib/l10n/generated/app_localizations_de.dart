@@ -1988,6 +1988,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careIssues => 'Darauf achten';
 
   @override
+  String get careKnownProblems => 'Bekannte Probleme an dieser Pflanze';
+
+  @override
+  String get careKnownProblemsNote => 'An dieser Art oder ihren nahen Verwandten gemeldet. Nicht alle treffen sie.';
+
+  @override
   String get careTips => 'Gute Gewohnheiten';
 
   @override
