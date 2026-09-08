@@ -56,7 +56,7 @@ wsl --install -d Ubuntu
 # Puis, dans Ubuntu
 sudo apt update && sudo apt install -y python3-pip python3-venv
 python3 -m venv ~/venv && source ~/venv/bin/activate
-pip install 'tensorflow[and-cuda]'          # embarque CUDA et cuDNN
+pip install -r requirements-gpu.txt         # tensorflow[and-cuda] : CUDA et cuDNN inclus
 python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 ```
 
@@ -75,7 +75,7 @@ python3 train.py --dataset ../plant_dataset/dataset --out ../../assets/model \
 |---|---|
 | `--mixed-precision` | calcul en float16 : les cœurs tensor des RTX 20xx et au-delà doublent à peu près le débit, et la mémoire libérée autorise des lots plus gros. Inutile, voire lent, sur processeur. |
 | `--batch 64` | la carte a 8 Go ; un lot plus gros l'occupe mieux. À monter tant que la mémoire suit. |
-| `--ram-budget` | avec 32 Go de mémoire vive, précharger une partie du jeu évite de relire les JPEG à chaque époque. |
+| `--ram-budget` | sans effet sur le jeu complet : 232 000 images en 256×256 font 45 Go, donc au-delà de toute mémoire vive raisonnable, et le préchargement est tout ou rien. À laisser tel quel. |
 
 L'export TFLite se fait toujours en float32 : le convertisseur ne sait pas
 convertir un graphe float16, donc le réseau est reconstruit avant

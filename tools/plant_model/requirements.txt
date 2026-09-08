@@ -1,3 +1,5 @@
+# Entraînement sur processeur. Pour une carte graphique, voir
+# requirements-gpu.txt : `tensorflow-cpu` ignore le matériel, même présent.
 tensorflow-cpu>=2.19
 numpy
 Pillow

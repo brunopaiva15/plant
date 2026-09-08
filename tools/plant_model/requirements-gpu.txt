@@ -1,0 +1,7 @@
+# Pour entraîner sur une carte graphique NVIDIA (WSL2 ou Linux).
+# `tensorflow[and-cuda]` embarque CUDA et cuDNN ; il ne faut PAS installer
+# `tensorflow-cpu` à côté, les deux paquets se marchent dessus et c'est la
+# version processeur qui gagne — dix fois plus lente, sans un message.
+tensorflow[and-cuda]>=2.19
+numpy
+Pillow
