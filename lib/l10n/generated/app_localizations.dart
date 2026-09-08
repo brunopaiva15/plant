@@ -2241,8 +2241,8 @@ abstract class AppLocalizations {
   /// No description provided for @identifyOnDevice.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnu sur votre appareil. Choisissez l\'espèce qui correspond.'**
-  String get identifyOnDevice;
+  /// **'Reconnu par {name}, sur votre appareil. Choisissez l\'espèce qui correspond.'**
+  String identifyOnDevice(String name);
 
   /// No description provided for @identifyViaPlantNet.
   ///
@@ -2277,8 +2277,8 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau. Quand le modèle hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
-  String get identificationHint;
+  /// **'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau : {name} répond hors ligne. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
+  String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.
   ///
@@ -2301,20 +2301,20 @@ abstract class AppLocalizations {
   /// No description provided for @identificationFallbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quand le modèle intégré hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.'**
-  String get identificationFallbackHint;
+  /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.'**
+  String identificationFallbackHint(String name);
 
   /// No description provided for @modelLoaded.
   ///
   /// In fr, this message translates to:
-  /// **'Modèle embarqué : {count} espèces'**
-  String modelLoaded(int count);
+  /// **'{name} : {count} espèces'**
+  String modelLoaded(String name, int count);
 
   /// No description provided for @modelMissing.
   ///
   /// In fr, this message translates to:
-  /// **'Modèle embarqué indisponible sur cet appareil'**
-  String get modelMissing;
+  /// **'{name} indisponible sur cet appareil'**
+  String modelMissing(String name);
 
   /// No description provided for @modelLoading.
   ///

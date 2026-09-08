@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/identification/cascade_identifier.dart';
@@ -50,7 +51,9 @@ class IdentificationSettingsScreen extends ConsumerWidget {
                   child: Text(
                     model.isLoading
                         ? l10n.modelLoading
-                        : (status != null && status.ready ? l10n.modelLoaded(status.speciesCount) : l10n.modelMissing),
+                        : (status != null && status.ready
+                            ? l10n.modelLoaded(AppConfig.modelDisplayName(status.version), status.speciesCount)
+                            : l10n.modelMissing(AppConfig.modelName)),
                     style: context.text.callout,
                   ),
                 ),
@@ -64,7 +67,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
             SelectableText(status.error!, style: context.text.caption),
           ],
           const SizedBox(height: Space.md),
-          Text(l10n.identificationHint, style: context.text.callout),
+          Text(l10n.identificationHint(AppConfig.modelName), style: context.text.callout),
           const SizedBox(height: Space.lg),
           FloraGroup(
             children: [
@@ -78,7 +81,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: Space.xs),
-          Text(l10n.identificationFallbackHint, style: context.text.caption),
+          Text(l10n.identificationFallbackHint(AppConfig.modelName), style: context.text.caption),
           const SizedBox(height: Space.sm),
           Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
           if (identifier is CascadeIdentifier) ...[

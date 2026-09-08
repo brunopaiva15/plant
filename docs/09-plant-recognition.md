@@ -1,10 +1,27 @@
-# 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
+# 09 — Reconnaissance de plantes : Iris, le modèle embarqué, repli Pl@ntNet
 
 > État au 8 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 518
 > images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 445
 > classes** livré dans l'app en TFLite (8,8 Mo). La cascade identifie **sur
 > l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
 > même plante valent dix-neuf points de top-1.
+
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la sixième :
+c'est donc **Iris 6** que l'application nomme à l'écran. Le reste de ce
+document parle de « la v6 » quand il compare des entraînements entre eux —
+ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
+
+## 0. Le nom
+
+`Iris` est la marque du modèle, `AppConfig.modelName` dans le code. Le numéro
+ne s'écrit **jamais** à la main : le modèle l'annonce dans
+`assets/model/model.json`, `TflitePlantModel` le lit au chargement et
+`AppConfig.modelDisplayName(version)` le colle au nom. Livrer un modèle
+réentraîné suffit donc à faire dire « Iris 7 » à l'écran des réglages, et
+l'application ne peut pas afficher un numéro qui ment.
+
+Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
+l'application dit « Iris » tout court plutôt que d'inventer un numéro.
 
 ## 1. Pourquoi
 
@@ -772,6 +789,10 @@ référence par classe (`test/fixtures/`), correspondance `labels.txt` ↔
 `plants.csv`.
 
 ## 8. Mises à jour du modèle
+
+Une version livrée = un numéro de plus dans `model.json`, donc un nom de plus
+à l'écran : après Iris 6 vient Iris 7. Rien d'autre à renommer — ni le code,
+ni les traductions, qui reçoivent le nom composé (§ 0).
 
 Deux options, à trancher au moment de la phase 2 :
 

@@ -4,9 +4,10 @@
 > Machine de référence : Windows + RTX 2070 Super (8 Go) + i7-9700K (8 cœurs).
 > Compter **une demi-journée** la première fois, dont l'essentiel en attente.
 
-Le modèle v6 a été entraîné sur quatre cœurs sans carte graphique : neuf
-heures 47, par tranches de dix minutes, sur une machine recyclée dès qu'elle
-s'endormait. Sur une carte grand public, la même passe coûte de l'ordre
+Iris 6 — la sixième version du modèle embarqué, celle que l'application
+livre aujourd'hui — a été entraînée sur quatre cœurs sans carte graphique :
+neuf heures 47, par tranches de dix minutes, sur une machine recyclée dès
+qu'elle s'endormait. Sur une carte grand public, la même passe coûte de l'ordre
 d'une heure. C'est ce qui rend la v7 possible : quatre recettes dans un
 après-midi au lieu d'une par nuit.
 

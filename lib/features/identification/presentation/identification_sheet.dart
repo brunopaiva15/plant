@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/likelihood_labels.dart';
@@ -129,7 +130,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// D'où vient la réponse : sur l'appareil, ou par le service en ligne.
   /// L'utilisateur a le droit de savoir si sa photo est partie sur le réseau.
   String _sourceHint(AppLocalizations l10n, IdentificationSource source) => switch (source) {
-        IdentificationSource.local => l10n.identifyOnDevice,
+        IdentificationSource.local => l10n.identifyOnDevice(AppConfig.modelName),
         IdentificationSource.remote => l10n.identifyViaPlantNet,
         IdentificationSource.unknown => l10n.identifyHint,
       };

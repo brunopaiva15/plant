@@ -18,7 +18,7 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/06-design-system.md](docs/06-design-system.md) | F. Couleurs, typographie, spacing, composants |
 | [docs/07-project-structure.md](docs/07-project-structure.md) | G. Arborescence du projet |
 | [docs/08-sync-and-collaboration.md](docs/08-sync-and-collaboration.md) | Synchronisation, comptes, collaboration (Supabase) |
-| [docs/09-plant-recognition.md](docs/09-plant-recognition.md) | Reconnaissance de plantes : jeu de données, modèle local, repli Pl@ntNet |
+| [docs/09-plant-recognition.md](docs/09-plant-recognition.md) | Reconnaissance de plantes : Iris, le modèle embarqué, jeu de données, repli Pl@ntNet |
 | [docs/10-entrainer-sur-son-poste.md](docs/10-entrainer-sur-son-poste.md) | Entraîner le modèle chez soi, de Windows nu au `.tflite` livré |
 
 ## Démarrer
