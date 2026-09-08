@@ -136,6 +136,27 @@ pas besoin : `pack_category_logos.py` recadre sur le contenu avant de réduire.
 Le recadrage est commun aux quatre, sans quoi le charançon grandirait et la
 feuille rétrécirait, et la famille perdrait son unité d'échelle.
 
+# Une illustration par problème
+
+Les lots livrés contiennent des PNG 1 024 px nommés
+`probleme_<id>_<titre>.png`. `pack_problem_icons.py` n'en garde que
+l'identifiant, réduit à 512 px et écrit la liste des identifiants illustrés
+dans `lib/features/problems/presentation/illustrated_problems.dart`.
+
+```bash
+python3 tool/pack_problem_icons.py <dossier de PNG> [<autre lot> …]
+```
+
+La liste est relue depuis `assets/problems/icons/` et non depuis ce qui vient
+d'être écrit : elle décrit ce qui est embarqué, lots précédents compris. Un
+test compare les deux, si bien qu'une image ajoutée ou retirée à la main se
+voit tout de suite.
+
+Pas de recadrage ici, contrairement aux symboles de familles : le cadrage
+varie à dessein d'une illustration à l'autre, une feuille seule occupant moins
+de place qu'une plante en pot, et les recadrer une par une les ramènerait
+toutes à la même taille apparente.
+
 `clay_scene.py` tient ce que ces scripts ont en commun : les primitives de
 géométrie, les matériaux mats, le studio d'éclairage et le grain. Rien ne s'y
 exécute à l'import.

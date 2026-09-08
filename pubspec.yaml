@@ -107,6 +107,9 @@ flutter:
     # Base des 200 troubles, ravageurs et maladies (fr/en/it/de), vocabulaire
     # commun du diagnostic, et les quatre symboles d'argile de ses familles.
     - assets/problems/
+    # Une illustration par problème, nommée par son identifiant. Le dossier
+    # parent ne suffit pas : Flutter ne descend pas dans les sous-dossiers.
+    - assets/problems/icons/
     # Illustrations 3D de l'onboarding : une image par écran, animée par l'app,
     # et la séquence de pousse du premier écran (tool/grow_monstera.py).
     - assets/onboarding/
