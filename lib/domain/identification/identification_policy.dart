@@ -28,7 +28,7 @@ enum IdentificationVerdict {
 /// utile telle quelle, et l'appel distant peut attendre qu'il le demande.
 class FallbackPolicy {
   const FallbackPolicy({
-    this.acceptThreshold = 0.70,
+    this.acceptThreshold = 0.60,
     this.plausibleThreshold = 0.25,
     this.minMargin = 0.25,
     this.floor = 0.10,
@@ -36,13 +36,29 @@ class FallbackPolicy {
 
   /// Score minimal du premier candidat pour l'accepter sans discuter.
   ///
-  /// Mesuré sur le jeu de test du modèle v5 (12 661 images, 894 espèces),
-  /// et surtout sur ses 2 795 photos de plantes cultivées, celles que les
-  /// utilisateurs prennent : à 0,90 le modèle ne répond seul que dans 40 %
-  /// des cas ; à 0,70 il le fait dans 55 %, avec 85 % de justesse sur ces
-  /// réponses au lieu de 94 %. Comme l'écran propose cinq candidats et que
-  /// l'utilisateur tranche, une première ligne parfois fausse coûte bien
-  /// moins qu'un appel réseau systématique.
+  /// **Un seuil ne se transporte pas d'un modèle à l'autre.** Il valait 0,70
+  /// pour la v5 et ses 894 espèces ; la v6 en compte 1 445, donc sa
+  /// confiance se répartit sur plus de candidats et le même seuil la rendait
+  /// trop prudente. Mesuré sur les photos de plantes cultivées du jeu de
+  /// test de la v6, dans le calcul exact que fait la cascade
+  /// (`tools/plant_model/multi_photo.py`) :
+  ///
+  /// | seuil | une photo | deux photos |
+  /// |---|---|---|
+  /// | 0,70 | 42 % de réponses seules, 86,0 % justes | 34 %, 93,5 % |
+  /// | 0,60 | 47 %, 82,8 % | 38 %, 92,3 % |
+  /// | 0,50 | 55 %, 74,3 % | 44 %, 88,4 % |
+  ///
+  /// À 0,60 la v6 cède trois points de justesse à une photo et en gagne cinq
+  /// d'autonomie ; avec deux photos elle remonte à 92,3 %. C'est le même
+  /// arbitrage qu'à la v5 : l'écran propose cinq candidats et l'utilisateur
+  /// tranche, donc une première ligne parfois fausse coûte bien moins qu'un
+  /// appel réseau systématique.
+  ///
+  /// Sur les seules espèces que les deux modèles connaissent, à images
+  /// identiques, la v6 à 0,70 était déjà bien plus sûre que la v5 au même
+  /// seuil (89,9 % contre 83,4 %) : abaisser le seuil dépense ce surplus en
+  /// autonomie plutôt que de le laisser dormir.
   final double acceptThreshold;
 
   /// Au-dessus de ce score, la liste locale est montrée sans appel distant,
@@ -53,8 +69,10 @@ class FallbackPolicy {
   ///
   /// Sans effet tant que [acceptThreshold] dépasse 0,625 : les scores d'un
   /// softmax somment à 1, donc un premier à 0,90 laisse au plus 0,10 au
-  /// deuxième. À 0,70 la règle redevient active et écarte les cas où le
-  /// modèle hésite entre deux espèces proches.
+  /// deuxième. Elle redevient active en dessous — mais, mesurée sur le jeu
+  /// de test de la v6, elle n'y change quasiment rien : à 0,60 les chiffres
+  /// sont identiques avec ou sans marge. On la garde parce qu'elle coûte
+  /// zéro et qu'elle protège d'un modèle futur moins bien calibré.
   final double minMargin;
 
   /// Sous ce score, un candidat ne compte même pas comme « incertain » :

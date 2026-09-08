@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import '../../core/utils/scientific_name.dart';
 import 'identification_metrics.dart';
@@ -203,22 +204,82 @@ class CascadeIdentifier implements PlantIdentifier {
     }
   }
 
+  /// Sous ce score, le modèle ne rend pas un candidat (`TfliteLocalPlantModel`).
+  /// Une espèce absente d'une liste vaut donc *au plus* cela.
+  static const _absentScore = 0.01;
+
   Future<List<IdentificationCandidate>> _classifyAll(List<File> images) async {
-    // Plusieurs photos de la même plante : les scores s'additionnent par
-    // espèce puis se normalisent, ce qui favorise l'espèce vue partout.
-    final sums = <String, double>{};
+    if (images.length == 1) {
+      return local.classify(images.first).timeout(localTimeout);
+    }
+    // Plusieurs photos de la même plante : on fusionne par **moyenne
+    // géométrique** des scores, c'est-à-dire moyenne des logarithmes.
+    //
+    // La moyenne arithmétique pardonne à une photo ratée : une espèce vue à
+    // 0,9 sur l'une et 0,1 sur l'autre ressort à 0,5. La géométrique exige
+    // que les photos soient d'accord et la ramène à 0,3. Mesuré sur 2 000
+    // observations de trois photos du jeu de test (tools/plant_model/
+    // multi_photo.py), l'écart entre les deux est de cinq points de top-1 ;
+    // le passage d'une photo à trois en vaut dix-neuf.
+    //
+    // Une espèce absente de la liste d'une photo ne vaut pas zéro — cela
+    // annulerait le produit — mais la borne que l'on connaît : le modèle
+    // ayant tronqué sa liste, elle est sous le plus petit score rendu, et
+    // sous le seuil de troncature. C'est une pénalité, pas un veto.
+    final scores = <Map<String, double>>[];
+    final floors = <double>[];
     final commons = <String, String?>{};
+    var coveredMass = 0.0;
     for (final image in images) {
       final result = await local.classify(image).timeout(localTimeout);
+      final byName = {for (final c in result) c.scientificName: c.score};
+      var floor = _absentScore;
+      for (final s in byName.values) {
+        if (s < floor) floor = s;
+        coveredMass += s;
+      }
+      scores.add(byName);
+      floors.add(floor);
       for (final c in result) {
-        sums[c.scientificName] = (sums[c.scientificName] ?? 0) + c.score;
         commons.putIfAbsent(c.scientificName, () => c.commonName);
       }
     }
-    final merged = [
-      for (final e in sums.entries) IdentificationCandidate(scientificName: e.key, commonName: commons[e.key], score: e.value / images.length),
+    coveredMass /= images.length;
+
+    final names = {for (final s in scores) ...s.keys};
+    if (names.isEmpty) return const [];
+    final merged = <String, double>{};
+    var total = 0.0;
+    for (final name in names) {
+      var sumOfLogs = 0.0;
+      for (var i = 0; i < scores.length; i++) {
+        sumOfLogs += math.log(math.max(scores[i][name] ?? floors[i], 1e-9));
+      }
+      final score = math.exp(sumOfLogs / scores.length);
+      merged[name] = score;
+      total += score;
+    }
+
+    // Remise à l'échelle. Moyenner aplatit la distribution : le premier
+    // candidat perd de la confiance alors même que le classement s'améliore,
+    // et il passe sous le seuil de [FallbackPolicy] — l'app irait consulter
+    // Pl@ntNet pour une réponse devenue *meilleure*.
+    //
+    // La cible est la masse que les listes d'entrée couvraient en moyenne,
+    // et non 1. Ramener à 1 fabriquerait de la confiance : deux photos qui
+    // ne rendent qu'un seul candidat, à 0,30 puis 0,90, en sortiraient à
+    // 1,00 — une certitude que personne n'a exprimée. Avec la masse
+    // moyenne, elles en sortent à 0,60. La fusion redresse l'échelle, elle
+    // n'invente rien. Multiplier par une constante ne change aucun ordre.
+    final scale = total > 0 ? coveredMass / total : 1.0;
+    return [
+      for (final e in merged.entries)
+        IdentificationCandidate(
+          scientificName: e.key,
+          commonName: commons[e.key],
+          score: (e.value * scale).clamp(0.0, 1.0),
+        ),
     ]..sort((a, b) => b.score.compareTo(a.score));
-    return merged;
   }
 
   /// Normalise les noms, note la provenance, rattache au catalogue. Le nom
