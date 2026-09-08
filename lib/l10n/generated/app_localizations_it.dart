@@ -917,8 +917,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localAccountHint =>
       'Le tue piante e foto restano private, su questo telefono. Account e sincronizzazione arriveranno in una versione futura.';
 
-  @override
-  String get about => 'Informazioni';
 
   @override
   String version(String version) {
@@ -3396,6 +3394,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get aboutSources => 'Fonti dei dati';
 
   @override
+  String get privacyPolicy => 'Informativa sulla privacy';
+
+  @override
   String get aboutSourceWikidata =>
       'Nomi delle specie in quattro lingue, dominio pubblico';
 
@@ -3459,9 +3460,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get supportNoThanks => 'Continua senza';
 
-  @override
-  String get aboutTagline =>
-      'Prenditi cura delle tue piante e conserva la loro storia.';
 
   @override
   String get emptyGardenSubtitle =>

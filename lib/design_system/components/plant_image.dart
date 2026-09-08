@@ -70,6 +70,15 @@ class PlantImage extends ConsumerWidget {
 /// Un [Hero] dont les coins suivent le vol : une vignette arrondie qui
 /// devient l'en-tête carré d'une fiche s'arrondit ou se redresse en route,
 /// au lieu de voler en rectangle et de ne s'arrondir qu'à l'atterrissage.
+///
+/// Et qui se retire quand on ne le voit pas. Le shell garde ses quatre
+/// onglets vivants dans un `IndexedStack` : la carte de l'onglet « Plantes »
+/// reste dans l'arbre, avec sa taille et sa position, pendant qu'on regarde
+/// « Aujourd'hui ». Sans ce garde-fou, fermer une fiche depuis un autre
+/// onglet faisait voler l'image vers cette carte posée hors champ, puis
+/// disparaître d'un coup faute d'être peinte. [TickerMode] dit exactement ce
+/// qu'il faut savoir : cette branche ne s'anime pas parce qu'on ne la voit
+/// pas. Flutter le pose aussi sur les routes couvertes par une autre.
 class PlantHero extends StatelessWidget {
   const PlantHero({super.key, required this.tag, required this.child, this.radius = BorderRadius.zero});
 
@@ -79,11 +88,9 @@ class PlantHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: tag,
-      flightShuttleBuilder: _shuttle,
-      child: ClipRRect(borderRadius: radius, child: child),
-    );
+    final clipped = ClipRRect(borderRadius: radius, child: child);
+    if (!TickerMode.of(context)) return clipped;
+    return Hero(tag: tag, flightShuttleBuilder: _shuttle, child: clipped);
   }
 
   static Widget _shuttle(BuildContext context, Animation<double> animation, HeroFlightDirection direction, BuildContext fromContext, BuildContext toContext) {

@@ -11,6 +11,18 @@ abstract final class AppConfig {
   static const List<String> legacyAppNames = ['Flora', 'Auxin'];
   static const String bundleId = 'ch.vergasta.plant';
 
+  /// Éditeur, tel qu'il apparaît au pied des réglages.
+  static const String publisher = 'Vergasta Digital';
+  static const String privacyUrl = 'https://vergasta.ch/privacy';
+
+  /// Version et numéro de compilation, recopiés de `pubspec.yaml`.
+  ///
+  /// Recopiés, donc susceptibles de dériver — c'était déjà arrivé, l'écran
+  /// annonçait 0.1.0 pour une application en 1.0.0. Un test les compare
+  /// désormais au pubspec et échoue si les deux divergent.
+  static const String version = '1.0.0';
+  static const int build = 1;
+
   /// Schéma des liens encodés dans les QR codes (`flora://plant/<id>`).
   ///
   /// Il garde le nom de travail : les étiquettes déjà imprimées le portent,
