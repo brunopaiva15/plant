@@ -5,7 +5,7 @@
 abstract final class RowDefaults {
   static const _byTable = <String, Map<String, Object?>>{
     'plants': {'number': 0},
-    'gardens': {'plantCounter': 0},
+    'gardens': {'plantCounter': 0, 'ownerId': ''},
     'locations': {'sortOrder': 0},
     'plant_attributes': {'position': 0},
     'attribute_schemas': {'position': 0, 'active': true},

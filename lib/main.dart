@@ -62,7 +62,6 @@ Future<void> main() async {
     preferencesServiceProvider.overrideWithValue(prefs),
     notificationServiceProvider.overrideWithValue(notifications),
     authRepositoryProvider.overrideWithValue(auth),
-    gardenIdProvider.overrideWithValue(gardenId),
   ]);
 
   // Emplacements de départ, dans la langue de l'appareil.

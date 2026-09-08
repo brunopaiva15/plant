@@ -471,3 +471,181 @@ returns table(user_id uuid, role text, display_name text, email text) language s
   left join auth.users u on u.id = m.user_id
   where m.garden_id = p_garden_id and is_member(p_garden_id);
 $$;
+
+-- ---------- Invitations : partager un jardin par lien ----------
+-- Une invitation porte un code court, à usage unique, éventuellement lié à une
+-- adresse e-mail et à une date d'expiration. L'invité n'a pas besoin d'avoir
+-- déjà un compte : il en crée un, puis échange le code contre une place dans le
+-- jardin. Le code est tiré côté serveur : le client ne peut pas le deviner.
+create table if not exists garden_invites (
+  id uuid primary key default gen_random_uuid(),
+  garden_id uuid not null references gardens(id) on delete cascade,
+  code text not null unique,
+  email text,                                  -- si renseigné, seul ce compte peut accepter
+  role text not null check (role in ('member','viewer')),
+  created_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz,
+  accepted_at timestamptz,
+  accepted_by uuid references auth.users(id) on delete set null,
+  revoked_at timestamptz
+);
+create index if not exists idx_garden_invites_garden on garden_invites(garden_id, created_at desc);
+
+alter table garden_invites enable row level security;
+drop policy if exists "invites read" on garden_invites;
+create policy "invites read" on garden_invites for select using (is_member(garden_id));
+drop policy if exists "invites write" on garden_invites;
+create policy "invites write" on garden_invites for all
+  using (exists (select 1 from gardens g where g.id = garden_id and g.owner_id = auth.uid()))
+  with check (exists (select 1 from gardens g where g.id = garden_id and g.owner_id = auth.uid()));
+
+-- Code à 8 caractères, sans I, L, O, 0 ni 1 : il se dicte au téléphone.
+-- Tirage par rejet pour rester uniforme (256 n'est pas multiple de 31).
+create or replace function new_invite_code() returns text language plpgsql as $$
+declare
+  alphabet constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  code text := '';
+  b int;
+begin
+  for _i in 1..8 loop
+    loop
+      b := get_byte(gen_random_bytes(1), 0);
+      exit when b < 248;
+    end loop;
+    code := code || substr(alphabet, 1 + (b % 31), 1);
+  end loop;
+  return code;
+end $$;
+
+create or replace function create_invite(p_garden_id uuid, p_email text default null, p_role text default 'member', p_days int default 14)
+returns garden_invites language plpgsql security definer set search_path = public as $$
+declare v garden_invites; v_code text;
+begin
+  if not exists (select 1 from gardens where id = p_garden_id and owner_id = auth.uid()) then raise exception 'not_owner'; end if;
+  if p_role not in ('member','viewer') then raise exception 'bad_role'; end if;
+  loop
+    v_code := new_invite_code();
+    exit when not exists (select 1 from garden_invites where code = v_code);
+  end loop;
+  insert into garden_invites(garden_id, code, email, role, created_by, expires_at)
+  values (p_garden_id, v_code, nullif(lower(trim(coalesce(p_email, ''))), ''), p_role, auth.uid(),
+          case when coalesce(p_days, 0) <= 0 then null else now() + make_interval(days => p_days) end)
+  returning * into v;
+  return v;
+end $$;
+
+-- Ce que voit l'invité avant d'accepter : le nom du jardin, celui qui l'invite,
+-- le rôle proposé. Aucune ligne = code inconnu, révoqué, expiré ou déjà utilisé.
+create or replace function preview_invite(p_code text)
+returns table (garden_id uuid, garden_name text, owner_name text, role text, email text, already_member boolean)
+language sql stable security definer set search_path = public as $$
+  select i.garden_id, g.name, coalesce(p.display_name, ''), i.role, i.email,
+         exists (select 1 from garden_members m where m.garden_id = i.garden_id and m.user_id = auth.uid())
+  from garden_invites i
+  join gardens g on g.id = i.garden_id
+  left join profiles p on p.id = g.owner_id
+  where upper(i.code) = upper(trim(p_code))
+    and i.revoked_at is null and i.accepted_at is null
+    and (i.expires_at is null or i.expires_at > now())
+    and g.deleted_at is null;
+$$;
+
+-- Échange du code contre une place dans le jardin. Un membre déjà présent
+-- garde son rôle : une invitation ne rétrograde jamais un propriétaire.
+create or replace function accept_invite(p_code text)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare v garden_invites; v_email text;
+begin
+  if auth.uid() is null then raise exception 'not_signed_in'; end if;
+  select * into v from garden_invites
+   where upper(code) = upper(trim(p_code))
+     and revoked_at is null and accepted_at is null
+     and (expires_at is null or expires_at > now())
+   for update;
+  if v.id is null then raise exception 'invalid_code'; end if;
+  select lower(email) into v_email from auth.users where id = auth.uid();
+  if v.email is not null and v.email is distinct from v_email then raise exception 'wrong_email'; end if;
+  insert into garden_members(garden_id, user_id, role) values (v.garden_id, auth.uid(), v.role)
+  on conflict (garden_id, user_id) do nothing;
+  update garden_invites set accepted_at = now(), accepted_by = auth.uid() where id = v.id;
+  return v.garden_id;
+end $$;
+
+create or replace function revoke_invite(p_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update garden_invites i set revoked_at = now()
+   where i.id = p_id and i.revoked_at is null
+     and exists (select 1 from gardens g where g.id = i.garden_id and g.owner_id = auth.uid());
+end $$;
+
+-- Les jardins auxquels le compte a accès : le sien d'abord, puis ceux qu'on
+-- lui a partagés. Sert au sélecteur de jardin de l'application.
+create or replace function my_gardens()
+returns table (id uuid, name text, owner_id uuid, owner_name text, role text, member_count int, plant_count int)
+language sql stable security definer set search_path = public as $$
+  select g.id, g.name, g.owner_id, coalesce(p.display_name, ''), m.role,
+         (select count(*)::int from garden_members x where x.garden_id = g.id),
+         (select count(*)::int from plants pl where pl.garden_id = g.id and pl.deleted_at is null and pl.status = 'active')
+  from garden_members m
+  join gardens g on g.id = m.garden_id
+  left join profiles p on p.id = g.owner_id
+  where m.user_id = auth.uid() and g.deleted_at is null
+  order by (g.owner_id = auth.uid()) desc, g.name;
+$$;
+
+-- Changer le rôle d'un membre, ou le retirer : le propriétaire seulement, et
+-- jamais sur lui-même — un jardin garde toujours son propriétaire.
+create or replace function set_member_role(p_garden_id uuid, p_user_id uuid, p_role text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (select 1 from gardens where id = p_garden_id and owner_id = auth.uid()) then raise exception 'not_owner'; end if;
+  if p_role not in ('member','viewer') then raise exception 'bad_role'; end if;
+  if p_user_id = auth.uid() then raise exception 'not_yourself'; end if;
+  update garden_members set role = p_role
+   where garden_id = p_garden_id and user_id = p_user_id and role <> 'owner';
+end $$;
+
+create or replace function remove_member(p_garden_id uuid, p_user_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (select 1 from gardens where id = p_garden_id and owner_id = auth.uid()) then raise exception 'not_owner'; end if;
+  if p_user_id = auth.uid() then raise exception 'not_yourself'; end if;
+  delete from garden_members where garden_id = p_garden_id and user_id = p_user_id and role <> 'owner';
+end $$;
+
+-- Quitter un jardin partagé. Le propriétaire ne peut pas quitter le sien.
+create or replace function leave_garden(p_garden_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if exists (select 1 from gardens where id = p_garden_id and owner_id = auth.uid()) then raise exception 'owner_cannot_leave'; end if;
+  delete from garden_members where garden_id = p_garden_id and user_id = auth.uid();
+end $$;
+
+do $$ declare f text; begin
+  foreach f in array array[
+    'create_invite(uuid,text,text,int)', 'preview_invite(text)', 'accept_invite(text)', 'revoke_invite(uuid)',
+    'my_gardens()', 'set_member_role(uuid,uuid,text)', 'remove_member(uuid,uuid)', 'leave_garden(uuid)'] loop
+    execute format('revoke all on function %s from public', f);
+    execute format('grant execute on function %s to authenticated', f);
+  end loop;
+end $$;
+
+-- Aperçu public d'une invitation, pour la page d'atterrissage du lien : qui
+-- invite, dans quel jardin, à quel titre. Rien de plus, et rien sur le contenu
+-- du jardin — de toute façon, qui tient le code peut le rejoindre.
+create or replace function public_invite(p_code text)
+returns table (garden_name text, owner_name text, role text, needs_email boolean)
+language sql stable security definer set search_path = public as $$
+  select g.name, coalesce(p.display_name, ''), i.role, i.email is not null
+  from garden_invites i
+  join gardens g on g.id = i.garden_id
+  left join profiles p on p.id = g.owner_id
+  where upper(i.code) = upper(trim(p_code))
+    and i.revoked_at is null and i.accepted_at is null
+    and (i.expires_at is null or i.expires_at > now())
+    and g.deleted_at is null;
+$$;
+revoke all on function public_invite(text) from public;
+grant execute on function public_invite(text) to anon, authenticated;

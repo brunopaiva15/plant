@@ -11,6 +11,8 @@ import '../../archive/presentation/archive_screen.dart' show archiveTitle, editA
 import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../account/application/membership_providers.dart';
+import '../../account/presentation/gardens_screen.dart' show gardenLabel;
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -136,6 +138,7 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: user != null && !user.isLocal ? (user.email ?? l10n.signedInAs) : l10n.localAccount,
                     onTap: () => context.push(Routes.account),
                   ),
+                  if (user != null && !user.isLocal) const _GardensRow(),
                   FloraListRow(
                     leading: Icon(CupertinoIcons.heart_fill, size: 20, color: c.rose),
                     title: l10n.supportSettings,
@@ -245,6 +248,28 @@ class _AppFooter extends StatelessWidget {
         const SizedBox(height: Space.xs),
         Text(l10n.version('${AppConfig.version} (${AppConfig.build})'), style: style),
       ],
+    );
+  }
+}
+
+/// Le jardin ouvert, et le chemin vers les autres. N'apparaît qu'avec un
+/// compte : sans lui, il n'y a qu'un jardin, celui de l'appareil.
+class _GardensRow extends ConsumerWidget {
+  const _GardensRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final role = ref.watch(currentRoleProvider);
+    final subtitle = [
+      gardenLabel(context, ref.watch(activeGardenNameProvider).value ?? '', isMine: role.canManageMembers),
+      if (!role.canManageMembers) role.canEdit ? l10n.roleMember : l10n.roleViewer,
+    ].join(' · ');
+    return FloraListRow(
+      leading: const Text('🏡', style: TextStyle(fontSize: 18)),
+      title: l10n.gardensTitle,
+      subtitle: subtitle,
+      onTap: () => context.push(Routes.gardens),
     );
   }
 }

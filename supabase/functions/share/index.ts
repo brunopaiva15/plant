@@ -1,15 +1,20 @@
 // Page publique d'un lien de partage Auxine.
 //
-// GET /functions/v1/share/<token>
+// GET /functions/v1/share/<token>       une plante ou une photo partagée
+// GET /functions/v1/share/join/<code>   une invitation à collaborer dans un jardin
 //
 // Ne rend qu'un lien vivant : non révoqué, non expiré, plante non supprimée.
-// La lecture passe par `public_shared_link`, une fonction SQL security definer :
-// la table `shared_links` reste inaccessible aux anonymes.
+// La lecture passe par `public_shared_link` et `public_invite`, deux fonctions
+// SQL security definer : ni `shared_links` ni `garden_invites` ne sont
+// accessibles aux anonymes.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const PHOTO_BUCKET = 'plant-photos';
+
+/** Schéma des liens de l'application : `flora://join/<code>`. */
+const APP_SCHEME = 'flora';
 
 /** Échappe le texte inséré dans le HTML : aucun contenu utilisateur n'est brut. */
 function esc(value: unknown): string {
@@ -46,6 +51,9 @@ ${opts.image ? `<meta property="og:image" content="${esc(opts.image)}">` : ''}
          display:flex; justify-content:center; padding:24px 16px 48px; }
   main { width:100%; max-width:560px; }
   .card { background:var(--surface); border:1px solid var(--line); border-radius:24px; overflow:hidden; }
+  .open { display:block; margin:16px 0 4px; padding:14px 18px; border-radius:16px; background:var(--sage);
+          color:#fff; text-align:center; text-decoration:none; font-weight:600; }
+  .code { font:600 22px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:0.12em; color:var(--ink); }
   img { width:100%; display:block; background:var(--line); }
   .body { padding:20px 22px 24px; }
   h1 { margin:0 0 4px; font-size:26px; letter-spacing:-0.02em; }
@@ -77,10 +85,44 @@ const notFound = () =>
     status: 404,
   });
 
+const roleLabels: Record<string, string> = {
+  member: 'ajouter, modifier et supprimer des plantes',
+  viewer: 'consulter le jardin, sans rien y changer',
+};
+
+/**
+ * Page d'atterrissage d'une invitation. Elle ne fait rien elle-même : le code
+ * ne vaut que dans l'application, échangé contre une place par un compte
+ * connecté. La page dit qui invite, et ouvre l'application.
+ */
+async function invitePage(code: string) {
+  const client = createClient(SUPABASE_URL, ANON_KEY);
+  const { data, error } = await client.rpc('public_invite', { p_code: code });
+  const invite = Array.isArray(data) ? data[0] : data;
+  if (error || !invite) return notFound();
+
+  const garden = invite.garden_name || 'un jardin';
+  const owner = invite.owner_name || '';
+  const title = owner ? `${owner} vous invite dans « ${garden} »` : `Invitation dans « ${garden} »`;
+  const body = `<div class="card"><div class="body">
+  <h1>${esc(title)}</h1>
+  <p>Vous pourrez ${esc(roleLabels[invite.role] ?? roleLabels.member)}.</p>
+  <a class="open" href="${esc(`${APP_SCHEME}://join/${code}`)}">Ouvrir dans Auxine</a>
+  <p>Pas encore l'application ? Installez Auxine, créez un compte${invite.needs_email ? ' avec l’adresse invitée' : ''}, puis saisissez ce code dans <b>Réglages › Mes jardins › Rejoindre un jardin</b> :</p>
+  <p class="code">${esc(code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code)}</p>
+  <div class="meta">L'invitation ne sert qu'une fois.</div>
+</div></div>`;
+  return page(body, { title, noindex: true });
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
 
-  const token = new URL(req.url).pathname.split('/').filter(Boolean).pop() ?? '';
+  const segments = new URL(req.url).pathname.split('/').filter(Boolean);
+  const token = segments.pop() ?? '';
+  if (segments.pop() === 'join') {
+    return /^[A-Za-z0-9]{6,16}$/.test(token) ? await invitePage(token.toUpperCase()) : notFound();
+  }
   if (!/^[A-Za-z0-9]{16,40}$/.test(token)) return notFound();
 
   const client = createClient(SUPABASE_URL, ANON_KEY);

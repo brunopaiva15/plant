@@ -10,11 +10,17 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftActionRepository implements ActionRepository {
-  DriftActionRepository(this._db, {String? Function()? currentUserId, bool Function()? southernHemisphere})
-      : _currentUserId = currentUserId ?? (() => null),
+  DriftActionRepository(this._db, {String? gardenId, String? Function()? currentUserId, bool Function()? southernHemisphere})
+      : _gardenId = gardenId,
+        _currentUserId = currentUserId ?? (() => null),
         _south = southernHemisphere ?? (() => false);
 
   final FloraDatabase _db;
+
+  /// Jardin ouvert. La base peut en contenir plusieurs depuis le partage :
+  /// les vues d'ensemble (journal, calendrier) s'en tiennent à celui-ci.
+  /// `null` en test et pour l'export, où la base n'a qu'un jardin.
+  final String? _gardenId;
   final String? Function() _currentUserId;
 
   /// L'hémisphère du jardin, relu à chaque complétion : il peut changer si
@@ -31,20 +37,25 @@ class DriftActionRepository implements ActionRepository {
     return q.watch().map((rows) => rows.map((r) => r.toDomain()).toList());
   }
 
+  /// Jointes à leur plante : les vues d'ensemble s'en tiennent au jardin ouvert.
   @override
-  Stream<List<PlantAction>> watchRecent({int limit = 20}) => (_db.select(_db.plantActions)
-        ..where((a) => a.deletedAt.isNull())
-        ..orderBy([(a) => OrderingTerm.desc(a.occurredAt)])
-        ..limit(limit))
-      .watch()
-      .map((rows) => rows.map((r) => r.toDomain()).toList());
+  Stream<List<PlantAction>> watchRecent({int limit = 20}) {
+    final q = _db.select(_db.plantActions).join([innerJoin(_db.plants, _db.plants.id.equalsExp(_db.plantActions.plantId))])
+      ..where(_db.plantActions.deletedAt.isNull())
+      ..orderBy([OrderingTerm.desc(_db.plantActions.occurredAt)])
+      ..limit(limit);
+    if (_gardenId != null) q.where(_db.plants.gardenId.equals(_gardenId!));
+    return q.watch().map((rows) => rows.map((r) => r.readTable(_db.plantActions).toDomain()).toList());
+  }
 
   @override
-  Stream<List<PlantAction>> watchBetween(DateTime from, DateTime to) => (_db.select(_db.plantActions)
-        ..where((a) => a.deletedAt.isNull() & a.occurredAt.isBetweenValues(from, to))
-        ..orderBy([(a) => OrderingTerm.asc(a.occurredAt)]))
-      .watch()
-      .map((rows) => rows.map((r) => r.toDomain()).toList());
+  Stream<List<PlantAction>> watchBetween(DateTime from, DateTime to) {
+    final q = _db.select(_db.plantActions).join([innerJoin(_db.plants, _db.plants.id.equalsExp(_db.plantActions.plantId))])
+      ..where(_db.plantActions.deletedAt.isNull() & _db.plantActions.occurredAt.isBetweenValues(from, to))
+      ..orderBy([OrderingTerm.asc(_db.plantActions.occurredAt)]);
+    if (_gardenId != null) q.where(_db.plants.gardenId.equals(_gardenId!));
+    return q.watch().map((rows) => rows.map((r) => r.readTable(_db.plantActions).toDomain()).toList());
+  }
 
   @override
   Future<PlantAction> log(NewAction data) async {

@@ -3589,4 +3589,189 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careAssistHint => 'When the catalogue does not know a species, its scientific name goes to the AI to fill in the sheet. Nothing else leaves the device, and the answer is kept so it is not asked twice.';
+
+  @override
+  String get gardensTitle => 'My gardens';
+
+  @override
+  String get gardensHint => 'The open garden is the one you see everywhere in the app. Switch between them whenever you like.';
+
+  @override
+  String get gardenMine => 'My garden';
+
+  @override
+  String get gardenUnnamed => 'Shared garden';
+
+  @override
+  String gardenSharedBy(String name) {
+    return 'Shared by $name';
+  }
+
+  @override
+  String gardenOpened(String name) {
+    return 'You are now in “$name”';
+  }
+
+  @override
+  String get someone => 'someone';
+
+  @override
+  String memberCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get renameGarden => 'Rename the garden';
+
+  @override
+  String get renameGardenHint => 'This is the name the people you invite will see.';
+
+  @override
+  String get gardenNameHint => 'The garden at home';
+
+  @override
+  String get joinGarden => 'Join a garden';
+
+  @override
+  String get joinGardenHint => 'Enter the code you were given, or open the invitation link you received.';
+
+  @override
+  String get inviteCodeHint => 'Invitation code';
+
+  @override
+  String get joinLook => 'See the invitation';
+
+  @override
+  String get joinConfirm => 'Join';
+
+  @override
+  String get joinInvalid => 'This code is no longer valid: it has been used, has expired, or never existed.';
+
+  @override
+  String get joinWrongEmail => 'This invitation is reserved for another email address.';
+
+  @override
+  String get joinNeedsAccount => 'You need an account to join a garden.';
+
+  @override
+  String joinInvitedBy(String name, String garden) {
+    return '$name invites you to “$garden”';
+  }
+
+  @override
+  String joinGardenName(String garden) {
+    return 'Invitation to “$garden”';
+  }
+
+  @override
+  String get joinAsMember => 'You will be able to add, edit and delete plants.';
+
+  @override
+  String get joinAsViewer => 'You will be able to see everything, without changing anything.';
+
+  @override
+  String get joinAlreadyMember => 'You are already part of this garden.';
+
+  @override
+  String joined(String name) {
+    return 'Welcome to “$name”';
+  }
+
+  @override
+  String get leaveGarden => 'Leave this garden';
+
+  @override
+  String leaveGardenConfirm(String name) {
+    return 'You will lose access to “$name”. The plants stay with their owner.';
+  }
+
+  @override
+  String leftGarden(String name) {
+    return 'You left “$name”';
+  }
+
+  @override
+  String get collaborationNeedsAccount => 'Sharing a garden needs an account';
+
+  @override
+  String get inviteSomeone => 'Invite someone';
+
+  @override
+  String get inviteReady => 'Invitation ready';
+
+  @override
+  String get inviteRoleHint => 'A member adds, edits and deletes plants. A viewer only looks.';
+
+  @override
+  String get inviteEmailOptional => 'Email address (optional)';
+
+  @override
+  String get inviteEmailHint => 'If given, only that account can accept the invitation.';
+
+  @override
+  String get inviteCreate => 'Create the invitation';
+
+  @override
+  String get inviteShareHint => 'Send this link or code to the person. They do not need the app yet.';
+
+  @override
+  String get inviteShare => 'Share the link';
+
+  @override
+  String inviteMessage(String link) {
+    return 'I am inviting you to my garden on Auxine: $link';
+  }
+
+  @override
+  String get inviteOnceHint => 'An invitation works only once.';
+
+  @override
+  String inviteExpires(String date) {
+    return 'Expires on $date';
+  }
+
+  @override
+  String get inviteFailed => 'The invitation could not be created.';
+
+  @override
+  String get invitesTitle => 'Pending invitations';
+
+  @override
+  String get inviteRevoke => 'Revoke';
+
+  @override
+  String get inviteRevokeConfirm => 'The code stops working immediately.';
+
+  @override
+  String get inviteRevoked => 'Invitation revoked';
+
+  @override
+  String get membersHint => 'The people you invite see the same plants as you, and can care for them.';
+
+  @override
+  String get membersGuestHint => 'This garden belongs to someone else. Here is who tends it.';
+
+  @override
+  String get memberRoleHint => 'A member adds, edits and deletes. A viewer only looks.';
+
+  @override
+  String makeRole(String role) {
+    return 'Change to “$role”';
+  }
+
+  @override
+  String roleChanged(String name, String role) {
+    return '$name is now “$role”';
+  }
+
+  @override
+  String removeMemberConfirm(String name) {
+    return '$name will lose access to this garden.';
+  }
 }

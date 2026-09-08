@@ -8,6 +8,7 @@ import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../account/application/membership_providers.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../plants/application/plant_providers.dart';
@@ -39,37 +40,40 @@ class LocationDetailScreen extends ConsumerWidget {
 
     return FloraPage(
       title: location.name,
-      trailing: FloraIconButton(
-        icon: CupertinoIcons.ellipsis,
-        semanticLabel: l10n.more,
-        onPressed: () => showAdaptiveActionSheet(
-          context,
-          cancelLabel: l10n.cancel,
-          actions: [
-            SheetAction(label: l10n.addPlant, icon: CupertinoIcons.plus, onPressed: () => startCreatePlantFlow(context, ref, locationId: locationId)),
-            SheetAction(label: l10n.editLocation, icon: CupertinoIcons.pencil, onPressed: () => showLocationEditSheet(context, existing: location)),
-            if (plants.isNotEmpty)
-              SheetAction(
-                label: l10n.careAllPlants,
-                icon: CupertinoIcons.drop,
-                onPressed: () => _careAll(context, ref, plants.map((p) => p.plant.id).toList()),
+      // Invité en lecture seule : plus rien à faire ici qu'à regarder.
+      trailing: !ref.watch(canEditProvider)
+          ? null
+          : FloraIconButton(
+              icon: CupertinoIcons.ellipsis,
+              semanticLabel: l10n.more,
+              onPressed: () => showAdaptiveActionSheet(
+                context,
+                cancelLabel: l10n.cancel,
+                actions: [
+                  SheetAction(label: l10n.addPlant, icon: CupertinoIcons.plus, onPressed: () => startCreatePlantFlow(context, ref, locationId: locationId)),
+                  SheetAction(label: l10n.editLocation, icon: CupertinoIcons.pencil, onPressed: () => showLocationEditSheet(context, existing: location)),
+                  if (plants.isNotEmpty)
+                    SheetAction(
+                      label: l10n.careAllPlants,
+                      icon: CupertinoIcons.drop,
+                      onPressed: () => _careAll(context, ref, plants.map((p) => p.plant.id).toList()),
+                    ),
+                  SheetAction(label: l10n.locationPhoto, icon: CupertinoIcons.camera, onPressed: () => _photoMenu(context, ref, location)),
+                  SheetAction(
+                    label: l10n.deleteLocation,
+                    icon: CupertinoIcons.trash,
+                    destructive: true,
+                    onPressed: () async {
+                      final ok = await showAdaptiveConfirm(context, title: l10n.deleteLocation, message: l10n.deleteLocationHint, confirmLabel: l10n.delete, cancelLabel: l10n.cancel, destructive: true);
+                      if (!ok) return;
+                      await ref.read(locationRepositoryProvider).delete(locationId);
+                      Haptics.warning();
+                      if (context.mounted) context.pop();
+                    },
+                  ),
+                ],
               ),
-            SheetAction(label: l10n.locationPhoto, icon: CupertinoIcons.camera, onPressed: () => _photoMenu(context, ref, location)),
-            SheetAction(
-              label: l10n.deleteLocation,
-              icon: CupertinoIcons.trash,
-              destructive: true,
-              onPressed: () async {
-                final ok = await showAdaptiveConfirm(context, title: l10n.deleteLocation, message: l10n.deleteLocationHint, confirmLabel: l10n.delete, cancelLabel: l10n.cancel, destructive: true);
-                if (!ok) return;
-                await ref.read(locationRepositoryProvider).delete(locationId);
-                Haptics.warning();
-                if (context.mounted) context.pop();
-              },
             ),
-          ],
-        ),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -16,8 +16,6 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   /// Tables sans `garden_id` : filtrées via la plante parente.
   static const _childOfPlant = {'plant_photos', 'plant_actions', 'care_schedules', 'plant_tags', 'measurements'};
 
-  static const _lww = {'gardens', 'locations', 'plants', 'care_schedules', 'inventory_items'};
-
   @override
   Future<void> upsert(String table, RemoteRow row) async {
     await _client.from(table).upsert(row);
@@ -31,7 +29,10 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   @override
   Future<List<RemoteRow>> pullSince(String table, {required String gardenId, DateTime? since}) async {
     if (table == 'garden_members' || table == 'profiles') return _pullMembership(table, gardenId);
-    final stamp = _lww.contains(table) ? 'updated_at' : 'created_at';
+    // Le curseur est posé sur `updated_at` pour ces tables : le delta doit se
+    // lire sur la même colonne, sinon une modification faite par quelqu'un
+    // d'autre n'arriverait jamais.
+    final stamp = SyncService.lwwTables.contains(table) ? 'updated_at' : 'created_at';
     PostgrestFilterBuilder<PostgrestList> query;
     if (table == 'gardens') {
       query = _client.from(table).select().eq('id', gardenId);
@@ -57,13 +58,6 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
     }
     return [for (final r in list) {'id': r['user_id'], 'display_name': r['display_name'], 'email': r['email']}];
   }
-
-  /// Invite un membre par e-mail (propriétaire uniquement).
-  Future<void> inviteMember({required String gardenId, required String email, required String role}) =>
-      _client.rpc('invite_member', params: {'p_garden_id': gardenId, 'p_email': email.trim(), 'p_role': role});
-
-  Future<void> removeMember({required String gardenId, required String userId}) =>
-      _client.from('garden_members').delete().match({'garden_id': gardenId, 'user_id': userId});
 
   @override
   Future<String> uploadFile(String storagePath, File file) async {

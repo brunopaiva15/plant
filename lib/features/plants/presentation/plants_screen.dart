@@ -6,6 +6,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../account/application/membership_providers.dart';
 import '../../../domain/models/models.dart';
 import '../application/plant_providers.dart';
 import 'create_plant_flow.dart';
@@ -106,8 +107,10 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
               // vient quand on veut une plante de plus, en sachant laquelle
               // ou non.
               FloraIconButton(icon: CupertinoIcons.lightbulb, semanticLabel: l10n.finderTitle, onPressed: () => context.push(Routes.finder)),
-              const SizedBox(width: Space.xs),
-              FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.addPlant, onPressed: () => startCreatePlantFlow(context, ref)),
+              if (ref.watch(canEditProvider)) ...[
+                const SizedBox(width: Space.xs),
+                FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.addPlant, onPressed: () => startCreatePlantFlow(context, ref)),
+              ],
             ],
           ),
           slivers: [

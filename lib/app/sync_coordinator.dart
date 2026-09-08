@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/config/supabase_config.dart';
+import '../data/services/preferences_service.dart';
 import '../data/sync/supabase_remote_data_source.dart';
 import '../data/sync/sync_service.dart';
 import '../domain/sync/sync_state.dart';
@@ -40,29 +41,38 @@ class SyncCoordinator extends Notifier<SyncState> with WidgetsBindingObserver {
   @override
   SyncState build() {
     final user = ref.watch(currentUserProvider).value;
+    // Changer de jardin change ce qu'on synchronise : nouveau service, nouveaux
+    // curseurs, nouvel abonnement temps réel.
+    final gardenId = ref.watch(gardenIdProvider);
     ref.onDispose(_teardown);
     if (!SupabaseConfig.isConfigured || user == null || user.isLocal) {
       _teardown();
       return SyncState.initial;
     }
-    _setup(user.id);
+    _setup(user.id, gardenId);
     return _service?.currentState ?? SyncState.initial;
   }
 
-  void _setup(String userId) {
+  void _setup(String userId, String gardenId) {
     _teardown();
     final prefs = ref.read(preferencesServiceProvider);
     final db = ref.read(databaseProvider);
     final storage = ref.read(photoStorageProvider);
-    final gardenId = ref.read(gardenIdProvider);
     final remote = SupabaseRemoteDataSource(Supabase.instance.client);
+    // Les curseurs sont nommés par jardin : basculer sur un jardin partagé le
+    // tire en entier, sans que le curseur du sien fasse sauter des lignes.
     final service = SyncService(
       db: db,
       remote: remote,
-      cursors: PrefsCursorStore(prefs.syncCursor, prefs.setSyncCursor, prefs.clearSyncCursors),
+      cursors: PrefsCursorStore(
+        (table) => prefs.syncCursor('$gardenId/$table'),
+        (table, value) => prefs.setSyncCursor('$gardenId/$table', value),
+        prefs.clearSyncCursors,
+      ),
       localFile: (rel) async => File(await storage.absolutePath(rel)),
       gardenId: gardenId,
       userId: userId,
+      ownedGardenId: prefs.gardenId,
     );
     _service = service;
     _stateSub = service.state.listen((s) => state = s);
@@ -83,11 +93,16 @@ class SyncCoordinator extends Notifier<SyncState> with WidgetsBindingObserver {
     unawaited(_firstSync(userId, service, prefs));
   }
 
-  Future<void> _firstSync(String userId, SyncService service, dynamic prefs) async {
-    // Première connexion sur cet appareil : tout le jardin local est poussé.
+  Future<void> _firstSync(String userId, SyncService service, PreferencesService prefs) async {
+    // Première connexion sur cet appareil : le jardin local passe au compte,
+    // puis part en entier. Les jardins partagés, eux, arrivent par le pull.
     if (prefs.syncedAccountId != userId) {
       await prefs.clearSyncCursors();
-      await service.enqueueEverything();
+      final own = prefs.gardenId;
+      if (own != null) {
+        await service.claimGarden(own, userId);
+        await service.enqueueEverything(gardenId: own);
+      }
       await prefs.setSyncedAccountId(userId);
     }
     await service.sync();
