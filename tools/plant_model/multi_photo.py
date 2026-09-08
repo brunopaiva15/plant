@@ -81,6 +81,12 @@ def like_app(probs: list[np.ndarray], top_k: int, cut: float = 0.01) -> np.ndarr
     seulement les scores comparables à ceux d'une photo seule — et donc au
     seuil de `FallbackPolicy`.
     """
+    if len(probs) == 1:
+        # Une seule photo : la cascade rend les scores du modèle tels quels,
+        # sans fusion ni renormalisation (cascade_identifier.dart). La mesure
+        # doit faire exactement pareil, sinon elle calibre un seuil pour un
+        # calcul que l'application n'exécute jamais.
+        return probs[0]
     kept = []
     for p in probs:
         order = np.argsort(-p)[:top_k]
@@ -98,7 +104,8 @@ def like_app(probs: list[np.ndarray], top_k: int, cut: float = 0.01) -> np.ndarr
 
 
 def measure(cached, labels, k: int, geometric: bool, only_captive: bool | None = None,
-            app_top_k: int | None = None) -> dict:
+            app_top_k: int | None = None, threshold: float = THRESHOLD,
+            min_margin: float = 0.0) -> dict:
     seen = hit1 = hit3 = accepted = accepted_ok = 0
     for probs, truth, captive in cached:
         if only_captive is not None and captive != only_captive:
@@ -112,7 +119,8 @@ def measure(cached, labels, k: int, geometric: bool, only_captive: bool | None =
         seen += 1
         hit1 += top[0] == truth
         hit3 += truth in top
-        if merged[order[0]] >= THRESHOLD:
+        second = merged[order[1]] if len(order) > 1 else 0.0
+        if merged[order[0]] >= threshold and merged[order[0]] - second >= min_margin:
             accepted += 1
             accepted_ok += top[0] == truth
     if not seen:
@@ -136,6 +144,31 @@ def show(title: str, rows: list[tuple[str, dict]]) -> None:
         print(f"   {label:24s} top1 {r['top1']}  top3 {r['top3']}  "
               f"seuil {THRESHOLD} → {r['accepted_rate']} acceptées, "
               f"précision {r['precision_when_accepted']}{delta}")
+    print()
+
+
+def sweep(cached, labels, photos: int, only_captive: bool | None) -> None:
+    """Le tableau qui sert à régler `FallbackPolicy`.
+
+    Le seuil livré (0,70) a été calibré sur la v5, à une photo. La v6 est
+    plus large — 1 445 classes au lieu de 894 — donc sa confiance se répartit
+    sur plus de candidats et le même seuil la rend trop prudente. Fusionner
+    plusieurs photos déplace encore la distribution. Un seuil ne se transpose
+    pas d'un modèle à l'autre : il se remesure.
+    """
+    qui = 'plantes cultivées' if only_captive else 'toutes espèces'
+    print(f'— seuils, {qui} (les photos de l\'app sont celles de gauche)\n')
+    print(f"   {'seuil':>6s} {'marge':>6s} | " + ' | '.join(f'{k} photo{"s" if k > 1 else " "}' for k in range(1, photos + 1)))
+    print('   ' + '-' * (16 + 22 * photos))
+    for threshold in (0.40, 0.50, 0.55, 0.60, 0.70, 0.80):
+        for min_margin in (0.0, 0.25):
+            cells = []
+            for k in range(1, photos + 1):
+                r = measure(cached, labels, k, False, only_captive=only_captive,
+                            app_top_k=5, threshold=threshold, min_margin=min_margin)
+                cells.append(f"{r['accepted_rate']:5.0%} à {r['precision_when_accepted'] or 0:5.1%}"
+                             if r and r['accepted_rate'] else '        —       ')
+            print(f'   {threshold:6.2f} {min_margin:6.2f} | ' + ' | '.join(cells))
     print()
 
 
@@ -183,6 +216,8 @@ def main() -> int:
     show('plantes cultivées — moyenne des probabilités',
          [(f'{k} photo{"s" if k > 1 else ""}', measure(cached, model['labels'], k, False, only_captive=True))
           for k in range(1, args.photos + 1)])
+    sweep(cached, model['labels'], args.photos, only_captive=True)
+    sweep(cached, model['labels'], args.photos, only_captive=None)
     return 0
 
 

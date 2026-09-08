@@ -1,9 +1,10 @@
 # 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
 
-> État au 6 septembre 2026 : 1 032 plantes au catalogue de collecte, 130 783
-> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **894
-> classes** livré dans l'app en TFLite (7,8 Mo). La cascade identifie **sur
-> l'appareil** et n'appelle Pl@ntNet que sur hésitation.
+> État au 8 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 518
+> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 445
+> classes** livré dans l'app en TFLite (8,8 Mo). La cascade identifie **sur
+> l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
+> même plante valent dix-neuf points de top-1.
 
 ## 1. Pourquoi
 
@@ -576,46 +577,108 @@ correspondance), Goeppertia orbifolia (connue comme Calathea orbifolia) et
 Streptocarpus ionanthus (Saintpaulia ionantha). À résoudre par
 `synonyms.txt` avant la v6.
 
-### 6.6 v6 — le jeu est prêt, l'entraînement attend une machine
+### 6.6 Résultats du modèle v6 — 1 445 espèces, entraîné au goutte-à-goutte
 
 Le catalogue de collecte est passé à 1 558 plantes (les 530 espèces
-cultivées les plus observées en Europe sur iNaturalist s'ajoutant aux
-1 030 d'avant), et la collecte a tourné jusqu'au bout le 6 septembre 2026 :
+cultivées les plus observées en Europe s'ajoutant aux 1 030 d'avant), et le
+modèle est entraîné.
 
-| | v5 | **jeu v6** |
+| | v5 | **v6** |
 |---|---|---|
 | Plantes au catalogue de collecte | 1 032 | **1 558** |
-| Espèces avec au moins une image | 984 | **1 513** |
-| Images gardées | 130 783 | **235 909** |
-| Classes exploitables (≥ 25 images d'entraînement) | 894 | **1 427** |
-| Licences | CC0, CC BY, CC BY-SA | CC0 115 341, CC BY 110 152, CC BY-SA 10 416 |
+| Espèces avec au moins une image | 984 | **1 509** |
+| Images gardées | 130 783 | **290 518** |
+| Classes du modèle | 894 | **1 445** |
+| Taille TFLite | 7,8 Mo | **8,8 Mo** |
+| Top-1 (test) | 51,9 % | **52,2 %** |
+| Top-3 (test) | 67,2 % | **67,6 %** |
+| Macro-F1 | 0,477 | **0,503** |
+| Entraînement | 4 + 12 époques, 5 h 15 | 40 + 12 époques, 9 h 47 |
 
-**Le modèle, lui, n'est pas entraîné.** Trois passes ont été tentées ; la
-machine de développement les a toutes interrompues. Ce qu'on en a appris,
-et qui est corrigé dans le code :
+Ces deux colonnes **ne se comparent pas** : chaque modèle a été mesuré sur
+le jeu de test de sa propre collecte, et celui de la v6 est plus dur — 551
+classes de plus, dont beaucoup d'espèces de jardin proches entre elles. Le
+seul chiffre lisible entre les deux est le macro-F1, qui monte de 2,6 points
+sur un problème 61 % plus large : les classes rares sont mieux traitées.
 
-- `candidate_pairs` gardait en mémoire toutes les paires d'un même seau :
-  des centaines de millions de tuples à 236 000 images, et la consolidation
-  mourait. Les seaux sont maintenant comparés d'un bloc avec numpy.
-- Le tampon de mélange était posé après le décodage : huit mille JPEG lus
-  avant le premier lot. Le mélange porte sur les chemins, avant décodage.
-- Précharger validation et test coûtait dix minutes au démarrage. Les deux
-  se lisent depuis les fichiers, et le test n'est construit qu'à
-  l'évaluation.
-- `--checkpoint` sauve les poids toutes les 200 lots et à chaque fin
-  d'époque ; `--steps-per-epoch` découpe l'entraînement en époques courtes.
-  Une reprise repart du dernier point.
+#### La comparaison qui décide, à armes égales
 
-Reste que neuf heures de calcul sur quatre cœurs sans carte graphique ne
-tiennent pas sur une machine recyclée dès que la session s'endort. La
-progression atteinte, 6 époques de tête sur 20 et 24 % de validation sur
-1 427 classes, n'était pas exploitable.
+`tools/plant_model/compare_models.py` fait passer les deux modèles sur **les
+mêmes images** — le test de la v6 — en ne gardant que les 889 espèces
+qu'ils connaissent tous les deux, et en masquant chez la v6 les classes que
+la v5 n'a pas. C'est la seule mesure qui dise ce que l'utilisateur gagne.
 
-**Décision du 7 septembre 2026 : l'app garde le modèle v5** (894 espèces,
-top-1 51,9 %). Le jeu v6 est prêt ; l'entraînement se fera sur une machine
-avec carte graphique, avec la recette de la v5 (MobileNetV3-Large,
-4 + 12 époques complètes). `tools/plant_dataset/cache/` conserve les
-résolutions de noms GBIF et iNaturalist, qui coûtent des heures de réseau.
+| 889 classes communes (5 000 images) | v5 | **v6** |
+|---|---|---|
+| Top-1 | 48,6 % | **57,3 %** |
+| Top-3 | 64,1 % | **72,1 %** |
+| Justesse quand le modèle répond seul (0,70) | 77,7 % | **88,9 %** |
+
+| plantes cultivées, classes communes (1 666 images) | v5 | **v6** |
+|---|---|---|
+| Top-1 | 57,1 % | **60,4 %** |
+| Top-3 | 71,8 % | **74,1 %** |
+| Justesse quand le modèle répond seul (0,70) | 83,4 % | **89,9 %** |
+
+Et 513 espèces que la v5 ne pouvait pas nommer du tout sont reconnues à
+50,3 % en top-1.
+
+Le gain le plus utile n'est pas le top-1 mais les **onze points de justesse
+quand le modèle tranche seul** : moins de mauvaises réponses affirmées, et
+moins d'appels à Pl@ntNet.
+
+#### Le seuil a été remesuré
+
+Un seuil ne se transporte pas d'un modèle à l'autre. La v6 répartit sa
+confiance sur 1 445 candidats au lieu de 894, donc le 0,70 de la v5 la
+rendait trop prudente. Mesuré sur les photos de plantes cultivées, dans le
+calcul exact que fait la cascade :
+
+| seuil | une photo | deux photos |
+|---|---|---|
+| 0,70 | 42 % de réponses seules, 86,0 % justes | 37 %, 93,1 % |
+| **0,60** | **47 %, 82,8 %** | **43 %, 90,8 %** |
+| 0,50 | 55 %, 74,3 % | 49 %, 85,9 % |
+
+`acceptThreshold` passe donc à **0,60**.
+
+#### Deux photos valent dix-neuf points
+
+La mesure la plus rentable de toute cette version n'a demandé aucun
+entraînement. `splits.csv` regroupe les photos d'une même observation ;
+2 000 observations de trois photos donnent, dans le calcul de la cascade :
+
+| | 1 photo | 2 photos | 3 photos |
+|---|---|---|---|
+| Top-1, toutes espèces | 47,6 % | 61,5 % | **66,4 %** |
+| Top-1, plantes cultivées | 48,5 % | 59,5 % | **67,5 %** |
+
+Dix-neuf points, contre 8,7 pour dix heures de calcul et 160 000 images de
+plus. La fusion se fait par **moyenne géométrique** — elle exige que les
+photos soient d'accord, là où la moyenne arithmétique pardonne à une photo
+ratée, et elle vaut cinq points de plus qu'elle. Détails et précautions :
+`tools/plant_model/multi_photo.py` et `cascade_identifier.dart`.
+
+Le chiffre est un plafond optimiste : les photos d'une observation viennent
+de la même séance, sous la même lumière. Les quasi-doublons ayant été
+écartés à la collecte, elles restent visuellement distinctes.
+
+#### Ce que l'entraînement a coûté, et ce qu'on en a appris
+
+Neuf heures 47 sur quatre cœurs sans carte graphique, sur une machine
+recyclée dès que la session s'endort. Trois passes précédentes avaient été
+perdues. Ce qui a changé :
+
+- la collecte est découpée en parts disjointes qui tiennent sur les quatre
+  cœurs : 1 558 espèces en 3 h 49 au lieu de près de sept heures ;
+- la phase de tête n'est plus qu'une passe avant. Le réseau y est gelé,
+  donc ses sorties ne changent pas d'une époque à l'autre : on les calcule
+  une fois (`--feature-cache`) et la tête s'entraîne dessus en quelques
+  minutes au lieu de quatre fois trente minutes ;
+- cet encodage, comme le réglage fin, **reprend où il s'arrête**. C'est ce
+  qui a permis d'avancer par tranches de dix minutes entre deux réveils ;
+- le décodage JPEG n'est pas le goulot, contrairement à ce que la recette
+  supposait : 630 images/s cache froid contre 93 pour le réseau.
 
 Trois hybrides horticoles n'ont aucune image, faute de nom reconnu par
 GBIF : Hylotelephium × mottramianum, Salvia × floriferior et
@@ -780,10 +843,16 @@ flutter test                                        # dont 33 pour l'identificat
 
 ## 12. Reste à faire, dans l'ordre
 
-1. Entraîner la v6 sur une machine avec carte graphique : le jeu est
-   collecté (1 427 classes, 235 909 images, § 6.6), la recette est celle de
-   la v5. Recopier `cache/*.json` dans `dataset/` avant toute recollecte.
-2. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
-3. Photos de plantes en pot dans des intérieurs : c'est ce qui manque au
-   yucca et au ficus ginseng, et les licences libres en offrent peu (§ 6.5).
-4. Recalage de `FallbackPolicy` sur le jeu de test de la v6.
+1. **Faire prendre deux photos** : le gain est mesuré et la cascade sait déjà
+   les fusionner, mais rien dans l'interface ne les demande. C'est dix-neuf
+   points qui attendent un écran.
+2. Pré-entraînement PlantNet-300K (§ 4.4, option a), jamais essayé. Vérifier
+   d'abord s'il existe un poids MobileNet publié — sans quoi c'est une
+   seconde passe complète — et le recouvrement d'espèces, qui a beaucoup
+   augmenté avec les 530 plantes de jardin de la v6.
+3. Régularisation : à la douzième époque, l'entraînement est à 70,5 % et la
+   validation à 52,2 %. Dix-huit points d'écart, c'est elle qui limite, pas
+   le nombre d'époques.
+4. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
+5. Photos de plantes en pot dans des intérieurs : c'est ce qui manque encore
+   au ficus ginseng, et les licences libres en offrent peu (§ 6.5).
