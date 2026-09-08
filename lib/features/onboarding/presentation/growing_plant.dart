@@ -65,7 +65,7 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
 
   /// Moment où la plante est devenue adulte : l'origine de sa respiration.
   Duration? _grownAt;
-  var _pose = const BreathPose(0);
+  var _pose = const BreathPose.rest();
 
   bool get _grown => _grownAt != null;
 
@@ -177,7 +177,7 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
     } else if (!wanted && _ticker.isActive) {
       _base = _elapsed;
       _ticker.stop();
-      setState(() => _pose = const BreathPose(0));
+      setState(() => _pose = const BreathPose.rest());
     }
   }
 

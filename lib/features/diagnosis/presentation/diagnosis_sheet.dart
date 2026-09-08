@@ -14,9 +14,11 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
+import '../../../domain/problems/plant_problem.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../actions/application/care_actions.dart';
+import '../../problems/presentation/problem_kind_icon.dart';
 
 /// « Ma plante a un problème » : photos, symptômes, analyse, pistes.
 Future<void> showDiagnosisSheet(BuildContext context, {required Plant plant}) =>
@@ -110,6 +112,9 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     return care.match == CareMatch.generic ? const [] : care.profile.issues;
   }
 
+  /// L'entrée de la base que le service a reconnue, s'il en a reconnu une.
+  PlantProblem? _problemOf(DiagnosisCause cause, ProblemCatalog? catalog) => catalog?[cause.problemId];
+
   /// Le nom de la piste : celui de la base quand le service en a reconnu une,
   /// sinon le titre qu'il a écrit lui-même.
   ///
@@ -118,7 +123,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   /// niveau des racines » d'une analyse à l'autre ; il s'appelle désormais
   /// pareil à chaque fois, et dans la langue de l'application.
   String _titleOf(DiagnosisCause cause, ProblemCatalog? catalog, String language) =>
-      catalog?[cause.problemId]?.nameIn(language) ?? cause.title;
+      _problemOf(cause, catalog)?.nameIn(language) ?? cause.title;
 
   Future<void> _save() async {
     final l10n = context.l10n;
@@ -207,10 +212,14 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             Text(l10n.identifyHint, style: context.text.caption),
             const SizedBox(height: Space.sm),
             for (final cause in _result!.causes)
-              _CauseCard(
-                cause: cause,
-                title: _titleOf(cause, ref.watch(problemCatalogProvider).value, Localizations.localeOf(context).languageCode),
-              ),
+              () {
+                final catalog = ref.watch(problemCatalogProvider).value;
+                return _CauseCard(
+                  cause: cause,
+                  title: _titleOf(cause, catalog, Localizations.localeOf(context).languageCode),
+                  kind: _problemOf(cause, catalog)?.kind,
+                );
+              }(),
             const SizedBox(height: Space.md),
             FloraButton(label: l10n.saveToJournal, icon: CupertinoIcons.book, expand: true, onPressed: _save),
             const SizedBox(height: Space.xs),
@@ -237,12 +246,17 @@ extension LikelihoodLabel on AppLocalizations {
 }
 
 class _CauseCard extends StatelessWidget {
-  const _CauseCard({required this.cause, required this.title});
+  const _CauseCard({required this.cause, required this.title, this.kind});
 
   final DiagnosisCause cause;
 
   /// Déjà résolu par la base : la carte n'a plus qu'à l'afficher.
   final String title;
+
+  /// La famille du problème, quand la base l'a reconnu. `null` pour une
+  /// cause hors base, qui n'a alors pas de symbole plutôt qu'un symbole
+  /// approximatif.
+  final ProblemKind? kind;
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +269,10 @@ class _CauseCard extends StatelessWidget {
           children: [
             Row(
               children: [
+                if (kind != null) ...[
+                  ProblemKindIcon(kind: kind!, side: 44),
+                  const SizedBox(width: Space.sm),
+                ],
                 Expanded(child: Text(title, style: context.text.title3)),
                 const SizedBox(width: Space.xs),
                 // Trois crans, pas de barre : il n'y a rien à remplir quand

@@ -1988,6 +1988,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careKnownProblemsNote => 'Reported on this species or its close relatives. Not all of them will affect it.';
 
   @override
+  String get problemKindDisorder => 'Disorder';
+
+  @override
+  String get problemKindPest => 'Pest';
+
+  @override
+  String get problemKindDisease => 'Disease';
+
+  @override
+  String get problemKindCondition => 'Condition';
+
+  @override
+  String get problemKindDisorders => 'Disorders';
+
+  @override
+  String get problemKindPests => 'Pests';
+
+  @override
+  String get problemKindDiseases => 'Diseases';
+
+  @override
+  String get problemKindConditions => 'Conditions';
+
+  @override
   String get careTips => 'Good habits';
 
   @override

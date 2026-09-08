@@ -61,29 +61,40 @@ class ClayIllustration extends StatefulWidget {
 /// l'impression d'un objet qui flotte plutôt que d'un objet qui oscille.
 /// L'ombre au sol se resserre et pâlit quand l'objet monte.
 class BreathPose {
-  const BreathPose(this.phase);
+  const BreathPose(this.phase) : _resting = false;
+
+  /// L'objet posé, immobile : ni décalé, ni penché, son ombre entière.
+  ///
+  /// Aucune phase ne donne cette pose. La hauteur et l'inclinaison sont en
+  /// quadrature — quand l'une s'annule l'autre est à son extrême —, si bien
+  /// que `BreathPose(0)` laisse l'objet penché d'un degré. Le repos est donc
+  /// un cas à part, et non un instant du cycle.
+  const BreathPose.rest()
+      : phase = 0,
+        _resting = true;
 
   /// Avancement, en tours de respiration.
   final double phase;
+  final bool _resting;
 
   double get _angle => phase * 2 * math.pi;
 
   /// Hauteur, de -1 (au plus bas) à 1 (au plus haut).
-  double get lift => math.sin(_angle);
+  double get lift => _resting ? 0 : math.sin(_angle);
 
   /// Inclinaison, de -1 à 1, en retard d'un quart de tour sur la hauteur.
-  double get tilt => math.sin(_angle - math.pi / 2);
+  double get tilt => _resting ? 0 : math.sin(_angle - math.pi / 2);
 
   /// Étendue de l'ombre au sol, de 0,82 (objet haut) à 1 (objet posé).
-  double get shadowScale => 1 - 0.09 * (lift + 1);
+  double get shadowScale => _resting ? 1 : 1 - 0.09 * (lift + 1);
 
   /// Opacité de l'ombre, de 0,55 (objet haut) à 1 (objet posé).
-  double get shadowOpacity => 1 - 0.225 * (lift + 1);
+  double get shadowOpacity => _resting ? 1 : 1 - 0.225 * (lift + 1);
 }
 
 class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerProviderStateMixin {
   late final Ticker _ticker = createTicker(_tick);
-  var _pose = const BreathPose(0);
+  var _pose = const BreathPose.rest();
 
 
   @override
@@ -112,7 +123,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
       // Posé : à la hauteur de repos, sans inclinaison. L'objet ne quitte le
       // centre qu'en glissant hors champ, flou : ce retour au repos ne se
       // voit pas, et la respiration repart du repos à son retour.
-      setState(() => _pose = const BreathPose(0));
+      setState(() => _pose = const BreathPose.rest());
     }
   }
 

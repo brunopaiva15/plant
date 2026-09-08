@@ -10,6 +10,7 @@ import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../plants/application/plant_providers.dart';
+import '../../problems/presentation/problem_kind_icon.dart';
 
 /// Fiche d'entretien d'une plante : quand l'arroser, quelle lumière lui
 /// donner, quel substrat, quand rempoter, ce qu'il faut surveiller.
@@ -273,6 +274,12 @@ class _KnownProblemsState extends ConsumerState<_KnownProblems> {
     if (found.isEmpty) return const SizedBox.shrink();
     final shown = _all ? found : found.take(preview).toList();
     final language = Localizations.localeOf(context).languageCode;
+    // Groupées par famille : le symbole se montre alors une fois par groupe,
+    // assez grand pour se lire, et il porte le mot qui va avec.
+    final familles = <ProblemKind, List<PlantProblem>>{};
+    for (final p in shown) {
+      (familles[p.kind] ??= []).add(p);
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -282,34 +289,34 @@ class _KnownProblemsState extends ConsumerState<_KnownProblems> {
         // La base le dit elle-même : les hôtes cités sont des exemples, et un
         // genre ne rend pas toutes ses espèces sensibles.
         Text(l10n.careKnownProblemsNote, style: context.text.caption),
-        const SizedBox(height: Space.sm),
-        FloraGroup(
-          children: [
-            for (final p in shown)
-              FloraListRow(
-                leading: Text(_emoji(p.kind), style: const TextStyle(fontSize: 16)),
-                title: p.nameIn(language),
-                dense: true,
-                chevron: false,
-                titleMaxLines: 2,
-              ),
-            if (shown.length < found.length)
-              FloraListRow(
-                leading: const Text('⋯', style: TextStyle(fontSize: 16)),
-                title: l10n.seeAll,
-                dense: true,
-                onTap: () => setState(() => _all = true),
-              ),
-          ],
-        ),
+        for (final entry in familles.entries) ...[
+          const SizedBox(height: Space.md),
+          Row(
+            children: [
+              ProblemKindIcon(kind: entry.key),
+              const SizedBox(width: Space.sm),
+              Text(l10n.problemKindPlural(entry.key), style: context.text.callout.copyWith(fontWeight: FontWeight.w600)),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+          FloraGroup(
+            children: [
+              for (final p in entry.value)
+                FloraListRow(title: p.nameIn(language), dense: true, chevron: false, titleMaxLines: 2),
+            ],
+          ),
+        ],
+        if (shown.length < found.length) ...[
+          const SizedBox(height: Space.sm),
+          FloraButton(
+            label: l10n.seeAll,
+            style: FloraButtonStyle.ghost,
+            size: FloraButtonSize.small,
+            onPressed: () => setState(() => _all = true),
+          ),
+        ],
       ],
     );
   }
 
-  static String _emoji(ProblemKind kind) => switch (kind) {
-        ProblemKind.disorder => '🌦️',
-        ProblemKind.pest => '🐛',
-        ProblemKind.disease => '🦠',
-        ProblemKind.condition => '🌫️',
-      };
 }

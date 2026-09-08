@@ -1994,6 +1994,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careKnownProblemsNote => 'An dieser Art oder ihren nahen Verwandten gemeldet. Nicht alle treffen sie.';
 
   @override
+  String get problemKindDisorder => 'Störung';
+
+  @override
+  String get problemKindPest => 'Schädling';
+
+  @override
+  String get problemKindDisease => 'Krankheit';
+
+  @override
+  String get problemKindCondition => 'Belag';
+
+  @override
+  String get problemKindDisorders => 'Störungen';
+
+  @override
+  String get problemKindPests => 'Schädlinge';
+
+  @override
+  String get problemKindDiseases => 'Krankheiten';
+
+  @override
+  String get problemKindConditions => 'Beläge';
+
+  @override
   String get careTips => 'Gute Gewohnheiten';
 
   @override

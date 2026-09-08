@@ -116,6 +116,26 @@ for f in glob.glob('/tmp/collection/*.png'):
     Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
 ```
 
+# Les quatre familles de problèmes
+
+`build_category_logos.py` rend les symboles des quatre valeurs du champ `type`
+de `assets/problems/catalog.txt` : une feuille au soleil avec sa goutte pour
+les troubles abiotiques, un charançon pour les ravageurs, une feuille à
+lésions pour les maladies, un dépôt sombre pour les affections. Aucun texte,
+donc valables dans les quatre langues.
+
+```bash
+# ~3 min sur quatre cœurs
+blender -b -noaudio -t 4 -P tool/build_category_logos.py -- --output build/category_logos
+# puis recadrage commun et réduction en WebP 512 (~25 Ko par symbole)
+python3 tool/pack_category_logos.py build/category_logos/renders
+```
+
+Le cadrage des rendus réserve de la place au mouvement, dont l'application n'a
+pas besoin : `pack_category_logos.py` recadre sur le contenu avant de réduire.
+Le recadrage est commun aux quatre, sans quoi le charançon grandirait et la
+feuille rétrécirait, et la famille perdrait son unité d'échelle.
+
 `clay_scene.py` tient ce que ces scripts ont en commun : les primitives de
 géométrie, les matériaux mats, le studio d'éclairage et le grain. Rien ne s'y
 exécute à l'import.

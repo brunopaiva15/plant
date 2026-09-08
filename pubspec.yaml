@@ -105,8 +105,8 @@ flutter:
     # Régénéré par tool/harvest_species.py puis tool/build_species_catalog.py.
     - assets/species/catalog.tsv
     # Base des 200 troubles, ravageurs et maladies (fr/en/it/de), vocabulaire
-    # commun du diagnostic.
-    - assets/problems/catalog.txt
+    # commun du diagnostic, et les quatre symboles d'argile de ses familles.
+    - assets/problems/
     # Illustrations 3D de l'onboarding : une image par écran, animée par l'app,
     # et la séquence de pousse du premier écran (tool/grow_monstera.py).
     - assets/onboarding/

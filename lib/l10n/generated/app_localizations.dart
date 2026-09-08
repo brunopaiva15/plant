@@ -3462,6 +3462,54 @@ abstract class AppLocalizations {
   /// **'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.'**
   String get careKnownProblemsNote;
 
+  /// No description provided for @problemKindDisorder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trouble'**
+  String get problemKindDisorder;
+
+  /// No description provided for @problemKindPest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ravageur'**
+  String get problemKindPest;
+
+  /// No description provided for @problemKindDisease.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maladie'**
+  String get problemKindDisease;
+
+  /// No description provided for @problemKindCondition.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affection'**
+  String get problemKindCondition;
+
+  /// No description provided for @problemKindDisorders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Troubles'**
+  String get problemKindDisorders;
+
+  /// No description provided for @problemKindPests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ravageurs'**
+  String get problemKindPests;
+
+  /// No description provided for @problemKindDiseases.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maladies'**
+  String get problemKindDiseases;
+
+  /// No description provided for @problemKindConditions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affections'**
+  String get problemKindConditions;
+
   /// No description provided for @careTips.
   ///
   /// In fr, this message translates to:
