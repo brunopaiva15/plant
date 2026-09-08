@@ -8,12 +8,14 @@ import 'plant_identifier.dart';
 /// raisons, et la seconde est la pire :
 ///
 /// - un softmax n'est pas calibré. [FallbackPolicy] documente qu'un premier
-///   candidat à 0,70 est juste dans 85 % des cas ; « 70 % » affiché n'est
-///   donc pas « 70 % de chances d'avoir raison » ;
-/// - le modèle embarqué répartit sa masse sur 894 espèces et Pl@ntNet sur
+///   candidat au seuil d'acceptation est juste dans 83 % des cas ; le score
+///   affiché tel quel n'est donc pas « 60 % de chances d'avoir raison » ;
+/// - le modèle embarqué répartit sa masse sur 1 445 espèces et Pl@ntNet sur
 ///   des dizaines de milliers. À confiance réelle égale, le premier sort des
 ///   scores structurellement plus hauts. Les afficher dans la même colonne
-///   invitait à une comparaison qui n'a pas de sens.
+///   invitait à une comparaison qui n'a pas de sens. C'est la même raison qui
+///   a fait remesurer le seuil en passant de 894 à 1 445 espèces : un score
+///   ne veut rien dire hors du modèle qui l'a produit.
 ///
 /// Les mots restent ceux du diagnostic. Une seule échelle de vraisemblance
 /// dans l'application, pas deux vocabulaires pour la même idée.
