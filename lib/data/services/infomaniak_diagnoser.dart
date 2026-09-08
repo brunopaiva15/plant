@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
+import '../../domain/care/care_profile.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
 
 /// Diagnostic par les AI Services d'Infomaniak (hébergés en Suisse), via
@@ -33,7 +34,14 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
 
   @override
-  Future<Diagnosis> diagnose({required List<File> images, required String language, String? plantName, String? species, String? symptoms}) async {
+  Future<Diagnosis> diagnose({
+    required List<File> images,
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    List<CommonIssue> knownIssues = const [],
+  }) async {
     if (!isConfigured) throw const DiagnosisException('unconfigured');
     if (images.isEmpty) throw const DiagnosisException('no_images');
     final parts = <Map<String, Object?>>[
@@ -42,7 +50,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           'type': 'image_url',
           'image_url': {'url': 'data:image/jpeg;base64,${base64Encode(await prepareImage(await image.readAsBytes()))}'},
         },
-      {'type': 'text', 'text': userPrompt(language: language, plantName: plantName, species: species, symptoms: symptoms)},
+      {
+        'type': 'text',
+        'text': userPrompt(language: language, plantName: plantName, species: species, symptoms: symptoms, knownIssues: knownIssues),
+      },
     ];
     // Le format JSON contraint n'est pas garanti par tous les modèles : si
     // le service le refuse, on renvoie la même demande sans lui — la consigne
@@ -95,19 +106,35 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   static String systemPrompt(String language) =>
       'You help a hobbyist care for a houseplant or garden plant. Look at the photos and describe what you observe, '
-      'then list the most plausible causes ranked by likelihood (0 to 1; they need not sum to 1), each with a short explanation '
+      'then list the most plausible causes, most plausible first, each with a short explanation '
       'and 1 to 3 concrete, gentle actions the person can take at home. Be honest about uncertainty: these are suggestions, never a diagnosis. '
-      'If the plant looks healthy, say so with a single low-likelihood cause at most. Set "urgent" only for pests, rot or rapid decline. '
+      'Rate each cause with "likelihood", one of exactly these three words: "likely", "possible", "unlikely". '
+      'Do not use numbers or percentages: you cannot measure this from a photo, and a figure would suggest a precision you do not have. '
+      'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
+      'If the plant looks healthy, say so with a single "unlikely" cause at most. Set "urgent" only for pests, rot or rapid decline. '
       'If the photos do not show a plant clearly enough, say so in "summary" and return no cause. '
       'Write every text field in the language with code "$language", in a warm, plain, human tone, without jargon. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
-      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "title" (string), "likelihood" (number), '
+      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "title" (string), "likelihood" (string), '
       '"explanation" (string), "actions" (array of strings)).';
 
-  static String userPrompt({required String language, String? plantName, String? species, String? symptoms}) {
+  static String userPrompt({
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    List<CommonIssue> knownIssues = const [],
+  }) {
     final parts = <String>[
       if (plantName != null && plantName.isNotEmpty) 'Plant: $plantName.',
       if (species != null && species.isNotEmpty) 'Species: $species.',
+      // Ce que la fiche d'entretien dit de l'espèce. C'est un a priori, pas
+      // une liste de réponses : sans cela le modèle part de zéro alors que le
+      // catalogue sait déjà de quoi ce genre de plante souffre d'ordinaire.
+      if (knownIssues.isNotEmpty)
+        'This species is commonly affected by: ${knownIssues.map((i) => i.name).join(', ')}. '
+            'Consider these first when the photos fit them, but do not force them: the plant may have something else entirely, '
+            'and a cause outside this list is a perfectly good answer.',
       if (symptoms != null && symptoms.trim().isNotEmpty) 'What the owner noticed: ${symptoms.trim()}',
       'What might be wrong, and what can I do?',
     ];
@@ -136,14 +163,25 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         .whereType<Map>()
         .map((c) => DiagnosisCause(
               title: (c['title'] as String?) ?? '',
-              likelihood: ((c['likelihood'] as num?) ?? 0).toDouble().clamp(0, 1),
+              likelihood: Likelihood.parse(c['likelihood']),
               explanation: (c['explanation'] as String?) ?? '',
               actions: ((c['actions'] as List?) ?? const []).whereType<String>().toList(),
             ))
         .where((c) => c.title.isNotEmpty)
-        .toList()
-      ..sort((a, b) => b.likelihood.compareTo(a.likelihood));
-    return Diagnosis(summary: (data['summary'] as String?) ?? '', causes: causes, urgent: data['urgent'] == true);
+        .toList();
+    // Trois crans laissent beaucoup d'ex æquo. Le rang d'arrivée les
+    // départage, car le service a déjà classé ses pistes de la plus à la
+    // moins plausible ; un tri sans cela les rebattrait sans raison.
+    final classees = causes.indexed.toList()
+      ..sort((a, b) {
+        final cran = a.$2.likelihood.index.compareTo(b.$2.likelihood.index);
+        return cran != 0 ? cran : a.$1.compareTo(b.$1);
+      });
+    return Diagnosis(
+      summary: (data['summary'] as String?) ?? '',
+      causes: [for (final (_, c) in classees) c],
+      urgent: data['urgent'] == true,
+    );
   }
 
   static Map<String, dynamic>? _extractJson(String text) {

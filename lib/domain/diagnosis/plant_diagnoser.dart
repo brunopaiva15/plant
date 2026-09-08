@@ -1,11 +1,39 @@
 import 'dart:io';
 
-/// Une cause possible, avec sa vraisemblance (0–1) et des gestes concrets.
+import '../care/care_profile.dart';
+
+/// À quel point une piste tient debout, en trois crans.
+///
+/// Pas un pourcentage. Un modèle de langue n'a aucun moyen de calibrer
+/// « 62 % » sur une photo de feuille jaune ; le chiffre donnait à une
+/// intuition l'allure d'une mesure, et une barre de progression le
+/// confirmait à l'œil. Trois mots disent la même chose sans mentir sur la
+/// précision.
+enum Likelihood {
+  likely,
+  possible,
+  unlikely;
+
+  /// Le mot rendu par le service, ou `possible` faute de mieux : une piste
+  /// sans étiquette reste une piste.
+  static Likelihood parse(Object? raw) {
+    for (final v in Likelihood.values) {
+      if (v.name == raw) return v;
+    }
+    // Certains modèles répondent encore par un nombre malgré la consigne.
+    // On le range dans un cran plutôt que de perdre la piste, en gardant des
+    // seuils larges : c'est un classement, pas une conversion.
+    if (raw is num) return raw >= 0.6 ? Likelihood.likely : (raw >= 0.3 ? Likelihood.possible : Likelihood.unlikely);
+    return Likelihood.possible;
+  }
+}
+
+/// Une cause possible, avec sa vraisemblance et des gestes concrets.
 class DiagnosisCause {
   const DiagnosisCause({required this.title, required this.likelihood, required this.explanation, required this.actions});
 
   final String title;
-  final double likelihood;
+  final Likelihood likelihood;
   final String explanation;
   final List<String> actions;
 }
@@ -43,6 +71,11 @@ abstract class PlantDiagnoser {
     String? plantName,
     String? species,
     String? symptoms,
+
+    /// Ce dont l'espèce souffre habituellement, d'après sa fiche
+    /// d'entretien. Une piste de départ, pas une liste de réponses : la
+    /// plante peut très bien avoir autre chose.
+    List<CommonIssue> knownIssues = const [],
   });
 }
 
@@ -51,6 +84,13 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
   @override
   bool get isConfigured => false;
   @override
-  Future<Diagnosis> diagnose({required List<File> images, required String language, String? plantName, String? species, String? symptoms}) =>
+  Future<Diagnosis> diagnose({
+    required List<File> images,
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    List<CommonIssue> knownIssues = const [],
+  }) =>
       throw const DiagnosisException('unconfigured');
 }

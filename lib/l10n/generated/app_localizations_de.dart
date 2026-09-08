@@ -1587,6 +1587,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get possibleCauses => 'Mögliche Ursachen';
 
   @override
+  String get likelihoodLikely => 'Wahrscheinlich';
+
+  @override
+  String get likelihoodPossible => 'Möglich';
+
+  @override
+  String get likelihoodUnlikely => 'Wenig wahrscheinlich';
+
+  @override
   String get urgentHint => 'Schnell handeln';
 
   @override

@@ -2820,6 +2820,24 @@ abstract class AppLocalizations {
   /// **'Pistes possibles'**
   String get possibleCauses;
 
+  /// No description provided for @likelihoodLikely.
+  ///
+  /// In fr, this message translates to:
+  /// **'Probable'**
+  String get likelihoodLikely;
+
+  /// No description provided for @likelihoodPossible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Possible'**
+  String get likelihoodPossible;
+
+  /// No description provided for @likelihoodUnlikely.
+  ///
+  /// In fr, this message translates to:
+  /// **'Peu probable'**
+  String get likelihoodUnlikely;
+
   /// No description provided for @urgentHint.
   ///
   /// In fr, this message translates to:

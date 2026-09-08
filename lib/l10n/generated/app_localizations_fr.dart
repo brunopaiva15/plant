@@ -1583,6 +1583,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get possibleCauses => 'Pistes possibles';
 
   @override
+  String get likelihoodLikely => 'Probable';
+
+  @override
+  String get likelihoodPossible => 'Possible';
+
+  @override
+  String get likelihoodUnlikely => 'Peu probable';
+
+  @override
   String get urgentHint => 'À traiter rapidement';
 
   @override

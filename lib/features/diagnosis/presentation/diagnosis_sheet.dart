@@ -10,6 +10,8 @@ import '../../../core/l10n/l10n.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
+import '../../../domain/care/care_guide.dart';
+import '../../../domain/care/care_profile.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
@@ -64,6 +66,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             plantName: widget.plant.name,
             species: widget.plant.speciesName,
             symptoms: _symptoms.text,
+            knownIssues: _knownIssues(),
           );
       Haptics.success();
       if (mounted) setState(() => _result = result);
@@ -83,10 +86,22 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     }
   }
 
+  /// Ce dont l'espèce souffre habituellement, d'après sa fiche d'entretien.
+  ///
+  /// Le catalogue le sait déjà pour un bon millier d'espèces ; le taire
+  /// reviendrait à faire chercher au modèle ce qui est écrit à côté. Une
+  /// fiche générique n'a rien à dire et n'envoie rien.
+  List<CommonIssue> _knownIssues() {
+    final species = widget.plant.speciesName;
+    if (species == null || species.isEmpty) return const [];
+    final care = ref.read(careGuideProvider).resolve(species, family: speciesFamilyOf(ref, species));
+    return care.match == CareMatch.generic ? const [] : care.profile.issues;
+  }
+
   Future<void> _save() async {
     final l10n = context.l10n;
     final r = _result!;
-    final text = [r.summary, ...r.causes.take(3).map((c) => '• ${c.title} (${(c.likelihood * 100).round()} %)')].join('\n');
+    final text = [r.summary, ...r.causes.take(3).map((c) => '• ${c.title} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})')].join('\n');
     await ref.read(careActionsProvider).log(
           NewAction(plantId: widget.plant.id, typeKey: CareKind.note.key, notes: text),
           message: l10n.diagnosisSaved,
@@ -181,6 +196,15 @@ abstract final class DiagnosisLimits {
   static const maxImages = 3;
 }
 
+/// Le mot qui dit la vraisemblance d'une piste, dans la langue de l'app.
+extension LikelihoodLabel on AppLocalizations {
+  String likelihoodLabel(Likelihood v) => switch (v) {
+        Likelihood.likely => likelihoodLikely,
+        Likelihood.possible => likelihoodPossible,
+        Likelihood.unlikely => likelihoodUnlikely,
+      };
+}
+
 class _CauseCard extends StatelessWidget {
   const _CauseCard({required this.cause});
 
@@ -189,7 +213,6 @@ class _CauseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final percent = (cause.likelihood * 100).round();
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.xs),
       child: FloraCard(
@@ -200,13 +223,19 @@ class _CauseCard extends StatelessWidget {
               children: [
                 Expanded(child: Text(cause.title, style: context.text.title3)),
                 const SizedBox(width: Space.xs),
-                DueBadge(emoji: '～', label: '$percent %', status: percent >= 50 ? DueStatus.today : DueStatus.upcoming, compact: true),
+                // Trois crans, pas de barre : il n'y a rien à remplir quand
+                // il n'y a rien à mesurer.
+                DueBadge(
+                  emoji: switch (cause.likelihood) { Likelihood.likely => '◆', Likelihood.possible => '◈', Likelihood.unlikely => '◇' },
+                  label: context.l10n.likelihoodLabel(cause.likelihood),
+                  status: switch (cause.likelihood) {
+                    Likelihood.likely => DueStatus.today,
+                    Likelihood.possible => DueStatus.upcoming,
+                    Likelihood.unlikely => DueStatus.none,
+                  },
+                  compact: true,
+                ),
               ],
-            ),
-            const SizedBox(height: Space.xxs),
-            ClipRRect(
-              borderRadius: Radii.fullAll,
-              child: LinearProgressIndicator(value: cause.likelihood, minHeight: 4, backgroundColor: c.surfaceMuted, color: percent >= 50 ? c.sage : c.inkTertiary),
             ),
             const SizedBox(height: Space.xs),
             Text(cause.explanation, style: context.text.callout),
