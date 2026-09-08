@@ -43,6 +43,12 @@ pip install --upgrade pip
 > qui ignore la carte même présente : l'entraînement tourne dix fois plus
 > lentement, sans un message. Sur cette machine, c'est **`requirements-gpu.txt`**.
 
+> **Le second piège, aussi coûteux.** Cloner dans `/mnt/c/...` — le disque
+> Windows vu depuis Linux — fait passer chaque lecture de fichier par une
+> couche de traduction. Sur 290 000 petits fichiers relus à chaque époque,
+> c'est un facteur dix. Le dépôt et le jeu doivent vivre dans le système de
+> fichiers de WSL (`~/`), pas sous `/mnt/c`.
+
 ```bash
 git clone https://github.com/brunopaiva15/plant.git ~/plant
 cd ~/plant/tools/plant_model
