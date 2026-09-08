@@ -24,13 +24,13 @@ Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${Date
 InfomaniakDiagnoser _diagnoser(http.Client client) =>
     InfomaniakDiagnoser(apiKey: 'tok', productId: '12345', model: 'mistralai/Mistral-Small-4-119B-2603', client: client);
 
-PlantProblem _probleme(String id, ProblemKind kind, String en) =>
-    PlantProblem(id: id, kind: kind, scope: ProblemScope.wide, fr: 'fr', en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
+PlantProblem _probleme(String id, ProblemKind kind, String en, {String fr = 'fr'}) =>
+    PlantProblem(id: id, kind: kind, scope: ProblemScope.wide, fr: fr, en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
 
 final _pistes = [
-  _probleme('002', ProblemKind.disorder, 'Waterlogging and root oxygen deficiency'),
-  _probleme('060', ProblemKind.pest, 'Spider mites'),
-  _probleme('126', ProblemKind.disease, 'Powdery mildews'),
+  _probleme('002', ProblemKind.disorder, 'Waterlogging and root oxygen deficiency', fr: 'Excès d\'eau et asphyxie racinaire'),
+  _probleme('060', ProblemKind.pest, 'Spider mites', fr: 'Tétranyques'),
+  _probleme('126', ProblemKind.disease, 'Powdery mildews', fr: 'Oïdiums'),
 ];
 
 void main() {
@@ -91,6 +91,78 @@ void main() {
       }));
       final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'002', '060', '126'});
       expect(d.causes.map((c) => c.problemId), ['002', '060', '126', null, null]);
+    });
+
+    group('le filet de rattrapage par le nom', () {
+      final noms = InfomaniakDiagnoser.namesOf([
+        _probleme('027', ProblemKind.disorder, 'Magnesium deficiency', fr: 'Carence en magnésium'),
+        _probleme('035', ProblemKind.disorder, 'Household-product phytotoxicity', fr: 'Phytotoxicité des produits ménagers'),
+      ], 'fr');
+
+      test('un nom exact rattrape un numéro oublié', () {
+        // Le cas vu en vrai : le service décrit exactement une piste de la
+        // liste, avec ses mots à elle, et n'en donne pas le numéro.
+        final body = _completion(jsonEncode({
+          'summary': '…',
+          'causes': [
+            {'title': 'Phytotoxicité des produits ménagers', 'likelihood': 'possible'},
+          ],
+        }));
+        expect(InfomaniakDiagnoser.parseResponse(body, allowed: const {'027', '035'}, byName: noms).causes.single.problemId, '035');
+      });
+
+      test('la casse, les accents et la ponctuation ne comptent pas', () {
+        final body = _completion(jsonEncode({
+          'summary': '…',
+          'causes': [
+            {'title': 'CARENCE EN MAGNESIUM.'},
+          ],
+        }));
+        expect(InfomaniakDiagnoser.parseResponse(body, allowed: const {'027'}, byName: noms).causes.single.problemId, '027');
+      });
+
+      test('un titre approchant ne rattrape rien', () {
+        // « Sécheresse passagère ou coup de soleil léger » recouvre deux
+        // pistes sans être ni l'une ni l'autre. Poser un nom de travers sur
+        // une carte serait pire que de n'en poser aucun.
+        final body = _completion(jsonEncode({
+          'summary': '…',
+          'causes': [
+            {'title': 'Légère carence en magnésium'},
+            {'title': 'Brûlure chimique légère'},
+          ],
+        }));
+        final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'027', '035'}, byName: noms);
+        expect(d.causes.map((c) => c.problemId), [null, null]);
+      });
+
+      test('un numéro explicite prime sur le nom', () {
+        final body = _completion(jsonEncode({
+          'summary': '…',
+          'causes': [
+            {'title': 'Carence en magnésium', 'problem': '035'},
+          ],
+        }));
+        expect(InfomaniakDiagnoser.parseResponse(body, allowed: const {'027', '035'}, byName: noms).causes.single.problemId, '035');
+      });
+
+      test('deux pistes de même nom normalisé sont écartées des deux côtés', () {
+        final ambigus = InfomaniakDiagnoser.namesOf([
+          _probleme('001', ProblemKind.disorder, 'Water deficit', fr: 'Manque d\'eau'),
+          _probleme('014', ProblemKind.disorder, 'Wind desiccation', fr: 'Manque d\'eau !'),
+        ], 'fr');
+        expect(ambigus, isEmpty, reason: 'trancher au hasard serait pire que ne rien faire');
+      });
+
+      test('sans liste soumise, le filet reste inerte', () {
+        final body = _completion(jsonEncode({
+          'summary': '…',
+          'causes': [
+            {'title': 'Carence en magnésium'},
+          ],
+        }));
+        expect(InfomaniakDiagnoser.parseResponse(body).causes.single.problemId, isNull);
+      });
     });
 
     test('une cause sans titre survit si elle porte un numéro', () {
@@ -170,6 +242,16 @@ void main() {
       expect(messages.first['content'], contains('"likely", "possible", "unlikely"'));
     });
 
+    test('la consigne impose le numéro et interdit de fondre deux pistes', () async {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      expect(consigne, contains('decide "problem" first'));
+      expect(consigne, contains('Always include the key'));
+      expect(consigne, contains('give them as two causes'));
+      // Le numéro se décide avant le titre : l'ordre des clés compte pour un
+      // modèle qui écrit de gauche à droite.
+      expect(consigne.indexOf('"problem" (string or null)'), lessThan(consigne.indexOf('"title" (string)')));
+    });
+
     test('la base locale part comme liste de pistes, groupée par nature', () async {
       late http.Request captured;
       final client = MockClient((req) async {
@@ -187,9 +269,11 @@ void main() {
       await tmp.delete();
       final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
       final text = parts.last['text'] as String;
-      expect(text, contains('Disorders: 002 Waterlogging and root oxygen deficiency.'));
-      expect(text, contains('Pests: 060 Spider mites.'));
-      expect(text, contains('Diseases: 126 Powdery mildews.'));
+      // Les noms partent dans la langue de la réponse : c'est celle dans
+      // laquelle le modèle écrira son titre.
+      expect(text, contains('Disorders: 002 Excès d\'eau et asphyxie racinaire.'));
+      expect(text, contains('Pests: 060 Tétranyques.'));
+      expect(text, contains('Diseases: 126 Oïdiums.'));
       expect(text, contains('especially common on this species: 060'));
       // Une liste de pistes, pas une liste de réponses.
       expect(text, isNot(contains('Other:')));
@@ -206,6 +290,23 @@ void main() {
       await tmp.delete();
       final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
       expect(parts.last['text'], isNot(contains('Known problems')));
+    });
+
+    test('en allemand, la liste part en allemand', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return http.Response(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(
+        images: [tmp],
+        language: 'de',
+        candidates: [_probleme('060', ProblemKind.pest, 'Spider mites', fr: 'Tétranyques')],
+      );
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      expect(parts.last['text'], contains('060 de'), reason: 'le nom allemand du gabarit');
     });
 
     test('un numéro qu\'on n\'a pas soumis est écarté', () async {
