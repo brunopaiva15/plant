@@ -7,9 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/problems/problem_catalog.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
+import '../../../domain/care/care_guide.dart';
+import '../../../domain/care/care_profile.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
@@ -58,12 +61,20 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
     try {
       final files = [for (final p in _photos) File(await storage.absolutePath(p.filePath))];
+      final frequent = ProblemCatalog.idsForIssues(_knownIssues()).toSet();
+      final catalog = await ref.read(problemCatalogProvider.future);
       final result = await ref.read(plantDiagnoserProvider).diagnose(
             images: files,
             language: lang,
             plantName: widget.plant.name,
             species: widget.plant.speciesName,
             symptoms: _symptoms.text,
+            candidates: catalog.candidatesFor(
+              species: widget.plant.speciesName,
+              family: speciesFamilyOf(ref, widget.plant.speciesName),
+              pinned: frequent,
+            ),
+            frequentIds: frequent,
           );
       Haptics.success();
       if (mounted) setState(() => _result = result);
@@ -83,10 +94,41 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     }
   }
 
+  /// Ce dont l'espèce souffre habituellement, d'après sa fiche d'entretien.
+  ///
+  /// Le catalogue le sait déjà pour un bon millier d'espèces ; le taire
+  /// reviendrait à faire chercher au modèle ce qui est écrit à côté. Une
+  /// fiche générique n'a rien à dire et n'envoie rien.
+  ///
+  /// La fiche est relue telle que le catalogue la donne, sans le complément
+  /// de l'IA : lui souffler ses propres suppositions les lui ferait
+  /// confirmer.
+  List<CommonIssue> _knownIssues() {
+    final species = widget.plant.speciesName;
+    if (species == null || species.isEmpty) return const [];
+    final care = ref.read(careGuideProvider).resolve(species, family: speciesFamilyOf(ref, species));
+    return care.match == CareMatch.generic ? const [] : care.profile.issues;
+  }
+
+  /// Le nom de la piste : celui de la base quand le service en a reconnu une,
+  /// sinon le titre qu'il a écrit lui-même.
+  ///
+  /// C'est tout l'intérêt de la base. Le même excès d'eau s'appelait
+  /// « Arrosage trop fréquent », « Trop d'eau » ou « Excès d'humidité au
+  /// niveau des racines » d'une analyse à l'autre ; il s'appelle désormais
+  /// pareil à chaque fois, et dans la langue de l'application.
+  String _titleOf(DiagnosisCause cause, ProblemCatalog? catalog, String language) =>
+      catalog?[cause.problemId]?.nameIn(language) ?? cause.title;
+
   Future<void> _save() async {
     final l10n = context.l10n;
     final r = _result!;
-    final text = [r.summary, ...r.causes.take(3).map((c) => '• ${c.title} (${(c.likelihood * 100).round()} %)')].join('\n');
+    final catalog = ref.read(problemCatalogProvider).value;
+    final language = Localizations.localeOf(context).languageCode;
+    final text = [
+      r.summary,
+      ...r.causes.take(3).map((c) => '• ${_titleOf(c, catalog, language)} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
+    ].join('\n');
     await ref.read(careActionsProvider).log(
           NewAction(plantId: widget.plant.id, typeKey: CareKind.note.key, notes: text),
           message: l10n.diagnosisSaved,
@@ -164,7 +206,11 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             const SizedBox(height: Space.xxs),
             Text(l10n.identifyHint, style: context.text.caption),
             const SizedBox(height: Space.sm),
-            for (final cause in _result!.causes) _CauseCard(cause: cause),
+            for (final cause in _result!.causes)
+              _CauseCard(
+                cause: cause,
+                title: _titleOf(cause, ref.watch(problemCatalogProvider).value, Localizations.localeOf(context).languageCode),
+              ),
             const SizedBox(height: Space.md),
             FloraButton(label: l10n.saveToJournal, icon: CupertinoIcons.book, expand: true, onPressed: _save),
             const SizedBox(height: Space.xs),
@@ -181,15 +227,26 @@ abstract final class DiagnosisLimits {
   static const maxImages = 3;
 }
 
+/// Le mot qui dit la vraisemblance d'une piste, dans la langue de l'app.
+extension LikelihoodLabel on AppLocalizations {
+  String likelihoodLabel(Likelihood v) => switch (v) {
+        Likelihood.likely => likelihoodLikely,
+        Likelihood.possible => likelihoodPossible,
+        Likelihood.unlikely => likelihoodUnlikely,
+      };
+}
+
 class _CauseCard extends StatelessWidget {
-  const _CauseCard({required this.cause});
+  const _CauseCard({required this.cause, required this.title});
 
   final DiagnosisCause cause;
+
+  /// Déjà résolu par la base : la carte n'a plus qu'à l'afficher.
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final percent = (cause.likelihood * 100).round();
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.xs),
       child: FloraCard(
@@ -198,15 +255,21 @@ class _CauseCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text(cause.title, style: context.text.title3)),
+                Expanded(child: Text(title, style: context.text.title3)),
                 const SizedBox(width: Space.xs),
-                DueBadge(emoji: '～', label: '$percent %', status: percent >= 50 ? DueStatus.today : DueStatus.upcoming, compact: true),
+                // Trois crans, pas de barre : il n'y a rien à remplir quand
+                // il n'y a rien à mesurer.
+                DueBadge(
+                  emoji: switch (cause.likelihood) { Likelihood.likely => '◆', Likelihood.possible => '◈', Likelihood.unlikely => '◇' },
+                  label: context.l10n.likelihoodLabel(cause.likelihood),
+                  status: switch (cause.likelihood) {
+                    Likelihood.likely => DueStatus.today,
+                    Likelihood.possible => DueStatus.upcoming,
+                    Likelihood.unlikely => DueStatus.none,
+                  },
+                  compact: true,
+                ),
               ],
-            ),
-            const SizedBox(height: Space.xxs),
-            ClipRRect(
-              borderRadius: Radii.fullAll,
-              child: LinearProgressIndicator(value: cause.likelihood, minHeight: 4, backgroundColor: c.surfaceMuted, color: percent >= 50 ? c.sage : c.inkTertiary),
             ),
             const SizedBox(height: Space.xs),
             Text(cause.explanation, style: context.text.callout),

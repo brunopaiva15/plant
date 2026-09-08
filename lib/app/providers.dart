@@ -26,6 +26,8 @@ import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
 import '../data/sharing/supabase_sharing_service.dart';
+import '../data/problems/problem_catalog.dart';
+import '../data/problems/problem_catalog_loader.dart';
 import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
@@ -71,8 +73,23 @@ final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorage
 final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
 final crashReporterProvider = Provider<CrashReporter>((ref) => const NoopCrashReporter());
 
-final plantRepositoryProvider =
-    Provider<PlantRepository>((ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+/// Le jardin est-il dans l'hémisphère sud ? La latitude du lieu météo le dit
+/// quand il est renseigné ; sinon on suppose le nord, faute de mieux.
+///
+/// Sans cela, décembre serait un mois de repos à Melbourne comme à Paris :
+/// les intervalles saisonniers et les repères d'arrosage tomberaient à
+/// contretemps six mois par an.
+final southernHemisphereProvider = Provider<bool>((ref) {
+  final place = ref.watch(preferencesProvider.select((p) => p.weatherPlace));
+  return place != null && place.latitude < 0;
+});
+
+/// Lu et non observé : les dépôts recalculent une échéance au moment où ils
+/// écrivent, et doivent voir l'hémisphère du jour sans être reconstruits.
+bool _south(Ref ref) => ref.read(southernHemisphereProvider);
+
+final plantRepositoryProvider = Provider<PlantRepository>(
+    (ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref)));
 final locationRepositoryProvider = Provider<LocationRepository>(
     (ref) => DriftLocationRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 String? _remoteUserId(Ref ref) {
@@ -80,10 +97,10 @@ String? _remoteUserId(Ref ref) {
   return u == null || u.isLocal ? null : u.id;
 }
 
-final actionRepositoryProvider =
-    Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
-final careRepositoryProvider =
-    Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider)));
+final actionRepositoryProvider = Provider<ActionRepository>((ref) =>
+    DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref), southernHemisphere: () => _south(ref)));
+final careRepositoryProvider = Provider<CareRepository>((ref) =>
+    DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider), southernHemisphere: () => _south(ref)));
 final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
 final actionTypeRepositoryProvider =
     Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));
@@ -317,6 +334,12 @@ final supportOfferProvider = FutureProvider<SupportOffer?>((ref) => ref.watch(su
 /// Catalogue étendu d'espèces, chargé à la première recherche seulement.
 final speciesIndexLoaderProvider = Provider<SpeciesIndexLoader>((ref) => SpeciesIndexLoader());
 final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(speciesIndexLoaderProvider).load());
+
+/// Base locale des troubles, ravageurs et maladies, chargée au premier
+/// diagnostic. C'est le vocabulaire commun : ce que l'IA a le droit de
+/// nommer, et le nom que l'application affiche ensuite.
+final problemCatalogLoaderProvider = Provider<ProblemCatalogLoader>((ref) => ProblemCatalogLoader());
+final problemCatalogProvider = FutureProvider<ProblemCatalog>((ref) => ref.watch(problemCatalogLoaderProvider).load());
 
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flora/data/services/infomaniak_diagnoser.dart';
 import 'package:flora/domain/diagnosis/plant_diagnoser.dart';
+import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -23,6 +24,15 @@ Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${Date
 InfomaniakDiagnoser _diagnoser(http.Client client) =>
     InfomaniakDiagnoser(apiKey: 'tok', productId: '12345', model: 'mistralai/Mistral-Small-4-119B-2603', client: client);
 
+PlantProblem _probleme(String id, ProblemKind kind, String en) =>
+    PlantProblem(id: id, kind: kind, scope: ProblemScope.wide, fr: 'fr', en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
+
+final _pistes = [
+  _probleme('002', ProblemKind.disorder, 'Waterlogging and root oxygen deficiency'),
+  _probleme('060', ProblemKind.pest, 'Spider mites'),
+  _probleme('126', ProblemKind.disease, 'Powdery mildews'),
+];
+
 void main() {
   group('la lecture de la réponse', () {
     test('trie les causes par vraisemblance', () {
@@ -30,15 +40,82 @@ void main() {
         'summary': 'Feuilles jaunes en bas.',
         'urgent': false,
         'causes': [
-          {'title': 'Manque de lumière', 'likelihood': 0.3, 'explanation': '…', 'actions': ['Rapprocher de la fenêtre']},
-          {'title': "Excès d'eau", 'likelihood': 0.7, 'explanation': '…', 'actions': ['Laisser sécher', 'Vérifier le drainage']},
+          {'title': 'Manque de lumière', 'likelihood': 'possible', 'explanation': '…', 'actions': ['Rapprocher de la fenêtre']},
+          {'title': "Excès d'eau", 'likelihood': 'likely', 'explanation': '…', 'actions': ['Laisser sécher', 'Vérifier le drainage']},
         ],
       }));
       final d = InfomaniakDiagnoser.parseResponse(body);
       expect(d.summary, 'Feuilles jaunes en bas.');
       expect(d.causes.map((c) => c.title), ["Excès d'eau", 'Manque de lumière']);
+      expect(d.causes.first.likelihood, Likelihood.likely);
       expect(d.causes.first.actions, hasLength(2));
       expect(d.urgent, isFalse);
+    });
+
+    test('à vraisemblance égale, l\'ordre du service est conservé', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'title': 'Araignées rouges', 'likelihood': 'possible'},
+          {'title': 'Air trop sec', 'likelihood': 'possible'},
+          {'title': 'Pourriture', 'likelihood': 'unlikely'},
+          {'title': 'Excès d\'eau', 'likelihood': 'likely'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body);
+      expect(d.causes.map((c) => c.title), ['Excès d\'eau', 'Araignées rouges', 'Air trop sec', 'Pourriture']);
+    });
+
+    test('un mot inconnu ou absent vaut « possible »', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'title': 'Sans étiquette'},
+          {'title': 'Étiquette fantaisiste', 'likelihood': 'très probable'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body);
+      expect(d.causes.map((c) => c.likelihood), everyElement(Likelihood.possible));
+    });
+
+    test('le numéro de la base est retenu, quelle que soit sa forme', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'title': 'Excès d\'eau', 'problem': '002'},
+          {'title': 'Tétranyques', 'problem': 60},
+          {'title': 'Oïdium', 'problem': 'id 126'},
+          {'title': 'Autre chose'},
+          {'title': 'Numéro fantaisiste', 'problem': '9999'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'002', '060', '126'});
+      expect(d.causes.map((c) => c.problemId), ['002', '060', '126', null, null]);
+    });
+
+    test('une cause sans titre survit si elle porte un numéro', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'problem': '002'},
+          {'explanation': 'sans rien pour la nommer'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'002'});
+      expect(d.causes.map((c) => c.problemId), ['002']);
+    });
+
+    test('un modèle qui répond encore en chiffres est rangé dans un cran', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'title': 'Haute', 'likelihood': 0.8},
+          {'title': 'Moyenne', 'likelihood': 0.4},
+          {'title': 'Basse', 'likelihood': 0.1},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body);
+      expect(d.causes.map((c) => c.likelihood), [Likelihood.likely, Likelihood.possible, Likelihood.unlikely]);
     });
 
     test('accepte du JSON entouré de balises Markdown', () {
@@ -90,6 +167,62 @@ void main() {
       expect(parts.first['image_url']['url'], startsWith('data:image/jpeg;base64,'));
       expect(parts.last['text'], contains('Monstera'));
       expect(parts.last['text'], contains('taches brunes'));
+      expect(messages.first['content'], contains('"likely", "possible", "unlikely"'));
+    });
+
+    test('la base locale part comme liste de pistes, groupée par nature', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return http.Response(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(
+        images: [tmp],
+        language: 'fr',
+        species: 'Monstera deliciosa',
+        candidates: _pistes,
+        frequentIds: const {'060'},
+      );
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      final text = parts.last['text'] as String;
+      expect(text, contains('Disorders: 002 Waterlogging and root oxygen deficiency.'));
+      expect(text, contains('Pests: 060 Spider mites.'));
+      expect(text, contains('Diseases: 126 Powdery mildews.'));
+      expect(text, contains('especially common on this species: 060'));
+      // Une liste de pistes, pas une liste de réponses.
+      expect(text, isNot(contains('Other:')));
+    });
+
+    test('sans base chargée, la demande part comme avant', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return http.Response(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(images: [tmp], language: 'fr', species: 'Inconnue quelconque');
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      expect(parts.last['text'], isNot(contains('Known problems')));
+    });
+
+    test('un numéro qu\'on n\'a pas soumis est écarté', () async {
+      final client = MockClient((_) async => http.Response(
+            _completion(jsonEncode({
+              'summary': '…',
+              'causes': [
+                {'title': 'Tétranyques', 'problem': '060'},
+                {'title': 'Feu bactérien', 'problem': '182'},
+              ],
+            })),
+            200,
+          ));
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+      expect(d.causes.map((c) => c.problemId), ['060', null]);
     });
 
     test('si le format JSON contraint est refusé, renvoie la demande sans lui', () async {

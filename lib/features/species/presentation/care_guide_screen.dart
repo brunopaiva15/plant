@@ -8,6 +8,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
+import '../../../domain/problems/plant_problem.dart';
 import '../../plants/application/plant_providers.dart';
 
 /// Fiche d'entretien d'une plante : quand l'arroser, quelle lumière lui
@@ -37,7 +38,7 @@ class CareGuideScreen extends ConsumerWidget {
         duration: Motion.of(context, Motion.standard),
         child: KeyedSubtree(
           key: ValueKey(care.match),
-          child: CareGuideBody(care: care, plantName: plant?.name, location: location),
+          child: CareGuideBody(care: care, plantName: plant?.name, speciesName: plant?.speciesName, location: location),
         ),
       ),
     );
@@ -61,22 +62,27 @@ class CareGuideScreen extends ConsumerWidget {
 }
 
 /// Corps de la fiche, réutilisable en sheet (création de plante, espèce).
-class CareGuideBody extends StatelessWidget {
-  const CareGuideBody({super.key, required this.care, this.plantName, this.location, this.header});
+class CareGuideBody extends ConsumerWidget {
+  const CareGuideBody({super.key, required this.care, this.plantName, this.speciesName, this.location, this.header});
 
   final ResolvedCare care;
   final String? plantName;
+
+  /// Nom scientifique, quand il est connu : c'est par lui que la base des
+  /// problèmes retrouve ce qui touche cette plante.
+  final String? speciesName;
   final Location? location;
   final Widget? header;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
     final p = care.profile;
     final now = DateTime.now();
+    final south = ref.watch(southernHemisphereProvider);
     final actualLight = _lightOf(location);
-    final currentDays = p.wateringDaysFor(now.month, actualLight: actualLight);
+    final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
 
     final badges = <(String, String)>[
       if (p.mistLeaves) ('💦', l10n.careBadgeMist),
@@ -136,7 +142,7 @@ class CareGuideBody extends StatelessWidget {
               '🧪',
               l10n.careFertilizing,
               p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow, context.localeTag),
+              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
             ),
             _row('🪴', l10n.careRepotting, l10n.repotLabel(p.repotEveryMonths)),
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),
@@ -177,6 +183,8 @@ class CareGuideBody extends StatelessWidget {
           const SizedBox(height: Space.sm),
           FloraGroup(children: [for (final i in p.issues) FloraListRow(leading: const Text('👀', style: TextStyle(fontSize: 16)), title: l10n.issueName(i), dense: true, chevron: false, titleMaxLines: 2)]),
         ],
+
+        if (speciesName != null && speciesName!.trim().isNotEmpty) _KnownProblems(speciesName: speciesName!, issues: p.issues),
 
         if (p.propagation.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
@@ -224,4 +232,84 @@ class CareGuideBody extends StatelessWidget {
   /// Lumière réelle de l'emplacement (« faible / moyenne / forte »), quand
   /// elle est renseignée : une plante en pleine lumière boit plus vite.
   static LightNeed? _lightOf(Location? location) => lightNeedFromCode(location?.light);
+}
+
+/// Ce que la base locale connaît de cette plante en particulier.
+///
+/// Elle sert déjà de vocabulaire au diagnostic ; elle a autant sa place ici,
+/// à froid, quand on lit la fiche sans avoir de problème. Les troubles
+/// universels en sont retirés — « manque d'eau » vaut pour tout le monde et
+/// n'apprend rien sur l'espèce —, tout comme ce que « À surveiller » vient de
+/// dire juste au-dessus.
+class _KnownProblems extends ConsumerStatefulWidget {
+  const _KnownProblems({required this.speciesName, required this.issues});
+
+  final String speciesName;
+
+  /// Les soucis déjà listés par la fiche, pour ne pas les redire.
+  final List<CommonIssue> issues;
+
+  @override
+  ConsumerState<_KnownProblems> createState() => _KnownProblemsState();
+}
+
+class _KnownProblemsState extends ConsumerState<_KnownProblems> {
+  /// Au-delà, la liste se replie. Une tomate en accumule une trentaine, et
+  /// une fiche n'est pas un catalogue de malheurs.
+  static const int preview = 6;
+
+  bool _all = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final catalog = ref.watch(problemCatalogProvider).value;
+    if (catalog == null) return const SizedBox.shrink();
+    final found = catalog.specificTo(
+      species: widget.speciesName,
+      family: speciesFamilyLookup(ref)(widget.speciesName),
+      covered: widget.issues,
+    );
+    if (found.isEmpty) return const SizedBox.shrink();
+    final shown = _all ? found : found.take(preview).toList();
+    final language = Localizations.localeOf(context).languageCode;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: Space.lg),
+        Text(l10n.careKnownProblems, style: context.text.title3),
+        const SizedBox(height: Space.xxs),
+        // La base le dit elle-même : les hôtes cités sont des exemples, et un
+        // genre ne rend pas toutes ses espèces sensibles.
+        Text(l10n.careKnownProblemsNote, style: context.text.caption),
+        const SizedBox(height: Space.sm),
+        FloraGroup(
+          children: [
+            for (final p in shown)
+              FloraListRow(
+                leading: Text(_emoji(p.kind), style: const TextStyle(fontSize: 16)),
+                title: p.nameIn(language),
+                dense: true,
+                chevron: false,
+                titleMaxLines: 2,
+              ),
+            if (shown.length < found.length)
+              FloraListRow(
+                leading: const Text('⋯', style: TextStyle(fontSize: 16)),
+                title: l10n.seeAll,
+                dense: true,
+                onTap: () => setState(() => _all = true),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  static String _emoji(ProblemKind kind) => switch (kind) {
+        ProblemKind.disorder => '🌦️',
+        ProblemKind.pest => '🐛',
+        ProblemKind.disease => '🦠',
+        ProblemKind.condition => '🌫️',
+      };
 }

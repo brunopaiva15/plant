@@ -7,10 +7,10 @@ import 'care_profile.dart';
 /// `null` quand la fiche n'a rien à dire du type demandé (type personnalisé,
 /// ou espèce qu'on ne rempote pas) : l'appelant retombe alors sur son défaut.
 extension CareProfileSuggestions on CareProfile {
-  int? suggestedIntervalDays(String typeKey, {DateTime? now, LightNeed? actualLight}) {
+  int? suggestedIntervalDays(String typeKey, {DateTime? now, LightNeed? actualLight, bool south = false}) {
     final month = (now ?? DateTime.now()).month;
     return switch (CareKind.fromKey(typeKey)) {
-      CareKind.watering => wateringDaysFor(month, actualLight: actualLight),
+      CareKind.watering => wateringDaysFor(month, south: south, actualLight: actualLight),
       CareKind.fertilizing => fertilizingDays,
       // Le rempotage se compte en mois ; le mois vaut 30 jours, ce qui
       // suffit pour une échéance à deux ans près.

@@ -105,7 +105,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In fr, this message translates to:
-  /// **'Auxin'**
+  /// **'Auxine'**
   String get appName;
 
   /// No description provided for @ok.
@@ -1575,7 +1575,7 @@ abstract class AppLocalizations {
   /// No description provided for @reduceMotionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Par défaut, Auxin suit le réglage du système.'**
+  /// **'Par défaut, Auxine suit le réglage du système.'**
   String get reduceMotionHint;
 
   /// No description provided for @notifications.
@@ -2385,7 +2385,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour vos plantes dehors, Auxin regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour vos plantes dehors, Auxine regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -2709,7 +2709,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteHint.
   ///
   /// In fr, this message translates to:
-  /// **'L\'invité doit déjà avoir un compte Auxin avec cette adresse.'**
+  /// **'L\'invité doit déjà avoir un compte Auxine avec cette adresse.'**
   String get inviteHint;
 
   /// No description provided for @roleOwner.
@@ -2819,6 +2819,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pistes possibles'**
   String get possibleCauses;
+
+  /// No description provided for @likelihoodLikely.
+  ///
+  /// In fr, this message translates to:
+  /// **'Probable'**
+  String get likelihoodLikely;
+
+  /// No description provided for @likelihoodPossible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Possible'**
+  String get likelihoodPossible;
+
+  /// No description provided for @likelihoodUnlikely.
+  ///
+  /// In fr, this message translates to:
+  /// **'Peu probable'**
+  String get likelihoodUnlikely;
 
   /// No description provided for @urgentHint.
   ///
@@ -3431,6 +3449,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'À surveiller'**
   String get careIssues;
+
+  /// No description provided for @careKnownProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problèmes connus sur cette plante'**
+  String get careKnownProblems;
+
+  /// No description provided for @careKnownProblemsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.'**
+  String get careKnownProblemsNote;
 
   /// No description provided for @careTips.
   ///
@@ -5517,7 +5547,7 @@ abstract class AppLocalizations {
   /// No description provided for @importErrorNotAZip.
   ///
   /// In fr, this message translates to:
-  /// **'Ce fichier n\'est pas une sauvegarde Auxin.'**
+  /// **'Ce fichier n\'est pas une sauvegarde Auxine.'**
   String get importErrorNotAZip;
 
   /// No description provided for @importErrorWrongApp.
@@ -5529,7 +5559,7 @@ abstract class AppLocalizations {
   /// No description provided for @importErrorTooRecent.
   ///
   /// In fr, this message translates to:
-  /// **'Cette sauvegarde vient d\'une version plus récente d\'Auxin.'**
+  /// **'Cette sauvegarde vient d\'une version plus récente d\'Auxine.'**
   String get importErrorTooRecent;
 
   /// No description provided for @importErrorGeneric.
@@ -5739,7 +5769,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Auxin est gratuit'**
+  /// **'Auxine est gratuite'**
   String get supportTitle;
 
   /// No description provided for @supportBody.
@@ -6081,7 +6111,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbWelcomeTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Bienvenue sur Auxin'**
+  /// **'Bienvenue sur Auxine'**
   String get onbWelcomeTitle;
 
   /// No description provided for @onbWelcomeBody.

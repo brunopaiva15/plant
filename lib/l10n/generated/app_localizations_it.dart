@@ -10,7 +10,7 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get appName => 'Auxin';
+  String get appName => 'Auxine';
 
   @override
   String get ok => 'OK';
@@ -853,7 +853,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Per impostazione predefinita, Auxin segue il sistema.';
+      'Per impostazione predefinita, Auxine segue il sistema.';
 
   @override
   String get notifications => 'Notifiche';
@@ -1326,7 +1326,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto, Auxin controlla la pioggia del giorno e ti evita un\'annaffiatura inutile. Dati Open-Meteo, senza account né chiave.';
+      'Per le piante all\'aperto, Auxine controlla la pioggia del giorno e ti evita un\'annaffiatura inutile. Dati Open-Meteo, senza account né chiave.';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -1521,7 +1521,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'La persona deve già avere un account Auxin con questo indirizzo.';
+      'La persona deve già avere un account Auxine con questo indirizzo.';
 
   @override
   String get roleOwner => 'Proprietario';
@@ -1583,6 +1583,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get possibleCauses => 'Cause possibili';
+
+  @override
+  String get likelihoodLikely => 'Probabile';
+
+  @override
+  String get likelihoodPossible => 'Possibile';
+
+  @override
+  String get likelihoodUnlikely => 'Poco probabile';
 
   @override
   String get urgentHint => 'Da trattare rapidamente';
@@ -1976,6 +1985,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careIssues => 'Da tenere d\'occhio';
+
+  @override
+  String get careKnownProblems => 'Problemi noti su questa pianta';
+
+  @override
+  String get careKnownProblemsNote => 'Segnalati su questa specie o su quelle affini. Non tutti la riguardano.';
 
   @override
   String get careTips => 'Buone abitudini';
@@ -3232,14 +3247,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'I dati del file sostituiscono quelli con lo stesso identificatore. Nulla viene eliminato.';
 
   @override
-  String get importErrorNotAZip => 'Questo file non è un backup Auxin.';
+  String get importErrorNotAZip => 'Questo file non è un backup Auxine.';
 
   @override
   String get importErrorWrongApp => 'Questo backup proviene da un\'altra app.';
 
   @override
   String get importErrorTooRecent =>
-      'Questo backup proviene da una versione più recente di Auxin.';
+      'Questo backup proviene da una versione più recente di Auxine.';
 
   @override
   String get importErrorGeneric => 'Ripristino non riuscito.';
@@ -3368,7 +3383,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get supportTitle => 'Auxin è gratuito';
+  String get supportTitle => 'Auxine è gratuita';
 
   @override
   String get supportBody =>
@@ -3546,7 +3561,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderAnyAnswer => 'Non importa';
 
   @override
-  String get onbWelcomeTitle => 'Benvenuto in Auxin';
+  String get onbWelcomeTitle => 'Benvenuto in Auxine';
 
   @override
   String get onbWelcomeBody => 'Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia.';

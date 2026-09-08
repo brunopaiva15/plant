@@ -420,7 +420,7 @@ class _SpeciesSheet extends ConsumerWidget {
             padding: const EdgeInsets.only(bottom: Space.md),
             child: Text(scientificName, style: context.text.caption),
           ),
-          CareGuideBody(care: care),
+          CareGuideBody(care: care, speciesName: scientificName),
           const SizedBox(height: Space.lg),
           FloraButton(label: actionLabel, icon: actionIcon, expand: true, onPressed: () => Navigator.of(context).pop(true)),
           const SizedBox(height: Space.xs),

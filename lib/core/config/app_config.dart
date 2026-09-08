@@ -1,14 +1,14 @@
 /// Configuration de marque et limites produit.
 ///
-/// Le produit s'appelle « Auxin ». Le code, lui, garde son nom de travail
+/// Le produit s'appelle « Auxine ». Le code, lui, garde son nom de travail
 /// (« Flora » : classes du design system, paquet Dart, schéma des liens) —
 /// rien d'autre que [appName] ne porte le nom vu par l'utilisateur.
 abstract final class AppConfig {
-  static const String appName = 'Auxin';
+  static const String appName = 'Auxine';
 
-  /// Nom porté avant « Auxin ». Les sauvegardes faites alors restent
+  /// Noms portés avant « Auxine ». Les sauvegardes faites alors restent
   /// importables : leur manifeste annonce encore l'ancien nom.
-  static const String legacyAppName = 'Flora';
+  static const List<String> legacyAppNames = ['Flora', 'Auxin'];
   static const String bundleId = 'ch.vergasta.plant';
 
   /// Schéma des liens encodés dans les QR codes (`flora://plant/<id>`).

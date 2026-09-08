@@ -21,7 +21,7 @@ import json
 import urllib.request
 
 ENDPOINT = 'https://query.wikidata.org/sparql'
-UA = 'AuxinApp/1.0 (offline species catalogue; github.com/brunopaiva15/plant)'
+UA = 'AuxineApp/1.0 (offline species catalogue; github.com/brunopaiva15/plant)'
 LANGS = ('fr', 'de', 'it', 'en')
 BATCH = 40
 

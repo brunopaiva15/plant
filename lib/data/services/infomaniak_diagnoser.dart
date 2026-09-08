@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
 import '../../domain/diagnosis/plant_diagnoser.dart';
+import '../../domain/problems/plant_problem.dart';
 
 /// Diagnostic par les AI Services d'Infomaniak (hébergés en Suisse), via
 /// leur route compatible OpenAI : un modèle qui voit les images reçoit les
@@ -33,7 +34,15 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
 
   @override
-  Future<Diagnosis> diagnose({required List<File> images, required String language, String? plantName, String? species, String? symptoms}) async {
+  Future<Diagnosis> diagnose({
+    required List<File> images,
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    List<PlantProblem> candidates = const [],
+    Set<String> frequentIds = const {},
+  }) async {
     if (!isConfigured) throw const DiagnosisException('unconfigured');
     if (images.isEmpty) throw const DiagnosisException('no_images');
     final parts = <Map<String, Object?>>[
@@ -42,7 +51,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           'type': 'image_url',
           'image_url': {'url': 'data:image/jpeg;base64,${base64Encode(await prepareImage(await image.readAsBytes()))}'},
         },
-      {'type': 'text', 'text': userPrompt(language: language, plantName: plantName, species: species, symptoms: symptoms)},
+      {
+        'type': 'text',
+        'text': userPrompt(
+          language: language,
+          plantName: plantName,
+          species: species,
+          symptoms: symptoms,
+          candidates: candidates,
+          frequentIds: frequentIds,
+        ),
+      },
     ];
     // Le format JSON contraint n'est pas garanti par tous les modèles : si
     // le service le refuse, on renvoie la même demande sans lui — la consigne
@@ -54,7 +73,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (response.statusCode == 401 || response.statusCode == 403) throw const DiagnosisException('unauthorized');
     if (response.statusCode == 429) throw const DiagnosisException('quota');
     if (response.statusCode != 200) throw DiagnosisException('http ${response.statusCode}');
-    return parseResponse(response.body);
+    // Un numéro qu'on n'a pas soumis ne vaut rien : soit le modèle l'a
+    // inventé, soit il désigne un problème qu'on a écarté pour cette plante.
+    return parseResponse(response.body, allowed: {for (final p in candidates) p.id});
   }
 
   Future<http.Response> _post(Map<String, Object?> body) => _client
@@ -95,29 +116,77 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   static String systemPrompt(String language) =>
       'You help a hobbyist care for a houseplant or garden plant. Look at the photos and describe what you observe, '
-      'then list the most plausible causes ranked by likelihood (0 to 1; they need not sum to 1), each with a short explanation '
+      'then list the most plausible causes, most plausible first, each with a short explanation '
       'and 1 to 3 concrete, gentle actions the person can take at home. Be honest about uncertainty: these are suggestions, never a diagnosis. '
-      'If the plant looks healthy, say so with a single low-likelihood cause at most. Set "urgent" only for pests, rot or rapid decline. '
+      'Rate each cause with "likelihood", one of exactly these three words: "likely", "possible", "unlikely". '
+      'Do not use numbers or percentages: you cannot measure this from a photo, and a figure would suggest a precision you do not have. '
+      'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
+      'If the plant looks healthy, say so with a single "unlikely" cause at most. Set "urgent" only for pests, rot or rapid decline. '
       'If the photos do not show a plant clearly enough, say so in "summary" and return no cause. '
+      'The message may list known problems, each as a three-digit number and a name. When a cause is one of them, put that number in "problem"; '
+      'use only numbers from that list, and omit "problem" for anything else. The list is a shortlist, not a closed set: a cause outside it is a '
+      'perfectly good answer, and picking a number that does not fit what you see is worse than picking none. '
       'Write every text field in the language with code "$language", in a warm, plain, human tone, without jargon. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
-      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "title" (string), "likelihood" (number), '
-      '"explanation" (string), "actions" (array of strings)).';
+      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "title" (string), "likelihood" (string), '
+      '"problem" (string, optional), "explanation" (string), "actions" (array of strings)).';
 
-  static String userPrompt({required String language, String? plantName, String? species, String? symptoms}) {
+  static String userPrompt({
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    List<PlantProblem> candidates = const [],
+    Set<String> frequentIds = const {},
+  }) {
     final parts = <String>[
       if (plantName != null && plantName.isNotEmpty) 'Plant: $plantName.',
       if (species != null && species.isNotEmpty) 'Species: $species.',
+      // La base locale, réduite à ce qui peut concerner cette plante. Elle
+      // donne au modèle un vocabulaire au lieu de le laisser improviser un
+      // nom à chaque analyse, et c'est ce nom-là que l'application affichera.
+      ...shortlist(candidates, frequentIds),
       if (symptoms != null && symptoms.trim().isNotEmpty) 'What the owner noticed: ${symptoms.trim()}',
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
   }
 
+  /// La liste de pistes telle qu'elle part, groupée par nature.
+  ///
+  /// Les troubles d'abord : ce sont les plus fréquents sur une plante de
+  /// balcon ou de salon, et ceux qu'un modèle a le plus tendance à oublier au
+  /// profit d'un ravageur spectaculaire.
+  static List<String> shortlist(List<PlantProblem> candidates, Set<String> frequentIds) {
+    if (candidates.isEmpty) return const [];
+    String? group(String label, ProblemKind kind) {
+      final of = candidates.where((p) => p.kind == kind);
+      if (of.isEmpty) return null;
+      return '$label: ${of.map((p) => '${p.id} ${p.en}').join('; ')}.';
+    }
+
+    final frequent = candidates.where((p) => frequentIds.contains(p.id)).map((p) => p.id).toList();
+    return [
+      'Known problems for this kind of plant, as "number name".',
+      ?group('Disorders', ProblemKind.disorder),
+      ?group('Pests', ProblemKind.pest),
+      ?group('Diseases', ProblemKind.disease),
+      ?group('Other', ProblemKind.condition),
+      // Ce que le catalogue de soins signale pour l'espèce : un a priori de
+      // plus, jamais une réponse.
+      if (frequent.isNotEmpty)
+        'Known to be especially common on this species: ${frequent.join(', ')}. '
+            'Weigh them a little more, but only if the photos fit.',
+    ];
+  }
+
   /// Extrait le diagnostic d'une réponse chat completions. Le contenu peut
   /// être une chaîne ou une liste de fragments ; du JSON entouré de
   /// balises Markdown ou d'une phrase est accepté.
-  static Diagnosis parseResponse(String body) {
+  /// [allowed] borne les numéros acceptés à ceux qu'on a soumis. `null`
+  /// laisse passer n'importe quel numéro à trois chiffres, ce qui n'a de sens
+  /// que hors appel réel.
+  static Diagnosis parseResponse(String body, {Set<String>? allowed}) {
     final json = jsonDecode(body) as Map<String, dynamic>;
     final choices = (json['choices'] as List?) ?? const [];
     if (choices.isEmpty) throw const DiagnosisException('empty');
@@ -136,14 +205,38 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         .whereType<Map>()
         .map((c) => DiagnosisCause(
               title: (c['title'] as String?) ?? '',
-              likelihood: ((c['likelihood'] as num?) ?? 0).toDouble().clamp(0, 1),
+              likelihood: Likelihood.parse(c['likelihood']),
               explanation: (c['explanation'] as String?) ?? '',
               actions: ((c['actions'] as List?) ?? const []).whereType<String>().toList(),
+              problemId: _problemId(c['problem'], allowed),
             ))
-        .where((c) => c.title.isNotEmpty)
-        .toList()
-      ..sort((a, b) => b.likelihood.compareTo(a.likelihood));
-    return Diagnosis(summary: (data['summary'] as String?) ?? '', causes: causes, urgent: data['urgent'] == true);
+        // Une cause sans titre reste lisible si elle porte un numéro : la
+        // base lui en donnera un, dans la bonne langue.
+        .where((c) => c.title.isNotEmpty || c.problemId != null)
+        .toList();
+    // Trois crans laissent beaucoup d'ex æquo. Le rang d'arrivée les
+    // départage, car le service a déjà classé ses pistes de la plus à la
+    // moins plausible ; un tri sans cela les rebattrait sans raison.
+    final classees = causes.indexed.toList()
+      ..sort((a, b) {
+        final cran = a.$2.likelihood.index.compareTo(b.$2.likelihood.index);
+        return cran != 0 ? cran : a.$1.compareTo(b.$1);
+      });
+    return Diagnosis(
+      summary: (data['summary'] as String?) ?? '',
+      causes: [for (final (_, c) in classees) c],
+      urgent: data['urgent'] == true,
+    );
+  }
+
+  /// Le numéro rendu, s'il est bien formé et s'il faisait partie de la liste
+  /// soumise. Un modèle qui écrit « 60 » ou « id 060 » veut dire 060.
+  static String? _problemId(Object? raw, Set<String>? allowed) {
+    final digits = RegExp(r'\d+').firstMatch(switch (raw) { num n => '$n', String t => t, _ => '' })?.group(0);
+    if (digits == null || digits.length > 3) return null;
+    final id = digits.padLeft(3, '0');
+    if (id == '000') return null;
+    return allowed == null || allowed.contains(id) ? id : null;
   }
 
   static Map<String, dynamic>? _extractJson(String text) {

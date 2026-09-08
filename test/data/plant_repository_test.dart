@@ -30,6 +30,29 @@ void main() {
 
   tearDown(() => db.close());
 
+  test('l\'hémisphère du jardin décide du rythme saisonnier', () async {
+    final plant = await plants.create(const NewPlant(name: 'Monstera'));
+    final austral = DriftCareRepository(db, plants, southernHemisphere: () => true);
+    CareSchedule saisonniere(String id) => CareSchedule(
+          id: id,
+          plantId: plant.id,
+          typeKey: 'cleaning',
+          strategy: CareStrategy.seasonal,
+          intervalDays: 10,
+          enabled: true,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+    final now = DateTime.now();
+    final nord = await care.upsert(saisonniere('nord'));
+    final sud = await austral.upsert(saisonniere('sud'));
+    expect(nord.nextDueAt, CareEngine.nextDueAfter(saisonniere('nord'), now));
+    expect(sud.nextDueAt, CareEngine.nextDueAfter(saisonniere('sud'), now, south: true));
+    // Aucune saison ne partage son multiplicateur avec celle d'en face : les
+    // deux échéances tombent forcément à des jours différents.
+    expect(sud.nextDueAt, isNot(nord.nextDueAt));
+  });
+
   test('creating a plant seeds default watering and fertilizing routines', () async {
     final plant = await plants.create(const NewPlant(name: 'Monstera'));
     final schedules = await care.watchByPlant(plant.id).first;
