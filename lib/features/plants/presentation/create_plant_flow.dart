@@ -26,7 +26,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../species/presentation/species_field.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
-Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? locationId}) async {
+Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? parentSpeciesName, String? locationId}) async {
   final l10n = context.l10n;
   if (!ref.read(canEditProvider)) {
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.readOnlyHint, emoji: '🔒'));
@@ -34,7 +34,7 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
   }
   final plantId = await showFloraFlow<String>(
     context,
-    builder: (ctx) => CreatePlantFlow(parentPlantId: parentPlantId, parentName: parentName, initialLocationId: locationId),
+    builder: (ctx) => CreatePlantFlow(parentPlantId: parentPlantId, parentName: parentName, parentSpeciesName: parentSpeciesName, initialLocationId: locationId),
   );
   if (plantId != null && context.mounted) {
     context.push(Routes.plant(plantId));
@@ -42,10 +42,14 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
 }
 
 class CreatePlantFlow extends ConsumerStatefulWidget {
-  const CreatePlantFlow({super.key, this.parentPlantId, this.parentName, this.initialLocationId});
+  const CreatePlantFlow({super.key, this.parentPlantId, this.parentName, this.parentSpeciesName, this.initialLocationId});
 
   final String? parentPlantId;
   final String? parentName;
+
+  /// Espèce de la plante mère : une bouture en hérite, l'utilisateur n'a pas
+  /// à la ressaisir.
+  final String? parentSpeciesName;
   final String? initialLocationId;
 
   @override
@@ -76,6 +80,19 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _noLocation = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Bouture : l'espèce (et donc le rythme de soins conseillé) vient de la
+    // plante mère. L'utilisateur peut toujours la corriger.
+    final inherited = widget.parentSpeciesName?.trim() ?? '';
+    if (inherited.isEmpty) return;
+    _species.text = inherited;
+    final care = ref.read(careGuideProvider).resolve(inherited, family: speciesFamilyOf(ref, inherited));
+    _watering = care.profile.wateringDaysFor(DateTime.now().month);
+    _fertilizing = care.profile.fertilizingDays ?? 0;
+  }
+
+  @override
   void dispose() {
     _page.dispose();
     _name.dispose();
@@ -86,6 +103,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   void _go(int step) {
     Haptics.selection();
+    // Le clavier de l'étape du nom ne doit pas suivre : ouvert, il écrase la
+    // mise en page des autres étapes (l'aperçu photo notamment).
+    if (step != 1) FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _step = step);
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
   }
@@ -249,13 +269,18 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
               child: _photo == null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(CupertinoIcons.camera, size: 44, color: c.sage),
-                        const SizedBox(height: Space.sm),
-                        Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
-                      ],
+                  // Le cadre rétrécit quand la place manque (petit écran) :
+                  // l'invite se met à l'échelle plutôt que de déborder.
+                  ? FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(CupertinoIcons.camera, size: 44, color: c.sage),
+                          const SizedBox(height: Space.sm),
+                          Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
                     )
                   : PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900),
             ),

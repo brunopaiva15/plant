@@ -331,8 +331,13 @@ final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide())
 /// Famille d'une espèce : le catalogue trié à la main d'abord, puis le
 /// catalogue étendu s'il est déjà chargé. Sans lui, la fiche d'entretien
 /// d'une plante hors catalogue retomberait sur le profil générique.
-String? Function(String?) speciesFamilyLookup(WidgetRef ref) {
-  final index = ref.watch(speciesIndexProvider).value;
+String? Function(String?) speciesFamilyLookup(WidgetRef ref) => _familyIn(ref.watch(speciesIndexProvider).value);
+
+/// Même recherche, mais hors `build` (initialisation d'un écran), là où
+/// `watch` n'a pas cours.
+String? speciesFamilyOf(WidgetRef ref, String? name) => _familyIn(ref.read(speciesIndexProvider).value)(name);
+
+String? Function(String?) _familyIn(SpeciesIndex? index) {
   return (name) {
     if (name == null || name.trim().isEmpty) return null;
     final curated = SpeciesCatalog.find(name)?.family;
