@@ -191,10 +191,5 @@ class CareGuideBody extends StatelessWidget {
 
   /// Lumière réelle de l'emplacement (« faible / moyenne / forte »), quand
   /// elle est renseignée : une plante en pleine lumière boit plus vite.
-  static LightNeed? _lightOf(Location? location) => switch (location?.light) {
-        'high' => LightNeed.someSun,
-        'medium' => LightNeed.brightIndirect,
-        'low' => LightNeed.lowLight,
-        _ => null,
-      };
+  static LightNeed? _lightOf(Location? location) => lightNeedFromCode(location?.light);
 }

@@ -1,6 +1,16 @@
 /// Besoin en lumière, du plus sombre au plus ensoleillé.
 enum LightNeed { shade, lowLight, indirect, brightIndirect, someSun, fullSun }
 
+/// Lumière réelle d'un emplacement, depuis le code stocké sur celui-ci
+/// (`high`, `medium`, `low`) : une plante au soleil boit plus vite que ce que
+/// dit la fiche de son espèce.
+LightNeed? lightNeedFromCode(String? code) => switch (code) {
+      'high' => LightNeed.someSun,
+      'medium' => LightNeed.brightIndirect,
+      'low' => LightNeed.lowLight,
+      _ => null,
+    };
+
 /// Besoin en humidité de l'air.
 enum HumidityNeed { low, average, high }
 
