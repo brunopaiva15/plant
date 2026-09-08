@@ -351,6 +351,42 @@ def fit_head(x, y, val, n_classes: int, dropout: float, epochs: int, weights: di
 
 
 
+def use_mixed_precision() -> str:
+    """Calcule en float16 là où c'est sûr, accumule en float32.
+
+    Sur une carte à cœurs tensor (RTX 20xx et au-delà), cela double à peu
+    près le débit et divise la mémoire par deux, donc autorise des lots plus
+    gros. Sur un processeur, cela ne rapporte rien et peut ralentir : c'est
+    une option, pas un défaut.
+
+    Les poids restent en float32 ; seuls les calculs intermédiaires passent
+    en float16. La tête est déjà forcée en float32 (`build_model`), et
+    l'export TFLite repart des poids, pas de la politique de calcul : le
+    fichier livré est le même.
+    """
+    tf.keras.mixed_precision.set_global_policy('mixed_float16')
+    return tf.keras.mixed_precision.global_policy().name
+
+
+def describe_devices() -> str:
+    """Ce sur quoi l'entraînement va réellement tourner.
+
+    Une carte invisible — pilote absent, TensorFlow sans CUDA, WSL mal
+    configuré — se traduit par un entraînement dix fois plus lent et par
+    aucun message. Autant le dire au démarrage."""
+    gpus = tf.config.list_physical_devices('GPU')
+    if not gpus:
+        return 'aucune carte graphique visible : entraînement sur processeur'
+    for gpu in gpus:
+        # Sans cela TensorFlow réserve toute la mémoire de la carte au
+        # démarrage, et rien d'autre ne peut plus s'en servir.
+        try:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        except RuntimeError:
+            pass
+    return f'{len(gpus)} carte(s) graphique(s) : ' + ', '.join(g.name for g in gpus)
+
+
 def build_model(n_classes: int, dropout: float, backbone: str = 'small') -> tf.keras.Model:
     """Le réseau : un MobileNetV3 pré-entraîné ImageNet, sans sa tête, puis
     la nôtre. `small` (2,5 Mo en float16, ~15 ms sur un téléphone récent)
@@ -365,7 +401,10 @@ def build_model(n_classes: int, dropout: float, backbone: str = 'small') -> tf.k
     x = base(inputs, training=False)
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
     x = tf.keras.layers.Dropout(dropout)(x)
-    outputs = tf.keras.layers.Dense(n_classes, activation='softmax', name='species')(x)
+    # La dernière couche reste en float32, même en précision mixte : un
+    # softmax en float16 déborde dès que les logits dépassent ~11, et les
+    # probabilités rendues serviraient ensuite de seuil à l'application.
+    outputs = tf.keras.layers.Dense(n_classes, activation='softmax', name='species', dtype='float32')(x)
     model = tf.keras.Model(inputs, outputs)
     model.base = base
     model.architecture = name
@@ -508,7 +547,12 @@ def main() -> int:
     ap.add_argument('--val-max', type=int, default=6000, help='images de validation pendant l\'entraînement ; l\'évaluation finale reste complète')
     ap.add_argument('--checkpoint', help='dossier où les poids sont sauvés après chaque époque, et d\'où l\'entraînement reprend')
     ap.add_argument('--feature-cache', help='dossier où garder les activations du réseau gelé ; la phase de tête devient une passe avant au lieu de N époques')
+    ap.add_argument('--mixed-precision', action='store_true', help='calcul en float16 : double le débit sur une carte à cœurs tensor, inutile sur processeur')
     args = ap.parse_args()
+
+    print(describe_devices(), flush=True)
+    if args.mixed_precision:
+        print(f'précision mixte : {use_mixed_precision()}', flush=True)
 
     dataset = Path(args.dataset)
     rows, captive = read_splits(dataset)
@@ -636,6 +680,22 @@ def main() -> int:
     if fine_done < args.fine_epochs:
         model.fit(train_ds, validation_data=val_ds, initial_epoch=fine_done, epochs=args.fine_epochs,
                   steps_per_epoch=args.steps_per_epoch, class_weight=weights, verbose=2, callbacks=callbacks)
+
+    if args.mixed_precision:
+        # Le convertisseur TFLite ne sait pas convertir un graphe en float16 :
+        # il réclame des « flex ops », que l'application n'embarque pas. Les
+        # poids, eux, sont restés en float32 — la précision mixte ne change
+        # que les calculs intermédiaires. On reconstruit donc le réseau en
+        # float32 et on y repose les poids appris.
+        #
+        # Le basculement se fait *avant* l'évaluation, pas seulement avant
+        # l'export : ainsi les chiffres publiés dans `model.json` sont ceux
+        # du fichier livré, et non ceux d'un modèle qui lui ressemble.
+        tf.keras.mixed_precision.set_global_policy('float32')
+        weights = model.get_weights()
+        model = build_model(len(classes), args.dropout, args.backbone)
+        model.set_weights(weights)
+        print('précision mixte : réseau reconstruit en float32 pour l\'évaluation et l\'export', flush=True)
 
     test_ds, _, test_paths = make_dataset(rows['test'], classes, args.batch, training=False,
                                           ram_budget_gb=args.ram_budget, preload=False)

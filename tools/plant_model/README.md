@@ -39,6 +39,63 @@ Sorties, directement dans les assets de l'app :
 | `labels.txt` | un identifiant interne par ligne, dans l'ordre des sorties |
 | `model.json` | version, taille d'entrée, empreinte SHA-256, métriques, courbe seuil / repli |
 
+## Entraîner sur une carte graphique (Windows + RTX, via WSL2)
+
+Une passe complète prend une dizaine d'heures sur quatre cœurs sans carte,
+et de l'ordre d'une heure sur une RTX 2070 Super. Tout le reste du travail
+sur le modèle en dépend : c'est la première chose à monter.
+
+**TensorFlow n'a plus de support GPU natif sous Windows depuis la 2.10.**
+La route qui marche est WSL2, où le pilote Windows est vu par Linux sans
+installer de pilote côté WSL :
+
+```bash
+# Sous Windows, dans PowerShell
+wsl --install -d Ubuntu
+
+# Puis, dans Ubuntu
+sudo apt update && sudo apt install -y python3-pip python3-venv
+python3 -m venv ~/venv && source ~/venv/bin/activate
+pip install 'tensorflow[and-cuda]'          # embarque CUDA et cuDNN
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+
+La dernière ligne doit afficher une carte. `train.py` le dit aussi au
+démarrage : sans carte visible, il l'annonce au lieu de tourner dix fois
+plus lentement en silence.
+
+```bash
+python3 train.py --dataset ../plant_dataset/dataset --out ../../assets/model \
+  --backbone large --batch 64 --mixed-precision \
+  --head-epochs 40 --fine-epochs 12 \
+  --feature-cache .cache/features --checkpoint .cache/ckpt --version 7
+```
+
+| Option | Pourquoi sur GPU |
+|---|---|
+| `--mixed-precision` | calcul en float16 : les cœurs tensor des RTX 20xx et au-delà doublent à peu près le débit, et la mémoire libérée autorise des lots plus gros. Inutile, voire lent, sur processeur. |
+| `--batch 64` | la carte a 8 Go ; un lot plus gros l'occupe mieux. À monter tant que la mémoire suit. |
+| `--ram-budget` | avec 32 Go de mémoire vive, précharger une partie du jeu évite de relire les JPEG à chaque époque. |
+
+L'export TFLite se fait toujours en float32 : le convertisseur ne sait pas
+convertir un graphe float16, donc le réseau est reconstruit avant
+l'évaluation et l'export. Les chiffres de `model.json` sont ceux du fichier
+livré, pas ceux d'un modèle qui lui ressemble.
+
+**Le goulot se déplace.** Mesuré ici sur quatre cœurs, le tuyau de données
+rend 630 images/s cache froid quand le réseau en avale 93 : le décodage
+JPEG est huit fois trop rapide pour gêner. Sur une carte à 1 000 images/s,
+ce rapport s'inverse et c'est le processeur qui fait attendre. Un i7-9700K
+(8 cœurs) tient largement ; en dessous, il faut surveiller. **Et le jeu doit
+être sur un SSD** : 290 000 fichiers lus dans un ordre différent à chaque
+époque sont le pire cas pour un disque à plateaux.
+
+**Le jeu d'images n'est pas dans Git** (15 Go). Il se reconstruit avec
+[`../plant_dataset`](../plant_dataset/README.md), en parts parallèles :
+comptez trois heures sur quatre cœurs, moins sur huit. Recopier d'abord
+`tools/plant_dataset/cache/*.json` dans `dataset/`, ce sont des heures de
+résolution de noms déjà faites.
+
 ## Options
 
 | Option | Défaut | Sens |
@@ -54,6 +111,7 @@ Sorties, directement dans les assets de l'app :
 | `--version` | `1` | version écrite dans `model.json` |
 | `--checkpoint DIR` | | poids sauvés toutes les 200 lots et à chaque époque ; relancer avec le même dossier reprend là |
 | `--feature-cache DIR` | | active les vecteurs du réseau gelé pour la phase de tête (voir ci-dessous) |
+| `--mixed-precision` | non | calcul en float16 ; double le débit sur une carte à cœurs tensor, inutile sur processeur |
 | `--steps-per-epoch N` | | lots par époque : des époques courtes, donc des points de sauvegarde fréquents |
 | `--ram-budget` | 5 | Go de préchargement au plus ; au-delà, les images sont relues des fichiers |
 
