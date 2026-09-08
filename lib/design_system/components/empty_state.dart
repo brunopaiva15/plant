@@ -13,6 +13,8 @@ class EmptyState extends StatelessWidget {
     this.subtitle,
     this.actionLabel,
     this.onAction,
+    this.secondaryLabel,
+    this.onSecondary,
     this.compact = false,
   });
 
@@ -21,6 +23,10 @@ class EmptyState extends StatelessWidget {
   final String? subtitle;
   final String? actionLabel;
   final VoidCallback? onAction;
+
+  /// Second geste, plus discret, quand l'écran vide en propose deux.
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
   final bool compact;
 
   @override
@@ -47,6 +53,10 @@ class EmptyState extends StatelessWidget {
           if (actionLabel != null && onAction != null) ...[
             const SizedBox(height: Space.xl),
             FloraButton(label: actionLabel!, onPressed: onAction),
+          ],
+          if (secondaryLabel != null && onSecondary != null) ...[
+            const SizedBox(height: Space.xs),
+            FloraButton(label: secondaryLabel!, style: FloraButtonStyle.ghost, onPressed: onSecondary),
           ],
         ],
       ),

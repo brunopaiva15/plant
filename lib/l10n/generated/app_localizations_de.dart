@@ -3416,4 +3416,127 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get emptyGardenSubtitle =>
       'Füge deine erste Pflanze hinzu, mit Foto, wenn du magst.';
+
+  @override
+  String get finderTitle => 'Pflanze finden';
+
+  @override
+  String get finderEntryHint => 'Unsicher, was passt?';
+
+  @override
+  String get finderStepSpot => 'Wo soll sie stehen?';
+
+  @override
+  String get finderStepSpotHint => 'Das Licht entscheidet fast alles.';
+
+  @override
+  String get finderSpotBright => 'Heller Raum';
+
+  @override
+  String get finderSpotMedium => 'Mittleres Licht';
+
+  @override
+  String get finderSpotDark => 'Dunkle Ecke';
+
+  @override
+  String get finderSpotOutdoor => 'Draußen, Balkon oder Garten';
+
+  @override
+  String get finderStepEffort => 'Wie viel Pflege?';
+
+  @override
+  String get finderStepEffortHint => 'Antworten Sie ehrlich, niemand urteilt.';
+
+  @override
+  String get finderEffortForgiving => 'Ich vergesse oft zu gießen';
+
+  @override
+  String get finderEffortNormal => 'Regelmäßig gießen, mehr nicht';
+
+  @override
+  String get finderEffortAttentive => 'Ich kümmere mich gern darum';
+
+  @override
+  String get finderStepSafety => 'Tiere oder Kinder?';
+
+  @override
+  String get finderStepSafetyHint => 'Viele Zimmerpflanzen sind giftig, wenn daran geknabbert wird.';
+
+  @override
+  String get finderSafetyYes => 'Ja, bitte ungiftig';
+
+  @override
+  String get finderSafetyNo => 'Keine Einschränkung';
+
+  @override
+  String get finderStepKind => 'Welche Art Pflanze?';
+
+  @override
+  String get finderStepKindHint => 'Mehrere möglich, oder keine.';
+
+  @override
+  String get finderNote => 'Sonst noch etwas?';
+
+  @override
+  String get finderNoteHint => 'Ein Bad ohne Fenster, eine Katze, die an allem knabbert …';
+
+  @override
+  String get finderNoteFooter => 'Wird nur verwendet, wenn Sie die KI fragen.';
+
+  @override
+  String get finderSubmit => 'Vorschläge ansehen';
+
+  @override
+  String get finderResults => 'Unsere Vorschläge';
+
+  @override
+  String get finderResultsHint => 'Nach den Pflegeinfos jeder Art.';
+
+  @override
+  String get finderEmptyTitle => 'Nichts Überzeugendes';
+
+  @override
+  String get finderEmptySubtitle => 'Keine Art im Katalog erfüllt alle Kriterien. Etwas lockern, oder die KI fragen.';
+
+  @override
+  String get finderRestart => 'Von vorne';
+
+  @override
+  String get finderAdd => 'Zum Garten hinzufügen';
+
+  @override
+  String get finderCare => 'Pflegeinfos ansehen';
+
+  @override
+  String get finderAskAi => 'Die KI fragen';
+
+  @override
+  String get finderAiSection => 'KI-Vorschläge';
+
+  @override
+  String get finderAiHint => 'Außerhalb des Katalogs: vor dem Kauf prüfen.';
+
+  @override
+  String get finderAiError => 'Die KI konnte nichts vorschlagen.';
+
+  @override
+  String get finderReasonLight => 'Mag dieses Licht';
+
+  @override
+  String get finderReasonLowLight => 'Verträgt Schatten';
+
+  @override
+  String get finderReasonForgiving => 'Verzeiht vergessenes Gießen';
+
+  @override
+  String get finderReasonEasy => 'Pflegeleicht';
+
+  @override
+  String get finderReasonSafe => 'Ungiftig';
+
+  @override
+  String get finderReasonOutdoor => 'Hält es draußen aus';
+
+  @override
+  String get finderAnyAnswer => 'Egal';
 }

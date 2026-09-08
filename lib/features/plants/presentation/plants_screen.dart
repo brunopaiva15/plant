@@ -109,7 +109,7 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
             if (plants.hasValue && list.isEmpty)
               SliverCentered(
                 child: total == 0
-                    ? EmptyState(emoji: '🪴', title: l10n.emptyPlantsTitle, subtitle: l10n.emptyPlantsSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref))
+                    ? EmptyState(emoji: '🪴', title: l10n.emptyPlantsTitle, subtitle: l10n.emptyPlantsSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref), secondaryLabel: l10n.finderTitle, onSecondary: () => context.push(Routes.finder))
                     : EmptyState(emoji: '🔍', title: l10n.noResultsTitle, subtitle: l10n.noResultsSubtitle, compact: true),
               )
             else if (grid)

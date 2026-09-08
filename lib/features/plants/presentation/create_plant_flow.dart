@@ -26,7 +26,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../species/presentation/species_field.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
-Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? parentSpeciesName, String? locationId}) async {
+Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? speciesName, String? locationId}) async {
   final l10n = context.l10n;
   if (!ref.read(canEditProvider)) {
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.readOnlyHint, emoji: '🔒'));
@@ -34,7 +34,7 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
   }
   final plantId = await showFloraFlow<String>(
     context,
-    builder: (ctx) => CreatePlantFlow(parentPlantId: parentPlantId, parentName: parentName, parentSpeciesName: parentSpeciesName, initialLocationId: locationId),
+    builder: (ctx) => CreatePlantFlow(parentPlantId: parentPlantId, parentName: parentName, speciesName: speciesName, initialLocationId: locationId),
   );
   if (plantId != null && context.mounted) {
     context.push(Routes.plant(plantId));
@@ -42,14 +42,14 @@ Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? 
 }
 
 class CreatePlantFlow extends ConsumerStatefulWidget {
-  const CreatePlantFlow({super.key, this.parentPlantId, this.parentName, this.parentSpeciesName, this.initialLocationId});
+  const CreatePlantFlow({super.key, this.parentPlantId, this.parentName, this.speciesName, this.initialLocationId});
 
   final String? parentPlantId;
   final String? parentName;
 
-  /// Espèce de la plante mère : une bouture en hérite, l'utilisateur n'a pas
-  /// à la ressaisir.
-  final String? parentSpeciesName;
+  /// Espèce déjà connue : celle de la plante mère pour une bouture, celle
+  /// retenue dans « Trouver une plante ». L'utilisateur peut la corriger.
+  final String? speciesName;
   final String? initialLocationId;
 
   @override
@@ -82,9 +82,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   @override
   void initState() {
     super.initState();
-    // Bouture : l'espèce (et donc le rythme de soins conseillé) vient de la
-    // plante mère. L'utilisateur peut toujours la corriger.
-    final inherited = widget.parentSpeciesName?.trim() ?? '';
+    // L'espèce est déjà connue (bouture, proposition retenue) : elle apporte
+    // avec elle le rythme de soins conseillé par sa fiche.
+    final inherited = widget.speciesName?.trim() ?? '';
     if (inherited.isEmpty) return;
     _species.text = inherited;
     final care = ref.read(careGuideProvider).resolve(inherited, family: speciesFamilyOf(ref, inherited));

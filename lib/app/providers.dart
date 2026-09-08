@@ -19,6 +19,7 @@ import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
 import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
+import '../data/services/infomaniak_advisor.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
@@ -38,6 +39,8 @@ import '../data/services/preferences_service.dart';
 import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
+import '../domain/species/plant_advisor.dart';
+import '../domain/species/plant_finder.dart';
 import '../domain/location/location_service.dart';
 import '../domain/species/species_info.dart';
 import '../core/utils/scientific_name.dart';
@@ -315,6 +318,19 @@ final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref
 final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
   if (!DiagnosisConfig.isConfigured) return const UnconfiguredDiagnoser();
   return InfomaniakDiagnoser(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+});
+
+/// « Trouver une plante » : le catalogue intégré et les fiches d'entretien
+/// répondent seuls, hors ligne et sans appel réseau.
+final plantFinderProvider = Provider<PlantFinder>(
+    (ref) => PlantFinder(entries: SpeciesCatalog.entries, guide: ref.watch(careGuideProvider)));
+
+/// Second tour de « Trouver une plante », quand le catalogue n'a rien de
+/// convaincant : même clé Infomaniak que le diagnostic, appelée seulement si
+/// l'utilisateur le demande. Sans clé, le bouton n'apparaît pas.
+final plantAdvisorProvider = Provider<PlantAdvisor>((ref) {
+  if (!DiagnosisConfig.isConfigured) return const UnconfiguredAdvisor();
+  return InfomaniakAdvisor(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
 });
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.

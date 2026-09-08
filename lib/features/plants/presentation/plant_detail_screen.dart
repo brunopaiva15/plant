@@ -99,7 +99,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
           },
         ),
-        SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, parentSpeciesName: plant.speciesName, locationId: plant.locationId)),
+        SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
         SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
       ],
     );
@@ -324,7 +324,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                           icon: CupertinoIcons.leaf_arrow_circlepath,
                           label: l10n.createCutting,
                           tint: c.sage,
-                          onTap: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, parentSpeciesName: plant.speciesName, locationId: plant.locationId),
+                          onTap: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId),
                         ),
                       ),
                     ],
@@ -771,7 +771,7 @@ class _Cuttings extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: l10n.cuttings, actionLabel: l10n.createCutting, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, parentSpeciesName: plant.speciesName, locationId: plant.locationId)),
+          SectionHeader(title: l10n.cuttings, actionLabel: l10n.createCutting, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.page),
             child: FloraGroup(

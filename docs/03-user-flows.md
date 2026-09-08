@@ -71,3 +71,21 @@ Fiche ─[⋯]⟶ Archiver ⟶ sheet : raison optionnelle (Morte · Donnée · V
 ✓ « Monstera archivée · Annuler »
 Profil ⟶ Anciennes plantes ⟶ [Restaurer]
 ```
+
+## 8. Trouver une plante (quatre questions)
+```
+Plantes (vide) ─[Trouver une plante]⟶ | Choisir une espèce ─[🧭 Trouver une plante]⟶
+  Q1 · Où va-t-elle vivre ?      Pièce lumineuse · Lumière moyenne · Coin sombre · Dehors
+  Q2 · Quel entretien ?          J'oublie souvent · Régulier · J'aime m'en occuper
+  Q3 · Animaux ou enfants ?      Sans risque · Pas de contrainte
+  Q4 · Quel genre ?              Chips multi-choix + texte libre (facultatif)
+  ⟶ 5 propositions du catalogue, chacune avec sa raison (« Supporte l'ombre · Facile à vivre »)
+  ─[tap]⟶ Fiche d'entretien en sheet ⟶ [Ajouter au jardin] (ou [Utiliser] depuis le sélecteur)
+```
+- Le tri se fait hors ligne sur les fiches d'entretien embarquées : lumière, difficulté,
+  arrosage, toxicité, tenue dehors. Un critère sans réponse ne pèse pas.
+- Éliminatoire, jamais négociable : toxicité inconnue quand on demande « sans risque »,
+  plein soleil dans un coin sombre, espèce exigeante pour qui oublie d'arroser.
+- Rien de convaincant ? On le dit, plutôt que de remplir la liste. [Demander à l'IA]
+  élargit alors hors catalogue — appel réseau seulement sur ce geste, propositions
+  marquées « à vérifier avant d'acheter ».

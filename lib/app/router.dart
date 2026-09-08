@@ -12,6 +12,7 @@ import '../features/dashboard/presentation/activity_log_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
 import '../features/export/presentation/backup_screen.dart';
+import '../features/finder/presentation/plant_finder_screen.dart';
 import '../features/garden/presentation/garden_screen.dart';
 import '../features/identification/presentation/identification_settings_screen.dart';
 import '../features/locations/presentation/location_detail_screen.dart';
@@ -72,6 +73,7 @@ abstract final class Routes {
   static const identification = '/settings/identification';
   static const scan = '/scan';
   static const speciesPicker = '/species/pick';
+  static const finder = '/species/finder';
   static const weather = '/settings/weather';
   static const account = '/settings/account';
   static const members = '/settings/members';
@@ -187,6 +189,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (c, s) => isCupertino(c)
             ? CupertinoPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: SpeciesPickerScreen(initialQuery: s.uri.queryParameters['q'] ?? ''))
             : MaterialPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: SpeciesPickerScreen(initialQuery: s.uri.queryParameters['q'] ?? '')),
+      ),
+      GoRoute(
+        path: Routes.finder,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) {
+          // `?pick=1` : ouvert depuis le sélecteur d'espèce, qui attend en
+          // retour l'espèce retenue.
+          final screen = PlantFinderScreen(picking: s.uri.queryParameters['pick'] == '1');
+          return isCupertino(c)
+              ? CupertinoPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: screen)
+              : MaterialPage<SpeciesSuggestion>(key: s.pageKey, fullscreenDialog: true, child: screen);
+        },
       ),
       GoRoute(
         path: Routes.scan,

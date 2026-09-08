@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/species/species_catalog.dart';
@@ -119,6 +120,13 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
     context.pop(s);
   }
 
+  /// « Trouver une plante » depuis le sélecteur : la proposition retenue
+  /// revient ici, comme si elle avait été cherchée à la main.
+  Future<void> _openFinder() async {
+    final picked = await context.push<SpeciesSuggestion>('${Routes.finder}?pick=1');
+    if (picked != null && mounted) _pick(picked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -166,6 +174,20 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
     final children = <Widget>[
       Padding(padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.page, Space.sm), child: searchField),
       if (!searching)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.sm),
+          child: FloraGroup(
+            children: [
+              FloraListRow(
+                leading: const Text('🧭', style: TextStyle(fontSize: 18)),
+                title: l10n.finderTitle,
+                subtitle: l10n.finderEntryHint,
+                onTap: _openFinder,
+              ),
+            ],
+          ),
+        ),
+      if (!searching)
         SizedBox(
           height: 40,
           child: ListView.separated(
@@ -206,7 +228,7 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
             children: [
               for (final e in catalog)
                 FloraListRow(
-                  leading: Text(_emojiFor(e.category), style: const TextStyle(fontSize: 18)),
+                  leading: Text(e.category.emoji, style: const TextStyle(fontSize: 18)),
                   title: e.commonName(lang),
                   subtitle: '${e.scientificName} · ${e.family}',
                   dense: true,
@@ -290,14 +312,4 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
       ),
     );
   }
-
-  static String _emojiFor(SpeciesCategory c) => switch (c) {
-        SpeciesCategory.indoor => '🪴',
-        SpeciesCategory.succulent => '🌵',
-        SpeciesCategory.herb => '🌿',
-        SpeciesCategory.vegetable => '🥕',
-        SpeciesCategory.fruit => '🍋',
-        SpeciesCategory.flower => '🌸',
-        SpeciesCategory.tree => '🌳',
-      };
 }

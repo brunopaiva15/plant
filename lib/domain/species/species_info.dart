@@ -95,7 +95,19 @@ class SpeciesSearchPage {
 }
 
 /// Catégorie d'usage d'une espèce du catalogue intégré.
-enum SpeciesCategory { indoor, succulent, herb, vegetable, fruit, flower, tree }
+enum SpeciesCategory {
+  indoor('🪴'),
+  succulent('🌵'),
+  herb('🌿'),
+  vegetable('🥕'),
+  fruit('🍋'),
+  flower('🌸'),
+  tree('🌳');
+
+  const SpeciesCategory(this.emoji);
+
+  final String emoji;
+}
 
 /// Entrée du catalogue intégré : disponible hors ligne, noms communs dans
 /// les quatre langues de l'app.

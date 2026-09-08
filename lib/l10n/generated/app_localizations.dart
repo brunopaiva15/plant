@@ -5831,6 +5831,253 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ajoutez votre première plante, avec une photo si vous voulez.'**
   String get emptyGardenSubtitle;
+
+  /// No description provided for @finderTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trouver une plante'**
+  String get finderTitle;
+
+  /// No description provided for @finderEntryHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous ne savez pas quoi choisir ?'**
+  String get finderEntryHint;
+
+  /// No description provided for @finderStepSpot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où va-t-elle vivre ?'**
+  String get finderStepSpot;
+
+  /// No description provided for @finderStepSpotHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La lumière décide de presque tout.'**
+  String get finderStepSpotHint;
+
+  /// No description provided for @finderSpotBright.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce lumineuse'**
+  String get finderSpotBright;
+
+  /// No description provided for @finderSpotMedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière moyenne'**
+  String get finderSpotMedium;
+
+  /// No description provided for @finderSpotDark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coin sombre'**
+  String get finderSpotDark;
+
+  /// No description provided for @finderSpotOutdoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dehors, balcon ou jardin'**
+  String get finderSpotOutdoor;
+
+  /// No description provided for @finderStepEffort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel entretien ?'**
+  String get finderStepEffort;
+
+  /// No description provided for @finderStepEffortHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Répondez honnêtement, personne ne vous juge.'**
+  String get finderStepEffortHint;
+
+  /// No description provided for @finderEffortForgiving.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'oublie souvent d\'arroser'**
+  String get finderEffortForgiving;
+
+  /// No description provided for @finderEffortNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un arrosage régulier, sans plus'**
+  String get finderEffortNormal;
+
+  /// No description provided for @finderEffortAttentive.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'aime m\'en occuper'**
+  String get finderEffortAttentive;
+
+  /// No description provided for @finderStepSafety.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des animaux ou des enfants ?'**
+  String get finderStepSafety;
+
+  /// No description provided for @finderStepSafetyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Beaucoup de plantes d\'intérieur sont toxiques si on les mordille.'**
+  String get finderStepSafetyHint;
+
+  /// No description provided for @finderSafetyYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, sans risque de préférence'**
+  String get finderSafetyYes;
+
+  /// No description provided for @finderSafetyNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de contrainte'**
+  String get finderSafetyNo;
+
+  /// No description provided for @finderStepKind.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel genre de plante ?'**
+  String get finderStepKind;
+
+  /// No description provided for @finderStepKindHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plusieurs choix possibles, ou aucun.'**
+  String get finderStepKindHint;
+
+  /// No description provided for @finderNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre chose ?'**
+  String get finderNote;
+
+  /// No description provided for @finderNoteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une salle de bain sans fenêtre, un chat qui mordille tout…'**
+  String get finderNoteHint;
+
+  /// No description provided for @finderNoteFooter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisé seulement si vous demandez l\'avis de l\'IA.'**
+  String get finderNoteFooter;
+
+  /// No description provided for @finderSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les propositions'**
+  String get finderSubmit;
+
+  /// No description provided for @finderResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nos propositions'**
+  String get finderResults;
+
+  /// No description provided for @finderResultsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'après la fiche d\'entretien de chaque espèce.'**
+  String get finderResultsHint;
+
+  /// No description provided for @finderEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien de convaincant'**
+  String get finderEmptyTitle;
+
+  /// No description provided for @finderEmptySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l\'IA.'**
+  String get finderEmptySubtitle;
+
+  /// No description provided for @finderRestart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommencer'**
+  String get finderRestart;
+
+  /// No description provided for @finderAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter au jardin'**
+  String get finderAdd;
+
+  /// No description provided for @finderCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la fiche'**
+  String get finderCare;
+
+  /// No description provided for @finderAskAi.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander à l\'IA'**
+  String get finderAskAi;
+
+  /// No description provided for @finderAiSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Propositions de l\'IA'**
+  String get finderAiSection;
+
+  /// No description provided for @finderAiHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors catalogue : à vérifier avant d\'acheter.'**
+  String get finderAiHint;
+
+  /// No description provided for @finderAiError.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'IA n\'a rien pu proposer.'**
+  String get finderAiError;
+
+  /// No description provided for @finderReasonLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aime cette lumière'**
+  String get finderReasonLight;
+
+  /// No description provided for @finderReasonLowLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supporte l\'ombre'**
+  String get finderReasonLowLight;
+
+  /// No description provided for @finderReasonForgiving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pardonne les oublis d\'arrosage'**
+  String get finderReasonForgiving;
+
+  /// No description provided for @finderReasonEasy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facile à vivre'**
+  String get finderReasonEasy;
+
+  /// No description provided for @finderReasonSafe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non toxique'**
+  String get finderReasonSafe;
+
+  /// No description provided for @finderReasonOutdoor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tient dehors'**
+  String get finderReasonOutdoor;
+
+  /// No description provided for @finderAnyAnswer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Peu importe'**
+  String get finderAnyAnswer;
+
 }
 
 class _AppLocalizationsDelegate

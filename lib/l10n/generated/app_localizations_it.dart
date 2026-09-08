@@ -3421,4 +3421,127 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get emptyGardenSubtitle =>
       'Aggiungi la tua prima pianta, con una foto se vuoi.';
+
+  @override
+  String get finderTitle => 'Trovare una pianta';
+
+  @override
+  String get finderEntryHint => 'Non sa cosa scegliere?';
+
+  @override
+  String get finderStepSpot => 'Dove vivrà?';
+
+  @override
+  String get finderStepSpotHint => 'La luce decide quasi tutto.';
+
+  @override
+  String get finderSpotBright => 'Stanza luminosa';
+
+  @override
+  String get finderSpotMedium => 'Luce media';
+
+  @override
+  String get finderSpotDark => 'Angolo buio';
+
+  @override
+  String get finderSpotOutdoor => 'Fuori, balcone o giardino';
+
+  @override
+  String get finderStepEffort => 'Quanta cura?';
+
+  @override
+  String get finderStepEffortHint => 'Risponda sinceramente, nessuno la giudica.';
+
+  @override
+  String get finderEffortForgiving => 'Dimentico spesso di annaffiare';
+
+  @override
+  String get finderEffortNormal => 'Annaffiature regolari, nulla di più';
+
+  @override
+  String get finderEffortAttentive => 'Mi piace prendermene cura';
+
+  @override
+  String get finderStepSafety => 'Animali o bambini?';
+
+  @override
+  String get finderStepSafetyHint => 'Molte piante da appartamento sono tossiche se masticate.';
+
+  @override
+  String get finderSafetyYes => 'Sì, meglio non tossica';
+
+  @override
+  String get finderSafetyNo => 'Nessun vincolo';
+
+  @override
+  String get finderStepKind => 'Che tipo di pianta?';
+
+  @override
+  String get finderStepKindHint => 'Più scelte, o nessuna.';
+
+  @override
+  String get finderNote => 'Altro?';
+
+  @override
+  String get finderNoteHint => 'Un bagno senza finestre, un gatto che mordicchia tutto…';
+
+  @override
+  String get finderNoteFooter => 'Usato solo se chiede all\'IA.';
+
+  @override
+  String get finderSubmit => 'Vedi le proposte';
+
+  @override
+  String get finderResults => 'Le nostre proposte';
+
+  @override
+  String get finderResultsHint => 'In base alla scheda di cura di ogni specie.';
+
+  @override
+  String get finderEmptyTitle => 'Niente di convincente';
+
+  @override
+  String get finderEmptySubtitle => 'Nessuna specie del catalogo soddisfa tutti i criteri. Allarghi un po\', o chieda all\'IA.';
+
+  @override
+  String get finderRestart => 'Ricomincia';
+
+  @override
+  String get finderAdd => 'Aggiungi al giardino';
+
+  @override
+  String get finderCare => 'Vedi la scheda';
+
+  @override
+  String get finderAskAi => 'Chiedi all\'IA';
+
+  @override
+  String get finderAiSection => 'Proposte dell\'IA';
+
+  @override
+  String get finderAiHint => 'Fuori catalogo: da verificare prima di acquistare.';
+
+  @override
+  String get finderAiError => 'L\'IA non è riuscita a proporre nulla.';
+
+  @override
+  String get finderReasonLight => 'Ama questa luce';
+
+  @override
+  String get finderReasonLowLight => 'Tollera l\'ombra';
+
+  @override
+  String get finderReasonForgiving => 'Perdona le annaffiature dimenticate';
+
+  @override
+  String get finderReasonEasy => 'Facile da coltivare';
+
+  @override
+  String get finderReasonSafe => 'Non tossica';
+
+  @override
+  String get finderReasonOutdoor => 'Sta bene all\'aperto';
+
+  @override
+  String get finderAnyAnswer => 'Non importa';
 }

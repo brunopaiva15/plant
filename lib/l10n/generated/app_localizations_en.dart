@@ -3401,4 +3401,127 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyGardenSubtitle =>
       'Add your first plant, with a photo if you like.';
+
+  @override
+  String get finderTitle => 'Find a plant';
+
+  @override
+  String get finderEntryHint => 'Not sure what to choose?';
+
+  @override
+  String get finderStepSpot => 'Where will it live?';
+
+  @override
+  String get finderStepSpotHint => 'Light decides almost everything.';
+
+  @override
+  String get finderSpotBright => 'Bright room';
+
+  @override
+  String get finderSpotMedium => 'Medium light';
+
+  @override
+  String get finderSpotDark => 'Dark corner';
+
+  @override
+  String get finderSpotOutdoor => 'Outdoors, balcony or garden';
+
+  @override
+  String get finderStepEffort => 'How much care?';
+
+  @override
+  String get finderStepEffortHint => 'Answer honestly, nobody is judging.';
+
+  @override
+  String get finderEffortForgiving => 'I often forget to water';
+
+  @override
+  String get finderEffortNormal => 'Regular watering, nothing more';
+
+  @override
+  String get finderEffortAttentive => 'I enjoy fussing over plants';
+
+  @override
+  String get finderStepSafety => 'Pets or children?';
+
+  @override
+  String get finderStepSafetyHint => 'Many houseplants are toxic when chewed.';
+
+  @override
+  String get finderSafetyYes => 'Yes, non-toxic please';
+
+  @override
+  String get finderSafetyNo => 'No constraint';
+
+  @override
+  String get finderStepKind => 'What kind of plant?';
+
+  @override
+  String get finderStepKindHint => 'Pick several, or none.';
+
+  @override
+  String get finderNote => 'Anything else?';
+
+  @override
+  String get finderNoteHint => 'A windowless bathroom, a cat that chews everything…';
+
+  @override
+  String get finderNoteFooter => 'Used only if you ask the AI.';
+
+  @override
+  String get finderSubmit => 'See suggestions';
+
+  @override
+  String get finderResults => 'Our suggestions';
+
+  @override
+  String get finderResultsHint => 'Based on each species\' care sheet.';
+
+  @override
+  String get finderEmptyTitle => 'Nothing convincing';
+
+  @override
+  String get finderEmptySubtitle => 'No species in the catalogue ticks every box. Widen a little, or ask the AI.';
+
+  @override
+  String get finderRestart => 'Start over';
+
+  @override
+  String get finderAdd => 'Add to my garden';
+
+  @override
+  String get finderCare => 'View care sheet';
+
+  @override
+  String get finderAskAi => 'Ask the AI';
+
+  @override
+  String get finderAiSection => 'AI suggestions';
+
+  @override
+  String get finderAiHint => 'Outside the catalogue: check before buying.';
+
+  @override
+  String get finderAiError => 'The AI could not suggest anything.';
+
+  @override
+  String get finderReasonLight => 'Likes this light';
+
+  @override
+  String get finderReasonLowLight => 'Tolerates shade';
+
+  @override
+  String get finderReasonForgiving => 'Forgives missed watering';
+
+  @override
+  String get finderReasonEasy => 'Easy-going';
+
+  @override
+  String get finderReasonSafe => 'Non-toxic';
+
+  @override
+  String get finderReasonOutdoor => 'Happy outdoors';
+
+  @override
+  String get finderAnyAnswer => 'No preference';
 }
