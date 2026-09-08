@@ -216,12 +216,15 @@ class CandidateRow extends StatelessWidget {
     final c = context.colors;
     final confidence = IdentificationConfidence.of(candidate);
     final mot = l10n.confidenceLabel(confidence);
-    final commun = candidate.commonName;
+    final commun = candidate.commonName ?? '';
     return FloraListRow(
-      title: candidate.scientificName,
-      // Le nom courant d'abord, c'est ce qui parle ; le cran ensuite, parce
-      // que la liste est ordonnée et que l'ordre en dit déjà la moitié.
-      subtitle: commun == null || commun.isEmpty ? mot : '$commun · $mot',
+      // Le nom courant en titre : « Pied d'éléphant » se reconnaît d'un coup
+      // d'œil, « Beaucarnea recurvata » demande de lire. Le nom scientifique
+      // reste dessous, c'est lui qui identifie l'espèce.
+      title: commun.isEmpty ? candidate.scientificName : commun,
+      // Sans nom courant, le nom scientifique monte en titre et le
+      // sous-titre ne garde que le cran, plutôt que de le répéter.
+      subtitle: commun.isEmpty ? mot : '${candidate.scientificName} · $mot',
       leading: Text(
         switch (confidence) {
           IdentificationConfidence.likely => '◆',
