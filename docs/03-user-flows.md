@@ -60,7 +60,9 @@ Stratégie *Intelligent* (météo / exposition) : Phase 3, même sheet, explicat
 ## 6. Première expérience (onboarding)
 ```
 Bienvenue ⟶ la plante de l'icône pousse : terre nue, fuseau, feuilles qui
-  s'ouvrent et se découpent, jusqu'à l'icône. Puis les présentations.
+  s'ouvrent et se découpent, jusqu'à l'icône.
+Toutes vos plantes ⟶ cinq plantes différentes qui gravitent, chacune à son
+  rythme. Puis les autres présentations.
 Splash ⟶ « Votre jardin, simplement. » [Ajouter ma première plante] · Plus tard
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]

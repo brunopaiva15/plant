@@ -7,6 +7,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import 'clay_illustration.dart';
 import 'growing_plant.dart';
+import 'plant_cluster.dart';
 
 /// La scène de l'onboarding : les cinq objets du jardin, qui se succèdent
 /// au centre de l'écran sur un halo de couleur.
@@ -135,12 +136,15 @@ class OnboardingStage extends StatelessWidget {
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
 
     final vivant = index == page && near < 0.02;
-    // Le premier objet n'est pas une image posée : c'est la plante de l'icône,
-    // qui pousse à l'arrivée sur l'écran de bienvenue. Les suivants sont les
-    // objets d'argile, dans l'ordre des écrans.
-    Widget object = index == 0
-        ? GrowingPlant(side: side, animate: vivant)
-        : ClayIllustration(slide: index, side: side, animate: vivant);
+    // Les deux premiers objets ne sont pas des images posées : la plante de
+    // l'icône qui pousse sur l'écran de bienvenue, puis la collection qui
+    // gravite sur « Toutes vos plantes, ici ». Les suivants sont les objets
+    // d'argile, dans l'ordre des écrans.
+    Widget object = switch (index) {
+      0 => GrowingPlant(side: side, animate: vivant),
+      1 => PlantCluster(side: side, animate: vivant),
+      _ => ClayIllustration(slide: index, side: side, animate: vivant),
+    };
     if (blur > 0.05) {
       object = ImageFiltered(
         imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),

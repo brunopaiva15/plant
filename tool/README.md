@@ -97,3 +97,25 @@ python3 tool/pack_growth.py /tmp/pousse assets/onboarding/pousse.webp --fps 14
 La caméra est cadrée une fois pour toutes sur la plante adulte : sans cela,
 le cadrage automatique suivrait la plante qui grandit et elle semblerait
 immobile pendant que le monde rétrécit autour d'elle.
+
+# La collection qui gravite (« Toutes vos plantes, ici »)
+
+`build_collection.py` rend cinq plantes, chacune seule dans son image : un
+monstera, un caoutchouc à feuilles entières, une sansevieria en lames droites,
+une petite plante ronde, un semis. Les cinq sortent des mêmes primitives que
+l'icône — c'est la largeur relative du limbe, sa longueur et son nombre de
+fentes qui changent la silhouette. L'application les pose ensuite côte à côte
+et les fait dériver, chacune sur son ellipse et à son rythme.
+
+```bash
+# ~2 min sur quatre cœurs
+blender -b -noaudio -P tool/build_collection.py -- 640 48 /tmp/collection
+# puis, en WebP (30 Ko par plante au lieu de 370 Ko en PNG) :
+python3 -c "from PIL import Image; import glob, os
+for f in glob.glob('/tmp/collection/*.png'):
+    Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
+```
+
+`clay_scene.py` tient ce que ces scripts ont en commun : les primitives de
+géométrie, les matériaux mats, le studio d'éclairage et le grain. Rien ne s'y
+exécute à l'import.

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -22,7 +23,9 @@ import 'clay_illustration.dart';
 /// l'écran, pas une minuterie : elle s'arrête net avec l'écran.
 ///
 /// Une fois la plante poussée, elle reste — une plante ne repousse pas — et
-/// se met à respirer comme les autres objets du jardin.
+/// se met à respirer comme les autres objets du jardin. Quitter l'écran de
+/// bienvenue défait l'objet, mais pas la plante : elle se retrouve où on l'a
+/// laissée, jamais au premier jour.
 class GrowingPlant extends StatefulWidget {
   const GrowingPlant({super.key, required this.side, this.animate = true});
 
@@ -39,6 +42,11 @@ class GrowingPlant extends StatefulWidget {
 }
 
 class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderStateMixin {
+  /// Jusqu'où la plante a poussé pendant ce lancement, par-delà les allers et
+  /// retours entre les écrans : la scène défait l'objet dès qu'il sort du
+  /// champ, et le referait pousser de la terre nue sans cette mémoire.
+  static int _reached = -1;
+
   late final Ticker _ticker = createTicker(_tick);
 
   ui.Codec? _codec;
@@ -94,13 +102,18 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
       _codec = null;
       return;
     }
-    // Sans animations, la plante est là d'emblée : on va droit à la dernière.
-    if (_reduceMotion) {
-      await _advance(_codec!.frameCount - 1);
-    } else {
-      await _advance(0);
-      _sync();
+    final last = _codec!.frameCount - 1;
+    // Sans animations, la plante est là d'emblée ; déjà poussée, elle l'est
+    // aussi. Sinon on reprend à l'image où on l'avait laissée.
+    if (_reduceMotion || _reached >= last) {
+      await _advance(last);
+      return;
     }
+    await _advance(math.max(_reached, 0));
+    // L'horloge repart au niveau atteint, sans quoi la pousse attendrait
+    // d'avoir rattrapé le temps déjà joué.
+    _base = _frame * math.max(_index, 0);
+    _sync();
   }
 
   /// Décode jusqu'à l'image [wanted], en n'affichant que celle-là : les
@@ -113,6 +126,7 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
     while (_index < wanted.clamp(0, last)) {
       final frame = await codec.getNextFrame();
       _index++;
+      _reached = math.max(_reached, _index);
       if (!mounted) {
         frame.image.dispose();
         _decoding = false;

@@ -1,6 +1,7 @@
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/clay_illustration.dart';
 import 'package:flora/features/onboarding/presentation/growing_plant.dart';
+import 'package:flora/features/onboarding/presentation/plant_cluster.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_stage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -51,6 +52,12 @@ void main() {
     testWidgets("le premier objet est la plante qui pousse, pas une image posée", (tester) async {
       await _pump(tester, offset: 0, page: 0);
       expect(find.byType(GrowingPlant), findsOneWidget);
+      expect(find.byType(ClayIllustration), findsNothing);
+    });
+
+    testWidgets("le deuxième écran montre la collection, pas une image posée", (tester) async {
+      await _pump(tester, offset: 1, page: 1);
+      expect(find.byType(PlantCluster), findsOneWidget);
       expect(find.byType(ClayIllustration), findsNothing);
     });
 

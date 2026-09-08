@@ -15,6 +15,7 @@ import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
 import 'onboarding_stage.dart';
+import 'plant_cluster.dart';
 
 /// Un écran de présentation : un objet du jardin, un titre, une phrase.
 class _Slide {
@@ -161,8 +162,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   void _keepIllustrations(int page) {
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (final i in {page, page + 1}) {
-      // Le premier objet est la séquence de pousse : elle charge la sienne.
-      if (i >= 1 && i < _objectCount) ClayIllustration.precache(context, i, side);
+      if (i >= _objectCount) continue;
+      // Le premier objet charge sa propre séquence ; le deuxième a cinq
+      // images plutôt qu'une.
+      if (i == 1) {
+        PlantCluster.precache(context, side);
+      } else if (i >= 2) {
+        ClayIllustration.precache(context, i, side);
+      }
     }
   }
 
