@@ -1222,6 +1222,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchOnline => 'None of these? Search online';
 
   @override
+  String get identifyAnotherPhoto => 'Add a photo';
+
+  @override
+  String get identifyAnotherPhotoHint => 'Another photo would help decide. A leaf, a flower, or the whole plant.';
+
+  @override
   String get searchingOnline => 'Searching online…';
 
   @override

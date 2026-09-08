@@ -608,6 +608,8 @@
   "identifyTitle": "Est-ce bien…",
   "identifyHint": "Suggestions d'espèce, à confirmer.",
   "searchOnline": "Aucune ne correspond ? Chercher en ligne",
+  "identifyAnotherPhoto": "Ajouter une photo",
+  "identifyAnotherPhotoHint": "Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.",
   "searchingOnline": "Recherche en ligne…",
   "suggestionsLocal": "Trouvé sur votre appareil, sans réseau.",
   "suggestionsRemote": "Proposé en ligne par Pl@ntNet.",

@@ -2208,6 +2208,18 @@ abstract class AppLocalizations {
   /// **'Aucune ne correspond ? Chercher en ligne'**
   String get searchOnline;
 
+  /// No description provided for @identifyAnotherPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get identifyAnotherPhoto;
+
+  /// No description provided for @identifyAnotherPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.'**
+  String get identifyAnotherPhotoHint;
+
   /// No description provided for @searchingOnline.
   ///
   /// In fr, this message translates to:

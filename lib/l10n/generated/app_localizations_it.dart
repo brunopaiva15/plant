@@ -1224,6 +1224,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchOnline => 'Nessuna corrisponde? Cerca online';
 
   @override
+  String get identifyAnotherPhoto => 'Aggiungi una foto';
+
+  @override
+  String get identifyAnotherPhotoHint => 'Un\'altra foto aiuterebbe a decidere. Una foglia, un fiore o la pianta intera.';
+
+  @override
   String get searchingOnline => 'Ricerca online…';
 
   @override

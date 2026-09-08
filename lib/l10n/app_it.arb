@@ -352,6 +352,8 @@
   "identifyTitle": "È forse…",
   "identifyHint": "Suggerimenti di specie, da confermare.",
   "searchOnline": "Nessuna corrisponde? Cerca online",
+  "identifyAnotherPhoto": "Aggiungi una foto",
+  "identifyAnotherPhotoHint": "Un'altra foto aiuterebbe a decidere. Una foglia, un fiore o la pianta intera.",
   "searchingOnline": "Ricerca online…",
   "suggestionsLocal": "Trovato sul tuo dispositivo, senza rete.",
   "suggestionsRemote": "Proposto online da Pl@ntNet.",

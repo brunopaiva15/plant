@@ -352,6 +352,8 @@
   "identifyTitle": "Is it…",
   "identifyHint": "Species suggestions, to confirm.",
   "searchOnline": "None of these? Search online",
+  "identifyAnotherPhoto": "Add a photo",
+  "identifyAnotherPhotoHint": "Another photo would help decide. A leaf, a flower, or the whole plant.",
   "searchingOnline": "Searching online…",
   "suggestionsLocal": "Found on your device, no network.",
   "suggestionsRemote": "Suggested online by Pl@ntNet.",

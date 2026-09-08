@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/likelihood_labels.dart';
 import '../../../data/problems/problem_catalog.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
@@ -234,15 +235,6 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
 /// Plafond de photos par analyse (aligné sur l'adaptateur).
 abstract final class DiagnosisLimits {
   static const maxImages = 3;
-}
-
-/// Le mot qui dit la vraisemblance d'une piste, dans la langue de l'app.
-extension LikelihoodLabel on AppLocalizations {
-  String likelihoodLabel(Likelihood v) => switch (v) {
-        Likelihood.likely => likelihoodLikely,
-        Likelihood.possible => likelihoodPossible,
-        Likelihood.unlikely => likelihoodUnlikely,
-      };
 }
 
 class _CauseCard extends StatelessWidget {
