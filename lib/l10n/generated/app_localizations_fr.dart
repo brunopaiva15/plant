@@ -1237,8 +1237,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get suggestionsRemote => 'Proposé en ligne par Pl@ntNet.';
 
   @override
-  String get identifyOnDevice =>
-      'Reconnu sur votre appareil. Choisissez l\'espèce qui correspond.';
+  String identifyOnDevice(String name) {
+    return 'Reconnu par $name, sur votre appareil. Choisissez l\'espèce qui correspond.';
+  }
 
   @override
   String get identifyViaPlantNet =>
@@ -1258,8 +1259,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get identificationSettings => 'Identification';
 
   @override
-  String get identificationHint =>
-      'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau. Quand le modèle hésite, la photo peut être envoyée à Pl@ntNet pour trancher.';
+  String identificationHint(String name) {
+    return 'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau : $name répond hors ligne. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.';
+  }
 
   @override
   String get identificationEnabled => 'Identification activée';
@@ -1271,16 +1273,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get identificationFallback => 'Repli en ligne';
 
   @override
-  String get identificationFallbackHint =>
-      'Quand le modèle intégré hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.';
-
-  @override
-  String modelLoaded(int count) {
-    return 'Modèle embarqué : $count espèces';
+  String identificationFallbackHint(String name) {
+    return 'Quand $name hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.';
   }
 
   @override
-  String get modelMissing => 'Modèle embarqué indisponible sur cet appareil';
+  String modelLoaded(String name, int count) {
+    return '$name : $count espèces';
+  }
+
+  @override
+  String modelMissing(String name) {
+    return '$name indisponible sur cet appareil';
+  }
 
   @override
   String get modelLoading => 'Chargement du modèle…';
