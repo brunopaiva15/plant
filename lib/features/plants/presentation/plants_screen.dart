@@ -102,6 +102,11 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
                 onPressed: () => showPlantFilterSheet(context),
               ),
               const SizedBox(width: Space.xs),
+              // « Trouver une plante » vit à côté du « + » : c'est ici qu'on
+              // vient quand on veut une plante de plus, en sachant laquelle
+              // ou non.
+              FloraIconButton(icon: CupertinoIcons.lightbulb, semanticLabel: l10n.finderTitle, onPressed: () => context.push(Routes.finder)),
+              const SizedBox(width: Space.xs),
               FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.addPlant, onPressed: () => startCreatePlantFlow(context, ref)),
             ],
           ),

@@ -74,7 +74,7 @@ Profil ⟶ Anciennes plantes ⟶ [Restaurer]
 
 ## 8. Trouver une plante (quatre questions)
 ```
-Plantes (vide) ─[Trouver une plante]⟶ | Choisir une espèce ─[🧭 Trouver une plante]⟶
+Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir une espèce ─[🧭]⟶
   Q1 · Où va-t-elle vivre ?      Pièce lumineuse · Lumière moyenne · Coin sombre · Dehors
   Q2 · Quel entretien ?          J'oublie souvent · Régulier · J'aime m'en occuper
   Q3 · Animaux ou enfants ?      Sans risque · Pas de contrainte
