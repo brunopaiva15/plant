@@ -31,6 +31,24 @@ class DiagnosisSettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: Space.md),
           Text(l10n.diagnosisSettingsHint, style: context.text.callout),
+          if (configured) ...[
+            const SizedBox(height: Space.lg),
+            FloraGroup(
+              children: [
+                FloraListRow(
+                  leading: const Text('📖', style: TextStyle(fontSize: 18)),
+                  title: l10n.careAssistSetting,
+                  trailing: AdaptiveSwitch(
+                    value: ref.watch(preferencesProvider.select((p) => p.careAssistEnabled)),
+                    onChanged: (v) => ref.read(preferencesProvider.notifier).setCareAssistEnabled(v),
+                  ),
+                  chevron: false,
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.sm),
+            Text(l10n.careAssistHint, style: context.text.caption),
+          ],
         ],
       ),
     );

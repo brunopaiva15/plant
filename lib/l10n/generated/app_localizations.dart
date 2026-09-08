@@ -6096,6 +6096,30 @@ abstract class AppLocalizations {
   /// **'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.'**
   String get finderIntro;
 
+  /// No description provided for @careMatchAssisted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complétée par l\'IA'**
+  String get careMatchAssisted;
+
+  /// No description provided for @careAssistedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l\'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n\'en fait pas partie.'**
+  String get careAssistedNote;
+
+  /// No description provided for @careAssistSetting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compléter les fiches avec l\'IA'**
+  String get careAssistSetting;
+
+  /// No description provided for @careAssistHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil, et la réponse est gardée pour ne pas la redemander.'**
+  String get careAssistHint;
+
 }
 
 class _AppLocalizationsDelegate

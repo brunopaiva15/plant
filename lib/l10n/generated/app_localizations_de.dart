@@ -3548,4 +3548,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get finderIntro => 'Vier Fragen zum Standort und zu deinen Gewohnheiten, dann Pflanzen, die sich dort wohlfühlen, jede mit ihren Pflegeinfos.';
+
+  @override
+  String get careMatchAssisted => 'Von der KI ergänzt';
+
+  @override
+  String get careAssistedNote => 'Der Katalog kennt diese Art nicht, diese Werte kommen also von der KI. Gesendet wurde nur der wissenschaftliche Name, die Giftigkeit gehört nicht dazu.';
+
+  @override
+  String get careAssistSetting => 'Pflegeinfos mit der KI ergänzen';
+
+  @override
+  String get careAssistHint => 'Kennt der Katalog eine Art nicht, geht ihr wissenschaftlicher Name an die KI, um die Pflegeinfos zu ergänzen. Sonst verlässt nichts das Gerät, und die Antwort wird behalten.';
 }

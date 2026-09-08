@@ -163,6 +163,7 @@ extension CareProfileLabels on AppLocalizations {
         CareMatch.genus => careMatchGenus(care.matchedOn ?? ''),
         CareMatch.family => careMatchFamily(care.matchedOn ?? ''),
         CareMatch.category || CareMatch.generic => careMatchGeneric,
+        CareMatch.assisted => careMatchAssisted,
       };
 
   /// « de mars à septembre », dans la langue et le calendrier de l'utilisateur.

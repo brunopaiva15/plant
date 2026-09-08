@@ -34,6 +34,15 @@ class PreferencesService {
   bool get identificationFallbackEnabled => _prefs.getBool('identification_fallback') ?? true;
   Future<void> setIdentificationFallbackEnabled(bool value) => _prefs.setBool('identification_fallback', value);
 
+  /// Complément des fiches d'entretien par l'IA, quand le catalogue ne
+  /// connaît pas l'espèce. Coupé, la fiche s'en tient à ses repères.
+  bool get careAssistEnabled => _prefs.getBool('care_assist') ?? true;
+  Future<void> setCareAssistEnabled(bool value) => _prefs.setBool('care_assist', value);
+
+  /// Réponses déjà obtenues, par espèce et par langue, en JSON.
+  String? get careCompletions => _prefs.getString('care_completions');
+  Future<void> setCareCompletions(String json) => _prefs.setString('care_completions', json);
+
   /// Compteurs de la cascade d'identification, en JSON.
   String? get identificationMetrics => _prefs.getString('identification_metrics');
   Future<void> setIdentificationMetrics(String json) => _prefs.setString('identification_metrics', json);

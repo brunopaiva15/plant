@@ -3533,4 +3533,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finderIntro => 'Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet.';
+
+  @override
+  String get careMatchAssisted => 'Completed by AI';
+
+  @override
+  String get careAssistedNote => 'The catalogue does not know this species, so these figures come from the AI. Only the scientific name was sent, and toxicity is not part of the answer.';
+
+  @override
+  String get careAssistSetting => 'Complete care sheets with AI';
+
+  @override
+  String get careAssistHint => 'When the catalogue does not know a species, its scientific name goes to the AI to fill in the sheet. Nothing else leaves the device, and the answer is kept so it is not asked twice.';
 }

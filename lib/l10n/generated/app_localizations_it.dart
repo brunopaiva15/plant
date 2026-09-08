@@ -3553,4 +3553,16 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get finderIntro => 'Quattro domande sul posto e sulle tue abitudini, poi piante che ci staranno bene, ognuna con la sua scheda di cura.';
+
+  @override
+  String get careMatchAssisted => 'Completata dall\'IA';
+
+  @override
+  String get careAssistedNote => 'Il catalogo non conosce questa specie, quindi questi valori vengono dall\'IA. È stato inviato solo il nome scientifico, e la tossicità non ne fa parte.';
+
+  @override
+  String get careAssistSetting => 'Completa le schede con l\'IA';
+
+  @override
+  String get careAssistHint => 'Quando il catalogo non conosce una specie, il suo nome scientifico va all\'IA per completare la scheda. Nient\'altro lascia il dispositivo, e la risposta viene conservata.';
 }

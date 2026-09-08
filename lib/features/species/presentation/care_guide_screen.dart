@@ -27,11 +27,36 @@ class CareGuideScreen extends ConsumerWidget {
     final plant = summary?.plant;
     final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
     final family = speciesFamilyLookup(ref)(plant?.speciesName);
-    final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family);
+    final care = _completed(context, ref, ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family), plant?.speciesName);
     return FloraPage(
       title: l10n.careGuide,
-      child: CareGuideBody(care: care, plantName: plant?.name, location: location),
+      // La fiche s'affiche tout de suite avec ce que le catalogue sait ; si
+      // l'IA la complète, elle se repose en fondu plutôt que de changer
+      // sèchement sous les yeux.
+      child: AnimatedSwitcher(
+        duration: Motion.of(context, Motion.standard),
+        child: KeyedSubtree(
+          key: ValueKey(care.match),
+          child: CareGuideBody(care: care, plantName: plant?.name, location: location),
+        ),
+      ),
     );
+  }
+
+  /// La fiche, complétée par l'IA quand le catalogue n'a que des repères
+  /// généraux à offrir.
+  ///
+  /// Une fiche de l'espèce, du genre ou de la famille a été renseignée à la
+  /// main : on n'y touche pas. C'est seulement quand la fiche avoue ne rien
+  /// savoir de particulier que la question part, une fois, en silence.
+  ResolvedCare _completed(BuildContext context, WidgetRef ref, ResolvedCare care, String? species) {
+    if (care.match != CareMatch.generic && care.match != CareMatch.category) return care;
+    final name = species?.trim() ?? '';
+    if (name.isEmpty) return care;
+    final language = Localizations.localeOf(context).languageCode;
+    final completion = ref.watch(careCompletionProvider((species: name, language: language))).value;
+    if (completion == null) return care;
+    return ResolvedCare(profile: completion.applyTo(care.profile), match: CareMatch.assisted);
   }
 }
 
@@ -167,7 +192,14 @@ class CareGuideBody extends StatelessWidget {
         const SizedBox(height: Space.lg),
         Text(l10n.careMatchLabel(care), style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
-        Text(care.isSpecific ? l10n.careDisclaimer : l10n.careMatchNote, style: context.text.caption),
+        Text(
+          switch (care.match) {
+            CareMatch.assisted => l10n.careAssistedNote,
+            CareMatch.species || CareMatch.genus => l10n.careDisclaimer,
+            _ => l10n.careMatchNote,
+          },
+          style: context.text.caption,
+        ),
       ],
     );
   }

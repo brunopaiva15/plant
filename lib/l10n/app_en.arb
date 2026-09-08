@@ -1111,5 +1111,9 @@
   "finderAnyAnswer": "No preference",
   "onbWelcomeTitle": "Welcome to Auxin",
   "onbWelcomeBody": "The journal of your plants, from the first watering to the newest leaf.",
-  "finderIntro": "Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet."
+  "finderIntro": "Four questions about the spot and about your habits, then plants that would be happy there, each with its care sheet.",
+  "careMatchAssisted": "Completed by AI",
+  "careAssistedNote": "The catalogue does not know this species, so these figures come from the AI. Only the scientific name was sent, and toxicity is not part of the answer.",
+  "careAssistSetting": "Complete care sheets with AI",
+  "careAssistHint": "When the catalogue does not know a species, its scientific name goes to the AI to fill in the sheet. Nothing else leaves the device, and the answer is kept so it is not asked twice."
 }

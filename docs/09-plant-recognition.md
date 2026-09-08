@@ -746,6 +746,38 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   Kimi est un jeu d'essai de vingt à trente photos de plantes à problème
   connu, envoyées avec la même consigne. Il reste à constituer.
 
+## 9 bis. Compléter une fiche d'entretien que le catalogue ne connaît pas
+
+Le catalogue intégré ne renseigne à la main que treize profils d'espèce ;
+tout le reste passe par le genre, la famille, la catégorie, ou finit sur des
+repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
+(« Repères généraux »), et c'est exactement le trou que l'IA comble
+(`lib/data/services/infomaniak_care_completer.dart`) :
+
+- **Quand** : seulement si la fiche n'a que des repères généraux, seulement
+  si la plante porte un nom d'espèce, seulement si l'utilisateur laisse le
+  réglage actif. Une fiche de l'espèce, du genre ou de la famille est
+  renseignée à la main et n'est jamais remplacée.
+- **Ce qui part** : le nom scientifique, rien d'autre. Ni photo, ni nom de
+  plante, ni donnée de l'utilisateur.
+- **Ce qui revient** : des nombres et des mots d'un vocabulaire fermé (les
+  valeurs des énumérations de `CareProfile`), à `temperature` 0. Tout ce qui
+  n'entre pas dans le vocabulaire est jeté, et les nombres invraisemblables
+  aussi (arrosage hors 1–120 jours, rempotage hors 6–120 mois, plage de
+  température à l'envers, hiver plus fréquent que l'été). Un champ absent
+  vaut mieux qu'un champ inventé, la consigne le dit et le lecteur s'y tient.
+- **Ce qui ne revient jamais** : la toxicité. Tout le reste est un avis sur
+  le confort d'une plante ; « non toxique pour le chat » est une affirmation
+  sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue.
+- **Une fois** : la réponse est gardée sur l'appareil, par espèce et par
+  langue, réponse vide comprise, pour qu'une espèce que l'IA ne connaît pas
+  ne soit pas redemandée à chaque ouverture de la fiche. Le cache est borné
+  à 120 entrées et ne part ni en sauvegarde ni en synchronisation.
+- **La provenance est dite** : la ligne du bas passe de « Repères généraux »
+  à « Complétée par l'IA », avec ce qui a été envoyé et ce qui ne l'a pas
+  été. Sans cela, l'application perdrait ce qui la distingue d'un moteur de
+  texte, savoir d'où viennent ses chiffres.
+
 ## 10. Ajouter une espèce
 
 1. L'ajouter au catalogue trié (`species_catalog.dart`) ou, à défaut, à
