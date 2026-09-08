@@ -9,10 +9,14 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftPlantRepository implements PlantRepository {
-  DriftPlantRepository(this._db, this._gardenId);
+  DriftPlantRepository(this._db, this._gardenId, {bool Function()? southernHemisphere})
+      : _south = southernHemisphere ?? (() => false);
 
   final FloraDatabase _db;
   final String _gardenId;
+
+  /// L'hémisphère du jardin, relu à chaque calcul d'échéance.
+  final bool Function() _south;
   static const _uuid = Uuid();
 
   /// Séparateur des tags concaténés ; interdit dans un nom de tag (voir TagRepository).
@@ -184,7 +188,7 @@ class DriftPlantRepository implements PlantRepository {
               typeKey: kind.key,
               strategy: schedule.strategy.name,
               intervalDays: days,
-              nextDueAt: Value(CareEngine.initialDue(schedule, now)),
+              nextDueAt: Value(CareEngine.initialDue(schedule, now, south: _south())),
               createdAt: now,
               updatedAt: now,
             ));
@@ -269,7 +273,7 @@ class DriftPlantRepository implements PlantRepository {
         final s = row.toDomain().copyWith(enabled: true);
         await (_db.update(_db.careSchedules)..where((x) => x.id.equals(s.id))).write(CareSchedulesCompanion(
           enabled: const Value(true),
-          nextDueAt: Value(CareEngine.initialDue(s, now)),
+          nextDueAt: Value(CareEngine.initialDue(s, now, south: _south())),
           updatedAt: Value(now),
         ));
         await _db.enqueueSync('care_schedules', s.id, 'upsert', const {});

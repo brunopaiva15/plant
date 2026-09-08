@@ -11,10 +11,14 @@ import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftCareRepository implements CareRepository {
-  DriftCareRepository(this._db, this._plants);
+  DriftCareRepository(this._db, this._plants, {bool Function()? southernHemisphere})
+      : _south = southernHemisphere ?? (() => false);
 
   final FloraDatabase _db;
   final PlantRepository _plants;
+
+  /// L'hémisphère du jardin, relu à chaque calcul d'échéance.
+  final bool Function() _south;
   static const _uuid = Uuid();
 
   @override
@@ -104,7 +108,7 @@ class DriftCareRepository implements CareRepository {
         existing.enabled != schedule.enabled;
     DateTime? nextDue = existing?.nextDueAt;
     if (changed) {
-      nextDue = CareEngine.nextDueAfter(withId, lastCompleted ?? now);
+      nextDue = CareEngine.nextDueAfter(withId, lastCompleted ?? now, south: _south());
       final today = DateTime(now.year, now.month, now.day);
       if (nextDue != null && nextDue.isBefore(today)) nextDue = today;
     }

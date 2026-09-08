@@ -77,4 +77,32 @@ void main() {
     expect(Season.of(DateTime(2026, 1, 15), southernHemisphere: true), Season.summer);
     expect(Season.of(DateTime(2026, 10, 1)), Season.autumn);
   });
+
+  group('dans l\'hémisphère sud', () {
+    final janvier = DateTime(2026, 1, 15, 10);
+
+    test('janvier compte comme un mois de croissance', () {
+      final s = schedule(strategy: CareStrategy.seasonal, interval: 10);
+      // Au nord, l'hiver espace l'arrosage (x1,5) ; au sud, janvier est
+      // l'été, qui le resserre (x0,8).
+      expect(CareEngine.effectiveInterval(s, janvier), 15);
+      expect(CareEngine.effectiveInterval(s, janvier, south: true), 8);
+    });
+
+    test('l\'échéance suit, à la complétion comme à la création', () {
+      final s = schedule(strategy: CareStrategy.seasonal, interval: 10);
+      expect(CareEngine.nextDueAfter(s, janvier, south: true), DateTime(2026, 1, 23));
+      expect(CareEngine.initialDue(s, janvier, south: true), DateTime(2026, 1, 23));
+      expect(CareEngine.complete(s, janvier, south: true).nextDueAt, DateTime(2026, 1, 23));
+    });
+
+    test('une routine à intervalle fixe ignore l\'hémisphère', () {
+      expect(CareEngine.effectiveInterval(schedule(), janvier, south: true), 7);
+    });
+
+    test('sans le dire, rien ne change', () {
+      final s = schedule(strategy: CareStrategy.seasonal, interval: 10);
+      expect(CareEngine.effectiveInterval(s, janvier), CareEngine.effectiveInterval(s, janvier, south: false));
+    });
+  });
 }

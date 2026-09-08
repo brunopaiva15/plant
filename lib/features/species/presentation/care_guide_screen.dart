@@ -61,7 +61,7 @@ class CareGuideScreen extends ConsumerWidget {
 }
 
 /// Corps de la fiche, réutilisable en sheet (création de plante, espèce).
-class CareGuideBody extends StatelessWidget {
+class CareGuideBody extends ConsumerWidget {
   const CareGuideBody({super.key, required this.care, this.plantName, this.location, this.header});
 
   final ResolvedCare care;
@@ -70,13 +70,14 @@ class CareGuideBody extends StatelessWidget {
   final Widget? header;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
     final p = care.profile;
     final now = DateTime.now();
+    final south = ref.watch(southernHemisphereProvider);
     final actualLight = _lightOf(location);
-    final currentDays = p.wateringDaysFor(now.month, actualLight: actualLight);
+    final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
 
     final badges = <(String, String)>[
       if (p.mistLeaves) ('💦', l10n.careBadgeMist),
@@ -136,7 +137,7 @@ class CareGuideBody extends StatelessWidget {
               '🧪',
               l10n.careFertilizing,
               p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow, context.localeTag),
+              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
             ),
             _row('🪴', l10n.careRepotting, l10n.repotLabel(p.repotEveryMonths)),
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),

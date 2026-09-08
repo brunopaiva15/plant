@@ -71,8 +71,23 @@ final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorage
 final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
 final crashReporterProvider = Provider<CrashReporter>((ref) => const NoopCrashReporter());
 
-final plantRepositoryProvider =
-    Provider<PlantRepository>((ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+/// Le jardin est-il dans l'hémisphère sud ? La latitude du lieu météo le dit
+/// quand il est renseigné ; sinon on suppose le nord, faute de mieux.
+///
+/// Sans cela, décembre serait un mois de repos à Melbourne comme à Paris :
+/// les intervalles saisonniers et les repères d'arrosage tomberaient à
+/// contretemps six mois par an.
+final southernHemisphereProvider = Provider<bool>((ref) {
+  final place = ref.watch(preferencesProvider.select((p) => p.weatherPlace));
+  return place != null && place.latitude < 0;
+});
+
+/// Lu et non observé : les dépôts recalculent une échéance au moment où ils
+/// écrivent, et doivent voir l'hémisphère du jour sans être reconstruits.
+bool _south(Ref ref) => ref.read(southernHemisphereProvider);
+
+final plantRepositoryProvider = Provider<PlantRepository>(
+    (ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref)));
 final locationRepositoryProvider = Provider<LocationRepository>(
     (ref) => DriftLocationRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 String? _remoteUserId(Ref ref) {
@@ -80,10 +95,10 @@ String? _remoteUserId(Ref ref) {
   return u == null || u.isLocal ? null : u.id;
 }
 
-final actionRepositoryProvider =
-    Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
-final careRepositoryProvider =
-    Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider)));
+final actionRepositoryProvider = Provider<ActionRepository>((ref) =>
+    DriftActionRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref), southernHemisphere: () => _south(ref)));
+final careRepositoryProvider = Provider<CareRepository>((ref) =>
+    DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider), southernHemisphere: () => _south(ref)));
 final photoRepositoryProvider = Provider<PhotoRepository>((ref) => DriftPhotoRepository(ref.watch(databaseProvider), currentUserId: () => _remoteUserId(ref)));
 final actionTypeRepositoryProvider =
     Provider<ActionTypeRepository>((ref) => DriftActionTypeRepository(ref.watch(databaseProvider)));

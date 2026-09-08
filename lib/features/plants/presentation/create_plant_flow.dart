@@ -88,7 +88,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     if (inherited.isEmpty) return;
     _species.text = inherited;
     final care = ref.read(careGuideProvider).resolve(inherited, family: speciesFamilyOf(ref, inherited));
-    _watering = care.profile.wateringDaysFor(DateTime.now().month);
+    _watering = care.profile.wateringDaysFor(DateTime.now().month, south: ref.read(southernHemisphereProvider));
     _fertilizing = care.profile.fertilizingDays ?? 0;
   }
 
@@ -170,7 +170,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final care = ref.read(careGuideProvider).resolve(scientificName, family: family);
     setState(() {
       if (_intervalsTouched) return;
-      _watering = care.profile.wateringDaysFor(DateTime.now().month);
+      _watering = care.profile.wateringDaysFor(DateTime.now().month, south: ref.read(southernHemisphereProvider));
       _fertilizing = care.profile.fertilizingDays ?? 0;
     });
   }
@@ -591,7 +591,7 @@ class _CarePreview extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.careWateringNow(p.wateringDaysFor(DateTime.now().month)), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
+                  Text(l10n.careWateringNow(p.wateringDaysFor(DateTime.now().month, south: ref.watch(southernHemisphereProvider))), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
                   Text('${l10n.lightName(p.light)} · ${l10n.careMatchLabel(care)}', style: context.text.caption),
                 ],

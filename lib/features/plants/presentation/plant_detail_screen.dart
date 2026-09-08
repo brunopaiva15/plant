@@ -500,7 +500,7 @@ class _CareGuideCard extends ConsumerWidget {
     final l10n = context.l10n;
     final c = context.colors;
     final care = ref.watch(careGuideProvider).resolve(speciesName, family: speciesFamilyLookup(ref)(speciesName));
-    final days = care.profile.wateringDaysFor(DateTime.now().month);
+    final days = care.profile.wateringDaysFor(DateTime.now().month, south: ref.watch(southernHemisphereProvider));
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(Space.page, Space.lg, Space.page, 0),

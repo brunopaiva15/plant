@@ -31,7 +31,7 @@ class PlantScheduleScreen extends ConsumerWidget {
     final plant = ref.watch(plantSummaryProvider(plantId)).value?.plant;
     final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: speciesFamilyLookup(ref)(plant?.speciesName));
     final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
-    final advice = _Advice(profile: care.profile, light: lightNeedFromCode(location?.light));
+    final advice = _Advice(profile: care.profile, light: lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
     return FloraPage(
       title: l10n.schedule,
       child: Column(
@@ -121,13 +121,17 @@ class PlantScheduleScreen extends ConsumerWidget {
 /// nouvelle routine. Sans fiche parlante (type personnalisé, espèce inconnue),
 /// on retombe sur les intervalles par défaut de l'application.
 class _Advice {
-  const _Advice({required this.profile, this.light});
+  const _Advice({required this.profile, this.light, this.south = false});
 
   final CareProfile profile;
   final LightNeed? light;
 
+  /// Le jardin est dans l'hémisphère sud : l'arrosage conseillé suit ses
+  /// saisons, pas celles du calendrier européen.
+  final bool south;
+
   int intervalFor(String typeKey, DateTime now) =>
-      profile.suggestedIntervalDays(typeKey, now: now, actualLight: light) ??
+      profile.suggestedIntervalDays(typeKey, now: now, actualLight: light, south: south) ??
       (typeKey == CareKind.watering.key ? AppConfig.defaultWateringInterval : AppConfig.defaultFertilizingInterval);
 }
 

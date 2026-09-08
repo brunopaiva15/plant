@@ -128,6 +128,17 @@ void main() {
       expect(lavender.fertilizingDays, isNull);
       expect(lavender.fertilizesIn(5), isFalse);
     });
+
+    test('au sud, la fenêtre affichée bascule de six mois', () {
+      const w = MonthWindow(3, 9);
+      expect(w.forHemisphere().from, 3, reason: 'au nord, elle ne bouge pas');
+      expect(w.forHemisphere(south: true).from, 9);
+      expect(w.forHemisphere(south: true).to, 3);
+      // Une fenêtre à cheval sur l'hiver reste à cheval sur l'autre.
+      expect(const MonthWindow(10, 3).forHemisphere(south: true).from, 4);
+      expect(const MonthWindow(10, 3).forHemisphere(south: true).to, 9);
+      expect(const MonthWindow(12, 2).forHemisphere(south: true).from, 6);
+    });
   });
 
   group('cohérence de la base', () {
