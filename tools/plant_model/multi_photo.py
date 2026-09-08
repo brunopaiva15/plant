@@ -65,12 +65,48 @@ def combine(probs: list[np.ndarray], geometric: bool) -> np.ndarray:
     return stack.mean(axis=0)
 
 
-def measure(cached, labels, k: int, geometric: bool, only_captive: bool | None = None) -> dict:
+def like_app(probs: list[np.ndarray], top_k: int, cut: float = 0.01) -> np.ndarray:
+    """Exactement ce que l'application peut calculer, et rien de plus.
+
+    `LocalPlantModel.classify` ne rend que les `top_k` premiers candidats
+    au-dessus de `cut` : la cascade ne voit jamais le vecteur entier. Une
+    espèce absente d'une liste n'y vaut pas zéro — elle vaut *au plus* le
+    plus petit score rendu, et au plus `cut`. On lui donne cette borne, qui
+    la pénalise sans l'annuler.
+
+    Le résultat est renormalisé. Moyenner aplatit la distribution et fait
+    chuter la confiance du premier candidat, donc le taux d'acceptation,
+    alors même que le classement s'améliore. La renormalisation est une
+    division par une constante : elle ne change aucun ordre, elle rend
+    seulement les scores comparables à ceux d'une photo seule — et donc au
+    seuil de `FallbackPolicy`.
+    """
+    kept = []
+    for p in probs:
+        order = np.argsort(-p)[:top_k]
+        order = [i for i in order if p[i] >= cut]
+        floor = min(float(p[order[-1]]), cut) if order else cut
+        kept.append(({int(i): float(p[i]) for i in order}, floor))
+    union = sorted({i for d, _ in kept for i in d})
+    if not union:
+        return np.zeros_like(probs[0])
+    merged = np.zeros_like(probs[0])
+    for i in union:
+        merged[i] = np.exp(np.mean([np.log(max(d.get(i, floor), 1e-9)) for d, floor in kept]))
+    total = merged.sum()
+    return merged / total if total > 0 else merged
+
+
+def measure(cached, labels, k: int, geometric: bool, only_captive: bool | None = None,
+            app_top_k: int | None = None) -> dict:
     seen = hit1 = hit3 = accepted = accepted_ok = 0
     for probs, truth, captive in cached:
         if only_captive is not None and captive != only_captive:
             continue
-        merged = combine(probs[:k], geometric) if k > 1 else probs[0]
+        if app_top_k is not None:
+            merged = like_app(probs[:k], app_top_k)
+        else:
+            merged = combine(probs[:k], geometric) if k > 1 else probs[0]
         order = np.argsort(-merged)[:3]
         top = [labels[i] for i in order]
         seen += 1
@@ -135,6 +171,14 @@ def main() -> int:
         nom = 'moyenne géométrique' if geometric else 'moyenne des probabilités'
         show(f'toutes espèces — {nom}',
              [(f'{k} photo{"s" if k > 1 else ""}', measure(cached, model['labels'], k, geometric))
+              for k in range(1, args.photos + 1)])
+    for top_k in (5, 40):
+        show(f'toutes espèces — comme l\'app (listes de {top_k}, renormalisé)',
+             [(f'{k} photo{"s" if k > 1 else ""}', measure(cached, model['labels'], k, False, app_top_k=top_k))
+              for k in range(1, args.photos + 1)])
+        show(f'plantes cultivées — comme l\'app (listes de {top_k}, renormalisé)',
+             [(f'{k} photo{"s" if k > 1 else ""}',
+               measure(cached, model['labels'], k, False, only_captive=True, app_top_k=top_k))
               for k in range(1, args.photos + 1)])
     show('plantes cultivées — moyenne des probabilités',
          [(f'{k} photo{"s" if k > 1 else ""}', measure(cached, model['labels'], k, False, only_captive=True))

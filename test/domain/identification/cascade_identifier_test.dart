@@ -50,6 +50,23 @@ class FakeLocal implements LocalPlantModel {
   }
 }
 
+/// Un modèle local qui rend une liste différente à chaque appel : c'est ce
+/// qu'il faut pour éprouver la fusion, [FakeLocal] rendant toujours la même.
+class _ByCall extends FakeLocal {
+  _ByCall(this.lists, this.onCall) : super(const []);
+
+  final List<List<IdentificationCandidate>> lists;
+  final void Function() onCall;
+  int _at = 0;
+
+  @override
+  Future<List<IdentificationCandidate>> classify(File image) async {
+    onCall();
+    calls++;
+    return lists[_at++ % lists.length];
+  }
+}
+
 class FakeRemote implements PlantIdentifier {
   FakeRemote(this.result, {this.configured = true, this.error});
 
@@ -325,8 +342,68 @@ void main() {
     final cascade = build(local, FakeRemote(remoteAnswer));
     final result = await cascade.identify([photo, other]);
     expect(local.calls, 2);
-    expect(result.first.score, closeTo(0.96, 1e-9));
     expect(result.length, 2);
+    // Deux photos d'accord : la moyenne géométrique rend les mêmes scores,
+    // que la renormalisation ramène à une somme de 1 (0,96 / 0,98).
+    expect(result.first.scientificName, 'Monstera deliciosa');
+    expect(result.first.score, closeTo(0.96 / 0.98, 1e-6));
+  });
+
+  test('one photo alone is classified as before, untouched', () async {
+    // Le chemin le plus fréquent ne doit rien coûter ni rien changer : pas
+    // de fusion, pas de renormalisation, les scores du modèle tels quels.
+    final local = FakeLocal(sure);
+    final cascade = build(local, FakeRemote(remoteAnswer));
+    final result = await cascade.identify([photo]);
+    expect(local.calls, 1);
+    expect(result.first.score, closeTo(0.96, 1e-9));
+  });
+
+  test('a species two photos disagree about is pushed down', () async {
+    // Le cœur du choix : la moyenne arithmétique donnerait 0,50 à l'espèce
+    // vue à 0,96 puis 0,04, et la placerait devant celle que les deux
+    // photos voient à 0,45. La géométrique la ramène à √(0,96 × 0,04) ≈ 0,20
+    // et laisse passer celle sur laquelle elles s'accordent.
+    var call = 0;
+    final local = _ByCall([
+      [c('Monstera deliciosa', 0.96), c('Monstera adansonii', 0.45)],
+      [c('Monstera deliciosa', 0.04), c('Monstera adansonii', 0.45)],
+    ], () => call++);
+    final cascade = build(local, FakeRemote(remoteAnswer));
+    final result = await cascade.identify([photo, other]);
+    expect(result.first.scientificName, 'Monstera adansonii',
+        reason: 'l\'espèce sur laquelle les deux photos s\'accordent passe devant');
+    expect(result.first.score, greaterThan(result.last.score));
+  });
+
+  test('a species absent from one list is penalised, not vetoed', () async {
+    // Le modèle tronque sa liste : une espèce absente n'y vaut pas zéro,
+    // sinon le produit s'annulerait et elle disparaîtrait pour toujours.
+    // Elle vaut la borne connue — sous le plus petit score rendu.
+    final local = _ByCall([
+      [c('Monstera deliciosa', 0.90), c('Monstera adansonii', 0.05)],
+      [c('Monstera adansonii', 0.90)],
+    ], () {});
+    final cascade = build(local, FakeRemote(remoteAnswer));
+    final result = await cascade.identify([photo, other]);
+    expect(result.map((r) => r.scientificName), contains('Monstera deliciosa'),
+        reason: 'absente d\'une liste, elle reste candidate');
+    expect(result.first.scientificName, 'Monstera adansonii');
+  });
+
+  test('merged scores sum to one, so the threshold still means something', () async {
+    // Moyenner aplatit la distribution. Sans renormalisation le premier
+    // candidat passerait sous le seuil de FallbackPolicy et l'app irait
+    // consulter Pl@ntNet pour une réponse pourtant meilleure.
+    final local = _ByCall([
+      [c('Monstera deliciosa', 0.80), c('Monstera adansonii', 0.10)],
+      [c('Monstera deliciosa', 0.70), c('Monstera adansonii', 0.20)],
+    ], () {});
+    final cascade = build(local, FakeRemote(remoteAnswer));
+    final result = await cascade.identify([photo, other]);
+    final total = result.fold<double>(0, (sum, r) => sum + r.score);
+    expect(total, closeTo(1.0, 1e-9));
+    expect(result.first.score, greaterThan(0.70), reason: 'la réponse reste acceptée');
   });
 
   test('metrics survive a JSON round trip', () {
