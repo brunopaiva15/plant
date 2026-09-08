@@ -76,16 +76,120 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (response.statusCode != 200) throw DiagnosisException('http ${response.statusCode}');
     // Un numéro qu'on n'a pas soumis ne vaut rien : soit le modèle l'a
     // inventé, soit il désigne un problème qu'on a écarté pour cette plante.
-    return parseResponse(
+    final diagnosis = parseResponse(
       response.body,
       allowed: {for (final p in candidates) p.id},
       byName: namesOf(candidates, language),
     );
+    return _numberLeftovers(diagnosis, candidates, language);
   }
 
-  Future<http.Response> _post(Map<String, Object?> body) => _client
+  /// Deuxième passe, pour les pistes revenues sans numéro.
+  ///
+  /// Demander en un seul jet d'observer, d'expliquer, de conseiller *et* de
+  /// rattacher à une liste, c'est demander quatre choses à la fois, et la
+  /// quatrième est celle qu'on lâche. En pratique le modèle écrivait
+  /// « Blessure mécanique ou coupure récente » sans voir que la liste
+  /// contenait « Blessures mécaniques ».
+  ///
+  /// Ici il n'y a plus qu'une question, fermée : lequel de ces numéros, ou
+  /// aucun. Pas de photo, donc quelques centimes de jetons et une seconde,
+  /// et seulement s'il reste des pistes à rattacher.
+  ///
+  /// C'est un bonus, jamais un motif d'échec : la moindre difficulté rend le
+  /// diagnostic de la première passe tel quel.
+  Future<Diagnosis> _numberLeftovers(Diagnosis diagnosis, List<PlantProblem> candidates, String language) async {
+    if (candidates.isEmpty) return diagnosis;
+    final orphelines = [
+      for (final (i, c) in diagnosis.causes.indexed)
+        if (c.problemId == null) i,
+    ];
+    if (orphelines.isEmpty) return diagnosis;
+    try {
+      final body = buildMappingRequest(
+        model: model,
+        candidates: candidates,
+        causes: [for (final i in orphelines) diagnosis.causes[i]],
+        language: language,
+      );
+      var response = await _post(body, timeout: const Duration(seconds: 30));
+      if (response.statusCode == 400) {
+        response = await _post({...body}..remove('response_format'), timeout: const Duration(seconds: 30));
+      }
+      if (response.statusCode != 200) return diagnosis;
+      final trouves = parseMapping(response.body, allowed: {for (final p in candidates) p.id});
+      if (trouves.isEmpty) return diagnosis;
+      final causes = [...diagnosis.causes];
+      for (final e in trouves.entries) {
+        if (e.key < 0 || e.key >= orphelines.length) continue;
+        final at = orphelines[e.key];
+        final c = causes[at];
+        causes[at] = DiagnosisCause(
+          title: c.title,
+          likelihood: c.likelihood,
+          explanation: c.explanation,
+          actions: c.actions,
+          problemId: e.value,
+        );
+      }
+      return Diagnosis(summary: diagnosis.summary, causes: causes, urgent: diagnosis.urgent);
+    } on Object {
+      return diagnosis;
+    }
+  }
+
+  /// Corps de la deuxième passe (exposé pour les tests).
+  static Map<String, Object?> buildMappingRequest({
+    required String model,
+    required List<PlantProblem> candidates,
+    required List<DiagnosisCause> causes,
+    required String language,
+  }) =>
+      {
+        'model': model,
+        'max_tokens': 300,
+        // Un rattachement, pas une création.
+        'temperature': 0.0,
+        'response_format': {'type': 'json_object'},
+        'messages': [
+          {
+            'role': 'system',
+            'content': 'You match short descriptions of plant problems to a numbered list. '
+                'For each numbered cause below, answer with the number of the listed problem it describes, or null when none of them does. '
+                'Do not rename anything, do not explain, do not use a number that is not on the list. '
+                'A cause worded loosely still matches when it is the same problem: "a knock or a recent cut" is mechanical injury. '
+                'Two causes may match the same listed problem, and none of them has to match. '
+                'Answer with one JSON object only, no markdown: {"matches": [{"cause": 0, "problem": "001"}, {"cause": 1, "problem": null}]}.',
+          },
+          {
+            'role': 'user',
+            'content': [
+              'Listed problems: ${candidates.map((p) => '${p.id} ${p.nameIn(language)}').join('; ')}.',
+              'Causes:',
+              for (final (i, c) in causes.indexed) '$i. ${c.title}${c.explanation.isEmpty ? '' : ' — ${c.explanation}'}',
+            ].join('\n'),
+          },
+        ],
+      };
+
+  /// Lit la réponse de la deuxième passe : le rang de la piste, son numéro.
+  static Map<int, String> parseMapping(String body, {required Set<String> allowed}) {
+    final text = _contentOf(body);
+    final data = _extractJson(text);
+    final matches = (data?['matches'] as List?) ?? const [];
+    final out = <int, String>{};
+    for (final m in matches.whereType<Map>()) {
+      final at = m['cause'];
+      final rang = at is num ? at.toInt() : int.tryParse('$at');
+      final id = _problemId(m['problem'], allowed);
+      if (rang != null && id != null) out[rang] = id;
+    }
+    return out;
+  }
+
+  Future<http.Response> _post(Map<String, Object?> body, {Duration timeout = const Duration(minutes: 2)}) => _client
       .post(endpoint, headers: {'content-type': 'application/json', 'authorization': 'Bearer ${apiKey.trim()}'}, body: jsonEncode(body))
-      .timeout(const Duration(minutes: 2));
+      .timeout(timeout);
 
   /// La photo telle qu'elle part : JPEG, grand côté à [maxSide] au plus.
   /// Une image illisible part telle quelle, le service dira ce qu'il en pense.
@@ -229,13 +333,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     final choice = choices.first as Map<String, dynamic>;
     if (choice['finish_reason'] == 'content_filter') throw const DiagnosisException('refusal');
     final message = (choice['message'] as Map<String, dynamic>?) ?? const {};
-    final content = message['content'];
-    final text = switch (content) {
-      String s => s,
-      List l => l.map((p) => p is Map ? (p['text'] as String? ?? '') : '').join(),
-      _ => '',
-    };
-    final data = _extractJson(text);
+    final data = _extractJson(_textOf(message['content']));
     if (data == null) throw const DiagnosisException('empty');
     final causes = ((data['causes'] as List?) ?? const [])
         .whereType<Map>()
@@ -264,6 +362,31 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       urgent: data['urgent'] == true,
     );
   }
+
+  /// Le texte d'une réponse, sans juger de sa validité : chaîne vide quand
+  /// il n'y en a pas. La première passe, elle, distingue une réponse vide
+  /// d'un refus et lève ; la seconde n'a qu'à renoncer.
+  static String _contentOf(String body) {
+    final Object? json;
+    try {
+      json = jsonDecode(body);
+    } on FormatException {
+      return '';
+    }
+    if (json is! Map<String, dynamic>) return '';
+    final choices = (json['choices'] as List?) ?? const [];
+    if (choices.isEmpty) return '';
+    final first = choices.first;
+    if (first is! Map<String, dynamic>) return '';
+    return _textOf((first['message'] as Map<String, dynamic>?)?['content']);
+  }
+
+  /// Le contenu peut être une chaîne ou une liste de fragments.
+  static String _textOf(Object? content) => switch (content) {
+        String s => s,
+        List l => l.map((p) => p is Map ? (p['text'] as String? ?? '') : '').join(),
+        _ => '',
+      };
 
   /// Le numéro rendu, s'il est bien formé et s'il faisait partie de la liste
   /// soumise. Un modèle qui écrit « 60 » ou « id 060 » veut dire 060.

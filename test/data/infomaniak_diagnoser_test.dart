@@ -358,4 +358,123 @@ void main() {
       expect(InfomaniakDiagnoser(apiKey: 'k', productId: '', model: 'm').isConfigured, isFalse);
     });
   });
+
+  group('la deuxième passe', () {
+    String premierJet(List<Map<String, Object?>> causes) => _completion(jsonEncode({'summary': '…', 'causes': causes}));
+
+    /// Un service qui répond au diagnostic puis au rattachement. La demande
+    /// de rattachement se reconnaît à l'absence d'image.
+    MockClient service(String diagnostic, String rattachement, List<String> corps) => MockClient((req) async {
+          corps.add(req.body);
+          final avecImage = req.body.contains('image_url');
+          return http.Response(avecImage ? diagnostic : rattachement, 200);
+        });
+
+    test('rattache une piste que la première passe avait laissée sans numéro', () async {
+      final corps = <String>[];
+      final client = service(
+        premierJet([
+          {'title': 'Oïdiums', 'problem': '126'},
+          {'title': 'Arrosage trop généreux ces derniers temps', 'explanation': 'le substrat reste détrempé'},
+        ]),
+        _completion(jsonEncode({
+          'matches': [
+            {'cause': 0, 'problem': '002'},
+          ],
+        })),
+        corps,
+      );
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+
+      expect(corps, hasLength(2), reason: 'un appel de diagnostic, un de rattachement');
+      expect(d.causes.map((c) => c.problemId), ['126', '002']);
+      expect(corps.last, isNot(contains('image_url')), reason: 'la deuxième passe ne renvoie pas les photos');
+      // Le rang envoyé est celui des seules pistes orphelines, pas celui de
+      // la liste entière : la piste 1 du diagnostic est la cause 0 ici. La
+      // liste des problèmes, elle, part entière — c'est parmi elle qu'on
+      // choisit.
+      final envoye = jsonDecode(corps.last) as Map<String, dynamic>;
+      final texte = (envoye['messages'] as List).last['content'] as String;
+      final pistesEnvoyees = texte.split('Causes:').last;
+      expect(pistesEnvoyees, contains('0. Arrosage trop généreux'));
+      expect(pistesEnvoyees, isNot(contains('Oïdiums')), reason: 'déjà numérotée, rien à demander');
+      expect(texte, contains('126 Oïdiums'), reason: 'mais elle reste dans la liste des choix');
+    });
+
+    test('ne repart pas quand tout est déjà numéroté', () async {
+      final corps = <String>[];
+      final client = service(premierJet([
+        {'title': 'Tétranyques', 'problem': '060'},
+      ]), _completion('{}'), corps);
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+      expect(corps, hasLength(1));
+      expect(d.causes.single.problemId, '060');
+    });
+
+    test('sans liste soumise, il n\'y a rien à rattacher', () async {
+      final corps = <String>[];
+      final client = service(premierJet([
+        {'title': 'Quelque chose'},
+      ]), _completion('{}'), corps);
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+      expect(corps, hasLength(1));
+    });
+
+    test('une deuxième passe en échec rend le diagnostic tel quel', () async {
+      var appels = 0;
+      final client = MockClient((req) async {
+        appels++;
+        if (req.body.contains('image_url')) {
+          return http.Response(premierJet([
+            {'title': 'Blessure mécanique', 'likelihood': 'possible'},
+          ]), 200);
+        }
+        return http.Response('', 500);
+      });
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+      expect(appels, 2);
+      expect(d.causes.single.title, 'Blessure mécanique', reason: 'la première passe survit');
+      expect(d.causes.single.problemId, isNull);
+    });
+
+    test('la demande de rattachement ne contient que la liste et les pistes', () {
+      final body = InfomaniakDiagnoser.buildMappingRequest(
+        model: 'm',
+        candidates: _pistes,
+        causes: const [DiagnosisCause(title: 'Toile fine', likelihood: Likelihood.possible, explanation: 'sous les feuilles', actions: [])],
+        language: 'fr',
+      );
+      final texte = (body['messages'] as List).last['content'] as String;
+      expect(texte, contains('060 Tétranyques'));
+      expect(texte, contains('0. Toile fine'));
+      expect(texte, contains('sous les feuilles'));
+      expect(body['temperature'], 0.0);
+    });
+
+    test('la lecture écarte les numéros hors liste et les rangs illisibles', () {
+      final body = _completion(jsonEncode({
+        'matches': [
+          {'cause': 0, 'problem': '060'},
+          {'cause': 1, 'problem': '182'},
+          {'cause': 2, 'problem': null},
+          {'cause': 'trois', 'problem': '126'},
+          {'problem': '002'},
+        ],
+      }));
+      expect(InfomaniakDiagnoser.parseMapping(body, allowed: const {'002', '060', '126'}), {0: '060'});
+    });
+
+    test('une réponse vide ou illisible ne rattache rien', () {
+      expect(InfomaniakDiagnoser.parseMapping(_completion('rien du tout'), allowed: const {'060'}), isEmpty);
+      expect(InfomaniakDiagnoser.parseMapping('pas du json', allowed: const {'060'}), isEmpty);
+    });
+  });
 }
