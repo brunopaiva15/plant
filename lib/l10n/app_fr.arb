@@ -810,6 +810,17 @@
     }
   },
   "diagnosisSaved": "Diagnostic ajouté au journal",
+  "diagnosisEntry": "Diagnostic",
+  "diagnosisOpen": "Voir le diagnostic complet",
+  "diagnosisSymptomsNoted": "Symptômes signalés",
+  "diagnosisMoreCauses": "{count, plural, =1{1 autre piste} other{{count} autres pistes}}",
+  "@diagnosisMoreCauses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "speciesInfo": "Fiche espèce",
   "speciesSource": "Source : GBIF — Global Biodiversity Information Facility",
   "speciesCommonNames": "Noms communs",

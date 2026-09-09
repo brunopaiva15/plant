@@ -11,16 +11,15 @@ import '../../../core/l10n/likelihood_labels.dart';
 import '../../../data/problems/problem_catalog.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
-import '../../../domain/care/care_engine.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
+import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
-import '../../../domain/problems/plant_problem.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../actions/application/care_actions.dart';
 import 'analysis_wait.dart';
-import '../../problems/presentation/problem_kind_icon.dart';
+import 'diagnosis_report.dart';
 
 /// « Ma plante a un problème » : photos, symptômes, analyse, pistes.
 Future<void> showDiagnosisSheet(BuildContext context, {required Plant plant}) =>
@@ -41,13 +40,20 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   bool _busy = false;
   Diagnosis? _result;
 
+  /// Vrai dès que le diagnostic est parti au journal : les photos lui
+  /// appartiennent alors, et le compte rendu les remontrera à sa réouverture.
+  bool _keepPhotos = false;
+
   @override
   void dispose() {
     _symptoms.dispose();
-    // Les photos de diagnostic sont temporaires : on nettoie.
-    final storage = ref.read(photoStorageProvider);
-    for (final p in _photos) {
-      storage.deleteFiles(p.filePath, p.thumbPath);
+    // Une analyse qu'on n'a pas gardée n'a laissé que des fichiers : on
+    // nettoie. Celle qu'on a enregistrée garde les siens.
+    if (!_keepPhotos) {
+      final storage = ref.read(photoStorageProvider);
+      for (final p in _photos) {
+        storage.deleteFiles(p.filePath, p.thumbPath);
+      }
     }
     super.dispose();
   }
@@ -114,19 +120,11 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     return care.match == CareMatch.generic ? const [] : care.profile.issues;
   }
 
-  /// L'entrée de la base que le service a reconnue, s'il en a reconnu une.
-  PlantProblem? _problemOf(DiagnosisCause cause, ProblemCatalog? catalog) => catalog?[cause.problemId];
-
-  /// Le nom de la piste : celui de la base quand le service en a reconnu une,
-  /// sinon le titre qu'il a écrit lui-même.
+  /// Enregistre le diagnostic entier dans le journal.
   ///
-  /// C'est tout l'intérêt de la base. Le même excès d'eau s'appelait
-  /// « Arrosage trop fréquent », « Trop d'eau » ou « Excès d'humidité au
-  /// niveau des racines » d'une analyse à l'autre ; il s'appelle désormais
-  /// pareil à chaque fois, et dans la langue de l'application.
-  String _titleOf(DiagnosisCause cause, ProblemCatalog? catalog, String language) =>
-      _problemOf(cause, catalog)?.nameIn(language) ?? cause.title;
-
+  /// La note reste lisible telle quelle — résumé et trois pistes — pour qui
+  /// exporte ses données ou lit la ligne ailleurs ; le compte rendu complet
+  /// l'accompagne dans les métadonnées, et c'est lui que la fiche rouvrira.
   Future<void> _save() async {
     final l10n = context.l10n;
     final r = _result!;
@@ -134,14 +132,31 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     final language = Localizations.localeOf(context).languageCode;
     final text = [
       r.summary,
-      ...r.causes.take(3).map((c) => '• ${_titleOf(c, catalog, language)} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
+      ...r.causes.take(3).map((c) => '• ${diagnosisCauseTitle(c, catalog, language)} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
     ].join('\n');
+    final photos = [for (final p in _photos) DiagnosisPhoto(filePath: p.filePath, thumbPath: p.thumbPath)];
+    final record = DiagnosisRecord(diagnosis: r, symptoms: _symptoms.text.trim(), photos: photos);
+    final kept = List<StoredPhoto>.of(_photos);
+    final storage = ref.read(photoStorageProvider);
     await ref.read(careActionsProvider).log(
-          NewAction(plantId: widget.plant.id, typeKey: CareKind.note.key, notes: text),
+          NewAction(
+            plantId: widget.plant.id,
+            typeKey: CareKind.note.key,
+            notes: text,
+            metadata: {DiagnosisRecord.metadataKey: record.toJson()},
+          ),
           message: l10n.diagnosisSaved,
           undoLabel: l10n.undo,
           emoji: '🩺',
+          // Annuler efface l'entrée : ses photos n'ont plus personne à qui
+          // appartenir.
+          onUndone: () async {
+            for (final p in kept) {
+              await storage.deleteFiles(p.filePath, p.thumbPath);
+            }
+          },
         );
+    _keepPhotos = true;
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -211,23 +226,15 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             const SizedBox(height: Space.lg),
             FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
           ] else ...[
-            if (_result!.urgent) DueBadge(emoji: '⚠️', label: l10n.urgentHint, status: DueStatus.overdue),
-            if (_result!.urgent) const SizedBox(height: Space.xs),
-            Text(_result!.summary, style: context.text.body),
-            const SizedBox(height: Space.lg),
-            Text(l10n.possibleCauses, style: context.text.title3),
-            const SizedBox(height: Space.xxs),
-            Text(l10n.identifyHint, style: context.text.caption),
-            const SizedBox(height: Space.sm),
-            for (final cause in _result!.causes)
-              () {
-                final catalog = ref.watch(problemCatalogProvider).value;
-                return _CauseCard(
-                  cause: cause,
-                  title: _titleOf(cause, catalog, Localizations.localeOf(context).languageCode),
-                  problem: _problemOf(cause, catalog),
-                );
-              }(),
+            // Le même corps que la réouverture depuis le journal : ce qu'on
+            // lit ici est exactement ce qu'on retrouvera plus tard.
+            DiagnosisReportView(
+              record: DiagnosisRecord(
+                diagnosis: _result!,
+                symptoms: _symptoms.text.trim(),
+                photos: [for (final p in _photos) DiagnosisPhoto(filePath: p.filePath, thumbPath: p.thumbPath)],
+              ),
+            ),
             const SizedBox(height: Space.md),
             FloraButton(label: l10n.saveToJournal, icon: CupertinoIcons.book, expand: true, onPressed: _save),
             const SizedBox(height: Space.xs),
@@ -242,71 +249,4 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
 /// Plafond de photos par analyse (aligné sur l'adaptateur).
 abstract final class DiagnosisLimits {
   static const maxImages = 3;
-}
-
-class _CauseCard extends StatelessWidget {
-  const _CauseCard({required this.cause, required this.title, this.problem});
-
-  final DiagnosisCause cause;
-
-  /// Déjà résolu par la base : la carte n'a plus qu'à l'afficher.
-  final String title;
-
-  /// L'entrée de la base, quand le service en a reconnu une. `null` pour une
-  /// cause hors base, qui n'a alors pas d'image plutôt qu'une image
-  /// approximative.
-  final PlantProblem? problem;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: Space.xs),
-      child: FloraCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (problem != null) ...[
-                  ProblemIcon(problem: problem!),
-                  const SizedBox(width: Space.sm),
-                ],
-                Expanded(child: Text(title, style: context.text.title3)),
-                const SizedBox(width: Space.xs),
-                // Trois crans, pas de barre : il n'y a rien à remplir quand
-                // il n'y a rien à mesurer.
-                DueBadge(
-                  emoji: switch (cause.likelihood) { Likelihood.likely => '◆', Likelihood.possible => '◈', Likelihood.unlikely => '◇' },
-                  label: context.l10n.likelihoodLabel(cause.likelihood),
-                  status: switch (cause.likelihood) {
-                    Likelihood.likely => DueStatus.today,
-                    Likelihood.possible => DueStatus.upcoming,
-                    Likelihood.unlikely => DueStatus.none,
-                  },
-                  compact: true,
-                ),
-              ],
-            ),
-            const SizedBox(height: Space.xs),
-            Text(cause.explanation, style: context.text.callout),
-            if (cause.actions.isNotEmpty) ...[
-              const SizedBox(height: Space.xs),
-              for (final a in cause.actions)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('→ ', style: context.text.callout.copyWith(color: c.sage)),
-                      Expanded(child: Text(a, style: context.text.callout.copyWith(color: c.ink))),
-                    ],
-                  ),
-                ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
 }

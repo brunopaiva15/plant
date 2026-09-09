@@ -918,6 +918,12 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   (`json_object`) ; si le service refuse ce paramètre, la même demande
   repart sans lui et le lecteur extrait le JSON du texte, balises Markdown
   comprises. Une photo sans plante lisible rend un résumé et aucune cause.
+- **Ce qui est gardé** : l'analyse enregistrée l'est entière. La note du
+  journal en garde le résumé et les trois premières pistes ; le compte rendu
+  complet — chaque piste avec son explication et ses gestes, l'urgence, les
+  symptômes signalés, les photos regardées — l'accompagne dans
+  `plant_actions.metadata` (docs/04). La ligne du journal en montre l'aperçu
+  et le rouvre d'un doigt, des mois plus tard, dans la langue du moment.
 - **Ce qui n'est pas mesuré** : la justesse de ces modèles sur des maladies
   de plantes. La seule façon de choisir entre Mistral Small 4, Qwen 3.5 et
   Kimi est un jeu d'essai de vingt à trente photos de plantes à problème

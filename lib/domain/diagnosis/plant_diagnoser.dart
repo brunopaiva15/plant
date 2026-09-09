@@ -45,6 +45,33 @@ class DiagnosisCause {
   /// couvre beaucoup, pas tout, et forcer une correspondance vaudrait moins
   /// que de l'admettre.
   final String? problemId;
+
+  Map<String, Object?> toJson() => {
+        'title': title,
+        'likelihood': likelihood.name,
+        'explanation': explanation,
+        'actions': actions,
+        if (problemId != null) 'problemId': problemId,
+      };
+
+  /// Une piste qui n'a rien à montrer : ni nom propre, ni numéro pour que la
+  /// base la nomme, ni explication. Une carte vide ne dit rien de plus qu'une
+  /// carte absente.
+  bool get isBlank => title.isEmpty && problemId == null && explanation.isEmpty;
+
+  /// Relit une cause gardée au journal. Tolérante : une analyse conservée il
+  /// y a six mois a pu être écrite par une version antérieure, et un champ
+  /// manquant vaut mieux qu'une entrée perdue.
+  factory DiagnosisCause.fromJson(Map<String, Object?> json) => DiagnosisCause(
+        title: json['title'] is String ? json['title'] as String : '',
+        likelihood: Likelihood.parse(json['likelihood']),
+        explanation: json['explanation'] is String ? json['explanation'] as String : '',
+        actions: [
+          for (final a in json['actions'] is List ? json['actions'] as List : const [])
+            if (a is String && a.trim().isNotEmpty) a,
+        ],
+        problemId: json['problemId'] is String ? json['problemId'] as String : null,
+      );
 }
 
 /// Résultat d'un diagnostic : toujours des suggestions, jamais des certitudes.
@@ -59,6 +86,22 @@ class Diagnosis {
 
   /// Vrai si la plante mérite une attention rapide (parasites, pourriture…).
   final bool urgent;
+
+  Map<String, Object?> toJson() => {
+        'summary': summary,
+        'urgent': urgent,
+        'causes': [for (final c in causes) c.toJson()],
+      };
+
+  factory Diagnosis.fromJson(Map<String, Object?> json) => Diagnosis(
+        summary: json['summary'] is String ? json['summary'] as String : '',
+        urgent: json['urgent'] == true,
+        causes: [
+          for (final c in json['causes'] is List ? json['causes'] as List : const [])
+            if (c is Map)
+              if (DiagnosisCause.fromJson(c.cast<String, Object?>()) case final cause when !cause.isBlank) cause,
+        ],
+      );
 }
 
 class DiagnosisException implements Exception {

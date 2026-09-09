@@ -2916,6 +2916,30 @@ abstract class AppLocalizations {
   /// **'Diagnostic ajouté au journal'**
   String get diagnosisSaved;
 
+  /// No description provided for @diagnosisEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostic'**
+  String get diagnosisEntry;
+
+  /// No description provided for @diagnosisOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir le diagnostic complet'**
+  String get diagnosisOpen;
+
+  /// No description provided for @diagnosisSymptomsNoted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Symptômes signalés'**
+  String get diagnosisSymptomsNoted;
+
+  /// No description provided for @diagnosisMoreCauses.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 autre piste} other{{count} autres pistes}}'**
+  String diagnosisMoreCauses(int count);
+
   /// No description provided for @speciesInfo.
   ///
   /// In fr, this message translates to:

@@ -1,12 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/likelihood_labels.dart';
 import '../../../core/utils/markdown.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_engine.dart';
+import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/models/models.dart';
 import '../../account/application/membership_providers.dart';
+import '../../diagnosis/presentation/diagnosis_report.dart';
 
 /// Une entrée du journal : « 💧 Arrosée · 09:42 », note, photo, mesure.
 class TimelineRow extends ConsumerWidget {
@@ -22,8 +26,16 @@ class TimelineRow extends ConsumerWidget {
     final c = context.colors;
     final l10n = context.l10n;
     final custom = ref.watch(actionTypeByKeyProvider)[action.typeKey];
-    final emoji = custom?.emoji ?? CareKind.fromKey(action.typeKey)?.emoji ?? '✓';
-    final title = action.typeKey == CareKind.note.key ? Markdown.stripped(action.notes ?? l10n.kindNote) : l10n.kindDone(action.typeKey, custom: custom);
+    // Un diagnostic est enregistré comme une note, mais il en porte le compte
+    // rendu entier : la ligne le dit et le rend rouvrable.
+    final diagnosis = DiagnosisRecord.fromMetadata(action.metadata);
+    final isNote = action.typeKey == CareKind.note.key && diagnosis == null;
+    final emoji = diagnosis != null ? '🩺' : (custom?.emoji ?? CareKind.fromKey(action.typeKey)?.emoji ?? '✓');
+    final title = diagnosis != null
+        ? l10n.diagnosisEntry
+        : isNote
+            ? Markdown.stripped(action.notes ?? l10n.kindNote)
+            : l10n.kindDone(action.typeKey, custom: custom);
     final detail = _detail(l10n);
     final me = ref.watch(currentUserProvider).value;
     final authorName = action.userId != null && action.userId != me?.id ? ref.watch(profileNamesProvider)[action.userId!] : null;
@@ -47,7 +59,7 @@ class TimelineRow extends ConsumerWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: Text(title, style: action.typeKey == CareKind.note.key ? context.text.body : context.text.title3)),
+                      Expanded(child: Text(title, style: isNote ? context.text.body : context.text.title3)),
                       const SizedBox(width: Space.xs),
                       Text(
                         authorName == null || authorName.isEmpty ? Dates.time(context, action.occurredAt) : '${Dates.time(context, action.occurredAt)} · ${l10n.byUser(authorName)}',
@@ -56,7 +68,13 @@ class TimelineRow extends ConsumerWidget {
                     ],
                   ),
                   if (detail != null) ...[const SizedBox(height: 2), Text(detail, style: context.text.callout)],
-                  if (action.typeKey != CareKind.note.key && action.notes != null) ...[const SizedBox(height: 4), MarkdownText(action.notes!, style: context.text.callout)],
+                  if (diagnosis != null) ...[
+                    const SizedBox(height: Space.xs),
+                    DiagnosisTimelineCard(record: diagnosis, date: action.occurredAt),
+                  ] else if (!isNote && action.notes != null) ...[
+                    const SizedBox(height: 4),
+                    MarkdownText(action.notes!, style: context.text.callout),
+                  ],
                   if (photo != null) ...[
                     const SizedBox(height: Space.xs),
                     Pressable(
@@ -87,6 +105,90 @@ class TimelineRow extends ConsumerWidget {
     }
     if (m['quantity'] is num) return '${(m['quantity'] as num).toStringAsFixed(0)} ${m['unit'] ?? 'ml'}';
     return null;
+  }
+}
+
+/// L'aperçu d'un diagnostic dans le journal, et la porte pour le rouvrir.
+///
+/// Un journal montre des dizaines d'entrées : le résumé et les pistes
+/// principales suffisent à retrouver de quoi il s'agissait. Le reste — ce que
+/// chaque piste expliquait, les gestes proposés, les photos regardées — est
+/// gardé entier et n'est jamais qu'à un doigt de là.
+class DiagnosisTimelineCard extends ConsumerWidget {
+  const DiagnosisTimelineCard({super.key, required this.record, required this.date});
+
+  final DiagnosisRecord record;
+  final DateTime date;
+
+  /// Combien de pistes tiennent dans l'aperçu avant qu'il ne devienne un
+  /// second compte rendu.
+  static const _previewCauses = 3;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.colors;
+    final l10n = context.l10n;
+    // Les pistes sont nommées par la base, comme dans le compte rendu : les
+    // deux doivent nommer la même chose de la même façon.
+    final catalog = ref.watch(problemCatalogProvider).value;
+    final language = Localizations.localeOf(context).languageCode;
+    final diagnosis = record.diagnosis;
+    final shown = diagnosis.causes.take(_previewCauses).toList();
+    final hidden = diagnosis.causes.length - shown.length;
+    return Pressable(
+      onTap: () => showDiagnosisReportSheet(context, record: record, date: date),
+      scale: 0.98,
+      semanticLabel: l10n.diagnosisOpen,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(Space.sm),
+        decoration: BoxDecoration(color: c.surfaceMuted, borderRadius: Radii.mediumAll),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (diagnosis.urgent) ...[
+              DueBadge(emoji: '⚠️', label: l10n.urgentHint, status: DueStatus.overdue, compact: true),
+              const SizedBox(height: Space.xs),
+            ],
+            if (diagnosis.summary.isNotEmpty)
+              Text(diagnosis.summary, style: context.text.callout, maxLines: 3, overflow: TextOverflow.ellipsis),
+            for (final cause in shown)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.xxs),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(likelihoodMark(cause.likelihood), style: context.text.caption.copyWith(color: c.sage)),
+                    const SizedBox(width: Space.xxs),
+                    Expanded(
+                      child: Text(
+                        diagnosisCauseTitle(cause, catalog, language),
+                        style: context.text.callout.copyWith(fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: Space.xs),
+                    Text(l10n.likelihoodLabel(cause.likelihood), style: context.text.caption),
+                  ],
+                ),
+              ),
+            const SizedBox(height: Space.xs),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    hidden > 0 ? '${l10n.diagnosisOpen} · ${l10n.diagnosisMoreCauses(hidden)}' : l10n.diagnosisOpen,
+                    style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Icon(CupertinoIcons.chevron_right, size: 13, color: c.sage),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

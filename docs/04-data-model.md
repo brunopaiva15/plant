@@ -83,6 +83,39 @@ species 1─n plants
 - `primary_photo_id` = première photo si nul ; l'utilisateur peut en choisir une autre.
 - Les types d'action personnalisés sont des lignes `action_types` avec `is_builtin = false`.
 
+## `plant_actions.metadata`
+Champ libre en JSON, à côté de `notes`. Trois usages aujourd'hui :
+
+| Clé | Écrite par | Contenu |
+|---|---|---|
+| `kind` `value` `unit` `quantity` | mesures et soins chiffrés | ce que la ligne du journal affiche en second |
+| `_prev_next_due` `_prev_last_completed` | `DriftActionRepository.log` | l'échéance d'avant, pour l'Undo |
+| `diagnosis` | « Ma plante a un problème » | le compte rendu entier de l'analyse |
+
+Le diagnostic est enregistré comme une note : `notes` en garde le résumé et
+les trois premières pistes, lisibles telles quelles à l'export. `metadata.diagnosis`
+garde tout le reste — c'est ce qui permet de **rouvrir** l'analyse depuis le
+journal des mois plus tard au lieu d'en relire l'aperçu
+(`DiagnosisRecord`, `lib/domain/diagnosis/diagnosis_record.dart`) :
+
+```json
+{"version": 1, "summary": "…", "urgent": true,
+ "symptoms": "ce que l'utilisateur avait décrit",
+ "causes": [{"title": "…", "problemId": "002", "likelihood": "likely",
+             "explanation": "…", "actions": ["…"]}],
+ "photos": [{"file": "…jpg", "thumb": "…_thumb.jpg"}]}
+```
+
+Les `problemId` sont conservés plutôt que les seuls noms : à la réouverture,
+les pistes sont renommées par la base des problèmes, dans la langue de
+l'application du moment. La relecture est tolérante — une analyse gardée avant
+un changement de format se lit pour ce qu'il en reste plutôt que de disparaître.
+
+Les fichiers cités par `photos` restent sur l'appareil qui a fait l'analyse :
+seules les photos de `plant_photos` partent en synchronisation et en
+sauvegarde, et une photo de feuille malade n'a rien à faire dans le suivi de
+croissance. Ailleurs, le compte rendu se lit sans elles.
+
 ## Sécurité (Supabase, P2)
 - RLS : `garden_members` détermine l'accès à tout ce qui porte `garden_id` (via `plants.garden_id` pour les tables filles).
 - Storage : bucket privé `plant-photos/{garden_id}/{plant_id}/{photo_id}.jpg`, URLs signées, validation MIME + taille.

@@ -565,6 +565,17 @@
   "addPhotos": "Fotos hinzufügen",
   "photosCount": "{count, plural, =1{1 Foto} other{{count} Fotos}}",
   "diagnosisSaved": "Diagnose im Verlauf gespeichert",
+  "diagnosisEntry": "Diagnose",
+  "diagnosisOpen": "Vollständige Diagnose ansehen",
+  "diagnosisSymptomsNoted": "Gemeldete Symptome",
+  "diagnosisMoreCauses": "{count, plural, =1{1 weitere Spur} other{{count} weitere Spuren}}",
+  "@diagnosisMoreCauses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@photosCount": {
     "placeholders": {
       "count": {

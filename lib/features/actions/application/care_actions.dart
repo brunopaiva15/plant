@@ -43,7 +43,16 @@ class CareActions {
     return true;
   }
 
-  Future<PlantAction> log(NewAction data, {required String message, required String undoLabel, String emoji = '✓'}) async {
+  /// [onUndone] défait ce que l'appelant avait mis de côté pour l'entrée
+  /// (les photos d'un diagnostic, par exemple) : l'entrée annulée n'a plus
+  /// rien à quoi les rattacher.
+  Future<PlantAction> log(
+    NewAction data, {
+    required String message,
+    required String undoLabel,
+    String emoji = '✓',
+    Future<void> Function()? onUndone,
+  }) async {
     if (_blockedReadOnly()) throw StateError('read-only');
     final action = await _actions.log(data);
     Haptics.success();
@@ -54,6 +63,7 @@ class CareActions {
       undoLabel: undoLabel,
       onUndo: () async {
         await _actions.undo(action);
+        await onUndone?.call();
         _ref.read(completedTasksProvider.notifier).forgetPlant(action.plantId, action.typeKey);
         await _reschedule();
       },

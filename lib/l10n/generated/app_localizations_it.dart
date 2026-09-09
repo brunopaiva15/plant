@@ -1648,6 +1648,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get diagnosisSaved => 'Diagnosi aggiunta al diario';
 
   @override
+  String get diagnosisEntry => 'Diagnosi';
+
+  @override
+  String get diagnosisOpen => 'Vedere la diagnosi completa';
+
+  @override
+  String get diagnosisSymptomsNoted => 'Sintomi segnalati';
+
+  @override
+  String diagnosisMoreCauses(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count altre piste',
+      one: '1 altra pista',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get speciesInfo => 'Specie';
 
   @override

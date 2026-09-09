@@ -565,6 +565,17 @@
   "addPhotos": "Add photos",
   "photosCount": "{count, plural, =1{1 photo} other{{count} photos}}",
   "diagnosisSaved": "Diagnosis added to the journal",
+  "diagnosisEntry": "Diagnosis",
+  "diagnosisOpen": "See the full diagnosis",
+  "diagnosisSymptomsNoted": "Reported symptoms",
+  "diagnosisMoreCauses": "{count, plural, =1{1 more lead} other{{count} more leads}}",
+  "@diagnosisMoreCauses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@photosCount": {
     "placeholders": {
       "count": {

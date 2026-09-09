@@ -22,7 +22,7 @@ lib/
 │   ├── repositories/              interfaces
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
-│   ├── diagnosis/                 PlantDiagnoser (interface, causes)
+│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisRecord (compte rendu gardé)
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
 │   └── auth/                      AuthRepository, AppUser
 ├── data/
@@ -42,7 +42,7 @@ lib/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, réglage du lieu
-│   ├── diagnosis/                 sheet « Ma plante a un problème », état du service
+│   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/
