@@ -151,6 +151,18 @@ Les répartitions viennent de `splits.csv` : les photos d'une même
 observation sont toutes du même côté, sinon la précision mesurée serait
 un mensonge.
 
+## Sur quoi le modèle se trompe
+
+```bash
+python3 confusions.py --dataset ../plant_dataset/dataset --model ../../assets/model
+```
+
+Sépare les erreurs entre celles qui restent dans le genre — attendues, deux
+espèces proches, et l'écran propose cinq candidats — et celles qui en
+sortent, qui sont de vrais défauts de collecte. Rend les paires de genres
+responsables et les espèces les plus ratées avec ce qu'on leur répond à la
+place. Voir le § 12.4 de `docs/09`.
+
 ## Choisir les seuils de repli
 
 `model.json` contient, pour chaque couple (seuil, marge), le taux de

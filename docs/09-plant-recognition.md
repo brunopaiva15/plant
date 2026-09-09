@@ -1274,14 +1274,39 @@ qu'on ne veut pas casser : proposer une photo de plus après une bonne réponse
 ajoute un geste à un parcours qui marchait. La piste raisonnable est de la
 proposer sous les candidats, sans l'imposer, plutôt qu'en travers du chemin.
 
-### 12.4 La matrice de confusion par genre
+### 12.4 ✅ La matrice de confusion par genre
 
-Le § 6.9 la promet ; `evaluate()` dans `train.py` ne produit que top-1, top-3,
-macro-F1 et la courbe de seuil. Sans elle, on sait *combien* le modèle se
-trompe et jamais *sur quoi* — donc rien qui dirige la collecte. Le ficus de
-rue contre le bonsaï, le yucca contre le maïs : ce sont des cas trouvés à la
-main, un par un, sur des photos réelles. Une trentaine de lignes, à écrire
-**avant** les recettes plutôt qu'après.
+`tools/plant_model/confusions.py`. Le § 6.9 la promettait depuis la v1 ;
+`evaluate()` ne rendait que top-1, top-3, macro-F1 et la courbe de seuil —
+*combien* le modèle se trompe, jamais *sur quoi*. Le yucca pris pour du maïs
+a mis trois versions à être découvert, à la main, sur une photo réelle.
+
+```bash
+cd tools/plant_model
+python3 confusions.py --dataset ../plant_dataset/dataset --model ../../assets/model
+python3 confusions.py --captive        # sur les seules photos de plantes cultivées
+```
+
+**Ce qu'il faut y lire, et dans quel ordre.** Le rapport sépare les erreurs
+en deux familles, et c'est toute sa valeur :
+
+- **dans le même genre** — deux érables, deux pépéromias. Attendu, et sans
+  gravité : l'écran propose cinq candidats et la bonne réponse y est presque
+  toujours. Ce n'est pas là qu'il faut dépenser des images.
+- **entre genres** — *Yucca* → *Zea*. Un vrai défaut, presque toujours un
+  manque d'images du bon domaine visuel, et la paire dit laquelle collecter.
+
+Un modèle dont 80 % des erreurs restent dans le genre est en bonne santé ; le
+même chiffre à 40 % dit qu'il reste des trous de collecte, et le classement
+des paires dit où.
+
+Le rapport finit par les espèces les plus ratées avec **ce qu'on leur répond
+à la place** — la question qu'on se posait sur le ficus ginseng (§ 6.5)
+depuis deux versions, et à laquelle une ligne de sortie répond maintenant.
+
+L'outil accepte `--csv` pour écrire toutes les paires et creuser ailleurs, et
+ses fonctions de tri sont testées sans TensorFlow
+(`tests/test_confusions.py`).
 
 ### 12.5 ✅ La régularisation
 
