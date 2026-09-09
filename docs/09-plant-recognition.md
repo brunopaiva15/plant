@@ -1,14 +1,15 @@
 # 09 — Reconnaissance de plantes : Iris, le modèle embarqué, repli Pl@ntNet
 
-> État au 8 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 518
-> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 445
-> classes** livré dans l'app en TFLite (8,8 Mo). La cascade identifie **sur
-> l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
-> même plante valent dix-neuf points de top-1.
+> État au 9 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 131
+> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 457
+> classes**, entrée 320 px, livré dans l'app en TFLite (8,8 Mo). La cascade
+> identifie **sur l'appareil** et n'appelle Pl@ntNet que sur hésitation ;
+> deux photos de la même plante valent quatorze points de top-1, trois en
+> valent vingt-deux.
 
-Le modèle embarqué s'appelle **Iris**, et la version livrée est la sixième :
-c'est donc **Iris 6** que l'application nomme à l'écran. Le reste de ce
-document parle de « la v6 » quand il compare des entraînements entre eux —
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la septième :
+c'est donc **Iris 7** que l'application nomme à l'écran. Le reste de ce
+document parle de « la v7 » quand il compare des entraînements entre eux —
 ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
 
 ## 0. Le nom
@@ -17,7 +18,7 @@ ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
 ne s'écrit **jamais** à la main : le modèle l'annonce dans
 `assets/model/model.json`, `TflitePlantModel` le lit au chargement et
 `AppConfig.modelDisplayName(version)` le colle au nom. Livrer un modèle
-réentraîné suffit donc à faire dire « Iris 7 » à l'écran des réglages, et
+réentraîné suffit donc à faire dire « Iris 8 » à l'écran des réglages, et
 l'application ne peut pas afficher un numéro qui ment.
 
 Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
@@ -91,34 +92,35 @@ Fichiers :
 ### 3.1 Règle de repli
 
 ```dart
-const FallbackPolicy(acceptThreshold: 0.90, minMargin: 0.25, floor: 0.10)
+const FallbackPolicy(acceptThreshold: 0.70, minMargin: 0.25, floor: 0.10)
 ```
 
 Réponse locale **acceptée** si, et seulement si :
 
-- le meilleur score ≥ **0,90**, **et**
+- le meilleur score ≥ **0,70**, **et**
 - l'écart entre le premier et le deuxième score ≥ **0,25**.
 
-Un modèle qui donne 0,91 / 0,89 n'a rien décidé ; on demande à Pl@ntNet.
+Un modèle qui donne 0,71 / 0,29 n'a rien décidé ; on demande à Pl@ntNet.
 Sous **0,10**, la liste ne vaut rien (image hors sujet) : `noCandidate`.
 
-**Recalage sur le modèle v1** (862 images de test, 78 espèces) :
+**Un seuil ne se transporte pas d'un modèle à l'autre**, et celui-ci a bougé
+à chaque version : 0,90 sur la v1 et ses 78 classes, 0,70 sur la v5, 0,60 sur
+la v6, **0,70 de nouveau sur Iris 7**. Un réseau qui répartit sa confiance sur
+plus d'espèces sort des scores structurellement plus bas ; un réseau mieux
+calibré en sort de plus honnêtes. Le recalage se fait avec
+`tools/plant_model/multi_photo.py`, sur les photos de plantes cultivées et
+dans le calcul exact que fait la cascade — mesure et raisonnement au § 6.7.
 
-| Seuil | Réponses acceptées | Précision sur ces réponses |
-|---|---|---|
-| 0,80 | 39 % | 92,6 % |
-| **0,90** | **30 %** | **96,9 %** |
-| 0,95 | 22 % | 97,9 % |
+C'est la première fois qu'il **remonte**. Les versions précédentes dépensaient
+leur surplus de justesse en autonomie ; Iris 7 permet l'inverse, et à 0,70 elle
+rend l'autonomie qu'avait la v6 à 0,60 — 47 % de réponses seules — avec 85,9 %
+de justesse au lieu de 82,8 %.
 
-On garde **0,90**. La précision à 0,95 est meilleure d'un point, mais
-l'incertitude de la mesure est du même ordre (±1 point sur 259 réponses
-acceptées) alors que l'acceptation chute d'un tiers.
-
-**La marge est aujourd'hui sans effet** : les scores d'un softmax somment
-à 1, donc un premier candidat à 0,90 laisse au plus 0,10 au deuxième —
-la marge vaut toujours au moins 0,80. Elle ne mordrait qu'avec un seuil
-sous 0,625, ou un modèle dont les sorties ne somment pas à 1. Elle est
-conservée pour cela, pas parce qu'elle travaille.
+**La marge est aujourd'hui sans effet** : les scores d'un softmax somment à 1,
+donc un premier candidat à 0,70 laisse au plus 0,30 au deuxième — la marge vaut
+toujours au moins 0,40. Elle ne mordrait qu'avec un seuil sous 0,625 — elle a
+failli, avec le 0,60 de la v6 — ou avec un modèle dont les sorties ne somment
+pas à 1. Elle est conservée pour cela, pas parce qu'elle travaille.
 
 ### 3.2 Inconnu / hors distribution
 
@@ -768,7 +770,120 @@ Trois hybrides horticoles n'ont aucune image, faute de nom reconnu par
 GBIF : Hylotelephium × mottramianum, Salvia × floriferior et
 Amelanchier × spicata.
 
-### 6.7 Résultats du modèle v1
+### 6.7 Résultats du modèle v7 — trois drapeaux, une heure
+
+Rien n'a changé du côté des sources : mêmes GBIF et iNaturalist que la v6,
+pas de Wikimedia Commons (§ 12.2 l'attend toujours). La collecte a été
+refaite de bout en bout — 1 558 plantes au catalogue, 1 507 avec des images,
+290 131 images gardées — et elle reproduit celle de la v6 à quelques
+centaines d'images près.
+
+Ce qui a changé tient en quatre décisions :
+
+| | |
+|---|---|
+| Répartition réparée + `--min-val 1` | 1 444 → **1 457 classes** (§ 12.1) |
+| `--dropout 0.5` | contre les dix-huit points de sur-apprentissage de la v6 |
+| `--unfreeze 100` | cent couches dégelées au lieu de soixante |
+| `--input-size 320` | l'entrée du réseau, le jeu étant stocké à 448 px |
+
+#### Une recette à la fois
+
+C'est la règle du § 12, et elle a payé : chaque essai se lit contre le
+précédent, sur **le même jeu de test et les mêmes classes**.
+
+| | référence | + dropout 0,5 | + unfreeze 100 | + 320 px |
+|---|---|---|---|---|
+| top-1 | 0,5162 | 0,5296 | 0,5467 | **0,5960** |
+| top-3 | 0,6685 | 0,6805 | 0,6985 | **0,7434** |
+| macro-F1 | 0,4981 | 0,5114 | 0,5277 | **0,5796** |
+| cultivées top-1 | 0,5335 | 0,5433 | 0,5623 | **0,5981** |
+| confiance moyenne | 0,5998 | 0,5430 | 0,5667 | 0,6280 |
+
+Trois choses que ce tableau apprend, et qu'une recette unique aurait cachées :
+
+1. **Le dropout ne gagne pas que de la précision, il recalibre.** La confiance
+   moyenne chute de 5,7 points sans que la justesse baisse : le modèle annonce
+   moins et se trompe moins. C'est ce qui déplace toute la courbe de seuil.
+2. **`--unfreeze 100` n'aurait pas marché seul.** Il rapporte 1,71 point *parce
+   que* le dropout tient le sur-apprentissage. Dégeler cent couches sur la
+   recette de base aurait probablement empiré les choses.
+3. **Le macro-F1 gagne autant que le top-1** (+8,15 contre +7,98 au total). Le
+   gain ne se concentre pas sur les espèces fréquentes ; la résolution profite
+   surtout aux distinctions fines entre espèces proches, c'est-à-dire aux
+   classes rares.
+
+#### La comparaison qui décide
+
+Les `model.json` de deux versions ne se comparent pas — jeux de test
+différents. `compare_models.py` fait passer les deux modèles sur **les mêmes
+images**, sur les 1 439 classes qu'ils connaissent tous les deux :
+
+| 1 439 classes communes (6 000 images) | Iris 6 | **Iris 7** | |
+|---|---|---|---|
+| top-1 | 51,67 % | **58,93 %** | +7,26 pt |
+| top-3 | 67,93 % | **74,37 %** | +6,44 |
+| au seuil 0,70 | 43 % acceptées, 84,5 % justes | **46,8 %, 89,1 %** | +3,8 et +4,6 |
+
+| plantes cultivées (2 000 images) | Iris 6 | **Iris 7** | |
+|---|---|---|---|
+| top-1 | 53,70 % | **59,45 %** | +5,75 pt |
+| top-3 | 68,85 % | **73,30 %** | +4,45 |
+| au seuil 0,70 | 49,6 %, 83,8 % | **51,4 %, 87,1 %** | +1,9 et +3,3 |
+
+Plus **18 espèces qu'Iris 6 ne pouvait pas nommer du tout**, reconnues à
+44,6 % en top-1 et 62,5 % en top-3.
+
+Le point remarquable n'est pas l'ampleur mais la **direction** : d'ordinaire,
+gagner en justesse coûte de l'autonomie — un modèle plus prudent répond moins
+souvent. Ici les deux montent ensemble. Au seuil de l'application, Iris 7
+répond seule plus souvent *et* se trompe moins.
+
+#### Deux photos valent quatorze points
+
+Dans le calcul exact de la cascade (listes de cinq candidats, plantes
+cultivées) :
+
+| | top-1 | top-3 | à 0,70 |
+|---|---|---|---|
+| 1 photo | 52,24 % | 66,27 % | 47 % de réponses seules, 85,9 % justes |
+| **2 photos** | **65,97 %** *(+13,7)* | 80,00 % | 35 %, **94,1 %** |
+| **3 photos** | **74,63 %** *(+22,4)* | 87,46 % | 35 %, **96,6 %** |
+
+La v6 donnait +11,0 et +19,0 sur la même mesure. Le geste le plus rentable de
+l'application l'est devenu un peu plus — et il ne coûte toujours pas une
+milliseconde de calcul.
+
+#### Le seuil remonte, pour la première fois
+
+`acceptThreshold` passe de 0,60 à **0,70**. Les deux versions précédentes
+avaient dépensé leur surplus de justesse en autonomie ; Iris 7 permet
+l'inverse. **À 0,70 elle rend exactement l'autonomie qu'avait la v6 à 0,60 —
+47 % — avec 85,9 % de justesse au lieu de 82,8 %.**
+
+C'est le bon arbitrage parce que la réponse acceptée est la plus coûteuse à
+rater : elle s'affiche comme « probable », et c'est celle sur laquelle
+l'utilisateur ne se pose pas de question. Une liste seulement plausible est
+montrée avec ses cinq candidats, et il tranche lui-même.
+
+#### Ce que ça a coûté
+
+**Une heure de carte graphique**, contre 9 h 47 pour la v6 sur quatre cœurs.
+Neuf minutes d'encodage des vecteurs, une minute de tête, dix minutes de
+réglage fin par recette — les recettes 1 et 2 réutilisant le cache, seule
+celle des 320 px l'a fait réencoder. C'est ce qui a rendu possible de
+n'essayer qu'un changement à la fois.
+
+Le seul prix à la livraison est **l'inférence sur le téléphone** :
+(320/224)² ≈ 2, donc de l'ordre d'une seconde au lieu d'une demi-seconde. Le
+`.tflite` ne bouge pas — 8,8 Mo — parce que MobileNetV3 est entièrement
+convolutif et que sa tête part d'une moyenne globale : le nombre de poids ne
+dépend pas de la résolution d'entrée. Et l'application n'a pas eu besoin
+d'une ligne de code : `tflite_plant_model.dart` lit `input_size`,
+`load_size` et `source_size` dans `model.json`, avec 224 / 256 / 448
+seulement comme valeurs par défaut.
+
+### 6.8 Résultats du modèle v1
 
 | | |
 |---|---|
@@ -797,7 +912,7 @@ Deux enseignements de cet entraînement, tous deux corrigés :
    La recette est maintenant écrite dans `model.json` (`input_size`,
    `load_size`) et lue par l'application, plutôt que codée des deux côtés.
 
-### 6.8 Recette
+### 6.9 Recette
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
@@ -961,7 +1076,11 @@ cd tools/plant_dataset && python3 -m pytest -q      # 105 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
-## 12. La v7 : ce qu'il reste à faire, dans l'ordre
+## 12. Ce qu'il reste à faire, dans l'ordre
+
+> **État au 9 septembre 2026.** Les § 12.1, 12.5 et 12.6 sont faits et livrés
+> dans Iris 7 : ils valent ensemble **+7,26 points de top-1** à armes égales
+> contre Iris 6 (§ 6.7). Le reste attend.
 
 La carte graphique change l'économie de cette liste. Une passe à l'heure au
 lieu de dix ([`10-entrainer-sur-son-poste.md`](10-entrainer-sur-son-poste.md))
@@ -978,7 +1097,7 @@ L'ordre ci-dessous suit le rapport entre ce que l'utilisateur y gagne et ce
 que ça coûte. Les trois premiers points changent ce qu'il voit ; les suivants
 font bouger les chiffres.
 
-### 12.1 Les 113 espèces collectées que le modèle ne nomme pas
+### 12.1 ✅ Les espèces collectées que le modèle ne nomme pas
 
 Ni collecte, ni entraînement supplémentaire : ces espèces sont déjà dans le
 jeu.
@@ -1125,14 +1244,14 @@ proposer sous les candidats, sans l'imposer, plutôt qu'en travers du chemin.
 
 ### 12.4 La matrice de confusion par genre
 
-Le § 6.8 la promet ; `evaluate()` dans `train.py` ne produit que top-1, top-3,
+Le § 6.9 la promet ; `evaluate()` dans `train.py` ne produit que top-1, top-3,
 macro-F1 et la courbe de seuil. Sans elle, on sait *combien* le modèle se
 trompe et jamais *sur quoi* — donc rien qui dirige la collecte. Le ficus de
 rue contre le bonsaï, le yucca contre le maïs : ce sont des cas trouvés à la
 main, un par un, sur des photos réelles. Une trentaine de lignes, à écrire
 **avant** les recettes plutôt qu'après.
 
-### 12.5 La régularisation
+### 12.5 ✅ La régularisation
 
 C'est le défaut mesuré, et la recette n'a presque rien pour le combattre.
 Aujourd'hui : recadrage aléatoire, miroir, luminosité, saturation, gigue de
@@ -1149,7 +1268,7 @@ résolution ; `--dropout 0.3` ; Adam à taux constant ; entropie croisée nue.
 Aucun ne coûte de collecte, tous coûtent une passe — d'où l'importance de
 n'en changer qu'un à la fois.
 
-### 12.6 L'entrée à 320 px
+### 12.6 ✅ L'entrée à 320 px
 
 Le levier classique de la reconnaissance fine, et le jeu est stocké en 448 px :
 **pas besoin de recollecter** — `--input-size 320` suffit, et le chargement
@@ -1193,11 +1312,12 @@ Trois hybrides horticoles n'ont aucune image faute de nom reconnu par GBIF :
 *Hylotelephium × mottramianum*, *Salvia × floriferior*, *Amelanchier ×
 spicata*. À résoudre par `synonyms.txt`, comme les trois de la v5 (§ 6.5).
 
-### 12.10 Comment on saura que la v7 vaut mieux
+### 12.10 ✅ Comment on sait qu'une version vaut mieux
 
 **Pas au top-1 de `model.json`.** Deux versions n'y sont pas mesurées sur le
 même jeu de test, et le § 6.6 le montre : la v6 y « gagne » 0,3 point sur un
-test plus dur, alors qu'à armes égales elle en gagne 8,7.
+test plus dur, alors qu'à armes égales elle en gagne 8,7. La méthode ci-dessous
+a servi à valider Iris 7 (§ 6.7) ; elle vaut pour la suivante.
 
 Ce qui décide :
 

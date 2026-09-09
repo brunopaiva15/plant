@@ -96,7 +96,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 - Apple Watch
 - Automatisations, Shortcuts / Siri, Home Assistant, capteurs
 - Import HortusFox (l'export complet JSON / CSV / ZIP est livré)
-- Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : livrée avec **Iris 6**, le modèle embarqué (1 445 espèces, 8,8 Mo). Deux photos de la même plante valent dix-neuf points de top-1 — [docs/09-plant-recognition.md](09-plant-recognition.md). Ce que la v7 peut apporter, et dans quel ordre : [§ 12](09-plant-recognition.md#12-la-v7--ce-quil-reste-à-faire-dans-lordre)
+- Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : livrée avec **Iris 7**, le modèle embarqué (1 457 espèces, 320 px, 8,8 Mo ; +7,3 points de top-1 sur Iris 6 à armes égales). Deux photos de la même plante valent quatorze points de top-1 — [docs/09-plant-recognition.md](09-plant-recognition.md). Ce qu'il reste à faire, et dans quel ordre : [§ 12](09-plant-recognition.md#12-ce-quil-reste-à-faire-dans-lordre)
 
 ## Principes de livraison
 1. Simplicité > élégance > vitesse > clarté > fiabilité > profondeur.

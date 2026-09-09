@@ -459,7 +459,10 @@ void main() {
     final total = result.fold<double>(0, (sum, r) => sum + r.score);
     expect(total, closeTo(0.90, 1e-9));
     expect(result.first.score, closeTo(0.7569, 1e-4));
-    expect(result.first.score, greaterThan(0.60), reason: 'la réponse reste acceptée');
+    // Par le seuil de la politique, pas par un littéral : il a valu 0,70,
+    // puis 0,60, puis 0,70 de nouveau. L'intention du test, elle, ne bouge pas.
+    expect(result.first.score, greaterThan(const FallbackPolicy().acceptThreshold),
+        reason: 'la réponse reste acceptée');
   });
 
   test('two photos that agree on a single species do not reach certainty', () async {

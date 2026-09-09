@@ -29,7 +29,7 @@ void main() {
 
   group('le service distant', () {
     test('a ses propres seuils', () {
-      // Un softmax sur 894 espèces et un service qui en connaît des dizaines
+      // Un softmax sur 1 457 espèces et un service qui en connaît des dizaines
       // de milliers ne produisent pas des scores comparables : 0,55 est un
       // bon score chez Pl@ntNet et une hésitation pour le modèle local.
       expect(remote(0.55), IdentificationConfidence.likely);
