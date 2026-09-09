@@ -1240,8 +1240,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get suggestionsRemote => 'Proposto online da Pl@ntNet.';
 
   @override
-  String get identifyOnDevice =>
-      'Riconosciuta sul tuo dispositivo. Scegli la specie corrispondente.';
+  String identifyOnDevice(String name) {
+    return 'Riconosciuta da $name, sul tuo dispositivo. Scegli la specie corrispondente.';
+  }
 
   @override
   String get identifyViaPlantNet =>
@@ -1261,8 +1262,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identificationSettings => 'Identificazione';
 
   @override
-  String get identificationHint =>
-      'Il riconoscimento della specie funziona prima sul tuo dispositivo, senza rete. Quando il modello è incerto, la foto può essere inviata a Pl@ntNet.';
+  String identificationHint(String name) {
+    return 'Il riconoscimento della specie funziona prima sul tuo dispositivo, senza rete: $name risponde offline. Quando è incerto, la foto può essere inviata a Pl@ntNet.';
+  }
 
   @override
   String get identificationEnabled => 'Identificazione attiva';
@@ -1274,17 +1276,19 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identificationFallback => 'Fallback online';
 
   @override
-  String get identificationFallbackHint =>
-      'Quando il modello integrato è incerto, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
-
-  @override
-  String modelLoaded(int count) {
-    return 'Modello integrato: $count specie';
+  String identificationFallbackHint(String name) {
+    return 'Quando $name è incerto, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
   }
 
   @override
-  String get modelMissing =>
-      'Modello integrato non disponibile su questo dispositivo';
+  String modelLoaded(String name, int count) {
+    return '$name: $count specie';
+  }
+
+  @override
+  String modelMissing(String name) {
+    return '$name non disponibile su questo dispositivo';
+  }
 
   @override
   String get modelLoading => 'Caricamento del modello…';

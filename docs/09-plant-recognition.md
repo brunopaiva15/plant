@@ -1,10 +1,27 @@
-# 09 — Reconnaissance de plantes : modèle local, repli Pl@ntNet
+# 09 — Reconnaissance de plantes : Iris, le modèle embarqué, repli Pl@ntNet
 
 > État au 8 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 518
 > images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 445
 > classes** livré dans l'app en TFLite (8,8 Mo). La cascade identifie **sur
 > l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
 > même plante valent dix-neuf points de top-1.
+
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la sixième :
+c'est donc **Iris 6** que l'application nomme à l'écran. Le reste de ce
+document parle de « la v6 » quand il compare des entraînements entre eux —
+ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
+
+## 0. Le nom
+
+`Iris` est la marque du modèle, `AppConfig.modelName` dans le code. Le numéro
+ne s'écrit **jamais** à la main : le modèle l'annonce dans
+`assets/model/model.json`, `TflitePlantModel` le lit au chargement et
+`AppConfig.modelDisplayName(version)` le colle au nom. Livrer un modèle
+réentraîné suffit donc à faire dire « Iris 7 » à l'écran des réglages, et
+l'application ne peut pas afficher un numéro qui ment.
+
+Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
+l'application dit « Iris » tout court plutôt que d'inventer un numéro.
 
 ## 1. Pourquoi
 
@@ -280,9 +297,68 @@ quelles, donc la même photo peut arriver deux fois. L'identifiant de photo
 extrait de l'URL (`/photos/726492519/`) est stocké dans `extra.photo_id` des
 deux côtés et sert de clé — la photo est reconnue **avant** téléchargement.
 
-Wikimedia Commons reste à faire ; c'est la même interface `ImageCandidate`.
+### 4.4 Wikimedia Commons (fait)
 
-### 4.4 PlantNet-300K — étude et décision
+`fetchers/wikimedia.py`, derrière `--wikimedia`. GBIF et iNaturalist
+décrivent des observations de terrain ; Commons est une médiathèque, où l'on
+photographie son monstera dans son salon. C'est la distribution qui manque au
+modèle — le yucca de salon pris pour du maïs vient de là (§ 6.3).
+
+Mesuré sur nos espèces avant d'écrire le connecteur : **97 % des fichiers
+portent une licence utilisable**, contre 18 % chez GBIF où les licences non
+commerciales écrasent tout. Une catégorie d'espèce contient de l'ordre de la
+centaine de fichiers, davantage avec ses sous-catégories : c'est un
+complément à GBIF, pas un remplacement.
+
+Trois choix que le connecteur assume :
+
+- **les non-photographies sont écartées sur le titre** (planches botaniques
+  du XIX<sup>e</sup>, scans d'herbier, cartes de répartition). Filtre
+  grossier : il laisse passer un dessin non nommé et écarte peut-être une
+  photo mal titrée ;
+- **pas de notion d'observation** : chaque fichier est son propre groupe de
+  répartition. Deux photos de la même plante ne seront donc pas gardées
+  ensemble ; la déduplication par empreinte perceptuelle, elle, reste
+  pleinement efficace ;
+- **une panne réseau n'est jamais avalée.** Le bug trouvé au premier essai
+  réel : Commons répondait 429, le connecteur rendait une liste vide, et
+  l'espèce était annoncée à zéro image alors qu'elle en avait soixante-dix.
+  Une source qui tombe doit se voir — `build_dataset` l'écrit `ÉCHEC`, et
+  `failed_species.py` la rattrape.
+
+### 4.5 Les autres banques d'images — ce qui a été mesuré, et refusé
+
+Le principe, énoncé par le projet : **la provenance des images est séparée de
+l'identité taxonomique.** GBIF reste la référence des noms ; une source
+supplémentaire ne fait qu'apporter des photos, rattachées à l'espèce
+canonique par `species` et `internal_plant_id`, chacune gardant sa
+`source`, son `source_id` et sa `license`. Ajouter une banque ne casse donc
+rien — la seule question est de savoir si elle apporte des images
+*utilisables* et *du bon domaine visuel*.
+
+Sur ce dernier point, une distinction fait tout le tri : une **planche
+d'herbier** est une plante séchée, aplatie, cousue sur un carton beige avec
+une étiquette. Le modèle doit reconnaître une plante vivante dans un salon.
+Ces images ne sont pas un complément faible, elles sont du bruit.
+
+| Source | Accès | Ce que la mesure a donné | Décision |
+|---|---|---|---|
+| **Wikimedia Commons** | API MediaWiki, sans clé | 97 % de licences utilisables, plantes cultivées | ✅ fait (§ 4.4) |
+| **Kew Data Portal** | `records-ws.data.kew.org` (Biocache / Living Atlases), sans clé | sur *Monstera deliciosa*, *Ficus elastica*, *Rosa canina* : **100 % `PRESERVED_SPECIMEN`** et **100 % de licence `other`** — donc refusées par le filtre avant même la question du domaine | ❌ |
+| **Smithsonian Gardens** | `s3://smithsonian-open-access`, unité `ofeo-sg`, sans clé — l'API demande un numéro de téléphone américain, le seau non | 23 678 fiches, toutes « Living botanical specimens », 4 884 avec image **CC0** ; mais 1 035 noms pour 217 genres, à très forte dominante d'orchidées (Phalaenopsis 1 086, Dendrobium 467, Oncidium 321). **Recouvrement avec nos 1 445 classes : 6 espèces, 7 photos.** | ❌ |
+| **Smithsonian NMNH (Botany)** | idem | planches d'herbier | ❌ |
+| **USDA / USFWS / NPS** | — | planches d'herbier et photos de terrain déjà relayées par GBIF | ❌ |
+| **OGL-3.0, etalab-2.0, CUSTOM-ML** | — | **zéro image** portant ces licences dans nos sources | sans objet |
+
+Le cas Smithsonian Gardens mérite d'être retenu : 4 884 photos CC0 de
+plantes vivantes cultivées, c'est exactement le bon domaine visuel, et
+c'est pourtant sept images pour nous. Une source ne vaut pas par sa taille
+mais par son recouvrement avec le catalogue — la mesure coûte dix minutes
+et évite d'écrire un connecteur pour rien. Elle redeviendrait intéressante
+le jour où le catalogue s'ouvrirait aux orchidées d'intérieur.
+
+
+### 4.6 PlantNet-300K — étude et décision
 
 Faits vérifiés (Zenodo, enregistrement 5645731, v1.1) :
 
@@ -773,6 +849,10 @@ référence par classe (`test/fixtures/`), correspondance `labels.txt` ↔
 
 ## 8. Mises à jour du modèle
 
+Une version livrée = un numéro de plus dans `model.json`, donc un nom de plus
+à l'écran : après Iris 6 vient Iris 7. Rien d'autre à renommer — ni le code,
+ni les traductions, qui reçoivent le nom composé (§ 0).
+
 Deux options, à trancher au moment de la phase 2 :
 
 1. **Avec l'app** (recommandé pour commencer) : le modèle est un asset ;
@@ -877,13 +957,13 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 52 tests
+cd tools/plant_dataset && python3 -m pytest -q      # 98 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
 ## 12. Reste à faire, dans l'ordre
 
-1. Pré-entraînement PlantNet-300K (§ 4.4, option a), jamais essayé. Vérifier
+1. Pré-entraînement PlantNet-300K (§ 4.6, option a), jamais essayé. Vérifier
    d'abord s'il existe un poids MobileNet publié — sans quoi c'est une
    seconde passe complète — et le recouvrement d'espèces, qui a beaucoup
    augmenté avec les 530 plantes de jardin de la v6.
@@ -892,4 +972,7 @@ flutter test                                        # dont 33 pour l'identificat
    le nombre d'époques.
 3. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
 4. Photos de plantes en pot dans des intérieurs : c'est ce qui manque encore
-   au ficus ginseng, et les licences libres en offrent peu (§ 6.5).
+   au ficus ginseng, et les licences libres en offrent peu (§ 6.5). Le
+   connecteur Wikimedia Commons (§ 4.4) est écrit pour ça mais n'a pas
+   encore servi à une collecte complète — reste à mesurer ce qu'il ajoute
+   réellement, espèce par espèce, avant de le mettre dans la recette.

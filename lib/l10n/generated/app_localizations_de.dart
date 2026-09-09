@@ -1243,8 +1243,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get suggestionsRemote => 'Online von Pl@ntNet vorgeschlagen.';
 
   @override
-  String get identifyOnDevice =>
-      'Auf deinem Gerät erkannt. Wähle die passende Art.';
+  String identifyOnDevice(String name) {
+    return 'Von $name auf deinem Gerät erkannt. Wähle die passende Art.';
+  }
 
   @override
   String get identifyViaPlantNet =>
@@ -1264,8 +1265,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get identificationSettings => 'Bestimmung';
 
   @override
-  String get identificationHint =>
-      'Die Arterkennung läuft zuerst auf deinem Gerät, ohne Netz. Wenn das Modell unsicher ist, kann das Foto zur Klärung an Pl@ntNet gehen.';
+  String identificationHint(String name) {
+    return 'Die Arterkennung läuft zuerst auf deinem Gerät, ohne Netz: $name antwortet offline. Wenn es unsicher ist, kann das Foto zur Klärung an Pl@ntNet gehen.';
+  }
 
   @override
   String get identificationEnabled => 'Bestimmung aktiviert';
@@ -1277,17 +1279,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get identificationFallback => 'Online-Rückfall';
 
   @override
-  String get identificationFallbackHint =>
-      'Wenn das integrierte Modell unsicher ist, wird das Foto an Pl@ntNet gesendet. Ausgeschaltet bleibt alles auf dem Gerät.';
-
-  @override
-  String modelLoaded(int count) {
-    return 'Integriertes Modell: $count Arten';
+  String identificationFallbackHint(String name) {
+    return 'Wenn $name unsicher ist, wird das Foto an Pl@ntNet gesendet. Ausgeschaltet bleibt alles auf dem Gerät.';
   }
 
   @override
-  String get modelMissing =>
-      'Integriertes Modell auf diesem Gerät nicht verfügbar';
+  String modelLoaded(String name, int count) {
+    return '$name: $count Arten';
+  }
+
+  @override
+  String modelMissing(String name) {
+    return '$name auf diesem Gerät nicht verfügbar';
+  }
 
   @override
   String get modelLoading => 'Modell wird geladen…';
