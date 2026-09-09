@@ -2250,6 +2250,12 @@ abstract class AppLocalizations {
   /// **'Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.'**
   String get identifyViaPlantNet;
 
+  /// No description provided for @identifyPhotoSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos Pl@ntNet et GBIF — touchez-en une pour la fiche.'**
+  String get identifyPhotoSource;
+
   /// No description provided for @identifyNone.
   ///
   /// In fr, this message translates to:

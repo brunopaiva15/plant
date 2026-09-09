@@ -15,6 +15,16 @@ import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/identification_confidence.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../../domain/identification/plant_identifier.dart';
+import '../../../domain/species/species_info.dart';
+import '../../species/presentation/species_sheet.dart';
+
+/// La photo d'illustration d'un candidat, cherchée chez GBIF après coup.
+/// Séparée de l'identification elle-même : la liste s'affiche dès que les
+/// noms sont là, les vignettes arrivent quand elles arrivent, et l'absence
+/// de réseau ne coûte qu'une vignette. Seul le nom de l'espèce sort de
+/// l'appareil — la photo de l'utilisateur, jamais.
+final candidateThumbnailProvider = FutureProvider.autoDispose.family<SpeciesImage?, String>(
+    (ref, scientificName) => ref.watch(speciesServiceProvider).thumbnail(scientificName));
 
 /// Lance l'identification sur une photo et laisse l'utilisateur choisir.
 /// Retourne le candidat retenu, ou `null`.
@@ -177,6 +187,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   ),
                   const SizedBox(height: Space.sm),
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => Navigator.of(context).pop(c))]),
+                  _PhotoSourceNote(candidates: results),
                   // La photo d'abord, l'appel réseau ensuite : l'une est
                   // gratuite et immédiate, l'autre se prend sur un quota.
                   if (_paths.length < maxPhotos && _ambiguous(results)) ...[
@@ -205,19 +216,46 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   }
 }
 
-class CandidateRow extends StatelessWidget {
+/// D'où viennent les vignettes, dit une fois sous la liste et seulement
+/// quand il y en a. Une photo affichée sans qu'on sache à qui elle est n'a
+/// pas sa place ici ; le crédit de celle qu'on touche est sur la fiche
+/// espèce, où la place ne manque pas.
+class _PhotoSourceNote extends ConsumerWidget {
+  const _PhotoSourceNote({required this.candidates});
+
+  final List<IdentificationCandidate> candidates;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final illustrated = candidates
+        .any((c) => c.image != null || ref.watch(candidateThumbnailProvider(c.scientificName)).asData?.value != null);
+    if (!illustrated) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.xs),
+      child: Text(context.l10n.identifyPhotoSource, style: context.text.caption),
+    );
+  }
+}
+
+class CandidateRow extends ConsumerWidget {
   const CandidateRow({super.key, required this.candidate, required this.onUse});
 
   final IdentificationCandidate candidate;
   final VoidCallback onUse;
 
+  /// Le côté de la vignette. Assez grand pour qu'une feuille se distingue
+  /// d'une fleur, assez petit pour que la ligne reste une ligne de liste.
+  static const double thumbnailSize = 44;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final c = context.colors;
     final confidence = IdentificationConfidence.of(candidate);
     final mot = l10n.confidenceLabel(confidence);
     final commun = candidate.commonName ?? '';
+    // Pl@ntNet livre sa photo de référence avec le résultat ; le modèle
+    // embarqué ne connaît que des noms, et c'est GBIF qui illustre alors.
+    final image = candidate.image ?? ref.watch(candidateThumbnailProvider(candidate.scientificName)).asData?.value;
     return FloraListRow(
       // Le nom courant en titre : « Pied d'éléphant » se reconnaît d'un coup
       // d'œil, « Beaucarnea recurvata » demande de lire. Le nom scientifique
@@ -226,21 +264,11 @@ class CandidateRow extends StatelessWidget {
       // Sans nom courant, le nom scientifique monte en titre et le
       // sous-titre ne garde que le cran, plutôt que de le répéter.
       subtitle: commun.isEmpty ? mot : '${candidate.scientificName} · $mot',
-      leading: Text(
-        switch (confidence) {
-          IdentificationConfidence.likely => '◆',
-          IdentificationConfidence.possible => '◈',
-          IdentificationConfidence.unlikely => '◇',
-        },
-        style: TextStyle(
-          fontSize: 15,
-          color: switch (confidence) {
-            IdentificationConfidence.likely => c.sage,
-            IdentificationConfidence.possible => c.inkSecondary,
-            IdentificationConfidence.unlikely => c.inkTertiary,
-          },
-        ),
-      ),
+      // La place de la vignette est tenue dès le premier rendu, même vide :
+      // la photo arrive une seconde après les noms, et une liste qui se
+      // décale sous le doigt au moment où l'on vise est une liste qui trompe.
+      leadingWidth: thumbnailSize,
+      leading: image == null ? _ConfidenceMark(confidence: confidence) : _CandidateThumbnail(image: image, scientificName: candidate.scientificName),
       trailing: FloraButton(
         label: l10n.useThis,
         size: FloraButtonSize.small,
@@ -251,6 +279,68 @@ class CandidateRow extends StatelessWidget {
         },
       ),
       chevron: false,
+    );
+  }
+}
+
+/// Le cran de confiance, quand aucune photo ne vient le remplacer : trois
+/// losanges, du plein au vide. Le mot reste dans le sous-titre, la forme
+/// donne le classement d'un coup d'œil.
+class _ConfidenceMark extends StatelessWidget {
+  const _ConfidenceMark({required this.confidence});
+
+  final IdentificationConfidence confidence;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Text(
+      switch (confidence) {
+        IdentificationConfidence.likely => '◆',
+        IdentificationConfidence.possible => '◈',
+        IdentificationConfidence.unlikely => '◇',
+      },
+      style: TextStyle(
+        fontSize: 15,
+        color: switch (confidence) {
+          IdentificationConfidence.likely => c.sage,
+          IdentificationConfidence.possible => c.inkSecondary,
+          IdentificationConfidence.unlikely => c.inkTertiary,
+        },
+      ),
+    );
+  }
+}
+
+/// À quoi ressemble l'espèce proposée. Une photo d'illustration, pas la
+/// plante de l'utilisateur — d'où l'ouverture de la fiche espèce au doigt :
+/// on y voit d'autres clichés, et le crédit de celui-ci.
+class _CandidateThumbnail extends StatelessWidget {
+  const _CandidateThumbnail({required this.image, required this.scientificName});
+
+  final SpeciesImage image;
+  final String scientificName;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final credit = image.rightsHolder == null
+        ? image.licenseLabel
+        : (image.licenseLabel == null ? image.rightsHolder : l10n.speciesPhotoCredit(image.rightsHolder!, image.licenseLabel!));
+    return Pressable(
+      // Quarante-quatre points de photo ne portent pas leur crédit à
+      // l'écran ; la synthèse vocale, elle, peut le dire, et la fiche
+      // espèce l'écrit en toutes lettres.
+      semanticLabel: credit == null ? scientificName : '$scientificName · $credit',
+      semanticHint: l10n.speciesInfo,
+      onTap: () => showSpeciesSheet(context, scientificName: scientificName),
+      child: ClipRRect(
+        borderRadius: Radii.smallAll,
+        child: SizedBox.square(
+          dimension: CandidateRow.thumbnailSize,
+          child: PlantImage(remoteUrl: image.url, cacheWidth: 132),
+        ),
+      ),
     );
   }
 }

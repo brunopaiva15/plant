@@ -1252,6 +1252,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Online von Pl@ntNet erkannt. Wähle die passende Art.';
 
   @override
+  String get identifyPhotoSource =>
+      'Fotos von Pl@ntNet und GBIF – für die Artenseite antippen.';
+
+  @override
   String get identifyNone => 'Keine zuverlässige Übereinstimmung.';
 
   @override

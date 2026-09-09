@@ -1249,6 +1249,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.';
 
   @override
+  String get identifyPhotoSource =>
+      'Photos Pl@ntNet et GBIF — touchez-en une pour la fiche.';
+
+  @override
   String get identifyNone => 'Aucune correspondance fiable.';
 
   @override

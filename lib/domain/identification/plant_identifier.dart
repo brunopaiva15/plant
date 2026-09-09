@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import '../species/species_info.dart';
+
 /// D'où vient un candidat.
 enum IdentificationSource {
   /// Modèle embarqué, sans réseau.
@@ -20,6 +22,7 @@ class IdentificationCandidate {
     this.commonName,
     this.source = IdentificationSource.unknown,
     this.internalId,
+    this.image,
   });
 
   final String scientificName;
@@ -31,13 +34,27 @@ class IdentificationCandidate {
   /// (« monstera-deliciosa »), `null` sinon.
   final String? internalId;
 
-  IdentificationCandidate copyWith({String? scientificName, String? commonName, double? score, IdentificationSource? source, String? Function()? internalId}) =>
+  /// Photo de référence de l'espèce, quand la source en fournit une. Jamais
+  /// la photo de l'utilisateur : celle-ci ne quitte pas l'appareil, ici on
+  /// ne reçoit qu'un cliché d'illustration. `null` tant qu'on n'en a pas,
+  /// et une vignette manquante ne doit jamais empêcher de choisir.
+  final SpeciesImage? image;
+
+  IdentificationCandidate copyWith({
+    String? scientificName,
+    String? commonName,
+    double? score,
+    IdentificationSource? source,
+    String? Function()? internalId,
+    SpeciesImage? image,
+  }) =>
       IdentificationCandidate(
         scientificName: scientificName ?? this.scientificName,
         commonName: commonName ?? this.commonName,
         score: score ?? this.score,
         source: source ?? this.source,
         internalId: internalId == null ? this.internalId : internalId(),
+        image: image ?? this.image,
       );
 }
 

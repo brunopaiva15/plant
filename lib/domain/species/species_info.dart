@@ -19,13 +19,39 @@ class SpeciesImage {
   final String? rightsHolder;
   final String? country;
 
+  /// Les termes Creative Commons de la photo, réduits à leur code : « by »,
+  /// « by-sa », « by-nc », ou « 0 » pour le domaine public. GBIF les donne
+  /// par une URL, Pl@ntNet en clair (« cc-by-sa ») ; `null` quand la source
+  /// n'a rien dit, ou nomme autre chose qu'une licence Creative Commons.
+  String? get _terms {
+    final l = license?.trim().toLowerCase();
+    if (l == null || l.isEmpty) return null;
+    if (l.contains('publicdomain')) return '0';
+    final url = RegExp(r'licenses/([a-z-]+)/').firstMatch(l);
+    if (url != null) return url.group(1);
+    return RegExp(r'^cc-?(by[a-z-]*|0)$').firstMatch(l)?.group(1);
+  }
+
   /// Libellé court de licence (« CC BY-NC 4.0 »).
   String? get licenseLabel {
     final l = license;
     if (l == null) return null;
-    final m = RegExp(r'licenses/([a-z-]+)/([0-9.]+)').firstMatch(l);
-    if (m == null) return l;
-    return 'CC ${m.group(1)!.toUpperCase()} ${m.group(2)}';
+    final terms = _terms;
+    if (terms == null) return l;
+    if (terms == '0') return 'CC0';
+    final version = RegExp(r'licenses/[a-z-]+/([0-9.]+)').firstMatch(l.toLowerCase())?.group(1);
+    return version == null ? 'CC ${terms.toUpperCase()}' : 'CC ${terms.toUpperCase()} $version';
+  }
+
+  /// Peut-on la montrer dans l'application ? Le domaine public et
+  /// l'attribution simple, oui ; le « pas d'usage commercial » (NC) et le
+  /// « pas de modification » (ND), non — l'application est un produit, et
+  /// docs/09 § 4.1 tient déjà cette règle pour le jeu d'entraînement. Une
+  /// photo dont on ignore la licence n'est pas une photo libre : sans
+  /// mention, on s'abstient.
+  bool get isFreelyDisplayable {
+    final terms = _terms?.split('-');
+    return terms != null && !terms.contains('nc') && !terms.contains('nd');
   }
 }
 
@@ -142,4 +168,10 @@ abstract class SpeciesService {
   Future<SpeciesSearchPage> search(String query, {int offset = 0, int limit = 30, String? languageCode});
   Future<SpeciesInfo?> lookup(String scientificName);
   Future<SpeciesInfo?> byKey(int key);
+
+  /// Une seule photo, pour une vignette de liste. Bien plus léger que
+  /// [lookup] — qui charge aussi la taxonomie et tous les noms communs —
+  /// parce qu'une liste de cinq candidats l'appelle cinq fois. Rend `null`
+  /// plutôt que d'échouer : une vignette absente n'empêche pas de choisir.
+  Future<SpeciesImage?> thumbnail(String scientificName);
 }

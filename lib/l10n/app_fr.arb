@@ -616,6 +616,7 @@
   "identifyOnDevice": "Reconnu par {name}, sur votre appareil. Choisissez l'espèce qui correspond.",
   "@identifyOnDevice": {"placeholders": {"name": {"type": "String"}}},
   "identifyViaPlantNet": "Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.",
+  "identifyPhotoSource": "Photos Pl@ntNet et GBIF — touchez-en une pour la fiche.",
   "identifyNone": "Aucune correspondance fiable.",
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
   "useThis": "Utiliser",

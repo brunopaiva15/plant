@@ -17,7 +17,16 @@ class GbifSpeciesService implements SpeciesService {
   /// Clé GBIF du règne Plantae : limite les résultats aux plantes.
   static const plantaeKey = 6;
 
+  /// Les licences d'occurrence qu'on s'autorise à afficher. GBIF n'en
+  /// normalise que quatre ; les deux autres sont CC BY-NC et « non
+  /// précisée », que l'application ne montre pas (docs/09 § 4.1).
+  static const _displayableLicenses = ['CC0_1_0', 'CC_BY_4_0'];
+
   final _cache = <int, SpeciesInfo>{};
+
+  /// Vignettes déjà cherchées, par nom scientifique. Une entrée `null` dit
+  /// « cette espèce n'a pas de photo », et évite de le redemander.
+  final _thumbnails = <String, SpeciesImage?>{};
 
   @override
   Future<List<SpeciesSuggestion>> suggest(String query, {String? languageCode}) async {
@@ -63,6 +72,15 @@ class GbifSpeciesService implements SpeciesService {
 
   @override
   Future<SpeciesInfo?> lookup(String scientificName) async {
+    final key = await _matchKey(scientificName);
+    return key == null ? null : byKey(key);
+  }
+
+  /// La clé GBIF d'un nom scientifique, ou `null` si la base ne le connaît
+  /// pas. Passer par `match` plutôt que d'interroger directement les
+  /// occurrences fait le travail que nous ne saurions pas faire : accorder
+  /// un synonyme, une graphie d'auteur, une sous-espèce, au nom accepté.
+  Future<int?> _matchKey(String scientificName) async {
     final name = scientificName.trim();
     if (name.isEmpty) return null;
     final uri = Uri.https(_base, '/v1/species/match', {'name': name, 'kingdom': 'Plantae'});
@@ -70,9 +88,43 @@ class GbifSpeciesService implements SpeciesService {
     if (res.statusCode != 200) return null;
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     final key = json['usageKey'] as int?;
-    final matchType = json['matchType'] as String?;
-    if (key == null || matchType == 'NONE') return null;
-    return byKey(key);
+    return (json['matchType'] as String?) == 'NONE' ? null : key;
+  }
+
+  @override
+  Future<SpeciesImage?> thumbnail(String scientificName) async {
+    final name = scientificName.trim();
+    if (name.isEmpty) return null;
+    // Une espèce déjà vue ne repart pas sur le réseau : la feuille
+    // d'identification se rouvre souvent sur les mêmes candidats, et une
+    // vignette n'a pas à se payer deux fois.
+    if (_thumbnails.containsKey(name)) return _thumbnails[name];
+    try {
+      final key = await _matchKey(name);
+      if (key == null) return _thumbnails[name] = null;
+      // La fiche espèce a pu passer par là : ses photos font l'affaire.
+      if (_cache[key]?.images.where((i) => i.isFreelyDisplayable).firstOrNull case final known?) {
+        return _thumbnails[name] = known;
+      }
+      // Le filtre de licence porte sur l'occurrence ; celui de
+      // [SpeciesImage.isFreelyDisplayable] porte sur le média lui-même, qui
+      // peut différer. Le premier évite de rapatrier ce qu'on jettera, le
+      // second est la garantie.
+      final res = await _client
+          .get(Uri.https(_base, '/v1/occurrence/search', {
+            'taxonKey': '$key',
+            'mediaType': 'StillImage',
+            'license': _displayableLicenses,
+            'limit': '5',
+          }))
+          .timeout(const Duration(seconds: 10));
+      if (res.statusCode != 200) return null;
+      return _thumbnails[name] = parseOccurrenceImages(res.body).where((i) => i.isFreelyDisplayable).firstOrNull;
+    } on Object {
+      // Réseau coupé, GBIF indisponible : on ne mémorise rien, la prochaine
+      // ouverture retentera. Le nom reste lisible sans sa photo.
+      return null;
+    }
   }
 
   @override
