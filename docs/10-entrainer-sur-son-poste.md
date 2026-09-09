@@ -3,6 +3,11 @@
 > Procédure suivie de bout en bout, de Windows nu au `.tflite` livré.
 > Machine de référence : Windows + RTX 2070 Super (8 Go) + i7-9700K (8 cœurs).
 > Compter **une demi-journée** la première fois, dont l'essentiel en attente.
+>
+> Sur une machine **louée** — Debian nu, carte de centre de calcul, disques à
+> monter soi-même — les commandes ci-dessous restent valables, mais
+> l'installation et le dimensionnement diffèrent :
+> [`11-entrainer-sur-une-vm.md`](11-entrainer-sur-une-vm.md).
 
 Iris 6 — la sixième version du modèle embarqué, celle que l'application
 livre aujourd'hui — a été entraînée sur quatre cœurs sans carte graphique :
