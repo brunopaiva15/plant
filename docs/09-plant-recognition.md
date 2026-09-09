@@ -957,7 +957,7 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 95 tests
+cd tools/plant_dataset && python3 -m pytest -q      # 98 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 

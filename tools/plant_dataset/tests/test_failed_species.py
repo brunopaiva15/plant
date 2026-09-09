@@ -6,6 +6,7 @@ compte : retrouver les noms exactement, ne pas confondre un `:` du message
 d'erreur avec celui qui suit le nom, et rendre le motif — parce que « 429 »
 et « une image illisible » n'appellent pas la même réponse.
 """
+import pytest
 import sys
 from pathlib import Path
 
@@ -21,8 +22,8 @@ JOURNAL = """[1/390] Monstera deliciosa: 42 gardées (gbif 30, inat 12)
 
 
 def test_le_nom_s_arrete_avant_le_motif():
-    """Le message d'erreur contient lui-même « : » — le nom est ce qui
-    précède le *dernier* deux-points avant ÉCHEC, pas le premier."""
+    """Le message d'erreur contient lui-même « : » — c'est `ÉCHEC` qui
+    borne le nom, pas le premier deux-points venu."""
     assert failures(JOURNAL) == [('Ficus elastica', 'HTTPError'),
                                  ('Citrus × limon', 'ConnectionError')]
 
@@ -51,3 +52,40 @@ def test_un_journal_sans_echec_donne_une_liste_vide(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     assert main(['--write', 'retry', 'ok.log']) == 0
     assert (tmp_path / 'retry0.txt').read_text(encoding='utf-8') == ''
+
+
+def test_une_espece_jamais_traitee_est_reprise_aussi(tmp_path, monkeypatch, capsys):
+    """Le cas « 389/390 » : la part a été tuée avant sa dernière espèce, qui
+    n'a donc aucune ligne — pas même un ÉCHEC. Rien ne la distingue d'une
+    espèce inexistante, sauf la liste qu'on avait confiée à la part."""
+    (tmp_path / 'shard0.log').write_text(JOURNAL, encoding='utf-8')
+    (tmp_path / 'shard0.txt').write_text(
+        'Monstera deliciosa\nFicus elastica\nCitrus × limon\nPilea peperomioides\nSedum morganianum\n',
+        encoding='utf-8')
+    monkeypatch.chdir(tmp_path)
+    assert main(['--write', 'retry', '--against', 'shard0.txt', 'shard0.log']) == 0
+    assert (tmp_path / 'retry0.txt').read_text(encoding='utf-8').splitlines() == [
+        'Ficus elastica', 'Citrus × limon', 'Sedum morganianum']
+    assert 'jamais traitée' in capsys.readouterr().err
+
+
+def test_un_nom_non_resolu_n_est_pas_a_reprendre(tmp_path, monkeypatch):
+    """« nom non résolu chez GBIF » n'est pas une panne : relancer n'y
+    changera rien, c'est `synonyms.txt` qui répond. L'espèce a une ligne,
+    donc `--against` ne la ramasse pas non plus."""
+    (tmp_path / 'shard0.log').write_text(
+        '[1/2] Sorbus aria: nom non résolu chez GBIF (FAMILY), à revoir\n'
+        '[2/2] Monstera deliciosa: 42 gardées\n', encoding='utf-8')
+    (tmp_path / 'shard0.txt').write_text('Sorbus aria\nMonstera deliciosa\n', encoding='utf-8')
+    monkeypatch.chdir(tmp_path)
+    assert main(['--write', 'retry', '--against', 'shard0.txt', 'shard0.log']) == 0
+    assert (tmp_path / 'retry0.txt').read_text(encoding='utf-8') == ''
+
+
+def test_autant_de_listes_que_de_journaux(tmp_path, monkeypatch):
+    (tmp_path / 'a.log').write_text(JOURNAL, encoding='utf-8')
+    (tmp_path / 'b.log').write_text(JOURNAL, encoding='utf-8')
+    (tmp_path / 'a.txt').write_text('Ficus elastica\n', encoding='utf-8')
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(SystemExit):
+        main(['--against', 'a.txt', 'a.log', 'b.log'])

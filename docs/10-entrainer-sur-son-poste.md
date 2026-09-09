@@ -76,7 +76,7 @@ l'identique depuis les sources, en parts parallèles.
 ```bash
 cd ~/plant/tools/plant_dataset
 pip install -r requirements.txt
-python3 -m pytest -q            # 95 tests, sans réseau
+python3 -m pytest -q            # 98 tests, sans réseau
 
 mkdir -p dataset
 cp cache/*.json dataset/        # heures de résolution de noms déjà faites
@@ -124,15 +124,43 @@ part en `ÉCHEC` dans le journal et la suivante démarre. Il faut donc
 repasser derrière, avant la fusion :
 
 ```bash
-python3 failed_species.py --write retry shard0.log shard1.log shard2.log shard3.log
+python3 failed_species.py --why --against shard0.txt --against shard1.txt \
+    --against shard2.txt --against shard3.txt shard0.log shard1.log shard2.log shard3.log
 ```
 
-Le décompte par motif dit quoi faire. `HTTPError` en masse, ce sont des 429 :
-reprendre à une seule part, sans concurrence, suffit. La reprise réécrit
-chaque espèce dans **sa** part d'origine — une espèce éclatée entre deux
-dossiers serait comptée deux fois à la fusion :
+`--against` compare le journal à la liste qu'on avait confiée à la part et
+ramasse aussi les espèces qui n'ont **aucune** ligne : une part tuée en
+route s'arrête sans rien écrire, et « 389/390 » ne se distingue autrement
+de « 390/390 » qu'à l'œil. Deux vérifications valent la peine avant :
 
 ```bash
+pgrep -af '[b]uild_dataset.py'                    # doit être vide
+grep -c 'images gardées sur' shard*.log           # 1 par part : elle est allée au bout
+```
+
+Le décompte par motif dit quoi faire :
+
+| Motif | Ce que c'est | Quoi faire |
+|---|---|---|
+| `HTTPError` | 429 ou 5xx après six essais — le débit, presque toujours | reprendre en séquentiel ; ça passe |
+| `ConnectionError`, `Timeout` | réseau coupé, source lente | reprendre à l'identique |
+| `JSONDecodeError` | réponse tronquée, source sous charge | reprendre à l'identique |
+| `jamais traitée` | la part s'est arrêtée avant | reprendre ; vérifier d'abord qu'elle n'a pas été tuée par manque de disque |
+| autre chose | un bogue, pas une panne | ne pas boucler dessus : la ligne complète du journal vaut plus qu'une seconde tentative |
+
+Les espèces marquées `nom non résolu chez GBIF, à revoir` ne sont **pas**
+des échecs et ne se reprennent pas : le nom est ambigu ou absent du
+référentiel, et c'est `synonyms.txt` qui répond
+(`grep -c 'à revoir' shard*.log` pour les compter). Il y en a une poignée,
+et le jeu s'en passe.
+
+La reprise réécrit chaque espèce dans **sa** part d'origine — une espèce
+éclatée entre deux dossiers serait comptée deux fois à la fusion :
+
+```bash
+python3 failed_species.py --write retry --against shard0.txt --against shard1.txt \
+    --against shard2.txt --against shard3.txt shard0.log shard1.log shard2.log shard3.log
+
 for i in 0 1 2 3; do
   [ -s retry$i.txt ] && python3 build_dataset.py --plants plants.csv --out shard$i \
     --only-file retry$i.txt --target-per-species 200 --allow-sa \
