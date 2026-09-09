@@ -115,6 +115,28 @@ void main() {
     expect(await actions.watchByPlant(p.id).first, hasLength(1));
   });
 
+  test('ré-archiver une plante déjà rangée ne touche ni sa date ni sa raison', () async {
+    final p = await plants.create(const NewPlant(name: 'Fougère'));
+    await plants.archive([p.id], reason: 'died');
+    final first = (await plants.getPlant(p.id))!;
+
+    await plants.archive([p.id], reason: 'sold');
+    final again = (await plants.getPlant(p.id))!;
+    expect(again.archiveReason, 'died');
+    expect(again.archivedAt, first.archivedAt);
+    expect(await plants.watchArchived().first, hasLength(1));
+  });
+
+  test('un archivage groupé n\'emporte que les plantes encore actives', () async {
+    final aloe = await plants.create(const NewPlant(name: 'Aloe'));
+    final basilic = await plants.create(const NewPlant(name: 'Basilic'));
+    await plants.archive([aloe.id], reason: 'died');
+
+    await plants.archive([aloe.id, basilic.id], reason: 'given');
+    expect((await plants.getPlant(aloe.id))!.archiveReason, 'died');
+    expect((await plants.getPlant(basilic.id))!.archiveReason, 'given');
+  });
+
   test('search matches name, species, location, tags and notes', () async {
     final balcon = await locations.create(name: 'Balcon', icon: '🌤️');
     final a = await plants.create(NewPlant(name: 'Olivier', speciesName: 'Olea europaea', locationId: balcon.id));

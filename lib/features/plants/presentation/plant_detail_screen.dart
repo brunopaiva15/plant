@@ -106,7 +106,12 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           ),
         if (canEdit)
           SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
-        if (canEdit) SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
+        // Une plante déjà rangée ne s'archive pas deux fois : à sa place, le
+        // geste qui a du sens depuis sa fiche, c'est de la ressortir.
+        if (canEdit && plant.isArchived)
+          SheetAction(label: l10n.restore, icon: CupertinoIcons.arrow_uturn_left, onPressed: () => _restore(plant)),
+        if (canEdit && !plant.isArchived)
+          SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
       ],
     );
   }
@@ -126,6 +131,14 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
   Future<void> _toggleFavorite(Plant plant) async {
     Haptics.selection();
     await ref.read(plantRepositoryProvider).setFavorite(id, !plant.isFavorite);
+  }
+
+  Future<void> _restore(Plant plant) async {
+    final l10n = context.l10n;
+    await ref.read(plantRepositoryProvider).restore([id]);
+    Haptics.success();
+    if (!mounted) return;
+    ref.read(toastProvider.notifier).show(ToastData(message: l10n.plantRestored(plant.name), emoji: '🌱'));
   }
 
   Future<void> _archive(Plant plant) async {

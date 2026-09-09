@@ -239,19 +239,24 @@ class DriftPlantRepository implements PlantRepository {
   Future<void> archive(List<String> ids, {String? reason}) async {
     final now = DateTime.now();
     await _db.transaction(() async {
-      await (_db.update(_db.plants)..where((p) => p.id.isIn(ids))).write(PlantsCompanion(
+      // On n'archive que ce qui est encore vivant : ré-archiver une plante
+      // déjà rangée écraserait sa date et sa raison d'origine.
+      final rows = await (_db.select(_db.plants)..where((p) => p.id.isIn(ids) & p.status.equals('active'))).get();
+      final targets = [for (final r in rows) r.id];
+      if (targets.isEmpty) return;
+      await (_db.update(_db.plants)..where((p) => p.id.isIn(targets))).write(PlantsCompanion(
         status: const Value('archived'),
         archivedAt: Value(now),
         archiveReason: Value(reason),
         updatedAt: Value(now),
       ));
       // Une plante archivée ne génère plus de rappel.
-      await (_db.update(_db.careSchedules)..where((s) => s.plantId.isIn(ids)))
+      await (_db.update(_db.careSchedules)..where((s) => s.plantId.isIn(targets)))
           .write(CareSchedulesCompanion(enabled: const Value(false), updatedAt: Value(now)));
-      for (final id in ids) {
+      for (final id in targets) {
         await _db.enqueueSync('plants', id, 'upsert', {'status': 'archived'});
       }
-      for (final s in await (_db.select(_db.careSchedules)..where((s) => s.plantId.isIn(ids))).get()) {
+      for (final s in await (_db.select(_db.careSchedules)..where((s) => s.plantId.isIn(targets))).get()) {
         await _db.enqueueSync('care_schedules', s.id, 'upsert', const {});
       }
     });
