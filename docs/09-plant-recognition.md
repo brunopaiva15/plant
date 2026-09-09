@@ -1104,7 +1104,7 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 112 tests
+cd tools/plant_dataset && python3 -m pytest -q      # 118 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
@@ -1260,6 +1260,23 @@ avant de le mettre dans la recette. Une source ne vaut pas par sa taille mais
 par son recouvrement avec le catalogue : le cas Smithsonian Gardens (§ 4.5) a
 coûté dix minutes de mesure et évité d'écrire un connecteur pour sept photos.
 
+**L'outil de mesure existe** — `tools/plant_dataset/commons_apport.py`. Il ne
+télécharge aucune image : il compte, par espèce, les fichiers que le
+connecteur retiendrait, et les met en regard de ce que le jeu possède déjà.
+
+```bash
+cd tools/plant_dataset
+python3 commons_apport.py --limit 30 --csv commons.csv
+```
+
+Ce qu'il faut regarder n'est pas le total mais **la troisième ligne du
+rapport** : le nombre d'espèces que Commons pourrait *au moins doubler*. Une
+espèce qui a 200 images et à qui Commons en offre 12 ne justifie pas une
+passe ; une espèce à 30 images à qui il en offre 150 la justifie à elle
+seule. Compter une heure pour les 167 plantes d'intérieur — l'API demande
+une seconde entre deux requêtes, et le connecteur descend d'un niveau dans
+les sous-catégories, là où sont justement les plantes cultivées.
+
 ### 12.3 La deuxième photo, là où elle n'est pas encore proposée
 
 Le bouton « ajouter une photo » n'apparaît que si la politique hésite
@@ -1340,14 +1357,50 @@ C'est le seul arbitrage : 320 px ne vaut le coup que s'il rapporte assez de
 points pour justifier une attente deux fois plus longue devant l'écran
 d'identification.
 
-### 12.7 La classe « autre » et la calibration
+### 12.7 La classe « autre » — et d'abord savoir si elle manque
 
-Prévues au § 3.2, jamais faites. Le seul garde-fou actuel contre une photo de
-chat est le plancher à 0,10, la marge y étant documentée comme inactive. La
-classe « autre » demande de collecter des non-plantes ; la calibration de
-température, elle, ne demande que le jeu de validation — et rendrait au score
-affiché le sens que `identification_confidence.dart` lui refuse aujourd'hui,
-à juste titre.
+Prévue au § 3.2, jamais faite. Le seul garde-fou contre une photo de chat est
+le plancher à 0,10, la marge étant inactive au seuil de 0,70.
+
+**Deux choses ont changé, et elles vont en sens contraire.**
+
+D'un côté, la calibration s'est améliorée toute seule. Le dropout à 0,5 a fait
+tomber la confiance moyenne de 5,7 points sans que la justesse baisse
+(§ 6.7) : le modèle est nettement moins présomptueux qu'à la v6, et c'est
+précisément le défaut que la calibration de température devait corriger. Ce
+levier-là a perdu de son intérêt.
+
+De l'autre, aucune calibration ne résout le vrai problème. **Un classifieur à
+1 457 sorties de plantes n'a aucun moyen de dire « ceci n'est pas une
+plante » :** il répartit sa masse entre les espèces qu'il connaît, quoi qu'on
+lui montre. Devant un chat, il répond une plante — la seule question est avec
+quelle assurance.
+
+#### La mesure à faire avant de construire quoi que ce soit
+
+C'est la leçon du § 4.5 et du § 12.8, appliquée à nous-mêmes : **mesurer avant
+d'écrire.** Une trentaine de photos hors sujet — animaux, meubles, visages,
+murs, plats — passées dans le modèle livré, et l'on regarde la distribution
+des meilleurs scores :
+
+| ce qu'on observe | ce que ça veut dire |
+|---|---|
+| presque tout sous 0,10 | le plancher fait déjà le travail, la classe « autre » est un chantier pour rien |
+| beaucoup entre 0,10 et 0,70 | l'application affiche une liste « plausible » sur une photo de chat : gênant, pas grave — un message suffirait |
+| des scores au-dessus de 0,70 | le modèle **affirme** une espèce devant n'importe quoi. Là seulement la classe « autre » se justifie |
+
+Trente photos et dix minutes tranchent entre trois chantiers de tailles très
+différentes. Aucun n'a de raison d'être entrepris avant.
+
+#### Si la mesure la réclame
+
+Une classe de plus, entraînée sur des négatifs de deux natures : des
+non-plantes (scènes d'intérieur, animaux, objets — CC0 abondant) et des
+**plantes hors catalogue**, qui sont le cas le plus fréquent en vrai et le
+plus difficile. Le coût réel n'est pas la collecte mais l'équilibre : une
+classe « autre » trop nourrie devient la réponse par défaut et fait chuter le
+rappel partout ailleurs. Elle se mesurerait comme le reste, à armes égales
+contre le modèle sans elle (§ 12.10).
 
 ### 12.8 PlantNet-300K — mesuré, et ce n'est pas ce qu'on croyait
 

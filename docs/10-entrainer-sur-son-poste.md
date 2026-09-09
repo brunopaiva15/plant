@@ -81,7 +81,7 @@ l'identique depuis les sources, en parts parallèles.
 ```bash
 cd ~/plant/tools/plant_dataset
 pip install -r requirements.txt
-python3 -m pytest -q            # 112 tests, sans réseau
+python3 -m pytest -q            # 118 tests, sans réseau
 
 mkdir -p dataset
 cp cache/*.json dataset/        # heures de résolution de noms déjà faites
