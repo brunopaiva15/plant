@@ -284,7 +284,7 @@ Une recette à la fois, sinon on ne saura pas ce qui a agi.
 |---|---|---|---|
 | 1 | `--dropout 0.5`, augmentations plus fortes | 1 h | resserrer l'écart de dix-huit points |
 | 2 | `--unfreeze 100` ou `--fine-lr 2e-5` | 1 h | trouver le bon dosage de réglage fin |
-| 3 | Entrée à 320 px — **demande une petite modification** : `IMAGE_SIZE` et `LOAD_SIZE` sont des constantes de `train.py`, pas des options | 2 h | le levier classique de la reconnaissance fine |
+| 3 | Entrée à 320 px : `--input-size 320` | 2 h | le levier classique de la reconnaissance fine, au prix d'une inférence deux fois plus lourde sur le téléphone |
 | 4 | Pré-entraînement PlantNet-300K | ½ journée | voir ci-dessous |
 
 **PlantNet-300K, ce qu'il faut savoir avant de s'y engager.** Les poids

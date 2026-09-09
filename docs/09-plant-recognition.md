@@ -1152,9 +1152,17 @@ n'en changer qu'un à la fois.
 ### 12.6 L'entrée à 320 px
 
 Le levier classique de la reconnaissance fine, et le jeu est stocké en 448 px :
-**pas besoin de recollecter**. Deux réserves. `IMAGE_SIZE` et `LOAD_SIZE` sont
-des constantes de `train.py`, pas des options. Et le `.tflite` grossit, à
-mettre en balance avec la demi-seconde d'inférence sur iPhone (§ 6.4).
+**pas besoin de recollecter** — `--input-size 320` suffit, et le chargement
+suit tout seul à la même marge de recadrage.
+
+**Ce que ça coûte n'est pas la taille du fichier.** MobileNetV3 est
+entièrement convolutif et sa tête part d'une moyenne globale : le nombre de
+poids ne dépend pas de la résolution d'entrée, et le `.tflite` reste à
+8,8 Mo. Ce qui double, c'est le **calcul sur le téléphone** — (320/224)² ≈ 2 —,
+donc la demi-seconde d'inférence mesurée au § 6.4 passerait à une seconde.
+C'est le seul arbitrage : 320 px ne vaut le coup que s'il rapporte assez de
+points pour justifier une attente deux fois plus longue devant l'écran
+d'identification.
 
 ### 12.7 La classe « autre » et la calibration
 
