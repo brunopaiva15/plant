@@ -359,6 +359,7 @@
   "suggestionsRemote": "Suggested online by Pl@ntNet.",
   "identifyOnDevice": "Recognised by {name}, on your device. Pick the matching species.",
   "identifyViaPlantNet": "Recognised online by Pl@ntNet. Pick the matching species.",
+  "identifyPhotoSource": "Photos from Pl@ntNet and GBIF — tap one for the species page.",
   "identifyNone": "No reliable match.",
   "identifyError": "Couldn't identify. Check your connection and try again.",
   "useThis": "Use",

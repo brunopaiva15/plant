@@ -249,6 +249,32 @@ de nom d'espèce.
   laissé le repli activé, et avec sa propre clé — comme aujourd'hui.
 - Les compteurs ne contiennent ni image, ni espèce, ni horodatage
   individuel.
+- Les vignettes de la liste (§ 3.7) sortent un **nom d'espèce**, jamais une
+  photo : c'est l'application qui demande à quoi ressemble un *Beaucarnea
+  recurvata*, pas ce que l'utilisateur a devant lui.
+
+### 3.7 La vignette d'un candidat
+
+« Beaucarnea recurvata » ne dit rien à personne ; la photo, si. Chaque ligne
+de la feuille d'identification porte donc une vignette de 44 points de
+l'espèce proposée, à côté du nom.
+
+| Source | Quand | Coût |
+|---|---|---|
+| Pl@ntNet | résultat distant : `include-related-images=true` rend les photos de référence dans **la même requête** | aucun appel ni quota de plus |
+| GBIF | tout le reste, et d'abord les réponses du modèle embarqué, qui ne connaît que des noms | deux requêtes par espèce (`species/match` puis `occurrence/search`), sans clé, mémorisées par nom pour la session |
+
+La vignette arrive **après** la liste : les noms s'affichent dès que le
+modèle a répondu, les photos se posent ensuite. Sans réseau, la ligne
+retrouve son losange de confiance et rien d'autre ne change — le modèle
+embarqué reste utilisable hors ligne de bout en bout.
+
+**Licences.** Une vignette n'a pas la place d'écrire son crédit : on la
+touche, la fiche espèce s'ouvre, et le crédit y est. Seules les photos en
+domaine public ou en attribution simple (CC0, CC BY, CC BY-SA) sont
+affichées — `SpeciesImage.isFreelyDisplayable`, la même règle qu'au § 4.1
+pour le jeu d'entraînement. Le CC BY-NC que GBIF sert volontiers est écarté
+deux fois : au filtre de la requête, puis sur le média lui-même.
 
 ## 4. Sources d'images et licences
 

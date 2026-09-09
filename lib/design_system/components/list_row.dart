@@ -24,6 +24,7 @@ class FloraListRow extends StatelessWidget {
     this.subtitleColor,
     this.strikethrough = false,
     this.titleMaxLines = 1,
+    this.leadingWidth = 32,
   });
 
   final String title;
@@ -45,6 +46,11 @@ class FloraListRow extends StatelessWidget {
   /// Lignes autorisées pour le titre : 2 pour une phrase courte.
   final int titleMaxLines;
 
+  /// Largeur réservée au [leading]. Trente-deux points suffisent à une
+  /// pastille ou à une vignette de plante ; une photo qu'il faut vraiment
+  /// reconnaître en demande davantage.
+  final double leadingWidth;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
@@ -58,7 +64,7 @@ class FloraListRow extends StatelessWidget {
         builder: (context, constraints) => Row(
           children: [
             if (leading != null) ...[
-              SizedBox(width: 32, child: Center(child: leading)),
+              SizedBox(width: leadingWidth, child: Center(child: leading)),
               const SizedBox(width: Space.sm),
             ],
             Expanded(

@@ -1247,6 +1247,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Recognised online by Pl@ntNet. Pick the matching species.';
 
   @override
+  String get identifyPhotoSource =>
+      'Photos from Pl@ntNet and GBIF — tap one for the species page.';
+
+  @override
   String get identifyNone => 'No reliable match.';
 
   @override

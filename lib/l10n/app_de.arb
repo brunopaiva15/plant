@@ -359,6 +359,7 @@
   "suggestionsRemote": "Online von Pl@ntNet vorgeschlagen.",
   "identifyOnDevice": "Von {name} auf deinem Gerät erkannt. Wähle die passende Art.",
   "identifyViaPlantNet": "Online von Pl@ntNet erkannt. Wähle die passende Art.",
+  "identifyPhotoSource": "Fotos von Pl@ntNet und GBIF – für die Artenseite antippen.",
   "identifyNone": "Keine zuverlässige Übereinstimmung.",
   "identifyError": "Bestimmung nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "useThis": "Verwenden",
