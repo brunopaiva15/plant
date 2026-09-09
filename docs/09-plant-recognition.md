@@ -1629,10 +1629,97 @@ La couverture seule ne rend pas l'application meilleure sur les plantes que
 les gens possèdent ; le domaine visuel, si. Les deux dans la même version,
 mais mesurés séparément :
 
-1. `confusions.py` sur Iris 7 — dix minutes, aucune collecte, et il dira
+1. les **quatorze plantes d'appartement absentes** du catalogue (§ 12.12) —
+   déjà mesurées, quatorze noms à collecter, et ce sont celles que les gens
+   possèdent ;
+2. `confusions.py` sur Iris 7 — dix minutes, aucune collecte, et il dira
    **lesquelles** des espèces actuelles réclament des images (§ 12.4) ;
-2. la liste des candidates, générée par observations et vérifiée par
+3. la liste des candidates, générée par observations et vérifiée par
    `disponibilite.py` ;
-3. la collecte, avec Commons pour le domaine (§ 12.2) et PlantNet-300K
+4. la collecte, avec Commons pour le domaine (§ 12.2) et PlantNet-300K
    plafonné pour le volume (§ 12.8) ;
-4. les recettes, une à la fois, comme pour la v7.
+5. les recettes, une à la fois, comme pour la v7.
+
+### 12.12 Ce que le modèle rend sur les plantes d'appartement
+
+Le top-1 publié — **0,5961** — est une moyenne sur 1 457 espèces dont la
+plupart sont sauvages, européennes, et que personne ne photographie dans son
+salon. L'application, elle, sert d'abord les 167 noms de
+`phase1_species.txt` : les plantes qu'on achète en jardinerie et qu'on pose
+sur une étagère. Ce chiffre-là n'a jamais été mesuré.
+
+`tools/plant_model/interieur.py` le mesure, et il commence par une question
+qui vient avant la précision.
+
+#### La couverture d'abord — mesurée, et elle surprend
+
+**Une espèce absente du catalogue ne se trompe pas : elle ne se propose
+jamais.** Elle est un échec certain pour l'utilisateur, et elle est
+*invisible* dans toute mesure de top-1 — on ne compte pas les erreurs d'une
+classe qui n'existe pas. Il faut donc la compter à part, et cette partie ne
+demande ni carte graphique, ni jeu d'images, ni TensorFlow :
+
+```bash
+cd tools/plant_model && python3 interieur.py --couverture
+```
+
+| | |
+|---|---|
+| noms dans `phase1_species.txt` | 167 |
+| plantes distinctes | **165** — *Calathea* et *Goeppertia orbifolia* sont la même, *Saintpaulia ionantha* et *Streptocarpus ionanthus* aussi |
+| que l'Iris 7 sait nommer | **151** |
+| **couverture** | **92 %** |
+
+Deux de ces 151 ne se trouvent qu'en résolvant les noms, et c'est pour cela
+que l'outil le fait : *Streptocarpus ionanthus* est au catalogue sous
+`saintpaulia-ionantha` (colonne `synonyms` de `plants.csv`), et *Citrus
+limon* sous `citrus-x-limon` — le × que la liste ne met pas. Les compter
+absentes aurait été une erreur de lecture, pas une lacune du modèle.
+
+#### Les quatorze plantes que l'application ne peut pas nommer
+
+| | |
+|---|---|
+| *Phalaenopsis amabilis* | l'orchidée la plus vendue d'Europe |
+| *Rhaphidophora tetrasperma* | le « mini-monstera », la plante à la mode |
+| *Alocasia zebrina*, *Alocasia amazonica* | deux Alocasia sur trois du commerce |
+| *Begonia rex* | trois *Begonia* au catalogue, pas celui-là |
+| *Peperomia argyreia* | le pépéromia melon d'eau |
+| *Calathea* (*Goeppertia*) *orbifolia* | le genre est là — `goeppertia-makoyana` — l'espèce non |
+| *Anthurium clarinervium* | `anthurium-andraeanum` est là, pas lui |
+| *Cymbidium hybridum*, *Hippeastrum vittatum*, *Gynura aurantiaca*, *Columnea gloriosa*, *Ravenea rivularis*, *Pachyphytum oviferum* | genre entièrement absent |
+
+Ce ne sont pas des espèces rares : ce sont des plantes de supermarché. Six
+d'entre elles ont un genre déjà au catalogue — les deux *Alocasia*, le
+*Begonia*, l'*Anthurium*, le *Peperomia*, le *Calathea* —, ce qui veut dire
+que le modèle répondra **une cousine avec assurance** plutôt que rien : le
+cas le plus coûteux du § 6.7, celui de la réponse acceptée qui est fausse.
+
+#### Ce qui reste à mesurer, et qui demande le jeu d'images
+
+```bash
+python3 interieur.py --dataset ../plant_dataset/dataset --model ../../assets/model
+```
+
+Sur les seules images de test de ces 151 espèces, deux lectures :
+
+- **catalogue entier** : les 1 457 sorties restent ouvertes — ce que vit
+  l'utilisateur aujourd'hui ;
+- **catalogue restreint** : les sorties masquées aux seules plantes
+  d'intérieur — ce que rendrait un modèle qui n'aurait appris qu'elles.
+
+L'écart est **le prix de l'étendue** : ce que les 1 306 autres espèces
+coûtent à celui qui n'en photographiera jamais aucune. C'est la question que
+le § 12.11 pose avant de viser 3 000 espèces, et elle n'a pas de réponse
+tant que ce chiffre n'existe pas. La mesure tourne sur le `.tflite` livré,
+pas sur le réseau Keras : elle vérifie au passage ce que `model.json`
+annonce, ce que personne n'avait fait.
+
+#### Ce que ça change dans l'ordre du travail
+
+Quatorze classes manquantes sur les plantes que les gens possèdent, contre
+1 543 espèces à ajouter pour atteindre 3 000. Le second chantier coûte douze
+heures de collecte et deux heures d'entraînement par recette ; le premier
+coûte une collecte de quatorze noms. **Ils ne se valent pas, et le petit
+passe devant** — il ne demande même pas d'attendre la v8, `--min-train`
+mis à part.

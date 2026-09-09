@@ -163,6 +163,23 @@ sortent, qui sont de vrais défauts de collecte. Rend les paires de genres
 responsables et les espèces les plus ratées avec ce qu'on leur répond à la
 place. Voir le § 12.4 de `docs/09`.
 
+## Ce que rend le modèle sur les plantes d'appartement
+
+```bash
+python3 interieur.py --couverture          # sans TensorFlow ni jeu d'images
+python3 interieur.py --dataset ../plant_dataset/dataset --model ../../assets/model
+```
+
+Le top-1 publié est une moyenne sur 1 457 espèces, dont la plupart sont
+sauvages. L'application sert d'abord les 167 noms de `phase1_species.txt`.
+L'outil rend deux choses qui ne se remplacent pas : la **couverture** —
+combien de ces plantes le modèle sait seulement nommer, une classe absente
+étant un échec certain et invisible dans toute mesure de précision — puis le
+**top-1 sur les images de test de ces espèces**, avec le catalogue entier
+puis masqué aux seules plantes d'intérieur. L'écart entre les deux est ce
+que l'étendue du catalogue coûte à celui qui photographie son salon. Voir
+le § 12.12 de `docs/09`.
+
 ## Choisir les seuils de repli
 
 `model.json` contient, pour chaque couple (seuil, marge), le taux de
