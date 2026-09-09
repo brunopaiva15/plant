@@ -76,7 +76,7 @@ l'identique depuis les sources, en parts parallèles.
 ```bash
 cd ~/plant/tools/plant_dataset
 pip install -r requirements.txt
-python3 -m pytest -q            # 91 tests, sans réseau
+python3 -m pytest -q            # 95 tests, sans réseau
 
 mkdir -p dataset
 cp cache/*.json dataset/        # heures de résolution de noms déjà faites
@@ -102,10 +102,51 @@ for i in 0 1 2 3; do
     --target-per-species 200 --allow-sa \
     --captive-file phase1_species.txt --captive-share 0.5 \
     --captive-place 97391 --place-share 0.25 \
-    --workers 8 --gbif-pause 0.6 --inat-pause 2.0 > shard$i.log 2>&1 &
+    --workers 8 --gbif-pause 0.8 --inat-pause 4.0 > shard$i.log 2>&1 &
 done
 wait
 ```
+
+> **Les pauses se divisent par le nombre de parts.** `--inat-pause` est
+> l'attente d'**une** part entre deux requêtes ; quatre parts en parallèle
+> font quatre fois plus de trafic. iNaturalist demande de rester sous
+> 60 requêtes par minute : c'est 4 s de pause à quatre parts, 3 s à trois,
+> 1 s tout seul. En dessous, la source répond 429, les six essais s'épuisent
+> et l'espèce part en `ÉCHEC` — sans casse, mais il faut la reprendre. Une
+> collecte saine finit à quelques échecs sur 1 558 ; à plusieurs dizaines
+> par part, c'est le débit qu'il faut relâcher, pas la reprise qu'il faut
+> répéter.
+
+### Rattraper les espèces tombées
+
+Une source qui tombe fait sauter **une** espèce, pas la collecte : elle
+part en `ÉCHEC` dans le journal et la suivante démarre. Il faut donc
+repasser derrière, avant la fusion :
+
+```bash
+python3 failed_species.py --write retry shard0.log shard1.log shard2.log shard3.log
+```
+
+Le décompte par motif dit quoi faire. `HTTPError` en masse, ce sont des 429 :
+reprendre à une seule part, sans concurrence, suffit. La reprise réécrit
+chaque espèce dans **sa** part d'origine — une espèce éclatée entre deux
+dossiers serait comptée deux fois à la fusion :
+
+```bash
+for i in 0 1 2 3; do
+  [ -s retry$i.txt ] && python3 build_dataset.py --plants plants.csv --out shard$i \
+    --only-file retry$i.txt --target-per-species 200 --allow-sa \
+    --captive-file phase1_species.txt --captive-share 0.5 \
+    --captive-place 97391 --place-share 0.25 \
+    --workers 8 --gbif-pause 1.0 --inat-pause 1.5 >> shard$i.log 2>&1
+done
+python3 failed_species.py --why shard*.log     # doit être proche de zéro
+```
+
+C'est séquentiel — une part après l'autre — et c'est voulu : deux cents
+espèces seules ne pèsent rien, quelques minutes suffisent, et on ne
+reproduit pas la cause. Ce qui reste après deux passes est probablement une
+espèce qu'aucune source ne connaît ; le jeu s'en passe.
 
 Puis la passe « en pot » sur les 167 plantes d'intérieur, qui ajoute par
 **dessus** la cible les photos de plantes cultivées — celles qui décrivent
@@ -118,7 +159,7 @@ for i in 0 1 2 3; do
     --target-per-species 300 --allow-sa \
     --captive-file phase1_species.txt --captive-share 0.5 \
     --captive-place 97391 --place-share 0.25 \
-    --workers 8 --gbif-pause 0.6 --inat-pause 2.0 > pot$i.log 2>&1 &
+    --workers 8 --gbif-pause 0.8 --inat-pause 4.0 > pot$i.log 2>&1 &
 done
 wait
 ```
@@ -138,10 +179,6 @@ bougent d'un jour à l'autre) :
 ```
 290 000 ± images gardées ; 1 500 ± espèces
 ```
-
-Une coupure réseau saute une espèce et l'écrit `ÉCHEC` dans le journal ;
-`grep ÉCHEC shard*.log` les liste, et les relancer avec
-`--only "Nom scientifique"` les rattrape en quelques secondes.
 
 ## 4. Refaire la v6 à l'identique (~1 h 30)
 
