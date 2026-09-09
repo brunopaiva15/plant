@@ -102,6 +102,7 @@ résolution de noms déjà faites.
 |---|---|---|
 | `--batch` | 32 | |
 | `--backbone` | `small` | `small` (MobileNetV3-Small, v1 à v3) ou `large` (v4 : trois fois plus de calcul, mieux sur les espèces proches) |
+| `--input-size` | 224 | côté de l'entrée du réseau ; le chargement suit à la même marge de recadrage. 320 double le calcul sur le téléphone sans changer la taille du `.tflite` — les poids ne dépendent pas de la résolution |
 | `--head-epochs` | 4 | époques avec le réseau gelé |
 | `--fine-epochs` | 12 | époques de réglage fin, arrêt anticipé sur la validation |
 | `--min-train` | 25 | une classe sous ce seuil est écartée du modèle |

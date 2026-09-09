@@ -63,6 +63,30 @@ LOAD_SIZE = 256    # on garde un peu de marge autour de 224 pour le recadrage
 SOURCE_SIZE = 448  # taille de stockage du jeu (plant_dataset/images.py, MAX_SIDE)
 
 
+def set_input_size(px: int) -> None:
+    """Change la taille d'entrée du réseau, et le chargement avec.
+
+    `LOAD_SIZE` garde sa marge de recadrage — 256 pour 224, soit un huitième.
+    Changer l'un sans l'autre est le piège de cette option : le réseau
+    apprendrait sur un cadrage que `model.json` n'annonce pas, l'application
+    lui donnerait autre chose que ce qu'il a vu, et l'écart se paierait en
+    points sans qu'on sache d'où il vient — c'est exactement ce qui avait
+    coûté 4,4 points à la v1 (§ 6.7 de docs/09).
+
+    Au-delà de `SOURCE_SIZE`, on demanderait au jeu plus de pixels qu'il n'en
+    a été stocké : l'agrandissement ne créerait pas de détail, il ferait
+    seulement croire qu'on en a.
+    """
+    global IMAGE_SIZE, LOAD_SIZE
+    load = round(px * LOAD_SIZE / IMAGE_SIZE)
+    if px < 32:
+        raise SystemExit(f'--input-size {px} : trop petit')
+    if load > SOURCE_SIZE:
+        raise SystemExit(f'--input-size {px} demande un chargement à {load} px, '
+                         f'au-delà des {SOURCE_SIZE} px auxquels le jeu est stocké')
+    IMAGE_SIZE, LOAD_SIZE = px, load
+
+
 def load_all(usable: list[tuple[str, int]]) -> tuple[np.ndarray, np.ndarray]:
     """Décode une fois pour toutes en mémoire, en 256×256 uint8.
 
@@ -542,6 +566,10 @@ def main() -> int:
     ap.add_argument('--fine-lr', type=float, default=5e-5, help='taux d\'apprentissage du réglage fin')
     ap.add_argument('--version', default='1')
     ap.add_argument('--backbone', choices=sorted(BACKBONES), default='small', help='MobileNetV3 small (v1 à v3) ou large')
+    ap.add_argument('--input-size', type=int, default=IMAGE_SIZE,
+                    help="côté de l'entrée du réseau, en pixels ; le chargement suit à la même "
+                         'marge de recadrage. 320 est le levier classique de la reconnaissance fine, '
+                         "au prix d'une inférence deux fois plus lourde sur le téléphone")
     ap.add_argument('--ram-budget', type=float, default=5.0, help='Go de préchargement au plus ; au-delà, lecture depuis les fichiers')
     ap.add_argument('--steps-per-epoch', type=int, help='lots par époque ; une époque courte = des points de sauvegarde fréquents')
     ap.add_argument('--val-max', type=int, default=6000, help='images de validation pendant l\'entraînement ; l\'évaluation finale reste complète')
@@ -549,6 +577,10 @@ def main() -> int:
     ap.add_argument('--feature-cache', help='dossier où garder les activations du réseau gelé ; la phase de tête devient une passe avant au lieu de N époques')
     ap.add_argument('--mixed-precision', action='store_true', help='calcul en float16 : double le débit sur une carte à cœurs tensor, inutile sur processeur')
     args = ap.parse_args()
+    # Avant toute lecture du jeu ou construction du réseau : tout le reste du
+    # fichier lit ces constantes au moment de s'en servir.
+    if args.input_size != IMAGE_SIZE:
+        set_input_size(args.input_size)
 
     print(describe_devices(), flush=True)
     if args.mixed_precision:

@@ -3,6 +3,11 @@
 > Procédure suivie de bout en bout, de Windows nu au `.tflite` livré.
 > Machine de référence : Windows + RTX 2070 Super (8 Go) + i7-9700K (8 cœurs).
 > Compter **une demi-journée** la première fois, dont l'essentiel en attente.
+>
+> Sur une machine **louée** — Debian nu, carte de centre de calcul, disques à
+> monter soi-même — les commandes ci-dessous restent valables, mais
+> l'installation et le dimensionnement diffèrent :
+> [`11-entrainer-sur-une-vm.md`](11-entrainer-sur-une-vm.md).
 
 Iris 6 — la sixième version du modèle embarqué, celle que l'application
 livre aujourd'hui — a été entraînée sur quatre cœurs sans carte graphique :
@@ -76,7 +81,7 @@ l'identique depuis les sources, en parts parallèles.
 ```bash
 cd ~/plant/tools/plant_dataset
 pip install -r requirements.txt
-python3 -m pytest -q            # 98 tests, sans réseau
+python3 -m pytest -q            # 105 tests, sans réseau
 
 mkdir -p dataset
 cp cache/*.json dataset/        # heures de résolution de noms déjà faites
@@ -166,10 +171,18 @@ for i in 0 1 2 3; do
     --only-file retry$i.txt --target-per-species 200 --allow-sa \
     --captive-file phase1_species.txt --captive-share 0.5 \
     --captive-place 97391 --place-share 0.25 \
-    --workers 8 --gbif-pause 1.0 --inat-pause 1.5 >> shard$i.log 2>&1
+    --workers 8 --gbif-pause 1.0 --inat-pause 1.5 > retry$i.log 2>&1
 done
-python3 failed_species.py --why shard*.log     # doit être proche de zéro
+python3 failed_species.py --why retry*.log     # doit être proche de zéro
 ```
+
+> **La reprise écrit dans son propre journal, et ce n'est pas un détail.**
+> `failed_species.py` retient toute espèce ayant une ligne `ÉCHEC`, sans
+> savoir qu'une passe ultérieure l'a rattrapée. Ajoutée à la suite du journal
+> de la passe principale (`>>`), la reprise laisserait donc le décompte
+> inchangé — 342 échecs avant, 342 après, alors que la quasi-totalité a été
+> reprise. Un journal par passe, et le chiffre veut de nouveau dire quelque
+> chose.
 
 C'est séquentiel — une part après l'autre — et c'est voulu : deux cents
 espèces seules ne pèsent rien, quelques minutes suffisent, et on ne
@@ -271,7 +284,7 @@ Une recette à la fois, sinon on ne saura pas ce qui a agi.
 |---|---|---|---|
 | 1 | `--dropout 0.5`, augmentations plus fortes | 1 h | resserrer l'écart de dix-huit points |
 | 2 | `--unfreeze 100` ou `--fine-lr 2e-5` | 1 h | trouver le bon dosage de réglage fin |
-| 3 | Entrée à 320 px — **demande une petite modification** : `IMAGE_SIZE` et `LOAD_SIZE` sont des constantes de `train.py`, pas des options | 2 h | le levier classique de la reconnaissance fine |
+| 3 | Entrée à 320 px : `--input-size 320` | 2 h | le levier classique de la reconnaissance fine, au prix d'une inférence deux fois plus lourde sur le téléphone |
 | 4 | Pré-entraînement PlantNet-300K | ½ journée | voir ci-dessous |
 
 **PlantNet-300K, ce qu'il faut savoir avant de s'y engager.** Les poids

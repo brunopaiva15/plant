@@ -10,11 +10,11 @@ import 'plant_identifier.dart';
 /// - un softmax n'est pas calibré. [FallbackPolicy] documente qu'un premier
 ///   candidat au seuil d'acceptation est juste dans 83 % des cas ; le score
 ///   affiché tel quel n'est donc pas « 60 % de chances d'avoir raison » ;
-/// - le modèle embarqué répartit sa masse sur 1 445 espèces et Pl@ntNet sur
+/// - le modèle embarqué répartit sa masse sur 1 457 espèces et Pl@ntNet sur
 ///   des dizaines de milliers. À confiance réelle égale, le premier sort des
 ///   scores structurellement plus hauts. Les afficher dans la même colonne
 ///   invitait à une comparaison qui n'a pas de sens. C'est la même raison qui
-///   a fait remesurer le seuil en passant de 894 à 1 445 espèces : un score
+///   a fait remesurer le seuil à chaque version : un score
 ///   ne veut rien dire hors du modèle qui l'a produit.
 ///
 /// Les mots restent ceux du diagnostic. Une seule échelle de vraisemblance

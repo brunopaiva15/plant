@@ -35,6 +35,7 @@ aconitum-variegatum
 acorus-calamus
 actaea-spicata
 actinidia-chinensis
+actinidia-deliciosa
 adansonia-digitata
 adenium-obesum
 adiantum-capillus-veneris
@@ -96,7 +97,6 @@ anacardium-occidentale
 ananas-comosus
 anemonastrum-narcissiflorum
 anemone-coronaria
-anemone-nemorosa
 anemonoides-blanda
 anemonoides-nemorosa
 anemonoides-sylvestris
@@ -155,6 +155,7 @@ astianthus-viminalis
 astrantia-major
 astrophytum-myriostigma
 atriplex-hortensis
+atriplex-rosea
 atropa-bella-donna
 aubrieta-deltoidea
 aucuba-japonica
@@ -213,6 +214,7 @@ calendula-officinalis
 callianthe-megapotamica
 callicarpa-dichotoma
 callisia-repens
+callistemon-citrinus
 callistephus-chinensis
 callitriche-stagnalis
 calluna-vulgaris
@@ -304,7 +306,6 @@ chenopodium-album
 chenopodium-opulifolium
 chenopodium-polyspermum
 chenopodium-quinoa
-chenopodium-strictum
 chimonanthus-praecox
 chloris-chloris
 chlorophytum-comosum
@@ -328,11 +329,11 @@ citrus-hystrix
 citrus-japonica
 citrus-maxima
 citrus-medica
+citrus-myrtifolia
 citrus-trifoliata
 citrus-x-aurantifolia
 citrus-x-aurantium
 citrus-x-bergamia
-citrus-x-clementina
 citrus-x-limon
 cladium-mariscus
 clematis-armandi
@@ -352,6 +353,7 @@ coleus-neochilus
 coleus-scutellarioides
 colocasia-esculenta
 colutea-arborescens
+commiphora-wightii
 convallaria-majalis
 convolvulus-arvensis
 convolvulus-tricolor
@@ -408,6 +410,7 @@ cucumis-sativus
 cucurbita-maxima
 cucurbita-moschata
 cucurbita-pepo
+cupressus-macrocarpa
 cupressus-sempervirens
 cupressus-x-leylandii
 curcuma-longa
@@ -547,6 +550,7 @@ euphorbia-epithymoides
 euphorbia-ingens
 euphorbia-lactea
 euphorbia-lathyris
+euphorbia-leuconeura
 euphorbia-marginata
 euphorbia-milii
 euphorbia-myrsinites
@@ -624,6 +628,7 @@ gerbera-jamesonii
 geum-coccineum
 ginkgo-biloba
 gladiolus-x-hortulanus
+glaucidium-palmarum
 glaucium-flavum
 glebionis-coronaria
 glechoma-hederacea
@@ -649,6 +654,7 @@ gymnocalycium-mihanovichii
 hamamelis-mollis
 hamamelis-virginiana
 hamamelis-x-intermedia
+harpagophytum-procumbens
 hatiora-salicornioides
 haworthiopsis-attenuata
 hedera-helix
@@ -679,6 +685,7 @@ hibiscus-cannabinus
 hibiscus-rosa-sinensis
 hibiscus-sabdariffa
 hibiscus-syriacus
+hieracium-aurantiacum
 himantoglossum-adriaticum
 himantoglossum-hircinum
 hippocrepis-comosa
@@ -690,7 +697,9 @@ hordeum-vulgare
 hosta-plantaginea
 hosta-sieboldii
 hovenia-dulcis
+howea-forsteriana
 hoya-carnosa
+hoya-kerrii
 humulus-lupulus
 hyacinthoides-hispanica
 hyacinthus-orientalis
@@ -700,6 +709,7 @@ hydrangea-paniculata
 hydrangea-petiolaris
 hydrangea-quercifolia
 hylotelephium-spectabile
+hylotelephium-telephium
 hyoscyamus-niger
 hypericum-androsaemum
 hypericum-calycinum
@@ -826,6 +836,7 @@ lonicera-ligustrina
 lonicera-periclymenum
 lonicera-tatarica
 lonicera-xylosteum
+lophira-alata
 loropetalum-chinense
 lotus-corniculatus
 lunaria-annua
@@ -864,7 +875,6 @@ matthiola-incana
 matthiola-longipetala
 medicago-sativa
 medinilla-magnifica
-melaleuca-citrina
 melaleuca-quinquenervia
 melaleuca-viminalis
 melia-azedarach
@@ -900,6 +910,7 @@ narcissus-pseudonarcissus
 narcissus-tazetta
 nasturtium-officinale
 nelumbo-nucifera
+nematanthus-gregarius
 neotinea-tridentata
 neottia-nidus-avis
 neottia-ovata
@@ -970,6 +981,7 @@ pelargonium-x-citrosum
 pelargonium-x-hortorum
 pelargonium-x-hybridum
 pelargonium-zonale
+peperomia-caperata
 peperomia-obtusifolia
 persea-americana
 persicaria-lapathifolia
@@ -1260,6 +1272,7 @@ silene-chalcedonica
 silene-coronaria
 silene-dioica
 silybum-marianum
+sinningia-speciosa
 sisymbrium-officinale
 skimmia-japonica
 smilax-aspera
@@ -1279,7 +1292,6 @@ sonchus-asper
 sonchus-oleraceus
 sorbaria-sorbifolia
 sorbus-aucuparia
-sorbus-domestica
 sorbus-torminalis
 sorghum-bicolor
 sparganium-erectum
@@ -1324,12 +1336,12 @@ syringa-josikaea
 syringa-meyeri
 syringa-vulgaris
 tagetes-erecta
-tagetes-patula
 tamarindus-indica
 tamarix-chinensis
 tamarix-gallica
 tamarix-parviflora
 tamarix-ramosissima
+tanacetum-balsamita
 tanacetum-parthenium
 tanacetum-vulgare
 taraxacum-officinale

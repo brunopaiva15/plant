@@ -20,6 +20,7 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/08-sync-and-collaboration.md](docs/08-sync-and-collaboration.md) | Synchronisation, comptes, collaboration (Supabase) |
 | [docs/09-plant-recognition.md](docs/09-plant-recognition.md) | Reconnaissance de plantes : Iris, le modèle embarqué, jeu de données, repli Pl@ntNet |
 | [docs/10-entrainer-sur-son-poste.md](docs/10-entrainer-sur-son-poste.md) | Entraîner le modèle chez soi, de Windows nu au `.tflite` livré |
+| [docs/11-entrainer-sur-une-vm.md](docs/11-entrainer-sur-une-vm.md) | Entraîner sur une VM Debian louée : pilote, disques, ce qui change d'une machine personnelle |
 
 ## Démarrer
 ```bash
