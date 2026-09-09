@@ -768,7 +768,7 @@ Trois hybrides horticoles n'ont aucune image, faute de nom reconnu par
 GBIF : Hylotelephium × mottramianum, Salvia × floriferior et
 Amelanchier × spicata.
 
-### 6.6 Résultats du modèle v1
+### 6.7 Résultats du modèle v1
 
 | | |
 |---|---|
@@ -797,7 +797,7 @@ Deux enseignements de cet entraînement, tous deux corrigés :
    La recette est maintenant écrite dans `model.json` (`input_size`,
    `load_size`) et lue par l'application, plutôt que codée des deux côtés.
 
-### 6.7 Recette
+### 6.8 Recette
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
@@ -961,18 +961,184 @@ cd tools/plant_dataset && python3 -m pytest -q      # 98 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
-## 12. Reste à faire, dans l'ordre
+## 12. La v7 : ce qu'il reste à faire, dans l'ordre
 
-1. Pré-entraînement PlantNet-300K (§ 4.6, option a), jamais essayé. Vérifier
-   d'abord s'il existe un poids MobileNet publié — sans quoi c'est une
-   seconde passe complète — et le recouvrement d'espèces, qui a beaucoup
-   augmenté avec les 530 plantes de jardin de la v6.
-2. Régularisation : à la douzième époque, l'entraînement est à 70,5 % et la
-   validation à 52,2 %. Dix-huit points d'écart, c'est elle qui limite, pas
-   le nombre d'époques.
-3. Trois hybrides horticoles sans image, à résoudre par `synonyms.txt`.
-4. Photos de plantes en pot dans des intérieurs : c'est ce qui manque encore
-   au ficus ginseng, et les licences libres en offrent peu (§ 6.5). Le
-   connecteur Wikimedia Commons (§ 4.4) est écrit pour ça mais n'a pas
-   encore servi à une collecte complète — reste à mesurer ce qu'il ajoute
-   réellement, espèce par espèce, avant de le mettre dans la recette.
+La carte graphique change l'économie de cette liste. Une passe à l'heure au
+lieu de dix ([`10-entrainer-sur-son-poste.md`](10-entrainer-sur-son-poste.md))
+permet d'essayer **un changement à la fois** au lieu d'une recette par nuit,
+et c'est la seule façon de savoir ce qui a agi.
+
+Deux chiffres de la v6 cadrent le reste (§ 6.6) : le sur-apprentissage
+limite, pas les époques — 70,5 % à l'entraînement contre 52,2 % en validation
+à la douzième époque ; et le gain le plus rentable de toute la version n'a
+demandé **aucun entraînement** — deux photos valent 13,9 points de top-1,
+contre 8,7 points pour dix heures de calcul et 160 000 images de plus.
+
+L'ordre ci-dessous suit le rapport entre ce que l'utilisateur y gagne et ce
+que ça coûte. Les trois premiers points changent ce qu'il voit ; les suivants
+font bouger les chiffres.
+
+### 12.1 Les 113 espèces collectées que le modèle ne nomme pas
+
+Ni collecte, ni entraînement supplémentaire : ces espèces sont déjà dans le
+jeu.
+
+| | |
+|---|---|
+| Plantes au catalogue de collecte | 1 558 |
+| Avec au moins une image | 1 509 |
+| **Classes dans `labels.txt`** | **1 445** |
+
+Quarante-neuf n'ont aucune image — noms horticoles qu'aucune source ne
+reconnaît (§ 6.5, § 6.6). Mais **soixante-quatre en ont et sont pourtant
+écartées**, par `--min-train 25` ou `--min-val 3`.
+
+Ce ne sont pas des espèces quelconques. Croisées avec `phase1_species.txt` —
+les 167 plantes d'intérieur et succulentes du catalogue trié, celles pour
+lesquelles l'application existe — **vingt-deux manquent au modèle** :
+
+> *Phalaenopsis amabilis*, *Howea forsteriana*, *Rhaphidophora tetrasperma*,
+> *Hoya kerrii*, *Peperomia caperata*, *Peperomia argyreia*, *Alocasia
+> zebrina*, *Alocasia amazonica*, *Anthurium clarinervium*, *Calathea
+> orbifolia*, *Goeppertia orbifolia*, *Begonia rex*, *Hippeastrum vittatum*,
+> *Sinningia speciosa*, *Cymbidium hybridum*, *Columnea gloriosa*,
+> *Nematanthus gregarius*, *Ravenea rivularis*, *Gynura aurantiaca*,
+> *Pachyphytum oviferum*, *Streptocarpus ionanthus*, *Citrus limon*.
+
+Le phalaenopsis est l'une des plantes d'appartement les plus répandues, et
+l'application la porte à son catalogue trié sans savoir la reconnaître.
+
+**Une partie de ces exclusions est un défaut de répartition, pas un manque de
+données.** La répartition 80 / 10 / 10 se fait *par groupe d'observation*
+(§ 5) : une espèce dont les photos viennent de peu d'observations peut tomber
+à zéro en validation et se faire écarter alors qu'elle a largement de quoi
+apprendre. Relevé dans `cache/stats.json` — l'état du jeu au 7 septembre,
+avant la dernière passe de reprise, donc à reconfirmer sur le `splits.csv`
+final :
+
+| Espèce | train | val | Sort |
+|---|---|---|---|
+| *Howea forsteriana* (kentia) | 95 | **0** | écartée, absente de `labels.txt` |
+| *Sinningia speciosa* (gloxinia) | 50 | **1** | écartée |
+| *Hoya kerrii* | 32 | **2** | écartée |
+| *Peperomia caperata* | 32 | **2** | écartée |
+
+Le remède est une répartition qui **garantit un groupe en validation et un en
+test** pour chaque espèce qui a de quoi en donner — quitte à prendre le
+deuxième groupe le plus petit — et qui, pour celles qui n'ont vraiment qu'un
+seul groupe, garde la classe en renonçant à sa métrique plutôt qu'à la classe.
+Une espèce qu'on ne sait pas mesurer vaut mieux qu'une espèce qu'on ne sait
+pas nommer : la cascade a de toute façon un seuil et cinq candidats pour
+absorber son incertitude.
+
+À revoir au passage : `--min-train 25` a été fixé à la v1, sur 78 classes et
+8 825 images. Sur 1 500 espèces, il ne protège plus la même chose.
+
+### 12.2 Wikimedia Commons, pour de vrai
+
+Le connecteur est écrit et testé (§ 4.4), mesuré à **97 % de licences
+utilisables** contre 18 % chez GBIF, et **il n'a jamais servi à une collecte
+complète**. C'est le seul levier qui attaque la cause plutôt que le symptôme :
+GBIF et iNaturalist décrivent des observations de terrain, Commons est
+l'endroit où l'on photographie son monstera dans son salon. C'est exactement
+la distribution qui manque au yucca pris pour du maïs (§ 6.3) et au ficus
+ginseng à 27 % (§ 6.5).
+
+Ce qui reste à faire est de **mesurer ce qu'il ajoute, espèce par espèce**,
+avant de le mettre dans la recette. Une source ne vaut pas par sa taille mais
+par son recouvrement avec le catalogue : le cas Smithsonian Gardens (§ 4.5) a
+coûté dix minutes de mesure et évité d'écrire un connecteur pour sept photos.
+
+### 12.3 La deuxième photo, là où elle n'est pas encore proposée
+
+Le bouton « ajouter une photo » n'apparaît que si la politique hésite
+(`_ambiguous`, dans `identification_sheet.dart` et `create_plant_flow.dart`).
+Une réponse **acceptée** ne le propose donc jamais — or une réponse acceptée
+seule à 0,60 est juste **82,8 %** du temps (§ 6.6). Un sixième des réponses
+affirmées sont fausses et ne se voient jamais offrir le geste qui les
+corrigerait : à deux photos, la justesse passe à 92,3 %.
+
+Élargir le déclencheur ne demande aucun réentraînement. Reste à trancher ce
+qu'on ne veut pas casser : proposer une photo de plus après une bonne réponse
+ajoute un geste à un parcours qui marchait. La piste raisonnable est de la
+proposer sous les candidats, sans l'imposer, plutôt qu'en travers du chemin.
+
+### 12.4 La matrice de confusion par genre
+
+Le § 6.8 la promet ; `evaluate()` dans `train.py` ne produit que top-1, top-3,
+macro-F1 et la courbe de seuil. Sans elle, on sait *combien* le modèle se
+trompe et jamais *sur quoi* — donc rien qui dirige la collecte. Le ficus de
+rue contre le bonsaï, le yucca contre le maïs : ce sont des cas trouvés à la
+main, un par un, sur des photos réelles. Une trentaine de lignes, à écrire
+**avant** les recettes plutôt qu'après.
+
+### 12.5 La régularisation
+
+C'est le défaut mesuré, et la recette n'a presque rien pour le combattre.
+Aujourd'hui : recadrage aléatoire, miroir, luminosité, saturation, gigue de
+résolution ; `--dropout 0.3` ; Adam à taux constant ; entropie croisée nue.
+
+| Levier | Aujourd'hui | À essayer |
+|---|---|---|
+| Dropout | 0,3 | 0,5 |
+| Augmentation | cinq transformations douces | effacement aléatoire, mixup |
+| Perte | entropie croisée nue | lissage d'étiquettes |
+| Taux d'apprentissage | Adam constant | décroissance cosinus |
+| Poids retenus | les derniers | moyenne mobile (EMA) |
+
+Aucun ne coûte de collecte, tous coûtent une passe — d'où l'importance de
+n'en changer qu'un à la fois.
+
+### 12.6 L'entrée à 320 px
+
+Le levier classique de la reconnaissance fine, et le jeu est stocké en 448 px :
+**pas besoin de recollecter**. Deux réserves. `IMAGE_SIZE` et `LOAD_SIZE` sont
+des constantes de `train.py`, pas des options. Et le `.tflite` grossit, à
+mettre en balance avec la demi-seconde d'inférence sur iPhone (§ 6.4).
+
+### 12.7 La classe « autre » et la calibration
+
+Prévues au § 3.2, jamais faites. Le seul garde-fou actuel contre une photo de
+chat est le plancher à 0,10, la marge y étant documentée comme inactive. La
+classe « autre » demande de collecter des non-plantes ; la calibration de
+température, elle, ne demande que le jeu de validation — et rendrait au score
+affiché le sens que `identification_confidence.dart` lui refuse aujourd'hui,
+à juste titre.
+
+### 12.8 PlantNet-300K
+
+Il ouvrait cette liste ; il descend ici pour la raison que le § 4.6 énonce
+lui-même : les poids publiés sont des **ResNet18 PyTorch**, rien de
+réutilisable pour un MobileNetV3 TensorFlow, donc une passe complète de plus,
+sur 306 000 images et 32 Go à télécharger.
+
+Le geste à dix minutes reste de **mesurer le recouvrement** entre leurs
+1 081 espèces (`plantnet300K_species_id_2_name.json`) et nos 1 445 classes. Il
+a beaucoup augmenté avec les 530 plantes de jardin de la v6. S'il est fort, le
+geste utile n'est pas de pré-entraîner mais d'**ajouter leurs images aux
+nôtres** pour les espèces communes : même bénéfice, aucune passe
+supplémentaire.
+
+### 12.9 Les hybrides sans image
+
+Trois hybrides horticoles n'ont aucune image faute de nom reconnu par GBIF :
+*Hylotelephium × mottramianum*, *Salvia × floriferior*, *Amelanchier ×
+spicata*. À résoudre par `synonyms.txt`, comme les trois de la v5 (§ 6.5).
+
+### 12.10 Comment on saura que la v7 vaut mieux
+
+**Pas au top-1 de `model.json`.** Deux versions n'y sont pas mesurées sur le
+même jeu de test, et le § 6.6 le montre : la v6 y « gagne » 0,3 point sur un
+test plus dur, alors qu'à armes égales elle en gagne 8,7.
+
+Ce qui décide :
+
+1. `compare_models.py` entre Iris 6 et la v7, sur les classes communes et les
+   mêmes images ;
+2. le même calcul restreint aux **plantes cultivées**, la seule population qui
+   ressemble aux photos des utilisateurs ;
+3. la **justesse quand le modèle répond seul** — 77,7 % → 88,9 % de la v5 à la
+   v6. C'est le chiffre que l'utilisateur ressent : moins de mauvaises réponses
+   affirmées, et moins d'appels à Pl@ntNet ;
+4. et, à la livraison, `multi_photo.py` pour remesurer `acceptThreshold` : un
+   seuil ne se transporte pas d'un modèle à l'autre (§ 3.1, § 6.6).
