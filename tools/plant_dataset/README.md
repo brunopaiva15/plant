@@ -15,7 +15,7 @@ Ce fichier ne dit que comment lancer l'outil.
 ```bash
 cd tools/plant_dataset
 python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
-python3 -m pytest -q                          # 105 tests, sans réseau
+python3 -m pytest -q                          # 112 tests, sans réseau
 ```
 
 ## Fichiers
@@ -27,6 +27,7 @@ python3 -m pytest -q                          # 105 tests, sans réseau
 | `enrich_plants.py` | Remplit `gbif_key` et `wikidata_id` (réseau). |
 | `build_dataset.py` | Collecte les images, vérifie, déduplique, répartit, attribue. |
 | `merge_shards.py` | Recolle des collectes menées en parallèle sur des parts disjointes du catalogue. |
+| `plantnet300k.py` | Mesure ce que PlantNet-300K apporterait, sur ses seules métadonnées (66 Mo) : recouvrement d'espèces, licences, cadrage. Voir le § 12.8 de `docs/09`. |
 | `plant_dataset/` | Le paquet : `taxonomy` (noms), `licenses`, `manifest`, `images`, `dedup`, `splits`, `fetchers/gbif`. |
 | `tests/` | Tests unitaires, avec des réponses GBIF réelles enregistrées dans `tests/fixtures/`. |
 | `dataset/` | Sortie. **Ignorée par Git.** |

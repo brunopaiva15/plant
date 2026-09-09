@@ -405,10 +405,10 @@ NeurIPS 2021 Datasets & Benchmarks).
 **Décision : ne pas en faire la base du modèle de l'app.** Trois raisons :
 
 1. **Couverture** : ses 1 081 espèces sont celles de la flore sauvage
-   d'Europe de l'Ouest ; un test sur les 297 plantes du catalogue Auxine
-   (plantes d'intérieur, tropicales, horticoles) reste à faire, mais
-   *Monstera*, *Epipremnum*, *Spathiphyllum* n'y ont aucune raison d'être
-   bien représentés. GBIF nous donne des images de ces plantes précises.
+   d'Europe de l'Ouest. **Mesuré depuis** (§ 12.8) : 108 espèces communes
+   avec nos 1 457 classes, 7,4 %. *Monstera*, *Epipremnum* et *Spathiphyllum*
+   n'y sont effectivement pas ; seize de nos plantes d'appartement s'y
+   trouvent en revanche, et en nombre.
 2. **Poids** : 32 Go et 300 000 images pour un modèle qui doit tenir dans
    quelques Mo sur téléphone et n'apprend qu'une liste choisie d'espèces.
 3. **Distribution** : les photos de terrain (fleurs, feuilles isolées)
@@ -1104,7 +1104,7 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 105 tests
+cd tools/plant_dataset && python3 -m pytest -q      # 112 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
@@ -1324,19 +1324,71 @@ température, elle, ne demande que le jeu de validation — et rendrait au score
 affiché le sens que `identification_confidence.dart` lui refuse aujourd'hui,
 à juste titre.
 
-### 12.8 PlantNet-300K
+### 12.8 PlantNet-300K — mesuré, et ce n'est pas ce qu'on croyait
 
-Il ouvrait cette liste ; il descend ici pour la raison que le § 4.6 énonce
-lui-même : les poids publiés sont des **ResNet18 PyTorch**, rien de
-réutilisable pour un MobileNetV3 TensorFlow, donc une passe complète de plus,
-sur 306 000 images et 32 Go à télécharger.
+La mesure que ce document réclamait depuis deux versions est faite :
+`tools/plant_dataset/plantnet300k.py`, sur les 66 Mo de métadonnées que
+Pl@ntNet publie à part — sans télécharger une seule des 306 000 images.
 
-Le geste à dix minutes reste de **mesurer le recouvrement** entre leurs
-1 081 espèces (`plantnet300K_species_id_2_name.json`) et nos 1 445 classes. Il
-a beaucoup augmenté avec les 530 plantes de jardin de la v6. S'il est fort, le
-geste utile n'est pas de pré-entraîner mais d'**ajouter leurs images aux
-nôtres** pour les espèces communes : même bénéfice, aucune passe
-supplémentaire.
+```bash
+cd tools/plant_dataset && python3 plantnet300k.py
+```
+
+**Le recouvrement d'espèces est faible.** 108 de nos 1 457 classes, soit
+7,4 %, et 68 genres sur nos 814. Leur jeu est profond mais étroit : 1 019
+espèces pour seulement 303 genres, la flore sauvage d'Europe de l'Ouest
+échantillonnée en profondeur. Le nôtre est large : 1 457 espèces sur 814
+genres.
+
+**Mais le volume sur ces 108 espèces est énorme, et les licences sont
+parfaites.**
+
+| | |
+|---|---|
+| Images sur les espèces communes | **181 824** utilisables sur 181 915 — **100 %** |
+| Licence | CC BY-SA presque partout, acceptée depuis le 6 septembre (§ 4.1) |
+| Par espèce | médiane **1 040**, contre ~190 dans notre jeu |
+| Espèces qui gagneraient plus de 100 images | 97 sur 108 |
+
+Et parmi elles, **seize plantes d'appartement de notre catalogue trié**, avec
+de quoi les noyer d'images : *Pelargonium zonale* 3 317, *Anthurium
+andraeanum* 2 801, *Tradescantia pallida* 2 521, *Tradescantia zebrina*
+2 470, *Zamioculcas zamiifolia* 2 164, *Schefflera arboricola* 1 972,
+*Fittonia albivenis* 1 358, *Nephrolepis exaltata* 687, *Sedum morganianum*
+630, *Peperomia caperata* 334…
+
+**Le piège est dans le cadrage.** La répartition par organe :
+
+| organe | images | |
+|---|---|---|
+| `flower` | 105 904 | 58 % |
+| `leaf` | 64 161 | 35 % |
+| `fruit` | 8 283 | 5 % |
+| **`habit`** (la plante entière) | **2 001** | **1,1 %** |
+
+Quatre-vingt-treize pour cent de gros plans. Sur *Zamioculcas zamiifolia*,
+2 164 images et **28** montrant la plante entière. Verser ce jeu tel quel,
+c'est refaire l'erreur du § 6.3 en plus gros : le modèle apprendrait
+magnifiquement à reconnaître une feuille de zamioculcas cadrée serrée, et pas
+la plante posée sur un meuble.
+
+Deuxième piège, arithmétique : ces 108 espèces passeraient de ~190 images à
+plus de mille. Elles pèseraient cinq fois le reste du catalogue, et le
+déséquilibre que `class_weight` corrige aujourd'hui deviendrait structurel.
+
+#### Ce qu'il faut donc en faire
+
+Ni pré-entraîner, ni verser en vrac : **une ingestion plafonnée, et le
+plafond est tout le travail.** Au plus 200 à 300 images par espèce, en
+prenant d'abord les `habit`, puis les `leaf` — dans cet ordre, parce que
+c'est celui de l'utilité décroissante pour nos utilisateurs. Sur les 108
+espèces, cela ferait de l'ordre de 25 000 images bien cadrées et sous
+licence propre, sans déformer la répartition.
+
+Le pré-entraînement, lui, reste ce que le § 4.6 en disait : les poids publiés
+sont des **ResNet18 PyTorch**, rien de réutilisable pour un MobileNetV3
+TensorFlow. Une passe complète de plus sur 306 000 images, pour un bénéfice
+que personne n'a mesuré. À garder pour le jour où le reste sera épuisé.
 
 ### 12.9 Les hybrides sans image
 
