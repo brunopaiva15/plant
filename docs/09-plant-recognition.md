@@ -1277,6 +1277,40 @@ seule. Compter une heure pour les 167 plantes d'intérieur — l'API demande
 une seconde entre deux requêtes, et le connecteur descend d'un niveau dans
 les sous-catégories, là où sont justement les plantes cultivées.
 
+#### Ce qu'un premier échantillon de huit espèces montre déjà
+
+| espèce | Commons | ce que ce document en dit |
+|---|---|---|
+| *Ficus microcarpa* | **299** *(le plafond)* | « le cas d'école », 27 % de top-1 (§ 6.5) |
+| *Monstera deliciosa* | 278 | |
+| *Beaucarnea recurvata* | 221 | 56 % de top-1 |
+| *Yucca gigantea* | 121 | « photos cultivées = arbres de jardin », 52 % |
+| *Zamioculcas zamiifolia* | 102 | 65 % |
+| *Hoya kerrii* | 43 | récupérée de justesse par le § 12.1, 32 images |
+| *Peperomia caperata* | 14 | idem, 32 images |
+| *Rhaphidophora tetrasperma* | 6 | absente d'Iris 6 faute d'images |
+
+La coupure est nette, et elle n'est pas celle qu'on attendait. **Commons est
+riche là où la plante est photographiée depuis des décennies, et pauvre là où
+elle est une mode récente.** Le ficus ginseng, le monstera, le yucca, le
+beaucarnea : cent à trois cents photographies chacun. Le mini-monstera, la
+peperomia caperata, le hoya cœur : six, quatorze, quarante-trois.
+
+Or ce sont deux maladies différentes, et Commons n'en soigne qu'une :
+
+- **le mauvais domaine visuel** — beaucoup d'images, mais toutes de plantes
+  sauvages ou de terrain. C'est le yucca pris pour du maïs, le ficus de rue
+  contre le bonsaï. **Commons soigne exactement ça**, et les espèces
+  concernées sont précisément celles où il est riche.
+- **la rareté** — trop peu d'images, quelle qu'en soit la provenance. Ce sont
+  les treize espèces que le § 12.1 vient de récupérer au bord du seuil.
+  **Commons n'y peut rien** : il en a moins qu'elles n'en ont déjà.
+
+Autrement dit, la passe Commons vaut d'être faite, mais il ne faut pas en
+attendre qu'elle sauve les espèces les plus fragiles. Pour celles-là, il
+faudra autre chose — et le § 12.8 montre que PlantNet-300K, lui, en tient des
+centaines pour certaines.
+
 ### 12.3 La deuxième photo, là où elle n'est pas encore proposée
 
 Le bouton « ajouter une photo » n'apparaît que si la politique hésite
