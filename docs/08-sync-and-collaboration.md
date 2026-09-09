@@ -55,3 +55,31 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`).
 3. Activer les fournisseurs Auth souhaités (Email OTP, Apple, Google) ; ajouter l'URL de redirection `flora://login-callback`.
 4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`.
+
+### Sign in with Apple : deux choses à faire côté Apple
+Le bouton « Continuer avec Apple » n'apparaît qu'avec un backend configuré, et
+il ne fonctionne que si le binaire porte l'entitlement
+`com.apple.developer.applesignin`. Cet entitlement **n'est pas dans le dépôt** :
+tant que la capability n'existe pas sur l'App ID, sa seule présence fait échouer
+la signature avec « Provisioning profile doesn't include the Sign In with Apple
+capability », y compris sur les builds locaux et la CI.
+
+Avant de livrer un build avec Supabase :
+1. Activer **Sign In with Apple** sur l'App ID `ch.vergasta.plant`
+   (developer.apple.com › Certificates, Identifiers & Profiles › Identifiers).
+2. Régénérer le profil de provisioning — sur Codemagic, la récupération des
+   fichiers de signature le refait à la volée une fois la capability activée.
+3. Recréer `ios/Runner/Runner.entitlements` :
+   ```xml
+   <key>com.apple.developer.applesignin</key>
+   <array><string>Default</string></array>
+   ```
+   et le déclarer dans les trois configurations du target `Runner`
+   (`CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;`).
+
+Sans l'étape 1, l'étape 3 casse le build ; sans l'étape 3, `signInWithApple`
+lève à l'exécution. Les deux vont ensemble.
+
+Rappel de la règle 4.8 de l'App Store : proposer Google ou un autre
+fournisseur tiers oblige à proposer Apple aussi. Les trois boutons ne peuvent
+donc pas être livrés à moitié.

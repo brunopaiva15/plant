@@ -84,6 +84,19 @@ class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+  /// Connexion Apple.
+  ///
+  /// Côté iOS, cet appel ne peut aboutir que si le binaire est signé avec
+  /// l'entitlement `com.apple.developer.applesignin`. Il n'est pas dans le
+  /// dépôt, et c'est délibéré : l'ajouter fait échouer la signature tant que
+  /// la capability « Sign In with Apple » n'est pas activée sur l'App ID
+  /// `ch.vergasta.plant` et le profil de provisioning régénéré. Le bouton
+  /// n'apparaît de toute façon qu'avec un backend configuré ([supportsRemote]).
+  ///
+  /// À faire, dans cet ordre, avant de livrer un build avec Supabase :
+  /// activer la capability sur l'App ID, régénérer le profil, puis remettre
+  /// `ios/Runner/Runner.entitlements` et son `CODE_SIGN_ENTITLEMENTS`.
+  /// Voir docs/08-sync-and-collaboration.md.
   @override
   Future<void> signInWithApple() async {
     if (defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.macOS) {
