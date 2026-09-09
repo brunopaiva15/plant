@@ -15,7 +15,7 @@ Ce fichier ne dit que comment lancer l'outil.
 ```bash
 cd tools/plant_dataset
 python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
-python3 -m pytest -q                          # 118 tests, sans réseau
+python3 -m pytest -q                          # 124 tests, sans réseau
 ```
 
 ## Fichiers
@@ -27,6 +27,7 @@ python3 -m pytest -q                          # 118 tests, sans réseau
 | `enrich_plants.py` | Remplit `gbif_key` et `wikidata_id` (réseau). |
 | `build_dataset.py` | Collecte les images, vérifie, déduplique, répartit, attribue. |
 | `merge_shards.py` | Recolle des collectes menées en parallèle sur des parts disjointes du catalogue. |
+| `disponibilite.py` | Combien d'images une espèce a, avant de décider de la collecter. Trie les candidates entre solides, maigres, jamais photographiées et noms non résolus. Voir le § 12.11 de `docs/09`. |
 | `commons_apport.py` | Mesure ce que Wikimedia Commons ajouterait, espèce par espèce, sans télécharger d'image. Voir le § 12.2 de `docs/09`. |
 | `plantnet300k.py` | Mesure ce que PlantNet-300K apporterait, sur ses seules métadonnées (66 Mo) : recouvrement d'espèces, licences, cadrage. Voir le § 12.8 de `docs/09`. |
 | `plant_dataset/` | Le paquet : `taxonomy` (noms), `licenses`, `manifest`, `images`, `dedup`, `splits`, `fetchers/gbif`. |

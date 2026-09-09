@@ -1104,7 +1104,7 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 118 tests
+cd tools/plant_dataset && python3 -m pytest -q      # 124 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
@@ -1526,3 +1526,82 @@ Ce qui décide :
    affirmées, et moins d'appels à Pl@ntNet ;
 4. et, à la livraison, `multi_photo.py` pour remesurer `acceptThreshold` : un
    seuil ne se transporte pas d'un modèle à l'autre (§ 3.1, § 6.6).
+
+### 12.11 Cadrage de la v8 : viser 3 000 espèces
+
+L'objectif est de passer de 1 457 à **3 000 classes**. Ce qui suit est ce
+qu'il faut savoir avant de s'y engager.
+
+#### Ce que ça coûte
+
+| | Iris 7 | à 3 000 |
+|---|---|---|
+| Modèle livré | 8,8 Mo | **≈ 11,8 Mo** — la dorsale ne bouge pas, la tête est un `Dense(960 → N)` |
+| Collecte | ~6 h | **~12 h**, bornée par les API : une machine plus grosse n'y change rien |
+| Jeu | 15 Go, 290 k images | ~30 Go, ~580 k images — compter 90 Go pendant la collecte en parts |
+| Une recette d'entraînement | 25 min | **~2 h** |
+
+#### Le risque, et il a un précédent
+
+**Ajouter des classes a toujours coûté du top-1 ici** : 78 classes en
+rendaient 63,8 %, 542 en rendaient 44,2 % (§ 6.2). Ce n'est pas une fatalité
+— la v6 a ajouté 551 espèces sans perdre — mais elle n'y est arrivée que
+parce que la collecte s'améliorait en même temps.
+
+Or les espèces à ajouter sont **moins photographiées** que les 1 457
+actuelles : c'est mécanique, on descend la courbe de popularité.
+
+#### Ce que la mesure dit déjà
+
+`tools/plant_dataset/disponibilite.py`, sur vingt espèces tirées au hasard du
+catalogue étendu et absentes du catalogue de collecte :
+
+| | |
+|---|---|
+| au-dessus des 25 images de `--min-train` | **8** |
+| entre 1 et 24 — collectées pour rien, écartées du modèle | 5 |
+| connues de GBIF, jamais photographiées | 7 |
+
+**Quarante pour cent.** Un tirage au hasard de 1 543 noms dans les 34 793
+candidates ne donnerait pas 3 000 classes mais environ **2 100**, et 900
+espèces collectées pour rien — douze heures de réseau et du disque pour des
+classes que `train.py` écarterait.
+
+Trois réserves sur ce chiffre, dans les deux sens : l'échantillon est de
+vingt, donc l'incertitude est d'une vingtaine de points ; c'est une **borne
+basse**, GBIF ne filtrant que CC0 et CC BY à la requête et iNaturalist en
+direct n'étant pas interrogé (§ 4.3) ; mais un tirage **au hasard** est le
+pire cas.
+
+#### La conclusion : sélectionner, ne pas tirer
+
+C'est déjà ce que la v6 avait fait sans le nommer — ses 530 ajouts étaient
+« les espèces cultivées les plus observées en Europe ». La liste des
+candidates doit se **générer depuis GBIF par nombre d'observations**, pas se
+tirer du catalogue étendu. `disponibilite.py` devient alors une
+vérification, pas une recherche.
+
+#### Le critère de réussite, à fixer maintenant
+
+Deux conditions, mesurées avec `compare_models.py` (§ 12.10) :
+
+1. **Les 1 457 espèces actuelles ne régressent pas.** Quelqu'un qui
+   photographie son monstera ne doit rien perdre à ce qu'on ait ajouté des
+   orchidées rares.
+2. **Les nouvelles dépassent 45 % de top-1.** En dessous, elles encombrent
+   plus qu'elles ne servent — et le repli Pl@ntNet existe précisément pour la
+   plante inhabituelle.
+
+#### L'ordre du travail
+
+La couverture seule ne rend pas l'application meilleure sur les plantes que
+les gens possèdent ; le domaine visuel, si. Les deux dans la même version,
+mais mesurés séparément :
+
+1. `confusions.py` sur Iris 7 — dix minutes, aucune collecte, et il dira
+   **lesquelles** des espèces actuelles réclament des images (§ 12.4) ;
+2. la liste des candidates, générée par observations et vérifiée par
+   `disponibilite.py` ;
+3. la collecte, avec Commons pour le domaine (§ 12.2) et PlantNet-300K
+   plafonné pour le volume (§ 12.8) ;
+4. les recettes, une à la fois, comme pour la v7.
