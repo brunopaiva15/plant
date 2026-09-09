@@ -49,7 +49,12 @@ class FloraTabBar extends StatelessWidget {
       // Une barre d'argile crème, opaque : la matière de l'app, posée sur le
       // contenu qui défile dessous. Bornée en largeur : sur un iPad en
       // paysage, une pilule de mille points serait ridicule.
+      // `heightFactor: 1` n'est pas un détail : sans lui, le Center s'étire
+      // dans les deux axes. Posé en `bottomNavigationBar`, il prenait toute la
+      // hauteur de l'écran et la pilule se retrouvait centrée au milieu du
+      // contenu. On ne centre que dans la largeur ; la hauteur épouse la barre.
       child: Center(
+        heightFactor: 1,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
           child: MediaQuery.withClampedTextScaling(
