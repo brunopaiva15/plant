@@ -62,6 +62,17 @@ void main() {
         }
       });
 
+      test('la carte du modèle et sa marque tiennent sur le pastel', () {
+        // Une carte de couleur : ce qu'on y écrit ne repose plus sur les
+        // fonds neutres du contrat, d'où la pleine encre. Le libellé des
+        // chiffres est en `sage`, déjà tenu par le test du pastel ci-dessus.
+        _expectAtLeast(c.ink, c.sageSoft, text, 'ink sur sageSoft');
+        // La marque : l'iris posé sur la feuille, le cœur posé dessus. Un
+        // dessin, donc 3:1 suffit.
+        _expectAtLeast(c.onAccent, c.sage, icon, 'l\'iris sur la feuille');
+        _expectAtLeast(c.terracotta, c.onAccent, icon, 'le cœur sur l\'iris');
+      });
+
       test('onAccent se lit sur tous les accents employés comme fond', () {
         // C'est le bouton « Arroser », le héros du matin, le bouton destructif.
         for (final (bg, n) in [(c.sage, 'sage'), (c.terracotta, 'terracotta'), (c.water, 'water'), (c.sun, 'sun'), (c.rose, 'rose'), (c.danger, 'danger')]) {

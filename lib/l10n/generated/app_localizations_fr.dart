@@ -1285,11 +1285,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String modelLoaded(String name, int count) {
-    return '$name : $count espèces';
-  }
-
-  @override
   String modelMissing(String name) {
     return '$name indisponible sur cet appareil';
   }
@@ -1305,6 +1300,29 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String onlineSearchesMonth(int used, int limit) {
     return 'Recherches en ligne ce mois-ci : $used sur $limit.';
+  }
+
+  @override
+  String get irisSection => 'Le modèle embarqué';
+
+  @override
+  String get irisTagline => 'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.';
+
+  @override
+  String get irisSpeciesLabel => 'espèces';
+
+  @override
+  String get irisOfflineValue => 'hors ligne';
+
+  @override
+  String get irisOfflineLabel => 'même en avion';
+
+  @override
+  String get irisTwoPhotosTitle => 'Deux photos valent mieux qu’une';
+
+  @override
+  String irisTwoPhotosBody(String name) {
+    return 'Photographiez la plante entière, puis une feuille de près. Avec deux photos, $name trouve la bonne espèce deux fois sur trois, au lieu d’une fois sur deux.';
   }
 
   @override
