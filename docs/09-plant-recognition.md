@@ -1054,8 +1054,45 @@ La finalisation dit ensuite ce qui reste : « *N* espèce(s) sans validation,
 donc absentes du modèle ». Ce qui figure encore dans cette ligne manque de
 photos, pas d'un tirage.
 
+#### Ce qu'il faut passer avec, sinon il ne sert à rien
+
+La réparation donne un **groupe** de validation, c'est-à-dire souvent une
+seule photo. Or `train.py` compte en **images** : `--min-val 3` par défaut.
+Une espèce réparée reste donc écartée si on ne descend pas ce seuil. **Il
+faut entraîner avec `--min-val 1`** pour que le correctif produise quoi que
+ce soit. Une classe mesurée sur une ou deux images n'a pas de métrique
+per-espèce crédible, mais la validation globale qui pilote l'arrêt anticipé
+porte sur ~29 000 images : quelques espèces à une photo n'y pèsent rien, et
+la classe existe — ce qui était le but.
+
+#### Ce que ça a donné, mesuré
+
+Sur une collecte refaite le 9 septembre 2026 (1 507 espèces avec des
+images), le compte des classes entraînables :
+
+| | classes |
+|---|---|
+| `--min-val 3` (avant, et après réparation) | 1 444 |
+| `--min-val 2` | 1 448 |
+| **`--min-val 1`** | **1 457** |
+
+**Treize classes récupérées**, pas soixante. Le reste des 63 exclusions —
+cinquante espèces — tombe sous `--min-train 25` : elles manquent d'images
+d'entraînement, et aucune répartition n'y changera rien. Le défaut de tirage
+était donc réel mais minoritaire ; l'estimation initiale venait d'un
+instantané de collecte à mi-parcours, où beaucoup d'espèces étaient encore
+sous-collectées.
+
+Les treize, en revanche, sont bien celles qu'on visait — cinq plantes
+d'appartement : *Hoya kerrii* (32 images d'entraînement), *Peperomia
+caperata* (32), *Sinningia speciosa* (49), *Nematanthus gregarius* (42),
+*Euphorbia leuconeura* (30). Et le cas d'école, *Hylotelephium telephium* :
+**162 images d'entraînement, une seule en validation**.
+
 À revoir au passage : `--min-train 25` a été fixé à la v1, sur 78 classes et
-8 825 images. Sur 1 500 espèces, il ne protège plus la même chose.
+8 825 images. Sur 1 500 espèces, il ne protège plus la même chose — et c'est
+désormais lui, pas la répartition, qui tient les cinquante espèces
+restantes.
 
 ### 12.2 Wikimedia Commons, pour de vrai
 

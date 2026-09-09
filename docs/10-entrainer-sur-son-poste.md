@@ -171,10 +171,18 @@ for i in 0 1 2 3; do
     --only-file retry$i.txt --target-per-species 200 --allow-sa \
     --captive-file phase1_species.txt --captive-share 0.5 \
     --captive-place 97391 --place-share 0.25 \
-    --workers 8 --gbif-pause 1.0 --inat-pause 1.5 >> shard$i.log 2>&1
+    --workers 8 --gbif-pause 1.0 --inat-pause 1.5 > retry$i.log 2>&1
 done
-python3 failed_species.py --why shard*.log     # doit être proche de zéro
+python3 failed_species.py --why retry*.log     # doit être proche de zéro
 ```
+
+> **La reprise écrit dans son propre journal, et ce n'est pas un détail.**
+> `failed_species.py` retient toute espèce ayant une ligne `ÉCHEC`, sans
+> savoir qu'une passe ultérieure l'a rattrapée. Ajoutée à la suite du journal
+> de la passe principale (`>>`), la reprise laisserait donc le décompte
+> inchangé — 342 échecs avant, 342 après, alors que la quasi-totalité a été
+> reprise. Un journal par passe, et le chiffre veut de nouveau dire quelque
+> chose.
 
 C'est séquentiel — une part après l'autre — et c'est voulu : deux cents
 espèces seules ne pèsent rien, quelques minutes suffisent, et on ne
