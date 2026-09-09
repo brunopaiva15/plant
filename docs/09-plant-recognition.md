@@ -904,10 +904,36 @@ Le seul prix à la livraison est **l'inférence sur le téléphone** :
 (320/224)² ≈ 2, donc de l'ordre d'une seconde au lieu d'une demi-seconde. Le
 `.tflite` ne bouge pas — 8,8 Mo — parce que MobileNetV3 est entièrement
 convolutif et que sa tête part d'une moyenne globale : le nombre de poids ne
-dépend pas de la résolution d'entrée. Et l'application n'a pas eu besoin
-d'une ligne de code : `tflite_plant_model.dart` lit `input_size`,
-`load_size` et `source_size` dans `model.json`, avec 224 / 256 / 448
-seulement comme valeurs par défaut.
+dépend pas de la résolution d'entrée. Et le modèle a pu être livré sans
+toucher au code : `tflite_plant_model.dart` lit `input_size`, `load_size` et
+`source_size` dans `model.json`, avec 224 / 256 / 448 seulement comme
+valeurs par défaut.
+
+**Cette seconde-là n'était pas une attente, c'était un gel.** La première
+version de ce paragraphe comparait deux latences ; il fallait comparer deux
+blocages. `classify()` appelait `interpreter.run()` sur l'isolat principal :
+pendant tout le calcul, l'application ne redessinait plus, ne répondait plus
+au doigt, et la cascade enchaînant les photos une par une, trois photos
+faisaient trois secondes d'écran mort — que l'utilisateur lit comme une
+panne, pas comme un calcul. Ça ne renverse pas l'arbitrage des 320 px,
+parce que le correctif est indépendant et qu'il ne coûte aucun point :
+
+- **l'inférence est partie dans un isolat.** `tflite_flutter` 0.12.1, déjà
+  épinglé, fournit `IsolateInterpreter` : le calcul tourne à côté,
+  l'interface reste vivante. Une file d'un seul rang le protège, parce que
+  cet isolat, rappelé pendant qu'il travaille, rend la main **sans rien
+  exécuter** — l'appelant lirait alors un vecteur de zéros, une réponse
+  fausse plutôt qu'une erreur ;
+- **l'entrée est passée à plat.** Les listes imbriquées coûtaient 102 400
+  listes et 307 200 nombres emballés, recopiés un par un au retour de
+  l'isolat de décodage, puis reconvertis élément par élément vers le tenseur
+  natif. Un `Float32List` traverse en un bloc ; et donné à TFLite sous sa
+  vue en octets — le seul type qu'il recopie tel quel — il devient un memcpy
+  d'un mégaoctet au lieu de 307 200 conversions.
+
+Le gel, lui, ne se mesure pas au banc : il se voit sur un téléphone. Ce qui
+reste à vérifier sur l'appareil, c'est l'inférence elle-même à 320 px, la
+demi-seconde du § 6.4 n'ayant jamais été remesurée depuis.
 
 ### 6.8 Résultats du modèle v1
 
@@ -1390,6 +1416,11 @@ donc la demi-seconde d'inférence mesurée au § 6.4 passerait à une seconde.
 C'est le seul arbitrage : 320 px ne vaut le coup que s'il rapporte assez de
 points pour justifier une attente deux fois plus longue devant l'écran
 d'identification.
+
+Ce raisonnement, tenu avant l'entraînement, comparait deux attentes alors
+que l'inférence tournait sur l'isolat principal et produisait donc deux
+gels. Le § 6.7 dit ce qui a été corrigé après coup ; la décision, elle, ne
+change pas.
 
 ### 12.7 La classe « autre » — et d'abord savoir si elle manque
 
