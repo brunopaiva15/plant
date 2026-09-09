@@ -1,6 +1,6 @@
 # Visuels du magasin
 
-Six visuels par langue, au format iPhone 6,7 pouces (1290 × 2796), sans le
+Sept visuels par langue, au format iPhone 6,7 pouces (1290 × 2796), sans le
 nom de l'application. Chacun montre une capture réelle de l'app dans un
 iPhone dessiné, un titre tracé en Shantell Sans (la police « main » de
 l'app), souvent un objet 3D de la série clay de l'onboarding, et parfois un
@@ -16,6 +16,7 @@ noires.
 | 4 | Jardin, calendrier, avec quatre tuiles du tableau de bord en avant | quatre tuiles | terre cuite |
 | 5 | Sauvegarde | carte, cadenas, nuage | rose |
 | 6 | Ajout d'une plante, étape « Une photo ? », avec la feuille « Est-ce bien… » en avant | — | terre |
+| 7 | Fiche d'entretien, « Problèmes connus sur cette plante » | trois entrées de la base | prune |
 
 Le sixième montre l'identification sur l'appareil. La feuille est redessinée
 à plat par `compose.py`, mais ce qu'elle affiche est vrai : la photo est une
@@ -25,6 +26,19 @@ propositions avec leurs scores sont la réponse du modèle livré, obtenue par
 `ident/score.py`.
 Après chaque nouveau modèle : relancer `score.py`, reporter ses résultats
 dans `IDENT_RESULTS`, régénérer.
+
+Le septième montre la base des problèmes. Derrière, la fiche du figuier lyre
+et ce que la base connaît de lui ; devant, trois des entrées que l'écran
+liste, une par famille, dans leur propre illustration : le froid sans gel
+(011), les cochenilles farineuses (054), la fumagine (181). Les deux cents
+problèmes ont chacun la leur — `assets/problems/icons/`, un fichier par
+identifiant — et les quatre symboles de famille (`clay_*.webp`) titrent les
+groupes de la fiche.
+
+`store/clay/` garde la pousse en pot du premier visuel. L'écran de bienvenue
+fait maintenant pousser la plante et l'app n'embarque plus que le pot nu
+(`pousse.webp`) ; le rendu d'origine reste ici, hors du bundle, pour que le
+visuel se regénère tel qu'il a été déposé.
 
 `fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect ;
 les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](listing.md).
@@ -57,4 +71,4 @@ le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
-que chaque titre tienne sur deux lignes ; la taille est commune aux six.
+que chaque titre tienne sur deux lignes ; la taille est commune aux sept.

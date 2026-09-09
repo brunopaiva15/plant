@@ -23,6 +23,11 @@ ROOT = os.path.join(HERE, '..')
 FONTS = os.path.join(HERE, 'fonts/inter/extras/ttf')
 HAND = os.path.join(ROOT, 'assets', 'fonts', 'ShantellSans-VF.ttf')
 CLAY = os.path.join(ROOT, 'assets', 'onboarding')
+# La pousse en pot du premier visuel n'est plus dans l'app : l'écran de
+# bienvenue fait maintenant pousser la plante et ne garde que le pot nu
+# (`pousse.webp`). Le rendu d'origine est conservé ici, hors du bundle, pour
+# que le visuel reste reproductible tel qu'il a été déposé.
+CLAY_STORE = os.path.join(HERE, 'clay')
 INTER_ZIP = 'https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip'
 
 
@@ -55,6 +60,7 @@ TINTS = {
     'terracotta': ((189, 88, 54), (242, 217, 203)),
     'rose': ((196, 86, 106), (245, 221, 224)),
     'earth': ((122, 76, 48), (236, 222, 208)),
+    'plum': ((122, 78, 118), (235, 222, 236)),
 }
 
 
@@ -249,8 +255,23 @@ def place_phone(canvas, shot_path, width=1010, y=1010, angle=0.0, x=None):
     return (x, y, ph.width, ph.height, scale)
 
 
-def place_clay(canvas, index, size, pos):
-    obj = Image.open(os.path.join(CLAY, f'onboarding_{index}.png')).convert('RGBA').resize((size, size), Image.LANCZOS)
+def place_clay(canvas, name, size, pos):
+    """Un objet de la série clay, par son nom de fichier : dans l'app quand
+    elle l'utilise encore, dans `store/clay/` sinon."""
+    path = os.path.join(CLAY, name)
+    if not os.path.exists(path):
+        path = os.path.join(CLAY_STORE, name)
+    obj = Image.open(path).convert('RGBA').resize((size, size), Image.LANCZOS)
+    paste_with_shadow(canvas, obj, pos, blur=50, offset=(10, 40), alpha=0.24)
+
+
+def place_problem(canvas, pid, size, pos):
+    """Une entrée de la base des problèmes, posée comme un objet d'argile.
+
+    Ce sont les mêmes rendus, sortis du même studio que la série clay de
+    l'onboarding : rien à accorder, ils tiennent ensemble sur le papier."""
+    path = os.path.join(ROOT, 'assets', 'problems', 'icons', f'{pid}.webp')
+    obj = Image.open(path).convert('RGBA').resize((size, size), Image.LANCZOS)
     paste_with_shadow(canvas, obj, pos, blur=50, offset=(10, 40), alpha=0.24)
 
 
@@ -367,7 +388,7 @@ def ident_card(lang, width=930):
     return card
 
 
-# --- les six visuels ---------------------------------------------------------
+# --- les sept visuels --------------------------------------------------------
 
 # Le registre des fiches App Store : un titre court, puis un fragment en
 # minuscules, sans point. Pas de phrase.
@@ -379,6 +400,7 @@ COPY = {
         ('Lieux, calendrier,\ninventaire', 'pour un appartement ou un jardin entier'),
         ('Tout reste sur\nvotre téléphone', 'sans compte, sans publicité'),
         ('Quelle est\ncette plante ?', 'une photo suffit, même sans réseau'),
+        ('Deux cents\nproblèmes connus', 'troubles, ravageurs, maladies, tous illustrés'),
     ],
     'en': [
         ('All your plants,\nin one place', 'with their photo, species and room'),
@@ -387,6 +409,7 @@ COPY = {
         ('Rooms, calendar,\ninventory', 'for a whole flat or garden'),
         ('Everything stays\non your phone', 'no account, no ads'),
         ('What plant\nis this?', 'one photo is enough, even offline'),
+        ('Two hundred\nknown problems', 'disorders, pests, diseases, each illustrated'),
     ],
 }
 
@@ -407,14 +430,14 @@ def build(shots, out, lang):
     img = background('sage')
     draw_text_block(img, *copy[0], size)
     place_phone(img, S('plants'), y=1040)
-    place_clay(img, 1, 560, (760, 640))
+    place_clay(img, 'onboarding_1.png', 560, (760, 640))
     img.convert('RGB').save(os.path.join(out, '1.png'), optimize=True)
 
     # 2 — aujourd'hui
     img = background('water')
     draw_text_block(img, *copy[1], size)
     place_phone(img, S('today'), y=1060, angle=-3.5)
-    place_clay(img, 2, 520, (60, 700))
+    place_clay(img, 'onboarding_2.png', 520, (60, 700))
     # la ligne « Calathea · Arroser », découpée dans la capture
     # La ligne monte en anglais : la carte de rappel y tient sur une ligne de moins.
     sticker(img, S('today'), TODAY_ROW[lang], 900, (330, 2060), angle=4)
@@ -424,14 +447,14 @@ def build(shots, out, lang):
     img = background('sun')
     draw_text_block(img, *copy[2], size)
     place_phone(img, S('care'), y=1080)
-    place_clay(img, 3, 540, (720, 690))
+    place_clay(img, 'onboarding_3.png', 540, (720, 690))
     img.convert('RGB').save(os.path.join(out, '3.png'), optimize=True)
 
     # 4 — le jardin
     img = background('terracotta')
     draw_text_block(img, *copy[3], size)
     place_phone(img, S('garden-calendar'), y=1060, angle=3.5)
-    place_clay(img, 4, 540, (40, 660))
+    place_clay(img, 'onboarding_4.png', 540, (40, 660))
     # quatre tuiles du tableau de bord
     stickers(img, S('dashboard'), DASHBOARD_TILES, 660, (640, 1880), angle=-4)
     img.convert('RGB').save(os.path.join(out, '4.png'), optimize=True)
@@ -440,7 +463,7 @@ def build(shots, out, lang):
     img = background('rose')
     draw_text_block(img, *copy[4], size)
     place_phone(img, S('backup'), y=1080)
-    place_clay(img, 5, 640, (620, 580))
+    place_clay(img, 'onboarding_5.png', 640, (620, 580))
     img.convert('RGB').save(os.path.join(out, '5.png'), optimize=True)
 
     # 6 — l'identification, sur l'appareil
@@ -452,6 +475,18 @@ def build(shots, out, lang):
     card = ident_card(lang).rotate(3, resample=Image.BICUBIC, expand=True)
     paste_with_shadow(img, card, (150, 1620), blur=55, offset=(12, 44), alpha=0.32)
     img.convert('RGB').save(os.path.join(out, '6.png'), optimize=True)
+
+    # 7 — la base des problèmes
+    img = background('plum')
+    draw_text_block(img, *copy[6], size)
+    # Derrière, ce que la base connaît du figuier lyre, groupé par famille ;
+    # devant, trois de ces entrées dans leur propre dessin — une par famille :
+    # le froid sans gel, les cochenilles farineuses, la fumagine.
+    place_phone(img, S('care-problems'), y=1020, angle=-3)
+    place_problem(img, '011', 560, (0, 620))
+    place_problem(img, '181', 340, (590, 660))
+    place_problem(img, '054', 380, (850, 700))
+    img.convert('RGB').save(os.path.join(out, '7.png'), optimize=True)
 
 
 if __name__ == '__main__':

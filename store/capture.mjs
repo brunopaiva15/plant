@@ -47,6 +47,15 @@ await p.mouse.move(195, 500); for (let i = 0; i < 6; i++) { await p.mouse.wheel(
 await p.waitForTimeout(1200); await p.mouse.click(195, 745); await p.waitForTimeout(3500); await shot('care');
 await go('/plants', 4000); await p.mouse.click(104, 375); await p.waitForTimeout(3000);
 await p.mouse.click(340, 543); await p.waitForTimeout(3500); await shot('schedule');   // Planning
+// Le figuier lyre, jusqu'à « Problèmes connus sur cette plante » : ce que la
+// base connaît de l'espèce, groupé par famille. Ici une molette vaut environ
+// 95 px, d'où le compte élevé — la fiche est longue. L'anglais bute sur le bas
+// de la fiche avant d'avoir tout déroulé ; les deux langues cadrent pareil.
+await go('/plants', 4000); await p.mouse.click(104, 560); await p.waitForTimeout(3000);   // Ficus lyrata
+await p.mouse.move(195, 500); for (let i = 0; i < 6; i++) { await p.mouse.wheel(0, 400); await p.waitForTimeout(250); }
+await p.waitForTimeout(1200); await p.mouse.click(195, 789); await p.waitForTimeout(3500);
+await p.mouse.move(195, 500); for (let i = 0; i < 26; i++) { await p.mouse.wheel(0, 400); await p.waitForTimeout(220); }
+await p.waitForTimeout(1000); await shot('care-problems');
 await go('/garden', 4000); await shot('garden');
 await p.mouse.click(326, 168); await p.waitForTimeout(2500); await shot('garden-calendar');
 await p.mouse.click(150, 168); await p.waitForTimeout(2500); await shot('garden-tasks');
