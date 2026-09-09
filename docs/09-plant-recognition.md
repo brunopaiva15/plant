@@ -957,7 +957,7 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 98 tests
+cd tools/plant_dataset && python3 -m pytest -q      # 105 tests
 flutter test                                        # dont 33 pour l'identification
 ```
 
@@ -1023,13 +1023,36 @@ final :
 | *Hoya kerrii* | 32 | **2** | écartée |
 | *Peperomia caperata* | 32 | **2** | écartée |
 
-Le remède est une répartition qui **garantit un groupe en validation et un en
-test** pour chaque espèce qui a de quoi en donner — quitte à prendre le
-deuxième groupe le plus petit — et qui, pour celles qui n'ont vraiment qu'un
-seul groupe, garde la classe en renonçant à sa métrique plutôt qu'à la classe.
-Une espèce qu'on ne sait pas mesurer vaut mieux qu'une espèce qu'on ne sait
-pas nommer : la cascade a de toute façon un seuil et cinq candidats pour
-absorber son incertitude.
+**Le remède est écrit** : `repair_species_coverage`
+(`plant_dataset/splits.py`), actif par défaut. Pour les seules espèces à qui
+la répartition n'a laissé aucun groupe en validation, puis aucun en test, il
+y déplace leur **plus petit groupe d'entraînement** — le plus petit, parce que
+l'entraînement est ce qui coûte le plus à perdre. Une espèce qui n'a qu'un
+seul groupe n'est pas touchée : la vider pour la mesurer ne l'avancerait à
+rien.
+
+**La réparation est minimale, et c'est la partie qui compte.** Elle ne
+redistribue rien : toutes les autres affectations restent exactement ce
+qu'elles étaient. Une re-répartition générale ferait passer en test des images
+que la v6 a vues à l'entraînement — la v6 y paraîtrait meilleure qu'elle
+n'est, et `compare_models.py` sous-estimerait le gain de la v7. C'est aussi
+pourquoi le module promet que « relancer la répartition ne déplace pas les
+anciennes » (§ 5), et la réparation tient cette promesse.
+
+Elle s'applique à la finalisation, sans réseau :
+
+```bash
+python3 build_dataset.py --out dataset --plants plants.csv --skip-fetch
+```
+
+`--no-repair-splits` rend la répartition d'avant — **c'est ce qu'il faut pour
+reproduire la v6 à l'identique**, puisque son jeu de test a été tiré sans la
+réparation. L'ordre est donc : finaliser sans réparation, refaire la v6,
+puis refinaliser avec.
+
+La finalisation dit ensuite ce qui reste : « *N* espèce(s) sans validation,
+donc absentes du modèle ». Ce qui figure encore dans cette ligne manque de
+photos, pas d'un tirage.
 
 À revoir au passage : `--min-train 25` a été fixé à la v1, sur 78 classes et
 8 825 images. Sur 1 500 espèces, il ne protège plus la même chose.

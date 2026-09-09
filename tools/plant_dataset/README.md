@@ -15,7 +15,7 @@ Ce fichier ne dit que comment lancer l'outil.
 ```bash
 cd tools/plant_dataset
 python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
-python3 -m pytest -q                          # 91 tests, sans réseau
+python3 -m pytest -q                          # 105 tests, sans réseau
 ```
 
 ## Fichiers
@@ -76,6 +76,7 @@ Puis vérifier à la main :
 | `--captive-place ID` | | lieu iNaturalist (97391 = Europe) : les plantes cultivées de cette région sont collectées **en premier**, en plus de la cible |
 | `--place-share` | 0,25 | part de la cible ajoutée en plantes cultivées de la région |
 | `--skip-fetch` | | ne rien télécharger : dédupliquer, répartir, compter ce qui est déjà là |
+| `--repair-splits` / `--no-repair-splits` | oui | donner un groupe de validation, puis de test, aux espèces qui n'en ont aucun ; `--no-repair-splits` rend la répartition d'avant, pour reproduire un modèle antérieur |
 | `--workers N` | 6 | téléchargements en parallèle |
 | `--gbif-pause` / `--inat-pause` | 0,25 / 1 | cadence des requêtes, en secondes ; à augmenter quand plusieurs collectes tournent |
 | `--wikimedia` | non | compléter par Wikimedia Commons (voir ci-dessous) |

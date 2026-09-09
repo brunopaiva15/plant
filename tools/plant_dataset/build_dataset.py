@@ -300,6 +300,9 @@ def main() -> int:
     ap.add_argument('--allow-sa', action='store_true', help='accepter aussi CC BY-SA (refusé par défaut)')
     ap.add_argument('--max-candidates', type=int, default=1500, help='occurrences GBIF parcourues au plus, par licence')
     ap.add_argument('--skip-fetch', action='store_true', help='ne rien télécharger : dédupliquer, répartir, compter')
+    ap.add_argument('--repair-splits', action=argparse.BooleanOptionalAction, default=True,
+                    help="donner un groupe de validation, puis de test, aux espèces qui n'en ont aucun ; "
+                         "--no-repair-splits rend la répartition d'avant, pour reproduire un modèle antérieur")
     ap.add_argument('--workers', type=int, default=6, help='téléchargements en parallèle')
     ap.add_argument('--only-file', help='fichier avec un nom scientifique par ligne (comme --only)')
     ap.add_argument('--no-inaturalist', action='store_true', help='ne pas compléter par l\'API iNaturalist')
@@ -362,7 +365,7 @@ def main() -> int:
     flagged = flag_cross_species(manifest.records)
     relocate(manifest, out)
     manifest.rewrite()
-    counts = write_splits(manifest.records, out / 'splits.csv')
+    counts = write_splits(manifest.records, out / 'splits.csv', repair=args.repair_splits)
     stats = manifest.stats()
     stats['duplicates'] = dups
     stats['cross_species_review'] = flagged
@@ -379,6 +382,13 @@ def main() -> int:
             f'doublons {st.get(STATUS_DUPLICATE, 0):3d}  revue {st.get(STATUS_REVIEW, 0):3d}  '
             f'train/val/test {sp.get("train", 0)}/{sp.get("val", 0)}/{sp.get("test", 0)}')
     log(f'licences : {stats["licenses"]}')
+    # `train.py` écarte du modèle toute classe sans validation. Une espèce
+    # qui reste ici n'a qu'un seul groupe d'observation : il lui faut des
+    # photos, pas une répartition différente.
+    sans_val = [s for s, c in counts.items() if not c.get('val')]
+    if sans_val:
+        log(f'{len(sans_val)} espèce(s) sans validation, donc absentes du modèle : '
+            f'{", ".join(sorted(sans_val)[:8])}{" …" if len(sans_val) > 8 else ""}')
     return 0
 
 
