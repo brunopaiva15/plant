@@ -24,4 +24,38 @@ void main() {
     expect(catalogPlantId('Quercus petraea (Matt.) Liebl.', index), 'quercus-petraea');
     expect(catalogPlantId('Quercus petraea', null), isNull);
   });
+
+  group('deux noms pour une plante', () {
+    // Six plantes du catalogue sont la même sous deux noms (§ 12.14), et les
+    // deux noms sont des classes du modèle : sans ce rattachement, la photo
+    // décide laquelle des deux fiches l'utilisateur obtient.
+    test('le synonyme trouve la fiche soignée, et le même identifiant', () {
+      expect(catalogLookup('Sansevieria trifasciata', null, 'fr')?.commonName, 'Langue de belle-mère');
+      expect(catalogPlantId('Sansevieria trifasciata', null), 'dracaena-trifasciata',
+          reason: 'une seule plante, un seul identifiant, donc un seul profil de soin');
+      expect(catalogPlantId('Dracaena trifasciata', null), 'dracaena-trifasciata');
+    });
+
+    test("l'auteur et la casse ne gênent pas le rattachement", () {
+      expect(catalogPlantId('Sansevieria trifasciata Prain', null), 'dracaena-trifasciata');
+      expect(catalogPlantId('sansevieria trifasciata', null), 'dracaena-trifasciata');
+    });
+
+    test('la flèche va vers ce que l\'app sait nommer, pas vers GBIF', () {
+      // GBIF dit « Kroenleinia grusonii » et « Coleus scutellarioides ».
+      // Suivre GBIF perdrait la fiche soignée du premier et, pour le second,
+      // rendrait la plante introuvable : aucun des deux catalogues ne la
+      // porte sous ce nom.
+      expect(catalogLookup('Kroenleinia grusonii', null, 'fr')?.commonName, 'Coussin de belle-mère');
+      final index = SpeciesIndex.parse(
+          'Plectranthus scutellarioides\tLamiaceae\t\tcoleus\tBuntnessel\t\n');
+      expect(catalogLookup('Coleus scutellarioides', index, 'en')?.commonName, 'coleus');
+      expect(catalogPlantId('Coleus scutellarioides', index), 'plectranthus-scutellarioides');
+    });
+
+    test('une plante sans doublon traverse la table sans rien changer', () {
+      expect(catalogPlantId('Monstera deliciosa', null), 'monstera-deliciosa');
+      expect(catalogLookup('Monstera deliciosa', null, 'fr')?.commonName, 'Monstera');
+    });
+  });
 }

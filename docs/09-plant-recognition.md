@@ -2026,10 +2026,48 @@ littérature récente les tient pour une seule plante — et ce sont deux
 classes du modèle. **L'outil rend les doublons certains, pas tous les
 doublons.**
 
-#### La correction
+#### ✅ Ce que ça changeait pour l'utilisateur, et qui est corrigé
 
-Dans `plants.csv` : garder le nom accepté, mettre l'autre dans la colonne
-`synonyms`. La collecte suivante réunit les images, la confusion disparaît,
-et six classes fantômes quittent le décompte. Aucun entraînement
-supplémentaire — cela se fait avec la v8, en amont de la collecte.
+Le défaut n'attendait pas la v8 : **il était déjà dans l'app livrée.** Les
+deux noms sont dans `catalog.tsv`, et `catalogLookup` (`providers.dart`)
+résolvait chacun pour son compte. Selon la photo, la même sansevière
+donnait :
+
+| | fiche trouvée | nom affiché en français | identifiant interne |
+|---|---|---|---|
+| classe `dracaena-trifasciata` | celle soignée à la main | **Langue de belle-mère** | `dracaena-trifasciata` |
+| classe `sansevieria-trifasciata` | le catalogue étendu | *Mother-in-law's tongue* | `sansevieria-trifasciata` |
+
+Deux fiches dans la recherche, deux noms, **deux identifiants internes donc
+deux profils de soin** — pour une seule plante, au hasard de la photo.
+
+`acceptedSpeciesName()` (`core/utils/scientific_name.dart`) rattache les
+cinq couples avant la résolution, à l'entonnoir unique qu'est
+`catalogLookup`. Le nom reçu reste affichable — *Sansevieria trifasciata*
+est un nom juste — mais l'identité, elle, est unique.
+
+**Et le sens de la flèche n'est pas celui qu'on croit**, ce qui a failli me
+coûter la correction. GBIF dit *quels* noms sont la même plante ; il ne dit
+pas lequel garder. Suivre le nom accepté de GBIF aurait donné :
+
+- *Coleus scutellarioides*, que **ni** la fiche soignée **ni** le catalogue
+  étendu ne portent — la plante ne serait plus reconnue du tout ;
+- *Kroenleinia grusonii*, qui n'est que dans le catalogue étendu, là où
+  *Echinocactus grusonii* a sa fiche soignée à la main et son nom français.
+
+Ce qui décide, c'est **ce que l'app possède** : fiche soignée d'abord,
+catalogue étendu ensuite. Les cinq flèches pointent maintenant vers un nom
+dont les quatre langues existent, vérifié une par une.
+
+*Citrus × bergamia* est volontairement laissée de côté : GBIF la rattache au
+citron, la bergamote n'est pas un citron pour qui la cultive, et aucun des
+deux catalogues ne la porte — il n'y a pas de contradiction à lever.
+
+#### Ce qui reste, pour la v8
+
+Les cinq couples sont inscrits dans la colonne `synonyms` de `plants.csv`,
+donc lisibles par la collecte. **Retirer les lignes en double du catalogue
+de collecte est la décision suivante** : elle change le jeu d'étiquettes du
+modèle, donc elle se prend en ouvrant la v8, pas en passant. Les images se
+rejoindront alors, et six classes fantômes quitteront le décompte.
 

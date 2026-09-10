@@ -345,7 +345,10 @@ String? catalogPlantId(String scientificName, SpeciesIndex? index) => catalogLoo
 /// Identifiant interne et nom courant d'une espèce, dans la langue demandée :
 /// catalogue trié à la main d'abord, catalogue étendu s'il est déjà chargé.
 CatalogMatch? catalogLookup(String scientificName, SpeciesIndex? index, String languageCode) {
-  final canonical = normalizeScientificName(scientificName);
+  // Le nom accepté d'abord : six plantes sont dans nos données sous deux
+  // noms (§ 12.14), et sans ce passage la même plante donne deux fiches,
+  // deux identifiants internes et deux profils de soin selon la photo.
+  final canonical = acceptedSpeciesName(normalizeScientificName(scientificName));
   if (canonical.isEmpty) return null;
   final curated = SpeciesCatalog.find(canonical);
   if (curated != null) {
