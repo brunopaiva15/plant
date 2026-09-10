@@ -7,7 +7,7 @@
 | Navigation | `go_router` + `StatefulShellRoute` | tabs avec état, deep links, transitions Cupertino sur iOS |
 | State | `flutter_riverpod` 3 (`Notifier`, `StreamProvider`) | léger, testable, pas de codegen obligatoire |
 | Base locale | `drift` (SQLite) | relationnel, réactif (streams), migrations, testable en mémoire |
-| Photos | `image_picker` + `image` (isolate) | pickers natifs, compression + miniatures hors UI thread |
+| Photos | `camera` + `image_picker` + `image` (isolate) | viseur intégré à l'étape photo, pickers natifs en repli, compression + miniatures hors UI thread |
 | Notifications | `flutter_local_notifications` + `timezone` | planification locale fiable, actions inline |
 | Prefs | `shared_preferences` | réglages simples |
 | i18n | `flutter_localizations` + ARB (`gen-l10n`) | fr / en / de / it, pluriels, dates locales |

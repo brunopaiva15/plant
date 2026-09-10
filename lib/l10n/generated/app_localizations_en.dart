@@ -327,6 +327,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listView => 'List';
 
   @override
+  String get showAsGrid => 'Show as grid';
+
+  @override
+  String get showAsList => 'Show as list';
+
+  @override
   String get noResultsTitle => 'No results';
 
   @override
@@ -1130,7 +1136,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noInventorySubtitle =>
-      'Fertilizers, soils, pots, tools: keep an eye on your supplies.';
+      'Keep an eye on your fertilizers, soils, pots and tools.';
 
   @override
   String get deleteItem => 'Delete item';
@@ -1183,7 +1189,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrHint =>
-      'Stick it on the pot: scanning opens the plant directly.';
+      'Stick it on the pot and scanning opens the plant directly.';
 
   @override
   String get scan => 'Scan';
@@ -1265,7 +1271,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Species recognition runs on your device first, with no network: $name answers offline. When it is unsure, the photo can be sent to Pl@ntNet to decide.';
+    return '$name recognises species right on your device, with no network. When it is unsure, the photo can be sent to Pl@ntNet to decide.';
   }
 
   @override
@@ -1297,14 +1303,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String onlineSearchesMonth(int used, int limit) {
-    return 'Online searches this month: $used of $limit.';
+    return '$used of $limit online searches this month.';
   }
 
   @override
   String get irisSection => 'The on-device model';
 
   @override
-  String get irisTagline => 'It names your plants right on your phone, with no network and no account.';
+  String get irisTagline =>
+      'It names your plants right on your phone, with no network and no account.';
 
   @override
   String get irisSpeciesLabel => 'species';
@@ -1350,7 +1357,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get outdoor => 'Outdoor';
 
   @override
-  String get outdoorHint => 'Balcony, garden, greenhouse: weather matters.';
+  String get outdoorHint =>
+      'On a balcony, in the garden or in a greenhouse, weather matters.';
 
   @override
   String get weather => 'Weather';
@@ -1376,7 +1384,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String weatherRainSkip(String names) {
-    return 'Rain expected: no need to water $names today.';
+    return 'No need to water $names today, rain is on the way.';
   }
 
   @override
@@ -1566,8 +1574,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invited => 'Invitation sent';
 
   @override
-  String get inviteError =>
-      'Couldn\'t invite: this address has no account yet.';
+  String get inviteError => 'This address has no account yet.';
 
   @override
   String get removeMember => 'Remove from garden';
@@ -1920,7 +1927,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTasksSubtitle =>
-      'Sowing, greenhouse cleaning, ordering soil: keep it all here.';
+      'Keep sowing, greenhouse cleaning and soil orders all in here.';
 
   @override
   String get noDoneTasks => 'Nothing done yet';
@@ -1989,7 +1996,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String notifTaskDue(String title) {
-    return 'Time for: $title';
+    return '$title, it\'s time';
   }
 
   @override
@@ -2127,7 +2134,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get careRepotNone => 'No repotting: grown as an annual';
+  String get careRepotNone => 'No repotting (grown as an annual)';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -2257,7 +2264,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careDisclaimer =>
-      'Guidance, not rules: your light, your pot and your air matter just as much.';
+      'Guidance, not rules. Your light, your pot and your air matter just as much.';
 
   @override
   String get careApplyToSchedule => 'Apply to schedule';
@@ -2280,10 +2287,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careBadgeOutdoor => 'Happy outdoors';
 
   @override
-  String get careIssueOverwatering => 'Overwatering: soft, yellow leaves';
+  String get careIssueOverwatering => 'Overwatering (soft, yellow leaves)';
 
   @override
-  String get careIssueUnderwatering => 'Underwatering: drooping leaves';
+  String get careIssueUnderwatering => 'Underwatering (drooping leaves)';
 
   @override
   String get careIssueRootRot => 'Root rot';
@@ -2331,14 +2338,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careIssueEtiolation => 'Stretching from too little light';
 
   @override
-  String get careIssueChlorosis => 'Chlorosis: pale leaves, green veins';
+  String get careIssueChlorosis => 'Chlorosis (pale leaves, green veins)';
 
   @override
   String get careIssueBlossomEndRot => 'Blossom end rot';
 
   @override
   String get careTipFingerTest =>
-      'Push a finger in: water when the top 2 cm are dry.';
+      'Push a finger in and water when the top 2 cm are dry.';
 
   @override
   String get careTipDrySoilFirst =>
@@ -2349,43 +2356,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipEvenWatering =>
-      'Water evenly: irregular watering splits the fruit.';
+      'Water evenly, as irregular watering splits the fruit.';
 
   @override
   String get careTipWaterAtBase => 'Water at the base, keeping the leaves dry.';
 
   @override
   String get careTipNoWaterOnLeaves =>
-      'Keep water off the leaves: droplets leave marks.';
+      'Keep water off the leaves, as droplets leave marks.';
 
   @override
   String get careTipBottomWatering =>
-      'Water from below: stand the pot in water for 20 minutes.';
+      'Water from below by standing the pot in water for 20 minutes.';
 
   @override
   String get careTipFilteredWater =>
-      'Use rain or filtered water: hard water browns the tips.';
+      'Use rain or filtered water, as hard water browns the tips.';
 
   @override
   String get careTipRainwaterOnly =>
-      'Water with rainwater: this plant hates lime.';
+      'Water with rainwater, as this plant hates lime.';
 
   @override
-  String get careTipThirstyPlant => 'A thirsty one: check daily in summer.';
+  String get careTipThirstyPlant => 'A thirsty one, check it daily in summer.';
 
   @override
-  String get careTipDroopSignal => 'It droops when thirsty: that is your cue.';
+  String get careTipDroopSignal => 'When it droops, it is thirsty.';
 
   @override
   String get careTipWinterDry => 'Keep it nearly dry through winter.';
 
   @override
   String get careTipWinterRest =>
-      'Cut watering right back in winter: it rests.';
+      'It rests in winter, so cut watering right back.';
 
   @override
   String get careTipSummerDormant =>
-      'It rests in summer: water very little then.';
+      'It rests in summer, so water very little then.';
 
   @override
   String get careTipNoWaterWhileSplitting =>
@@ -2400,7 +2407,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipDryUpsideDown =>
-      'After soaking, dry it upside down: water in the centre rots it.';
+      'After soaking, dry it upside down, as water in the centre rots it.';
 
   @override
   String get careTipWaterInTheCup =>
@@ -2408,7 +2415,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipNoSoil =>
-      'It lives without soil: just rest it on a holder.';
+      'It lives without soil, just resting on a holder.';
 
   @override
   String get careTipGreenRoots =>
@@ -2420,7 +2427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipNoDirectSun =>
-      'Keep it out of direct sun: it scorches the leaves.';
+      'Keep it out of direct sun, which scorches the leaves.';
 
   @override
   String get careTipToleratesLowLight =>
@@ -2428,7 +2435,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipToleratesNeglect =>
-      'It forgives neglect: when in doubt, do not water.';
+      'It forgives neglect, so when in doubt, do not water.';
 
   @override
   String get careTipBrightForColor =>
@@ -2440,37 +2447,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipHatesMoving =>
-      'It hates being moved: find one spot and leave it there.';
+      'Find one spot and leave it there, it hates being moved.';
 
   @override
   String get careTipWipeLeaves =>
-      'Wipe the leaves: they breathe and catch light better.';
+      'Wipe the leaves so they breathe and catch light better.';
 
   @override
   String get careTipTrimToBushOut => 'Trim leggy stems and it will branch out.';
 
   @override
   String get careTipMonsteraSupport =>
-      'Give it a moss pole: leaves get bigger and more split.';
+      'Give it a moss pole and the leaves get bigger and more split.';
 
   @override
   String get careTipShallowPot => 'A wide, shallow pot suits it better.';
 
   @override
   String get careTipLikesBeingPotbound =>
-      'It flowers better when snug: repot rarely.';
+      'It flowers better when snug, so repot rarely.';
 
   @override
   String get careTipTrunkStoresWater =>
-      'The swollen base stores water: too little beats too much.';
+      'The swollen base stores water, so too little beats too much.';
 
   @override
   String get careTipPupsToShare =>
-      'It makes pups: detach them to propagate or give away.';
+      'It makes pups, detach them to propagate or give away.';
 
   @override
   String get careTipKeepFlowerSpike =>
-      'Do not cut a green flower spike: it can rebloom on it.';
+      'Do not cut a green flower spike, as it can rebloom on it.';
 
   @override
   String get careTipDarkForRebloom =>
@@ -2478,7 +2485,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipNotADesertCactus =>
-      'Not a desert cactus: it likes shade and moisture.';
+      'Not a desert cactus, it likes shade and moisture.';
 
   @override
   String get careTipDeadheadFlowers =>
@@ -2486,7 +2493,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipPinchFlowers =>
-      'Pinch off flower buds: the leaves stay tender.';
+      'Pinch off flower buds to keep the leaves tender.';
 
   @override
   String get careTipHarvestTop =>
@@ -2494,7 +2501,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipHarvestOutside =>
-      'Pick the outer leaves: the centre keeps growing.';
+      'Pick the outer leaves and the centre keeps growing.';
 
   @override
   String get careTipStakeAndPrune => 'Stake it and pinch out the side shoots.';
@@ -2519,18 +2526,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipTrimTwiceAYear =>
-      'Two trims a year is enough: June and late August.';
+      'Two trims a year is enough, in June and late August.';
 
   @override
   String get careTipContainItsRoots =>
-      'Grow it in a pot or add a root barrier: it spreads fast.';
+      'It spreads fast, so grow it in a pot or add a root barrier.';
 
   @override
-  String get careTipMulchIt => 'Mulch the base: less watering, fewer weeds.';
+  String get careTipMulchIt =>
+      'Mulch the base for less watering and fewer weeds.';
 
   @override
   String get careTipAcidSoil =>
-      'It needs acidic soil: skip all-purpose compost.';
+      'It needs acidic soil, not all-purpose compost.';
 
   @override
   String get careTipBlueNeedsAcid =>
@@ -2542,18 +2550,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipNoFertilizer =>
-      'No feeding: rich soil costs it scent and shape.';
+      'No feeding, as rich soil costs it scent and shape.';
 
   @override
-  String get careTipNoNitrogen => 'Skip nitrogen feed: it makes its own.';
+  String get careTipNoNitrogen => 'Skip nitrogen feed, as it makes its own.';
 
   @override
   String get careTipLetFoliageDieBack =>
-      'Let the foliage yellow in place: it refuels the bulb.';
+      'Let the foliage yellow in place, as it refuels the bulb.';
 
   @override
   String get careTipDiesBackInWinter =>
-      'It vanishes in winter and returns in spring: that is normal.';
+      'It vanishes in winter and returns in spring, which is normal.';
 
   @override
   String get careTipSummerOutdoors =>
@@ -2571,22 +2579,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipCoolerIsBetter =>
-      'It prefers cool: keep it away from radiators.';
+      'It prefers cool, so keep it away from radiators.';
 
   @override
   String get careTipHardyOutdoors =>
-      'Hardy: it overwinters outdoors unprotected.';
+      'Hardy enough to overwinter outdoors unprotected.';
 
   @override
   String get careTipShelterFromWind =>
-      'Shelter it from wind: the foliage tears easily.';
+      'Shelter it from wind, as the foliage tears easily.';
 
   @override
-  String get careTipAirFlow => 'Give it airflow: stagnant air invites disease.';
+  String get careTipAirFlow =>
+      'Give it airflow, as stagnant air invites disease.';
 
   @override
   String get careTipSpiderMiteWatch =>
-      'Check under the leaves: spider mites love it.';
+      'Check under the leaves, where spider mites gather.';
 
   @override
   String get careTipSlugWatch =>
@@ -2594,11 +2603,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipBoxMothWatch =>
-      'Watch for box moth: caterpillars and silk in the foliage.';
+      'Watch for box moth, whose caterpillars leave silk in the foliage.';
 
   @override
   String get careTipSapIrritant =>
-      'Its sap irritates skin and eyes: wear gloves to prune.';
+      'Its sap irritates skin and eyes, so wear gloves to prune.';
 
   @override
   String get careTipVeryToxic =>
@@ -2606,11 +2615,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careTipSharpSpines =>
-      'Its spines are dangerous: keep it away from walkways.';
+      'Its spines are dangerous, so keep it away from walkways.';
 
   @override
   String get careTipSplitsAreNormal =>
-      'Leaves split with age: that is normal, not a disease.';
+      'Leaves split with age, which is normal and not a disease.';
 
   @override
   String get careTipDryToBloom => 'A little drought stress triggers flowering.';
@@ -2665,7 +2674,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldTemplatesHint =>
-      'Create the fields you reuse across plants: they will be one tap away.';
+      'Create the fields you reuse across plants and they will be one tap away.';
 
   @override
   String get newFieldTemplate => 'New template';
@@ -2756,7 +2765,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photoUrlHint => 'https://…';
 
   @override
-  String get photoUrlInvalid => 'Invalid address: it must start with https://';
+  String get photoUrlInvalid => 'The address must start with https://';
 
   @override
   String get photoRemote => 'Remote photo';
@@ -2887,7 +2896,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get searchByNumberHint => 'Tip: type #42 to find plant no. 42.';
+  String get searchByNumberHint => 'Type #42 to find plant no. 42.';
 
   @override
   String get inventoryGroups => 'Groups';
@@ -2912,7 +2921,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteGroupHint =>
-      'Items are not deleted: they move to the group you pick.';
+      'Items are not deleted, they move to the group you pick.';
 
   @override
   String get moveItemsTo => 'Move items to';
@@ -2964,7 +2973,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteGroupExplain =>
-      'Items are not deleted: they simply go back to no group.';
+      'Items are not deleted, they simply go back to no group.';
 
   @override
   String get newEvent => 'New event';
@@ -3055,7 +3064,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Events are not deleted: they simply lose their category.';
+      'Events are not deleted, they simply lose their category.';
 
   @override
   String get noEventCategoriesYet =>
@@ -3244,7 +3253,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupExplain =>
-      'A .zip file with your data and photos. An open format: your data stays yours.';
+      'A .zip file with your data and photos. An open format, so your data stays yours.';
 
   @override
   String get backupWhatToExport => 'What to back up';
@@ -3477,7 +3486,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportThanksBody =>
-      'Your support is recorded. The app does not change: it was already complete.';
+      'Your support is recorded. The app does not change, it was already complete.';
 
   @override
   String get supportUnavailable =>
@@ -3721,7 +3730,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinInvalid =>
-      'This code is no longer valid: it has been used, has expired, or never existed.';
+      'This code is no longer valid. It has been used, has expired, or never existed.';
 
   @override
   String get joinWrongEmail =>
@@ -3800,7 +3809,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String inviteMessage(String link) {
-    return 'I am inviting you to my garden on Auxine: $link';
+    return 'I am inviting you to my garden on Auxine. $link';
   }
 
   @override

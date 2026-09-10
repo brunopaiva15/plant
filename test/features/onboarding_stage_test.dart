@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/clay_illustration.dart';
 import 'package:flora/features/onboarding/presentation/growing_plant.dart';
@@ -42,6 +44,13 @@ Future<void> _pump(
     ),
   );
   await tester.pump();
+}
+
+/// Pose [child] seul à l'écran et rend la place de sa première image.
+Future<Offset> _place(WidgetTester tester, Widget child) async {
+  await tester.pumpWidget(MaterialApp(home: Scaffold(body: Center(child: child))));
+  await tester.pump();
+  return tester.getTopLeft(find.byType(Image).first);
 }
 
 void main() {
@@ -132,19 +141,34 @@ void main() {
     });
   });
 
-  group('les animations réduites', () {
-    testWidgets('retirent le flou de profondeur', (tester) async {
-      await _pump(tester, offset: 2.4, page: 2, reduceMotion: true);
-      expect(find.byType(ImageFiltered), findsNothing);
+  group('le flou de profondeur', () {
+    /// Nombre d'objets réellement adoucis. Le filtre est toujours dans
+    /// l'arbre — le poser et l'ôter déferait l'objet en dessous — mais il
+    /// s'éteint dès qu'il ne sert plus, et éteint il ne coûte rien.
+    int softened(WidgetTester tester) => tester.widgetList<ImageFiltered>(find.byType(ImageFiltered)).where((f) => f.enabled).length;
+
+    testWidgets('adoucit les objets qui traversent, pas celui qui se pose', (tester) async {
+      await _pump(tester, offset: 2.4, page: 2);
+      expect(softened(tester), 2);
+      await _pump(tester, offset: 2, page: 2);
+      expect(softened(tester), 0);
     });
 
-    testWidgets('laissent le flou quand elles sont permises', (tester) async {
-      // Les deux objets en mouvement sont adoucis ; celui qui se pose ne
-      // l'est plus.
-      await _pump(tester, offset: 2.4, page: 2);
-      expect(find.byType(ImageFiltered), findsNWidgets(2));
-      await _pump(tester, offset: 2, page: 2);
-      expect(find.byType(ImageFiltered), findsNothing);
+    testWidgets("ne défait pas l'objet en s'allumant", (tester) async {
+      // Le filtre s'allume à un dixième d'écran du centre, quand l'objet est
+      // encore en pleine vue. S'il changeait la forme de l'arbre, l'objet
+      // serait défait puis refait à cet instant : la plante de l'accueil,
+      // dont la séquence se décode, disparaissait au lieu de sortir.
+      await _pump(tester, offset: 0, page: 0);
+      final posed = tester.element(find.byType(GrowingPlant));
+      await _pump(tester, offset: 0.2, page: 0);
+      expect(softened(tester), greaterThan(0));
+      expect(tester.element(find.byType(GrowingPlant)), same(posed));
+    });
+
+    testWidgets('les animations réduites le laissent éteint', (tester) async {
+      await _pump(tester, offset: 2.4, page: 2, reduceMotion: true);
+      expect(softened(tester), 0);
     });
   });
 
@@ -242,6 +266,127 @@ void main() {
       expect(high.shadowOpacity, lessThan(low.shadowOpacity));
       expect(low.shadowScale, closeTo(1, 1e-9));
       expect(low.shadowOpacity, closeTo(1, 1e-9));
+    });
+
+    test("l'amplitude mène du repos à la pleine respiration", () {
+      // Le repos est une amplitude nulle, à n'importe quelle phase : c'est ce
+      // qui permet d'y aller et d'en revenir sans saut.
+      for (final phase in [0.0, 0.25, 0.5, 0.75]) {
+        final posed = BreathPose(phase, amplitude: 0);
+        expect(posed.lift, closeTo(0, 1e-9));
+        expect(posed.tilt, closeTo(0, 1e-9));
+        expect(posed.shadowScale, closeTo(1, 1e-9));
+        expect(posed.shadowOpacity, closeTo(1, 1e-9));
+      }
+      // À mi-amplitude, l'objet est à mi-chemin du posé et du respiré.
+      const full = BreathPose(0.25);
+      const half = BreathPose(0.25, amplitude: 0.5);
+      expect(half.lift, closeTo(full.lift / 2, 1e-9));
+      expect(half.tilt, closeTo(full.tilt / 2, 1e-9));
+      expect(1 - half.shadowScale, closeTo((1 - full.shadowScale) / 2, 1e-9));
+      expect(1 - half.shadowOpacity, closeTo((1 - full.shadowOpacity) / 2, 1e-9));
+    });
+  });
+
+  group("les objets qui s'animent", () {
+    testWidgets("la collection s'écarte de sa place, elle n'y saute pas", (tester) async {
+      // Posée, la composition est exactement celle qui a été choisie.
+      final anchor = await _place(tester, const PlantCluster(side: 320, animate: false));
+      // Elle arrive au centre : la dérive s'ouvre depuis cette place. Elle
+      // partait d'un coup à sa phase — les cinq plantes sautaient ensemble.
+      var previous = await _place(tester, const PlantCluster(side: 320));
+      expect((previous - anchor).distance, lessThan(1));
+      var drift = 0.0;
+      for (var i = 0; i < 40; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+        final now = tester.getTopLeft(find.byType(Image).first);
+        expect((now - previous).distance, lessThan(1), reason: 'la dérive a sauté de $previous à $now');
+        drift = math.max(drift, (now - anchor).distance);
+        previous = now;
+      }
+      expect(drift, greaterThan(1), reason: "la dérive ne s'est jamais ouverte");
+
+      // Et elle s'en va : la composition revient à sa place sans saut.
+      await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Center(child: PlantCluster(side: 320, animate: false)))));
+      for (var i = 0; i < 40; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+        final now = tester.getTopLeft(find.byType(Image).first);
+        expect((now - previous).distance, lessThan(1), reason: 'le retour à la place a sauté de $previous à $now');
+        previous = now;
+      }
+      expect((previous - anchor).distance, lessThan(0.5));
+    });
+
+    testWidgets("l'objet d'argile prend et rend son souffle sans saut", (tester) async {
+      // Posé, l'objet est droit ; la respiration commence à l'inclinaison
+      // extrême, et sans l'amplitude il penchait d'un degré d'un coup.
+      final posed = await _place(tester, const ClayIllustration(slide: 2, side: 320, animate: false));
+      var previous = await _place(tester, const ClayIllustration(slide: 2, side: 320));
+      expect((previous - posed).distance, lessThan(1));
+      var breathed = 0.0;
+      for (var i = 0; i < 40; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+        final now = tester.getTopLeft(find.byType(Image).first);
+        expect((now - previous).distance, lessThan(1), reason: 'la respiration a sauté de $previous à $now');
+        breathed = math.max(breathed, (now - posed).distance);
+        previous = now;
+      }
+      expect(breathed, greaterThan(1), reason: "l'objet n'a jamais respiré");
+    });
+  });
+
+  group("l'horloge de la respiration", () {
+    /// Fait tourner l'horloge à soixante images par seconde et rend, image par
+    /// image, de combien la pose a bougé.
+    List<double> jumps(Breath breath, {required bool breathing, required int frames, Duration from = Duration.zero}) {
+      var previous = breath.pose;
+      final steps = <double>[];
+      for (var i = 1; i <= frames; i++) {
+        breath.advance(from + Duration(microseconds: i * 1000000 ~/ 60), breathing: breathing);
+        final pose = breath.pose;
+        steps.add(math.max((pose.tilt - previous.tilt).abs(), (pose.shadowOpacity - previous.shadowOpacity).abs()));
+        previous = pose;
+      }
+      return steps;
+    }
+
+    test("s'installe et se retire sans saut", () {
+      final breath = Breath();
+      expect(breath.resting, isTrue);
+      expect(breath.level, 0);
+      // C'est tout l'objet de l'amplitude : l'inclinaison est à son extrême à
+      // la phase zéro, et sans elle le premier tick faisait pencher l'objet
+      // d'un degré d'un coup.
+      final arrivee = jumps(breath, breathing: true, frames: 60);
+      expect(arrivee.every((step) => step < 0.1), isTrue, reason: "la respiration s'installe par pas : $arrivee");
+      expect(breath.level, 1);
+
+      final depart = jumps(breath, breathing: false, frames: 60, from: const Duration(seconds: 1));
+      expect(depart.every((step) => step < 0.1), isTrue, reason: 'et se retire de même : $depart');
+      expect(breath.resting, isTrue);
+      expect(breath.pose.tilt, 0);
+      expect(breath.pose.shadowOpacity, 1);
+    });
+
+    test("reprise après une pause : elle ne rattrape pas le temps passé ailleurs", () {
+      final breath = Breath();
+      jumps(breath, breathing: true, frames: 60);
+      final quitte = breath.seconds;
+      // L'horloge de l'écran recompte depuis zéro à chaque reprise : sans
+      // plafond, le premier tick d'après ferait tourner l'objet d'un bloc.
+      breath.advance(Duration.zero, breathing: true);
+      expect(breath.seconds, closeTo(quitte, 1e-9));
+      breath.advance(const Duration(seconds: 30), breathing: true);
+      expect(breath.seconds - quitte, lessThan(0.1));
+    });
+
+    test("sans animations, elle pose l'objet sur-le-champ", () {
+      final breath = Breath();
+      jumps(breath, breathing: true, frames: 60);
+      breath.rest();
+      expect(breath.resting, isTrue);
+      expect(breath.pose.lift, 0);
+      expect(breath.pose.tilt, 0);
     });
   });
 }

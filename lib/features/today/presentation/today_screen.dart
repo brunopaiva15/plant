@@ -19,6 +19,7 @@ import '../../weather/presentation/weather_widgets.dart';
 import '../application/completed_tasks.dart';
 import 'care_task_card.dart';
 import 'notification_prompt.dart';
+import 'upcoming_section.dart';
 
 /// Écran principal : « Qu'est-ce que je dois faire aujourd'hui ? »
 class TodayScreen extends ConsumerWidget {
@@ -125,7 +126,7 @@ class TodayScreen extends ConsumerWidget {
           if (dueTasks.isNotEmpty) _FreeTaskSection(tasks: dueTasks),
           if (overdue.isNotEmpty) _TaskSection(title: l10n.sectionOverdue, tasks: overdue),
           if (today.isNotEmpty) _TaskSection(title: l10n.sectionToday, tasks: today),
-          if (upcoming.isNotEmpty) _TaskSection(title: l10n.sectionUpcoming, tasks: upcoming, compact: true),
+          if (upcoming.isNotEmpty) UpcomingSection(tasks: upcoming),
           const _GardenSummary(),
           const _RecentPhotos(),
           const _RecentActivity(),
@@ -161,11 +162,10 @@ class _FreeTaskSection extends StatelessWidget {
 }
 
 class _TaskSection extends StatelessWidget {
-  const _TaskSection({required this.title, required this.tasks, this.compact = false});
+  const _TaskSection({required this.title, required this.tasks});
 
   final String title;
   final List<CareTask> tasks;
-  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +180,6 @@ class _TaskSection extends StatelessWidget {
             itemBuilder: (context, i) => CareTaskCard(
               key: ValueKey(tasks[i].schedule.id),
               task: tasks[i],
-              compact: compact,
               onOpen: () => context.push(Routes.plant(tasks[i].plantId)),
             ),
           ),
