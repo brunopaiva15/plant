@@ -34,6 +34,12 @@ class FloraTabBar extends StatelessWidget {
   static const double _labelSize = 11;
   static const double _iconSize = 22;
 
+  /// Le blanc sous la pilule quand le système n'en réserve aucun.
+  ///
+  /// C'est le seul chiffre à toucher pour poser la barre plus haut ou plus
+  /// bas sur un appareil sans encart. Ailleurs, c'est l'encart qui commande.
+  static const double _bottomGap = Space.xs;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
@@ -45,7 +51,13 @@ class FloraTabBar extends StatelessWidget {
     // La barre grandit avec son contenu au lieu de le rogner.
     final height = math.max(64.0, 12 + _iconSize + 2 + lineHeight * lines + 12);
     return Padding(
-      padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, MediaQuery.paddingOf(context).bottom + Space.sm),
+      // L'encart réservé par le système — 34 pt sous un iPhone à indicateur
+      // d'accueil, la hauteur des trois boutons sous Android — *est* la marge
+      // du bas. L'empiler avec la nôtre laissait 46 pt de vide sous la
+      // pilule, bien plus haut que les barres du système. On s'y installe, on
+      // ne s'y ajoute pas ; et sous une barre à boutons, la garder entière est
+      // ce qui empêche la pilule de passer dessous.
+      padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, math.max(_bottomGap, MediaQuery.paddingOf(context).bottom)),
       // Une barre d'argile crème, opaque : la matière de l'app, posée sur le
       // contenu qui défile dessous. Bornée en largeur : sur un iPad en
       // paysage, une pilule de mille points serait ridicule.

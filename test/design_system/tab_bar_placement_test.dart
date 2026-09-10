@@ -19,14 +19,24 @@ const _tabs = [
   FloraTab(icon: CupertinoIcons.person, activeIcon: CupertinoIcons.person_fill, label: 'Profil'),
 ];
 
-Future<void> _pumpShell(WidgetTester tester, {double textScale = 1.0, Size size = const Size(390, 844)}) async {
+Future<void> _pumpShell(
+  WidgetTester tester, {
+  double textScale = 1.0,
+  Size size = const Size(390, 844),
+  double bottomInset = 0,
+}) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
   await tester.pumpWidget(
     MaterialApp(
       theme: buildFloraTheme(Brightness.dark),
       home: MediaQuery(
-        data: MediaQueryData(textScaler: TextScaler.linear(textScale), size: size),
+        data: MediaQueryData(
+          textScaler: TextScaler.linear(textScale),
+          size: size,
+          padding: EdgeInsets.only(bottom: bottomInset),
+          viewPadding: EdgeInsets.only(bottom: bottomInset),
+        ),
         child: Scaffold(
           extendBody: true,
           body: ListView(children: [for (var i = 0; i < 20; i++) SizedBox(height: 80, child: Text('ligne $i'))]),
@@ -62,6 +72,32 @@ void main() {
         expect(tester.getRect(find.byType(ClayBox).first).center.dy, greaterThan(844 * 0.75));
       });
     }
+
+    // L'encart du système est la marge du bas, pas un socle sur lequel en
+    // empiler une autre : l'ajouter posait la pilule 46 pt au-dessus du bord
+    // d'un iPhone, deux fois plus haut que les barres du système.
+    //
+    // (appareil, encart réservé, blanc attendu sous la pilule)
+    const cases = <(String, double, double)>[
+      ('iPhone à indicateur d\'accueil', 34, 34),
+      ('Android, navigation par gestes', 24, 24),
+      ('Android, barre à trois boutons', 48, 48),
+      ('appareil sans encart', 0, 8),
+    ];
+    for (final (device, inset, expected) in cases) {
+      testWidgets('$device : $expected pt sous la pilule', (tester) async {
+        await _pumpShell(tester, bottomInset: inset);
+        final pill = tester.getRect(find.byType(ClayBox).first);
+        expect(844 - pill.bottom, closeTo(expected, 0.5));
+      });
+    }
+
+    testWidgets('sous une barre à boutons, la pilule ne passe jamais dessous', (tester) async {
+      await _pumpShell(tester, bottomInset: 48);
+      final pill = tester.getRect(find.byType(ClayBox).first);
+      // Le bas de la pilule reste au-dessus de la zone réservée aux boutons.
+      expect(pill.bottom, lessThanOrEqualTo(844 - 48 + 0.5));
+    });
 
     testWidgets('sur une tablette, elle reste en bas et bornée en largeur', (tester) async {
       await _pumpShell(tester, size: const Size(1180, 820));
