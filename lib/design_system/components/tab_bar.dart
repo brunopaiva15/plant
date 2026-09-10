@@ -34,11 +34,34 @@ class FloraTabBar extends StatelessWidget {
   static const double _labelSize = 11;
   static const double _iconSize = 22;
 
-  /// Le blanc sous la pilule quand le système n'en réserve aucun.
+  /// Le blanc laissé sous la pilule, quand le système réserve un bandeau fin :
+  /// l'indicateur d'accueil d'iOS, la barre de gestes d'Android.
   ///
-  /// C'est le seul chiffre à toucher pour poser la barre plus haut ou plus
-  /// bas sur un appareil sans encart. Ailleurs, c'est l'encart qui commande.
+  /// Mesuré sur une capture de l'App Store posée à côté de l'app, à l'écran
+  /// près : sa barre flottante laisse 61 px sur un iPhone 16 Pro, soit 20,7 pt.
+  /// L'app en laissait 102, soit 34,7 — la totalité de l'encart iOS.
+  ///
+  /// Car une barre flottante ne se pose pas *au-dessus* de l'encart, elle
+  /// flotte *dedans* : l'indicateur d'accueil ne fait que 5 pt de haut, posés
+  /// à 8 pt du bord, et les 34 pt que réserve le système sont larges pour lui.
+  /// Vingt points le dégagent, avec sept de marge.
+  static const double _floatingGap = 20;
+
+  /// Au-delà, l'encart n'est plus une réserve mais de l'interface qu'on ne
+  /// peut pas recouvrir : la barre à trois boutons d'Android. On la rend
+  /// entière, sans quoi la pilule passerait dessous.
+  static const double _physicalNavInset = 40;
+
+  /// Et sans aucun encart, il faut bien décoller du bord.
   static const double _bottomGap = Space.xs;
+
+  /// Le blanc sous la pilule, selon ce que le système réserve en bas.
+  static double _bottomInset(BuildContext context) {
+    final reserved = MediaQuery.paddingOf(context).bottom;
+    // Une barre de boutons se respecte ; un bandeau fin se traverse.
+    if (reserved >= _physicalNavInset) return reserved;
+    return math.max(_bottomGap, math.min(reserved, _floatingGap));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,13 +74,7 @@ class FloraTabBar extends StatelessWidget {
     // La barre grandit avec son contenu au lieu de le rogner.
     final height = math.max(64.0, 12 + _iconSize + 2 + lineHeight * lines + 12);
     return Padding(
-      // L'encart réservé par le système — 34 pt sous un iPhone à indicateur
-      // d'accueil, la hauteur des trois boutons sous Android — *est* la marge
-      // du bas. L'empiler avec la nôtre laissait 46 pt de vide sous la
-      // pilule, bien plus haut que les barres du système. On s'y installe, on
-      // ne s'y ajoute pas ; et sous une barre à boutons, la garder entière est
-      // ce qui empêche la pilule de passer dessous.
-      padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, math.max(_bottomGap, MediaQuery.paddingOf(context).bottom)),
+      padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, _bottomInset(context)),
       // Une barre d'argile crème, opaque : la matière de l'app, posée sur le
       // contenu qui défile dessous. Bornée en largeur : sur un iPad en
       // paysage, une pilule de mille points serait ridicule.

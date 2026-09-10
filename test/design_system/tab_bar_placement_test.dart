@@ -73,14 +73,18 @@ void main() {
       });
     }
 
-    // L'encart du système est la marge du bas, pas un socle sur lequel en
-    // empiler une autre : l'ajouter posait la pilule 46 pt au-dessus du bord
-    // d'un iPhone, deux fois plus haut que les barres du système.
+    // Une barre flottante flotte *dans* l'encart, elle ne se pose pas
+    // au-dessus : l'indicateur d'accueil ne fait que 5 pt de haut, et les 34
+    // que réserve iOS sont larges pour lui. Vingt points, c'est ce que laisse
+    // l'App Store, mesuré au pixel sur une capture d'iPhone 16 Pro.
+    //
+    // Une barre à trois boutons, elle, est de l'interface : on la rend
+    // entière, sinon la pilule passe dessous.
     //
     // (appareil, encart réservé, blanc attendu sous la pilule)
     const cases = <(String, double, double)>[
-      ('iPhone à indicateur d\'accueil', 34, 34),
-      ('Android, navigation par gestes', 24, 24),
+      ('iPhone à indicateur d\'accueil', 34, 20),
+      ('Android, navigation par gestes', 24, 20),
       ('Android, barre à trois boutons', 48, 48),
       ('appareil sans encart', 0, 8),
     ];
