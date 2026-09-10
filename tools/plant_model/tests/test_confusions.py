@@ -10,7 +10,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from confusions import au_hasard, croiser, especes_en_difficulte, famille, genre  # noqa: E402
+from confusions import (au_hasard, croiser, especes_en_difficulte, famille,  # noqa: E402
+                        genre, jamais_reconnues)
 
 
 def test_le_genre_sort_de_lidentifiant():
@@ -127,3 +128,18 @@ def test_le_troisieme_tiroir_a_sa_reference_comme_les_deux_autres():
     h = au_hasard(['a-un', 'a-deux', 'b-un'], {'a-un': 'X', 'a-deux': 'X', 'b-un': 'X'})
     assert round(h['genre'] + h['famille'] + h['au_dela'], 6) == 1.0
     assert h['au_dela'] == 0.0, 'ici toutes les classes sont d\'une seule famille'
+
+
+def test_une_espece_jamais_reconnue_nest_pas_une_espece_confondue():
+    # 5 images, 5 erreurs : le modèle ne l'a pas apprise. À distinguer d'une
+    # espèce fragile, qui en rate quatre sur cinq.
+    perdue = [('a-un', 'b-un')] * 5
+    fragile = [('c-un', 'd-un')] * 4 + [('c-un', 'c-un')]
+    stats = croiser(perdue + fragile)
+    assert jamais_reconnues(stats) == [('a-un', 5)]
+
+
+def test_une_espece_trop_peu_vue_ne_compte_pas_comme_perdue():
+    # Trois images ratées ne disent rien : on ne classe pas une espèce sur
+    # trois photos, c'est déjà la règle d'`especes_en_difficulte`.
+    assert jamais_reconnues(croiser([('a-un', 'b-un')] * 3)) == []

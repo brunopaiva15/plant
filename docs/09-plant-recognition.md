@@ -1383,25 +1383,93 @@ python3 confusions.py --dataset ../plant_dataset/dataset --model ../../assets/mo
 python3 confusions.py --captive        # sur les seules photos de plantes cultivées
 ```
 
-**Ce qu'il faut y lire, et dans quel ordre.** Le rapport sépare les erreurs
-en deux familles, et c'est toute sa valeur :
+#### Ce que le premier passage a donné — 6 000 images, Iris 7
 
-- **dans le même genre** — deux érables, deux pépéromias. Attendu, et sans
-  gravité : l'écran propose cinq candidats et la bonne réponse y est presque
-  toujours. Ce n'est pas là qu'il faut dépenser des images.
-- **entre genres** — *Yucca* → *Zea*. Un vrai défaut, presque toujours un
-  manque d'images du bon domaine visuel, et la paire dit laquelle collecter.
+|  | part des erreurs | au hasard | |
+|---|---|---|---|
+| dans le même genre | 12,8 % | 0,17 % | **×73** |
+| dans la même famille | 14,2 % | 1,93 % | **×7** |
+| au-delà | 73,0 % | 97,89 % | ×0,75 |
 
-Un modèle dont 80 % des erreurs restent dans le genre est en bonne santé ; le
-même chiffre à 40 % dit qu'il reste des trous de collecte, et le classement
-des paires dit où.
+**La lecture prévue ici était fausse, et de deux façons.**
+
+Ce paragraphe annonçait qu'« un modèle dont 80 % des erreurs restent dans le
+genre est en bonne santé ». C'est arithmétiquement hors d'atteinte : **549
+classes sur 1 457 sont seules dans leur genre** et leurs erreurs ne
+*peuvent* pas y rester. Une erreur tirée au sort y resterait 0,17 % du
+temps. Les 12,8 % mesurés ne sont donc pas un échec par rapport aux 80 %
+espérés, ce sont **soixante-treize fois le hasard** : le modèle sait très
+bien reconnaître un genre.
+
+Et le rapport rangeait tout le reste sous « vrais défauts », ce qui mettait
+dans le même sac *Picea* → *Abies*, deux Pinaceae que personne ne sépare de
+loin, et *Parthenocissus* → *Petroselinum*, une vigne vierge prise pour du
+persil. D'où trois tiroirs au lieu de deux, `plants.csv` donnant la famille
+des 1 457 classes.
+
+#### Le vrai enseignement : c'est de l'ignorance, pas de la confusion
+
+**1 794 erreurs sur 2 458 franchissent la famille botanique.** Le document
+raconte depuis la v1 une histoire de confusions entre espèces proches — le
+yucca pris pour du maïs. La mesure dit que c'est le petit quart du problème,
+et que ce quart-là est **déjà rattrapé par l'interface** : le top-3 est à
+74,4 % contre 59,6 % de top-1, soit près de neuf cents images sur six mille
+où la bonne réponse est dans les cinq candidats affichés.
+
+Le reste n'est pas une confusion qu'on arbitre, c'est une plante que le
+modèle n'a pas apprise. Le rapport le dit maintenant en une ligne : combien
+d'espèces n'ont **pas une seule** bonne réponse sur leurs images de test.
+Celles-là ne demandent pas un meilleur départage, elles demandent des
+images.
+
+#### Les familles franchies, et la seule qui touche l'application
+
+| | |
+|---|---|
+| Pinaceae ↔ Cupressaceae | **26** — sapins, épicéas, cyprès, thuyas |
+| **Asparagaceae ↔ Poaceae** | **14** |
+| Amaranthaceae → Polygonaceae | 10 |
+| Rosaceae → Ranunculaceae / Fagaceae / Caprifoliaceae / Fabaceae | 25 en tout |
+| Asteraceae → Fabaceae / Apiaceae / Brassicaceae / Ranunculaceae | 26 en tout |
+
+Les conifères dominent, et c'est sans conséquence : personne n'identifie un
+thuya depuis son salon. **La paire qui compte est la deuxième.** Asparagaceae,
+ce sont les 41 classes à feuilles en lanières — *Chlorophytum*, *Dracaena*,
+*Cordyline*, *Aspidistra*, *Beaucarnea*, *Yucca* —, c'est-à-dire une bonne
+part des plantes d'appartement du catalogue. Poaceae, ce sont les graminées.
+
+**C'est le yucca pris pour du maïs du § 6.3, toujours là, et pas résolu.** La
+v4 l'avait traité espèce par espèce, en recollectant des photos de yucca en
+pot ; la vue par famille dit que le défaut n'était pas le yucca mais **la
+forme de feuille**, et qu'il touche tout un rayon de jardinerie. Quatorze
+erreurs sur six mille images est un petit nombre — mais mesuré sur un jeu de
+test aux trois quarts sauvage, pas sur les photos que l'application reçoit.
+
+#### Et ce que les espèces les plus ratées ne contiennent pas
+
+Cèdres, fusains, églantiers, paulownias, mélèzes, frênes, pins : les vingt
+espèces les plus ratées sont des plantes de dehors. **Aucune des 151 espèces
+d'appartement n'y figure** — ce qui corrobore, par un autre chemin, les huit
+points et demi d'écart du § 12.12 entre les plantes d'intérieur et le reste
+du catalogue. Le modèle est faible là où l'utilisateur ne regarde pas.
+
+#### En pratique
+
+```bash
+python3 confusions.py --dataset ../plant_dataset/dataset --model ../../assets/model --csv paires.csv
+python3 confusions.py --pairs paires.csv        # relit, ne recalcule pas
+python3 confusions.py --captive                 # les seules photos de plantes cultivées
+```
+
+`--csv` écrit les paires, `--pairs` les relit : le rapport se refait en une
+seconde sans TensorFlow ni machine d'entraînement. C'est ce qui a permis de
+corriger deux fois la lecture ci-dessus sans remobiliser la VM — vingt
+minutes d'inférences auraient découragé la première correction, et la
+seconde ne serait jamais venue.
 
 Le rapport finit par les espèces les plus ratées avec **ce qu'on leur répond
 à la place** — la question qu'on se posait sur le ficus ginseng (§ 6.5)
-depuis deux versions, et à laquelle une ligne de sortie répond maintenant.
-
-L'outil accepte `--csv` pour écrire toutes les paires et creuser ailleurs, et
-ses fonctions de tri sont testées sans TensorFlow
+depuis deux versions. Les fonctions de tri sont testées sans TensorFlow
 (`tests/test_confusions.py`).
 
 ### 12.5 ✅ La régularisation

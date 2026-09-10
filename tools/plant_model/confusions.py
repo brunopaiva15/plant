@@ -168,6 +168,23 @@ def especes_en_difficulte(stats: dict, minimum: int = 5) -> list[tuple[str, int,
     return out
 
 
+def jamais_reconnues(stats: dict, minimum: int = 5) -> list[tuple[str, int]]:
+    """Les espèces dont pas une image de test n'est reconnue.
+
+    Une espèce à 8 erreurs sur 8 n'est pas « confondue » : elle n'est pas
+    apprise. C'est une population à part, et c'est elle la liste de collecte
+    — pas les paires du classement, qui mélangent des espèces fragiles et
+    des espèces absentes du modèle en tout sauf le nom.
+    """
+    out = []
+    for espece, vues in stats['vues'].items():
+        if vues < minimum:
+            continue
+        if sum(stats['par_espece'].get(espece, {}).values()) == vues:
+            out.append((espece, vues))
+    return sorted(out, key=lambda r: -r[1])
+
+
 def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) -> None:
     n, justes = stats['images'], stats['justes']
     erreurs = n - justes
@@ -211,6 +228,13 @@ def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) ->
         print(f'\nles {top} confusions de famille les plus fréquentes — celles qui coûtent des images :')
         for (fv, fp), combien in stats['entre_familles'].most_common(top):
             print(f'  {fv:22s} → {fp:22s} {combien:5d}')
+
+    mesurables = [e for e, v in stats['vues'].items() if v >= 5]
+    perdues = jamais_reconnues(stats)
+    if mesurables:
+        print(f"\n**{len(perdues)} espèces sur {len(mesurables)} mesurables n'ont pas une seule bonne")
+        print(f"réponse** ({len(perdues) / len(mesurables):.0%}) : celles-là ne sont pas confondues,")
+        print('elles ne sont pas apprises. C\'est la liste de collecte.')
 
     print(f'\nles {top} espèces les plus ratées (au moins 5 images de test) :')
     for espece, ratees, vues, coupable, combien in especes_en_difficulte(stats)[:top]:
