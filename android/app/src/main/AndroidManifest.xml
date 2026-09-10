@@ -1,8 +1,15 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Le viseur intégré (paquet `camera`) apporte ces deux lignes avec lui.
+         Le micro : l'application ne filme pas, elle ouvre le flux sans son.
+         La caméra requise : sans elle, il reste la galerie et l'ajout d'une
+         plante sans photo — ce n'est pas une raison de refuser l'installation. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" tools:replace="android:required"/>
     <application
         android:label="Auxine"
         android:name="${applicationName}"
