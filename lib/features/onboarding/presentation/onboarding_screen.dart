@@ -247,8 +247,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _float,
-              builder: (context, _) =>
-                  OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce, glow: 1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)),
+              builder: (context, _) => OnboardingBackdrop(
+                tint: tint,
+                drift: _float.value,
+                reduceMotion: reduce,
+                // Les lueurs s'éteignent avec la scène quand on la quitte, et
+                // reculent au tiers sur l'écran de la marque, qui a besoin
+                // d'un fond plus sobre pour se détacher.
+                glow: (1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)) * OnboardingStage.ambienceAt(_offset),
+              ),
             ),
           ),
           SafeArea(

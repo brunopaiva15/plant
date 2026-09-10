@@ -69,6 +69,20 @@ void main() {
       expect(find.byType(ClayIllustration), findsNothing);
     });
 
+    test("le halo se retire sur la place de la marque, et revient à côté", () {
+      // La feuille de la marque est verte et le halo l'est aussi : en sombre,
+      // l'un avalait l'autre. Le retrait suit le doigt plutôt que de tomber
+      // d'un coup à l'arrivée.
+      expect(OnboardingStage.clay[OnboardingStage.mark], isNull);
+      expect(OnboardingStage.haloAt(OnboardingStage.mark.toDouble()), 0);
+      expect(OnboardingStage.haloAt(OnboardingStage.mark - 0.5), closeTo(0.5, 1e-9));
+      expect(OnboardingStage.haloAt(OnboardingStage.mark + 1.0), 1);
+      expect(OnboardingStage.haloAt(0), 1);
+      // Le fond recule sans s'éteindre : l'écran ne devient pas nu.
+      expect(OnboardingStage.ambienceAt(OnboardingStage.mark.toDouble()), closeTo(0.35, 1e-9));
+      expect(OnboardingStage.ambienceAt(0), 1);
+    });
+
     test("chaque place a son objet, et aucune image ne sert deux fois", () {
       // Les trois places sans image sont la plante qui pousse, la collection
       // et la marque d'Iris ; les autres ont chacune la sienne.

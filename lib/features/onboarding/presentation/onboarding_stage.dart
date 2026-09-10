@@ -67,6 +67,16 @@ class OnboardingStage extends StatelessWidget {
   /// l'écran qui décode d'avance la lit plutôt que de refaire le compte.
   static const List<int?> clay = [null, null, 2, 3, 4, null, 5, 6];
 
+  /// La place de la marque d'Iris, la seule dont le halo s'efface.
+  ///
+  /// La marque a ses propres couleurs, qui ne suivent pas le thème
+  /// (`IrisMark`) : c'est ce qu'on demande à un logo. Mais sa feuille est
+  /// verte et le halo l'est aussi — en sombre, le halo remonte au niveau de
+  /// la feuille et l'avale (1,2:1 en son centre, et aucune teinte de halo n'y
+  /// échappe). Entre une marque qui change de couleur pour se sauver et un
+  /// halo qui s'efface le temps d'un écran, c'est le halo qui cède.
+  static const int mark = 5;
+
   /// Taille visible de la scène : elle rapetisse à l'approche du dernier
   /// écran, qui a ses propres boutons sous le texte, puis se referme quand on
   /// le quitte, pour laisser toute la hauteur au prénom.
@@ -83,6 +93,23 @@ class OnboardingStage extends StatelessWidget {
 
   /// De 0 à 1 quand on passe du dernier écran à la page du prénom.
   double get _leaving => (offset - (count - 1)).clamp(0.0, 1.0);
+
+  /// Ce qu'il reste du halo à une position donnée du carrousel : rien sur la
+  /// place de la marque, tout à un écran de là. Il se retire et revient au
+  /// rythme du doigt, comme le reste de la scène — il ne s'éteint pas d'un
+  /// coup à l'arrivée.
+  ///
+  /// Le fond s'en sert aussi : ses deux lueurs sont de la même couleur que le
+  /// halo, et à pleine densité elles suffisaient à ramener la feuille sous
+  /// 3:1 en clair. Elles ne s'éteignent pas pour autant — l'écran serait nu —,
+  /// elles reculent au tiers, ce qui rend les trois points de contraste
+  /// manquants.
+  static double haloAt(double offset) => (offset - mark).abs().clamp(0.0, 1.0);
+
+  /// Ce que gardent les lueurs du fond au même endroit du carrousel.
+  static double ambienceAt(double offset) => 0.35 + 0.65 * haloAt(offset);
+
+  double get haloFade => haloAt(offset);
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +142,7 @@ class OnboardingStage extends StatelessWidget {
                         // s'épanouit à l'arrivée sur l'écran.
                         Transform.scale(
                           scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
-                          child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark),
+                          child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark, fade: haloFade),
                         ),
                         for (var i = count - 1; i >= 0; i--) _object(context, i, width, side, rise),
                       ],
@@ -179,11 +206,14 @@ class OnboardingStage extends StatelessWidget {
 
 /// Une tache de couleur ronde et sans bord, plus dense au centre.
 class _Halo extends StatelessWidget {
-  const _Halo({required this.color, required this.size, required this.dark});
+  const _Halo({required this.color, required this.size, required this.dark, this.fade = 1});
 
   final Color color;
   final double size;
   final bool dark;
+
+  /// Ce qu'il reste du halo, de 0 (rien) à 1 (entier).
+  final double fade;
 
   @override
   Widget build(BuildContext context) {
@@ -195,8 +225,8 @@ class _Halo extends StatelessWidget {
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              color.withValues(alpha: dark ? 0.42 : 0.34),
-              color.withValues(alpha: dark ? 0.22 : 0.16),
+              color.withValues(alpha: (dark ? 0.42 : 0.34) * fade),
+              color.withValues(alpha: (dark ? 0.22 : 0.16) * fade),
               color.withValues(alpha: 0),
             ],
             stops: const [0, 0.45, 1],
