@@ -2049,7 +2049,7 @@ abstract class AppLocalizations {
   /// No description provided for @noInventorySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Engrais, terreaux, pots, outils : gardez l\'œil sur vos réserves.'**
+  /// **'Gardez l\'œil sur vos engrais, terreaux, pots et outils.'**
   String get noInventorySubtitle;
 
   /// No description provided for @deleteItem.
@@ -2133,7 +2133,7 @@ abstract class AppLocalizations {
   /// No description provided for @qrHint.
   ///
   /// In fr, this message translates to:
-  /// **'Collez-le sur le pot : le scanner ouvre directement la fiche.'**
+  /// **'Collez-le sur le pot et le scanner ouvrira directement la fiche.'**
   String get qrHint;
 
   /// No description provided for @scan.
@@ -2283,7 +2283,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau : {name} répond hors ligne. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
+  /// **'{name} reconnaît les espèces directement sur votre appareil, sans réseau. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
   String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.
@@ -2331,7 +2331,7 @@ abstract class AppLocalizations {
   /// No description provided for @onlineSearchesMonth.
   ///
   /// In fr, this message translates to:
-  /// **'Recherches en ligne ce mois-ci : {used} sur {limit}.'**
+  /// **'{used} recherches en ligne sur {limit} ce mois-ci.'**
   String onlineSearchesMonth(int used, int limit);
 
   /// No description provided for @irisSection.
@@ -2427,7 +2427,7 @@ abstract class AppLocalizations {
   /// No description provided for @outdoorHint.
   ///
   /// In fr, this message translates to:
-  /// **'Balcon, jardin, serre : la météo compte.'**
+  /// **'Au balcon, au jardin ou en serre, la météo compte.'**
   String get outdoorHint;
 
   /// No description provided for @weather.
@@ -2475,7 +2475,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherRainSkip.
   ///
   /// In fr, this message translates to:
-  /// **'Pluie prévue : pas besoin d\'arroser {names} aujourd\'hui.'**
+  /// **'Pas besoin d\'arroser {names} aujourd\'hui, la pluie s\'en charge.'**
   String weatherRainSkip(String names);
 
   /// No description provided for @postpone.
@@ -2793,7 +2793,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteError.
   ///
   /// In fr, this message translates to:
-  /// **'Impossible d\'inviter : cette adresse n\'a pas encore de compte.'**
+  /// **'Cette adresse n\'a pas encore de compte.'**
   String get inviteError;
 
   /// No description provided for @removeMember.
@@ -3357,7 +3357,7 @@ abstract class AppLocalizations {
   /// No description provided for @noTasksSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Semis, nettoyage de la serre, commande de terreau : notez tout ici.'**
+  /// **'Notez ici les semis, le nettoyage de la serre, la commande de terreau.'**
   String get noTasksSubtitle;
 
   /// No description provided for @noDoneTasks.
@@ -3441,7 +3441,7 @@ abstract class AppLocalizations {
   /// No description provided for @notifTaskDue.
   ///
   /// In fr, this message translates to:
-  /// **'C\'est le moment : {title}'**
+  /// **'{title}, c\'est le moment'**
   String notifTaskDue(String title);
 
   /// No description provided for @careGuide.
@@ -3639,7 +3639,7 @@ abstract class AppLocalizations {
   /// No description provided for @careRepotNone.
   ///
   /// In fr, this message translates to:
-  /// **'Pas de rempotage : culture annuelle'**
+  /// **'Pas de rempotage (culture annuelle)'**
   String get careRepotNone;
 
   /// No description provided for @careTempIdeal.
@@ -3879,7 +3879,7 @@ abstract class AppLocalizations {
   /// No description provided for @careDisclaimer.
   ///
   /// In fr, this message translates to:
-  /// **'Des repères, pas des règles : votre lumière, votre pot et votre air comptent autant.'**
+  /// **'Des repères, pas des règles. Votre lumière, votre pot et votre air comptent autant.'**
   String get careDisclaimer;
 
   /// No description provided for @careApplyToSchedule.
@@ -3921,13 +3921,13 @@ abstract class AppLocalizations {
   /// No description provided for @careIssueOverwatering.
   ///
   /// In fr, this message translates to:
-  /// **'Excès d\'eau : feuilles molles et jaunes'**
+  /// **'Excès d\'eau (feuilles molles et jaunes)'**
   String get careIssueOverwatering;
 
   /// No description provided for @careIssueUnderwatering.
   ///
   /// In fr, this message translates to:
-  /// **'Manque d\'eau : feuilles qui retombent'**
+  /// **'Manque d\'eau (feuilles qui retombent)'**
   String get careIssueUnderwatering;
 
   /// No description provided for @careIssueRootRot.
@@ -4023,7 +4023,7 @@ abstract class AppLocalizations {
   /// No description provided for @careIssueChlorosis.
   ///
   /// In fr, this message translates to:
-  /// **'Chlorose : feuilles pâles, nervures vertes'**
+  /// **'Chlorose (feuilles pâles, nervures vertes)'**
   String get careIssueChlorosis;
 
   /// No description provided for @careIssueBlossomEndRot.
@@ -4035,7 +4035,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipFingerTest.
   ///
   /// In fr, this message translates to:
-  /// **'Enfoncez un doigt : arrosez quand les 2 premiers centimètres sont secs.'**
+  /// **'Enfoncez un doigt et arrosez quand les 2 premiers centimètres sont secs.'**
   String get careTipFingerTest;
 
   /// No description provided for @careTipDrySoilFirst.
@@ -4053,7 +4053,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipEvenWatering.
   ///
   /// In fr, this message translates to:
-  /// **'Arrosez régulièrement : les à-coups font éclater les fruits.'**
+  /// **'Arrosez régulièrement, car les à-coups font éclater les fruits.'**
   String get careTipEvenWatering;
 
   /// No description provided for @careTipWaterAtBase.
@@ -4065,37 +4065,37 @@ abstract class AppLocalizations {
   /// No description provided for @careTipNoWaterOnLeaves.
   ///
   /// In fr, this message translates to:
-  /// **'Ne mouillez pas les feuilles : l\'eau stagnante les tache.'**
+  /// **'Ne mouillez pas les feuilles, car l\'eau stagnante les tache.'**
   String get careTipNoWaterOnLeaves;
 
   /// No description provided for @careTipBottomWatering.
   ///
   /// In fr, this message translates to:
-  /// **'Arrosez par le bas : posez le pot dans une soucoupe d\'eau 20 minutes.'**
+  /// **'Arrosez par le bas, en posant le pot dans une soucoupe d\'eau 20 minutes.'**
   String get careTipBottomWatering;
 
   /// No description provided for @careTipFilteredWater.
   ///
   /// In fr, this message translates to:
-  /// **'Préférez l\'eau de pluie ou filtrée : le calcaire brunit les pointes.'**
+  /// **'Préférez l\'eau de pluie ou filtrée, car le calcaire brunit les pointes.'**
   String get careTipFilteredWater;
 
   /// No description provided for @careTipRainwaterOnly.
   ///
   /// In fr, this message translates to:
-  /// **'Arrosez à l\'eau de pluie : cette plante déteste le calcaire.'**
+  /// **'Arrosez à l\'eau de pluie, car cette plante déteste le calcaire.'**
   String get careTipRainwaterOnly;
 
   /// No description provided for @careTipThirstyPlant.
   ///
   /// In fr, this message translates to:
-  /// **'Grosse buveuse : en été, vérifiez tous les jours.'**
+  /// **'Grosse buveuse, vérifiez-la tous les jours en été.'**
   String get careTipThirstyPlant;
 
   /// No description provided for @careTipDroopSignal.
   ///
   /// In fr, this message translates to:
-  /// **'Elle s\'affaisse quand elle a soif : c\'est votre signal.'**
+  /// **'Quand elle s\'affaisse, c\'est qu\'elle a soif.'**
   String get careTipDroopSignal;
 
   /// No description provided for @careTipWinterDry.
@@ -4107,13 +4107,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipWinterRest.
   ///
   /// In fr, this message translates to:
-  /// **'Ralentissez fortement l\'arrosage en hiver : elle se repose.'**
+  /// **'En hiver, elle se repose et demande beaucoup moins d\'eau.'**
   String get careTipWinterRest;
 
   /// No description provided for @careTipSummerDormant.
   ///
   /// In fr, this message translates to:
-  /// **'Elle se repose en été : arrosez très peu à cette période.'**
+  /// **'Elle se repose en été et demande très peu d\'eau à cette période.'**
   String get careTipSummerDormant;
 
   /// No description provided for @careTipNoWaterWhileSplitting.
@@ -4137,7 +4137,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipDryUpsideDown.
   ///
   /// In fr, this message translates to:
-  /// **'Après le bain, laissez-la sécher tête en bas : l\'eau au cœur la fait pourrir.'**
+  /// **'Après le bain, laissez-la sécher tête en bas, car l\'eau au cœur la fait pourrir.'**
   String get careTipDryUpsideDown;
 
   /// No description provided for @careTipWaterInTheCup.
@@ -4149,7 +4149,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipNoSoil.
   ///
   /// In fr, this message translates to:
-  /// **'Elle vit sans terre : posez-la simplement sur un support.'**
+  /// **'Elle vit sans terre, posée simplement sur un support.'**
   String get careTipNoSoil;
 
   /// No description provided for @careTipGreenRoots.
@@ -4167,7 +4167,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipNoDirectSun.
   ///
   /// In fr, this message translates to:
-  /// **'Évitez le soleil direct : il brûle le feuillage.'**
+  /// **'Évitez le soleil direct, qui brûle le feuillage.'**
   String get careTipNoDirectSun;
 
   /// No description provided for @careTipToleratesLowLight.
@@ -4179,7 +4179,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipToleratesNeglect.
   ///
   /// In fr, this message translates to:
-  /// **'Elle pardonne les oublis : en cas de doute, n\'arrosez pas.'**
+  /// **'Elle pardonne les oublis, alors en cas de doute, n\'arrosez pas.'**
   String get careTipToleratesNeglect;
 
   /// No description provided for @careTipBrightForColor.
@@ -4197,25 +4197,25 @@ abstract class AppLocalizations {
   /// No description provided for @careTipHatesMoving.
   ///
   /// In fr, this message translates to:
-  /// **'Elle déteste être déplacée : trouvez-lui une place et laissez-la.'**
+  /// **'Trouvez-lui une place et laissez-la, elle déteste être déplacée.'**
   String get careTipHatesMoving;
 
   /// No description provided for @careTipWipeLeaves.
   ///
   /// In fr, this message translates to:
-  /// **'Dépoussiérez les feuilles : elles respirent et captent mieux la lumière.'**
+  /// **'Dépoussiérez les feuilles pour qu\'elles respirent et captent mieux la lumière.'**
   String get careTipWipeLeaves;
 
   /// No description provided for @careTipTrimToBushOut.
   ///
   /// In fr, this message translates to:
-  /// **'Taillez les tiges trop longues : elle se ramifiera.'**
+  /// **'Taillez les tiges trop longues et elle se ramifiera.'**
   String get careTipTrimToBushOut;
 
   /// No description provided for @careTipMonsteraSupport.
   ///
   /// In fr, this message translates to:
-  /// **'Offrez-lui un tuteur moussu : les feuilles deviendront plus grandes et découpées.'**
+  /// **'Offrez-lui un tuteur moussu et les feuilles deviendront plus grandes et découpées.'**
   String get careTipMonsteraSupport;
 
   /// No description provided for @careTipShallowPot.
@@ -4227,25 +4227,25 @@ abstract class AppLocalizations {
   /// No description provided for @careTipLikesBeingPotbound.
   ///
   /// In fr, this message translates to:
-  /// **'Elle fleurit mieux à l\'étroit : rempotez rarement.'**
+  /// **'Elle fleurit mieux à l\'étroit, alors rempotez rarement.'**
   String get careTipLikesBeingPotbound;
 
   /// No description provided for @careTipTrunkStoresWater.
   ///
   /// In fr, this message translates to:
-  /// **'Son pied renflé stocke l\'eau : mieux vaut trop peu que trop.'**
+  /// **'Son pied renflé stocke l\'eau, mieux vaut donc trop peu que trop.'**
   String get careTipTrunkStoresWater;
 
   /// No description provided for @careTipPupsToShare.
   ///
   /// In fr, this message translates to:
-  /// **'Elle fait des rejets : détachez-les pour multiplier ou offrir.'**
+  /// **'Elle fait des rejets, détachez-les pour multiplier ou offrir.'**
   String get careTipPupsToShare;
 
   /// No description provided for @careTipKeepFlowerSpike.
   ///
   /// In fr, this message translates to:
-  /// **'Ne coupez pas la hampe verte : elle peut refleurir dessus.'**
+  /// **'Ne coupez pas la hampe verte, car elle peut refleurir dessus.'**
   String get careTipKeepFlowerSpike;
 
   /// No description provided for @careTipDarkForRebloom.
@@ -4257,19 +4257,19 @@ abstract class AppLocalizations {
   /// No description provided for @careTipNotADesertCactus.
   ///
   /// In fr, this message translates to:
-  /// **'Ce n\'est pas un cactus du désert : il aime l\'ombre et l\'humidité.'**
+  /// **'Ce n\'est pas un cactus du désert, il aime l\'ombre et l\'humidité.'**
   String get careTipNotADesertCactus;
 
   /// No description provided for @careTipDeadheadFlowers.
   ///
   /// In fr, this message translates to:
-  /// **'Retirez les fleurs fanées : elle refleurira plus longtemps.'**
+  /// **'Retirez les fleurs fanées et elle refleurira plus longtemps.'**
   String get careTipDeadheadFlowers;
 
   /// No description provided for @careTipPinchFlowers.
   ///
   /// In fr, this message translates to:
-  /// **'Pincez les fleurs dès qu\'elles montent : les feuilles restent tendres.'**
+  /// **'Pincez les fleurs dès qu\'elles montent pour garder des feuilles tendres.'**
   String get careTipPinchFlowers;
 
   /// No description provided for @careTipHarvestTop.
@@ -4281,7 +4281,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipHarvestOutside.
   ///
   /// In fr, this message translates to:
-  /// **'Cueillez les feuilles extérieures : le cœur continue de pousser.'**
+  /// **'Cueillez les feuilles extérieures et le cœur continuera de pousser.'**
   String get careTipHarvestOutside;
 
   /// No description provided for @careTipStakeAndPrune.
@@ -4323,25 +4323,25 @@ abstract class AppLocalizations {
   /// No description provided for @careTipTrimTwiceAYear.
   ///
   /// In fr, this message translates to:
-  /// **'Deux tailles par an suffisent : juin et fin août.'**
+  /// **'Deux tailles par an suffisent, en juin et fin août.'**
   String get careTipTrimTwiceAYear;
 
   /// No description provided for @careTipContainItsRoots.
   ///
   /// In fr, this message translates to:
-  /// **'Plantez-la en pot ou posez une barrière anti-rhizome : elle envahit tout.'**
+  /// **'Elle envahit tout, plantez-la en pot ou posez une barrière anti-rhizome.'**
   String get careTipContainItsRoots;
 
   /// No description provided for @careTipMulchIt.
   ///
   /// In fr, this message translates to:
-  /// **'Paillez le pied : moins d\'arrosages, moins de mauvaises herbes.'**
+  /// **'Paillez le pied pour arroser moins et limiter les mauvaises herbes.'**
   String get careTipMulchIt;
 
   /// No description provided for @careTipAcidSoil.
   ///
   /// In fr, this message translates to:
-  /// **'Elle exige une terre acide : évitez le terreau universel.'**
+  /// **'Elle exige une terre acide, pas du terreau universel.'**
   String get careTipAcidSoil;
 
   /// No description provided for @careTipBlueNeedsAcid.
@@ -4359,25 +4359,25 @@ abstract class AppLocalizations {
   /// No description provided for @careTipNoFertilizer.
   ///
   /// In fr, this message translates to:
-  /// **'Pas d\'engrais : trop riche, elle perd son parfum et sa tenue.'**
+  /// **'Pas d\'engrais, une terre trop riche lui coûte son parfum et sa tenue.'**
   String get careTipNoFertilizer;
 
   /// No description provided for @careTipNoNitrogen.
   ///
   /// In fr, this message translates to:
-  /// **'Évitez l\'engrais azoté : elle fabrique son propre azote.'**
+  /// **'Évitez l\'engrais azoté, car elle fabrique le sien.'**
   String get careTipNoNitrogen;
 
   /// No description provided for @careTipLetFoliageDieBack.
   ///
   /// In fr, this message translates to:
-  /// **'Laissez le feuillage jaunir sur pied : il recharge le bulbe.'**
+  /// **'Laissez le feuillage jaunir sur pied, car il recharge le bulbe.'**
   String get careTipLetFoliageDieBack;
 
   /// No description provided for @careTipDiesBackInWinter.
   ///
   /// In fr, this message translates to:
-  /// **'Elle disparaît en hiver et repart au printemps : c\'est normal.'**
+  /// **'Elle disparaît en hiver et repart au printemps, c\'est normal.'**
   String get careTipDiesBackInWinter;
 
   /// No description provided for @careTipSummerOutdoors.
@@ -4407,31 +4407,31 @@ abstract class AppLocalizations {
   /// No description provided for @careTipCoolerIsBetter.
   ///
   /// In fr, this message translates to:
-  /// **'Elle préfère la fraîcheur : évitez la proximité d\'un radiateur.'**
+  /// **'Elle préfère la fraîcheur, éloignez-la des radiateurs.'**
   String get careTipCoolerIsBetter;
 
   /// No description provided for @careTipHardyOutdoors.
   ///
   /// In fr, this message translates to:
-  /// **'Rustique : elle passe l\'hiver dehors sans protection.'**
+  /// **'Rustique, elle passe l\'hiver dehors sans protection.'**
   String get careTipHardyOutdoors;
 
   /// No description provided for @careTipShelterFromWind.
   ///
   /// In fr, this message translates to:
-  /// **'Placez-la à l\'abri du vent : le feuillage s\'abîme vite.'**
+  /// **'Placez-la à l\'abri du vent, car le feuillage s\'abîme vite.'**
   String get careTipShelterFromWind;
 
   /// No description provided for @careTipAirFlow.
   ///
   /// In fr, this message translates to:
-  /// **'Aérez autour d\'elle : l\'air confiné favorise les maladies.'**
+  /// **'Aérez autour d\'elle, car l\'air confiné favorise les maladies.'**
   String get careTipAirFlow;
 
   /// No description provided for @careTipSpiderMiteWatch.
   ///
   /// In fr, this message translates to:
-  /// **'Inspectez le dessous des feuilles : les araignées rouges l\'adorent.'**
+  /// **'Inspectez le dessous des feuilles, que les araignées rouges adorent.'**
   String get careTipSpiderMiteWatch;
 
   /// No description provided for @careTipSlugWatch.
@@ -4443,13 +4443,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipBoxMothWatch.
   ///
   /// In fr, this message translates to:
-  /// **'Surveillez la pyrale : chenilles et fils de soie dans le feuillage.'**
+  /// **'Surveillez la pyrale, ses chenilles laissent des fils de soie dans le feuillage.'**
   String get careTipBoxMothWatch;
 
   /// No description provided for @careTipSapIrritant.
   ///
   /// In fr, this message translates to:
-  /// **'Sa sève irrite la peau et les yeux : portez des gants pour la tailler.'**
+  /// **'Sa sève irrite la peau et les yeux, taillez-la avec des gants.'**
   String get careTipSapIrritant;
 
   /// No description provided for @careTipVeryToxic.
@@ -4461,13 +4461,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipSharpSpines.
   ///
   /// In fr, this message translates to:
-  /// **'Ses pointes sont dangereuses : éloignez-la des passages.'**
+  /// **'Ses pointes sont dangereuses, éloignez-la des passages.'**
   String get careTipSharpSpines;
 
   /// No description provided for @careTipSplitsAreNormal.
   ///
   /// In fr, this message translates to:
-  /// **'Les feuilles se fendent avec l\'âge : c\'est normal, pas une maladie.'**
+  /// **'Les feuilles se fendent avec l\'âge, c\'est normal et non une maladie.'**
   String get careTipSplitsAreNormal;
 
   /// No description provided for @careTipDryToBloom.
@@ -4575,7 +4575,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldTemplatesHint.
   ///
   /// In fr, this message translates to:
-  /// **'Créez ici les champs que vous réutilisez sur plusieurs plantes : ils vous seront proposés en un tap.'**
+  /// **'Créez ici les champs que vous réutilisez sur plusieurs plantes. Ils vous seront ensuite proposés en un tap.'**
   String get fieldTemplatesHint;
 
   /// No description provided for @newFieldTemplate.
@@ -4737,7 +4737,7 @@ abstract class AppLocalizations {
   /// No description provided for @photoUrlInvalid.
   ///
   /// In fr, this message translates to:
-  /// **'Adresse invalide : elle doit commencer par https://'**
+  /// **'L\'adresse doit commencer par https://'**
   String get photoUrlInvalid;
 
   /// No description provided for @photoRemote.
@@ -4989,7 +4989,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchByNumberHint.
   ///
   /// In fr, this message translates to:
-  /// **'Astuce : tapez #42 pour retrouver la plante n° 42.'**
+  /// **'Tapez #42 pour retrouver la plante n° 42.'**
   String get searchByNumberHint;
 
   /// No description provided for @inventoryGroups.
@@ -5037,7 +5037,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteGroupHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les articles ne sont pas supprimés : ils rejoignent le groupe choisi.'**
+  /// **'Les articles ne sont pas supprimés, ils rejoignent le groupe choisi.'**
   String get deleteGroupHint;
 
   /// No description provided for @moveItemsTo.
@@ -5121,7 +5121,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteGroupExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Les articles ne sont pas supprimés : ils redeviennent sans groupe.'**
+  /// **'Les articles ne sont pas supprimés, ils redeviennent simplement sans groupe.'**
   String get deleteGroupExplain;
 
   /// No description provided for @newEvent.
@@ -5253,7 +5253,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteEventCategoryExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Les événements ne sont pas supprimés : ils perdent simplement leur catégorie.'**
+  /// **'Les événements ne sont pas supprimés, ils perdent simplement leur catégorie.'**
   String get deleteEventCategoryExplain;
 
   /// No description provided for @noEventCategoriesYet.
@@ -5577,7 +5577,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Un fichier .zip contenant vos données et vos photos. Format ouvert : vous restez maître de vos données.'**
+  /// **'Un fichier .zip contenant vos données et vos photos. Un format ouvert, pour que vous restiez maître de vos données.'**
   String get backupExplain;
 
   /// No description provided for @backupWhatToExport.
@@ -5937,7 +5937,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportThanksBody.
   ///
   /// In fr, this message translates to:
-  /// **'Votre soutien est enregistré. L\'application ne change pas : elle était déjà entière.'**
+  /// **'Votre soutien est enregistré. L\'application ne change pas, elle était déjà entière.'**
   String get supportThanksBody;
 
   /// No description provided for @supportUnavailable.
@@ -6375,7 +6375,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinInvalid.
   ///
   /// In fr, this message translates to:
-  /// **'Ce code ne vaut plus rien : il a déjà servi, a expiré, ou n\'existe pas.'**
+  /// **'Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n\'existe pas.'**
   String get joinInvalid;
 
   /// No description provided for @joinWrongEmail.
@@ -6501,7 +6501,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteMessage.
   ///
   /// In fr, this message translates to:
-  /// **'Je vous invite dans mon jardin sur Auxine : {link}'**
+  /// **'Je vous invite dans mon jardin sur Auxine. {link}'**
   String inviteMessage(String link);
 
   /// No description provided for @inviteOnceHint.

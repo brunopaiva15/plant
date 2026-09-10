@@ -1131,7 +1131,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noInventorySubtitle =>
-      'Engrais, terreaux, pots, outils : gardez l\'œil sur vos réserves.';
+      'Gardez l\'œil sur vos engrais, terreaux, pots et outils.';
 
   @override
   String get deleteItem => 'Supprimer l\'article';
@@ -1184,7 +1184,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get qrHint =>
-      'Collez-le sur le pot : le scanner ouvre directement la fiche.';
+      'Collez-le sur le pot et le scanner ouvrira directement la fiche.';
 
   @override
   String get scan => 'Scanner';
@@ -1267,7 +1267,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'La reconnaissance d\'espèce fonctionne d\'abord sur votre appareil, sans réseau : $name répond hors ligne. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.';
+    return '$name reconnaît les espèces directement sur votre appareil, sans réseau. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.';
   }
 
   @override
@@ -1299,14 +1299,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String onlineSearchesMonth(int used, int limit) {
-    return 'Recherches en ligne ce mois-ci : $used sur $limit.';
+    return '$used recherches en ligne sur $limit ce mois-ci.';
   }
 
   @override
   String get irisSection => 'Le modèle embarqué';
 
   @override
-  String get irisTagline => 'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.';
+  String get irisTagline =>
+      'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.';
 
   @override
   String get irisSpeciesLabel => 'espèces';
@@ -1352,7 +1353,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get outdoor => 'Extérieur';
 
   @override
-  String get outdoorHint => 'Balcon, jardin, serre : la météo compte.';
+  String get outdoorHint =>
+      'Au balcon, au jardin ou en serre, la météo compte.';
 
   @override
   String get weather => 'Météo';
@@ -1378,7 +1380,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String weatherRainSkip(String names) {
-    return 'Pluie prévue : pas besoin d\'arroser $names aujourd\'hui.';
+    return 'Pas besoin d\'arroser $names aujourd\'hui, la pluie s\'en charge.';
   }
 
   @override
@@ -1568,8 +1570,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get invited => 'Invitation envoyée';
 
   @override
-  String get inviteError =>
-      'Impossible d\'inviter : cette adresse n\'a pas encore de compte.';
+  String get inviteError => 'Cette adresse n\'a pas encore de compte.';
 
   @override
   String get removeMember => 'Retirer du jardin';
@@ -1923,7 +1924,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noTasksSubtitle =>
-      'Semis, nettoyage de la serre, commande de terreau : notez tout ici.';
+      'Notez ici les semis, le nettoyage de la serre, la commande de terreau.';
 
   @override
   String get noDoneTasks => 'Rien de terminé pour l\'instant';
@@ -1992,7 +1993,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String notifTaskDue(String title) {
-    return 'C\'est le moment : $title';
+    return '$title, c\'est le moment';
   }
 
   @override
@@ -2130,7 +2131,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get careRepotNone => 'Pas de rempotage : culture annuelle';
+  String get careRepotNone => 'Pas de rempotage (culture annuelle)';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -2261,7 +2262,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careDisclaimer =>
-      'Des repères, pas des règles : votre lumière, votre pot et votre air comptent autant.';
+      'Des repères, pas des règles. Votre lumière, votre pot et votre air comptent autant.';
 
   @override
   String get careApplyToSchedule => 'Appliquer au planning';
@@ -2285,10 +2286,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careIssueOverwatering =>
-      'Excès d\'eau : feuilles molles et jaunes';
+      'Excès d\'eau (feuilles molles et jaunes)';
 
   @override
-  String get careIssueUnderwatering => 'Manque d\'eau : feuilles qui retombent';
+  String get careIssueUnderwatering => 'Manque d\'eau (feuilles qui retombent)';
 
   @override
   String get careIssueRootRot => 'Pourriture des racines';
@@ -2336,14 +2337,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careIssueEtiolation => 'Étiolement par manque de lumière';
 
   @override
-  String get careIssueChlorosis => 'Chlorose : feuilles pâles, nervures vertes';
+  String get careIssueChlorosis => 'Chlorose (feuilles pâles, nervures vertes)';
 
   @override
   String get careIssueBlossomEndRot => 'Nécrose apicale des fruits';
 
   @override
   String get careTipFingerTest =>
-      'Enfoncez un doigt : arrosez quand les 2 premiers centimètres sont secs.';
+      'Enfoncez un doigt et arrosez quand les 2 premiers centimètres sont secs.';
 
   @override
   String get careTipDrySoilFirst =>
@@ -2355,7 +2356,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipEvenWatering =>
-      'Arrosez régulièrement : les à-coups font éclater les fruits.';
+      'Arrosez régulièrement, car les à-coups font éclater les fruits.';
 
   @override
   String get careTipWaterAtBase =>
@@ -2363,38 +2364,38 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipNoWaterOnLeaves =>
-      'Ne mouillez pas les feuilles : l\'eau stagnante les tache.';
+      'Ne mouillez pas les feuilles, car l\'eau stagnante les tache.';
 
   @override
   String get careTipBottomWatering =>
-      'Arrosez par le bas : posez le pot dans une soucoupe d\'eau 20 minutes.';
+      'Arrosez par le bas, en posant le pot dans une soucoupe d\'eau 20 minutes.';
 
   @override
   String get careTipFilteredWater =>
-      'Préférez l\'eau de pluie ou filtrée : le calcaire brunit les pointes.';
+      'Préférez l\'eau de pluie ou filtrée, car le calcaire brunit les pointes.';
 
   @override
   String get careTipRainwaterOnly =>
-      'Arrosez à l\'eau de pluie : cette plante déteste le calcaire.';
+      'Arrosez à l\'eau de pluie, car cette plante déteste le calcaire.';
 
   @override
   String get careTipThirstyPlant =>
-      'Grosse buveuse : en été, vérifiez tous les jours.';
+      'Grosse buveuse, vérifiez-la tous les jours en été.';
 
   @override
   String get careTipDroopSignal =>
-      'Elle s\'affaisse quand elle a soif : c\'est votre signal.';
+      'Quand elle s\'affaisse, c\'est qu\'elle a soif.';
 
   @override
   String get careTipWinterDry => 'En hiver, gardez-la presque au sec.';
 
   @override
   String get careTipWinterRest =>
-      'Ralentissez fortement l\'arrosage en hiver : elle se repose.';
+      'En hiver, elle se repose et demande beaucoup moins d\'eau.';
 
   @override
   String get careTipSummerDormant =>
-      'Elle se repose en été : arrosez très peu à cette période.';
+      'Elle se repose en été et demande très peu d\'eau à cette période.';
 
   @override
   String get careTipNoWaterWhileSplitting =>
@@ -2410,7 +2411,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipDryUpsideDown =>
-      'Après le bain, laissez-la sécher tête en bas : l\'eau au cœur la fait pourrir.';
+      'Après le bain, laissez-la sécher tête en bas, car l\'eau au cœur la fait pourrir.';
 
   @override
   String get careTipWaterInTheCup =>
@@ -2418,7 +2419,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipNoSoil =>
-      'Elle vit sans terre : posez-la simplement sur un support.';
+      'Elle vit sans terre, posée simplement sur un support.';
 
   @override
   String get careTipGreenRoots =>
@@ -2430,7 +2431,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipNoDirectSun =>
-      'Évitez le soleil direct : il brûle le feuillage.';
+      'Évitez le soleil direct, qui brûle le feuillage.';
 
   @override
   String get careTipToleratesLowLight =>
@@ -2438,7 +2439,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipToleratesNeglect =>
-      'Elle pardonne les oublis : en cas de doute, n\'arrosez pas.';
+      'Elle pardonne les oublis, alors en cas de doute, n\'arrosez pas.';
 
   @override
   String get careTipBrightForColor =>
@@ -2450,19 +2451,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipHatesMoving =>
-      'Elle déteste être déplacée : trouvez-lui une place et laissez-la.';
+      'Trouvez-lui une place et laissez-la, elle déteste être déplacée.';
 
   @override
   String get careTipWipeLeaves =>
-      'Dépoussiérez les feuilles : elles respirent et captent mieux la lumière.';
+      'Dépoussiérez les feuilles pour qu\'elles respirent et captent mieux la lumière.';
 
   @override
   String get careTipTrimToBushOut =>
-      'Taillez les tiges trop longues : elle se ramifiera.';
+      'Taillez les tiges trop longues et elle se ramifiera.';
 
   @override
   String get careTipMonsteraSupport =>
-      'Offrez-lui un tuteur moussu : les feuilles deviendront plus grandes et découpées.';
+      'Offrez-lui un tuteur moussu et les feuilles deviendront plus grandes et découpées.';
 
   @override
   String get careTipShallowPot =>
@@ -2470,19 +2471,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipLikesBeingPotbound =>
-      'Elle fleurit mieux à l\'étroit : rempotez rarement.';
+      'Elle fleurit mieux à l\'étroit, alors rempotez rarement.';
 
   @override
   String get careTipTrunkStoresWater =>
-      'Son pied renflé stocke l\'eau : mieux vaut trop peu que trop.';
+      'Son pied renflé stocke l\'eau, mieux vaut donc trop peu que trop.';
 
   @override
   String get careTipPupsToShare =>
-      'Elle fait des rejets : détachez-les pour multiplier ou offrir.';
+      'Elle fait des rejets, détachez-les pour multiplier ou offrir.';
 
   @override
   String get careTipKeepFlowerSpike =>
-      'Ne coupez pas la hampe verte : elle peut refleurir dessus.';
+      'Ne coupez pas la hampe verte, car elle peut refleurir dessus.';
 
   @override
   String get careTipDarkForRebloom =>
@@ -2490,15 +2491,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipNotADesertCactus =>
-      'Ce n\'est pas un cactus du désert : il aime l\'ombre et l\'humidité.';
+      'Ce n\'est pas un cactus du désert, il aime l\'ombre et l\'humidité.';
 
   @override
   String get careTipDeadheadFlowers =>
-      'Retirez les fleurs fanées : elle refleurira plus longtemps.';
+      'Retirez les fleurs fanées et elle refleurira plus longtemps.';
 
   @override
   String get careTipPinchFlowers =>
-      'Pincez les fleurs dès qu\'elles montent : les feuilles restent tendres.';
+      'Pincez les fleurs dès qu\'elles montent pour garder des feuilles tendres.';
 
   @override
   String get careTipHarvestTop =>
@@ -2506,7 +2507,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipHarvestOutside =>
-      'Cueillez les feuilles extérieures : le cœur continue de pousser.';
+      'Cueillez les feuilles extérieures et le cœur continuera de pousser.';
 
   @override
   String get careTipStakeAndPrune =>
@@ -2534,19 +2535,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipTrimTwiceAYear =>
-      'Deux tailles par an suffisent : juin et fin août.';
+      'Deux tailles par an suffisent, en juin et fin août.';
 
   @override
   String get careTipContainItsRoots =>
-      'Plantez-la en pot ou posez une barrière anti-rhizome : elle envahit tout.';
+      'Elle envahit tout, plantez-la en pot ou posez une barrière anti-rhizome.';
 
   @override
   String get careTipMulchIt =>
-      'Paillez le pied : moins d\'arrosages, moins de mauvaises herbes.';
+      'Paillez le pied pour arroser moins et limiter les mauvaises herbes.';
 
   @override
   String get careTipAcidSoil =>
-      'Elle exige une terre acide : évitez le terreau universel.';
+      'Elle exige une terre acide, pas du terreau universel.';
 
   @override
   String get careTipBlueNeedsAcid =>
@@ -2558,19 +2559,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipNoFertilizer =>
-      'Pas d\'engrais : trop riche, elle perd son parfum et sa tenue.';
+      'Pas d\'engrais, une terre trop riche lui coûte son parfum et sa tenue.';
 
   @override
   String get careTipNoNitrogen =>
-      'Évitez l\'engrais azoté : elle fabrique son propre azote.';
+      'Évitez l\'engrais azoté, car elle fabrique le sien.';
 
   @override
   String get careTipLetFoliageDieBack =>
-      'Laissez le feuillage jaunir sur pied : il recharge le bulbe.';
+      'Laissez le feuillage jaunir sur pied, car il recharge le bulbe.';
 
   @override
   String get careTipDiesBackInWinter =>
-      'Elle disparaît en hiver et repart au printemps : c\'est normal.';
+      'Elle disparaît en hiver et repart au printemps, c\'est normal.';
 
   @override
   String get careTipSummerOutdoors =>
@@ -2589,23 +2590,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipCoolerIsBetter =>
-      'Elle préfère la fraîcheur : évitez la proximité d\'un radiateur.';
+      'Elle préfère la fraîcheur, éloignez-la des radiateurs.';
 
   @override
   String get careTipHardyOutdoors =>
-      'Rustique : elle passe l\'hiver dehors sans protection.';
+      'Rustique, elle passe l\'hiver dehors sans protection.';
 
   @override
   String get careTipShelterFromWind =>
-      'Placez-la à l\'abri du vent : le feuillage s\'abîme vite.';
+      'Placez-la à l\'abri du vent, car le feuillage s\'abîme vite.';
 
   @override
   String get careTipAirFlow =>
-      'Aérez autour d\'elle : l\'air confiné favorise les maladies.';
+      'Aérez autour d\'elle, car l\'air confiné favorise les maladies.';
 
   @override
   String get careTipSpiderMiteWatch =>
-      'Inspectez le dessous des feuilles : les araignées rouges l\'adorent.';
+      'Inspectez le dessous des feuilles, que les araignées rouges adorent.';
 
   @override
   String get careTipSlugWatch =>
@@ -2613,11 +2614,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipBoxMothWatch =>
-      'Surveillez la pyrale : chenilles et fils de soie dans le feuillage.';
+      'Surveillez la pyrale, ses chenilles laissent des fils de soie dans le feuillage.';
 
   @override
   String get careTipSapIrritant =>
-      'Sa sève irrite la peau et les yeux : portez des gants pour la tailler.';
+      'Sa sève irrite la peau et les yeux, taillez-la avec des gants.';
 
   @override
   String get careTipVeryToxic =>
@@ -2625,11 +2626,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careTipSharpSpines =>
-      'Ses pointes sont dangereuses : éloignez-la des passages.';
+      'Ses pointes sont dangereuses, éloignez-la des passages.';
 
   @override
   String get careTipSplitsAreNormal =>
-      'Les feuilles se fendent avec l\'âge : c\'est normal, pas une maladie.';
+      'Les feuilles se fendent avec l\'âge, c\'est normal et non une maladie.';
 
   @override
   String get careTipDryToBloom =>
@@ -2685,7 +2686,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get fieldTemplatesHint =>
-      'Créez ici les champs que vous réutilisez sur plusieurs plantes : ils vous seront proposés en un tap.';
+      'Créez ici les champs que vous réutilisez sur plusieurs plantes. Ils vous seront ensuite proposés en un tap.';
 
   @override
   String get newFieldTemplate => 'Nouveau modèle';
@@ -2778,8 +2779,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get photoUrlHint => 'https://…';
 
   @override
-  String get photoUrlInvalid =>
-      'Adresse invalide : elle doit commencer par https://';
+  String get photoUrlInvalid => 'L\'adresse doit commencer par https://';
 
   @override
   String get photoRemote => 'Photo distante';
@@ -2911,8 +2911,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get searchByNumberHint =>
-      'Astuce : tapez #42 pour retrouver la plante n° 42.';
+  String get searchByNumberHint => 'Tapez #42 pour retrouver la plante n° 42.';
 
   @override
   String get inventoryGroups => 'Groupes';
@@ -2937,7 +2936,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteGroupHint =>
-      'Les articles ne sont pas supprimés : ils rejoignent le groupe choisi.';
+      'Les articles ne sont pas supprimés, ils rejoignent le groupe choisi.';
 
   @override
   String get moveItemsTo => 'Déplacer les articles vers';
@@ -2989,7 +2988,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteGroupExplain =>
-      'Les articles ne sont pas supprimés : ils redeviennent sans groupe.';
+      'Les articles ne sont pas supprimés, ils redeviennent simplement sans groupe.';
 
   @override
   String get newEvent => 'Nouvel événement';
@@ -3080,7 +3079,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Les événements ne sont pas supprimés : ils perdent simplement leur catégorie.';
+      'Les événements ne sont pas supprimés, ils perdent simplement leur catégorie.';
 
   @override
   String get noEventCategoriesYet =>
@@ -3270,7 +3269,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get backupExplain =>
-      'Un fichier .zip contenant vos données et vos photos. Format ouvert : vous restez maître de vos données.';
+      'Un fichier .zip contenant vos données et vos photos. Un format ouvert, pour que vous restiez maître de vos données.';
 
   @override
   String get backupWhatToExport => 'Que sauvegarder';
@@ -3496,7 +3495,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get supportThanksBody =>
-      'Votre soutien est enregistré. L\'application ne change pas : elle était déjà entière.';
+      'Votre soutien est enregistré. L\'application ne change pas, elle était déjà entière.';
 
   @override
   String get supportUnavailable =>
@@ -3743,7 +3742,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get joinInvalid =>
-      'Ce code ne vaut plus rien : il a déjà servi, a expiré, ou n\'existe pas.';
+      'Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n\'existe pas.';
 
   @override
   String get joinWrongEmail =>
@@ -3824,7 +3823,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String inviteMessage(String link) {
-    return 'Je vous invite dans mon jardin sur Auxine : $link';
+    return 'Je vous invite dans mon jardin sur Auxine. $link';
   }
 
   @override
