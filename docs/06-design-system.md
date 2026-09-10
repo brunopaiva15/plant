@@ -42,6 +42,20 @@ saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
 `FloraButton` l'utilisent ; `size` est le diamètre au repos (36 par défaut,
 14 dans un bouton). Avec *reduced motion*, la motte reste posée.
 
+### La marque d'Iris (`iris_mark.dart`)
+Le logo du modèle embarqué, dans *Réglages > Identification* : une feuille
+peinte par `paintClay`, sa nervation, et en son centre un iris clair à cœur de
+terre cuite. Iris, c'est l'œil, le diaphragme et la fleur.
+
+Sans trois écarts, une vésique symétrique ne serait qu'un œil : la feuille
+penche, sa base est plus ronde que sa pointe, et ses nervures partent toutes
+vers celle-ci, comme une nervation pennée.
+
+Feuille en `sage`, iris en `onAccent`, cœur en `terracotta` : trois paires déjà
+tenues par le contrat de contraste, donc elle se retourne seule en sombre et en
+contraste élevé. Décorative par défaut ; `semanticLabel` ne se donne que si
+elle est seule.
+
 ## Couleurs (`design_system/tokens/colors.dart`)
 | Token | Clair | Sombre | Usage |
 |---|---|---|---|
@@ -73,6 +87,9 @@ exécution :
 - `sage`, `terracotta`, `water`, `danger` : **≥ 4.5:1** sur ces fonds et sur
   leur pastel, parce qu'ils portent du texte de 13 pt ;
 - `sun` et `rose` ne servent que d'icônes : **≥ 3:1** ;
+- `ink` sur `sageSoft` : la carte du modèle est une carte de couleur, donc ce
+  qu'on y écrit ne repose plus sur les fonds neutres. Tout y est en pleine
+  encre, et le libellé de ses chiffres en `sage` ;
 - **`onAccent`** — ce qu'on pose sur un accent employé comme fond — **≥ 4.5:1**
   sur chacun d'eux. Une seule valeur par thème suffit : les accents sont tous
   sombres en clair, tous clairs en sombre. Ne jamais écrire `Colors.white` en
@@ -140,7 +157,7 @@ se déclare `header: true`, ce qui rend le rotor « Titres » utilisable.
 - `selection` : changement de chip / onglet · `light` : tap bouton · `success` : action enregistrée · `warning` : archivage.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · PhotoGrid · QuantityStepper · DatePicker (natif) · PlantPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · QuantityStepper · DatePicker (natif) · PlantPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader
 
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.

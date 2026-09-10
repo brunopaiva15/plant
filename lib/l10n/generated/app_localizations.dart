@@ -2310,12 +2310,6 @@ abstract class AppLocalizations {
   /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.'**
   String identificationFallbackHint(String name);
 
-  /// No description provided for @modelLoaded.
-  ///
-  /// In fr, this message translates to:
-  /// **'{name} : {count} espèces'**
-  String modelLoaded(String name, int count);
-
   /// No description provided for @modelMissing.
   ///
   /// In fr, this message translates to:
@@ -2339,6 +2333,48 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Recherches en ligne ce mois-ci : {used} sur {limit}.'**
   String onlineSearchesMonth(int used, int limit);
+
+  /// No description provided for @irisSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le modèle embarqué'**
+  String get irisSection;
+
+  /// No description provided for @irisTagline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.'**
+  String get irisTagline;
+
+  /// No description provided for @irisSpeciesLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'espèces'**
+  String get irisSpeciesLabel;
+
+  /// No description provided for @irisOfflineValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'hors ligne'**
+  String get irisOfflineValue;
+
+  /// No description provided for @irisOfflineLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'même en avion'**
+  String get irisOfflineLabel;
+
+  /// No description provided for @irisTwoPhotosTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deux photos valent mieux qu’une'**
+  String get irisTwoPhotosTitle;
+
+  /// No description provided for @irisTwoPhotosBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photographiez la plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, au lieu d’une fois sur deux.'**
+  String irisTwoPhotosBody(String name);
 
   /// No description provided for @confidence.
   ///

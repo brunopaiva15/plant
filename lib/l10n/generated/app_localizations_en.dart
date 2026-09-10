@@ -1283,11 +1283,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String modelLoaded(String name, int count) {
-    return '$name: $count species';
-  }
-
-  @override
   String modelMissing(String name) {
     return '$name unavailable on this device';
   }
@@ -1303,6 +1298,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String onlineSearchesMonth(int used, int limit) {
     return 'Online searches this month: $used of $limit.';
+  }
+
+  @override
+  String get irisSection => 'The on-device model';
+
+  @override
+  String get irisTagline => 'It names your plants right on your phone, with no network and no account.';
+
+  @override
+  String get irisSpeciesLabel => 'species';
+
+  @override
+  String get irisOfflineValue => 'offline';
+
+  @override
+  String get irisOfflineLabel => 'even on a plane';
+
+  @override
+  String get irisTwoPhotosTitle => 'Two photos beat one';
+
+  @override
+  String irisTwoPhotosBody(String name) {
+    return 'Photograph the whole plant, then a leaf close up. With two photos, $name finds the right species two times out of three, instead of one out of two.';
   }
 
   @override

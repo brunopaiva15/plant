@@ -24,6 +24,24 @@ l'application ne peut pas afficher un numéro qui ment.
 Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
 l'application dit « Iris » tout court plutôt que d'inventer un numéro.
 
+### Là où l'utilisateur le rencontre
+
+*Réglages > Identification* lui donne une section : la marque (`IrisMark`,
+§ *Matière* de [docs/06](06-design-system.md)), le nom, une phrase, le nombre
+d'espèces et le fait qu'il réponde hors ligne.
+
+Le compte d'espèces n'est pas écrit dans l'écran : il sort du même
+`model.json` que la version. Livrer une v8 change la section sans qu'on touche
+à une ligne de présentation.
+
+La carte remplace la ligne d'état tant que le modèle est chargé — la voir,
+c'est savoir qu'il l'est. Sinon la ligne d'état reste, avec l'erreur native
+brute, qui seule distingue un asset absent d'une bibliothèque non liée.
+
+Une seconde carte porte le conseil des deux photos (§ 6.7) : quatorze points
+de top-1 pour zéro calcul, et il n'était écrit nulle part où l'utilisateur
+le lise.
+
 ## 1. Pourquoi
 
 Aujourd'hui l'identification passe intégralement par l'API Pl@ntNet, avec la
