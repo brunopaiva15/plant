@@ -27,7 +27,7 @@ l'application dit « Iris » tout court plutôt que d'inventer un numéro.
 ### Là où l'utilisateur le rencontre
 
 L'onboarding le présente en un écran, entre le jardin et la vie privée : la
-marque au centre de la scène, « Iris 7 reconnaît vos plantes hors ligne », et
+marque au centre de la scène, « Iris 7 nomme vos plantes hors ligne », et
 une phrase qui dit d'où vient la réponse. Le numéro y arrive comme ailleurs, du
 `model.json` — lu seul, sans réveiller TensorFlow, parce qu'un onboarding doit
 s'ouvrir en un instant (`modelDisplayNameProvider`, `LocalPlantModel.announcedVersion`).

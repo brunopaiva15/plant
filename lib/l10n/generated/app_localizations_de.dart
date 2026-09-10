@@ -3413,7 +3413,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String onbIrisTitle(String name) {
-    return '$name erkennt deine Pflanzen offline';
+    return '$name kennt deine Pflanzen offline';
   }
 
   @override

@@ -3430,7 +3430,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String onbIrisTitle(String name) {
-    return '$name reconnaît vos plantes hors ligne';
+    return '$name nomme vos plantes hors ligne';
   }
 
   @override
