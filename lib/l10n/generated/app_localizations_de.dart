@@ -1234,6 +1234,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein weiteres Foto würde helfen. Ein Blatt, eine Blüte oder die ganze Pflanze.';
 
   @override
+  String get identifyConfirmWithPhoto => 'Mit einem Foto bestätigen';
+
+  @override
   String get searchingOnline => 'Online-Suche…';
 
   @override

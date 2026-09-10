@@ -1229,6 +1229,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Another photo would help decide. A leaf, a flower, or the whole plant.';
 
   @override
+  String get identifyConfirmWithPhoto => 'Confirm with a photo';
+
+  @override
   String get searchingOnline => 'Searching online…';
 
   @override
