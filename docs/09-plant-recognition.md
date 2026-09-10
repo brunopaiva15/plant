@@ -2361,3 +2361,90 @@ Quelques lignes, aucune collecte de plus, et ça vise le défaut le plus cher
 du modèle. À faire **avant** la collecte de la v8, sinon on ramène 4 220
 espèces sans en profiter.
 
+### 12.18 L'étage cultivar : prototypes plutôt que classes
+
+Le § 12.16 concluait que le cultivar ne pouvait pas être une classe et le
+renvoyait à une question posée à l'utilisateur. **Il y a mieux, et ça ne
+coûte pas ce que j'avais chiffré.**
+
+```
+photo → backbone → embedding
+                      ↓
+              classifieur d'espèces          ← 50-100+ observations, classes
+                      ↓
+             « Monstera deliciosa »
+                      ↓
+         prototypes du genre/espèce          ← 5-30 observations, suggestion
+                      ↓
+        Thai / Albo / Aurea / Mint
+```
+
+**Pourquoi c'est bon marché, contrairement à ce que je disais.** Les dix
+points du § 12.12 viennent de l'étendue du *softmax* : chaque classe de plus
+est un candidat de plus à écarter pour toutes les photos. Un étage
+conditionné à l'espèce n'élargit rien — il ne sépare que les quatre ou huit
+cultivars d'une seule plante, une fois l'espèce connue. Le sous-problème est
+minuscule, et ajouter un cultivar ne demande **aucun réentraînement** : un
+prototype de plus dans la base.
+
+L'infrastructure existe déjà : `--feature-cache` met en cache les
+activations du réseau gelé, **960 nombres par image** (`FEATURE_DIM`).
+
+#### Trois réserves, dont une qui peut tout arrêter
+
+**1. Le réglage fin apprend à effacer ce qu'on cherche.** Chaque photo de
+« Thai Constellation » de notre jeu est étiquetée *Monstera deliciosa*. Les
+cent couches dégelées poussent donc l'embedding à **faire converger** le
+cultivar panaché et la plante ordinaire. Chercher les cultivars dans cette
+représentation, c'est les chercher dans la seule qu'on ait entraînée à les
+confondre. Parades, du moins cher au plus cher : partir du backbone
+**ImageNet gelé** ; prendre une couche **plus précoce**, la panachure étant
+un signal de couleur que les couches basses gardent mieux ; ou ajouter une
+perte contrastive au réglage fin.
+
+**2. La donnée manque là où l'app en a besoin.** Le seuil relâché à 10-30
+photos est le bon raisonnement, mais Commons donne **1** fichier pour
+`Monstera deliciosa (cultivars)`, **3** pour « Marble Queen », **6** pour
+« N'Joy ». Là où il y a de quoi, c'est *Acer palmatum*, *Hosta*, *Rosa* —
+les classiques de jardin, photographiés depuis vingt ans. L'architecture
+marcherait donc **d'abord sur les érables, pas sur la Monstera panachée**,
+soit l'inverse de ce que l'application sert. C'est le § 12.2 encore.
+
+**3. La base de prototypes n'est pas gratuite sur le téléphone.**
+
+| | 960 dimensions | projetées en 128 |
+|---|---|---|
+| 5 000 prototypes, float16 | 9,6 Mo | **1,3 Mo** |
+| 7 500 prototypes | 14,4 Mo | 1,9 Mo |
+
+Neuf mégaoctets, c'est plus que le modèle entier. **La projection fait
+partie du dessin, pas de l'optimisation.**
+
+#### L'expérience qui tranche, et son piège
+
+`tools/plant_model/prototypes.py`. Elle compare la similarité entre deux
+photos d'un même cultivar et celle entre deux cultivars **de la même
+espèce** — séparer deux espèces étant déjà résolu.
+
+> **Le piège, mesuré en écrivant l'outil.** Dix photos dans un espace à 960
+> dimensions se séparent presque toujours : sur du bruit pur, un prototype
+> laissant une photo de côté atteint **0,9 de justesse**. Ce n'est pas une
+> propriété des cultivars, c'est une propriété des petits échantillons en
+> grande dimension. Sans témoin, l'expérience aurait conclu que l'embedding
+> sépare les cultivars — quel que soit l'embedding.
+>
+> D'où un **test de permutation** : on mélange les étiquettes deux cents
+> fois et on regarde la part des mélanges qui font aussi bien. Comparer à
+> leur *moyenne* ne suffirait pas — une réalisation dépasse une moyenne une
+> fois sur deux.
+
+```bash
+python3 prototypes.py --recolter --especes "Acer palmatum,Hosta,Rosa"
+python3 prototypes.py --mesurer                    # ImageNet gelé
+python3 prototypes.py --mesurer --poids .cache/ckpt/fine.weights.h5   # notre réseau
+```
+
+Les deux lectures répondent à la réserve n° 1 : si le réseau gelé sépare et
+que le nôtre non, c'est le réglage fin qui a effacé le signal, et l'étage
+cultivar doit partir d'ailleurs.
+
