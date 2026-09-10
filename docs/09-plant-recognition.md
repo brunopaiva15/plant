@@ -1414,6 +1414,9 @@ python3 confusions.py --captive        # sur les seules photos de plantes cultiv
 | dans la même famille | 14,2 % | 1,93 % | **×7** |
 | au-delà | 73,0 % | 97,89 % | ×0,75 |
 
+*(parts mesurées sur 6 000 images ; les décomptes par famille et la
+distribution par espèce plus bas viennent du test entier, 29 000 images.)*
+
 **La lecture prévue ici était fausse, et de deux façons.**
 
 Ce paragraphe annonçait qu'« un modèle dont 80 % des erreurs restent dans le
@@ -1466,23 +1469,36 @@ en pot, et celui que la passe Commons du § 12.2 vise. **Ajouter 1 500 espèces
 ne le soignerait pas** : ce sont des photos d'un autre genre qu'il faut aux
 espèces déjà présentes.
 
-> **Ce que ce 2 % ne dit pas.** 575 espèces sont « mesurables » — celles qui
-> ont au moins cinq images dans l'échantillon de 6 000, sur 1 457 classes.
-> L'échantillon sous-représente donc exactement les espèces les plus à
-> risque : les plus rares du jeu sont aussi celles qui n'atteignent pas cinq
-> images tirées. **11 est un plancher, pas un décompte.** Le mesurer vraiment
-> demande `--sample 0`, soit environ trois quarts d'heure sur les 29 000
-> images de test.
+**Et ce 2 % était lui-même une mauvaise mesure.** La passe complète a rendu
+**5 espèces sur 1 422**, contre 11 sur 575 dans l'échantillon. Ce n'est pas
+une amélioration, c'est le même modèle : une espèce à 15 % de top-1 rate
+facilement ses cinq photos, presque jamais ses trente. **Le zéro mesurait le
+nombre d'images de test.** Un seuil, lui, ne bouge pas :
+
+| sur les 1 422 espèces vues au moins cinq fois | |
+|---|---|
+| **sous 25 % de top-1** | **76** (5,3 %) ← la liste de collecte |
+| sous 50 % | 402 (28,3 %) |
+| pas une seule bonne réponse | 5 (0,4 %) |
+
+Voilà la forme réelle du problème : **soixante-seize espèces à reprendre**,
+pas cinq et pas mille quatre cents. Le reste du catalogue tient. Et les
+trois quarts des erreurs viennent d'espèces qui, elles, dépassent 50 % —
+c'est-à-dire de photos ratées sur des plantes connues, pas de classes
+perdues.
 
 #### Les familles franchies, et la seule qui touche l'application
 
+Sur le jeu de test entier, 29 000 images :
+
 | | |
 |---|---|
-| Pinaceae ↔ Cupressaceae | **26** — sapins, épicéas, cyprès, thuyas |
-| **Asparagaceae ↔ Poaceae** | **14** |
-| Amaranthaceae → Polygonaceae | 10 |
-| Rosaceae → Ranunculaceae / Fagaceae / Caprifoliaceae / Fabaceae | 25 en tout |
-| Asteraceae → Fabaceae / Apiaceae / Brassicaceae / Ranunculaceae | 26 en tout |
+| Pinaceae ↔ Cupressaceae | **98** — sapins, épicéas, cyprès, thuyas |
+| Asteraceae ↔ Brassicaceae | 72 |
+| Asteraceae → Apiaceae / Ranunculaceae / Lamiaceae / Fabaceae | 120 en tout |
+| Rosaceae → Caprifoliaceae / Ranunculaceae / Oleaceae / Fabaceae | 98 en tout |
+| **Asparagaceae ↔ Poaceae** | **39** |
+| Amaranthaceae → Polygonaceae | 20 |
 
 Les conifères dominent, et c'est sans conséquence : personne n'identifie un
 thuya depuis son salon. **La paire qui compte est la deuxième.** Asparagaceae,
@@ -1493,9 +1509,14 @@ part des plantes d'appartement du catalogue. Poaceae, ce sont les graminées.
 **C'est le yucca pris pour du maïs du § 6.3, toujours là, et pas résolu.** La
 v4 l'avait traité espèce par espèce, en recollectant des photos de yucca en
 pot ; la vue par famille dit que le défaut n'était pas le yucca mais **la
-forme de feuille**, et qu'il touche tout un rayon de jardinerie. Quatorze
-erreurs sur six mille images est un petit nombre — mais mesuré sur un jeu de
-test aux trois quarts sauvage, pas sur les photos que l'application reçoit.
+forme de feuille**, et qu'il touche tout un rayon de jardinerie — le
+classement par genres le confirme, `yucca → dracaena` pèse 10 à lui seul.
+
+> **Une part de ce classement n'est pas une erreur du modèle.**
+> `hesperocyparis → cupressus` (11) et son symétrique (10) sont en tête des
+> confusions de genre, et pour cause : ce sont **la même plante sous deux
+> noms**, tous deux au catalogue. Aucune photo ne pouvait trancher. Voir le
+> § 12.14 — cinq autres paires sont dans ce cas.
 
 #### Et ce que les espèces les plus ratées ne contiennent pas
 
@@ -1950,4 +1971,65 @@ poids de l'application pour un texte que personne ne lira. Trois voies :
 
 Ce qui n'est pas défendable, c'est l'état actuel : trois documents et un
 commentaire de code annoncent une livraison qui n'a pas lieu.
+
+### 12.14 Six plantes comptées deux fois
+
+`tools/plant_dataset/doublons.py`. Trouvé en cherchant pourquoi
+`hesperocyparis → cupressus` était en tête des confusions de genre du
+§ 12.4 : ce n'était pas une erreur du modèle. **Les deux noms sont la même
+plante, et tous deux sont des classes.**
+
+Les 1 457 noms du catalogue ont été résolus vers leur taxon accepté chez
+GBIF — aucun non résolu — et six couples tombent sur la même clé :
+
+| | | |
+|---|---|---|
+| `dracaena-trifasciata` | `sansevieria-trifasciata` | **la sansevière**, genre changé en 2017 |
+| `coleus-scutellarioides` | `plectranthus-scutellarioides` | **le coléus** |
+| `echinocactus-grusonii` | `kroenleinia-grusonii` | **le coussin de belle-mère** |
+| `cupressus-macrocarpa` | `hesperocyparis-macrocarpa` | le cyprès de Lambert |
+| `citrus-myrtifolia` | `citrus-x-aurantium` | le chinotto, une forme de bigaradier |
+| `citrus-x-bergamia` | `citrus-x-limon` | la bergamote, rattachée au citron par GBIF |
+
+Les quatre premiers ne prêtent pas à discussion. **Les deux derniers sont le
+jugement de GBIF sur le marais taxonomique des agrumes**, et méritent d'être
+confirmés avant fusion — mais ils expliquent au passage pourquoi *Citrus ×
+limon* rate 23 de ses 26 images de test en répondant six fois *Citrus ×
+aurantium* (§ 12.4).
+
+#### Ce que ça coûte, trois fois
+
+- **les images se partagent.** Une plante photographiée sous deux noms
+  nourrit deux classes à demi. Pour la sansevière — l'une des plantes
+  d'appartement les plus vendues — c'est exactement le contraire de ce que
+  le § 12.12 demande ;
+- **la confusion est imperdable.** Aucune photo ne peut trancher, puisqu'il
+  n'y a rien à trancher. Elle compte pourtant dans la matrice comme un
+  défaut, et elle a occupé la tête du classement ;
+- **le décompte de classes est faux d'autant.** 1 457 annoncées, 1 451
+  plantes.
+
+#### Pourquoi il fallait GBIF et pas une heuristique
+
+Le premier réflexe — deux identifiants qui partagent leur épithète dans une
+même famille — rend **34 groupes pour 4 vrais doublons** sur ce catalogue.
+*Populus alba* et *Salix alba* ne sont pas la même plante ; `officinalis`,
+`vulgaris` et `japonica` sont des passe-partout. Et l'heuristique **rate**
+les deux couples d'agrumes, dont l'épithète diffère. GBIF est déjà l'arbitre
+de la collecte et de `synonyms.txt` (§ 6.5) ; il n'y avait pas de raison
+d'en prendre un autre.
+
+**Sa limite, écrite dans l'outil.** La dorsale GBIF retarde sur certains
+transferts récents : *Schefflera arboricola* et *Heptapleurum arboricola* y
+sont deux taxons acceptés, donc l'outil ne les signale pas, alors que la
+littérature récente les tient pour une seule plante — et ce sont deux
+classes du modèle. **L'outil rend les doublons certains, pas tous les
+doublons.**
+
+#### La correction
+
+Dans `plants.csv` : garder le nom accepté, mettre l'autre dans la colonne
+`synonyms`. La collecte suivante réunit les images, la confusion disparaît,
+et six classes fantômes quittent le décompte. Aucun entraînement
+supplémentaire — cela se fait avec la v8, en amont de la collecte.
 
