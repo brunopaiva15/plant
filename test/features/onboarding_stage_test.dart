@@ -1,6 +1,7 @@
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/clay_illustration.dart';
 import 'package:flora/features/onboarding/presentation/growing_plant.dart';
+import 'package:flora/features/onboarding/presentation/iris_float.dart';
 import 'package:flora/features/onboarding/presentation/plant_cluster.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_stage.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ Future<void> _pump(
   WidgetTester tester, {
   required double offset,
   required int page,
+  int count = 5,
   double entry = 1,
   bool reduceMotion = false,
 }) async {
@@ -29,7 +31,7 @@ Future<void> _pump(
       theme: buildFloraTheme(Brightness.light),
       home: Scaffold(
         body: OnboardingStage(
-          count: 5,
+          count: count,
           offset: offset,
           page: page,
           entry: entry,
@@ -59,6 +61,20 @@ void main() {
       await _pump(tester, offset: 1, page: 1);
       expect(find.byType(PlantCluster), findsOneWidget);
       expect(find.byType(ClayIllustration), findsNothing);
+    });
+
+    testWidgets("l'écran du modèle embarqué montre la marque d'Iris, pas une image", (tester) async {
+      await _pump(tester, offset: 5, page: 5, count: OnboardingStage.clay.length);
+      expect(find.byType(IrisFloat), findsOneWidget);
+      expect(find.byType(ClayIllustration), findsNothing);
+    });
+
+    test("chaque place a son objet, et aucune image ne sert deux fois", () {
+      // Les trois places sans image sont la plante qui pousse, la collection
+      // et la marque d'Iris ; les autres ont chacune la sienne.
+      final images = OnboardingStage.clay.whereType<int>().toList();
+      expect(OnboardingStage.clay.length - images.length, 3);
+      expect(images.toSet().length, images.length);
     });
 
     testWidgets('pendant le geste, le voisin entre en scène', (tester) async {

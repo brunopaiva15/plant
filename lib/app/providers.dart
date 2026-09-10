@@ -17,6 +17,7 @@ import '../data/repositories/tag_repository_impl.dart';
 import '../data/repositories/attachment_repository_impl.dart';
 import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
+import '../core/config/app_config.dart';
 import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
 import '../data/services/infomaniak_advisor.dart';
@@ -305,6 +306,17 @@ final localModelStatusProvider = FutureProvider<LocalModelStatus>((ref) async {
   final model = ref.watch(localPlantModelProvider);
   final ready = await model.warmUp();
   return LocalModelStatus(ready: ready, version: model.version, speciesCount: model.speciesCount, error: model.loadError);
+});
+
+/// Le nom du modèle embarqué tel qu'il se présente — « Iris 7 » —, ou
+/// « Iris » tout court tant que ses métadonnées n'ont rien annoncé.
+///
+/// Il ne charge pas le modèle : l'onboarding le nomme sur un de ses premiers
+/// écrans, et le graphe n'a rien à faire là. Le numéro reste celui du
+/// `model.json` livré, jamais un numéro écrit dans le code.
+final modelDisplayNameProvider = FutureProvider<String>((ref) async {
+  final model = ref.watch(localPlantModelProvider);
+  return AppConfig.modelDisplayName(await model.announcedVersion());
 });
 
 class LocalModelStatus {

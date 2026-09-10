@@ -7,10 +7,11 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import 'clay_illustration.dart';
 import 'growing_plant.dart';
+import 'iris_float.dart';
 import 'plant_cluster.dart';
 
-/// La scène de l'onboarding : les cinq objets du jardin, qui se succèdent
-/// au centre de l'écran sur un halo de couleur.
+/// La scène de l'onboarding : les objets du jardin, qui se succèdent au
+/// centre de l'écran sur un halo de couleur.
 ///
 /// Les écrans ne défilent pas l'un après l'autre comme des diapositives : le
 /// halo reste là et change de couleur, les objets changent de place. Celui
@@ -56,6 +57,15 @@ class OnboardingStage extends StatelessWidget {
 
   /// Marge de la scène par rapport aux bords de l'écran.
   static const double inset = Space.page;
+
+  /// L'image d'argile de chaque place, dans l'ordre des écrans, ou `null`
+  /// quand la place a son propre objet — la plante qui pousse, la collection
+  /// qui gravite, la marque d'Iris.
+  ///
+  /// Le numéro d'une image n'est plus celui de sa place depuis qu'Iris s'est
+  /// glissé entre les écrans, et cette liste est la seule à le savoir :
+  /// l'écran qui décode d'avance la lit plutôt que de refaire le compte.
+  static const List<int?> clay = [null, null, 2, 3, 4, null, 5, 6];
 
   /// Taille visible de la scène : elle rapetisse à l'approche du dernier
   /// écran, qui a ses propres boutons sous le texte, puis se referme quand on
@@ -136,15 +146,21 @@ class OnboardingStage extends StatelessWidget {
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
 
     final vivant = index == page && near < 0.02;
-    // Les deux premiers objets ne sont pas des images posées : la plante de
-    // l'icône qui pousse sur l'écran de bienvenue, puis la collection qui
-    // gravite sur « Toutes vos plantes, ici ». Les suivants sont les objets
-    // d'argile, dans l'ordre des écrans.
-    Widget object = switch (index) {
-      0 => GrowingPlant(side: side, animate: vivant),
-      1 => PlantCluster(side: side, animate: vivant),
-      _ => ClayIllustration(slide: index, side: side, animate: vivant),
-    };
+    // Trois places ne sont pas des images posées : la plante de l'icône qui
+    // pousse sur l'écran de bienvenue, la collection qui gravite sur
+    // « Toutes vos plantes, ici », et la marque d'Iris sur l'écran du modèle
+    // embarqué. Les autres sont les objets d'argile, dans l'ordre de [clay].
+    final image = index < clay.length ? clay[index] : null;
+    Widget object;
+    if (image != null) {
+      object = ClayIllustration(slide: image, side: side, animate: vivant);
+    } else {
+      object = switch (index) {
+        0 => GrowingPlant(side: side, animate: vivant),
+        1 => PlantCluster(side: side, animate: vivant),
+        _ => IrisFloat(side: side, animate: vivant),
+      };
+    }
     if (blur > 0.05) {
       object = ImageFiltered(
         imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),

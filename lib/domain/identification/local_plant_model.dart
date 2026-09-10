@@ -13,6 +13,15 @@ abstract class LocalPlantModel {
   /// les mises à jour.
   String? get version;
 
+  /// Le numéro que les métadonnées annoncent, lu sans charger le graphe.
+  ///
+  /// [version] ne le connaît qu'une fois le modèle chargé, et l'onboarding
+  /// nomme « Iris 7 » sur un de ses premiers écrans : réveiller TensorFlow
+  /// pour un numéro coûterait l'ouverture instantanée que le chargement
+  /// paresseux protège. Rend `null` si les métadonnées manquent — le nom
+  /// s'écrit alors sans numéro plutôt qu'avec un numéro inventé.
+  Future<String?> announcedVersion();
+
   /// Nombre d'espèces que le modèle sait nommer, 0 s'il n'est pas chargé.
   int get speciesCount;
 
@@ -44,6 +53,9 @@ class NoLocalModel implements LocalPlantModel {
 
   @override
   String? get version => null;
+
+  @override
+  Future<String?> announcedVersion() async => null;
 
   @override
   int get speciesCount => 0;

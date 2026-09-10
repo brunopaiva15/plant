@@ -3429,6 +3429,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.';
 
   @override
+  String onbIrisTitle(String name) {
+    return '$name reconnaît vos plantes hors ligne';
+  }
+
+  @override
+  String get onbIrisBody =>
+      'Le modèle est embarqué dans l\'application, vos photos ne partent nulle part.';
+
+  @override
   String get onbPrivacyTitle => 'Tout reste sur votre téléphone';
 
   @override

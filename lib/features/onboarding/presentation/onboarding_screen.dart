@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -21,8 +22,11 @@ import 'plant_cluster.dart';
 class _Slide {
   const _Slide({required this.title, required this.body, required this.tint});
 
-  final String Function(AppLocalizations) title;
-  final String Function(AppLocalizations) body;
+  /// Le texte de l'écran, dans la langue de l'app et sous le nom que le
+  /// modèle embarqué s'est donné — « Iris 7 ». Seul son écran s'en sert ; les
+  /// autres l'ignorent.
+  final String Function(AppLocalizations l10n, String model) title;
+  final String Function(AppLocalizations l10n, String model) body;
 
   /// Couleur d'ambiance de l'écran.
   final Color Function(FloraColors) tint;
@@ -30,12 +34,16 @@ class _Slide {
 
 final _slides = <_Slide>[
   // La bienvenue : la plante de l'icône y pousse, de la terre nue à l'adulte.
-  _Slide(title: (l) => l.onbWelcomeTitle, body: (l) => l.onbWelcomeBody, tint: (c) => c.sage),
-  _Slide(title: (l) => l.onboardingTitle, body: (l) => l.onboardingSubtitle, tint: (c) => c.sage),
-  _Slide(title: (l) => l.onbTodayTitle, body: (l) => l.onbTodayBody, tint: (c) => c.water),
-  _Slide(title: (l) => l.onbCareTitle, body: (l) => l.onbCareBody, tint: (c) => c.sun),
-  _Slide(title: (l) => l.onbGardenTitle, body: (l) => l.onbGardenBody, tint: (c) => c.terracotta),
-  _Slide(title: (l) => l.onbPrivacyTitle, body: (l) => l.onbPrivacyBody, tint: (c) => c.rose),
+  _Slide(title: (l, _) => l.onbWelcomeTitle, body: (l, _) => l.onbWelcomeBody, tint: (c) => c.sage),
+  _Slide(title: (l, _) => l.onboardingTitle, body: (l, _) => l.onboardingSubtitle, tint: (c) => c.sage),
+  _Slide(title: (l, _) => l.onbTodayTitle, body: (l, _) => l.onbTodayBody, tint: (c) => c.water),
+  _Slide(title: (l, _) => l.onbCareTitle, body: (l, _) => l.onbCareBody, tint: (c) => c.sun),
+  _Slide(title: (l, _) => l.onbGardenTitle, body: (l, _) => l.onbGardenBody, tint: (c) => c.terracotta),
+  // Iris, le modèle embarqué, sous sa marque et son numéro. Il vient juste
+  // avant la promesse de vie privée, qu'il tient déjà : reconnaître sans
+  // réseau, c'est n'avoir rien à envoyer.
+  _Slide(title: (l, model) => l.onbIrisTitle(model), body: (l, _) => l.onbIrisBody, tint: (c) => c.sage),
+  _Slide(title: (l, _) => l.onbPrivacyTitle, body: (l, _) => l.onbPrivacyBody, tint: (c) => c.rose),
 ];
 
 /// Couleur de l'étape « Où sont vos plantes ? », qui suit les présentations.
@@ -74,10 +82,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   bool _addPlant = false;
 
   /// Hauteur du bloc de texte, mesurée sur le plus long des écrans, et la
-  /// clé de mesure qui l'a produite : la largeur, la taille de police et la
-  /// langue. Elle ne se recalcule que si l'un des trois change.
+  /// clé de mesure qui l'a produite : la largeur, la taille de police, la
+  /// langue et le nom du modèle. Elle ne se recalcule que si l'un des quatre
+  /// change.
   double _textBlock = 0;
   Object? _textBlockKey;
+
+  /// Le nom que le modèle embarqué s'est donné, « Iris 7 », ou « Iris » tant
+  /// que ses métadonnées n'ont rien annoncé. Relevé à chaque construction,
+  /// parce que la mesure du texte et le décodage des images se font aussi
+  /// hors d'elle, une image plus tard.
+  String _model = AppConfig.modelName;
 
   /// L'étape du lieu vient après les présentations : elle garde la scène et
   /// son objet, mais a ses propres boutons.
@@ -107,7 +122,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   double _textBlockHeight(BuildContext context) {
     final mq = MediaQuery.of(context);
     final width = mq.size.width - 2 * Space.page;
-    final key = (width, mq.textScaler.scale(100), Localizations.localeOf(context).toString());
+    final key = (width, mq.textScaler.scale(100), Localizations.localeOf(context).toString(), _model);
     if (key != _textBlockKey) {
       _textBlockKey = key;
       _textBlock = _measureTextBlock(context, width);
@@ -124,8 +139,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final body = base.merge(onboardingBodyStyle(context));
     var tallest = 0.0;
     for (final slide in _slides) {
-      final t = RisingTitle.layoutLines(slide.title(l10n), title, width, scaler, direction).fold(0.0, (h, line) => h + line.height);
-      final painter = TextPainter(text: TextSpan(text: slide.body(l10n), style: body), textDirection: direction, textScaler: scaler)..layout(maxWidth: width);
+      final t = RisingTitle.layoutLines(slide.title(l10n, _model), title, width, scaler, direction).fold(0.0, (h, line) => h + line.height);
+      final painter = TextPainter(text: TextSpan(text: slide.body(l10n, _model), style: body), textDirection: direction, textScaler: scaler)..layout(maxWidth: width);
       tallest = math.max(tallest, t + Space.sm + painter.height);
       painter.dispose();
     }
@@ -163,12 +178,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (final i in {page, page + 1}) {
       if (i >= _objectCount) continue;
-      // Le premier objet charge sa propre séquence ; le deuxième a cinq
-      // images plutôt qu'une.
-      if (i == 1) {
+      // La collection a cinq images plutôt qu'une ; les objets d'argile en ont
+      // une, dont le numéro n'est pas celui de leur place. La plante qui
+      // pousse charge sa propre séquence, et la marque d'Iris se peint : ni
+      // l'une ni l'autre n'a d'image à décoder.
+      final image = OnboardingStage.clay[i];
+      if (image != null) {
+        ClayIllustration.precache(context, image, side);
+      } else if (i == 1) {
         PlantCluster.precache(context, side);
-      } else if (i >= 2) {
-        ClayIllustration.precache(context, i, side);
       }
     }
   }
@@ -225,6 +243,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final l10n = context.l10n;
     final c = context.colors;
     final reduce = MediaQuery.disableAnimationsOf(context);
+    // Le modèle n'est pas chargé pour si peu : seul son `model.json` est lu,
+    // et le numéro arrive une image ou deux après le premier écran — bien
+    // avant que le doigt n'atteigne celui d'Iris.
+    _model = ref.watch(modelDisplayNameProvider).value ?? AppConfig.modelName;
     final onSlides = _page < _slides.length;
     final current = math.min(_page, _objectCount - 1);
     final tint = _tint(c);
@@ -281,8 +303,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                       for (final (i, slide) in _slides.indexed)
                         AnimatedBuilder(
                           animation: _entry,
-                          builder: (context, _) =>
-                              _SlideText(slide: slide, t: reduce || i != _page ? 1.0 : _entry.value, parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
+                          builder: (context, _) => _SlideText(
+                            slide: slide,
+                            model: _model,
+                            t: reduce || i != _page ? 1.0 : _entry.value,
+                            parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0),
+                          ),
                         ),
                       _PlacePage(onDone: () => _goTo(_nameIndex)),
                       _NamePage(controller: _name, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),
@@ -357,9 +383,13 @@ class _SkipButton extends StatelessWidget {
 /// Le texte d'un écran : le titre qui se lève ligne à ligne, puis la phrase.
 /// Rangé à gauche, sous la scène — un titre d'affiche, pas une légende.
 class _SlideText extends StatelessWidget {
-  const _SlideText({required this.slide, required this.t, required this.parallax});
+  const _SlideText({required this.slide, required this.model, required this.t, required this.parallax});
 
   final _Slide slide;
+
+  /// Le nom du modèle embarqué, pour l'écran qui le nomme.
+  final String model;
+
   final double t;
   final double parallax;
 
@@ -390,14 +420,14 @@ class _SlideText extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                RisingTitle(text: slide.title(l10n), style: onboardingTitleStyle(context), t: t),
+                RisingTitle(text: slide.title(l10n, model), style: onboardingTitleStyle(context), t: t),
                 const SizedBox(height: Space.sm),
                 Stagger(
                   t: t,
                   index: 3,
                   count: 4,
                   slide: 10,
-                  child: Text(slide.body(l10n), style: onboardingBodyStyle(context)),
+                  child: Text(slide.body(l10n, model), style: onboardingBodyStyle(context)),
                 ),
               ],
             ),

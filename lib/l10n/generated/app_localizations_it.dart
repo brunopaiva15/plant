@@ -3417,6 +3417,15 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ogni annaffiatura, ogni rinvaso è datato e archiviato con la pianta.';
 
   @override
+  String onbIrisTitle(String name) {
+    return '$name riconosce le tue piante offline';
+  }
+
+  @override
+  String get onbIrisBody =>
+      'Il modello è dentro l\'app, le tue foto non escono dal telefono.';
+
+  @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';
 
   @override

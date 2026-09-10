@@ -43,9 +43,10 @@ saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
 14 dans un bouton). Avec *reduced motion*, la motte reste posée.
 
 ### La marque d'Iris (`iris_mark.dart`)
-Le logo du modèle embarqué, dans *Réglages > Identification* : une feuille
-peinte par `paintClay`, sa nervation, et en son centre un iris clair à cœur de
-terre cuite. Iris, c'est l'œil, le diaphragme et la fleur.
+Le logo du modèle embarqué, dans *Réglages > Identification* et au centre de
+son écran d'onboarding : une feuille peinte par `paintClay`, sa nervation, et
+en son centre un iris clair à cœur de terre cuite. Iris, c'est l'œil, le
+diaphragme et la fleur.
 
 Sans trois écarts, une vésique symétrique ne serait qu'un œil : la feuille
 penche, sa base est plus ronde que sa pointe, et ses nervures partent toutes
@@ -55,6 +56,10 @@ Feuille en `sage`, iris en `onAccent`, cœur en `terracotta` : trois paires déj
 tenues par le contrat de contraste, donc elle se retourne seule en sombre et en
 contraste élevé. Décorative par défaut ; `semanticLabel` ne se donne que si
 elle est seule.
+
+Sur la scène de l'onboarding (`iris_float.dart`) elle prend la place d'un objet
+d'argile, à la même respiration. Sans l'ombre au sol de `ClayFloat` : elle porte
+déjà la sienne, et deux ombres la feraient flotter deux fois.
 
 ## Couleurs (`design_system/tokens/colors.dart`)
 | Token | Clair | Sombre | Usage |

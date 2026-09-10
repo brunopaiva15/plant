@@ -3412,6 +3412,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Jedes Gießen, jedes Umtopfen wird datiert und bei der Pflanze abgelegt.';
 
   @override
+  String onbIrisTitle(String name) {
+    return '$name erkennt deine Pflanzen offline';
+  }
+
+  @override
+  String get onbIrisBody =>
+      'Das Modell steckt in der App, deine Fotos verlassen das Telefon nicht.';
+
+  @override
   String get onbPrivacyTitle => 'Alles bleibt auf deinem Handy';
 
   @override
