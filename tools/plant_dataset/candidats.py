@@ -87,6 +87,32 @@ def retenir(resultats: list[dict], connus: set[str], rangs: tuple[str, ...] = RA
     return out
 
 
+def inscrire(connues: list, candidates: list[tuple[str, int]]) -> list:
+    """Les lignes de `plants.csv` à ajouter pour ces candidates.
+
+    C'est la pièce qui manquait entre la sélection et la collecte :
+    `build_dataset.py --only-file` ne **filtre** que les plantes déjà
+    présentes dans `plants.csv`. Une candidate absente du catalogue n'est
+    pas collectée — elle est ignorée en silence, ce qui ne se voit qu'après
+    la collecte, dans un décompte plus court que prévu.
+
+    Les lignes créées ne portent que ce que le nom donne : identifiant
+    interne, genre, épithète. La famille, la clé GBIF et l'identifiant
+    Wikidata viennent ensuite d'`enrich_plants.py --gbif --wikidata`, et les
+    noms courants du catalogue de l'app.
+    """
+    from plant_dataset.taxonomy import PlantEntry
+    connus = {e.internal_id for e in connues}
+    ajouts = []
+    for nom, _ in candidates:
+        entree = PlantEntry.from_name(nom)
+        if entree.internal_id in connus:
+            continue
+        connus.add(entree.internal_id)
+        ajouts.append(entree)
+    return ajouts
+
+
 def deja_au_catalogue(plants: Path, labels: Path | None = None) -> set[str]:
     """Ce qu'on a déjà : le catalogue de collecte, et les classes livrées.
 
@@ -128,6 +154,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument('--pause', type=float, default=1.0, help='cadence iNaturalist ; en dessous, 429')
     ap.add_argument('--out', help='un nom par ligne, prêt pour disponibilite.py')
     ap.add_argument('--csv', help='avec le nombre d\'observations cultivées')
+    ap.add_argument('--inscrire', action='store_true',
+                    help='ajouter les candidates à plants.csv — sans quoi la collecte les ignore')
     args = ap.parse_args(argv)
 
     from plant_dataset.fetchers.inaturalist import InatClient   # réseau : pas à l'import du module
@@ -163,6 +191,16 @@ def main(argv: list[str] | None = None) -> int:
             w = _csv.writer(f)
             w.writerow(['espece', 'observations_cultivees'])
             w.writerows(candidates)
+
+    if args.inscrire:
+        from plant_dataset.taxonomy import load_plants, save_plants
+        connues = load_plants(args.plants)
+        ajouts = inscrire(connues, candidates)
+        save_plants(args.plants, connues + ajouts)
+        print(f'\n{len(ajouts)} lignes ajoutées à {args.plants} '
+              f'({len(connues)} → {len(connues) + len(ajouts)})')
+        print('→ compléter famille, clé GBIF et Wikidata :\n'
+              '   python3 enrich_plants.py --gbif --wikidata')
     return 0
 
 

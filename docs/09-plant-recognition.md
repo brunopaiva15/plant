@@ -1930,6 +1930,26 @@ nombre de classes, à raison de deux octets par classe et par canal.
 celui qui photographie son salon, pour les espèces qu'il ne photographiera
 jamais. Passer de 1 457 à 5 000 ne peut qu'aggraver ce chiffre.
 
+#### La pièce qui manquait entre la sélection et la collecte
+
+`build_dataset.py --only-file` ne **filtre** que les plantes déjà présentes
+dans `plants.csv` : une candidate absente du catalogue n'est pas collectée,
+**elle est ignorée en silence**. Le défaut ne se voit qu'après la collecte,
+dans un décompte plus court que prévu — quinze heures pour rien.
+
+D'où `candidats.py --inscrire`, qui ajoute les candidates retenues au
+catalogue avant de collecter. Les lignes créées ne portent que ce que le nom
+donne — identifiant interne, genre, épithète ; la famille, la clé GBIF et
+l'identifiant Wikidata viennent ensuite d'`enrich_plants.py`.
+
+La chaîne complète, dans l'ordre :
+
+```bash
+python3 candidats.py --combien 4220 --out candidats_v8.txt --inscrire
+python3 enrich_plants.py --gbif --wikidata
+# puis la collecte en parts, § 3 de docs/10
+```
+
 #### La décision se déplace, elle ne se prend pas maintenant
 
 **Collecter ne force pas à entraîner.** Les images de 4 000 candidates

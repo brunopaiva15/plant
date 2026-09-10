@@ -71,3 +71,28 @@ def test_le_deja_connu_reunit_le_catalogue_et_les_classes_livrees(tmp_path):
 
 def test_sans_fichier_le_catalogue_connu_est_vide(tmp_path):
     assert deja_au_catalogue(tmp_path / 'absent.csv', tmp_path / 'absent.txt') == set()
+
+
+def test_inscrire_rend_les_lignes_qui_manquent_au_catalogue():
+    # `build_dataset.py --only-file` ne fait que *filtrer* plants.csv : une
+    # candidate absente du catalogue n'est pas collectée, elle est ignorée
+    # en silence. C'est la pièce qui manquait entre les deux.
+    import sys
+    from pathlib import Path as P
+    sys.path.insert(0, str(P(__file__).resolve().parents[1]))
+    from candidats import inscrire
+    from plant_dataset.taxonomy import PlantEntry
+
+    connues = [PlantEntry.from_name('Monstera deliciosa')]
+    ajouts = inscrire(connues, [('Monstera deliciosa', 9), ('Ixora coccinea', 28355)])
+    assert [e.internal_id for e in ajouts] == ['ixora-coccinea']
+    assert ajouts[0].genus == 'Ixora' and ajouts[0].epithet == 'coccinea'
+
+
+def test_inscrire_ne_double_pas_une_candidate_repetee():
+    import sys
+    from pathlib import Path as P
+    sys.path.insert(0, str(P(__file__).resolve().parents[1]))
+    from candidats import inscrire
+    ajouts = inscrire([], [('Aloe vera', 5), ('aloe vera', 4)])
+    assert len(ajouts) == 1
