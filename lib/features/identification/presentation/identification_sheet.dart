@@ -92,14 +92,14 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     setState(() => _future = identifier.identifyRemotely(_files, language: _language));
   }
 
-  /// Le modèle hésite-t-il ? C'est la politique de la cascade qui le dit,
-  /// celle-là même qui décide d'appeler ou non le service distant, plutôt
-  /// qu'un seuil recopié ici qui finirait par diverger.
-  bool _ambiguous(List<IdentificationCandidate> results) {
+  /// Faut-il proposer une photo de plus, et sur quel ton ? C'est la
+  /// politique de la cascade qui le dit, celle-là même qui décide d'appeler
+  /// ou non le service distant, plutôt qu'un seuil recopié ici qui finirait
+  /// par diverger.
+  SecondPhotoOffer _offer(List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    if (identifier is! CascadeIdentifier || results.isEmpty) return false;
-    if (results.first.source != IdentificationSource.local) return false;
-    return identifier.policy.decide(results) != IdentificationVerdict.accepted;
+    if (identifier is! CascadeIdentifier) return SecondPhotoOffer.none;
+    return secondPhotoOffer(identifier.policy, results, photos: _paths.length, maxPhotos: maxPhotos);
   }
 
   /// Une photo de plus, et on recommence. C'est gratuit, hors ligne et
@@ -174,6 +174,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               if (snap.hasError) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);
               final results = (snap.data ?? const <IdentificationCandidate>[]).take(5).toList();
               if (results.isEmpty) return EmptyState(emoji: '🤔', title: l10n.identifyNone, compact: true);
+              final offer = _offer(results);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -190,7 +191,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   _PhotoSourceNote(candidates: results),
                   // La photo d'abord, l'appel réseau ensuite : l'une est
                   // gratuite et immédiate, l'autre se prend sur un quota.
-                  if (_paths.length < maxPhotos && _ambiguous(results)) ...[
+                  if (offer == SecondPhotoOffer.prominent) ...[
                     const SizedBox(height: Space.md),
                     Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
                     const SizedBox(height: Space.xs),
@@ -199,6 +200,20 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                       icon: CupertinoIcons.camera,
                       expand: true,
                       style: FloraButtonStyle.secondary,
+                      onPressed: _picking ? null : _chooseSource,
+                    ),
+                  ],
+                  // Réponse acceptée : une sur dix est fausse et ne se voyait
+                  // jamais offrir le geste qui la corrigerait. On le propose
+                  // donc aussi ici — mais en dessous et sans phrase, pour ne
+                  // pas mettre un geste en travers d'un parcours qui marchait.
+                  if (offer == SecondPhotoOffer.quiet) ...[
+                    const SizedBox(height: Space.sm),
+                    FloraButton(
+                      label: l10n.identifyConfirmWithPhoto,
+                      icon: CupertinoIcons.camera,
+                      expand: true,
+                      style: FloraButtonStyle.ghost,
                       onPressed: _picking ? null : _chooseSource,
                     ),
                   ],

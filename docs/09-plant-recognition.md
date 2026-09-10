@@ -1356,19 +1356,42 @@ attendre qu'elle sauve les espèces les plus fragiles. Pour celles-là, il
 faudra autre chose — et le § 12.8 montre que PlantNet-300K, lui, en tient des
 centaines pour certaines.
 
-### 12.3 La deuxième photo, là où elle n'est pas encore proposée
+### 12.3 ✅ La deuxième photo, là où elle n'était pas proposée
 
-Le bouton « ajouter une photo » n'apparaît que si la politique hésite
-(`_ambiguous`, dans `identification_sheet.dart` et `create_plant_flow.dart`).
-Une réponse **acceptée** ne le propose donc jamais — or une réponse acceptée
-seule à 0,60 est juste **82,8 %** du temps (§ 6.6). Un sixième des réponses
-affirmées sont fausses et ne se voient jamais offrir le geste qui les
-corrigerait : à deux photos, la justesse passe à 92,3 %.
+Le bouton « ajouter une photo » n'apparaissait que si la politique hésitait.
+Une réponse **acceptée** ne le proposait donc jamais — or une réponse
+acceptée à 0,70 est juste **89,9 %** du temps sur les plantes d'appartement
+en pot (§ 12.12), et 89,1 % sur l'ensemble du test (§ 6.7). **Une réponse
+affirmée sur dix est fausse**, et c'était exactement celle à qui le geste
+correctif n'était jamais offert : le modèle avait le bon goût de douter, ou
+l'utilisateur n'avait rien.
 
-Élargir le déclencheur ne demande aucun réentraînement. Reste à trancher ce
-qu'on ne veut pas casser : proposer une photo de plus après une bonne réponse
-ajoute un geste à un parcours qui marchait. La piste raisonnable est de la
-proposer sous les candidats, sans l'imposer, plutôt qu'en travers du chemin.
+Le geste, lui, est le meilleur de tout ce document : deux photos valent
+**13,7 points de top-1**, plus que dix heures de calcul et 160 000 images
+(§ 6.6). Il est gratuit, hors ligne, instantané.
+
+**Ce qui a été fait.** La décision quitte les deux écrans pour la couche
+domaine — `secondPhotoOffer()`, à côté de `FallbackPolicy` — et rend trois
+états au lieu d'un booléen :
+
+| | quand | comment |
+|---|---|---|
+| `prominent` | le modèle hésite | phrase d'explication + bouton secondaire, comme avant |
+| `quiet` | la réponse est acceptée | bouton fantôme sous les candidats, sans phrase |
+| `none` | plus de photo possible, ou réponse venue de Pl@ntNet | rien |
+
+Les deux écrans (`identification_sheet.dart`, `create_plant_flow.dart`)
+partageaient jusqu'ici deux copies identiques de la règle ; ils appellent
+maintenant la même fonction, testée sans widget
+(`test/domain/identification/second_photo_offer_test.dart`).
+
+Le troisième cas mérite son mot : sur une réponse **distante**, une photo de
+plus ne rejouerait rien sans un nouvel appel, donc sans entamer le quota
+mensuel. Ce n'est plus le même geste gratuit, et on ne le propose pas.
+
+Et le registre effacé est le point de la chose. Proposer une photo de plus
+après une bonne réponse ajoute un geste à un parcours qui marchait : sous
+les candidats, sans phrase, sans l'imposer.
 
 ### 12.4 ✅ La matrice de confusion par genre
 
