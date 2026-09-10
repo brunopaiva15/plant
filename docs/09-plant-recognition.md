@@ -966,6 +966,17 @@ Deux enseignements de cet entraînement, tous deux corrigés :
 
 ### 6.9 Recette
 
+> **C'est le plan d'origine, pas la recette livrée**, et il est gardé pour
+> ce qu'il montre du chemin parcouru. Quatre points n'ont jamais été suivis
+> et un lecteur pressé les prendrait pour l'existant : la tête n'a **pas**
+> de classe « autre » — le modèle a 1 457 sorties, pas 1 458, et le § 12.7
+> explique pourquoi elle n'a toujours pas été faite ; EfficientNet-Lite0 n'a
+> jamais été essayé ; le réglage fin ne dégèle pas « tout le réseau » mais
+> ses cent dernières couches (§ 6.7) ; et le déséquilibre est traité par des
+> poids de classe dans la perte, non par un échantillonnage pondéré. La
+> recette réellement appliquée est celle du § 6.7 et du
+> [`README` de `tools/plant_model`](../tools/plant_model/README.md).
+
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
 | 1 ✅ | 95 plantes d'intérieur et succulentes | 120 | premier `.tflite` livré |
@@ -1003,6 +1014,14 @@ Livrables du modèle : le fichier de poids, `labels.txt` (une ligne par
 classe : `internal_id`), `model.json` (version, date, taille d'entrée,
 normalisation, N classes, empreinte SHA-256, seuils recommandés) et
 `ATTRIBUTIONS.md`.
+
+> **Ce qui a été fait.** TFLite tourne sur les deux plateformes, par
+> `tflite_flutter` : ni Core ML, ni `coremltools`, ni pivot ONNX n'existent
+> dans le dépôt, et l'app n'a pas de canal de plateforme pour le modèle. La
+> classe s'appelle `TflitePlantModel`, sans `Local`. Et `ATTRIBUTIONS.md`
+> est bien produit par la collecte, mais **dans `dataset/`, sur la machine
+> d'entraînement** : il n'est pas dans `assets/model/`, donc il n'est pas
+> livré avec l'application (voir § 12.13).
 
 Dans l'app : une classe `TfliteLocalPlantModel implements LocalPlantModel`
 qui charge le fichier, redimensionne la photo, normalise, exécute et rend
@@ -1723,3 +1742,50 @@ heures de collecte et deux heures d'entraînement par recette ; le premier
 coûte une collecte de quatorze noms. **Ils ne se valent pas, et le petit
 passe devant** — il ne demande même pas d'attendre la v8, `--min-train`
 mis à part.
+
+### 12.13 Les attributions ne sortent pas de la machine d'entraînement
+
+La collecte fait ce qu'il faut : `write_attributions` écrit, pour chacune
+des 290 131 images gardées, son auteur, sa licence et le lien vers
+l'observation (`dataset/ATTRIBUTIONS.md` et `dataset/attributions.csv`).
+Son commentaire dit « c'est ce qu'on livrera avec le modèle », et le
+[`README` du collecteur](../tools/plant_dataset/README.md) écrit qu'ils
+« doivent être livrés avec le modèle ». Le § 7 les compte parmi les
+livrables.
+
+**Ils ne le sont pas.** `assets/model/` contient `plants.tflite`,
+`labels.txt` et `model.json`, rien d'autre — et `pubspec.yaml` embarquant le
+dossier entier, il suffirait d'y déposer le fichier pour qu'il parte dans
+l'app. Deux choses à trancher, et elles sont indépendantes.
+
+#### 1. La sauvegarde, qui n'attend pas
+
+`dataset/` est dans `.gitignore` et vit sur une machine louée à l'heure.
+**Ce fichier est la seule trace de la provenance de 290 131 images** : d'où
+elles viennent, sous quelle licence, de qui. Le jeu se recollecte — les
+images sont toujours chez GBIF et iNaturalist —, mais pas à l'identique :
+une observation retirée, une licence changée, et la trace de ce que le
+modèle *livré* a réellement vu est perdue. `attributions.csv` compressé pèse
+quelques dizaines de mégaoctets ; il devrait sortir de la VM avant qu'elle
+ne soit rendue.
+
+#### 2. Ce qu'on livre dans l'app, qui demande une décision
+
+Le fichier entier fait de l'ordre de **40 Mo** — une ligne de 130 octets par
+image, contre 8,8 Mo pour le modèle. Le livrer tel quel quadruplerait le
+poids de l'application pour un texte que personne ne lira. Trois voies :
+
+- **une forme condensée** dans `assets/model/` : une ligne par auteur
+  distinct plutôt que par image, avec les licences et les sources. Il faut
+  d'abord compter les auteurs distincts — le chiffre n'existe pas ;
+- **le fichier entier publié à côté** (dépôt ou site), l'app y renvoyant
+  depuis un écran de crédits qu'elle n'a pas encore ;
+- **écrire noir sur blanc qu'on ne le livre pas**, et pourquoi. C'est
+  défendable — la question de savoir si des poids sont une adaptation des
+  images n'est pas tranchée —, mais alors il faut corriger les trois
+  endroits qui promettent le contraire, plutôt que de les laisser dire une
+  chose que le dépôt ne fait pas.
+
+Ce qui n'est pas défendable, c'est l'état actuel : trois documents et un
+commentaire de code annoncent une livraison qui n'a pas lieu.
+

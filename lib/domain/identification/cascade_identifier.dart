@@ -204,7 +204,7 @@ class CascadeIdentifier implements PlantIdentifier {
     }
   }
 
-  /// Sous ce score, le modèle ne rend pas un candidat (`TfliteLocalPlantModel`).
+  /// Sous ce score, le modèle ne rend pas un candidat (`TflitePlantModel`).
   /// Une espèce absente d'une liste vaut donc *au plus* cela.
   static const _absentScore = 0.01;
 
