@@ -3406,7 +3406,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get onbIrisBody => 'One photo, and it suggests a name.';
+  String get onbIrisBody =>
+      'One photo, and it suggests a name. If unsure, it sends the photo online.';
 
   @override
   String get onbPrivacyTitle => 'Everything stays on your phone';

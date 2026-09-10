@@ -3422,7 +3422,8 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get onbIrisBody => 'Una foto, e propone un nome.';
+  String get onbIrisBody =>
+      'Una foto, e propone un nome. Se esita, la foto va online.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';

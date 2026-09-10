@@ -3417,7 +3417,8 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get onbIrisBody => 'Ein Foto, und ein Name wird vorgeschlagen.';
+  String get onbIrisBody =>
+      'Ein Foto, und ein Name wird vorgeschlagen. Bei Zweifeln geht das Foto online.';
 
   @override
   String get onbPrivacyTitle => 'Alles bleibt auf deinem Handy';

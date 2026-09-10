@@ -1074,7 +1074,7 @@
   "onbGardenTitle": "Räume, Fotos, Kalender",
   "onbGardenBody": "Jedes Gießen, jedes Umtopfen wird datiert und bei der Pflanze abgelegt.",
   "onbIrisTitle": "{name} erkennt deine Pflanzen offline",
-  "onbIrisBody": "Ein Foto, und ein Name wird vorgeschlagen.",
+  "onbIrisBody": "Ein Foto, und ein Name wird vorgeschlagen. Bei Zweifeln geht das Foto online.",
   "onbPrivacyTitle": "Alles bleibt auf deinem Handy",
   "onbPrivacyBody": "Kein Pflichtkonto, keine Werbung.",
   "onbStart": "Loslegen",

@@ -27,8 +27,12 @@ l'application dit « Iris » tout court plutôt que d'inventer un numéro.
 ### Là où l'utilisateur le rencontre
 
 L'onboarding le présente en un écran, entre le jardin et la vie privée : la
-marque au centre de la scène, « Iris reconnaît vos plantes hors ligne », et le
-geste qui va avec — une photo, un nom proposé.
+marque au centre de la scène, « Iris reconnaît vos plantes hors ligne », le
+geste qui va avec — une photo, un nom proposé — et la cascade en une
+proposition, « s'il hésite, elle part en ligne ». C'est le seul endroit où le
+repli se dit avant qu'on en ait besoin ; le taire ici pour l'écrire dans les
+réglages, juste avant un écran qui promet que tout reste sur l'appareil,
+reviendrait à le cacher.
 
 **Sans numéro.** L'écran dit « Iris », `AppConfig.modelName` et rien de plus.
 Le numéro répond d'une question qu'on ne se pose pas encore en découvrant
