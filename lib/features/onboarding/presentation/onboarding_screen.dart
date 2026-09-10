@@ -58,11 +58,29 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with TickerProviderStateMixin {
   final _name = TextEditingController();
   final _pages = PageController();
+
+  /// L'entrée de la scène, jouée une fois à l'ouverture : le halo s'épanouit
+  /// et le premier objet se pose.
+  ///
+  /// Elle ne se rejoue pas d'un écran à l'autre. La rejouer revenait à
+  /// remettre à zéro, en plein geste, ce qui était déjà en place : le halo
+  /// se refermait d'un dixième et l'objet du milieu sautait de vingt points,
+  /// à mi-parcours de chaque changement d'écran. Le passage d'un écran au
+  /// suivant est porté par le carrousel lui-même, qui ne saute jamais.
   late final _entry = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..forward();
 
-  /// Le souffle du fond : une seconde et demie à l'arrivée sur chaque écran,
-  /// qui ralentit et se pose. Rien ne bouge à perpétuité.
+  /// Le souffle du fond : une seconde et demie à l'ouverture, qui ralentit et
+  /// se pose. Comme l'entrée, il ne se rejoue pas — les lueurs auraient sauté
+  /// avec elle. Rien ne bouge à perpétuité.
   late final _float = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..forward();
+
+  /// La levée du texte, celle-là rejouée à chaque écran neuf : le titre y
+  /// sort ligne à ligne, puis la phrase.
+  late final _reveal = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..forward();
+
+  /// Les écrans dont le texte est déjà levé. Revenir sur ses pas ne le
+  /// relève pas, et surtout ne le rabat pas.
+  final _revealed = <int>{0};
 
   int _page = 0;
 
@@ -149,6 +167,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     _pages.dispose();
     _entry.dispose();
     _float.dispose();
+    _reveal.dispose();
     super.dispose();
   }
 
@@ -184,14 +203,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     if (page != _nameIndex) FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _page = page);
     _keepIllustrations(page);
-    // Chaque écran rejoue son entrée à l'arrivée, jamais avant ; le fond
-    // reprend son souffle en même temps.
-    _entry
-      ..reset()
-      ..forward();
-    _float
-      ..reset()
-      ..forward();
+    // Le texte d'un écran neuf se lève ; celui d'un écran déjà lu est déjà
+    // debout, et le retrouver ne le fait pas repartir du bas.
+    if (page >= _slides.length) return;
+    if (_revealed.add(page)) {
+      _reveal
+        ..reset()
+        ..forward();
+    } else {
+      _reveal.value = 1;
+    }
+  }
+
+  /// Où en est la levée du texte de l'écran [i] : il attend sous la ligne
+  /// tant qu'on ne l'a pas atteint, se lève une fois arrivé, et reste levé
+  /// derrière soi. Aucun de ces passages ne saute — c'est toujours l'écran
+  /// courant qui bouge, et lui seul.
+  double _revealOf(int i) {
+    if (i == _page) return _reveal.value;
+    return _revealed.contains(i) ? 1 : 0;
   }
 
   void _toSupport({required bool addPlant}) {
@@ -262,7 +292,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                   ),
                 ),
                 AnimatedBuilder(
-                  animation: Listenable.merge([_entry, _float]),
+                  animation: _entry,
                   builder: (context, _) => OnboardingStage(
                     count: _objectCount,
                     offset: _offset,
@@ -280,9 +310,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                     children: [
                       for (final (i, slide) in _slides.indexed)
                         AnimatedBuilder(
-                          animation: _entry,
+                          animation: _reveal,
                           builder: (context, _) =>
-                              _SlideText(slide: slide, t: reduce || i != _page ? 1.0 : _entry.value, parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
+                              _SlideText(slide: slide, t: reduce ? 1.0 : _revealOf(i), parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
                         ),
                       _PlacePage(onDone: () => _goTo(_nameIndex)),
                       _NamePage(controller: _name, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),
