@@ -119,3 +119,11 @@ def test_un_catalogue_dune_seule_classe_na_pas_de_hasard():
 def test_la_famille_vient_de_plants_csv_et_se_lit_en_minuscules():
     assert famille('picea-abies', FAMILLES) == 'pinaceae'
     assert famille('inconnue-x', FAMILLES).startswith('?'), 'une famille absente reste distincte'
+
+
+def test_le_troisieme_tiroir_a_sa_reference_comme_les_deux_autres():
+    # Sans elle, « 73 % au-delà » se lit comme un désastre alors que le
+    # hasard en mettrait 98 % : le modèle y est meilleur, pas pire.
+    h = au_hasard(['a-un', 'a-deux', 'b-un'], {'a-un': 'X', 'a-deux': 'X', 'b-un': 'X'})
+    assert round(h['genre'] + h['famille'] + h['au_dela'], 6) == 1.0
+    assert h['au_dela'] == 0.0, 'ici toutes les classes sont d\'une seule famille'

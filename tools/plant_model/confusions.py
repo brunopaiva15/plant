@@ -89,6 +89,16 @@ def au_hasard(classes: list[str], familles: dict[str, str] | None = None,
     return {
         'genre': pg,
         'famille': pf,
+        # Le troisième tiroir a droit à sa référence comme les deux autres.
+        # Sans elle, « 73 % au-delà » se lit comme un désastre, alors que le
+        # hasard en mettrait 97,9 % : le modèle y est meilleur que le hasard,
+        # simplement pas de beaucoup. C'est une charge de travail, pas un
+        # scandale — et l'inverse serait un vrai scandale, celui d'un modèle
+        # qui ne saurait même pas reconnaître une famille.
+        # Le résidu flottant de 1 - pg - pf vaut 1e-16 quand toutes les
+        # classes partagent une famille ; laissé tel quel, il ferait un
+        # rapport à quinze chiffres dans le rapport.
+        'au_dela': reste if (reste := 1.0 - pg - pf) > 1e-12 else 0.0,
         'seules_dans_leur_genre': sum(1 for c in classes if par_genre[genre(c, noms)] == 1),
     }
 
@@ -171,7 +181,8 @@ def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) ->
         if reference is not None:
             ligne += f"   au hasard : {reference:5.2%}"
             if reference > 0:
-                ligne += f"  → ×{combien / erreurs / reference:.0f}"
+                rapport = combien / erreurs / reference
+                ligne += f"  → ×{rapport:.0f}" if rapport >= 2 else f"  → ×{rapport:.2f}"
         # Largeur fixe : les trois parts doivent se lire en colonne, y
         # compris celle qui n'a pas de référence à afficher.
         return ligne.ljust(48)
@@ -180,7 +191,7 @@ def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) ->
     print(f"{part(stats['dans_genre'], hasard.get('genre'))}   dans le même genre")
     if familles:
         print(f"{part(stats['meme_famille'], hasard.get('famille'))}   dans la même famille")
-        print(f"{part(stats['hors_famille'])}   au-delà  ← les vrais défauts")
+        print(f"{part(stats['hors_famille'], hasard.get('au_dela'))}   au-delà  ← les vrais défauts")
     else:
         print(f"{part(stats['hors_genre'])}   hors du genre (sans `plants.csv`, la famille n'est pas connue)")
     seules = hasard.get('seules_dans_leur_genre')
