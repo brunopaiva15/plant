@@ -65,6 +65,44 @@ NOT_A_PHOTO = re.compile(
     r'coat\s+of\s+arms|chromolith)\b', re.I)
 
 _HYBRID = re.compile(r'\s*×\s*')
+
+#: Sous-catégories à visiter d'abord, dans cet ordre. Commons range les
+#: photos d'une espèce par contexte, et tous les contextes ne se valent pas
+#: pour nous : `Monstera deliciosa (potted)` porte 41 fichiers de plantes en
+#: pot, c'est-à-dire **exactement** ce que l'application reçoit et ce qui
+#: manque au modèle (§ 12.4 de docs/09 : 73 % des erreurs franchissent la
+#: famille, faute d'avoir vu la plante telle qu'on la cultive).
+#:
+#: Sans cet ordre, les six sous-catégories retenues étaient les six premières
+#: rendues par l'API — `(potted)` passait ou ne passait pas au hasard, et
+#: `(products)` prenait sa place.
+SUBCAT_PRIORITAIRES = ('potted', 'in pots', 'indoor', 'houseplant', 'cultivars',
+                       'cultivated', 'in gardens', 'garden')
+
+#: Sous-catégories à ne pas visiter du tout : ce ne sont pas des photos de
+#: la plante vivante. `NOT_A_PHOTO` les rattrape déjà par le nom de fichier,
+#: mais les écarter au niveau de la catégorie évite d'y dépenser des places.
+SUBCAT_REFUSEES = ('illustration', 'herbarium', 'specimen', 'products', 'stamps',
+                   'coins', 'maps', 'diagram', 'seeds', 'wood', 'timber')
+
+
+def classer_souscategories(noms: list[str], combien: int) -> list[str]:
+    """Les sous-catégories qui valent le détour, les meilleures d'abord.
+
+    Rend au plus `combien` noms : les prioritaires dans l'ordre de
+    `SUBCAT_PRIORITAIRES`, puis les autres telles quelles, jamais les
+    refusées.
+    """
+    gardees = [n for n in noms if not any(r in n.lower() for r in SUBCAT_REFUSEES)]
+
+    def rang(nom: str) -> int:
+        bas = nom.lower()
+        for i, mot in enumerate(SUBCAT_PRIORITAIRES):
+            if mot in bas:
+                return i
+        return len(SUBCAT_PRIORITAIRES)
+
+    return sorted(gardees, key=rang)[:combien]
 _TAGS = re.compile(r'<[^>]+>')
 
 
@@ -175,8 +213,11 @@ class CommonsClient:
             return
         categories = [racine]
         if subcategories:
-            categories += [c['title'].split(':', 1)[-1]
-                           for c in self._members(racine, 'subcat', subcategories)]
+            # On demande large et on trie : les plantes en pot d'abord, les
+            # planches botaniques jamais. Prendre les six premières rendues
+            # par l'API revenait à tirer au sort le contexte des photos.
+            toutes = [c['title'].split(':', 1)[-1] for c in self._members(racine, 'subcat', 50)]
+            categories += classer_souscategories(toutes, subcategories)
 
         titres, vus = [], set()
         for cat in categories:

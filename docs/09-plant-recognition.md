@@ -2254,3 +2254,110 @@ de collecte est la décision suivante** : elle change le jeu d'étiquettes du
 modèle, donc elle se prend en ouvrant la v8, pas en passant. Les images se
 rejoindront alors, et six classes fantômes quitteront le décompte.
 
+### 12.15 Répondre au niveau du genre, plutôt qu'une tête hiérarchique
+
+La question posée : le modèle doit-il apprendre Famille → Genre → Espèce ?
+**Non à l'entraînement, oui à la réponse**, et la matrice du § 12.4 dit
+pourquoi.
+
+#### Ce que la mesure interdit d'espérer
+
+Une tête hiérarchique — trois sorties, trois pertes additionnées — sert
+quand les erreurs se serrent contre l'arbre taxonomique. Les nôtres ne s'y
+serrent pas : **73 % franchissent la famille**. Et le modèle a déjà appris
+la taxonomie sans qu'on la lui donne : 12,8 % d'erreurs dans le genre, soit
+**73 fois le hasard**. Ce qui manque n'est pas la structure, c'est la photo
+— l'échec est par photo et non par espèce (§ 12.4), et aucune supervision
+taxonomique ne fait parler une image qui ne dit rien.
+
+S'y ajoute que les quasi-erreurs sont **déjà rattrapées par l'écran** :
+top-3 à 74,4 % contre 59,6 % de top-1, cinq candidats affichés.
+
+#### Ce que la même mesure rend gratuit
+
+Sommer le softmax **par genre**. Quand cinq candidats sont cinq *Picea* à
+0,15, le genre pèse 0,75 : « un épicéa, espèce incertaine » est une réponse
+**vraie et utile**, là où cinq noms n'en sont pas une et où l'appel à
+Pl@ntNet coûte du quota.
+
+Le plancher se lit déjà dans les chiffres du § 12.4 :
+
+| | top-1 |
+|---|---|
+| espèce | 59,0 % |
+| **genre** | **≥ 64,3 %** |
+| famille | ≥ 70,1 % |
+
+Ce sont des planchers : ils ne comptent que les cas où la *première*
+réponse tombait dans le bon genre, pas ceux où la masse du genre était
+juste mais répartie. Le vrai chiffre demande de garder les distributions —
+un mode `--proba` dans `confusions.py`, une passe de trois quarts d'heure.
+
+Et à 5 000 classes, plus d'espèces par genre : ce que ça rapporte augmente
+avec le catalogue, contrairement au top-1.
+
+### 12.16 Les cultivars : un second axe, pas des classes
+
+*Monstera deliciosa* « Thai Constellation » est une *Monstera deliciosa*
+panachée. Les gens en possèdent, et ils veulent le nom. La tentation est
+d'en faire des classes ; **trois mesures l'interdisent.**
+
+| | |
+|---|---|
+| iNaturalist | sur les 2 000 taxons cultivés les plus observés : 1 935 espèces, 65 hybrides, **zéro cultivar**. Une photo de « Thai Constellation » y est enregistrée *Monstera deliciosa* |
+| Commons | la hiérarchie existe — `Monstera deliciosa (cultivars)` — et porte **1 fichier**. `Epipremnum aureum` « Marble Queen » : **3**. « N'Joy » : **6** |
+| le seuil | 25 images pour qu'une classe entre dans le modèle, 200 visées |
+
+> **Une mesure ratée, et ce qu'elle apprend.** La première version de ce
+> paragraphe annonçait zéro photo partout. C'était faux : le connecteur
+> cherchait `Category:Monstera deliciosa 'Thai Constellation'` quand Commons
+> nomme `Category:Monstera deliciosa (cultivars)`. **Les zéros venaient de
+> la requête, pas des données.** Refaite correctement, la conclusion tient —
+> pour une autre raison, qui recoupe le § 12.2 : Commons est riche pour les
+> plantes installées de longue date, pauvre pour les modes récentes, et
+> « Thai Constellation » est une mode récente.
+
+S'ajoute le risque propre : des centaines de classes visuellement quasi
+identiques recréeraient à grande échelle le défaut du § 12.14 — les images
+d'une plante partagées entre deux étiquettes, une confusion qu'aucune photo
+ne peut trancher — et aggraveraient les dix points du § 12.12.
+
+#### Ce qu'on fait à la place
+
+**Le modèle répond l'espèce, l'application propose les cultivars.**
+`tools/plant_dataset/cultivars.py` construit la liste depuis Wikidata, où un
+cultivar est une instance de `Q4886` rattachée à son taxon parent. Sur les
+360 premières espèces du catalogue : **622 cultivars sur 115 espèces, un
+tiers du catalogue en a au moins un** — *Acer palmatum* « Bloodgood »,
+*Ficus elastica* « Robusta », *Epipremnum aureum* « Neon ».
+
+Un garde-fou non négociable : `Q4886` porte aussi des taxons qui n'en sont
+pas. La règle du code horticole tranche — **un nom de cultivar prend une
+majuscule** —, ce qui écarte *Hosta decorata* (une espèce) et « Agave
+americana var. medio-picta alba » (une variété).
+
+Si un jour un modèle doit les distinguer, **la source sera l'application
+elle-même** : demander « quel cultivar ? » après avoir dit l'espèce
+accumule le jeu étiqueté qui n'existe nulle part. Ça commence par poser la
+question, pas par entraîner.
+
+### 12.17 ✅ Commons range les plantes en pot, et on ne le lui demandait pas
+
+Trouvé en cherchant les cultivars : `Category:Monstera deliciosa (potted)`
+porte **41 fichiers**. Commons **catégorise le contexte** — `(potted)`,
+`(flowers)`, `(leaves)`, `(products)`, `- botanical illustrations`.
+
+Or le § 12.4 dit que 73 % des erreurs viennent de n'avoir jamais vu la
+plante telle qu'on la cultive, et le § 6.3 a déjà payé une fois ce défaut —
+le yucca pris pour du maïs, corrigé en recollectant des photos en pot.
+
+Le connecteur descendait bien d'un niveau, mais prenait **les six premières
+sous-catégories rendues par l'API** : `(potted)` passait ou non au hasard,
+et `(products)` — des confitures — pouvait prendre sa place.
+`classer_souscategories()` les ordonne maintenant : les plantes en pot et
+les cultivars d'abord, les planches botaniques et les herbiers jamais.
+
+Quelques lignes, aucune collecte de plus, et ça vise le défaut le plus cher
+du modèle. À faire **avant** la collecte de la v8, sinon on ramène 4 220
+espèces sans en profiter.
+

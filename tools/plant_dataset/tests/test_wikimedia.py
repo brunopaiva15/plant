@@ -141,3 +141,46 @@ def test_une_espece_sans_categorie_rend_simplement_rien():
     simplement pas de catégorie. Ce n'est pas une erreur."""
     c = FauxCommons(categories={})
     assert list(c.image_candidates('Cymbidium hybridum')) == []
+
+
+# --- L'ordre des sous-catégories décide du domaine visuel des photos -------
+#
+# Commons range les photos d'une espèce par contexte : `(potted)` porte les
+# plantes en pot, `(products)` des pots de confiture, `- botanical
+# illustrations` des gravures du XIXe. Prendre les six premières rendues par
+# l'API revenait à tirer au sort — or le § 12.4 dit que 73 % des erreurs du
+# modèle viennent de n'avoir jamais vu la plante telle qu'on la cultive.
+
+from plant_dataset.fetchers.wikimedia import classer_souscategories  # noqa: E402
+
+
+def test_les_plantes_en_pot_passent_devant():
+    noms = ['Monstera deliciosa (flowers)', 'Monstera deliciosa (potted)',
+            'Monstera deliciosa (fruit)']
+    assert classer_souscategories(noms, 3)[0] == 'Monstera deliciosa (potted)'
+
+
+def test_les_planches_et_herbiers_ne_sont_jamais_visites():
+    noms = ['Ficus elastica - botanical illustrations', 'Ficus elastica (herbarium specimens)',
+            'Ficus elastica (potted)']
+    assert classer_souscategories(noms, 6) == ['Ficus elastica (potted)']
+
+
+def test_les_produits_derives_non_plus():
+    # « Monstera deliciosa (products) » : des confitures, pas des plantes.
+    assert classer_souscategories(['Monstera deliciosa (products)'], 6) == []
+
+
+def test_lordre_des_priorites_est_respecte():
+    noms = ['X (garden)', 'X (cultivars)', 'X (in pots)']
+    assert classer_souscategories(noms, 3) == ['X (in pots)', 'X (cultivars)', 'X (garden)']
+
+
+def test_les_categories_neutres_suivent_sans_etre_ecartees():
+    noms = ['X (leaves)', 'X (potted)']
+    assert classer_souscategories(noms, 2) == ['X (potted)', 'X (leaves)']
+
+
+def test_le_plafond_est_respecte():
+    noms = [f'X (potted {i})' for i in range(10)]
+    assert len(classer_souscategories(noms, 4)) == 4
