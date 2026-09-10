@@ -612,6 +612,7 @@
   "searchOnline": "Aucune ne correspond ? Chercher en ligne",
   "identifyAnotherPhoto": "Ajouter une photo",
   "identifyAnotherPhotoHint": "Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.",
+  "identifyConfirmWithPhoto": "Confirmer avec une photo",
   "searchingOnline": "Recherche en ligne…",
   "suggestionsLocal": "Trouvé sur votre appareil, sans réseau.",
   "suggestionsRemote": "Proposé en ligne par Pl@ntNet.",

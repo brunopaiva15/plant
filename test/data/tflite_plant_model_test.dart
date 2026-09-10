@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flora/data/services/tflite_plant_model.dart';
 
@@ -65,25 +66,23 @@ void main() {
       return img.encodeJpg(im, quality: 95);
     }
 
-    bool hasChannel(List<List<List<List<double>>>> t, int channel) {
-      for (final row in t.first) {
-        for (final px in row) {
-          if (px[channel] > 200 && px[(channel + 1) % 3] < 80) return true;
-        }
+    /// La sortie est à plat : trois nombres par pixel, dans l'ordre R, G, B.
+    bool hasChannel(Float32List t, int channel) {
+      for (var i = 0; i + 2 < t.length; i += 3) {
+        if (t[i + channel] > 200 && t[i + (channel + 1) % 3] < 80) return true;
       }
       return false;
     }
 
     test('la sortie a la forme attendue par le modèle', () {
       final out = TflitePlantModel.decodeForTest(picture(1), 224, 256)!;
-      expect(out.length, 1);
-      expect(out.first.length, 224);
-      expect(out.first.first.length, 224);
-      expect(out.first.first.first.length, 3);
+      // [1, 224, 224, 3] mis à plat : c'est tel quel, en octets, que le
+      // tenseur d'entrée le recevra.
+      expect(out.length, 1 * 224 * 224 * 3);
+      expect(out.lengthInBytes, 224 * 224 * 3 * 4);
       // Octets 0–255 : la normalisation est dans le graphe, pas ici.
-      final values = [for (final r in out.first) for (final p in r) ...p];
-      expect(values.reduce((a, b) => a > b ? a : b), greaterThan(1.0));
-      expect(values.every((v) => v >= 0 && v <= 255), isTrue);
+      expect(out.reduce((a, b) => a > b ? a : b), greaterThan(1.0));
+      expect(out.every((v) => v >= 0 && v <= 255), isTrue);
     });
 
     test('le carré central est conservé, les bords sont écartés', () {
@@ -99,7 +98,7 @@ void main() {
       // crénelage que le modèle n'a jamais vu ; la réduction intermédiaire
       // conserve la couleur moyenne des zones.
       final out = TflitePlantModel.decodeForTest(picture(20, width: 3000, height: 2400), 224, 256, 448)!;
-      expect(out.first.length, 224);
+      expect(out.length, 224 * 224 * 3);
       expect(hasChannel(out, 1), isTrue, reason: 'le sujet central survit à la réduction');
       expect(hasChannel(out, 0), isFalse, reason: 'le bord reste écarté');
     });
@@ -108,7 +107,7 @@ void main() {
       // loadSize == inputSize : redimensionnement direct, pour un modèle
       // futur entraîné ainsi.
       final out = TflitePlantModel.decodeForTest(picture(1), 224, 224)!;
-      expect(out.first.length, 224);
+      expect(out.length, 224 * 224 * 3);
     });
 
     test('une image illisible ne fait pas tomber l\'app', () {

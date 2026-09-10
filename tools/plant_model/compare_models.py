@@ -81,8 +81,21 @@ def predict(model, path: str) -> np.ndarray:
     return model['interpreter'].get_tensor(model['out']['index'])[0]
 
 
-def score(rows, model, restrict: set[str] | None) -> dict:
-    """Top-1, top-3 et taux d'acceptation à 0,70 — le seuil de l'application."""
+def score(rows, model, restrict: set[str] | None, renormalise: bool = False) -> dict:
+    """Top-1, top-3 et taux d'acceptation à 0,70 — le seuil de l'application.
+
+    `renormalise` ne change **pas** le top-1 : masquer préserve l'ordre entre
+    les classes qui restent. Il ne change que les colonnes de seuil, et il
+    répond à deux questions différentes :
+
+    - **sans** (le défaut, et les chiffres publiés au § 6.7) : « ce modèle-ci,
+      jugé sur les classes que l'autre connaît aussi ». La confiance reste
+      celle que l'application lirait, donc le seuil de 0,70 garde son sens ;
+    - **avec** : « que rendrait un modèle qui n'aurait appris que ces
+      classes-là ». Sa couche finale répartirait la masse entre elles ; sans
+      renormaliser, on mesure une autonomie artificiellement basse, puisque
+      la probabilité partie aux classes masquées ne revient à personne.
+    """
     seen = hit1 = hit3 = accepted = accepted_ok = 0
     for path, truth in rows:
         if truth not in model['index']:
@@ -97,6 +110,10 @@ def score(rows, model, restrict: set[str] | None) -> dict:
                 if i is not None:
                     mask[i] = 1.0
             probs = probs * mask
+            if renormalise:
+                masse = float(probs.sum())
+                if masse > 0:
+                    probs = probs / masse
         order = np.argsort(-probs)[:3]
         top = [model['labels'][i] for i in order]
         seen += 1

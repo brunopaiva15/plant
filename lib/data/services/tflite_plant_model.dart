@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,14 @@ import '../../domain/identification/plant_identifier.dart';
 ///
 /// Le graphe inclut sa propre normalisation (MobileNetV3 attend des octets
 /// 0–255) : ici on ne fait que décoder, recadrer au carré et redimensionner.
+///
+/// Rien de tout cela ne tourne sur l'isolat principal. Le décodage part dans
+/// un `Isolate.run` jetable, l'inférence dans l'isolat permanent de
+/// [IsolateInterpreter]. Ce second point n'est pas un raffinement : depuis
+/// l'Iris 7 l'entrée est en 320 px, l'inférence demande près d'une seconde,
+/// et la cascade en enchaîne une par photo. Trois photos, c'était trois
+/// secondes d'interface gelée — que l'utilisateur lit comme une panne, pas
+/// comme un calcul.
 class TflitePlantModel implements LocalPlantModel {
   TflitePlantModel({
     this.modelAsset = 'assets/model/plants.tflite',
@@ -33,6 +42,7 @@ class TflitePlantModel implements LocalPlantModel {
   final AssetBundle _bundle;
 
   Interpreter? _interpreter;
+  IsolateInterpreter? _worker;
   List<String> _labels = const [];
   String? _version;
   int _inputSize = 224;
@@ -41,6 +51,9 @@ class TflitePlantModel implements LocalPlantModel {
   Future<bool>? _loading;
   bool _failed = false;
   String? _loadError;
+
+  /// La file des inférences : une seule à la fois, voir [_run].
+  Future<void> _turn = Future<void>.value();
 
   /// Vrai tant qu'un chargement n'a pas échoué : avant le premier appel, le
   /// modèle est présumé présent, et c'est la cascade qui le charge. Ne pas
@@ -80,7 +93,20 @@ class TflitePlantModel implements LocalPlantModel {
         // du graphe suffisent.
       }
       final options = InterpreterOptions()..threads = 2;
-      _interpreter = await Interpreter.fromAsset(modelAsset, options: options);
+      final interpreter = await Interpreter.fromAsset(modelAsset, options: options);
+      _interpreter = interpreter;
+      try {
+        // L'isolat de calcul est monté une fois pour toutes, ici, pendant
+        // que l'utilisateur n'attend encore rien : le faire naître à la
+        // première photo rendrait le démarrage de l'isolat visible dans la
+        // première identification.
+        _worker = await IsolateInterpreter.create(address: interpreter.address);
+      } on Object catch (e) {
+        // Un isolat en moins n'est pas un modèle en moins : on retombe sur
+        // l'exécution sur place, qui gèle l'écran mais répond juste.
+        debugPrint('inférence hors isolat impossible : $e');
+        _worker = null;
+      }
       return true;
     } on Object catch (e) {
       // Pas de modèle livré, fichier illisible, plateforme sans TFLite :
@@ -89,6 +115,7 @@ class TflitePlantModel implements LocalPlantModel {
       _loadError = e.toString();
       _failed = true;
       _interpreter = null;
+      _worker = null;
       return false;
     }
   }
@@ -96,14 +123,13 @@ class TflitePlantModel implements LocalPlantModel {
   @override
   Future<List<IdentificationCandidate>> classify(File image) async {
     if (!await warmUp()) return const [];
-    final interpreter = _interpreter;
-    if (interpreter == null) return const [];
+    if (_interpreter == null) return const [];
 
     final input = await _prepare(image, _inputSize, _loadSize, _sourceSize);
     if (input == null) return const [];
 
     final output = [List<double>.filled(_labels.length, 0)];
-    interpreter.run(input, output);
+    await _run(input, output);
     final scores = output.first;
 
     final candidates = <IdentificationCandidate>[];
@@ -120,8 +146,65 @@ class TflitePlantModel implements LocalPlantModel {
     return candidates.take(5).toList();
   }
 
+  /// Le délai au-delà duquel on cesse d'attendre l'isolat de calcul.
+  ///
+  /// Une inférence demande environ une seconde à 320 px sur un téléphone
+  /// récent, trois ou quatre sur un vieux : quinze secondes ne coupent
+  /// jamais un calcul réel, elles ne coupent qu'un isolat mort. La cascade a
+  /// son propre délai, bien plus court ; celui-ci ne protège que la file.
+  static const _inferenceTimeout = Duration(seconds: 15);
+
+  /// Une inférence à la fois, et jamais d'attente sans fin.
+  ///
+  /// [IsolateInterpreter] ne sait pas se dédoubler : appelé pendant qu'il
+  /// travaille, il rend la main **sans rien exécuter**, et l'appelant lit un
+  /// vecteur de zéros — une réponse fausse, pas une erreur. La cascade prend
+  /// ses photos une par une, mais elle abandonne chaque appel au bout de
+  /// quelques secondes sans que le calcul, lui, s'arrête : deux photos
+  /// peuvent donc se croiser. D'où cette file d'un seul rang.
+  ///
+  /// Le délai porte sur la file entière et non sur la seule inférence : un
+  /// isolat qui ne rendrait jamais la main bloquerait sinon toutes les
+  /// identifications de la session, silencieusement.
+  Future<void> _run(Float32List input, List<List<double>> output) {
+    final turn = _turn.then<void>((_) => _infer(input, output)).timeout(_inferenceTimeout);
+    _turn = turn.then<void>((_) {}, onError: (Object _) {});
+    return turn;
+  }
+
+  Future<void> _infer(Float32List input, List<List<double>> output) async {
+    // `Uint8List` est le seul type que `tflite_flutter` recopie tel quel vers
+    // le tenseur natif ; tout le reste, `Float32List` comprise, il le
+    // parcourt élément par élément en allouant quatre octets par nombre
+    // (`ByteConversionUtils.convertObjectToBytes`). On lui passe donc la vue
+    // en octets de nos flottants : un memcpy d'un mégaoctet au lieu de
+    // 307 200 conversions.
+    //
+    // En contrepartie la bibliothèque ne cherche plus la forme de l'entrée
+    // et ne redimensionne plus le tenseur : une taille qui ne collerait pas
+    // au graphe échouerait au lieu d'être rattrapée. `model.json` et le
+    // `.tflite` sortent du même export (`export_tflite`), ils ne peuvent pas
+    // diverger.
+    final Object payload = Endian.host == Endian.little
+        ? input.buffer.asUint8List(input.offsetInBytes, input.lengthInBytes)
+        // Aucune plateforme visée n'est gros-boutienne ; ce repli est juste,
+        // pas rapide.
+        : input;
+    final worker = _worker;
+    if (worker != null) {
+      await worker.run(payload, output);
+    } else {
+      _interpreter?.run(payload, output);
+    }
+  }
+
   @override
   void dispose() {
+    // L'isolat d'abord : il travaille sur l'adresse de l'interpréteur, le
+    // fermer après reviendrait à le laisser un instant sur de la mémoire
+    // libérée.
+    _worker?.close();
+    _worker = null;
     _interpreter?.close();
     _interpreter = null;
   }
@@ -144,16 +227,16 @@ class TflitePlantModel implements LocalPlantModel {
   /// central, redimensionnement à `loadSize`, puis recadrage central à
   /// `size`. Redimensionner directement à 224 donne un cadrage plus large
   /// et coûte plusieurs points de précision, mesurés sur le jeu de test.
-  static Future<List<List<List<List<double>>>>?> _prepare(File file, int size, int loadSize, int sourceSize) async {
+  static Future<Float32List?> _prepare(File file, int size, int loadSize, int sourceSize) async {
     final bytes = await file.readAsBytes();
     return Isolate.run(() => _decode(bytes, size, loadSize, sourceSize));
   }
 
   @visibleForTesting
-  static List<List<List<List<double>>>>? decodeForTest(Uint8List bytes, int size, int loadSize, [int sourceSize = 448]) =>
+  static Float32List? decodeForTest(Uint8List bytes, int size, int loadSize, [int sourceSize = 448]) =>
       _decode(bytes, size, loadSize, sourceSize);
 
-  static List<List<List<List<double>>>>? _decode(Uint8List bytes, int size, int loadSize, int sourceSize) {
+  static Float32List? _decode(Uint8List bytes, int size, int loadSize, int sourceSize) {
     // Un fichier tronqué ou dans un format inattendu n'est pas une panne du
     // modèle : c'est une photo sans candidat, et la cascade ira au service
     // distant. Le décodeur lève sur certaines entrées au lieu de rendre null.
@@ -182,16 +265,21 @@ class TflitePlantModel implements LocalPlantModel {
     final resized = img.copyResize(source, width: load, height: load, interpolation: img.Interpolation.linear);
     final offset = (load - size) ~/ 2;
     final small = load == size ? resized : img.copyCrop(resized, x: offset, y: offset, width: size, height: size);
-    // Forme [1, size, size, 3], en octets 0–255 : le graphe normalise lui-même.
-    final rows = <List<List<double>>>[];
+    // Forme [1, size, size, 3] mise à plat, en octets 0–255 : le graphe
+    // normalise lui-même. À plat, et non en listes imbriquées : à 320 px
+    // celles-ci pesaient 102 400 listes et 307 200 nombres emballés, tous
+    // recopiés un par un au retour de l'isolat. Le `Float32List` traverse
+    // en un bloc et part au tenseur natif sans conversion (voir [_infer]).
+    final out = Float32List(size * size * 3);
+    var i = 0;
     for (var y = 0; y < size; y++) {
-      final row = <List<double>>[];
       for (var x = 0; x < size; x++) {
         final p = small.getPixel(x, y);
-        row.add([p.r.toDouble(), p.g.toDouble(), p.b.toDouble()]);
+        out[i++] = p.r.toDouble();
+        out[i++] = p.g.toDouble();
+        out[i++] = p.b.toDouble();
       }
-      rows.add(row);
     }
-    return [rows];
+    return out;
   }
 }

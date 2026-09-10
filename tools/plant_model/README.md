@@ -163,10 +163,40 @@ sortent, qui sont de vrais défauts de collecte. Rend les paires de genres
 responsables et les espèces les plus ratées avec ce qu'on leur répond à la
 place. Voir le § 12.4 de `docs/09`.
 
+## Ce que rend le modèle sur les plantes d'appartement
+
+```bash
+python3 interieur.py --couverture          # sans TensorFlow ni jeu d'images
+python3 interieur.py --dataset ../plant_dataset/dataset --model ../../assets/model
+```
+
+Le top-1 publié est une moyenne sur 1 457 espèces, dont la plupart sont
+sauvages. L'application sert d'abord les 167 noms de `phase1_species.txt`.
+L'outil rend deux choses qui ne se remplacent pas : la **couverture** —
+combien de ces plantes le modèle sait seulement nommer, une classe absente
+étant un échec certain et invisible dans toute mesure de précision — puis le
+**top-1 sur les images de test de ces espèces**, avec le catalogue entier
+puis masqué aux seules plantes d'intérieur. L'écart entre les deux est ce
+que l'étendue du catalogue coûte à celui qui photographie son salon. Voir
+le § 12.12 de `docs/09`.
+
 ## Choisir les seuils de repli
 
 `model.json` contient, pour chaque couple (seuil, marge), le taux de
-réponses acceptées et la précision sur ces réponses. On retient le couple
-dont la précision dépasse 97 % avec le taux d'acceptation le plus élevé,
-et on le reporte dans `FallbackPolicy`
+réponses acceptées et la précision sur ces réponses. On reporte le couple
+retenu dans `FallbackPolicy`
 (`lib/domain/identification/identification_policy.dart`).
+
+**La règle écrite ici — « précision au-dessus de 97 % » — n'est pas celle
+qu'on applique**, et il vaut mieux le dire que laisser croire le contraire.
+Sur l'Iris 7 elle est parfaitement atteignable : le seuil 0,95 rend **97,7 %
+de précision**. Mais il n'accepte plus que **26,6 %** des réponses — trois
+photos sur quatre partiraient chez Pl@ntNet, aux frais du quota mensuel.
+Le seuil livré est 0,70 : **47,3 % d'autonomie pour 89,8 % de précision**.
+
+C'est donc un arbitrage assumé, huit points de justesse contre vingt et un
+d'autonomie, et non l'application de la règle ci-dessus. La règle réelle,
+celle du § 6.7 de `docs/09`, porte sur les versions et non sur les seuils :
+**à autonomie égale, prendre la version la plus juste.** C'est elle qui a
+fait remonter le seuil à 0,70 pour l'Iris 7 — il y rend l'autonomie qu'avait
+la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %.

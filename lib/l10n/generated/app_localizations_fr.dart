@@ -1237,6 +1237,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.';
 
   @override
+  String get identifyConfirmWithPhoto => 'Confirmer avec une photo';
+
+  @override
   String get searchingOnline => 'Recherche en ligne…';
 
   @override

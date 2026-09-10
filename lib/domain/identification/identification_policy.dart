@@ -98,3 +98,50 @@ class FallbackPolicy {
     return IdentificationVerdict.uncertain;
   }
 }
+
+/// Ce que l'écran d'identification propose comme photo supplémentaire.
+///
+/// Le geste est le même dans les trois cas — une photo de plus, gratuite,
+/// hors ligne, instantanée — mais il ne se propose pas de la même façon
+/// selon qu'il tranche une hésitation ou qu'il vérifie une certitude.
+enum SecondPhotoOffer {
+  /// Rien : la réponse ne vient pas du modèle embarqué, la liste est vide,
+  /// ou le maximum de photos est atteint.
+  none,
+
+  /// En évidence, avec sa phrase d'explication. Le modèle hésite, et la
+  /// photo est le geste qui tranche : deux photos valent **13,7 points de
+  /// top-1**, plus que dix heures de calcul et 160 000 images (§ 6.6).
+  prominent,
+
+  /// Discrète, sous les candidats. La réponse est acceptée — elle s'affiche
+  /// comme « probable » et l'utilisateur ne se pose pas de question —, mais
+  /// à 0,70 **une réponse acceptée sur dix est fausse** (89,9 % de justesse
+  /// sur les plantes d'appartement en pot, § 12.12). Ne rien proposer,
+  /// c'est réserver le correctif aux cas où le modèle a le bon goût de
+  /// douter. Le proposer en travers du chemin, c'est ajouter un geste à un
+  /// parcours qui marchait : d'où le registre effacé.
+  quiet,
+}
+
+/// Comment proposer la photo suivante, s'il faut la proposer.
+///
+/// La décision vit ici plutôt que dans les deux écrans qui s'en servent :
+/// elle est la même pour la fiche d'identification et pour la création de
+/// plante, et un seuil recopié dans une vue finit toujours par diverger de
+/// celui de la cascade.
+SecondPhotoOffer secondPhotoOffer(
+  FallbackPolicy policy,
+  List<IdentificationCandidate> candidates, {
+  required int photos,
+  required int maxPhotos,
+}) {
+  if (candidates.isEmpty || photos >= maxPhotos) return SecondPhotoOffer.none;
+  // Une réponse du service distant est déjà la meilleure disponible : une
+  // photo de plus ne la rejouerait pas sans un nouvel appel, donc sans
+  // entamer le quota. Ce n'est plus le même geste gratuit.
+  if (candidates.first.source != IdentificationSource.local) return SecondPhotoOffer.none;
+  return policy.decide(candidates) == IdentificationVerdict.accepted
+      ? SecondPhotoOffer.quiet
+      : SecondPhotoOffer.prominent;
+}

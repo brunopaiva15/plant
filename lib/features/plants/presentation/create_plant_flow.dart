@@ -234,11 +234,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   /// Le modèle hésite-t-il ? La politique de la cascade le dit, celle-là
   /// même qui décide d'appeler ou non le service distant.
-  bool _identificationAmbiguous(List<IdentificationCandidate> results) {
+  SecondPhotoOffer _identificationOffer(List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    if (identifier is! CascadeIdentifier || results.isEmpty) return false;
-    if (results.first.source != IdentificationSource.local) return false;
-    return identifier.policy.decide(results) != IdentificationVerdict.accepted;
+    if (identifier is! CascadeIdentifier) return SecondPhotoOffer.none;
+    return secondPhotoOffer(identifier.policy, results,
+        photos: _identificationPaths.length, maxPhotos: maxIdentificationPhotos);
   }
 
   /// Une photo de plus pour trancher. Gratuite, hors ligne et immédiate, là
@@ -533,7 +533,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onSearchOnline: _canSearchOnline ? _searchOnline : null,
               photoCount: _identificationPaths.length,
               onAddPhoto: _identificationPaths.length < maxIdentificationPhotos && !_picking ? _chooseIdentificationSource : null,
-              ambiguous: _identificationAmbiguous,
+              offer: _identificationOffer,
             ),
           const SizedBox(height: Space.lg),
           Pressable(
@@ -638,7 +638,7 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onSearchOnline,
     this.onAddPhoto,
     this.photoCount = 1,
-    this.ambiguous,
+    this.offer,
   });
 
   final Future<List<IdentificationCandidate>> future;
@@ -654,8 +654,9 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Nombre de photos déjà soumises au moteur.
   final int photoCount;
 
-  /// Le modèle hésite-t-il sur cette liste ? Décidé par la cascade.
-  final bool Function(List<IdentificationCandidate>)? ambiguous;
+  /// Faut-il proposer une photo de plus, et sur quel ton ? Décidé par la
+  /// cascade, comme dans la fiche d'identification.
+  final SecondPhotoOffer Function(List<IdentificationCandidate>)? offer;
 
   @override
   Widget build(BuildContext context) {
@@ -695,7 +696,7 @@ class _IdentificationSuggestions extends StatelessWidget {
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
               // La photo d'abord, l'appel réseau ensuite : l'une est gratuite
               // et immédiate, l'autre se prend sur un quota mensuel.
-              if (onAddPhoto != null && (ambiguous?.call(results) ?? false)) ...[
+              if (onAddPhoto != null && offer?.call(results) == SecondPhotoOffer.prominent) ...[
                 const SizedBox(height: Space.sm),
                 Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
                 const SizedBox(height: Space.xs),
@@ -703,6 +704,20 @@ class _IdentificationSuggestions extends StatelessWidget {
                   label: l10n.identifyAnotherPhoto,
                   icon: CupertinoIcons.camera,
                   style: FloraButtonStyle.secondary,
+                  size: FloraButtonSize.small,
+                  onPressed: onAddPhoto,
+                ),
+              ],
+              // Réponse acceptée : une sur dix est fausse, et jusqu'ici seule
+              // l'hésitation du modèle donnait droit au geste qui la corrige.
+              // Discret et sans phrase, pour ne pas alourdir un parcours de
+              // création qui marchait.
+              if (onAddPhoto != null && offer?.call(results) == SecondPhotoOffer.quiet) ...[
+                const SizedBox(height: Space.sm),
+                FloraButton(
+                  label: l10n.identifyConfirmWithPhoto,
+                  icon: CupertinoIcons.camera,
+                  style: FloraButtonStyle.ghost,
                   size: FloraButtonSize.small,
                   onPressed: onAddPhoto,
                 ),

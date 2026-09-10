@@ -2232,6 +2232,12 @@ abstract class AppLocalizations {
   /// **'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.'**
   String get identifyAnotherPhotoHint;
 
+  /// No description provided for @identifyConfirmWithPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer avec une photo'**
+  String get identifyConfirmWithPhoto;
+
   /// No description provided for @searchingOnline.
   ///
   /// In fr, this message translates to:

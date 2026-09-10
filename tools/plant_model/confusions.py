@@ -11,19 +11,27 @@ trouvent un par un, à la main, sur des photos réelles — c'est comme ça que
 le yucca pris pour du maïs a été découvert (§ 6.3), et il avait eu le temps
 de traverser trois versions.
 
-La distinction qui fait tout le tri :
+Trois tiroirs, parce que deux mentaient :
 
-- **une confusion dans le genre** est attendue. Deux érables, deux sapins,
-  deux pépéromias se ressemblent, et l'écran propose cinq candidats : la
-  bonne réponse y est presque toujours. Ce n'est pas là qu'il faut dépenser
-  des images.
-- **une confusion entre genres** est un vrai défaut. *Yucca* → *Zea*,
-  c'est le modèle qui n'a jamais vu la plante telle qu'on la cultive. Ces
-  paires-là se corrigent par des images, et elles disent lesquelles.
+- **dans le genre** : deux érables, deux sapins, deux pépéromias. L'écran
+  propose cinq candidats, la bonne réponse y est presque toujours ;
+- **dans la famille** : *Picea* → *Abies*, deux Pinaceae. Botaniquement
+  proches, visuellement proches, et durs pour un humain aussi ;
+- **au-delà** : *Parthenocissus* → *Petroselinum*, une vigne vierge prise
+  pour du persil. C'est là que sont les vrais défauts, et ces paires-là se
+  corrigent par des images.
 
-Le rapport se lit donc de haut en bas : la part des erreurs qui sortent du
-genre d'abord, les paires responsables ensuite, et enfin les espèces qui
-échouent le plus souvent avec ce qu'on leur répond à la place.
+**Et chaque part se lit contre le hasard, sinon elle ne dit rien.** 38 % des
+classes sont seules dans leur genre : leurs erreurs ne *peuvent pas* rester
+dans le genre. Une erreur tirée au sort y resterait 0,17 % du temps ; en
+annoncer 13 % n'est donc pas « une petite part attendue » mais soixante-dix
+fois le hasard. La première version de ce fichier appelait « vrais défauts »
+les 87 % restants, ce qui revenait à compter comme un défaut la structure du
+catalogue.
+
+Le rapport se lit donc de haut en bas : les trois parts et leur hasard, les
+paires responsables ensuite, et enfin les espèces qui échouent le plus
+souvent avec ce qu'on leur répond à la place.
 """
 from __future__ import annotations
 
@@ -50,13 +58,63 @@ def genre(internal_id: str, noms: dict[str, str] | None = None) -> str:
     return internal_id.split('-')[0]
 
 
-def croiser(paires: list[tuple[str, str]], noms: dict[str, str] | None = None) -> dict:
-    """Range les erreurs selon qu'elles restent dans le genre ou en sortent.
+def famille(internal_id: str, familles: dict[str, str] | None = None) -> str:
+    """La famille d'une espèce, quand `plants.csv` la donne.
+
+    Elle la donne pour les 1 457 classes de l'Iris 7, mais l'outil doit
+    tourner sans : une famille inconnue vaut son propre identifiant, donc
+    elle ne se confond avec aucune autre.
+    """
+    if familles and internal_id in familles:
+        return familles[internal_id].strip().lower()
+    return f'?{internal_id}'
+
+
+def au_hasard(classes: list[str], familles: dict[str, str] | None = None,
+              noms: dict[str, str] | None = None) -> dict:
+    """Où tomberait une erreur tirée au sort — la seule référence qui vaille.
+
+    Sans elle, « 13 % des erreurs restent dans le genre » se lit comme une
+    petite part, alors que c'est soixante-dix fois ce que donnerait le
+    hasard. Le calcul suppose les classes équiprobables : c'est faux dans le
+    détail, mais l'ordre de grandeur suffit à empêcher le contresens.
+    """
+    n = len(classes)
+    if n < 2:
+        return {'genre': 0.0, 'famille': 0.0, 'seules_dans_leur_genre': 0}
+    par_genre: Counter = Counter(genre(c, noms) for c in classes)
+    par_famille: Counter = Counter(famille(c, familles) for c in classes)
+    pg = sum(par_genre[genre(c, noms)] - 1 for c in classes) / (n * (n - 1))
+    pf = sum(par_famille[famille(c, familles)] - par_genre[genre(c, noms)] for c in classes) / (n * (n - 1))
+    return {
+        'genre': pg,
+        'famille': pf,
+        # Le troisième tiroir a droit à sa référence comme les deux autres.
+        # Sans elle, « 73 % au-delà » se lit comme un désastre, alors que le
+        # hasard en mettrait 97,9 % : le modèle y est meilleur que le hasard,
+        # simplement pas de beaucoup. C'est une charge de travail, pas un
+        # scandale — et l'inverse serait un vrai scandale, celui d'un modèle
+        # qui ne saurait même pas reconnaître une famille.
+        # Le résidu flottant de 1 - pg - pf vaut 1e-16 quand toutes les
+        # classes partagent une famille ; laissé tel quel, il ferait un
+        # rapport à quinze chiffres dans le rapport.
+        'au_dela': reste if (reste := 1.0 - pg - pf) > 1e-12 else 0.0,
+        'seules_dans_leur_genre': sum(1 for c in classes if par_genre[genre(c, noms)] == 1),
+    }
+
+
+def croiser(paires: list[tuple[str, str]], noms: dict[str, str] | None = None,
+            familles: dict[str, str] | None = None) -> dict:
+    """Range les erreurs selon la distance taxonomique entre les deux espèces.
 
     `paires` est une liste de (vérité, prédiction) en identifiants internes.
+
+    Sans `familles`, il ne reste que deux tiroirs et `meme_famille` vaut
+    zéro : le rapport le dit alors au lieu d'annoncer une part nulle.
     """
-    justes = hors_genre = dans_genre = 0
+    justes = dans_genre = meme_famille = hors_famille = 0
     entre_genres: Counter = Counter()
+    entre_familles: Counter = Counter()
     par_espece: dict[str, Counter] = defaultdict(Counter)
     vues: Counter = Counter()
     for verite, predit in paires:
@@ -68,15 +126,24 @@ def croiser(paires: list[tuple[str, str]], noms: dict[str, str] | None = None) -
         gv, gp = genre(verite, noms), genre(predit, noms)
         if gv == gp:
             dans_genre += 1
+            continue
+        entre_genres[(gv, gp)] += 1
+        fv, fp = famille(verite, familles), famille(predit, familles)
+        if familles and fv == fp:
+            meme_famille += 1
         else:
-            hors_genre += 1
-            entre_genres[(gv, gp)] += 1
+            hors_famille += 1
+            if familles:
+                entre_familles[(fv, fp)] += 1
     return {
         'images': len(paires),
         'justes': justes,
         'dans_genre': dans_genre,
-        'hors_genre': hors_genre,
+        'meme_famille': meme_famille,
+        'hors_famille': hors_famille,
+        'hors_genre': meme_famille + hors_famille,
         'entre_genres': entre_genres,
+        'entre_familles': entre_familles,
         'par_espece': par_espece,
         'vues': vues,
     }
@@ -101,27 +168,107 @@ def especes_en_difficulte(stats: dict, minimum: int = 5) -> list[tuple[str, int,
     return out
 
 
-def _rapport(stats: dict, noms: dict[str, str], top: int) -> None:
+def taux_par_espece(stats: dict, minimum: int = 5) -> dict[str, float]:
+    """Le top-1 de chaque espèce assez vue pour qu'il veuille dire quelque
+    chose. On ne classe pas une espèce sur trois photos."""
+    out = {}
+    for espece, vues in stats['vues'].items():
+        if vues < minimum:
+            continue
+        # Le rapport des justes, pas le complément des ratées : `1 - 4/5`
+        # rend 0,199999… et deux espèces identiques cesseraient d'être égales.
+        out[espece] = (vues - sum(stats['par_espece'].get(espece, {}).values())) / vues
+    return out
+
+
+def faiblesse(stats: dict, minimum: int = 5) -> dict:
+    """La distribution des espèces par top-1 — la vraie liste de collecte.
+
+    **Compter les espèces à zéro bonne réponse ne marche pas**, et la mesure
+    l'a montré en se contredisant : sur un échantillon de 6 000 images, 11
+    espèces sur 575 n'avaient rien de juste ; sur les 29 000 du test entier,
+    5 sur 1 422. Le second chiffre n'est pas une amélioration, c'est le même
+    modèle. Une espèce à 15 % de top-1 rate facilement ses cinq images ;
+    elle n'en rate presque jamais trente. **Le zéro mesure le nombre
+    d'images de test, pas la faiblesse de la classe.**
+
+    Un seuil, lui, ne bouge pas avec la taille de l'échantillon. D'où des
+    tranches, et un « jamais reconnues » gardé pour mémoire mais annoncé
+    pour ce qu'il est.
+    """
+    taux = taux_par_espece(stats, minimum)
+    return {
+        'mesurables': len(taux),
+        'nulles': sorted(e for e, t in taux.items() if t == 0.0),
+        'sous_25': sorted(e for e, t in taux.items() if t < 0.25),
+        'sous_50': sorted(e for e, t in taux.items() if t < 0.50),
+        'taux': taux,
+    }
+
+
+def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) -> None:
     n, justes = stats['images'], stats['justes']
     erreurs = n - justes
     print(f'{n} images, {justes} justes ({justes / n:.1%})\n')
     if not erreurs:
         print('aucune erreur : rien à dire.')
         return
-    print(f"{erreurs} erreurs, dont :")
-    print(f"  {stats['dans_genre']:6d} dans le même genre  ({stats['dans_genre'] / erreurs:.0%})  — attendues")
-    print(f"  {stats['hors_genre']:6d} entre genres        ({stats['hors_genre'] / erreurs:.0%})  — les vrais défauts")
+
+    def part(combien, reference=None):
+        ligne = f"  {combien:6d}  ({combien / erreurs:5.1%})"
+        if reference is not None:
+            ligne += f"   au hasard : {reference:5.2%}"
+            if reference > 0:
+                rapport = combien / erreurs / reference
+                ligne += f"  → ×{rapport:.0f}" if rapport >= 2 else f"  → ×{rapport:.2f}"
+        # Largeur fixe : les trois parts doivent se lire en colonne, y
+        # compris celle qui n'a pas de référence à afficher.
+        return ligne.ljust(48)
+
+    print(f'{erreurs} erreurs, rangées par distance taxonomique :')
+    print(f"{part(stats['dans_genre'], hasard.get('genre'))}   dans le même genre")
+    if familles:
+        print(f"{part(stats['meme_famille'], hasard.get('famille'))}   dans la même famille")
+        print(f"{part(stats['hors_famille'], hasard.get('au_dela'))}   au-delà  ← les vrais défauts")
+    else:
+        print(f"{part(stats['hors_genre'])}   hors du genre (sans `plants.csv`, la famille n'est pas connue)")
+    seules = hasard.get('seules_dans_leur_genre')
+    if seules:
+        print(f"\n{seules} classes sont seules dans leur genre : leurs erreurs ne *peuvent pas*")
+        print("y rester. C'est pourquoi la colonne « au hasard » est là — sans elle, la")
+        print('première ligne se lirait comme une petite part au lieu de son contraire.')
 
     def joli(i):
         return noms.get(i, i)
 
-    print(f'\nles {top} confusions entre genres les plus fréquentes :')
+    print(f'\nles {top} confusions de genre les plus fréquentes :')
     for (gv, gp), combien in stats['entre_genres'].most_common(top):
         print(f'  {gv:22s} → {gp:22s} {combien:5d}')
 
+    if stats['entre_familles']:
+        print(f'\nles {top} confusions de famille les plus fréquentes — celles qui coûtent des images :')
+        for (fv, fp), combien in stats['entre_familles'].most_common(top):
+            print(f'  {fv:22s} → {fp:22s} {combien:5d}')
+
+    f = faiblesse(stats)
+    if f['mesurables']:
+        n = f['mesurables']
+        print(f"\nles {n} espèces vues au moins 5 fois, par top-1 :")
+        print(f"  {len(f['sous_25']):5d}  ({len(f['sous_25']) / n:5.1%})   sous 25 %  ← la liste de collecte")
+        print(f"  {len(f['sous_50']):5d}  ({len(f['sous_50']) / n:5.1%})   sous 50 %")
+        print(f"  {len(f['nulles']):5d}  ({len(f['nulles']) / n:5.1%})   pas une seule bonne réponse")
+        print('\nLa dernière ligne mesure surtout le nombre d\'images de test : une')
+        print("espèce à 15 % rate facilement ses cinq photos, presque jamais ses")
+        print('trente. Ce sont les deux premières qui font la liste de travail.')
+
     print(f'\nles {top} espèces les plus ratées (au moins 5 images de test) :')
     for espece, ratees, vues, coupable, combien in especes_en_difficulte(stats)[:top]:
-        mot = 'même genre' if genre(espece, noms) == genre(coupable, noms) else 'AUTRE GENRE'
+        if genre(espece, noms) == genre(coupable, noms):
+            mot = 'même genre'
+        elif familles and famille(espece, familles) == famille(coupable, familles):
+            mot = 'même famille'
+        else:
+            mot = 'AU-DELÀ'
         print(f'  {joli(espece):34s} {ratees:3d}/{vues:3d} ratées → {joli(coupable):32s} ×{combien} ({mot})')
 
 
@@ -134,18 +281,36 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument('--captive', action='store_true', help='ne garder que les photos de plantes cultivées')
     ap.add_argument('--top', type=int, default=20)
     ap.add_argument('--csv', help='écrire toutes les paires (vérité, prédiction) pour creuser ailleurs')
+    ap.add_argument('--pairs', help='relire un CSV de paires déjà écrit au lieu de refaire les inférences')
     ap.add_argument('--plants', default='../plant_dataset/plants.csv')
     args = ap.parse_args(argv)
+
+    noms, familles = {}, {}
+    plants = Path(args.plants)
+    if plants.exists():
+        for r in csv.DictReader(plants.open(encoding='utf-8')):
+            noms[r['internal_id']] = r['scientific_name']
+            if r.get('family', '').strip():
+                familles[r['internal_id']] = r['family']
+
+    classes = [l.strip() for l in (Path(args.model) / 'labels.txt').read_text(encoding='utf-8').splitlines() if l.strip()]
+
+    if args.pairs:
+        # Les paires suffisent au rapport : relire un fichier déjà écrit coûte
+        # une seconde là où refaire 6 000 inférences coûte vingt minutes.
+        # C'est ce qui a permis de corriger la lecture de ce rapport sans
+        # remobiliser la machine d'entraînement.
+        with open(args.pairs, newline='', encoding='utf-8') as f:
+            paires = [(r['verite'], r['prediction']) for r in csv.DictReader(f)]
+        print(f'{len(paires)} paires relues de {args.pairs}\n', flush=True)
+        _rapport(croiser(paires, noms, familles), noms, familles,
+                 au_hasard(classes, familles, noms), args.top)
+        return 0
 
     # Importés ici : ils tirent TensorFlow, dont les fonctions pures de ce
     # fichier n'ont pas besoin pour être testées.
     import numpy as np
     from compare_models import load_model, predict, read_test
-
-    noms = {}
-    plants = Path(args.plants)
-    if plants.exists():
-        noms = {r['internal_id']: r['scientific_name'] for r in csv.DictReader(plants.open(encoding='utf-8'))}
 
     modele = load_model(Path(args.model))
     lignes = [(p, t) for p, t, cap in read_test(Path(args.dataset)) if not args.captive or cap]
@@ -169,7 +334,8 @@ def main(argv: list[str] | None = None) -> int:
             w.writerows(paires)
         print(f'{len(paires)} paires écrites dans {args.csv}\n')
 
-    _rapport(croiser(paires, noms), noms, args.top)
+    _rapport(croiser(paires, noms, familles), noms, familles,
+             au_hasard(classes, familles, noms), args.top)
     return 0
 
 

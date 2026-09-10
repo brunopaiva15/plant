@@ -937,10 +937,36 @@ Le seul prix à la livraison est **l'inférence sur le téléphone** :
 (320/224)² ≈ 2, donc de l'ordre d'une seconde au lieu d'une demi-seconde. Le
 `.tflite` ne bouge pas — 8,8 Mo — parce que MobileNetV3 est entièrement
 convolutif et que sa tête part d'une moyenne globale : le nombre de poids ne
-dépend pas de la résolution d'entrée. Et l'application n'a pas eu besoin
-d'une ligne de code : `tflite_plant_model.dart` lit `input_size`,
-`load_size` et `source_size` dans `model.json`, avec 224 / 256 / 448
-seulement comme valeurs par défaut.
+dépend pas de la résolution d'entrée. Et le modèle a pu être livré sans
+toucher au code : `tflite_plant_model.dart` lit `input_size`, `load_size` et
+`source_size` dans `model.json`, avec 224 / 256 / 448 seulement comme
+valeurs par défaut.
+
+**Cette seconde-là n'était pas une attente, c'était un gel.** La première
+version de ce paragraphe comparait deux latences ; il fallait comparer deux
+blocages. `classify()` appelait `interpreter.run()` sur l'isolat principal :
+pendant tout le calcul, l'application ne redessinait plus, ne répondait plus
+au doigt, et la cascade enchaînant les photos une par une, trois photos
+faisaient trois secondes d'écran mort — que l'utilisateur lit comme une
+panne, pas comme un calcul. Ça ne renverse pas l'arbitrage des 320 px,
+parce que le correctif est indépendant et qu'il ne coûte aucun point :
+
+- **l'inférence est partie dans un isolat.** `tflite_flutter` 0.12.1, déjà
+  épinglé, fournit `IsolateInterpreter` : le calcul tourne à côté,
+  l'interface reste vivante. Une file d'un seul rang le protège, parce que
+  cet isolat, rappelé pendant qu'il travaille, rend la main **sans rien
+  exécuter** — l'appelant lirait alors un vecteur de zéros, une réponse
+  fausse plutôt qu'une erreur ;
+- **l'entrée est passée à plat.** Les listes imbriquées coûtaient 102 400
+  listes et 307 200 nombres emballés, recopiés un par un au retour de
+  l'isolat de décodage, puis reconvertis élément par élément vers le tenseur
+  natif. Un `Float32List` traverse en un bloc ; et donné à TFLite sous sa
+  vue en octets — le seul type qu'il recopie tel quel — il devient un memcpy
+  d'un mégaoctet au lieu de 307 200 conversions.
+
+Le gel, lui, ne se mesure pas au banc : il se voit sur un téléphone. Ce qui
+reste à vérifier sur l'appareil, c'est l'inférence elle-même à 320 px, la
+demi-seconde du § 6.4 n'ayant jamais été remesurée depuis.
 
 ### 6.8 Résultats du modèle v1
 
@@ -972,6 +998,17 @@ Deux enseignements de cet entraînement, tous deux corrigés :
    `load_size`) et lue par l'application, plutôt que codée des deux côtés.
 
 ### 6.9 Recette
+
+> **C'est le plan d'origine, pas la recette livrée**, et il est gardé pour
+> ce qu'il montre du chemin parcouru. Quatre points n'ont jamais été suivis
+> et un lecteur pressé les prendrait pour l'existant : la tête n'a **pas**
+> de classe « autre » — le modèle a 1 457 sorties, pas 1 458, et le § 12.7
+> explique pourquoi elle n'a toujours pas été faite ; EfficientNet-Lite0 n'a
+> jamais été essayé ; le réglage fin ne dégèle pas « tout le réseau » mais
+> ses cent dernières couches (§ 6.7) ; et le déséquilibre est traité par des
+> poids de classe dans la perte, non par un échantillonnage pondéré. La
+> recette réellement appliquée est celle du § 6.7 et du
+> [`README` de `tools/plant_model`](../tools/plant_model/README.md).
 
 | Phase | Espèces | Images / espèce | Objectif |
 |---|---|---|---|
@@ -1010,6 +1047,14 @@ Livrables du modèle : le fichier de poids, `labels.txt` (une ligne par
 classe : `internal_id`), `model.json` (version, date, taille d'entrée,
 normalisation, N classes, empreinte SHA-256, seuils recommandés) et
 `ATTRIBUTIONS.md`.
+
+> **Ce qui a été fait.** TFLite tourne sur les deux plateformes, par
+> `tflite_flutter` : ni Core ML, ni `coremltools`, ni pivot ONNX n'existent
+> dans le dépôt, et l'app n'a pas de canal de plateforme pour le modèle. La
+> classe s'appelle `TflitePlantModel`, sans `Local`. Et `ATTRIBUTIONS.md`
+> est bien produit par la collecte, mais **dans `dataset/`, sur la machine
+> d'entraînement** : il n'est pas dans `assets/model/`, donc il n'est pas
+> livré avec l'application (voir § 12.13).
 
 Dans l'app : une classe `TfliteLocalPlantModel implements LocalPlantModel`
 qui charge le fichier, redimensionne la photo, normalise, exécute et rend
@@ -1344,19 +1389,42 @@ attendre qu'elle sauve les espèces les plus fragiles. Pour celles-là, il
 faudra autre chose — et le § 12.8 montre que PlantNet-300K, lui, en tient des
 centaines pour certaines.
 
-### 12.3 La deuxième photo, là où elle n'est pas encore proposée
+### 12.3 ✅ La deuxième photo, là où elle n'était pas proposée
 
-Le bouton « ajouter une photo » n'apparaît que si la politique hésite
-(`_ambiguous`, dans `identification_sheet.dart` et `create_plant_flow.dart`).
-Une réponse **acceptée** ne le propose donc jamais — or une réponse acceptée
-seule à 0,60 est juste **82,8 %** du temps (§ 6.6). Un sixième des réponses
-affirmées sont fausses et ne se voient jamais offrir le geste qui les
-corrigerait : à deux photos, la justesse passe à 92,3 %.
+Le bouton « ajouter une photo » n'apparaissait que si la politique hésitait.
+Une réponse **acceptée** ne le proposait donc jamais — or une réponse
+acceptée à 0,70 est juste **89,9 %** du temps sur les plantes d'appartement
+en pot (§ 12.12), et 89,1 % sur l'ensemble du test (§ 6.7). **Une réponse
+affirmée sur dix est fausse**, et c'était exactement celle à qui le geste
+correctif n'était jamais offert : le modèle avait le bon goût de douter, ou
+l'utilisateur n'avait rien.
 
-Élargir le déclencheur ne demande aucun réentraînement. Reste à trancher ce
-qu'on ne veut pas casser : proposer une photo de plus après une bonne réponse
-ajoute un geste à un parcours qui marchait. La piste raisonnable est de la
-proposer sous les candidats, sans l'imposer, plutôt qu'en travers du chemin.
+Le geste, lui, est le meilleur de tout ce document : deux photos valent
+**13,7 points de top-1**, plus que dix heures de calcul et 160 000 images
+(§ 6.6). Il est gratuit, hors ligne, instantané.
+
+**Ce qui a été fait.** La décision quitte les deux écrans pour la couche
+domaine — `secondPhotoOffer()`, à côté de `FallbackPolicy` — et rend trois
+états au lieu d'un booléen :
+
+| | quand | comment |
+|---|---|---|
+| `prominent` | le modèle hésite | phrase d'explication + bouton secondaire, comme avant |
+| `quiet` | la réponse est acceptée | bouton fantôme sous les candidats, sans phrase |
+| `none` | plus de photo possible, ou réponse venue de Pl@ntNet | rien |
+
+Les deux écrans (`identification_sheet.dart`, `create_plant_flow.dart`)
+partageaient jusqu'ici deux copies identiques de la règle ; ils appellent
+maintenant la même fonction, testée sans widget
+(`test/domain/identification/second_photo_offer_test.dart`).
+
+Le troisième cas mérite son mot : sur une réponse **distante**, une photo de
+plus ne rejouerait rien sans un nouvel appel, donc sans entamer le quota
+mensuel. Ce n'est plus le même geste gratuit, et on ne le propose pas.
+
+Et le registre effacé est le point de la chose. Proposer une photo de plus
+après une bonne réponse ajoute un geste à un parcours qui marchait : sous
+les candidats, sans phrase, sans l'imposer.
 
 ### 12.4 ✅ La matrice de confusion par genre
 
@@ -1371,25 +1439,143 @@ python3 confusions.py --dataset ../plant_dataset/dataset --model ../../assets/mo
 python3 confusions.py --captive        # sur les seules photos de plantes cultivées
 ```
 
-**Ce qu'il faut y lire, et dans quel ordre.** Le rapport sépare les erreurs
-en deux familles, et c'est toute sa valeur :
+#### Ce que le premier passage a donné — 6 000 images, Iris 7
 
-- **dans le même genre** — deux érables, deux pépéromias. Attendu, et sans
-  gravité : l'écran propose cinq candidats et la bonne réponse y est presque
-  toujours. Ce n'est pas là qu'il faut dépenser des images.
-- **entre genres** — *Yucca* → *Zea*. Un vrai défaut, presque toujours un
-  manque d'images du bon domaine visuel, et la paire dit laquelle collecter.
+|  | part des erreurs | au hasard | |
+|---|---|---|---|
+| dans le même genre | 12,8 % | 0,17 % | **×73** |
+| dans la même famille | 14,2 % | 1,93 % | **×7** |
+| au-delà | 73,0 % | 97,89 % | ×0,75 |
 
-Un modèle dont 80 % des erreurs restent dans le genre est en bonne santé ; le
-même chiffre à 40 % dit qu'il reste des trous de collecte, et le classement
-des paires dit où.
+*(parts mesurées sur 6 000 images ; les décomptes par famille et la
+distribution par espèce plus bas viennent du test entier, 29 000 images.)*
+
+**La lecture prévue ici était fausse, et de deux façons.**
+
+Ce paragraphe annonçait qu'« un modèle dont 80 % des erreurs restent dans le
+genre est en bonne santé ». C'est arithmétiquement hors d'atteinte : **549
+classes sur 1 457 sont seules dans leur genre** et leurs erreurs ne
+*peuvent* pas y rester. Une erreur tirée au sort y resterait 0,17 % du
+temps. Les 12,8 % mesurés ne sont donc pas un échec par rapport aux 80 %
+espérés, ce sont **soixante-treize fois le hasard** : le modèle sait très
+bien reconnaître un genre.
+
+Et le rapport rangeait tout le reste sous « vrais défauts », ce qui mettait
+dans le même sac *Picea* → *Abies*, deux Pinaceae que personne ne sépare de
+loin, et *Parthenocissus* → *Petroselinum*, une vigne vierge prise pour du
+persil. D'où trois tiroirs au lieu de deux, `plants.csv` donnant la famille
+des 1 457 classes.
+
+#### Le vrai enseignement : l'échec est par photo, pas par espèce
+
+**1 794 erreurs sur 2 458 franchissent la famille botanique.** Le document
+raconte depuis la v1 une histoire de confusions entre espèces proches — le
+yucca pris pour du maïs. La mesure dit que c'est le petit quart du problème,
+et que ce quart-là est **déjà rattrapé par l'interface** : le top-3 est à
+74,4 % contre 59,6 % de top-1, soit près de neuf cents images sur six mille
+où la bonne réponse est dans les cinq candidats affichés.
+
+La lecture qui vient alors à l'esprit — « le reste, ce sont des plantes que
+le modèle n'a pas apprises » — est **fausse, et c'est la ligne suivante du
+rapport qui l'a montrée** :
+
+> **11 espèces sur 575 mesurables n'ont pas une seule bonne réponse (2 %).**
+
+Deux pour cent. La population des espèces jamais reconnues est minuscule.
+Les 1 794 erreurs lointaines ne sont donc pas concentrées sur des classes
+absentes en tout sauf le nom : elles sont **réparties sur des espèces que le
+modèle reconnaît par ailleurs**, une photo sur deux ou sur trois.
+
+Ce qui change le diagnostic, et le remède avec :
+
+- **le modèle connaît presque toutes ses espèces** ; il échoue sur certaines
+  *photos* — cadrage, arrière-plan, gros plan contre plante entière,
+  lumière ;
+- **et quand il échoue, il ne se rabat pas sur une voisine plausible.** Il
+  répond une plante sans rapport. Ce n'est pas le comportement d'un modèle
+  qui hésite entre deux espèces proches, c'est celui d'un modèle à qui la
+  photo ne dit rien.
+
+C'est un problème de **domaine visuel**, pas de couverture d'espèces — le
+diagnostic du § 6.3, celui qui avait fait recollecter les plantes d'intérieur
+en pot, et celui que la passe Commons du § 12.2 vise. **Ajouter 1 500 espèces
+ne le soignerait pas** : ce sont des photos d'un autre genre qu'il faut aux
+espèces déjà présentes.
+
+**Et ce 2 % était lui-même une mauvaise mesure.** La passe complète a rendu
+**5 espèces sur 1 422**, contre 11 sur 575 dans l'échantillon. Ce n'est pas
+une amélioration, c'est le même modèle : une espèce à 15 % de top-1 rate
+facilement ses cinq photos, presque jamais ses trente. **Le zéro mesurait le
+nombre d'images de test.** Un seuil, lui, ne bouge pas :
+
+| sur les 1 422 espèces vues au moins cinq fois | |
+|---|---|
+| **sous 25 % de top-1** | **76** (5,3 %) ← la liste de collecte |
+| sous 50 % | 402 (28,3 %) |
+| pas une seule bonne réponse | 5 (0,4 %) |
+
+Voilà la forme réelle du problème : **soixante-seize espèces à reprendre**,
+pas cinq et pas mille quatre cents. Le reste du catalogue tient. Et les
+trois quarts des erreurs viennent d'espèces qui, elles, dépassent 50 % —
+c'est-à-dire de photos ratées sur des plantes connues, pas de classes
+perdues.
+
+#### Les familles franchies, et la seule qui touche l'application
+
+Sur le jeu de test entier, 29 000 images :
+
+| | |
+|---|---|
+| Pinaceae ↔ Cupressaceae | **98** — sapins, épicéas, cyprès, thuyas |
+| Asteraceae ↔ Brassicaceae | 72 |
+| Asteraceae → Apiaceae / Ranunculaceae / Lamiaceae / Fabaceae | 120 en tout |
+| Rosaceae → Caprifoliaceae / Ranunculaceae / Oleaceae / Fabaceae | 98 en tout |
+| **Asparagaceae ↔ Poaceae** | **39** |
+| Amaranthaceae → Polygonaceae | 20 |
+
+Les conifères dominent, et c'est sans conséquence : personne n'identifie un
+thuya depuis son salon. **La paire qui compte est la deuxième.** Asparagaceae,
+ce sont les 41 classes à feuilles en lanières — *Chlorophytum*, *Dracaena*,
+*Cordyline*, *Aspidistra*, *Beaucarnea*, *Yucca* —, c'est-à-dire une bonne
+part des plantes d'appartement du catalogue. Poaceae, ce sont les graminées.
+
+**C'est le yucca pris pour du maïs du § 6.3, toujours là, et pas résolu.** La
+v4 l'avait traité espèce par espèce, en recollectant des photos de yucca en
+pot ; la vue par famille dit que le défaut n'était pas le yucca mais **la
+forme de feuille**, et qu'il touche tout un rayon de jardinerie — le
+classement par genres le confirme, `yucca → dracaena` pèse 10 à lui seul.
+
+> **Une part de ce classement n'est pas une erreur du modèle.**
+> `hesperocyparis → cupressus` (11) et son symétrique (10) sont en tête des
+> confusions de genre, et pour cause : ce sont **la même plante sous deux
+> noms**, tous deux au catalogue. Aucune photo ne pouvait trancher. Voir le
+> § 12.14 — cinq autres paires sont dans ce cas.
+
+#### Et ce que les espèces les plus ratées ne contiennent pas
+
+Cèdres, fusains, églantiers, paulownias, mélèzes, frênes, pins : les vingt
+espèces les plus ratées sont des plantes de dehors. **Aucune des 151 espèces
+d'appartement n'y figure** — ce qui corrobore, par un autre chemin, les huit
+points et demi d'écart du § 12.12 entre les plantes d'intérieur et le reste
+du catalogue. Le modèle est faible là où l'utilisateur ne regarde pas.
+
+#### En pratique
+
+```bash
+python3 confusions.py --dataset ../plant_dataset/dataset --model ../../assets/model --csv paires.csv
+python3 confusions.py --pairs paires.csv        # relit, ne recalcule pas
+python3 confusions.py --captive                 # les seules photos de plantes cultivées
+```
+
+`--csv` écrit les paires, `--pairs` les relit : le rapport se refait en une
+seconde sans TensorFlow ni machine d'entraînement. C'est ce qui a permis de
+corriger deux fois la lecture ci-dessus sans remobiliser la VM — vingt
+minutes d'inférences auraient découragé la première correction, et la
+seconde ne serait jamais venue.
 
 Le rapport finit par les espèces les plus ratées avec **ce qu'on leur répond
 à la place** — la question qu'on se posait sur le ficus ginseng (§ 6.5)
-depuis deux versions, et à laquelle une ligne de sortie répond maintenant.
-
-L'outil accepte `--csv` pour écrire toutes les paires et creuser ailleurs, et
-ses fonctions de tri sont testées sans TensorFlow
+depuis deux versions. Les fonctions de tri sont testées sans TensorFlow
 (`tests/test_confusions.py`).
 
 ### 12.5 ✅ La régularisation
@@ -1423,6 +1609,11 @@ donc la demi-seconde d'inférence mesurée au § 6.4 passerait à une seconde.
 C'est le seul arbitrage : 320 px ne vaut le coup que s'il rapporte assez de
 points pour justifier une attente deux fois plus longue devant l'écran
 d'identification.
+
+Ce raisonnement, tenu avant l'entraînement, comparait deux attentes alors
+que l'inférence tournait sur l'isolat principal et produisait donc deux
+gels. Le § 6.7 dit ce qui a été corrigé après coup ; la décision, elle, ne
+change pas.
 
 ### 12.7 La classe « autre » — et d'abord savoir si elle manque
 
@@ -1600,6 +1791,13 @@ candidates ne donnerait pas 3 000 classes mais environ **2 100**, et 900
 espèces collectées pour rien — douze heures de réseau et du disque pour des
 classes que `train.py` écarterait.
 
+**Et le § 12.12 a depuis chiffré ce que l'étendue coûte déjà** : sur les
+plantes d'appartement, restreindre les sorties de 1 457 à 151 classes rend
+**dix points de top-1**. Ce n'est pas un argument contre les 3 000 — il faut
+bien nommer ce que les gens photographient —, mais c'est la mesure qui
+manquait au critère de réussite ci-dessous : la première condition n'est pas
+une formalité, c'est celle qui décide.
+
 Trois réserves sur ce chiffre, dans les deux sens : l'échantillon est de
 vingt, donc l'incertitude est d'une vingtaine de points ; c'est une **borne
 basse**, GBIF ne filtrant que CC0 et CC BY à la requête et iNaturalist en
@@ -1631,10 +1829,278 @@ La couverture seule ne rend pas l'application meilleure sur les plantes que
 les gens possèdent ; le domaine visuel, si. Les deux dans la même version,
 mais mesurés séparément :
 
-1. `confusions.py` sur Iris 7 — dix minutes, aucune collecte, et il dira
+1. les **quatorze plantes d'appartement absentes** du catalogue (§ 12.12) —
+   déjà mesurées, quatorze noms à collecter, et ce sont celles que les gens
+   possèdent ;
+2. `confusions.py` sur Iris 7 — dix minutes, aucune collecte, et il dira
    **lesquelles** des espèces actuelles réclament des images (§ 12.4) ;
-2. la liste des candidates, générée par observations et vérifiée par
+3. la liste des candidates, générée par observations et vérifiée par
    `disponibilite.py` ;
-3. la collecte, avec Commons pour le domaine (§ 12.2) et PlantNet-300K
+4. la collecte, avec Commons pour le domaine (§ 12.2) et PlantNet-300K
    plafonné pour le volume (§ 12.8) ;
-4. les recettes, une à la fois, comme pour la v7.
+5. les recettes, une à la fois, comme pour la v7.
+
+### 12.12 Ce que le modèle rend sur les plantes d'appartement
+
+Le top-1 publié — **0,5961** — est une moyenne sur 1 457 espèces dont la
+plupart sont sauvages, européennes, et que personne ne photographie dans son
+salon. L'application, elle, sert d'abord les 167 noms de
+`phase1_species.txt` : les plantes qu'on achète en jardinerie et qu'on pose
+sur une étagère. Ce chiffre-là n'a jamais été mesuré.
+
+`tools/plant_model/interieur.py` le mesure, et il commence par une question
+qui vient avant la précision.
+
+#### La couverture d'abord — mesurée, et elle surprend
+
+**Une espèce absente du catalogue ne se trompe pas : elle ne se propose
+jamais.** Elle est un échec certain pour l'utilisateur, et elle est
+*invisible* dans toute mesure de top-1 — on ne compte pas les erreurs d'une
+classe qui n'existe pas. Il faut donc la compter à part, et cette partie ne
+demande ni carte graphique, ni jeu d'images, ni TensorFlow :
+
+```bash
+cd tools/plant_model && python3 interieur.py --couverture
+```
+
+| | |
+|---|---|
+| noms dans `phase1_species.txt` | 167 |
+| plantes distinctes | **165** — *Calathea* et *Goeppertia orbifolia* sont la même, *Saintpaulia ionantha* et *Streptocarpus ionanthus* aussi |
+| que l'Iris 7 sait nommer | **151** |
+| **couverture** | **92 %** |
+
+Deux de ces 151 ne se trouvent qu'en résolvant les noms, et c'est pour cela
+que l'outil le fait : *Streptocarpus ionanthus* est au catalogue sous
+`saintpaulia-ionantha` (colonne `synonyms` de `plants.csv`), et *Citrus
+limon* sous `citrus-x-limon` — le × que la liste ne met pas. Les compter
+absentes aurait été une erreur de lecture, pas une lacune du modèle.
+
+#### Les quatorze plantes que l'application ne peut pas nommer
+
+| | |
+|---|---|
+| *Phalaenopsis amabilis* | l'orchidée la plus vendue d'Europe |
+| *Rhaphidophora tetrasperma* | le « mini-monstera », la plante à la mode |
+| *Alocasia zebrina*, *Alocasia amazonica* | deux Alocasia sur trois du commerce |
+| *Begonia rex* | trois *Begonia* au catalogue, pas celui-là |
+| *Peperomia argyreia* | le pépéromia melon d'eau |
+| *Calathea* (*Goeppertia*) *orbifolia* | le genre est là — `goeppertia-makoyana` — l'espèce non |
+| *Anthurium clarinervium* | `anthurium-andraeanum` est là, pas lui |
+| *Cymbidium hybridum*, *Hippeastrum vittatum*, *Gynura aurantiaca*, *Columnea gloriosa*, *Ravenea rivularis*, *Pachyphytum oviferum* | genre entièrement absent |
+
+Ce ne sont pas des espèces rares : ce sont des plantes de supermarché. Six
+d'entre elles ont un genre déjà au catalogue — les deux *Alocasia*, le
+*Begonia*, l'*Anthurium*, le *Peperomia*, le *Calathea* —, ce qui veut dire
+que le modèle répondra **une cousine avec assurance** plutôt que rien : le
+cas le plus coûteux du § 6.7, celui de la réponse acceptée qui est fausse.
+
+#### La précision, mesurée sur le `.tflite` livré
+
+3 606 images de test portent sur ces 151 espèces. Deux lectures, la seconde
+avec les sorties masquées aux seules plantes d'intérieur — ce que rendrait
+un modèle qui n'aurait appris qu'elles :
+
+| sur les 3 606 images | top-1 | top-3 | à 0,70 |
+|---|---|---|---|
+| **catalogue entier** (1 457 sorties) | 0,6733 | 0,8028 | 57,4 % acceptées, 90,6 % justes |
+| **catalogue restreint** (151 sorties) | **0,7754** | 0,8899 | 54,6 % acceptées, 95,1 % justes |
+| les mêmes, **photographiées en pot** (1 963 images) | 0,6796 | 0,8105 | 59,6 % acceptées, 89,9 % justes |
+| pour comparaison, **tout le reste du catalogue** (4 000 images) | 0,5888 | 0,7403 | |
+
+Trois choses en sortent, et elles ne disent pas la même chose.
+
+**1. Le titre sous-vend le modèle sur son terrain.** 67,3 % sur les plantes
+d'appartement contre 58,9 % sur le reste : **huit points et demi d'écart**
+en faveur des photos que l'application reçoit vraiment. Le 0,5961 publié est
+une moyenne sur une population que l'utilisateur ne photographie pas.
+
+**2. Le `.tflite` livré vaut ce que `model.json` annonce.** 59,0 % sur 6 000
+images tirées au hasard contre 59,61 % annoncés sur 28 983 : l'écart tient
+dans le bruit d'échantillonnage (± 1,2 point à 6 000 tirages). L'export
+float16 ne coûte rien de mesurable — c'était pris sur parole jusqu'ici.
+
+**3. Le prix de l'étendue est de dix points.** Restreindre les sorties aux
+151 plantes d'intérieur fait passer le top-1 de 67,3 % à **77,5 %**, et la
+précision des réponses acceptées de 90,6 % à **95,1 %**. Les 1 306 espèces
+que l'utilisateur ne photographiera jamais lui coûtent donc **dix points de
+top-1**, tous les jours.
+
+> Le top-1 est exact : masquer préserve l'ordre entre les classes qui
+> restent, renormaliser n'y change rien. Les colonnes de seuil, elles, sont
+> mesurées **après** renormalisation (`score(..., renormalise=True)`), sans
+> quoi la masse partie aux classes masquées ne reviendrait à personne et
+> l'autonomie serait artificiellement basse. Un modèle réellement entraîné
+> sur 151 classes ferait vraisemblablement mieux encore : il aurait la même
+> capacité pour neuf fois moins d'espèces.
+
+#### Ce que ça change dans l'ordre du travail
+
+Quatorze classes manquantes sur les plantes que les gens possèdent, contre
+1 543 espèces à ajouter pour atteindre 3 000. Le second chantier coûte douze
+heures de collecte et deux heures d'entraînement par recette ; le premier
+coûte une collecte de quatorze noms. **Ils ne se valent pas, et le petit
+passe devant** — il ne demande même pas d'attendre la v8, `--min-train`
+mis à part.
+
+#### Et une piste qui ne demande aucun entraînement
+
+Ces dix points ne s'obtiennent pas qu'en rétrécissant le modèle : ils
+s'obtiennent en rétrécissant **la liste des candidats au moment de
+répondre**. C'est un masque sur les sorties, quelques lignes dans la
+cascade, aucune collecte et aucune passe d'entraînement — et l'application
+sait souvent de quoi il s'agit, puisqu'elle sert d'abord à suivre des
+plantes en pot.
+
+Ce n'est pas gratuit pour autant : masquer, c'est **rendre impossible** la
+bonne réponse pour qui photographie un érable dans la rue. Le § 3.2 avait
+prévu la classe « autre » pour ce genre de garde-fou et elle n'existe
+toujours pas (§ 12.7). À creuser avec les mêmes 3 606 images avant d'écrire
+quoi que ce soit — mais dix points pour zéro heure de calcul, c'est le
+meilleur rapport de toute cette liste.
+
+### 12.13 Les attributions ne sortent pas de la machine d'entraînement
+
+La collecte fait ce qu'il faut : `write_attributions` écrit, pour chacune
+des 290 131 images gardées, son auteur, sa licence et le lien vers
+l'observation (`dataset/ATTRIBUTIONS.md` et `dataset/attributions.csv`).
+Son commentaire dit « c'est ce qu'on livrera avec le modèle », et le
+[`README` du collecteur](../tools/plant_dataset/README.md) écrit qu'ils
+« doivent être livrés avec le modèle ». Le § 7 les compte parmi les
+livrables.
+
+**Ils ne le sont pas.** `assets/model/` contient `plants.tflite`,
+`labels.txt` et `model.json`, rien d'autre — et `pubspec.yaml` embarquant le
+dossier entier, il suffirait d'y déposer le fichier pour qu'il parte dans
+l'app. Deux choses à trancher, et elles sont indépendantes.
+
+#### 1. La sauvegarde, qui n'attend pas
+
+`dataset/` est dans `.gitignore` et vit sur une machine louée à l'heure.
+**Ce fichier est la seule trace de la provenance de 290 131 images** : d'où
+elles viennent, sous quelle licence, de qui. Le jeu se recollecte — les
+images sont toujours chez GBIF et iNaturalist —, mais pas à l'identique :
+une observation retirée, une licence changée, et la trace de ce que le
+modèle *livré* a réellement vu est perdue. `attributions.csv` compressé pèse
+quelques dizaines de mégaoctets ; il devrait sortir de la VM avant qu'elle
+ne soit rendue.
+
+#### 2. Ce qu'on livre dans l'app, qui demande une décision
+
+Le fichier entier fait de l'ordre de **40 Mo** — une ligne de 130 octets par
+image, contre 8,8 Mo pour le modèle. Le livrer tel quel quadruplerait le
+poids de l'application pour un texte que personne ne lira. Trois voies :
+
+- **une forme condensée** dans `assets/model/` : une ligne par auteur
+  distinct plutôt que par image, avec les licences et les sources. Il faut
+  d'abord compter les auteurs distincts — le chiffre n'existe pas ;
+- **le fichier entier publié à côté** (dépôt ou site), l'app y renvoyant
+  depuis un écran de crédits qu'elle n'a pas encore ;
+- **écrire noir sur blanc qu'on ne le livre pas**, et pourquoi. C'est
+  défendable — la question de savoir si des poids sont une adaptation des
+  images n'est pas tranchée —, mais alors il faut corriger les trois
+  endroits qui promettent le contraire, plutôt que de les laisser dire une
+  chose que le dépôt ne fait pas.
+
+Ce qui n'est pas défendable, c'est l'état actuel : trois documents et un
+commentaire de code annoncent une livraison qui n'a pas lieu.
+
+### 12.14 Six plantes comptées deux fois
+
+`tools/plant_dataset/doublons.py`. Trouvé en cherchant pourquoi
+`hesperocyparis → cupressus` était en tête des confusions de genre du
+§ 12.4 : ce n'était pas une erreur du modèle. **Les deux noms sont la même
+plante, et tous deux sont des classes.**
+
+Les 1 457 noms du catalogue ont été résolus vers leur taxon accepté chez
+GBIF — aucun non résolu — et six couples tombent sur la même clé :
+
+| | | |
+|---|---|---|
+| `dracaena-trifasciata` | `sansevieria-trifasciata` | **la sansevière**, genre changé en 2017 |
+| `coleus-scutellarioides` | `plectranthus-scutellarioides` | **le coléus** |
+| `echinocactus-grusonii` | `kroenleinia-grusonii` | **le coussin de belle-mère** |
+| `cupressus-macrocarpa` | `hesperocyparis-macrocarpa` | le cyprès de Lambert |
+| `citrus-myrtifolia` | `citrus-x-aurantium` | le chinotto, une forme de bigaradier |
+| `citrus-x-bergamia` | `citrus-x-limon` | la bergamote, rattachée au citron par GBIF |
+
+Les quatre premiers ne prêtent pas à discussion. **Les deux derniers sont le
+jugement de GBIF sur le marais taxonomique des agrumes**, et méritent d'être
+confirmés avant fusion — mais ils expliquent au passage pourquoi *Citrus ×
+limon* rate 23 de ses 26 images de test en répondant six fois *Citrus ×
+aurantium* (§ 12.4).
+
+#### Ce que ça coûte, trois fois
+
+- **les images se partagent.** Une plante photographiée sous deux noms
+  nourrit deux classes à demi. Pour la sansevière — l'une des plantes
+  d'appartement les plus vendues — c'est exactement le contraire de ce que
+  le § 12.12 demande ;
+- **la confusion est imperdable.** Aucune photo ne peut trancher, puisqu'il
+  n'y a rien à trancher. Elle compte pourtant dans la matrice comme un
+  défaut, et elle a occupé la tête du classement ;
+- **le décompte de classes est faux d'autant.** 1 457 annoncées, 1 451
+  plantes.
+
+#### Pourquoi il fallait GBIF et pas une heuristique
+
+Le premier réflexe — deux identifiants qui partagent leur épithète dans une
+même famille — rend **34 groupes pour 4 vrais doublons** sur ce catalogue.
+*Populus alba* et *Salix alba* ne sont pas la même plante ; `officinalis`,
+`vulgaris` et `japonica` sont des passe-partout. Et l'heuristique **rate**
+les deux couples d'agrumes, dont l'épithète diffère. GBIF est déjà l'arbitre
+de la collecte et de `synonyms.txt` (§ 6.5) ; il n'y avait pas de raison
+d'en prendre un autre.
+
+**Sa limite, écrite dans l'outil.** La dorsale GBIF retarde sur certains
+transferts récents : *Schefflera arboricola* et *Heptapleurum arboricola* y
+sont deux taxons acceptés, donc l'outil ne les signale pas, alors que la
+littérature récente les tient pour une seule plante — et ce sont deux
+classes du modèle. **L'outil rend les doublons certains, pas tous les
+doublons.**
+
+#### ✅ Ce que ça changeait pour l'utilisateur, et qui est corrigé
+
+Le défaut n'attendait pas la v8 : **il était déjà dans l'app livrée.** Les
+deux noms sont dans `catalog.tsv`, et `catalogLookup` (`providers.dart`)
+résolvait chacun pour son compte. Selon la photo, la même sansevière
+donnait :
+
+| | fiche trouvée | nom affiché en français | identifiant interne |
+|---|---|---|---|
+| classe `dracaena-trifasciata` | celle soignée à la main | **Langue de belle-mère** | `dracaena-trifasciata` |
+| classe `sansevieria-trifasciata` | le catalogue étendu | *Mother-in-law's tongue* | `sansevieria-trifasciata` |
+
+Deux fiches dans la recherche, deux noms, **deux identifiants internes donc
+deux profils de soin** — pour une seule plante, au hasard de la photo.
+
+`acceptedSpeciesName()` (`core/utils/scientific_name.dart`) rattache les
+cinq couples avant la résolution, à l'entonnoir unique qu'est
+`catalogLookup`. Le nom reçu reste affichable — *Sansevieria trifasciata*
+est un nom juste — mais l'identité, elle, est unique.
+
+**Et le sens de la flèche n'est pas celui qu'on croit**, ce qui a failli me
+coûter la correction. GBIF dit *quels* noms sont la même plante ; il ne dit
+pas lequel garder. Suivre le nom accepté de GBIF aurait donné :
+
+- *Coleus scutellarioides*, que **ni** la fiche soignée **ni** le catalogue
+  étendu ne portent — la plante ne serait plus reconnue du tout ;
+- *Kroenleinia grusonii*, qui n'est que dans le catalogue étendu, là où
+  *Echinocactus grusonii* a sa fiche soignée à la main et son nom français.
+
+Ce qui décide, c'est **ce que l'app possède** : fiche soignée d'abord,
+catalogue étendu ensuite. Les cinq flèches pointent maintenant vers un nom
+dont les quatre langues existent, vérifié une par une.
+
+*Citrus × bergamia* est volontairement laissée de côté : GBIF la rattache au
+citron, la bergamote n'est pas un citron pour qui la cultive, et aucun des
+deux catalogues ne la porte — il n'y a pas de contradiction à lever.
+
+#### Ce qui reste, pour la v8
+
+Les cinq couples sont inscrits dans la colonne `synonyms` de `plants.csv`,
+donc lisibles par la collecte. **Retirer les lignes en double du catalogue
+de collecte est la décision suivante** : elle change le jeu d'étiquettes du
+modèle, donc elle se prend en ouvrant la v8, pas en passant. Les images se
+rejoindront alors, et six classes fantômes quitteront le décompte.
+
