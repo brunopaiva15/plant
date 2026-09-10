@@ -327,6 +327,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listView => 'List';
 
   @override
+  String get showAsGrid => 'Show as grid';
+
+  @override
+  String get showAsList => 'Show as list';
+
+  @override
   String get noResultsTitle => 'No results';
 
   @override

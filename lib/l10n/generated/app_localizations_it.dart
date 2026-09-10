@@ -328,6 +328,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get listView => 'Elenco';
 
   @override
+  String get showAsGrid => 'Mostra come griglia';
+
+  @override
+  String get showAsList => 'Mostra come elenco';
+
+  @override
   String get noResultsTitle => 'Nessun risultato';
 
   @override

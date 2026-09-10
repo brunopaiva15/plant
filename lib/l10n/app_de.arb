@@ -91,6 +91,8 @@
   "clearFilters": "Filter löschen",
   "gridView": "Raster",
   "listView": "Liste",
+  "showAsGrid": "Als Raster anzeigen",
+  "showAsList": "Als Liste anzeigen",
   "noResultsTitle": "Keine Ergebnisse",
   "noResultsSubtitle": "Versuch es mit einem anderen Wort.",
   "emptyPlantsTitle": "Noch keine Pflanzen",

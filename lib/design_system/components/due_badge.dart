@@ -8,22 +8,29 @@ import '../tokens/radius.dart';
 
 /// Pastille « 💧 Dans 2 j » — la couleur seule ne porte jamais l'information.
 class DueBadge extends StatelessWidget {
-  const DueBadge({super.key, required this.emoji, required this.label, required this.status, this.compact = false});
+  const DueBadge({super.key, required this.emoji, required this.label, required this.status, this.compact = false, this.done = false});
 
   final String emoji;
   final String label;
   final DueStatus status;
   final bool compact;
 
+  /// Le soin vient d'être enregistré : la pastille passe au vert du fait
+  /// accompli — celui du bouton et du swipe — le temps que la carte s'en aille.
+  /// Elle ne dit plus une échéance, elle confirme.
+  final bool done;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final (bg, fg) = switch (status) {
-      DueStatus.overdue => (c.terracottaSoft, c.terracotta),
-      DueStatus.today => (c.waterSoft, c.water),
-      DueStatus.upcoming => (c.surfaceMuted, c.inkSecondary),
-      DueStatus.none => (c.surfaceMuted, c.inkTertiary),
-    };
+    final (bg, fg) = done
+        ? (c.sageSoft, c.sage)
+        : switch (status) {
+            DueStatus.overdue => (c.terracottaSoft, c.terracotta),
+            DueStatus.today => (c.waterSoft, c.water),
+            DueStatus.upcoming => (c.surfaceMuted, c.inkSecondary),
+            DueStatus.none => (c.surfaceMuted, c.inkTertiary),
+          };
     return Container(
       padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 10, vertical: compact ? 3 : 5),
       decoration: BoxDecoration(color: bg, borderRadius: Radii.fullAll),

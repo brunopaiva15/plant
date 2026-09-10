@@ -92,6 +92,11 @@ class PreferencesService {
   bool get archiveGridView => _prefs.getBool('archive_grid_view') ?? false;
   Future<void> setArchiveGridView(bool value) => _prefs.setBool('archive_grid_view', value);
 
+  /// Vue de la section « À venir » de l'écran du jour : la grille par défaut,
+  /// la liste pour qui préfère lire ses soins l'un sous l'autre.
+  bool get upcomingGridView => _prefs.getBool('upcoming_grid_view') ?? true;
+  Future<void> setUpcomingGridView(bool value) => _prefs.setBool('upcoming_grid_view', value);
+
   /// Ce que le carrousel « dernières plantes » du tableau de bord montre :
   /// les dernières ajoutées, ou les dernières modifiées.
   String get recentPlantsMode => _prefs.getString('recent_plants_mode') ?? 'added';

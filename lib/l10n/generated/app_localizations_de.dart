@@ -328,6 +328,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listView => 'Liste';
 
   @override
+  String get showAsGrid => 'Als Raster anzeigen';
+
+  @override
+  String get showAsList => 'Als Liste anzeigen';
+
+  @override
   String get noResultsTitle => 'Keine Ergebnisse';
 
   @override
