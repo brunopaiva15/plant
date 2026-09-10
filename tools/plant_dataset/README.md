@@ -18,6 +18,28 @@ python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
 python3 -m pytest -q                          # 124 tests, sans réseau
 ```
 
+
+## Les classes qui sont la même plante
+
+```bash
+python3 doublons.py --labels ../../assets/model/labels.txt
+```
+
+*Sansevieria trifasciata* et *Dracaena trifasciata* sont une seule plante —
+la sansevière a changé de genre en 2017 — et les deux noms sont au
+catalogue. Le modèle a donc deux classes pour elle : les images se
+partagent, chacune s'entraîne sur la moitié de ce qu'elle devrait, et la
+confusion qui en résulte est **imperdable** puisqu'il n'y a rien à
+trancher. Elle apparaît pourtant dans `confusions.py` comme un défaut du
+modèle.
+
+L'outil résout chaque nom du catalogue vers son taxon accepté chez GBIF et
+groupe ceux qui tombent sur la même clé. Pas d'heuristique : chercher les
+épithètes partagées dans une même famille rend 34 groupes pour 4 vrais
+doublons — *Populus alba* et *Salix alba* ne sont pas la même plante. Les
+clés sont mises en cache, une reprise ne redemande rien. Voir le § 12.14 de
+`docs/09`.
+
 ## Fichiers
 
 | Fichier | Rôle |

@@ -168,21 +168,42 @@ def especes_en_difficulte(stats: dict, minimum: int = 5) -> list[tuple[str, int,
     return out
 
 
-def jamais_reconnues(stats: dict, minimum: int = 5) -> list[tuple[str, int]]:
-    """Les espèces dont pas une image de test n'est reconnue.
-
-    Une espèce à 8 erreurs sur 8 n'est pas « confondue » : elle n'est pas
-    apprise. C'est une population à part, et c'est elle la liste de collecte
-    — pas les paires du classement, qui mélangent des espèces fragiles et
-    des espèces absentes du modèle en tout sauf le nom.
-    """
-    out = []
+def taux_par_espece(stats: dict, minimum: int = 5) -> dict[str, float]:
+    """Le top-1 de chaque espèce assez vue pour qu'il veuille dire quelque
+    chose. On ne classe pas une espèce sur trois photos."""
+    out = {}
     for espece, vues in stats['vues'].items():
         if vues < minimum:
             continue
-        if sum(stats['par_espece'].get(espece, {}).values()) == vues:
-            out.append((espece, vues))
-    return sorted(out, key=lambda r: -r[1])
+        # Le rapport des justes, pas le complément des ratées : `1 - 4/5`
+        # rend 0,199999… et deux espèces identiques cesseraient d'être égales.
+        out[espece] = (vues - sum(stats['par_espece'].get(espece, {}).values())) / vues
+    return out
+
+
+def faiblesse(stats: dict, minimum: int = 5) -> dict:
+    """La distribution des espèces par top-1 — la vraie liste de collecte.
+
+    **Compter les espèces à zéro bonne réponse ne marche pas**, et la mesure
+    l'a montré en se contredisant : sur un échantillon de 6 000 images, 11
+    espèces sur 575 n'avaient rien de juste ; sur les 29 000 du test entier,
+    5 sur 1 422. Le second chiffre n'est pas une amélioration, c'est le même
+    modèle. Une espèce à 15 % de top-1 rate facilement ses cinq images ;
+    elle n'en rate presque jamais trente. **Le zéro mesure le nombre
+    d'images de test, pas la faiblesse de la classe.**
+
+    Un seuil, lui, ne bouge pas avec la taille de l'échantillon. D'où des
+    tranches, et un « jamais reconnues » gardé pour mémoire mais annoncé
+    pour ce qu'il est.
+    """
+    taux = taux_par_espece(stats, minimum)
+    return {
+        'mesurables': len(taux),
+        'nulles': sorted(e for e, t in taux.items() if t == 0.0),
+        'sous_25': sorted(e for e, t in taux.items() if t < 0.25),
+        'sous_50': sorted(e for e, t in taux.items() if t < 0.50),
+        'taux': taux,
+    }
 
 
 def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) -> None:
@@ -229,12 +250,16 @@ def _rapport(stats: dict, noms: dict, familles: dict, hasard: dict, top: int) ->
         for (fv, fp), combien in stats['entre_familles'].most_common(top):
             print(f'  {fv:22s} → {fp:22s} {combien:5d}')
 
-    mesurables = [e for e, v in stats['vues'].items() if v >= 5]
-    perdues = jamais_reconnues(stats)
-    if mesurables:
-        print(f"\n**{len(perdues)} espèces sur {len(mesurables)} mesurables n'ont pas une seule bonne")
-        print(f"réponse** ({len(perdues) / len(mesurables):.0%}) : celles-là ne sont pas confondues,")
-        print('elles ne sont pas apprises. C\'est la liste de collecte.')
+    f = faiblesse(stats)
+    if f['mesurables']:
+        n = f['mesurables']
+        print(f"\nles {n} espèces vues au moins 5 fois, par top-1 :")
+        print(f"  {len(f['sous_25']):5d}  ({len(f['sous_25']) / n:5.1%})   sous 25 %  ← la liste de collecte")
+        print(f"  {len(f['sous_50']):5d}  ({len(f['sous_50']) / n:5.1%})   sous 50 %")
+        print(f"  {len(f['nulles']):5d}  ({len(f['nulles']) / n:5.1%})   pas une seule bonne réponse")
+        print('\nLa dernière ligne mesure surtout le nombre d\'images de test : une')
+        print("espèce à 15 % rate facilement ses cinq photos, presque jamais ses")
+        print('trente. Ce sont les deux premières qui font la liste de travail.')
 
     print(f'\nles {top} espèces les plus ratées (au moins 5 images de test) :')
     for espece, ratees, vues, coupable, combien in especes_en_difficulte(stats)[:top]:

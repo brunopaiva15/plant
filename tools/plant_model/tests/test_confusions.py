@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from confusions import (au_hasard, croiser, especes_en_difficulte, famille,  # noqa: E402
-                        genre, jamais_reconnues)
+                        faiblesse, genre, taux_par_espece)
 
 
 def test_le_genre_sort_de_lidentifiant():
@@ -130,16 +130,25 @@ def test_le_troisieme_tiroir_a_sa_reference_comme_les_deux_autres():
     assert h['au_dela'] == 0.0, 'ici toutes les classes sont d\'une seule famille'
 
 
-def test_une_espece_jamais_reconnue_nest_pas_une_espece_confondue():
-    # 5 images, 5 erreurs : le modèle ne l'a pas apprise. À distinguer d'une
-    # espèce fragile, qui en rate quatre sur cinq.
-    perdue = [('a-un', 'b-un')] * 5
-    fragile = [('c-un', 'd-un')] * 4 + [('c-un', 'c-un')]
-    stats = croiser(perdue + fragile)
-    assert jamais_reconnues(stats) == [('a-un', 5)]
+def test_le_taux_par_espece_ne_compte_que_les_especes_assez_vues():
+    stats = croiser([('a-un', 'b-un')] * 4 + [('a-un', 'a-un')] + [('c-un', 'd-un')] * 3)
+    taux = taux_par_espece(stats)
+    assert taux == {'a-un': 0.2}, 'c-un n\'a que 3 images : on ne la classe pas'
 
 
-def test_une_espece_trop_peu_vue_ne_compte_pas_comme_perdue():
-    # Trois images ratées ne disent rien : on ne classe pas une espèce sur
-    # trois photos, c'est déjà la règle d'`especes_en_difficulte`.
-    assert jamais_reconnues(croiser([('a-un', 'b-un')] * 3)) == []
+def test_les_tranches_ne_dependent_pas_de_la_taille_de_lechantillon():
+    # Le même modèle, la même espèce à 20 %, vue 5 fois puis 30 fois : le
+    # « zéro bonne réponse » bascule, pas la tranche. C'est ce qui a fait
+    # remplacer la mesure — 11 espèces sur 575 dans l'échantillon, 5 sur
+    # 1 422 dans le test entier, pour un modèle inchangé.
+    petit = croiser([('a-un', 'b-un')] * 5)
+    grand = croiser([('a-un', 'b-un')] * 24 + [('a-un', 'a-un')] * 6)
+    assert faiblesse(petit)['nulles'] == ['a-un']
+    assert faiblesse(grand)['nulles'] == [], 'la même faiblesse ne compte plus comme nulle'
+    assert faiblesse(petit)['sous_25'] == faiblesse(grand)['sous_25'] == ['a-un']
+
+
+def test_une_espece_solide_ne_figure_dans_aucune_tranche():
+    stats = croiser([('a-un', 'a-un')] * 9 + [('a-un', 'b-un')])
+    f = faiblesse(stats)
+    assert f['mesurables'] == 1 and f['sous_50'] == [] and f['nulles'] == []
