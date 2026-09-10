@@ -3410,6 +3410,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Every watering and repotting is dated and filed with the plant.';
 
   @override
+  String onbIrisTitle(String name) {
+    return '$name names your plants offline';
+  }
+
+  @override
+  String get onbIrisBody =>
+      'Photograph your plant. What Iris can\'t recognise, it looks up online.';
+
+  @override
   String get onbPrivacyTitle => 'Everything stays on your phone';
 
   @override

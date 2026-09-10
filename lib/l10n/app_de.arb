@@ -1075,6 +1075,8 @@
   "onbCareBody": "Die Abstände passen sich von selbst an, wenn die Tage kürzer werden.",
   "onbGardenTitle": "Räume, Fotos, Kalender",
   "onbGardenBody": "Jedes Gießen, jedes Umtopfen wird datiert und bei der Pflanze abgelegt.",
+  "onbIrisTitle": "{name} erkennt deine Pflanzen offline",
+  "onbIrisBody": "Fotografiere deine Pflanze. Erkennt Iris sie nicht, wird online gesucht.",
   "onbPrivacyTitle": "Alles bleibt auf deinem Handy",
   "onbPrivacyBody": "Kein Pflichtkonto, keine Werbung.",
   "onbStart": "Loslegen",

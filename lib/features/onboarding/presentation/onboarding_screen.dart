@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -35,6 +36,12 @@ final _slides = <_Slide>[
   _Slide(title: (l) => l.onbTodayTitle, body: (l) => l.onbTodayBody, tint: (c) => c.water),
   _Slide(title: (l) => l.onbCareTitle, body: (l) => l.onbCareBody, tint: (c) => c.sun),
   _Slide(title: (l) => l.onbGardenTitle, body: (l) => l.onbGardenBody, tint: (c) => c.terracotta),
+  // Iris, le modèle embarqué, sous sa marque. La marque seule, sans numéro :
+  // celui-ci vit dans les réglages, où l'on vient voir ce qui tourne
+  // vraiment, et il n'apprendrait rien à qui découvre l'app. L'écran vient
+  // juste avant la promesse de vie privée, qu'il tient déjà — reconnaître
+  // sans réseau, c'est n'avoir rien à envoyer.
+  _Slide(title: (l) => l.onbIrisTitle(AppConfig.modelName), body: (l) => l.onbIrisBody, tint: (c) => c.sage),
   _Slide(title: (l) => l.onbPrivacyTitle, body: (l) => l.onbPrivacyBody, tint: (c) => c.rose),
 ];
 
@@ -182,12 +189,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (final i in {page, page + 1}) {
       if (i >= _objectCount) continue;
-      // Le premier objet charge sa propre séquence ; le deuxième a cinq
-      // images plutôt qu'une.
-      if (i == 1) {
+      // La collection a cinq images plutôt qu'une ; les objets d'argile en ont
+      // une, dont le numéro n'est pas celui de leur place. La plante qui
+      // pousse charge sa propre séquence, et la marque d'Iris se peint : ni
+      // l'une ni l'autre n'a d'image à décoder.
+      final image = OnboardingStage.clay[i];
+      if (image != null) {
+        ClayIllustration.precache(context, image, side);
+      } else if (i == 1) {
         PlantCluster.precache(context, side);
-      } else if (i >= 2) {
-        ClayIllustration.precache(context, i, side);
       }
     }
   }
@@ -267,8 +277,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _float,
-              builder: (context, _) =>
-                  OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce, glow: 1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)),
+              builder: (context, _) => OnboardingBackdrop(
+                tint: tint,
+                drift: _float.value,
+                reduceMotion: reduce,
+                // Les lueurs s'éteignent avec la scène quand on la quitte, et
+                // reculent au tiers sur l'écran de la marque, qui a besoin
+                // d'un fond plus sobre pour se détacher.
+                glow: (1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)) * OnboardingStage.ambienceAt(_offset),
+              ),
             ),
           ),
           SafeArea(

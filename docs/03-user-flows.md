@@ -65,6 +65,9 @@ Bienvenue ⟶ la plante de l'icône pousse : terre nue, fuseau, feuilles qui
   s'ouvrent et se découpent, jusqu'à l'icône.
 Toutes vos plantes ⟶ cinq plantes différentes qui gravitent, chacune à son
   rythme. Puis les autres présentations.
+Iris ⟶ la marque du modèle embarqué : « Iris reconnaît vos plantes hors
+  ligne », le geste (photographier la plante), et le repli en ligne quand Iris
+  ne la reconnaît pas. Juste avant l'écran de vie privée qu'il annonce.
 Splash ⟶ « Votre jardin, simplement. » [Ajouter ma première plante] · Plus tard
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]

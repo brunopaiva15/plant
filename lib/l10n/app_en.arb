@@ -1075,6 +1075,8 @@
   "onbCareBody": "Intervals adjust on their own as the days get shorter.",
   "onbGardenTitle": "Rooms, photos, calendar",
   "onbGardenBody": "Every watering and repotting is dated and filed with the plant.",
+  "onbIrisTitle": "{name} names your plants offline",
+  "onbIrisBody": "Photograph your plant. What Iris can't recognise, it looks up online.",
   "onbPrivacyTitle": "Everything stays on your phone",
   "onbPrivacyBody": "No account required, no ads.",
   "onbStart": "Get started",

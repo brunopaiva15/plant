@@ -1075,6 +1075,8 @@
   "onbCareBody": "Gli intervalli si adattano da soli quando le giornate si accorciano.",
   "onbGardenTitle": "Stanze, foto, calendario",
   "onbGardenBody": "Ogni annaffiatura, ogni rinvaso è datato e archiviato con la pianta.",
+  "onbIrisTitle": "{name} riconosce le tue piante offline",
+  "onbIrisBody": "Fotografa la tua pianta. Se Iris non la riconosce, la cerca online.",
   "onbPrivacyTitle": "Tutto resta sul tuo telefono",
   "onbPrivacyBody": "Nessun account obbligatorio, nessuna pubblicità.",
   "onbStart": "Iniziare",

@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
+import 'package:flora/design_system/design_system.dart';
 import 'package:flora/design_system/tokens/colors.dart';
+import 'package:flora/features/onboarding/presentation/onboarding_stage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -62,15 +64,12 @@ void main() {
         }
       });
 
-      test('la carte du modèle et sa marque tiennent sur le pastel', () {
+      test('la carte du modèle tient sur le pastel', () {
         // Une carte de couleur : ce qu'on y écrit ne repose plus sur les
         // fonds neutres du contrat, d'où la pleine encre. Le libellé des
         // chiffres est en `sage`, déjà tenu par le test du pastel ci-dessus.
+        // La marque, elle, ne suit plus la palette : voir le groupe qui suit.
         _expectAtLeast(c.ink, c.sageSoft, text, 'ink sur sageSoft');
-        // La marque : l'iris posé sur la feuille, le cœur posé dessus. Un
-        // dessin, donc 3:1 suffit.
-        _expectAtLeast(c.onAccent, c.sage, icon, 'l\'iris sur la feuille');
-        _expectAtLeast(c.terracotta, c.onAccent, icon, 'le cœur sur l\'iris');
       });
 
       test('onAccent se lit sur tous les accents employés comme fond', () {
@@ -81,6 +80,44 @@ void main() {
       });
     });
   }
+
+  group("la marque d'Iris ne suit pas la palette", () {
+    // Un logo garde ses couleurs : c'est ce qui en fait un logo. La marque est
+    // donc hors du contrat des palettes, et doit tenir seule sur tout ce qu'on
+    // lui met dessous. Les quatre fonds ci-dessous sont les mêmes dans les
+    // quatre palettes — « augmenter le contraste » ne touche ni au canvas ni
+    // au pastel —, un seul jeu de mesures suffit donc.
+    //
+    // Le seuil reste 3:1, celui d'un dessin, y compris pour les palettes
+    // renforcées : la marque est décorative (`ExcludeSemantics`), le nom du
+    // modèle est écrit en toutes lettres à côté d'elle, et rien de ce qu'elle
+    // porte n'a besoin d'être lu.
+    const surfaces = <(Color, String)>[
+      (Color(0xFFF6EFE4), 'le canvas clair'),
+      (Color(0xFF221A15), 'le canvas sombre'),
+      (Color(0xFFE4EFE6), 'le pastel des réglages, clair'),
+      (Color(0xFF2C3D31), 'le pastel des réglages, sombre'),
+    ];
+
+    test('la feuille se détache des deux thèmes, sur les mêmes pixels', () {
+      for (final (bg, n) in surfaces) {
+        _expectAtLeast(IrisMark.blade, bg, 3.0, 'la feuille sur $n');
+      }
+    });
+
+    test('l\'iris et le cœur tiennent sur la feuille', () {
+      _expectAtLeast(IrisMark.iris, IrisMark.blade, 3.0, 'l\'iris sur la feuille');
+      _expectAtLeast(IrisMark.heart, IrisMark.iris, 3.0, 'le cœur sur l\'iris');
+    });
+
+    test('le halo de l\'onboarding, lui, s\'efface', () {
+      // Le seul fond qu'aucune couleur figée ne pouvait tenir : le halo est de
+      // la couleur de l'écran, la feuille est verte, et en sombre les deux se
+      // rejoignent. La scène le retire sur cette place, et le fond recule.
+      expect(OnboardingStage.haloAt(OnboardingStage.mark.toDouble()), 0);
+      expect(OnboardingStage.ambienceAt(OnboardingStage.mark.toDouble()), lessThan(0.5));
+    });
+  });
 
   group('le contraste élevé renforce vraiment', () {
     test('les séparateurs deviennent visibles', () {

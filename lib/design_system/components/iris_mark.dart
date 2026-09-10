@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../theme/flora_theme.dart';
 import 'clay.dart';
 
 /// Le logo du modèle embarqué : une feuille d'argile, sa nervation, et en son
@@ -13,12 +12,32 @@ import 'clay.dart';
 /// penche, sa base est plus ronde que sa pointe, et ses nervures partent
 /// toutes vers celle-ci.
 ///
-/// Peinte par [paintClay], comme les cartes. Feuille en `sage`, iris en
-/// `onAccent`, cœur en `terracotta` : trois paires que le contrat de contraste
-/// tient déjà, donc la marque se retourne seule en sombre et en contraste
-/// élevé.
+/// Peinte par [paintClay], comme les cartes, mais **avec ses propres
+/// couleurs** : une marque ne se retourne pas avec le thème. La première
+/// version prenait `sage`, `onAccent` et `terracotta` de la palette du
+/// moment ; en sombre la feuille pâlissait, l'iris passait au presque-noir et
+/// le cœur au saumon — le même dessin, pas le même logo. [blade], [iris] et
+/// [heart] sont donc des constantes, et [paintClay] est appelé en `dark:
+/// false` : le relief, l'ombre portée et le liseré ne bougent pas non plus.
+/// La marque est identique au pixel près dans les quatre palettes.
+///
+/// [blade] n'est pas `sage` mais un vert un peu plus clair : figée, la feuille
+/// doit tenir seule sur les fonds clairs *et* sombres. À cette luminance elle
+/// passe 3:1 sur les quatre — canvas clair, canvas sombre, carte `sageSoft`
+/// des deux côtés (`colors_contrast_test.dart`). Le halo vert de l'onboarding
+/// est le seul fond qu'aucune couleur figée ne pouvait tenir ; c'est lui qui
+/// s'efface, pas elle (`OnboardingStage.mark`).
 class IrisMark extends StatelessWidget {
   const IrisMark({super.key, this.size = 72, this.semanticLabel});
+
+  /// La feuille. Même teinte que `sage`, montée en clarté jusqu'à la seule
+  /// bande où elle tient 3:1 aussi bien sur la crème que sur le brun sombre.
+  static const Color blade = Color(0xFF369361);
+
+  /// L'iris, blanc, et son cœur de terre cuite. Les deux valeurs claires de
+  /// la palette : sur la feuille, elles gardent 3,8:1 et 6,2:1.
+  static const Color iris = Color(0xFFFFFFFF);
+  static const Color heart = Color(0xFF9C482C);
 
   /// Côté du carré. Seule l'ombre portée déborde, comme celle d'une carte.
   final double size;
@@ -29,12 +48,8 @@ class IrisMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.colors;
     final mark = RepaintBoundary(
-      child: CustomPaint(
-        size: Size(size, size),
-        painter: _IrisMarkPainter(blade: c.sage, iris: c.onAccent, heart: c.terracotta, dark: c.isDark),
-      ),
+      child: CustomPaint(size: Size(size, size), painter: const _IrisMarkPainter()),
     );
     return semanticLabel == null
         ? ExcludeSemantics(child: mark)
@@ -42,13 +57,11 @@ class IrisMark extends StatelessWidget {
   }
 }
 
+/// Le peintre de la marque. Sans champ : tout ce qu'il lui faut est constant,
+/// et le même exemplaire `const` sert donc les quatre palettes — c'est ce qui
+/// rend l'identité entre clair et sombre vérifiable plutôt que promise.
 class _IrisMarkPainter extends CustomPainter {
-  const _IrisMarkPainter({required this.blade, required this.iris, required this.heart, required this.dark});
-
-  final Color blade;
-  final Color iris;
-  final Color heart;
-  final bool dark;
+  const _IrisMarkPainter();
 
   static const double _tilt = -0.30;
 
@@ -76,14 +89,14 @@ class _IrisMarkPainter extends CustomPainter {
       ..cubicTo(length * 0.55, half * 1.35, -length * 0.43, half * 1.53, -length, 0)
       ..close();
     // Le relief se proportionne à la feuille, pas au carré qui la contient.
-    paintClay(canvas, leaf, bounds: leaf.getBounds(), color: blade, depth: ClayDepth.deep, dark: dark);
+    paintClay(canvas, leaf, bounds: leaf.getBounds(), color: IrisMark.blade, depth: ClayDepth.deep, dark: false);
 
     // Les nervures sont rognées à la feuille : un trait qui dépasse ferait un
     // dessin posé sur une forme, au lieu d'une seule pièce.
     canvas.save();
     canvas.clipPath(leaf);
     final vein = Paint()
-      ..color = iris.withValues(alpha: dark ? 0.32 : 0.42)
+      ..color = IrisMark.iris.withValues(alpha: 0.42)
       ..strokeWidth = math.max(1, s * 0.019)
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
@@ -102,13 +115,15 @@ class _IrisMarkPainter extends CustomPainter {
     // d'ombre portée.
     final radius = s * 0.118;
     final disc = Path()..addOval(Rect.fromCircle(center: Offset.zero, radius: radius));
-    paintClay(canvas, disc, bounds: disc.getBounds(), color: iris, depth: ClayDepth.light, dark: dark, dropShadow: false);
-    canvas.drawCircle(Offset.zero, radius * 0.72, Paint()..color = heart);
+    paintClay(canvas, disc, bounds: disc.getBounds(), color: IrisMark.iris, depth: ClayDepth.light, dark: false, dropShadow: false);
+    canvas.drawCircle(Offset.zero, radius * 0.72, Paint()..color = IrisMark.heart);
 
     canvas.restore();
   }
 
+  /// Rien ne peut changer : ni le thème, ni le contraste élevé, ni une
+  /// couleur passée d'ailleurs. Seule la taille repeint, et c'est le
+  /// [CustomPaint] qui s'en charge.
   @override
-  bool shouldRepaint(_IrisMarkPainter old) =>
-      old.blade != blade || old.iris != iris || old.heart != heart || old.dark != dark;
+  bool shouldRepaint(_IrisMarkPainter old) => false;
 }

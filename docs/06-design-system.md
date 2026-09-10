@@ -43,18 +43,39 @@ saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
 14 dans un bouton). Avec *reduced motion*, la motte reste posée.
 
 ### La marque d'Iris (`iris_mark.dart`)
-Le logo du modèle embarqué, dans *Réglages > Identification* : une feuille
-peinte par `paintClay`, sa nervation, et en son centre un iris clair à cœur de
-terre cuite. Iris, c'est l'œil, le diaphragme et la fleur.
+Le logo du modèle embarqué, dans *Réglages > Identification* et au centre de
+son écran d'onboarding : une feuille peinte par `paintClay`, sa nervation, et
+en son centre un iris clair à cœur de terre cuite. Iris, c'est l'œil, le
+diaphragme et la fleur.
 
 Sans trois écarts, une vésique symétrique ne serait qu'un œil : la feuille
 penche, sa base est plus ronde que sa pointe, et ses nervures partent toutes
 vers celle-ci, comme une nervation pennée.
 
-Feuille en `sage`, iris en `onAccent`, cœur en `terracotta` : trois paires déjà
-tenues par le contrat de contraste, donc elle se retourne seule en sombre et en
-contraste élevé. Décorative par défaut ; `semanticLabel` ne se donne que si
-elle est seule.
+**Ses couleurs sont les siennes.** La première version prenait `sage`,
+`onAccent` et `terracotta` de la palette du moment ; en sombre la feuille
+pâlissait, l'iris passait au presque-noir et le cœur au saumon — le même
+dessin, pas le même logo. `IrisMark.blade`, `.iris` et `.heart` sont donc des
+constantes, et `paintClay` est appelé en `dark: false` : le relief lui-même ne
+bascule pas. Le peintre n'a plus aucun champ, si bien que le même exemplaire
+`const` sert les quatre palettes — l'identité est vérifiée, pas promise.
+
+`blade` (#369361) n'est pas `sage` mais un vert un peu plus clair, la seule
+bande de clarté où une couleur figée passe 3:1 sur les quatre fonds qu'elle
+rencontre : canvas clair, canvas sombre, pastel des réglages des deux côtés
+(3,34 · 4,49 · 3,23 · 3,03). Le seuil reste celui d'un dessin, même en
+contraste élevé : la marque est décorative, le nom du modèle est écrit à côté
+d'elle. Décorative par défaut, donc ; `semanticLabel` ne se donne que si elle
+est seule.
+
+Sur la scène de l'onboarding (`iris_float.dart`) elle prend la place d'un objet
+d'argile, à la même respiration. Sans l'ombre au sol de `ClayFloat` : elle porte
+déjà la sienne, et deux ombres la feraient flotter deux fois. Et c'est le seul
+écran où le halo de la scène s'efface (`OnboardingStage.mark`) : il est de la
+couleur de l'écran, la feuille est verte, et en sombre les deux se rejoignaient
+à 1,2:1. Entre une marque qui change de couleur pour se sauver et un halo qui
+se retire le temps d'un écran, c'est le halo qui cède ; les lueurs du fond
+reculent au tiers pour la même raison.
 
 ## Couleurs (`design_system/tokens/colors.dart`)
 | Token | Clair | Sombre | Usage |

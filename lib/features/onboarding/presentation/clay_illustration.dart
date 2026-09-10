@@ -15,10 +15,11 @@ import 'package:flutter/scheduler.dart';
 /// et sans coupure. L'objet respire doucement — quelques points de haut en
 /// bas, un degré d'inclinaison — et son ombre au sol suit le mouvement.
 /// Avec « réduire les animations », il reste posé.
-class ClayIllustration extends StatefulWidget {
+class ClayIllustration extends StatelessWidget {
   const ClayIllustration({super.key, required this.slide, required this.side, this.animate = true});
 
-  /// Numéro de l'écran, de 1 à [count].
+  /// Numéro de l'image, de 2 à [count]. Ce n'est plus le rang de l'écran :
+  /// `OnboardingStage.clay` dit quelle image va à quelle place.
   final int slide;
 
   /// Côté de l'illustration, en points. La scène l'accorde à la hauteur de
@@ -28,13 +29,14 @@ class ClayIllustration extends StatefulWidget {
   /// L'écran est-il à l'affichage ? À `false`, l'objet reste posé.
   final bool animate;
 
-  /// Nombre d'illustrations disponibles.
+  /// Numéro de la dernière image livrée. Les images vont de 2 à [count] : les
+  /// deux premières places de la scène ont leurs propres objets.
   static const int count = 6;
 
   /// Durée d'une respiration complète.
   static const Duration breath = Duration(milliseconds: 3400);
 
-  /// Chemin de l'image d'un écran.
+  /// Chemin d'une image.
   static String still(int slide) => 'assets/onboarding/onboarding_$slide.png';
 
   /// L'image est décodée à la taille où elle s'affiche, pas à sa taille de
@@ -44,13 +46,31 @@ class ClayIllustration extends StatefulWidget {
     return ResizeImage(AssetImage(path), width: (side * pixelRatio).round(), policy: ResizeImagePolicy.fit);
   }
 
-  /// Décode d'avance l'image d'un écran, pour qu'elle arrive nette.
+  /// Décode d'avance une image, pour qu'elle arrive nette.
   static Future<void> precache(BuildContext context, int slide, double side) {
     return precacheImage(provider(still(slide), side, MediaQuery.devicePixelRatioOf(context)), context);
   }
 
   @override
-  State<ClayIllustration> createState() => _ClayIllustrationState();
+  Widget build(BuildContext context) {
+    final ratio = MediaQuery.devicePixelRatioOf(context);
+    return Breathing(
+      animate: animate,
+      builder: (context, pose) => ClayFloat(
+        side: side,
+        pose: pose,
+        child: Image(
+          image: provider(still(slide), side, ratio),
+          width: side,
+          height: side,
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+          filterQuality: FilterQuality.high,
+          excludeFromSemantics: true,
+        ),
+      ),
+    );
+  }
 }
 
 /// La pose de l'objet à un instant donné : où il en est de sa respiration, et
@@ -154,7 +174,26 @@ class Breath {
   }
 }
 
-class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerProviderStateMixin {
+/// Le souffle d'un objet de la scène : le ticker, et la pose qu'il en tire.
+///
+/// Ce qui respire est donné par l'appelant — une image d'argile, la marque
+/// d'Iris. Le ticker tourne tant qu'il a quelque chose à montrer : l'objet au
+/// centre de l'écran, animations permises, ou la respiration qu'il lui reste
+/// à rendre en le quittant. C'est [Breath] qui mène l'un à l'autre, jamais
+/// d'un saut.
+class Breathing extends StatefulWidget {
+  const Breathing({super.key, required this.animate, required this.builder});
+
+  /// L'objet est-il à l'affichage ? À `false`, il reste posé.
+  final bool animate;
+
+  final Widget Function(BuildContext context, BreathPose pose) builder;
+
+  @override
+  State<Breathing> createState() => _BreathingState();
+}
+
+class _BreathingState extends State<Breathing> with SingleTickerProviderStateMixin {
   late final Ticker _ticker = createTicker(_tick);
   final _breath = Breath();
   var _pose = const BreathPose.rest();
@@ -171,7 +210,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   }
 
   @override
-  void didUpdateWidget(ClayIllustration old) {
+  void didUpdateWidget(Breathing old) {
     super.didUpdateWidget(old);
     _sync();
   }
@@ -212,23 +251,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   }
 
   @override
-  Widget build(BuildContext context) {
-    final side = widget.side;
-    final ratio = MediaQuery.devicePixelRatioOf(context);
-    return ClayFloat(
-      side: side,
-      pose: _pose,
-      child: Image(
-        image: ClayIllustration.provider(ClayIllustration.still(widget.slide), side, ratio),
-        width: side,
-        height: side,
-        fit: BoxFit.contain,
-        gaplessPlayback: true,
-        filterQuality: FilterQuality.high,
-        excludeFromSemantics: true,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => widget.builder(context, _pose);
 }
 
 /// L'objet posé sur la scène : son ombre au sol, et la respiration qui les

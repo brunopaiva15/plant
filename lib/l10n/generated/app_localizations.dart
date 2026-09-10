@@ -5832,6 +5832,18 @@ abstract class AppLocalizations {
   /// **'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.'**
   String get onbGardenBody;
 
+  /// No description provided for @onbIrisTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} reconnaît vos plantes hors ligne'**
+  String onbIrisTitle(String name);
+
+  /// No description provided for @onbIrisBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.'**
+  String get onbIrisBody;
+
   /// No description provided for @onbPrivacyTitle.
   ///
   /// In fr, this message translates to:

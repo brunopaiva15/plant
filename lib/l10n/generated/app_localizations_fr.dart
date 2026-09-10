@@ -3434,6 +3434,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.';
 
   @override
+  String onbIrisTitle(String name) {
+    return '$name reconnaît vos plantes hors ligne';
+  }
+
+  @override
+  String get onbIrisBody =>
+      'Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.';
+
+  @override
   String get onbPrivacyTitle => 'Tout reste sur votre téléphone';
 
   @override
