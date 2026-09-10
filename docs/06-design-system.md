@@ -189,17 +189,28 @@ fond blanc.
 
 - Source détourée : `assets/icon/plant.png`. C'est le master : tout le
   reste en dérive.
-- `icon.png` / `icon_dark.png` : la plante à 84 % sur blanc. Sans alpha :
+- `icon.png` / `icon_dark.png` : la plante à 92 % sur blanc. Sans alpha :
   l'App Store la refuse.
+- `icon_ios_foreground.png` : la même plante à 92 %, fond transparent. iOS
+  pose lui-même le fond du mode nuit et la teinte du mode teinté.
 - `icon_foreground.png` : plante à 62 %, fond transparent. Le XML adaptatif
   d'Android ajoute un retrait de 16 %, d'où la marge apparemment large.
 - `icon_monochrome.png` : la même silhouette en noir, pour les icônes
   thématiques d'Android 13+.
 
+La plante occupe 92 % de la largeur, comme sur les icônes système : c'est
+elle qui doit se lire sur la grille, pas le blanc autour. Les pointes de
+feuilles s'arrêtent à 4 % des bords, loin du rayon d'angle du squircle
+d'iOS — 22 % du côté, qui n'entame que les coins. Seules les icônes web
+« maskable » descendent à 72 % : leur zone de sûreté est un disque de 80 %
+du côté, et tout ce qui déborde peut être rogné.
+
 Régénérer après toute modification :
 ```
-dart run flutter_launcher_icons
+python3 tool/build_app_icon.py
 ```
-La configuration vit dans `flutter_launcher_icons.yaml`. Les icônes web
-« maskable » et le favicon sont retaillés à part : leur zone de sûreté est
-plus petite que celle d'iOS.
+Le script compose les cinq sources depuis le master, puis toutes les
+déclinaisons d'iOS, d'Android et du web, sans chaîne Flutter installée.
+`dart run flutter_launcher_icons` fait le même travail depuis
+`flutter_launcher_icons.yaml`, à deux réserves près : il rééchantillonne
+autrement, et il retaille les « maskable » comme les autres.

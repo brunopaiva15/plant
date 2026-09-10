@@ -1,5 +1,9 @@
 # Icône de l'application : la monstera en papier découpé dans son pot, sur
-# fond blanc. Régénérer après modification :
+# fond blanc. Les sources listées ici sont composées à partir du master
+# détouré par tool/build_app_icon.py, qui écrit aussi les déclinaisons de
+# chaque plateforme. Régénérer après modification :
+#   python3 tool/build_app_icon.py
+# ou, si la chaîne Flutter est installée :
 #   dart run flutter_launcher_icons
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"
@@ -14,8 +18,11 @@ flutter_launcher_icons:
   ios: true
   # iOS refuse toute transparence dans l'icône de l'App Store.
   remove_alpha_ios: true
-  image_path_ios_dark_transparent: "assets/icon/icon_foreground.png"
-  image_path_ios_tinted_grayscale: "assets/icon/icon_foreground.png"
+  # Pas l'avant-plan d'Android : sa zone de sûreté rétrécit la plante d'un
+  # tiers, et iOS ne rogne rien. Le mode nuit et le mode teinté prennent
+  # donc la plante à la même taille que l'icône claire, fond en moins.
+  image_path_ios_dark_transparent: "assets/icon/icon_ios_foreground.png"
+  image_path_ios_tinted_grayscale: "assets/icon/icon_ios_foreground.png"
   # Le mode teinté d'iOS 18 attend une image en niveaux de gris.
   desaturate_tinted_to_grayscale_ios: true
 
