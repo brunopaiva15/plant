@@ -80,8 +80,13 @@ class PlantCluster extends StatefulWidget {
 class _PlantClusterState extends State<PlantCluster> with SingleTickerProviderStateMixin {
   late final Ticker _ticker = createTicker(_tick);
 
-  /// Avancement de la dérive, en secondes.
-  double _seconds = 0;
+  /// L'horloge de la dérive : son temps fait tourner les ellipses, son
+  /// amplitude dit à quel point elles s'écartent de leur place.
+  final _breath = Breath();
+
+  /// Les plantes doivent-elles dériver ? Relevé à chaque changement, pour que
+  /// le tick n'ait pas à interroger le contexte.
+  bool _wanted = false;
 
   @override
   void didChangeDependencies() {
@@ -98,18 +103,23 @@ class _PlantClusterState extends State<PlantCluster> with SingleTickerProviderSt
   bool get _reduceMotion => MediaQuery.disableAnimationsOf(context);
 
   void _sync() {
-    final wanted = widget.animate && !_reduceMotion;
-    if (wanted && !_ticker.isActive) {
-      _ticker.start();
-    } else if (!wanted && _ticker.isActive) {
-      _ticker.stop();
-      // Posées : la composition retrouve exactement les places choisies.
-      setState(() => _seconds = 0);
+    final reduce = _reduceMotion;
+    _wanted = widget.animate && !reduce;
+    if (reduce) {
+      if (_ticker.isActive) _ticker.stop();
+      // Posées d'emblée : la composition est exactement celle qui a été
+      // choisie, et rien n'a à s'en retirer.
+      if (!_breath.resting) setState(_breath.rest);
+      return;
     }
+    if (_wanted && !_ticker.isActive) _ticker.start();
+    // Celles qui s'en vont gardent l'horloge le temps de revenir à leur
+    // place : c'est [_tick] qui la range.
   }
 
   void _tick(Duration elapsed) {
-    setState(() => _seconds = elapsed.inMicroseconds / Duration.microsecondsPerSecond);
+    setState(() => _breath.advance(elapsed, breathing: _wanted));
+    if (!_wanted && _breath.resting) _ticker.stop();
   }
 
   @override
@@ -122,28 +132,31 @@ class _PlantClusterState extends State<PlantCluster> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final side = widget.side;
     final ratio = MediaQuery.devicePixelRatioOf(context);
-    final moving = _ticker.isActive;
     return SizedBox.square(
       dimension: side,
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          for (final plant in _plants) _one(plant, side, ratio, moving),
+          for (final plant in _plants) _one(plant, side, ratio),
         ],
       ),
     );
   }
 
-  Widget _one(_Plant plant, double side, double ratio, bool moving) {
-    final tours = moving ? plant.phase + _seconds / plant.period : 0.0;
-    final angle = 2 * math.pi * tours;
+  Widget _one(_Plant plant, double side, double ratio) {
+    final angle = 2 * math.pi * (plant.phase + _breath.seconds / plant.period);
     // Une ellipse plus large que haute : cela dérive, cela ne tourne pas en
     // rond. L'inclinaison est en retard d'un quart de tour sur la dérive, ce
     // qui donne un objet qui flotte plutôt qu'un objet qui oscille.
-    final dx = moving ? math.cos(angle) * plant.orbit * side : 0.0;
-    final dy = moving ? math.sin(angle) * plant.orbit * side * 0.62 : 0.0;
-    final tilt = moving ? math.sin(angle - math.pi / 2) * 0.02 : 0.0;
+    //
+    // L'amplitude ouvre et referme l'ellipse : chaque plante part de sa place
+    // et y revient. Sans elle, la dérive s'ouvrait d'un coup à sa phase de
+    // départ, et les cinq plantes sautaient ensemble en arrivant au centre.
+    final level = _breath.level;
+    final dx = math.cos(angle) * plant.orbit * side * level;
+    final dy = math.sin(angle) * plant.orbit * side * 0.62 * level;
+    final tilt = math.sin(angle - math.pi / 2) * 0.02 * level;
     final plantSide = side * plant.scale;
     return Transform.translate(
       offset: Offset(plant.x * side + dx, plant.y * side + dy),

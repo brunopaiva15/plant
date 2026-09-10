@@ -63,11 +63,14 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
   Duration _elapsed = Duration.zero;
   Duration _base = Duration.zero;
 
-  /// Moment où la plante est devenue adulte : l'origine de sa respiration.
-  Duration? _grownAt;
+  /// La plante est-elle adulte ? Elle se met alors à respirer.
+  bool _grown = false;
+  final _breath = Breath();
   var _pose = const BreathPose.rest();
 
-  bool get _grown => _grownAt != null;
+  /// La plante doit-elle vivre ? Relevé à chaque changement, pour que le tick
+  /// n'ait pas à interroger le contexte.
+  bool _wanted = false;
 
   @override
   void didChangeDependencies() {
@@ -141,7 +144,7 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
     }
     _decoding = false;
     if (_index >= last && !_grown) {
-      _grownAt = _ticker.isActive ? _elapsed : Duration.zero;
+      _grown = true;
       _sync();
     }
   }
@@ -158,27 +161,44 @@ class _GrowingPlantState extends State<GrowingPlant> with SingleTickerProviderSt
 
   void _tick(Duration elapsed) {
     _elapsed = elapsed + _base;
-    final grownAt = _grownAt;
-    if (grownAt == null) {
+    if (!_grown) {
+      // La pousse s'interrompt net : une image de plus ou de moins ne se voit
+      // pas, il n'y a rien à retirer en douceur.
+      if (!_wanted) return _park();
       final wanted = _elapsed.inMicroseconds ~/ _frame.inMicroseconds;
       if (wanted > _index) _advance(wanted);
       return;
     }
-    final since = _elapsed - grownAt;
-    setState(() => _pose = BreathPose(since.inMicroseconds / ClayIllustration.breath.inMicroseconds));
+    _breath.advance(elapsed, breathing: _wanted);
+    setState(() => _pose = _breath.pose);
+    if (!_wanted && _breath.resting) _park();
+  }
+
+  /// Range l'horloge en gardant la place : la pousse reprendra où elle en est.
+  void _park() {
+    _base = _elapsed;
+    _ticker.stop();
   }
 
   /// L'horloge ne tourne que quand il y a quelque chose à montrer : l'objet
-  /// au centre de l'écran, animations permises.
+  /// au centre de l'écran, animations permises — ou la respiration qu'il lui
+  /// reste à rendre en le quittant.
   void _sync() {
-    final wanted = widget.animate && !_reduceMotion && _codec != null;
-    if (wanted && !_ticker.isActive) {
-      _ticker.start();
-    } else if (!wanted && _ticker.isActive) {
-      _base = _elapsed;
-      _ticker.stop();
-      setState(() => _pose = const BreathPose.rest());
+    final reduce = _reduceMotion;
+    _wanted = widget.animate && !reduce && _codec != null;
+    if (reduce) {
+      if (_ticker.isActive) _park();
+      if (!_breath.resting) {
+        setState(() {
+          _breath.rest();
+          _pose = _breath.pose;
+        });
+      }
+      return;
     }
+    if (_wanted && !_ticker.isActive) _ticker.start();
+    // La plante adulte qui s'en va garde son horloge le temps de reposer :
+    // c'est [_tick] qui la range.
   }
 
   @override

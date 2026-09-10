@@ -25,6 +25,7 @@ import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../species/presentation/species_field.dart';
+import 'inline_camera.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
 Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? speciesName, String? locationId}) async {
@@ -59,6 +60,10 @@ class CreatePlantFlow extends ConsumerStatefulWidget {
 
 class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   final _page = PageController();
+
+  /// Le viseur de la première étape. Il ne tourne que là, et seulement tant
+  /// qu'aucune photo n'a été retenue.
+  final _camera = InlineCameraController();
   int _step = 0;
   StoredPhoto? _photo;
   bool _picking = false;
@@ -94,6 +99,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   @override
   void initState() {
     super.initState();
+    // Le flux s'ouvre tout de suite : la première étape est celle de la photo,
+    // et l'aperçu doit y être avant que l'utilisateur ne pense à viser.
+    _camera.start();
     // L'espèce est déjà connue (bouture, proposition retenue) : elle apporte
     // avec elle le rythme de soins conseillé par sa fiche.
     final inherited = widget.speciesName?.trim() ?? '';
@@ -106,6 +114,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   @override
   void dispose() {
+    _camera.dispose();
     _page.dispose();
     _name.dispose();
     _species.dispose();
@@ -131,28 +140,75 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     // Le clavier de l'étape du nom ne doit pas suivre : ouvert, il écrase la
     // mise en page des autres étapes (l'aperçu photo notamment).
     if (step != 1) FocusManager.instance.primaryFocus?.unfocus();
+    // Le viseur n'a de raison de tourner qu'à l'étape photo, et seulement
+    // tant qu'il reste quelque chose à cadrer : ailleurs, il ne ferait que
+    // tenir la caméra et vider la batterie.
+    if (step == 0 && _photo == null) {
+      _camera.start();
+    } else {
+      _camera.stop();
+    }
     setState(() => _step = step);
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
   }
 
+  /// Ouvre l'appareil photo ou la galerie du système. Le viseur intégré a
+  /// pris la place du premier cas courant ; celui-ci reste pour la galerie,
+  /// et pour les appareils qui n'offrent pas d'aperçu.
   Future<void> _pick(PhotoSource source) async {
     if (_picking) return;
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
-      if (stored != null) {
-        if (_photo != null) await ref.read(photoStorageProvider).deleteFiles(_photo!.filePath, _photo!.thumbPath);
-        setState(() => _photo = stored);
-        Haptics.success();
-        _go(1);
-        await _startIdentification(stored);
-      }
+      if (stored != null && mounted) await _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.pick');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
     } finally {
       if (mounted) setState(() => _picking = false);
     }
+  }
+
+  /// Déclenche depuis le viseur intégré : un seul geste, sans passer par
+  /// l'appareil photo du système. Si le viseur n'a pas pu s'ouvrir — refus,
+  /// appareil sans caméra — le bouton retrouve son ancien geste.
+  Future<void> _capture() async {
+    if (_picking) return;
+    if (!_camera.isReady) return _pick(PhotoSource.camera);
+    setState(() => _picking = true);
+    final shot = await _camera.capture();
+    if (shot == null) {
+      // Le déclencheur n'a rien donné : plutôt qu'un bouton sans effet,
+      // l'appareil photo du système prend le relais.
+      if (!mounted) return;
+      setState(() => _picking = false);
+      return _pick(PhotoSource.camera);
+    }
+    try {
+      final stored = await ref.read(photoStorageProvider).importFile(shot);
+      if (mounted) await _accept(stored);
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'createPlant.capture');
+      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+    } finally {
+      // Le fichier brut du plugin a servi : la copie compressée le remplace,
+      // et le dossier temporaire n'a pas à garder de pleine résolution.
+      try {
+        await shot.delete();
+      } catch (_) {}
+      if (mounted) setState(() => _picking = false);
+    }
+  }
+
+  /// Retient la photo : elle remplace la précédente, ouvre l'étape du nom et
+  /// lance l'identification en fond.
+  Future<void> _accept(StoredPhoto stored) async {
+    final storage = ref.read(photoStorageProvider);
+    if (_photo != null) await storage.deleteFiles(_photo!.filePath, _photo!.thumbPath);
+    setState(() => _photo = stored);
+    Haptics.success();
+    _go(1);
+    await _startIdentification(stored);
   }
 
   /// Identification en arrière-plan dès qu'une photo existe (si un service est configuré).
@@ -338,6 +394,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     );
   }
 
+  /// L'étape photo : le viseur est déjà ouvert dans le cadre, et le bouton
+  /// déclenche. Plus d'appareil photo à aller chercher avant de viser.
   Widget _photoStep() {
     final l10n = context.l10n;
     final c = context.colors;
@@ -347,34 +405,26 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       body: Center(
         child: AspectRatio(
           aspectRatio: 4 / 5,
-          child: Pressable(
-            onTap: () => _showPhotoSources(),
-            scale: 0.98,
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
-              child: _photo == null
-                  // Le cadre rétrécit quand la place manque (petit écran) :
-                  // l'invite se met à l'échelle plutôt que de déborder.
-                  ? FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(CupertinoIcons.camera, size: 44, color: c.sage),
-                          const SizedBox(height: Space.sm),
-                          Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    )
-                  : PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900),
+          // Le cadre suit le viseur : il s'ouvre, il échoue, il rend la main.
+          child: ListenableBuilder(
+            listenable: _camera,
+            builder: (context, _) => Pressable(
+              // Le cadre est lui-même le déclencheur : viser puis toucher
+              // l'image suffit, sans descendre jusqu'au bouton.
+              onTap: _onFrameTap,
+              scale: 0.98,
+              child: Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
+                child: _photoFrame(),
+              ),
             ),
           ),
         ),
       ),
       actions: _photo == null
           ? [
-              FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: () => _pick(PhotoSource.camera)),
+              FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
               const SizedBox(height: Space.xs),
               FloraButton(label: l10n.choosePhoto, style: FloraButtonStyle.secondary, expand: true, onPressed: _picking ? null : () => _pick(PhotoSource.gallery)),
               const SizedBox(height: Space.xs),
@@ -386,6 +436,53 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               FloraButton(label: l10n.changePhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: _showPhotoSources),
             ],
     );
+  }
+
+  /// Ce que montre le cadre : la photo retenue, le flux de l'appareil, ou —
+  /// faute de viseur — l'invite qui mène à l'appareil photo du système.
+  Widget _photoFrame() {
+    final l10n = context.l10n;
+    final c = context.colors;
+    if (_photo != null) return PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
+    if (_camera.isReady) return InlineCameraPreview(controller: _camera);
+    if (_camera.status == InlineCameraStatus.starting) return Center(child: ClayLoader(size: 32, color: c.sage));
+    // Le cadre rétrécit quand la place manque (petit écran) : l'invite se met
+    // à l'échelle plutôt que de déborder.
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Padding(
+        padding: const EdgeInsets.all(Space.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(CupertinoIcons.camera, size: 44, color: c.sage),
+            const SizedBox(height: Space.sm),
+            Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+            // Sans l'autorisation, l'aperçu ne viendra jamais : le dire ici,
+            // là où l'utilisateur attend l'image.
+            if (_camera.permissionDenied) ...[
+              const SizedBox(height: Space.xs),
+              // Largeur fixe : sans elle, la phrase tiendrait sur une seule
+              // ligne et la mise à l'échelle rapetisserait tout le bloc.
+              SizedBox(
+                width: 220,
+                child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Toucher le cadre : c'est le déclencheur quand le viseur est ouvert, et
+  /// le choix de la source dans tous les autres cas.
+  void _onFrameTap() {
+    if (_photo == null && _camera.isReady) {
+      _capture();
+      return;
+    }
+    _showPhotoSources();
   }
 
   Future<void> _showPhotoSources() {

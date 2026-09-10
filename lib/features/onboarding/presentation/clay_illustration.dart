@@ -15,10 +15,11 @@ import 'package:flutter/scheduler.dart';
 /// et sans coupure. L'objet respire doucement — quelques points de haut en
 /// bas, un degré d'inclinaison — et son ombre au sol suit le mouvement.
 /// Avec « réduire les animations », il reste posé.
-class ClayIllustration extends StatefulWidget {
+class ClayIllustration extends StatelessWidget {
   const ClayIllustration({super.key, required this.slide, required this.side, this.animate = true});
 
-  /// Numéro de l'écran, de 1 à [count].
+  /// Numéro de l'image, de 2 à [count]. Ce n'est plus le rang de l'écran :
+  /// `OnboardingStage.clay` dit quelle image va à quelle place.
   final int slide;
 
   /// Côté de l'illustration, en points. La scène l'accorde à la hauteur de
@@ -28,13 +29,14 @@ class ClayIllustration extends StatefulWidget {
   /// L'écran est-il à l'affichage ? À `false`, l'objet reste posé.
   final bool animate;
 
-  /// Nombre d'illustrations disponibles.
+  /// Numéro de la dernière image livrée. Les images vont de 2 à [count] : les
+  /// deux premières places de la scène ont leurs propres objets.
   static const int count = 6;
 
   /// Durée d'une respiration complète.
   static const Duration breath = Duration(milliseconds: 3400);
 
-  /// Chemin de l'image d'un écran.
+  /// Chemin d'une image.
   static String still(int slide) => 'assets/onboarding/onboarding_$slide.png';
 
   /// L'image est décodée à la taille où elle s'affiche, pas à sa taille de
@@ -44,58 +46,161 @@ class ClayIllustration extends StatefulWidget {
     return ResizeImage(AssetImage(path), width: (side * pixelRatio).round(), policy: ResizeImagePolicy.fit);
   }
 
-  /// Décode d'avance l'image d'un écran, pour qu'elle arrive nette.
+  /// Décode d'avance une image, pour qu'elle arrive nette.
   static Future<void> precache(BuildContext context, int slide, double side) {
     return precacheImage(provider(still(slide), side, MediaQuery.devicePixelRatioOf(context)), context);
   }
 
   @override
-  State<ClayIllustration> createState() => _ClayIllustrationState();
+  Widget build(BuildContext context) {
+    final ratio = MediaQuery.devicePixelRatioOf(context);
+    return Breathing(
+      animate: animate,
+      builder: (context, pose) => ClayFloat(
+        side: side,
+        pose: pose,
+        child: Image(
+          image: provider(still(slide), side, ratio),
+          width: side,
+          height: side,
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+          filterQuality: FilterQuality.high,
+          excludeFromSemantics: true,
+        ),
+      ),
+    );
+  }
 }
 
-/// La pose de l'objet à un instant donné : où il en est de sa respiration.
+/// La pose de l'objet à un instant donné : où il en est de sa respiration, et
+/// à quelle amplitude il la respire.
 ///
 /// Tout dérive d'une seule phase, en tours. La hauteur et l'inclinaison sont
 /// des sinus de cette phase, décalés d'un quart de tour pour que l'objet ne
 /// monte pas et ne penche pas en même temps : c'est ce décalage qui donne
 /// l'impression d'un objet qui flotte plutôt que d'un objet qui oscille.
 /// L'ombre au sol se resserre et pâlit quand l'objet monte.
+///
+/// L'amplitude est le second réglage, et il compte autant : aucune phase ne
+/// donne l'objet posé — quand la hauteur s'annule l'inclinaison est à son
+/// extrême —, si bien que le repos ne peut pas être un instant du cycle. Il
+/// est une amplitude nulle, et l'objet passe de l'un à l'autre en respirant
+/// plus ou moins fort, jamais d'un saut.
 class BreathPose {
-  const BreathPose(this.phase) : _resting = false;
+  const BreathPose(this.phase, {this.amplitude = 1});
 
   /// L'objet posé, immobile : ni décalé, ni penché, son ombre entière.
-  ///
-  /// Aucune phase ne donne cette pose. La hauteur et l'inclinaison sont en
-  /// quadrature — quand l'une s'annule l'autre est à son extrême —, si bien
-  /// que `BreathPose(0)` laisse l'objet penché d'un degré. Le repos est donc
-  /// un cas à part, et non un instant du cycle.
   const BreathPose.rest()
       : phase = 0,
-        _resting = true;
+        amplitude = 0;
 
   /// Avancement, en tours de respiration.
   final double phase;
-  final bool _resting;
+
+  /// Ampleur de la respiration, de 0 (posé) à 1 (pleine).
+  final double amplitude;
 
   double get _angle => phase * 2 * math.pi;
 
+  /// Hauteur ramenée entre 0 (au plus bas, ou posé) et 1 (au plus haut) :
+  /// c'est elle que suit l'ombre au sol.
+  double get _height => amplitude * (math.sin(_angle) + 1) / 2;
+
   /// Hauteur, de -1 (au plus bas) à 1 (au plus haut).
-  double get lift => _resting ? 0 : math.sin(_angle);
+  double get lift => amplitude * math.sin(_angle);
 
   /// Inclinaison, de -1 à 1, en retard d'un quart de tour sur la hauteur.
-  double get tilt => _resting ? 0 : math.sin(_angle - math.pi / 2);
+  double get tilt => amplitude * math.sin(_angle - math.pi / 2);
 
   /// Étendue de l'ombre au sol, de 0,82 (objet haut) à 1 (objet posé).
-  double get shadowScale => _resting ? 1 : 1 - 0.09 * (lift + 1);
+  double get shadowScale => 1 - 0.18 * _height;
 
   /// Opacité de l'ombre, de 0,55 (objet haut) à 1 (objet posé).
-  double get shadowOpacity => _resting ? 1 : 1 - 0.225 * (lift + 1);
+  double get shadowOpacity => 1 - 0.45 * _height;
 }
 
-class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerProviderStateMixin {
+/// L'horloge de ce qui vit sur la scène : la respiration d'un objet d'argile,
+/// la pousse adulte de la plante de l'icône, la dérive des plantes de la
+/// collection.
+///
+/// Elle donne deux choses : le temps écoulé, qui fait tourner le cycle, et
+/// l'amplitude, qui dit à quel point l'objet vit. L'amplitude monte quand
+/// l'objet arrive au centre et redescend quand il s'en va — c'est tout
+/// l'intérêt de cette horloge. Sans elle, prendre et rendre son souffle
+/// revenait à passer d'un coup entre deux poses sans rapport : l'objet
+/// sautait d'un degré et son ombre d'un quart de son opacité, à chaque écran
+/// quitté comme à chaque écran posé.
+class Breath {
+  /// Temps que met la respiration à s'installer, et à se retirer.
+  static const Duration settle = Duration(milliseconds: 500);
+
+  double _seconds = 0;
+  double _level = 0;
+  Duration _last = Duration.zero;
+
+  /// Temps écoulé à respirer, en secondes.
+  double get seconds => _seconds;
+
+  /// À quel point l'objet respire, de 0 (posé) à 1 (pleine respiration).
+  double get level => _level;
+
+  /// L'objet est-il tout à fait posé ? L'horloge n'a alors plus rien à faire.
+  bool get resting => _level <= 0;
+
+  /// La pose d'un objet qui respire au rythme de [ClayIllustration.breath].
+  BreathPose get pose => BreathPose(_seconds / _breathSeconds, amplitude: _level);
+
+  static final double _breathSeconds = ClayIllustration.breath.inMicroseconds / Duration.microsecondsPerSecond;
+
+  /// Avance l'horloge jusqu'à [elapsed], l'objet respirant ou non.
+  ///
+  /// Le pas est plafonné à une image : l'horloge d'un écran quitté puis repris
+  /// recompte depuis zéro, et sans ce plafond le premier tick d'après ferait
+  /// tourner l'objet de tout le temps passé ailleurs.
+  void advance(Duration elapsed, {required bool breathing}) {
+    final dt = ((elapsed - _last).inMicroseconds / Duration.microsecondsPerSecond).clamp(0.0, 1 / 30);
+    _last = elapsed;
+    _seconds += dt;
+    final step = dt / (settle.inMicroseconds / Duration.microsecondsPerSecond);
+    _level = (breathing ? _level + step : _level - step).clamp(0.0, 1.0);
+  }
+
+  /// Pose l'objet sur-le-champ, sans le laisser rendre son souffle. Sans
+  /// animations, il n'y a rien à retirer en douceur : il n'a jamais respiré.
+  void rest() {
+    _seconds = 0;
+    _level = 0;
+  }
+}
+
+/// Le souffle d'un objet de la scène : le ticker, et la pose qu'il en tire.
+///
+/// Ce qui respire est donné par l'appelant — une image d'argile, la marque
+/// d'Iris. Le ticker tourne tant qu'il a quelque chose à montrer : l'objet au
+/// centre de l'écran, animations permises, ou la respiration qu'il lui reste
+/// à rendre en le quittant. C'est [Breath] qui mène l'un à l'autre, jamais
+/// d'un saut.
+class Breathing extends StatefulWidget {
+  const Breathing({super.key, required this.animate, required this.builder});
+
+  /// L'objet est-il à l'affichage ? À `false`, il reste posé.
+  final bool animate;
+
+  final Widget Function(BuildContext context, BreathPose pose) builder;
+
+  @override
+  State<Breathing> createState() => _BreathingState();
+}
+
+class _BreathingState extends State<Breathing> with SingleTickerProviderStateMixin {
   late final Ticker _ticker = createTicker(_tick);
+  final _breath = Breath();
   var _pose = const BreathPose.rest();
 
+  /// L'objet doit-il respirer ? Relevé à chaque changement, pour que le tick
+  /// n'ait pas à interroger le contexte.
+  bool _wanted = false;
 
   @override
   void didChangeDependencies() {
@@ -105,7 +210,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   }
 
   @override
-  void didUpdateWidget(ClayIllustration old) {
+  void didUpdateWidget(Breathing old) {
     super.didUpdateWidget(old);
     _sync();
   }
@@ -113,24 +218,30 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   bool get _reduceMotion => MediaQuery.disableAnimationsOf(context);
 
   /// Le ticker ne tourne que quand il a quelque chose à montrer : l'objet au
-  /// centre de l'écran, animations permises.
+  /// centre de l'écran, animations permises — ou la respiration qu'il lui
+  /// reste à rendre en le quittant.
   void _sync() {
-    final wanted = widget.animate && !_reduceMotion;
-    if (wanted && !_ticker.isActive) {
-      _ticker.start();
-    } else if (!wanted && _ticker.isActive) {
-      _ticker.stop();
-      // Posé : à la hauteur de repos, sans inclinaison. L'objet ne quitte le
-      // centre qu'en glissant hors champ, flou : ce retour au repos ne se
-      // voit pas, et la respiration repart du repos à son retour.
-      setState(() => _pose = const BreathPose.rest());
+    final reduce = _reduceMotion;
+    _wanted = widget.animate && !reduce;
+    if (reduce) {
+      if (_ticker.isActive) _ticker.stop();
+      if (!_breath.resting) {
+        setState(() {
+          _breath.rest();
+          _pose = _breath.pose;
+        });
+      }
+      return;
     }
+    if (_wanted && !_ticker.isActive) _ticker.start();
+    // L'objet qui s'en va garde son horloge le temps de reposer : c'est
+    // [_tick] qui la range une fois la respiration rendue.
   }
 
   void _tick(Duration elapsed) {
-    // La respiration part de la pose de repos : la phase zéro est l'objet
-    // posé, ni haut ni bas, sans inclinaison, et la vitesse y est continue.
-    setState(() => _pose = BreathPose(elapsed.inMicroseconds / ClayIllustration.breath.inMicroseconds));
+    _breath.advance(elapsed, breathing: _wanted);
+    setState(() => _pose = _breath.pose);
+    if (!_wanted && _breath.resting) _ticker.stop();
   }
 
   @override
@@ -140,23 +251,7 @@ class _ClayIllustrationState extends State<ClayIllustration> with SingleTickerPr
   }
 
   @override
-  Widget build(BuildContext context) {
-    final side = widget.side;
-    final ratio = MediaQuery.devicePixelRatioOf(context);
-    return ClayFloat(
-      side: side,
-      pose: _pose,
-      child: Image(
-        image: ClayIllustration.provider(ClayIllustration.still(widget.slide), side, ratio),
-        width: side,
-        height: side,
-        fit: BoxFit.contain,
-        gaplessPlayback: true,
-        filterQuality: FilterQuality.high,
-        excludeFromSemantics: true,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => widget.builder(context, _pose);
 }
 
 /// L'objet posé sur la scène : son ombre au sol, et la respiration qui les

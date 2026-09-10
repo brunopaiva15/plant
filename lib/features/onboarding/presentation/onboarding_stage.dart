@@ -7,10 +7,11 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import 'clay_illustration.dart';
 import 'growing_plant.dart';
+import 'iris_float.dart';
 import 'plant_cluster.dart';
 
-/// La scène de l'onboarding : les cinq objets du jardin, qui se succèdent
-/// au centre de l'écran sur un halo de couleur.
+/// La scène de l'onboarding : les objets du jardin, qui se succèdent au
+/// centre de l'écran sur un halo de couleur.
 ///
 /// Les écrans ne défilent pas l'un après l'autre comme des diapositives : le
 /// halo reste là et change de couleur, les objets changent de place. Celui
@@ -38,7 +39,10 @@ class OnboardingStage extends StatelessWidget {
   /// L'écran affiché, celui dont l'objet s'anime.
   final int page;
 
-  /// Avancement de l'entrée de la page courante (0 → 1).
+  /// Avancement de l'entrée de la scène (0 → 1), jouée à l'ouverture et une
+  /// seule fois. Le passage d'un écran au suivant vient du carrousel, pas
+  /// d'ici : une entrée rejouée en cours de geste ferait sauter le halo et
+  /// l'objet du milieu, qui sont déjà en place.
   final double entry;
 
   /// Hauteur de la scène, accordée à celle de l'écran.
@@ -57,6 +61,25 @@ class OnboardingStage extends StatelessWidget {
   /// Marge de la scène par rapport aux bords de l'écran.
   static const double inset = Space.page;
 
+  /// L'image d'argile de chaque place, dans l'ordre des écrans, ou `null`
+  /// quand la place a son propre objet — la plante qui pousse, la collection
+  /// qui gravite, la marque d'Iris.
+  ///
+  /// Le numéro d'une image n'est plus celui de sa place depuis qu'Iris s'est
+  /// glissé entre les écrans, et cette liste est la seule à le savoir :
+  /// l'écran qui décode d'avance la lit plutôt que de refaire le compte.
+  static const List<int?> clay = [null, null, 2, 3, 4, null, 5, 6];
+
+  /// La place de la marque d'Iris, la seule dont le halo s'efface.
+  ///
+  /// La marque a ses propres couleurs, qui ne suivent pas le thème
+  /// (`IrisMark`) : c'est ce qu'on demande à un logo. Mais sa feuille est
+  /// verte et le halo l'est aussi — en sombre, le halo remonte au niveau de
+  /// la feuille et l'avale (1,2:1 en son centre, et aucune teinte de halo n'y
+  /// échappe). Entre une marque qui change de couleur pour se sauver et un
+  /// halo qui s'efface le temps d'un écran, c'est le halo qui cède.
+  static const int mark = 5;
+
   /// Taille visible de la scène : elle rapetisse à l'approche du dernier
   /// écran, qui a ses propres boutons sous le texte, puis se referme quand on
   /// le quitte, pour laisser toute la hauteur au prénom.
@@ -73,6 +96,23 @@ class OnboardingStage extends StatelessWidget {
 
   /// De 0 à 1 quand on passe du dernier écran à la page du prénom.
   double get _leaving => (offset - (count - 1)).clamp(0.0, 1.0);
+
+  /// Ce qu'il reste du halo à une position donnée du carrousel : rien sur la
+  /// place de la marque, tout à un écran de là. Il se retire et revient au
+  /// rythme du doigt, comme le reste de la scène — il ne s'éteint pas d'un
+  /// coup à l'arrivée.
+  ///
+  /// Le fond s'en sert aussi : ses deux lueurs sont de la même couleur que le
+  /// halo, et à pleine densité elles suffisaient à ramener la feuille sous
+  /// 3:1 en clair. Elles ne s'éteignent pas pour autant — l'écran serait nu —,
+  /// elles reculent au tiers, ce qui rend les trois points de contraste
+  /// manquants.
+  static double haloAt(double offset) => (offset - mark).abs().clamp(0.0, 1.0);
+
+  /// Ce que gardent les lueurs du fond au même endroit du carrousel.
+  static double ambienceAt(double offset) => 0.35 + 0.65 * haloAt(offset);
+
+  double get haloFade => haloAt(offset);
 
   @override
   Widget build(BuildContext context) {
@@ -102,10 +142,11 @@ class OnboardingStage extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         // Le halo : une tache de couleur douce, sans bord, qui
-                        // s'épanouit à l'arrivée sur l'écran.
+                        // s'épanouit à l'ouverture puis reste là. Ce sont les
+                        // objets qui changent de place, pas lui.
                         Transform.scale(
                           scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
-                          child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark),
+                          child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark, fade: haloFade),
                         ),
                         for (var i = count - 1; i >= 0; i--) _object(context, i, width, side, rise),
                       ],
@@ -132,30 +173,42 @@ class OnboardingStage extends StatelessWidget {
     final dx = d * 0.7 * width;
     final dy = -24 * d.sign * near + 20 * (1 - rise) * (1 - near);
     final blur = reduceMotion ? 0.0 : 5.0 * Curves.easeIn.transform(near);
-    // L'objet arrive un peu petit et prend sa place, comme posé.
+    // À l'ouverture, le premier objet arrive un peu petit et prend sa place,
+    // comme posé. Ensuite, c'est le geste qui l'apporte.
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
 
     final vivant = index == page && near < 0.02;
-    // Les deux premiers objets ne sont pas des images posées : la plante de
-    // l'icône qui pousse sur l'écran de bienvenue, puis la collection qui
-    // gravite sur « Toutes vos plantes, ici ». Les suivants sont les objets
-    // d'argile, dans l'ordre des écrans.
-    Widget object = switch (index) {
-      0 => GrowingPlant(side: side, animate: vivant),
-      1 => PlantCluster(side: side, animate: vivant),
-      _ => ClayIllustration(slide: index, side: side, animate: vivant),
-    };
-    if (blur > 0.05) {
-      object = ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: object,
-      );
+    // Trois places ne sont pas des images posées : la plante de l'icône qui
+    // pousse sur l'écran de bienvenue, la collection qui gravite sur
+    // « Toutes vos plantes, ici », et la marque d'Iris sur l'écran du modèle
+    // embarqué. Les autres sont les objets d'argile, dans l'ordre de [clay].
+    final image = index < clay.length ? clay[index] : null;
+    final Widget object;
+    if (image != null) {
+      object = ClayIllustration(slide: image, side: side, animate: vivant);
+    } else {
+      object = switch (index) {
+        0 => GrowingPlant(side: side, animate: vivant),
+        1 => PlantCluster(side: side, animate: vivant),
+        _ => IrisFloat(side: side, animate: vivant),
+      };
     }
+    // Le flou de profondeur est toujours là, éteint quand il ne sert pas :
+    // l'ajouter et le retirer d'un écran à l'autre changeait la forme de
+    // l'arbre, et l'objet en dessous était défait puis refait. La plante de
+    // l'accueil, dont la séquence se décode, disparaissait alors le temps de
+    // se recharger, au lieu de sortir de l'écran. Éteint, le filtre ne coûte
+    // ni couche ni pixel.
+    final softened = ImageFiltered(
+      enabled: blur > 0.05,
+      imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+      child: object,
+    );
     return Transform.translate(
       offset: Offset(dx, dy),
       child: Opacity(
         opacity: (opacity * (near < 0.02 ? (reduceMotion ? 1 : 0.4 + 0.6 * rise) : 1)).clamp(0.0, 1.0),
-        child: Transform.scale(scale: scale * settle, child: object),
+        child: Transform.scale(scale: scale * settle, child: softened),
       ),
     );
   }
@@ -163,11 +216,14 @@ class OnboardingStage extends StatelessWidget {
 
 /// Une tache de couleur ronde et sans bord, plus dense au centre.
 class _Halo extends StatelessWidget {
-  const _Halo({required this.color, required this.size, required this.dark});
+  const _Halo({required this.color, required this.size, required this.dark, this.fade = 1});
 
   final Color color;
   final double size;
   final bool dark;
+
+  /// Ce qu'il reste du halo, de 0 (rien) à 1 (entier).
+  final double fade;
 
   @override
   Widget build(BuildContext context) {
@@ -179,8 +235,8 @@ class _Halo extends StatelessWidget {
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              color.withValues(alpha: dark ? 0.42 : 0.34),
-              color.withValues(alpha: dark ? 0.22 : 0.16),
+              color.withValues(alpha: (dark ? 0.42 : 0.34) * fade),
+              color.withValues(alpha: (dark ? 0.22 : 0.16) * fade),
               color.withValues(alpha: 0),
             ],
             stops: const [0, 0.45, 1],
@@ -193,15 +249,16 @@ class _Halo extends StatelessWidget {
 
 /// Le fond : le fond de l'app, à peine teinté de la couleur de l'écran, et
 /// deux lueurs très diffuses dans cette couleur — une qui monte derrière la
-/// scène, une qui déborde d'un coin. Elles bougent d'un rien à l'arrivée sur
-/// chaque écran, puis se posent.
+/// scène, une qui déborde d'un coin. Elles bougent d'un rien à l'ouverture,
+/// puis se posent ; d'un écran à l'autre, seule leur teinte change, et elle
+/// change au rythme du doigt.
 class OnboardingBackdrop extends StatelessWidget {
   const OnboardingBackdrop({super.key, required this.tint, required this.drift, required this.reduceMotion, this.glow = 1});
 
   /// La couleur de l'écran courant, déjà interpolée entre deux écrans.
   final Color tint;
 
-  /// Avancement du souffle d'arrivée, de 0 à 1.
+  /// Avancement du souffle d'ouverture, de 0 à 1.
   final double drift;
   final bool reduceMotion;
 

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -35,6 +36,12 @@ final _slides = <_Slide>[
   _Slide(title: (l) => l.onbTodayTitle, body: (l) => l.onbTodayBody, tint: (c) => c.water),
   _Slide(title: (l) => l.onbCareTitle, body: (l) => l.onbCareBody, tint: (c) => c.sun),
   _Slide(title: (l) => l.onbGardenTitle, body: (l) => l.onbGardenBody, tint: (c) => c.terracotta),
+  // Iris, le modèle embarqué, sous sa marque. La marque seule, sans numéro :
+  // celui-ci vit dans les réglages, où l'on vient voir ce qui tourne
+  // vraiment, et il n'apprendrait rien à qui découvre l'app. L'écran vient
+  // juste avant la promesse de vie privée, qu'il tient déjà — reconnaître
+  // sans réseau, c'est n'avoir rien à envoyer.
+  _Slide(title: (l) => l.onbIrisTitle(AppConfig.modelName), body: (l) => l.onbIrisBody, tint: (c) => c.sage),
   _Slide(title: (l) => l.onbPrivacyTitle, body: (l) => l.onbPrivacyBody, tint: (c) => c.rose),
 ];
 
@@ -58,11 +65,29 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with TickerProviderStateMixin {
   final _name = TextEditingController();
   final _pages = PageController();
+
+  /// L'entrée de la scène, jouée une fois à l'ouverture : le halo s'épanouit
+  /// et le premier objet se pose.
+  ///
+  /// Elle ne se rejoue pas d'un écran à l'autre. La rejouer revenait à
+  /// remettre à zéro, en plein geste, ce qui était déjà en place : le halo
+  /// se refermait d'un dixième et l'objet du milieu sautait de vingt points,
+  /// à mi-parcours de chaque changement d'écran. Le passage d'un écran au
+  /// suivant est porté par le carrousel lui-même, qui ne saute jamais.
   late final _entry = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..forward();
 
-  /// Le souffle du fond : une seconde et demie à l'arrivée sur chaque écran,
-  /// qui ralentit et se pose. Rien ne bouge à perpétuité.
+  /// Le souffle du fond : une seconde et demie à l'ouverture, qui ralentit et
+  /// se pose. Comme l'entrée, il ne se rejoue pas — les lueurs auraient sauté
+  /// avec elle. Rien ne bouge à perpétuité.
   late final _float = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..forward();
+
+  /// La levée du texte, celle-là rejouée à chaque écran neuf : le titre y
+  /// sort ligne à ligne, puis la phrase.
+  late final _reveal = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..forward();
+
+  /// Les écrans dont le texte est déjà levé. Revenir sur ses pas ne le
+  /// relève pas, et surtout ne le rabat pas.
+  final _revealed = <int>{0};
 
   int _page = 0;
 
@@ -149,6 +174,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     _pages.dispose();
     _entry.dispose();
     _float.dispose();
+    _reveal.dispose();
     super.dispose();
   }
 
@@ -163,12 +189,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final side = OnboardingStage.sideOf(_stageHeight(context), MediaQuery.sizeOf(context).width);
     for (final i in {page, page + 1}) {
       if (i >= _objectCount) continue;
-      // Le premier objet charge sa propre séquence ; le deuxième a cinq
-      // images plutôt qu'une.
-      if (i == 1) {
+      // La collection a cinq images plutôt qu'une ; les objets d'argile en ont
+      // une, dont le numéro n'est pas celui de leur place. La plante qui
+      // pousse charge sa propre séquence, et la marque d'Iris se peint : ni
+      // l'une ni l'autre n'a d'image à décoder.
+      final image = OnboardingStage.clay[i];
+      if (image != null) {
+        ClayIllustration.precache(context, image, side);
+      } else if (i == 1) {
         PlantCluster.precache(context, side);
-      } else if (i >= 2) {
-        ClayIllustration.precache(context, i, side);
       }
     }
   }
@@ -184,14 +213,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     if (page != _nameIndex) FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _page = page);
     _keepIllustrations(page);
-    // Chaque écran rejoue son entrée à l'arrivée, jamais avant ; le fond
-    // reprend son souffle en même temps.
-    _entry
-      ..reset()
-      ..forward();
-    _float
-      ..reset()
-      ..forward();
+    // Le texte d'un écran neuf se lève ; celui d'un écran déjà lu est déjà
+    // debout, et le retrouver ne le fait pas repartir du bas.
+    if (page >= _slides.length) return;
+    if (_revealed.add(page)) {
+      _reveal
+        ..reset()
+        ..forward();
+    } else {
+      _reveal.value = 1;
+    }
+  }
+
+  /// Où en est la levée du texte de l'écran [i] : il attend sous la ligne
+  /// tant qu'on ne l'a pas atteint, se lève une fois arrivé, et reste levé
+  /// derrière soi. Aucun de ces passages ne saute — c'est toujours l'écran
+  /// courant qui bouge, et lui seul.
+  double _revealOf(int i) {
+    if (i == _page) return _reveal.value;
+    return _revealed.contains(i) ? 1 : 0;
   }
 
   void _toSupport({required bool addPlant}) {
@@ -237,8 +277,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _float,
-              builder: (context, _) =>
-                  OnboardingBackdrop(tint: tint, drift: _float.value, reduceMotion: reduce, glow: 1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)),
+              builder: (context, _) => OnboardingBackdrop(
+                tint: tint,
+                drift: _float.value,
+                reduceMotion: reduce,
+                // Les lueurs s'éteignent avec la scène quand on la quitte, et
+                // reculent au tiers sur l'écran de la marque, qui a besoin
+                // d'un fond plus sobre pour se détacher.
+                glow: (1 - (_offset - (_objectCount - 1)).clamp(0.0, 1.0)) * OnboardingStage.ambienceAt(_offset),
+              ),
             ),
           ),
           SafeArea(
@@ -262,7 +309,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                   ),
                 ),
                 AnimatedBuilder(
-                  animation: Listenable.merge([_entry, _float]),
+                  animation: _entry,
                   builder: (context, _) => OnboardingStage(
                     count: _objectCount,
                     offset: _offset,
@@ -280,9 +327,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                     children: [
                       for (final (i, slide) in _slides.indexed)
                         AnimatedBuilder(
-                          animation: _entry,
+                          animation: _reveal,
                           builder: (context, _) =>
-                              _SlideText(slide: slide, t: reduce || i != _page ? 1.0 : _entry.value, parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
+                              _SlideText(slide: slide, t: reduce ? 1.0 : _revealOf(i), parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
                         ),
                       _PlacePage(onDone: () => _goTo(_nameIndex)),
                       _NamePage(controller: _name, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),

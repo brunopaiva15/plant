@@ -6,7 +6,8 @@ Notation : `[tap]` = un tap, `⟶` = transition, `✓` = feedback (animation + h
 ```
 Plantes ─[tap +]⟶ Sheet plein écran
   Étape 1 · Photo
-    [Prendre une photo] | [Choisir une photo] | Continuer sans photo
+    Viseur ouvert dans le cadre : [tap cadre] ou [Prendre une photo] déclenche
+    [Choisir une photo] | Continuer sans photo
   Étape 2 · Nom
     Champ unique, clavier ouvert, suggestion = nom d'espèce si connu
     [Continuer]
@@ -17,6 +18,7 @@ Plantes ─[tap +]⟶ Sheet plein écran
 ```
 - Routines par défaut créées automatiquement (arrosage 7 j, engrais 30 j) → « Plus d'options » pour ajuster.
 - Étape « Identification » (P2) s'insère entre 1 et 2 uniquement si la fonction est activée et une photo existe.
+- Le viseur ne tourne qu'à l'étape 1, tant qu'aucune photo n'est retenue. Sans lui — autorisation refusée, appareil sans caméra — le cadre retrouve son invite et les boutons ouvrent l'appareil photo du système.
 
 ## 2. Arroser une plante (1 tap)
 ```
@@ -63,6 +65,9 @@ Bienvenue ⟶ la plante de l'icône pousse : terre nue, fuseau, feuilles qui
   s'ouvrent et se découpent, jusqu'à l'icône.
 Toutes vos plantes ⟶ cinq plantes différentes qui gravitent, chacune à son
   rythme. Puis les autres présentations.
+Iris ⟶ la marque du modèle embarqué : « Iris reconnaît vos plantes hors
+  ligne », le geste (photographier la plante), et le repli en ligne quand Iris
+  ne la reconnaît pas. Juste avant l'écran de vie privée qu'il annonce.
 Splash ⟶ « Votre jardin, simplement. » [Ajouter ma première plante] · Plus tard
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]

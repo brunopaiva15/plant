@@ -24,6 +24,39 @@ l'application ne peut pas afficher un numéro qui ment.
 Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
 l'application dit « Iris » tout court plutôt que d'inventer un numéro.
 
+### Là où l'utilisateur le rencontre
+
+L'onboarding le présente en un écran, entre le jardin et la vie privée : la
+marque au centre de la scène, « Iris reconnaît vos plantes hors ligne », le
+geste qui va avec — photographiez votre plante — et la cascade en une
+proposition, « si Iris ne la reconnaît pas, il la cherche en ligne ». C'est le seul endroit où le
+repli se dit avant qu'on en ait besoin ; le taire ici pour l'écrire dans les
+réglages, juste avant un écran qui promet que tout reste sur l'appareil,
+reviendrait à le cacher.
+
+**Sans numéro.** L'écran dit « Iris », `AppConfig.modelName` et rien de plus.
+Le numéro répond d'une question qu'on ne se pose pas encore en découvrant
+l'app — *lequel tourne sur mon téléphone ?* —, et il n'a de sens qu'à côté de
+ce qu'il a coûté et rapporté, c'est-à-dire dans les réglages. L'onboarding y
+gagne aussi de ne rien charger : `version` demande le graphe, et le graphe
+n'a rien à faire sur le deuxième écran d'une app qui s'ouvre.
+
+*Réglages > Identification* lui donne une section : la marque (`IrisMark`,
+§ *Matière* de [docs/06](06-design-system.md)), le nom, une phrase, le nombre
+d'espèces et le fait qu'il réponde hors ligne.
+
+Le compte d'espèces n'est pas écrit dans l'écran : il sort du même
+`model.json` que la version. Livrer une v8 change la section sans qu'on touche
+à une ligne de présentation.
+
+La carte remplace la ligne d'état tant que le modèle est chargé — la voir,
+c'est savoir qu'il l'est. Sinon la ligne d'état reste, avec l'erreur native
+brute, qui seule distingue un asset absent d'une bibliothèque non liée.
+
+Une seconde carte porte le conseil des deux photos (§ 6.7) : quatorze points
+de top-1 pour zéro calcul, et il n'était écrit nulle part où l'utilisateur
+le lise.
+
 ## 1. Pourquoi
 
 Aujourd'hui l'identification passe intégralement par l'API Pl@ntNet, avec la
