@@ -233,7 +233,12 @@ def main(argv: list[str] | None = None) -> int:
     lot = tirer(dedans, args.sample)
     print(f'\n— plantes d\'appartement ({len(lot)} images)')
     entier = score(lot, modele, None)
-    restreint = score(lot, modele, interieur)
+    # Renormalisé : un modèle qui n'aurait appris que ces classes répartirait
+    # entre elles la masse que celui-ci donne aux 1 306 autres. Le top-1 ne
+    # bouge pas — masquer préserve l'ordre —, seules les colonnes de seuil
+    # sont concernées, et sans ça on lirait une autonomie en baisse alors
+    # qu'elle monterait.
+    restreint = score(lot, modele, interieur, renormalise=True)
     for titre, res in (('catalogue entier   ', entier), ('catalogue restreint', restreint)):
         print(f"   {titre} : top1 {res['top1']}  top3 {res['top3']}  "
               f"seuil {SEUIL} → {res['accepted_rate']} acceptées, précision {res['precision_when_accepted']}")

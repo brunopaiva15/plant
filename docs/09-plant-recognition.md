@@ -1617,6 +1617,13 @@ candidates ne donnerait pas 3 000 classes mais environ **2 100**, et 900
 espèces collectées pour rien — douze heures de réseau et du disque pour des
 classes que `train.py` écarterait.
 
+**Et le § 12.12 a depuis chiffré ce que l'étendue coûte déjà** : sur les
+plantes d'appartement, restreindre les sorties de 1 457 à 151 classes rend
+**dix points de top-1**. Ce n'est pas un argument contre les 3 000 — il faut
+bien nommer ce que les gens photographient —, mais c'est la mesure qui
+manquait au critère de réussite ci-dessous : la première condition n'est pas
+une formalité, c'est celle qui décide.
+
 Trois réserves sur ce chiffre, dans les deux sens : l'échantillon est de
 vingt, donc l'incertitude est d'une vingtaine de points ; c'est une **borne
 basse**, GBIF ne filtrant que CC0 et CC BY à la requête et iNaturalist en
@@ -1714,25 +1721,44 @@ d'entre elles ont un genre déjà au catalogue — les deux *Alocasia*, le
 que le modèle répondra **une cousine avec assurance** plutôt que rien : le
 cas le plus coûteux du § 6.7, celui de la réponse acceptée qui est fausse.
 
-#### Ce qui reste à mesurer, et qui demande le jeu d'images
+#### La précision, mesurée sur le `.tflite` livré
 
-```bash
-python3 interieur.py --dataset ../plant_dataset/dataset --model ../../assets/model
-```
+3 606 images de test portent sur ces 151 espèces. Deux lectures, la seconde
+avec les sorties masquées aux seules plantes d'intérieur — ce que rendrait
+un modèle qui n'aurait appris qu'elles :
 
-Sur les seules images de test de ces 151 espèces, deux lectures :
+| sur les 3 606 images | top-1 | top-3 | à 0,70 |
+|---|---|---|---|
+| **catalogue entier** (1 457 sorties) | 0,6733 | 0,8028 | 57,4 % acceptées, 90,6 % justes |
+| **catalogue restreint** (151 sorties) | **0,7754** | 0,8899 | 54,6 % acceptées, 95,1 % justes |
+| les mêmes, **photographiées en pot** (1 963 images) | 0,6796 | 0,8105 | 59,6 % acceptées, 89,9 % justes |
+| pour comparaison, **tout le reste du catalogue** (4 000 images) | 0,5888 | 0,7403 | |
 
-- **catalogue entier** : les 1 457 sorties restent ouvertes — ce que vit
-  l'utilisateur aujourd'hui ;
-- **catalogue restreint** : les sorties masquées aux seules plantes
-  d'intérieur — ce que rendrait un modèle qui n'aurait appris qu'elles.
+Trois choses en sortent, et elles ne disent pas la même chose.
 
-L'écart est **le prix de l'étendue** : ce que les 1 306 autres espèces
-coûtent à celui qui n'en photographiera jamais aucune. C'est la question que
-le § 12.11 pose avant de viser 3 000 espèces, et elle n'a pas de réponse
-tant que ce chiffre n'existe pas. La mesure tourne sur le `.tflite` livré,
-pas sur le réseau Keras : elle vérifie au passage ce que `model.json`
-annonce, ce que personne n'avait fait.
+**1. Le titre sous-vend le modèle sur son terrain.** 67,3 % sur les plantes
+d'appartement contre 58,9 % sur le reste : **huit points et demi d'écart**
+en faveur des photos que l'application reçoit vraiment. Le 0,5961 publié est
+une moyenne sur une population que l'utilisateur ne photographie pas.
+
+**2. Le `.tflite` livré vaut ce que `model.json` annonce.** 59,0 % sur 6 000
+images tirées au hasard contre 59,61 % annoncés sur 28 983 : l'écart tient
+dans le bruit d'échantillonnage (± 1,2 point à 6 000 tirages). L'export
+float16 ne coûte rien de mesurable — c'était pris sur parole jusqu'ici.
+
+**3. Le prix de l'étendue est de dix points.** Restreindre les sorties aux
+151 plantes d'intérieur fait passer le top-1 de 67,3 % à **77,5 %**, et la
+précision des réponses acceptées de 90,6 % à **95,1 %**. Les 1 306 espèces
+que l'utilisateur ne photographiera jamais lui coûtent donc **dix points de
+top-1**, tous les jours.
+
+> Le top-1 est exact : masquer préserve l'ordre entre les classes qui
+> restent, renormaliser n'y change rien. Les colonnes de seuil, elles, sont
+> mesurées **après** renormalisation (`score(..., renormalise=True)`), sans
+> quoi la masse partie aux classes masquées ne reviendrait à personne et
+> l'autonomie serait artificiellement basse. Un modèle réellement entraîné
+> sur 151 classes ferait vraisemblablement mieux encore : il aurait la même
+> capacité pour neuf fois moins d'espèces.
 
 #### Ce que ça change dans l'ordre du travail
 
@@ -1742,6 +1768,22 @@ heures de collecte et deux heures d'entraînement par recette ; le premier
 coûte une collecte de quatorze noms. **Ils ne se valent pas, et le petit
 passe devant** — il ne demande même pas d'attendre la v8, `--min-train`
 mis à part.
+
+#### Et une piste qui ne demande aucun entraînement
+
+Ces dix points ne s'obtiennent pas qu'en rétrécissant le modèle : ils
+s'obtiennent en rétrécissant **la liste des candidats au moment de
+répondre**. C'est un masque sur les sorties, quelques lignes dans la
+cascade, aucune collecte et aucune passe d'entraînement — et l'application
+sait souvent de quoi il s'agit, puisqu'elle sert d'abord à suivre des
+plantes en pot.
+
+Ce n'est pas gratuit pour autant : masquer, c'est **rendre impossible** la
+bonne réponse pour qui photographie un érable dans la rue. Le § 3.2 avait
+prévu la classe « autre » pour ce genre de garde-fou et elle n'existe
+toujours pas (§ 12.7). À creuser avec les mêmes 3 606 images avant d'écrire
+quoi que ce soit — mais dix points pour zéro heure de calcul, c'est le
+meilleur rapport de toute cette liste.
 
 ### 12.13 Les attributions ne sortent pas de la machine d'entraînement
 
