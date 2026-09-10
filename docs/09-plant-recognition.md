@@ -1407,7 +1407,7 @@ loin, et *Parthenocissus* → *Petroselinum*, une vigne vierge prise pour du
 persil. D'où trois tiroirs au lieu de deux, `plants.csv` donnant la famille
 des 1 457 classes.
 
-#### Le vrai enseignement : c'est de l'ignorance, pas de la confusion
+#### Le vrai enseignement : l'échec est par photo, pas par espèce
 
 **1 794 erreurs sur 2 458 franchissent la famille botanique.** Le document
 raconte depuis la v1 une histoire de confusions entre espèces proches — le
@@ -1416,11 +1416,40 @@ et que ce quart-là est **déjà rattrapé par l'interface** : le top-3 est à
 74,4 % contre 59,6 % de top-1, soit près de neuf cents images sur six mille
 où la bonne réponse est dans les cinq candidats affichés.
 
-Le reste n'est pas une confusion qu'on arbitre, c'est une plante que le
-modèle n'a pas apprise. Le rapport le dit maintenant en une ligne : combien
-d'espèces n'ont **pas une seule** bonne réponse sur leurs images de test.
-Celles-là ne demandent pas un meilleur départage, elles demandent des
-images.
+La lecture qui vient alors à l'esprit — « le reste, ce sont des plantes que
+le modèle n'a pas apprises » — est **fausse, et c'est la ligne suivante du
+rapport qui l'a montrée** :
+
+> **11 espèces sur 575 mesurables n'ont pas une seule bonne réponse (2 %).**
+
+Deux pour cent. La population des espèces jamais reconnues est minuscule.
+Les 1 794 erreurs lointaines ne sont donc pas concentrées sur des classes
+absentes en tout sauf le nom : elles sont **réparties sur des espèces que le
+modèle reconnaît par ailleurs**, une photo sur deux ou sur trois.
+
+Ce qui change le diagnostic, et le remède avec :
+
+- **le modèle connaît presque toutes ses espèces** ; il échoue sur certaines
+  *photos* — cadrage, arrière-plan, gros plan contre plante entière,
+  lumière ;
+- **et quand il échoue, il ne se rabat pas sur une voisine plausible.** Il
+  répond une plante sans rapport. Ce n'est pas le comportement d'un modèle
+  qui hésite entre deux espèces proches, c'est celui d'un modèle à qui la
+  photo ne dit rien.
+
+C'est un problème de **domaine visuel**, pas de couverture d'espèces — le
+diagnostic du § 6.3, celui qui avait fait recollecter les plantes d'intérieur
+en pot, et celui que la passe Commons du § 12.2 vise. **Ajouter 1 500 espèces
+ne le soignerait pas** : ce sont des photos d'un autre genre qu'il faut aux
+espèces déjà présentes.
+
+> **Ce que ce 2 % ne dit pas.** 575 espèces sont « mesurables » — celles qui
+> ont au moins cinq images dans l'échantillon de 6 000, sur 1 457 classes.
+> L'échantillon sous-représente donc exactement les espèces les plus à
+> risque : les plus rares du jeu sont aussi celles qui n'atteignent pas cinq
+> images tirées. **11 est un plancher, pas un décompte.** Le mesurer vraiment
+> demande `--sample 0`, soit environ trois quarts d'heure sur les 29 000
+> images de test.
 
 #### Les familles franchies, et la seule qui touche l'application
 
