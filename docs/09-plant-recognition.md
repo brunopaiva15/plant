@@ -1798,6 +1798,54 @@ bien nommer ce que les gens photographient —, mais c'est la mesure qui
 manquait au critère de réussite ci-dessous : la première condition n'est pas
 une formalité, c'est celle qui décide.
 
+#### Ce que les 76 espèces faibles disent du cap
+
+Les 63 plus mal classées (§ 12.4) ont été relevées nommément. Leur
+composition dit où le modèle est faible, et ce n'est pas là où on
+l'attendait :
+
+| | |
+|---|---|
+| **plantes d'appartement** | **1 sur 63** — *Dracaena reflexa* |
+| échouent contre une espèce du **même genre** | 28 (44 %) |
+| dans la même famille | 11 (17 %) |
+| au-delà de la famille | 24 (38 %) |
+
+Les soixante-deux autres sont des **arbres, des conifères, des céréales et
+des plantes sauvages** : paulownia, lagerstroemia, cryptomeria, seigle,
+orties de bord de route. Or c'est exactement la population que 1 543 espèces
+de plus viendraient grossir — on ne descend pas la courbe de popularité de
+GBIF sans tomber sur davantage de flore européenne sauvage.
+
+Et 44 % de ces échecs sont **rattrapés par l'écran** : le candidat proposé
+est du même genre, l'application en montre cinq, la bonne réponse y est. La
+population réellement coûteuse, ce sont les 24 qui sortent de la famille.
+
+#### Ce que ça change au cap des 3 000, sans l'abandonner
+
+Trois mesures pointent dans le même sens :
+
+1. le modèle rend **67,3 %** sur les plantes d'appartement et 58,9 % sur le
+   reste (§ 12.12) ;
+2. restreindre les sorties à l'intérieur rend **dix points** ;
+3. **une seule** des 63 espèces les plus faibles est une plante
+   d'appartement.
+
+Le catalogue est déjà large là où l'utilisateur ne regarde pas, et faible au
+même endroit. **Viser 3 000 par un tirage dans la flore disponible
+ajouterait des espèces dans la bande la plus faible, en faisant payer dix
+points à celui qui photographie son salon.** Ce n'est pas une raison de
+renoncer au chiffre — c'en est une de choisir ce qu'on y met : des plantes
+**cultivées**, celles des jardineries, des balcons et des jardins, plutôt
+que ce dont GBIF a le plus. La v6 l'avait fait sans le nommer (§ 12.11,
+« sélectionner, ne pas tirer ») ; la mesure dit maintenant pourquoi c'était
+la bonne intuition.
+
+Et deux corrections gratuites avant toute collecte : les **six doublons**
+du § 12.14 — *Cupressus macrocarpa* rate 20 de ses 26 images, dont **8 en
+répondant son propre autre nom** —, et les **14 plantes d'appartement
+absentes** du § 12.12.
+
 Trois réserves sur ce chiffre, dans les deux sens : l'échantillon est de
 vingt, donc l'incertitude est d'une vingtaine de points ; c'est une **borne
 basse**, GBIF ne filtrant que CC0 et CC BY à la requête et iNaturalist en
