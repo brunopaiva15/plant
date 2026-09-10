@@ -38,7 +38,10 @@ class OnboardingStage extends StatelessWidget {
   /// L'écran affiché, celui dont l'objet s'anime.
   final int page;
 
-  /// Avancement de l'entrée de la page courante (0 → 1).
+  /// Avancement de l'entrée de la scène (0 → 1), jouée à l'ouverture et une
+  /// seule fois. Le passage d'un écran au suivant vient du carrousel, pas
+  /// d'ici : une entrée rejouée en cours de geste ferait sauter le halo et
+  /// l'objet du milieu, qui sont déjà en place.
   final double entry;
 
   /// Hauteur de la scène, accordée à celle de l'écran.
@@ -102,7 +105,8 @@ class OnboardingStage extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         // Le halo : une tache de couleur douce, sans bord, qui
-                        // s'épanouit à l'arrivée sur l'écran.
+                        // s'épanouit à l'ouverture puis reste là. Ce sont les
+                        // objets qui changent de place, pas lui.
                         Transform.scale(
                           scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
                           child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark),
@@ -132,7 +136,8 @@ class OnboardingStage extends StatelessWidget {
     final dx = d * 0.7 * width;
     final dy = -24 * d.sign * near + 20 * (1 - rise) * (1 - near);
     final blur = reduceMotion ? 0.0 : 5.0 * Curves.easeIn.transform(near);
-    // L'objet arrive un peu petit et prend sa place, comme posé.
+    // À l'ouverture, le premier objet arrive un peu petit et prend sa place,
+    // comme posé. Ensuite, c'est le geste qui l'apporte.
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
 
     final vivant = index == page && near < 0.02;
@@ -140,22 +145,27 @@ class OnboardingStage extends StatelessWidget {
     // l'icône qui pousse sur l'écran de bienvenue, puis la collection qui
     // gravite sur « Toutes vos plantes, ici ». Les suivants sont les objets
     // d'argile, dans l'ordre des écrans.
-    Widget object = switch (index) {
+    final Widget object = switch (index) {
       0 => GrowingPlant(side: side, animate: vivant),
       1 => PlantCluster(side: side, animate: vivant),
       _ => ClayIllustration(slide: index, side: side, animate: vivant),
     };
-    if (blur > 0.05) {
-      object = ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: object,
-      );
-    }
+    // Le flou de profondeur est toujours là, éteint quand il ne sert pas :
+    // l'ajouter et le retirer d'un écran à l'autre changeait la forme de
+    // l'arbre, et l'objet en dessous était défait puis refait. La plante de
+    // l'accueil, dont la séquence se décode, disparaissait alors le temps de
+    // se recharger, au lieu de sortir de l'écran. Éteint, le filtre ne coûte
+    // ni couche ni pixel.
+    final softened = ImageFiltered(
+      enabled: blur > 0.05,
+      imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+      child: object,
+    );
     return Transform.translate(
       offset: Offset(dx, dy),
       child: Opacity(
         opacity: (opacity * (near < 0.02 ? (reduceMotion ? 1 : 0.4 + 0.6 * rise) : 1)).clamp(0.0, 1.0),
-        child: Transform.scale(scale: scale * settle, child: object),
+        child: Transform.scale(scale: scale * settle, child: softened),
       ),
     );
   }
@@ -193,15 +203,16 @@ class _Halo extends StatelessWidget {
 
 /// Le fond : le fond de l'app, à peine teinté de la couleur de l'écran, et
 /// deux lueurs très diffuses dans cette couleur — une qui monte derrière la
-/// scène, une qui déborde d'un coin. Elles bougent d'un rien à l'arrivée sur
-/// chaque écran, puis se posent.
+/// scène, une qui déborde d'un coin. Elles bougent d'un rien à l'ouverture,
+/// puis se posent ; d'un écran à l'autre, seule leur teinte change, et elle
+/// change au rythme du doigt.
 class OnboardingBackdrop extends StatelessWidget {
   const OnboardingBackdrop({super.key, required this.tint, required this.drift, required this.reduceMotion, this.glow = 1});
 
   /// La couleur de l'écran courant, déjà interpolée entre deux écrans.
   final Color tint;
 
-  /// Avancement du souffle d'arrivée, de 0 à 1.
+  /// Avancement du souffle d'ouverture, de 0 à 1.
   final double drift;
   final bool reduceMotion;
 
