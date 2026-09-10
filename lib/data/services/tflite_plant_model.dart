@@ -52,26 +52,6 @@ class TflitePlantModel implements LocalPlantModel {
   String? get version => _version;
 
   @override
-  Future<String?> announcedVersion() async {
-    // Chargé, le modèle a déjà lu ses métadonnées ; sinon on ne lit qu'elles,
-    // quelques centaines d'octets, et l'interpréteur reste au repos.
-    if (_version != null) return _version;
-    try {
-      return _versionOf(await _bundle.loadString(metaAsset));
-    } on Object {
-      // Métadonnées absentes ou illisibles : le nom s'écrira sans numéro.
-      return null;
-    }
-  }
-
-  /// Le numéro annoncé par `model.json`, `null` s'il n'y en a pas.
-  ///
-  /// Il n'est pas retenu dans [_version], qui répond de ce que
-  /// l'interpréteur a chargé : le dire chargé sur la foi d'un fichier de
-  /// métadonnées ferait passer l'écran des réglages pour rassuré à tort.
-  static String? _versionOf(String meta) => RegExp(r'"version"\s*:\s*"([^"]+)"').firstMatch(meta)?.group(1);
-
-  @override
   int get speciesCount => _interpreter == null ? 0 : _labels.length;
 
   @override
@@ -88,7 +68,7 @@ class TflitePlantModel implements LocalPlantModel {
       if (_labels.isEmpty) throw StateError('labels vides');
       try {
         final meta = await _bundle.loadString(metaAsset);
-        _version = _versionOf(meta);
+        _version = RegExp(r'"version"\s*:\s*"([^"]+)"').firstMatch(meta)?.group(1);
         final size = RegExp(r'"input_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);
         if (size != null) _inputSize = int.parse(size);
         final load = RegExp(r'"load_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);

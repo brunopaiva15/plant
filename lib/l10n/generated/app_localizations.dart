@@ -5823,13 +5823,13 @@ abstract class AppLocalizations {
   /// No description provided for @onbIrisTitle.
   ///
   /// In fr, this message translates to:
-  /// **'{name} nomme vos plantes hors ligne'**
+  /// **'{name} reconnaît vos plantes hors ligne'**
   String onbIrisTitle(String name);
 
   /// No description provided for @onbIrisBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le modèle est embarqué dans l\'application, vos photos ne partent nulle part.'**
+  /// **'Une photo, et il propose un nom.'**
   String get onbIrisBody;
 
   /// No description provided for @onbPrivacyTitle.

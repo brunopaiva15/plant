@@ -24,9 +24,6 @@ class FakeLocal implements LocalPlantModel {
   String? get version => available ? 'test-1' : null;
 
   @override
-  Future<String?> announcedVersion() async => version;
-
-  @override
   int get speciesCount => available ? 3 : 0;
 
   @override
@@ -65,8 +62,6 @@ class FakePerImage implements LocalPlantModel {
   bool get isAvailable => true;
   @override
   String? get version => 'test-1';
-  @override
-  Future<String?> announcedVersion() async => version;
   @override
   int get speciesCount => 3;
   @override

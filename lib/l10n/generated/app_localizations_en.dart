@@ -3406,8 +3406,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get onbIrisBody =>
-      'The model ships inside the app, so your photos never leave your phone.';
+  String get onbIrisBody => 'One photo, and it suggests a name.';
 
   @override
   String get onbPrivacyTitle => 'Everything stays on your phone';

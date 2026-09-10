@@ -3413,12 +3413,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String onbIrisTitle(String name) {
-    return '$name kennt deine Pflanzen offline';
+    return '$name erkennt deine Pflanzen offline';
   }
 
   @override
-  String get onbIrisBody =>
-      'Das Modell steckt in der App, deine Fotos verlassen das Telefon nicht.';
+  String get onbIrisBody => 'Ein Foto, und ein Name wird vorgeschlagen.';
 
   @override
   String get onbPrivacyTitle => 'Alles bleibt auf deinem Handy';

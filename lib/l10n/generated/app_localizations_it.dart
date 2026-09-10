@@ -3422,8 +3422,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get onbIrisBody =>
-      'Il modello è dentro l\'app, le tue foto non escono dal telefono.';
+  String get onbIrisBody => 'Una foto, e propone un nome.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';

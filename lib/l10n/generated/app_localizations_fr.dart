@@ -3430,12 +3430,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String onbIrisTitle(String name) {
-    return '$name nomme vos plantes hors ligne';
+    return '$name reconnaît vos plantes hors ligne';
   }
 
   @override
-  String get onbIrisBody =>
-      'Le modèle est embarqué dans l\'application, vos photos ne partent nulle part.';
+  String get onbIrisBody => 'Une photo, et il propose un nom.';
 
   @override
   String get onbPrivacyTitle => 'Tout reste sur votre téléphone';
