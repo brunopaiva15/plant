@@ -3407,7 +3407,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'One photo, and it suggests a name. If unsure, it sends the photo online.';
+      'Photograph your plant. What Iris can\'t recognise, it looks up online.';
 
   @override
   String get onbPrivacyTitle => 'Everything stays on your phone';

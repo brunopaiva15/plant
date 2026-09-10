@@ -3418,7 +3418,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Ein Foto, und ein Name wird vorgeschlagen. Bei Zweifeln geht das Foto online.';
+      'Fotografiere deine Pflanze. Erkennt Iris sie nicht, wird online gesucht.';
 
   @override
   String get onbPrivacyTitle => 'Alles bleibt auf deinem Handy';

@@ -1579,7 +1579,7 @@
   "onbGardenBody": "Chaque arrosage, chaque rempotage est daté et rangé avec la plante.",
   "onbIrisTitle": "{name} reconnaît vos plantes hors ligne",
   "@onbIrisTitle": {"placeholders": {"name": {"type": "String"}}},
-  "onbIrisBody": "Une photo, et il propose un nom. S'il hésite, elle part en ligne.",
+  "onbIrisBody": "Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.",
   "onbPrivacyTitle": "Tout reste sur votre téléphone",
   "onbPrivacyBody": "Pas de compte obligatoire, pas de publicité.",
   "onbStart": "Commencer",

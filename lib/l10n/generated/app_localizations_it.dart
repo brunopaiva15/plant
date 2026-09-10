@@ -3423,7 +3423,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Una foto, e propone un nome. Se esita, la foto va online.';
+      'Fotografa la tua pianta. Se Iris non la riconosce, la cerca online.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';

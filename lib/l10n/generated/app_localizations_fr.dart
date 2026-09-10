@@ -3435,7 +3435,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Une photo, et il propose un nom. S\'il hésite, elle part en ligne.';
+      'Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.';
 
   @override
   String get onbPrivacyTitle => 'Tout reste sur votre téléphone';

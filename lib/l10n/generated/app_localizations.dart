@@ -5829,7 +5829,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbIrisBody.
   ///
   /// In fr, this message translates to:
-  /// **'Une photo, et il propose un nom. S\'il hésite, elle part en ligne.'**
+  /// **'Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.'**
   String get onbIrisBody;
 
   /// No description provided for @onbPrivacyTitle.
