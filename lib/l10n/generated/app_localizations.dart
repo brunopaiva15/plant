@@ -648,6 +648,18 @@ abstract class AppLocalizations {
   /// **'Liste'**
   String get listView;
 
+  /// No description provided for @showAsGrid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher en grille'**
+  String get showAsGrid;
+
+  /// No description provided for @showAsList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher en liste'**
+  String get showAsList;
+
   /// No description provided for @noResultsTitle.
   ///
   /// In fr, this message translates to:

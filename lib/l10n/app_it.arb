@@ -91,6 +91,8 @@
   "clearFilters": "Rimuovi filtri",
   "gridView": "Griglia",
   "listView": "Elenco",
+  "showAsGrid": "Mostra come griglia",
+  "showAsList": "Mostra come elenco",
   "noResultsTitle": "Nessun risultato",
   "noResultsSubtitle": "Prova con un'altra parola.",
   "emptyPlantsTitle": "Nessuna pianta",

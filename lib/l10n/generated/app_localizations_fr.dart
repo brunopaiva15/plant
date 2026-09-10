@@ -328,6 +328,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get listView => 'Liste';
 
   @override
+  String get showAsGrid => 'Afficher en grille';
+
+  @override
+  String get showAsList => 'Afficher en liste';
+
+  @override
   String get noResultsTitle => 'Aucun résultat';
 
   @override
@@ -1306,7 +1312,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get irisSection => 'Le modèle embarqué';
 
   @override
-  String get irisTagline => 'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.';
+  String get irisTagline =>
+      'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.';
 
   @override
   String get irisSpeciesLabel => 'espèces';

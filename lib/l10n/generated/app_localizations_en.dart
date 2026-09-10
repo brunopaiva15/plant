@@ -327,6 +327,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listView => 'List';
 
   @override
+  String get showAsGrid => 'Show as grid';
+
+  @override
+  String get showAsList => 'Show as list';
+
+  @override
   String get noResultsTitle => 'No results';
 
   @override
@@ -1304,7 +1310,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get irisSection => 'The on-device model';
 
   @override
-  String get irisTagline => 'It names your plants right on your phone, with no network and no account.';
+  String get irisTagline =>
+      'It names your plants right on your phone, with no network and no account.';
 
   @override
   String get irisSpeciesLabel => 'species';

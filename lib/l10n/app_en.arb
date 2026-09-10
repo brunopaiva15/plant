@@ -91,6 +91,8 @@
   "clearFilters": "Clear filters",
   "gridView": "Grid",
   "listView": "List",
+  "showAsGrid": "Show as grid",
+  "showAsList": "Show as list",
   "noResultsTitle": "No results",
   "noResultsSubtitle": "Try another word.",
   "emptyPlantsTitle": "No plants yet",

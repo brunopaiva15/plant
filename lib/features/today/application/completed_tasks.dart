@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/models/models.dart';
+import '../../actions/application/care_actions.dart';
 
 /// Phase d'une tâche qui vient d'être complétée sur l'écran Aujourd'hui.
 enum LingerPhase { done, leaving }
@@ -60,3 +62,24 @@ class CompletedTasksController extends Notifier<Map<String, LingeringTask>> {
 }
 
 final completedTasksProvider = NotifierProvider<CompletedTasksController, Map<String, LingeringTask>>(CompletedTasksController.new);
+
+/// Ce que le registre dit de [task] : `null` quand elle est active, sinon la
+/// phase de sa sortie. À lire depuis un `build`.
+///
+/// L'état « ✓ Fait » ne vit pas dans la carte mais ici : un soin enregistré
+/// repousse l'échéance, donc la carte change de section dans la seconde — la
+/// confirmation, elle, doit tenir le temps de l'undo, où qu'elle atterrisse.
+LingerPhase? watchCarePhase(WidgetRef ref, CareTask task) =>
+    ref.watch(completedTasksProvider.select((m) => m[task.schedule.id]?.phase));
+
+/// Enregistre le soin, et garde la tâche en « ✓ Fait » le temps de l'undo.
+Future<void> completeCareTask(BuildContext context, WidgetRef ref, CareTask task) async {
+  // Un second tap pendant l'animation ne doit pas enregistrer deux fois.
+  if (ref.read(completedTasksProvider).containsKey(task.schedule.id)) return;
+  ref.read(completedTasksProvider.notifier).markDone(task);
+  await ref.read(careActionsProvider).logQuick(context, plantId: task.plantId, plantName: task.summary.plant.name, typeKey: task.typeKey);
+}
+
+/// « Plus tard » : l'échéance glisse à demain.
+Future<void> snoozeCareTask(BuildContext context, WidgetRef ref, CareTask task) =>
+    ref.read(careActionsProvider).snooze(context, scheduleId: task.schedule.id, plantName: task.summary.plant.name);

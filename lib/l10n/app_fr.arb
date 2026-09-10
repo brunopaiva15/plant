@@ -163,6 +163,8 @@
   "clearFilters": "Effacer les filtres",
   "gridView": "Grille",
   "listView": "Liste",
+  "showAsGrid": "Afficher en grille",
+  "showAsList": "Afficher en liste",
   "noResultsTitle": "Aucun résultat",
   "noResultsSubtitle": "Essayez un autre mot.",
   "emptyPlantsTitle": "Aucune plante",
