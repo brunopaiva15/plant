@@ -1856,9 +1856,91 @@ pire cas.
 
 C'est déjà ce que la v6 avait fait sans le nommer — ses 530 ajouts étaient
 « les espèces cultivées les plus observées en Europe ». La liste des
-candidates doit se **générer depuis GBIF par nombre d'observations**, pas se
-tirer du catalogue étendu. `disponibilite.py` devient alors une
-vérification, pas une recherche.
+candidates doit se **générer par nombre d'observations**, pas se tirer du
+catalogue étendu. `disponibilite.py` devient alors une vérification, pas une
+recherche.
+
+#### ✅ Fait, et le résultat renverse la prudence ci-dessus
+
+`tools/plant_dataset/candidats.py`. **Ce n'est pas GBIF qui sait dire
+« cultivée »** : il a le champ (`degreeOfEstablishment=cultivated`) et
+personne ne le remplit — **288 occurrences sur 76 millions**, quatre
+millionièmes. Mesuré, pas supposé.
+
+C'est **iNaturalist** : son drapeau « captive/cultivated » est posé par les
+observateurs et massivement utilisé, et l'API rend le classement tout fait.
+58 543 espèces de plantes cultivées, triées par observations. En tête :
+hibiscus, laurier-rose, érable du Japon, lagerstroemia, croton, romarin,
+aloès. Le rayon d'une jardinerie, pas une flore de terrain.
+
+Après retrait des 1 457 déjà connues : **7 658 candidates nouvelles**.
+
+| rang de la candidate | observations cultivées |
+|---|---|
+| 500ᵉ | 1 489 (*Eucalyptus robusta*) |
+| 1 543ᵉ — de quoi viser 3 000 | 481 (*Correa alba*) |
+| 3 000ᵉ | 203 |
+| 3 543ᵉ — de quoi viser 5 000 | 160 (*Trichocereus atacamensis*) |
+| 5 000ᵉ | 94 |
+
+#### Le gap entre 3 000 et 5 000 : il n'y en a pas
+
+C'est la question qui décide, et elle se mesure : sur 35 candidates tirées
+au sort dans chaque bande, combien atteignent les 25 images de
+`--min-train` chez GBIF ?
+
+| | au-dessus de 25 images | maigres | jamais photographiées |
+|---|---|---|---|
+| **rangs 1 – 1 543** (viser 3 000) | **30/35 — 86 %** | 5 | 0 |
+| **rangs 1 544 – 3 543** (les 2 000 de plus) | **29/35 — 83 %** | 6 | 0 |
+
+Trois points d'écart, dans le bruit d'un échantillon de 35. **La deuxième
+bande vaut la première.** Et les deux valent le double du tirage au hasard
+mesuré plus haut, qui rendait 40 % : c'est la sélection qui produit
+l'écart, pas la profondeur.
+
+Le chiffre est en outre une **borne basse** : GBIF ne filtre que CC0 et CC BY
+à la requête, le partage à l'identique ne se voit qu'au média, et
+iNaturalist en direct — qui apporte précisément les plantes cultivées
+(§ 4.3) — n'est pas interrogé du tout.
+
+Ce qu'on peut donc attendre :
+
+| | candidates à collecter | classes réelles attendues |
+|---|---|---|
+| viser 3 000 | 1 543 | ≈ **2 780** |
+| viser 5 000 | 3 543 | ≈ **4 430** |
+| atteindre 5 000 | ≈ 4 220 | ≈ 5 000 |
+
+#### Ce que 5 000 coûte vraiment
+
+Pas la disponibilité, donc. Trois autres choses :
+
+| | 1 457 | 3 000 | 5 000 |
+|---|---|---|---|
+| `.tflite` livré | 8,8 Mo | ≈ 11,8 Mo | **≈ 15,6 Mo** |
+| collecte | ~6 h | ~12 h | **~15 h**, bornée par les API |
+| jeu d'images | 15 Go | ~30 Go | **~50 Go** (et le triple en cours de collecte) |
+| une recette d'entraînement | 25 min | ~2 h | **~3 h** |
+
+La tête est un `Dense(960 → N)` : c'est le seul poste qui grossit avec le
+nombre de classes, à raison de deux octets par classe et par canal.
+
+**Et le vrai prix reste celui du § 12.12** : dix points de top-1 pris à
+celui qui photographie son salon, pour les espèces qu'il ne photographiera
+jamais. Passer de 1 457 à 5 000 ne peut qu'aggraver ce chiffre.
+
+#### La décision se déplace, elle ne se prend pas maintenant
+
+**Collecter ne force pas à entraîner.** Les images de 4 000 candidates
+servent aussi bien un modèle à 3 000 classes qu'un modèle à 5 000 : c'est
+`--min-train` et la liste des classes qui tranchent, à l'entraînement, en
+vingt-cinq minutes de plus.
+
+Donc : **collecter large** — la collecte est le travail long, irréversible
+et borné par les API —, puis **entraîner les deux et mesurer** avec
+`compare_models.py` (§ 12.10). Le critère de réussite ci-dessous ne change
+pas ; il devient simplement décidable au lieu d'être pronostiqué.
 
 #### Le critère de réussite, à fixer maintenant
 

@@ -19,6 +19,25 @@ python3 -m pytest -q                          # 124 tests, sans réseau
 ```
 
 
+## Choisir les espèces de la version suivante
+
+```bash
+python3 candidats.py --combien 3543 --out candidats-v8.txt
+python3 disponibilite.py --species-file candidats-v8.txt --csv disponibilite.csv
+```
+
+Un tirage au hasard dans le catalogue étendu ne rend que 40 % de classes
+exploitables, et grossit la population où le modèle est déjà le plus faible
+— arbres et plantes sauvages (§ 12.4). Il faut donc classer les candidates
+par ce que les gens **cultivent**.
+
+**GBIF ne sait pas le dire** : son champ `degreeOfEstablishment=cultivated`
+compte 288 occurrences sur 76 millions. iNaturalist, si — son drapeau
+« captive » est posé par les observateurs, et l'API rend 58 000 espèces
+cultivées triées par observations. Sélectionnées ainsi, **83 à 86 %** des
+candidates atteignent les 25 images de `--min-train`, et le taux ne baisse
+pas entre le 1 543ᵉ et le 3 543ᵉ rang. Voir le § 12.11 de `docs/09`.
+
 ## Les classes qui sont la même plante
 
 ```bash
