@@ -132,16 +132,29 @@ class ReleaseNote {
 /// récente jamais vue qu'elle annonce au lancement.
 List<ReleaseNote> releaseNotes(AppLocalizations l10n) {
   // ────────────────────────────────────────────────────────────────────────
-  // EXEMPLE — à remplacer à la première vraie livraison.
+  // EXEMPLE — gabarit, pas contenu. Personne ne le voit.
   //
-  // Le mécanisme est en place avant d'avoir quelque chose à annoncer : cette
-  // entrée sert de gabarit et de démonstration. Ses chiffres sont inventés,
-  // et c'est sans conséquence tant qu'elle reste ici : livrée dans la même
-  // version que le mécanisme, elle ne s'ouvre d'elle-même chez personne
-  // (voir [WhatsNew.take]) et ne se voit que par Profil → Nouveautés.
+  // Le mécanisme est en place avant qu'il y ait quelque chose à annoncer :
+  // cette entrée sert de modèle. Ses chiffres sont inventés, et aucun chemin
+  // ne mène à elle — livrée dans la même version que le mécanisme, elle ne
+  // s'ouvre d'elle-même chez personne (voir [WhatsNew.take]), et les réglages
+  // n'ont pas de ligne « Nouveautés » tant qu'elle est la seule au catalogue.
   //
-  // À la vraie version d'Iris 8 : reprendre le texte des quatre `.arb`, et
-  // garder l'identifiant si la fenêtre n'a jamais été livrée autrement.
+  // **Son identifiant est dépensé.** Tout appareil ayant lancé cette version
+  // porte `iris-8` dans ses nouveautés vues. D'où deux règles, en sens
+  // inverse l'une de l'autre :
+  //
+  // - ne pas le renommer ici : sous un identifiant neuf, l'exemple
+  //   redeviendrait inédit et s'ouvrirait pour de bon chez ces appareils-là,
+  //   chiffres inventés compris ;
+  // - ne pas le reprendre pour la vraie livraison d'Iris 8, qui a besoin d'un
+  //   identifiant jamais vu — `iris-8-modele` fera l'affaire — sans quoi sa
+  //   fenêtre serait avalée en silence.
+  //
+  // À la première vraie livraison : remplacer cette entrée (nouvel
+  // identifiant), écrire son texte dans les quatre `.arb`, et rouvrir la
+  // ligne des réglages si on veut qu'elle reste relisible — la marche à
+  // suivre est notée dans `profile_screen.dart`.
   // ────────────────────────────────────────────────────────────────────────
   const speciesCount = '5000';
   return [

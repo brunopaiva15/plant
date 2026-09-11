@@ -114,8 +114,15 @@ Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir u
    réglage concerné, ouvert après fermeture.
 4. Elle est marquée comme vue **avant** d'être affichée : une application tuée
    en cours de lecture ne la rouvre pas au lancement suivant.
-5. Elle reste relisible à volonté : Profil → Nouveautés.
+5. Pas de porte d'entrée manuelle pour l'instant : les réglages n'ont pas de
+   ligne « Nouveautés » tant que le catalogue ne contient que l'exemple, dont
+   les chiffres sont inventés. Rouvrir cette ligne à la première vraie
+   livraison est une FloraListRow — la marche à suivre est dans
+   `profile_screen.dart`.
 
 Ajouter une version = une entrée dans `releaseNotes()` et ses clés dans les
 quatre `.arb`. Un identifiant de nouveauté ne se renomme ni ne se réemploie :
-le renommer rouvrirait la fenêtre chez tous ceux qui l'avaient fermée.
+le renommer rouvre la fenêtre chez tous ceux qui l'avaient fermée, le
+réemployer avale en silence celle qui devait s'ouvrir. L'identifiant de
+l'exemple (`iris-8`) est déjà dépensé sur tout appareil ayant lancé cette
+version — la vraie livraison d'Iris 8 en prendra donc un autre.
