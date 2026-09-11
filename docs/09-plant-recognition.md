@@ -968,6 +968,112 @@ Le gel, lui, ne se mesure pas au banc : il se voit sur un téléphone. Ce qui
 reste à vérifier sur l'appareil, c'est l'inférence elle-même à 320 px, la
 demi-seconde du § 6.4 n'ayant jamais été remesurée depuis.
 
+### 6.7 bis Résultats de l'Iris 8 — collecter large, livrer étroit
+
+La v8 devait élargir le répertoire : 4 220 espèces candidates collectées en
+vingt-deux heures, 991 926 images gardées, **5 259 classes entraînées**
+(§ 12.11). Elle ne l'a pas élargi d'une espèce, et elle a quand même été la
+plus grosse avancée de qualité depuis la v3. Voici pourquoi.
+
+#### La mesure qui a tout décidé
+
+`compare_models.py` fait passer les deux modèles sur les **mêmes** 6 000
+images, sur les 1 444 classes qu'ils connaissent tous les deux. Mais il
+masque les sorties que l'autre modèle n'a pas — et ce masque retire 13
+classes à l'Iris 7 contre **3 815** à l'Iris 8. Le chiffre obtenu répond donc
+à « ce réseau-ci, s'il n'avait à choisir que parmi les espèces de l'autre »,
+pas à ce que l'utilisateur reçoit. D'où la seconde lecture, sorties
+entières :
+
+| 1 444 classes communes, 6 000 mêmes images | Iris 7 | Iris 8 à 5 259 classes |
+|---|---|---|
+| **sorties masquées** — qualité du réseau | 0,5863 | **0,6543** (+6,8) |
+| **sorties entières** — ce que l'application rend | 0,5862 | **0,5528** (−3,3) |
+| plantes cultivées, sorties entières | 0,5990 | **0,5300** (−6,9) |
+
+La ligne de l'Iris 7 ne bouge que d'un dix-millième entre les deux lectures :
+la comparaison est propre, tout l'écart vient de l'Iris 8.
+
+**Dix points séparent les deux lectures du même réseau sur les mêmes
+photos** — onze sur les plantes cultivées. C'est la mesure la plus directe
+qu'on ait du prix de l'étendue, et elle confirme au dixième près
+l'estimation du § 12.12, obtenue autrement. Les 3 815 espèces nouvelles ne
+se contentent pas d'être mal reconnues : **elles volent les réponses des
+anciennes.**
+
+#### Retailler plutôt que réentraîner
+
+Le réseau n'avait donc pas besoin d'être réappris, mais d'être **borné**. Et
+la borne n'a pas sa place dans l'application : `assets/species/catalog.tsv`
+porte 36 364 noms — plus que le modèle — et `CatalogCareGuide` résout
+l'entretien espèce → genre → famille → catégorie, si bien que l'application
+sait déjà dire quelque chose de presque n'importe quoi. Il n'existe aucun
+ensemble « ce que l'app sait afficher » à quoi masquer.
+
+`tools/plant_model/retailler.py` la met donc dans le modèle : on reprend les
+poids appris, on ne garde dans la dernière couche que les colonnes voulues,
+on réexporte. **Ce n'est pas un réentraînement** — quelques minutes, dont
+l'essentiel en réévaluation.
+
+Et ce n'est pas non plus une approximation : le softmax d'une tête tronquée
+vaut `exp(zᵢ) / Σ_gardées exp(zⱼ)`, c'est-à-dire exactement un masque suivi
+d'une renormalisation. La lecture `compare_models --restreint` **est** la
+mesure du fichier produit.
+
+#### Ce qui est livré
+
+1 444 classes, les mêmes que l'Iris 7 moins treize.
+
+| `model.json`, chacun sur son propre test | Iris 7 | **Iris 8** |
+|---|---|---|
+| classes | 1 457 | 1 444 |
+| top-1 | 0,5961 | **0,6627** |
+| top-3 | 0,7435 | **0,8047** |
+| macro-F1 | 0,5796 | **0,6472** |
+| plantes cultivées, top-1 | 0,5979 | **0,6483** |
+| seuil 0,70 / marge 0,25 | 47,3 % acceptées, 89,8 % justes | **54,9 %, 91,3 %** |
+| taille | 8,79 Mo | 8,77 Mo |
+
+**Plus autonome *et* plus juste au même seuil.** Il n'y a pas d'arbitrage :
+`FallbackPolicy` ne bouge pas, huit identifications sur cent cessent
+d'appeler Pl@ntNet, et celles que l'application tranche seule sont plus
+souvent vraies. À titre de comparaison, le passage de la v6 à la v7 avait
+demandé de *monter* le seuil pour obtenir moins que ça.
+
+Le chiffre publié et le chiffre rigoureux bougent ici dans le même sens
+(+6,7 et +6,8) — assez rare pour être noté : aucune des deux mesures ne
+raconte d'histoire.
+
+#### Le coût, et il est réel
+
+**13 espèces que l'Iris 7 nommait et que l'Iris 8 n'a pas apprises**, dont
+quatre d'intérieur : *Hoya kerrii*, *Nematanthus gregarius*, *Peperomia
+caperata*, *Sinningia speciosa*. La couverture des 167 noms d'appartement
+recule de **92 % à 89 %** (151 → 147). Elles restent choisissables à la main
+dans le sélecteur d'espèces ; l'appareil photo ne les proposera plus.
+
+Ce ne sont pas des espèces pauvres : elles sont tombées sur le défaut de
+découpage du § 12.19, corrigé depuis. La prochaine construction du jeu en
+récupère une partie.
+
+#### Ce que la v8 aura vraiment servi
+
+Les vingt-deux heures de collecte n'ont pas élargi le répertoire — elles ont
+**affiné la vision**. Le réseau a vu 991 000 images sur 5 259 plantes au lieu
+de 290 000 sur 1 457, et sur les espèces qu'il connaissait déjà il est six
+points et demi meilleur. On jette ensuite les sorties en trop et on garde
+les traits.
+
+On ne peut pas démêler complètement ce qui vient des espèces nouvelles de ce
+que les anciennes ont gagné en images au passage. Mais les deux faits sont
+mesurés et tiennent ensemble : le jeu a triplé, la représentation partagée a
+gagné 6,8 points, et exposer les 5 259 sorties détruit ce gain.
+
+> **Collecter large, livrer étroit.** Le § 13 le pariait par raisonnement ;
+> c'est maintenant un chiffre. Une espèce de plus au catalogue coûte à
+> toutes les autres, et ce coût ne se voit dans aucun `model.json` — il faut
+> deux modèles sur les mêmes images pour le lire.
+
 ### 6.8 Résultats du modèle v1
 
 | | |
@@ -1932,6 +2038,13 @@ d'images — c'est la réparation du découpage qui leur en donnait trop peu à
 valider. Diagnostic et correctif au § 12.19 ; il prend effet à la prochaine
 construction du jeu, pas sur l'Iris 8.
 
+> **Ces 5 259 classes n'ont pas été livrées.** Mesuré sur les mêmes images,
+> le modèle à 5 259 sorties rend *moins* bien que l'Iris 7 sur les espèces
+> que l'utilisateur avait déjà. L'Iris 8 livré est le même réseau retaillé à
+> **1 444 classes**, et il gagne 6,6 points de top-1. La collecte a servi —
+> comme matière d'entraînement, pas comme répertoire. Tout est au § 6.7 bis,
+> et c'est la leçon la plus chère de cette version.
+
 **L'échantillon de 35 espèces annonçait 84 % ; la réalité est à 95 %.** Ce
 n'est pas une erreur de l'échantillon, c'est sa limite, écrite dans sa
 propre documentation : `disponibilite.py` n'interroge que GBIF en CC0 et
@@ -2106,6 +2219,13 @@ float16 ne coûte rien de mesurable — c'était pris sur parole jusqu'ici.
 précision des réponses acceptées de 90,6 % à **95,1 %**. Les 1 306 espèces
 que l'utilisateur ne photographiera jamais lui coûtent donc **dix points de
 top-1**, tous les jours.
+
+> **Confirmé depuis, par un autre chemin.** Le § 6.7 bis fait passer un même
+> réseau de 5 259 sorties à 1 444 sur les mêmes 6 000 images : 0,5528 contre
+> 0,6543, soit **10,2 points**, et 11,1 sur les plantes cultivées. Deux
+> mesures indépendantes, deux jeux de classes différents, le même ordre de
+> grandeur. Ce n'est donc pas une particularité des plantes d'intérieur :
+> c'est ce que coûte une sortie de plus, quelle qu'elle soit.
 
 > Le top-1 est exact : masquer préserve l'ordre entre les classes qui
 > restent, renormaliser n'y change rien. Les colonnes de seuil, elles, sont
@@ -2284,6 +2404,33 @@ donc lisibles par la collecte. **Retirer les lignes en double du catalogue
 de collecte est la décision suivante** : elle change le jeu d'étiquettes du
 modèle, donc elle se prend en ouvrant la v8, pas en passant. Les images se
 rejoindront alors, et six classes fantômes quitteront le décompte.
+
+#### Et le catalogue de la v8 en a ramené quarante de plus
+
+Le catalogue est passé à 5 778 lignes (§ 12.11), et le défaut a suivi.
+Simple comptage des clés GBIF déjà résolues dans `plants.csv` — aucun appel
+réseau :
+
+| | |
+|---|---|
+| clés GBIF portées par plus d'une ligne | **46** |
+| lignes en trop | **51** |
+| groupes dont deux membres sont des classes de l'Iris 8 livré | 6 — les mêmes qu'ici |
+
+L'Iris 8 livré n'est donc pas plus atteint qu'avant, et
+`acceptedSpeciesName()` continue de le couvrir. Mais le modèle **à 5 259
+classes**, lui, portait les 46 : *Calathea* et *Goeppertia orbifolia*,
+*Dypsis* et *Chrysalidocarpus lutescens*, cinq agrumes sur une seule clé.
+Autant de plantes dont les images se partageaient entre deux classes qui se
+disputaient ensuite la réponse — une part, petite mais réelle, des dix
+points du § 6.7 bis.
+
+**Et 46 est une borne basse.** *Saintpaulia ionantha* et *Streptocarpus
+ionanthus* sont deux lignes du catalogue pour une seule plante, et leurs
+clés GBIF diffèrent : le comptage par clé ne les voit pas. C'est
+`doublons.py`, qui demande à GBIF le taxon *accepté* de chaque nom, qui
+donne le vrai chiffre — à lancer sur les 5 778 lignes avant la prochaine
+collecte, pas après.
 
 ### 12.15 Répondre au niveau du genre, plutôt qu'une tête hiérarchique
 
@@ -2559,6 +2706,20 @@ L'Iris 8 est une version de **largeur** : 1 457 → ~5 000 classes. L'Iris 9
 doit être une version de **profondeur** — le même catalogue, mieux nourri.
 Et comme la largeur coûte dix points à celui qui photographie son salon, son
 premier travail sera peut-être d'en rendre une partie.
+
+> **Écrit avant la v8, tranché par elle.** Le pari ci-dessus était un
+> raisonnement ; c'est devenu une mesure. L'Iris 8 entraîné à 5 259 classes
+> rend 0,5528 sur les espèces déjà connues là où l'Iris 7 rend 0,5862 ;
+> retaillé à 1 444, le même réseau rend 0,6543 (§ 6.7 bis). La largeur a bien
+> coûté, et « en rendre une partie » n'était pas *peut-être* : c'était la
+> condition pour que la version soit livrable.
+>
+> Mais la collecte large n'a pas été perdue pour autant, et c'est la nuance
+> que le paragraphe ci-dessus n'avait pas vue : ce sont ces 700 000 images
+> supplémentaires qui ont fait les 6,8 points. **La largeur se paie dans les
+> sorties, pas dans l'entraînement.** L'Iris 9 peut donc continuer à
+> collecter tout ce qu'il trouve — il doit seulement choisir ce qu'il
+> expose.
 
 ### 13.2 Les quatre chantiers, par rapport mesuré
 
