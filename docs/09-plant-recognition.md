@@ -1409,9 +1409,9 @@ domaine — `secondPhotoOffer()`, à côté de `FallbackPolicy` — et rend troi
 
 | | quand | comment |
 |---|---|---|
-| `prominent` | le modèle hésite | phrase d'explication + bouton secondaire, comme avant |
-| `quiet` | la réponse est acceptée | bouton fantôme sous les candidats, sans phrase |
-| `none` | plus de photo possible, ou réponse venue de Pl@ntNet | rien |
+| `prominent` | le modèle hésite | la bande, et sa phrase : quoi photographier |
+| `quiet` | la réponse est acceptée | la bande seule, sans phrase |
+| `none` | plus de photo possible, ou réponse venue de Pl@ntNet | pas de case libre |
 
 Les deux écrans (`identification_sheet.dart`, `create_plant_flow.dart`)
 partageaient jusqu'ici deux copies identiques de la règle ; ils appellent
@@ -1423,8 +1423,35 @@ plus ne rejouerait rien sans un nouvel appel, donc sans entamer le quota
 mensuel. Ce n'est plus le même geste gratuit, et on ne le propose pas.
 
 Et le registre effacé est le point de la chose. Proposer une photo de plus
-après une bonne réponse ajoute un geste à un parcours qui marchait : sous
-les candidats, sans phrase, sans l'imposer.
+après une bonne réponse ajoute un geste à un parcours qui marchait : sans
+phrase, sans l'imposer.
+
+#### Un bouton ne dit pas qu'il y a une suite
+
+Les deux registres ont d'abord été deux **boutons**, sous la liste des
+candidats, et le compte des photos une légende au-dessus d'elle : « Iris ·
+2 photos ». Personne ne devinait qu'on pouvait en prendre plusieurs à la
+suite, et c'est logique — un bouton au singulier, qui réapparaît à
+l'identique après avoir servi, ne promet pas de troisième tour, et une
+légende dit un **état**, jamais un geste.
+
+`IdentificationPhotoStrip` (`features/identification/presentation/`) les
+remplace par une bande de trois emplacements, posée **au-dessus** de la
+liste : les photos parties, puis la case libre qui les suit, puis la place
+qui reste. La suite n'a plus besoin d'être écrite, elle se voit — et le
+compte disparaît de la légende, deux vignettes le disant mieux.
+
+Trois règles tiennent le composant :
+
+- **l'invitation reste décidée par le domaine.** `onAdd` nul, aucune case
+  libre : c'est ainsi qu'une réponse distante n'en propose pas ;
+- **une seule case écoute le doigt**, la première libre. Les suivantes sont
+  des contours — deux cibles côte à côte pour le même geste n'en font pas un
+  plus clair ;
+- **une photo se retire**, sauf la première, qui appartient à l'appelant. La
+  moyenne géométrique exige que les photos soient d'accord : un cliché raté
+  tire le résultat vers le bas, et le seul recours était jusqu'ici de fermer
+  la feuille. Tests : `test/features/identification_photo_strip_test.dart`.
 
 ### 12.4 ✅ La matrice de confusion par genre
 

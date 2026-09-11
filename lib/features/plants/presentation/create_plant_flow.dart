@@ -20,6 +20,7 @@ import '../../../domain/repositories/repositories.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../../../domain/identification/identification_policy.dart';
+import '../../identification/presentation/identification_photos.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
@@ -76,7 +77,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   final _identificationExtras = <StoredPhoto>[];
 
   /// Chemins absolus envoyés au moteur : la photo de la plante, puis les
-  /// autres. Le moteur additionne les scores par espèce.
+  /// autres. Le moteur les fusionne par moyenne géométrique — l'espèce que
+  /// toutes les photos voient remonte, celle qui ne tenait qu'à un cliché
+  /// ambigu redescend.
   final _identificationPaths = <String>[];
 
   /// Au-delà, une photo de plus n'apporte plus grand-chose.
@@ -266,6 +269,27 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     } finally {
       if (mounted) setState(() => _picking = false);
     }
+  }
+
+  /// Retirer une photo prise pour identifier, et recommencer sans elle.
+  ///
+  /// La fusion par moyenne géométrique **exige que les photos soient
+  /// d'accord** : un cliché raté tire le résultat vers le bas au lieu de
+  /// l'affiner. Le rang zéro est la photo de la plante : elle reste, c'est
+  /// l'étape d'avant qui la change.
+  Future<void> _removeIdentificationPhoto(int index) async {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (_picking || index <= 0 || index >= _identificationPaths.length) return;
+    final stored = _identificationExtras.removeAt(index - 1);
+    final lang = _identificationLanguage;
+    final storage = ref.read(photoStorageProvider);
+    _identificationPaths.removeAt(index);
+    setState(() {
+      _identification = identifier
+          .identify([for (final p in _identificationPaths) File(p)], language: lang)
+          .catchError((_) => <IdentificationCandidate>[]);
+    });
+    await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
   void _chooseIdentificationSource() {
@@ -531,8 +555,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               future: _identification!,
               onPick: _applyCandidate,
               onSearchOnline: _canSearchOnline ? _searchOnline : null,
-              photoCount: _identificationPaths.length,
-              onAddPhoto: _identificationPaths.length < maxIdentificationPhotos && !_picking ? _chooseIdentificationSource : null,
+              paths: _identificationPaths,
+              // Sans gêne pour `_picking` : retirer les cases libres pendant
+              // qu'on prend une photo ferait rétrécir la bande puis revenir.
+              // Les deux gestes se gardent eux-mêmes.
+              onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _chooseIdentificationSource : null,
+              onRemovePhoto: _removeIdentificationPhoto,
               offer: _identificationOffer,
             ),
           const SizedBox(height: Space.lg),
@@ -635,9 +663,10 @@ class _IdentificationSuggestions extends StatelessWidget {
   const _IdentificationSuggestions({
     required this.future,
     required this.onPick,
+    required this.paths,
     this.onSearchOnline,
     this.onAddPhoto,
-    this.photoCount = 1,
+    this.onRemovePhoto,
     this.offer,
   });
 
@@ -651,8 +680,12 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Présent tant qu'une photo de plus est acceptée.
   final VoidCallback? onAddPhoto;
 
-  /// Nombre de photos déjà soumises au moteur.
-  final int photoCount;
+  /// Retirer une photo ajoutée pour identifier. Jamais la première : c'est
+  /// la photo de la plante.
+  final ValueChanged<int>? onRemovePhoto;
+
+  /// Les photos soumises au moteur, en chemins absolus.
+  final List<String> paths;
 
   /// Faut-il proposer une photo de plus, et sur quel ton ? Décidé par la
   /// cascade, comme dans la fiche d'identification.
@@ -672,6 +705,12 @@ class _IdentificationSuggestions extends StatelessWidget {
         }
         final results = (snap.data ?? const <IdentificationCandidate>[]).take(3).toList();
         if (results.isEmpty) return const SizedBox.shrink();
+        final photoOffer = offer?.call(results) ?? SecondPhotoOffer.none;
+        // La bande montre ce qui est parti dès qu'il y a plusieurs photos, et
+        // la place libre seulement si la cascade en veut une de plus. Le
+        // compte n'est plus écrit — « · 2 photos » disait l'état sans jamais
+        // dire le geste ; deux vignettes et une case vide disent les deux.
+        final showStrip = paths.length > 1 || photoOffer != SecondPhotoOffer.none;
         return Padding(
           padding: const EdgeInsets.only(top: Space.md),
           child: Column(
@@ -680,48 +719,34 @@ class _IdentificationSuggestions extends StatelessWidget {
               // D'où viennent ces noms : l'utilisateur a le droit de savoir si
               // sa photo est partie sur le réseau, et de le demander sinon.
               Text(
-                () {
-                  final source = switch (results.first.source) {
-                    IdentificationSource.local => l10n.suggestionsLocal,
-                    IdentificationSource.remote => l10n.suggestionsRemote,
-                    IdentificationSource.unknown => l10n.identifyHint,
-                  };
-                  // Le nombre de photos n'apparaît qu'une fois qu'il y en a
-                  // plusieurs : « 1 photo » n'apprendrait rien.
-                  return photoCount > 1 ? '$source · ${l10n.photosCount(photoCount)}' : source;
-                }(),
+                switch (results.first.source) {
+                  IdentificationSource.local => l10n.suggestionsLocal,
+                  IdentificationSource.remote => l10n.suggestionsRemote,
+                  IdentificationSource.unknown => l10n.identifyHint,
+                },
                 style: context.text.caption,
               ),
+              if (showStrip) ...[
+                const SizedBox(height: Space.xs),
+                IdentificationPhotoStrip(
+                  paths: paths,
+                  maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
+                  onAdd: photoOffer == SecondPhotoOffer.none ? null : onAddPhoto,
+                  onRemove: onRemovePhoto,
+                ),
+                // Le modèle hésite : la photo est le geste qui tranche, et il
+                // vaut la phrase qui dit quoi photographier.
+                if (photoOffer == SecondPhotoOffer.prominent) ...[
+                  const SizedBox(height: Space.xs),
+                  Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                ],
+              ],
               const SizedBox(height: Space.xs),
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
               // La photo d'abord, l'appel réseau ensuite : l'une est gratuite
-              // et immédiate, l'autre se prend sur un quota mensuel.
-              if (onAddPhoto != null && offer?.call(results) == SecondPhotoOffer.prominent) ...[
-                const SizedBox(height: Space.sm),
-                Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                const SizedBox(height: Space.xs),
-                FloraButton(
-                  label: l10n.identifyAnotherPhoto,
-                  icon: CupertinoIcons.camera,
-                  style: FloraButtonStyle.secondary,
-                  size: FloraButtonSize.small,
-                  onPressed: onAddPhoto,
-                ),
-              ],
-              // Réponse acceptée : une sur dix est fausse, et jusqu'ici seule
-              // l'hésitation du modèle donnait droit au geste qui la corrige.
-              // Discret et sans phrase, pour ne pas alourdir un parcours de
-              // création qui marchait.
-              if (onAddPhoto != null && offer?.call(results) == SecondPhotoOffer.quiet) ...[
-                const SizedBox(height: Space.sm),
-                FloraButton(
-                  label: l10n.identifyConfirmWithPhoto,
-                  icon: CupertinoIcons.camera,
-                  style: FloraButtonStyle.ghost,
-                  size: FloraButtonSize.small,
-                  onPressed: onAddPhoto,
-                ),
-              ],
+              // et immédiate, l'autre se prend sur un quota mensuel. Le geste
+              // gratuit est donc au-dessus de la liste, dans la bande, et
+              // celui qui se paie reste ici-bas.
               if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
                 const SizedBox(height: Space.sm),
                 FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.ghost, size: FloraButtonSize.small, onPressed: onSearchOnline),
