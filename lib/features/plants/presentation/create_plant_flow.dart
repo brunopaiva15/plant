@@ -63,7 +63,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   final _page = PageController();
 
   /// Le viseur de la première étape. Il ne tourne que là, et seulement tant
-  /// qu'aucune photo n'a été retenue.
+  /// qu'il reste une case libre : il ne s'éteint plus à la première photo,
+  /// c'est ce qui permet d'en prendre deux ou trois à la file.
   final _camera = InlineCameraController();
   int _step = 0;
   StoredPhoto? _photo;
@@ -456,9 +457,22 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   Widget _photoStep() {
     final l10n = context.l10n;
     final c = context.colors;
+    final taken = _identificationPaths.length;
+    final full = taken >= maxIdentificationPhotos;
     return _StepLayout(
-      title: l10n.stepPhotoTitle,
-      subtitle: l10n.stepPhotoSubtitle,
+      // L'en-tête suit l'état. Sans quoi l'écran redemande « Une photo ? »
+      // au-dessus d'une photo déjà prise, et personne ne comprend que le
+      // viseur attend la **suivante** — c'est la seule chose que cet écran
+      // ait à dire une fois le premier déclenchement passé.
+      //
+      // Les trois états empruntent des phrases qui existent déjà : le titre
+      // de la carte des deux photos (§ 6.7, réglages d'identification) dit
+      // le pourquoi, et son conseil dit quoi photographier. Rien de neuf à
+      // traduire, et le même vocabulaire d'un écran à l'autre.
+      title: taken == 0
+          ? l10n.stepPhotoTitle
+          : (full ? l10n.photosCount(taken) : l10n.irisTwoPhotosTitle),
+      subtitle: taken == 0 || full ? l10n.stepPhotoSubtitle : l10n.identifyAnotherPhotoHint,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -486,7 +500,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           // cases vides sur un écran qui n'en demande qu'une en réclameraient
           // trois ; après le premier déclenchement, elles disent seulement
           // qu'on peut continuer.
-          if (_identificationPaths.isNotEmpty) ...[
+          if (taken > 0) ...[
             const SizedBox(height: Space.md),
             IdentificationPhotoStrip(
               paths: _identificationPaths,
@@ -509,7 +523,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
               // Une photo de plus reste un geste offert, jamais réclamé :
               // « Continuer » est au-dessus, et c'est le chemin par défaut.
-              if (_identificationPaths.length < maxIdentificationPhotos) ...[
+              if (!full) ...[
                 const SizedBox(height: Space.xs),
                 FloraButton(
                   label: l10n.identifyAnotherPhoto,

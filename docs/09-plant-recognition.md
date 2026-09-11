@@ -1472,6 +1472,18 @@ si on veut — le cadre lui-même est le déclencheur —, puis « Continuer ».
 première est la photo de la plante ; les autres ne servent qu'à la
 reconnaître et s'effacent en partant.
 
+**L'en-tête suit l'état**, sans quoi l'écran redemande « Une photo ? » au
+sommet d'une photo déjà prise, et le viseur redevient illisible : personne ne
+comprend qu'il attend la *suivante*. Trois états, avec des phrases qui
+existaient déjà — rien de neuf à traduire, et le même vocabulaire d'un écran
+à l'autre :
+
+| photos | titre | sous-titre |
+|---|---|---|
+| aucune | « Une photo ? » | « Pour la reconnaître, et la retrouver dans votre liste. » |
+| une ou deux | « Deux photos valent mieux qu'une » (§ 6.7, la carte des réglages) | « Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière. » |
+| trois | « 3 photos » | le sous-titre d'origine — l'invitation est close |
+
 Le moteur ne reçoit plus rien tant qu'on est à l'étape photo : il reçoit
 **tout d'un coup** en arrivant à l'étape du nom. Une seule passe, avec les
 trois photos, plutôt qu'une réponse sur une photo suivie d'une correction —
