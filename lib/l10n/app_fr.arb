@@ -1587,6 +1587,22 @@
   "onbPrivacyBody": "Pas de compte obligatoire, pas de publicité.",
   "onbStart": "Commencer",
   "replayOnboarding": "Revoir la présentation",
+  "whatsNewTitle": "Nouveautés",
+  "whatsNewModelUpdate": "Mise à jour du modèle",
+  "whatsNewIrisIntro": "Le modèle embarqué a été réentraîné. Il connaît plus d'espèces, hésite moins, et travaille toujours sans réseau.",
+  "whatsNewIrisSpeciesTitle": "{count} espèces reconnues",
+  "@whatsNewIrisSpeciesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsNewIrisSpeciesBody": "Les plantes d'intérieur les plus rares entrent au catalogue, à côté de celles qu'Iris nommait déjà.",
+  "whatsNewIrisOfflineTitle": "Toujours sur l'appareil",
+  "whatsNewIrisOfflineBody": "La reconnaissance reste locale : rien ne part sans votre accord, et le repli en ligne se coupe d'un interrupteur.",
+  "whatsNewIrisDoubtTitle": "Il sait dire qu'il hésite",
+  "whatsNewIrisDoubtBody": "Quand deux espèces se ressemblent vraiment, Iris propose les deux plutôt que d'en choisir une au hasard.",
   "onbStepOf": "Étape {current} sur {total}",
   "@onbStepOf": {
     "placeholders": {

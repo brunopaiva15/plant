@@ -5874,6 +5874,60 @@ abstract class AppLocalizations {
   /// **'Revoir la présentation'**
   String get replayOnboarding;
 
+  /// No description provided for @whatsNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveautés'**
+  String get whatsNewTitle;
+
+  /// No description provided for @whatsNewModelUpdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour du modèle'**
+  String get whatsNewModelUpdate;
+
+  /// No description provided for @whatsNewIrisIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le modèle embarqué a été réentraîné. Il connaît plus d\'espèces, hésite moins, et travaille toujours sans réseau.'**
+  String get whatsNewIrisIntro;
+
+  /// No description provided for @whatsNewIrisSpeciesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} espèces reconnues'**
+  String whatsNewIrisSpeciesTitle(String count);
+
+  /// No description provided for @whatsNewIrisSpeciesBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les plantes d\'intérieur les plus rares entrent au catalogue, à côté de celles qu\'Iris nommait déjà.'**
+  String get whatsNewIrisSpeciesBody;
+
+  /// No description provided for @whatsNewIrisOfflineTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toujours sur l\'appareil'**
+  String get whatsNewIrisOfflineTitle;
+
+  /// No description provided for @whatsNewIrisOfflineBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La reconnaissance reste locale : rien ne part sans votre accord, et le repli en ligne se coupe d\'un interrupteur.'**
+  String get whatsNewIrisOfflineBody;
+
+  /// No description provided for @whatsNewIrisDoubtTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il sait dire qu\'il hésite'**
+  String get whatsNewIrisDoubtTitle;
+
+  /// No description provided for @whatsNewIrisDoubtBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand deux espèces se ressemblent vraiment, Iris propose les deux plutôt que d\'en choisir une au hasard.'**
+  String get whatsNewIrisDoubtBody;
+
   /// No description provided for @onbStepOf.
   ///
   /// In fr, this message translates to:

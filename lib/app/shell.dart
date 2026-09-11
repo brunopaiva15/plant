@@ -4,9 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../core/l10n/l10n.dart';
 import '../design_system/design_system.dart';
+import '../features/whats_new/presentation/whats_new_gate.dart';
 
 /// Coquille à 4 onglets avec barre flottante. Le contenu passe sous la barre
 /// (extendBody) pour le rendu translucide.
+///
+/// C'est aussi le point d'atterrissage de l'application : [WhatsNewGate] y
+/// guette une mise à jour et ouvre, le cas échéant, la fenêtre des
+/// nouveautés — une fois, au premier rendu.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.shell});
 
@@ -18,7 +23,7 @@ class AppShell extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.colors.canvas,
       extendBody: true,
-      body: shell,
+      body: WhatsNewGate(child: shell),
       bottomNavigationBar: FloraTabBar(
         index: shell.currentIndex,
         onSelect: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),

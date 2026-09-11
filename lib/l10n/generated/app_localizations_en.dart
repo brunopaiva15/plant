@@ -3434,6 +3434,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get replayOnboarding => 'Replay the intro';
 
   @override
+  String get whatsNewTitle => 'What\'s new';
+
+  @override
+  String get whatsNewModelUpdate => 'Model update';
+
+  @override
+  String get whatsNewIrisIntro =>
+      'The on-device model has been retrained. It knows more species, hesitates less, and still works with no network.';
+
+  @override
+  String whatsNewIrisSpeciesTitle(String count) {
+    return '$count species recognised';
+  }
+
+  @override
+  String get whatsNewIrisSpeciesBody =>
+      'The rarest houseplants join the catalogue, alongside the ones Iris could already name.';
+
+  @override
+  String get whatsNewIrisOfflineTitle => 'Still on your device';
+
+  @override
+  String get whatsNewIrisOfflineBody =>
+      'Recognition stays local: nothing leaves without your say-so, and the online fallback is one switch away.';
+
+  @override
+  String get whatsNewIrisDoubtTitle => 'It says when it is unsure';
+
+  @override
+  String get whatsNewIrisDoubtBody =>
+      'When two species really do look alike, Iris offers both rather than picking one at random.';
+
+  @override
   String onbStepOf(int current, int total) {
     return 'Step $current of $total';
   }

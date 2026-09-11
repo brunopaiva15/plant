@@ -3443,6 +3443,39 @@ class AppLocalizationsDe extends AppLocalizations {
   String get replayOnboarding => 'Einführung erneut ansehen';
 
   @override
+  String get whatsNewTitle => 'Neuerungen';
+
+  @override
+  String get whatsNewModelUpdate => 'Modell-Update';
+
+  @override
+  String get whatsNewIrisIntro =>
+      'Das Modell auf dem Gerät wurde neu trainiert. Es kennt mehr Arten, zögert seltener und arbeitet weiterhin ohne Netz.';
+
+  @override
+  String whatsNewIrisSpeciesTitle(String count) {
+    return '$count erkannte Arten';
+  }
+
+  @override
+  String get whatsNewIrisSpeciesBody =>
+      'Auch die seltensten Zimmerpflanzen sind jetzt im Katalog, neben denen, die Iris schon benennen konnte.';
+
+  @override
+  String get whatsNewIrisOfflineTitle => 'Weiterhin auf dem Gerät';
+
+  @override
+  String get whatsNewIrisOfflineBody =>
+      'Die Erkennung bleibt lokal: Ohne deine Zustimmung geht nichts raus, und der Online-Rückfall lässt sich abschalten.';
+
+  @override
+  String get whatsNewIrisDoubtTitle => 'Es sagt, wenn es unsicher ist';
+
+  @override
+  String get whatsNewIrisDoubtBody =>
+      'Wenn sich zwei Arten wirklich ähneln, schlägt Iris beide vor, statt eine zufällig zu wählen.';
+
+  @override
   String onbStepOf(int current, int total) {
     return 'Schritt $current von $total';
   }

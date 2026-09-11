@@ -12,6 +12,8 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
+import '../../whats_new/application/release_notes.dart';
+import '../../whats_new/presentation/whats_new_sheet.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -26,6 +28,9 @@ class ProfileScreen extends ConsumerWidget {
     final count = ref.watch(activePlantCountProvider).value ?? 0;
     final themeLabel = switch (prefs.themeMode) { ThemeMode.system => l10n.themeSystem, ThemeMode.light => l10n.themeLight, ThemeMode.dark => l10n.themeDark };
     final languageLabel = prefs.locale == null ? l10n.languageSystem : _languageName(prefs.locale!.languageCode);
+    // La dernière nouveauté livrée, relisible à volonté : elle ne s'ouvre
+    // d'elle-même qu'une fois, au lancement qui suit la mise à jour.
+    final latestNote = ref.watch(whatsNewProvider).latest(releaseNotes(l10n));
 
     Widget value(String text) => Text(text, style: context.text.callout);
 
@@ -145,6 +150,13 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: prefs.hasSupported ? l10n.supportAlready : l10n.supportFreeForever,
                     onTap: () => context.push(Routes.support),
                   ),
+                  if (latestNote != null)
+                    FloraListRow(
+                      leading: Icon(CupertinoIcons.sparkles, size: 20, color: c.terracotta),
+                      title: l10n.whatsNewTitle,
+                      subtitle: latestNote.title,
+                      onTap: () => showWhatsNew(context, latestNote),
+                    ),
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],

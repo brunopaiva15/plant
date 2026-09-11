@@ -46,6 +46,7 @@ lib/
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/
+│   ├── whats_new/                 catalogue des nouveautés, règle d'ouverture, fenêtre native
 │   └── profile/                   settings, appearance, notifications, action types, about
 └── l10n/
     ├── app_fr.arb (template) · app_en.arb · app_de.arb · app_it.arb

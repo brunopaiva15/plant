@@ -156,4 +156,19 @@ class PreferencesService {
 
   bool get notificationPromptShown => _prefs.getBool('notification_prompt_shown') ?? false;
   Future<void> setNotificationPromptShown() => _prefs.setBool('notification_prompt_shown', true);
+
+  // Nouveautés (« What's New »)
+
+  /// Version de l'application au dernier lancement.
+  ///
+  /// `null` tant qu'aucun lancement ne l'a écrite : installation neuve, ou
+  /// mise à jour depuis une version antérieure au mécanisme. Dans les deux
+  /// cas on ne sait pas d'où vient l'utilisateur, et `WhatsNew` se tait.
+  String? get lastRunVersion => _prefs.getString('last_run_version');
+  Future<void> setLastRunVersion(String value) => _prefs.setString('last_run_version', value);
+
+  /// Identifiants des nouveautés déjà présentées. La liste ne se vide pas :
+  /// elle pèse un identifiant par version livrée.
+  Set<String> get seenReleaseNotes => (_prefs.getStringList('seen_release_notes') ?? const <String>[]).toSet();
+  Future<void> setSeenReleaseNotes(Set<String> ids) => _prefs.setStringList('seen_release_notes', ids.toList());
 }
