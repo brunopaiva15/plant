@@ -9,6 +9,7 @@ import 'package:flora/data/repositories/plant_repository_impl.dart';
 import 'package:flora/data/repositories/photo_repository_impl.dart';
 import 'package:flora/data/sync/sync_service.dart';
 import 'package:flora/domain/models/models.dart';
+import 'package:flora/domain/repositories/repositories.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'sync_service_test.dart' show FakeRemote;
