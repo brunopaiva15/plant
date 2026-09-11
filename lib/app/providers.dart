@@ -38,6 +38,7 @@ import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
 import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
+import '../data/services/photo_maintenance.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
@@ -117,6 +118,7 @@ final activeGardenProvider = NotifierProvider<ActiveGarden, String>(ActiveGarden
 final gardenIdProvider = Provider<String>((ref) => ref.watch(activeGardenProvider));
 
 final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorageService());
+final photoMaintenanceProvider = Provider<PhotoMaintenance>((ref) => PhotoMaintenance(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
 final crashReporterProvider = Provider<CrashReporter>((ref) => const NoopCrashReporter());
 

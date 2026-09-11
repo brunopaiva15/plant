@@ -405,6 +405,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             thumbPath: _photo!.thumbPath,
             width: _photo!.width,
             height: _photo!.height,
+            takenAt: _photo!.takenAt,
           );
       await ref.read(actionRepositoryProvider).log(NewAction(plantId: plant.id, typeKey: CareKind.photo.key, photoId: photo.id));
     }

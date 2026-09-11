@@ -116,6 +116,10 @@ class CareActions {
             thumbPath: stored.thumbPath,
             width: stored.width,
             height: stored.height,
+            // Une photo choisie dans la galerie garde sa date de prise de
+            // vue : sans elle, deux ans d'archives se rangeaient tous
+            // aujourd'hui, et le timelapse racontait n'importe quoi.
+            takenAt: stored.takenAt,
           );
       await _actions.log(NewAction(plantId: plantId, typeKey: CareKind.photo.key, photoId: photo.id));
       Haptics.success();
