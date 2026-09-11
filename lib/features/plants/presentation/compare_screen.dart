@@ -62,10 +62,10 @@ class _CompareScreenState extends State<CompareScreen> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        PlantImage(relativePath: _after.filePath, cacheWidth: 1200),
+                        PlantImage(relativePath: _after.filePath, remoteUrl: _after.remoteUrl, cacheWidth: 1200),
                         ClipRect(
                           clipper: _LeftClipper(_split),
-                          child: PlantImage(relativePath: _before.filePath, cacheWidth: 1200),
+                          child: PlantImage(relativePath: _before.filePath, remoteUrl: _before.remoteUrl, cacheWidth: 1200),
                         ),
                         Positioned(
                           left: constraints.maxWidth * _split - 1,

@@ -62,7 +62,7 @@ class _TimelapseScreenState extends State<TimelapseScreen> {
           children: [
             AnimatedSwitcher(
               duration: Motion.of(context, Motion.slow),
-              child: PlantImage(key: ValueKey(photo.id), relativePath: photo.filePath, fit: BoxFit.contain, cacheWidth: 1400),
+              child: PlantImage(key: ValueKey(photo.id), relativePath: photo.filePath, remoteUrl: photo.remoteUrl, fit: BoxFit.contain, cacheWidth: 1400),
             ),
             SafeArea(
               child: Column(

@@ -23,6 +23,26 @@
 | plant_actions, plant_photos, measurements, tags, plant_tags | append-only : `insert or ignore`, suppression logique par `deleted_at` |
 | photos (fichiers) | immuables, nommées par UUID : jamais de conflit |
 
+## Les fichiers des photos
+La ligne et l'image voyagent séparément, et l'image coûte mille fois plus cher.
+- **Téléversement seulement quand l'image change.** Une écriture qui ne touche
+  qu'aux métadonnées le dit dans son payload d'outbox (`{"files": false}`) :
+  renommer une photo pousse la ligne sans renvoyer l'original.
+- **`storage_path` / `thumb_path` appartiennent au serveur.** Les colonnes
+  locales du même nom désignent des fichiers de l'appareil : elles ne sont
+  jamais poussées. Un push qui ne téléverse rien omet ces colonnes, et
+  PostgREST laisse alors au serveur les siennes.
+- **Téléchargement hors transaction.** Les fichiers d'un lot descendent avant
+  que la transaction SQLite ne s'ouvre, et un échec ne fait échouer ni la
+  ligne, ni les tables suivantes.
+- **Rattrapage** (`SyncService.repairPhotoFiles`, au plus une fois par dizaine
+  de minutes) : les photos dont le fichier manque sur l'appareil sont
+  redemandées, au chemin que dit le serveur. Le repérage se fait sur le
+  disque : quand rien ne manque, il ne coûte pas un octet de réseau.
+- **Suppression** : les objets du bucket partent avec la photo (suppression
+  logique) ou avec la plante (suppression définitive, dont le payload de
+  l'outbox porte le chemin puisque la ligne, elle, n'existe plus).
+
 ## Auth
 `AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (e-mail + code à 6 chiffres, Apple natif sur iOS, Google via OAuth). À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
 

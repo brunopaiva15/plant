@@ -98,7 +98,9 @@ class DriftPhotoRepository implements PhotoRepository {
   @override
   Future<void> setLabel(String photoId, String? label) async {
     await (_db.update(_db.plantPhotos)..where((p) => p.id.equals(photoId))).write(PlantPhotosCompanion(label: Value(_clean(label))));
-    await _db.enqueueSync('plant_photos', photoId, 'upsert', {});
+    // `files: false` : la synchronisation pousse la ligne sans renvoyer
+    // l'image. Un titre de douze caractères ne vaut pas un original.
+    await _db.enqueueSync('plant_photos', photoId, 'upsert', {'files': false});
   }
 
   static String? _clean(String? s) {
@@ -134,8 +136,9 @@ class DriftPhotoRepository implements PhotoRepository {
       }
       await (_db.update(_db.plantActions)..where((a) => a.photoId.equals(photoId)))
           .write(PlantActionsCompanion(deletedAt: Value(now)));
-      // Suppression logique : la ligne reste, avec deleted_at, pour les autres appareils.
-      await _db.enqueueSync('plant_photos', photoId, 'upsert', {});
+      // Suppression logique : la ligne reste, avec deleted_at, pour les autres
+      // appareils. Les fichiers, eux, quittent le bucket à la poussée.
+      await _db.enqueueSync('plant_photos', photoId, 'upsert', {'files': false});
     });
   }
 }

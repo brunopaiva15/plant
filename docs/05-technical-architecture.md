@@ -43,8 +43,19 @@ Règle : les widgets ne connaissent ni drift ni la plateforme ; ils consomment d
 - Jours silencieux respectés. Permission demandée **en contexte** (après la première action), jamais au lancement.
 
 ## Photos
-- Original recompressé (max 2048 px, JPEG q85) + miniature 400 px, dans `ApplicationDocuments/photos/`.
+- Original recompressé (max 2048 px, JPEG q85) + miniature 480 px, dans `ApplicationDocuments/photos/`.
 - HEIC converti par le picker natif. Chargement `Image.file` avec `cacheWidth` pour les grilles.
+- **Date de prise de vue** : lue dans l'EXIF (`DateTimeOriginal`) pour les photos
+  choisies dans la galerie, qui peuvent dater d'il y a deux ans ; à défaut,
+  l'heure courante. C'est elle qui range la galerie par mois et ordonne le
+  timelapse.
+- **Coordonnées GPS effacées** à l'import : l'encodeur JPEG réécrit l'EXIF tel
+  quel, et la photo part ensuite dans l'export, la synchronisation et le
+  partage par lien.
+- **Ménage au lancement** (`PhotoMaintenance`) : les fichiers que plus aucune
+  ligne ne réclame — plante supprimée définitivement, photo effacée sur un
+  autre appareil — s'en vont. Les fichiers de moins de douze heures sont
+  épargnés : pendant une création, la photo existe avant sa ligne.
 
 ## Performance
 - Listes en `Sliver*` / `GridView.builder` (virtualisées), `RepaintBoundary` sur les cartes.

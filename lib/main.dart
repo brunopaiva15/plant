@@ -94,6 +94,9 @@ Future<void> main() async {
   };
   // Les rappels sont recalculés à chaque lancement (dates et réglages ont pu changer).
   container.read(reminderSchedulerProvider).reschedule();
+  // Ménage des fichiers photo orphelins, en tâche de fond : personne ne
+  // l'attend, et un échec ne doit pas retarder l'ouverture de l'application.
+  container.read(photoMaintenanceProvider).run().catchError((Object _) => 0);
   // Démarre la synchronisation si un compte est connecté (no-op sinon).
   container.listen(syncCoordinatorProvider, (_, _) {});
 
