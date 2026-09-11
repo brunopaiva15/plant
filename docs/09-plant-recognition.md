@@ -2448,3 +2448,93 @@ Les deux lectures répondent à la réserve n° 1 : si le réseau gelé sépare 
 que le nôtre non, c'est le réglage fin qui a effacé le signal, et l'étage
 cultivar doit partir d'ailleurs.
 
+## 13. Cadrage de l'Iris 9 : nourrir, pas grossir
+
+> **Cet ordre est provisoire.** Il sera révisé quand l'Iris 8 sera entraînée
+> et qu'on saura ce que la largeur a **réellement** coûté : le § 12.12
+> mesure dix points pour 1 457 classes, le chiffre à 5 000 n'existe pas
+> encore, et c'est lui qui décidera si le point 2 ci-dessous passe devant
+> tout le reste.
+
+### 13.1 Ce que toutes les mesures de la semaine disent ensemble
+
+Prises une par une, elles ressemblent à des constats sans lien. Mises
+côte à côte, elles disent la même chose :
+
+| | |
+|---|---|
+| 73 % des erreurs franchissent la **famille** botanique (§ 12.4) | ce ne sont pas des confusions entre voisines |
+| **5 espèces sur 1 422** ne sont jamais reconnues ; 76 sont sous 25 % | les classes sont apprises, les photos ratent |
+| **67,3 %** sur les plantes d'appartement contre 58,9 % ailleurs (§ 12.12) | le modèle est bon là où la v4 avait recollecté en pot |
+| Asparagaceae ↔ Poaceae, 39 erreurs (§ 12.4) | le yucca pris pour du maïs, toujours là en v7 |
+
+**Le modèle ne manque pas d'espèces, il manque de photos ordinaires.**
+L'échec est par photo, pas par espèce, et le seul endroit où il est bon est
+précisément celui où on lui avait donné des photos du bon genre.
+
+L'Iris 8 est une version de **largeur** : 1 457 → ~5 000 classes. L'Iris 9
+doit être une version de **profondeur** — le même catalogue, mieux nourri.
+Et comme la largeur coûte dix points à celui qui photographie son salon, son
+premier travail sera peut-être d'en rendre une partie.
+
+### 13.2 Les quatre chantiers, par rapport mesuré
+
+**1. Répondre au niveau du genre** (§ 12.15). Aucun entraînement : sommer le
+softmax par genre porte le top-1 de 59,0 % à **au moins 64,3 %**, et « un
+épicéa, espèce incertaine » est une réponse vraie là où cinq noms n'en sont
+pas une. À 5 000 classes, davantage d'espèces par genre : le gain augmente
+avec le catalogue, contrairement au top-1.
+
+**2. Restreindre les candidats au contexte** (§ 12.12). **Dix points**, un
+masque sur les sorties, aucune collecte. Contrepartie réelle : rendre
+*impossible* la bonne réponse pour qui photographie un érable dans la rue —
+c'est le garde-fou de la classe « autre », prévu au § 3.2 et jamais fait. À
+mesurer sur les 3 606 images avant d'écrire une ligne.
+
+**3. Les photos des utilisateurs.** La seule source qui règle **les deux**
+problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
+identification confirmée est une photo étiquetée, dans le bon domaine, de la
+plante que quelqu'un possède vraiment. Aucun jeu public n'a ça et aucun n'en
+aura : iNaturalist ne modélise pas les cultivars (§ 12.16), Commons en a
+deux photos par cultivar en médiane sur son genre le mieux fourni.
+
+C'est aussi **le seul chantier dont le délai se compte en mois**, d'où sa
+place : il faut le commencer avant d'en avoir besoin. Il demande du
+consentement explicite, une tuyauterie, et du soin sur la vie privée — une
+photo de salon n'est pas une observation naturaliste. Il commence par
+**poser la question dans l'application**, pas par entraîner.
+
+**4. Les 76 espèces faibles** (§ 12.4), avec le domaine en tête et non le
+volume : `(potted)` de Commons, tout juste branché (§ 12.17), et
+`captive=true` d'iNaturalist qu'on n'utilise qu'à 50 % de la cible. Pour les
+espèces que les gens possèdent réellement, cette proportion devrait être
+inversée.
+
+### 13.3 La branche cultivars, et la porte qui la commande
+
+Le § 12.18 tient à une hypothèse non vérifiée : **l'embedding sépare-t-il
+deux cultivars d'une même espèce, ou l'a-t-on entraîné à les confondre ?**
+Chaque photo de « Thai Constellation » de notre jeu est étiquetée *Monstera
+deliciosa* — les cent couches dégelées ont appris à les rapprocher.
+
+`prototypes.py` tranche en deux heures, avec les quelques *Hosta* qui ont 5
+à 14 photos sur Commons. Et le résultat oriente deux routes très
+différentes :
+
+- **signal présent** → c'est un problème de **récolte**, et les sources
+  existent (Commons par les légendes plutôt que par les catégories, NC State
+  et ses blocs image-légende-auteur-licence, Flickr par cultivar nommé) ;
+- **signal absent** → c'est une décision d'**entraînement** de l'Iris 9 —
+  une perte contrastive pendant le réglage fin — et aucune récolte n'a de
+  sens avant.
+
+**Ne pas construire le moissonneur avant d'avoir passé cette porte.** Deux
+heures peuvent en économiser cinquante.
+
+### 13.4 Ce qu'il faut retenir
+
+Deux des quatre chantiers ne demandent **aucun entraînement**, et le
+troisième ne demande aucune collecte extérieure. L'Iris 9 n'est pas un
+modèle plus gros : c'est un modèle mieux nourri, et pour l'essentiel une
+application qui sait quoi faire de ce qu'il rend.
+
