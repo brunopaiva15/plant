@@ -1921,10 +1921,16 @@ Fusionnées au jeu de l'Iris 7 :
 | | |
 |---|---|
 | espèces du catalogue ayant des images | **5 646 / 5 778 — 97,7 %** |
-| qui passent `--min-train 25` et ont une validation | **5 371 / 5 646 — 95,1 %** |
+| qui passent `--min-train 25` | **5 371 / 5 646 — 95,1 %** |
+| qui passent **aussi** `--min-val 3` | **5 259 / 5 646 — 93,1 %** |
 | images gardées | 991 926 sur 1 014 678 (4 596 doublons exacts) |
 | par classe | 185 (199 pour l'Iris 7) |
-| **classes de l'Iris 8** | **5 371**, soit 3,7× l'Iris 7 |
+| **classes de l'Iris 8** | **5 259**, soit 3,6× l'Iris 7 |
+
+Les 112 espèces qui tombent entre les deux seuils ne manquaient pas
+d'images — c'est la réparation du découpage qui leur en donnait trop peu à
+valider. Diagnostic et correctif au § 12.19 ; il prend effet à la prochaine
+construction du jeu, pas sur l'Iris 8.
 
 **L'échantillon de 35 espèces annonçait 84 % ; la réalité est à 95 %.** Ce
 n'est pas une erreur de l'échantillon, c'est sa limite, écrite dans sa
@@ -2472,6 +2478,58 @@ python3 prototypes.py --mesurer --poids .cache/ckpt/fine.weights.h5   # notre r�
 Les deux lectures répondent à la réserve n° 1 : si le réseau gelé sépare et
 que le nôtre non, c'est le réglage fin qui a effacé le signal, et l'étage
 cultivar doit partir d'ailleurs.
+
+### 12.19 ✅ 112 espèces écartées pour une image de validation
+
+Le compte des classes d'Iris 8 ne tombait pas juste : la finalisation
+annonçait 5 371 classes, `train.py` en a déclaré **5 259**. L'entonnoir, lu
+sur `splits.csv` :
+
+| | classes | perdues |
+|---|---|---|
+| espèces dans `splits.csv` | 5 628 | |
+| `train ≥ 25` | 5 371 | −257, trop peu d'images |
+| `train ≥ 25` **et** `val ≥ 3` | **5 259** | −112, pas de quoi valider |
+
+Ces 112 ne sont pas des classes fragiles : **47 images d'entraînement en
+médiane, jusqu'à 193** — *Sinapis alba*, *Hylotelephium telephium*. 6 356
+images d'entraînement partent avec elles. Et aucune n'avait une validation
+vide : toutes en avaient **une ou deux**.
+
+**C'est la réparation elle-même qui les a mises là.**
+`repair_species_coverage` donnait bien un groupe de validation aux espèces
+qui n'en avaient aucun — d'où les zéros absents — mais elle prenait **le plus
+petit groupe d'entraînement**. L'intention était bonne (perdre le moins
+possible d'entraînement) ; l'effet ne l'était pas : le plus petit groupe fait
+souvent une ou deux photos, et `train.py` en exige trois.
+
+**Les deux moitiés du système ne visaient pas la même cible.** La réparation
+visait « au moins un groupe », `train.py` exige « au moins `--min-val`
+images ». Une espèce réparée avec un groupe de deux photos était réparée sur
+le papier et écartée en pratique. Et la réparation ne se déclenchait que si
+la validation était *absente* : une espèce à qui le hachage avait
+naturellement donné deux photos n'était jamais touchée.
+
+Corrigé dans `plant_dataset/splits.py`, qui nomme désormais les deux seuils
+(`MIN_TRAIN`, `MIN_VAL`) et les vise :
+
+- on répare aussi une validation **présente mais sous le seuil** ;
+- on choisit le plan qui **sort le moins d'images de l'entraînement** — le
+  plus petit groupe qui comble à lui seul, ou les plus petits accumulés,
+  selon lequel coûte le moins ;
+- un plan qui ferait passer l'entraînement sous `--min-train` est **abandonné
+  entier** : la classe serait écartée quand même, et on aurait perdu les
+  images pour rien.
+
+**Le correctif ne peut pas fausser une comparaison entre versions** : une
+espèce qui satisfait déjà les deux seuils n'est jamais touchée, donc seules
+des classes absentes du modèle précédent changent de découpage. C'est la
+propriété que vérifie
+`test_repair_leaves_alone_a_species_that_already_meets_the_thresholds`.
+
+Trouvé pendant l'entraînement de la v8, donc **trop tard pour elle** :
+changer la liste des classes invalide l'empreinte du cache de traits et
+relancerait l'encodage. Ça prend effet à la prochaine construction du jeu.
 
 ## 13. Cadrage de l'Iris 9 : nourrir, pas grossir
 
