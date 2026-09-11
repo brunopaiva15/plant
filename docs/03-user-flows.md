@@ -109,8 +109,9 @@ Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir u
    des nouveautés jamais vues — une seule, même si deux versions ont été
    sautées.
 3. La fenêtre s'ouvre (sheet native iOS / dialogue plein écran Android), se
-   ferme par « Continuer », par la croix, ou d'un glissement vers le bas sur
-   iOS. Un lien discret peut mener au réglage concerné, ouvert après fermeture.
+   ferme par « Continuer », par la croix, ou — sur iOS, une fois la page
+   revenue en haut — d'un glissement vers le bas. Un lien discret peut mener au
+   réglage concerné, ouvert après fermeture.
 4. Elle est marquée comme vue **avant** d'être affichée : une application tuée
    en cours de lecture ne la rouvre pas au lancement suivant.
 5. Elle reste relisible à volonté : Profil → Nouveautés.

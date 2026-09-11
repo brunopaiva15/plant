@@ -46,6 +46,10 @@ Future<T?> showFloraSheet<T>(
 
 /// Sheet plein écran pour un flow (création de plante) : sur iOS, la sheet
 /// native qui repousse l'écran précédent ; sur Android, un dialogue plein écran.
+///
+/// Pour un contenu qui défile d'un seul tenant, prendre
+/// [showFloraScrollableFlow] : cette version-ci laisse tomber le
+/// `ScrollController` de la sheet, et le contenu ne défilerait pas.
 Future<T?> showFloraFlow<T>(BuildContext context, {required WidgetBuilder builder}) {
   Haptics.light();
   if (isCupertino(context)) {
@@ -57,6 +61,40 @@ Future<T?> showFloraFlow<T>(BuildContext context, {required WidgetBuilder builde
   }
   return Navigator.of(context, rootNavigator: true).push<T>(
     MaterialPageRoute(fullscreenDialog: true, builder: builder),
+  );
+}
+
+/// [showFloraFlow] pour un contenu qui défile sur toute sa hauteur.
+///
+/// La sheet d'iOS pose un `Listener` translucide **par-dessus tout son
+/// contenu**, qui arme un `VerticalDragGestureRecognizer` à chaque doigt posé :
+/// c'est son glissement de fermeture. Une vue défilante ordinaire lui dispute
+/// donc chaque geste vertical dans l'arène, et c'est la sheet qui gagne — elle
+/// descend, le contenu ne bouge pas d'un pixel.
+///
+/// Le `ScrollController` qu'elle fournit est ce qui les réconcilie : il donne
+/// à la vue une `_CupertinoSheetScrollPosition` qui arbitre les deux. Tant que
+/// la liste n'est pas en haut, le geste la fait défiler ; une fois en haut, il
+/// referme la sheet. C'est le comportement d'une sheet iOS native, et il n'y a
+/// pas moyen de l'obtenir autrement.
+///
+/// Le contrôleur ne vaut que pour **une** vue défilante : un flow à plusieurs
+/// pages qui défilent chacune de leur côté ne peut pas s'en servir (un même
+/// contrôleur ne s'attache qu'à une vue à la fois) — c'est pourquoi
+/// [showFloraFlow] existe toujours à côté.
+///
+/// Sur Android il n'y a pas de sheet : le contrôleur vaut `null` et la vue
+/// défilante garde le sien.
+Future<T?> showFloraScrollableFlow<T>(
+  BuildContext context, {
+  required Widget Function(BuildContext context, ScrollController? controller) builder,
+}) {
+  Haptics.light();
+  if (isCupertino(context)) {
+    return showCupertinoSheet<T>(context: context, useNestedNavigation: true, scrollableBuilder: builder);
+  }
+  return Navigator.of(context, rootNavigator: true).push<T>(
+    MaterialPageRoute(fullscreenDialog: true, builder: (ctx) => builder(ctx, null)),
   );
 }
 

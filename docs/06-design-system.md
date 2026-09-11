@@ -186,8 +186,15 @@ s'éteint dans le fond de la page, la marque posée au centre sur une médaille
 d'argile qui respire, un titre en Shantell, trois points forts, et un bouton
 qui reste sous les yeux pendant que la page défile.
 
-- **Présentation native, dessin commun.** `showFloraFlow` : la sheet empilée
-  d'iOS d'un côté, le dialogue plein écran de Material 3 de l'autre.
+- **Présentation native, dessin commun.** `showFloraScrollableFlow` : la sheet
+  empilée d'iOS d'un côté, le dialogue plein écran de Material 3 de l'autre.
+- **Le contenu défile parce qu'il emprunte le `ScrollController` de la sheet.**
+  La sheet d'iOS arme un `VerticalDragGestureRecognizer` par-dessus tout son
+  contenu ; sans ce contrôleur, elle remporte chaque geste vertical et la page
+  reste figée pendant que la sheet descend. Avec lui, la liste défile tant
+  qu'elle n'est pas en haut, et referme la sheet une fois en haut. Un flow à
+  plusieurs pages défilantes ne peut pas s'en servir — d'où `showFloraFlow`,
+  qui reste à côté.
 - **La médaille est `surface`, pas la teinte** du bandeau : la marque d'Iris a
   ses couleurs figées, garanties lisibles sur les quatre fonds de carte et
   sur rien d'autre.

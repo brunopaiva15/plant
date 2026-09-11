@@ -10,26 +10,36 @@ import '../application/release_notes.dart';
 
 /// La fenêtre des nouveautés.
 ///
-/// Présentée par [showFloraFlow], donc native des deux côtés : sur iOS la
-/// sheet empilée d'iOS 18, qui repousse l'écran en arrière-plan et se ferme
-/// d'un glissement vers le bas ; sur Android le dialogue plein écran de
-/// Material 3, qui est le pendant documenté d'un contenu modal aussi long.
+/// Présentée par [showFloraScrollableFlow], donc native des deux côtés : sur
+/// iOS la sheet empilée d'iOS 18, qui repousse l'écran en arrière-plan et se
+/// ferme d'un glissement vers le bas une fois la page revenue en haut ; sur
+/// Android le dialogue plein écran de Material 3, qui est le pendant
+/// documenté d'un contenu modal aussi long.
 /// Le dessin, lui, est le même des deux côtés — c'est la règle de la maison :
 /// conventions de la plateforme, identité commune.
 ///
 /// Elle rend la route du lien « en savoir plus » si l'utilisateur l'a suivi,
 /// pour que l'appelant l'ouvre une fois la fenêtre refermée.
 Future<void> showWhatsNew(BuildContext context, ReleaseNote note) async {
-  final route = await showFloraFlow<String>(context, builder: (ctx) => WhatsNewView(note: note));
+  final route = await showFloraScrollableFlow<String>(
+    context,
+    builder: (ctx, controller) => WhatsNewView(note: note, controller: controller),
+  );
   if (route != null && context.mounted) context.push(route);
 }
 
 /// Le contenu de la fenêtre : un héros, un titre, trois points forts, et le
 /// bouton qui referme.
 class WhatsNewView extends StatelessWidget {
-  const WhatsNewView({super.key, required this.note});
+  const WhatsNewView({super.key, required this.note, this.controller});
 
   final ReleaseNote note;
+
+  /// Le contrôleur que la sheet d'iOS prête à son contenu. Sans lui, elle
+  /// remporte tous les gestes verticaux et la page ne défile pas —
+  /// [showFloraScrollableFlow] raconte pourquoi. `null` sur Android, où la vue
+  /// défilante garde le sien.
+  final ScrollController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +58,7 @@ class WhatsNewView extends StatelessWidget {
               children: [
                 Positioned.fill(
                   child: SingleChildScrollView(
+                    controller: controller,
                     physics: floraScrollPhysics,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

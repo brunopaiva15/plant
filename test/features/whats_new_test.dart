@@ -33,14 +33,9 @@ ReleaseNote _note(String id) => ReleaseNote(
 
 final _notes = [_note('a'), _note('b'), _note('c')];
 
-Future<void> _pumpWindow(WidgetTester tester, {double scale = 1}) async {
-  // Un téléphone, pas le carré de 800 par 600 du banc d'essai : c'est la
-  // largeur qui décide du nombre de lignes des boutons du pied.
-  tester.view.physicalSize = const Size(1170, 2532);
-  tester.view.devicePixelRatio = 3;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    MaterialApp(
+/// L'application d'essai : un téléphone, le français, et pas d'animation —
+/// la médaille du héros respire sans fin, rien ne se stabiliserait jamais.
+Widget _app(Widget home, {double scale = 1}) => MaterialApp(
       locale: const Locale('fr'),
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -50,15 +45,20 @@ Future<void> _pumpWindow(WidgetTester tester, {double scale = 1}) async {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       theme: buildFloraTheme(Brightness.light),
-      // La médaille respire sans fin : sans « réduire les animations », rien
-      // ne se stabiliserait jamais et `pumpAndSettle` tournerait en rond.
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale), disableAnimations: true),
         child: child!,
       ),
-      home: const Scaffold(key: Key('host'), body: SizedBox.expand()),
-    ),
-  );
+      home: home,
+    );
+
+Future<void> _pumpWindow(WidgetTester tester, {double scale = 1}) async {
+  // Un téléphone, pas le carré de 800 par 600 du banc d'essai : c'est la
+  // largeur qui décide du nombre de lignes des boutons du pied.
+  tester.view.physicalSize = const Size(1170, 2532);
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(_app(const Scaffold(key: Key('host'), body: SizedBox.expand()), scale: scale));
   final context = tester.element(find.byKey(const Key('host')));
   final note = releaseNotes(AppLocalizations.of(context)).last;
   unawaited(showWhatsNew(context, note));
@@ -147,6 +147,17 @@ void main() {
       await tester.tap(find.bySemanticsLabel('Fermer'));
       await tester.pumpAndSettle();
       expect(find.byType(WhatsNewView), findsNothing);
+    });
+
+    testWidgets('la page emprunte le contrôleur que la sheet lui prête', (tester) async {
+      // Sans lui, la sheet d'iOS arme son propre reconnaisseur de glissement
+      // par-dessus le contenu, remporte chaque geste vertical, et la page reste
+      // figée pendant que la sheet descend — c'est ce qu'on a vu sur l'appareil.
+      final controller = ScrollController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(_app(WhatsNewView(note: _note('x'), controller: controller)));
+      await tester.pump();
+      expect(tester.widget<SingleChildScrollView>(find.byType(SingleChildScrollView)).controller, same(controller));
     });
 
     for (final scale in [0.82, 1.0, 2.0, 3.5]) {
