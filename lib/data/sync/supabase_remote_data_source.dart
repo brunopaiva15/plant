@@ -73,6 +73,12 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   }
 
   @override
+  Future<void> removeFiles(List<String> paths) async {
+    if (paths.isEmpty) return;
+    await _client.storage.from(SupabaseConfig.photoBucket).remove(paths);
+  }
+
+  @override
   Stream<RemoteChange> watchChanges(String gardenId) {
     late StreamController<RemoteChange> controller;
     RealtimeChannel? channel;

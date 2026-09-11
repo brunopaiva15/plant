@@ -28,6 +28,11 @@ abstract class RemoteDataSource {
   /// Télécharge une photo distante dans [target].
   Future<void> downloadFile(String storagePath, File target);
 
+  /// Efface des fichiers du stockage distant ; les chemins inconnus sont
+  /// ignorés. Sans elle, une photo supprimée laissait son image sur le
+  /// serveur pour toujours.
+  Future<void> removeFiles(List<String> paths);
+
   /// Changements en temps réel sur le jardin (peut être vide si non supporté).
   Stream<RemoteChange> watchChanges(String gardenId);
 }

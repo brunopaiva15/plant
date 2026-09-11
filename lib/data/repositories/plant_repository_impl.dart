@@ -292,11 +292,19 @@ class DriftPlantRepository implements PlantRepository {
   @override
   Future<void> deleteForever(String id) async {
     await _db.transaction(() async {
+      // Les photos s'en vont avec la plante : sans cette liste, leurs
+      // fichiers resteraient dans le bucket sans plus aucune ligne pour les
+      // réclamer. Le chemin distant se reconstruit depuis ce payload — la
+      // ligne, elle, ne sera plus là pour le dire (voir `sync_service`).
+      final photos = await (_db.select(_db.plantPhotos)..where((p) => p.plantId.equals(id))).get();
       await (_db.delete(_db.careSchedules)..where((s) => s.plantId.equals(id))).go();
       await (_db.delete(_db.plantActions)..where((a) => a.plantId.equals(id))).go();
       await (_db.delete(_db.plantPhotos)..where((p) => p.plantId.equals(id))).go();
       await (_db.delete(_db.plantTags)..where((p) => p.plantId.equals(id))).go();
       await (_db.delete(_db.plants)..where((p) => p.id.equals(id))).go();
+      for (final photo in photos) {
+        await _db.enqueueSync('plant_photos', photo.id, 'delete', {'plant_id': id, 'garden_id': _gardenId});
+      }
       await _db.enqueueSync('plants', id, 'delete', {});
     });
   }
