@@ -16,6 +16,7 @@ import '../../../domain/identification/identification_confidence.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../domain/species/species_info.dart';
+import '../../plants/presentation/inline_camera.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
 
@@ -54,6 +55,24 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   final _extra = <StoredPhoto>[];
   bool _picking = false;
 
+  /// Le viseur, ouvert **dans la feuille** pour enchaîner les photos.
+  ///
+  /// La feuille d'action puis l'appareil du système, c'était trois gestes et
+  /// deux changements d'écran par photo : on ne prend pas « plusieurs photos
+  /// à la suite » à ce prix-là. Ici l'aperçu reste entre deux déclenchements
+  /// et chaque cliché tombe dans la bande, sous les yeux.
+  final _camera = InlineCameraController();
+  bool _shooting = false;
+
+  /// La dernière réponse complète.
+  ///
+  /// Une photo de plus relance l'identification, et le `FutureBuilder`
+  /// repasserait par son attente : tout le corps de la feuille — viseur
+  /// compris — disparaîtrait une seconde à chaque déclenchement. La liste
+  /// précédente reste donc à l'écran pendant la relance ; seul le tout
+  /// premier calcul, celui qui n'a rien à montrer, a droit au tourniquet.
+  List<IdentificationCandidate>? _last;
+
   /// Au-delà, une photo de plus n'apporte plus grand-chose et la recherche
   /// en ligne est le meilleur recours.
   static const int maxPhotos = 3;
@@ -66,6 +85,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
 
   @override
   void dispose() {
+    _camera.dispose();
     // Ces photos ne servaient qu'à identifier : elles ne sont la photo
     // d'aucune plante et n'ont rien à faire sur l'appareil après coup.
     final storage = ref.read(photoStorageProvider);
@@ -81,7 +101,15 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   List<File> get _files => [for (final p in _paths) File(p)];
 
   Future<List<IdentificationCandidate>> _identify() =>
-      ref.read(plantIdentifierProvider).identify(_files, language: _language);
+      _remember(ref.read(plantIdentifierProvider).identify(_files, language: _language));
+
+  /// Retient la réponse pour que la relance suivante ait quelque chose à
+  /// montrer pendant qu'elle calcule.
+  Future<List<IdentificationCandidate>> _remember(Future<List<IdentificationCandidate>> pending) async {
+    final results = await pending;
+    if (mounted) _last = results;
+    return results;
+  }
 
   /// Relance la recherche, cette fois en ligne, parce qu'aucune proposition
   /// de l'appareil ne convenait. L'appel se fait sur ce geste et pas avant :
@@ -90,7 +118,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   Future<void> _searchOnline() async {
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is! CascadeIdentifier) return;
-    setState(() => _future = identifier.identifyRemotely(_files, language: _language));
+    setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language)));
   }
 
   /// Faut-il proposer une photo de plus, et sur quel ton ? C'est la
@@ -111,17 +139,84 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null) return;
-      final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
-      if (!mounted) return;
-      setState(() {
-        _extra.add(stored);
-        _paths.add(path);
-        _future = _identify();
-      });
+      await _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'identification.addPhoto');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
     } finally {
+      if (mounted) setState(() => _picking = false);
+    }
+  }
+
+  /// Range une photo de plus dans la bande et relance l'identification.
+  Future<void> _accept(StoredPhoto stored) async {
+    final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
+    if (!mounted) return;
+    final full = _paths.length + 1 >= maxPhotos;
+    setState(() {
+      _extra.add(stored);
+      _paths.add(path);
+      _future = _identify();
+      if (full) _shooting = false;
+    });
+    // La bande est pleine : la caméra n'a plus rien à prendre, et rien à
+    // faire allumée devant une liste de candidats.
+    if (full) await _camera.stop();
+  }
+
+  /// Ouvre le viseur dans la feuille, plutôt que l'appareil du système.
+  ///
+  /// Sans viseur possible — pas un téléphone, permission refusée, appareil
+  /// sans caméra —, l'ancien chemin reprend la main : la feuille d'action,
+  /// puis l'appareil du système.
+  Future<void> _openViewfinder() async {
+    if (!InlineCameraController.isSupported) {
+      _chooseSource();
+      return;
+    }
+    setState(() => _shooting = true);
+    await _camera.start();
+    if (!mounted) return;
+    if (_camera.status == InlineCameraStatus.unavailable) {
+      setState(() => _shooting = false);
+      _chooseSource();
+    }
+  }
+
+  void _closeViewfinder() {
+    setState(() => _shooting = false);
+    _camera.stop();
+  }
+
+  /// Déclenche, range la photo, et **laisse le viseur ouvert** : la deuxième
+  /// et la troisième photo ne demandent alors qu'un geste chacune.
+  Future<void> _capture() async {
+    if (_picking) return;
+    // Le flux n'était pas prêt : plutôt qu'un bouton sans effet, l'appareil
+    // du système prend le relais.
+    if (!_camera.isReady) {
+      _chooseSource();
+      return;
+    }
+    setState(() => _picking = true);
+    File? shot;
+    try {
+      shot = await _camera.capture();
+      if (shot == null) {
+        if (mounted) setState(() => _picking = false);
+        _chooseSource();
+        return;
+      }
+      await _accept(await ref.read(photoStorageProvider).importFile(shot));
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'identification.capture');
+      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+    } finally {
+      // Le fichier brut du plugin a servi : la copie compressée le remplace,
+      // et le dossier temporaire n'a pas à garder de pleine résolution.
+      try {
+        await shot?.delete();
+      } catch (_) {}
       if (mounted) setState(() => _picking = false);
     }
   }
@@ -176,6 +271,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final c = context.colors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
       child: Column(
@@ -183,17 +279,61 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SheetHeader(title: l10n.identifyTitle),
+          // Le viseur est **hors** du `FutureBuilder` : chaque déclenchement
+          // relance l'identification, et il disparaîtrait le temps du calcul
+          // — un viseur qui s'éteint entre deux photos n'est plus un viseur.
+          if (_shooting) ...[
+            const SizedBox(height: Space.xs),
+            ListenableBuilder(
+              listenable: _camera,
+              builder: (context, _) => Pressable(
+                // Le cadre est lui-même le déclencheur, comme à l'étape photo
+                // de la création : viser puis toucher l'image suffit.
+                onTap: _capture,
+                scale: 0.98,
+                child: Container(
+                  height: 220,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.largeAll),
+                  child: _camera.isReady
+                      ? InlineCameraPreview(controller: _camera)
+                      : Center(child: ClayLoader(size: 28, color: c.sage)),
+                ),
+              ),
+            ),
+            const SizedBox(height: Space.xs),
+            // La même bande qu'en bas, mais ici la case libre déclenche : on
+            // voit la photo tomber à l'endroit où on l'attend.
+            IdentificationPhotoStrip(paths: _paths, maxPhotos: maxPhotos, onAdd: _capture, onRemove: _removePhoto),
+            const SizedBox(height: Space.sm),
+            FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
+            const SizedBox(height: Space.xs),
+            FloraButton(
+              label: l10n.gallery,
+              style: FloraButtonStyle.secondary,
+              expand: true,
+              onPressed: _picking ? null : () => _addPhoto(PhotoSource.gallery),
+            ),
+            const SizedBox(height: Space.xs),
+            FloraButton(label: l10n.done, style: FloraButtonStyle.ghost, expand: true, onPressed: _closeViewfinder),
+            const SizedBox(height: Space.sm),
+          ],
           FutureBuilder<List<IdentificationCandidate>>(
             future: _future,
             builder: (context, snap) {
-              if (snap.connectionState != ConnectionState.done) {
+              // Une relance — une photo de plus, une photo retirée — garde la
+              // réponse précédente le temps de calculer la suivante. Seul le
+              // premier calcul n'a rien à montrer et prend le tourniquet.
+              final busy = snap.connectionState != ConnectionState.done;
+              final data = snap.data ?? _last;
+              if (busy && data == null) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: Space.xxl),
                   child: Column(children: [const AdaptiveProgress(), const SizedBox(height: Space.sm), Text(l10n.identifying, style: context.text.callout)]),
                 );
               }
-              if (snap.hasError) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);
-              final results = (snap.data ?? const <IdentificationCandidate>[]).take(5).toList();
+              if (snap.hasError && data == null) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);
+              final results = (data ?? const <IdentificationCandidate>[]).take(5).toList();
               if (results.isEmpty) return EmptyState(emoji: '🤔', title: l10n.identifyNone, compact: true);
               final offer = _offer(results);
               // La bande montre ce qui est parti dès qu'il y a plusieurs
@@ -201,11 +341,11 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               // une de plus. Le compte n'est plus écrit — « · 2 photos »
               // disait l'état sans jamais dire le geste ; deux vignettes et
               // une case vide disent les deux.
-              final showStrip = _paths.length > 1 || offer != SecondPhotoOffer.none;
+              final showStrip = !_shooting && (_paths.length > 1 || offer != SecondPhotoOffer.none);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(_sourceHint(l10n, results.first.source), style: context.text.caption),
+                  Text(busy ? l10n.identifying : _sourceHint(l10n, results.first.source), style: context.text.caption),
                   if (showStrip) ...[
                     const SizedBox(height: Space.xs),
                     IdentificationPhotoStrip(
@@ -214,7 +354,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                       // Rien n'est retiré de la bande pendant qu'on prend
                       // une photo : les cases libres disparaîtraient puis
                       // reviendraient. Les deux gestes se gardent eux-mêmes.
-                      onAdd: offer == SecondPhotoOffer.none ? null : _chooseSource,
+                      onAdd: offer == SecondPhotoOffer.none ? null : _openViewfinder,
                       onRemove: _removePhoto,
                     ),
                     // Le modèle hésite : la photo est le geste qui tranche,

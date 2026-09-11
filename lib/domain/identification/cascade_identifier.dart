@@ -208,9 +208,38 @@ class CascadeIdentifier implements PlantIdentifier {
   /// Une espèce absente d'une liste vaut donc *au plus* cela.
   static const _absentScore = 0.01;
 
+  /// Au-delà, les plus anciennes photos sortent du mémo. Trois pour la série
+  /// en cours, et de quoi ne pas tout perdre quand l'utilisateur recommence.
+  static const _maxShots = 8;
+
+  /// Ce que le modèle a déjà dit de chaque photo, prise une par une.
+  ///
+  /// Une photo de plus refait toute la **fusion** — la moyenne géométrique se
+  /// calcule sur la liste entière —, mais elle n'a aucune raison de refaire
+  /// toute l'**inférence**. Elle la refaisait : à 320 px chaque image coûte
+  /// près d'une seconde (§ 6.7), et monter à trois photos en demandait six au
+  /// lieu de trois. La bande des photos rend le geste répétable ; il devait
+  /// cesser d'être quadratique.
+  ///
+  /// Ce mémo est en amont du cache de [identify], qui garde des réponses
+  /// finies par jeu de photos : ici ce sont les scores bruts d'une image,
+  /// avant fusion, avant seuil, avant rattachement au catalogue.
+  final _shots = <String, List<IdentificationCandidate>>{};
+
+  /// Les scores du modèle pour une photo, calculés une seule fois.
+  Future<List<IdentificationCandidate>> _classifyOnce(File image) async {
+    final key = await _fileKey(image);
+    final known = _shots[key];
+    if (known != null) return known;
+    final result = await local.classify(image).timeout(localTimeout);
+    _shots[key] = result;
+    if (_shots.length > _maxShots) _shots.remove(_shots.keys.first);
+    return result;
+  }
+
   Future<List<IdentificationCandidate>> _classifyAll(List<File> images) async {
     if (images.length == 1) {
-      return local.classify(images.first).timeout(localTimeout);
+      return _classifyOnce(images.first);
     }
     // Plusieurs photos de la même plante : on fusionne par **moyenne
     // géométrique** des scores, c'est-à-dire moyenne des logarithmes.
@@ -231,7 +260,7 @@ class CascadeIdentifier implements PlantIdentifier {
     final commons = <String, String?>{};
     var coveredMass = 0.0;
     for (final image in images) {
-      final result = await local.classify(image).timeout(localTimeout);
+      final result = await _classifyOnce(image);
       final byName = {for (final c in result) c.scientificName: c.score};
       var floor = _absentScore;
       for (final s in byName.values) {
@@ -311,10 +340,16 @@ class CascadeIdentifier implements PlantIdentifier {
   Future<String> _cacheKey(List<File> images) async {
     final parts = <String>[];
     for (final f in images) {
-      final stat = await f.stat();
-      parts.add('${f.path}|${stat.size}|${stat.modified.millisecondsSinceEpoch}');
+      parts.add(await _fileKey(f));
     }
     return parts.join(';');
+  }
+
+  /// Ce qui distingue une photo d'une autre : son chemin, sa taille et sa
+  /// date. Un fichier réécrit au même endroit change donc de clé.
+  Future<String> _fileKey(File f) async {
+    final stat = await f.stat();
+    return '${f.path}|${stat.size}|${stat.modified.millisecondsSinceEpoch}';
   }
 
   /// Le mois civil de l'appareil, clé du compteur distant.

@@ -1453,6 +1453,43 @@ Trois règles tiennent le composant :
   tire le résultat vers le bas, et le seul recours était jusqu'ici de fermer
   la feuille. Tests : `test/features/identification_photo_strip_test.dart`.
 
+#### Et le viseur reste ouvert
+
+Montrer qu'une suite est possible ne suffit pas s'il faut la payer trois
+gestes à la fois. Chaque photo passait par une feuille d'action — appareil
+photo ou galerie — puis par l'appareil du système : deux changements
+d'écran, et l'aperçu à rouvrir à chaque fois. Or l'application a déjà un
+viseur intégré (`InlineCameraController`, § de l'étape photo), et il ne
+servait qu'à la première photo d'une plante.
+
+Il s'ouvre maintenant **dans la feuille d'identification et sous les
+suggestions de la création** : on vise, on déclenche, la photo tombe dans la
+bande, et l'aperçu est toujours là pour la suivante. La liste des candidats
+se recalcule dessous à chaque cliché. Le viseur se referme tout seul à la
+troisième photo — il n'a plus rien à prendre — et sur « Terminé ».
+
+Deux détails sans lesquels ça ne tient pas :
+
+- **le viseur est hors du `FutureBuilder`.** Chaque déclenchement relance
+  l'identification ; dedans, il disparaîtrait le temps du calcul. Un viseur
+  qui s'éteint entre deux photos n'est plus un viseur ;
+- **la liste précédente reste à l'écran pendant la relance.** Seul le tout
+  premier calcul, celui qui n'a rien à montrer, a droit au tourniquet.
+
+Sans viseur possible — pas un téléphone, permission refusée, appareil sans
+caméra — l'ancien chemin reprend la main, feuille d'action comprise, et la
+galerie reste offerte à côté du déclencheur.
+
+#### Une photo de plus ne réinfère que la photo de plus
+
+`CascadeIdentifier` reclassait **toutes** les photos à chaque relance : la
+fusion se calcule bien sur la liste entière, mais l'inférence n'avait aucune
+raison de se refaire. À 320 px chaque image coûte près d'une seconde (§ 6.7),
+donc monter à trois photos en demandait six au lieu de trois — et le geste
+vient d'être rendu répétable. Un mémo par photo (chemin, taille, date) est
+posé en amont du cache de `identify`, qui garde lui des réponses finies par
+jeu de photos ; ici ce sont les scores bruts d'une image, avant fusion.
+
 ### 12.4 ✅ La matrice de confusion par genre
 
 `tools/plant_model/confusions.py`. Le § 6.9 la promettait depuis la v1 ;

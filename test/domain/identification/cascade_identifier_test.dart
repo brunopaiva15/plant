@@ -161,6 +161,22 @@ void main() {
       expect(result.map((r) => r.score), everyElement(closeTo(0.45, 1e-9)));
     });
 
+    test('une photo de plus ne fait réinférer que la nouvelle', () async {
+      final local = FakePerImage({
+        'a.jpg': [c('Monstera deliciosa', 0.30)],
+        'b.jpg': [c('Monstera deliciosa', 0.90)],
+      });
+      final cascade = build(local, FakeRemote(remoteAnswer, configured: false));
+      await cascade.identify([photo]);
+      expect(local.calls, 1);
+
+      await cascade.identify([photo, other]);
+      // La fusion se refait sur les deux listes, l'inférence non : à 320 px
+      // une image coûte près d'une seconde, et la bande des photos rend ce
+      // geste répétable — trois photos ne doivent pas en coûter six.
+      expect(local.calls, 2, reason: 'la première photo n\'est pas reclassée');
+    });
+
     test('deux photos ne sont pas le même résultat qu\'une seule en cache', () async {
       final local = FakePerImage({
         'a.jpg': [c('Monstera deliciosa', 0.30)],
