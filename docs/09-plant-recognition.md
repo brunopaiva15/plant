@@ -2531,7 +2531,77 @@ différentes :
 **Ne pas construire le moissonneur avant d'avoir passé cette porte.** Deux
 heures peuvent en économiser cinquante.
 
-### 13.4 Ce qu'il faut retenir
+### 13.4 Le catalogue de l'application et celui de la collecte ne sont pas le même fichier
+
+C'est la frontière la plus facile à franchir par mégarde, et la plus chère.
+
+**`plants.csv` est le catalogue de *collecte*.** `build_dataset.py` collecte
+ce qu'il contient ; `train.py` en fait des classes. Une ligne y est donc une
+**classe du modèle**, pas une fiche d'application.
+
+**Une fiche de cultivar n'a donc rien à y faire.** Écrire `Epipremnum aureum
+'Marble Queen'` dans `plants.csv` la ferait collecter comme une espèce, puis
+entrer au modèle comme une classe de plus — c'est-à-dire exactement ce que
+le § 12.16 interdit, et une répétition à grande échelle du défaut du
+§ 12.14 : deux étiquettes pour une plante, les images partagées, une
+confusion qu'aucune photo ne peut trancher.
+
+| | vit dans | devient |
+|---|---|---|
+| espèce | `plants.csv` | une classe du modèle |
+| cultivar | catalogue de l'app + `cultivars.csv` | une fiche, jamais une classe |
+| photo validée | table `plant_images` | une illustration, ou un prototype (§ 12.18) |
+
+Le rattachement se fait par l'identifiant de l'espèce parente : si GBIF ne
+connaît qu'*Epipremnum aureum*, c'est à elle que pointent 'Marble Queen' et
+'N'Joy', qui restent deux fiches distinctes côté application.
+
+#### Un identifiant qu'on possède déjà sans le savoir
+
+Un plan de rattachement aux référentiels veut `gbif_taxon_key` **et**
+`inaturalist_taxon_id`, qui sont deux registres différents. `plants.csv`
+porte `gbif_key`, `wikidata_id` et `plantnet_id` — pas iNaturalist.
+
+Mais **la valeur existe déjà** : `resolve_inat()` résout le taxon espèce par
+espèce pendant la collecte et le mémorise dans `dataset/species_inat.json`,
+indexé par nom scientifique, avec l'identifiant, le rang et le nombre
+d'observations. C'est une colonne à recopier, pas des milliers de requêtes à
+refaire.
+
+#### Valider à la main : pour quoi, et jusqu'où
+
+Un écran de validation — la fiche à gauche, les photos candidates à droite,
+trois réponses possibles (espèce confirmée, cultivar confirmé, insuffisant)
+— est la bonne réponse au défaut des sources sans identification : Unsplash
+donne des photos, pas des identifications, et un humain en ajoute une.
+
+**Mais il ne passe pas à l'échelle de l'entraînement.** Une photo de
+référence par fiche, ce sont ~5 000 décisions : faisable, et c'est l'usage
+« illustration ». La profondeur d'un modèle en demande des centaines par
+espèce, et les prototypes de cultivars dix à trente chacun — des dizaines de
+milliers de décisions.
+
+**Sauf braqué ailleurs.** L'écran est la partie coûteuse à construire ; une
+fois qu'il existe, le pointer sur les **photos des utilisateurs** (§ 13.2,
+chantier 3) change sa nature : l'identification est déjà donnée par celui
+qui a ajouté la plante, et on n'échantillonne plus qu'un contrôle qualité.
+Même outil, même table, mais une source qui fournit du volume dans le bon
+domaine visuel — et qui règle les cultivars par la même occasion.
+
+#### Licence et conditions d'API ne sont pas le même texte
+
+Pour Unsplash en particulier, et la remarque vaut ailleurs : la **licence**
+accorde le téléchargement, la copie et la modification — donc
+l'entraînement, la seule restriction réelle étant de ne pas revendre sans
+modification substantielle ni reconstituer un service concurrent. Les
+**conditions de l'API**, elles, imposent de servir les images depuis les URL
+d'Unsplash, d'attribuer, et d'appeler leur point de suivi à la sélection.
+
+Deux documents, deux usages : trouver les photos *via l'API* lie pour
+l'affichage, sans interdire d'entraîner sous la licence. À trancher
+explicitement avant d'écrire le connecteur, plutôt qu'après.
+
+### 13.5 Ce qu'il faut retenir
 
 Deux des quatre chantiers ne demandent **aucun entraînement**, et le
 troisième ne demande aucune collecte extérieure. L'Iris 9 n'est pas un
