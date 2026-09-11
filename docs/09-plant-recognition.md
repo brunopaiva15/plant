@@ -1912,6 +1912,31 @@ Ce qu'on peut donc attendre :
 | viser 5 000 | 3 543 | ≈ **4 430** |
 | atteindre 5 000 | ≈ 4 220 | ≈ 5 000 |
 
+#### ✅ Ce que la collecte a réellement rendu
+
+4 220 candidates collectées en vingt-deux heures, quatre parts, plus une
+reprise GBIF pour les espèces tombées sur le quota journalier d'iNaturalist.
+Fusionnées au jeu de l'Iris 7 :
+
+| | |
+|---|---|
+| espèces du catalogue ayant des images | **5 646 / 5 778 — 97,7 %** |
+| qui passent `--min-train 25` et ont une validation | **5 371 / 5 646 — 95,1 %** |
+| images gardées | 991 926 sur 1 014 678 (4 596 doublons exacts) |
+| par classe | 185 (199 pour l'Iris 7) |
+| **classes de l'Iris 8** | **5 371**, soit 3,7× l'Iris 7 |
+
+**L'échantillon de 35 espèces annonçait 84 % ; la réalité est à 95 %.** Ce
+n'est pas une erreur de l'échantillon, c'est sa limite, écrite dans sa
+propre documentation : `disponibilite.py` n'interroge que GBIF en CC0 et
+CC BY, alors que la collecte a aussi eu iNaturalist, le partage à
+l'identique et Commons. Il annonçait une **borne basse** et c'en était une.
+
+La conséquence pratique dépasse ce chiffre : **la disponibilité n'était pas
+le facteur limitant, et ne l'était probablement pas non plus à 3 000.** Le
+gap qu'on cherchait entre les deux cibles n'existait ni dans l'échantillon
+ni dans les faits.
+
 #### Ce que 5 000 coûte vraiment
 
 Pas la disponibilité, donc. Trois autres choses :
