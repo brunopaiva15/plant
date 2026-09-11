@@ -2780,69 +2780,90 @@ Trouvé pendant l'entraînement de la v8, donc **trop tard pour elle** :
 changer la liste des classes invalide l'empreinte du cache de traits et
 relancerait l'encodage. Ça prend effet à la prochaine construction du jeu.
 
-## 13. Cadrage de l'Iris 9 : nourrir, pas grossir
+## 13. Cadrage de l'Iris 9 : entraîner large, exposer étroit
 
-> **Cet ordre est provisoire.** Il sera révisé quand l'Iris 8 sera entraînée
-> et qu'on saura ce que la largeur a **réellement** coûté : le § 12.12
-> mesure dix points pour 1 457 classes, le chiffre à 5 000 n'existe pas
-> encore, et c'est lui qui décidera si le point 2 ci-dessous passe devant
-> tout le reste.
+> **Écrit avant l'Iris 8, révisé par elle.** La première version de ce
+> cadrage disait « nourrir, pas grossir » et attendait un chiffre : ce que
+> la largeur coûte réellement à 5 000 classes. Le chiffre est tombé —
+> **10,2 points** (§ 6.7 bis) — et il a changé le titre. Grossir n'est pas
+> le problème ; grossir *à la sortie* l'est. Les deux ne se décidaient pas
+> séparément jusqu'ici, et c'est le vrai acquis de la v8.
 
-### 13.1 Ce que toutes les mesures de la semaine disent ensemble
+### 13.1 Les sept faits, et ce qu'ils imposent
 
-Prises une par une, elles ressemblent à des constats sans lien. Mises
-côte à côte, elles disent la même chose :
+Chacun a coûté une version ou une nuit. Ensemble ils ne laissent pas
+beaucoup de choix.
 
-| | |
-|---|---|
-| 73 % des erreurs franchissent la **famille** botanique (§ 12.4) | ce ne sont pas des confusions entre voisines |
-| **5 espèces sur 1 422** ne sont jamais reconnues ; 76 sont sous 25 % | les classes sont apprises, les photos ratent |
-| **67,3 %** sur les plantes d'appartement contre 58,9 % ailleurs (§ 12.12) | le modèle est bon là où la v4 avait recollecté en pot |
-| Asparagaceae ↔ Poaceae, 39 erreurs (§ 12.4) | le yucca pris pour du maïs, toujours là en v7 |
+| ce qui est mesuré | où | ce que ça impose |
+|---|---|---|
+| **73 %** des erreurs franchissent la **famille** botanique | § 12.4 | ce ne sont pas des confusions entre voisines : la photo est hors du domaine appris |
+| **5 espèces sur 1 422** jamais reconnues, **76** sous 25 % | § 12.4 | l'échec est **par photo**, pas par espèce — les classes sont apprises |
+| **67,3 %** sur les plantes d'appartement contre 58,9 % ailleurs | § 12.12 | le seul endroit où le modèle est bon est celui où on lui avait donné des photos en pot (§ 6.3) |
+| tripler le jeu rend **+6,8 points** sur les espèces déjà connues | § 6.7 bis | la collecte large **paie**, dans l'entraînement |
+| exposer 5 259 sorties au lieu de 1 444 coûte **−10,2 points** | § 6.7 bis | la même largeur **coûte**, dans les sorties |
+| sommer le softmax par genre : **+5,3 points au moins**, sans entraînement | § 12.15 | une réponse plus vague et vraie vaut mieux que cinq noms faux |
+| **46 clés GBIF** portées par plusieurs lignes du catalogue | § 12.14 | des classes qui se disputent les mêmes images, sans qu'aucune photo puisse trancher |
 
-**Le modèle ne manque pas d'espèces, il manque de photos ordinaires.**
-L'échec est par photo, pas par espèce, et le seul endroit où il est bon est
-précisément celui où on lui avait donné des photos du bon genre.
+Les deux lignes du milieu sont la découverte de la v8, et elles se
+contredisent en apparence. C'est la clé de tout le reste.
 
-L'Iris 8 est une version de **largeur** : 1 457 → ~5 000 classes. L'Iris 9
-doit être une version de **profondeur** — le même catalogue, mieux nourri.
-Et comme la largeur coûte dix points à celui qui photographie son salon, son
-premier travail sera peut-être d'en rendre une partie.
+### 13.2 Le principe : entraîner large, exposer étroit
 
-> **Écrit avant la v8, tranché par elle.** Le pari ci-dessus était un
-> raisonnement ; c'est devenu une mesure. L'Iris 8 entraîné à 5 259 classes
-> rend 0,5528 sur les espèces déjà connues là où l'Iris 7 rend 0,5862 ;
-> retaillé à 1 444, le même réseau rend 0,6543 (§ 6.7 bis). La largeur a bien
-> coûté, et « en rendre une partie » n'était pas *peut-être* : c'était la
-> condition pour que la version soit livrable.
->
-> Mais la collecte large n'a pas été perdue pour autant, et c'est la nuance
-> que le paragraphe ci-dessus n'avait pas vue : ce sont ces 700 000 images
-> supplémentaires qui ont fait les 6,8 points. **La largeur se paie dans les
-> sorties, pas dans l'entraînement.** L'Iris 9 peut donc continuer à
-> collecter tout ce qu'il trouve — il doit seulement choisir ce qu'il
-> expose.
+**L'ensemble d'entraînement et l'ensemble exposé sont deux décisions
+différentes.** On les avait confondues pendant huit versions, parce que
+`train.py` fait des classes de tout ce qu'il trouve et que personne n'avait
+essayé autrement.
 
-### 13.2 Les quatre chantiers, par rapport mesuré
+La v8 les a séparées par accident, puis `retailler.py` l'a fait exprès :
 
-**1. Répondre au niveau du genre** (§ 12.15). Aucun entraînement : sommer le
-softmax par genre porte le top-1 de 59,0 % à **au moins 64,3 %**, et « un
-épicéa, espèce incertaine » est une réponse vraie là où cinq noms n'en sont
-pas une. À 5 000 classes, davantage d'espèces par genre : le gain augmente
-avec le catalogue, contrairement au top-1.
+- **large à l'entraînement** — 991 000 images sur 5 259 plantes ont produit
+  une représentation nettement meilleure que 290 000 sur 1 457. Une espèce
+  de plus, même si personne ne la photographiera jamais, apprend au réseau à
+  mieux voir les autres ;
+- **étroit à la sortie** — chaque classe exposée dispute les réponses de
+  toutes les autres. Dix points entre 1 444 et 5 259 sorties, sur les mêmes
+  poids et les mêmes photos.
 
-**2. Restreindre les candidats au contexte** (§ 12.12). **Dix points**, un
-masque sur les sorties, aucune collecte. Contrepartie réelle : rendre
-*impossible* la bonne réponse pour qui photographie un érable dans la rue —
-c'est le garde-fou de la classe « autre », prévu au § 3.2 et jamais fait. À
-mesurer sur les 3 606 images avant d'écrire une ligne.
+#### Ce que ça change dans la conduite du projet
 
-**3. Les photos des utilisateurs.** La seule source qui règle **les deux**
+**Le nombre de classes cesse d'être un pari.** Il se choisissait avant la
+collecte, donc vingt-deux heures et un entraînement avant d'en voir l'effet
+— c'est ce qui a fait perdre une journée à débattre de « 3 000 ou 5 000 »
+(§ 12.11) alors que la question ne se posait pas là. Désormais :
+
+1. on collecte tout ce qu'on peut ;
+2. on entraîne **une fois**, sur tout ;
+3. on **mesure** la courbe des tailles de sortie ;
+4. on exporte l'ensemble qu'on veut, en quelques minutes, autant de fois
+   qu'on veut.
+
+La décision la plus risquée n'est plus attachée à l'étape la plus chère.
+C'est le vrai gain de la v8, et il vaut plus que ses six points.
+
+> **Et un même réseau peut rendre plusieurs modèles.** Rien n'oblige à
+> n'exporter qu'une tête. Un ensemble « ce qu'on cultive » et un ensemble
+> « tout » sont deux fichiers tirés des mêmes poids — le § 12.12 attendait
+> ce masque contextuel depuis la v7 ; il est maintenant à portée, sous
+> réserve de la porte du § 13.6.
+
+### 13.3 Les chantiers, par rapport mesuré
+
+**1. Choisir l'ensemble exposé — en le mesurant.** Le plus gros effet connu
+(dix points), aucun entraînement, aucune collecte. On ne connaît que les
+deux bouts de la courbe : 1 444 → 0,6543 et 5 259 → 0,5528. Le coude est
+entre les deux et personne ne sait où. Quatre exports et quatre passes de
+`compare_models.py` le disent — quelques heures de GPU, sur un jeu déjà
+collecté.
+
+C'est le premier chantier **parce qu'il conditionne les autres** : nourrir
+une espèce qu'on n'exposera pas est un travail perdu.
+
+**2. Les photos des utilisateurs.** La seule source qui règle **les deux**
 problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
 identification confirmée est une photo étiquetée, dans le bon domaine, de la
-plante que quelqu'un possède vraiment. Aucun jeu public n'a ça et aucun n'en
-aura : iNaturalist ne modélise pas les cultivars (§ 12.16), Commons en a
-deux photos par cultivar en médiane sur son genre le mieux fourni.
+plante que quelqu'un possède vraiment. Aucun jeu public n'a ça : iNaturalist
+ne modélise pas les cultivars (§ 12.16), Commons en a deux photos par
+cultivar en médiane sur son genre le mieux fourni.
 
 C'est aussi **le seul chantier dont le délai se compte en mois**, d'où sa
 place : il faut le commencer avant d'en avoir besoin. Il demande du
@@ -2850,13 +2871,28 @@ consentement explicite, une tuyauterie, et du soin sur la vie privée — une
 photo de salon n'est pas une observation naturaliste. Il commence par
 **poser la question dans l'application**, pas par entraîner.
 
-**4. Les 76 espèces faibles** (§ 12.4), avec le domaine en tête et non le
-volume : `(potted)` de Commons, tout juste branché (§ 12.17), et
-`captive=true` d'iNaturalist qu'on n'utilise qu'à 50 % de la cible. Pour les
-espèces que les gens possèdent réellement, cette proportion devrait être
-inversée.
+**3. Répondre au niveau du genre.** Aucun entraînement : sommer le softmax
+par genre porte le top-1 d'au moins 5,3 points, et « un épicéa, espèce
+incertaine » est une réponse vraie là où cinq noms n'en sont pas une. Le
+gain grandit avec le catalogue, contrairement au top-1.
 
-### 13.3 La branche cultivars, et la porte qui la commande
+**4. Nourrir les 76 espèces faibles — le domaine avant le volume.**
+`(potted)` de Commons, branché à la v8 (§ 12.17), et `captive=true`
+d'iNaturalist qu'on n'utilise qu'à 50 % de la cible. Pour des plantes que
+les gens possèdent, cette proportion devrait être inversée. C'est le
+chantier qui attaque directement les 73 % d'erreurs hors famille.
+
+**5. Les doublons, avant la collecte et pas après.** 46 clés GBIF en double
+au minimum dans les 5 778 lignes, et c'est une borne basse (§ 12.14).
+`doublons.py` donne le vrai chiffre en une passe. Deux classes pour une
+plante, ce sont des images partagées et une confusion imperdable : du
+travail de collecte dépensé à fabriquer une erreur.
+
+**6. Le découpage — déjà fait.** Le § 12.19 rendra ~112 espèces que la v8
+avait écartées pour une image de validation manquante. Rien à décider, ça
+prend effet à la prochaine construction du jeu.
+
+### 13.4 La branche cultivars, et la porte qui la commande
 
 Le § 12.18 tient à une hypothèse non vérifiée : **l'embedding sépare-t-il
 deux cultivars d'une même espèce, ou l'a-t-on entraîné à les confondre ?**
@@ -2877,7 +2913,7 @@ différentes :
 **Ne pas construire le moissonneur avant d'avoir passé cette porte.** Deux
 heures peuvent en économiser cinquante.
 
-### 13.4 Le catalogue de l'application et celui de la collecte ne sont pas le même fichier
+### 13.5 Le catalogue de l'application et celui de la collecte ne sont pas le même fichier
 
 C'est la frontière la plus facile à franchir par mégarde, et la plus chère.
 
@@ -2928,8 +2964,8 @@ espèce, et les prototypes de cultivars dix à trente chacun — des dizaines de
 milliers de décisions.
 
 **Sauf braqué ailleurs.** L'écran est la partie coûteuse à construire ; une
-fois qu'il existe, le pointer sur les **photos des utilisateurs** (§ 13.2,
-chantier 3) change sa nature : l'identification est déjà donnée par celui
+fois qu'il existe, le pointer sur les **photos des utilisateurs** (§ 13.3,
+chantier 2) change sa nature : l'identification est déjà donnée par celui
 qui a ajouté la plante, et on n'échantillonne plus qu'un contrôle qualité.
 Même outil, même table, mais une source qui fournit du volume dans le bon
 domaine visuel — et qui règle les cultivars par la même occasion.
@@ -2947,10 +2983,72 @@ Deux documents, deux usages : trouver les photos *via l'API* lie pour
 l'affichage, sans interdire d'entraîner sous la licence. À trancher
 explicitement avant d'écrire le connecteur, plutôt qu'après.
 
-### 13.5 Ce qu'il faut retenir
+### 13.6 La recette, et ce qu'elle change de la v8
 
-Deux des quatre chantiers ne demandent **aucun entraînement**, et le
-troisième ne demande aucune collecte extérieure. L'Iris 9 n'est pas un
-modèle plus gros : c'est un modèle mieux nourri, et pour l'essentiel une
-application qui sait quoi faire de ce qu'il rend.
+Rien de spectaculaire : la v8 a montré que la recette d'entraînement n'est
+plus le facteur limitant. Quatre corrections, toutes tirées d'une mesure.
+
+**1. Pré-réduire le jeu à la taille d'entrée.** C'est le seul changement qui
+achète du temps, et donc des essais. À `--input-size 320`, `LOAD_SIZE` monte
+à 366 px et précharger les 794 000 images d'entraînement demanderait 315 Go
+— hors de portée. Le jeu est donc **relu et redécodé à chaque époque**, et
+le tuyau plafonne autour de **750 images/s**, mesuré pendant l'encodage de
+la v8. Dix-huit minutes d'époque dont l'essentiel est du JPEG.
+
+Stocker le jeu **déjà réduit** à la taille de chargement supprime ce
+décodage. Sur une L40 dont la carte attend le processeur (`docs/11` § 1), le
+gain est direct : plus d'époques par euro, donc plus de recettes essayées.
+
+**2. Lancer `doublons.py` avant la collecte**, pas après (§ 13.3, chantier
+5). Une ligne en double, c'est de la collecte dépensée à fabriquer une
+confusion imperdable.
+
+**3. Le découpage corrigé** (§ 12.19) est déjà dans `splits.py` : il vise
+maintenant `--min-val` images, pas « au moins un groupe ».
+
+**4. Trancher la question du lot, une fois pour toutes.** On ne sait
+toujours pas si `--batch 128` a aidé la v8 : le run a changé deux choses à
+la fois. Deux entraînements courts sur un sous-ensemble le diraient pour
+quelques euros — et si le tuyau reste le plafond (point 1), la réponse est
+probablement « rien », ce qui vaut la peine d'être su plutôt que supposé.
+
+Le reste ne bouge pas : `--backbone large`, `--dropout 0.5`, `--unfreeze
+100`, `--input-size 320`, précision mixte, cache de traits et points de
+sauvegarde. Une recette à la fois, comme au § 12.
+
+### 13.7 Les trois portes, et ce qu'on ne fera pas
+
+**Aucun de ces chantiers ne commence avant sa porte.** C'est ce qui a
+manqué à la v8 : on a collecté 4 220 espèces avant de savoir ce qu'une
+espèce de plus coûte.
+
+| porte | ce qu'elle décide | coût |
+|---|---|---|
+| la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | quelques heures de GPU, jeu déjà collecté |
+| `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | deux heures |
+| la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | à mesurer sur les 3 606 images |
+
+**Ce qu'on ne fera pas, et pourquoi :**
+
+- **pas de tête hiérarchique** famille → genre → espèce : sommer le softmax
+  par genre donne le même service sans rien réentraîner (§ 12.15) ;
+- **pas de cultivars comme classes** : ils n'ont pas de source d'images, et
+  les mettre au catalogue de collecte répéterait le défaut du § 12.14 à
+  grande échelle (§ 12.16, § 13.5) ;
+- **pas d'espèces de plus pour le nombre.** C'est le renversement de la v8 :
+  élargir le catalogue exposé se paie, et se paie en points. On continuera
+  d'en collecter — pour l'entraînement, pas pour l'affichage.
+
+### 13.8 Ce qu'il faut retenir
+
+Trois des six chantiers ne demandent **aucun entraînement**, et deux ne
+demandent aucune collecte. L'Iris 9 n'est pas un modèle plus gros : c'est un
+modèle mieux nourri, mieux borné, et pour l'essentiel une application qui
+sait quoi faire de ce qu'il rend.
+
+Et une phrase, s'il ne fallait en garder qu'une, parce qu'elle a coûté
+vingt-deux heures de collecte et une nuit de mesures :
+
+> **La largeur se paie dans les sorties, pas dans l'entraînement.**
+> Collecter tout ce qu'on trouve, n'exposer que ce qu'on sert.
 
