@@ -1413,6 +1413,10 @@ domaine — `secondPhotoOffer()`, à côté de `FallbackPolicy` — et rend troi
 | `quiet` | la réponse est acceptée | la bande seule, sans phrase |
 | `none` | plus de photo possible, ou réponse venue de Pl@ntNet | pas de case libre |
 
+La règle vaut là où une réponse est déjà affichée — la feuille et l'étape du
+nom. À l'étape photo de la création, personne n'a encore rien demandé au
+moteur : la bande y est une invitation, pas une correction.
+
 Les deux écrans (`identification_sheet.dart`, `create_plant_flow.dart`)
 partageaient jusqu'ici deux copies identiques de la règle ; ils appellent
 maintenant la même fonction, testée sans widget
@@ -1453,32 +1457,54 @@ Trois règles tiennent le composant :
   tire le résultat vers le bas, et le seul recours était jusqu'ici de fermer
   la feuille. Tests : `test/features/identification_photo_strip_test.dart`.
 
-#### Et le viseur reste ouvert
+#### Les photos se prennent là où l'on photographie
 
-Montrer qu'une suite est possible ne suffit pas s'il faut la payer trois
-gestes à la fois. Chaque photo passait par une feuille d'action — appareil
-photo ou galerie — puis par l'appareil du système : deux changements
-d'écran, et l'aperçu à rouvrir à chaque fois. Or l'application a déjà un
-viseur intégré (`InlineCameraController`, § de l'étape photo), et il ne
-servait qu'à la première photo d'une plante.
+Première version : le viseur s'ouvrait dans la feuille d'identification et
+sous les suggestions de la création. Ça marchait, et c'était au mauvais
+endroit — une caméra logée dans une feuille de résultats, et un deuxième
+viseur dans un flux qui en avait déjà un. Les photos appartiennent à
+**l'écran où l'on photographie**, et les résultats à celui qui les montre.
 
-Il s'ouvre maintenant **dans la feuille d'identification et sous les
-suggestions de la création** : on vise, on déclenche, la photo tombe dans la
-bande, et l'aperçu est toujours là pour la suivante. La liste des candidats
-se recalcule dessous à chaque cliché. Le viseur se referme tout seul à la
-troisième photo — il n'a plus rien à prendre — et sur « Terminé ».
+**À la création, tout remonte à l'étape photo.** Le viseur y était déjà ;
+il ne s'éteint simplement plus au premier déclenchement. On prend une photo,
+la bande apparaît sous le cadre, on en prend une deuxième et une troisième
+si on veut — le cadre lui-même est le déclencheur —, puis « Continuer ». La
+première est la photo de la plante ; les autres ne servent qu'à la
+reconnaître et s'effacent en partant.
 
-Deux détails sans lesquels ça ne tient pas :
+Le moteur ne reçoit plus rien tant qu'on est à l'étape photo : il reçoit
+**tout d'un coup** en arrivant à l'étape du nom. Une seule passe, avec les
+trois photos, plutôt qu'une réponse sur une photo suivie d'une correction —
+et la meilleure réponse dès le premier affichage. Le geste reste offert,
+jamais réclamé : « Continuer » est le bouton du dessus, et une seule photo
+suffit à passer.
 
-- **le viseur est hors du `FutureBuilder`.** Chaque déclenchement relance
-  l'identification ; dedans, il disparaîtrait le temps du calcul. Un viseur
-  qui s'éteint entre deux photos n'est plus un viseur ;
-- **la liste précédente reste à l'écran pendant la relance.** Seul le tout
-  premier calcul, celui qui n'a rien à montrer, a droit au tourniquet.
+L'étape du nom garde la bande et la règle du § 12.3 — si Iris hésite, une
+photo de plus est proposée — mais par la feuille d'action, sans deuxième
+viseur.
 
-Sans viseur possible — pas un téléphone, permission refusée, appareil sans
-caméra — l'ancien chemin reprend la main, feuille d'action comprise, et la
-galerie reste offerte à côté du déclencheur.
+Ce qui reste de la première version : **la liste précédente reste à l'écran
+pendant une relance**. Seul le tout premier calcul, celui qui n'a rien à
+montrer, a droit au tourniquet.
+
+#### Depuis une fiche, les photos sont déjà là
+
+Une plante qu'on identifie depuis sa fiche a une galerie. La feuille s'ouvre
+donc **pré-remplie** : la photo principale, puis les deux plus récentes de la
+galerie (`plant_detail_screen.dart`). Trois photos valent 22,4 points de
+top-1 de plus qu'une seule, et celles-là ne coûtent ni un geste ni une
+seconde — elles sont déjà prises, déjà sur l'appareil. La bande les montre,
+et une croix retire celle qui n'aide pas.
+
+Deux garde-fous :
+
+- **on ne prête que ce qui est lisible** : les photos distantes (`isRemote`)
+  et les fichiers absents sont écartés. Le moteur échouerait à les lire, et
+  l'identification locale entière partirait au repli Pl@ntNet, sur le quota,
+  pour rien ;
+- **on n'efface que ce qu'on a pris.** Une photo prêtée se retire de la bande
+  sans disparaître de l'appareil ; une photo prise dans la feuille s'efface
+  en partant, comme avant. C'est ce que porte `_Shot`.
 
 #### Une photo de plus ne réinfère que la photo de plus
 

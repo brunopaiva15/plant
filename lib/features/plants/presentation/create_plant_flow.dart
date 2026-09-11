@@ -85,12 +85,6 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// Au-delà, une photo de plus n'apporte plus grand-chose.
   static const int maxIdentificationPhotos = 3;
 
-  /// Le viseur est rouvert à l'étape du nom, pour enchaîner les photos
-  /// d'identification sans repasser par l'appareil du système. C'est le même
-  /// contrôleur qu'à l'étape photo : les deux ne sont jamais ouverts en même
-  /// temps, et [_go] le referme en changeant d'étape.
-  bool _shootingIdentification = false;
-
   late final _name = TextEditingController(text: widget.parentName == null ? '' : context.l10n.cuttingOf(widget.parentName!));
   final _species = TextEditingController();
   final _notes = TextEditingController();
@@ -146,33 +140,36 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   void _go(int step) {
     Haptics.selection();
-    // Changer d'étape referme le viseur de l'identification : la caméra
-    // appartient à l'étape qu'on regarde.
-    _shootingIdentification = false;
     // Le clavier de l'étape du nom ne doit pas suivre : ouvert, il écrase la
     // mise en page des autres étapes (l'aperçu photo notamment).
     if (step != 1) FocusManager.instance.primaryFocus?.unfocus();
     // Le viseur n'a de raison de tourner qu'à l'étape photo, et seulement
-    // tant qu'il reste quelque chose à cadrer : ailleurs, il ne ferait que
-    // tenir la caméra et vider la batterie.
-    if (step == 0 && _photo == null) {
+    // tant qu'il reste de la place : ailleurs, il ne ferait que tenir la
+    // caméra et vider la batterie. Il ne s'éteint plus à la première photo —
+    // c'est ce qui permet d'en prendre deux ou trois à la file.
+    if (step == 0 && _identificationPaths.length < maxIdentificationPhotos) {
       _camera.start();
     } else {
       _camera.stop();
     }
     setState(() => _step = step);
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
+    // En arrivant à l'étape du nom, le moteur reçoit toutes les photos d'un
+    // coup — et une seule fois : revenir en arrière puis repasser ici ne
+    // relance rien tant que les photos n'ont pas changé.
+    if (step == 1 && _identification == null) _startIdentification();
   }
 
   /// Ouvre l'appareil photo ou la galerie du système. Le viseur intégré a
   /// pris la place du premier cas courant ; celui-ci reste pour la galerie,
   /// et pour les appareils qui n'offrent pas d'aperçu.
-  Future<void> _pick(PhotoSource source) async {
+  Future<void> _pick(PhotoSource source, {bool replace = false}) async {
     if (_picking) return;
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
-      if (stored != null && mounted) await _accept(stored);
+      if (stored == null || !mounted) return;
+      await (replace ? _replace(stored) : _accept(stored));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.pick');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
@@ -212,35 +209,64 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     }
   }
 
-  /// Retient la photo : elle remplace la précédente, ouvre l'étape du nom et
-  /// lance l'identification en fond.
+  /// Retient une photo de plus, sans quitter l'étape.
   Future<void> _accept(StoredPhoto stored) async {
     final storage = ref.read(photoStorageProvider);
-    if (_photo != null) await storage.deleteFiles(_photo!.filePath, _photo!.thumbPath);
-    setState(() => _photo = stored);
+    final path = await storage.absolutePath(stored.filePath);
+    if (!mounted) return;
+    // La première photo est celle de la plante ; les suivantes ne servent
+    // qu'à la reconnaître et s'effaceront en partant. Aucune ne passe à
+    // l'étape suivante toute seule : c'est « Continuer » qui décide, et
+    // c'est ce qui permet d'en prendre deux ou trois à la file.
+    setState(() {
+      if (_photo == null) {
+        _photo = stored;
+      } else {
+        _identificationExtras.add(stored);
+      }
+      _identificationPaths.add(path);
+      // Les photos ont changé : la réponse d'avant ne vaut plus, et la
+      // suivante se demandera en arrivant à l'étape du nom.
+      _identification = null;
+    });
     Haptics.success();
-    _go(1);
-    await _startIdentification(stored);
   }
 
-  /// Identification en arrière-plan dès qu'une photo existe (si un service est configuré).
-  /// Les suggestions apparaissent à l'étape du nom, sans étape supplémentaire.
-  ///
-  /// Le chemin est résolu avant de poser le futur, pour que la liste des
-  /// photos soumises soit à jour dans le même `setState` : c'est elle qui dit
-  /// combien de photos sont parties et s'il en reste une à proposer.
-  Future<void> _startIdentification(StoredPhoto photo) async {
-    final identifier = ref.read(plantIdentifierProvider);
-    if (!identifier.isConfigured) return;
-    final lang = _identificationLanguage;
+  /// Remplace la photo de la plante. Les vues prises pour l'identification
+  /// montraient l'ancien sujet : elles partent avec elle.
+  Future<void> _replace(StoredPhoto stored) async {
+    final storage = ref.read(photoStorageProvider);
+    final old = _photo;
     _dropIdentificationExtras();
-    final path = await ref.read(photoStorageProvider).absolutePath(photo.filePath);
+    final path = await storage.absolutePath(stored.filePath);
     if (!mounted) return;
     setState(() {
+      _photo = stored;
       _identificationPaths
         ..clear()
         ..add(path);
-      _identification = identifier.identify([File(path)], language: lang).catchError((_) => <IdentificationCandidate>[]);
+      _identification = null;
+    });
+    Haptics.success();
+    if (old != null) await storage.deleteFiles(old.filePath, old.thumbPath);
+  }
+
+  /// Identification en arrière-plan, sur **toutes** les photos de l'étape
+  /// d'avant, en arrivant à l'étape du nom. Les suggestions y apparaissent
+  /// sans étape supplémentaire.
+  ///
+  /// Une seule passe, avec tout ce qu'on a : deux photos valent 13,7 points
+  /// de top-1 et trois en valent 22,4 (docs/09 § 6.7). Les demander d'abord
+  /// et répondre ensuite vaut mieux que répondre sur une seule photo, puis
+  /// se corriger.
+  void _startIdentification() {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (!identifier.isConfigured || _identificationPaths.isEmpty) return;
+    final lang = _identificationLanguage;
+    setState(() {
+      _identification = identifier
+          .identify([for (final p in _identificationPaths) File(p)], language: lang)
+          .catchError((_) => <IdentificationCandidate>[]);
     });
   }
 
@@ -278,92 +304,25 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// l'affiner. Le rang zéro est la photo de la plante : elle reste, c'est
   /// l'étape d'avant qui la change.
   Future<void> _removeIdentificationPhoto(int index) async {
-    final identifier = ref.read(plantIdentifierProvider);
     if (_picking || index <= 0 || index >= _identificationPaths.length) return;
     final stored = _identificationExtras.removeAt(index - 1);
-    final lang = _identificationLanguage;
     final storage = ref.read(photoStorageProvider);
-    _identificationPaths.removeAt(index);
-    setState(() {
-      _identification = identifier
-          .identify([for (final p in _identificationPaths) File(p)], language: lang)
-          .catchError((_) => <IdentificationCandidate>[]);
-    });
+    setState(() => _identificationPaths.removeAt(index));
+    // À l'étape photo, rien n'a encore été demandé au moteur : il n'y a rien
+    // à relancer, seulement une case qui se libère.
+    if (_identification != null) _startIdentification();
     await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
   /// Range une photo d'identification de plus et relance le moteur.
   Future<void> _acceptIdentificationPhoto(StoredPhoto stored) async {
-    final identifier = ref.read(plantIdentifierProvider);
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
-    final lang = _identificationLanguage;
-    _identificationExtras.add(stored);
-    _identificationPaths.add(path);
-    final full = _identificationPaths.length >= maxIdentificationPhotos;
     setState(() {
-      if (full) _shootingIdentification = false;
-      _identification = identifier
-          .identify([for (final p in _identificationPaths) File(p)], language: lang)
-          .catchError((_) => <IdentificationCandidate>[]);
+      _identificationExtras.add(stored);
+      _identificationPaths.add(path);
     });
-    // La bande est pleine : la caméra n'a plus rien à prendre.
-    if (full) await _camera.stop();
-  }
-
-  /// Rouvre le viseur, ici, sous les suggestions — plutôt que la feuille
-  /// d'action puis l'appareil du système, trois gestes et deux changements
-  /// d'écran par photo. Sans viseur possible, l'ancien chemin reprend.
-  Future<void> _openIdentificationViewfinder() async {
-    if (!InlineCameraController.isSupported) {
-      _chooseIdentificationSource();
-      return;
-    }
-    // Le champ du nom a l'autofocus à cette étape : son clavier prendrait la
-    // moitié de la place que l'aperçu demande.
-    FocusManager.instance.primaryFocus?.unfocus();
-    setState(() => _shootingIdentification = true);
-    await _camera.start();
-    if (!mounted) return;
-    if (_camera.status == InlineCameraStatus.unavailable) {
-      setState(() => _shootingIdentification = false);
-      _chooseIdentificationSource();
-    }
-  }
-
-  void _closeIdentificationViewfinder() {
-    setState(() => _shootingIdentification = false);
-    _camera.stop();
-  }
-
-  /// Déclenche et **laisse le viseur ouvert** : la deuxième et la troisième
-  /// photo ne demandent alors qu'un geste chacune.
-  Future<void> _captureIdentification() async {
-    if (_picking) return;
-    if (!_camera.isReady) {
-      _chooseIdentificationSource();
-      return;
-    }
-    setState(() => _picking = true);
-    File? shot;
-    try {
-      shot = await _camera.capture();
-      if (shot == null) {
-        if (mounted) setState(() => _picking = false);
-        _chooseIdentificationSource();
-        return;
-      }
-      await _acceptIdentificationPhoto(await ref.read(photoStorageProvider).importFile(shot));
-    } catch (e, st) {
-      ref.read(crashReporterProvider).report(e, st, context: 'createPlant.identifyCapture');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
-    } finally {
-      // Le fichier brut du plugin a servi : la copie compressée le remplace.
-      try {
-        await shot?.delete();
-      } catch (_) {}
-      if (mounted) setState(() => _picking = false);
-    }
+    _startIdentification();
   }
 
   void _chooseIdentificationSource() {
@@ -500,25 +459,43 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     return _StepLayout(
       title: l10n.stepPhotoTitle,
       subtitle: l10n.stepPhotoSubtitle,
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: 4 / 5,
-          // Le cadre suit le viseur : il s'ouvre, il échoue, il rend la main.
-          child: ListenableBuilder(
-            listenable: _camera,
-            builder: (context, _) => Pressable(
-              // Le cadre est lui-même le déclencheur : viser puis toucher
-              // l'image suffit, sans descendre jusqu'au bouton.
-              onTap: _onFrameTap,
-              scale: 0.98,
-              child: Container(
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
-                child: _photoFrame(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Flexible(
+            child: AspectRatio(
+              aspectRatio: 4 / 5,
+              // Le cadre suit le viseur : il s'ouvre, il échoue, il rend la main.
+              child: ListenableBuilder(
+                listenable: _camera,
+                builder: (context, _) => Pressable(
+                  // Le cadre est lui-même le déclencheur : viser puis toucher
+                  // l'image suffit, sans descendre jusqu'au bouton.
+                  onTap: _onFrameTap,
+                  scale: 0.98,
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
+                    child: _photoFrame(),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          // La bande n'apparaît qu'une fois la première photo prise. Trois
+          // cases vides sur un écran qui n'en demande qu'une en réclameraient
+          // trois ; après le premier déclenchement, elles disent seulement
+          // qu'on peut continuer.
+          if (_identificationPaths.isNotEmpty) ...[
+            const SizedBox(height: Space.md),
+            IdentificationPhotoStrip(
+              paths: _identificationPaths,
+              maxPhotos: maxIdentificationPhotos,
+              onAdd: _addAnotherPhoto,
+              onRemove: _removeIdentificationPhoto,
+            ),
+          ],
+        ],
       ),
       actions: _photo == null
           ? [
@@ -530,8 +507,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ]
           : [
               FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
+              // Une photo de plus reste un geste offert, jamais réclamé :
+              // « Continuer » est au-dessus, et c'est le chemin par défaut.
+              if (_identificationPaths.length < maxIdentificationPhotos) ...[
+                const SizedBox(height: Space.xs),
+                FloraButton(
+                  label: l10n.identifyAnotherPhoto,
+                  icon: CupertinoIcons.camera_fill,
+                  style: FloraButtonStyle.secondary,
+                  expand: true,
+                  loading: _picking,
+                  onPressed: _addAnotherPhoto,
+                ),
+              ],
               const SizedBox(height: Space.xs),
-              FloraButton(label: l10n.changePhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: _showPhotoSources),
+              FloraButton(label: l10n.changePhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _showPhotoSources(replace: true)),
             ],
     );
   }
@@ -541,8 +531,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   Widget _photoFrame() {
     final l10n = context.l10n;
     final c = context.colors;
-    if (_photo != null) return PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
+    // Le viseur passe devant la photo retenue : elle est dans la bande, en
+    // dessous, et le cadre sert maintenant à la suivante.
     if (_camera.isReady) return InlineCameraPreview(controller: _camera);
+    if (_photo != null) return PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
     if (_camera.status == InlineCameraStatus.starting) return Center(child: ClayLoader(size: 32, color: c.sage));
     // Le cadre rétrécit quand la place manque (petit écran) : l'invite se met
     // à l'échelle plutôt que de déborder.
@@ -576,21 +568,39 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// Toucher le cadre : c'est le déclencheur quand le viseur est ouvert, et
   /// le choix de la source dans tous les autres cas.
   void _onFrameTap() {
-    if (_photo == null && _camera.isReady) {
+    // Le cadre est le déclencheur tant qu'il reste de la place : viser,
+    // toucher, recommencer — sans redescendre jusqu'au bouton. Sans viseur,
+    // il garde son ancien sens : toucher la photo, c'est la changer.
+    if (_camera.isReady && _identificationPaths.length < maxIdentificationPhotos) {
+      _capture();
+      return;
+    }
+    _showPhotoSources(replace: true);
+  }
+
+  /// Une vue de plus de la même plante — jamais un remplacement.
+  ///
+  /// Sans viseur, l'appareil du système prend le relais ; c'est le seul
+  /// endroit où la distinction compte, parce que la même feuille d'action
+  /// sert aussi à changer la photo de la plante.
+  void _addAnotherPhoto() {
+    if (_camera.isReady) {
       _capture();
       return;
     }
     _showPhotoSources();
   }
 
-  Future<void> _showPhotoSources() {
+  /// Les deux sources du système. [replace] dit si la photo choisie prend la
+  /// place de celle de la plante ou s'ajoute aux vues d'identification.
+  Future<void> _showPhotoSources({bool replace = false}) {
     final l10n = context.l10n;
     return showAdaptiveActionSheet(
       context,
       cancelLabel: l10n.cancel,
       actions: [
-        SheetAction(label: l10n.takePhoto, icon: CupertinoIcons.camera, onPressed: () => _pick(PhotoSource.camera)),
-        SheetAction(label: l10n.choosePhoto, icon: CupertinoIcons.photo, onPressed: () => _pick(PhotoSource.gallery)),
+        SheetAction(label: l10n.takePhoto, icon: CupertinoIcons.camera, onPressed: () => _pick(PhotoSource.camera, replace: replace)),
+        SheetAction(label: l10n.choosePhoto, icon: CupertinoIcons.photo, onPressed: () => _pick(PhotoSource.gallery, replace: replace)),
       ],
     );
   }
@@ -624,63 +634,16 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             },
           ),
           _CarePreview(speciesName: _species.text),
-          // Le viseur s'ouvre ici, au-dessus des suggestions, et reste
-          // ouvert entre deux déclenchements : c'est ce qui fait d'« une
-          // photo de plus » une suite plutôt qu'un aller-retour.
-          if (_shootingIdentification) ...[
-            const SizedBox(height: Space.md),
-            ListenableBuilder(
-              listenable: _camera,
-              builder: (context, _) => Pressable(
-                // Le cadre est lui-même le déclencheur, comme à l'étape photo.
-                onTap: _captureIdentification,
-                scale: 0.98,
-                child: Container(
-                  height: 200,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.largeAll),
-                  child: _camera.isReady
-                      ? InlineCameraPreview(controller: _camera)
-                      : Center(child: ClayLoader(size: 28, color: c.sage)),
-                ),
-              ),
-            ),
-            const SizedBox(height: Space.xs),
-            IdentificationPhotoStrip(
-              paths: _identificationPaths,
-              maxPhotos: maxIdentificationPhotos,
-              onAdd: _captureIdentification,
-              onRemove: _removeIdentificationPhoto,
-            ),
-            const SizedBox(height: Space.sm),
-            FloraButton(
-              label: l10n.takePhoto,
-              icon: CupertinoIcons.camera_fill,
-              expand: true,
-              loading: _picking,
-              onPressed: _captureIdentification,
-            ),
-            const SizedBox(height: Space.xs),
-            FloraButton(
-              label: l10n.gallery,
-              style: FloraButtonStyle.secondary,
-              expand: true,
-              onPressed: _picking ? null : () => _addIdentificationPhoto(PhotoSource.gallery),
-            ),
-            const SizedBox(height: Space.xs),
-            FloraButton(label: l10n.done, style: FloraButtonStyle.ghost, expand: true, onPressed: _closeIdentificationViewfinder),
-          ],
           if (_identification != null)
             _IdentificationSuggestions(
               future: _identification!,
               onPick: _applyCandidate,
               onSearchOnline: _canSearchOnline ? _searchOnline : null,
               paths: _identificationPaths,
-              shooting: _shootingIdentification,
               // Sans gêne pour `_picking` : retirer les cases libres pendant
               // qu'on prend une photo ferait rétrécir la bande puis revenir.
               // Les deux gestes se gardent eux-mêmes.
-              onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _openIdentificationViewfinder : null,
+              onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _chooseIdentificationSource : null,
               onRemovePhoto: _removeIdentificationPhoto,
               offer: _identificationOffer,
             ),
@@ -789,7 +752,6 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onAddPhoto,
     this.onRemovePhoto,
     this.offer,
-    this.shooting = false,
   });
 
   final Future<List<IdentificationCandidate>> future;
@@ -813,10 +775,6 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// cascade, comme dans la fiche d'identification.
   final SecondPhotoOffer Function(List<IdentificationCandidate>)? offer;
 
-  /// Le viseur est ouvert au-dessus : il porte déjà sa bande, et deux
-  /// bandes pour les mêmes photos n'en diraient pas plus.
-  final bool shooting;
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -836,7 +794,7 @@ class _IdentificationSuggestions extends StatelessWidget {
         // la place libre seulement si la cascade en veut une de plus. Le
         // compte n'est plus écrit — « · 2 photos » disait l'état sans jamais
         // dire le geste ; deux vignettes et une case vide disent les deux.
-        final showStrip = !shooting && (paths.length > 1 || photoOffer != SecondPhotoOffer.none);
+        final showStrip = paths.length > 1 || photoOffer != SecondPhotoOffer.none;
         return Padding(
           padding: const EdgeInsets.only(top: Space.md),
           child: Column(

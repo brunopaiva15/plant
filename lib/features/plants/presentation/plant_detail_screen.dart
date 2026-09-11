@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -116,13 +118,38 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     );
   }
 
+  /// Au-delà, le gain d'une photo de plus n'est plus mesuré (docs/09 § 6.7),
+  /// et la feuille n'en accepte pas davantage.
+  static const int _identifyPhotos = 3;
+
+  /// Identifier, avec ce que la plante a déjà.
+  ///
+  /// La photo principale part d'office, et **les plus récentes de la galerie
+  /// partent avec elle** : deux photos valent 13,7 points de top-1, trois en
+  /// valent 22,4, et celles-là ne coûtent ni un geste ni une seconde — elles
+  /// sont déjà prises. La feuille les montre dans sa bande, et une croix
+  /// retire celle qui n'aide pas.
+  ///
+  /// Les photos arrivent triées de la plus récente à la plus ancienne
+  /// (`photo_repository_impl.dart`), ce qui est le bon ordre : les dernières
+  /// sont celles qui ressemblent le plus à la plante d'aujourd'hui.
   Future<void> _identify(Plant plant) async {
     final photos = ref.read(plantPhotosProvider(id)).value ?? const <PlantPhoto>[];
     final primary = photos.where((p) => p.id == plant.primaryPhotoId).firstOrNull ?? photos.firstOrNull;
     if (primary == null) return;
-    final path = await ref.read(photoStorageProvider).absolutePath(primary.filePath);
+    final storage = ref.read(photoStorageProvider);
+    final path = await storage.absolutePath(primary.filePath);
+    final others = <String>[];
+    for (final photo in photos.where((p) => p.id != primary.id && !p.isRemote)) {
+      if (others.length >= _identifyPhotos - 1) break;
+      final other = await storage.absolutePath(photo.filePath);
+      // Une photo qui n'est pas sur l'appareil, le moteur ne saurait pas la
+      // lire : sa lecture ratée ferait échouer toute l'identification locale
+      // et partir chez Pl@ntNet, sur le quota, pour rien.
+      if (await File(other).exists()) others.add(other);
+    }
     if (!mounted) return;
-    final candidate = await showIdentificationSheet(context, absoluteImagePath: path);
+    final candidate = await showIdentificationSheet(context, absoluteImagePath: path, others: others);
     if (candidate == null || !mounted) return;
     await ref.read(plantRepositoryProvider).update(plant.copyWith(speciesName: () => candidate.scientificName));
     if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.speciesSet, emoji: '🔬'));
