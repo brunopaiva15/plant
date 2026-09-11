@@ -24,9 +24,17 @@ PLANTS = 'plants.csv'
 WIKIDATA = 'https://query.wikidata.org/sparql'
 
 
-def enrich_gbif(entries) -> list[str]:
+def enrich_gbif(entries, plants_path=None, every: int = 200) -> list[str]:
+    """Résout ce qui ne l'est pas encore — et **sauve en chemin**.
+
+    Une reprise ne redemande rien : les entrées déjà résolues sont sautées.
+    Encore faut-il qu'elles aient été écrites : sur 4 220 espèces neuves la
+    passe dure une heure et demie, et n'enregistrer qu'à la fin faisait
+    perdre l'heure entière sur une coupure de réseau ou un Ctrl-C.
+    """
     client = GbifClient()
     doubtful = []
+    resolues = 0
     for i, e in enumerate(entries, 1):
         if e.gbif_key:
             continue
@@ -37,6 +45,9 @@ def enrich_gbif(entries) -> list[str]:
         e.gbif_key = m.accepted_key or m.key
         if not e.family and m.family:
             e.family = m.family
+        resolues += 1
+        if resolues % every == 0 and plants_path:
+            save_plants(plants_path, entries)
         if i % 25 == 0:
             print(f'  gbif {i}/{len(entries)}', file=sys.stderr, flush=True)
     return doubtful
@@ -68,7 +79,7 @@ def main() -> int:
     do_all = not (args.gbif or args.wikidata)
     entries = load_plants(args.plants)
     if args.gbif or do_all:
-        doubtful = enrich_gbif(entries)
+        doubtful = enrich_gbif(entries, args.plants)
         save_plants(args.plants, entries)
         print(f'gbif : {sum(1 for e in entries if e.gbif_key)}/{len(entries)} résolues')
         for d in doubtful:

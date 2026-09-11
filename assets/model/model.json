@@ -1,211 +1,211 @@
 {
- "version": "7",
+ "version": "8",
  "input_size": 320,
  "load_size": 366,
  "source_size": 448,
- "classes": 1457,
+ "classes": 1444,
  "architecture": "MobileNetV3Large",
  "preprocessing": "included_in_graph_uint8_0_255",
- "sha256": "4399cac8b683ae32b633b5c6878f8bfa5b6a58cc3e74704394f3d22e1619e134",
- "bytes": 8790320,
+ "sha256": "9760ded18778a03f5a07e500403eb66dfe13a044dc68a33fbbf99eeb77fa14cd",
+ "bytes": 8765332,
  "metrics": {
-  "images": 28983,
-  "top1": 0.5961,
-  "top3": 0.7435,
-  "macro_f1": 0.5796,
-  "mean_confidence": 0.628,
+  "images": 28836,
+  "top1": 0.6627,
+  "top3": 0.8047,
+  "macro_f1": 0.6472,
+  "mean_confidence": 0.6843,
   "captive": {
-   "images": 3959,
-   "top1": 0.5979,
-   "top3": 0.7434,
+   "images": 3946,
+   "top1": 0.6483,
+   "top3": 0.796,
    "threshold_curve": [
     {
      "threshold": 0.5,
-     "accepted_rate": 0.6676,
-     "precision_when_accepted": 0.7836
+     "accepted_rate": 0.7035,
+     "precision_when_accepted": 0.8192
     },
     {
      "threshold": 0.7,
-     "accepted_rate": 0.5138,
-     "precision_when_accepted": 0.8722
+     "accepted_rate": 0.5606,
+     "precision_when_accepted": 0.8987
     },
     {
      "threshold": 0.9,
-     "accepted_rate": 0.3562,
-     "precision_when_accepted": 0.9518
+     "accepted_rate": 0.4105,
+     "precision_when_accepted": 0.9543
     }
    ]
   },
-  "version": "7"
+  "version": "8"
  },
  "threshold_curve": [
   {
    "threshold": 0.5,
    "min_margin": 0.0,
-   "accepted_rate": 0.6131,
-   "precision_when_accepted": 0.8159
+   "accepted_rate": 0.6875,
+   "precision_when_accepted": 0.8442
   },
   {
    "threshold": 0.5,
    "min_margin": 0.15,
-   "accepted_rate": 0.6061,
-   "precision_when_accepted": 0.82
+   "accepted_rate": 0.6786,
+   "precision_when_accepted": 0.8483
   },
   {
    "threshold": 0.5,
    "min_margin": 0.25,
-   "accepted_rate": 0.5938,
-   "precision_when_accepted": 0.8254
+   "accepted_rate": 0.6655,
+   "precision_when_accepted": 0.8543
   },
   {
    "threshold": 0.5,
    "min_margin": 0.4,
-   "accepted_rate": 0.5519,
-   "precision_when_accepted": 0.8493
+   "accepted_rate": 0.6205,
+   "precision_when_accepted": 0.8773
   },
   {
    "threshold": 0.6,
    "min_margin": 0.0,
-   "accepted_rate": 0.5382,
-   "precision_when_accepted": 0.8615
+   "accepted_rate": 0.615,
+   "precision_when_accepted": 0.8821
   },
   {
    "threshold": 0.6,
    "min_margin": 0.15,
-   "accepted_rate": 0.5382,
-   "precision_when_accepted": 0.8615
+   "accepted_rate": 0.615,
+   "precision_when_accepted": 0.8821
   },
   {
    "threshold": 0.6,
    "min_margin": 0.25,
-   "accepted_rate": 0.5373,
-   "precision_when_accepted": 0.8619
+   "accepted_rate": 0.6136,
+   "precision_when_accepted": 0.8829
   },
   {
    "threshold": 0.6,
    "min_margin": 0.4,
-   "accepted_rate": 0.5246,
-   "precision_when_accepted": 0.8687
+   "accepted_rate": 0.5982,
+   "precision_when_accepted": 0.8903
   },
   {
    "threshold": 0.7,
    "min_margin": 0.0,
-   "accepted_rate": 0.4727,
-   "precision_when_accepted": 0.8975
+   "accepted_rate": 0.5489,
+   "precision_when_accepted": 0.9128
   },
   {
    "threshold": 0.7,
    "min_margin": 0.15,
-   "accepted_rate": 0.4727,
-   "precision_when_accepted": 0.8975
+   "accepted_rate": 0.5489,
+   "precision_when_accepted": 0.9128
   },
   {
    "threshold": 0.7,
    "min_margin": 0.25,
-   "accepted_rate": 0.4727,
-   "precision_when_accepted": 0.8975
+   "accepted_rate": 0.5489,
+   "precision_when_accepted": 0.9128
   },
   {
    "threshold": 0.7,
    "min_margin": 0.4,
-   "accepted_rate": 0.4727,
-   "precision_when_accepted": 0.8975
+   "accepted_rate": 0.5489,
+   "precision_when_accepted": 0.9128
   },
   {
    "threshold": 0.8,
    "min_margin": 0.0,
-   "accepted_rate": 0.4053,
-   "precision_when_accepted": 0.9317
+   "accepted_rate": 0.4816,
+   "precision_when_accepted": 0.9426
   },
   {
    "threshold": 0.8,
    "min_margin": 0.15,
-   "accepted_rate": 0.4053,
-   "precision_when_accepted": 0.9317
+   "accepted_rate": 0.4816,
+   "precision_when_accepted": 0.9426
   },
   {
    "threshold": 0.8,
    "min_margin": 0.25,
-   "accepted_rate": 0.4053,
-   "precision_when_accepted": 0.9317
+   "accepted_rate": 0.4816,
+   "precision_when_accepted": 0.9426
   },
   {
    "threshold": 0.8,
    "min_margin": 0.4,
-   "accepted_rate": 0.4053,
-   "precision_when_accepted": 0.9317
+   "accepted_rate": 0.4816,
+   "precision_when_accepted": 0.9426
   },
   {
    "threshold": 0.85,
    "min_margin": 0.0,
-   "accepted_rate": 0.3687,
-   "precision_when_accepted": 0.9452
+   "accepted_rate": 0.4416,
+   "precision_when_accepted": 0.9566
   },
   {
    "threshold": 0.85,
    "min_margin": 0.15,
-   "accepted_rate": 0.3687,
-   "precision_when_accepted": 0.9452
+   "accepted_rate": 0.4416,
+   "precision_when_accepted": 0.9566
   },
   {
    "threshold": 0.85,
    "min_margin": 0.25,
-   "accepted_rate": 0.3687,
-   "precision_when_accepted": 0.9452
+   "accepted_rate": 0.4416,
+   "precision_when_accepted": 0.9566
   },
   {
    "threshold": 0.85,
    "min_margin": 0.4,
-   "accepted_rate": 0.3687,
-   "precision_when_accepted": 0.9452
+   "accepted_rate": 0.4416,
+   "precision_when_accepted": 0.9566
   },
   {
    "threshold": 0.9,
    "min_margin": 0.0,
-   "accepted_rate": 0.3261,
-   "precision_when_accepted": 0.9602
+   "accepted_rate": 0.3949,
+   "precision_when_accepted": 0.9694
   },
   {
    "threshold": 0.9,
    "min_margin": 0.15,
-   "accepted_rate": 0.3261,
-   "precision_when_accepted": 0.9602
+   "accepted_rate": 0.3949,
+   "precision_when_accepted": 0.9694
   },
   {
    "threshold": 0.9,
    "min_margin": 0.25,
-   "accepted_rate": 0.3261,
-   "precision_when_accepted": 0.9602
+   "accepted_rate": 0.3949,
+   "precision_when_accepted": 0.9694
   },
   {
    "threshold": 0.9,
    "min_margin": 0.4,
-   "accepted_rate": 0.3261,
-   "precision_when_accepted": 0.9602
+   "accepted_rate": 0.3949,
+   "precision_when_accepted": 0.9694
   },
   {
    "threshold": 0.95,
    "min_margin": 0.0,
-   "accepted_rate": 0.2656,
-   "precision_when_accepted": 0.9766
+   "accepted_rate": 0.3257,
+   "precision_when_accepted": 0.9818
   },
   {
    "threshold": 0.95,
    "min_margin": 0.15,
-   "accepted_rate": 0.2656,
-   "precision_when_accepted": 0.9766
+   "accepted_rate": 0.3257,
+   "precision_when_accepted": 0.9818
   },
   {
    "threshold": 0.95,
    "min_margin": 0.25,
-   "accepted_rate": 0.2656,
-   "precision_when_accepted": 0.9766
+   "accepted_rate": 0.3257,
+   "precision_when_accepted": 0.9818
   },
   {
    "threshold": 0.95,
    "min_margin": 0.4,
-   "accepted_rate": 0.2656,
-   "precision_when_accepted": 0.9766
+   "accepted_rate": 0.3257,
+   "precision_when_accepted": 0.9818
   }
  ],
  "species": {
@@ -246,7 +246,6 @@
   "acorus-calamus": "Acorus calamus",
   "actaea-spicata": "Actaea spicata",
   "actinidia-chinensis": "Actinidia chinensis",
-  "actinidia-deliciosa": "Actinidia deliciosa",
   "adansonia-digitata": "Adansonia digitata",
   "adenium-obesum": "Adenium obesum",
   "adiantum-capillus-veneris": "Adiantum capillus-veneris",
@@ -366,7 +365,6 @@
   "astrantia-major": "Astrantia major",
   "astrophytum-myriostigma": "Astrophytum myriostigma",
   "atriplex-hortensis": "Atriplex hortensis",
-  "atriplex-rosea": "Atriplex rosea",
   "atropa-bella-donna": "Atropa bella-donna",
   "aubrieta-deltoidea": "Aubrieta deltoidea",
   "aucuba-japonica": "Aucuba japonica",
@@ -564,7 +562,6 @@
   "coleus-scutellarioides": "Coleus scutellarioides",
   "colocasia-esculenta": "Colocasia esculenta",
   "colutea-arborescens": "Colutea arborescens",
-  "commiphora-wightii": "Commiphora wightii",
   "convallaria-majalis": "Convallaria majalis",
   "convolvulus-arvensis": "Convolvulus arvensis",
   "convolvulus-tricolor": "Convolvulus tricolor",
@@ -761,7 +758,6 @@
   "euphorbia-ingens": "Euphorbia ingens",
   "euphorbia-lactea": "Euphorbia lactea",
   "euphorbia-lathyris": "Euphorbia lathyris",
-  "euphorbia-leuconeura": "Euphorbia leuconeura",
   "euphorbia-marginata": "Euphorbia marginata",
   "euphorbia-milii": "Euphorbia milii",
   "euphorbia-myrsinites": "Euphorbia myrsinites",
@@ -839,7 +835,6 @@
   "geum-coccineum": "Geum coccineum",
   "ginkgo-biloba": "Ginkgo biloba",
   "gladiolus-x-hortulanus": "Gladiolus × hortulanus",
-  "glaucidium-palmarum": "Glaucidium palmarum",
   "glaucium-flavum": "Glaucium flavum",
   "glebionis-coronaria": "Glebionis coronaria",
   "glechoma-hederacea": "Glechoma hederacea",
@@ -865,7 +860,6 @@
   "hamamelis-mollis": "Hamamelis mollis",
   "hamamelis-virginiana": "Hamamelis virginiana",
   "hamamelis-x-intermedia": "Hamamelis × intermedia",
-  "harpagophytum-procumbens": "Harpagophytum procumbens",
   "hatiora-salicornioides": "Hatiora salicornioides",
   "haworthiopsis-attenuata": "Haworthiopsis attenuata",
   "hedera-helix": "Hedera helix",
@@ -910,7 +904,6 @@
   "hovenia-dulcis": "Hovenia dulcis",
   "howea-forsteriana": "Howea forsteriana",
   "hoya-carnosa": "Hoya carnosa",
-  "hoya-kerrii": "Hoya kerrii",
   "humulus-lupulus": "Humulus lupulus",
   "hyacinthoides-hispanica": "Hyacinthoides hispanica",
   "hyacinthus-orientalis": "Hyacinthus orientalis",
@@ -920,7 +913,6 @@
   "hydrangea-petiolaris": "Hydrangea petiolaris",
   "hydrangea-quercifolia": "Hydrangea quercifolia",
   "hylotelephium-spectabile": "Hylotelephium spectabile",
-  "hylotelephium-telephium": "Hylotelephium telephium",
   "hyoscyamus-niger": "Hyoscyamus niger",
   "hypericum-androsaemum": "Hypericum androsaemum",
   "hypericum-calycinum": "Hypericum calycinum",
@@ -1047,7 +1039,6 @@
   "lonicera-periclymenum": "Lonicera periclymenum",
   "lonicera-tatarica": "Lonicera tatarica",
   "lonicera-xylosteum": "Lonicera xylosteum",
-  "lophira-alata": "Lophira alata",
   "loropetalum-chinense": "Loropetalum chinense",
   "lotus-corniculatus": "Lotus corniculatus",
   "lunaria-annua": "Lunaria annua",
@@ -1121,7 +1112,6 @@
   "narcissus-tazetta": "Narcissus tazetta",
   "nasturtium-officinale": "Nasturtium officinale",
   "nelumbo-nucifera": "Nelumbo nucifera",
-  "nematanthus-gregarius": "Nematanthus gregarius",
   "neotinea-tridentata": "Neotinea tridentata",
   "neottia-nidus-avis": "Neottia nidus-avis",
   "neottia-ovata": "Neottia ovata",
@@ -1192,7 +1182,6 @@
   "pelargonium-x-hortorum": "Pelargonium × hortorum",
   "pelargonium-x-hybridum": "Pelargonium × hybridum",
   "pelargonium-zonale": "Pelargonium zonale",
-  "peperomia-caperata": "Peperomia caperata",
   "peperomia-obtusifolia": "Peperomia obtusifolia",
   "persea-americana": "Persea americana",
   "persicaria-lapathifolia": "Persicaria lapathifolia",
@@ -1483,7 +1472,6 @@
   "silene-coronaria": "Silene coronaria",
   "silene-dioica": "Silene dioica",
   "silybum-marianum": "Silybum marianum",
-  "sinningia-speciosa": "Sinningia speciosa",
   "sisymbrium-officinale": "Sisymbrium officinale",
   "skimmia-japonica": "Skimmia japonica",
   "smilax-aspera": "Smilax aspera",
@@ -1552,7 +1540,6 @@
   "tamarix-gallica": "Tamarix gallica",
   "tamarix-parviflora": "Tamarix parviflora",
   "tamarix-ramosissima": "Tamarix ramosissima",
-  "tanacetum-balsamita": "Tanacetum balsamita",
   "tanacetum-parthenium": "Tanacetum parthenium",
   "tanacetum-vulgare": "Tanacetum vulgare",
   "taraxacum-officinale": "Taraxacum officinale",

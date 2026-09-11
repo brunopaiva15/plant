@@ -968,6 +968,112 @@ Le gel, lui, ne se mesure pas au banc : il se voit sur un téléphone. Ce qui
 reste à vérifier sur l'appareil, c'est l'inférence elle-même à 320 px, la
 demi-seconde du § 6.4 n'ayant jamais été remesurée depuis.
 
+### 6.7 bis Résultats de l'Iris 8 — collecter large, livrer étroit
+
+La v8 devait élargir le répertoire : 4 220 espèces candidates collectées en
+vingt-deux heures, 991 926 images gardées, **5 259 classes entraînées**
+(§ 12.11). Elle ne l'a pas élargi d'une espèce, et elle a quand même été la
+plus grosse avancée de qualité depuis la v3. Voici pourquoi.
+
+#### La mesure qui a tout décidé
+
+`compare_models.py` fait passer les deux modèles sur les **mêmes** 6 000
+images, sur les 1 444 classes qu'ils connaissent tous les deux. Mais il
+masque les sorties que l'autre modèle n'a pas — et ce masque retire 13
+classes à l'Iris 7 contre **3 815** à l'Iris 8. Le chiffre obtenu répond donc
+à « ce réseau-ci, s'il n'avait à choisir que parmi les espèces de l'autre »,
+pas à ce que l'utilisateur reçoit. D'où la seconde lecture, sorties
+entières :
+
+| 1 444 classes communes, 6 000 mêmes images | Iris 7 | Iris 8 à 5 259 classes |
+|---|---|---|
+| **sorties masquées** — qualité du réseau | 0,5863 | **0,6543** (+6,8) |
+| **sorties entières** — ce que l'application rend | 0,5862 | **0,5528** (−3,3) |
+| plantes cultivées, sorties entières | 0,5990 | **0,5300** (−6,9) |
+
+La ligne de l'Iris 7 ne bouge que d'un dix-millième entre les deux lectures :
+la comparaison est propre, tout l'écart vient de l'Iris 8.
+
+**Dix points séparent les deux lectures du même réseau sur les mêmes
+photos** — onze sur les plantes cultivées. C'est la mesure la plus directe
+qu'on ait du prix de l'étendue, et elle confirme au dixième près
+l'estimation du § 12.12, obtenue autrement. Les 3 815 espèces nouvelles ne
+se contentent pas d'être mal reconnues : **elles volent les réponses des
+anciennes.**
+
+#### Retailler plutôt que réentraîner
+
+Le réseau n'avait donc pas besoin d'être réappris, mais d'être **borné**. Et
+la borne n'a pas sa place dans l'application : `assets/species/catalog.tsv`
+porte 36 364 noms — plus que le modèle — et `CatalogCareGuide` résout
+l'entretien espèce → genre → famille → catégorie, si bien que l'application
+sait déjà dire quelque chose de presque n'importe quoi. Il n'existe aucun
+ensemble « ce que l'app sait afficher » à quoi masquer.
+
+`tools/plant_model/retailler.py` la met donc dans le modèle : on reprend les
+poids appris, on ne garde dans la dernière couche que les colonnes voulues,
+on réexporte. **Ce n'est pas un réentraînement** — quelques minutes, dont
+l'essentiel en réévaluation.
+
+Et ce n'est pas non plus une approximation : le softmax d'une tête tronquée
+vaut `exp(zᵢ) / Σ_gardées exp(zⱼ)`, c'est-à-dire exactement un masque suivi
+d'une renormalisation. La lecture `compare_models --restreint` **est** la
+mesure du fichier produit.
+
+#### Ce qui est livré
+
+1 444 classes, les mêmes que l'Iris 7 moins treize.
+
+| `model.json`, chacun sur son propre test | Iris 7 | **Iris 8** |
+|---|---|---|
+| classes | 1 457 | 1 444 |
+| top-1 | 0,5961 | **0,6627** |
+| top-3 | 0,7435 | **0,8047** |
+| macro-F1 | 0,5796 | **0,6472** |
+| plantes cultivées, top-1 | 0,5979 | **0,6483** |
+| seuil 0,70 / marge 0,25 | 47,3 % acceptées, 89,8 % justes | **54,9 %, 91,3 %** |
+| taille | 8,79 Mo | 8,77 Mo |
+
+**Plus autonome *et* plus juste au même seuil.** Il n'y a pas d'arbitrage :
+`FallbackPolicy` ne bouge pas, huit identifications sur cent cessent
+d'appeler Pl@ntNet, et celles que l'application tranche seule sont plus
+souvent vraies. À titre de comparaison, le passage de la v6 à la v7 avait
+demandé de *monter* le seuil pour obtenir moins que ça.
+
+Le chiffre publié et le chiffre rigoureux bougent ici dans le même sens
+(+6,7 et +6,8) — assez rare pour être noté : aucune des deux mesures ne
+raconte d'histoire.
+
+#### Le coût, et il est réel
+
+**13 espèces que l'Iris 7 nommait et que l'Iris 8 n'a pas apprises**, dont
+quatre d'intérieur : *Hoya kerrii*, *Nematanthus gregarius*, *Peperomia
+caperata*, *Sinningia speciosa*. La couverture des 167 noms d'appartement
+recule de **92 % à 89 %** (151 → 147). Elles restent choisissables à la main
+dans le sélecteur d'espèces ; l'appareil photo ne les proposera plus.
+
+Ce ne sont pas des espèces pauvres : elles sont tombées sur le défaut de
+découpage du § 12.19, corrigé depuis. La prochaine construction du jeu en
+récupère une partie.
+
+#### Ce que la v8 aura vraiment servi
+
+Les vingt-deux heures de collecte n'ont pas élargi le répertoire — elles ont
+**affiné la vision**. Le réseau a vu 991 000 images sur 5 259 plantes au lieu
+de 290 000 sur 1 457, et sur les espèces qu'il connaissait déjà il est six
+points et demi meilleur. On jette ensuite les sorties en trop et on garde
+les traits.
+
+On ne peut pas démêler complètement ce qui vient des espèces nouvelles de ce
+que les anciennes ont gagné en images au passage. Mais les deux faits sont
+mesurés et tiennent ensemble : le jeu a triplé, la représentation partagée a
+gagné 6,8 points, et exposer les 5 259 sorties détruit ce gain.
+
+> **Collecter large, livrer étroit.** Le § 13 le pariait par raisonnement ;
+> c'est maintenant un chiffre. Une espèce de plus au catalogue coûte à
+> toutes les autres, et ce coût ne se voit dans aucun `model.json` — il faut
+> deux modèles sur les mêmes images pour le lire.
+
 ### 6.8 Résultats du modèle v1
 
 | | |
@@ -1900,6 +2006,54 @@ bien nommer ce que les gens photographient —, mais c'est la mesure qui
 manquait au critère de réussite ci-dessous : la première condition n'est pas
 une formalité, c'est celle qui décide.
 
+#### Ce que les 76 espèces faibles disent du cap
+
+Les 63 plus mal classées (§ 12.4) ont été relevées nommément. Leur
+composition dit où le modèle est faible, et ce n'est pas là où on
+l'attendait :
+
+| | |
+|---|---|
+| **plantes d'appartement** | **1 sur 63** — *Dracaena reflexa* |
+| échouent contre une espèce du **même genre** | 28 (44 %) |
+| dans la même famille | 11 (17 %) |
+| au-delà de la famille | 24 (38 %) |
+
+Les soixante-deux autres sont des **arbres, des conifères, des céréales et
+des plantes sauvages** : paulownia, lagerstroemia, cryptomeria, seigle,
+orties de bord de route. Or c'est exactement la population que 1 543 espèces
+de plus viendraient grossir — on ne descend pas la courbe de popularité de
+GBIF sans tomber sur davantage de flore européenne sauvage.
+
+Et 44 % de ces échecs sont **rattrapés par l'écran** : le candidat proposé
+est du même genre, l'application en montre cinq, la bonne réponse y est. La
+population réellement coûteuse, ce sont les 24 qui sortent de la famille.
+
+#### Ce que ça change au cap des 3 000, sans l'abandonner
+
+Trois mesures pointent dans le même sens :
+
+1. le modèle rend **67,3 %** sur les plantes d'appartement et 58,9 % sur le
+   reste (§ 12.12) ;
+2. restreindre les sorties à l'intérieur rend **dix points** ;
+3. **une seule** des 63 espèces les plus faibles est une plante
+   d'appartement.
+
+Le catalogue est déjà large là où l'utilisateur ne regarde pas, et faible au
+même endroit. **Viser 3 000 par un tirage dans la flore disponible
+ajouterait des espèces dans la bande la plus faible, en faisant payer dix
+points à celui qui photographie son salon.** Ce n'est pas une raison de
+renoncer au chiffre — c'en est une de choisir ce qu'on y met : des plantes
+**cultivées**, celles des jardineries, des balcons et des jardins, plutôt
+que ce dont GBIF a le plus. La v6 l'avait fait sans le nommer (§ 12.11,
+« sélectionner, ne pas tirer ») ; la mesure dit maintenant pourquoi c'était
+la bonne intuition.
+
+Et deux corrections gratuites avant toute collecte : les **six doublons**
+du § 12.14 — *Cupressus macrocarpa* rate 20 de ses 26 images, dont **8 en
+répondant son propre autre nom** —, et les **14 plantes d'appartement
+absentes** du § 12.12.
+
 Trois réserves sur ce chiffre, dans les deux sens : l'échantillon est de
 vingt, donc l'incertitude est d'une vingtaine de points ; c'est une **borne
 basse**, GBIF ne filtrant que CC0 et CC BY à la requête et iNaturalist en
@@ -1910,9 +2064,149 @@ pire cas.
 
 C'est déjà ce que la v6 avait fait sans le nommer — ses 530 ajouts étaient
 « les espèces cultivées les plus observées en Europe ». La liste des
-candidates doit se **générer depuis GBIF par nombre d'observations**, pas se
-tirer du catalogue étendu. `disponibilite.py` devient alors une
-vérification, pas une recherche.
+candidates doit se **générer par nombre d'observations**, pas se tirer du
+catalogue étendu. `disponibilite.py` devient alors une vérification, pas une
+recherche.
+
+#### ✅ Fait, et le résultat renverse la prudence ci-dessus
+
+`tools/plant_dataset/candidats.py`. **Ce n'est pas GBIF qui sait dire
+« cultivée »** : il a le champ (`degreeOfEstablishment=cultivated`) et
+personne ne le remplit — **288 occurrences sur 76 millions**, quatre
+millionièmes. Mesuré, pas supposé.
+
+C'est **iNaturalist** : son drapeau « captive/cultivated » est posé par les
+observateurs et massivement utilisé, et l'API rend le classement tout fait.
+58 543 espèces de plantes cultivées, triées par observations. En tête :
+hibiscus, laurier-rose, érable du Japon, lagerstroemia, croton, romarin,
+aloès. Le rayon d'une jardinerie, pas une flore de terrain.
+
+Après retrait des 1 457 déjà connues : **7 658 candidates nouvelles**.
+
+| rang de la candidate | observations cultivées |
+|---|---|
+| 500ᵉ | 1 489 (*Eucalyptus robusta*) |
+| 1 543ᵉ — de quoi viser 3 000 | 481 (*Correa alba*) |
+| 3 000ᵉ | 203 |
+| 3 543ᵉ — de quoi viser 5 000 | 160 (*Trichocereus atacamensis*) |
+| 5 000ᵉ | 94 |
+
+#### Le gap entre 3 000 et 5 000 : il n'y en a pas
+
+C'est la question qui décide, et elle se mesure : sur 35 candidates tirées
+au sort dans chaque bande, combien atteignent les 25 images de
+`--min-train` chez GBIF ?
+
+| | au-dessus de 25 images | maigres | jamais photographiées |
+|---|---|---|---|
+| **rangs 1 – 1 543** (viser 3 000) | **30/35 — 86 %** | 5 | 0 |
+| **rangs 1 544 – 3 543** (les 2 000 de plus) | **29/35 — 83 %** | 6 | 0 |
+
+Trois points d'écart, dans le bruit d'un échantillon de 35. **La deuxième
+bande vaut la première.** Et les deux valent le double du tirage au hasard
+mesuré plus haut, qui rendait 40 % : c'est la sélection qui produit
+l'écart, pas la profondeur.
+
+Le chiffre est en outre une **borne basse** : GBIF ne filtre que CC0 et CC BY
+à la requête, le partage à l'identique ne se voit qu'au média, et
+iNaturalist en direct — qui apporte précisément les plantes cultivées
+(§ 4.3) — n'est pas interrogé du tout.
+
+Ce qu'on peut donc attendre :
+
+| | candidates à collecter | classes réelles attendues |
+|---|---|---|
+| viser 3 000 | 1 543 | ≈ **2 780** |
+| viser 5 000 | 3 543 | ≈ **4 430** |
+| atteindre 5 000 | ≈ 4 220 | ≈ 5 000 |
+
+#### ✅ Ce que la collecte a réellement rendu
+
+4 220 candidates collectées en vingt-deux heures, quatre parts, plus une
+reprise GBIF pour les espèces tombées sur le quota journalier d'iNaturalist.
+Fusionnées au jeu de l'Iris 7 :
+
+| | |
+|---|---|
+| espèces du catalogue ayant des images | **5 646 / 5 778 — 97,7 %** |
+| qui passent `--min-train 25` | **5 371 / 5 646 — 95,1 %** |
+| qui passent **aussi** `--min-val 3` | **5 259 / 5 646 — 93,1 %** |
+| images gardées | 991 926 sur 1 014 678 (4 596 doublons exacts) |
+| par classe | 185 (199 pour l'Iris 7) |
+| **classes de l'Iris 8** | **5 259**, soit 3,6× l'Iris 7 |
+
+Les 112 espèces qui tombent entre les deux seuils ne manquaient pas
+d'images — c'est la réparation du découpage qui leur en donnait trop peu à
+valider. Diagnostic et correctif au § 12.19 ; il prend effet à la prochaine
+construction du jeu, pas sur l'Iris 8.
+
+> **Ces 5 259 classes n'ont pas été livrées.** Mesuré sur les mêmes images,
+> le modèle à 5 259 sorties rend *moins* bien que l'Iris 7 sur les espèces
+> que l'utilisateur avait déjà. L'Iris 8 livré est le même réseau retaillé à
+> **1 444 classes**, et il gagne 6,6 points de top-1. La collecte a servi —
+> comme matière d'entraînement, pas comme répertoire. Tout est au § 6.7 bis,
+> et c'est la leçon la plus chère de cette version.
+
+**L'échantillon de 35 espèces annonçait 84 % ; la réalité est à 95 %.** Ce
+n'est pas une erreur de l'échantillon, c'est sa limite, écrite dans sa
+propre documentation : `disponibilite.py` n'interroge que GBIF en CC0 et
+CC BY, alors que la collecte a aussi eu iNaturalist, le partage à
+l'identique et Commons. Il annonçait une **borne basse** et c'en était une.
+
+La conséquence pratique dépasse ce chiffre : **la disponibilité n'était pas
+le facteur limitant, et ne l'était probablement pas non plus à 3 000.** Le
+gap qu'on cherchait entre les deux cibles n'existait ni dans l'échantillon
+ni dans les faits.
+
+#### Ce que 5 000 coûte vraiment
+
+Pas la disponibilité, donc. Trois autres choses :
+
+| | 1 457 | 3 000 | 5 000 |
+|---|---|---|---|
+| `.tflite` livré | 8,8 Mo | ≈ 11,8 Mo | **≈ 15,6 Mo** |
+| collecte | ~6 h | ~12 h | **~15 h**, bornée par les API |
+| jeu d'images | 15 Go | ~30 Go | **~50 Go** (et le triple en cours de collecte) |
+| une recette d'entraînement | 25 min | ~2 h | **~3 h** |
+
+La tête est un `Dense(960 → N)` : c'est le seul poste qui grossit avec le
+nombre de classes, à raison de deux octets par classe et par canal.
+
+**Et le vrai prix reste celui du § 12.12** : dix points de top-1 pris à
+celui qui photographie son salon, pour les espèces qu'il ne photographiera
+jamais. Passer de 1 457 à 5 000 ne peut qu'aggraver ce chiffre.
+
+#### La pièce qui manquait entre la sélection et la collecte
+
+`build_dataset.py --only-file` ne **filtre** que les plantes déjà présentes
+dans `plants.csv` : une candidate absente du catalogue n'est pas collectée,
+**elle est ignorée en silence**. Le défaut ne se voit qu'après la collecte,
+dans un décompte plus court que prévu — quinze heures pour rien.
+
+D'où `candidats.py --inscrire`, qui ajoute les candidates retenues au
+catalogue avant de collecter. Les lignes créées ne portent que ce que le nom
+donne — identifiant interne, genre, épithète ; la famille, la clé GBIF et
+l'identifiant Wikidata viennent ensuite d'`enrich_plants.py`.
+
+La chaîne complète, dans l'ordre :
+
+```bash
+python3 candidats.py --combien 4220 --out candidats_v8.txt --inscrire
+python3 enrich_plants.py --gbif --wikidata
+# puis la collecte en parts, § 3 de docs/10
+```
+
+#### La décision se déplace, elle ne se prend pas maintenant
+
+**Collecter ne force pas à entraîner.** Les images de 4 000 candidates
+servent aussi bien un modèle à 3 000 classes qu'un modèle à 5 000 : c'est
+`--min-train` et la liste des classes qui tranchent, à l'entraînement, en
+vingt-cinq minutes de plus.
+
+Donc : **collecter large** — la collecte est le travail long, irréversible
+et borné par les API —, puis **entraîner les deux et mesurer** avec
+`compare_models.py` (§ 12.10). Le critère de réussite ci-dessous ne change
+pas ; il devient simplement décidable au lieu d'être pronostiqué.
 
 #### Le critère de réussite, à fixer maintenant
 
@@ -2027,6 +2321,13 @@ float16 ne coûte rien de mesurable — c'était pris sur parole jusqu'ici.
 précision des réponses acceptées de 90,6 % à **95,1 %**. Les 1 306 espèces
 que l'utilisateur ne photographiera jamais lui coûtent donc **dix points de
 top-1**, tous les jours.
+
+> **Confirmé depuis, par un autre chemin.** Le § 6.7 bis fait passer un même
+> réseau de 5 259 sorties à 1 444 sur les mêmes 6 000 images : 0,5528 contre
+> 0,6543, soit **10,2 points**, et 11,1 sur les plantes cultivées. Deux
+> mesures indépendantes, deux jeux de classes différents, le même ordre de
+> grandeur. Ce n'est donc pas une particularité des plantes d'intérieur :
+> c'est ce que coûte une sortie de plus, quelle qu'elle soit.
 
 > Le top-1 est exact : masquer préserve l'ordre entre les classes qui
 > restent, renormaliser n'y change rien. Les colonnes de seuil, elles, sont
@@ -2205,4 +2506,451 @@ donc lisibles par la collecte. **Retirer les lignes en double du catalogue
 de collecte est la décision suivante** : elle change le jeu d'étiquettes du
 modèle, donc elle se prend en ouvrant la v8, pas en passant. Les images se
 rejoindront alors, et six classes fantômes quitteront le décompte.
+
+#### Et le catalogue de la v8 en a ramené quarante de plus
+
+Le catalogue est passé à 5 778 lignes (§ 12.11), et le défaut a suivi.
+Simple comptage des clés GBIF déjà résolues dans `plants.csv` — aucun appel
+réseau :
+
+| | |
+|---|---|
+| clés GBIF portées par plus d'une ligne | **46** |
+| lignes en trop | **51** |
+| groupes dont deux membres sont des classes de l'Iris 8 livré | 6 — les mêmes qu'ici |
+
+L'Iris 8 livré n'est donc pas plus atteint qu'avant, et
+`acceptedSpeciesName()` continue de le couvrir. Mais le modèle **à 5 259
+classes**, lui, portait les 46 : *Calathea* et *Goeppertia orbifolia*,
+*Dypsis* et *Chrysalidocarpus lutescens*, cinq agrumes sur une seule clé.
+Autant de plantes dont les images se partageaient entre deux classes qui se
+disputaient ensuite la réponse — une part, petite mais réelle, des dix
+points du § 6.7 bis.
+
+**Et 46 est une borne basse.** *Saintpaulia ionantha* et *Streptocarpus
+ionanthus* sont deux lignes du catalogue pour une seule plante, et leurs
+clés GBIF diffèrent : le comptage par clé ne les voit pas. C'est
+`doublons.py`, qui demande à GBIF le taxon *accepté* de chaque nom, qui
+donne le vrai chiffre — à lancer sur les 5 778 lignes avant la prochaine
+collecte, pas après.
+
+### 12.15 Répondre au niveau du genre, plutôt qu'une tête hiérarchique
+
+La question posée : le modèle doit-il apprendre Famille → Genre → Espèce ?
+**Non à l'entraînement, oui à la réponse**, et la matrice du § 12.4 dit
+pourquoi.
+
+#### Ce que la mesure interdit d'espérer
+
+Une tête hiérarchique — trois sorties, trois pertes additionnées — sert
+quand les erreurs se serrent contre l'arbre taxonomique. Les nôtres ne s'y
+serrent pas : **73 % franchissent la famille**. Et le modèle a déjà appris
+la taxonomie sans qu'on la lui donne : 12,8 % d'erreurs dans le genre, soit
+**73 fois le hasard**. Ce qui manque n'est pas la structure, c'est la photo
+— l'échec est par photo et non par espèce (§ 12.4), et aucune supervision
+taxonomique ne fait parler une image qui ne dit rien.
+
+S'y ajoute que les quasi-erreurs sont **déjà rattrapées par l'écran** :
+top-3 à 74,4 % contre 59,6 % de top-1, cinq candidats affichés.
+
+#### Ce que la même mesure rend gratuit
+
+Sommer le softmax **par genre**. Quand cinq candidats sont cinq *Picea* à
+0,15, le genre pèse 0,75 : « un épicéa, espèce incertaine » est une réponse
+**vraie et utile**, là où cinq noms n'en sont pas une et où l'appel à
+Pl@ntNet coûte du quota.
+
+Le plancher se lit déjà dans les chiffres du § 12.4 :
+
+| | top-1 |
+|---|---|
+| espèce | 59,0 % |
+| **genre** | **≥ 64,3 %** |
+| famille | ≥ 70,1 % |
+
+Ce sont des planchers : ils ne comptent que les cas où la *première*
+réponse tombait dans le bon genre, pas ceux où la masse du genre était
+juste mais répartie. Le vrai chiffre demande de garder les distributions —
+un mode `--proba` dans `confusions.py`, une passe de trois quarts d'heure.
+
+Et à 5 000 classes, plus d'espèces par genre : ce que ça rapporte augmente
+avec le catalogue, contrairement au top-1.
+
+### 12.16 Les cultivars : un second axe, pas des classes
+
+*Monstera deliciosa* « Thai Constellation » est une *Monstera deliciosa*
+panachée. Les gens en possèdent, et ils veulent le nom. La tentation est
+d'en faire des classes ; **trois mesures l'interdisent.**
+
+| | |
+|---|---|
+| iNaturalist | sur les 2 000 taxons cultivés les plus observés : 1 935 espèces, 65 hybrides, **zéro cultivar**. Une photo de « Thai Constellation » y est enregistrée *Monstera deliciosa* |
+| Commons | la hiérarchie existe — `Monstera deliciosa (cultivars)` — et porte **1 fichier**. `Epipremnum aureum` « Marble Queen » : **3**. « N'Joy » : **6** |
+| le seuil | 25 images pour qu'une classe entre dans le modèle, 200 visées |
+
+> **Une mesure ratée, et ce qu'elle apprend.** La première version de ce
+> paragraphe annonçait zéro photo partout. C'était faux : le connecteur
+> cherchait `Category:Monstera deliciosa 'Thai Constellation'` quand Commons
+> nomme `Category:Monstera deliciosa (cultivars)`. **Les zéros venaient de
+> la requête, pas des données.** Refaite correctement, la conclusion tient —
+> pour une autre raison, qui recoupe le § 12.2 : Commons est riche pour les
+> plantes installées de longue date, pauvre pour les modes récentes, et
+> « Thai Constellation » est une mode récente.
+
+S'ajoute le risque propre : des centaines de classes visuellement quasi
+identiques recréeraient à grande échelle le défaut du § 12.14 — les images
+d'une plante partagées entre deux étiquettes, une confusion qu'aucune photo
+ne peut trancher — et aggraveraient les dix points du § 12.12.
+
+#### Ce qu'on fait à la place
+
+**Le modèle répond l'espèce, l'application propose les cultivars.**
+`tools/plant_dataset/cultivars.py` construit la liste depuis Wikidata, où un
+cultivar est une instance de `Q4886` rattachée à son taxon parent. Sur les
+360 premières espèces du catalogue : **622 cultivars sur 115 espèces, un
+tiers du catalogue en a au moins un** — *Acer palmatum* « Bloodgood »,
+*Ficus elastica* « Robusta », *Epipremnum aureum* « Neon ».
+
+Un garde-fou non négociable : `Q4886` porte aussi des taxons qui n'en sont
+pas. La règle du code horticole tranche — **un nom de cultivar prend une
+majuscule** —, ce qui écarte *Hosta decorata* (une espèce) et « Agave
+americana var. medio-picta alba » (une variété).
+
+Si un jour un modèle doit les distinguer, **la source sera l'application
+elle-même** : demander « quel cultivar ? » après avoir dit l'espèce
+accumule le jeu étiqueté qui n'existe nulle part. Ça commence par poser la
+question, pas par entraîner.
+
+### 12.17 ✅ Commons range les plantes en pot, et on ne le lui demandait pas
+
+Trouvé en cherchant les cultivars : `Category:Monstera deliciosa (potted)`
+porte **41 fichiers**. Commons **catégorise le contexte** — `(potted)`,
+`(flowers)`, `(leaves)`, `(products)`, `- botanical illustrations`.
+
+Or le § 12.4 dit que 73 % des erreurs viennent de n'avoir jamais vu la
+plante telle qu'on la cultive, et le § 6.3 a déjà payé une fois ce défaut —
+le yucca pris pour du maïs, corrigé en recollectant des photos en pot.
+
+Le connecteur descendait bien d'un niveau, mais prenait **les six premières
+sous-catégories rendues par l'API** : `(potted)` passait ou non au hasard,
+et `(products)` — des confitures — pouvait prendre sa place.
+`classer_souscategories()` les ordonne maintenant : les plantes en pot et
+les cultivars d'abord, les planches botaniques et les herbiers jamais.
+
+Quelques lignes, aucune collecte de plus, et ça vise le défaut le plus cher
+du modèle. À faire **avant** la collecte de la v8, sinon on ramène 4 220
+espèces sans en profiter.
+
+### 12.18 L'étage cultivar : prototypes plutôt que classes
+
+Le § 12.16 concluait que le cultivar ne pouvait pas être une classe et le
+renvoyait à une question posée à l'utilisateur. **Il y a mieux, et ça ne
+coûte pas ce que j'avais chiffré.**
+
+```
+photo → backbone → embedding
+                      ↓
+              classifieur d'espèces          ← 50-100+ observations, classes
+                      ↓
+             « Monstera deliciosa »
+                      ↓
+         prototypes du genre/espèce          ← 5-30 observations, suggestion
+                      ↓
+        Thai / Albo / Aurea / Mint
+```
+
+**Pourquoi c'est bon marché, contrairement à ce que je disais.** Les dix
+points du § 12.12 viennent de l'étendue du *softmax* : chaque classe de plus
+est un candidat de plus à écarter pour toutes les photos. Un étage
+conditionné à l'espèce n'élargit rien — il ne sépare que les quatre ou huit
+cultivars d'une seule plante, une fois l'espèce connue. Le sous-problème est
+minuscule, et ajouter un cultivar ne demande **aucun réentraînement** : un
+prototype de plus dans la base.
+
+L'infrastructure existe déjà : `--feature-cache` met en cache les
+activations du réseau gelé, **960 nombres par image** (`FEATURE_DIM`).
+
+#### Trois réserves, dont une qui peut tout arrêter
+
+**1. Le réglage fin apprend à effacer ce qu'on cherche.** Chaque photo de
+« Thai Constellation » de notre jeu est étiquetée *Monstera deliciosa*. Les
+cent couches dégelées poussent donc l'embedding à **faire converger** le
+cultivar panaché et la plante ordinaire. Chercher les cultivars dans cette
+représentation, c'est les chercher dans la seule qu'on ait entraînée à les
+confondre. Parades, du moins cher au plus cher : partir du backbone
+**ImageNet gelé** ; prendre une couche **plus précoce**, la panachure étant
+un signal de couleur que les couches basses gardent mieux ; ou ajouter une
+perte contrastive au réglage fin.
+
+**2. La donnée manque là où l'app en a besoin.** Le seuil relâché à 10-30
+photos est le bon raisonnement, mais Commons donne **1** fichier pour
+`Monstera deliciosa (cultivars)`, **3** pour « Marble Queen », **6** pour
+« N'Joy ». Là où il y a de quoi, c'est *Acer palmatum*, *Hosta*, *Rosa* —
+les classiques de jardin, photographiés depuis vingt ans. L'architecture
+marcherait donc **d'abord sur les érables, pas sur la Monstera panachée**,
+soit l'inverse de ce que l'application sert. C'est le § 12.2 encore.
+
+**3. La base de prototypes n'est pas gratuite sur le téléphone.**
+
+| | 960 dimensions | projetées en 128 |
+|---|---|---|
+| 5 000 prototypes, float16 | 9,6 Mo | **1,3 Mo** |
+| 7 500 prototypes | 14,4 Mo | 1,9 Mo |
+
+Neuf mégaoctets, c'est plus que le modèle entier. **La projection fait
+partie du dessin, pas de l'optimisation.**
+
+#### L'expérience qui tranche, et son piège
+
+`tools/plant_model/prototypes.py`. Elle compare la similarité entre deux
+photos d'un même cultivar et celle entre deux cultivars **de la même
+espèce** — séparer deux espèces étant déjà résolu.
+
+> **Le piège, mesuré en écrivant l'outil.** Dix photos dans un espace à 960
+> dimensions se séparent presque toujours : sur du bruit pur, un prototype
+> laissant une photo de côté atteint **0,9 de justesse**. Ce n'est pas une
+> propriété des cultivars, c'est une propriété des petits échantillons en
+> grande dimension. Sans témoin, l'expérience aurait conclu que l'embedding
+> sépare les cultivars — quel que soit l'embedding.
+>
+> D'où un **test de permutation** : on mélange les étiquettes deux cents
+> fois et on regarde la part des mélanges qui font aussi bien. Comparer à
+> leur *moyenne* ne suffirait pas — une réalisation dépasse une moyenne une
+> fois sur deux.
+
+```bash
+python3 prototypes.py --recolter --especes "Acer palmatum,Hosta,Rosa"
+python3 prototypes.py --mesurer                    # ImageNet gelé
+python3 prototypes.py --mesurer --poids .cache/ckpt/fine.weights.h5   # notre réseau
+```
+
+Les deux lectures répondent à la réserve n° 1 : si le réseau gelé sépare et
+que le nôtre non, c'est le réglage fin qui a effacé le signal, et l'étage
+cultivar doit partir d'ailleurs.
+
+### 12.19 ✅ 112 espèces écartées pour une image de validation
+
+Le compte des classes d'Iris 8 ne tombait pas juste : la finalisation
+annonçait 5 371 classes, `train.py` en a déclaré **5 259**. L'entonnoir, lu
+sur `splits.csv` :
+
+| | classes | perdues |
+|---|---|---|
+| espèces dans `splits.csv` | 5 628 | |
+| `train ≥ 25` | 5 371 | −257, trop peu d'images |
+| `train ≥ 25` **et** `val ≥ 3` | **5 259** | −112, pas de quoi valider |
+
+Ces 112 ne sont pas des classes fragiles : **47 images d'entraînement en
+médiane, jusqu'à 193** — *Sinapis alba*, *Hylotelephium telephium*. 6 356
+images d'entraînement partent avec elles. Et aucune n'avait une validation
+vide : toutes en avaient **une ou deux**.
+
+**C'est la réparation elle-même qui les a mises là.**
+`repair_species_coverage` donnait bien un groupe de validation aux espèces
+qui n'en avaient aucun — d'où les zéros absents — mais elle prenait **le plus
+petit groupe d'entraînement**. L'intention était bonne (perdre le moins
+possible d'entraînement) ; l'effet ne l'était pas : le plus petit groupe fait
+souvent une ou deux photos, et `train.py` en exige trois.
+
+**Les deux moitiés du système ne visaient pas la même cible.** La réparation
+visait « au moins un groupe », `train.py` exige « au moins `--min-val`
+images ». Une espèce réparée avec un groupe de deux photos était réparée sur
+le papier et écartée en pratique. Et la réparation ne se déclenchait que si
+la validation était *absente* : une espèce à qui le hachage avait
+naturellement donné deux photos n'était jamais touchée.
+
+Corrigé dans `plant_dataset/splits.py`, qui nomme désormais les deux seuils
+(`MIN_TRAIN`, `MIN_VAL`) et les vise :
+
+- on répare aussi une validation **présente mais sous le seuil** ;
+- on choisit le plan qui **sort le moins d'images de l'entraînement** — le
+  plus petit groupe qui comble à lui seul, ou les plus petits accumulés,
+  selon lequel coûte le moins ;
+- un plan qui ferait passer l'entraînement sous `--min-train` est **abandonné
+  entier** : la classe serait écartée quand même, et on aurait perdu les
+  images pour rien.
+
+**Le correctif ne peut pas fausser une comparaison entre versions** : une
+espèce qui satisfait déjà les deux seuils n'est jamais touchée, donc seules
+des classes absentes du modèle précédent changent de découpage. C'est la
+propriété que vérifie
+`test_repair_leaves_alone_a_species_that_already_meets_the_thresholds`.
+
+Trouvé pendant l'entraînement de la v8, donc **trop tard pour elle** :
+changer la liste des classes invalide l'empreinte du cache de traits et
+relancerait l'encodage. Ça prend effet à la prochaine construction du jeu.
+
+## 13. Cadrage de l'Iris 9 : nourrir, pas grossir
+
+> **Cet ordre est provisoire.** Il sera révisé quand l'Iris 8 sera entraînée
+> et qu'on saura ce que la largeur a **réellement** coûté : le § 12.12
+> mesure dix points pour 1 457 classes, le chiffre à 5 000 n'existe pas
+> encore, et c'est lui qui décidera si le point 2 ci-dessous passe devant
+> tout le reste.
+
+### 13.1 Ce que toutes les mesures de la semaine disent ensemble
+
+Prises une par une, elles ressemblent à des constats sans lien. Mises
+côte à côte, elles disent la même chose :
+
+| | |
+|---|---|
+| 73 % des erreurs franchissent la **famille** botanique (§ 12.4) | ce ne sont pas des confusions entre voisines |
+| **5 espèces sur 1 422** ne sont jamais reconnues ; 76 sont sous 25 % | les classes sont apprises, les photos ratent |
+| **67,3 %** sur les plantes d'appartement contre 58,9 % ailleurs (§ 12.12) | le modèle est bon là où la v4 avait recollecté en pot |
+| Asparagaceae ↔ Poaceae, 39 erreurs (§ 12.4) | le yucca pris pour du maïs, toujours là en v7 |
+
+**Le modèle ne manque pas d'espèces, il manque de photos ordinaires.**
+L'échec est par photo, pas par espèce, et le seul endroit où il est bon est
+précisément celui où on lui avait donné des photos du bon genre.
+
+L'Iris 8 est une version de **largeur** : 1 457 → ~5 000 classes. L'Iris 9
+doit être une version de **profondeur** — le même catalogue, mieux nourri.
+Et comme la largeur coûte dix points à celui qui photographie son salon, son
+premier travail sera peut-être d'en rendre une partie.
+
+> **Écrit avant la v8, tranché par elle.** Le pari ci-dessus était un
+> raisonnement ; c'est devenu une mesure. L'Iris 8 entraîné à 5 259 classes
+> rend 0,5528 sur les espèces déjà connues là où l'Iris 7 rend 0,5862 ;
+> retaillé à 1 444, le même réseau rend 0,6543 (§ 6.7 bis). La largeur a bien
+> coûté, et « en rendre une partie » n'était pas *peut-être* : c'était la
+> condition pour que la version soit livrable.
+>
+> Mais la collecte large n'a pas été perdue pour autant, et c'est la nuance
+> que le paragraphe ci-dessus n'avait pas vue : ce sont ces 700 000 images
+> supplémentaires qui ont fait les 6,8 points. **La largeur se paie dans les
+> sorties, pas dans l'entraînement.** L'Iris 9 peut donc continuer à
+> collecter tout ce qu'il trouve — il doit seulement choisir ce qu'il
+> expose.
+
+### 13.2 Les quatre chantiers, par rapport mesuré
+
+**1. Répondre au niveau du genre** (§ 12.15). Aucun entraînement : sommer le
+softmax par genre porte le top-1 de 59,0 % à **au moins 64,3 %**, et « un
+épicéa, espèce incertaine » est une réponse vraie là où cinq noms n'en sont
+pas une. À 5 000 classes, davantage d'espèces par genre : le gain augmente
+avec le catalogue, contrairement au top-1.
+
+**2. Restreindre les candidats au contexte** (§ 12.12). **Dix points**, un
+masque sur les sorties, aucune collecte. Contrepartie réelle : rendre
+*impossible* la bonne réponse pour qui photographie un érable dans la rue —
+c'est le garde-fou de la classe « autre », prévu au § 3.2 et jamais fait. À
+mesurer sur les 3 606 images avant d'écrire une ligne.
+
+**3. Les photos des utilisateurs.** La seule source qui règle **les deux**
+problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
+identification confirmée est une photo étiquetée, dans le bon domaine, de la
+plante que quelqu'un possède vraiment. Aucun jeu public n'a ça et aucun n'en
+aura : iNaturalist ne modélise pas les cultivars (§ 12.16), Commons en a
+deux photos par cultivar en médiane sur son genre le mieux fourni.
+
+C'est aussi **le seul chantier dont le délai se compte en mois**, d'où sa
+place : il faut le commencer avant d'en avoir besoin. Il demande du
+consentement explicite, une tuyauterie, et du soin sur la vie privée — une
+photo de salon n'est pas une observation naturaliste. Il commence par
+**poser la question dans l'application**, pas par entraîner.
+
+**4. Les 76 espèces faibles** (§ 12.4), avec le domaine en tête et non le
+volume : `(potted)` de Commons, tout juste branché (§ 12.17), et
+`captive=true` d'iNaturalist qu'on n'utilise qu'à 50 % de la cible. Pour les
+espèces que les gens possèdent réellement, cette proportion devrait être
+inversée.
+
+### 13.3 La branche cultivars, et la porte qui la commande
+
+Le § 12.18 tient à une hypothèse non vérifiée : **l'embedding sépare-t-il
+deux cultivars d'une même espèce, ou l'a-t-on entraîné à les confondre ?**
+Chaque photo de « Thai Constellation » de notre jeu est étiquetée *Monstera
+deliciosa* — les cent couches dégelées ont appris à les rapprocher.
+
+`prototypes.py` tranche en deux heures, avec les quelques *Hosta* qui ont 5
+à 14 photos sur Commons. Et le résultat oriente deux routes très
+différentes :
+
+- **signal présent** → c'est un problème de **récolte**, et les sources
+  existent (Commons par les légendes plutôt que par les catégories, NC State
+  et ses blocs image-légende-auteur-licence, Flickr par cultivar nommé) ;
+- **signal absent** → c'est une décision d'**entraînement** de l'Iris 9 —
+  une perte contrastive pendant le réglage fin — et aucune récolte n'a de
+  sens avant.
+
+**Ne pas construire le moissonneur avant d'avoir passé cette porte.** Deux
+heures peuvent en économiser cinquante.
+
+### 13.4 Le catalogue de l'application et celui de la collecte ne sont pas le même fichier
+
+C'est la frontière la plus facile à franchir par mégarde, et la plus chère.
+
+**`plants.csv` est le catalogue de *collecte*.** `build_dataset.py` collecte
+ce qu'il contient ; `train.py` en fait des classes. Une ligne y est donc une
+**classe du modèle**, pas une fiche d'application.
+
+**Une fiche de cultivar n'a donc rien à y faire.** Écrire `Epipremnum aureum
+'Marble Queen'` dans `plants.csv` la ferait collecter comme une espèce, puis
+entrer au modèle comme une classe de plus — c'est-à-dire exactement ce que
+le § 12.16 interdit, et une répétition à grande échelle du défaut du
+§ 12.14 : deux étiquettes pour une plante, les images partagées, une
+confusion qu'aucune photo ne peut trancher.
+
+| | vit dans | devient |
+|---|---|---|
+| espèce | `plants.csv` | une classe du modèle |
+| cultivar | catalogue de l'app + `cultivars.csv` | une fiche, jamais une classe |
+| photo validée | table `plant_images` | une illustration, ou un prototype (§ 12.18) |
+
+Le rattachement se fait par l'identifiant de l'espèce parente : si GBIF ne
+connaît qu'*Epipremnum aureum*, c'est à elle que pointent 'Marble Queen' et
+'N'Joy', qui restent deux fiches distinctes côté application.
+
+#### Un identifiant qu'on possède déjà sans le savoir
+
+Un plan de rattachement aux référentiels veut `gbif_taxon_key` **et**
+`inaturalist_taxon_id`, qui sont deux registres différents. `plants.csv`
+porte `gbif_key`, `wikidata_id` et `plantnet_id` — pas iNaturalist.
+
+Mais **la valeur existe déjà** : `resolve_inat()` résout le taxon espèce par
+espèce pendant la collecte et le mémorise dans `dataset/species_inat.json`,
+indexé par nom scientifique, avec l'identifiant, le rang et le nombre
+d'observations. C'est une colonne à recopier, pas des milliers de requêtes à
+refaire.
+
+#### Valider à la main : pour quoi, et jusqu'où
+
+Un écran de validation — la fiche à gauche, les photos candidates à droite,
+trois réponses possibles (espèce confirmée, cultivar confirmé, insuffisant)
+— est la bonne réponse au défaut des sources sans identification : Unsplash
+donne des photos, pas des identifications, et un humain en ajoute une.
+
+**Mais il ne passe pas à l'échelle de l'entraînement.** Une photo de
+référence par fiche, ce sont ~5 000 décisions : faisable, et c'est l'usage
+« illustration ». La profondeur d'un modèle en demande des centaines par
+espèce, et les prototypes de cultivars dix à trente chacun — des dizaines de
+milliers de décisions.
+
+**Sauf braqué ailleurs.** L'écran est la partie coûteuse à construire ; une
+fois qu'il existe, le pointer sur les **photos des utilisateurs** (§ 13.2,
+chantier 3) change sa nature : l'identification est déjà donnée par celui
+qui a ajouté la plante, et on n'échantillonne plus qu'un contrôle qualité.
+Même outil, même table, mais une source qui fournit du volume dans le bon
+domaine visuel — et qui règle les cultivars par la même occasion.
+
+#### Licence et conditions d'API ne sont pas le même texte
+
+Pour Unsplash en particulier, et la remarque vaut ailleurs : la **licence**
+accorde le téléchargement, la copie et la modification — donc
+l'entraînement, la seule restriction réelle étant de ne pas revendre sans
+modification substantielle ni reconstituer un service concurrent. Les
+**conditions de l'API**, elles, imposent de servir les images depuis les URL
+d'Unsplash, d'attribuer, et d'appeler leur point de suivi à la sélection.
+
+Deux documents, deux usages : trouver les photos *via l'API* lie pour
+l'affichage, sans interdire d'entraîner sous la licence. À trancher
+explicitement avant d'écrire le connecteur, plutôt qu'après.
+
+### 13.5 Ce qu'il faut retenir
+
+Deux des quatre chantiers ne demandent **aucun entraînement**, et le
+troisième ne demande aucune collecte extérieure. L'Iris 9 n'est pas un
+modèle plus gros : c'est un modèle mieux nourri, et pour l'essentiel une
+application qui sait quoi faire de ce qu'il rend.
 

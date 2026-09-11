@@ -78,7 +78,7 @@ def alias_depuis(lignes) -> dict[str, str]:
     for r in lignes:
         retenu = r['internal_id']
         alias.setdefault(retenu, retenu)
-        for s in (r.get('synonyms') or '').replace(';', ',').split(','):
+        for s in (r.get('synonyms') or '').replace(';', '|').replace(',', '|').split('|'):
             if s.strip():
                 alias.setdefault(_id(s.strip()), retenu)
         alias.setdefault(_id(r['scientific_name']), retenu)
