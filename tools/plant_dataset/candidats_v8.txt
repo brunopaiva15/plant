@@ -240,8 +240,8 @@ Malva subovata
 Conoclinium coelestinum
 Dodonaea viscosa
 Phlox divaricata
-Afrocarpus falcatus
 Excoecaria cochinchinensis
+Afrocarpus falcatus
 Eryngium yuccifolium
 Quercus muehlenbergii
 Passiflora incarnata
@@ -298,8 +298,8 @@ Crassula multicava
 Conoclinium dissectum
 Stapelia gigantea
 Crassula capitella
-Ebenopsis ebano
 Zephyranthes carinata
+Ebenopsis ebano
 Hedychium coronarium
 Kalmia latifolia
 Scadoxus multiflorus
@@ -445,11 +445,11 @@ Senna siamea
 Heliotropium arborescens
 Anemonastrum canadense
 Castanea mollissima
+Quercus fusiformis
 Brugmansia aurea
 Pinus ponderosa
 Orthosiphon aristatus
 Heuchera americana
-Quercus fusiformis
 Aquilegia coerulea
 Araucaria angustifolia
 Sanguinaria canadensis
@@ -472,8 +472,8 @@ Symphyotrichum oblongifolium
 Styrax japonicus
 Handroanthus impetiginosus
 Syzygium cumini
-Senna alata
 Cinnamomum burmanni
+Senna alata
 Goeppertia zebrina
 Epidendrum radicans
 Licuala grandis
@@ -896,8 +896,8 @@ Physalis philadelphica
 Petasites japonicus
 Tristaniopsis laurina
 Chrysanthemum indicum
-Anthurium schlechtendalii
 Aloe juvenna
+Anthurium schlechtendalii
 Echeveria pulidonis
 Nyctocereus serpentinus
 Oxalis corniculata
@@ -1281,9 +1281,9 @@ Dalea purpurea
 Vernonia gigantea
 Rhododendron mucronulatum
 Calycanthus × raulstonii
+Zephyranthes citrina
 Kalanchoe laxiflora
 Bouteloua gracilis
-Zephyranthes citrina
 Lippia alba
 Salvia polystachia
 Drosera capensis
@@ -1356,12 +1356,12 @@ Eriogonum arborescens
 Alocasia micholitziana
 Verbesina virginica
 Dianella tasmanica
+Ficus vaccinioides
 Agave ovatifolia
 Justicia adhatoda
 Aechmea bracteata
 Piper betle
 Impatiens niamniamensis
-Ficus vaccinioides
 Opuntia stricta
 Amsonia ciliata
 Sedum sexangulare
@@ -1978,11 +1978,11 @@ Tillandsia aeranthos
 Forsythia koreana
 Sinapis alba
 Penstemon calycosus
+Ruellia elegans
 Betula alleghaniensis
 Watsonia borbonica
 Echeveria setosa
 Hippeastrum striatum
-Ruellia elegans
 Oxalis stricta
 Quercus ellipsoidalis
 Ulmus rubra
@@ -2092,6 +2092,7 @@ Bassia scoparia
 Crinum bulbispermum
 Imperata cylindrica
 Primula × polyantha
+Coccinia grandis
 Dryopteris wallichiana
 Acorus gramineus
 Gomesa flexuosa
@@ -2100,7 +2101,6 @@ Claytonia sibirica
 Galanthus woronowii
 Crocus sativus
 Pycnanthemum verticillatum
-Coccinia grandis
 Agave mapisaga
 Agastache mexicana
 Bauhinia tomentosa
@@ -2248,12 +2248,12 @@ Quercus rugosa
 Homalocephala texensis
 Marchantia polymorpha
 Rumex obtusifolius
+Pulmonaria saccharata
 Maackia amurensis
 Ruellia nudiflora
 Polygala fruticosa
 Allium proliferum
 Pelazoneuron kunthii
-Pulmonaria saccharata
 Tetradium daniellii
 Asarum caudatum
 Amaranthus viridis
@@ -2311,12 +2311,12 @@ Festuca californica
 Attalea phalerata
 Aponogeton distachyos
 Genipa americana
-Livistona australis
 Beaucarnea pliabilis
 Beschorneria yuccoides
 Pelargonium tomentosum
 Anemanthele lessoniana
 Primula denticulata
+Livistona australis
 Acrostichum aureum
 Campanulastrum americanum
 Phlomis purpurea
@@ -2396,6 +2396,7 @@ Senecio niveoaureus
 Caryopteris incana
 Corylus cornuta
 Asclepias texana
+Musa balbisiana
 Taxus × media
 Heliconia chartacea
 Cyrtanthus elatus
@@ -2405,7 +2406,6 @@ Camptotheca acuminata
 Aquilegia flavescens
 Boltonia asteroides
 Nicotiana rustica
-Musa balbisiana
 Aloiampelos striatula
 Pinus jeffreyi
 Ferocactus herrerae
@@ -3031,6 +3031,7 @@ Eclipta prostrata
 Zizia aptera
 Juglans ailantifolia
 Lepechinia hastata
+Phyllanthus niruri
 Kohleria amabilis
 Agave asperrima
 Hernandia nymphaeifolia
@@ -3046,7 +3047,6 @@ Aquilegia alpina
 Aristolochia grandiflora
 Coreopsis basalis
 Echinocereus enneacanthus
-Phyllanthus niruri
 Marsilea minuta
 Woodwardia prolifera
 Elodea densa
@@ -3229,6 +3229,7 @@ Eugenia involucrata
 Begonia fenicis
 Petrosedum sediforme
 Trichocereus terscheckii
+Megathyrsus maximus
 Geranium nodosum
 Frangula purshiana
 Lepidium virginicum
@@ -3241,7 +3242,6 @@ Azara microphylla
 Viburnum sargentii
 Gardenia volkensii
 Crassula expansa
-Megathyrsus maximus
 Metrosideros polymorpha
 Urtica gracilis
 Cestrum diurnum
@@ -3412,6 +3412,7 @@ Phedimus aizoon
 Cenchrus purpureus
 Geniostoma ligustrifolium
 Mandevilla laxa
+Acer davidii
 Lithocarpus corneus
 Asarum arifolium
 Echeveria purpusiorum
@@ -3432,7 +3433,6 @@ Tillandsia caput-medusae
 Aeonium urbicum
 Magnolia obovata
 Hypericum monogynum
-Acer davidii
 Rhododendron noriakianum
 Lindera akoensis
 Malephora purpureocrocea
@@ -3806,6 +3806,7 @@ Caragana pygmaea
 Acacia acinacea
 Humulus scandens
 Jasminum nervosum
+Leucospermum lineare
 Sorghum halepense
 Eriophyllum staechadifolium
 Amelanchier utahensis
@@ -3825,7 +3826,6 @@ Saraca dives
 Protea obtusifolia
 Juniperus × pfitzeriana
 Xanthoceras sorbifolium
-Leucospermum lineare
 Pinus muricata
 Cercocarpus betuloides
 Cylindropuntia ramosissima
@@ -3850,6 +3850,7 @@ Dryopteris ludoviciana
 Pittosporum viridiflorum
 Pulmonaria obscura
 Bouteloua dactyloides
+Senecio macroglossus
 Zanthoxylum nitidum
 Adromischus cristatus
 Pelargonium reniforme
@@ -3865,7 +3866,6 @@ Jatropha dioica
 Salvinia natans
 Pellaea rotundifolia
 Ligustrum quihoui
-Senecio macroglossus
 Enchylaena tomentosa
 Ceodes brunoniana
 Markhamia lutea
