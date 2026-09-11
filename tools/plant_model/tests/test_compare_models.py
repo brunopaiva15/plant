@@ -94,3 +94,28 @@ def test_tally_does_not_modify_the_probabilities_it_is_given(restrict):
     avant = probs.copy()
     tally([('a', probs)], m, restrict, renormalise=True)
     assert np.array_equal(probs, avant)
+
+
+def test_the_threshold_is_a_parameter_not_a_constant():
+    """Choisir le seuil de `FallbackPolicy` demande de le balayer : une réponse
+    à 0,62 est refusée à 0,70 et acceptée à 0,60, et c'est tout l'objet du
+    réglage."""
+    m = modele(['a', 'b'])
+    pred = [('a', sortie(m, {'a': 0.62, 'b': 0.38}))]
+    assert tally(pred, m, None, seuil=0.70)['accepted_rate'] == 0.0
+    assert tally(pred, m, None, seuil=0.60)['accepted_rate'] == 1.0
+    # Le seuil ne touche pas au classement.
+    assert tally(pred, m, None, seuil=0.90)['top1'] == 1.0
+
+
+def test_restricting_and_renormalising_is_what_a_narrowed_app_would_render():
+    """La configuration visée : masquer aux espèces du catalogue, rendre la
+    masse retirée, puis appliquer le seuil. Sans renormaliser, la même réponse
+    paraît moins sûre qu'elle ne l'est."""
+    m = modele(['fiche', 'autre-fiche', 'hors-catalogue'])
+    pred = [('fiche', sortie(m, {'fiche': 0.45, 'autre-fiche': 0.15, 'hors-catalogue': 0.4}))]
+    catalogue = {'fiche', 'autre-fiche'}
+    assert tally(pred, m, catalogue, seuil=0.70)['accepted_rate'] == 0.0
+    renorme = tally(pred, m, catalogue, renormalise=True, seuil=0.70)
+    assert renorme['accepted_rate'] == 1.0          # 0,45 / 0,60 = 0,75
+    assert renorme['precision_when_accepted'] == 1.0

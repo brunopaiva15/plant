@@ -121,8 +121,9 @@ def predict_rows(rows, model) -> list[tuple[str, np.ndarray]]:
     return [(truth, predict(model, path)) for path, truth in rows if truth in model['index']]
 
 
-def tally(predictions, model, restrict: set[str] | None, renormalise: bool = False) -> dict:
-    """Top-1, top-3 et taux d'acceptation à 0,70 — le seuil de l'application.
+def tally(predictions, model, restrict: set[str] | None, renormalise: bool = False,
+          seuil: float = 0.70) -> dict:
+    """Top-1, top-3 et taux d'acceptation au seuil de l'application.
 
     `renormalise` ne change **pas** le top-1 : masquer préserve l'ordre entre
     les classes qui restent. Il ne change que les colonnes de seuil, et il
@@ -135,6 +136,11 @@ def tally(predictions, model, restrict: set[str] | None, renormalise: bool = Fal
       classes-là ». Sa couche finale répartirait la masse entre elles ; sans
       renormaliser, on mesure une autonomie artificiellement basse, puisque
       la probabilité partie aux classes masquées ne revient à personne.
+
+    C'est cette seconde lecture qui décrit une application qui restreindrait
+    ses sorties à son catalogue : elle masque, donc elle renormalise avant
+    d'afficher une confiance. `seuil` se balaie alors pour trouver celui qui
+    rend l'autonomie de la version précédente sans descendre sous sa justesse.
     """
     seen = hit1 = hit3 = accepted = accepted_ok = 0
     for truth, probs in predictions:
@@ -156,7 +162,7 @@ def tally(predictions, model, restrict: set[str] | None, renormalise: bool = Fal
         seen += 1
         hit1 += top[0] == truth
         hit3 += truth in top
-        if probs[order[0]] >= 0.70:
+        if probs[order[0]] >= seuil:
             accepted += 1
             accepted_ok += top[0] == truth
     return {
@@ -168,9 +174,10 @@ def tally(predictions, model, restrict: set[str] | None, renormalise: bool = Fal
     }
 
 
-def score(rows, model, restrict: set[str] | None, renormalise: bool = False) -> dict:
+def score(rows, model, restrict: set[str] | None, renormalise: bool = False,
+          seuil: float = 0.70) -> dict:
     """Inférence puis comptage, pour qui n'a qu'une lecture à faire."""
-    return tally(predict_rows(rows, model), model, restrict, renormalise)
+    return tally(predict_rows(rows, model), model, restrict, renormalise, seuil)
 
 
 def read_test(dataset: Path) -> list[tuple[str, str, bool]]:
@@ -192,6 +199,12 @@ def main() -> int:
     ap.add_argument('--b', required=True, help='modèle candidat')
     ap.add_argument('--sample', type=int, default=6000, help='images de test tirées au hasard, 0 = toutes')
     ap.add_argument('--seed', type=int, default=20260905)
+    ap.add_argument('--restreint', action='store_true',
+                    help='ajoute la lecture « masquée et renormalisée » : ce que rendrait une '
+                         'application qui restreint ses sorties à son propre catalogue, balayée '
+                         'sur plusieurs seuils')
+    ap.add_argument('--seuils', default='0.5,0.6,0.7,0.8',
+                    help='seuils balayés par --restreint')
     args = ap.parse_args()
 
     a, b = load_model(Path(args.a)), load_model(Path(args.b))
@@ -205,6 +218,7 @@ def main() -> int:
     captive = [(p, t) for p, t, c in rows if t in shared and c]
     new = [(p, t) for p, t, _ in rows if t in only_b]
     rng = random.Random(args.seed)
+    seuils = [float(x) for x in args.seuils.split(',') if x.strip()]
 
     def take(items, n):
         return rng.sample(items, n) if n and len(items) > n else items
@@ -227,6 +241,17 @@ def main() -> int:
         for model, pred in sorties:
             ligne(model, tally(pred, model, None))
         print()
+        if args.restreint:
+            # Masquer retire de la masse ; sans la rendre, le seuil devient
+            # plus sévère qu'il n'en a l'air et l'autonomie mesurée est fausse.
+            print(f'— {title} ({len(subset)} images) — masquées et renormalisées, '
+                  'une application restreinte à son catalogue')
+            for model, pred in sorties:
+                for seuil in seuils:
+                    r = tally(pred, model, shared, renormalise=True, seuil=seuil)
+                    print(f"   v{model['version']} top1 {r['top1']}  seuil {seuil:.2f} → "
+                          f"{r['accepted_rate']} acceptées, précision {r['precision_when_accepted']}")
+            print()
 
     if new:
         subset = take(new, args.sample // 3)
