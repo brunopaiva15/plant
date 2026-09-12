@@ -112,6 +112,10 @@ class LocationDetailScreen extends ConsumerWidget {
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              // Sans marge explicite, une grille imbriquée reprend à son
+              // compte les marges de sécurité de l'écran — un grand vide
+              // au-dessus des plantes, sous un en-tête qui les gère déjà.
+              padding: EdgeInsets.zero,
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 220, mainAxisSpacing: Space.sm, crossAxisSpacing: Space.sm, childAspectRatio: 0.72),
               itemCount: plants.length,
               itemBuilder: (context, i) => PlantGridCard(summary: plants[i], onTap: () => context.push(Routes.plant(plants[i].plant.id))),

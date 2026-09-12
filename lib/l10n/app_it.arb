@@ -1248,6 +1248,5 @@
   "viewPlant": "La pianta",
   "viewLeafClose": "Una foglia da vicino",
   "viewAnother": "Altra vista",
-  "viewForModel": "Questa foto aiuta {name} a riconoscere la specie. Non verrà conservata.",
-  "viewsCaption": "Foto per {name}, poi eliminate"
+  "viewForModel": "Questa foto aiuta {name} a riconoscere la specie. Non verrà conservata."
 }

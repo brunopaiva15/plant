@@ -155,7 +155,6 @@ void main() {
     expect(find.text('La plante'), findsOneWidget);
     expect(find.text('Une feuille de près'), findsOneWidget);
     expect(find.text('Autre vue'), findsOneWidget);
-    expect(find.textContaining('supprimées ensuite'), findsOneWidget);
     expect(find.bySemanticsLabel('Supprimer la photo'), findsNothing);
     expect(photoFiles(), hasLength(2));
 

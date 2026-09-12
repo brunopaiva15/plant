@@ -1886,7 +1886,5 @@
   "viewLeafClose": "Une feuille de près",
   "viewAnother": "Autre vue",
   "viewForModel": "Cette photo aide {name} à reconnaître l'espèce. Elle ne sera pas gardée.",
-  "@viewForModel": {"placeholders": {"name": {"type": "String"}}},
-  "viewsCaption": "Photos pour {name}, supprimées ensuite",
-  "@viewsCaption": {"placeholders": {"name": {"type": "String"}}}
+  "@viewForModel": {"placeholders": {"name": {"type": "String"}}}
 }

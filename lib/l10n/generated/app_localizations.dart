@@ -6875,12 +6875,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Cette photo aide {name} à reconnaître l\'espèce. Elle ne sera pas gardée.'**
   String viewForModel(String name);
-
-  /// No description provided for @viewsCaption.
-  ///
-  /// In fr, this message translates to:
-  /// **'Photos pour {name}, supprimées ensuite'**
-  String viewsCaption(String name);
 }
 
 class _AppLocalizationsDelegate

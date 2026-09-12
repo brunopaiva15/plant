@@ -4052,9 +4052,4 @@ class AppLocalizationsFr extends AppLocalizations {
   String viewForModel(String name) {
     return 'Cette photo aide $name à reconnaître l\'espèce. Elle ne sera pas gardée.';
   }
-
-  @override
-  String viewsCaption(String name) {
-    return 'Photos pour $name, supprimées ensuite';
-  }
 }

@@ -39,6 +39,9 @@ class _PickerBody extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            // Une grille imbriquée sans marge explicite reprend celles de
+            // l'écran (barre d'état) : un vide sous le titre de la sheet.
+            padding: EdgeInsets.zero,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: Space.xs, crossAxisSpacing: Space.xs, childAspectRatio: 0.8),
             itemCount: photos.length,
             itemBuilder: (context, i) {

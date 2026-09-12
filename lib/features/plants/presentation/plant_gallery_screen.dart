@@ -89,6 +89,9 @@ class PlantGalleryScreen extends ConsumerWidget {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
+                    // Une grille imbriquée sans marge explicite reprend
+                    // celles de l'écran : un vide au-dessus de chaque mois.
+                    padding: EdgeInsets.zero,
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 140, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 0.8),
                     itemCount: items.length,
                     itemBuilder: (context, i) => _Tile(
