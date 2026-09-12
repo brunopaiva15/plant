@@ -121,23 +121,36 @@ Fiche ─[⋯]⟶ Archiver ⟶ sheet : raison optionnelle (Morte · Donnée · V
 Profil ⟶ Anciennes plantes ⟶ [Restaurer]
 ```
 
-## 8. Trouver une plante (quatre questions)
+## 8. Trouver une plante (trois questions, puis un atelier)
 ```
 Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir une espèce ─[🧭]⟶
-  Q1 · Où va-t-elle vivre ?      Pièce lumineuse · Lumière moyenne · Coin sombre · Dehors
-  Q2 · Quel entretien ?          J'oublie souvent · Régulier · J'aime m'en occuper
-  Q3 · Animaux ou enfants ?      Sans risque · Pas de contrainte
-  Q4 · Quel genre ?              Chips multi-choix + texte libre (facultatif)
-  ⟶ 5 propositions du catalogue, chacune avec sa raison (« Supporte l'ombre · Facile à vivre »)
-  ─[tap]⟶ Fiche d'entretien en sheet ⟶ [Ajouter au jardin] (ou [Utiliser] depuis le sélecteur)
+  Q1 · Où va-t-elle vivre ?      ☀️ Pièce lumineuse · 🌤️ Lumière moyenne · 🌑 Coin sombre · 🏡 Dehors   [Peu importe]
+  Q2 · Quel entretien ?          😅 J'oublie souvent · 🙂 Régulier · 🥰 J'aime m'en occuper            [Peu importe]
+  Q3 · Animaux ou enfants ?      🐾 Sans risque · 🙅 Pas de contrainte
+  ⟶ Nos propositions
+       puces des réponses (☀️ Pièce lumineuse · 😅 J'oublie… · 🐾 Sans risque) ─[tap]⟶ la question, puis retour ici
+       filtre par genre (Toutes · 🪴 Intérieur · 🌵 Succulentes · …) : la liste se refait sur place
+       ★ Notre premier choix : carte de couleur, photo ou emoji, raisons en pastilles, 💧 ☀️ 📈 en un coup d'œil
+       Elles s'y plairaient aussi : quatre cartes, mêmes raisons
+       ✨ Aller plus loin : texte libre + [Demander à l'IA] (seulement si une clé est configurée)
+  ─[tap]⟶ Fiche en sheet : tuile, noms, raisons, fiche d'entretien ⟶ [Ajouter au jardin] (ou [Utiliser] depuis le sélecteur)
 ```
+- Une réponse touchée se colore, puis la page tourne d'elle-même : c'est un
+  questionnaire, pas un formulaire. Chaque tuile dit sous son libellé ce qu'elle
+  recouvre (« Loin des fenêtres, peu de jour »), pour que « Coin sombre » veuille
+  dire la même chose pour tout le monde.
+- Le genre de plante n'est plus une question : c'est un filtre sur les
+  propositions, qui se refont sous les yeux. Une puce de réponse ramène à sa
+  question, et la nouvelle réponse revient droit aux propositions.
 - Le tri se fait hors ligne sur les fiches d'entretien embarquées : lumière, difficulté,
-  arrosage, toxicité, tenue dehors. Un critère sans réponse ne pèse pas.
+  arrosage, toxicité, tenue dehors. Un critère sans réponse ne pèse pas. Les photos
+  sont celles des observations GBIF libres de droits, cherchées après coup ; sans
+  réseau, l'emoji de la catégorie tient la tuile, de la même forme.
 - Éliminatoire, jamais négociable : toxicité inconnue quand on demande « sans risque »,
   plein soleil dans un coin sombre, espèce exigeante pour qui oublie d'arroser.
 - Rien de convaincant ? On le dit, plutôt que de remplir la liste. [Demander à l'IA]
-  élargit alors hors catalogue — appel réseau seulement sur ce geste, propositions
-  marquées « à vérifier avant d'acheter ».
+  élargit alors hors catalogue, avec le texte libre en plus — appel réseau seulement
+  sur ce geste, propositions marquées « à vérifier avant d'acheter ».
 
 ## 9. Après une mise à jour (fenêtre des nouveautés)
 1. L'application s'ouvre sur l'onglet du jour ; `WhatsNewGate`, posé autour de

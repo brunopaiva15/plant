@@ -130,10 +130,16 @@ class PlantFinder {
   /// Ce qui disqualifie sans discussion : une promesse qu'on ne peut pas
   /// tenir (toxicité inconnue quand on demande du sans risque), une plante
   /// qui ne survivrait pas à l'endroit, ou qui demande trop pour qui oublie.
+  ///
+  /// La lumière tolère un cran d'écart, pas deux : une plante de lumière
+  /// vive dans un coin sombre végète, et les autres réponses — un arrosage
+  /// qu'on oublie, des animaux — ne la sauvent pas. Avec deux crans admis,
+  /// « j'oublie d'arroser » suffisait à faire remonter un Gasteria dans un
+  /// coin sombre, et sa fiche disait le contraire juste en dessous.
   bool _admissible(FinderCriteria c, CareProfile p) {
     if (c.safeOnly && p.toxicity != Toxicity.safe) return false;
     if (c.spot == FinderSpot.outdoor && !p.outdoorFriendly) return false;
-    if (c.spot != null && (p.light.index - _targetLight(c.spot!).index).abs() > 2) return false;
+    if (c.spot != null && (p.light.index - _targetLight(c.spot!).index).abs() > 1) return false;
     if (c.effort == FinderEffort.forgiving && (p.difficulty == CareDifficulty.demanding || p.humidity == HumidityNeed.high)) return false;
     return true;
   }

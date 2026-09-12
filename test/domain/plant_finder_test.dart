@@ -52,10 +52,19 @@ void main() {
       expect(results.every((m) => m.reasons.contains(FinderReason.safe)), isTrue);
     });
 
-    test('un coin sombre ne reçoit pas de plante de plein soleil', () {
+    test('un coin sombre ne reçoit pas de plante de lumière vive', () {
       final results = finder.search(const FinderCriteria(spot: FinderSpot.darkRoom), limit: 20);
       expect(results, isNotEmpty);
-      expect(results.every((m) => profileOf(m).light.index <= LightNeed.brightIndirect.index), isTrue);
+      expect(results.every((m) => profileOf(m).light.index <= LightNeed.indirect.index), isTrue);
+    });
+
+    test('les autres réponses ne rachètent pas la lumière', () {
+      // Qui oublie d'arroser et vit avec un chat : les succulentes cochent
+      // les deux cases, mais aucune ne vit dans un coin sombre.
+      final results = finder.search(const FinderCriteria(spot: FinderSpot.darkRoom, effort: FinderEffort.forgiving, safeOnly: true), limit: 20);
+      expect(results, isNotEmpty);
+      expect(results.every((m) => profileOf(m).light.index <= LightNeed.indirect.index), isTrue);
+      expect(results.any((m) => m.entry.category == SpeciesCategory.succulent), isFalse);
     });
 
     test('dehors : seulement des espèces qui tiennent dehors', () {
