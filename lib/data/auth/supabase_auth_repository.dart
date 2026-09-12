@@ -66,24 +66,6 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   bool get supportsRemote => true;
 
-  @override
-  Future<void> requestEmailCode(String email) async {
-    try {
-      await _client.auth.signInWithOtp(email: email.trim(), shouldCreateUser: true);
-    } on sb.AuthException catch (e) {
-      throw AuthException(e.message);
-    }
-  }
-
-  @override
-  Future<void> verifyEmailCode({required String email, required String code}) async {
-    try {
-      await _client.auth.verifyOTP(email: email.trim(), token: code.trim(), type: sb.OtpType.email);
-    } on sb.AuthException catch (e) {
-      throw AuthException(e.message);
-    }
-  }
-
   /// Connexion Apple, native (feuille système, sans navigateur).
   ///
   /// Le jeton d'identité signé par Apple est échangé contre une session

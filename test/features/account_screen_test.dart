@@ -13,9 +13,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// L'écran Compte, avant connexion, avec un backend configuré : quels boutons
-/// sont dessinés. Apple est livré sur iPhone et iPad ; Google est codé mais
-/// attend `AppConfig.googleSignInEnabled` — un bouton Google qui réapparaîtrait
-/// par mégarde remettrait la règle 4.8 de l'App Store dans la balance.
+/// sont dessinés. Apple est livré sur iPhone et iPad, et c'est la seule porte :
+/// pas de connexion par e-mail sur Auxine, et Google est codé mais attend
+/// `AppConfig.googleSignInEnabled` — un bouton qui réapparaîtrait par mégarde
+/// remettrait la règle 4.8 de l'App Store dans la balance. Sur Android, le
+/// compte reste local, comme sans backend.
 class _RemoteAuth implements AuthRepository {
   final _user = const AppUser(id: 'u', displayName: '');
 
@@ -33,12 +35,6 @@ class _RemoteAuth implements AuthRepository {
 
   @override
   Future<void> updateDisplayName(String name) async {}
-
-  @override
-  Future<void> requestEmailCode(String email) async {}
-
-  @override
-  Future<void> verifyEmailCode({required String email, required String code}) async {}
 
   @override
   Future<void> signInWithApple() async {}
@@ -86,16 +82,17 @@ Future<AppLocalizations> _pump(WidgetTester tester) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('sur iOS : Apple et l\'e-mail, pas Google', (tester) => _on(TargetPlatform.iOS, tester, (l10n) async {
+  testWidgets('sur iOS : Apple, et rien d\'autre', (tester) => _on(TargetPlatform.iOS, tester, (l10n) async {
         expect(find.text(l10n.continueWithApple), findsOneWidget);
-        expect(find.text(l10n.continueWithEmail), findsOneWidget);
         expect(find.text(l10n.continueWithGoogle), findsNothing);
+        expect(find.byType(FloraButton), findsOneWidget, reason: 'aucune autre porte : pas d\'e-mail');
+        expect(find.text(l10n.localAccount), findsNothing);
         expect(AppConfig.googleSignInEnabled, isFalse, reason: 'Google n\'est pas livré : Android n\'est pas la priorité');
       }));
 
-  testWidgets('sur Android : l\'e-mail seulement', (tester) => _on(TargetPlatform.android, tester, (l10n) async {
-        expect(find.text(l10n.continueWithApple), findsNothing);
-        expect(find.text(l10n.continueWithGoogle), findsNothing);
-        expect(find.text(l10n.continueWithEmail), findsOneWidget);
+  testWidgets('sur Android : le compte reste local, aucun bouton', (tester) => _on(TargetPlatform.android, tester, (l10n) async {
+        expect(find.byType(FloraButton), findsNothing);
+        expect(find.text(l10n.localAccount), findsOneWidget);
+        expect(find.text(l10n.localAccountHint), findsOneWidget);
       }));
 }

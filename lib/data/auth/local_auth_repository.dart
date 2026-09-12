@@ -9,7 +9,7 @@ import '../services/preferences_service.dart';
 
 /// Compte local : aucune donnée ne quitte l'appareil. Un jardin est créé pour
 /// l'utilisateur à la première ouverture. La liaison à un compte distant
-/// (Apple / Google / e-mail) se fera en Phase 2 en réattribuant `owner_id`.
+/// (Apple) se fait en réattribuant `owner_id`.
 class LocalAuthRepository implements AuthRepository {
   LocalAuthRepository(this._db, this._prefs);
 
@@ -31,12 +31,6 @@ class LocalAuthRepository implements AuthRepository {
 
   @override
   bool get supportsRemote => false;
-
-  @override
-  Future<void> requestEmailCode(String email) => throw UnsupportedError('local account');
-
-  @override
-  Future<void> verifyEmailCode({required String email, required String code}) => throw UnsupportedError('local account');
 
   @override
   Future<void> signInWithApple() => throw UnsupportedError('local account');

@@ -11,6 +11,7 @@ import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
+import '../../account/presentation/account_screen.dart' show signInAvailable;
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
 
 /// Profil : prénom, apparence, notifications, données, sources.
@@ -130,7 +131,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: Space.lg),
               FloraGroup(
-                footer: ref.watch(authRepositoryProvider).supportsRemote ? l10n.signInHint : l10n.localAccountHint,
+                footer: signInAvailable(ref.watch(authRepositoryProvider)) ? l10n.signInHint : l10n.localAccountHint,
                 children: [
                   FloraListRow(
                     leading: Icon(user != null && !user.isLocal ? CupertinoIcons.person_crop_circle_fill : CupertinoIcons.lock, size: 20, color: user != null && !user.isLocal ? c.sage : c.inkSecondary),

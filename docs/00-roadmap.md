@@ -51,7 +51,7 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Timelapse de croissance (photos en fondu, chronologiques) | ✅ |
 | Stock bas regroupé dans le rappel quotidien | ✅ |
 | Synchronisation multi-appareils : `SyncService` (push depuis l'outbox, pull delta, last-write-wins, photos), adaptateur Supabase, temps réel, coordinateur (démarrage / premier plan / après écriture) | ✅ code + tests ; activé par `--dart-define` (voir docs/08) |
-| Comptes : e-mail par code, Apple natif (iOS) ; compte local conservé sans connexion. Google OAuth codé mais pas livré (`AppConfig.googleSignInEnabled`, Android n'est pas prioritaire) | ✅ |
+| Comptes : Apple natif (iOS), et lui seul — pas d'e-mail ; compte local conservé sans connexion, et sur Android. Google OAuth codé mais pas livré (`AppConfig.googleSignInEnabled`, Android n'est pas prioritaire) | ✅ |
 | Collaboration : membres, rôles owner / member / viewer, « · par Laura » dans la timeline, lecture seule pour viewer | ✅ |
 | Partager son jardin : invitation par lien ou code à usage unique (QR compris), l'invité crée un compte s'il n'en a pas, « Mes jardins » pour basculer de l'un à l'autre, changement de rôle, retrait, départ d'un jardin | ✅ |
 | Diagnostic « Ma plante a un problème » : photos + symptômes → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, sans plafond, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |

@@ -1486,26 +1486,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get continueWithGoogle => 'Mit Google fortfahren';
 
   @override
-  String get continueWithEmail => 'Mit E-Mail fortfahren';
-
-  @override
-  String get emailHint => 'du@beispiel.ch';
-
-  @override
-  String get sendCode => 'Code senden';
-
-  @override
-  String codeSent(String email) {
-    return 'Code an $email gesendet.';
-  }
-
-  @override
-  String get codeHint => '6-stelliger Code';
-
-  @override
-  String get verifyCode => 'Bestätigen';
-
-  @override
   String get signOut => 'Abmelden';
 
   @override

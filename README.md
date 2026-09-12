@@ -35,9 +35,9 @@ Sans configuration, l'app est 100 % locale. Pour la synchronisation et les compt
 ```bash
 flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co --dart-define=SUPABASE_ANON_KEY=...
 ```
-Schéma et politiques RLS : `supabase/schema.sql`. Connexion par e-mail (code à
-6 chiffres) et par Apple sur iPhone et iPad ; Google attend son tour
-(`AppConfig.googleSignInEnabled`). Sign in with Apple demande la capability sur
+Schéma et politiques RLS : `supabase/schema.sql`. Connexion par Apple, sur
+iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
+(`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
 
 ## Gratuite, avec un soutien facultatif

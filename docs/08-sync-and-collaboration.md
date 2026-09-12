@@ -44,7 +44,7 @@ La ligne et l'image voyagent séparément, et l'image coûte mille fois plus che
   l'outbox porte le chemin puisque la ligne, elle, n'existe plus).
 
 ## Auth
-`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (e-mail + code à 6 chiffres, Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
+`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple, et sur Android le compte reste local tant que Google n'est pas livré (`signInAvailable`). À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
 
 ## Le jardin ouvert
 Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a partagés. Un seul est **ouvert** à la fois — c'est lui que montrent toutes les listes.
@@ -56,7 +56,7 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 
 ## Collaboration
 - `garden_members` : `owner` / `member` / `viewer`. Le domaine en fait `GardenRole` (`domain/sharing/garden_collaboration.dart`) : `canEdit`, `canManageMembers`.
-- **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : il en crée un, puis échange le code (`accept_invite`).
+- **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : il en crée un (avec Apple, donc sur iPhone ou iPad), puis échange le code (`accept_invite`).
 - Le lien envoyé est une adresse https (`…/functions/v1/share/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`flora://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît.
 - `my_gardens()` liste les jardins du compte avec le rôle, le nom du propriétaire, le nombre de membres et de plantes. `set_member_role`, `remove_member`, `leave_garden`, `revoke_invite` complètent la gestion — toutes `security definer`, propriétaire seul sauf `leave_garden`.
 - Chaque action et photo porte `user_id` ; la timeline affiche « · Laura » quand l'auteur n'est pas l'utilisateur courant (cache local `profiles`).
@@ -73,7 +73,7 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 ## Mise en place
 1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL.
 2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`).
-3. Activer les fournisseurs Auth : **Email OTP** et **Apple** (voir ci-dessous). Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `flora://login-callback`.
+3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `flora://login-callback`.
 4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
 
 ### Sign in with Apple
