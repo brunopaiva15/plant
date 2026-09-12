@@ -6273,7 +6273,7 @@ abstract class AppLocalizations {
   /// No description provided for @gardensHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le jardin ouvert est celui que vous voyez partout dans l\'application. Vous passez de l\'un à l\'autre quand vous voulez.'**
+  /// **'Le jardin sélectionné est celui affiché dans l\'application.'**
   String get gardensHint;
 
   /// No description provided for @gardenMine.
@@ -6339,7 +6339,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinGardenHint.
   ///
   /// In fr, this message translates to:
-  /// **'Saisissez le code reçu, ou ouvrez le lien d\'invitation qu\'on vous a envoyé.'**
+  /// **'Saisissez le code d\'invitation ou ouvrez le lien reçu.'**
   String get joinGardenHint;
 
   /// No description provided for @inviteCodeHint.
@@ -6351,7 +6351,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinLook.
   ///
   /// In fr, this message translates to:
-  /// **'Voir l\'invitation'**
+  /// **'Vérifier le code'**
   String get joinLook;
 
   /// No description provided for @joinConfirm.
@@ -6363,7 +6363,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinInvalid.
   ///
   /// In fr, this message translates to:
-  /// **'Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n\'existe pas.'**
+  /// **'Code invalide, expiré ou déjà utilisé.'**
   String get joinInvalid;
 
   /// No description provided for @joinWrongEmail.

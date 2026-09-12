@@ -3671,7 +3671,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'Il giardino aperto è quello che vedete ovunque nell\'app. Potete passare dall\'uno all\'altro quando volete.';
+      'Il giardino selezionato è quello mostrato nell\'app.';
 
   @override
   String get gardenMine => 'Il mio giardino';
@@ -3717,20 +3717,19 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Inserite il codice ricevuto, o aprite il link d\'invito.';
+      'Inserite il codice d\'invito o aprite il link ricevuto.';
 
   @override
   String get inviteCodeHint => 'Codice d\'invito';
 
   @override
-  String get joinLook => 'Vedi l\'invito';
+  String get joinLook => 'Verifica codice';
 
   @override
   String get joinConfirm => 'Unisciti';
 
   @override
-  String get joinInvalid =>
-      'Questo codice non vale più. Già usato, scaduto o inesistente.';
+  String get joinInvalid => 'Codice non valido, scaduto o già usato.';
 
   @override
   String get joinWrongEmail =>
