@@ -22,7 +22,7 @@
   "seeAll": "Tout voir",
   "optional": "facultatif",
   "none": "Aucun",
-  "genericError": "Quelque chose n'a pas fonctionné. Réessayez.",
+  "genericError": "Une erreur est survenue. Réessayez.",
   "tabToday": "Aujourd'hui",
   "tabPlants": "Plantes",
   "tabGarden": "Jardin",
@@ -48,8 +48,8 @@
   "sectionToday": "Aujourd'hui",
   "sectionUpcoming": "À venir",
   "allDoneTitle": "Tout est en ordre",
-  "allDoneSubtitle": "Vos plantes n'ont besoin de rien aujourd'hui.",
-  "emptyGardenTitle": "Votre jardin commence ici.",
+  "allDoneSubtitle": "Aucun soin prévu aujourd'hui.",
+  "emptyGardenTitle": "Aucune plante",
   "addFirstPlant": "Ajouter ma première plante",
   "yourGarden": "Votre jardin",
   "recentPhotos": "Photos récentes",
@@ -168,7 +168,7 @@
   "noResultsTitle": "Aucun résultat",
   "noResultsSubtitle": "Essayez un autre mot.",
   "emptyPlantsTitle": "Aucune plante",
-  "emptyPlantsSubtitle": "Votre jardin commence ici.",
+  "emptyPlantsSubtitle": "Ajoutez votre première plante.",
   "addPlant": "Ajouter une plante",
   "selectedCount": "{count, plural, =1{1 sélectionnée} other{{count} sélectionnées}}",
   "@selectedCount": {
@@ -201,16 +201,16 @@
     }
   },
   "newPlant": "Nouvelle plante",
-  "stepPhotoTitle": "Une photo ?",
+  "stepPhotoTitle": "Photo",
   "stepPhotoSubtitle": "Cadrez la plante en entier, à la lumière du jour.",
   "takePhoto": "Prendre une photo",
   "choosePhoto": "Choisir une photo",
   "withoutPhoto": "Continuer sans photo",
   "changePhoto": "Changer",
-  "stepNameTitle": "Comment s'appelle-t-elle ?",
+  "stepNameTitle": "Nom",
   "plantNameHint": "Nom de la plante",
   "speciesHint": "Espèce (facultatif)",
-  "stepLocationTitle": "Où se trouve-t-elle ?",
+  "stepLocationTitle": "Emplacement",
   "newLocationChip": "Nouveau",
   "noLocation": "Sans emplacement",
   "finish": "Terminer",
@@ -270,7 +270,7 @@
   "schedule": "Planning",
   "editPlant": "Modifier la plante",
   "archivePlant": "Archiver la plante",
-  "archiveReasonTitle": "Que s'est-il passé ?",
+  "archiveReasonTitle": "Motif",
   "reasonDied": "Morte",
   "reasonGiven": "Donnée",
   "reasonSold": "Vendue",
@@ -360,7 +360,7 @@
       }
     }
   },
-  "whatDidYouDo": "Qu'avez-vous fait ?",
+  "whatDidYouDo": "Action",
   "when": "Quand",
   "noteHint": "Ajouter une note…",
   "quantity": "Quantité",
@@ -427,7 +427,7 @@
   "notificationTime": "Heure",
   "quietDays": "Jours silencieux",
   "notificationPreview": "Aperçu",
-  "notificationHint": "Une seule notification par jour, uniquement quand une plante a besoin de vous.",
+  "notificationHint": "Une notification par jour, seulement si un soin est prévu.",
   "notificationPermissionDenied": "Autorisez les notifications dans les Réglages de votre téléphone.",
   "archives": "Anciennes plantes",
   "noArchivesTitle": "Aucune ancienne plante",
@@ -447,7 +447,7 @@
   "languageSystem": "Système",
   "account": "Compte",
   "localAccount": "Données sur cet appareil",
-  "localAccountHint": "Vos plantes et photos restent privées, sur ce téléphone. Les comptes et la synchronisation arriveront dans une prochaine version.",
+  "localAccountHint": "Vos données restent sur ce téléphone.",
   "version": "Version {version}",
   "@version": {
     "placeholders": {
@@ -462,25 +462,25 @@
   "noTags": "Aucun tag",
   "manageTags": "Gérer les tags",
   "onboardingTitle": "Toutes vos plantes, ici",
-  "onboardingSubtitle": "Ajoutez-les une par une, avec une photo si vous voulez.",
+  "onboardingSubtitle": "Ajoutez-les avec ou sans photo.",
   "onbPlaceTitle": "Où sont vos plantes ?",
-  "onbPlaceBody": "Pour la météo du jour et l'arrosage dehors. Une ville suffit ; votre position exacte n'est ni gardée ni partagée.",
+  "onbPlaceBody": "Pour la météo et l'arrosage en extérieur. Une ville suffit, la position exacte n'est pas conservée.",
   "useMyLocation": "Utiliser ma position",
   "locating": "Recherche de votre ville…",
   "locationFailed": "Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.",
   "placeChosen": "Météo réglée sur {place}.",
   "@placeChosen": {"placeholders": {"place": {"type": "String"}}},
-  "askNameTitle": "Comment vous appelez-vous ?",
-  "askNameSubtitle": "Pour vous saluer chaque matin. Vous pourrez changer plus tard.",
-  "onbAccountTitle": "Et si vous changez de téléphone\u00a0?",
-  "onbAccountBody": "Avec un compte, vos plantes et vos photos sont sauvegardées, et vous pouvez partager un jardin. Il suffit de votre identifiant Apple.",
-  "notificationAskTitle": "Un rappel utile, chaque jour",
-  "notificationAskBody": "Une seule notification par jour, à l'heure que vous choisissez, seulement quand une plante en a besoin.",
+  "askNameTitle": "Votre prénom",
+  "askNameSubtitle": "Modifiable plus tard dans le profil.",
+  "onbAccountTitle": "Sauvegarde et partage",
+  "onbAccountBody": "Un compte sauvegarde vos données et permet de partager un jardin. Connexion avec votre identifiant Apple.",
+  "notificationAskTitle": "Rappel quotidien",
+  "notificationAskBody": "Une notification par jour, à l'heure choisie, seulement si un soin est prévu.",
   "enable": "Activer",
   "notNow": "Pas maintenant",
   "notificationTitle": "Vos plantes",
   "notificationChannel": "Rappels d'entretien",
-  "notifWaterOne": "{name} a probablement besoin d'eau aujourd'hui.",
+  "notifWaterOne": "{name} : arrosage prévu aujourd'hui.",
   "@notifWaterOne": {
     "placeholders": {
       "name": {
@@ -488,7 +488,7 @@
       }
     }
   },
-  "notifWaterMany": "{names} ont probablement besoin d'eau aujourd'hui.",
+  "notifWaterMany": "{names} : arrosage prévu aujourd'hui.",
   "@notifWaterMany": {
     "placeholders": {
       "names": {
@@ -496,7 +496,7 @@
       }
     }
   },
-  "notifOther": "{count, plural, =1{1 autre soin vous attend.} other{{count} autres soins vous attendent.}}",
+  "notifOther": "{count, plural, =1{1 autre soin prévu.} other{{count} autres soins prévus.}}",
   "@notifOther": {
     "placeholders": {
       "count": {
@@ -504,7 +504,7 @@
       }
     }
   },
-  "notifOnlyOther": "{count, plural, =1{1 soin vous attend aujourd'hui.} other{{count} soins vous attendent aujourd'hui.}}",
+  "notifOnlyOther": "{count, plural, =1{1 soin prévu aujourd'hui.} other{{count} soins prévus aujourd'hui.}}",
   "@notifOnlyOther": {
     "placeholders": {
       "count": {
@@ -568,7 +568,7 @@
     }
   },
   "noInventoryTitle": "Inventaire vide",
-  "noInventorySubtitle": "Gardez l'œil sur vos engrais, terreaux, pots et outils.",
+  "noInventorySubtitle": "Engrais, terreaux, pots, outils…",
   "deleteItem": "Supprimer l'article",
   "lowStockItems": "{count, plural, =1{1 article en stock bas} other{{count} articles en stock bas}}",
   "@lowStockItems": {
@@ -599,39 +599,39 @@
     }
   },
   "qrCode": "QR code",
-  "qrHint": "Collez-le sur le pot et le scanner ouvrira directement la fiche.",
+  "qrHint": "Scanné, ce code ouvre la fiche de la plante.",
   "scan": "Scanner",
   "scanHint": "Visez le QR code d'une plante.",
-  "unknownQr": "Ce QR code n'appartient pas à votre jardin.",
+  "unknownQr": "QR code inconnu.",
   "shareQr": "Partager",
   "printLabels": "Étiquettes PDF",
   "labels": "Étiquettes",
   "cameraPermission": "Autorisez l'accès à l'appareil photo dans les Réglages.",
   "identify": "Identifier",
   "identifying": "Analyse en cours…",
-  "identifyTitle": "Est-ce bien…",
+  "identifyTitle": "Espèce",
   "identifyHint": "Suggestions d'espèce, à confirmer.",
-  "searchOnline": "Aucune ne correspond ? Chercher en ligne",
+  "searchOnline": "Chercher en ligne",
   "identifyAnotherPhoto": "Ajouter une photo",
-  "identifyAnotherPhotoHint": "Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.",
+  "identifyAnotherPhotoHint": "Une feuille, une fleur ou la plante entière permet d'affiner.",
   "identifyConfirmWithPhoto": "Confirmer avec une photo",
   "searchingOnline": "Recherche en ligne…",
   "suggestionsLocal": "Trouvé sur votre appareil, sans réseau.",
   "suggestionsRemote": "Proposé en ligne par Pl@ntNet.",
-  "identifyOnDevice": "Reconnu par {name}, sur votre appareil. Choisissez l'espèce qui correspond.",
+  "identifyOnDevice": "Reconnu par {name} sur l'appareil. Choisissez l'espèce.",
   "@identifyOnDevice": {"placeholders": {"name": {"type": "String"}}},
-  "identifyViaPlantNet": "Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.",
+  "identifyViaPlantNet": "Reconnu en ligne par Pl@ntNet. Choisissez l'espèce.",
   "identifyPhotoSource": "Photos Pl@ntNet et GBIF — touchez-en une pour la fiche.",
   "identifyNone": "Aucune correspondance fiable.",
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
   "useThis": "Utiliser",
   "identificationSettings": "Identification",
-  "identificationHint": "{name} reconnaît les espèces directement sur votre appareil, sans réseau. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.",
+  "identificationHint": "{name} reconnaît les espèces sur l'appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.",
   "@identificationHint": {"placeholders": {"name": {"type": "String"}}},
   "identificationEnabled": "Identification activée",
   "identificationDisabled": "Non configurée",
   "identificationFallback": "Repli en ligne",
-  "identificationFallbackHint": "Quand {name} hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l'appareil.",
+  "identificationFallbackHint": "Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil.",
   "@identificationFallbackHint": {"placeholders": {"name": {"type": "String"}}},
   "modelMissing": "{name} indisponible sur cet appareil",
   "@modelMissing": {"placeholders": {"name": {"type": "String"}}},
@@ -641,12 +641,12 @@
   "onlineSearchesMonth": "{used} recherches en ligne sur {limit} ce mois-ci.",
   "@onlineSearchesMonth": {"placeholders": {"used": {"type": "int"}, "limit": {"type": "int"}}},
   "irisSection": "Le modèle embarqué",
-  "irisTagline": "Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.",
+  "irisTagline": "Reconnaissance des espèces sur le téléphone, sans réseau ni compte.",
   "irisSpeciesLabel": "espèces",
   "irisOfflineValue": "hors ligne",
   "irisOfflineLabel": "même en avion",
   "irisTwoPhotosTitle": "Deux photos valent mieux qu’une",
-  "irisTwoPhotosBody": "Photographiez la plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, au lieu d’une fois sur deux.",
+  "irisTwoPhotosBody": "La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux.",
   "@irisTwoPhotosBody": {"placeholders": {"name": {"type": "String"}}},
   "confidence": "{percent} %",
   "@confidence": {
@@ -663,15 +663,15 @@
   "after": "Après",
   "comparePickFirst": "Choisissez deux photos.",
   "outdoor": "Extérieur",
-  "outdoorHint": "Au balcon, au jardin ou en serre, la météo compte.",
+  "outdoorHint": "Balcon, jardin ou serre : la météo est prise en compte.",
   "weather": "Météo",
-  "weatherHint": "Pour vos plantes dehors, Auxine regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.",
+  "weatherHint": "Pour les plantes en extérieur, l'arrosage est reporté les jours de pluie. Données Open-Meteo, sans compte ni clé.",
   "weatherPlace": "Lieu",
   "weatherSearchHint": "Ville…",
   "weatherNone": "Aucun lieu",
   "weatherRemove": "Retirer le lieu",
   "weatherNoResults": "Aucun lieu trouvé.",
-  "weatherRainSkip": "Pas besoin d'arroser {names} aujourd'hui, la pluie s'en charge.",
+  "weatherRainSkip": "Pluie aujourd'hui : arrosage de {names} reporté.",
   "@weatherRainSkip": {
     "placeholders": {
       "names": {
@@ -706,12 +706,12 @@
   },
   "dataSection": "Données",
   "exportData": "Exporter mes données",
-  "exportHint": "Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos. Vos données vous appartiennent.",
+  "exportHint": "Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos.",
   "exporting": "Préparation de l'export…",
   "exportError": "Export impossible. Réessayez.",
   "play": "Lire",
   "timelapseHint": "Touchez pour mettre en pause.",
-  "notifLowStockOne": "Il ne vous reste presque plus de {name}.",
+  "notifLowStockOne": "{name} : stock bas.",
   "@notifLowStockOne": {
     "placeholders": {
       "name": {
@@ -719,7 +719,7 @@
       }
     }
   },
-  "notifLowStockMany": "{count} articles sont presque épuisés.",
+  "notifLowStockMany": "{count} articles en stock bas.",
   "@notifLowStockMany": {
     "placeholders": {
       "count": {
@@ -730,7 +730,7 @@
   "accountTitle": "Compte",
   "signIn": "Se connecter",
   "signInWithAppleId": "Avec votre identifiant Apple",
-  "signInHint": "Un compte sauvegarde vos plantes, les synchronise entre vos appareils et permet de partager un jardin. Sans compte, tout reste sur ce téléphone.",
+  "signInHint": "Un compte sauvegarde vos données, les synchronise entre appareils et permet de partager un jardin.",
   "continueWithApple": "Continuer avec Apple",
   "continueWithGoogle": "Continuer avec Google",
   "signOut": "Se déconnecter",
@@ -780,8 +780,8 @@
     }
   },
   "you": "vous",
-  "diagnosisTitle": "Ma plante a un problème",
-  "diagnosisHint": "Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont des pistes, jamais des certitudes.",
+  "diagnosisTitle": "Diagnostic",
+  "diagnosisHint": "Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.",
   "diagnosisSymptomsHint": "Ce que vous avez remarqué (facultatif)…",
   "analyze": "Analyser",
   "analyzing": "Analyse en cours…",
@@ -882,7 +882,7 @@
   "tasks": "Tâches",
   "newTask": "Nouvelle tâche",
   "editTask": "Modifier la tâche",
-  "taskTitleHint": "Que faut-il faire ?",
+  "taskTitleHint": "Titre",
   "taskDescriptionHint": "Détails (facultatif)",
   "taskPlant": "Plante",
   "taskNoPlant": "Sans plante",
@@ -917,7 +917,7 @@
   "taskSectionUpcoming": "À venir",
   "taskSectionNoDate": "Sans date",
   "noTasksTitle": "Aucune tâche",
-  "noTasksSubtitle": "Notez ici les semis, le nettoyage de la serre, la commande de terreau.",
+  "noTasksSubtitle": "Semis, nettoyage de la serre, commande de terreau…",
   "noDoneTasks": "Rien de terminé pour l'instant",
   "taskDoneToast": "{title} · Terminée",
   "@taskDoneToast": {
@@ -986,7 +986,7 @@
       }
     }
   },
-  "notifTaskDue": "{title}, c'est le moment",
+  "notifTaskDue": "À faire : {title}",
   "@notifTaskDue": {
     "placeholders": {
       "title": {
@@ -1009,7 +1009,7 @@
   "carePropagation": "Multiplication",
   "careIssues": "À surveiller",
   "careKnownProblems": "Problèmes connus sur cette plante",
-  "careKnownProblemsNote": "Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.",
+  "careKnownProblemsNote": "Signalés sur cette espèce ou des espèces proches.",
   "problemKindDisorder": "Trouble",
   "problemKindPest": "Ravageur",
   "problemKindDisease": "Maladie",
@@ -1018,7 +1018,7 @@
   "problemKindPests": "Ravageurs",
   "problemKindDiseases": "Maladies",
   "problemKindConditions": "Affections",
-  "careTips": "Bons réflexes",
+  "careTips": "Conseils",
   "careEveryDays": "{count, plural, =1{Tous les jours} other{Tous les {count} jours}}",
   "@careEveryDays": {
     "placeholders": {
@@ -1145,7 +1145,7 @@
   },
   "careMatchGeneric": "Repères généraux",
   "careMatchNote": "Ces repères viennent du groupe botanique, pas de l'espèce exacte. Précisez l'espèce pour affiner.",
-  "careDisclaimer": "Des repères, pas des règles. Votre lumière, votre pot et votre air comptent autant.",
+  "careDisclaimer": "Valeurs indicatives, à adapter à la lumière, au pot et à l'air ambiant.",
   "careApplyToSchedule": "Appliquer au planning",
   "careScheduleApplied": "Planning mis à jour",
   "careSuggestedIntervals": "Arrosage tous les {water} jours, engrais tous les {fertilize} jours",
@@ -1271,7 +1271,7 @@
   "fieldEmpty": "Non renseigné",
   "noCustomFields": "Aucun champ personnalisé",
   "fieldTemplates": "Modèles de champs",
-  "fieldTemplatesHint": "Créez ici les champs que vous réutilisez sur plusieurs plantes. Ils vous seront ensuite proposés en un tap.",
+  "fieldTemplatesHint": "Champs réutilisables sur plusieurs plantes.",
   "newFieldTemplate": "Nouveau modèle",
   "noFieldTemplates": "Aucun modèle",
   "fieldTemplateInactive": "Masqué",
@@ -1382,8 +1382,8 @@
   },
   "filterByTag": "Filtrer par tag",
   "itemNotFound": "Article introuvable",
-  "noGroupsYet": "Aucun groupe pour l'instant. Créez-en un pour ranger vos articles à votre façon.",
-  "deleteGroupExplain": "Les articles ne sont pas supprimés, ils redeviennent simplement sans groupe.",
+  "noGroupsYet": "Aucun groupe.",
+  "deleteGroupExplain": "Les articles ne sont pas supprimés, ils perdent leur groupe.",
   "newEvent": "Nouvel événement",
   "editEvent": "Modifier l'événement",
   "deleteEvent": "Supprimer l'événement",
@@ -1426,8 +1426,8 @@
   "newEventCategory": "Nouvelle catégorie",
   "editEventCategory": "Modifier la catégorie",
   "deleteEventCategory": "Supprimer la catégorie",
-  "deleteEventCategoryExplain": "Les événements ne sont pas supprimés, ils perdent simplement leur catégorie.",
-  "noEventCategoriesYet": "Aucune catégorie. Créez-en une pour colorer vos événements.",
+  "deleteEventCategoryExplain": "Les événements ne sont pas supprimés, ils perdent leur catégorie.",
+  "noEventCategoriesYet": "Aucune catégorie.",
   "categoryNameHint": "Nom de la catégorie",
   "eventPlant": "Plante liée",
   "eventNoPlant": "Aucune",
@@ -1444,7 +1444,7 @@
   "statLowStock": "Stock bas",
   "statActionsThisMonth": "Soins ce mois",
   "statWateringsThisMonth": "Arrosages ce mois",
-  "statOldest": "La doyenne",
+  "statOldest": "Plus ancienne",
   "warningsSection": "À surveiller",
   "warningSick": "Malade",
   "warningWatch": "À surveiller",
@@ -1456,12 +1456,12 @@
       }
     }
   },
-  "noWarnings": "Tout va bien dans le jardin.",
+  "noWarnings": "Rien à signaler.",
   "recentPlantsSection": "Dernières plantes",
   "recentAdded": "Ajoutées",
   "recentUpdated": "Modifiées",
   "activityLogTitle": "Journal d'activité",
-  "activityEmpty": "Rien encore. Le journal se remplit dès le premier soin.",
+  "activityEmpty": "Aucune activité.",
   "activityPlantAdded": "Ajoutée au jardin",
   "activityPlantArchived": "Archivée",
   "activityLocationNote": "Note d'emplacement",
@@ -1501,7 +1501,7 @@
   "weatherToday": "Aujourd'hui",
   "weatherFailed": "Prévisions indisponibles pour l'instant.",
   "backupTitle": "Sauvegarde",
-  "backupExplain": "Un fichier .zip contenant vos données et vos photos. Un format ouvert, pour que vous restiez maître de vos données.",
+  "backupExplain": "Un fichier .zip contenant vos données et vos photos.",
   "backupWhatToExport": "Que sauvegarder",
   "backupWhatToImport": "Que restaurer",
   "sectionGarden": "Jardin et emplacements",
@@ -1551,22 +1551,22 @@
       }
     }
   },
-  "onbTodayTitle": "Chaque matin, ce qu'il y a à faire",
-  "onbTodayBody": "Arrosé ? Un geste, et c'est noté.",
+  "onbTodayTitle": "Les soins du jour",
+  "onbTodayBody": "Un geste pour noter chaque soin.",
   "onbCareTitle": "Moins d'arrosages en hiver",
-  "onbCareBody": "Les intervalles s'ajustent tout seuls quand les jours raccourcissent.",
+  "onbCareBody": "Les intervalles s'ajustent selon la saison.",
   "onbGardenTitle": "Emplacements, photos, calendrier",
   "onbGardenBody": "Chaque arrosage, chaque rempotage est daté et rangé avec la plante.",
   "onbIrisTitle": "{name} reconnaît vos plantes hors ligne",
   "@onbIrisTitle": {"placeholders": {"name": {"type": "String"}}},
-  "onbIrisBody": "Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.",
+  "onbIrisBody": "Si Iris ne reconnaît pas une plante, la recherche continue en ligne.",
   "onbPrivacyTitle": "Tout reste sur votre téléphone",
   "onbPrivacyBody": "Pas de compte obligatoire, pas de publicité.",
   "onbStart": "Commencer",
   "replayOnboarding": "Revoir la présentation",
   "whatsNewTitle": "Nouveautés",
   "whatsNewModelUpdate": "Mise à jour du modèle",
-  "whatsNewIrisIntro": "Le modèle embarqué a été réentraîné. Il connaît plus d'espèces, hésite moins, et travaille toujours sans réseau.",
+  "whatsNewIrisIntro": "Le modèle embarqué a été réentraîné : plus d'espèces, moins d'erreurs, toujours sans réseau.",
   "whatsNewIrisSpeciesTitle": "{count} espèces reconnues",
   "@whatsNewIrisSpeciesTitle": {
     "placeholders": {
@@ -1575,11 +1575,11 @@
       }
     }
   },
-  "whatsNewIrisSpeciesBody": "Les plantes d'intérieur les plus rares entrent au catalogue, à côté de celles qu'Iris nommait déjà.",
+  "whatsNewIrisSpeciesBody": "Des plantes d'intérieur plus rares s'ajoutent au catalogue.",
   "whatsNewIrisOfflineTitle": "Toujours sur l'appareil",
   "whatsNewIrisOfflineBody": "La reconnaissance reste locale : rien ne part sans votre accord, et le repli en ligne se coupe d'un interrupteur.",
-  "whatsNewIrisDoubtTitle": "Il sait dire qu'il hésite",
-  "whatsNewIrisDoubtBody": "Quand deux espèces se ressemblent vraiment, Iris propose les deux plutôt que d'en choisir une au hasard.",
+  "whatsNewIrisDoubtTitle": "Doute signalé",
+  "whatsNewIrisDoubtBody": "Quand deux espèces se ressemblent, Iris propose les deux.",
   "onbStepOf": "Étape {current} sur {total}",
   "@onbStepOf": {
     "placeholders": {
@@ -1607,8 +1607,8 @@
     }
   },
   "supportTitle": "Auxine est gratuite",
-  "supportBody": "Toutes les fonctions sont gratuites. Si l'app vous est utile, vous pouvez donner un coup de pouce à son développeur — une fois, sans abonnement.",
-  "supportNothingLocked": "Rien n'est réservé à ceux qui donnent.",
+  "supportBody": "Toutes les fonctions sont gratuites. Un soutien ponctuel, sans abonnement, est possible.",
+  "supportNothingLocked": "Aucune fonction n'est réservée aux donateurs.",
   "supportGive": "Soutenir · {price}",
   "@supportGive": {
     "placeholders": {
@@ -1619,7 +1619,7 @@
   },
   "supportRestore": "Restaurer mon soutien",
   "supportThanksTitle": "Merci",
-  "supportThanksBody": "Votre soutien est enregistré. L'application ne change pas, elle était déjà entière.",
+  "supportThanksBody": "Votre soutien est enregistré.",
   "supportUnavailable": "L'achat n'est pas disponible sur cet appareil.",
   "supportFailed": "L'achat n'a pas abouti.",
   "supportNothingToRestore": "Aucun soutien à restaurer.",
@@ -1627,55 +1627,55 @@
   "supportFreeForever": "Gratuite, sans limite",
   "supportAlready": "Merci pour votre soutien",
   "supportNoThanks": "Continuer sans",
-  "emptyGardenSubtitle": "Ajoutez votre première plante, avec une photo si vous voulez.",
+  "emptyGardenSubtitle": "Ajoutez votre première plante.",
   "finderTitle": "Trouver une plante",
-  "finderEntryHint": "Vous ne savez pas quoi choisir ?",
-  "finderStepSpot": "Où va-t-elle vivre ?",
-  "finderStepSpotHint": "La lumière décide de presque tout.",
+  "finderEntryHint": "Aide au choix",
+  "finderStepSpot": "Emplacement",
+  "finderStepSpotHint": "La lumière est le critère principal.",
   "finderSpotBright": "Pièce lumineuse",
   "finderSpotMedium": "Lumière moyenne",
   "finderSpotDark": "Coin sombre",
   "finderSpotOutdoor": "Dehors, balcon ou jardin",
   "finderStepEffort": "Quel entretien ?",
-  "finderStepEffortHint": "Répondez honnêtement, personne ne vous juge.",
-  "finderEffortForgiving": "J'oublie souvent d'arroser",
-  "finderEffortNormal": "Un arrosage régulier, sans plus",
-  "finderEffortAttentive": "J'aime m'en occuper",
+  "finderStepEffortHint": "Fréquence d'arrosage que vous pouvez assurer.",
+  "finderEffortForgiving": "Arrosage occasionnel",
+  "finderEffortNormal": "Arrosage régulier",
+  "finderEffortAttentive": "Entretien fréquent",
   "finderStepSafety": "Des animaux ou des enfants ?",
   "finderStepSafetyHint": "Beaucoup de plantes d'intérieur sont toxiques si on les mordille.",
   "finderSafetyYes": "Oui, sans risque de préférence",
   "finderSafetyNo": "Pas de contrainte",
   "finderStepKind": "Quel genre de plante ?",
   "finderStepKindHint": "Plusieurs choix possibles, ou aucun.",
-  "finderNote": "Autre chose ?",
+  "finderNote": "Précisions",
   "finderNoteHint": "Une salle de bain sans fenêtre, un chat qui mordille tout…",
   "finderNoteFooter": "Utilisé seulement si vous demandez l'avis de l'IA.",
   "finderSubmit": "Voir les propositions",
-  "finderResults": "Nos propositions",
+  "finderResults": "Propositions",
   "finderResultsHint": "D'après la fiche d'entretien de chaque espèce.",
-  "finderEmptyTitle": "Rien de convaincant",
-  "finderEmptySubtitle": "Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l'IA.",
+  "finderEmptyTitle": "Aucun résultat",
+  "finderEmptySubtitle": "Aucune espèce du catalogue ne correspond à tous les critères. Élargissez-les ou demandez à l'IA.",
   "finderRestart": "Recommencer",
   "finderAdd": "Ajouter au jardin",
   "finderCare": "Voir la fiche",
   "finderAskAi": "Demander à l'IA",
   "finderAiSection": "Propositions de l'IA",
   "finderAiHint": "Hors catalogue, à vérifier avant d'acheter.",
-  "finderAiError": "L'IA n'a rien pu proposer.",
+  "finderAiError": "Aucune proposition de l'IA.",
   "finderReasonLight": "Aime cette lumière",
   "finderReasonLowLight": "Supporte l'ombre",
-  "finderReasonForgiving": "Pardonne les oublis d'arrosage",
-  "finderReasonEasy": "Facile à vivre",
+  "finderReasonForgiving": "Tolère les oublis d'arrosage",
+  "finderReasonEasy": "Facile",
   "finderReasonSafe": "Non toxique",
   "finderReasonOutdoor": "Tient dehors",
   "finderAnyAnswer": "Peu importe",
   "onbWelcomeTitle": "Bienvenue sur Auxine",
-  "onbWelcomeBody": "Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.",
-  "finderIntro": "Quatre questions sur l'endroit et sur vos habitudes, puis des plantes qui s'y plairont, chacune avec sa fiche d'entretien.",
+  "onbWelcomeBody": "Le carnet d'entretien de vos plantes.",
+  "finderIntro": "Quatre questions, puis une sélection d'espèces adaptées, avec leur fiche d'entretien.",
   "careMatchAssisted": "Complétée par l'IA",
-  "careAssistedNote": "Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n'en fait pas partie.",
+  "careAssistedNote": "Espèce absente du catalogue : ces repères viennent de l'IA. Seul le nom scientifique a été envoyé. La toxicité n'est pas renseignée.",
   "careAssistSetting": "Compléter les fiches avec l'IA",
-  "careAssistHint": "Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l'IA pour compléter la fiche. Rien d'autre ne quitte l'appareil, et la réponse est gardée pour ne pas la redemander.",
+  "careAssistHint": "Pour une espèce absente du catalogue, le nom scientifique est envoyé à l'IA pour compléter la fiche. Rien d'autre ne quitte l'appareil. La réponse est conservée.",
   "gardensTitle": "Mes jardins",
   "gardensHint": "Le jardin sélectionné est celui affiché dans l'application.",
   "gardenMine": "Mon jardin",
@@ -1688,7 +1688,7 @@
       }
     }
   },
-  "gardenOpened": "Vous êtes dans « {name} »",
+  "gardenOpened": "Jardin : {name}",
   "@gardenOpened": {
     "placeholders": {
       "name": {
@@ -1706,7 +1706,7 @@
     }
   },
   "renameGarden": "Renommer le jardin",
-  "renameGardenHint": "C'est ce nom que verront les personnes invitées.",
+  "renameGardenHint": "Nom visible par les personnes invitées.",
   "gardenNameHint": "Le jardin de la maison",
   "joinGarden": "Rejoindre un jardin",
   "joinGardenHint": "Saisissez le code d'invitation ou ouvrez le lien reçu.",
@@ -1716,7 +1716,7 @@
   "joinInvalid": "Code invalide, expiré ou déjà utilisé.",
   "joinWrongEmail": "Cette invitation est réservée à une autre adresse e-mail.",
   "joinNeedsAccount": "Il faut un compte pour rejoindre un jardin.",
-  "joinSignInHint": "Il suffit de votre identifiant Apple.",
+  "joinSignInHint": "Connexion avec votre identifiant Apple.",
   "joinInvitedBy": "{name} vous invite dans « {garden} »",
   "@joinInvitedBy": {
     "placeholders": {
@@ -1736,10 +1736,10 @@
       }
     }
   },
-  "joinAsMember": "Vous pourrez ajouter, modifier et supprimer des plantes.",
-  "joinAsViewer": "Vous pourrez tout consulter, sans rien y changer.",
+  "joinAsMember": "Ajout, modification et suppression de plantes.",
+  "joinAsViewer": "Consultation seule, sans modification.",
   "joinAlreadyMember": "Vous faites déjà partie de ce jardin.",
-  "joined": "Bienvenue dans « {name} »",
+  "joined": "Jardin « {name} » rejoint",
   "@joined": {
     "placeholders": {
       "name": {
@@ -1748,7 +1748,7 @@
     }
   },
   "leaveGarden": "Quitter ce jardin",
-  "leaveGardenConfirm": "Vous n'aurez plus accès à « {name} ». Les plantes restent chez leur propriétaire.",
+  "leaveGardenConfirm": "Vous n'aurez plus accès à « {name} ».",
   "@leaveGardenConfirm": {
     "placeholders": {
       "name": {
@@ -1767,13 +1767,13 @@
   "collaborationNeedsAccount": "Il faut un compte pour partager un jardin",
   "inviteSomeone": "Inviter quelqu'un",
   "inviteReady": "Invitation prête",
-  "inviteRoleHint": "Un membre ajoute, modifie et supprime des plantes. Un lecteur regarde, sans rien changer.",
+  "inviteRoleHint": "Membre : ajoute, modifie et supprime des plantes. Lecteur : consultation seule.",
   "inviteEmailOptional": "Adresse e-mail (facultatif)",
-  "inviteEmailHint": "Renseignée, l'invitation ne pourra être acceptée que par ce compte.",
+  "inviteEmailHint": "Si renseignée, seule cette adresse pourra accepter l'invitation.",
   "inviteCreate": "Créer l'invitation",
-  "inviteShareHint": "Envoyez ce lien ou ce code à la personne. Elle n'a pas besoin d'avoir déjà l'application.",
+  "inviteShareHint": "Envoyez ce lien ou ce code. L'application n'est pas nécessaire pour le recevoir.",
   "inviteShare": "Partager le lien",
-  "inviteMessage": "Je vous invite dans mon jardin sur Auxine. {link}",
+  "inviteMessage": "Invitation à rejoindre mon jardin sur Auxine : {link}",
   "@inviteMessage": {
     "placeholders": {
       "link": {
@@ -1793,11 +1793,11 @@
   "inviteFailed": "Impossible de créer l'invitation.",
   "invitesTitle": "Invitations en attente",
   "inviteRevoke": "Révoquer",
-  "inviteRevokeConfirm": "Le code cessera aussitôt de fonctionner.",
+  "inviteRevokeConfirm": "Le code ne fonctionnera plus.",
   "inviteRevoked": "Invitation révoquée",
-  "membersHint": "Les personnes que vous invitez voient les mêmes plantes que vous, et peuvent s'en occuper.",
-  "membersGuestHint": "Ce jardin appartient à quelqu'un d'autre. Voici qui s'en occupe.",
-  "memberRoleHint": "Un membre ajoute, modifie et supprime. Un lecteur regarde.",
+  "membersHint": "Les membres voient les mêmes plantes et peuvent s'en occuper.",
+  "membersGuestHint": "Jardin partagé par un autre utilisateur.",
+  "memberRoleHint": "Membre : ajoute, modifie et supprime des plantes. Lecteur : consultation seule.",
   "makeRole": "Passer en « {role} »",
   "@makeRole": {
     "placeholders": {
@@ -1831,8 +1831,8 @@
   "photoFrameHint": "Gardez le même cadrage d'une fois sur l'autre pour suivre la croissance.",
   "photoGhostToggle": "Superposer la dernière photo",
   "photoGhostHint": "Alignez la plante sur la photo en transparence.",
-  "photoTitleStepTitle": "Un titre ?",
-  "photoTitleStepSubtitle": "Pour la retrouver plus tard. Vous pouvez laisser vide.",
+  "photoTitleStepTitle": "Titre",
+  "photoTitleStepSubtitle": "Facultatif.",
   "photoTagNewLeaf": "Nouvelle feuille",
   "photoTagFlowering": "Floraison",
   "photoTagBeforeRepotting": "Avant rempotage",
@@ -1841,10 +1841,10 @@
   "photoTagAfterPruning": "Après taille",
   "mainPhotoHint": "Affichée sur la fiche et dans la liste.",
   "retake": "Reprendre",
-  "growthEmptySubtitle": "Ajoutez une photo de temps en temps pour la voir pousser.",
+  "growthEmptySubtitle": "Ajoutez des photos régulièrement pour suivre la croissance.",
   "growthSummary": "{count, plural, =1{1 photo · depuis {since}} other{{count} photos · depuis {since}}}",
   "@growthSummary": {"placeholders": {"count": {"type": "int"}, "since": {"type": "String"}}},
-  "growthNudge": "Dernière photo le {date}. Prenez-en une nouvelle ?",
+  "growthNudge": "Dernière photo le {date}.",
   "@growthNudge": {"placeholders": {"date": {"type": "String"}}},
   "timelapse": "Timelapse",
   "beforeAfter": "Avant / après",
@@ -1856,13 +1856,13 @@
   "addTitle": "Ajouter un titre",
   "swap": "Inverser",
   "pause": "Pause",
-  "stepPhotoDoneTitle": "On la garde ?",
-  "stepPhotoDoneSubtitle": "Vous pouvez ajouter une feuille de près pour aider {name}.",
+  "stepPhotoDoneTitle": "Aperçu",
+  "stepPhotoDoneSubtitle": "Une feuille de près aide {name} à reconnaître l'espèce.",
   "@stepPhotoDoneSubtitle": {"placeholders": {"name": {"type": "String"}}},
   "stepPhotoDonePlain": "Vous pourrez en ajouter d'autres depuis sa fiche.",
   "viewPlant": "La plante",
   "viewLeafClose": "Une feuille de près",
   "viewAnother": "Autre vue",
-  "viewForModel": "Cette photo aide {name} à reconnaître l'espèce. Elle ne sera pas gardée.",
+  "viewForModel": "Utilisée par {name} pour reconnaître l'espèce, non conservée.",
   "@viewForModel": {"placeholders": {"name": {"type": "String"}}}
 }

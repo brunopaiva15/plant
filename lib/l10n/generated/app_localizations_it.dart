@@ -76,7 +76,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get none => 'Nessuno';
 
   @override
-  String get genericError => 'Qualcosa non ha funzionato. Riprova.';
+  String get genericError => 'Si è verificato un errore. Riprova.';
 
   @override
   String get tabToday => 'Oggi';
@@ -123,11 +123,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get allDoneTitle => 'Tutto in ordine';
 
   @override
-  String get allDoneSubtitle =>
-      'Le tue piante non hanno bisogno di nulla oggi.';
+  String get allDoneSubtitle => 'Nessuna cura prevista oggi.';
 
   @override
-  String get emptyGardenTitle => 'Il tuo giardino inizia qui.';
+  String get emptyGardenTitle => 'Nessuna pianta';
 
   @override
   String get addFirstPlant => 'Aggiungi la mia prima pianta';
@@ -343,7 +342,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get emptyPlantsTitle => 'Nessuna pianta';
 
   @override
-  String get emptyPlantsSubtitle => 'Il tuo giardino inizia qui.';
+  String get emptyPlantsSubtitle => 'Aggiungete la prima pianta.';
 
   @override
   String get addPlant => 'Aggiungi una pianta';
@@ -403,7 +402,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get newPlant => 'Nuova pianta';
 
   @override
-  String get stepPhotoTitle => 'Una foto?';
+  String get stepPhotoTitle => 'Foto';
 
   @override
   String get stepPhotoSubtitle =>
@@ -422,7 +421,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get changePhoto => 'Cambia';
 
   @override
-  String get stepNameTitle => 'Come si chiama?';
+  String get stepNameTitle => 'Nome';
 
   @override
   String get plantNameHint => 'Nome della pianta';
@@ -431,7 +430,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get speciesHint => 'Specie (facoltativo)';
 
   @override
-  String get stepLocationTitle => 'Dove si trova?';
+  String get stepLocationTitle => 'Posizione';
 
   @override
   String get newLocationChip => 'Nuovo';
@@ -541,7 +540,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get archivePlant => 'Archivia pianta';
 
   @override
-  String get archiveReasonTitle => 'Cos\'è successo?';
+  String get archiveReasonTitle => 'Motivo';
 
   @override
   String get reasonDied => 'Morta';
@@ -677,7 +676,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get whatDidYouDo => 'Cosa hai fatto?';
+  String get whatDidYouDo => 'Azione';
 
   @override
   String get when => 'Quando';
@@ -881,7 +880,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get notificationHint =>
-      'Una sola notifica al giorno, solo quando una pianta ha bisogno di te.';
+      'Una notifica al giorno, solo se è prevista una cura.';
 
   @override
   String get notificationPermissionDenied =>
@@ -923,8 +922,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localAccount => 'Dati su questo dispositivo';
 
   @override
-  String get localAccountHint =>
-      'Le tue piante e foto restano private, su questo telefono. Account e sincronizzazione arriveranno in una versione futura.';
+  String get localAccountHint => 'I dati restano su questo telefono.';
 
   @override
   String version(String version) {
@@ -950,15 +948,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onboardingTitle => 'Tutte le tue piante, qui';
 
   @override
-  String get onboardingSubtitle =>
-      'Aggiungile una alla volta, con una foto se vuoi.';
+  String get onboardingSubtitle => 'Aggiungetele con o senza foto.';
 
   @override
   String get onbPlaceTitle => 'Dove sono le tue piante?';
 
   @override
   String get onbPlaceBody =>
-      'Per il meteo del giorno e l\'annaffiatura all\'aperto. Basta una città; la tua posizione esatta non viene né conservata né condivisa.';
+      'Per il meteo e l\'irrigazione all\'aperto. Basta una città, la posizione esatta non viene salvata.';
 
   @override
   String get useMyLocation => 'Usa la mia posizione';
@@ -976,25 +973,24 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get askNameTitle => 'Come ti chiami?';
+  String get askNameTitle => 'Il vostro nome';
 
   @override
-  String get askNameSubtitle =>
-      'Per salutarti ogni mattina. Potrai cambiarlo più tardi.';
+  String get askNameSubtitle => 'Modificabile in seguito nel profilo.';
 
   @override
-  String get onbAccountTitle => 'E se cambi telefono?';
+  String get onbAccountTitle => 'Backup e condivisione';
 
   @override
   String get onbAccountBody =>
-      'Con un account le tue piante e le tue foto sono al sicuro, e puoi condividere un giardino. Basta il tuo ID Apple.';
+      'Un account salva i dati e permette di condividere un giardino. Accesso con il vostro ID Apple.';
 
   @override
-  String get notificationAskTitle => 'Un promemoria utile, ogni giorno';
+  String get notificationAskTitle => 'Promemoria giornaliero';
 
   @override
   String get notificationAskBody =>
-      'Una sola notifica al giorno, all\'ora che scegli, solo quando una pianta ne ha bisogno.';
+      'Una notifica al giorno, all\'ora scelta, solo se è prevista una cura.';
 
   @override
   String get enable => 'Attiva';
@@ -1010,12 +1006,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String notifWaterOne(String name) {
-    return '$name ha probabilmente bisogno d\'acqua oggi.';
+    return '$name: irrigazione prevista oggi.';
   }
 
   @override
   String notifWaterMany(String names) {
-    return '$names hanno probabilmente bisogno d\'acqua oggi.';
+    return '$names: irrigazione prevista oggi.';
   }
 
   @override
@@ -1023,8 +1019,8 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count altre cure ti aspettano.',
-      one: '1 altra cura ti aspetta.',
+      other: '$count altre cure previste.',
+      one: '1 altra cura prevista.',
     );
     return '$_temp0';
   }
@@ -1034,8 +1030,8 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count cure ti aspettano oggi.',
-      one: '1 cura ti aspetta oggi.',
+      other: '$count cure previste oggi.',
+      one: '1 cura prevista oggi.',
     );
     return '$_temp0';
   }
@@ -1143,8 +1139,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get noInventoryTitle => 'Inventario vuoto';
 
   @override
-  String get noInventorySubtitle =>
-      'Tieni d\'occhio concimi, terricci, vasi e attrezzi.';
+  String get noInventorySubtitle => 'Concimi, terricci, vasi, attrezzi…';
 
   @override
   String get deleteItem => 'Elimina articolo';
@@ -1197,7 +1192,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get qrHint =>
-      'Attaccalo al vaso e la scansione aprirà direttamente la pianta.';
+      'Scansionato, questo codice apre la scheda della pianta.';
 
   @override
   String get scan => 'Scansiona';
@@ -1206,7 +1201,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scanHint => 'Inquadra il codice QR di una pianta.';
 
   @override
-  String get unknownQr => 'Questo codice QR non appartiene al tuo giardino.';
+  String get unknownQr => 'Codice QR sconosciuto.';
 
   @override
   String get shareQr => 'Condividi';
@@ -1228,20 +1223,20 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifying => 'Analisi in corso…';
 
   @override
-  String get identifyTitle => 'È forse…';
+  String get identifyTitle => 'Specie';
 
   @override
   String get identifyHint => 'Suggerimenti di specie, da confermare.';
 
   @override
-  String get searchOnline => 'Nessuna corrisponde? Cerca online';
+  String get searchOnline => 'Cerca online';
 
   @override
   String get identifyAnotherPhoto => 'Aggiungi una foto';
 
   @override
   String get identifyAnotherPhotoHint =>
-      'Un\'altra foto aiuterebbe a decidere. Una foglia, un fiore o la pianta intera.';
+      'Una foglia, un fiore o la pianta intera aiuta a precisare.';
 
   @override
   String get identifyConfirmWithPhoto => 'Conferma con una foto';
@@ -1257,12 +1252,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identifyOnDevice(String name) {
-    return 'Riconosciuta da $name, sul tuo dispositivo. Scegli la specie corrispondente.';
+    return 'Riconosciuta da $name sul dispositivo. Scegliete la specie.';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Riconosciuta online da Pl@ntNet. Scegli la specie corrispondente.';
+      'Riconosciuta online da Pl@ntNet. Scegliete la specie.';
 
   @override
   String get identifyPhotoSource =>
@@ -1283,7 +1278,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return '$name riconosce le specie direttamente sul tuo dispositivo, senza rete. Quando è incerto, la foto può essere inviata a Pl@ntNet.';
+    return '$name riconosce le specie sul dispositivo, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
   }
 
   @override
@@ -1323,7 +1318,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get irisTagline =>
-      'Riconosce le tue piante direttamente sul telefono, senza rete e senza account.';
+      'Riconoscimento delle specie sul telefono, senza rete né account.';
 
   @override
   String get irisSpeciesLabel => 'specie';
@@ -1339,7 +1334,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String irisTwoPhotosBody(String name) {
-    return 'Fotografa la pianta intera, poi una foglia da vicino. Con due foto, $name trova la specie giusta due volte su tre, invece di una su due.';
+    return 'La pianta intera, poi una foglia da vicino. Con due foto, $name trova la specie giusta due volte su tre, invece di una su due.';
   }
 
   @override
@@ -1370,14 +1365,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get outdoorHint =>
-      'Sul balcone, in giardino o in serra il meteo conta.';
+      'Balcone, giardino o serra: il meteo viene considerato.';
 
   @override
   String get weather => 'Meteo';
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto, Auxine controlla la pioggia del giorno e ti evita un\'annaffiatura inutile. Dati Open-Meteo, senza account né chiave.';
+      'Per le piante all\'aperto, l\'irrigazione viene rinviata nei giorni di pioggia. Dati Open-Meteo, senza account né chiave.';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -1396,7 +1391,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String weatherRainSkip(String names) {
-    return 'Oggi non serve annaffiare $names, è prevista pioggia.';
+    return 'Pioggia oggi: irrigazione di $names rinviata.';
   }
 
   @override
@@ -1450,7 +1445,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get exportHint =>
-      'Un file ZIP con piante, cronologia, inventario, impostazioni e foto. I tuoi dati sono tuoi.';
+      'Un file ZIP con piante, cronologia, inventario, impostazioni e foto.';
 
   @override
   String get exporting => 'Preparazione dell\'esportazione…';
@@ -1466,12 +1461,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String notifLowStockOne(String name) {
-    return '$name è quasi finito.';
+    return '$name: scorta bassa.';
   }
 
   @override
   String notifLowStockMany(int count) {
-    return '$count articoli sono quasi finiti.';
+    return '$count articoli con scorta bassa.';
   }
 
   @override
@@ -1485,7 +1480,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get signInHint =>
-      'Un account salva le tue piante, le sincronizza tra i dispositivi e permette di condividere un giardino. Senza account, tutto resta su questo telefono.';
+      'Un account salva i dati, li sincronizza tra dispositivi e permette di condividere un giardino.';
 
   @override
   String get continueWithApple => 'Continua con Apple';
@@ -1588,11 +1583,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get you => 'tu';
 
   @override
-  String get diagnosisTitle => 'La mia pianta ha un problema';
+  String get diagnosisTitle => 'Diagnosi';
 
   @override
   String get diagnosisHint =>
-      'Fotografa foglie, fusto o terra da più angolazioni. I risultati sono piste, mai certezze.';
+      'Fotografate foglie, fusto o terra da più angolazioni. I risultati sono indicativi.';
 
   @override
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
@@ -1808,7 +1803,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get editTask => 'Modifica attività';
 
   @override
-  String get taskTitleHint => 'Cosa c\'è da fare?';
+  String get taskTitleHint => 'Titolo';
 
   @override
   String get taskDescriptionHint => 'Dettagli (facoltativo)';
@@ -1924,7 +1919,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get noTasksSubtitle =>
-      'Annota qui le semine, la pulizia della serra, l\'ordine di terriccio.';
+      'Semine, pulizia della serra, ordine di terriccio…';
 
   @override
   String get noDoneTasks => 'Niente di completato per ora';
@@ -1993,7 +1988,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String notifTaskDue(String title) {
-    return '$title, è il momento';
+    return 'Da fare: $title';
   }
 
   @override
@@ -2044,7 +2039,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careKnownProblemsNote =>
-      'Segnalati su questa specie o su quelle affini. Non tutti la riguardano.';
+      'Segnalati su questa specie o su specie affini.';
 
   @override
   String get problemKindDisorder => 'Disturbo';
@@ -2071,7 +2066,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get problemKindConditions => 'Affezioni';
 
   @override
-  String get careTips => 'Buone abitudini';
+  String get careTips => 'Consigli';
 
   @override
   String careEveryDays(int count) {
@@ -2261,7 +2256,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careDisclaimer =>
-      'Indicazioni, non regole. La tua luce, il tuo vaso e la tua aria contano altrettanto.';
+      'Valori indicativi, da adattare a luce, vaso e aria ambiente.';
 
   @override
   String get careApplyToSchedule => 'Applica al planning';
@@ -2676,8 +2671,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get fieldTemplates => 'Modelli di campo';
 
   @override
-  String get fieldTemplatesHint =>
-      'Crea qui i campi che riutilizzi su più piante. Te li proporremo con un tocco.';
+  String get fieldTemplatesHint => 'Campi riutilizzabili su più piante.';
 
   @override
   String get newFieldTemplate => 'Nuovo modello';
@@ -2974,12 +2968,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get itemNotFound => 'Articolo non trovato';
 
   @override
-  String get noGroupsYet =>
-      'Nessun gruppo per ora. Creane uno per organizzare gli articoli a modo tuo.';
+  String get noGroupsYet => 'Nessun gruppo.';
 
   @override
   String get deleteGroupExplain =>
-      'Gli articoli non vengono eliminati, tornano semplicemente senza gruppo.';
+      'Gli articoli non vengono eliminati, perdono il gruppo.';
 
   @override
   String get newEvent => 'Nuovo evento';
@@ -3070,11 +3063,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Gli eventi non vengono eliminati, perdono soltanto la categoria.';
+      'Gli eventi non vengono eliminati, perdono la categoria.';
 
   @override
-  String get noEventCategoriesYet =>
-      'Nessuna categoria. Creane una per colorare i tuoi eventi.';
+  String get noEventCategoriesYet => 'Nessuna categoria.';
 
   @override
   String get categoryNameHint => 'Nome della categoria';
@@ -3125,7 +3117,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get statWateringsThisMonth => 'Annaffiature questo mese';
 
   @override
-  String get statOldest => 'La più anziana';
+  String get statOldest => 'Più vecchia';
 
   @override
   String get warningsSection => 'Da tenere d\'occhio';
@@ -3148,7 +3140,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get noWarnings => 'Va tutto bene nel giardino.';
+  String get noWarnings => 'Niente da segnalare.';
 
   @override
   String get recentPlantsSection => 'Piante recenti';
@@ -3163,8 +3155,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get activityLogTitle => 'Registro attività';
 
   @override
-  String get activityEmpty =>
-      'Ancora nulla. Il registro si riempie dalla prima cura.';
+  String get activityEmpty => 'Nessuna attività.';
 
   @override
   String get activityPlantAdded => 'Aggiunta al giardino';
@@ -3259,8 +3250,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get backupTitle => 'Backup';
 
   @override
-  String get backupExplain =>
-      'Un file .zip con i tuoi dati e le tue foto. Un formato aperto, così i dati restano tuoi.';
+  String get backupExplain => 'Un file .zip con i dati e le foto.';
 
   @override
   String get backupWhatToExport => 'Cosa salvare';
@@ -3354,17 +3344,16 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get onbTodayTitle => 'Ogni mattina, cosa c\'è da fare';
+  String get onbTodayTitle => 'Le cure del giorno';
 
   @override
-  String get onbTodayBody => 'Annaffiata? Un tocco, ed è segnato.';
+  String get onbTodayBody => 'Un tocco per registrare ogni cura.';
 
   @override
   String get onbCareTitle => 'Meno annaffiature d\'inverno';
 
   @override
-  String get onbCareBody =>
-      'Gli intervalli si adattano da soli quando le giornate si accorciano.';
+  String get onbCareBody => 'Gli intervalli si adattano alla stagione.';
 
   @override
   String get onbGardenTitle => 'Stanze, foto, calendario';
@@ -3380,7 +3369,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Fotografa la tua pianta. Se Iris non la riconosce, la cerca online.';
+      'Se Iris non riconosce una pianta, la ricerca continua online.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';
@@ -3403,7 +3392,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get whatsNewIrisIntro =>
-      'Il modello sul dispositivo è stato riaddestrato. Conosce più specie, esita meno e continua a funzionare senza rete.';
+      'Il modello integrato è stato riaddestrato: più specie, meno errori, sempre senza rete.';
 
   @override
   String whatsNewIrisSpeciesTitle(String count) {
@@ -3412,7 +3401,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get whatsNewIrisSpeciesBody =>
-      'Anche le piante da interno più rare entrano nel catalogo, accanto a quelle che Iris sapeva già nominare.';
+      'Piante d\'interno più rare si aggiungono al catalogo.';
 
   @override
   String get whatsNewIrisOfflineTitle => 'Sempre sul dispositivo';
@@ -3422,11 +3411,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Il riconoscimento resta locale: niente esce senza il tuo consenso, e il ripiego online si disattiva con un interruttore.';
 
   @override
-  String get whatsNewIrisDoubtTitle => 'Sa dire quando è incerto';
+  String get whatsNewIrisDoubtTitle => 'Dubbio segnalato';
 
   @override
   String get whatsNewIrisDoubtBody =>
-      'Quando due specie si somigliano davvero, Iris le propone entrambe invece di sceglierne una a caso.';
+      'Quando due specie si somigliano, Iris propone entrambe.';
 
   @override
   String onbStepOf(int current, int total) {
@@ -3467,10 +3456,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Tutte le funzioni sono gratuite. Se l\'app ti è utile, puoi dare una mano al suo sviluppatore — una volta, senza abbonamento.';
+      'Tutte le funzioni sono gratuite. È possibile un sostegno una tantum, senza abbonamento.';
 
   @override
-  String get supportNothingLocked => 'Niente è riservato a chi dona.';
+  String get supportNothingLocked =>
+      'Nessuna funzione è riservata ai sostenitori.';
 
   @override
   String supportGive(String price) {
@@ -3484,8 +3474,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportThanksTitle => 'Grazie';
 
   @override
-  String get supportThanksBody =>
-      'Il tuo sostegno è registrato. L\'app non cambia, era già completa.';
+  String get supportThanksBody => 'Il vostro sostegno è stato registrato.';
 
   @override
   String get supportUnavailable =>
@@ -3510,20 +3499,19 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportNoThanks => 'Continua senza';
 
   @override
-  String get emptyGardenSubtitle =>
-      'Aggiungi la tua prima pianta, con una foto se vuoi.';
+  String get emptyGardenSubtitle => 'Aggiungete la prima pianta.';
 
   @override
   String get finderTitle => 'Trovare una pianta';
 
   @override
-  String get finderEntryHint => 'Non sa cosa scegliere?';
+  String get finderEntryHint => 'Aiuto nella scelta';
 
   @override
-  String get finderStepSpot => 'Dove vivrà?';
+  String get finderStepSpot => 'Posizione';
 
   @override
-  String get finderStepSpotHint => 'La luce decide quasi tutto.';
+  String get finderStepSpotHint => 'La luce è il criterio principale.';
 
   @override
   String get finderSpotBright => 'Stanza luminosa';
@@ -3541,17 +3529,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderStepEffort => 'Quanta cura?';
 
   @override
-  String get finderStepEffortHint =>
-      'Risponda sinceramente, nessuno la giudica.';
+  String get finderStepEffortHint => 'Quanto spesso potete annaffiare.';
 
   @override
-  String get finderEffortForgiving => 'Dimentico spesso di annaffiare';
+  String get finderEffortForgiving => 'Irrigazione occasionale';
 
   @override
-  String get finderEffortNormal => 'Annaffiature regolari, nulla di più';
+  String get finderEffortNormal => 'Irrigazione regolare';
 
   @override
-  String get finderEffortAttentive => 'Mi piace prendermene cura';
+  String get finderEffortAttentive => 'Cura frequente';
 
   @override
   String get finderStepSafety => 'Animali o bambini?';
@@ -3573,7 +3560,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderStepKindHint => 'Più scelte, o nessuna.';
 
   @override
-  String get finderNote => 'Altro?';
+  String get finderNote => 'Dettagli';
 
   @override
   String get finderNoteHint =>
@@ -3586,17 +3573,17 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderSubmit => 'Vedi le proposte';
 
   @override
-  String get finderResults => 'Le nostre proposte';
+  String get finderResults => 'Proposte';
 
   @override
   String get finderResultsHint => 'In base alla scheda di cura di ogni specie.';
 
   @override
-  String get finderEmptyTitle => 'Niente di convincente';
+  String get finderEmptyTitle => 'Nessun risultato';
 
   @override
   String get finderEmptySubtitle =>
-      'Nessuna specie del catalogo soddisfa tutti i criteri. Allarghi un po\', o chieda all\'IA.';
+      'Nessuna specie del catalogo corrisponde a tutti i criteri. Ampliateli o chiedete all\'IA.';
 
   @override
   String get finderRestart => 'Ricomincia';
@@ -3618,7 +3605,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Fuori catalogo, da verificare prima di acquistare.';
 
   @override
-  String get finderAiError => 'L\'IA non è riuscita a proporre nulla.';
+  String get finderAiError => 'Nessuna proposta dall\'IA.';
 
   @override
   String get finderReasonLight => 'Ama questa luce';
@@ -3627,10 +3614,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderReasonLowLight => 'Tollera l\'ombra';
 
   @override
-  String get finderReasonForgiving => 'Perdona le annaffiature dimenticate';
+  String get finderReasonForgiving => 'Tollera le dimenticanze';
 
   @override
-  String get finderReasonEasy => 'Facile da coltivare';
+  String get finderReasonEasy => 'Facile';
 
   @override
   String get finderReasonSafe => 'Non tossica';
@@ -3645,26 +3632,25 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onbWelcomeTitle => 'Benvenuto in Auxine';
 
   @override
-  String get onbWelcomeBody =>
-      'Il diario delle tue piante, dalla prima annaffiatura alla nuova foglia.';
+  String get onbWelcomeBody => 'Il diario di cura delle vostre piante.';
 
   @override
   String get finderIntro =>
-      'Quattro domande sul posto e sulle tue abitudini, poi piante che ci staranno bene, ognuna con la sua scheda di cura.';
+      'Quattro domande, poi una selezione di specie adatte, con la scheda di cura.';
 
   @override
   String get careMatchAssisted => 'Completata dall\'IA';
 
   @override
   String get careAssistedNote =>
-      'Il catalogo non conosce questa specie, quindi questi valori vengono dall\'IA. È stato inviato solo il nome scientifico, e la tossicità non ne fa parte.';
+      'Specie assente dal catalogo: questi riferimenti vengono dall\'IA. È stato inviato solo il nome scientifico. La tossicità non è indicata.';
 
   @override
   String get careAssistSetting => 'Completa le schede con l\'IA';
 
   @override
   String get careAssistHint =>
-      'Quando il catalogo non conosce una specie, il suo nome scientifico va all\'IA per completare la scheda. Nient\'altro lascia il dispositivo, e la risposta viene conservata.';
+      'Per una specie assente dal catalogo, il nome scientifico viene inviato all\'IA per completare la scheda. Nient\'altro lascia il dispositivo. La risposta viene conservata.';
 
   @override
   String get gardensTitle => 'I miei giardini';
@@ -3686,7 +3672,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String gardenOpened(String name) {
-    return 'Ora siete in «$name»';
+    return 'Giardino: $name';
   }
 
   @override
@@ -3707,7 +3693,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get renameGarden => 'Rinomina il giardino';
 
   @override
-  String get renameGardenHint => 'È il nome che vedranno le persone invitate.';
+  String get renameGardenHint => 'Nome visibile alle persone invitate.';
 
   @override
   String get gardenNameHint => 'Il giardino di casa';
@@ -3739,7 +3725,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinNeedsAccount => 'Serve un account per unirsi a un giardino.';
 
   @override
-  String get joinSignInHint => 'Basta il tuo ID Apple.';
+  String get joinSignInHint => 'Accesso con il vostro ID Apple.';
 
   @override
   String joinInvitedBy(String name, String garden) {
@@ -3752,18 +3738,17 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get joinAsMember =>
-      'Potrete aggiungere, modificare ed eliminare piante.';
+  String get joinAsMember => 'Aggiunta, modifica ed eliminazione di piante.';
 
   @override
-  String get joinAsViewer => 'Potrete vedere tutto, senza modificare nulla.';
+  String get joinAsViewer => 'Sola consultazione, senza modifiche.';
 
   @override
   String get joinAlreadyMember => 'Fate già parte di questo giardino.';
 
   @override
   String joined(String name) {
-    return 'Benvenuti in «$name»';
+    return 'Giardino «$name» aggiunto';
   }
 
   @override
@@ -3771,7 +3756,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String leaveGardenConfirm(String name) {
-    return 'Perderete l\'accesso a «$name». Le piante restano al loro proprietario.';
+    return 'Non avrete più accesso a «$name».';
   }
 
   @override
@@ -3791,28 +3776,28 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inviteRoleHint =>
-      'Un membro aggiunge, modifica ed elimina piante. Un lettore guarda soltanto.';
+      'Membro: aggiunge, modifica ed elimina piante. Lettore: sola consultazione.';
 
   @override
   String get inviteEmailOptional => 'Indirizzo e-mail (facoltativo)';
 
   @override
   String get inviteEmailHint =>
-      'Se indicato, solo quell\'account potrà accettare l\'invito.';
+      'Se indicato, solo questo indirizzo potrà accettare l\'invito.';
 
   @override
   String get inviteCreate => 'Crea l\'invito';
 
   @override
   String get inviteShareHint =>
-      'Inviate questo link o codice alla persona. Non serve che abbia già l\'app.';
+      'Inviate questo link o codice. L\'app non è necessaria per riceverlo.';
 
   @override
   String get inviteShare => 'Condividi il link';
 
   @override
   String inviteMessage(String link) {
-    return 'Vi invito nel mio giardino su Auxine. $link';
+    return 'Invito a unirvi al mio giardino su Auxine: $link';
   }
 
   @override
@@ -3833,22 +3818,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get inviteRevoke => 'Revoca';
 
   @override
-  String get inviteRevokeConfirm => 'Il codice smetterà subito di funzionare.';
+  String get inviteRevokeConfirm => 'Il codice non funzionerà più.';
 
   @override
   String get inviteRevoked => 'Invito revocato';
 
   @override
   String get membersHint =>
-      'Le persone che invitate vedono le stesse piante e possono occuparsene.';
+      'I membri vedono le stesse piante e possono prendersene cura.';
 
   @override
-  String get membersGuestHint =>
-      'Questo giardino è di qualcun altro. Ecco chi se ne occupa.';
+  String get membersGuestHint => 'Giardino condiviso da un altro utente.';
 
   @override
   String get memberRoleHint =>
-      'Un membro aggiunge, modifica ed elimina. Un lettore guarda.';
+      'Membro: aggiunge, modifica ed elimina piante. Lettore: sola consultazione.';
 
   @override
   String makeRole(String role) {
@@ -3885,11 +3869,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get photoGhostHint => 'Allinea la pianta alla foto in trasparenza.';
 
   @override
-  String get photoTitleStepTitle => 'Un titolo?';
+  String get photoTitleStepTitle => 'Titolo';
 
   @override
-  String get photoTitleStepSubtitle =>
-      'Per ritrovarla più tardi. Puoi lasciare vuoto.';
+  String get photoTitleStepSubtitle => 'Facoltativo.';
 
   @override
   String get photoTagNewLeaf => 'Foglia nuova';
@@ -3917,7 +3900,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get growthEmptySubtitle =>
-      'Aggiungi una foto ogni tanto per vederla crescere.';
+      'Aggiungete foto regolarmente per seguire la crescita.';
 
   @override
   String growthSummary(int count, String since) {
@@ -3932,7 +3915,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String growthNudge(String date) {
-    return 'Ultima foto il $date. Ne scatti una nuova?';
+    return 'Ultima foto il $date.';
   }
 
   @override
@@ -3965,11 +3948,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pause => 'Pausa';
 
   @override
-  String get stepPhotoDoneTitle => 'La teniamo?';
+  String get stepPhotoDoneTitle => 'Anteprima';
 
   @override
   String stepPhotoDoneSubtitle(String name) {
-    return 'Puoi aggiungere una foglia da vicino per aiutare $name.';
+    return 'Una foglia da vicino aiuta $name a riconoscere la specie.';
   }
 
   @override
@@ -3986,6 +3969,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String viewForModel(String name) {
-    return 'Questa foto aiuta $name a riconoscere la specie. Non verrà conservata.';
+    return 'Usata da $name per riconoscere la specie, non conservata.';
   }
 }

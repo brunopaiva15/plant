@@ -133,7 +133,7 @@ void main() {
 
     testWidgets('une suggestion remplit le titre, la même le vide', (tester) async {
       await pump(tester);
-      expect(find.text('Un titre ?'), findsOneWidget);
+      expect(find.text('Titre'), findsOneWidget);
 
       // La puce, pas le champ : une fois remplie, le champ porte le même mot.
       Finder chip(String s) => find.widgetWithText(FloraChip, s);

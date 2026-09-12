@@ -80,7 +80,7 @@ void main() {
   testWidgets('empty garden shows the first-plant call to action', (tester) async {
     final container = await boot(tester);
     await pumpApp(tester, container);
-    expect(find.text('Votre jardin commence ici.'), findsOneWidget);
+    expect(find.text('Aucune plante'), findsOneWidget);
     expect(find.text('Ajouter ma première plante'), findsOneWidget);
   });
 
@@ -145,7 +145,7 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Ajouter une action'));
     await settle(tester);
-    expect(find.text("Qu'avez-vous fait ?"), findsOneWidget);
+    expect(find.text('Action'), findsOneWidget);
     await tester.tap(find.text('Enregistrer'));
     await settle(tester);
     expect(find.textContaining('Arrosée'), findsWidgets);
@@ -281,7 +281,7 @@ void main() {
     await step(tester);
     // Le titre est levé mot à mot ; la phrase du dessous, elle, est d'un seul
     // tenant : c'est elle qui dit que l'écran de bienvenue est bien là.
-    expect(find.text('Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.'), findsOneWidget);
+    expect(find.text('Le carnet d\'entretien de vos plantes.'), findsOneWidget);
     // « Passer » saute les diapositives et mène à l'étape du lieu, qu'on
     // peut remettre à plus tard ; puis vient le prénom.
     await tester.tap(find.text('Passer'));

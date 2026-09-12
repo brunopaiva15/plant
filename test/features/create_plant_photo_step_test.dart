@@ -131,7 +131,7 @@ void main() {
   testWidgets('viser : le cadrage est conseillé, et sans viseur les gestes sont des boutons', (tester) async {
     await pumpFlow(tester);
 
-    expect(find.text('Une photo ?'), findsOneWidget);
+    expect(find.text('Photo'), findsOneWidget);
     expect(find.textContaining('Cadrez la plante en entier'), findsOneWidget);
     // L'invite du cadre et le bouton disent le même geste.
     expect(find.text('Prendre une photo'), findsNWidgets(2));
@@ -147,8 +147,8 @@ void main() {
     await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
     await tester.pumpAndSettle();
 
-    expect(find.text('On la garde ?'), findsOneWidget);
-    expect(find.textContaining('pour aider Iris'), findsOneWidget);
+    expect(find.text('Aperçu'), findsOneWidget);
+    expect(find.textContaining('aide Iris'), findsOneWidget);
     expect(find.text('Continuer'), findsOneWidget);
     expect(find.text('Reprendre'), findsOneWidget);
     // La bande dit laquelle est la photo de la plante, et quoi prendre ensuite.
@@ -163,14 +163,14 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Choisir une photo').last);
     await tester.pumpAndSettle();
-    expect(find.text('On la garde ?'), findsOneWidget, reason: 'la vue prise, le cadre montre toujours la photo de la plante');
+    expect(find.text('Aperçu'), findsOneWidget, reason: 'la vue prise, le cadre montre toujours la photo de la plante');
     expect(find.bySemanticsLabel('Supprimer la photo'), findsOneWidget, reason: 'seule la vue de plus a une croix');
     expect(photoFiles(), hasLength(4));
 
     // Reprendre : la photo et sa vue partent ensemble, retour au viseur.
     await tester.tap(find.text('Reprendre'));
     await tester.pumpAndSettle();
-    expect(find.text('Une photo ?'), findsOneWidget);
+    expect(find.text('Photo'), findsOneWidget);
     expect(find.text('La plante'), findsNothing);
     expect(photoFiles(), isEmpty, reason: 'rien ne reste sur le disque');
   });
@@ -180,7 +180,7 @@ void main() {
     await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
     await tester.pumpAndSettle();
 
-    expect(find.text('On la garde ?'), findsOneWidget);
+    expect(find.text('Aperçu'), findsOneWidget);
     expect(find.textContaining('depuis sa fiche'), findsOneWidget);
     expect(find.text('La plante'), findsNothing);
     expect(find.text('Une feuille de près'), findsNothing);

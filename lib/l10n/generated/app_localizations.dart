@@ -237,7 +237,7 @@ abstract class AppLocalizations {
   /// No description provided for @genericError.
   ///
   /// In fr, this message translates to:
-  /// **'Quelque chose n\'a pas fonctionné. Réessayez.'**
+  /// **'Une erreur est survenue. Réessayez.'**
   String get genericError;
 
   /// No description provided for @tabToday.
@@ -309,13 +309,13 @@ abstract class AppLocalizations {
   /// No description provided for @allDoneSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Vos plantes n\'ont besoin de rien aujourd\'hui.'**
+  /// **'Aucun soin prévu aujourd\'hui.'**
   String get allDoneSubtitle;
 
   /// No description provided for @emptyGardenTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Votre jardin commence ici.'**
+  /// **'Aucune plante'**
   String get emptyGardenTitle;
 
   /// No description provided for @addFirstPlant.
@@ -681,7 +681,7 @@ abstract class AppLocalizations {
   /// No description provided for @emptyPlantsSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Votre jardin commence ici.'**
+  /// **'Ajoutez votre première plante.'**
   String get emptyPlantsSubtitle;
 
   /// No description provided for @addPlant.
@@ -753,7 +753,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepPhotoTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une photo ?'**
+  /// **'Photo'**
   String get stepPhotoTitle;
 
   /// No description provided for @stepPhotoSubtitle.
@@ -789,7 +789,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepNameTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Comment s\'appelle-t-elle ?'**
+  /// **'Nom'**
   String get stepNameTitle;
 
   /// No description provided for @plantNameHint.
@@ -807,7 +807,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepLocationTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Où se trouve-t-elle ?'**
+  /// **'Emplacement'**
   String get stepLocationTitle;
 
   /// No description provided for @newLocationChip.
@@ -999,7 +999,7 @@ abstract class AppLocalizations {
   /// No description provided for @archiveReasonTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Que s\'est-il passé ?'**
+  /// **'Motif'**
   String get archiveReasonTitle;
 
   /// No description provided for @reasonDied.
@@ -1227,7 +1227,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatDidYouDo.
   ///
   /// In fr, this message translates to:
-  /// **'Qu\'avez-vous fait ?'**
+  /// **'Action'**
   String get whatDidYouDo;
 
   /// No description provided for @when.
@@ -1629,7 +1629,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une seule notification par jour, uniquement quand une plante a besoin de vous.'**
+  /// **'Une notification par jour, seulement si un soin est prévu.'**
   String get notificationHint;
 
   /// No description provided for @notificationPermissionDenied.
@@ -1707,7 +1707,7 @@ abstract class AppLocalizations {
   /// No description provided for @localAccountHint.
   ///
   /// In fr, this message translates to:
-  /// **'Vos plantes et photos restent privées, sur ce téléphone. Les comptes et la synchronisation arriveront dans une prochaine version.'**
+  /// **'Vos données restent sur ce téléphone.'**
   String get localAccountHint;
 
   /// No description provided for @version.
@@ -1755,7 +1755,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ajoutez-les une par une, avec une photo si vous voulez.'**
+  /// **'Ajoutez-les avec ou sans photo.'**
   String get onboardingSubtitle;
 
   /// No description provided for @onbPlaceTitle.
@@ -1767,7 +1767,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbPlaceBody.
   ///
   /// In fr, this message translates to:
-  /// **'Pour la météo du jour et l\'arrosage dehors. Une ville suffit ; votre position exacte n\'est ni gardée ni partagée.'**
+  /// **'Pour la météo et l\'arrosage en extérieur. Une ville suffit, la position exacte n\'est pas conservée.'**
   String get onbPlaceBody;
 
   /// No description provided for @useMyLocation.
@@ -1797,37 +1797,37 @@ abstract class AppLocalizations {
   /// No description provided for @askNameTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Comment vous appelez-vous ?'**
+  /// **'Votre prénom'**
   String get askNameTitle;
 
   /// No description provided for @askNameSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Pour vous saluer chaque matin. Vous pourrez changer plus tard.'**
+  /// **'Modifiable plus tard dans le profil.'**
   String get askNameSubtitle;
 
   /// No description provided for @onbAccountTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Et si vous changez de téléphone ?'**
+  /// **'Sauvegarde et partage'**
   String get onbAccountTitle;
 
   /// No description provided for @onbAccountBody.
   ///
   /// In fr, this message translates to:
-  /// **'Avec un compte, vos plantes et vos photos sont sauvegardées, et vous pouvez partager un jardin. Il suffit de votre identifiant Apple.'**
+  /// **'Un compte sauvegarde vos données et permet de partager un jardin. Connexion avec votre identifiant Apple.'**
   String get onbAccountBody;
 
   /// No description provided for @notificationAskTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Un rappel utile, chaque jour'**
+  /// **'Rappel quotidien'**
   String get notificationAskTitle;
 
   /// No description provided for @notificationAskBody.
   ///
   /// In fr, this message translates to:
-  /// **'Une seule notification par jour, à l\'heure que vous choisissez, seulement quand une plante en a besoin.'**
+  /// **'Une notification par jour, à l\'heure choisie, seulement si un soin est prévu.'**
   String get notificationAskBody;
 
   /// No description provided for @enable.
@@ -1857,25 +1857,25 @@ abstract class AppLocalizations {
   /// No description provided for @notifWaterOne.
   ///
   /// In fr, this message translates to:
-  /// **'{name} a probablement besoin d\'eau aujourd\'hui.'**
+  /// **'{name} : arrosage prévu aujourd\'hui.'**
   String notifWaterOne(String name);
 
   /// No description provided for @notifWaterMany.
   ///
   /// In fr, this message translates to:
-  /// **'{names} ont probablement besoin d\'eau aujourd\'hui.'**
+  /// **'{names} : arrosage prévu aujourd\'hui.'**
   String notifWaterMany(String names);
 
   /// No description provided for @notifOther.
   ///
   /// In fr, this message translates to:
-  /// **'{count, plural, =1{1 autre soin vous attend.} other{{count} autres soins vous attendent.}}'**
+  /// **'{count, plural, =1{1 autre soin prévu.} other{{count} autres soins prévus.}}'**
   String notifOther(int count);
 
   /// No description provided for @notifOnlyOther.
   ///
   /// In fr, this message translates to:
-  /// **'{count, plural, =1{1 soin vous attend aujourd\'hui.} other{{count} soins vous attendent aujourd\'hui.}}'**
+  /// **'{count, plural, =1{1 soin prévu aujourd\'hui.} other{{count} soins prévus aujourd\'hui.}}'**
   String notifOnlyOther(int count);
 
   /// No description provided for @andJoin.
@@ -2073,7 +2073,7 @@ abstract class AppLocalizations {
   /// No description provided for @noInventorySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Gardez l\'œil sur vos engrais, terreaux, pots et outils.'**
+  /// **'Engrais, terreaux, pots, outils…'**
   String get noInventorySubtitle;
 
   /// No description provided for @deleteItem.
@@ -2157,7 +2157,7 @@ abstract class AppLocalizations {
   /// No description provided for @qrHint.
   ///
   /// In fr, this message translates to:
-  /// **'Collez-le sur le pot et le scanner ouvrira directement la fiche.'**
+  /// **'Scanné, ce code ouvre la fiche de la plante.'**
   String get qrHint;
 
   /// No description provided for @scan.
@@ -2175,7 +2175,7 @@ abstract class AppLocalizations {
   /// No description provided for @unknownQr.
   ///
   /// In fr, this message translates to:
-  /// **'Ce QR code n\'appartient pas à votre jardin.'**
+  /// **'QR code inconnu.'**
   String get unknownQr;
 
   /// No description provided for @shareQr.
@@ -2217,7 +2217,7 @@ abstract class AppLocalizations {
   /// No description provided for @identifyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Est-ce bien…'**
+  /// **'Espèce'**
   String get identifyTitle;
 
   /// No description provided for @identifyHint.
@@ -2229,7 +2229,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchOnline.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune ne correspond ? Chercher en ligne'**
+  /// **'Chercher en ligne'**
   String get searchOnline;
 
   /// No description provided for @identifyAnotherPhoto.
@@ -2241,7 +2241,7 @@ abstract class AppLocalizations {
   /// No description provided for @identifyAnotherPhotoHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière.'**
+  /// **'Une feuille, une fleur ou la plante entière permet d\'affiner.'**
   String get identifyAnotherPhotoHint;
 
   /// No description provided for @identifyConfirmWithPhoto.
@@ -2271,13 +2271,13 @@ abstract class AppLocalizations {
   /// No description provided for @identifyOnDevice.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnu par {name}, sur votre appareil. Choisissez l\'espèce qui correspond.'**
+  /// **'Reconnu par {name} sur l\'appareil. Choisissez l\'espèce.'**
   String identifyOnDevice(String name);
 
   /// No description provided for @identifyViaPlantNet.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnu en ligne par Pl@ntNet. Choisissez l’espèce qui correspond.'**
+  /// **'Reconnu en ligne par Pl@ntNet. Choisissez l\'espèce.'**
   String get identifyViaPlantNet;
 
   /// No description provided for @identifyPhotoSource.
@@ -2313,7 +2313,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'{name} reconnaît les espèces directement sur votre appareil, sans réseau. Quand il hésite, la photo peut être envoyée à Pl@ntNet pour trancher.'**
+  /// **'{name} reconnaît les espèces sur l\'appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
   String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.
@@ -2337,7 +2337,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationFallbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Coupé, tout reste sur l\'appareil.'**
+  /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
   String identificationFallbackHint(String name);
 
   /// No description provided for @modelMissing.
@@ -2373,7 +2373,7 @@ abstract class AppLocalizations {
   /// No description provided for @irisTagline.
   ///
   /// In fr, this message translates to:
-  /// **'Il reconnaît vos plantes directement sur votre téléphone, sans réseau et sans compte.'**
+  /// **'Reconnaissance des espèces sur le téléphone, sans réseau ni compte.'**
   String get irisTagline;
 
   /// No description provided for @irisSpeciesLabel.
@@ -2403,7 +2403,7 @@ abstract class AppLocalizations {
   /// No description provided for @irisTwoPhotosBody.
   ///
   /// In fr, this message translates to:
-  /// **'Photographiez la plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, au lieu d’une fois sur deux.'**
+  /// **'La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux.'**
   String irisTwoPhotosBody(String name);
 
   /// No description provided for @confidence.
@@ -2457,7 +2457,7 @@ abstract class AppLocalizations {
   /// No description provided for @outdoorHint.
   ///
   /// In fr, this message translates to:
-  /// **'Au balcon, au jardin ou en serre, la météo compte.'**
+  /// **'Balcon, jardin ou serre : la météo est prise en compte.'**
   String get outdoorHint;
 
   /// No description provided for @weather.
@@ -2469,7 +2469,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour vos plantes dehors, Auxine regarde la pluie du jour et vous évite un arrosage inutile. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour les plantes en extérieur, l\'arrosage est reporté les jours de pluie. Données Open-Meteo, sans compte ni clé.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -2505,7 +2505,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherRainSkip.
   ///
   /// In fr, this message translates to:
-  /// **'Pas besoin d\'arroser {names} aujourd\'hui, la pluie s\'en charge.'**
+  /// **'Pluie aujourd\'hui : arrosage de {names} reporté.'**
   String weatherRainSkip(String names);
 
   /// No description provided for @postpone.
@@ -2589,7 +2589,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos. Vos données vous appartiennent.'**
+  /// **'Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos.'**
   String get exportHint;
 
   /// No description provided for @exporting.
@@ -2619,13 +2619,13 @@ abstract class AppLocalizations {
   /// No description provided for @notifLowStockOne.
   ///
   /// In fr, this message translates to:
-  /// **'Il ne vous reste presque plus de {name}.'**
+  /// **'{name} : stock bas.'**
   String notifLowStockOne(String name);
 
   /// No description provided for @notifLowStockMany.
   ///
   /// In fr, this message translates to:
-  /// **'{count} articles sont presque épuisés.'**
+  /// **'{count} articles en stock bas.'**
   String notifLowStockMany(int count);
 
   /// No description provided for @accountTitle.
@@ -2649,7 +2649,7 @@ abstract class AppLocalizations {
   /// No description provided for @signInHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un compte sauvegarde vos plantes, les synchronise entre vos appareils et permet de partager un jardin. Sans compte, tout reste sur ce téléphone.'**
+  /// **'Un compte sauvegarde vos données, les synchronise entre appareils et permet de partager un jardin.'**
   String get signInHint;
 
   /// No description provided for @continueWithApple.
@@ -2823,13 +2823,13 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ma plante a un problème'**
+  /// **'Diagnostic'**
   String get diagnosisTitle;
 
   /// No description provided for @diagnosisHint.
   ///
   /// In fr, this message translates to:
-  /// **'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont des pistes, jamais des certitudes.'**
+  /// **'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
   /// No description provided for @diagnosisSymptomsHint.
@@ -3207,7 +3207,7 @@ abstract class AppLocalizations {
   /// No description provided for @taskTitleHint.
   ///
   /// In fr, this message translates to:
-  /// **'Que faut-il faire ?'**
+  /// **'Titre'**
   String get taskTitleHint;
 
   /// No description provided for @taskDescriptionHint.
@@ -3357,7 +3357,7 @@ abstract class AppLocalizations {
   /// No description provided for @noTasksSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Notez ici les semis, le nettoyage de la serre, la commande de terreau.'**
+  /// **'Semis, nettoyage de la serre, commande de terreau…'**
   String get noTasksSubtitle;
 
   /// No description provided for @noDoneTasks.
@@ -3441,7 +3441,7 @@ abstract class AppLocalizations {
   /// No description provided for @notifTaskDue.
   ///
   /// In fr, this message translates to:
-  /// **'{title}, c\'est le moment'**
+  /// **'À faire : {title}'**
   String notifTaskDue(String title);
 
   /// No description provided for @careGuide.
@@ -3537,7 +3537,7 @@ abstract class AppLocalizations {
   /// No description provided for @careKnownProblemsNote.
   ///
   /// In fr, this message translates to:
-  /// **'Signalés sur cette espèce ou sur ses proches. Tous ne la touchent pas.'**
+  /// **'Signalés sur cette espèce ou des espèces proches.'**
   String get careKnownProblemsNote;
 
   /// No description provided for @problemKindDisorder.
@@ -3591,7 +3591,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTips.
   ///
   /// In fr, this message translates to:
-  /// **'Bons réflexes'**
+  /// **'Conseils'**
   String get careTips;
 
   /// No description provided for @careEveryDays.
@@ -3879,7 +3879,7 @@ abstract class AppLocalizations {
   /// No description provided for @careDisclaimer.
   ///
   /// In fr, this message translates to:
-  /// **'Des repères, pas des règles. Votre lumière, votre pot et votre air comptent autant.'**
+  /// **'Valeurs indicatives, à adapter à la lumière, au pot et à l\'air ambiant.'**
   String get careDisclaimer;
 
   /// No description provided for @careApplyToSchedule.
@@ -4575,7 +4575,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldTemplatesHint.
   ///
   /// In fr, this message translates to:
-  /// **'Créez ici les champs que vous réutilisez sur plusieurs plantes. Ils vous seront ensuite proposés en un tap.'**
+  /// **'Champs réutilisables sur plusieurs plantes.'**
   String get fieldTemplatesHint;
 
   /// No description provided for @newFieldTemplate.
@@ -5115,13 +5115,13 @@ abstract class AppLocalizations {
   /// No description provided for @noGroupsYet.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun groupe pour l\'instant. Créez-en un pour ranger vos articles à votre façon.'**
+  /// **'Aucun groupe.'**
   String get noGroupsYet;
 
   /// No description provided for @deleteGroupExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Les articles ne sont pas supprimés, ils redeviennent simplement sans groupe.'**
+  /// **'Les articles ne sont pas supprimés, ils perdent leur groupe.'**
   String get deleteGroupExplain;
 
   /// No description provided for @newEvent.
@@ -5253,13 +5253,13 @@ abstract class AppLocalizations {
   /// No description provided for @deleteEventCategoryExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Les événements ne sont pas supprimés, ils perdent simplement leur catégorie.'**
+  /// **'Les événements ne sont pas supprimés, ils perdent leur catégorie.'**
   String get deleteEventCategoryExplain;
 
   /// No description provided for @noEventCategoriesYet.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune catégorie. Créez-en une pour colorer vos événements.'**
+  /// **'Aucune catégorie.'**
   String get noEventCategoriesYet;
 
   /// No description provided for @categoryNameHint.
@@ -5361,7 +5361,7 @@ abstract class AppLocalizations {
   /// No description provided for @statOldest.
   ///
   /// In fr, this message translates to:
-  /// **'La doyenne'**
+  /// **'Plus ancienne'**
   String get statOldest;
 
   /// No description provided for @warningsSection.
@@ -5391,7 +5391,7 @@ abstract class AppLocalizations {
   /// No description provided for @noWarnings.
   ///
   /// In fr, this message translates to:
-  /// **'Tout va bien dans le jardin.'**
+  /// **'Rien à signaler.'**
   String get noWarnings;
 
   /// No description provided for @recentPlantsSection.
@@ -5421,7 +5421,7 @@ abstract class AppLocalizations {
   /// No description provided for @activityEmpty.
   ///
   /// In fr, this message translates to:
-  /// **'Rien encore. Le journal se remplit dès le premier soin.'**
+  /// **'Aucune activité.'**
   String get activityEmpty;
 
   /// No description provided for @activityPlantAdded.
@@ -5577,7 +5577,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Un fichier .zip contenant vos données et vos photos. Un format ouvert, pour que vous restiez maître de vos données.'**
+  /// **'Un fichier .zip contenant vos données et vos photos.'**
   String get backupExplain;
 
   /// No description provided for @backupWhatToExport.
@@ -5709,13 +5709,13 @@ abstract class AppLocalizations {
   /// No description provided for @onbTodayTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque matin, ce qu\'il y a à faire'**
+  /// **'Les soins du jour'**
   String get onbTodayTitle;
 
   /// No description provided for @onbTodayBody.
   ///
   /// In fr, this message translates to:
-  /// **'Arrosé ? Un geste, et c\'est noté.'**
+  /// **'Un geste pour noter chaque soin.'**
   String get onbTodayBody;
 
   /// No description provided for @onbCareTitle.
@@ -5727,7 +5727,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbCareBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les intervalles s\'ajustent tout seuls quand les jours raccourcissent.'**
+  /// **'Les intervalles s\'ajustent selon la saison.'**
   String get onbCareBody;
 
   /// No description provided for @onbGardenTitle.
@@ -5751,7 +5751,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbIrisBody.
   ///
   /// In fr, this message translates to:
-  /// **'Photographiez votre plante. Si Iris ne la reconnaît pas, il la cherche en ligne.'**
+  /// **'Si Iris ne reconnaît pas une plante, la recherche continue en ligne.'**
   String get onbIrisBody;
 
   /// No description provided for @onbPrivacyTitle.
@@ -5793,7 +5793,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Le modèle embarqué a été réentraîné. Il connaît plus d\'espèces, hésite moins, et travaille toujours sans réseau.'**
+  /// **'Le modèle embarqué a été réentraîné : plus d\'espèces, moins d\'erreurs, toujours sans réseau.'**
   String get whatsNewIrisIntro;
 
   /// No description provided for @whatsNewIrisSpeciesTitle.
@@ -5805,7 +5805,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisSpeciesBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les plantes d\'intérieur les plus rares entrent au catalogue, à côté de celles qu\'Iris nommait déjà.'**
+  /// **'Des plantes d\'intérieur plus rares s\'ajoutent au catalogue.'**
   String get whatsNewIrisSpeciesBody;
 
   /// No description provided for @whatsNewIrisOfflineTitle.
@@ -5823,13 +5823,13 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisDoubtTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Il sait dire qu\'il hésite'**
+  /// **'Doute signalé'**
   String get whatsNewIrisDoubtTitle;
 
   /// No description provided for @whatsNewIrisDoubtBody.
   ///
   /// In fr, this message translates to:
-  /// **'Quand deux espèces se ressemblent vraiment, Iris propose les deux plutôt que d\'en choisir une au hasard.'**
+  /// **'Quand deux espèces se ressemblent, Iris propose les deux.'**
   String get whatsNewIrisDoubtBody;
 
   /// No description provided for @onbStepOf.
@@ -5895,13 +5895,13 @@ abstract class AppLocalizations {
   /// No description provided for @supportBody.
   ///
   /// In fr, this message translates to:
-  /// **'Toutes les fonctions sont gratuites. Si l\'app vous est utile, vous pouvez donner un coup de pouce à son développeur — une fois, sans abonnement.'**
+  /// **'Toutes les fonctions sont gratuites. Un soutien ponctuel, sans abonnement, est possible.'**
   String get supportBody;
 
   /// No description provided for @supportNothingLocked.
   ///
   /// In fr, this message translates to:
-  /// **'Rien n\'est réservé à ceux qui donnent.'**
+  /// **'Aucune fonction n\'est réservée aux donateurs.'**
   String get supportNothingLocked;
 
   /// No description provided for @supportGive.
@@ -5925,7 +5925,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportThanksBody.
   ///
   /// In fr, this message translates to:
-  /// **'Votre soutien est enregistré. L\'application ne change pas, elle était déjà entière.'**
+  /// **'Votre soutien est enregistré.'**
   String get supportThanksBody;
 
   /// No description provided for @supportUnavailable.
@@ -5973,7 +5973,7 @@ abstract class AppLocalizations {
   /// No description provided for @emptyGardenSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ajoutez votre première plante, avec une photo si vous voulez.'**
+  /// **'Ajoutez votre première plante.'**
   String get emptyGardenSubtitle;
 
   /// No description provided for @finderTitle.
@@ -5985,19 +5985,19 @@ abstract class AppLocalizations {
   /// No description provided for @finderEntryHint.
   ///
   /// In fr, this message translates to:
-  /// **'Vous ne savez pas quoi choisir ?'**
+  /// **'Aide au choix'**
   String get finderEntryHint;
 
   /// No description provided for @finderStepSpot.
   ///
   /// In fr, this message translates to:
-  /// **'Où va-t-elle vivre ?'**
+  /// **'Emplacement'**
   String get finderStepSpot;
 
   /// No description provided for @finderStepSpotHint.
   ///
   /// In fr, this message translates to:
-  /// **'La lumière décide de presque tout.'**
+  /// **'La lumière est le critère principal.'**
   String get finderStepSpotHint;
 
   /// No description provided for @finderSpotBright.
@@ -6033,25 +6033,25 @@ abstract class AppLocalizations {
   /// No description provided for @finderStepEffortHint.
   ///
   /// In fr, this message translates to:
-  /// **'Répondez honnêtement, personne ne vous juge.'**
+  /// **'Fréquence d\'arrosage que vous pouvez assurer.'**
   String get finderStepEffortHint;
 
   /// No description provided for @finderEffortForgiving.
   ///
   /// In fr, this message translates to:
-  /// **'J\'oublie souvent d\'arroser'**
+  /// **'Arrosage occasionnel'**
   String get finderEffortForgiving;
 
   /// No description provided for @finderEffortNormal.
   ///
   /// In fr, this message translates to:
-  /// **'Un arrosage régulier, sans plus'**
+  /// **'Arrosage régulier'**
   String get finderEffortNormal;
 
   /// No description provided for @finderEffortAttentive.
   ///
   /// In fr, this message translates to:
-  /// **'J\'aime m\'en occuper'**
+  /// **'Entretien fréquent'**
   String get finderEffortAttentive;
 
   /// No description provided for @finderStepSafety.
@@ -6093,7 +6093,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderNote.
   ///
   /// In fr, this message translates to:
-  /// **'Autre chose ?'**
+  /// **'Précisions'**
   String get finderNote;
 
   /// No description provided for @finderNoteHint.
@@ -6117,7 +6117,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderResults.
   ///
   /// In fr, this message translates to:
-  /// **'Nos propositions'**
+  /// **'Propositions'**
   String get finderResults;
 
   /// No description provided for @finderResultsHint.
@@ -6129,13 +6129,13 @@ abstract class AppLocalizations {
   /// No description provided for @finderEmptyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Rien de convaincant'**
+  /// **'Aucun résultat'**
   String get finderEmptyTitle;
 
   /// No description provided for @finderEmptySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l\'IA.'**
+  /// **'Aucune espèce du catalogue ne correspond à tous les critères. Élargissez-les ou demandez à l\'IA.'**
   String get finderEmptySubtitle;
 
   /// No description provided for @finderRestart.
@@ -6177,7 +6177,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderAiError.
   ///
   /// In fr, this message translates to:
-  /// **'L\'IA n\'a rien pu proposer.'**
+  /// **'Aucune proposition de l\'IA.'**
   String get finderAiError;
 
   /// No description provided for @finderReasonLight.
@@ -6195,13 +6195,13 @@ abstract class AppLocalizations {
   /// No description provided for @finderReasonForgiving.
   ///
   /// In fr, this message translates to:
-  /// **'Pardonne les oublis d\'arrosage'**
+  /// **'Tolère les oublis d\'arrosage'**
   String get finderReasonForgiving;
 
   /// No description provided for @finderReasonEasy.
   ///
   /// In fr, this message translates to:
-  /// **'Facile à vivre'**
+  /// **'Facile'**
   String get finderReasonEasy;
 
   /// No description provided for @finderReasonSafe.
@@ -6231,13 +6231,13 @@ abstract class AppLocalizations {
   /// No description provided for @onbWelcomeBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.'**
+  /// **'Le carnet d\'entretien de vos plantes.'**
   String get onbWelcomeBody;
 
   /// No description provided for @finderIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.'**
+  /// **'Quatre questions, puis une sélection d\'espèces adaptées, avec leur fiche d\'entretien.'**
   String get finderIntro;
 
   /// No description provided for @careMatchAssisted.
@@ -6249,7 +6249,7 @@ abstract class AppLocalizations {
   /// No description provided for @careAssistedNote.
   ///
   /// In fr, this message translates to:
-  /// **'Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l\'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n\'en fait pas partie.'**
+  /// **'Espèce absente du catalogue : ces repères viennent de l\'IA. Seul le nom scientifique a été envoyé. La toxicité n\'est pas renseignée.'**
   String get careAssistedNote;
 
   /// No description provided for @careAssistSetting.
@@ -6261,7 +6261,7 @@ abstract class AppLocalizations {
   /// No description provided for @careAssistHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quand le catalogue ne connaît pas une espèce, son nom scientifique part chez l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil, et la réponse est gardée pour ne pas la redemander.'**
+  /// **'Pour une espèce absente du catalogue, le nom scientifique est envoyé à l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil. La réponse est conservée.'**
   String get careAssistHint;
 
   /// No description provided for @gardensTitle.
@@ -6297,7 +6297,7 @@ abstract class AppLocalizations {
   /// No description provided for @gardenOpened.
   ///
   /// In fr, this message translates to:
-  /// **'Vous êtes dans « {name} »'**
+  /// **'Jardin : {name}'**
   String gardenOpened(String name);
 
   /// No description provided for @someone.
@@ -6321,7 +6321,7 @@ abstract class AppLocalizations {
   /// No description provided for @renameGardenHint.
   ///
   /// In fr, this message translates to:
-  /// **'C\'est ce nom que verront les personnes invitées.'**
+  /// **'Nom visible par les personnes invitées.'**
   String get renameGardenHint;
 
   /// No description provided for @gardenNameHint.
@@ -6381,7 +6381,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinSignInHint.
   ///
   /// In fr, this message translates to:
-  /// **'Il suffit de votre identifiant Apple.'**
+  /// **'Connexion avec votre identifiant Apple.'**
   String get joinSignInHint;
 
   /// No description provided for @joinInvitedBy.
@@ -6399,13 +6399,13 @@ abstract class AppLocalizations {
   /// No description provided for @joinAsMember.
   ///
   /// In fr, this message translates to:
-  /// **'Vous pourrez ajouter, modifier et supprimer des plantes.'**
+  /// **'Ajout, modification et suppression de plantes.'**
   String get joinAsMember;
 
   /// No description provided for @joinAsViewer.
   ///
   /// In fr, this message translates to:
-  /// **'Vous pourrez tout consulter, sans rien y changer.'**
+  /// **'Consultation seule, sans modification.'**
   String get joinAsViewer;
 
   /// No description provided for @joinAlreadyMember.
@@ -6417,7 +6417,7 @@ abstract class AppLocalizations {
   /// No description provided for @joined.
   ///
   /// In fr, this message translates to:
-  /// **'Bienvenue dans « {name} »'**
+  /// **'Jardin « {name} » rejoint'**
   String joined(String name);
 
   /// No description provided for @leaveGarden.
@@ -6429,7 +6429,7 @@ abstract class AppLocalizations {
   /// No description provided for @leaveGardenConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'Vous n\'aurez plus accès à « {name} ». Les plantes restent chez leur propriétaire.'**
+  /// **'Vous n\'aurez plus accès à « {name} ».'**
   String leaveGardenConfirm(String name);
 
   /// No description provided for @leftGarden.
@@ -6459,7 +6459,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteRoleHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un membre ajoute, modifie et supprime des plantes. Un lecteur regarde, sans rien changer.'**
+  /// **'Membre : ajoute, modifie et supprime des plantes. Lecteur : consultation seule.'**
   String get inviteRoleHint;
 
   /// No description provided for @inviteEmailOptional.
@@ -6471,7 +6471,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteEmailHint.
   ///
   /// In fr, this message translates to:
-  /// **'Renseignée, l\'invitation ne pourra être acceptée que par ce compte.'**
+  /// **'Si renseignée, seule cette adresse pourra accepter l\'invitation.'**
   String get inviteEmailHint;
 
   /// No description provided for @inviteCreate.
@@ -6483,7 +6483,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteShareHint.
   ///
   /// In fr, this message translates to:
-  /// **'Envoyez ce lien ou ce code à la personne. Elle n\'a pas besoin d\'avoir déjà l\'application.'**
+  /// **'Envoyez ce lien ou ce code. L\'application n\'est pas nécessaire pour le recevoir.'**
   String get inviteShareHint;
 
   /// No description provided for @inviteShare.
@@ -6495,7 +6495,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteMessage.
   ///
   /// In fr, this message translates to:
-  /// **'Je vous invite dans mon jardin sur Auxine. {link}'**
+  /// **'Invitation à rejoindre mon jardin sur Auxine : {link}'**
   String inviteMessage(String link);
 
   /// No description provided for @inviteOnceHint.
@@ -6531,7 +6531,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteRevokeConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'Le code cessera aussitôt de fonctionner.'**
+  /// **'Le code ne fonctionnera plus.'**
   String get inviteRevokeConfirm;
 
   /// No description provided for @inviteRevoked.
@@ -6543,19 +6543,19 @@ abstract class AppLocalizations {
   /// No description provided for @membersHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les personnes que vous invitez voient les mêmes plantes que vous, et peuvent s\'en occuper.'**
+  /// **'Les membres voient les mêmes plantes et peuvent s\'en occuper.'**
   String get membersHint;
 
   /// No description provided for @membersGuestHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ce jardin appartient à quelqu\'un d\'autre. Voici qui s\'en occupe.'**
+  /// **'Jardin partagé par un autre utilisateur.'**
   String get membersGuestHint;
 
   /// No description provided for @memberRoleHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un membre ajoute, modifie et supprime. Un lecteur regarde.'**
+  /// **'Membre : ajoute, modifie et supprime des plantes. Lecteur : consultation seule.'**
   String get memberRoleHint;
 
   /// No description provided for @makeRole.
@@ -6615,13 +6615,13 @@ abstract class AppLocalizations {
   /// No description provided for @photoTitleStepTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Un titre ?'**
+  /// **'Titre'**
   String get photoTitleStepTitle;
 
   /// No description provided for @photoTitleStepSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Pour la retrouver plus tard. Vous pouvez laisser vide.'**
+  /// **'Facultatif.'**
   String get photoTitleStepSubtitle;
 
   /// No description provided for @photoTagNewLeaf.
@@ -6675,7 +6675,7 @@ abstract class AppLocalizations {
   /// No description provided for @growthEmptySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ajoutez une photo de temps en temps pour la voir pousser.'**
+  /// **'Ajoutez des photos régulièrement pour suivre la croissance.'**
   String get growthEmptySubtitle;
 
   /// No description provided for @growthSummary.
@@ -6687,7 +6687,7 @@ abstract class AppLocalizations {
   /// No description provided for @growthNudge.
   ///
   /// In fr, this message translates to:
-  /// **'Dernière photo le {date}. Prenez-en une nouvelle ?'**
+  /// **'Dernière photo le {date}.'**
   String growthNudge(String date);
 
   /// No description provided for @timelapse.
@@ -6747,13 +6747,13 @@ abstract class AppLocalizations {
   /// No description provided for @stepPhotoDoneTitle.
   ///
   /// In fr, this message translates to:
-  /// **'On la garde ?'**
+  /// **'Aperçu'**
   String get stepPhotoDoneTitle;
 
   /// No description provided for @stepPhotoDoneSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Vous pouvez ajouter une feuille de près pour aider {name}.'**
+  /// **'Une feuille de près aide {name} à reconnaître l\'espèce.'**
   String stepPhotoDoneSubtitle(String name);
 
   /// No description provided for @stepPhotoDonePlain.
@@ -6783,7 +6783,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewForModel.
   ///
   /// In fr, this message translates to:
-  /// **'Cette photo aide {name} à reconnaître l\'espèce. Elle ne sera pas gardée.'**
+  /// **'Utilisée par {name} pour reconnaître l\'espèce, non conservée.'**
   String viewForModel(String name);
 }
 
