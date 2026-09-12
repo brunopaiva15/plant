@@ -110,6 +110,38 @@ class AdaptiveSegmented<T extends Object> extends StatelessWidget {
   }
 }
 
+/// Curseur natif (CupertinoSlider sur iOS, Slider Material ailleurs), dans
+/// la couleur demandée — blanc sur le noir d'une visionneuse, par exemple.
+class AdaptiveSlider extends StatelessWidget {
+  const AdaptiveSlider({super.key, required this.value, required this.onChanged, this.min = 0, this.max = 1, this.divisions, this.color});
+
+  final double value;
+  final ValueChanged<double> onChanged;
+  final double min;
+  final double max;
+  final int? divisions;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final active = color ?? c.sage;
+    if (isCupertino(context)) {
+      return CupertinoSlider(value: value, min: min, max: max, divisions: divisions, activeColor: active, thumbColor: active, onChanged: onChanged);
+    }
+    return SliderTheme(
+      data: SliderThemeData(
+        activeTrackColor: active,
+        inactiveTrackColor: active.withValues(alpha: 0.3),
+        thumbColor: active,
+        overlayColor: active.withValues(alpha: 0.15),
+        trackHeight: 3,
+      ),
+      child: Slider(value: value, min: min, max: max, divisions: divisions, onChanged: onChanged),
+    );
+  }
+}
+
 /// Une action d'un action sheet.
 class SheetAction {
   const SheetAction({required this.label, required this.onPressed, this.destructive = false, this.icon});

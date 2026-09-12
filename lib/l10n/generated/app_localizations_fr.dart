@@ -3926,4 +3926,105 @@ class AppLocalizationsFr extends AppLocalizations {
   String removeMemberConfirm(String name) {
     return '$name n\'aura plus accès à ce jardin.';
   }
+
+  @override
+  String get photoFirstTitle => 'Sa première photo';
+
+  @override
+  String get photoNextTitle => 'Une nouvelle photo';
+
+  @override
+  String get photoFirstHint =>
+      'Elle deviendra sa photo principale, et ouvrira le suivi de croissance.';
+
+  @override
+  String get photoFrameHint =>
+      'Même cadrage, même lumière : la croissance se lit mieux d\'une photo à l\'autre.';
+
+  @override
+  String get photoGhostToggle => 'Calquer la dernière photo';
+
+  @override
+  String get photoGhostHint =>
+      'La dernière photo apparaît en transparence : alignez le pot dessus.';
+
+  @override
+  String get photoTitleStepTitle => 'Un titre ?';
+
+  @override
+  String get photoTitleStepSubtitle =>
+      'Facultatif. Il vous aidera à la retrouver dans la galerie.';
+
+  @override
+  String get photoTagNewLeaf => 'Nouvelle feuille';
+
+  @override
+  String get photoTagFlowering => 'Floraison';
+
+  @override
+  String get photoTagBeforeRepotting => 'Avant rempotage';
+
+  @override
+  String get photoTagAfterRepotting => 'Après rempotage';
+
+  @override
+  String get photoTagCutting => 'Bouture';
+
+  @override
+  String get photoTagAfterPruning => 'Après taille';
+
+  @override
+  String get mainPhotoHint => 'Celle de la fiche et de la liste.';
+
+  @override
+  String get retake => 'Reprendre';
+
+  @override
+  String get growthEmptySubtitle =>
+      'Une photo de temps en temps, et vous la verrez pousser.';
+
+  @override
+  String growthSummary(int count, String since) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos · depuis $since',
+      one: '1 photo · depuis $since',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String growthNudge(String date) {
+    return 'Dernière photo le $date. Une nouvelle ?';
+  }
+
+  @override
+  String get timelapse => 'Timelapse';
+
+  @override
+  String get beforeAfter => 'Avant / après';
+
+  @override
+  String photoCounter(int index, int total) {
+    return '$index / $total';
+  }
+
+  @override
+  String get photoTitleShort => 'Titre';
+
+  @override
+  String get mainPhotoShort => 'Principale';
+
+  @override
+  String get share => 'Partager';
+
+  @override
+  String get addTitle => 'Ajouter un titre';
+
+  @override
+  String get swap => 'Inverser';
+
+  @override
+  String get pause => 'Pause';
 }

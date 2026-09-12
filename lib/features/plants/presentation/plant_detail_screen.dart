@@ -10,7 +10,6 @@ import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/observability/observability.dart';
-import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
@@ -29,7 +28,10 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../application/plant_providers.dart';
 import 'create_plant_flow.dart';
 import 'edit_plant_sheet.dart';
+import 'growth_section.dart';
 import 'measurements_section.dart';
+import 'photo_capture_flow.dart';
+import 'photo_viewer.dart';
 import 'plant_tags_sheet.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
@@ -63,17 +65,9 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     if (mounted) setState(() => _justDone.remove(typeKey));
   }
 
-  Future<void> _addPhoto() {
-    final l10n = context.l10n;
-    return showAdaptiveActionSheet(
-      context,
-      cancelLabel: l10n.cancel,
-      actions: [
-        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: id, source: PhotoSource.camera)),
-        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => ref.read(careActionsProvider).addPhoto(context, plantId: id, source: PhotoSource.gallery)),
-      ],
-    );
-  }
+  /// Le flow guidé, d'où qu'on parte dans la fiche : l'action rapide, la
+  /// section Croissance, l'en-tête sans photo.
+  Future<void> _addPhoto() => showPhotoCaptureFlow(context, ref, plantId: id);
 
   Future<void> _menu(Plant plant) async {
     final l10n = context.l10n;
@@ -357,7 +351,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: _PracticalTile(
+                        child: FloraActionTile(
                           icon: CupertinoIcons.clock,
                           label: l10n.editSchedule,
                           tint: c.water,
@@ -366,7 +360,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       ),
                       const SizedBox(width: Space.sm),
                       Expanded(
-                        child: _PracticalTile(
+                        child: FloraActionTile(
                           icon: CupertinoIcons.leaf_arrow_circlepath,
                           label: l10n.createCutting,
                           tint: c.sage,
@@ -382,7 +376,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           _CareGuideCard(plantId: id, speciesName: plant.speciesName),
           _PlantTasks(plantId: id),
           _RecentHistory(plantId: id),
-          _Growth(plantId: id, photos: photos, onAdd: _addPhoto),
+          GrowthSection(plantId: id, photos: photos, primaryId: plant.primaryPhotoId, onAdd: _addPhoto),
           MeasurementsSection(plantId: id, plantName: plant.name),
           _Info(summary: summary),
           _CustomFields(plantId: id),
@@ -673,80 +667,14 @@ class _RecentHistory extends ConsumerWidget {
                               action: a,
                               photo: a.photoId == null ? null : photos[a.photoId],
                               isLast: gi == groups.length - 1 && i == g.$2.length - 1,
-                              onPhotoTap: () => context.push(Routes.plantGallery(plantId)),
+                              onPhotoTap: a.photoId == null || photos[a.photoId] == null
+                                  ? null
+                                  : () => showPhotoViewer(context, plantId: plantId, photoId: a.photoId!, photos: photos.values.toList()),
                             ),
                         ],
                       ],
                     ),
                   ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Growth extends StatelessWidget {
-  const _Growth({required this.plantId, required this.photos, required this.onAdd});
-
-  final String plantId;
-  final List<PlantPhoto> photos;
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final c = context.colors;
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(title: l10n.growth, actionLabel: photos.isEmpty ? null : l10n.seeAll, onAction: () => context.push(Routes.plantGallery(plantId))),
-          SizedBox(
-            height: 120,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: Space.page),
-              children: [
-                Pressable(
-                  onTap: onAdd,
-                  scale: 0.95,
-                  semanticLabel: l10n.addPhoto,
-                  child: Container(
-                    width: 92,
-                    margin: const EdgeInsets.only(right: Space.xs),
-                    decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.mediumAll),
-                    child: Icon(CupertinoIcons.camera_fill, color: c.sage),
-                  ),
-                ),
-                for (final p in photos.take(10))
-                  Pressable(
-                    onTap: () => context.push(Routes.plantGallery(plantId)),
-                    scale: 0.96,
-                    child: Container(
-                      width: 92,
-                      margin: const EdgeInsets.only(right: Space.xs),
-                      clipBehavior: Clip.antiAlias,
-                      decoration: const BoxDecoration(borderRadius: Radii.mediumAll),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          PlantImage(relativePath: p.thumbPath, remoteUrl: p.remoteUrl, cacheWidth: 300),
-                          Positioned(
-                            left: 6,
-                            bottom: 6,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(color: c.ink.withValues(alpha: 0.55), borderRadius: Radii.fullAll),
-                              child: Text(Dates.day(context, p.takenAt), style: context.text.caption.copyWith(color: Colors.white, fontSize: 11)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
           ),
         ],
       ),
@@ -839,39 +767,6 @@ class _Cuttings extends ConsumerWidget {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Une option pratique de la fiche : une icône teintée et un libellé, sur
-/// une carte d'argile. Deux côte à côte sous les boutons principaux.
-class _PracticalTile extends StatelessWidget {
-  const _PracticalTile({required this.icon, required this.label, required this.tint, required this.onTap});
-
-  final IconData icon;
-  final String label;
-  final Color tint;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return FloraCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.sm),
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(color: tint.withValues(alpha: c.isDark ? 0.22 : 0.14), shape: BoxShape.circle),
-            alignment: Alignment.center,
-            child: Icon(icon, size: 18, color: tint),
-          ),
-          const SizedBox(width: Space.xs),
-          Expanded(child: Text(label, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );

@@ -17,6 +17,7 @@ export 'pressable.dart';
 export 'section_header.dart';
 export 'sheets.dart';
 export 'skeleton.dart';
+export 'step_dots.dart';
 export 'stepper.dart';
 export 'markdown_text.dart';
 export 'tab_bar.dart';

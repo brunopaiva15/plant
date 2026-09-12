@@ -87,3 +87,37 @@ class FloraGroup extends StatelessWidget {
     );
   }
 }
+
+/// Une option pratique : une icône teintée dans un rond pastel, un libellé,
+/// sur une carte d'argile. Deux côte à côte disent « voici les outils »
+/// sans qu'on ait à deviner ce que cache une icône seule dans une barre.
+class FloraActionTile extends StatelessWidget {
+  const FloraActionTile({super.key, required this.icon, required this.label, required this.tint, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final Color tint;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return FloraCard(
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.sm),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(color: tint.withValues(alpha: c.isDark ? 0.22 : 0.14), shape: BoxShape.circle),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 18, color: tint),
+          ),
+          const SizedBox(width: Space.xs),
+          Expanded(child: Text(label, style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis)),
+        ],
+      ),
+    );
+  }
+}

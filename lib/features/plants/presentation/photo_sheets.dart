@@ -5,6 +5,7 @@ import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/models/models.dart';
 
 /// Saisit ou modifie le titre d'une photo. Retourne le texte, ou `null` si
 /// l'utilisateur annule. Une chaîne vide efface le titre.
@@ -54,9 +55,10 @@ class _PhotoLabelBodyState extends State<_PhotoLabelBody> {
   }
 }
 
-/// Ajoute une photo hébergée ailleurs, par son adresse web.
-Future<void> showPhotoUrlSheet(BuildContext context, {required String plantId}) =>
-    showFloraSheet<void>(context, builder: (_) => _PhotoUrlBody(plantId: plantId));
+/// Ajoute une photo hébergée ailleurs, par son adresse web. Retourne la
+/// photo créée, ou `null` si l'utilisateur a refermé la sheet sans rien.
+Future<PlantPhoto?> showPhotoUrlSheet(BuildContext context, {required String plantId}) =>
+    showFloraSheet<PlantPhoto>(context, builder: (_) => _PhotoUrlBody(plantId: plantId));
 
 class _PhotoUrlBody extends ConsumerStatefulWidget {
   const _PhotoUrlBody({required this.plantId});
@@ -95,9 +97,9 @@ class _PhotoUrlBodyState extends ConsumerState<_PhotoUrlBody> {
       return;
     }
     setState(() => _saving = true);
-    await ref.read(photoRepositoryProvider).addFromUrl(plantId: widget.plantId, url: _url.text.trim(), label: _label.text.trim());
+    final photo = await ref.read(photoRepositoryProvider).addFromUrl(plantId: widget.plantId, url: _url.text.trim(), label: _label.text.trim());
     Haptics.success();
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pop(photo);
   }
 
   @override

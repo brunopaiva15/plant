@@ -1,11 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
+import 'photo_picker_sheet.dart';
 
 /// Avant / après : deux photos superposées, un curseur pour révéler.
+///
+/// Les deux photos se choisissent en les voyant — une grille de vignettes
+/// datées —, et chaque carte montre celle qu'elle tient. Un geste inverse
+/// les deux, parce que « avant » et « après » se trompent facilement de
+/// côté.
 class CompareScreen extends StatefulWidget {
   const CompareScreen({super.key, required this.photos});
 
@@ -23,15 +30,23 @@ class _CompareScreenState extends State<CompareScreen> {
 
   Future<void> _pick(bool before) async {
     final l10n = context.l10n;
-    await showAdaptiveActionSheet(
+    final picked = await showPhotoPickerSheet(
       context,
       title: before ? l10n.before : l10n.after,
-      cancelLabel: l10n.cancel,
-      actions: [
-        for (final p in widget.photos)
-          SheetAction(label: Dates.dayYear(context, p.takenAt), onPressed: () => setState(() => before ? _before = p : _after = p)),
-      ],
+      photos: widget.photos,
+      selectedId: before ? _before.id : _after.id,
     );
+    if (picked == null || !mounted) return;
+    setState(() => before ? _before = picked : _after = picked);
+  }
+
+  void _swap() {
+    Haptics.selection();
+    setState(() {
+      final b = _before;
+      _before = _after;
+      _after = b;
+    });
   }
 
   @override
@@ -41,15 +56,16 @@ class _CompareScreenState extends State<CompareScreen> {
     return FloraPage(
       title: l10n.compare,
       scrollable: false,
+      trailing: FloraIconButton(icon: CupertinoIcons.arrow_right_arrow_left, semanticLabel: l10n.swap, onPressed: _swap),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, Space.md),
         child: Column(
           children: [
             Row(
               children: [
-                Expanded(child: _Picker(label: l10n.before, date: Dates.day(context, _before.takenAt), onTap: () => _pick(true))),
+                Expanded(child: _Picker(label: l10n.before, photo: _before, onTap: () => _pick(true))),
                 const SizedBox(width: Space.xs),
-                Expanded(child: _Picker(label: l10n.after, date: Dates.day(context, _after.takenAt), onTap: () => _pick(false))),
+                Expanded(child: _Picker(label: l10n.after, photo: _after, onTap: () => _pick(false))),
               ],
             ),
             const SizedBox(height: Space.md),
@@ -67,6 +83,10 @@ class _CompareScreenState extends State<CompareScreen> {
                           clipper: _LeftClipper(_split),
                           child: PlantImage(relativePath: _before.filePath, remoteUrl: _before.remoteUrl, cacheWidth: 1200),
                         ),
+                        // Les deux dates sur l'image même : on sait toujours
+                        // de quel côté est quoi, sans lever les yeux.
+                        Positioned(left: Space.sm, top: Space.sm, child: _DateTag(Dates.day(context, _before.takenAt))),
+                        Positioned(right: Space.sm, top: Space.sm, child: _DateTag(Dates.day(context, _after.takenAt))),
                         Positioned(
                           left: constraints.maxWidth * _split - 1,
                           top: 0,
@@ -98,29 +118,54 @@ class _CompareScreenState extends State<CompareScreen> {
   }
 }
 
+/// La carte d'un côté : sa vignette, son rôle, sa date. Toucher change la
+/// photo.
 class _Picker extends StatelessWidget {
-  const _Picker({required this.label, required this.date, required this.onTap});
+  const _Picker({required this.label, required this.photo, required this.onTap});
 
   final String label;
-  final String date;
+  final PlantPhoto photo;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return FloraCard(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
+      padding: const EdgeInsets.all(Space.xs),
       child: Row(
         children: [
+          ClipRRect(
+            borderRadius: Radii.smallAll,
+            child: SizedBox(width: 44, height: 44, child: PlantImage(relativePath: photo.thumbPath, remoteUrl: photo.remoteUrl, cacheWidth: 132)),
+          ),
+          const SizedBox(width: Space.xs),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text(label, style: context.text.caption), Text(date, style: context.text.title3)],
+              children: [
+                Text(label, style: context.text.caption),
+                Text(Dates.day(context, photo.takenAt), style: context.text.title3, maxLines: 1, overflow: TextOverflow.ellipsis),
+              ],
             ),
           ),
           Icon(CupertinoIcons.chevron_down, size: 16, color: context.colors.inkTertiary),
         ],
       ),
+    );
+  }
+}
+
+class _DateTag extends StatelessWidget {
+  const _DateTag(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 3),
+      decoration: BoxDecoration(color: const Color(0x8C000000), borderRadius: Radii.fullAll),
+      child: Text(text, style: context.text.caption.copyWith(color: Colors.white)),
     );
   }
 }

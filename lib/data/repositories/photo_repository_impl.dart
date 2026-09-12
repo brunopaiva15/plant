@@ -44,6 +44,7 @@ class DriftPhotoRepository implements PhotoRepository {
     required int width,
     required int height,
     DateTime? takenAt,
+    String? label,
   }) async {
     final now = DateTime.now();
     final id = _uuid.v4();
@@ -52,6 +53,7 @@ class DriftPhotoRepository implements PhotoRepository {
             id: id,
             plantId: plantId,
             userId: Value(_currentUserId()),
+            label: Value(_clean(label)),
             filePath: filePath,
             thumbPath: thumbPath,
             width: width,
