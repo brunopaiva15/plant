@@ -1,3 +1,7 @@
+-- Le fichier se rejoue tel quel dans l'éditeur SQL d'un projet existant :
+-- tables « if not exists », colonnes ajoutées par « add column if not
+-- exists », politiques et déclencheurs recréés après un « drop if exists ».
+-- Mettre le schéma à jour, c'est le rejouer en entier.
 -- Auxine — schéma Postgres (Supabase). Miroir du schéma local (docs/04-data-model.md).
 -- Toutes les tables portent garden_id (directement ou via plant_id) ; l'accès est
 -- gouverné par garden_members via RLS. Les IDs sont générés côté client (UUID v4).
@@ -169,6 +173,7 @@ create table if not exists inventory_items (
   unit text not null default '',
   low_threshold numeric,
   location_id uuid references locations(id) on delete set null,
+  group_id uuid references inventory_groups(id) on delete set null,
   notes text,
   photo_path text,
   thumb_path text,
@@ -176,6 +181,10 @@ create table if not exists inventory_items (
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
 );
+-- Projets créés avant les groupes d'inventaire : la colonne manquait, et
+-- PostgREST refusait alors chaque objet poussé par l'app (« Could not find
+-- the 'group_id' column »), ce qui arrêtait toute la synchronisation.
+alter table inventory_items add column if not exists group_id uuid references inventory_groups(id) on delete set null;
 
 create table if not exists tasks (
   id uuid primary key,
@@ -382,15 +391,21 @@ create or replace function plant_garden(p uuid) returns uuid language sql stable
 $$;
 
 alter table profiles enable row level security;
+drop policy if exists "own profile" on profiles;
 create policy "own profile" on profiles for all using (id = auth.uid()) with check (id = auth.uid());
 
 alter table gardens enable row level security;
+drop policy if exists "gardens read" on gardens;
 create policy "gardens read" on gardens for select using (is_member(id) or owner_id = auth.uid());
+drop policy if exists "gardens insert" on gardens;
 create policy "gardens insert" on gardens for insert with check (owner_id = auth.uid());
+drop policy if exists "gardens update" on gardens;
 create policy "gardens update" on gardens for update using (owner_id = auth.uid());
 
 alter table garden_members enable row level security;
+drop policy if exists "members read" on garden_members;
 create policy "members read" on garden_members for select using (is_member(garden_id));
+drop policy if exists "members manage" on garden_members;
 create policy "members manage" on garden_members for all
   using (exists(select 1 from gardens g where g.id = garden_id and g.owner_id = auth.uid()))
   with check (exists(select 1 from gardens g where g.id = garden_id and g.owner_id = auth.uid()));
@@ -418,13 +433,18 @@ do $$ declare t text; begin
 end $$;
 
 alter table action_types enable row level security;
+drop policy if exists "types read" on action_types;
 create policy "types read" on action_types for select using (garden_id is null or is_member(garden_id));
+drop policy if exists "types write" on action_types;
 create policy "types write" on action_types for all using (garden_id is not null and can_edit(garden_id)) with check (garden_id is not null and can_edit(garden_id));
 
 -- Storage : bucket privé, chemin plant-photos/{garden_id}/... ; accès par appartenance au jardin.
 insert into storage.buckets (id, name, public) values ('plant-photos', 'plant-photos', false) on conflict do nothing;
+drop policy if exists "photos read" on storage.objects;
 create policy "photos read" on storage.objects for select using (bucket_id = 'plant-photos' and is_member((storage.foldername(name))[1]::uuid));
+drop policy if exists "photos write" on storage.objects;
 create policy "photos write" on storage.objects for insert with check (bucket_id = 'plant-photos' and can_edit((storage.foldername(name))[1]::uuid));
+drop policy if exists "photos delete" on storage.objects;
 create policy "photos delete" on storage.objects for delete using (bucket_id = 'plant-photos' and can_edit((storage.foldername(name))[1]::uuid));
 
 -- ---------- Profils & invitations ----------
@@ -440,11 +460,13 @@ create trigger trg_new_user after insert on auth.users for each row execute func
 
 -- Les membres d'un même jardin peuvent lire les profils des autres membres.
 drop policy if exists "own profile" on profiles;
+drop policy if exists "profiles read" on profiles;
 create policy "profiles read" on profiles for select using (
   id = auth.uid() or exists (
     select 1 from garden_members a join garden_members b on a.garden_id = b.garden_id
     where a.user_id = auth.uid() and b.user_id = profiles.id)
 );
+drop policy if exists "profiles write" on profiles;
 create policy "profiles write" on profiles for all using (id = auth.uid()) with check (id = auth.uid());
 
 -- Inviter par e-mail : seul le propriétaire du jardin ; l'invité doit déjà avoir un compte.
