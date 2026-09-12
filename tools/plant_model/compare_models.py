@@ -180,16 +180,21 @@ def score(rows, model, restrict: set[str] | None, renormalise: bool = False,
     return tally(predict_rows(rows, model), model, restrict, renormalise, seuil)
 
 
-def read_test(dataset: Path) -> list[tuple[str, str, bool]]:
+def read_rows(dataset: Path, split: str) -> list[tuple[str, str, bool]]:
+    """Chemin, espèce, drapeau `captive` — pour un split donné."""
     rows = []
     with open(dataset / 'splits.csv', newline='', encoding='utf-8') as f:
         for row in csv.DictReader(f):
-            if row['split'] != 'test':
+            if row['split'] != split:
                 continue
             path = dataset / row['path']
             if path.exists():
                 rows.append((str(path), row['internal_plant_id'], row.get('captive') == '1'))
     return rows
+
+
+def read_test(dataset: Path) -> list[tuple[str, str, bool]]:
+    return read_rows(dataset, 'test')
 
 
 def main() -> int:

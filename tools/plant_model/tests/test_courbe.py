@@ -62,3 +62,47 @@ def test_the_priority_order_never_duplicates_the_core():
     jeux = ensembles(['a', 'b'], ['b', 'a', 'e'], TOUTES, [3])
     assert sorted(jeux[3]) == ['a', 'b', 'e']
     assert len(jeux[3]) == len(set(jeux[3]))
+
+
+# ── le coût de vol ────────────────────────────────────────────────────────
+
+import numpy as np
+
+from courbe import couts_de_vol, ordre_par_vol
+
+
+def test_a_candidate_steals_only_images_the_core_gets_right():
+    """Trois classes : 0 et 1 au cœur, 2 candidate. La candidate vole B, où
+    elle dépasse la vérité ; pas A, où elle reste derrière ; et C ne compte
+    pas, le cœur s'y trompait déjà."""
+    P = np.array([[0.6, 0.1, 0.3],      # A : vérité 0, juste, candidate derrière
+                  [0.2, 0.35, 0.45],    # B : vérité 1, juste, candidate devant → vol
+                  [0.2, 0.4, 0.4]])     # C : vérité 0, le cœur répond 1 → déjà fausse
+    vols, justes = couts_de_vol(P, np.array([0, 1, 0]), np.array([0, 1]), np.array([2]))
+    assert list(vols) == [1]
+    assert justes == 2
+
+
+def test_stealing_requires_strictly_more_than_the_truth():
+    P = np.array([[0.5, 0.0, 0.5]])
+    vols, _ = couts_de_vol(P, np.array([0]), np.array([0, 1]), np.array([2]))
+    assert list(vols) == [0]
+
+
+def test_costs_are_counted_per_candidate():
+    P = np.array([[0.4, 0.1, 0.5, 0.0],
+                  [0.1, 0.4, 0.5, 0.45]])
+    vols, _ = couts_de_vol(P, np.array([0, 1]), np.array([0, 1]), np.array([2, 3]))
+    assert list(vols) == [2, 1]
+
+
+def test_free_candidates_come_first_then_priority_breaks_ties():
+    """Deux gratuites et une chère : les gratuites d'abord, dans l'ordre de
+    culture — et la chère en dernier même si elle est la plus cultivée."""
+    couts = {'chere': 3, 'b': 0, 'c': 0}
+    assert ordre_par_vol(couts, ['chere', 'c', 'b']) == ['c', 'b', 'chere']
+
+
+def test_a_candidate_absent_from_the_priority_file_goes_after_its_peers():
+    couts = {'connue': 0, 'inconnue': 0}
+    assert ordre_par_vol(couts, ['connue']) == ['connue', 'inconnue']
