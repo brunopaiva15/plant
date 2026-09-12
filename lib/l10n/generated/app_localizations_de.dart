@@ -985,21 +985,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Um dich jeden Morgen zu begrüßen. Du kannst es später ändern.';
 
   @override
-  String get onbAccountTitle => 'Deine Pflanzen, überall';
+  String get onbAccountTitle => 'Und wenn du das Telefon wechselst?';
 
   @override
   String get onbAccountBody =>
-      'Ein Konto ist einfach deine Apple-ID – nichts weiter anzulegen. Ohne Konto bleibt alles auf diesem Telefon, und die App funktioniert genauso gut.';
-
-  @override
-  String get onbAccountBackup =>
-      'Eine Sicherung, falls das Telefon verloren geht oder ersetzt wird';
-
-  @override
-  String get onbAccountDevices => 'Dieselben Pflanzen auf iPhone und iPad';
-
-  @override
-  String get onbAccountShare => 'Ein Garten, den du mit jemandem teilst';
+      'Mit einem Konto sind deine Pflanzen und Fotos gesichert, und du kannst einen Garten teilen. Deine Apple-ID genügt.';
 
   @override
   String get notificationAskTitle => 'Eine nützliche Erinnerung pro Tag';
@@ -1491,6 +1481,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get signIn => 'Anmelden';
+
+  @override
+  String get signInWithAppleId => 'Mit deiner Apple-ID';
 
   @override
   String get signInHint =>
@@ -3784,8 +3777,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Für den Beitritt zu einem Garten braucht es ein Konto.';
 
   @override
-  String get joinSignInHint =>
-      'Für diesen Garten brauchst du nur ein Konto: deine Apple-ID, nichts weiter anzulegen.';
+  String get joinSignInHint => 'Deine Apple-ID genügt.';
 
   @override
   String joinInvitedBy(String name, String garden) {

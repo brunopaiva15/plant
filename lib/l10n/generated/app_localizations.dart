@@ -1809,32 +1809,14 @@ abstract class AppLocalizations {
   /// No description provided for @onbAccountTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Retrouvez vos plantes partout'**
+  /// **'Et si vous changez de téléphone ?'**
   String get onbAccountTitle;
 
   /// No description provided for @onbAccountBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un compte, c\'est votre identifiant Apple — rien d\'autre à créer. Sans compte, tout reste sur ce téléphone, et l\'app marche aussi bien.'**
+  /// **'Avec un compte, vos plantes et vos photos sont sauvegardées, et vous pouvez partager un jardin. Il suffit de votre identifiant Apple.'**
   String get onbAccountBody;
-
-  /// No description provided for @onbAccountBackup.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une sauvegarde, si le téléphone est perdu ou remplacé'**
-  String get onbAccountBackup;
-
-  /// No description provided for @onbAccountDevices.
-  ///
-  /// In fr, this message translates to:
-  /// **'Les mêmes plantes sur votre iPhone et votre iPad'**
-  String get onbAccountDevices;
-
-  /// No description provided for @onbAccountShare.
-  ///
-  /// In fr, this message translates to:
-  /// **'Un jardin partagé avec quelqu\'un'**
-  String get onbAccountShare;
 
   /// No description provided for @notificationAskTitle.
   ///
@@ -2657,6 +2639,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Se connecter'**
   String get signIn;
+
+  /// No description provided for @signInWithAppleId.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec votre identifiant Apple'**
+  String get signInWithAppleId;
 
   /// No description provided for @signInHint.
   ///
@@ -6471,7 +6459,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinSignInHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un compte suffit pour rejoindre ce jardin : votre identifiant Apple, rien d\'autre à créer.'**
+  /// **'Il suffit de votre identifiant Apple.'**
   String get joinSignInHint;
 
   /// No description provided for @joinInvitedBy.

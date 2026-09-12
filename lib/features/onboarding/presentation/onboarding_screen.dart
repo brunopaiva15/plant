@@ -614,10 +614,10 @@ class _NamePage extends StatelessWidget {
   }
 }
 
-/// Le compte, expliqué avant d'être proposé : une sauvegarde, les mêmes
-/// plantes sur l'iPad, un jardin à deux. Un compte, c'est l'identifiant
-/// Apple — rien à créer. Rien n'oblige non plus : « Plus tard » passe
-/// outre, et l'écran Compte des réglages refait la même proposition.
+/// Le compte, en deux phrases, comme les autres étapes : ce qu'il apporte
+/// (une sauvegarde, un jardin partagé), et ce qu'il demande (l'identifiant
+/// Apple). Rien n'oblige : « Plus tard » passe outre, et Profil › Se
+/// connecter refait la même proposition.
 ///
 /// Si la connexion aboutit, on passe à la suite sans autre geste. Le prénom
 /// d'Apple ne remplace pas celui qu'on vient de taper : `_finish` écrit
@@ -674,8 +674,8 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
                 Text(l10n.onbAccountTitle, style: onboardingTitleStyle(context)),
                 const SizedBox(height: Space.sm),
                 Text(l10n.onbAccountBody, style: onboardingBodyStyle(context)),
-                const SizedBox(height: Space.lg),
-                if (signedIn)
+                if (signedIn) ...[
+                  const SizedBox(height: Space.lg),
                   FloraCard(
                     child: Row(
                       children: [
@@ -685,13 +685,7 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
                         Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage),
                       ],
                     ),
-                  )
-                else ...[
-                  _Reason(emoji: '💾', variant: 0, text: l10n.onbAccountBackup),
-                  const SizedBox(height: Space.sm),
-                  _Reason(emoji: '📱', variant: 1, text: l10n.onbAccountDevices),
-                  const SizedBox(height: Space.sm),
-                  _Reason(emoji: '🤝', variant: 2, text: l10n.onbAccountShare),
+                  ),
                 ],
                 const Spacer(),
                 const SizedBox(height: Space.xl),
@@ -707,26 +701,6 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Une raison d'avoir un compte : un symbole dans sa pastille, une ligne.
-class _Reason extends StatelessWidget {
-  const _Reason({required this.emoji, required this.variant, required this.text});
-
-  final String emoji;
-  final int variant;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        EmojiTile(emoji: emoji, variant: variant),
-        const SizedBox(width: Space.sm),
-        Expanded(child: Text(text, style: context.text.body)),
-      ],
     );
   }
 }
