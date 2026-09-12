@@ -983,6 +983,23 @@ class AppLocalizationsIt extends AppLocalizations {
       'Per salutarti ogni mattina. Potrai cambiarlo più tardi.';
 
   @override
+  String get onbAccountTitle => 'Le tue piante, ovunque';
+
+  @override
+  String get onbAccountBody =>
+      'Un account è semplicemente il tuo ID Apple: nient\'altro da creare. Senza account, tutto resta su questo telefono e l\'app funziona altrettanto bene.';
+
+  @override
+  String get onbAccountBackup =>
+      'Un backup, se il telefono viene perso o sostituito';
+
+  @override
+  String get onbAccountDevices => 'Le stesse piante su iPhone e iPad';
+
+  @override
+  String get onbAccountShare => 'Un giardino condiviso con qualcuno';
+
+  @override
   String get notificationAskTitle => 'Un promemoria utile, ogni giorno';
 
   @override
@@ -3771,6 +3788,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinNeedsAccount => 'Serve un account per unirsi a un giardino.';
+
+  @override
+  String get joinSignInHint =>
+      'Per entrare in questo giardino basta un account: il tuo ID Apple, nient\'altro da creare.';
 
   @override
   String joinInvitedBy(String name, String garden) {

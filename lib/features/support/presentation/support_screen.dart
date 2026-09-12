@@ -6,6 +6,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/support/support_service.dart';
+import '../../onboarding/presentation/growing_plant.dart';
 
 /// Le soutien facultatif au développeur.
 ///
@@ -93,7 +94,10 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
             height: 132,
             decoration: BoxDecoration(color: c.sageSoft, shape: BoxShape.circle),
             alignment: Alignment.center,
-            child: Image.asset('assets/onboarding/onboarding_1.png', width: 84, height: 84, excludeFromSemantics: true),
+            // La plante de l'icône : celle qui a poussé sur le premier écran de
+            // l'onboarding, et qui est déjà debout quand on arrive ici. Depuis
+            // les réglages, sur un lancement neuf, elle pousse une fois.
+            child: const ExcludeSemantics(child: GrowingPlant(side: 84)),
           ),
         ),
         const SizedBox(height: Space.lg),

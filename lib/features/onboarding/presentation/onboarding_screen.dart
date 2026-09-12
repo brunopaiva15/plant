@@ -11,7 +11,9 @@ import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/weather/weather.dart';
+import '../../account/application/sign_in_availability.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
@@ -48,8 +50,8 @@ final _slides = <_Slide>[
 /// Couleur de l'étape « Où sont vos plantes ? », qui suit les présentations.
 Color _placeTint(FloraColors c) => c.water;
 
-/// Présentation animée, le lieu de la météo, le prénom, puis le soutien
-/// facultatif au développeur.
+/// Présentation animée, le lieu de la météo, le prénom, le compte (là où
+/// Sign in with Apple existe), puis le soutien facultatif au développeur.
 ///
 /// Les écrans ne se remplacent pas l'un l'autre comme des diapositives : le
 /// fond change de teinte, les objets du jardin tournent autour de la place
@@ -108,8 +110,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// son objet, mais a ses propres boutons.
   int get _placeIndex => _slides.length;
   int get _nameIndex => _slides.length + 1;
-  int get _supportIndex => _slides.length + 2;
-  int get _pageCount => _slides.length + 3;
+
+  /// Le compte ne se propose que là où l'on peut en ouvrir un : un backend,
+  /// et Sign in with Apple. Ailleurs l'étape n'est pas dessinée du tout —
+  /// on ne promet pas une connexion qui n'existe pas. Le dépôt d'auth est
+  /// fixé au démarrage : le lire ici, hors de `build`, ne rate aucun
+  /// changement.
+  bool get _hasAccount => signInAvailable(ref.read(authRepositoryProvider));
+  int get _accountIndex => _slides.length + 2;
+  int get _supportIndex => _slides.length + (_hasAccount ? 3 : 2);
+  int get _pageCount => _slides.length + (_hasAccount ? 4 : 3);
 
   /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu.
   int get _objectCount => _slides.length + 1;
@@ -234,9 +244,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     return _revealed.contains(i) ? 1 : 0;
   }
 
-  void _toSupport({required bool addPlant}) {
+  /// Après le prénom : le compte s'il peut être proposé, sinon le soutien.
+  void _afterName({required bool addPlant}) {
     _addPlant = addPlant;
-    _goTo(_supportIndex);
+    _goTo(_hasAccount ? _accountIndex : _supportIndex);
   }
 
   Future<void> _finish() async {
@@ -332,7 +343,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                               _SlideText(slide: slide, t: reduce ? 1.0 : _revealOf(i), parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
                         ),
                       _PlacePage(onDone: () => _goTo(_nameIndex)),
-                      _NamePage(controller: _name, onSubmit: () => _toSupport(addPlant: true), onSkip: () => _toSupport(addPlant: false)),
+                      _NamePage(controller: _name, onSubmit: () => _afterName(addPlant: true), onSkip: () => _afterName(addPlant: false)),
+                      if (_hasAccount) _AccountPage(onDone: () => _goTo(_supportIndex)),
                       _SupportPage(onDone: _finish),
                     ],
                   ),
@@ -598,6 +610,123 @@ class _NamePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Le compte, expliqué avant d'être proposé : une sauvegarde, les mêmes
+/// plantes sur l'iPad, un jardin à deux. Un compte, c'est l'identifiant
+/// Apple — rien à créer. Rien n'oblige non plus : « Plus tard » passe
+/// outre, et l'écran Compte des réglages refait la même proposition.
+///
+/// Si la connexion aboutit, on passe à la suite sans autre geste. Le prénom
+/// d'Apple ne remplace pas celui qu'on vient de taper : `_finish` écrit
+/// celui de la page précédente en dernier.
+class _AccountPage extends ConsumerStatefulWidget {
+  const _AccountPage({required this.onDone});
+
+  final VoidCallback onDone;
+
+  @override
+  ConsumerState<_AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends ConsumerState<_AccountPage> {
+  bool _busy = false;
+
+  Future<void> _signIn() async {
+    if (_busy) return;
+    final l10n = context.l10n;
+    setState(() => _busy = true);
+    try {
+      await ref.read(authRepositoryProvider).signInWithApple();
+      Haptics.success();
+      if (mounted) widget.onDone();
+    } on AuthException catch (e) {
+      // Refermer la feuille d'Apple n'est pas une erreur : on reste là.
+      if (e.message == 'cancelled') return;
+      ref.read(toastProvider.notifier).show(ToastData(message: e.message == 'apple_unavailable' ? l10n.appleUnavailable : l10n.authError, emoji: '!'));
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'onboarding_auth');
+      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.authError, emoji: '!'));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final user = ref.watch(currentUserProvider).value;
+    final signedIn = user != null && !user.isLocal;
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: floraScrollPhysics,
+        padding: const EdgeInsets.symmetric(horizontal: Space.page),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: Space.xl),
+                Text(l10n.onbAccountTitle, style: onboardingTitleStyle(context)),
+                const SizedBox(height: Space.sm),
+                Text(l10n.onbAccountBody, style: onboardingBodyStyle(context)),
+                const SizedBox(height: Space.lg),
+                if (signedIn)
+                  FloraCard(
+                    child: Row(
+                      children: [
+                        FloraAvatar(name: user.displayName, size: 40),
+                        const SizedBox(width: Space.sm),
+                        Expanded(child: Text(user.email ?? l10n.signedInAs, style: context.text.title3)),
+                        Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage),
+                      ],
+                    ),
+                  )
+                else ...[
+                  _Reason(emoji: '💾', variant: 0, text: l10n.onbAccountBackup),
+                  const SizedBox(height: Space.sm),
+                  _Reason(emoji: '📱', variant: 1, text: l10n.onbAccountDevices),
+                  const SizedBox(height: Space.sm),
+                  _Reason(emoji: '🤝', variant: 2, text: l10n.onbAccountShare),
+                ],
+                const Spacer(),
+                const SizedBox(height: Space.xl),
+                if (signedIn)
+                  OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
+                else ...[
+                  FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: _signIn),
+                  const SizedBox(height: Space.xs),
+                  OnboardingButton(label: l10n.later, filled: false, onPressed: widget.onDone),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Une raison d'avoir un compte : un symbole dans sa pastille, une ligne.
+class _Reason extends StatelessWidget {
+  const _Reason({required this.emoji, required this.variant, required this.text});
+
+  final String emoji;
+  final int variant;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        EmojiTile(emoji: emoji, variant: variant),
+        const SizedBox(width: Space.sm),
+        Expanded(child: Text(text, style: context.text.body)),
+      ],
     );
   }
 }

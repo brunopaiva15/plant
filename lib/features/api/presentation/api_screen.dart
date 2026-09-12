@@ -2,14 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show SelectableText;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/config/supabase_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/sync/sync_service.dart';
 import '../../../design_system/design_system.dart';
+import '../../account/application/sign_in_availability.dart';
 
 /// Les données d'Auxine sont accessibles par l'API REST du projet Supabase.
 /// Cet écran documente l'adresse, les ressources et l'authentification :
@@ -33,7 +36,7 @@ class ApiScreen extends ConsumerWidget {
         children: [
           Text(l10n.apiExplain, style: context.text.callout.copyWith(color: c.inkSecondary)),
           const SizedBox(height: Space.lg),
-          if (!connected)
+          if (!connected) ...[
             FloraCard(
               child: Row(
                 children: [
@@ -42,8 +45,12 @@ class ApiScreen extends ConsumerWidget {
                   Expanded(child: Text(l10n.apiNotConnected, style: context.text.callout)),
                 ],
               ),
-            )
-          else ...[
+            ),
+            if (signInAvailable(ref.watch(authRepositoryProvider))) ...[
+              const SizedBox(height: Space.md),
+              FloraButton(label: l10n.signIn, expand: true, onPressed: () => context.push(Routes.account)),
+            ],
+          ] else ...[
             FloraGroup(
               header: l10n.apiCopyBase,
               children: [
