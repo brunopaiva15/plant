@@ -89,7 +89,8 @@ def main() -> int:
                     help='les espèces déjà servies, jamais retirées')
     ap.add_argument('--ordre', help='ordre de priorité des ajouts (noms scientifiques)')
     ap.add_argument('--tailles', default='1444,1800,2200,2800,3600,5259')
-    ap.add_argument('--sample', type=int, default=6000, help='images de test tirées au hasard')
+    ap.add_argument('--sample', type=int, default=6000,
+                    help='images de test du cœur ; les autres espèces en reçoivent la moitié')
     ap.add_argument('--seed', type=int, default=20260905)
     ap.add_argument('--seuil', type=float, default=0.70)
     args = ap.parse_args()
@@ -100,17 +101,28 @@ def main() -> int:
     jeux = ensembles(coeur, lire_ordre(Path(args.ordre) if args.ordre else None),
                      toutes, [int(x) for x in args.tailles.split(',')])
 
+    socle = set(coeur) & set(toutes)
     rows = [(p, t) for p, t, _ in read_test(Path(args.dataset)) if t in modele['index']]
+
+    # Le tirage du cœur reproduit celui de `compare_models.py` — même graine,
+    # même filtre, même premier appel — donc **les mêmes images**. La ligne du
+    # cœur seul doit alors retomber au millième sur le chiffre du § 6.7 bis :
+    # un garde-fou gratuit, et le seul moyen de savoir que le reste de la
+    # courbe est lisible.
     rng = random.Random(args.seed)
-    if args.sample and len(rows) > args.sample:
-        rows = rng.sample(rows, args.sample)
-    print(f"{len(toutes)} classes apprises, {len(set(coeur) & set(toutes))} au cœur, "
-          f"{len(rows)} images de test\n")
+    au_coeur = [r for r in rows if r[1] in socle]
+    ailleurs = [r for r in rows if r[1] not in socle]
+    if args.sample:
+        if len(au_coeur) > args.sample:
+            au_coeur = rng.sample(au_coeur, args.sample)
+        if len(ailleurs) > args.sample // 2:
+            ailleurs = rng.sample(ailleurs, args.sample // 2)
+    rows = au_coeur + ailleurs
+    print(f"{len(toutes)} classes apprises, {len(socle)} au cœur\n"
+          f"{len(au_coeur)} images du cœur, {len(ailleurs)} des autres espèces\n")
 
     print('inférence, une fois pour toutes…', flush=True)
     pred = predict_rows(rows, modele)
-
-    socle = set(coeur) & set(toutes)
     print(f"\n{'exposées':>9}  {'cœur : top1':>12} {'top3':>7} {'autonomie':>10} {'justesse':>9}"
           f"   {'ajoutées : top1':>16} {'images':>7}")
     for n in sorted(jeux):
