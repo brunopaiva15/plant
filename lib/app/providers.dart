@@ -21,6 +21,7 @@ import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
 import '../data/services/infomaniak_advisor.dart';
 import '../data/services/infomaniak_care_completer.dart';
+import '../data/services/infomaniak_cutting_refiner.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../core/config/identification_config.dart';
@@ -36,6 +37,7 @@ import '../data/species/species_index_loader.dart';
 import '../domain/sharing/garden_collaboration.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
+import '../domain/cuttings/cutting_guide.dart';
 import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_maintenance.dart';
@@ -43,6 +45,7 @@ import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
 import '../data/services/preferences_care_store.dart';
+import '../data/services/preferences_cutting_store.dart';
 import '../data/services/preferences_service.dart';
 import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
@@ -454,6 +457,45 @@ final careCompletionProvider = FutureProvider.autoDispose.family<CareCompletion?
     // Une fiche sans complément reste une fiche : l'échec ne se voit pas, et
     // ne se garde pas non plus, pour que la question puisse repartir plus tard.
     ref.read(crashReporterProvider).report(e, st, context: 'care.completion');
+    return null;
+  }
+});
+
+/// Précision des étapes du guide de bouturage par l'IA, pour l'espèce de la
+/// plante mère. Même clé Infomaniak que le diagnostic ; sans clé, le guide
+/// s'en tient à ses textes génériques.
+final cuttingGuideRefinerProvider = Provider<CuttingGuideRefiner>((ref) {
+  if (!DiagnosisConfig.isConfigured) return const UnconfiguredCuttingGuideRefiner();
+  return InfomaniakCuttingRefiner(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+});
+
+/// Les guides déjà précisés, gardés sur l'appareil.
+final cuttingGuideStoreProvider = Provider<CuttingGuideStore>((ref) => PreferencesCuttingStore(ref.watch(preferencesServiceProvider)));
+
+/// Les étapes précisées pour une espèce, ou `null` si la question ne se pose
+/// pas : espèce inconnue, IA coupée dans les réglages, ou réponse vide.
+///
+/// Même règle que le complément des fiches : la réponse déjà obtenue est
+/// rendue telle quelle, sans réseau ; sinon, et seulement si l'utilisateur
+/// laisse faire, la question part une fois et la réponse est gardée.
+final cuttingGuideRefinementProvider =
+    FutureProvider.autoDispose.family<CuttingGuideRefinement?, ({String species, String language})>((ref, q) async {
+  final species = q.species.trim();
+  if (species.isEmpty) return null;
+  final store = ref.watch(cuttingGuideStoreProvider);
+  final known = store.read(species, q.language);
+  if (known != null) return known.isEmpty ? null : known;
+  if (!ref.watch(preferencesProvider.select((p) => p.careAssistEnabled))) return null;
+  final refiner = ref.watch(cuttingGuideRefinerProvider);
+  if (!refiner.isConfigured) return null;
+  try {
+    final refinement = await refiner.refine(scientificName: species, language: q.language);
+    await store.write(species, q.language, refinement);
+    return refinement.isEmpty ? null : refinement;
+  } catch (e, st) {
+    // Un guide générique reste un guide : l'échec ne se voit pas, et ne se
+    // garde pas non plus, pour que la question puisse repartir plus tard.
+    ref.read(crashReporterProvider).report(e, st, context: 'cutting.guide');
     return null;
   }
 });

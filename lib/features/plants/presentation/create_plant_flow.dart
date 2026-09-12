@@ -22,6 +22,7 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../identification/presentation/identification_photos.dart';
 import '../../identification/presentation/identification_sheet.dart';
+import '../../cuttings/presentation/cutting_guide_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../domain/care/care_guide.dart';
@@ -29,11 +30,19 @@ import '../../species/presentation/species_field.dart';
 import 'inline_camera.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
+///
+/// Une bouture commence par son guide : six gestes, illustrés, précisés pour
+/// l'espèce de la plante mère quand l'IA la connaît. Le guide se passe d'un
+/// mot ; le refermer, c'est renoncer à la bouture.
 Future<void> startCreatePlantFlow(BuildContext context, WidgetRef ref, {String? parentPlantId, String? parentName, String? speciesName, String? locationId}) async {
   final l10n = context.l10n;
   if (!ref.read(canEditProvider)) {
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.readOnlyHint, emoji: '🔒'));
     return;
+  }
+  if (parentPlantId != null) {
+    final create = await showCuttingGuide(context, species: speciesName);
+    if (create != true || !context.mounted) return;
   }
   final plantId = await showFloraFlow<String>(
     context,

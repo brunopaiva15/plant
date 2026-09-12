@@ -116,6 +116,47 @@ for f in glob.glob('/tmp/collection/*.png'):
     Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
 ```
 
+# Le guide de bouturage (six séquences)
+
+`build_cutting_guide.py` rend les six étapes du guide qui s'ouvre avant la
+création d'une bouture, chacune en une séquence d'images : la plante mère
+qui pousse et l'anneau qui se pose sur le nœud choisi ; les ciseaux qui se
+ferment sous le nœud et le brin qui se détache ; la feuille du bas qui se
+décroche ; la bouture qui descend dans le verre ; les racines qui sortent du
+nœud ; la bouture racinée qui descend dans le pot. Même argile, même studio,
+même caméra que l'icône ; l'ombre et le flottement sont dessinés par
+l'application.
+
+La plante mère est une liane à feuilles entières, un pothos : c'est la
+bouture de tige la plus courante et le nœud s'y lit bien. Les feuilles sont
+en cœur (`feuille_coeur`), avec leurs deux lobes, une pointe qui retombe et
+une nervure ; le limbe s'infléchit au bout du pétiole, face au regard, ce
+qui évite les feuilles vues de chant. À partir de la troisième étape la
+bouture est le sujet : elle a sa propre tige, droite, et ses feuilles sont
+placées pour la caméra (azimuts absolus). Le verre et l'eau sont des
+« voiles » — une surface claire mêlée de transparence pure, sans réfraction :
+un vrai verre en transmission grouille de bruit à ces réglages et
+assombrit les racines.
+
+Chaque étape est cadrée une fois pour toutes sur l'union de ses images
+clefs ; sans cela le cadre suivrait le sujet et c'est le monde qui semblerait
+bouger.
+
+```bash
+# aperçu : quatre images par étape, ~1 min
+blender -b -noaudio -P tool/build_cutting_guide.py -- 400 16 /tmp/bouture apercu
+# une seule étape
+blender -b -noaudio -P tool/build_cutting_guide.py -- 400 16 /tmp/bouture apercu etape_5
+# rendu complet : ~200 images, ~1 h sur quatre cœurs
+blender -b -noaudio -P tool/build_cutting_guide.py -- 768 32 /tmp/bouture
+for i in 1 2 3 4 5 6; do
+  python3 tool/pack_growth.py /tmp/bouture/etape_$i assets/cutting/etape_$i.webp --fps 14
+done
+```
+
+`test/assets/cutting_sequences_test.dart` vérifie que les six séquences sont
+embarquées, carrées, animées et pas trop lourdes.
+
 # Les quatre familles de problèmes
 
 `build_category_logos.py` rend les symboles des quatre valeurs du champ `type`

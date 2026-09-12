@@ -972,6 +972,90 @@ abstract class AppLocalizations {
   /// **'Bouture de {name}'**
   String cuttingOf(String name);
 
+  /// No description provided for @cuttingGuideStemTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La tige'**
+  String get cuttingGuideStemTitle;
+
+  /// No description provided for @cuttingGuideStemBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une tige saine, avec au moins un nœud : le renflement d\'où partent les feuilles. Deux ou trois feuilles au-dessus suffisent.'**
+  String get cuttingGuideStemBody;
+
+  /// No description provided for @cuttingGuideCutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La coupe'**
+  String get cuttingGuideCutTitle;
+
+  /// No description provided for @cuttingGuideCutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une lame propre, une coupe nette juste sous le nœud. Un centimètre de tige en dessous suffit.'**
+  String get cuttingGuideCutBody;
+
+  /// No description provided for @cuttingGuideLeavesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les feuilles'**
+  String get cuttingGuideLeavesTitle;
+
+  /// No description provided for @cuttingGuideLeavesBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les feuilles du bas sont retirées, le nœud reste nu. Deux ou trois feuilles en haut nourrissent la bouture.'**
+  String get cuttingGuideLeavesBody;
+
+  /// No description provided for @cuttingGuideWaterTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'eau'**
+  String get cuttingGuideWaterTitle;
+
+  /// No description provided for @cuttingGuideWaterBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nœud sous l\'eau, les feuilles au-dessus. Eau à température ambiante, lumière vive sans soleil direct.'**
+  String get cuttingGuideWaterBody;
+
+  /// No description provided for @cuttingGuideRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines'**
+  String get cuttingGuideRootsTitle;
+
+  /// No description provided for @cuttingGuideRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'eau se change chaque semaine. Les premières racines apparaissent en deux à six semaines.'**
+  String get cuttingGuideRootsBody;
+
+  /// No description provided for @cuttingGuidePotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pot'**
+  String get cuttingGuidePotTitle;
+
+  /// No description provided for @cuttingGuidePotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À quelques centimètres de racines, la bouture passe en pot, dans un terreau léger, et reçoit un premier arrosage.'**
+  String get cuttingGuidePotBody;
+
+  /// No description provided for @cuttingGuideStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer la bouture'**
+  String get cuttingGuideStart;
+
+  /// No description provided for @cuttingGuideRefined.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étapes précisées par l\'IA pour {species}.'**
+  String cuttingGuideRefined(String species);
+
   /// No description provided for @parentPlant.
   ///
   /// In fr, this message translates to:

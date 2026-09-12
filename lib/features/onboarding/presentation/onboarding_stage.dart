@@ -146,7 +146,7 @@ class OnboardingStage extends StatelessWidget {
                         // objets qui changent de place, pas lui.
                         Transform.scale(
                           scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
-                          child: _Halo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark, fade: haloFade),
+                          child: ClayHalo(color: tint ?? c.sage, size: side * 1.18, dark: c.isDark, fade: haloFade),
                         ),
                         for (var i = count - 1; i >= 0; i--) _object(context, i, width, side, rise),
                       ],
@@ -215,8 +215,8 @@ class OnboardingStage extends StatelessWidget {
 }
 
 /// Une tache de couleur ronde et sans bord, plus dense au centre.
-class _Halo extends StatelessWidget {
-  const _Halo({required this.color, required this.size, required this.dark, this.fade = 1});
+class ClayHalo extends StatelessWidget {
+  const ClayHalo({required this.color, required this.size, required this.dark, this.fade = 1});
 
   final Color color;
   final double size;

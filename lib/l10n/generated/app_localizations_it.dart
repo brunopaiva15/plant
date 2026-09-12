@@ -528,6 +528,56 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideStemTitle => 'Il fusto';
+
+  @override
+  String get cuttingGuideStemBody =>
+      'Un fusto sano, con almeno un nodo: il rigonfiamento da cui partono le foglie. Due o tre foglie sopra bastano.';
+
+  @override
+  String get cuttingGuideCutTitle => 'Il taglio';
+
+  @override
+  String get cuttingGuideCutBody =>
+      'Una lama pulita, un taglio netto appena sotto il nodo. Un centimetro di fusto sotto basta.';
+
+  @override
+  String get cuttingGuideLeavesTitle => 'Le foglie';
+
+  @override
+  String get cuttingGuideLeavesBody =>
+      'Le foglie in basso vengono tolte, il nodo resta nudo. Due o tre foglie in alto nutrono la talea.';
+
+  @override
+  String get cuttingGuideWaterTitle => 'L\'acqua';
+
+  @override
+  String get cuttingGuideWaterBody =>
+      'Il nodo sott\'acqua, le foglie sopra. Acqua a temperatura ambiente, luce viva senza sole diretto.';
+
+  @override
+  String get cuttingGuideRootsTitle => 'Le radici';
+
+  @override
+  String get cuttingGuideRootsBody =>
+      'L\'acqua si cambia ogni settimana. Le prime radici compaiono in due-sei settimane.';
+
+  @override
+  String get cuttingGuidePotTitle => 'Il vaso';
+
+  @override
+  String get cuttingGuidePotBody =>
+      'Con qualche centimetro di radici, la talea passa in vaso, in un terriccio leggero, con una prima annaffiatura.';
+
+  @override
+  String get cuttingGuideStart => 'Crea la talea';
+
+  @override
+  String cuttingGuideRefined(String species) {
+    return 'Passaggi precisati dall\'IA per $species.';
+  }
+
+  @override
   String get parentPlant => 'Pianta madre';
 
   @override
