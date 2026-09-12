@@ -76,6 +76,20 @@ create table if not exists plants (
   deleted_at timestamptz
 );
 
+-- Les trois fonctions des règles d'accès, définies dès que leurs tables
+-- existent : les premières règles (liens partagés) les appellent bien avant
+-- la section RLS, et sur un projet neuf le script s'arrêtait là —
+-- « function is_member(uuid) does not exist » — sans rien créer.
+create or replace function is_member(g uuid) returns boolean language sql stable security definer as $$
+  select exists(select 1 from garden_members where garden_id = g and user_id = auth.uid());
+$$;
+create or replace function can_edit(g uuid) returns boolean language sql stable security definer as $$
+  select exists(select 1 from garden_members where garden_id = g and user_id = auth.uid() and role in ('owner','member'));
+$$;
+create or replace function plant_garden(p uuid) returns uuid language sql stable security definer as $$
+  select garden_id from plants where id = p;
+$$;
+
 -- Libellé et URL externe des photos (v7).
 create table if not exists plant_photos (
   id uuid primary key,
@@ -380,16 +394,6 @@ drop trigger if exists trg_garden_owner on gardens;
 create trigger trg_garden_owner after insert on gardens for each row execute function add_owner_membership();
 
 -- ---------- Row Level Security ----------
-create or replace function is_member(g uuid) returns boolean language sql stable security definer as $$
-  select exists(select 1 from garden_members where garden_id = g and user_id = auth.uid());
-$$;
-create or replace function can_edit(g uuid) returns boolean language sql stable security definer as $$
-  select exists(select 1 from garden_members where garden_id = g and user_id = auth.uid() and role in ('owner','member'));
-$$;
-create or replace function plant_garden(p uuid) returns uuid language sql stable security definer as $$
-  select garden_id from plants where id = p;
-$$;
-
 alter table profiles enable row level security;
 drop policy if exists "own profile" on profiles;
 create policy "own profile" on profiles for all using (id = auth.uid()) with check (id = auth.uid());
