@@ -759,7 +759,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepPhotoSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Cadrez la plante entière, en lumière naturelle. Elle servira à la reconnaître, et à la retrouver dans votre liste.'**
+  /// **'Cadrez la plante en entier, à la lumière du jour.'**
   String get stepPhotoSubtitle;
 
   /// No description provided for @takePhoto.
@@ -6669,37 +6669,37 @@ abstract class AppLocalizations {
   /// No description provided for @photoFirstTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Sa première photo'**
+  /// **'Première photo'**
   String get photoFirstTitle;
 
   /// No description provided for @photoNextTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une nouvelle photo'**
+  /// **'Nouvelle photo'**
   String get photoNextTitle;
 
   /// No description provided for @photoFirstHint.
   ///
   /// In fr, this message translates to:
-  /// **'Elle deviendra sa photo principale, et ouvrira le suivi de croissance.'**
+  /// **'Elle servira de photo principale.'**
   String get photoFirstHint;
 
   /// No description provided for @photoFrameHint.
   ///
   /// In fr, this message translates to:
-  /// **'Même cadrage, même lumière : la croissance se lit mieux d\'une photo à l\'autre.'**
+  /// **'Gardez le même cadrage d\'une fois sur l\'autre pour suivre la croissance.'**
   String get photoFrameHint;
 
   /// No description provided for @photoGhostToggle.
   ///
   /// In fr, this message translates to:
-  /// **'Calquer la dernière photo'**
+  /// **'Superposer la dernière photo'**
   String get photoGhostToggle;
 
   /// No description provided for @photoGhostHint.
   ///
   /// In fr, this message translates to:
-  /// **'La dernière photo apparaît en transparence : alignez le pot dessus.'**
+  /// **'Alignez la plante sur la photo en transparence.'**
   String get photoGhostHint;
 
   /// No description provided for @photoTitleStepTitle.
@@ -6711,7 +6711,7 @@ abstract class AppLocalizations {
   /// No description provided for @photoTitleStepSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Facultatif. Il vous aidera à la retrouver dans la galerie.'**
+  /// **'Pour la retrouver plus tard. Vous pouvez laisser vide.'**
   String get photoTitleStepSubtitle;
 
   /// No description provided for @photoTagNewLeaf.
@@ -6753,7 +6753,7 @@ abstract class AppLocalizations {
   /// No description provided for @mainPhotoHint.
   ///
   /// In fr, this message translates to:
-  /// **'Celle de la fiche et de la liste.'**
+  /// **'Affichée sur la fiche et dans la liste.'**
   String get mainPhotoHint;
 
   /// No description provided for @retake.
@@ -6765,7 +6765,7 @@ abstract class AppLocalizations {
   /// No description provided for @growthEmptySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une photo de temps en temps, et vous la verrez pousser.'**
+  /// **'Ajoutez une photo de temps en temps pour la voir pousser.'**
   String get growthEmptySubtitle;
 
   /// No description provided for @growthSummary.
@@ -6777,7 +6777,7 @@ abstract class AppLocalizations {
   /// No description provided for @growthNudge.
   ///
   /// In fr, this message translates to:
-  /// **'Dernière photo le {date}. Une nouvelle ?'**
+  /// **'Dernière photo le {date}. Prenez-en une nouvelle ?'**
   String growthNudge(String date);
 
   /// No description provided for @timelapse.
@@ -6837,13 +6837,13 @@ abstract class AppLocalizations {
   /// No description provided for @stepPhotoDoneTitle.
   ///
   /// In fr, this message translates to:
-  /// **'La voilà.'**
+  /// **'On la garde ?'**
   String get stepPhotoDoneTitle;
 
   /// No description provided for @stepPhotoDoneSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une feuille de près aiderait {name} à reconnaître l\'espèce. Facultatif.'**
+  /// **'Vous pouvez ajouter une feuille de près pour aider {name}.'**
   String stepPhotoDoneSubtitle(String name);
 
   /// No description provided for @stepPhotoDonePlain.
@@ -6855,7 +6855,7 @@ abstract class AppLocalizations {
   /// No description provided for @viewPlant.
   ///
   /// In fr, this message translates to:
-  /// **'Sa photo'**
+  /// **'La plante'**
   String get viewPlant;
 
   /// No description provided for @viewLeafClose.
@@ -6867,19 +6867,19 @@ abstract class AppLocalizations {
   /// No description provided for @viewAnother.
   ///
   /// In fr, this message translates to:
-  /// **'Une autre vue'**
+  /// **'Autre vue'**
   String get viewAnother;
 
   /// No description provided for @viewForModel.
   ///
   /// In fr, this message translates to:
-  /// **'Pour aider {name} à trancher. Cette vue ne sera pas gardée.'**
+  /// **'Cette photo aide {name} à reconnaître l\'espèce. Elle ne sera pas gardée.'**
   String viewForModel(String name);
 
   /// No description provided for @viewsCaption.
   ///
   /// In fr, this message translates to:
-  /// **'Vues pour {name}, effacées ensuite'**
+  /// **'Photos pour {name}, supprimées ensuite'**
   String viewsCaption(String name);
 }
 

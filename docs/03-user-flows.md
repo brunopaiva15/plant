@@ -8,9 +8,9 @@ Plantes ─[tap +]⟶ Sheet plein écran
   Étape 1 · Photo, en trois états
     Viser      viseur dans le cadre, déclencheur rond dessus, galerie dans un coin
                [tap cadre] ou [◯] déclenche · Continuer sans photo
-    La voilà   la photo prise remplit le cadre (c'est la confirmation)
-               dessous, si Iris est là : « Sa photo » · [+ Une feuille de près] · [+ Une autre vue]
-               légende « Vues pour Iris, effacées ensuite » · [Continuer] · Reprendre
+    On la      la photo prise remplit le cadre (c'est la confirmation)
+    garde ?    dessous, si Iris est là : « La plante » · [+ Une feuille de près] · [+ Autre vue]
+               légende « Photos pour Iris, supprimées ensuite » · [Continuer] · Reprendre
     Une vue    [tap emplacement] ⟶ le viseur revient sous le titre de l'emplacement,
     de plus    rend la main dès la prise ; × ou Annuler ramène à la photo
   Étape 2 · Nom
@@ -43,7 +43,7 @@ Fiche plante ─[tap 📷 | Croissance | en-tête sans photo]⟶ Sheet plein éc
 Galerie Croissance ─[Prendre une photo]⟶ la même
   Étape 1 · Viser
     Viseur ouvert dans le cadre ; [tap cadre] ou [Prendre une photo] déclenche
-    Calque : la dernière photo en transparence par-dessus le viseur (☑ par défaut)
+    Superposition : la dernière photo en transparence par-dessus le viseur (☑ par défaut)
     [Choisir une photo] · Depuis une adresse web
   Étape 2 · Un titre ?
     Aperçu daté · champ titre · puces : Nouvelle feuille · Floraison · Avant rempotage…
@@ -51,9 +51,9 @@ Galerie Croissance ─[Prendre une photo]⟶ la même
 ✓ « Photo ajoutée » ⟶ compression (isolate) + miniature ⟶ journal, Croissance, galerie
   ⟶ si première photo : devient la photo principale
 ```
-- Le calque est ce qui rend un suivi de croissance lisible : même cadrage,
+- La superposition est ce qui rend un suivi de croissance lisible : même cadrage,
   même distance d'un mois à l'autre. Il ne se propose que si le viseur tourne
-  et qu'il y a une photo à calquer.
+  et qu'il y a une photo à superposer.
 - Sans viseur (autorisation refusée, appareil sans caméra), le cadre garde
   son invite et les boutons ouvrent l'appareil photo du système.
 - Repartir sans enregistrer efface les fichiers de la prise ; le titre et la

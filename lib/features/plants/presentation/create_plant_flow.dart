@@ -478,7 +478,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   ///
   /// **Viser** : le viseur est dans le cadre, le déclencheur rond posé
   /// dessus, la galerie dans un coin. Rien à chercher ailleurs.
-  /// **La voilà** : la photo prise remplit le cadre — c'est la confirmation —,
+  /// **On la garde ?** : la photo prise remplit le cadre — c'est la confirmation —,
   /// et dessous, des emplacements qui disent quoi photographier de plus pour
   /// aider Iris, et que ces vues ne seront pas gardées.
   /// **Une vue de plus** : le viseur revient pour l'emplacement touché, avec
@@ -959,7 +959,7 @@ class _Shutter extends StatelessWidget {
 ///
 /// Trois cases égales ne disaient rien : laquelle est la photo de la plante,
 /// à quoi servent les autres, que deviennent-elles. Ici la première est
-/// « Sa photo », les suivantes portent le sujet conseillé, et la légende
+/// « La plante », les suivantes portent le sujet conseillé, et la légende
 /// sous la bande dit qu'elles ne sont pas gardées.
 class _ViewsStrip extends StatelessWidget {
   const _ViewsStrip({required this.plantThumb, required this.extras, required this.hints, required this.onAdd, required this.onRemove});

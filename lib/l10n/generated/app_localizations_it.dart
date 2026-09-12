@@ -407,7 +407,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get stepPhotoSubtitle =>
-      'Inquadra la pianta intera, con luce naturale. Servirà a riconoscerla e a ritrovarla nella tua lista.';
+      'Inquadra la pianta intera, alla luce del giorno.';
 
   @override
   String get takePhoto => 'Scatta una foto';
@@ -3917,32 +3917,30 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get photoFirstTitle => 'La sua prima foto';
+  String get photoFirstTitle => 'Prima foto';
 
   @override
-  String get photoNextTitle => 'Una nuova foto';
+  String get photoNextTitle => 'Nuova foto';
 
   @override
-  String get photoFirstHint =>
-      'Diventerà la foto principale e aprirà il diario di crescita.';
+  String get photoFirstHint => 'Sarà la foto principale.';
 
   @override
   String get photoFrameHint =>
-      'Stessa inquadratura, stessa luce: la crescita si legge meglio da una foto all\'altra.';
+      'Mantieni la stessa inquadratura ogni volta per seguire la crescita.';
 
   @override
   String get photoGhostToggle => 'Sovrapponi l\'ultima foto';
 
   @override
-  String get photoGhostHint =>
-      'L\'ultima foto appare in trasparenza: allinea il vaso sopra.';
+  String get photoGhostHint => 'Allinea la pianta alla foto in trasparenza.';
 
   @override
   String get photoTitleStepTitle => 'Un titolo?';
 
   @override
   String get photoTitleStepSubtitle =>
-      'Facoltativo. Ti aiuterà a ritrovarla nella galleria.';
+      'Per ritrovarla più tardi. Puoi lasciare vuoto.';
 
   @override
   String get photoTagNewLeaf => 'Foglia nuova';
@@ -3963,14 +3961,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get photoTagAfterPruning => 'Dopo la potatura';
 
   @override
-  String get mainPhotoHint => 'Quella della scheda e della lista.';
+  String get mainPhotoHint => 'Mostrata nella scheda e nella lista.';
 
   @override
   String get retake => 'Rifai';
 
   @override
   String get growthEmptySubtitle =>
-      'Una foto ogni tanto, e la vedrai crescere.';
+      'Aggiungi una foto ogni tanto per vederla crescere.';
 
   @override
   String growthSummary(int count, String since) {
@@ -3985,7 +3983,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String growthNudge(String date) {
-    return 'Ultima foto il $date. Una nuova?';
+    return 'Ultima foto il $date. Ne scatti una nuova?';
   }
 
   @override
@@ -4018,32 +4016,32 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pause => 'Pausa';
 
   @override
-  String get stepPhotoDoneTitle => 'Eccola.';
+  String get stepPhotoDoneTitle => 'La teniamo?';
 
   @override
   String stepPhotoDoneSubtitle(String name) {
-    return 'Una foglia da vicino aiuterebbe $name a riconoscere la specie. Facoltativo.';
+    return 'Puoi aggiungere una foglia da vicino per aiutare $name.';
   }
 
   @override
   String get stepPhotoDonePlain => 'Potrai aggiungerne altre dalla sua scheda.';
 
   @override
-  String get viewPlant => 'La sua foto';
+  String get viewPlant => 'La pianta';
 
   @override
   String get viewLeafClose => 'Una foglia da vicino';
 
   @override
-  String get viewAnother => 'Un\'altra vista';
+  String get viewAnother => 'Altra vista';
 
   @override
   String viewForModel(String name) {
-    return 'Per aiutare $name a decidere. Questa vista non verrà conservata.';
+    return 'Questa foto aiuta $name a riconoscere la specie. Non verrà conservata.';
   }
 
   @override
   String viewsCaption(String name) {
-    return 'Viste per $name, poi eliminate';
+    return 'Foto per $name, poi eliminate';
   }
 }
