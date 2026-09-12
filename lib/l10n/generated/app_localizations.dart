@@ -2646,42 +2646,6 @@ abstract class AppLocalizations {
   /// **'Continuer avec Google'**
   String get continueWithGoogle;
 
-  /// No description provided for @continueWithEmail.
-  ///
-  /// In fr, this message translates to:
-  /// **'Continuer avec un e-mail'**
-  String get continueWithEmail;
-
-  /// No description provided for @emailHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'vous@exemple.ch'**
-  String get emailHint;
-
-  /// No description provided for @sendCode.
-  ///
-  /// In fr, this message translates to:
-  /// **'Recevoir un code'**
-  String get sendCode;
-
-  /// No description provided for @codeSent.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code envoyé à {email}.'**
-  String codeSent(String email);
-
-  /// No description provided for @codeHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Code à 6 chiffres'**
-  String get codeHint;
-
-  /// No description provided for @verifyCode.
-  ///
-  /// In fr, this message translates to:
-  /// **'Valider'**
-  String get verifyCode;
-
   /// No description provided for @signOut.
   ///
   /// In fr, this message translates to:

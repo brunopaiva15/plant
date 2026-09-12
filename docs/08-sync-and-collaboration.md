@@ -44,7 +44,7 @@ La ligne et l'image voyagent séparément, et l'image coûte mille fois plus che
   l'outbox porte le chemin puisque la ligne, elle, n'existe plus).
 
 ## Auth
-`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (e-mail + code à 6 chiffres, Apple natif sur iOS, Google via OAuth). À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
+`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple, et sur Android le compte reste local tant que Google n'est pas livré (`signInAvailable`). À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
 
 ## Le jardin ouvert
 Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a partagés. Un seul est **ouvert** à la fois — c'est lui que montrent toutes les listes.
@@ -56,7 +56,7 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 
 ## Collaboration
 - `garden_members` : `owner` / `member` / `viewer`. Le domaine en fait `GardenRole` (`domain/sharing/garden_collaboration.dart`) : `canEdit`, `canManageMembers`.
-- **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : il en crée un, puis échange le code (`accept_invite`).
+- **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : il en crée un (avec Apple, donc sur iPhone ou iPad), puis échange le code (`accept_invite`).
 - Le lien envoyé est une adresse https (`…/functions/v1/share/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`flora://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît.
 - `my_gardens()` liste les jardins du compte avec le rôle, le nom du propriétaire, le nombre de membres et de plantes. `set_member_role`, `remove_member`, `leave_garden`, `revoke_invite` complètent la gestion — toutes `security definer`, propriétaire seul sauf `leave_garden`.
 - Chaque action et photo porte `user_id` ; la timeline affiche « · Laura » quand l'auteur n'est pas l'utilisateur courant (cache local `profiles`).
@@ -73,33 +73,42 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 ## Mise en place
 1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL.
 2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`).
-3. Activer les fournisseurs Auth souhaités (Email OTP, Apple, Google) ; ajouter l'URL de redirection `flora://login-callback`.
-4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`.
+3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `flora://login-callback`.
+4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
 
-### Sign in with Apple : deux choses à faire côté Apple
-Le bouton « Continuer avec Apple » n'apparaît qu'avec un backend configuré, et
-il ne fonctionne que si le binaire porte l'entitlement
-`com.apple.developer.applesignin`. Cet entitlement **n'est pas dans le dépôt** :
-tant que la capability n'existe pas sur l'App ID, sa seule présence fait échouer
-la signature avec « Provisioning profile doesn't include the Sign In with Apple
-capability », y compris sur les builds locaux et la CI.
+### Sign in with Apple
+Le bouton « Continuer avec Apple » n'apparaît qu'avec un backend configuré, sur
+iPhone et iPad. La connexion est native (feuille système, pas de navigateur) :
+l'app reçoit un jeton d'identité signé par Apple et l'échange contre une session
+Supabase (`signInWithIdToken`, nonce à l'appui). Le prénom donné par Apple à la
+première connexion devient le nom affiché s'il n'y en avait pas encore.
 
-Avant de livrer un build avec Supabase :
-1. Activer **Sign In with Apple** sur l'App ID `ch.vergasta.plant`
-   (developer.apple.com › Certificates, Identifiers & Profiles › Identifiers).
-2. Régénérer le profil de provisioning — sur Codemagic, la récupération des
+Le binaire porte l'entitlement `com.apple.developer.applesignin`
+(`ios/Runner/Runner.entitlements`, déclaré dans les trois configurations du
+target `Runner` par `CODE_SIGN_ENTITLEMENTS`). Cet entitlement **exige que la
+capability existe sur l'App ID** : sans elle, la signature échoue avec
+« Provisioning profile doesn't include the Sign In with Apple capability », y
+compris sur les builds locaux et la CI. C'est ce qui était arrivé une première
+fois (commit c13bbcd), et la raison pour laquelle l'entitlement avait été retiré.
+
+À faire une fois, avant le prochain build :
+1. **Apple** : activer *Sign In with Apple* sur l'App ID `ch.vergasta.plant`
+   (developer.apple.com › Certificates, Identifiers & Profiles › Identifiers),
+   puis régénérer le profil de provisioning — sur Codemagic, la récupération des
    fichiers de signature le refait à la volée une fois la capability activée.
-3. Recréer `ios/Runner/Runner.entitlements` :
-   ```xml
-   <key>com.apple.developer.applesignin</key>
-   <array><string>Default</string></array>
-   ```
-   et le déclarer dans les trois configurations du target `Runner`
-   (`CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;`).
+2. **Supabase** : Authentication › Providers › Apple, activer, et mettre
+   `ch.vergasta.plant` dans *Authorized Client IDs*. C'est tout ce que demande
+   le flux natif ; le *Secret Key* (JWT signé avec la clé `.p8`) ne sert qu'au
+   flux OAuth web, que l'app n'utilise pas.
+3. **Codemagic** : passer `SUPABASE_URL` et `SUPABASE_ANON_KEY` en
+   `--dart-define` (§ Mise en place, étape 4).
 
-Sans l'étape 1, l'étape 3 casse le build ; sans l'étape 3, `signInWithApple`
-lève à l'exécution. Les deux vont ensemble.
+Sans l'étape 1, le build ne se signe pas ; sans la 2, Supabase refuse le jeton
+(« Unacceptable audience ») ; sans la 3, le bouton n'est pas dessiné.
 
-Rappel de la règle 4.8 de l'App Store : proposer Google ou un autre
-fournisseur tiers oblige à proposer Apple aussi. Les trois boutons ne peuvent
-donc pas être livrés à moitié.
+Google n'est pas livré : `signInWithGoogle` et sa redirection
+`flora://login-callback` restent codés, mais le bouton attend
+`AppConfig.googleSignInEnabled`. La règle 4.8 de l'App Store n'exige Apple qu'en
+présence d'un autre fournisseur tiers ; Apple seul est permis, et Google
+pourra suivre quand Android deviendra prioritaire — en activant alors aussi le
+fournisseur côté Supabase.

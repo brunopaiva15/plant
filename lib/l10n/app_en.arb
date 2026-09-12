@@ -492,12 +492,6 @@
   "signInHint": "An account backs up your plants, syncs them across your devices and lets you share a garden. Without one, everything stays on this phone.",
   "continueWithApple": "Continue with Apple",
   "continueWithGoogle": "Continue with Google",
-  "continueWithEmail": "Continue with email",
-  "emailHint": "you@example.com",
-  "sendCode": "Send me a code",
-  "codeSent": "Code sent to {email}.",
-  "codeHint": "6-digit code",
-  "verifyCode": "Verify",
   "signOut": "Sign out",
   "signOutConfirm": "Your data stays on this phone.",
   "signedInAs": "Signed in",
@@ -511,13 +505,6 @@
   "authError": "Couldn't sign in. Check the address and try again.",
   "appleUnavailable": "Apple sign-in is available on iPhone and iPad.",
   "synchronization": "Sync",
-  "@codeSent": {
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    }
-  },
   "@syncIdle": {
     "placeholders": {
       "time": {

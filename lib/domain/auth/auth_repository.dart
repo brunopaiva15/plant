@@ -11,8 +11,9 @@ class AppUser {
 }
 
 /// Abstraction d'authentification. `LocalAuthRepository` (compte sur l'appareil)
-/// ou `SupabaseAuthRepository` (e-mail par code, Apple, Google) : l'UI ne
-/// connaît que cette interface.
+/// ou `SupabaseAuthRepository` (Apple ; Google codé, pas livré) : l'UI ne
+/// connaît que cette interface. Pas de connexion par e-mail sur Auxine :
+/// un compte, c'est un identifiant Apple.
 abstract class AuthRepository {
   Stream<AppUser?> watchUser();
   AppUser? get currentUser;
@@ -21,12 +22,6 @@ abstract class AuthRepository {
 
   /// `true` si un backend est configuré (connexion possible).
   bool get supportsRemote;
-
-  /// Envoie un code à 6 chiffres par e-mail.
-  Future<void> requestEmailCode(String email);
-
-  /// Vérifie le code reçu et ouvre la session.
-  Future<void> verifyEmailCode({required String email, required String code});
 
   Future<void> signInWithApple();
   Future<void> signInWithGoogle();

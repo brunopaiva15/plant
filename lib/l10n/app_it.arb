@@ -492,12 +492,6 @@
   "signInHint": "Un account salva le tue piante, le sincronizza tra i dispositivi e permette di condividere un giardino. Senza account, tutto resta su questo telefono.",
   "continueWithApple": "Continua con Apple",
   "continueWithGoogle": "Continua con Google",
-  "continueWithEmail": "Continua con e-mail",
-  "emailHint": "tu@esempio.ch",
-  "sendCode": "Ricevi un codice",
-  "codeSent": "Codice inviato a {email}.",
-  "codeHint": "Codice a 6 cifre",
-  "verifyCode": "Conferma",
   "signOut": "Esci",
   "signOutConfirm": "I tuoi dati restano su questo telefono.",
   "signedInAs": "Connesso",
@@ -511,13 +505,6 @@
   "authError": "Accesso non riuscito. Controlla l'indirizzo e riprova.",
   "appleUnavailable": "L'accesso con Apple è disponibile su iPhone e iPad.",
   "synchronization": "Sincronizzazione",
-  "@codeSent": {
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    }
-  },
   "@syncIdle": {
     "placeholders": {
       "time": {

@@ -43,6 +43,15 @@ abstract final class AppConfig {
   /// connexion Google. Rien de tout cela n'est visible dans l'application.
   static const String linkScheme = 'flora';
 
+  /// Fournisseurs tiers proposés sur l'écran Compte, en plus de l'e-mail par
+  /// code. Apple est livré (natif, iPhone et iPad, entitlement
+  /// `com.apple.developer.applesignin` dans `ios/Runner/Runner.entitlements`).
+  /// Google ne l'est pas encore : `signInWithGoogle` reste codé, mais le
+  /// bouton n'est pas dessiné tant que ce drapeau est faux. Android n'est pas
+  /// la priorité, et la règle 4.8 de l'App Store n'exige Apple qu'en présence
+  /// d'un autre fournisseur tiers — proposer Apple seul est permis.
+  static const bool googleSignInEnabled = false;
+
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.
   static const String supportProductId = 'ch.vergasta.plant.support';

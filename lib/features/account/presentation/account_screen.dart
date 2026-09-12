@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -14,7 +16,15 @@ import '../../../domain/sync/sync_state.dart';
 import '../application/membership_providers.dart';
 import 'gardens_screen.dart' show gardenLabel;
 
-/// Compte : connexion (Apple, Google, e-mail par code), état de synchronisation.
+/// `true` quand l'écran Compte peut proposer une connexion : un backend
+/// configuré, et une plateforme où Sign in with Apple existe. Pas de
+/// connexion par e-mail sur Auxine, et Google n'est pas livré : sur Android,
+/// le compte reste local, exactement comme sans backend.
+bool signInAvailable(AuthRepository auth) =>
+    auth.supportsRemote && (defaultTargetPlatform == TargetPlatform.iOS || AppConfig.googleSignInEnabled);
+
+/// Compte : connexion (Apple sur iOS ; Google derrière
+/// `AppConfig.googleSignInEnabled`), état de synchronisation.
 class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key});
 
@@ -23,20 +33,9 @@ class AccountScreen extends ConsumerStatefulWidget {
 }
 
 class _AccountScreenState extends ConsumerState<AccountScreen> {
-  final _email = TextEditingController();
-  final _code = TextEditingController();
-  bool _emailMode = false;
-  bool _codeSent = false;
   bool _busy = false;
 
-  @override
-  void dispose() {
-    _email.dispose();
-    _code.dispose();
-    super.dispose();
-  }
-
-  Future<void> _run(Future<void> Function() action, {String? errorOverride}) async {
+  Future<void> _run(Future<void> Function() action) async {
     if (_busy) return;
     setState(() => _busy = true);
     final l10n = context.l10n;
@@ -44,7 +43,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       await action();
       Haptics.success();
     } on AuthException catch (e) {
-      ref.read(toastProvider.notifier).show(ToastData(message: e.message == 'apple_unavailable' ? l10n.appleUnavailable : (errorOverride ?? l10n.authError), emoji: '!'));
+      ref.read(toastProvider.notifier).show(ToastData(message: e.message == 'apple_unavailable' ? l10n.appleUnavailable : l10n.authError, emoji: '!'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'auth');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.authError, emoji: '!'));
@@ -64,62 +63,27 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (!auth.supportsRemote) ...[
-            FloraGroup(footer: l10n.localAccountHint, children: [FloraListRow(leading: Icon(CupertinoIcons.lock, size: 20, color: context.colors.inkSecondary), title: l10n.localAccount)]),
-          ] else if (signedIn) ...[
+          if (signedIn) ...[
             _SignedIn(user: user, onSignOut: () => _run(() async {
               final ok = await showAdaptiveConfirm(context, title: l10n.signOut, message: l10n.signOutConfirm, confirmLabel: l10n.signOut, cancelLabel: l10n.cancel, destructive: true);
               if (ok) await auth.signOut();
             })),
+          ] else if (!signInAvailable(auth)) ...[
+            FloraGroup(footer: l10n.localAccountHint, children: [FloraListRow(leading: Icon(CupertinoIcons.lock, size: 20, color: context.colors.inkSecondary), title: l10n.localAccount)]),
           ] else ...[
             Text(l10n.signInHint, style: context.text.callout),
             const SizedBox(height: Space.xl),
-            if (defaultTargetPlatform == TargetPlatform.iOS) ...[
-              FloraButton(label: l10n.continueWithApple, icon: CupertinoIcons.person_crop_circle, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
-              const SizedBox(height: Space.xs),
+            if (defaultTargetPlatform == TargetPlatform.iOS)
+              FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
+            if (AppConfig.googleSignInEnabled) ...[
+              if (defaultTargetPlatform == TargetPlatform.iOS) const SizedBox(height: Space.xs),
+              FloraButton(label: l10n.continueWithGoogle, icon: CupertinoIcons.globe, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => _run(auth.signInWithGoogle)),
             ],
-            FloraButton(label: l10n.continueWithGoogle, icon: CupertinoIcons.globe, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => _run(auth.signInWithGoogle)),
-            const SizedBox(height: Space.xs),
-            FloraButton(label: l10n.continueWithEmail, icon: CupertinoIcons.mail, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => setState(() => _emailMode = true)),
-            AnimatedSize(
-              duration: Motion.of(context, Motion.standard),
-              curve: Motion.easeOut,
-              alignment: Alignment.topCenter,
-              child: !_emailMode
-                  ? const SizedBox(width: double.infinity)
-                  : Padding(
-                      padding: const EdgeInsets.only(top: Space.lg),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          FloraTextField(controller: _email, hint: l10n.emailHint, keyboardType: TextInputType.emailAddress, textCapitalization: TextCapitalization.none, autofocus: true, enabled: !_codeSent, textInputAction: TextInputAction.send, onSubmitted: (_) => _sendCode()),
-                          const SizedBox(height: Space.xs),
-                          if (!_codeSent)
-                            FloraButton(label: l10n.sendCode, expand: true, loading: _busy, onPressed: _sendCode)
-                          else ...[
-                            Text(l10n.codeSent(_email.text.trim()), style: context.text.caption),
-                            const SizedBox(height: Space.xs),
-                            FloraTextField(controller: _code, hint: l10n.codeHint, keyboardType: TextInputType.number, textCapitalization: TextCapitalization.none, autofocus: true, textInputAction: TextInputAction.done, onSubmitted: (_) => _verify()),
-                            const SizedBox(height: Space.xs),
-                            FloraButton(label: l10n.verifyCode, expand: true, loading: _busy, onPressed: _verify),
-                          ],
-                        ],
-                      ),
-                    ),
-            ),
           ],
         ],
       ),
     );
   }
-
-  Future<void> _sendCode() => _run(() async {
-        if (!_email.text.contains('@')) throw const AuthException('bad_email');
-        await ref.read(authRepositoryProvider).requestEmailCode(_email.text);
-        if (mounted) setState(() => _codeSent = true);
-      });
-
-  Future<void> _verify() => _run(() => ref.read(authRepositoryProvider).verifyEmailCode(email: _email.text, code: _code.text));
 }
 
 class _SignedIn extends ConsumerWidget {
