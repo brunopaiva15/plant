@@ -86,6 +86,10 @@ et l'humidité relative, et rien d'autre.
   d'abord, quand HomeKit en a plusieurs, puis les accessoires de cette
   maison pièce par pièce, avec ce que chacun mesure. Un seul capteur dans la
   maison, et il est retenu sans question.
+- Deux capteurs, un par grandeur : celui de la température (`home_sensor`)
+  et, s'il n'est pas le même, celui de l'humidité (`home_humidity_sensor`).
+  Sans second capteur, l'humidité vient du premier, s'il la mesure ; à
+  l'onboarding, un capteur sans hygromètre fait demander un hygromètre.
 - Le capteur retenu est en préférences (`home_sensor`, `id|nom|pièce|maison`) ; la
   mesure ne l'est jamais, elle se relit toutes les quinze minutes
   (`homeReadingProvider`).

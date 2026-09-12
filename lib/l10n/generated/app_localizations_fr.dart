@@ -1073,6 +1073,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeClimateNoRoom => 'Sans pièce';
 
   @override
+  String get homeClimateTemperatureSensor => 'Capteur de température';
+
+  @override
+  String get homeClimateHumiditySensor => 'Capteur d\'humidité';
+
+  @override
+  String get homeClimateSameSensor => 'Même capteur';
+
+  @override
   String get homeClimateNone => 'Aucun capteur';
 
   @override

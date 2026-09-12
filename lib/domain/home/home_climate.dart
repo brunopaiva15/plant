@@ -21,6 +21,8 @@ class HomeSensor {
   final bool hasTemperature;
   final bool hasHumidity;
 
+  bool measures(HomeQuantity q) => q == HomeQuantity.temperature ? hasTemperature : hasHumidity;
+
   /// Le nom sous lequel il s'affiche : la pièce quand elle est connue, sinon
   /// l'accessoire lui-même.
   String get label => roomName?.trim().isNotEmpty == true ? roomName!.trim() : name;
@@ -47,9 +49,12 @@ class HomeSensor {
   }
 }
 
+/// Ce qu'un capteur mesure, et ce qu'on lui demande.
+enum HomeQuantity { temperature, humidity }
+
 /// Une mesure, au moment où elle a été lue.
 class HomeReading {
-  const HomeReading({required this.at, this.temperatureC, this.humidity, this.sensor});
+  const HomeReading({required this.at, this.temperatureC, this.humidity, this.sensor, this.humiditySensor});
 
   final DateTime at;
 
@@ -59,7 +64,11 @@ class HomeReading {
   /// Humidité relative (0–100), ou `null` si le capteur ne la donne pas.
   final int? humidity;
 
+  /// Le capteur de température, dont la pièce donne son nom à la mesure.
   final HomeSensor? sensor;
+
+  /// Le capteur d'humidité, quand ce n'est pas le même.
+  final HomeSensor? humiditySensor;
 
   bool get isEmpty => temperatureC == null && humidity == null;
 }

@@ -1962,6 +1962,24 @@ abstract class AppLocalizations {
   /// **'Sans pièce'**
   String get homeClimateNoRoom;
 
+  /// No description provided for @homeClimateTemperatureSensor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capteur de température'**
+  String get homeClimateTemperatureSensor;
+
+  /// No description provided for @homeClimateHumiditySensor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capteur d\'humidité'**
+  String get homeClimateHumiditySensor;
+
+  /// No description provided for @homeClimateSameSensor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Même capteur'**
+  String get homeClimateSameSensor;
+
   /// No description provided for @homeClimateNone.
   ///
   /// In fr, this message translates to:

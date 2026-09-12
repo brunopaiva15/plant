@@ -209,6 +209,7 @@ class AppPreferences {
     required this.careAssistEnabled,
     required this.weatherPlace,
     required this.homeSensor,
+    required this.homeHumiditySensor,
     required this.archiveName,
   });
 
@@ -237,6 +238,10 @@ class AppPreferences {
   /// Le capteur d'Apple Maison qui donne le climat de l'intérieur, ou `null`
   /// tant que rien n'est branché.
   final HomeSensor? homeSensor;
+
+  /// Le capteur qui donne l'humidité quand ce n'est pas le même ; `null`,
+  /// et c'est [homeSensor] qui la donne, s'il la mesure.
+  final HomeSensor? homeHumiditySensor;
 
   /// Nom donné aux archives, vide si l'utilisateur garde celui par défaut.
   final String archiveName;
@@ -267,6 +272,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       careAssistEnabled: s.careAssistEnabled,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       homeSensor: HomeSensor.decode(s.homeSensor),
+      homeHumiditySensor: HomeSensor.decode(s.homeHumiditySensor),
       archiveName: s.archiveName,
     );
   }
@@ -291,7 +297,18 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
-  Future<void> setHomeSensor(HomeSensor? sensor) => _apply((s) => sensor == null ? s.clearHomeSensor() : s.setHomeSensor(sensor.encode()));
+  /// Le capteur de température. Retiré, il emporte celui de l'humidité :
+  /// sans maison branchée, il n'y a plus rien à lire.
+  Future<void> setHomeSensor(HomeSensor? sensor) => _apply((s) async {
+        if (sensor == null) {
+          await s.clearHomeSensor();
+          await s.clearHomeHumiditySensor();
+        } else {
+          await s.setHomeSensor(sensor.encode());
+        }
+      });
+  Future<void> setHomeHumiditySensor(HomeSensor? sensor) =>
+      _apply((s) => sensor == null ? s.clearHomeHumiditySensor() : s.setHomeHumiditySensor(sensor.encode()));
   Future<void> setArchiveName(String name) => _apply((s) => s.setArchiveName(name));
   Future<void> setDisplayName(String name) async {
     await ref.read(authRepositoryProvider).updateDisplayName(name);

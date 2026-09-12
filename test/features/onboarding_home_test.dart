@@ -136,6 +136,31 @@ void main() {
     expect(find.text('Continuer'), findsWidgets);
   });
 
+  testWidgets("un thermostat sans hygromètre : l'humidité se demande à part", (tester) async {
+    const thermostat = HomeSensor(id: 'T', name: 'Thermostat', roomName: 'Salon', homeName: 'Appartement', hasHumidity: false);
+    const hygro1 = HomeSensor(id: 'H1', name: 'Hygromètre salon', roomName: 'Salon', homeName: 'Appartement', hasTemperature: false);
+    const hygro2 = HomeSensor(id: 'H2', name: 'Hygromètre chambre', roomName: 'Chambre', homeName: 'Appartement', hasTemperature: false);
+    final home = FakeHomeClimateService(sensorList: const [thermostat, hygro1, hygro2]);
+    await _pump(tester, home);
+    await _pastCity(tester);
+    await _tap(tester, 'Connecter Apple Maison');
+    // La feuille de la température ne propose que ce qui la mesure.
+    expect(find.text('Capteur de température'), findsOneWidget);
+    expect(find.text('Thermostat'), findsOneWidget);
+    expect(find.text('Hygromètre salon'), findsNothing);
+    await tester.tap(find.text('Thermostat'));
+    await _step(tester);
+    // Puis celle de l'humidité, avec les deux hygromètres.
+    expect(find.text("Capteur d'humidité"), findsOneWidget);
+    expect(find.text('Hygromètre salon'), findsOneWidget);
+    expect(find.text('Hygromètre chambre'), findsOneWidget);
+    await tester.tap(find.text('Hygromètre chambre'));
+    await _step(tester);
+    expect(_prefs.homeSensor, 'T|Thermostat|Salon|Appartement');
+    expect(_prefs.homeHumiditySensor, 'H2|Hygromètre chambre|Chambre|Appartement');
+    expect(find.text('Salon + Chambre'), findsOneWidget);
+  });
+
   testWidgets('aucun capteur : on reste là, et « Plus tard » mène au prénom', (tester) async {
     final home = FakeHomeClimateService(sensorList: const []);
     await _pump(tester, home);

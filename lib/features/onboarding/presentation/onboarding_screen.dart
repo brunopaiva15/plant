@@ -633,12 +633,21 @@ class _HomePageState extends ConsumerState<_HomePage> {
   }
 
   Future<void> _pick() async {
-    final chosen = await showHomeSensorPicker(context, sensors: _sensors, selectedId: ref.read(preferencesProvider).homeSensor?.id);
+    final chosen = await showHomeSensorPicker(context, sensors: _sensors, quantity: HomeQuantity.temperature, selectedId: ref.read(preferencesProvider).homeSensor?.id);
     if (chosen != null) await _select(chosen);
   }
 
   Future<void> _select(HomeSensor sensor) async {
-    await ref.read(preferencesProvider.notifier).setHomeSensor(sensor);
+    final prefs = ref.read(preferencesProvider.notifier);
+    await prefs.setHomeSensor(sensor);
+    await prefs.setHomeHumiditySensor(null);
+    // Un capteur qui ne mesure pas l'humidité, et d'autres qui la mesurent :
+    // on la demande aussi, dans la même feuille.
+    final hygrometers = [for (final s in _sensors) if (s.hasHumidity && s.id != sensor.id) s];
+    if (!sensor.hasHumidity && hygrometers.isNotEmpty && mounted) {
+      final chosen = hygrometers.length == 1 ? hygrometers.single : await showHomeSensorPicker(context, sensors: _sensors, quantity: HomeQuantity.humidity);
+      if (chosen != null) await prefs.setHomeHumiditySensor(chosen);
+    }
     ref.invalidate(homeReadingProvider);
     Haptics.success();
   }
@@ -648,6 +657,7 @@ class _HomePageState extends ConsumerState<_HomePage> {
     final l10n = context.l10n;
     final c = context.colors;
     final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
+    final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
     final reading = sensor == null ? null : ref.watch(homeReadingProvider).value;
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return LayoutBuilder(
@@ -678,7 +688,7 @@ class _HomePageState extends ConsumerState<_HomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(sensor.label, style: context.text.title3),
+                              Text(humiditySensor == null ? sensor.label : '${sensor.label} + ${humiditySensor.label}', style: context.text.title3),
                               Text(
                                 [if (sensor.roomName != null) sensor.name, ?sensor.homeName, if (reading != null && !reading.isEmpty) homeReadingLabel(reading, metric: metric)].join(' · '),
                                 style: context.text.callout,
