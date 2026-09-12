@@ -38,6 +38,7 @@ import '../features/species/presentation/care_guide_screen.dart';
 import '../features/species/presentation/species_picker_screen.dart';
 import '../features/support/presentation/support_screen.dart';
 import '../features/today/presentation/today_screen.dart';
+import '../features/home_climate/presentation/home_climate_settings_screen.dart';
 import '../features/weather/presentation/forecast_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
 import 'deep_links.dart';
@@ -78,6 +79,7 @@ abstract final class Routes {
   static const speciesPicker = '/species/pick';
   static const finder = '/species/finder';
   static const weather = '/settings/weather';
+  static const homeClimate = '/settings/home';
   static const account = '/settings/account';
   static const gardens = '/settings/gardens';
   static const members = '/settings/members';
@@ -191,6 +193,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.support, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const SupportScreen())),
       GoRoute(path: Routes.identification, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const IdentificationSettingsScreen())),
       GoRoute(path: Routes.weather, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const WeatherSettingsScreen())),
+      GoRoute(path: Routes.homeClimate, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const HomeClimateSettingsScreen())),
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),
       GoRoute(path: Routes.gardens, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const GardensScreen())),
       GoRoute(path: Routes.members, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const MembersScreen())),

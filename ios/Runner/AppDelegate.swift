@@ -12,5 +12,7 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    // Les capteurs d'Apple Maison, sans plugin : un canal, trois méthodes.
+    HomeClimateChannel.register(with: engineBridge.applicationRegistrar.messenger())
   }
 }

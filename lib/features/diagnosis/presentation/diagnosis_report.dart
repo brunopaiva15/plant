@@ -92,7 +92,7 @@ class DiagnosisReportView extends ConsumerWidget {
           const SizedBox(height: Space.lg),
           Text(l10n.possibleCauses, style: context.text.title3),
           const SizedBox(height: Space.xxs),
-          Text(l10n.identifyHint, style: context.text.caption),
+          Text(l10n.causesHint, style: context.text.caption),
           const SizedBox(height: Space.sm),
           for (final cause in diagnosis.causes)
             CauseCard(cause: cause, title: diagnosisCauseTitle(cause, catalog, language), problem: catalog?[cause.problemId]),

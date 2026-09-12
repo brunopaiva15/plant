@@ -1248,6 +1248,12 @@ abstract class AppLocalizations {
   /// **'Aucun rappel automatique.'**
   String get strategyManualHint;
 
+  /// No description provided for @strategyFixedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le même intervalle toute l\'année.'**
+  String get strategyFixedHint;
+
   /// No description provided for @enabled.
   ///
   /// In fr, this message translates to:
@@ -1259,6 +1265,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Intervalle'**
   String get interval;
+
+  /// No description provided for @intervalSuggested.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intervalle conseillé'**
+  String get intervalSuggested;
+
+  /// No description provided for @intervalSuggestedDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Intervalle conseillé : 1 jour} other{Intervalle conseillé : {count} jours}}'**
+  String intervalSuggestedDays(int count);
 
   /// No description provided for @daysCount.
   ///
@@ -1871,6 +1889,174 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.'**
   String get locationFailed;
+
+  /// No description provided for @onbHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre intérieur'**
+  String get onbHomeTitle;
+
+  /// No description provided for @onbHomeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les capteurs Apple Maison donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. Lecture sur l\'appareil, rien n\'est envoyé.'**
+  String get onbHomeBody;
+
+  /// No description provided for @homeClimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple Maison'**
+  String get homeClimate;
+
+  /// No description provided for @homeClimateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La température et l\'humidité d\'un capteur Apple Maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. Lecture sur l\'appareil, rien n\'est envoyé.'**
+  String get homeClimateHint;
+
+  /// No description provided for @homeClimateConnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecter Apple Maison'**
+  String get homeClimateConnect;
+
+  /// No description provided for @homeClimateSearching.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche des capteurs…'**
+  String get homeClimateSearching;
+
+  /// No description provided for @homeClimateSensor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capteur'**
+  String get homeClimateSensor;
+
+  /// No description provided for @homeClimateSensors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capteurs trouvés'**
+  String get homeClimateSensors;
+
+  /// No description provided for @homeClimateNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun capteur'**
+  String get homeClimateNone;
+
+  /// No description provided for @homeClimateRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer le capteur'**
+  String get homeClimateRemove;
+
+  /// No description provided for @homeClimateReading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mesure'**
+  String get homeClimateReading;
+
+  /// No description provided for @homeClimateUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capteur injoignable pour l\'instant.'**
+  String get homeClimateUnavailable;
+
+  /// No description provided for @homeClimateUpdatedAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'{minutes, plural, =0{À l\'instant} =1{Il y a 1 min} other{Il y a {minutes} min}}'**
+  String homeClimateUpdatedAgo(int minutes);
+
+  /// No description provided for @homeClimateNoSensors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison.'**
+  String get homeClimateNoSensors;
+
+  /// No description provided for @homeClimateDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.'**
+  String get homeClimateDenied;
+
+  /// No description provided for @homeClimateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.'**
+  String get homeClimateFailed;
+
+  /// No description provided for @homeClimateAtHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chez vous'**
+  String get homeClimateAtHome;
+
+  /// No description provided for @homeClimateFits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans la plage de l\'espèce.'**
+  String get homeClimateFits;
+
+  /// No description provided for @homeClimateTooDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air trop sec pour cette espèce.'**
+  String get homeClimateTooDry;
+
+  /// No description provided for @homeClimateTooHumid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air trop humide pour cette espèce.'**
+  String get homeClimateTooHumid;
+
+  /// No description provided for @homeClimateTooCold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop froid pour cette espèce.'**
+  String get homeClimateTooCold;
+
+  /// No description provided for @homeClimateTooHot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop chaud pour cette espèce.'**
+  String get homeClimateTooHot;
+
+  /// No description provided for @homeTipDryAir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air sec ({humidity} %) : brumiser ou regrouper {names}.'**
+  String homeTipDryAir(int humidity, String names);
+
+  /// No description provided for @homeTipHumidAir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air humide ({humidity} %) : aérer la pièce.'**
+  String homeTipHumidAir(int humidity);
+
+  /// No description provided for @homeTipHumidAirPlants.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air humide ({humidity} %) : aérer, et laisser sécher {names} entre deux arrosages.'**
+  String homeTipHumidAirPlants(int humidity, String names);
+
+  /// No description provided for @homeTipCold.
+  ///
+  /// In fr, this message translates to:
+  /// **'{temperature} chez vous : trop froid pour {names}.'**
+  String homeTipCold(String temperature, String names);
+
+  /// No description provided for @homeTipHot.
+  ///
+  /// In fr, this message translates to:
+  /// **'{temperature} chez vous : {names} sèchent plus vite, vérifier la terre.'**
+  String homeTipHot(String temperature, String names);
+
+  /// No description provided for @diagnosisWithHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mesure Apple Maison jointe : {reading}.'**
+  String diagnosisWithHome(String reading);
 
   /// No description provided for @placeChosen.
   ///
@@ -2957,6 +3143,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pistes possibles'**
   String get possibleCauses;
+
+  /// No description provided for @causesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classées par vraisemblance, à confirmer.'**
+  String get causesHint;
 
   /// No description provided for @likelihoodLikely.
   ///

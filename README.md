@@ -40,6 +40,16 @@ iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
 (`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
 
+## Apple Maison (facultatif)
+Sur iPhone et iPad, un capteur de température ou d'humidité d'Apple Maison
+peut être branché à l'onboarding (après la ville) ou dans Profil › Apple
+Maison. Sa mesure ajuste les conseils des plantes d'intérieur (air sec,
+froid, chaleur) sur l'écran Aujourd'hui et dans les fiches d'entretien, et
+accompagne les photos d'un diagnostic. Lecture sur l'appareil par HomeKit
+(`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur l'App ID) ;
+rien n'est écrit dans la maison, rien n'est gardé. Sur Android, l'étape et le
+réglage n'apparaissent pas. Détails : docs/05.
+
 ## Gratuite, avec un soutien facultatif
 Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique
 permet seulement de remercier le développeur — il ne déverrouille rien.

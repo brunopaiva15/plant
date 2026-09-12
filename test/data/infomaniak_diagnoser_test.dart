@@ -17,7 +17,15 @@ String _completion(Object content, {String finish = 'stop'}) => jsonEncode({
       ],
     });
 
-final _ok = jsonEncode({'summary': 'ok', 'urgent': false, 'causes': []});
+/// Une réponse valide : un résumé et une piste, numérotée 060 pour qu'aucune
+/// passe de rattrapage ne parte dans les tests qui regardent la requête.
+final _ok = jsonEncode({
+  'summary': 'ok',
+  'urgent': false,
+  'causes': [
+    {'problem': '060', 'title': 'Tétranyques', 'likelihood': 'possible', 'explanation': '…', 'actions': ['Doucher le feuillage']},
+  ],
+});
 
 Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${DateTime.now().microsecondsSinceEpoch}.jpg').writeAsBytes([1, 2, 3]);
 
@@ -252,6 +260,21 @@ void main() {
       expect(consigne.indexOf('"problem" (string or null)'), lessThan(consigne.indexOf('"title" (string)')));
     });
 
+    test('la consigne demande toujours une piste, et n\'en fait jamais une de la photo', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      expect(consigne, contains('"causes" is never empty'));
+      expect(consigne, contains('The photo is never a cause'));
+      // L'ancienne consigne autorisait le compte rendu sans piste, celui qui
+      // se contentait de dire que le symptôme n'était pas sur l'image.
+      expect(consigne, isNot(contains('return no cause')));
+    });
+
+    test('ce que la personne décrit vaut pour vu, que la photo le montre ou non', () {
+      final texte = InfomaniakDiagnoser.userPrompt(language: 'fr', symptoms: 'feuille sèche tombante');
+      expect(texte, contains('feuille sèche tombante'));
+      expect(texte, contains('whether or not the photos show it'));
+    });
+
     test('la base locale part comme liste de pistes, groupée par nature', () async {
       late http.Request captured;
       final client = MockClient((req) async {
@@ -475,6 +498,75 @@ void main() {
     test('une réponse vide ou illisible ne rattache rien', () {
       expect(InfomaniakDiagnoser.parseMapping(_completion('rien du tout'), allowed: const {'060'}), isEmpty);
       expect(InfomaniakDiagnoser.parseMapping('pas du json', allowed: const {'060'}), isEmpty);
+    });
+  });
+
+  group('la passe de repli', () {
+    /// Un service qui rend un premier compte rendu, puis la réponse de repli.
+    /// La demande de repli se reconnaît à l'absence d'image.
+    MockClient service(String premier, String repli, List<String> corps) => MockClient((req) async {
+          corps.add(req.body);
+          return http.Response(req.body.contains('image_url') ? premier : repli, 200);
+        });
+
+    final sansPiste = _completion(jsonEncode({'summary': 'Feuillage vert, sans tache visible.', 'causes': []}));
+
+    test('une analyse sans piste en redemande une, sur les mots plutôt que sur les photos', () async {
+      final corps = <String>[];
+      final client = service(
+        sansPiste,
+        _completion(jsonEncode({
+          'summary': 'Autre chose.',
+          'causes': [
+            {'problem': '002', 'title': 'Excès d\'eau', 'likelihood': 'possible', 'explanation': '…', 'actions': ['Laisser sécher']},
+          ],
+        })),
+        corps,
+      );
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(
+        images: [tmp],
+        language: 'fr',
+        species: 'Alocasia micholitziana',
+        symptoms: 'feuille sèche tombante',
+        candidates: _pistes,
+      );
+      await tmp.delete();
+
+      expect(corps, hasLength(2), reason: 'le diagnostic, puis le repli');
+      expect(corps.last, isNot(contains('image_url')), reason: 'les photos n\'ont rien donné, on ne les renvoie pas');
+      expect(d.causes.single.problemId, '002');
+      // Le résumé reste celui de la passe qui a regardé les photos ; le repli
+      // n'apporte que les pistes.
+      expect(d.summary, 'Feuillage vert, sans tache visible.');
+      final texte = ((jsonDecode(corps.last) as Map<String, dynamic>)['messages'] as List).last['content'] as String;
+      expect(texte, contains('feuille sèche tombante'));
+      expect(texte, contains('Alocasia micholitziana'));
+      expect(texte, contains('060 Tétranyques'), reason: 'la liste des problèmes connus repart avec');
+    });
+
+    test('un repli en échec rend le compte rendu tel quel', () async {
+      final corps = <String>[];
+      final client = MockClient((req) async {
+        corps.add(req.body);
+        return req.body.contains('image_url') ? http.Response(sansPiste, 200) : http.Response('', 500);
+      });
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', symptoms: 'feuille sèche tombante');
+      await tmp.delete();
+      expect(corps, hasLength(2));
+      expect(d.summary, 'Feuillage vert, sans tache visible.');
+      expect(d.causes, isEmpty, reason: 'un repli manqué n\'invente rien');
+    });
+
+    test('une première passe qui a sa piste ne repart pas', () async {
+      final corps = <String>[];
+      final client = service(_completion(_ok), _completion('{}'), corps);
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+      expect(corps, hasLength(1));
+      expect(d.causes.single.problemId, '060');
     });
   });
 }

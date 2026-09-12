@@ -679,10 +679,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get strategyManualHint => 'Keine automatische Erinnerung.';
 
   @override
+  String get strategyFixedHint => 'Das ganze Jahr dasselbe Intervall.';
+
+  @override
   String get enabled => 'Aktiv';
 
   @override
   String get interval => 'Intervall';
+
+  @override
+  String get intervalSuggested => 'Empfohlenes Intervall';
+
+  @override
+  String intervalSuggestedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Empfohlenes Intervall: $count Tage',
+      one: 'Empfohlenes Intervall: 1 Tag',
+    );
+    return '$_temp0';
+  }
 
   @override
   String daysCount(int count) {
@@ -1018,6 +1035,116 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get locationFailed =>
       'Standort nicht verfügbar. Du kannst unter Profil › Wetter eine Stadt wählen.';
+
+  @override
+  String get onbHomeTitle => 'Dein Zuhause';
+
+  @override
+  String get onbHomeBody =>
+      'Sensoren von Apple Home liefern Temperatur und Luftfeuchtigkeit des Raums. Tipps und Diagnosen für Zimmerpflanzen berücksichtigen sie. Gelesen auf dem Gerät, nichts wird gesendet.';
+
+  @override
+  String get homeClimate => 'Apple Home';
+
+  @override
+  String get homeClimateHint =>
+      'Temperatur und Luftfeuchtigkeit eines Apple-Home-Sensors passen die Tipps für Zimmerpflanzen an und ergänzen Diagnosen. Gelesen auf dem Gerät, nichts wird gesendet.';
+
+  @override
+  String get homeClimateConnect => 'Apple Home verbinden';
+
+  @override
+  String get homeClimateSearching => 'Sensoren werden gesucht…';
+
+  @override
+  String get homeClimateSensor => 'Sensor';
+
+  @override
+  String get homeClimateSensors => 'Gefundene Sensoren';
+
+  @override
+  String get homeClimateNone => 'Kein Sensor';
+
+  @override
+  String get homeClimateRemove => 'Sensor entfernen';
+
+  @override
+  String get homeClimateReading => 'Messwert';
+
+  @override
+  String get homeClimateUnavailable => 'Sensor im Moment nicht erreichbar.';
+
+  @override
+  String homeClimateUpdatedAgo(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Vor $minutes Min.',
+      one: 'Vor 1 Min.',
+      zero: 'Gerade eben',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeClimateNoSensors =>
+      'Kein Temperatur- oder Feuchtigkeitssensor in Apple Home.';
+
+  @override
+  String get homeClimateDenied =>
+      'Zugriff auf Apple Home abgelehnt. Er lässt sich unter Einstellungen › Datenschutz › Home wieder erteilen.';
+
+  @override
+  String get homeClimateFailed =>
+      'Apple Home nicht verfügbar. Du kannst unter Profil › Apple Home einen Sensor verbinden.';
+
+  @override
+  String get homeClimateAtHome => 'Bei dir';
+
+  @override
+  String get homeClimateFits => 'Im Bereich dieser Art.';
+
+  @override
+  String get homeClimateTooDry => 'Luft zu trocken für diese Art.';
+
+  @override
+  String get homeClimateTooHumid => 'Luft zu feucht für diese Art.';
+
+  @override
+  String get homeClimateTooCold => 'Zu kalt für diese Art.';
+
+  @override
+  String get homeClimateTooHot => 'Zu warm für diese Art.';
+
+  @override
+  String homeTipDryAir(int humidity, String names) {
+    return 'Trockene Luft ($humidity %): $names besprühen oder zusammenstellen.';
+  }
+
+  @override
+  String homeTipHumidAir(int humidity) {
+    return 'Feuchte Luft ($humidity %): den Raum lüften.';
+  }
+
+  @override
+  String homeTipHumidAirPlants(int humidity, String names) {
+    return 'Feuchte Luft ($humidity %): lüften, und $names zwischen zwei Wassergaben abtrocknen lassen.';
+  }
+
+  @override
+  String homeTipCold(String temperature, String names) {
+    return '$temperature bei dir: zu kalt für $names.';
+  }
+
+  @override
+  String homeTipHot(String temperature, String names) {
+    return '$temperature bei dir: $names trocknen schneller aus, Erde prüfen.';
+  }
+
+  @override
+  String diagnosisWithHome(String reading) {
+    return 'Messwert von Apple Home beigefügt: $reading.';
+  }
 
   @override
   String placeChosen(String place) {
@@ -1661,6 +1788,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get possibleCauses => 'Mögliche Ursachen';
+
+  @override
+  String get causesHint => 'Nach Wahrscheinlichkeit geordnet, zu bestätigen.';
 
   @override
   String get likelihoodLikely => 'Wahrscheinlich';

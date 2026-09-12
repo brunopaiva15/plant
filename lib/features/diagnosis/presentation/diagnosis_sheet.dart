@@ -15,9 +15,13 @@ import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
+import '../../../domain/home/home_climate.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../actions/application/care_actions.dart';
+import '../../home_climate/application/home_climate_providers.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
+import '../../weather/application/weather_providers.dart';
 import 'analysis_wait.dart';
 import 'diagnosis_report.dart';
 
@@ -85,6 +89,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
               pinned: frequent,
             ),
             frequentIds: frequent,
+            indoorClimate: _indoorClimate(),
           );
       Haptics.success();
       if (mounted) setState(() => _result = result);
@@ -102,6 +107,16 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// La mesure de la maison, pour une plante qui y vit. Une plante dehors
+  /// n'a rien à faire du thermomètre du salon.
+  HomeReading? _indoorClimate({bool watch = false}) {
+    final location = widget.plant.locationId;
+    final outdoor = watch ? ref.watch(outdoorLocationIdsProvider) : ref.read(outdoorLocationIdsProvider);
+    if (location != null && outdoor.contains(location)) return null;
+    final reading = watch ? ref.watch(homeReadingProvider).value : ref.read(homeReadingProvider).value;
+    return reading == null || reading.isEmpty ? null : reading;
   }
 
   /// Ce dont l'espèce souffre habituellement, d'après sa fiche d'entretien.
@@ -223,6 +238,15 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             ),
             const SizedBox(height: Space.sm),
             FloraTextField(controller: _symptoms, hint: l10n.diagnosisSymptomsHint, minLines: 1, maxLines: 3),
+            if (_indoorClimate(watch: true) case final reading?) ...[
+              // Dire ce qui part avec les photos : la mesure du capteur, et
+              // rien d'autre.
+              const SizedBox(height: Space.sm),
+              Text(
+                l10n.diagnosisWithHome(homeReadingLabel(reading, metric: ref.watch(preferencesProvider.select((p) => p.metricUnits)))),
+                style: context.text.caption,
+              ),
+            ],
             const SizedBox(height: Space.lg),
             FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
           ] else ...[
