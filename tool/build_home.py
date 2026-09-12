@@ -66,6 +66,24 @@ def box(name, center, size, mat, bevel=0.03):
     return mesh(name, verts, faces, mat, bevel=bevel)
 
 
+def walls(name, mat):
+    """Les murs, pignons compris : un prisme a section pentagonale, dont les
+    deux pointes montent jusque sous la faitiere. Sans eux, on voyait sous le
+    toit par les deux bouts, et la maison etait creuse."""
+    x0, x1 = -W / 2, W / 2
+    y0, y1 = -D / 2, D / 2
+    zb, zt = H - 0.02, H + ROOF_H
+    # Le dessous du toit, a l'aplomb du mur : c'est la hauteur des murs.
+    hw = zb + (zt - zb) * OVER / (D / 2 + OVER) - 0.005
+    hr = zt - 0.005
+    sect = [(y0, 0), (y1, 0), (y1, hw), (0, hr), (y0, hw)]
+    verts = [(x0, y, z) for (y, z) in sect] + [(x1, y, z) for (y, z) in sect]
+    n = len(sect)
+    faces = [tuple(range(n)), tuple(range(2 * n - 1, n - 1, -1))]
+    faces += [(i, (i + 1) % n, (i + 1) % n + n, i + n) for i in range(n)]
+    return mesh(name, verts, faces, mat, bevel=0.04)
+
+
 def prism(name, mat):
     """Le toit : un toit a deux pans, faitiere le long de x, avec un debord et
     une epaisseur — une plaque d'argile pliee, pas une feuille."""
@@ -124,7 +142,7 @@ def house():
     ink = material('Encre_4A3528', '4A3528', .76)
 
     # Les murs, sur une plinthe un peu plus large : la maison est posee.
-    box('Murs', (0, 0, H / 2), (W, D, H), cream, bevel=0.04)
+    walls('Murs', cream)
     box('Plinthe', (0, 0, 0.035), (W + 0.10, D + 0.10, 0.07), terra_deep, bevel=0.02)
     prism('Toit', terra)
     # La cheminee, pres de la faitiere, a droite, et qui la depasse.
