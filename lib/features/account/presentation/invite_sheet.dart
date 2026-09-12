@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show SelectableText;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -31,6 +32,10 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
   final _email = TextEditingController();
   GardenRole _role = GardenRole.member;
   bool _busy = false;
+
+  /// Ce que le serveur a répondu quand l'invitation n'a pas pu se créer :
+  /// « Impossible » seul ne permet ni de comprendre ni de réparer.
+  String? _error;
   GardenInvite? _invite;
 
   @override
@@ -41,7 +46,10 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
 
   Future<void> _create() async {
     if (_busy) return;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     final l10n = context.l10n;
     try {
       final invite = await ref.read(collaborationServiceProvider).createInvite(
@@ -54,7 +62,10 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
       if (mounted) setState(() => _invite = invite);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'invite');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.inviteFailed, emoji: '!'));
+      if (mounted) {
+        setState(() => _error = e is CollaborationException ? (e.detail ?? e.error.name) : e.toString());
+        ref.read(toastProvider.notifier).show(ToastData(message: l10n.inviteFailed, emoji: '!'));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -98,6 +109,10 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
       ),
       const SizedBox(height: Space.xs),
       Text(l10n.inviteEmailHint, style: context.text.caption),
+      if (_error != null) ...[
+        const SizedBox(height: Space.md),
+        SelectableText(_error!, style: context.text.caption.copyWith(color: context.colors.danger)),
+      ],
       const SizedBox(height: Space.lg),
       FloraButton(label: l10n.inviteCreate, icon: CupertinoIcons.person_add, expand: true, loading: _busy, onPressed: _create),
     ];
