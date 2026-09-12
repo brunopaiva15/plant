@@ -68,7 +68,11 @@ class OnboardingStage extends StatelessWidget {
   /// Le numéro d'une image n'est plus celui de sa place depuis qu'Iris s'est
   /// glissé entre les écrans, et cette liste est la seule à le savoir :
   /// l'écran qui décode d'avance la lit plutôt que de refaire le compte.
-  static const List<int?> clay = [null, null, 2, 3, 4, null, 5, 6];
+  ///
+  /// La neuvième place est la maison d'Apple Maison, qui n'existe que sur
+  /// iPhone et iPad : l'écran compte ses objets, et s'arrête avant elle
+  /// ailleurs.
+  static const List<int?> clay = [null, null, 2, 3, 4, null, 5, 6, 7];
 
   /// La place de la marque d'Iris, la seule dont le halo s'efface.
   ///

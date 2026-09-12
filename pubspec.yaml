@@ -112,7 +112,8 @@ flutter:
     # parent ne suffit pas : Flutter ne descend pas dans les sous-dossiers.
     - assets/problems/icons/
     # Illustrations 3D de l'onboarding : une image par écran, animée par l'app,
-    # et la séquence de pousse du premier écran (tool/grow_monstera.py).
+    # la séquence de pousse du premier écran (tool/grow_monstera.py) et la
+    # maison d'Apple Maison (tool/build_home.py).
     - assets/onboarding/
     # Le guide de bouturage : six séquences d'argile, une par étape
     # (tool/build_cutting_guide.py), jouées par l'app quand on crée une bouture.

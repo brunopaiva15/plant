@@ -1061,6 +1061,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeClimateSensors => 'Capteurs trouvés';
 
   @override
+  String get homeClimateChoose => 'Choisir un capteur';
+
+  @override
+  String get homeClimateChange => 'Changer de capteur';
+
+  @override
+  String get homeClimateHome => 'Maison';
+
+  @override
+  String get homeClimateNoRoom => 'Sans pièce';
+
+  @override
   String get homeClimateNone => 'Aucun capteur';
 
   @override

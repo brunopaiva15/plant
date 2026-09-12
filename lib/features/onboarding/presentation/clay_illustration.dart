@@ -31,7 +31,7 @@ class ClayIllustration extends StatelessWidget {
 
   /// Numéro de la dernière image livrée. Les images vont de 2 à [count] : les
   /// deux premières places de la scène ont leurs propres objets.
-  static const int count = 6;
+  static const int count = 7;
 
   /// Durée d'une respiration complète.
   static const Duration breath = Duration(milliseconds: 3400);

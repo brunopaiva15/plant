@@ -8,6 +8,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/home/home_climate.dart';
 import '../application/home_climate_providers.dart';
 import 'home_climate_widgets.dart';
+import 'home_sensor_picker_sheet.dart';
 
 /// Profil › Apple Maison : le capteur retenu, sa mesure, et les autres
 /// capteurs de la maison pour en changer.
@@ -58,8 +59,18 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
       ref.read(toastProvider.notifier).show(ToastData(message: access == HomeAccess.denied ? l10n.homeClimateDenied : l10n.homeClimateNoSensors, emoji: '🏠'));
       return;
     }
-    // Un seul capteur : c'est lui. Plusieurs : la liste attend un choix.
-    if (sensors.length == 1 && ref.read(preferencesProvider).homeSensor == null) await _select(sensors.single);
+    // Un seul capteur : c'est lui. Plusieurs : la maison, puis le capteur.
+    if (ref.read(preferencesProvider).homeSensor != null) return;
+    if (sensors.length == 1) {
+      await _select(sensors.single);
+    } else {
+      await _pick();
+    }
+  }
+
+  Future<void> _pick() async {
+    final chosen = await showHomeSensorPicker(context, sensors: _sensors, selectedId: ref.read(preferencesProvider).homeSensor?.id);
+    if (chosen != null) await _select(chosen);
   }
 
   Future<void> _select(HomeSensor sensor) async {
@@ -81,10 +92,6 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
     final reading = ref.watch(homeReadingProvider);
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
-    final others = [
-      for (final s in _sensors)
-        if (s.id != sensor?.id) s,
-    ];
     return FloraPage(
       title: l10n.homeClimate,
       child: Column(
@@ -98,7 +105,7 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
               FloraListRow(
                 leading: Text(sensor == null ? '🏠' : '🌡️', style: const TextStyle(fontSize: 18)),
                 title: sensor?.label ?? l10n.homeClimateNone,
-                subtitle: sensor == null || sensor.roomName == null ? null : sensor.name,
+                subtitle: sensor == null ? null : [if (sensor.roomName != null) sensor.name, ?sensor.homeName].join(' · '),
                 trailing: sensor == null
                     ? null
                     : FloraIconButton(
@@ -133,23 +140,18 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
           const SizedBox(height: Space.lg),
           if (_busy)
             const Padding(padding: EdgeInsets.all(Space.md), child: Center(child: AdaptiveProgress()))
-          else if (others.isNotEmpty)
-            FloraGroup(
-              header: l10n.homeClimateSensors,
-              children: [
-                for (final s in others)
-                  FloraListRow(
-                    leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
-                    title: s.label,
-                    subtitle: s.roomName == null ? s.homeName : s.name,
-                    onTap: () => _select(s),
-                  ),
-              ],
+          else if (_sensors.isNotEmpty)
+            // La maison, la pièce, l'accessoire : le choix se fait dans une
+            // feuille, la même qu'à l'onboarding.
+            FloraButton(
+              label: sensor == null ? l10n.homeClimateChoose : l10n.homeClimateChange,
+              icon: CupertinoIcons.house_fill,
+              style: sensor == null ? FloraButtonStyle.primary : FloraButtonStyle.tonal,
+              expand: true,
+              onPressed: _pick,
             )
-          else if (sensor == null)
-            FloraButton(label: l10n.homeClimateConnect, icon: CupertinoIcons.house_fill, expand: true, onPressed: _connect)
-          else if (_searched)
-            FloraButton(label: l10n.homeClimateConnect, style: FloraButtonStyle.ghost, expand: true, onPressed: _connect),
+          else if (sensor == null || _searched)
+            FloraButton(label: l10n.homeClimateConnect, icon: CupertinoIcons.house_fill, style: sensor == null ? FloraButtonStyle.primary : FloraButtonStyle.ghost, expand: true, onPressed: _connect),
         ],
       ),
     );
