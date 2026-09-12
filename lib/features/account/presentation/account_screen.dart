@@ -43,6 +43,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       await action();
       Haptics.success();
     } on AuthException catch (e) {
+      if (e.message == 'cancelled') return;
       ref.read(toastProvider.notifier).show(ToastData(message: e.message == 'apple_unavailable' ? l10n.appleUnavailable : l10n.authError, emoji: '!'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'auth');

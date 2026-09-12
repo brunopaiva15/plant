@@ -103,7 +103,12 @@ Toutes vos plantes ⟶ cinq plantes différentes qui gravitent, chacune à son
 Iris ⟶ la marque du modèle embarqué : « Iris reconnaît vos plantes hors
   ligne », le geste (photographier la plante), et le repli en ligne quand Iris
   ne la reconnaît pas. Juste avant l'écran de vie privée qu'il annonce.
-Splash ⟶ « Votre jardin, simplement. » [Ajouter ma première plante] · Plus tard
+Où sont vos plantes ? ⟶ [Utiliser ma position] · Plus tard
+Comment vous appelez-vous ? ⟶ [Ajouter ma première plante] · Plus tard
+Retrouvez vos plantes partout ⟶ pourquoi un compte (sauvegarde, iPad, jardin
+  partagé), puis [Continuer avec Apple] · Plus tard. L'étape n'existe que sur
+  iOS avec un backend : ailleurs, le prénom mène droit au soutien.
+Auxine est gratuite ⟶ soutien facultatif, [Continuer sans]
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]
   ⟶ Notification proposée après la première action (permission demandée en contexte)

@@ -1806,6 +1806,36 @@ abstract class AppLocalizations {
   /// **'Pour vous saluer chaque matin. Vous pourrez changer plus tard.'**
   String get askNameSubtitle;
 
+  /// No description provided for @onbAccountTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retrouvez vos plantes partout'**
+  String get onbAccountTitle;
+
+  /// No description provided for @onbAccountBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte, c\'est votre identifiant Apple — rien d\'autre à créer. Sans compte, tout reste sur ce téléphone, et l\'app marche aussi bien.'**
+  String get onbAccountBody;
+
+  /// No description provided for @onbAccountBackup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une sauvegarde, si le téléphone est perdu ou remplacé'**
+  String get onbAccountBackup;
+
+  /// No description provided for @onbAccountDevices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les mêmes plantes sur votre iPhone et votre iPad'**
+  String get onbAccountDevices;
+
+  /// No description provided for @onbAccountShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un jardin partagé avec quelqu\'un'**
+  String get onbAccountShare;
+
   /// No description provided for @notificationAskTitle.
   ///
   /// In fr, this message translates to:

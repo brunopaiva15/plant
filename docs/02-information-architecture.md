@@ -14,7 +14,7 @@ Tab bar
 ## Hiérarchie des écrans
 ```
 Root
-├── Splash → Onboarding (5 écrans + prénom + soutien) → Shell
+├── Splash → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend] + soutien) → Shell
 └── Shell (tabs)
     ├── Aujourd'hui
     │   ├── [Plante] → Fiche plante

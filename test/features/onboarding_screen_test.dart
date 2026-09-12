@@ -1,3 +1,4 @@
+import 'package:flora/app/providers.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_stage.dart';
@@ -8,12 +9,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flora/l10n/generated/app_localizations.dart';
 
+import 'fakes/fake_auth_repository.dart';
+
 Future<void> _pump(WidgetTester tester) async {
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     ProviderScope(
+      overrides: [authRepositoryProvider.overrideWithValue(FakeAuthRepository(remote: false))],
       child: MaterialApp(
         locale: const Locale('fr'),
         localizationsDelegates: const [

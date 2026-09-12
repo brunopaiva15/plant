@@ -44,7 +44,7 @@ La ligne et l'image voyagent séparément, et l'image coûte mille fois plus che
   l'outbox porte le chemin puisque la ligne, elle, n'existe plus).
 
 ## Auth
-`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple, et sur Android le compte reste local tant que Google n'est pas livré (`signInAvailable`). À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
+`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple, et sur Android le compte reste local tant que Google n'est pas livré (`signInAvailable`). La connexion se propose à deux endroits : une étape de l'onboarding, après le prénom, qui explique à quoi sert un compte (sauvegarde, iPad, jardin partagé) et se passe d'un « Plus tard » ; et Profil › Compte, à tout moment. L'étape de l'onboarding n'est pas dessinée là où la connexion n'existe pas. À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
 
 ## Le jardin ouvert
 Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a partagés. Un seul est **ouvert** à la fois — c'est lui que montrent toutes les listes.

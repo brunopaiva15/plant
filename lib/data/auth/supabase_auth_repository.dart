@@ -84,10 +84,17 @@ class SupabaseAuthRepository implements AuthRepository {
     }
     final rawNonce = _client.auth.generateRawNonce();
     final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
-    final credential = await SignInWithApple.getAppleIDCredential(
-      scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
-      nonce: hashedNonce,
-    );
+    final AuthorizationCredentialAppleID credential;
+    try {
+      credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
+        nonce: hashedNonce,
+      );
+    } on SignInWithAppleAuthorizationException catch (e) {
+      // Refermer la feuille d'Apple : l'UI ne montre rien. Le reste est une
+      // erreur, dite comme telle.
+      throw AuthException(e.code == AuthorizationErrorCode.canceled ? 'cancelled' : e.message);
+    }
     final idToken = credential.identityToken;
     if (idToken == null) throw const AuthException('apple_no_token');
     try {

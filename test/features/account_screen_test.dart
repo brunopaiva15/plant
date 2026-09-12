@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flora/app/providers.dart';
 import 'package:flora/core/config/app_config.dart';
 import 'package:flora/design_system/design_system.dart';
-import 'package:flora/domain/auth/auth_repository.dart';
 import 'package:flora/features/account/presentation/account_screen.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
@@ -12,40 +9,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'fakes/fake_auth_repository.dart';
+
 /// L'écran Compte, avant connexion, avec un backend configuré : quels boutons
 /// sont dessinés. Apple est livré sur iPhone et iPad, et c'est la seule porte :
 /// pas de connexion par e-mail sur Auxine, et Google est codé mais attend
 /// `AppConfig.googleSignInEnabled` — un bouton qui réapparaîtrait par mégarde
 /// remettrait la règle 4.8 de l'App Store dans la balance. Sur Android, le
 /// compte reste local, comme sans backend.
-class _RemoteAuth implements AuthRepository {
-  final _user = const AppUser(id: 'u', displayName: '');
-
-  @override
-  bool get supportsRemote => true;
-
-  @override
-  AppUser? get currentUser => _user;
-
-  @override
-  Stream<AppUser?> watchUser() => Stream.value(_user);
-
-  @override
-  Future<AppUser> ensureLocalUser() async => _user;
-
-  @override
-  Future<void> updateDisplayName(String name) async {}
-
-  @override
-  Future<void> signInWithApple() async {}
-
-  @override
-  Future<void> signInWithGoogle() async {}
-
-  @override
-  Future<void> signOut() async {}
-}
-
 /// Dessine l'écran sur [platform], puis rend la plateforme au banc d'essai
 /// avant la fin du test : il vérifie lui-même que rien n'a été laissé changé.
 Future<void> _on(TargetPlatform platform, WidgetTester tester, Future<void> Function(AppLocalizations l10n) body) async {
@@ -60,7 +31,7 @@ Future<void> _on(TargetPlatform platform, WidgetTester tester, Future<void> Func
 Future<AppLocalizations> _pump(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [authRepositoryProvider.overrideWithValue(_RemoteAuth())],
+      overrides: [authRepositoryProvider.overrideWithValue(FakeAuthRepository(remote: true))],
       child: MaterialApp(
         locale: const Locale('fr'),
         localizationsDelegates: const [

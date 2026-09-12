@@ -985,6 +985,23 @@ class AppLocalizationsDe extends AppLocalizations {
       'Um dich jeden Morgen zu begrüßen. Du kannst es später ändern.';
 
   @override
+  String get onbAccountTitle => 'Deine Pflanzen, überall';
+
+  @override
+  String get onbAccountBody =>
+      'Ein Konto ist einfach deine Apple-ID – nichts weiter anzulegen. Ohne Konto bleibt alles auf diesem Telefon, und die App funktioniert genauso gut.';
+
+  @override
+  String get onbAccountBackup =>
+      'Eine Sicherung, falls das Telefon verloren geht oder ersetzt wird';
+
+  @override
+  String get onbAccountDevices => 'Dieselben Pflanzen auf iPhone und iPad';
+
+  @override
+  String get onbAccountShare => 'Ein Garten, den du mit jemandem teilst';
+
+  @override
   String get notificationAskTitle => 'Eine nützliche Erinnerung pro Tag';
 
   @override
