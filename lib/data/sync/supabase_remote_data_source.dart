@@ -16,6 +16,14 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   /// Tables sans `garden_id` : filtrées via la plante parente.
   static const _childOfPlant = {'plant_photos', 'plant_actions', 'care_schedules', 'plant_tags', 'measurements'};
 
+  /// Tables sans aucune colonne de date : ni `updated_at`, ni `created_at`.
+  /// Elles ne se lisent pas en delta — on les tire en entier à chaque fois,
+  /// et le local les applique en « insert or ignore » ou en « upsert ». Les
+  /// filtrer sur une date qu'elles n'ont pas, c'était une requête refusée à
+  /// la deuxième synchronisation (« column measurements.created_at does not
+  /// exist »), et donc plus aucune lecture.
+  static const _unstamped = {'plant_tags', 'inventory_tags', 'action_types', 'measurements'};
+
   @override
   Future<void> upsert(String table, RemoteRow row) async {
     await _client.from(table).upsert(row);
@@ -38,14 +46,19 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
       query = _client.from(table).select().eq('id', gardenId);
     } else if (_childOfPlant.contains(table)) {
       query = _client.from(table).select('*, plants!inner(garden_id)').eq('plants.garden_id', gardenId);
+    } else if (table == 'inventory_tags') {
+      // Pas de `garden_id` sur la liaison : il se lit sur l'objet.
+      query = _client.from(table).select('*, inventory_items!inner(garden_id)').eq('inventory_items.garden_id', gardenId);
     } else {
       query = _client.from(table).select().eq('garden_id', gardenId);
     }
-    if (since != null && table != 'plant_tags') query = query.gt(stamp, since.toUtc().toIso8601String());
+    if (since != null && !_unstamped.contains(table)) query = query.gt(stamp, since.toUtc().toIso8601String());
     final rows = await query;
     return [
       for (final r in rows)
-        Map<String, Object?>.from(r)..remove('plants'),
+        Map<String, Object?>.from(r)
+          ..remove('plants')
+          ..remove('inventory_items'),
     ];
   }
 
