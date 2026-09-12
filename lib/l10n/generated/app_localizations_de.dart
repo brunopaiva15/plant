@@ -718,7 +718,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get photoError =>
-      'Foto konnte nicht hinzugefügt werden. Bitte erneut versuchen.';
+      'Foto konnte nicht hinzugefügt werden. Erneut versuchen.';
 
   @override
   String get newActionType => 'Neuer Aktionstyp';
@@ -953,7 +953,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingSubtitle => 'Mit oder ohne Foto hinzufügen.';
 
   @override
-  String get onbPlaceTitle => 'Wo stehen deine Pflanzen?';
+  String get onbPlaceTitle => 'Ihre Stadt';
 
   @override
   String get onbPlaceBody =>
@@ -1452,7 +1452,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get exporting => 'Export wird vorbereitet…';
 
   @override
-  String get exportError => 'Export fehlgeschlagen. Bitte erneut versuchen.';
+  String get exportError => 'Export fehlgeschlagen. Erneut versuchen.';
 
   @override
   String get play => 'Abspielen';
@@ -3541,7 +3541,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Viele Zimmerpflanzen sind giftig, wenn daran geknabbert wird.';
 
   @override
-  String get finderSafetyYes => 'Ja, bitte ungiftig';
+  String get finderSafetyYes => 'Ja, nur ungiftige';
 
   @override
   String get finderSafetyNo => 'Keine Einschränkung';
@@ -3620,13 +3620,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderSpotOutdoorHint => 'Balkon, Terrasse oder Garten';
 
   @override
-  String get finderEffortForgivingHint => 'Bitte eine Pflanze, die verzeiht';
+  String get finderEffortForgivingHint =>
+      'Eine Pflanze, die vergessenes Gießen verträgt';
 
   @override
   String get finderEffortNormalHint => 'Etwa einmal pro Woche gießen';
 
   @override
-  String get finderEffortAttentiveHint => 'Sprühen, umtopfen, nachsehen: gern';
+  String get finderEffortAttentiveHint =>
+      'Sprühen, Umtopfen, regelmäßige Kontrolle';
 
   @override
   String get finderSafetyYesHint => 'Nur ungiftige Arten';
@@ -3635,10 +3637,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderSafetyNoHint => 'Alle Arten, auch giftige';
 
   @override
-  String get finderTopPick => 'Unsere erste Wahl';
+  String get finderTopPick => 'Erste Wahl';
 
   @override
-  String get finderAlternatives => 'Auch sie würden sich dort wohlfühlen';
+  String get finderAlternatives => 'Weitere Vorschläge';
 
   @override
   String get finderChangeAnswer => 'Diese Antwort ändern';

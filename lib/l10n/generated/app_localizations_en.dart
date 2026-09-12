@@ -716,7 +716,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gallery => 'Photo library';
 
   @override
-  String get photoError => 'Couldn\'t add the photo. Please try again.';
+  String get photoError => 'Couldn\'t add the photo. Try again.';
 
   @override
   String get newActionType => 'New action type';
@@ -950,7 +950,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSubtitle => 'Add them with or without a photo.';
 
   @override
-  String get onbPlaceTitle => 'Where are your plants?';
+  String get onbPlaceTitle => 'Your city';
 
   @override
   String get onbPlaceBody =>
@@ -1448,7 +1448,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exporting => 'Preparing export…';
 
   @override
-  String get exportError => 'Export failed. Please try again.';
+  String get exportError => 'Export failed. Try again.';
 
   @override
   String get play => 'Play';
@@ -3528,7 +3528,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderStepSafetyHint => 'Many houseplants are toxic when chewed.';
 
   @override
-  String get finderSafetyYes => 'Yes, non-toxic please';
+  String get finderSafetyYes => 'Yes, non-toxic only';
 
   @override
   String get finderSafetyNo => 'No constraint';
@@ -3608,14 +3608,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderSpotOutdoorHint => 'Balcony, terrace or garden';
 
   @override
-  String get finderEffortForgivingHint => 'A plant that forgives, please';
+  String get finderEffortForgivingHint =>
+      'A plant that tolerates missed waterings';
 
   @override
   String get finderEffortNormalHint => 'About one watering a week';
 
   @override
-  String get finderEffortAttentiveHint =>
-      'Misting, repotting, checking in: gladly';
+  String get finderEffortAttentiveHint => 'Misting, repotting, regular checks';
 
   @override
   String get finderSafetyYesHint => 'Only non-toxic species';
@@ -3624,10 +3624,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderSafetyNoHint => 'Every species, toxic ones included';
 
   @override
-  String get finderTopPick => 'Our first pick';
+  String get finderTopPick => 'First pick';
 
   @override
-  String get finderAlternatives => 'These would be happy there too';
+  String get finderAlternatives => 'Other suggestions';
 
   @override
   String get finderChangeAnswer => 'Change this answer';

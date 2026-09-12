@@ -286,7 +286,7 @@ void main() {
     // peut remettre à plus tard ; puis vient le prénom.
     await tester.tap(find.text('Passer'));
     await step(tester);
-    expect(find.text('Où sont vos plantes\u00a0?'), findsOneWidget);
+    expect(find.text('Votre ville'), findsOneWidget);
     // Avec la police des tests, plus large que la vraie, le bas de la page
     // passe sous le pli : on l'amène à l'écran avant de toucher. La page
     // suivante est déjà construite hors champ, d'où le premier des deux.

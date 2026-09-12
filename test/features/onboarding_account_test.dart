@@ -78,7 +78,7 @@ Future<void> _tap(WidgetTester tester, String text) async {
 /// Jusqu'au prénom, puis « Plus tard ».
 Future<void> _pastName(WidgetTester tester) async {
   await _tap(tester, 'Passer');
-  expect(find.text('Où sont vos plantes\u00a0?'), findsOneWidget);
+  expect(find.text('Votre ville'), findsOneWidget);
   await _tap(tester, 'Plus tard');
   expect(find.text('Comment vous appelez-vous\u00a0?'), findsOneWidget);
   await _tap(tester, 'Plus tard');

@@ -1761,7 +1761,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbPlaceTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Où sont vos plantes ?'**
+  /// **'Votre ville'**
   String get onbPlaceTitle;
 
   /// No description provided for @onbPlaceBody.
@@ -6219,7 +6219,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderEffortForgivingHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une plante qui pardonne, s\'il vous plaît'**
+  /// **'Une plante qui tolère les oublis'**
   String get finderEffortForgivingHint;
 
   /// No description provided for @finderEffortNormalHint.
@@ -6231,7 +6231,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderEffortAttentiveHint.
   ///
   /// In fr, this message translates to:
-  /// **'Brumiser, rempoter, surveiller : avec plaisir'**
+  /// **'Brumisation, rempotage, surveillance régulière'**
   String get finderEffortAttentiveHint;
 
   /// No description provided for @finderSafetyYesHint.
@@ -6249,13 +6249,13 @@ abstract class AppLocalizations {
   /// No description provided for @finderTopPick.
   ///
   /// In fr, this message translates to:
-  /// **'Notre premier choix'**
+  /// **'Premier choix'**
   String get finderTopPick;
 
   /// No description provided for @finderAlternatives.
   ///
   /// In fr, this message translates to:
-  /// **'Elles s\'y plairaient aussi'**
+  /// **'Autres propositions'**
   String get finderAlternatives;
 
   /// No description provided for @finderChangeAnswer.

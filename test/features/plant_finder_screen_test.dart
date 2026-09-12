@@ -100,7 +100,7 @@ void main() {
 
       await _answer(tester, 'Oui, sans risque de préférence');
       expect(find.text('Propositions'), findsOneWidget);
-      expect(find.text('Notre premier choix'), findsOneWidget);
+      expect(find.text('Premier choix'), findsOneWidget);
       expect(find.byType(FinderTopPickCard), findsOneWidget);
       expect(find.byType(FinderMatchCard), findsWidgets);
       // Un coin sombre : le premier choix supporte l'ombre, et « sans
@@ -115,7 +115,7 @@ void main() {
       expect(find.text('Quel entretien ?'), findsOneWidget);
       await _answer(tester, 'Peu importe');
       await _answer(tester, 'Pas de contrainte');
-      expect(find.text('Notre premier choix'), findsOneWidget);
+      expect(find.text('Premier choix'), findsOneWidget);
       expect(find.text('Endroit : peu importe'), findsOneWidget);
       expect(find.text('Entretien : peu importe'), findsOneWidget);
     });

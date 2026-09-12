@@ -951,7 +951,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get onboardingSubtitle => 'Ajoutez-les avec ou sans photo.';
 
   @override
-  String get onbPlaceTitle => 'Où sont vos plantes ?';
+  String get onbPlaceTitle => 'Votre ville';
 
   @override
   String get onbPlaceBody =>
@@ -3637,15 +3637,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get finderSpotOutdoorHint => 'Balcon, terrasse ou jardin';
 
   @override
-  String get finderEffortForgivingHint =>
-      'Une plante qui pardonne, s\'il vous plaît';
+  String get finderEffortForgivingHint => 'Une plante qui tolère les oublis';
 
   @override
   String get finderEffortNormalHint => 'Un arrosage par semaine, à peu près';
 
   @override
   String get finderEffortAttentiveHint =>
-      'Brumiser, rempoter, surveiller : avec plaisir';
+      'Brumisation, rempotage, surveillance régulière';
 
   @override
   String get finderSafetyYesHint => 'Seulement des espèces non toxiques';
@@ -3654,10 +3653,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get finderSafetyNoHint => 'Toutes les espèces, toxiques comprises';
 
   @override
-  String get finderTopPick => 'Notre premier choix';
+  String get finderTopPick => 'Premier choix';
 
   @override
-  String get finderAlternatives => 'Elles s\'y plairaient aussi';
+  String get finderAlternatives => 'Autres propositions';
 
   @override
   String get finderChangeAnswer => 'Modifier cette réponse';

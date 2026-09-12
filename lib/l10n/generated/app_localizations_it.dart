@@ -951,7 +951,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onboardingSubtitle => 'Aggiungetele con o senza foto.';
 
   @override
-  String get onbPlaceTitle => 'Dove sono le tue piante?';
+  String get onbPlaceTitle => 'La vostra città';
 
   @override
   String get onbPlaceBody =>
@@ -3548,7 +3548,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Molte piante da appartamento sono tossiche se masticate.';
 
   @override
-  String get finderSafetyYes => 'Sì, meglio non tossica';
+  String get finderSafetyYes => 'Sì, solo non tossiche';
 
   @override
   String get finderSafetyNo => 'Nessun vincolo';
@@ -3628,14 +3628,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderSpotOutdoorHint => 'Balcone, terrazzo o giardino';
 
   @override
-  String get finderEffortForgivingHint => 'Una pianta che perdona, per favore';
+  String get finderEffortForgivingHint =>
+      'Una pianta che tollera le dimenticanze';
 
   @override
   String get finderEffortNormalHint => 'Circa un\'annaffiatura a settimana';
 
   @override
   String get finderEffortAttentiveHint =>
-      'Nebulizzare, rinvasare, controllare: volentieri';
+      'Nebulizzazione, rinvaso, controlli regolari';
 
   @override
   String get finderSafetyYesHint => 'Solo specie non tossiche';
@@ -3644,10 +3645,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderSafetyNoHint => 'Tutte le specie, anche tossiche';
 
   @override
-  String get finderTopPick => 'La nostra prima scelta';
+  String get finderTopPick => 'Prima scelta';
 
   @override
-  String get finderAlternatives => 'Anche loro starebbero bene lì';
+  String get finderAlternatives => 'Altre proposte';
 
   @override
   String get finderChangeAnswer => 'Cambia questa risposta';

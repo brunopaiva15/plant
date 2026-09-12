@@ -53,7 +53,8 @@ lib/
 test/
 ├── domain/care_engine_test.dart
 ├── domain/reminder_planner_test.dart
-└── data/plant_repository_test.dart
+├── data/plant_repository_test.dart
+└── l10n/arb_tone_test.dart       ton des textes, sur les quatre ARB
 docs/                              cette documentation
 ```
 
@@ -61,4 +62,5 @@ docs/                              cette documentation
 - Un fichier = un widget public majeur ; < 300 lignes par fichier.
 - Controllers Riverpod suffixés `Controller`, providers `xxxProvider`.
 - Aucune chaîne UI hors ARB. Aucune couleur hors tokens.
+- Les textes suivent docs/06, « Les textes » ; `test/l10n/arb_tone_test.dart` le vérifie.
 - Feature = dossier avec `presentation/` (+ `application/` pour controllers si besoin).
