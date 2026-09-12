@@ -26,6 +26,12 @@ Deux colonnes, et il faut les deux :
 - **le gain** — top-1 sur les images des espèces ajoutées, que l'ensemble
   précédent ne pouvait pas nommer du tout.
 
+Et deux tables : toutes les photos, puis les seules photos de plantes
+**cultivées** (`captive`, § 5). Le § 6.7 bis a mesuré le coût de l'étendue
+à 10,2 points en général et **11,1 sur les plantes en pot** — le domaine
+réel de l'application. Le coude peut être plus tôt là qu'ailleurs, et c'est
+là qu'il faut le lire.
+
 Les ensembles sont **emboîtés** : chaque taille contient la précédente. Sans
 ça, deux points de la courbe ne se compareraient pas.
 """
@@ -103,7 +109,7 @@ def main() -> int:
                      toutes, [int(x) for x in args.tailles.split(',')])
 
     socle = set(coeur) & set(toutes)
-    rows = [(p, t) for p, t, _ in read_test(Path(args.dataset)) if t in modele['index']]
+    rows = [(p, t, c) for p, t, c in read_test(Path(args.dataset)) if t in modele['index']]
 
     # Le tirage du cœur reproduit celui de `compare_models.py` — même graine,
     # même filtre, même premier appel — donc **les mêmes images**. La ligne du
@@ -123,22 +129,36 @@ def main() -> int:
           f"{len(au_coeur)} images du cœur, {len(ailleurs)} des autres espèces\n")
 
     print('inférence, une fois pour toutes…', flush=True)
-    pred = predict_rows(rows, modele)
+    pred = predict_rows([(p, t) for p, t, _ in rows], modele)
+    # `predict_rows` ne filtre que les vérités inconnues du modèle, déjà
+    # écartées plus haut : les drapeaux restent alignés sur les sorties.
+    assert len(pred) == len(rows)
+    en_pot = [c for _, _, c in rows]
+
     def cellule(valeur) -> str:
         return '—' if valeur is None else f'{valeur:.4f}'
 
-    pred_coeur = [(t, p) for t, p in pred if t in socle]
-    print(f"\n{'exposées':>9}  {'cœur : top1':>12} {'top3':>7} {'autonomie':>10} {'justesse':>9}"
-          f"   {'ajoutées : top1':>16} {'images':>7}")
-    for n in sorted(jeux):
-        garde = set(jeux[n])
-        pred_ajoutees = [(t, p) for t, p in pred if t in garde and t not in socle]
-        c = tally(pred_coeur, modele, garde, renormalise=True, seuil=args.seuil)
-        a = tally(pred_ajoutees, modele, garde, renormalise=True, seuil=args.seuil) if pred_ajoutees else {}
-        print(f'{n:>9}  {cellule(c["top1"]):>12} {cellule(c["top3"]):>7} '
-              f'{cellule(c["accepted_rate"]):>10} {cellule(c["precision_when_accepted"]):>9}   '
-              f'{cellule(a.get("top1")):>16} {a.get("images", 0):>7}')
-    print(f'\ncœur mesuré sur {len(socle)} espèces, les mêmes à chaque ligne.')
+    def table(titre: str, sorties: list) -> None:
+        pred_coeur = [(t, p) for t, p in sorties if t in socle]
+        print(f"\n— {titre} : {len(pred_coeur)} images du cœur, "
+              f"{len(sorties) - len(pred_coeur)} des autres espèces")
+        print(f"{'exposées':>9}  {'cœur : top1':>12} {'top3':>7} {'autonomie':>10} {'justesse':>9}"
+              f"   {'ajoutées : top1':>16} {'images':>7}")
+        for n in sorted(jeux):
+            garde = set(jeux[n])
+            pred_ajoutees = [(t, p) for t, p in sorties if t in garde and t not in socle]
+            c = tally(pred_coeur, modele, garde, renormalise=True, seuil=args.seuil)
+            a = (tally(pred_ajoutees, modele, garde, renormalise=True, seuil=args.seuil)
+                 if pred_ajoutees else {})
+            print(f'{n:>9}  {cellule(c["top1"]):>12} {cellule(c["top3"]):>7} '
+                  f'{cellule(c["accepted_rate"]):>10} {cellule(c["precision_when_accepted"]):>9}   '
+                  f'{cellule(a.get("top1")):>16} {a.get("images", 0):>7}')
+
+    table('toutes les photos', pred)
+    table("photos de plantes cultivées — le domaine de l'application",
+          [tp for tp, c in zip(pred, en_pot) if c])
+    print(f'\ncœur : {len(socle)} espèces, les mêmes à chaque ligne. '
+          'La ligne du cœur seul, première table, doit retomber sur le § 6.7 bis.')
     return 0
 
 
