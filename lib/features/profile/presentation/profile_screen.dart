@@ -148,7 +148,6 @@ class ProfileScreen extends ConsumerWidget {
                   // L'export vit dans la sauvegarde, avec le choix des
                   // sections : deux portes vers le même ZIP n'en font qu'une.
                   FloraListRow(leading: const Text('💾', style: TextStyle(fontSize: 18)), title: l10n.backupTitle, onTap: () => context.push(Routes.backup)),
-                  FloraListRow(leading: const Text('🔌', style: TextStyle(fontSize: 18)), title: l10n.apiTitle, onTap: () => context.push(Routes.api)),
                 ],
               ),
               const SizedBox(height: Space.lg),

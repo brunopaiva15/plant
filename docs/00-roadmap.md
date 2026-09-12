@@ -79,7 +79,6 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Archives : nom personnalisable, recherche, quatre tris, navigation par année, vue liste ou cartes, préférences mémorisées | ✅ |
 | Prévisions météo sur cinq jours : min / max, précipitations, risque de pluie, vent, humidité | ✅ |
 | Sauvegarde : export par sections, restauration avec aperçu, rapport d'import | ✅ |
-| API externe : API REST du projet Supabase, jeton de session, ressources documentées dans l'app | ✅ |
 
 ## Au-delà de HortusFox
 | Fonction | État |

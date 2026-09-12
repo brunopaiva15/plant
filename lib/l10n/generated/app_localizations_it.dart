@@ -3354,49 +3354,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get apiTitle => 'API esterna';
-
-  @override
-  String get apiExplain =>
-      'I tuoi dati sono raggiungibili tramite l\'API REST del tuo progetto Supabase, con la tua chiave. Nulla è esposto senza account.';
-
-  @override
-  String get apiNotConnected => 'Collega un account per abilitare l\'API.';
-
-  @override
-  String get apiEndpoints => 'Endpoint';
-
-  @override
-  String get apiCopyBase => 'Copia l\'URL di base';
-
-  @override
-  String get apiCopied => 'URL copiato';
-
-  @override
-  String get apiTokenHint =>
-      'Autenticati con il token della tua sessione Supabase (intestazione Authorization: Bearer).';
-
-  @override
-  String get apiCopyToken => 'Copia il token di accesso';
-
-  @override
-  String get apiTokenCopied => 'Token copiato';
-
-  @override
-  String get apiTokenWarning =>
-      'Valido per alcune ore. Si revoca disconnettendoti.';
-
-  @override
-  String get apiReadWrite => 'Lettura e scrittura';
-
-  @override
-  String get apiOnlyYourGarden =>
-      'Ogni richiesta vede solo i giardini di cui fai parte.';
-
-  @override
-  String get apiExample => 'Esempio';
-
-  @override
   String get onbTodayTitle => 'Ogni mattina, cosa c\'è da fare';
 
   @override
