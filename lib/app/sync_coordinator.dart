@@ -12,6 +12,16 @@ import '../data/sync/sync_service.dart';
 import '../domain/sync/sync_state.dart';
 import 'providers.dart';
 
+/// Une synchronisation en échec, avec ce que le serveur a répondu.
+class SyncFailure implements Exception {
+  const SyncFailure(this.message);
+
+  final String message;
+
+  @override
+  String toString() => 'SyncFailure: $message';
+}
+
 /// Curseurs de synchronisation persistés (par table).
 class PrefsCursorStore implements SyncCursorStore {
   PrefsCursorStore(this._read, this._write, this._clearAll);
@@ -75,7 +85,14 @@ class SyncCoordinator extends Notifier<SyncState> with WidgetsBindingObserver {
       ownedGardenId: prefs.gardenId,
     );
     _service = service;
-    _stateSub = service.state.listen((s) => state = s);
+    _stateSub = service.state.listen((s) {
+      // L'erreur va aussi au journal : l'écran Compte la montre, mais
+      // l'utilisateur ne la recopie pas toujours.
+      if (s.status == SyncStatus.error && s.message != null && state.message != s.message) {
+        ref.read(crashReporterProvider).report(SyncFailure(s.message!), StackTrace.current, context: 'sync');
+      }
+      state = s;
+    });
     WidgetsBinding.instance.addObserver(this);
 
     // Écritures locales → synchro après 3 s de calme.

@@ -57,6 +57,28 @@ class ProfileScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: Space.lg),
+              // Le compte tout de suite sous le nom : c'est ici qu'on se
+              // connecte, et personne ne doit avoir à le chercher au fond
+              // des réglages.
+              Builder(builder: (context) {
+                final signedIn = user != null && !user.isLocal;
+                final canSignIn = !signedIn && signInAvailable(ref.watch(authRepositoryProvider));
+                return FloraGroup(
+                  footer: signedIn ? null : (canSignIn ? l10n.signInHint : l10n.localAccountHint),
+                  children: [
+                    FloraListRow(
+                      leading: signedIn
+                          ? Icon(CupertinoIcons.person_crop_circle_fill, size: 20, color: c.sage)
+                          : Icon(canSignIn ? Icons.apple : CupertinoIcons.lock, size: 20, color: c.inkSecondary),
+                      title: canSignIn ? l10n.signIn : l10n.account,
+                      subtitle: signedIn ? (user.email ?? l10n.signedInAs) : (canSignIn ? l10n.signInWithAppleId : l10n.localAccount),
+                      onTap: () => context.push(Routes.account),
+                    ),
+                    if (signedIn) const _GardensRow(),
+                  ],
+                );
+              }),
               const SizedBox(height: Space.xl),
               FloraGroup(
                 children: [
@@ -126,20 +148,11 @@ class ProfileScreen extends ConsumerWidget {
                   // L'export vit dans la sauvegarde, avec le choix des
                   // sections : deux portes vers le même ZIP n'en font qu'une.
                   FloraListRow(leading: const Text('💾', style: TextStyle(fontSize: 18)), title: l10n.backupTitle, onTap: () => context.push(Routes.backup)),
-                  FloraListRow(leading: const Text('🔌', style: TextStyle(fontSize: 18)), title: l10n.apiTitle, onTap: () => context.push(Routes.api)),
                 ],
               ),
               const SizedBox(height: Space.lg),
               FloraGroup(
-                footer: signInAvailable(ref.watch(authRepositoryProvider)) ? l10n.signInHint : l10n.localAccountHint,
                 children: [
-                  FloraListRow(
-                    leading: Icon(user != null && !user.isLocal ? CupertinoIcons.person_crop_circle_fill : CupertinoIcons.lock, size: 20, color: user != null && !user.isLocal ? c.sage : c.inkSecondary),
-                    title: l10n.account,
-                    subtitle: user != null && !user.isLocal ? (user.email ?? l10n.signedInAs) : l10n.localAccount,
-                    onTap: () => context.push(Routes.account),
-                  ),
-                  if (user != null && !user.isLocal) const _GardensRow(),
                   FloraListRow(
                     leading: Icon(CupertinoIcons.heart_fill, size: 20, color: c.rose),
                     title: l10n.supportSettings,

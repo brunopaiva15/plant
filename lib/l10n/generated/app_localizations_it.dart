@@ -983,21 +983,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Per salutarti ogni mattina. Potrai cambiarlo più tardi.';
 
   @override
-  String get onbAccountTitle => 'Le tue piante, ovunque';
+  String get onbAccountTitle => 'E se cambi telefono?';
 
   @override
   String get onbAccountBody =>
-      'Un account è semplicemente il tuo ID Apple: nient\'altro da creare. Senza account, tutto resta su questo telefono e l\'app funziona altrettanto bene.';
-
-  @override
-  String get onbAccountBackup =>
-      'Un backup, se il telefono viene perso o sostituito';
-
-  @override
-  String get onbAccountDevices => 'Le stesse piante su iPhone e iPad';
-
-  @override
-  String get onbAccountShare => 'Un giardino condiviso con qualcuno';
+      'Con un account le tue piante e le tue foto sono al sicuro, e puoi condividere un giardino. Basta il tuo ID Apple.';
 
   @override
   String get notificationAskTitle => 'Un promemoria utile, ogni giorno';
@@ -1489,6 +1479,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get signIn => 'Accedi';
+
+  @override
+  String get signInWithAppleId => 'Con il tuo ID Apple';
 
   @override
   String get signInHint =>
@@ -3361,49 +3354,6 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get apiTitle => 'API esterna';
-
-  @override
-  String get apiExplain =>
-      'I tuoi dati sono raggiungibili tramite l\'API REST del tuo progetto Supabase, con la tua chiave. Nulla è esposto senza account.';
-
-  @override
-  String get apiNotConnected => 'Collega un account per abilitare l\'API.';
-
-  @override
-  String get apiEndpoints => 'Endpoint';
-
-  @override
-  String get apiCopyBase => 'Copia l\'URL di base';
-
-  @override
-  String get apiCopied => 'URL copiato';
-
-  @override
-  String get apiTokenHint =>
-      'Autenticati con il token della tua sessione Supabase (intestazione Authorization: Bearer).';
-
-  @override
-  String get apiCopyToken => 'Copia il token di accesso';
-
-  @override
-  String get apiTokenCopied => 'Token copiato';
-
-  @override
-  String get apiTokenWarning =>
-      'Valido per alcune ore. Si revoca disconnettendoti.';
-
-  @override
-  String get apiReadWrite => 'Lettura e scrittura';
-
-  @override
-  String get apiOnlyYourGarden =>
-      'Ogni richiesta vede solo i giardini di cui fai parte.';
-
-  @override
-  String get apiExample => 'Esempio';
-
-  @override
   String get onbTodayTitle => 'Ogni mattina, cosa c\'è da fare';
 
   @override
@@ -3842,8 +3792,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinNeedsAccount => 'Serve un account per unirsi a un giardino.';
 
   @override
-  String get joinSignInHint =>
-      'Per entrare in questo giardino basta un account: il tuo ID Apple, nient\'altro da creare.';
+  String get joinSignInHint => 'Basta il tuo ID Apple.';
 
   @override
   String joinInvitedBy(String name, String garden) {

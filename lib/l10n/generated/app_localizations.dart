@@ -1809,32 +1809,14 @@ abstract class AppLocalizations {
   /// No description provided for @onbAccountTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Retrouvez vos plantes partout'**
+  /// **'Et si vous changez de téléphone ?'**
   String get onbAccountTitle;
 
   /// No description provided for @onbAccountBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un compte, c\'est votre identifiant Apple — rien d\'autre à créer. Sans compte, tout reste sur ce téléphone, et l\'app marche aussi bien.'**
+  /// **'Avec un compte, vos plantes et vos photos sont sauvegardées, et vous pouvez partager un jardin. Il suffit de votre identifiant Apple.'**
   String get onbAccountBody;
-
-  /// No description provided for @onbAccountBackup.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une sauvegarde, si le téléphone est perdu ou remplacé'**
-  String get onbAccountBackup;
-
-  /// No description provided for @onbAccountDevices.
-  ///
-  /// In fr, this message translates to:
-  /// **'Les mêmes plantes sur votre iPhone et votre iPad'**
-  String get onbAccountDevices;
-
-  /// No description provided for @onbAccountShare.
-  ///
-  /// In fr, this message translates to:
-  /// **'Un jardin partagé avec quelqu\'un'**
-  String get onbAccountShare;
 
   /// No description provided for @notificationAskTitle.
   ///
@@ -2657,6 +2639,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Se connecter'**
   String get signIn;
+
+  /// No description provided for @signInWithAppleId.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec votre identifiant Apple'**
+  String get signInWithAppleId;
 
   /// No description provided for @signInHint.
   ///
@@ -5718,84 +5706,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{1 élément} other{{count} éléments}}'**
   String backupContains(int count);
 
-  /// No description provided for @apiTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'API externe'**
-  String get apiTitle;
-
-  /// No description provided for @apiExplain.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vos données sont accessibles par l\'API REST de votre projet Supabase, avec votre propre clé. Rien n\'est exposé sans compte.'**
-  String get apiExplain;
-
-  /// No description provided for @apiNotConnected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Connectez un compte pour activer l\'API.'**
-  String get apiNotConnected;
-
-  /// No description provided for @apiEndpoints.
-  ///
-  /// In fr, this message translates to:
-  /// **'Points d\'accès'**
-  String get apiEndpoints;
-
-  /// No description provided for @apiCopyBase.
-  ///
-  /// In fr, this message translates to:
-  /// **'Copier l\'adresse de base'**
-  String get apiCopyBase;
-
-  /// No description provided for @apiCopied.
-  ///
-  /// In fr, this message translates to:
-  /// **'Adresse copiée'**
-  String get apiCopied;
-
-  /// No description provided for @apiTokenHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Authentifiez-vous avec le jeton de votre session Supabase (en-tête Authorization: Bearer).'**
-  String get apiTokenHint;
-
-  /// No description provided for @apiCopyToken.
-  ///
-  /// In fr, this message translates to:
-  /// **'Copier le jeton d\'accès'**
-  String get apiCopyToken;
-
-  /// No description provided for @apiTokenCopied.
-  ///
-  /// In fr, this message translates to:
-  /// **'Jeton copié'**
-  String get apiTokenCopied;
-
-  /// No description provided for @apiTokenWarning.
-  ///
-  /// In fr, this message translates to:
-  /// **'Valable quelques heures. Se révoque en vous déconnectant.'**
-  String get apiTokenWarning;
-
-  /// No description provided for @apiReadWrite.
-  ///
-  /// In fr, this message translates to:
-  /// **'Lecture et écriture'**
-  String get apiReadWrite;
-
-  /// No description provided for @apiOnlyYourGarden.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chaque requête ne voit que les jardins dont vous êtes membre.'**
-  String get apiOnlyYourGarden;
-
-  /// No description provided for @apiExample.
-  ///
-  /// In fr, this message translates to:
-  /// **'Exemple'**
-  String get apiExample;
-
   /// No description provided for @onbTodayTitle.
   ///
   /// In fr, this message translates to:
@@ -6549,7 +6459,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinSignInHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un compte suffit pour rejoindre ce jardin : votre identifiant Apple, rien d\'autre à créer.'**
+  /// **'Il suffit de votre identifiant Apple.'**
   String get joinSignInHint;
 
   /// No description provided for @joinInvitedBy.

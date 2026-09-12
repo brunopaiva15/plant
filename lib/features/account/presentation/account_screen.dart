@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show Icons;
+import 'package:flutter/material.dart' show Icons, SelectableText;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -127,6 +127,15 @@ class _SignedIn extends ConsumerWidget {
               title: status,
               subtitle: sync.pendingCount > 0 ? l10n.syncPending(sync.pendingCount) : null,
             ),
+            // L'erreur telle que le serveur l'a dite. Sans elle, « Erreur de
+            // synchronisation » ne permet ni de comprendre ni de réparer :
+            // une colonne inconnue du schéma, un bucket absent, une règle
+            // qui refuse — trois causes, trois remèdes, un seul libellé.
+            if (sync.status == SyncStatus.error && (sync.message ?? '').isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
+                child: SelectableText(sync.message!, style: context.text.caption.copyWith(color: c.inkSecondary)),
+              ),
             FloraListRow(leading: Icon(CupertinoIcons.arrow_2_circlepath, size: 20, color: c.inkSecondary), title: l10n.syncNow, onTap: () => ref.read(syncCoordinatorProvider.notifier).syncNow(), chevron: false),
           ],
         ),

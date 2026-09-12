@@ -105,9 +105,10 @@ Iris ⟶ la marque du modèle embarqué : « Iris reconnaît vos plantes hors
   ne la reconnaît pas. Juste avant l'écran de vie privée qu'il annonce.
 Où sont vos plantes ? ⟶ [Utiliser ma position] · Plus tard
 Comment vous appelez-vous ? ⟶ [Ajouter ma première plante] · Plus tard
-Retrouvez vos plantes partout ⟶ pourquoi un compte (sauvegarde, iPad, jardin
-  partagé), puis [Continuer avec Apple] · Plus tard. L'étape n'existe que sur
-  iOS avec un backend : ailleurs, le prénom mène droit au soutien.
+Et si vous changez de téléphone ? ⟶ deux phrases (sauvegarde, jardin partagé,
+  l'identifiant Apple suffit), puis [Continuer avec Apple] · Plus tard. L'étape
+  n'existe que sur iOS avec un backend : ailleurs, le prénom mène droit au
+  soutien.
 Auxine est gratuite ⟶ soutien facultatif, [Continuer sans]
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]
