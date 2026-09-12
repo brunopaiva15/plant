@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
+import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/care_suggestions.dart';
 import '../../../domain/models/models.dart';
@@ -26,12 +28,7 @@ class PlantScheduleScreen extends ConsumerWidget {
     final schedules = ref.watch(plantSchedulesProvider(plantId)).value ?? const <CareSchedule>[];
     final types = ref.watch(actionTypeByKeyProvider);
     final now = DateTime.now();
-    // Fiche d'entretien de la plante : elle donne l'intervalle de départ des
-    // routines qu'on ajoute, plutôt qu'un chiffre rond sorti de nulle part.
-    final plant = ref.watch(plantSummaryProvider(plantId)).value?.plant;
-    final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: speciesFamilyLookup(ref)(plant?.speciesName));
-    final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
-    final advice = _Advice(profile: care.profile, light: lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
+    final advice = _adviceFor(ref, plantId);
     return FloraPage(
       title: l10n.schedule,
       child: Column(
@@ -118,12 +115,16 @@ class PlantScheduleScreen extends ConsumerWidget {
 }
 
 /// Ce que la fiche d'entretien de la plante conseille, prêt à préremplir une
-/// nouvelle routine. Sans fiche parlante (type personnalisé, espèce inconnue),
-/// on retombe sur les intervalles par défaut de l'application.
+/// nouvelle routine et à dire d'où sort le chiffre proposé. Sans fiche
+/// parlante (type personnalisé, espèce inconnue), on retombe sur les
+/// intervalles par défaut de l'application.
 class _Advice {
-  const _Advice({required this.profile, this.light, this.south = false});
+  const _Advice({required this.care, this.light, this.south = false});
 
-  final CareProfile profile;
+  /// Fiche retenue, avec sa provenance : « Fiche de l'espèce » et « Fiche du
+  /// genre Ficus » ne se valent pas, et l'écran le dit.
+  final ResolvedCare care;
+
   final LightNeed? light;
 
   /// Le jardin est dans l'hémisphère sud : l'arrosage conseillé suit ses
@@ -131,8 +132,26 @@ class _Advice {
   final bool south;
 
   int intervalFor(String typeKey, DateTime now) =>
-      profile.suggestedIntervalDays(typeKey, now: now, actualLight: light, south: south) ??
+      _fromProfile(typeKey, now) ??
       (typeKey == CareKind.watering.key ? AppConfig.defaultWateringInterval : AppConfig.defaultFertilizingInterval);
+
+  /// Le même intervalle, mais seulement quand il vient vraiment de la plante :
+  /// un défaut d'application ne se présente pas comme un conseil tiré de
+  /// l'espèce.
+  int? suggestionFor(String typeKey, DateTime now) => care.match == CareMatch.generic ? null : _fromProfile(typeKey, now);
+
+  int? _fromProfile(String typeKey, DateTime now) =>
+      care.profile.suggestedIntervalDays(typeKey, now: now, actualLight: light, south: south);
+}
+
+/// Fiche d'entretien de la plante et lumière réelle de son emplacement : de
+/// quoi conseiller un intervalle de départ, plutôt qu'un chiffre rond sorti de
+/// nulle part, et dire ensuite d'où il sort.
+_Advice _adviceFor(WidgetRef ref, String plantId) {
+  final plant = ref.watch(plantSummaryProvider(plantId)).value?.plant;
+  final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: speciesFamilyLookup(ref)(plant?.speciesName));
+  final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
+  return _Advice(care: care, light: lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
 }
 
 Future<void> showScheduleEditSheet(BuildContext context, {required CareSchedule schedule}) =>
@@ -179,12 +198,22 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final type = ref.watch(actionTypeByKeyProvider)[widget.schedule.typeKey];
+    final advice = _adviceFor(ref, widget.schedule.plantId);
     final isNew = widget.schedule.id.isEmpty;
     final hint = switch (_strategy) {
       CareStrategy.seasonal => l10n.strategySeasonalHint,
       CareStrategy.manual => l10n.strategyManualHint,
-      CareStrategy.fixed => l10n.everyDays(_interval),
+      // Ce que fait le mode, pas l'intervalle : le chiffre est déjà sous les
+      // yeux, au stepper, et l'écrire deux fois le rend illisible.
+      CareStrategy.fixed => l10n.strategyFixedHint,
     };
+    // D'où vient l'intervalle affiché : la fiche d'entretien de la plante.
+    // Tant qu'il vaut ce qu'elle conseille, on le dit sans répéter le chiffre ;
+    // une fois réglé à la main, la valeur conseillée reste lisible.
+    final suggested = advice.suggestionFor(widget.schedule.typeKey, DateTime.now());
+    final source = suggested == null
+        ? null
+        : '${suggested == _interval ? l10n.intervalSuggested : l10n.intervalSuggestedDays(suggested)} · ${l10n.careMatchLabel(advice.care)}';
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
       child: Column(
@@ -205,20 +234,29 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
             opacity: _strategy == CareStrategy.manual ? 0.35 : 1,
             child: IgnorePointer(
               ignoring: _strategy == CareStrategy.manual,
-              child: FloraGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FloraListRow(
-                    title: l10n.interval,
-                    trailing: QuantityStepper(
-                      value: _interval,
-                      min: _monthly ? 30 : 1,
-                      max: _monthly ? 1825 : 365,
-                      step: _monthly ? 30 : 1,
-                      label: l10n.daysCount(_interval),
-                      onChanged: (v) => setState(() => _interval = v),
-                    ),
+                  FloraGroup(
+                    children: [
+                      FloraListRow(
+                        title: l10n.interval,
+                        trailing: QuantityStepper(
+                          value: _interval,
+                          min: _monthly ? 30 : 1,
+                          max: _monthly ? 1825 : 365,
+                          step: _monthly ? 30 : 1,
+                          label: l10n.daysCount(_interval),
+                          onChanged: (v) => setState(() => _interval = v),
+                        ),
+                      ),
+                      FloraListRow(title: l10n.enabled, trailing: AdaptiveSwitch(value: _enabled, onChanged: (v) => setState(() => _enabled = v))),
+                    ],
                   ),
-                  FloraListRow(title: l10n.enabled, trailing: AdaptiveSwitch(value: _enabled, onChanged: (v) => setState(() => _enabled = v))),
+                  if (source != null) ...[
+                    const SizedBox(height: Space.xs),
+                    Text(source, style: context.text.caption, textAlign: TextAlign.center),
+                  ],
                 ],
               ),
             ),

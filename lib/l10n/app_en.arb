@@ -177,8 +177,18 @@
   "strategyManual": "Manual",
   "strategySeasonalHint": "Less often in winter, more in summer.",
   "strategyManualHint": "No automatic reminder.",
+  "strategyFixedHint": "The same interval all year.",
   "enabled": "Enabled",
   "interval": "Interval",
+  "intervalSuggested": "Suggested interval",
+  "intervalSuggestedDays": "{count, plural, =1{Suggested interval: 1 day} other{Suggested interval: {count} days}}",
+  "@intervalSuggestedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "daysCount": "{count, plural, =1{1 day} other{{count} days}}",
   "lastDone": "Last: {date}",
   "nextDue": "Next: {date}",

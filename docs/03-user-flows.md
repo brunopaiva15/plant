@@ -89,6 +89,9 @@ Aussi accessible inline depuis l'étape 3 de création de plante (« + Nouveau �
 Fiche plante ─[tap « Planning »]⟶ Écran planning
   Liste des routines : 💧 Arrosage · tous les 7 jours · prochain : dans 2 j
   [tap ligne]⟶ Sheet : stratégie (Fixe / Saisonnier / Manuel), intervalle (stepper), activé
+    Sous le stepper, d'où sort le chiffre : « Intervalle conseillé · Fiche de
+    l'espèce », et la valeur conseillée dès qu'on s'en écarte. Rien quand la
+    fiche est générique : l'intervalle ne vient alors pas de la plante.
   [+ Ajouter une routine] ⟶ type (chips) puis même sheet
 ✓ prochaine échéance recalculée et affichée immédiatement
 ```

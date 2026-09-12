@@ -1164,6 +1164,12 @@ abstract class AppLocalizations {
   /// **'Aucun rappel automatique.'**
   String get strategyManualHint;
 
+  /// No description provided for @strategyFixedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le même intervalle toute l\'année.'**
+  String get strategyFixedHint;
+
   /// No description provided for @enabled.
   ///
   /// In fr, this message translates to:
@@ -1175,6 +1181,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Intervalle'**
   String get interval;
+
+  /// No description provided for @intervalSuggested.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intervalle conseillé'**
+  String get intervalSuggested;
+
+  /// No description provided for @intervalSuggestedDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{Intervalle conseillé : 1 jour} other{Intervalle conseillé : {count} jours}}'**
+  String intervalSuggestedDays(int count);
 
   /// No description provided for @daysCount.
   ///
