@@ -759,7 +759,7 @@ abstract class AppLocalizations {
   /// No description provided for @stepPhotoSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Pour la reconnaître, et la retrouver dans votre liste.'**
+  /// **'Cadrez la plante entière, en lumière naturelle. Elle servira à la reconnaître, et à la retrouver dans votre liste.'**
   String get stepPhotoSubtitle;
 
   /// No description provided for @takePhoto.
@@ -6833,6 +6833,54 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pause'**
   String get pause;
+
+  /// No description provided for @stepPhotoDoneTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La voilà.'**
+  String get stepPhotoDoneTitle;
+
+  /// No description provided for @stepPhotoDoneSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une feuille de près aiderait {name} à reconnaître l\'espèce. Facultatif.'**
+  String stepPhotoDoneSubtitle(String name);
+
+  /// No description provided for @stepPhotoDonePlain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pourrez en ajouter d\'autres depuis sa fiche.'**
+  String get stepPhotoDonePlain;
+
+  /// No description provided for @viewPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sa photo'**
+  String get viewPlant;
+
+  /// No description provided for @viewLeafClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une feuille de près'**
+  String get viewLeafClose;
+
+  /// No description provided for @viewAnother.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une autre vue'**
+  String get viewAnother;
+
+  /// No description provided for @viewForModel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour aider {name} à trancher. Cette vue ne sera pas gardée.'**
+  String viewForModel(String name);
+
+  /// No description provided for @viewsCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vues pour {name}, effacées ensuite'**
+  String viewsCaption(String name);
 }
 
 class _AppLocalizationsDelegate

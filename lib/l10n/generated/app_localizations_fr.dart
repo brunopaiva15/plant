@@ -407,7 +407,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stepPhotoSubtitle =>
-      'Pour la reconnaître, et la retrouver dans votre liste.';
+      'Cadrez la plante entière, en lumière naturelle. Elle servira à la reconnaître, et à la retrouver dans votre liste.';
 
   @override
   String get takePhoto => 'Prendre une photo';
@@ -4027,4 +4027,35 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pause => 'Pause';
+
+  @override
+  String get stepPhotoDoneTitle => 'La voilà.';
+
+  @override
+  String stepPhotoDoneSubtitle(String name) {
+    return 'Une feuille de près aiderait $name à reconnaître l\'espèce. Facultatif.';
+  }
+
+  @override
+  String get stepPhotoDonePlain =>
+      'Vous pourrez en ajouter d\'autres depuis sa fiche.';
+
+  @override
+  String get viewPlant => 'Sa photo';
+
+  @override
+  String get viewLeafClose => 'Une feuille de près';
+
+  @override
+  String get viewAnother => 'Une autre vue';
+
+  @override
+  String viewForModel(String name) {
+    return 'Pour aider $name à trancher. Cette vue ne sera pas gardée.';
+  }
+
+  @override
+  String viewsCaption(String name) {
+    return 'Vues pour $name, effacées ensuite';
+  }
 }

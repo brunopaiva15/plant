@@ -202,7 +202,7 @@
   },
   "newPlant": "Nouvelle plante",
   "stepPhotoTitle": "Une photo ?",
-  "stepPhotoSubtitle": "Pour la reconnaître, et la retrouver dans votre liste.",
+  "stepPhotoSubtitle": "Cadrez la plante entière, en lumière naturelle. Elle servira à la reconnaître, et à la retrouver dans votre liste.",
   "takePhoto": "Prendre une photo",
   "choosePhoto": "Choisir une photo",
   "withoutPhoto": "Continuer sans photo",
@@ -1877,5 +1877,16 @@
   "share": "Partager",
   "addTitle": "Ajouter un titre",
   "swap": "Inverser",
-  "pause": "Pause"
+  "pause": "Pause",
+  "stepPhotoDoneTitle": "La voilà.",
+  "stepPhotoDoneSubtitle": "Une feuille de près aiderait {name} à reconnaître l'espèce. Facultatif.",
+  "@stepPhotoDoneSubtitle": {"placeholders": {"name": {"type": "String"}}},
+  "stepPhotoDonePlain": "Vous pourrez en ajouter d'autres depuis sa fiche.",
+  "viewPlant": "Sa photo",
+  "viewLeafClose": "Une feuille de près",
+  "viewAnother": "Une autre vue",
+  "viewForModel": "Pour aider {name} à trancher. Cette vue ne sera pas gardée.",
+  "@viewForModel": {"placeholders": {"name": {"type": "String"}}},
+  "viewsCaption": "Vues pour {name}, effacées ensuite",
+  "@viewsCaption": {"placeholders": {"name": {"type": "String"}}}
 }

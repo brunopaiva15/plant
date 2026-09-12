@@ -109,7 +109,7 @@
   "archivedCount": "{count, plural, =1{1 pianta archiviata} other{{count} piante archiviate}}",
   "newPlant": "Nuova pianta",
   "stepPhotoTitle": "Una foto?",
-  "stepPhotoSubtitle": "Per riconoscerla, e ritrovarla nella tua lista.",
+  "stepPhotoSubtitle": "Inquadra la pianta intera, con luce naturale. Servirà a riconoscerla e a ritrovarla nella tua lista.",
   "takePhoto": "Scatta una foto",
   "choosePhoto": "Scegli una foto",
   "withoutPhoto": "Continua senza foto",
@@ -1241,5 +1241,13 @@
   "share": "Condividi",
   "addTitle": "Aggiungi un titolo",
   "swap": "Inverti",
-  "pause": "Pausa"
+  "pause": "Pausa",
+  "stepPhotoDoneTitle": "Eccola.",
+  "stepPhotoDoneSubtitle": "Una foglia da vicino aiuterebbe {name} a riconoscere la specie. Facoltativo.",
+  "stepPhotoDonePlain": "Potrai aggiungerne altre dalla sua scheda.",
+  "viewPlant": "La sua foto",
+  "viewLeafClose": "Una foglia da vicino",
+  "viewAnother": "Un'altra vista",
+  "viewForModel": "Per aiutare {name} a decidere. Questa vista non verrà conservata.",
+  "viewsCaption": "Viste per {name}, poi eliminate"
 }

@@ -5,9 +5,14 @@ Notation : `[tap]` = un tap, `⟶` = transition, `✓` = feedback (animation + h
 ## 1. Créer une plante (< 20 s, 3 étapes)
 ```
 Plantes ─[tap +]⟶ Sheet plein écran
-  Étape 1 · Photo
-    Viseur ouvert dans le cadre : [tap cadre] ou [Prendre une photo] déclenche
-    [Choisir une photo] | Continuer sans photo
+  Étape 1 · Photo, en trois états
+    Viser      viseur dans le cadre, déclencheur rond dessus, galerie dans un coin
+               [tap cadre] ou [◯] déclenche · Continuer sans photo
+    La voilà   la photo prise remplit le cadre (c'est la confirmation)
+               dessous, si Iris est là : « Sa photo » · [+ Une feuille de près] · [+ Une autre vue]
+               légende « Vues pour Iris, effacées ensuite » · [Continuer] · Reprendre
+    Une vue    [tap emplacement] ⟶ le viseur revient sous le titre de l'emplacement,
+    de plus    rend la main dès la prise ; × ou Annuler ramène à la photo
   Étape 2 · Nom
     Champ unique, clavier ouvert, suggestion = nom d'espèce si connu
     [Continuer]
@@ -18,7 +23,8 @@ Plantes ─[tap +]⟶ Sheet plein écran
 ```
 - Routines par défaut créées automatiquement (arrosage 7 j, engrais 30 j) → « Plus d'options » pour ajuster.
 - Étape « Identification » (P2) s'insère entre 1 et 2 uniquement si la fonction est activée et une photo existe.
-- Le viseur ne tourne qu'à l'étape 1, tant qu'aucune photo n'est retenue. Sans lui — autorisation refusée, appareil sans caméra — le cadre retrouve son invite et les boutons ouvrent l'appareil photo du système.
+- Le viseur ne tourne qu'à l'étape 1, tant qu'il reste un emplacement libre. Sans lui — autorisation refusée, appareil sans caméra — le cadre garde son invite, les gestes reviennent en boutons ([Prendre une photo] · [Choisir une photo]) et un emplacement libre ouvre l'appareil ou la galerie du système.
+- Reprendre efface la photo et les vues prises avec elle : elles montraient le même sujet. Les vues ne sont proposées que si un moteur d'identification est configuré, et ne sont jamais gardées.
 
 ## 2. Arroser une plante (1 tap)
 ```

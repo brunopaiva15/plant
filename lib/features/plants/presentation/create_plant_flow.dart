@@ -68,6 +68,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   final _camera = InlineCameraController();
   int _step = 0;
   StoredPhoto? _photo;
+
+  /// Où en est l'étape photo : on vise, on regarde la photo prise, ou on
+  /// vise une vue de plus pour un emplacement précis.
+  _PhotoMode _mode = _PhotoMode.aim;
   bool _picking = false;
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
@@ -164,13 +168,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// Ouvre l'appareil photo ou la galerie du système. Le viseur intégré a
   /// pris la place du premier cas courant ; celui-ci reste pour la galerie,
   /// et pour les appareils qui n'offrent pas d'aperçu.
-  Future<void> _pick(PhotoSource source, {bool replace = false}) async {
+  Future<void> _pick(PhotoSource source) async {
     if (_picking) return;
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null || !mounted) return;
-      await (replace ? _replace(stored) : _accept(stored));
+      await _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.pick');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
@@ -210,15 +214,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     }
   }
 
-  /// Retient une photo de plus, sans quitter l'étape.
+  /// Retient une photo, sans quitter l'étape, et la montre : la première est
+  /// celle de la plante, les suivantes des vues pour l'identification.
   Future<void> _accept(StoredPhoto stored) async {
     final storage = ref.read(photoStorageProvider);
     final path = await storage.absolutePath(stored.filePath);
     if (!mounted) return;
-    // La première photo est celle de la plante ; les suivantes ne servent
-    // qu'à la reconnaître et s'effaceront en partant. Aucune ne passe à
-    // l'étape suivante toute seule : c'est « Continuer » qui décide, et
-    // c'est ce qui permet d'en prendre deux ou trois à la file.
     setState(() {
       if (_photo == null) {
         _photo = stored;
@@ -229,27 +230,45 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       // Les photos ont changé : la réponse d'avant ne vaut plus, et la
       // suivante se demandera en arrivant à l'étape du nom.
       _identification = null;
+      // Le cadre montre ce qu'on vient de prendre : c'est la confirmation.
+      _mode = _PhotoMode.review;
     });
+    // Plus d'emplacement libre : le viseur n'a plus rien à faire.
+    if (_identificationPaths.length >= maxIdentificationPhotos) _camera.stop();
     Haptics.success();
   }
 
-  /// Remplace la photo de la plante. Les vues prises pour l'identification
-  /// montraient l'ancien sujet : elles partent avec elle.
-  Future<void> _replace(StoredPhoto stored) async {
+  /// Reprendre : la photo de la plante part, et avec elle les vues prises
+  /// pour la reconnaître, qui montraient le même sujet. Retour au viseur.
+  Future<void> _retake() async {
     final storage = ref.read(photoStorageProvider);
     final old = _photo;
     _dropIdentificationExtras();
-    final path = await storage.absolutePath(stored.filePath);
-    if (!mounted) return;
     setState(() {
-      _photo = stored;
-      _identificationPaths
-        ..clear()
-        ..add(path);
+      _photo = null;
+      _identificationPaths.clear();
       _identification = null;
+      _mode = _PhotoMode.aim;
     });
-    Haptics.success();
+    _camera.start();
     if (old != null) await storage.deleteFiles(old.filePath, old.thumbPath);
+  }
+
+  /// Une vue de plus, pour l'emplacement touché. Avec le viseur, le cadre
+  /// repasse en direct ; sans lui, l'appareil ou la galerie du système.
+  void _openExtraSlot() {
+    if (_picking || _identificationPaths.length >= maxIdentificationPhotos) return;
+    if (_camera.isReady || _camera.status == InlineCameraStatus.starting) {
+      Haptics.selection();
+      setState(() => _mode = _PhotoMode.extra);
+      return;
+    }
+    _showPhotoSources();
+  }
+
+  void _cancelExtra() {
+    Haptics.selection();
+    setState(() => _mode = _PhotoMode.review);
   }
 
   /// Identification en arrière-plan, sur **toutes** les photos de l'étape
@@ -310,8 +329,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final storage = ref.read(photoStorageProvider);
     setState(() => _identificationPaths.removeAt(index));
     // À l'étape photo, rien n'a encore été demandé au moteur : il n'y a rien
-    // à relancer, seulement une case qui se libère.
+    // à relancer, seulement une case qui se libère — et le viseur qui peut
+    // reprendre pour la remplir.
     if (_identification != null) _startIdentification();
+    if (_step == 0) _camera.start();
     await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
@@ -453,169 +474,208 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     );
   }
 
-  /// L'étape photo : le viseur est déjà ouvert dans le cadre, et le bouton
-  /// déclenche. Plus d'appareil photo à aller chercher avant de viser.
+  /// L'étape photo, en trois états qui se lisent d'un coup d'œil.
+  ///
+  /// **Viser** : le viseur est dans le cadre, le déclencheur rond posé
+  /// dessus, la galerie dans un coin. Rien à chercher ailleurs.
+  /// **La voilà** : la photo prise remplit le cadre — c'est la confirmation —,
+  /// et dessous, des emplacements qui disent quoi photographier de plus pour
+  /// aider Iris, et que ces vues ne seront pas gardées.
+  /// **Une vue de plus** : le viseur revient pour l'emplacement touché, avec
+  /// son titre, et rend la main dès la prise.
+  ///
+  /// Avant, le viseur restait devant la photo prise, qui n'apparaissait
+  /// qu'en vignette ; trois cases égales ne disaient ni laquelle était la
+  /// photo de la plante, ni à quoi servaient les autres.
   Widget _photoStep() {
     final l10n = context.l10n;
-    final c = context.colors;
+    final identifier = ref.watch(plantIdentifierProvider);
     final taken = _identificationPaths.length;
     final full = taken >= maxIdentificationPhotos;
-    return _StepLayout(
-      // L'en-tête suit l'état. Sans quoi l'écran redemande « Une photo ? »
-      // au-dessus d'une photo déjà prise, et personne ne comprend que le
-      // viseur attend la **suivante** — c'est la seule chose que cet écran
-      // ait à dire une fois le premier déclenchement passé.
-      //
-      // Les trois états empruntent des phrases qui existent déjà : le titre
-      // de la carte des deux photos (§ 6.7, réglages d'identification) dit
-      // le pourquoi, et son conseil dit quoi photographier. Rien de neuf à
-      // traduire, et le même vocabulaire d'un écran à l'autre.
-      title: taken == 0
-          ? l10n.stepPhotoTitle
-          : (full ? l10n.photosCount(taken) : l10n.irisTwoPhotosTitle),
-      subtitle: taken == 0 || full ? l10n.stepPhotoSubtitle : l10n.identifyAnotherPhotoHint,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Flexible(
-            child: AspectRatio(
-              aspectRatio: 4 / 5,
-              // Le cadre suit le viseur : il s'ouvre, il échoue, il rend la main.
-              child: ListenableBuilder(
-                listenable: _camera,
-                builder: (context, _) => Pressable(
-                  // Le cadre est lui-même le déclencheur : viser puis toucher
-                  // l'image suffit, sans descendre jusqu'au bouton.
-                  onTap: _onFrameTap,
-                  scale: 0.98,
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
-                    child: _photoFrame(),
+    final hints = [l10n.viewLeafClose, l10n.viewAnother];
+    final extraIndex = _identificationExtras.length;
+    return ListenableBuilder(
+      listenable: _camera,
+      builder: (context, _) {
+        final live = _camera.isReady;
+        final (title, subtitle) = switch (_mode) {
+          _PhotoMode.aim => (l10n.stepPhotoTitle, l10n.stepPhotoSubtitle),
+          _PhotoMode.review => (
+              l10n.stepPhotoDoneTitle,
+              identifier.isConfigured && !full ? l10n.stepPhotoDoneSubtitle(AppConfig.modelName) : l10n.stepPhotoDonePlain,
+            ),
+          _PhotoMode.extra => (hints[extraIndex.clamp(0, hints.length - 1)], l10n.viewForModel(AppConfig.modelName)),
+        };
+        return _StepLayout(
+          title: title,
+          subtitle: subtitle,
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: AspectRatio(
+                  aspectRatio: 4 / 5,
+                  child: AnimatedSwitcher(
+                    duration: Motion.of(context, Motion.standard),
+                    // La pile du fondu doit remplir le cadre : lâche, elle
+                    // laisserait l'invite flotter au milieu et la photo
+                    // prise reprendre son propre format.
+                    layoutBuilder: (current, previous) => Stack(fit: StackFit.expand, children: [...previous, ?current]),
+                    child: KeyedSubtree(key: ValueKey(_mode == _PhotoMode.review), child: _photoFrame(live: live)),
                   ),
                 ),
               ),
-            ),
-          ),
-          // La bande n'apparaît qu'une fois la première photo prise. Trois
-          // cases vides sur un écran qui n'en demande qu'une en réclameraient
-          // trois ; après le premier déclenchement, elles disent seulement
-          // qu'on peut continuer.
-          if (taken > 0) ...[
-            const SizedBox(height: Space.md),
-            IdentificationPhotoStrip(
-              paths: _identificationPaths,
-              maxPhotos: maxIdentificationPhotos,
-              onAdd: _addAnotherPhoto,
-              onRemove: _removeIdentificationPhoto,
-            ),
-          ],
-        ],
-      ),
-      actions: _photo == null
-          ? [
-              FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
-              const SizedBox(height: Space.xs),
-              FloraButton(label: l10n.choosePhoto, style: FloraButtonStyle.secondary, expand: true, onPressed: _picking ? null : () => _pick(PhotoSource.gallery)),
-              const SizedBox(height: Space.xs),
-              FloraButton(label: l10n.withoutPhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _go(1)),
-            ]
-          : [
-              FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
-              // Une photo de plus reste un geste offert, jamais réclamé :
-              // « Continuer » est au-dessus, et c'est le chemin par défaut.
-              if (!full) ...[
+              // Les vues pour l'identification n'ont de sens que si un
+              // moteur peut les lire : sans lui, rien n'est proposé.
+              if (_mode == _PhotoMode.review && identifier.isConfigured) ...[
+                const SizedBox(height: Space.md),
+                _ViewsStrip(
+                  plantThumb: _photo!.thumbPath,
+                  extras: _identificationExtras,
+                  hints: hints,
+                  onAdd: full ? null : _openExtraSlot,
+                  onRemove: _removeIdentificationPhoto,
+                ),
                 const SizedBox(height: Space.xs),
-                FloraButton(
-                  label: l10n.identifyAnotherPhoto,
-                  icon: CupertinoIcons.camera_fill,
-                  style: FloraButtonStyle.secondary,
-                  expand: true,
-                  loading: _picking,
-                  onPressed: _addAnotherPhoto,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const IrisMark(size: 18),
+                    const SizedBox(width: 6),
+                    // Pliable : à 200 % de Dynamic Type, la phrase ne tient
+                    // plus sur une ligne, et elle ne doit pas se faire couper.
+                    Flexible(child: Text(l10n.viewsCaption(AppConfig.modelName), style: context.text.caption, maxLines: 2)),
+                  ],
                 ),
               ],
-              const SizedBox(height: Space.xs),
-              FloraButton(label: l10n.changePhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _showPhotoSources(replace: true)),
             ],
+          ),
+          actions: switch (_mode) {
+            _PhotoMode.aim => [
+                // Le viseur porte son déclencheur : ici, seulement la porte de
+                // sortie. Sans viseur, les deux gestes reviennent en boutons.
+                if (!live) ...[
+                  FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
+                  const SizedBox(height: Space.xs),
+                  FloraButton(label: l10n.choosePhoto, icon: CupertinoIcons.photo, style: FloraButtonStyle.secondary, expand: true, onPressed: _picking ? null : () => _pick(PhotoSource.gallery)),
+                  const SizedBox(height: Space.xs),
+                ],
+                FloraButton(label: l10n.withoutPhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _go(1)),
+              ],
+            _PhotoMode.review => [
+                FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
+                const SizedBox(height: Space.xs),
+                FloraButton(label: l10n.retake, icon: CupertinoIcons.camera, style: FloraButtonStyle.ghost, expand: true, onPressed: _picking ? null : _retake),
+              ],
+            _PhotoMode.extra => [
+                FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
+                const SizedBox(height: Space.xs),
+                FloraButton(label: l10n.cancel, style: FloraButtonStyle.ghost, expand: true, onPressed: _cancelExtra),
+              ],
+          },
+        );
+      },
     );
   }
 
-  /// Ce que montre le cadre : la photo retenue, le flux de l'appareil, ou —
-  /// faute de viseur — l'invite qui mène à l'appareil photo du système.
-  Widget _photoFrame() {
+  /// Ce que montre le cadre : la photo prise, ou le viseur avec ses
+  /// commandes posées dessus, ou — faute de viseur — l'invite qui mène à
+  /// l'appareil photo du système.
+  Widget _photoFrame({required bool live}) {
     final l10n = context.l10n;
     final c = context.colors;
-    // Le viseur passe devant la photo retenue : elle est dans la bande, en
-    // dessous, et le cadre sert maintenant à la suivante.
-    if (_camera.isReady) return InlineCameraPreview(controller: _camera);
-    if (_photo != null) return PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
-    if (_camera.status == InlineCameraStatus.starting) return Center(child: ClayLoader(size: 32, color: c.sage));
-    // Le cadre rétrécit quand la place manque (petit écran) : l'invite se met
-    // à l'échelle plutôt que de déborder.
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Padding(
-        padding: const EdgeInsets.all(Space.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(CupertinoIcons.camera, size: 44, color: c.sage),
-            const SizedBox(height: Space.sm),
-            Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
-            // Sans l'autorisation, l'aperçu ne viendra jamais : le dire ici,
-            // là où l'utilisateur attend l'image.
-            if (_camera.permissionDenied) ...[
-              const SizedBox(height: Space.xs),
-              // Largeur fixe : sans elle, la phrase tiendrait sur une seule
-              // ligne et la mise à l'échelle rapetisserait tout le bloc.
-              SizedBox(
-                width: 220,
-                child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
+    final Widget content;
+    if (_mode == _PhotoMode.review) {
+      content = PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
+    } else if (live) {
+      content = Stack(
+        fit: StackFit.expand,
+        children: [
+          InlineCameraPreview(controller: _camera),
+          // Le déclencheur, au bas du cadre, comme sur n'importe quel appareil.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: Space.md,
+            child: Center(child: _Shutter(busy: _picking, onTap: _capture)),
+          ),
+          if (_mode == _PhotoMode.aim)
+            Positioned(
+              left: Space.md,
+              bottom: Space.lg,
+              child: FloraIconButton(
+                icon: CupertinoIcons.photo,
+                semanticLabel: l10n.choosePhoto,
+                background: Colors.white.withValues(alpha: 0.85),
+                color: c.ink,
+                onPressed: _picking ? null : () => _pick(PhotoSource.gallery),
               ),
+            ),
+          if (_mode == _PhotoMode.extra)
+            Positioned(
+              top: Space.sm,
+              right: Space.sm,
+              child: FloraIconButton(
+                icon: CupertinoIcons.xmark,
+                semanticLabel: l10n.cancel,
+                background: Colors.white.withValues(alpha: 0.85),
+                color: c.ink,
+                onPressed: _cancelExtra,
+              ),
+            ),
+        ],
+      );
+    } else if (_camera.status == InlineCameraStatus.starting) {
+      content = Center(child: ClayLoader(size: 32, color: c.sage));
+    } else {
+      // Le cadre rétrécit quand la place manque (petit écran) : l'invite se
+      // met à l'échelle plutôt que de déborder.
+      content = FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Padding(
+          padding: const EdgeInsets.all(Space.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(CupertinoIcons.camera, size: 44, color: c.sage),
+              const SizedBox(height: Space.sm),
+              Text(l10n.takePhoto, style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+              // Sans l'autorisation, l'aperçu ne viendra jamais : le dire
+              // ici, là où l'utilisateur attend l'image.
+              if (_camera.permissionDenied) ...[
+                const SizedBox(height: Space.xs),
+                SizedBox(
+                  width: 220,
+                  child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
+      );
+    }
+    final frame = Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.xlAll),
+      child: content,
     );
+    // La photo prise ne se touche pas : « Reprendre » est en dessous. Le
+    // viseur, lui, se déclenche du doigt ; sans viseur, toucher l'invite
+    // ouvre l'appareil photo du système.
+    if (_mode == _PhotoMode.review) return frame;
+    return Pressable(onTap: live ? _capture : () => _pick(PhotoSource.camera), scale: 0.98, haptic: false, child: frame);
   }
 
-  /// Toucher le cadre : c'est le déclencheur quand le viseur est ouvert, et
-  /// le choix de la source dans tous les autres cas.
-  void _onFrameTap() {
-    // Le cadre est le déclencheur tant qu'il reste de la place : viser,
-    // toucher, recommencer — sans redescendre jusqu'au bouton. Sans viseur,
-    // il garde son ancien sens : toucher la photo, c'est la changer.
-    if (_camera.isReady && _identificationPaths.length < maxIdentificationPhotos) {
-      _capture();
-      return;
-    }
-    _showPhotoSources(replace: true);
-  }
-
-  /// Une vue de plus de la même plante — jamais un remplacement.
-  ///
-  /// Sans viseur, l'appareil du système prend le relais ; c'est le seul
-  /// endroit où la distinction compte, parce que la même feuille d'action
-  /// sert aussi à changer la photo de la plante.
-  void _addAnotherPhoto() {
-    if (_camera.isReady) {
-      _capture();
-      return;
-    }
-    _showPhotoSources();
-  }
-
-  /// Les deux sources du système. [replace] dit si la photo choisie prend la
-  /// place de celle de la plante ou s'ajoute aux vues d'identification.
-  Future<void> _showPhotoSources({bool replace = false}) {
+  /// Les deux sources du système, pour une vue de plus quand le viseur
+  /// n'est pas là.
+  Future<void> _showPhotoSources() {
     final l10n = context.l10n;
     return showAdaptiveActionSheet(
       context,
       cancelLabel: l10n.cancel,
       actions: [
-        SheetAction(label: l10n.takePhoto, icon: CupertinoIcons.camera, onPressed: () => _pick(PhotoSource.camera, replace: replace)),
-        SheetAction(label: l10n.choosePhoto, icon: CupertinoIcons.photo, onPressed: () => _pick(PhotoSource.gallery, replace: replace)),
+        SheetAction(label: l10n.takePhoto, icon: CupertinoIcons.camera, onPressed: () => _pick(PhotoSource.camera)),
+        SheetAction(label: l10n.choosePhoto, icon: CupertinoIcons.photo, onPressed: () => _pick(PhotoSource.gallery)),
       ],
     );
   }
@@ -854,6 +914,181 @@ class _IdentificationSuggestions extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Les trois états de l'étape photo.
+enum _PhotoMode { aim, review, extra }
+
+/// Le déclencheur : un anneau blanc et son disque, posés sur le viseur.
+class _Shutter extends StatelessWidget {
+  const _Shutter({required this.onTap, required this.busy});
+
+  final VoidCallback onTap;
+  final bool busy;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Pressable(
+      onTap: busy ? null : onTap,
+      scale: 0.86,
+      semanticLabel: l10n.takePhoto,
+      child: Container(
+        width: 68,
+        height: 68,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 4),
+          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 10, offset: Offset(0, 3))],
+        ),
+        child: Container(
+          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+          alignment: Alignment.center,
+          child: busy ? ClayLoader(size: 16, color: context.colors.sage) : null,
+        ),
+      ),
+    );
+  }
+}
+
+/// La photo de la plante, puis les vues prises pour la reconnaître, chacune
+/// sous son nom ; les emplacements libres disent quoi photographier.
+///
+/// Trois cases égales ne disaient rien : laquelle est la photo de la plante,
+/// à quoi servent les autres, que deviennent-elles. Ici la première est
+/// « Sa photo », les suivantes portent le sujet conseillé, et la légende
+/// sous la bande dit qu'elles ne sont pas gardées.
+class _ViewsStrip extends StatelessWidget {
+  const _ViewsStrip({required this.plantThumb, required this.extras, required this.hints, required this.onAdd, required this.onRemove});
+
+  final String plantThumb;
+  final List<StoredPhoto> extras;
+
+  /// Un sujet conseillé par emplacement libre, dans l'ordre.
+  final List<String> hints;
+
+  /// Nul quand tous les emplacements sont pris.
+  final VoidCallback? onAdd;
+
+  /// Retirer une vue, par son rang global (la photo de la plante est 0).
+  final ValueChanged<int> onRemove;
+
+  static const double _size = 64;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final slots = <Widget>[
+      _slot(context, caption: l10n.viewPlant, child: _thumb(context, PlantImage(relativePath: plantThumb, cacheWidth: 200))),
+      for (final (i, e) in extras.indexed)
+        _slot(
+          context,
+          caption: hints[i.clamp(0, hints.length - 1)],
+          child: _thumb(
+            context,
+            PlantImage(relativePath: e.thumbPath, cacheWidth: 200),
+            onRemove: () => onRemove(i + 1),
+          ),
+        ),
+      for (var i = extras.length; i < hints.length; i++)
+        // Seul le premier emplacement libre écoute : deux cibles pour le
+        // même geste n'en font pas un plus clair. La cible, c'est la tuile
+        // et son libellé ensemble.
+        if (i == extras.length && onAdd != null)
+          Pressable(
+            onTap: onAdd,
+            scale: 0.95,
+            semanticLabel: hints[i],
+            child: _slot(
+              context,
+              caption: hints[i],
+              child: Container(
+                width: _size,
+                height: _size,
+                decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.mediumAll),
+                child: Icon(CupertinoIcons.camera_fill, color: c.sage, size: 22),
+              ),
+            ),
+          )
+        else
+          _slot(
+            context,
+            caption: hints[i],
+            muted: true,
+            child: Container(
+              width: _size,
+              height: _size,
+              decoration: BoxDecoration(borderRadius: Radii.mediumAll, border: Border.all(color: c.line)),
+              child: Icon(CupertinoIcons.plus, color: c.inkTertiary, size: 14),
+            ),
+          ),
+    ];
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final (i, s) in slots.indexed) ...[
+          if (i > 0) const SizedBox(width: Space.sm),
+          s,
+        ],
+      ],
+    );
+  }
+
+  Widget _slot(BuildContext context, {required String caption, required Widget child, bool muted = false}) {
+    return SizedBox(
+      width: 84,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          child,
+          const SizedBox(height: Space.xxs),
+          Text(
+            caption,
+            style: context.text.caption.copyWith(color: muted ? context.colors.inkTertiary : context.colors.inkSecondary, fontSize: 11),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _thumb(BuildContext context, Widget image, {VoidCallback? onRemove}) {
+    final c = context.colors;
+    final clipped = ClipRRect(borderRadius: Radii.mediumAll, child: SizedBox(width: _size, height: _size, child: image));
+    if (onRemove == null) return clipped;
+    return SizedBox(
+      width: _size,
+      height: _size,
+      child: Stack(
+        children: [
+          clipped,
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Pressable(
+              onTap: onRemove,
+              scale: 0.9,
+              minTapTarget: false,
+              semanticLabel: context.l10n.deletePhoto,
+              child: Padding(
+                padding: const EdgeInsets.all(Space.xxs),
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(color: c.surface.withValues(alpha: 0.92), shape: BoxShape.circle),
+                  child: Icon(CupertinoIcons.xmark, size: 11, color: c.ink),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

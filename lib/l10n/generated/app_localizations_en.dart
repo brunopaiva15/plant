@@ -406,7 +406,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepPhotoSubtitle =>
-      'To recognise it, and to find it in your list.';
+      'Frame the whole plant, in natural light. It will be used to recognise it, and to find it in your list.';
 
   @override
   String get takePhoto => 'Take a photo';
@@ -3998,4 +3998,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pause => 'Pause';
+
+  @override
+  String get stepPhotoDoneTitle => 'There it is.';
+
+  @override
+  String stepPhotoDoneSubtitle(String name) {
+    return 'A leaf close up would help $name recognise the species. Optional.';
+  }
+
+  @override
+  String get stepPhotoDonePlain => 'You can add more from its page.';
+
+  @override
+  String get viewPlant => 'Its photo';
+
+  @override
+  String get viewLeafClose => 'A leaf close up';
+
+  @override
+  String get viewAnother => 'Another view';
+
+  @override
+  String viewForModel(String name) {
+    return 'To help $name decide. This view will not be kept.';
+  }
+
+  @override
+  String viewsCaption(String name) {
+    return 'Views for $name, deleted afterwards';
+  }
 }

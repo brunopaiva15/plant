@@ -109,7 +109,7 @@
   "archivedCount": "{count, plural, =1{1 Pflanze archiviert} other{{count} Pflanzen archiviert}}",
   "newPlant": "Neue Pflanze",
   "stepPhotoTitle": "Ein Foto?",
-  "stepPhotoSubtitle": "Zum Erkennen, und zum Wiederfinden in deiner Liste.",
+  "stepPhotoSubtitle": "Nimm die ganze Pflanze ins Bild, bei Tageslicht. Das Foto dient zum Erkennen und zum Wiederfinden in deiner Liste.",
   "takePhoto": "Foto aufnehmen",
   "choosePhoto": "Foto auswählen",
   "withoutPhoto": "Ohne Foto fortfahren",
@@ -1241,5 +1241,13 @@
   "share": "Teilen",
   "addTitle": "Titel hinzufügen",
   "swap": "Tauschen",
-  "pause": "Pause"
+  "pause": "Pause",
+  "stepPhotoDoneTitle": "Da ist sie.",
+  "stepPhotoDoneSubtitle": "Ein Blatt aus der Nähe würde {name} helfen, die Art zu erkennen. Optional.",
+  "stepPhotoDonePlain": "Weitere Fotos kannst du später auf ihrer Seite hinzufügen.",
+  "viewPlant": "Ihr Foto",
+  "viewLeafClose": "Ein Blatt aus der Nähe",
+  "viewAnother": "Eine weitere Ansicht",
+  "viewForModel": "Damit {name} sicher entscheiden kann. Diese Ansicht wird nicht behalten.",
+  "viewsCaption": "Ansichten für {name}, danach gelöscht"
 }

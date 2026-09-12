@@ -109,7 +109,7 @@
   "archivedCount": "{count, plural, =1{1 plant archived} other{{count} plants archived}}",
   "newPlant": "New plant",
   "stepPhotoTitle": "A photo?",
-  "stepPhotoSubtitle": "To recognise it, and to find it in your list.",
+  "stepPhotoSubtitle": "Frame the whole plant, in natural light. It will be used to recognise it, and to find it in your list.",
   "takePhoto": "Take a photo",
   "choosePhoto": "Choose a photo",
   "withoutPhoto": "Continue without photo",
@@ -1241,5 +1241,13 @@
   "share": "Share",
   "addTitle": "Add a title",
   "swap": "Swap",
-  "pause": "Pause"
+  "pause": "Pause",
+  "stepPhotoDoneTitle": "There it is.",
+  "stepPhotoDoneSubtitle": "A leaf close up would help {name} recognise the species. Optional.",
+  "stepPhotoDonePlain": "You can add more from its page.",
+  "viewPlant": "Its photo",
+  "viewLeafClose": "A leaf close up",
+  "viewAnother": "Another view",
+  "viewForModel": "To help {name} decide. This view will not be kept.",
+  "viewsCaption": "Views for {name}, deleted afterwards"
 }
