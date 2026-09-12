@@ -34,6 +34,20 @@ là qu'il faut le lire.
 
 Les ensembles sont **emboîtés** : chaque taille contient la précédente. Sans
 ça, deux points de la courbe ne se compareraient pas.
+
+**`--par-vol` : ajouter par coût, pas par priorité.** La première courbe a
+montré que le coût de l'étendue n'est pas une fonction de *combien*
+d'espèces on ajoute mais de *lesquelles* : une espèce qui ne passe jamais
+devant la bonne réponse sur une image du cœur est gratuite, une espèce qui
+lui ressemble coûte à chaque photo. Pour chaque candidate, on compte donc
+les images du cœur qu'elle ferait basculer de juste à fausse si elle était
+exposée — son **coût de vol** — et on ajoute par coût croissant, la priorité
+de culture ne départageant que les ex æquo.
+
+La sélection se fait sur le split de **validation** et la mesure sur le
+**test** : choisir et mesurer sur les mêmes images flatterait le résultat.
+Une taille de plus est ajoutée d'office à la courbe : le cœur plus toutes
+les espèces qui ne volent rien en validation.
 """
 from __future__ import annotations
 
@@ -41,6 +55,8 @@ import argparse
 import random
 import sys
 from pathlib import Path
+
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'plant_dataset'))
@@ -71,6 +87,33 @@ def ensembles(coeur: list[str], ordre: list[str], toutes: list[str],
     return sortie
 
 
+def couts_de_vol(P: np.ndarray, verite: np.ndarray, coeur: np.ndarray,
+                 candidats: np.ndarray) -> tuple[np.ndarray, int]:
+    """Pour chaque candidate, le nombre d'images du cœur qu'elle ferait
+    basculer de juste à fausse si elle était exposée à côté du cœur.
+
+    Seules comptent les images que le cœur seul reconnaît : une image déjà
+    fausse ne peut pas le devenir davantage, et une candidate n'est jamais
+    la vérité d'une image du cœur. Sur une image juste, le meilleur score du
+    cœur *est* celui de la vérité ; la candidate vole si elle le dépasse.
+
+    `P` : une ligne par image, une colonne par classe du modèle. `verite`,
+    `coeur`, `candidats` : des indices de colonnes. Rend aussi le nombre
+    d'images justes, pour lire les coûts en proportion.
+    """
+    argmax_coeur = coeur[np.argmax(P[:, coeur], axis=1)]
+    juste = argmax_coeur == verite
+    seuil = P[np.arange(len(P)), verite][juste]
+    return (P[juste][:, candidats] > seuil[:, None]).sum(axis=0), int(juste.sum())
+
+
+def ordre_par_vol(couts: dict[str, int], priorite: list[str]) -> list[str]:
+    """Les candidates par coût croissant ; à coût égal, la priorité de
+    culture, puis l'identifiant pour que deux exécutions se ressemblent."""
+    rang = {c: i for i, c in enumerate(priorite)}
+    return sorted(couts, key=lambda c: (couts[c], rang.get(c, len(rang)), c))
+
+
 def lire_ordre(chemin: Path | None) -> list[str]:
     """Les identifiants internes, dans l'ordre de priorité du fichier.
 
@@ -86,7 +129,7 @@ def lire_ordre(chemin: Path | None) -> list[str]:
 
 
 def main() -> int:
-    from compare_models import load_model, predict_rows, read_test, tally
+    from compare_models import load_model, predict_rows, read_rows, read_test, tally
 
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -100,15 +143,46 @@ def main() -> int:
                     help='images de test du cœur ; les autres espèces en reçoivent la moitié')
     ap.add_argument('--seed', type=int, default=20260905)
     ap.add_argument('--seuil', type=float, default=0.70)
+    ap.add_argument('--par-vol', action='store_true',
+                    help='ordonner les ajouts par coût de vol mesuré en validation, '
+                         'la priorité de culture ne départageant que les ex æquo')
+    ap.add_argument('--val-sample', type=int, default=12000,
+                    help='images du cœur en validation pour mesurer les coûts ; 0 = toutes')
     args = ap.parse_args()
 
     modele = load_model(Path(args.modele))
     toutes = modele['labels']
     coeur = Path(args.coeur).read_text(encoding='utf-8').split()
-    jeux = ensembles(coeur, lire_ordre(Path(args.ordre) if args.ordre else None),
-                     toutes, [int(x) for x in args.tailles.split(',')])
-
     socle = set(coeur) & set(toutes)
+    priorite = lire_ordre(Path(args.ordre) if args.ordre else None)
+    tailles = [int(x) for x in args.tailles.split(',')]
+
+    if args.par_vol:
+        # Un générateur à part : le tirage du test doit rester le premier
+        # appel sur `Random(args.seed)`, sinon le garde-fou du § 6.7 bis tombe.
+        val = [(p, t) for p, t, _ in read_rows(Path(args.dataset), 'val') if t in socle]
+        if args.val_sample and len(val) > args.val_sample:
+            val = random.Random(args.seed + 1).sample(val, args.val_sample)
+        print(f'coûts de vol : {len(val)} images du cœur en validation…', flush=True)
+        pv = predict_rows(val, modele)
+        P = np.stack([p for _, p in pv])
+        verite = np.array([modele['index'][t] for t, _ in pv])
+        idx_coeur = np.array(sorted(modele['index'][c] for c in socle))
+        cand_ids = [c for c in toutes if c not in socle]
+        vols, justes = couts_de_vol(P, verite, idx_coeur,
+                                    np.array([modele['index'][c] for c in cand_ids]))
+        couts = dict(zip(cand_ids, (int(v) for v in vols)))
+        priorite = ordre_par_vol(couts, priorite)
+        paliers = [(0, 'ne volent rien'), (2, 'en volent ≤ 2'), (5, '≤ 5'), (20, '≤ 20')]
+        print(f'  {justes} images justes avec le cœur seul ; sur {len(couts)} candidates, '
+              + ', '.join(f'{sum(1 for v in couts.values() if v <= n)} {mot}' for n, mot in paliers)
+              + f', {sum(1 for v in couts.values() if v > 20)} plus de 20')
+        gratuites = sum(1 for v in couts.values() if v == 0)
+        tailles.append(len(socle) + gratuites)
+        print(f'  → taille ajoutée à la courbe : {len(socle) + gratuites} '
+              f'(le cœur plus les {gratuites} gratuites)\n')
+
+    jeux = ensembles(coeur, priorite, toutes, tailles)
     rows = [(p, t, c) for p, t, c in read_test(Path(args.dataset)) if t in modele['index']]
 
     # Le tirage du cœur reproduit celui de `compare_models.py` — même graine,
