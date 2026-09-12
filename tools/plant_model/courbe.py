@@ -36,6 +36,7 @@ import random
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'plant_dataset'))
 
 
@@ -123,16 +124,20 @@ def main() -> int:
 
     print('inférence, une fois pour toutes…', flush=True)
     pred = predict_rows(rows, modele)
+    def cellule(valeur) -> str:
+        return '—' if valeur is None else f'{valeur:.4f}'
+
+    pred_coeur = [(t, p) for t, p in pred if t in socle]
     print(f"\n{'exposées':>9}  {'cœur : top1':>12} {'top3':>7} {'autonomie':>10} {'justesse':>9}"
           f"   {'ajoutées : top1':>16} {'images':>7}")
     for n in sorted(jeux):
         garde = set(jeux[n])
-        au_coeur = [(t, p) for t, p in pred if t in socle]
-        ajoutees = [(t, p) for t, p in pred if t in garde and t not in socle]
-        c = tally(au_coeur, modele, garde, renormalise=True, seuil=args.seuil)
-        a = tally(ajoutees, modele, garde, renormalise=True, seuil=args.seuil) if ajoutees else {}
-        print(f'{n:>9}  {c["top1"]:>12} {c["top3"]:>7} {c["accepted_rate"]:>10} '
-              f'{c["precision_when_accepted"]:>9}   {a.get("top1", "—"):>16} {a.get("images", 0):>7}')
+        pred_ajoutees = [(t, p) for t, p in pred if t in garde and t not in socle]
+        c = tally(pred_coeur, modele, garde, renormalise=True, seuil=args.seuil)
+        a = tally(pred_ajoutees, modele, garde, renormalise=True, seuil=args.seuil) if pred_ajoutees else {}
+        print(f'{n:>9}  {cellule(c["top1"]):>12} {cellule(c["top3"]):>7} '
+              f'{cellule(c["accepted_rate"]):>10} {cellule(c["precision_when_accepted"]):>9}   '
+              f'{cellule(a.get("top1")):>16} {a.get("images", 0):>7}')
     print(f'\ncœur mesuré sur {len(socle)} espèces, les mêmes à chaque ligne.')
     return 0
 
