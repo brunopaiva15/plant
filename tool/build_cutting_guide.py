@@ -21,7 +21,7 @@
 # bouger.
 #
 # Execution :
-#   blender -b -noaudio -P tool/build_cutting_guide.py -- <res> <samples> <dossier> [apercu]
+#   blender -b -noaudio -P tool/build_cutting_guide.py -- <res> <samples> <dossier> [apercu|complet [etape_N]]
 # puis, pour chaque etape :
 #   python3 tool/pack_growth.py <dossier>/etape_1 assets/cutting/etape_1.webp --fps 14
 # ============================================================
@@ -36,10 +36,11 @@ from clay_scene import (  # noqa: E402  — le chemin doit etre pose avant
 )
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
-RES = int(argv[0]) if len(argv) > 0 else 832
-SAMPLES = int(argv[1]) if len(argv) > 1 else 36
+RES = int(argv[0]) if len(argv) > 0 else 768
+SAMPLES = int(argv[1]) if len(argv) > 1 else 32
 DOSSIER = argv[2] if len(argv) > 2 else "/tmp/bouture"
-# En apercu, quatre images par etape suffisent a juger la scene.
+# En apercu, quatre images par etape suffisent a juger la scene. Le quatrieme
+# argument peut etre « complet », pour ne rendre qu'une etape en entier.
 APERCU = len(argv) > 3 and argv[3] == "apercu"
 SEULE = argv[4] if len(argv) > 4 else None
 

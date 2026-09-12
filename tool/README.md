@@ -145,8 +145,9 @@ bouger.
 ```bash
 # aperçu : quatre images par étape, ~1 min
 blender -b -noaudio -P tool/build_cutting_guide.py -- 400 16 /tmp/bouture apercu
-# une seule étape
+# une seule étape, en aperçu ou en entier
 blender -b -noaudio -P tool/build_cutting_guide.py -- 400 16 /tmp/bouture apercu etape_5
+blender -b -noaudio -P tool/build_cutting_guide.py -- 768 32 /tmp/bouture complet etape_5
 # rendu complet : ~200 images, ~1 h sur quatre cœurs
 blender -b -noaudio -P tool/build_cutting_guide.py -- 768 32 /tmp/bouture
 for i in 1 2 3 4 5 6; do
