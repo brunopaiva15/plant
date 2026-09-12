@@ -177,8 +177,18 @@
   "strategyManual": "Manuale",
   "strategySeasonalHint": "Meno spesso in inverno, più spesso in estate.",
   "strategyManualHint": "Nessun promemoria automatico.",
+  "strategyFixedHint": "Lo stesso intervallo tutto l'anno.",
   "enabled": "Attiva",
   "interval": "Intervallo",
+  "intervalSuggested": "Intervallo consigliato",
+  "intervalSuggestedDays": "{count, plural, =1{Intervallo consigliato: 1 giorno} other{Intervallo consigliato: {count} giorni}}",
+  "@intervalSuggestedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "daysCount": "{count, plural, =1{1 giorno} other{{count} giorni}}",
   "lastDone": "Ultima: {date}",
   "nextDue": "Prossima: {date}",
@@ -640,6 +650,7 @@
   "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
   "diagnosisUnauthorized": "La diagnosi non è disponibile al momento. Riprova più tardi.",
   "possibleCauses": "Cause possibili",
+  "causesHint": "Ordinate per verosimiglianza, da confermare.",
   "likelihoodLikely": "Probabile",
   "likelihoodPossible": "Possibile",
   "likelihoodUnlikely": "Poco probabile",

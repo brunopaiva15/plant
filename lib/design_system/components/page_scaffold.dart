@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
+import 'buttons.dart';
 
 
 /// La physique de défilement de toutes les pages : le rebond d'iOS, et rien
@@ -55,6 +56,27 @@ class SliverCentered extends StatelessWidget {
   }
 }
 
+/// Le bouton de retour d'une page à grand titre, quand il y a où revenir.
+///
+/// Les quatre onglets sont des racines : rien à dépiler, et la barre reste
+/// nue. Mais le même gabarit sert aussi à des pages poussées — « Anciennes
+/// plantes », ouverte depuis les réglages —, qui n'offraient alors aucun
+/// retour visible : seuls le glissement d'iOS et le geste système d'Android
+/// ramenaient en arrière. Le bouton apparaît donc de lui-même là où la pile
+/// le permet, sans que la page ait à y penser.
+///
+/// Le libellé vient des localisations de Flutter — « Retour », « Back »,
+/// « Zurück », « Indietro » —, comme pour le retour natif de [FloraPage] : le
+/// design system ne lit pas les ARB, ses textes lui sont passés.
+Widget? _impliedBackButton(BuildContext context) {
+  if (!(ModalRoute.of(context)?.canPop ?? false)) return null;
+  return FloraIconButton(
+    icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded,
+    semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
+    onPressed: () => Navigator.of(context).maybePop(),
+  );
+}
+
 /// Page à grand titre (onglets) : CupertinoSliverNavigationBar natif sur iOS,
 /// SliverAppBar.large sur Android. Le contenu est une liste de slivers.
 class LargeTitlePage extends StatelessWidget {
@@ -80,11 +102,12 @@ class LargeTitlePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final lead = leading ?? _impliedBackButton(context);
     final Widget header;
     if (isCupertino(context)) {
       header = CupertinoSliverNavigationBar(
         largeTitle: Text(title),
-        leading: leading,
+        leading: lead,
         trailing: trailing,
         backgroundColor: c.canvas.withValues(alpha: 0.82),
         border: null,
@@ -103,7 +126,7 @@ class LargeTitlePage extends StatelessWidget {
     } else {
       header = SliverAppBar.large(
         title: Text(title),
-        leading: leading,
+        leading: lead,
         automaticallyImplyLeading: false,
         actions: trailing == null ? null : [Padding(padding: const EdgeInsets.only(right: Space.xs), child: trailing)],
         backgroundColor: c.canvas,

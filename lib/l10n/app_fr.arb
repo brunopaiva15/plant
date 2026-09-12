@@ -312,8 +312,18 @@
   "strategyManual": "Manuel",
   "strategySeasonalHint": "Espacé en hiver, rapproché en été.",
   "strategyManualHint": "Aucun rappel automatique.",
+  "strategyFixedHint": "Le même intervalle toute l'année.",
   "enabled": "Activée",
   "interval": "Intervalle",
+  "intervalSuggested": "Intervalle conseillé",
+  "intervalSuggestedDays": "{count, plural, =1{Intervalle conseillé : 1 jour} other{Intervalle conseillé : {count} jours}}",
+  "@intervalSuggestedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "daysCount": "{count, plural, =1{1 jour} other{{count} jours}}",
   "@daysCount": {
     "placeholders": {
@@ -878,6 +888,7 @@
   "diagnosisRefused": "L'analyse n'a pas pu être effectuée pour cette photo.",
   "diagnosisUnauthorized": "Le diagnostic est indisponible pour le moment. Réessayez plus tard.",
   "possibleCauses": "Pistes possibles",
+  "causesHint": "Classées par vraisemblance, à confirmer.",
   "likelihoodLikely": "Probable",
   "likelihoodPossible": "Possible",
   "likelihoodUnlikely": "Peu probable",

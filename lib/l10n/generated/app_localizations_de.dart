@@ -629,10 +629,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get strategyManualHint => 'Keine automatische Erinnerung.';
 
   @override
+  String get strategyFixedHint => 'Das ganze Jahr dasselbe Intervall.';
+
+  @override
   String get enabled => 'Aktiv';
 
   @override
   String get interval => 'Intervall';
+
+  @override
+  String get intervalSuggested => 'Empfohlenes Intervall';
+
+  @override
+  String intervalSuggestedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Empfohlenes Intervall: $count Tage',
+      one: 'Empfohlenes Intervall: 1 Tag',
+    );
+    return '$_temp0';
+  }
 
   @override
   String daysCount(int count) {
@@ -1721,6 +1738,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get possibleCauses => 'Mögliche Ursachen';
+
+  @override
+  String get causesHint => 'Nach Wahrscheinlichkeit geordnet, zu bestätigen.';
 
   @override
   String get likelihoodLikely => 'Wahrscheinlich';
