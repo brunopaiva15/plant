@@ -116,6 +116,19 @@ for f in glob.glob('/tmp/collection/*.png'):
     Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
 ```
 
+# La maison (« Votre intérieur », Apple Maison)
+
+`build_home.py` rend la maison d'argile de l'étape Apple Maison de
+l'onboarding, dans le même studio et les mêmes matériaux que les autres
+objets : murs crème, toit de terre cuite, porte sauge, fenêtres rondes
+couleur d'eau, cheminée. Sans ombre au sol, comme les autres : l'application
+la dessine.
+
+```bash
+# ~2 min sur quatre cœurs ; --resolution 512 --samples 16 pour un aperçu
+blender -b -noaudio -t 4 -P tool/build_home.py -- --output assets/onboarding/onboarding_7.png
+```
+
 # Les quatre familles de problèmes
 
 `build_category_logos.py` rend les symboles des quatre valeurs du champ `type`

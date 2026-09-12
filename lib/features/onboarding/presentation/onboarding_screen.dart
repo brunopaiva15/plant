@@ -54,6 +54,9 @@ final _slides = <_Slide>[
 /// Couleur de l'étape « Où sont vos plantes ? », qui suit les présentations.
 Color _placeTint(FloraColors c) => c.water;
 
+/// Couleur de l'étape « Votre intérieur », la maison d'Apple Maison.
+Color _homeTint(FloraColors c) => c.sun;
+
 /// Présentation animée, le lieu de la météo, la maison (là où Apple Maison
 /// existe), le prénom, le compte (là où Sign in with Apple existe), puis le
 /// soutien facultatif au développeur.
@@ -133,8 +136,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   int get _supportIndex => _nameIndex + (_hasAccount ? 2 : 1);
   int get _pageCount => _nameIndex + (_hasAccount ? 3 : 2);
 
-  /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu.
-  int get _objectCount => _slides.length + 1;
+  /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu,
+  /// plus la maison là où Apple Maison existe.
+  int get _objectCount => _slides.length + (_hasHome ? 2 : 1);
 
   /// En-tête (« Passer ») et pied (points, bouton), avec leurs marges.
   static const double _topHeight = Space.sm + 40;
@@ -276,7 +280,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
 
   /// La couleur de l'écran, déjà mêlée à celle du suivant pendant le geste.
   Color _tint(FloraColors c) {
-    final tints = [for (final slide in _slides) slide.tint(c), _placeTint(c)];
+    final tints = [for (final slide in _slides) slide.tint(c), _placeTint(c), if (_hasHome) _homeTint(c)];
     final o = _offset.clamp(0.0, (tints.length - 1).toDouble());
     final i = o.floor();
     final next = math.min(i + 1, tints.length - 1);
