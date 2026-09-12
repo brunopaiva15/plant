@@ -11,7 +11,7 @@ import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
-import '../../account/presentation/account_screen.dart' show signInAvailable;
+import '../../account/application/sign_in_availability.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
 
 /// Profil : prénom, apparence, notifications, données, sources.

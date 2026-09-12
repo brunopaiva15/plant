@@ -1,13 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
 import '../application/membership_providers.dart';
+import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel, leaveGarden;
 import 'invite_sheet.dart';
 
@@ -30,9 +33,17 @@ class MembersScreen extends ConsumerWidget {
     final gardenName = gardenLabel(context, ref.watch(activeGardenNameProvider).value ?? '', isMine: isOwner);
 
     if (!service.isAvailable || !signedIn) {
+      final canSignIn = signInAvailable(ref.watch(authRepositoryProvider));
       return FloraPage(
         title: l10n.membersTitle,
-        child: EmptyState(emoji: '🤝', title: l10n.collaborationNeedsAccount, subtitle: l10n.signInHint, compact: true),
+        child: EmptyState(
+          emoji: '🤝',
+          title: l10n.collaborationNeedsAccount,
+          subtitle: canSignIn ? l10n.signInHint : l10n.localAccountHint,
+          actionLabel: canSignIn ? l10n.signIn : null,
+          onAction: canSignIn ? () => context.push(Routes.account) : null,
+          compact: true,
+        ),
       );
     }
 

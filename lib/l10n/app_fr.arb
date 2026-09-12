@@ -1731,6 +1731,7 @@
   "joinInvalid": "Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n'existe pas.",
   "joinWrongEmail": "Cette invitation est réservée à une autre adresse e-mail.",
   "joinNeedsAccount": "Il faut un compte pour rejoindre un jardin.",
+  "joinSignInHint": "Un compte suffit pour rejoindre ce jardin : votre identifiant Apple, rien d'autre à créer.",
   "joinInvitedBy": "{name} vous invite dans « {garden} »",
   "@joinInvitedBy": {
     "placeholders": {

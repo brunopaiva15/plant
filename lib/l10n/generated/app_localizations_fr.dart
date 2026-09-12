@@ -3801,6 +3801,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get joinNeedsAccount => 'Il faut un compte pour rejoindre un jardin.';
 
   @override
+  String get joinSignInHint =>
+      'Un compte suffit pour rejoindre ce jardin : votre identifiant Apple, rien d\'autre à créer.';
+
+  @override
   String joinInvitedBy(String name, String garden) {
     return '$name vous invite dans « $garden »';
   }

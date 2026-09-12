@@ -6468,6 +6468,12 @@ abstract class AppLocalizations {
   /// **'Il faut un compte pour rejoindre un jardin.'**
   String get joinNeedsAccount;
 
+  /// No description provided for @joinSignInHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte suffit pour rejoindre ce jardin : votre identifiant Apple, rien d\'autre à créer.'**
+  String get joinSignInHint;
+
   /// No description provided for @joinInvitedBy.
   ///
   /// In fr, this message translates to:

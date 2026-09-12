@@ -13,7 +13,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/weather/weather.dart';
-import '../../account/presentation/account_screen.dart' show signInAvailable;
+import '../../account/application/sign_in_availability.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';

@@ -12,6 +12,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
 import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
 import '../application/membership_providers.dart';
+import '../application/sign_in_availability.dart';
 import 'join_garden_sheet.dart';
 
 /// Mes jardins : le sien, ceux qu'on lui a partagés, et de quoi en rejoindre
@@ -41,7 +42,16 @@ class GardensScreen extends ConsumerWidget {
             )
           : null,
       child: !service.isAvailable || !signedIn
-          ? EmptyState(emoji: '🌱', title: l10n.collaborationNeedsAccount, subtitle: l10n.signInHint, actionLabel: l10n.signIn, onAction: () => context.push(Routes.account))
+          ? Builder(builder: (context) {
+              final canSignIn = signInAvailable(ref.watch(authRepositoryProvider));
+              return EmptyState(
+                emoji: '🌱',
+                title: l10n.collaborationNeedsAccount,
+                subtitle: canSignIn ? l10n.signInHint : l10n.localAccountHint,
+                actionLabel: canSignIn ? l10n.signIn : null,
+                onAction: canSignIn ? () => context.push(Routes.account) : null,
+              );
+            })
           : gardens.when(
               loading: () => const Padding(padding: EdgeInsets.all(Space.xxl), child: Center(child: AdaptiveProgress())),
               error: (_, _) => EmptyState(emoji: '📡', title: l10n.genericError, compact: true),

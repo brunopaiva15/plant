@@ -1174,6 +1174,7 @@
   "joinInvalid": "Questo codice non vale più. Già usato, scaduto o inesistente.",
   "joinWrongEmail": "Questo invito è riservato a un altro indirizzo e-mail.",
   "joinNeedsAccount": "Serve un account per unirsi a un giardino.",
+  "joinSignInHint": "Per entrare in questo giardino basta un account: il tuo ID Apple, nient'altro da creare.",
   "joinInvitedBy": "{name} vi invita in «{garden}»",
   "joinGardenName": "Invito in «{garden}»",
   "joinAsMember": "Potrete aggiungere, modificare ed eliminare piante.",

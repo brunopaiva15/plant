@@ -14,14 +14,8 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/sync/sync_state.dart';
 import '../application/membership_providers.dart';
+import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel;
-
-/// `true` quand l'écran Compte peut proposer une connexion : un backend
-/// configuré, et une plateforme où Sign in with Apple existe. Pas de
-/// connexion par e-mail sur Auxine, et Google n'est pas livré : sur Android,
-/// le compte reste local, exactement comme sans backend.
-bool signInAvailable(AuthRepository auth) =>
-    auth.supportsRemote && (defaultTargetPlatform == TargetPlatform.iOS || AppConfig.googleSignInEnabled);
 
 /// Compte : connexion (Apple sur iOS ; Google derrière
 /// `AppConfig.googleSignInEnabled`), état de synchronisation.

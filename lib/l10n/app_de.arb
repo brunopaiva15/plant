@@ -1174,6 +1174,7 @@
   "joinInvalid": "Dieser Code gilt nicht mehr. Bereits benutzt, abgelaufen oder unbekannt.",
   "joinWrongEmail": "Diese Einladung gilt für eine andere E-Mail-Adresse.",
   "joinNeedsAccount": "Für den Beitritt zu einem Garten braucht es ein Konto.",
+  "joinSignInHint": "Für diesen Garten brauchst du nur ein Konto: deine Apple-ID, nichts weiter anzulegen.",
   "joinInvitedBy": "{name} lädt Sie in „{garden}“ ein",
   "joinGardenName": "Einladung in „{garden}“",
   "joinAsMember": "Sie können Pflanzen hinzufügen, ändern und löschen.",

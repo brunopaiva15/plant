@@ -1174,6 +1174,7 @@
   "joinInvalid": "This code is no longer valid. It has been used, has expired, or never existed.",
   "joinWrongEmail": "This invitation is reserved for another email address.",
   "joinNeedsAccount": "You need an account to join a garden.",
+  "joinSignInHint": "An account is all it takes to join this garden: your Apple ID, nothing else to create.",
   "joinInvitedBy": "{name} invites you to “{garden}”",
   "joinGardenName": "Invitation to “{garden}”",
   "joinAsMember": "You will be able to add, edit and delete plants.",
