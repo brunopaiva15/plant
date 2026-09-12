@@ -15,6 +15,7 @@ import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../tasks/application/task_providers.dart';
 import '../../tasks/presentation/task_row.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../weather/presentation/weather_widgets.dart';
 import '../application/completed_tasks.dart';
 import 'care_task_card.dart';
@@ -72,7 +73,7 @@ class TodayScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xs),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text(Dates.longDate(context, now), style: context.text.callout), const WeatherLine()],
+              children: [Text(Dates.longDate(context, now), style: context.text.callout), const WeatherLine(), const HomeClimateLine()],
             ),
           ),
         ),
@@ -86,6 +87,7 @@ class TodayScreen extends ConsumerWidget {
             ),
           ),
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
+        const SliverToBoxAdapter(child: HomeClimateAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
         if (plantCount == 0 && tasks.hasValue)
           SliverCentered(

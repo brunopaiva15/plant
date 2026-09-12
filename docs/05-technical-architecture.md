@@ -17,6 +17,7 @@
 | Diagnostic | AI Services d'Infomaniak, route compatible OpenAI (`PlantDiagnoser`) | clé de l'éditeur au build, modèle choisi au build, sans plafond |
 | Complément de fiche | AI Services d'Infomaniak (`CareCompleter`) | seulement quand le catalogue n'a que des repères généraux ; nom scientifique seul, réponse gardée sur l'appareil |
 | Météo | Open-Meteo (`WeatherService`) | gratuit, sans compte |
+| Climat de la maison | HomeKit, par un canal natif (`HomeClimateService` → `ios/Runner/HomeClimateChannel.swift`) | iPhone et iPad seulement ; lecture de deux caractéristiques, rien d'écrit, rien ne sort de l'appareil |
 
 ## Couches
 ```
@@ -69,3 +70,29 @@ Règle : les widgets ne connaissent ni drift ni la plateforme ; ils consomment d
 - `test/domain/care_engine_test.dart` : calculs d'échéances (fixe, saisonnier, manuel, retards).
 - `test/data/*_repository_test.dart` : repositories sur base en mémoire (créer plante, arroser, archiver / restaurer, recherche).
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
+
+## Apple Maison (`domain/home/`, `features/home_climate/`)
+La météo dit ce qu'il fait dehors ; un capteur HomeKit dit ce qu'il fait
+dans le salon. L'application en lit deux caractéristiques, la température
+et l'humidité relative, et rien d'autre.
+
+- `HomeClimateService` : trois questions — l'accès accordé ou non, la liste
+  des accessoires qui mesurent l'une ou l'autre, la mesure de l'un d'eux.
+  Implémentation `HomeKitClimateService` sur un `MethodChannel`
+  (`ch.vergasta.plant/home_climate`), muette hors iOS ; le natif est dans
+  `ios/Runner/HomeClimateChannel.swift` (`HMHomeManager`, délai de dix
+  secondes, dernière valeur connue si l'accessoire ne répond pas).
+- Le capteur retenu est en préférences (`home_sensor`, `id|nom|pièce`) ; la
+  mesure ne l'est jamais, elle se relit toutes les quinze minutes
+  (`homeReadingProvider`).
+- `HomeClimateAdvisor` compare la mesure aux fiches des plantes d'intérieur
+  (celles qui ne sont pas dans un emplacement « extérieur », et seulement
+  celles de la pièce si un emplacement porte le nom de la pièce du capteur) :
+  air sec sous 45 % pour les espèces à forte humidité, sous 30 % pour les
+  autres ; air humide au-delà de 70 % ; froid sous le minimum de l'espèce ;
+  chaleur au-delà de sa plage idéale, ou de 30° sans plage.
+- Le diagnostic joint la mesure à la question, pour une plante qui n'est pas
+  dehors, et le dit sous le champ des symptômes.
+- Réglages : `NSHomeKitUsageDescription` dans `Info.plist`, entitlement
+  `com.apple.developer.homekit`, capability *HomeKit* sur l'App ID. Sans
+  capteur dans la maison, l'étape d'onboarding se passe d'un geste.

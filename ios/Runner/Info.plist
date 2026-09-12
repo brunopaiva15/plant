@@ -84,6 +84,8 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Auxine utilise votre position, une fois, pour trouver la ville de la météo. Elle n'est ni gardée ni partagée.</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>Auxine lit la température et l'humidité de vos capteurs Apple Maison pour adapter les conseils et les diagnostics de vos plantes d'intérieur. Rien n'est écrit dans votre maison, rien ne quitte l'appareil.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Auxine utilise l'appareil photo pour photographier vos plantes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

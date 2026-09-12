@@ -281,6 +281,95 @@
   "useMyLocation": "Usa la mia posizione",
   "locating": "Ricerca della tua città…",
   "locationFailed": "Posizione non disponibile. Potrai scegliere una città in Profilo › Meteo.",
+  "onbHomeTitle": "La vostra casa",
+  "onbHomeBody": "I sensori di Casa di Apple danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.",
+  "homeClimate": "Casa di Apple",
+  "homeClimateHint": "Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Lettura sul dispositivo, nulla viene inviato.",
+  "homeClimateConnect": "Collega Casa di Apple",
+  "homeClimateSearching": "Ricerca dei sensori…",
+  "homeClimateSensor": "Sensore",
+  "homeClimateSensors": "Sensori trovati",
+  "homeClimateNone": "Nessun sensore",
+  "homeClimateRemove": "Rimuovi sensore",
+  "homeClimateReading": "Misura",
+  "homeClimateUnavailable": "Sensore non raggiungibile per ora.",
+  "homeClimateUpdatedAgo": "{minutes, plural, =0{Adesso} =1{1 min fa} other{{minutes} min fa}}",
+  "@homeClimateUpdatedAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeClimateNoSensors": "Nessun sensore di temperatura o umidità in Casa di Apple.",
+  "homeClimateDenied": "Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.",
+  "homeClimateFailed": "Casa di Apple non disponibile. Potrai collegare un sensore in Profilo › Casa di Apple.",
+  "homeClimateAtHome": "Da voi",
+  "homeClimateFits": "Nell'intervallo della specie.",
+  "homeClimateTooDry": "Aria troppo secca per questa specie.",
+  "homeClimateTooHumid": "Aria troppo umida per questa specie.",
+  "homeClimateTooCold": "Troppo freddo per questa specie.",
+  "homeClimateTooHot": "Troppo caldo per questa specie.",
+  "homeTipDryAir": "Aria secca ({humidity} %): nebulizzare o raggruppare {names}.",
+  "@homeTipDryAir": {
+    "placeholders": {
+      "humidity": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTipHumidAir": "Aria umida ({humidity} %): arieggiare la stanza.",
+  "@homeTipHumidAir": {
+    "placeholders": {
+      "humidity": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTipHumidAirPlants": "Aria umida ({humidity} %): arieggiare, e lasciare asciugare {names} tra due annaffiature.",
+  "@homeTipHumidAirPlants": {
+    "placeholders": {
+      "humidity": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTipCold": "{temperature} da voi: troppo freddo per {names}.",
+  "@homeTipCold": {
+    "placeholders": {
+      "temperature": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTipHot": "{temperature} da voi: {names} si asciugano più in fretta, controllare la terra.",
+  "@homeTipHot": {
+    "placeholders": {
+      "temperature": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisWithHome": "Misura di Casa di Apple allegata: {reading}.",
+  "@diagnosisWithHome": {
+    "placeholders": {
+      "reading": {
+        "type": "String"
+      }
+    }
+  },
   "placeChosen": "Meteo impostato su {place}.",
   "@placeChosen": {"placeholders": {"place": {"type": "String"}}},
   "askNameTitle": "Il vostro nome",

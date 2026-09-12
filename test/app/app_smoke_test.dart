@@ -295,7 +295,7 @@ void main() {
     await tester.pump();
     await tester.tap(laterOnPlace);
     await step(tester);
-    expect(find.text('Comment vous appelez-vous\u00a0?'), findsOneWidget);
+    expect(find.text('Votre prénom'), findsOneWidget);
     await tester.enterText(find.byType(EditableText), 'Bruno');
     final laterOnName = find.text('Plus tard').last;
     await tester.ensureVisible(laterOnName);

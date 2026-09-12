@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../home/home_climate.dart';
 import '../problems/plant_problem.dart';
 
 /// À quel point une piste tient debout, en trois crans.
@@ -131,6 +132,11 @@ abstract class PlantDiagnoser {
 
     /// Parmi eux, ceux que la fiche d'entretien signale pour l'espèce.
     Set<String> frequentIds = const {},
+
+    /// Le climat mesuré chez l'utilisateur (Apple Maison), pour une plante
+    /// d'intérieur. Un air à 30 % explique des pointes sèches mieux qu'une
+    /// photo ; sans capteur, ou pour une plante dehors, rien n'est transmis.
+    HomeReading? indoorClimate,
   });
 }
 
@@ -147,6 +153,7 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     String? symptoms,
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
+    HomeReading? indoorClimate,
   }) =>
       throw const DiagnosisException('unconfigured');
 }

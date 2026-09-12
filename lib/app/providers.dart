@@ -23,6 +23,7 @@ import '../data/services/infomaniak_advisor.dart';
 import '../data/services/infomaniak_care_completer.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
+import '../data/services/home_kit_climate_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
 import '../data/sharing/supabase_collaboration_service.dart';
@@ -47,6 +48,7 @@ import '../data/services/preferences_service.dart';
 import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
 import '../domain/diagnosis/plant_diagnoser.dart';
+import '../domain/home/home_climate.dart';
 import '../domain/species/plant_advisor.dart';
 import '../domain/species/plant_finder.dart';
 import '../domain/location/location_service.dart';
@@ -203,6 +205,7 @@ class AppPreferences {
     required this.identificationFallbackEnabled,
     required this.careAssistEnabled,
     required this.weatherPlace,
+    required this.homeSensor,
     required this.archiveName,
   });
 
@@ -227,6 +230,10 @@ class AppPreferences {
   /// Complément des fiches d'entretien par l'IA autorisé.
   final bool careAssistEnabled;
   final WeatherPlace? weatherPlace;
+
+  /// Le capteur d'Apple Maison qui donne le climat de l'intérieur, ou `null`
+  /// tant que rien n'est branché.
+  final HomeSensor? homeSensor;
 
   /// Nom donné aux archives, vide si l'utilisateur garde celui par défaut.
   final String archiveName;
@@ -256,6 +263,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       identificationFallbackEnabled: s.identificationFallbackEnabled,
       careAssistEnabled: s.careAssistEnabled,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
+      homeSensor: HomeSensor.decode(s.homeSensor),
       archiveName: s.archiveName,
     );
   }
@@ -280,6 +288,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
+  Future<void> setHomeSensor(HomeSensor? sensor) => _apply((s) => sensor == null ? s.clearHomeSensor() : s.setHomeSensor(sensor.encode()));
   Future<void> setArchiveName(String name) => _apply((s) => s.setArchiveName(name));
   Future<void> setDisplayName(String name) async {
     await ref.read(authRepositoryProvider).updateDisplayName(name);
@@ -370,6 +379,14 @@ final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoServic
 /// La position de l'appareil, pour proposer le lieu de la météo à
 /// l'onboarding. Remplacée dans les tests par un service muet.
 final locationServiceProvider = Provider<LocationService>((ref) => const DeviceLocationService());
+
+/// Les capteurs d'Apple Maison, là où HomeKit existe : iPhone et iPad.
+/// Ailleurs le service est muet, et l'étape comme le réglage n'apparaissent
+/// pas — on ne propose pas une maison qu'on ne peut pas lire.
+final homeClimateServiceProvider = Provider<HomeClimateService>((ref) {
+  if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return const UnavailableHomeClimateService();
+  return HomeKitClimateService();
+});
 
 /// Soutien facultatif : le magasin de la plateforme là où il y en a un.
 /// Ailleurs — le web, le bureau, les tests — l'offre est simplement absente.
@@ -479,6 +496,9 @@ final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide())
 /// catalogue étendu s'il est déjà chargé. Sans lui, la fiche d'entretien
 /// d'une plante hors catalogue retomberait sur le profil générique.
 String? Function(String?) speciesFamilyLookup(WidgetRef ref) => _familyIn(ref.watch(speciesIndexProvider).value);
+
+/// Même recherche depuis un provider, qui n'a qu'un `Ref`.
+String? Function(String?) speciesFamilyLookupIn(Ref ref) => _familyIn(ref.watch(speciesIndexProvider).value);
 
 /// Même recherche, mais hors `build` (initialisation d'un écran), là où
 /// `watch` n'a pas cours.

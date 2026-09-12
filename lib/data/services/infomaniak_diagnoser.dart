@@ -8,6 +8,7 @@ import 'package:image/image.dart' as img;
 
 import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
+import '../../domain/home/home_climate.dart';
 import '../../domain/problems/plant_problem.dart';
 
 /// Diagnostic par les AI Services d'Infomaniak (hébergés en Suisse), via
@@ -43,6 +44,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? symptoms,
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
+    HomeReading? indoorClimate,
   }) async {
     if (!isConfigured) throw const DiagnosisException('unconfigured');
     if (images.isEmpty) throw const DiagnosisException('no_images');
@@ -61,6 +63,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           symptoms: symptoms,
           candidates: candidates,
           frequentIds: frequentIds,
+          indoorClimate: indoorClimate,
         ),
       },
     ];
@@ -251,10 +254,15 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? symptoms,
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
+    HomeReading? indoorClimate,
   }) {
     final parts = <String>[
       if (plantName != null && plantName.isNotEmpty) 'Plant: $plantName.',
       if (species != null && species.isNotEmpty) 'Species: $species.',
+      // Ce que le capteur de la maison mesure, quand il y en a un : une
+      // donnée de plus pour départager un air sec d'un manque d'eau, jamais
+      // une réponse.
+      ?climateLine(indoorClimate),
       // La base locale, réduite à ce qui peut concerner cette plante. Elle
       // donne au modèle un vocabulaire au lieu de le laisser improviser un
       // nom à chaque analyse, et c'est ce nom-là que l'application affichera.
@@ -263,6 +271,18 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
+  }
+
+  /// La phrase qui décrit le climat mesuré, ou `null` s'il n'y a rien à dire.
+  static String? climateLine(HomeReading? reading) {
+    if (reading == null || reading.isEmpty) return null;
+    final facts = [
+      if (reading.temperatureC != null) '${reading.temperatureC!.toStringAsFixed(1)} °C',
+      if (reading.humidity != null) '${reading.humidity} % relative humidity',
+    ];
+    final room = reading.sensor?.roomName;
+    return 'Measured indoors right now by a home sensor${room == null || room.isEmpty ? '' : ' in the room "$room"'}: ${facts.join(', ')}. '
+        'Take these conditions into account when weighing dry air, cold or heat as causes.';
   }
 
   /// Les noms des pistes soumises, normalisés, pour le filet de rattrapage.

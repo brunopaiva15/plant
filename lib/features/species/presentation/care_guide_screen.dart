@@ -9,6 +9,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
 
@@ -129,6 +130,9 @@ class CareGuideBody extends ConsumerWidget {
           ),
           const SizedBox(height: Space.md),
         ],
+
+        // La pièce, mesurée : ce que la fiche demande, et ce qu'elle a.
+        HomeClimateFitCard(profile: p),
 
         FloraGroup(
           children: [

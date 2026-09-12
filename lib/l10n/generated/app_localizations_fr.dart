@@ -968,6 +968,116 @@ class AppLocalizationsFr extends AppLocalizations {
       'Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.';
 
   @override
+  String get onbHomeTitle => 'Votre intérieur';
+
+  @override
+  String get onbHomeBody =>
+      'Les capteurs Apple Maison donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. Lecture sur l\'appareil, rien n\'est envoyé.';
+
+  @override
+  String get homeClimate => 'Apple Maison';
+
+  @override
+  String get homeClimateHint =>
+      'La température et l\'humidité d\'un capteur Apple Maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. Lecture sur l\'appareil, rien n\'est envoyé.';
+
+  @override
+  String get homeClimateConnect => 'Connecter Apple Maison';
+
+  @override
+  String get homeClimateSearching => 'Recherche des capteurs…';
+
+  @override
+  String get homeClimateSensor => 'Capteur';
+
+  @override
+  String get homeClimateSensors => 'Capteurs trouvés';
+
+  @override
+  String get homeClimateNone => 'Aucun capteur';
+
+  @override
+  String get homeClimateRemove => 'Retirer le capteur';
+
+  @override
+  String get homeClimateReading => 'Mesure';
+
+  @override
+  String get homeClimateUnavailable => 'Capteur injoignable pour l\'instant.';
+
+  @override
+  String homeClimateUpdatedAgo(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Il y a $minutes min',
+      one: 'Il y a 1 min',
+      zero: 'À l\'instant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeClimateNoSensors =>
+      'Aucun capteur de température ou d\'humidité dans Apple Maison.';
+
+  @override
+  String get homeClimateDenied =>
+      'Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.';
+
+  @override
+  String get homeClimateFailed =>
+      'Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.';
+
+  @override
+  String get homeClimateAtHome => 'Chez vous';
+
+  @override
+  String get homeClimateFits => 'Dans la plage de l\'espèce.';
+
+  @override
+  String get homeClimateTooDry => 'Air trop sec pour cette espèce.';
+
+  @override
+  String get homeClimateTooHumid => 'Air trop humide pour cette espèce.';
+
+  @override
+  String get homeClimateTooCold => 'Trop froid pour cette espèce.';
+
+  @override
+  String get homeClimateTooHot => 'Trop chaud pour cette espèce.';
+
+  @override
+  String homeTipDryAir(int humidity, String names) {
+    return 'Air sec ($humidity %) : brumiser ou regrouper $names.';
+  }
+
+  @override
+  String homeTipHumidAir(int humidity) {
+    return 'Air humide ($humidity %) : aérer la pièce.';
+  }
+
+  @override
+  String homeTipHumidAirPlants(int humidity, String names) {
+    return 'Air humide ($humidity %) : aérer, et laisser sécher $names entre deux arrosages.';
+  }
+
+  @override
+  String homeTipCold(String temperature, String names) {
+    return '$temperature chez vous : trop froid pour $names.';
+  }
+
+  @override
+  String homeTipHot(String temperature, String names) {
+    return '$temperature chez vous : $names sèchent plus vite, vérifier la terre.';
+  }
+
+  @override
+  String diagnosisWithHome(String reading) {
+    return 'Mesure Apple Maison jointe : $reading.';
+  }
+
+  @override
   String placeChosen(String place) {
     return 'Météo réglée sur $place.';
   }

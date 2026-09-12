@@ -281,6 +281,95 @@
   "useMyLocation": "Use my location",
   "locating": "Finding your town…",
   "locationFailed": "Location unavailable. You can pick a town in Profile › Weather.",
+  "onbHomeTitle": "Your home",
+  "onbHomeBody": "Apple Home sensors give the room's temperature and humidity. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.",
+  "homeClimate": "Apple Home",
+  "homeClimateHint": "The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Read on the device, nothing is sent.",
+  "homeClimateConnect": "Connect Apple Home",
+  "homeClimateSearching": "Looking for sensors…",
+  "homeClimateSensor": "Sensor",
+  "homeClimateSensors": "Sensors found",
+  "homeClimateNone": "No sensor",
+  "homeClimateRemove": "Remove sensor",
+  "homeClimateReading": "Reading",
+  "homeClimateUnavailable": "Sensor not reachable for now.",
+  "homeClimateUpdatedAgo": "{minutes, plural, =0{Just now} =1{1 min ago} other{{minutes} min ago}}",
+  "@homeClimateUpdatedAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeClimateNoSensors": "No temperature or humidity sensor in Apple Home.",
+  "homeClimateDenied": "Access to Apple Home refused. It can be granted again in Settings › Privacy › Home.",
+  "homeClimateFailed": "Apple Home unavailable. You can connect a sensor in Profile › Apple Home.",
+  "homeClimateAtHome": "At home",
+  "homeClimateFits": "Within the range for this species.",
+  "homeClimateTooDry": "Air too dry for this species.",
+  "homeClimateTooHumid": "Air too humid for this species.",
+  "homeClimateTooCold": "Too cold for this species.",
+  "homeClimateTooHot": "Too warm for this species.",
+  "homeTipDryAir": "Dry air ({humidity}%): mist or group {names}.",
+  "@homeTipDryAir": {
+    "placeholders": {
+      "humidity": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTipHumidAir": "Humid air ({humidity}%): air the room.",
+  "@homeTipHumidAir": {
+    "placeholders": {
+      "humidity": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTipHumidAirPlants": "Humid air ({humidity}%): air the room, and let {names} dry out between waterings.",
+  "@homeTipHumidAirPlants": {
+    "placeholders": {
+      "humidity": {
+        "type": "int"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTipCold": "{temperature} at home: too cold for {names}.",
+  "@homeTipCold": {
+    "placeholders": {
+      "temperature": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTipHot": "{temperature} at home: {names} dry out faster, check the soil.",
+  "@homeTipHot": {
+    "placeholders": {
+      "temperature": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisWithHome": "Apple Home reading attached: {reading}.",
+  "@diagnosisWithHome": {
+    "placeholders": {
+      "reading": {
+        "type": "String"
+      }
+    }
+  },
   "placeChosen": "Weather set to {place}.",
   "@placeChosen": {"placeholders": {"place": {"type": "String"}}},
   "askNameTitle": "Your first name",

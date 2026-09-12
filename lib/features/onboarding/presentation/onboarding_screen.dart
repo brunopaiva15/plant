@@ -12,8 +12,11 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
+import '../../../domain/home/home_climate.dart';
 import '../../../domain/weather/weather.dart';
 import '../../account/application/sign_in_availability.dart';
+import '../../home_climate/application/home_climate_providers.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
@@ -50,8 +53,9 @@ final _slides = <_Slide>[
 /// Couleur de l'étape « Où sont vos plantes ? », qui suit les présentations.
 Color _placeTint(FloraColors c) => c.water;
 
-/// Présentation animée, le lieu de la météo, le prénom, le compte (là où
-/// Sign in with Apple existe), puis le soutien facultatif au développeur.
+/// Présentation animée, le lieu de la météo, la maison (là où Apple Maison
+/// existe), le prénom, le compte (là où Sign in with Apple existe), puis le
+/// soutien facultatif au développeur.
 ///
 /// Les écrans ne se remplacent pas l'un l'autre comme des diapositives : le
 /// fond change de teinte, les objets du jardin tournent autour de la place
@@ -109,7 +113,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// L'étape du lieu vient après les présentations : elle garde la scène et
   /// son objet, mais a ses propres boutons.
   int get _placeIndex => _slides.length;
-  int get _nameIndex => _slides.length + 1;
+
+  /// Après le lieu, la maison : les capteurs d'Apple Maison, là où HomeKit
+  /// existe — iPhone et iPad. Ailleurs l'étape n'est pas dessinée, comme le
+  /// compte. Le service est fixé au démarrage : le lire ici, hors de
+  /// `build`, ne rate aucun changement.
+  bool get _hasHome => ref.read(homeClimateServiceProvider).isSupported;
+  int get _homeIndex => _slides.length + 1;
+  int get _nameIndex => _slides.length + (_hasHome ? 2 : 1);
 
   /// Le compte ne se propose que là où l'on peut en ouvrir un : un backend,
   /// et Sign in with Apple. Ailleurs l'étape n'est pas dessinée du tout —
@@ -117,9 +128,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// fixé au démarrage : le lire ici, hors de `build`, ne rate aucun
   /// changement.
   bool get _hasAccount => signInAvailable(ref.read(authRepositoryProvider));
-  int get _accountIndex => _slides.length + 2;
-  int get _supportIndex => _slides.length + (_hasAccount ? 3 : 2);
-  int get _pageCount => _slides.length + (_hasAccount ? 4 : 3);
+  int get _accountIndex => _nameIndex + 1;
+  int get _supportIndex => _nameIndex + (_hasAccount ? 2 : 1);
+  int get _pageCount => _nameIndex + (_hasAccount ? 3 : 2);
 
   /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu.
   int get _objectCount => _slides.length + 1;
@@ -342,7 +353,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                           builder: (context, _) =>
                               _SlideText(slide: slide, t: reduce ? 1.0 : _revealOf(i), parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0)),
                         ),
-                      _PlacePage(onDone: () => _goTo(_nameIndex)),
+                      _PlacePage(onDone: () => _goTo(_hasHome ? _homeIndex : _nameIndex)),
+                      if (_hasHome) _HomePage(onDone: () => _goTo(_nameIndex)),
                       _NamePage(controller: _name, onSubmit: () => _afterName(addPlant: true), onSkip: () => _afterName(addPlant: false)),
                       if (_hasAccount) _AccountPage(onDone: () => _goTo(_supportIndex)),
                       _SupportPage(onDone: _finish),
@@ -554,6 +566,154 @@ class _PlacePageState extends ConsumerState<_PlacePage> {
                   OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
                 else
                   OnboardingButton(label: _busy ? l10n.locating : l10n.useMyLocation, trailingIcon: _busy ? null : CupertinoIcons.location_fill, onPressed: _locate),
+                const SizedBox(height: Space.xs),
+                OnboardingButton(label: l10n.later, filled: false, onPressed: widget.onDone),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// « Votre intérieur » : un bouton, et le capteur d'Apple Maison est
+/// trouvé. Sa mesure ajuste les conseils des plantes d'intérieur ; sans lui,
+/// rien ne manque, on le branchera plus tard.
+class _HomePage extends ConsumerStatefulWidget {
+  const _HomePage({required this.onDone});
+
+  final VoidCallback onDone;
+
+  @override
+  ConsumerState<_HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<_HomePage> {
+  bool _busy = false;
+
+  /// Plusieurs capteurs trouvés : on laisse choisir, la liste remplace le
+  /// bouton. Un seul : c'est lui, sans question.
+  List<HomeSensor> _choices = const [];
+
+  Future<void> _connect() async {
+    if (_busy) return;
+    final l10n = context.l10n;
+    setState(() => _busy = true);
+    final service = ref.read(homeClimateServiceProvider);
+    List<HomeSensor> sensors = const [];
+    var access = HomeAccess.unavailable;
+    try {
+      sensors = await service.sensors();
+      access = await service.access();
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'onboarding_home');
+    }
+    if (!mounted) return;
+    if (sensors.isEmpty) {
+      setState(() => _busy = false);
+      ref.read(toastProvider.notifier).show(ToastData(message: access == HomeAccess.denied ? l10n.homeClimateDenied : l10n.homeClimateFailed, emoji: '🏠'));
+      return;
+    }
+    if (sensors.length == 1) {
+      await _select(sensors.single);
+      return;
+    }
+    setState(() {
+      _busy = false;
+      _choices = sensors;
+    });
+  }
+
+  Future<void> _select(HomeSensor sensor) async {
+    await ref.read(preferencesProvider.notifier).setHomeSensor(sensor);
+    ref.invalidate(homeReadingProvider);
+    Haptics.success();
+    if (mounted) {
+      setState(() {
+        _busy = false;
+        _choices = const [];
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
+    final reading = sensor == null ? null : ref.watch(homeReadingProvider).value;
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: floraScrollPhysics,
+        padding: const EdgeInsets.symmetric(horizontal: Space.page),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: Space.xl),
+                Text(l10n.onbHomeTitle, style: onboardingTitleStyle(context)),
+                const SizedBox(height: Space.sm),
+                Text(l10n.onbHomeBody, style: onboardingBodyStyle(context)),
+                if (sensor != null) ...[
+                  const SizedBox(height: Space.lg),
+                  FloraCard(
+                    child: Row(
+                      children: [
+                        EmojiTile(emoji: '🏠', background: c.sunSoft),
+                        const SizedBox(width: Space.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(sensor.label, style: context.text.title3),
+                              if (reading != null && !reading.isEmpty) Text(homeReadingLabel(reading, metric: metric), style: context.text.callout),
+                            ],
+                          ),
+                        ),
+                        Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage),
+                      ],
+                    ),
+                  ),
+                ] else if (_choices.isNotEmpty) ...[
+                  // Des cartes plutôt que des lignes de liste : la page mesure
+                  // sa hauteur, et une ligne de liste ne sait pas la donner.
+                  const SizedBox(height: Space.lg),
+                  Text(l10n.homeClimateSensors, style: context.text.title3),
+                  const SizedBox(height: Space.sm),
+                  for (final s in _choices)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Space.xs),
+                      child: FloraCard(
+                        onTap: () => _select(s),
+                        child: Row(
+                          children: [
+                            EmojiTile(emoji: '🌡️', background: c.sunSoft),
+                            const SizedBox(width: Space.sm),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(s.label, style: context.text.title3),
+                                  if ((s.roomName == null ? s.homeName : s.name) case final detail?) Text(detail, style: context.text.caption),
+                                ],
+                              ),
+                            ),
+                            Icon(CupertinoIcons.chevron_right, size: 16, color: c.inkTertiary),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+                const Spacer(),
+                const SizedBox(height: Space.xl),
+                if (sensor != null)
+                  OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
+                else if (_choices.isEmpty)
+                  OnboardingButton(label: _busy ? l10n.homeClimateSearching : l10n.homeClimateConnect, trailingIcon: _busy ? null : CupertinoIcons.house_fill, onPressed: _connect),
                 const SizedBox(height: Space.xs),
                 OnboardingButton(label: l10n.later, filled: false, onPressed: widget.onDone),
               ],

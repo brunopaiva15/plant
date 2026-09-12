@@ -101,6 +101,10 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   FloraListRow(leading: const Text('🌍', style: TextStyle(fontSize: 18)), title: l10n.language, trailing: value(languageLabel), chevron: true, onTap: () => _pickLanguage(context, ref)),
                   FloraListRow(leading: const Text('🌤️', style: TextStyle(fontSize: 18)), title: l10n.weather, trailing: value(prefs.weatherPlace?.name.split(',').first ?? l10n.none), chevron: true, onTap: () => context.push(Routes.weather)),
+                  // Apple Maison n'existe que sur iPhone et iPad : ailleurs la
+                  // ligne n'est pas là, plutôt qu'un réglage qui ne mène à rien.
+                  if (ref.watch(homeClimateServiceProvider).isSupported)
+                    FloraListRow(leading: const Text('🏠', style: TextStyle(fontSize: 18)), title: l10n.homeClimate, trailing: value(prefs.homeSensor?.label ?? l10n.none), chevron: true, onTap: () => context.push(Routes.homeClimate)),
                 ],
               ),
               const SizedBox(height: Space.lg),

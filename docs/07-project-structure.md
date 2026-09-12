@@ -24,11 +24,12 @@ lib/
 │   ├── identification/            PlantIdentifier (interface, candidats)
 │   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisRecord (compte rendu gardé)
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
+│   ├── home/                      HomeClimateService (capteurs Apple Maison), HomeClimateAdvisor
 │   └── auth/                      AuthRepository, AppUser
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService
 │   └── auth/                      LocalAuthRepository
 ├── features/
 │   ├── onboarding/
@@ -42,6 +43,7 @@ lib/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, réglage du lieu
+│   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur
 │   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP

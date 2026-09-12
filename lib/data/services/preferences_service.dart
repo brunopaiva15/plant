@@ -136,6 +136,13 @@ class PreferencesService {
       _prefs.setString('weather_place', '${name.replaceAll('|', ' ')}|$lat|$lon');
   Future<void> clearWeatherPlace() => _prefs.remove('weather_place');
 
+  /// Le capteur d'Apple Maison retenu (`id|nom|pièce`), ou `null` si le
+  /// climat de la maison n'est pas branché. Les mesures, elles, ne sont
+  /// jamais gardées : elles se relisent.
+  String? get homeSensor => _prefs.getString('home_sensor');
+  Future<void> setHomeSensor(String encoded) => _prefs.setString('home_sensor', encoded);
+  Future<void> clearHomeSensor() => _prefs.remove('home_sensor');
+
   // Synchronisation
   DateTime? syncCursor(String table) {
     final raw = _prefs.getString('sync_cursor_$table');

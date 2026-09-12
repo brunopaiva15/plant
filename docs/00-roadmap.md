@@ -78,6 +78,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Tableau de bord : statistiques, avertissements (malade, à surveiller, soin en retard), dernières plantes, journal global d'activité | ✅ |
 | Archives : nom personnalisable, recherche, quatre tris, navigation par année, vue liste ou cartes, préférences mémorisées | ✅ |
 | Prévisions météo sur cinq jours : min / max, précipitations, risque de pluie, vent, humidité | ✅ |
+| Apple Maison (iOS) : température et humidité d'un capteur HomeKit, étape d'onboarding après la ville, ligne et conseils du jour pour les plantes d'intérieur, carte « Chez vous » dans la fiche d'entretien, mesure jointe au diagnostic | ✅ |
 | Sauvegarde : export par sections, restauration avec aperçu, rapport d'import | ✅ |
 
 ## Au-delà de HortusFox
