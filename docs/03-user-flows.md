@@ -5,9 +5,14 @@ Notation : `[tap]` = un tap, `⟶` = transition, `✓` = feedback (animation + h
 ## 1. Créer une plante (< 20 s, 3 étapes)
 ```
 Plantes ─[tap +]⟶ Sheet plein écran
-  Étape 1 · Photo
-    Viseur ouvert dans le cadre : [tap cadre] ou [Prendre une photo] déclenche
-    [Choisir une photo] | Continuer sans photo
+  Étape 1 · Photo, en trois états
+    Viser      viseur dans le cadre, déclencheur rond dessus, galerie dans un coin
+               [tap cadre] ou [◯] déclenche · Continuer sans photo
+    On la      la photo prise remplit le cadre (c'est la confirmation)
+    garde ?    dessous, si Iris est là : « La plante » · [+ Une feuille de près] · [+ Autre vue]
+               légende « Photos pour Iris, supprimées ensuite » · [Continuer] · Reprendre
+    Une vue    [tap emplacement] ⟶ le viseur revient sous le titre de l'emplacement,
+    de plus    rend la main dès la prise ; × ou Annuler ramène à la photo
   Étape 2 · Nom
     Champ unique, clavier ouvert, suggestion = nom d'espèce si connu
     [Continuer]
@@ -18,7 +23,8 @@ Plantes ─[tap +]⟶ Sheet plein écran
 ```
 - Routines par défaut créées automatiquement (arrosage 7 j, engrais 30 j) → « Plus d'options » pour ajuster.
 - Étape « Identification » (P2) s'insère entre 1 et 2 uniquement si la fonction est activée et une photo existe.
-- Le viseur ne tourne qu'à l'étape 1, tant qu'aucune photo n'est retenue. Sans lui — autorisation refusée, appareil sans caméra — le cadre retrouve son invite et les boutons ouvrent l'appareil photo du système.
+- Le viseur ne tourne qu'à l'étape 1, tant qu'il reste un emplacement libre. Sans lui — autorisation refusée, appareil sans caméra — le cadre garde son invite, les gestes reviennent en boutons ([Prendre une photo] · [Choisir une photo]) et un emplacement libre ouvre l'appareil ou la galerie du système.
+- Reprendre efface la photo et les vues prises avec elle : elles montraient le même sujet. Les vues ne sont proposées que si un moteur d'identification est configuré, et ne sont jamais gardées.
 
 ## 2. Arroser une plante (1 tap)
 ```
@@ -37,7 +43,7 @@ Fiche plante ─[tap 📷 | Croissance | en-tête sans photo]⟶ Sheet plein éc
 Galerie Croissance ─[Prendre une photo]⟶ la même
   Étape 1 · Viser
     Viseur ouvert dans le cadre ; [tap cadre] ou [Prendre une photo] déclenche
-    Calque : la dernière photo en transparence par-dessus le viseur (☑ par défaut)
+    Superposition : la dernière photo en transparence par-dessus le viseur (☑ par défaut)
     [Choisir une photo] · Depuis une adresse web
   Étape 2 · Un titre ?
     Aperçu daté · champ titre · puces : Nouvelle feuille · Floraison · Avant rempotage…
@@ -45,9 +51,9 @@ Galerie Croissance ─[Prendre une photo]⟶ la même
 ✓ « Photo ajoutée » ⟶ compression (isolate) + miniature ⟶ journal, Croissance, galerie
   ⟶ si première photo : devient la photo principale
 ```
-- Le calque est ce qui rend un suivi de croissance lisible : même cadrage,
+- La superposition est ce qui rend un suivi de croissance lisible : même cadrage,
   même distance d'un mois à l'autre. Il ne se propose que si le viseur tourne
-  et qu'il y a une photo à calquer.
+  et qu'il y a une photo à superposer.
 - Sans viseur (autorisation refusée, appareil sans caméra), le cadre garde
   son invite et les boutons ouvrent l'appareil photo du système.
 - Repartir sans enregistrer efface les fichiers de la prise ; le titre et la

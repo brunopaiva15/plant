@@ -405,8 +405,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepPhotoTitle => 'A photo?';
 
   @override
-  String get stepPhotoSubtitle =>
-      'To recognise it, and to find it in your list.';
+  String get stepPhotoSubtitle => 'Frame the whole plant, in daylight.';
 
   @override
   String get takePhoto => 'Take a photo';
@@ -3899,32 +3898,31 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get photoFirstTitle => 'Its first photo';
+  String get photoFirstTitle => 'First photo';
 
   @override
-  String get photoNextTitle => 'A new photo';
+  String get photoNextTitle => 'New photo';
 
   @override
-  String get photoFirstHint =>
-      'It will become the main photo, and start the growth record.';
+  String get photoFirstHint => 'It will be the main photo.';
 
   @override
   String get photoFrameHint =>
-      'Same framing, same light: growth is easier to read from one photo to the next.';
+      'Keep the same framing each time to follow its growth.';
 
   @override
   String get photoGhostToggle => 'Overlay the last photo';
 
   @override
   String get photoGhostHint =>
-      'The last photo shows through: line the pot up with it.';
+      'Line the plant up with the photo shown in transparency.';
 
   @override
   String get photoTitleStepTitle => 'A title?';
 
   @override
   String get photoTitleStepSubtitle =>
-      'Optional. It helps you find it again in the gallery.';
+      'To find it again later. You can leave it empty.';
 
   @override
   String get photoTagNewLeaf => 'New leaf';
@@ -3945,14 +3943,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photoTagAfterPruning => 'After pruning';
 
   @override
-  String get mainPhotoHint => 'The one on the plant page and in the list.';
+  String get mainPhotoHint => 'Shown on the plant page and in the list.';
 
   @override
   String get retake => 'Retake';
 
   @override
   String get growthEmptySubtitle =>
-      'A photo now and then, and you\'ll see it grow.';
+      'Add a photo now and then to watch it grow.';
 
   @override
   String growthSummary(int count, String since) {
@@ -3967,7 +3965,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String growthNudge(String date) {
-    return 'Last photo on $date. Time for a new one?';
+    return 'Last photo on $date. Take a new one?';
   }
 
   @override
@@ -3998,4 +3996,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pause => 'Pause';
+
+  @override
+  String get stepPhotoDoneTitle => 'Keep it?';
+
+  @override
+  String stepPhotoDoneSubtitle(String name) {
+    return 'You can add a leaf close up to help $name.';
+  }
+
+  @override
+  String get stepPhotoDonePlain => 'You can add more from its page.';
+
+  @override
+  String get viewPlant => 'The plant';
+
+  @override
+  String get viewLeafClose => 'A leaf close up';
+
+  @override
+  String get viewAnother => 'Another view';
+
+  @override
+  String viewForModel(String name) {
+    return 'This photo helps $name recognise the species. It will not be kept.';
+  }
+
+  @override
+  String viewsCaption(String name) {
+    return 'Photos for $name, deleted afterwards';
+  }
 }

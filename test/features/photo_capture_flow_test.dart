@@ -84,14 +84,14 @@ void main() {
     await tester.pumpAndSettle();
 
     // Pas encore de photo : le titre le dit, et explique ce qu'elle deviendra.
-    expect(find.text('Sa première photo'), findsOneWidget);
+    expect(find.text('Première photo'), findsOneWidget);
     expect(find.textContaining('photo principale'), findsOneWidget);
     // L'invite du cadre et le bouton disent le même geste.
     expect(find.text('Prendre une photo'), findsNWidgets(2));
     expect(find.text('Choisir une photo'), findsOneWidget);
     expect(find.text('Depuis une adresse web'), findsOneWidget);
     // Le calque ne se propose pas sans viseur : il n'y aurait rien dessous.
-    expect(find.text('Calquer la dernière photo'), findsNothing);
+    expect(find.text('Superposer la dernière photo'), findsNothing);
     expect(find.byType(StepDots), findsOneWidget);
   });
 
@@ -100,9 +100,9 @@ void main() {
     await tester.pumpWidget(_app(const PhotoCaptureFlow(plantId: 'p1'), photos: [_photo('a')]));
     await tester.pumpAndSettle();
 
-    expect(find.text('Une nouvelle photo'), findsOneWidget);
-    expect(find.textContaining('Même cadrage'), findsOneWidget);
-    expect(find.text('Sa première photo'), findsNothing);
+    expect(find.text('Nouvelle photo'), findsOneWidget);
+    expect(find.textContaining('même cadrage'), findsOneWidget);
+    expect(find.text('Première photo'), findsNothing);
   });
 
   group('l\'étape du titre', () {
