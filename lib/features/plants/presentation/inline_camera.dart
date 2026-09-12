@@ -16,6 +16,12 @@ enum InlineCameraStatus {
   /// L'aperçu est à l'écran et la capture est possible.
   ready,
 
+  /// L'application est passée derrière : le système a repris la caméra, et
+  /// le flux reviendra de lui-même au retour. Ce n'est pas une absence de
+  /// viseur — la page garde sa mise en page, sans quoi la carte du
+  /// multitâche montrait une autre étape, et le retour réagençait tout.
+  suspended,
+
   /// Pas de viseur ici : permission refusée, appareil sans caméra, ou panne
   /// du plugin. L'appelant retombe alors sur l'appareil photo du système.
   unavailable,
@@ -55,6 +61,12 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
 
   /// Le flux est ouvert et peut prendre une photo.
   bool get isReady => _status == InlineCameraStatus.ready && (_camera?.value.isInitialized ?? false);
+
+  /// Un viseur est là, arrive, ou revient : la page se dessine avec lui —
+  /// le déclencheur sur le cadre, pas les boutons de repli — même si
+  /// l'aperçu n'est pas encore à l'écran.
+  bool get hasViewfinder =>
+      _status == InlineCameraStatus.starting || _status == InlineCameraStatus.ready || _status == InlineCameraStatus.suspended;
 
   /// Un viseur intégré n'existe que sur téléphone et tablette. Ailleurs — le
   /// web, le bureau, les tests — l'appelant garde l'appareil du système.
@@ -106,7 +118,7 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
     if (state == AppLifecycleState.resumed) {
       _open();
     } else {
-      _close();
+      _close(suspended: true);
     }
   }
 
@@ -170,12 +182,16 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
     }
   }
 
-  Future<void> _close() async {
+  /// [suspended] : le système a repris la caméra le temps d'un passage en
+  /// arrière-plan, et le flux reviendra ; sinon, c'est un arrêt voulu.
+  Future<void> _close({bool suspended = false}) async {
     final camera = _camera;
     _camera = null;
     // Un refus reste un refus : le redire au lieu de faire croire à un viseur
     // qui n'attendrait qu'un geste.
-    if (_status != InlineCameraStatus.unavailable) _set(InlineCameraStatus.idle);
+    if (_status != InlineCameraStatus.unavailable) {
+      _set(suspended && _status != InlineCameraStatus.idle ? InlineCameraStatus.suspended : InlineCameraStatus.idle);
+    }
     await camera?.dispose();
   }
 

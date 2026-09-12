@@ -258,7 +258,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// repasse en direct ; sans lui, l'appareil ou la galerie du système.
   void _openExtraSlot() {
     if (_picking || _identificationPaths.length >= maxIdentificationPhotos) return;
-    if (_camera.isReady || _camera.status == InlineCameraStatus.starting) {
+    if (_camera.hasViewfinder) {
       Haptics.selection();
       setState(() => _mode = _PhotoMode.extra);
       return;
@@ -497,7 +497,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     return ListenableBuilder(
       listenable: _camera,
       builder: (context, _) {
-        final live = _camera.isReady;
+        // La mise en page suit le viseur, présent ou en train de revenir ;
+        // seul l'aperçu lui-même attend d'être prêt.
+        final live = _camera.hasViewfinder;
         final (title, subtitle) = switch (_mode) {
           _PhotoMode.aim => (l10n.stepPhotoTitle, l10n.stepPhotoSubtitle),
           _PhotoMode.review => (
@@ -580,13 +582,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       content = Stack(
         fit: StackFit.expand,
         children: [
-          InlineCameraPreview(controller: _camera),
+          // Le flux, ou ce qui le remplace le temps qu'il arrive : la motte
+          // pendant l'ouverture, un appareil posé pendant que l'application
+          // est derrière. Le cadre et ses commandes ne bougent pas.
+          if (_camera.isReady)
+            InlineCameraPreview(controller: _camera)
+          else if (_camera.status == InlineCameraStatus.starting)
+            Center(child: ClayLoader(size: 32, color: c.sage))
+          else
+            Center(child: Icon(CupertinoIcons.camera, size: 44, color: c.sage)),
           // Le déclencheur, au bas du cadre, comme sur n'importe quel appareil.
           Positioned(
             left: 0,
             right: 0,
             bottom: Space.md,
-            child: Center(child: _Shutter(busy: _picking, onTap: _capture)),
+            child: Center(child: _Shutter(busy: _picking, enabled: _camera.isReady, onTap: _capture)),
           ),
           if (_mode == _PhotoMode.aim)
             Positioned(
@@ -614,8 +624,6 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ),
         ],
       );
-    } else if (_camera.status == InlineCameraStatus.starting) {
-      content = Center(child: ClayLoader(size: 32, color: c.sage));
     } else {
       // Le cadre rétrécit quand la place manque (petit écran) : l'invite se
       // met à l'échelle plutôt que de déborder.
@@ -652,7 +660,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     // viseur, lui, se déclenche du doigt ; sans viseur, toucher l'invite
     // ouvre l'appareil photo du système.
     if (_mode == _PhotoMode.review) return frame;
-    return Pressable(onTap: live ? _capture : () => _pick(PhotoSource.camera), scale: 0.98, haptic: false, child: frame);
+    return Pressable(onTap: live ? (_camera.isReady ? _capture : null) : () => _pick(PhotoSource.camera), scale: 0.98, haptic: false, child: frame);
   }
 
   /// Les deux sources du système, pour une vue de plus quand le viseur
@@ -912,16 +920,21 @@ enum _PhotoMode { aim, review, extra }
 
 /// Le déclencheur : un anneau blanc et son disque, posés sur le viseur.
 class _Shutter extends StatelessWidget {
-  const _Shutter({required this.onTap, required this.busy});
+  const _Shutter({required this.onTap, required this.busy, this.enabled = true});
 
   final VoidCallback onTap;
   final bool busy;
+
+  /// Faux tant que le flux n'est pas prêt : le déclencheur est là, il
+  /// n'écoute pas encore.
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Pressable(
-      onTap: busy ? null : onTap,
+      onTap: busy || !enabled ? null : onTap,
+      enabled: enabled,
       scale: 0.86,
       semanticLabel: l10n.takePhoto,
       child: Container(

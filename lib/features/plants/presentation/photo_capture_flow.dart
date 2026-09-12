@@ -238,7 +238,9 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
     return ListenableBuilder(
       listenable: _camera,
       builder: (context, _) {
-        final ghostAvailable = _camera.isReady && previous != null;
+        // La puce reste tant qu'un viseur est là ou revient : elle ne doit
+        // pas disparaître le temps d'un passage en arrière-plan.
+        final ghostAvailable = _camera.hasViewfinder && previous != null;
         return PhotoFlowStep(
           title: previous == null ? l10n.photoFirstTitle : l10n.photoNextTitle,
           subtitle: previous == null ? l10n.photoFirstHint : l10n.photoFrameHint,
@@ -249,7 +251,7 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
                 child: AspectRatio(
                   aspectRatio: 4 / 5,
                   child: Pressable(
-                    onTap: _camera.isReady ? _capture : () => _pick(PhotoSource.camera),
+                    onTap: _camera.isReady ? _capture : (_camera.hasViewfinder ? null : () => _pick(PhotoSource.camera)),
                     scale: 0.98,
                     semanticLabel: l10n.takePhoto,
                     child: CaptureFrame(
@@ -342,6 +344,10 @@ class CaptureFrame extends StatelessWidget {
       );
     } else if (camera.status == InlineCameraStatus.starting) {
       content = Center(child: ClayLoader(size: 32, color: c.sage));
+    } else if (camera.status == InlineCameraStatus.suspended) {
+      // L'application est derrière : le viseur reviendra, le cadre attend
+      // sans changer de visage.
+      content = Center(child: Icon(CupertinoIcons.camera, size: 44, color: c.sage));
     } else {
       content = FittedBox(
         fit: BoxFit.scaleDown,

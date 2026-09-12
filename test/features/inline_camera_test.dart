@@ -22,6 +22,19 @@ void main() {
     expect(await camera.capture(), isNull);
     // Et un refus n'en est pas un : rien à mener aux Réglages.
     expect(camera.permissionDenied, isFalse);
+    // Pas de viseur du tout : la page prend sa mise en page de repli.
+    expect(camera.hasViewfinder, isFalse);
+  });
+
+  test("passer derrière ne transforme pas une absence de viseur en viseur suspendu", () async {
+    final camera = InlineCameraController();
+    addTearDown(camera.dispose);
+    await camera.start();
+    camera.didChangeAppLifecycleState(AppLifecycleState.paused);
+    expect(camera.status, InlineCameraStatus.unavailable);
+    expect(camera.hasViewfinder, isFalse);
+    camera.didChangeAppLifecycleState(AppLifecycleState.resumed);
+    expect(camera.status, InlineCameraStatus.unavailable);
   });
 
   test('démarrer et arrêter plusieurs fois ne casse rien', () async {
