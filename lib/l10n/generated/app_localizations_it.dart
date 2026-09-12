@@ -630,10 +630,27 @@ class AppLocalizationsIt extends AppLocalizations {
   String get strategyManualHint => 'Nessun promemoria automatico.';
 
   @override
+  String get strategyFixedHint => 'Lo stesso intervallo tutto l\'anno.';
+
+  @override
   String get enabled => 'Attiva';
 
   @override
   String get interval => 'Intervallo';
+
+  @override
+  String get intervalSuggested => 'Intervallo consigliato';
+
+  @override
+  String intervalSuggestedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Intervallo consigliato: $count giorni',
+      one: 'Intervallo consigliato: 1 giorno',
+    );
+    return '$_temp0';
+  }
 
   @override
   String daysCount(int count) {

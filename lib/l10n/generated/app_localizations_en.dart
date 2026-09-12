@@ -628,10 +628,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get strategyManualHint => 'No automatic reminder.';
 
   @override
+  String get strategyFixedHint => 'The same interval all year.';
+
+  @override
   String get enabled => 'Enabled';
 
   @override
   String get interval => 'Interval';
+
+  @override
+  String get intervalSuggested => 'Suggested interval';
+
+  @override
+  String intervalSuggestedDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Suggested interval: $count days',
+      one: 'Suggested interval: 1 day',
+    );
+    return '$_temp0';
+  }
 
   @override
   String daysCount(int count) {
