@@ -102,32 +102,52 @@ class CareActions {
     await _reschedule();
   }
 
-  /// Import d'une photo : stockage, entrée d'historique, toast.
-  Future<PlantPhoto?> addPhoto(BuildContext context, {required String plantId, required PhotoSource source}) async {
+  /// Enregistre une photo déjà rangée par [PhotoStorageService] : la ligne,
+  /// son entrée de journal, le toast. Le titre et la photo principale se
+  /// décident au moment de la prise, pas après coup dans un menu — c'est le
+  /// flow guidé (`photo_capture_flow.dart`) qui les apporte ici.
+  ///
+  /// Retourne `null` si rien n'a été écrit : lecture seule, ou erreur. Dans
+  /// les deux cas les fichiers sont effacés — une photo sans ligne ne serait
+  /// qu'un orphelin pour le ménage.
+  Future<PlantPhoto?> savePhoto(
+    BuildContext context, {
+    required String plantId,
+    required StoredPhoto stored,
+    String? label,
+    bool makePrimary = false,
+  }) async {
     final l10n = context.l10n;
-    if (_blockedReadOnly()) return null;
     final storage = _ref.read(photoStorageProvider);
+    if (_blockedReadOnly()) {
+      await storage.deleteFiles(stored.filePath, stored.thumbPath);
+      return null;
+    }
     try {
-      final stored = await storage.pick(source);
-      if (stored == null) return null;
-      final photo = await _ref.read(photoRepositoryProvider).add(
-            plantId: plantId,
-            filePath: stored.filePath,
-            thumbPath: stored.thumbPath,
-            width: stored.width,
-            height: stored.height,
-            // Une photo choisie dans la galerie garde sa date de prise de
-            // vue : sans elle, deux ans d'archives se rangeaient tous
-            // aujourd'hui, et le timelapse racontait n'importe quoi.
-            takenAt: stored.takenAt,
-          );
+      final photos = _ref.read(photoRepositoryProvider);
+      final photo = await photos.add(
+        plantId: plantId,
+        filePath: stored.filePath,
+        thumbPath: stored.thumbPath,
+        width: stored.width,
+        height: stored.height,
+        // Une photo choisie dans la galerie garde sa date de prise de
+        // vue : sans elle, deux ans d'archives se rangeaient tous
+        // aujourd'hui, et le timelapse racontait n'importe quoi.
+        takenAt: stored.takenAt,
+        label: label,
+      );
+      // La première photo devient principale toute seule (dépôt) ; pour les
+      // suivantes, c'est l'interrupteur du flow qui décide.
+      if (makePrimary) await photos.setPrimary(plantId, photo.id);
       await _actions.log(NewAction(plantId: plantId, typeKey: CareKind.photo.key, photoId: photo.id));
       Haptics.success();
-      _analytics.track(AnalyticsEvents.photoAdded);
+      _analytics.track(AnalyticsEvents.photoAdded, {'labelled': label != null && label.isNotEmpty, 'primary': makePrimary});
       _toast.show(ToastData(message: l10n.photoAddedToast, emoji: '📷'));
       return photo;
     } catch (e, st) {
-      _ref.read(crashReporterProvider).report(e, st, context: 'addPhoto');
+      _ref.read(crashReporterProvider).report(e, st, context: 'savePhoto');
+      await storage.deleteFiles(stored.filePath, stored.thumbPath);
       _toast.show(ToastData(message: l10n.photoError, emoji: '!'));
       return null;
     }

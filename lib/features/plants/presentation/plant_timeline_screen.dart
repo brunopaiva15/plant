@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../application/plant_providers.dart';
+import 'photo_viewer.dart';
 import 'timeline_row.dart';
 
 /// Journal complet d'une plante.
@@ -35,7 +34,9 @@ class PlantTimelineScreen extends ConsumerWidget {
                       action: a,
                       photo: a.photoId == null ? null : photos[a.photoId],
                       isLast: i == items.length - 1,
-                      onPhotoTap: () => context.push(Routes.plantGallery(plantId)),
+                      onPhotoTap: a.photoId == null || photos[a.photoId] == null
+                          ? null
+                          : () => showPhotoViewer(context, plantId: plantId, photoId: a.photoId!, photos: photos.values.toList()),
                     ),
                   const SizedBox(height: Space.lg),
                 ],

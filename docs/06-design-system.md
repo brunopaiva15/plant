@@ -178,7 +178,28 @@ se déclare `header: true`, ce qui rend le rotor « Titres » utilisable.
 - `selection` : changement de chip / onglet · `light` : tap bouton · `success` : action enregistrée · `warning` : archivage.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · QuantityStepper · DatePicker (natif) · PlantPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · ActionTile · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+
+## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)
+Un seul chemin pour en ajouter une, `showPhotoCaptureFlow` : le viseur dans
+la page, comme à la création, avec la dernière photo posée dessus en
+transparence (`CaptureFrame.ghostOpacity`, 38 %) pour retrouver le même
+cadrage ; puis la photo, sa date, un titre que des puces remplissent, et la
+photo principale quand la question se pose. Les feuilles d'action système
+« Appareil photo | Galerie » n'existent plus pour les photos de plante.
+
+La visionneuse est une route transparente sur le noir : toucher cache ou
+montre ce qui entoure la photo, tirer vers le bas la referme (le noir
+s'éclaircit à mesure, le héros repart vers sa vignette), toucher deux fois
+agrandit autour du doigt. Ses gestes sont nommés — Titre, Principale,
+Partager, Supprimer — sur une même rangée ; elle s'abonne aux photos de la
+plante, si bien qu'une suppression la met à jour sans la refermer. Sur le
+noir, la palette du thème ne s'applique pas : blancs et un rouge clair
+figé pour le geste destructif.
+
+Deux vignettes de la même photo peuvent se trouver sur la fiche — la bande
+Croissance et le journal — : chacune a son nom de héros (`growth-` et
+`photo-`), et la visionneuse reçoit celui de la vignette d'où elle part.
 
 ## La fenêtre des nouveautés (`features/whats_new/`)
 Ce que l'application montre après une mise à jour : un bandeau teinté qui

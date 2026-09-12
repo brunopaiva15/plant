@@ -31,13 +31,41 @@ Undo : action supprimée, échéance restaurée, carte revient.
 ```
 Variante depuis la fiche plante : chip 💧 ⟶ identique. Variante multi-sélection : « 6 plantes arrosées ».
 
-## 3. Ajouter une photo
+## 3. Ajouter une photo (2 étapes, un seul chemin)
 ```
-Fiche plante ─[tap 📷]⟶ Action sheet native : Caméra | Galerie
-  ⟶ picker natif ⟶ compression (isolate) + miniature
-  ⟶ ✓ photo apparaît dans la timeline et la galerie (hero)
+Fiche plante ─[tap 📷 | Croissance | en-tête sans photo]⟶ Sheet plein écran
+Galerie Croissance ─[Prendre une photo]⟶ la même
+  Étape 1 · Viser
+    Viseur ouvert dans le cadre ; [tap cadre] ou [Prendre une photo] déclenche
+    Calque : la dernière photo en transparence par-dessus le viseur (☑ par défaut)
+    [Choisir une photo] · Depuis une adresse web
+  Étape 2 · Un titre ?
+    Aperçu daté · champ titre · puces : Nouvelle feuille · Floraison · Avant rempotage…
+    ☐ Photo principale (seulement s'il y en a déjà) · [Enregistrer] · Reprendre
+✓ « Photo ajoutée » ⟶ compression (isolate) + miniature ⟶ journal, Croissance, galerie
   ⟶ si première photo : devient la photo principale
 ```
+- Le calque est ce qui rend un suivi de croissance lisible : même cadrage,
+  même distance d'un mois à l'autre. Il ne se propose que si le viseur tourne
+  et qu'il y a une photo à calquer.
+- Sans viseur (autorisation refusée, appareil sans caméra), le cadre garde
+  son invite et les boutons ouvrent l'appareil photo du système.
+- Repartir sans enregistrer efface les fichiers de la prise ; le titre et la
+  photo principale s'écrivent avec la ligne, pas après coup dans un menu.
+
+### Regarder les photos
+- **Croissance (fiche)** : la bande des dernières photos — chacune s'ouvre en
+  grand d'un toucher —, « 12 photos · depuis mars 2024 », et une relance
+  quand la dernière a plus d'un mois.
+- **Galerie Croissance** : Timelapse et Avant / après nommés en haut, les
+  photos mois par mois avec leur titre, [Prendre une photo] en bas.
+- **Visionneuse** : glisser pour passer à la suivante, pincer ou toucher deux
+  fois pour agrandir, tirer vers le bas pour refermer, toucher pour cacher ou
+  montrer ce qui entoure la photo. En bas : la date, le titre (qui s'écrit
+  là), et quatre gestes nommés — Titre, Principale, Partager, Supprimer.
+- **Avant / après** : les deux photos se choisissent dans une grille de
+  vignettes datées, un geste les inverse. **Timelapse** : un curseur qu'on
+  tire, lecture / pause.
 
 ## 4. Créer un emplacement
 ```

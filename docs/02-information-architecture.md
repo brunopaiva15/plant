@@ -28,9 +28,9 @@ Root
     │   └── Fiche plante (push plein écran, tab bar masquée)
     │       ├── Ajouter une action (sheet)
     │       ├── Ajouter une note (sheet)
-    │       ├── Ajouter une photo (picker natif)
+    │       ├── Ajouter une photo (flow 2 étapes : viser avec calque, titrer)
     │       ├── Planning d'entretien (push)
-    │       ├── Galerie (push)
+    │       ├── Croissance (push) : timelapse, avant / après, visionneuse plein écran
     │       ├── Timeline complète (push)
     │       ├── Modifier (sheet)
     │       └── Menu ⋯ : favori, bouture, déplacer, archiver
@@ -54,7 +54,8 @@ Root
 | Contenu | Présentation |
 |---|---|
 | Action courte (ajouter action, note, choisir emplacement) | Bottom sheet, poignée, clavier géré |
-| Flow multi-étapes (création plante) | Sheet plein écran avec progression discrète |
+| Flow multi-étapes (création plante, ajout de photo) | Sheet plein écran avec progression discrète |
+| Photo en grand (visionneuse) | Route transparente sur le noir, héros depuis la vignette, tirer vers le bas pour refermer |
 | Contenu immersif (fiche plante) | Push plein écran, header photo collapsible |
 | Options secondaires | Menu contextuel (⋯) ou long press |
 | Confirmation destructive | Action sheet native (Cupertino) / dialog M3 |

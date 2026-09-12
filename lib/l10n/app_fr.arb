@@ -1846,5 +1846,36 @@
         "type": "String"
       }
     }
-  }
+  },
+  "photoFirstTitle": "Sa première photo",
+  "photoNextTitle": "Une nouvelle photo",
+  "photoFirstHint": "Elle deviendra sa photo principale, et ouvrira le suivi de croissance.",
+  "photoFrameHint": "Même cadrage, même lumière : la croissance se lit mieux d'une photo à l'autre.",
+  "photoGhostToggle": "Calquer la dernière photo",
+  "photoGhostHint": "La dernière photo apparaît en transparence : alignez le pot dessus.",
+  "photoTitleStepTitle": "Un titre ?",
+  "photoTitleStepSubtitle": "Facultatif. Il vous aidera à la retrouver dans la galerie.",
+  "photoTagNewLeaf": "Nouvelle feuille",
+  "photoTagFlowering": "Floraison",
+  "photoTagBeforeRepotting": "Avant rempotage",
+  "photoTagAfterRepotting": "Après rempotage",
+  "photoTagCutting": "Bouture",
+  "photoTagAfterPruning": "Après taille",
+  "mainPhotoHint": "Celle de la fiche et de la liste.",
+  "retake": "Reprendre",
+  "growthEmptySubtitle": "Une photo de temps en temps, et vous la verrez pousser.",
+  "growthSummary": "{count, plural, =1{1 photo · depuis {since}} other{{count} photos · depuis {since}}}",
+  "@growthSummary": {"placeholders": {"count": {"type": "int"}, "since": {"type": "String"}}},
+  "growthNudge": "Dernière photo le {date}. Une nouvelle ?",
+  "@growthNudge": {"placeholders": {"date": {"type": "String"}}},
+  "timelapse": "Timelapse",
+  "beforeAfter": "Avant / après",
+  "photoCounter": "{index} / {total}",
+  "@photoCounter": {"placeholders": {"index": {"type": "int"}, "total": {"type": "int"}}},
+  "photoTitleShort": "Titre",
+  "mainPhotoShort": "Principale",
+  "share": "Partager",
+  "addTitle": "Ajouter un titre",
+  "swap": "Inverser",
+  "pause": "Pause"
 }

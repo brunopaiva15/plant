@@ -67,6 +67,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Attributs personnalisés (booléen, entier, décimal, texte, date), schémas réutilisables, copie au clonage, recherche et commandes groupées | ✅ |
 | Pièces jointes par plante : ajout, libellé, ouverture, renommage, partage, suppression, synchronisation | ✅ |
 | Galerie : titre de photo, photo principale, photo par URL externe, aperçu | ✅ |
+| Photos : flow guidé (viseur intégré, calque de la dernière photo, titre et photo principale à la prise), section Croissance qui compte et relance, visionneuse à gestes (tirer pour fermer, double toucher), sélecteur visuel de l'avant / après, curseur du timelapse | ✅ |
 | Partage de photos par lien : public ou non indexé, titre, description, expiration, révocation | ✅ |
 | Notes en Markdown : gras, italique, listes, citations, liens cliquables (analyseur maison, sans dépendance) | ✅ |
 | Emplacements : notes, journal, photo d'aperçu, actions groupées | ✅ |

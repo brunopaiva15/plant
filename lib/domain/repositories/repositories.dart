@@ -172,6 +172,8 @@ abstract class PhotoRepository {
     required int width,
     required int height,
     DateTime? takenAt,
+    /// Titre donné au moment de la prise (« Nouvelle feuille »).
+    String? label,
   });
   /// Ajoute une photo hébergée ailleurs (URL) sans rien télécharger.
   Future<PlantPhoto> addFromUrl({required String plantId, required String url, String? label});

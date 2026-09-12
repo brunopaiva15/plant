@@ -6665,6 +6665,174 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{name} n\'aura plus accès à ce jardin.'**
   String removeMemberConfirm(String name);
+
+  /// No description provided for @photoFirstTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sa première photo'**
+  String get photoFirstTitle;
+
+  /// No description provided for @photoNextTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une nouvelle photo'**
+  String get photoNextTitle;
+
+  /// No description provided for @photoFirstHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle deviendra sa photo principale, et ouvrira le suivi de croissance.'**
+  String get photoFirstHint;
+
+  /// No description provided for @photoFrameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Même cadrage, même lumière : la croissance se lit mieux d\'une photo à l\'autre.'**
+  String get photoFrameHint;
+
+  /// No description provided for @photoGhostToggle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calquer la dernière photo'**
+  String get photoGhostToggle;
+
+  /// No description provided for @photoGhostHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La dernière photo apparaît en transparence : alignez le pot dessus.'**
+  String get photoGhostHint;
+
+  /// No description provided for @photoTitleStepTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un titre ?'**
+  String get photoTitleStepTitle;
+
+  /// No description provided for @photoTitleStepSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif. Il vous aidera à la retrouver dans la galerie.'**
+  String get photoTitleStepSubtitle;
+
+  /// No description provided for @photoTagNewLeaf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle feuille'**
+  String get photoTagNewLeaf;
+
+  /// No description provided for @photoTagFlowering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Floraison'**
+  String get photoTagFlowering;
+
+  /// No description provided for @photoTagBeforeRepotting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant rempotage'**
+  String get photoTagBeforeRepotting;
+
+  /// No description provided for @photoTagAfterRepotting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après rempotage'**
+  String get photoTagAfterRepotting;
+
+  /// No description provided for @photoTagCutting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture'**
+  String get photoTagCutting;
+
+  /// No description provided for @photoTagAfterPruning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après taille'**
+  String get photoTagAfterPruning;
+
+  /// No description provided for @mainPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Celle de la fiche et de la liste.'**
+  String get mainPhotoHint;
+
+  /// No description provided for @retake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre'**
+  String get retake;
+
+  /// No description provided for @growthEmptySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une photo de temps en temps, et vous la verrez pousser.'**
+  String get growthEmptySubtitle;
+
+  /// No description provided for @growthSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 photo · depuis {since}} other{{count} photos · depuis {since}}}'**
+  String growthSummary(int count, String since);
+
+  /// No description provided for @growthNudge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière photo le {date}. Une nouvelle ?'**
+  String growthNudge(String date);
+
+  /// No description provided for @timelapse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Timelapse'**
+  String get timelapse;
+
+  /// No description provided for @beforeAfter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant / après'**
+  String get beforeAfter;
+
+  /// No description provided for @photoCounter.
+  ///
+  /// In fr, this message translates to:
+  /// **'{index} / {total}'**
+  String photoCounter(int index, int total);
+
+  /// No description provided for @photoTitleShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre'**
+  String get photoTitleShort;
+
+  /// No description provided for @mainPhotoShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Principale'**
+  String get mainPhotoShort;
+
+  /// No description provided for @share.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get share;
+
+  /// No description provided for @addTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un titre'**
+  String get addTitle;
+
+  /// No description provided for @swap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inverser'**
+  String get swap;
+
+  /// No description provided for @pause.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pause'**
+  String get pause;
 }
 
 class _AppLocalizationsDelegate

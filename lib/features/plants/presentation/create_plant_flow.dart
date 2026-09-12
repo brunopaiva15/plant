@@ -434,7 +434,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                     onPressed: () => _step == 0 ? _cancel() : _go(_step - 1),
                   ),
                   const Spacer(),
-                  _StepDots(count: 3, index: _step),
+                  StepDots(count: 3, index: _step),
                   const Spacer(),
                   const SizedBox(width: 40),
                 ],
@@ -895,32 +895,6 @@ class _StepLayout extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, Space.md),
           child: Column(mainAxisSize: MainAxisSize.min, children: actions),
         ),
-      ],
-    );
-  }
-}
-
-class _StepDots extends StatelessWidget {
-  const _StepDots({required this.count, required this.index});
-
-  final int count;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < count; i++)
-          AnimatedContainer(
-            duration: Motion.of(context, Motion.standard),
-            curve: Motion.easeOut,
-            margin: const EdgeInsets.symmetric(horizontal: 3),
-            width: i == index ? 20 : 6,
-            height: 6,
-            decoration: BoxDecoration(color: i == index ? c.sage : c.line, borderRadius: Radii.fullAll),
-          ),
       ],
     );
   }
