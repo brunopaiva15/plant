@@ -35,7 +35,7 @@ Sans configuration, l'app est 100 % locale. Pour la synchronisation et les compt
 ```bash
 flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co --dart-define=SUPABASE_ANON_KEY=...
 ```
-Schéma et politiques RLS : `supabase/schema.sql`. Connexion par Apple, sur
+Schéma et politiques RLS : `supabase/schema.sql`, à rejouer en entier dans l'éditeur SQL. Les liens de partage et d'invitation demandent en plus la fonction Edge `share` (`supabase functions deploy share --no-verify-jwt`). Connexion par Apple, sur
 iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
 (`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.

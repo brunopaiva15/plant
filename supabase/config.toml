@@ -1,0 +1,10 @@
+# Configuration pour la CLI Supabase : `supabase link`, puis
+# `supabase functions deploy share`. Le reste garde les valeurs par défaut.
+project_id = "plant"
+
+[functions.share]
+# La page d'un lien de partage ou d'invitation s'ouvre depuis un navigateur,
+# sans clé ni jeton. Avec la vérification par défaut, Supabase répondrait
+# 401 avant même d'appeler la fonction ; elle ne rend de toute façon que ce
+# que deux fonctions SQL security definer acceptent de montrer.
+verify_jwt = false
