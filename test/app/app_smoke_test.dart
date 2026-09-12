@@ -262,7 +262,6 @@ void main() {
 
     for (final entry in <(String, String)>[
       (Routes.backup, 'Sauvegarde'),
-      (Routes.api, 'API externe'),
       (Routes.archive, 'Anciennes plantes'),
       (Routes.activityLog, 'Journal d\'activité'),
       (Routes.forecast, 'Prévisions'),

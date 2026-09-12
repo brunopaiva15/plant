@@ -98,7 +98,7 @@ void main() {
         final auth = FakeAuthRepository(remote: true);
         await _pump(tester, auth);
         await _pastName(tester);
-        expect(find.text('Retrouvez vos plantes partout'), findsOneWidget);
+        expect(find.text('Et si vous changez de téléphone\u00a0?'), findsOneWidget);
         expect(find.text('Continuer avec Apple'), findsOneWidget);
         expect(find.text('Auxine est gratuite'), findsNothing, reason: 'le soutien attend derrière le compte');
 
@@ -111,7 +111,7 @@ void main() {
         final auth = FakeAuthRepository(remote: true);
         await _pump(tester, auth);
         await _pastName(tester);
-        expect(find.text('Retrouvez vos plantes partout'), findsOneWidget);
+        expect(find.text('Et si vous changez de téléphone\u00a0?'), findsOneWidget);
         await _tap(tester, 'Plus tard');
         expect(auth.appleSignIns, 0);
         expect(find.text('Auxine est gratuite'), findsOneWidget);
@@ -120,14 +120,14 @@ void main() {
   testWidgets('sans backend : le prénom mène droit au soutien', (tester) => _on(TargetPlatform.iOS, () async {
         await _pump(tester, FakeAuthRepository(remote: false));
         await _pastName(tester);
-        expect(find.text('Retrouvez vos plantes partout'), findsNothing);
+        expect(find.text('Et si vous changez de téléphone\u00a0?'), findsNothing);
         expect(find.text('Auxine est gratuite'), findsOneWidget);
       }));
 
   testWidgets('sur Android, même avec un backend : pas de compte à proposer', (tester) => _on(TargetPlatform.android, () async {
         await _pump(tester, FakeAuthRepository(remote: true));
         await _pastName(tester);
-        expect(find.text('Retrouvez vos plantes partout'), findsNothing);
+        expect(find.text('Et si vous changez de téléphone\u00a0?'), findsNothing);
         expect(find.text('Auxine est gratuite'), findsOneWidget);
       }));
 }

@@ -9,7 +9,6 @@ import '../features/account/presentation/account_screen.dart';
 import '../features/account/presentation/gardens_screen.dart';
 import '../features/account/presentation/members_screen.dart';
 import '../features/archive/presentation/archive_screen.dart';
-import '../features/api/presentation/api_screen.dart';
 import '../features/dashboard/presentation/activity_log_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
@@ -87,7 +86,6 @@ abstract final class Routes {
   static const activityLog = '/activity';
   static const forecast = '/weather/forecast';
   static const backup = '/settings/backup';
-  static const api = '/settings/api';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -146,11 +144,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.backup,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => platformPage(c, s, const BackupScreen()),
-      ),
-      GoRoute(
-        path: Routes.api,
-        parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (c, s) => platformPage(c, s, const ApiScreen()),
       ),
       GoRoute(
         path: Routes.forecast,
