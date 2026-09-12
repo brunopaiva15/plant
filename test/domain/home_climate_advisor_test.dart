@@ -102,13 +102,17 @@ void main() {
   });
 
   test('un capteur se garde et se relit en préférences', () {
-    const sensor = HomeSensor(id: 'A|B', name: 'Eve Room', roomName: 'Salon');
+    const sensor = HomeSensor(id: 'A|B', name: 'Eve Room', roomName: 'Salon', homeName: 'Chalet');
     final back = HomeSensor.decode(sensor.encode())!;
     expect(back.id, 'A B');
     expect(back.name, 'Eve Room');
     expect(back.roomName, 'Salon');
+    expect(back.homeName, 'Chalet');
     expect(back.label, 'Salon');
+    expect(back, const HomeSensor(id: 'A B', name: 'Eve Room', roomName: 'Salon', homeName: 'Chalet'));
+    // Une préférence écrite avant la maison se relit encore.
     expect(HomeSensor.decode('x|Capteur|')!.label, 'Capteur');
+    expect(HomeSensor.decode('x|Capteur|')!.homeName, isNull);
     expect(HomeSensor.decode(''), isNull);
     expect(HomeSensor.decode('seul'), isNull);
   });

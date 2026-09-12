@@ -1010,6 +1010,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeClimateSensors => 'Sensors found';
 
   @override
+  String get homeClimateChoose => 'Choose a sensor';
+
+  @override
+  String get homeClimateChange => 'Change sensor';
+
+  @override
+  String get homeClimateHome => 'Home';
+
+  @override
+  String get homeClimateNoRoom => 'No room';
+
+  @override
   String get homeClimateNone => 'No sensor';
 
   @override

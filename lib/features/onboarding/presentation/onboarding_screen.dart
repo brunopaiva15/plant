@@ -17,6 +17,7 @@ import '../../../domain/weather/weather.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../home_climate/application/home_climate_providers.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
+import '../../home_climate/presentation/home_sensor_picker_sheet.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
@@ -592,9 +593,8 @@ class _HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<_HomePage> {
   bool _busy = false;
 
-  /// Plusieurs capteurs trouvés : on laisse choisir, la liste remplace le
-  /// bouton. Un seul : c'est lui, sans question.
-  List<HomeSensor> _choices = const [];
+  /// Les capteurs trouvés, pour en changer après coup.
+  List<HomeSensor> _sensors = const [];
 
   Future<void> _connect() async {
     if (_busy) return;
@@ -615,26 +615,28 @@ class _HomePageState extends ConsumerState<_HomePage> {
       ref.read(toastProvider.notifier).show(ToastData(message: access == HomeAccess.denied ? l10n.homeClimateDenied : l10n.homeClimateFailed, emoji: '🏠'));
       return;
     }
-    if (sensors.length == 1) {
-      await _select(sensors.single);
-      return;
-    }
     setState(() {
       _busy = false;
-      _choices = sensors;
+      _sensors = sensors;
     });
+    // Un seul capteur : c'est lui, sans question. Plusieurs : la maison,
+    // puis la pièce et l'accessoire, dans une feuille.
+    if (sensors.length == 1) {
+      await _select(sensors.single);
+    } else {
+      await _pick();
+    }
+  }
+
+  Future<void> _pick() async {
+    final chosen = await showHomeSensorPicker(context, sensors: _sensors, selectedId: ref.read(preferencesProvider).homeSensor?.id);
+    if (chosen != null) await _select(chosen);
   }
 
   Future<void> _select(HomeSensor sensor) async {
     await ref.read(preferencesProvider.notifier).setHomeSensor(sensor);
     ref.invalidate(homeReadingProvider);
     Haptics.success();
-    if (mounted) {
-      setState(() {
-        _busy = false;
-        _choices = const [];
-      });
-    }
   }
 
   @override
@@ -660,7 +662,10 @@ class _HomePageState extends ConsumerState<_HomePage> {
                 Text(l10n.onbHomeBody, style: onboardingBodyStyle(context)),
                 if (sensor != null) ...[
                   const SizedBox(height: Space.lg),
+                  // La carte se touche pour changer de capteur quand la
+                  // maison en a plusieurs.
                   FloraCard(
+                    onTap: _sensors.length > 1 ? _pick : null,
                     child: Row(
                       children: [
                         EmojiTile(emoji: '🏠', background: c.sunSoft),
@@ -670,50 +675,28 @@ class _HomePageState extends ConsumerState<_HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(sensor.label, style: context.text.title3),
-                              if (reading != null && !reading.isEmpty) Text(homeReadingLabel(reading, metric: metric), style: context.text.callout),
+                              Text(
+                                [if (sensor.roomName != null) sensor.name, ?sensor.homeName, if (reading != null && !reading.isEmpty) homeReadingLabel(reading, metric: metric)].join(' · '),
+                                style: context.text.callout,
+                              ),
                             ],
                           ),
                         ),
-                        Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage),
+                        Icon(_sensors.length > 1 ? CupertinoIcons.chevron_right : CupertinoIcons.checkmark_circle_fill, color: _sensors.length > 1 ? c.inkTertiary : c.sage),
                       ],
                     ),
                   ),
-                ] else if (_choices.isNotEmpty) ...[
-                  // Des cartes plutôt que des lignes de liste : la page mesure
-                  // sa hauteur, et une ligne de liste ne sait pas la donner.
-                  const SizedBox(height: Space.lg),
-                  Text(l10n.homeClimateSensors, style: context.text.title3),
-                  const SizedBox(height: Space.sm),
-                  for (final s in _choices)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: Space.xs),
-                      child: FloraCard(
-                        onTap: () => _select(s),
-                        child: Row(
-                          children: [
-                            EmojiTile(emoji: '🌡️', background: c.sunSoft),
-                            const SizedBox(width: Space.sm),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(s.label, style: context.text.title3),
-                                  if ((s.roomName == null ? s.homeName : s.name) case final detail?) Text(detail, style: context.text.caption),
-                                ],
-                              ),
-                            ),
-                            Icon(CupertinoIcons.chevron_right, size: 16, color: c.inkTertiary),
-                          ],
-                        ),
-                      ),
-                    ),
                 ],
                 const Spacer(),
                 const SizedBox(height: Space.xl),
                 if (sensor != null)
                   OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
-                else if (_choices.isEmpty)
-                  OnboardingButton(label: _busy ? l10n.homeClimateSearching : l10n.homeClimateConnect, trailingIcon: _busy ? null : CupertinoIcons.house_fill, onPressed: _connect),
+                else
+                  OnboardingButton(
+                    label: _busy ? l10n.homeClimateSearching : (_sensors.length > 1 ? l10n.homeClimateChoose : l10n.homeClimateConnect),
+                    trailingIcon: _busy ? null : CupertinoIcons.house_fill,
+                    onPressed: _sensors.length > 1 ? _pick : _connect,
+                  ),
                 const SizedBox(height: Space.xs),
                 OnboardingButton(label: l10n.later, filled: false, onPressed: widget.onDone),
               ],

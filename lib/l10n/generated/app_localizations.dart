@@ -1854,6 +1854,30 @@ abstract class AppLocalizations {
   /// **'Capteurs trouvés'**
   String get homeClimateSensors;
 
+  /// No description provided for @homeClimateChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir un capteur'**
+  String get homeClimateChoose;
+
+  /// No description provided for @homeClimateChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer de capteur'**
+  String get homeClimateChange;
+
+  /// No description provided for @homeClimateHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maison'**
+  String get homeClimateHome;
+
+  /// No description provided for @homeClimateNoRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans pièce'**
+  String get homeClimateNoRoom;
+
   /// No description provided for @homeClimateNone.
   ///
   /// In fr, this message translates to:

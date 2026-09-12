@@ -25,24 +25,25 @@ class HomeSensor {
   /// l'accessoire lui-même.
   String get label => roomName?.trim().isNotEmpty == true ? roomName!.trim() : name;
 
-  /// Sérialisation compacte pour les préférences (`id|nom|pièce`).
-  String encode() => [id, name, roomName ?? ''].map((s) => s.replaceAll('|', ' ')).join('|');
+  /// Sérialisation compacte pour les préférences (`id|nom|pièce|maison`).
+  String encode() => [id, name, roomName ?? '', homeName ?? ''].map((s) => s.replaceAll('|', ' ')).join('|');
 
   /// Deux capteurs sont le même s'ils portent le même identifiant, le même
-  /// nom et la même pièce : les préférences relisent le leur à chaque
+  /// nom, la même pièce et la même maison : les préférences relisent le leur à chaque
   /// changement, et un `select` ne doit pas y voir un capteur neuf.
   @override
-  bool operator ==(Object other) => other is HomeSensor && other.id == id && other.name == name && other.roomName == roomName;
+  bool operator ==(Object other) => other is HomeSensor && other.id == id && other.name == name && other.roomName == roomName && other.homeName == homeName;
 
   @override
-  int get hashCode => Object.hash(id, name, roomName);
+  int get hashCode => Object.hash(id, name, roomName, homeName);
 
   static HomeSensor? decode(String? raw) {
     if (raw == null || raw.isEmpty) return null;
     final parts = raw.split('|');
     if (parts.length < 2 || parts[0].isEmpty) return null;
     final room = parts.length > 2 ? parts[2] : '';
-    return HomeSensor(id: parts[0], name: parts[1], roomName: room.isEmpty ? null : room);
+    final home = parts.length > 3 ? parts[3] : '';
+    return HomeSensor(id: parts[0], name: parts[1], roomName: room.isEmpty ? null : room, homeName: home.isEmpty ? null : home);
   }
 }
 

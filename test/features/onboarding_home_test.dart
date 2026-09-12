@@ -80,8 +80,9 @@ Future<void> _pastCity(WidgetTester tester) async {
   await _tap(tester, 'Plus tard');
 }
 
-const _salon = HomeSensor(id: 'A', name: 'Eve Room', roomName: 'Salon');
-const _chambre = HomeSensor(id: 'B', name: 'Eve Room 2', roomName: 'Chambre');
+const _salon = HomeSensor(id: 'A', name: 'Eve Room', roomName: 'Salon', homeName: 'Appartement');
+const _chambre = HomeSensor(id: 'B', name: 'Eve Room 2', roomName: 'Chambre', homeName: 'Appartement', hasHumidity: false);
+const _chalet = HomeSensor(id: 'C', name: 'Eve Weather', homeName: 'Chalet');
 
 void main() {
   testWidgets("la maison vient après la ville, et un seul capteur est retenu d'un geste", (tester) async {
@@ -93,25 +94,45 @@ void main() {
 
     await _tap(tester, 'Connecter Apple Maison');
     expect(home.sensorCalls, 1);
-    expect(_prefs.homeSensor, 'A|Eve Room|Salon');
+    expect(_prefs.homeSensor, 'A|Eve Room|Salon|Appartement');
     expect(find.text('Salon'), findsOneWidget);
-    expect(find.text('21° · 38 %'), findsOneWidget);
+    expect(find.textContaining('21° · 38 %'), findsOneWidget);
 
     await _tap(tester, 'Continuer');
     expect(find.text('Votre prénom'), findsOneWidget);
   });
 
-  testWidgets('plusieurs capteurs : la liste attend un choix', (tester) async {
-    final home = FakeHomeClimateService(sensorList: const [_salon, _chambre]);
+  testWidgets('plusieurs capteurs : la maison, puis la pièce et l’accessoire, dans une feuille', (tester) async {
+    final home = FakeHomeClimateService(sensorList: const [_salon, _chambre, _chalet]);
     await _pump(tester, home);
     await _pastCity(tester);
     await _tap(tester, 'Connecter Apple Maison');
     expect(_prefs.homeSensor, isNull);
-    expect(find.text('Salon'), findsOneWidget);
-    expect(find.text('Chambre'), findsOneWidget);
+    // La feuille s'ouvre sur la première maison : ses deux pièces, et ce
+    // que chaque accessoire mesure.
+    expect(find.text('Choisir un capteur'), findsWidgets);
+    expect(find.text('Appartement'), findsOneWidget);
+    expect(find.text('Chalet'), findsOneWidget);
+    // Les pièces sont des en-têtes de groupe, en capitales.
+    expect(find.text('SALON'), findsOneWidget);
+    expect(find.text('CHAMBRE'), findsOneWidget);
+    expect(find.text('Température · Humidité'), findsOneWidget);
+    expect(find.text('Température'), findsOneWidget);
+    expect(find.text('Eve Weather'), findsNothing);
 
-    await _tap(tester, 'Chambre');
-    expect(_prefs.homeSensor, 'B|Eve Room 2|Chambre');
+    // L'autre maison : un accessoire sans pièce.
+    await tester.tap(find.text('Chalet'));
+    await _step(tester);
+    expect(find.text('Eve Weather'), findsOneWidget);
+    expect(find.text('SANS PIÈCE'), findsOneWidget);
+    expect(find.text('Eve Room 2'), findsNothing);
+
+    await tester.tap(find.text('Appartement'));
+    await _step(tester);
+    await tester.tap(find.text('Eve Room 2'));
+    await _step(tester);
+    expect(_prefs.homeSensor, 'B|Eve Room 2|Chambre|Appartement');
+    expect(find.text('Chambre'), findsOneWidget);
     expect(find.text('Continuer'), findsWidgets);
   });
 

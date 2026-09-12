@@ -82,7 +82,11 @@ et l'humidité relative, et rien d'autre.
   (`ch.vergasta.plant/home_climate`), muette hors iOS ; le natif est dans
   `ios/Runner/HomeClimateChannel.swift` (`HMHomeManager`, délai de dix
   secondes, dernière valeur connue si l'accessoire ne répond pas).
-- Le capteur retenu est en préférences (`home_sensor`, `id|nom|pièce`) ; la
+- Le choix se fait dans une feuille (`showHomeSensorPicker`) : la maison
+  d'abord, quand HomeKit en a plusieurs, puis les accessoires de cette
+  maison pièce par pièce, avec ce que chacun mesure. Un seul capteur dans la
+  maison, et il est retenu sans question.
+- Le capteur retenu est en préférences (`home_sensor`, `id|nom|pièce|maison`) ; la
   mesure ne l'est jamais, elle se relit toutes les quinze minutes
   (`homeReadingProvider`).
 - `HomeClimateAdvisor` compare la mesure aux fiches des plantes d'intérieur
