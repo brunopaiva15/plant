@@ -573,11 +573,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cuttingGuideStart => 'Créer la bouture';
 
   @override
-  String cuttingGuideRefined(String species) {
-    return 'Étapes précisées par l\'IA pour $species.';
-  }
-
-  @override
   String get parentPlant => 'Plante mère';
 
   @override

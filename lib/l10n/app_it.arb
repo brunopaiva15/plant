@@ -158,8 +158,6 @@
   "cuttingGuidePotTitle": "Il vaso",
   "cuttingGuidePotBody": "Con qualche centimetro di radici, la talea passa in vaso, in un terriccio leggero, con una prima annaffiatura.",
   "cuttingGuideStart": "Crea la talea",
-  "cuttingGuideRefined": "Passaggi precisati dall'IA per {species}.",
-  "@cuttingGuideRefined": {"placeholders": {"species": {"type": "String"}}},
   "parentPlant": "Pianta madre",
   "schedule": "Programma",
   "editPlant": "Modifica pianta",

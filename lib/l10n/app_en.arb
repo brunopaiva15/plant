@@ -158,8 +158,6 @@
   "cuttingGuidePotTitle": "The pot",
   "cuttingGuidePotBody": "With a few centimetres of roots, the cutting goes into a pot with a light potting mix and gets a first watering.",
   "cuttingGuideStart": "Create the cutting",
-  "cuttingGuideRefined": "Steps refined by the AI for {species}.",
-  "@cuttingGuideRefined": {"placeholders": {"species": {"type": "String"}}},
   "parentPlant": "Parent plant",
   "schedule": "Schedule",
   "editPlant": "Edit plant",

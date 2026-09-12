@@ -572,11 +572,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cuttingGuideStart => 'Create the cutting';
 
   @override
-  String cuttingGuideRefined(String species) {
-    return 'Steps refined by the AI for $species.';
-  }
-
-  @override
   String get parentPlant => 'Parent plant';
 
   @override

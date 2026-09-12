@@ -22,7 +22,7 @@ String _completion(Object content, {String finish = 'stop'}) => jsonEncode({
 const _six = [
   'Une tige avec une racine aérienne au nœud reprend plus vite.',
   'Coupe nette sous le nœud, lame propre.',
-  'Une feuille en haut suffit ; le nœud reste nu.',
+  'Une feuille en haut suffit. Le nœud reste nu.',
   'Dans l\'eau, à la lumière, sans soleil direct.',
   'Racines en trois semaines, eau changée chaque semaine.',
   'En pot dès trois centimètres de racines, dans un terreau aéré.',
@@ -41,7 +41,7 @@ void main() {
       final system = (messages.first as Map)['content'] as String;
       expect(system, contains('"fr"'));
       expect(system, contains('exactly six strings'));
-      expect(system, contains('no exclamation marks'));
+      expect(system, contains('no exclamation marks, no semicolons'));
       expect(body['response_format'], {'type': 'json_object'});
       expect(body['temperature'], lessThan(0.5));
     });
@@ -80,9 +80,12 @@ void main() {
       expect(r.steps.length, 6);
     });
 
-    test('le ton est tenu : pas de point d\'exclamation, pas d\'espaces en trop', () {
-      expect(InfomaniakCuttingRefiner.sanitize('Coupez  sous le nœud !  Bravo !'), 'Coupez sous le nœud. Bravo.');
+    test('le ton est tenu : ni exclamation ni point-virgule, une majuscule par phrase, un point pour finir', () {
+      expect(InfomaniakCuttingRefiner.sanitize('Coupez  sous le nœud !  bravo !'), 'Coupez sous le nœud. Bravo.');
       expect(InfomaniakCuttingRefiner.sanitize('Sans fin !!!'), 'Sans fin.');
+      expect(InfomaniakCuttingRefiner.sanitize('le nœud sous l\'eau ; les feuilles au-dessus'), 'Le nœud sous l\'eau. Les feuilles au-dessus.');
+      expect(InfomaniakCuttingRefiner.sanitize('à la lumière. sans soleil direct.'), 'À la lumière. Sans soleil direct.');
+      expect(InfomaniakCuttingRefiner.sanitize('Racines en 3 semaines… '), 'Racines en 3 semaines…');
     });
 
     test('un texte interminable est coupé à une phrase', () {

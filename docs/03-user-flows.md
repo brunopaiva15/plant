@@ -45,8 +45,9 @@ Fiche plante ─[Créer une bouture]⟶ Guide de bouturage (sheet plein écran)
   mère a une espèce et que « Compléter les fiches avec l'IA » est laissé
   allumé, le nom scientifique part une fois et les six phrases sont réécrites
   pour l'espèce : où est le nœud, eau ou substrat, délai, saison. Le texte
-  générique s'affiche d'abord, le texte précis le remplace en fondu, et une
-  ligne dit « Étapes précisées par l'IA pour … ». Les titres ne changent pas.
+  générique s'affiche d'abord, le texte précis le remplace en fondu. Les
+  titres ne changent pas. Le texte reçu est mis au ton de l'application :
+  ni point d'exclamation ni point-virgule, une majuscule par phrase.
 - La réponse est gardée sur l'appareil, par espèce et par langue : la
   bouture suivante de la même plante ne redemande rien. Une réponse vide
   (espèce inconnue) se garde aussi. Sans clé, IA coupée, ou en cas d'erreur,

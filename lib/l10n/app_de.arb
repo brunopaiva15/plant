@@ -158,8 +158,6 @@
   "cuttingGuidePotTitle": "Der Topf",
   "cuttingGuidePotBody": "Bei einigen Zentimetern Wurzeln kommt der Ableger in einen Topf mit leichter Erde und wird einmal angegossen.",
   "cuttingGuideStart": "Ableger anlegen",
-  "cuttingGuideRefined": "Schritte von der KI für {species} präzisiert.",
-  "@cuttingGuideRefined": {"placeholders": {"species": {"type": "String"}}},
   "parentPlant": "Mutterpflanze",
   "schedule": "Pflegeplan",
   "editPlant": "Pflanze bearbeiten",
