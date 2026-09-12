@@ -527,6 +527,56 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideStemTitle => 'The stem';
+
+  @override
+  String get cuttingGuideStemBody =>
+      'A healthy stem with at least one node: the swelling where the leaves attach. Two or three leaves above it are enough.';
+
+  @override
+  String get cuttingGuideCutTitle => 'The cut';
+
+  @override
+  String get cuttingGuideCutBody =>
+      'A clean blade, a clean cut just below the node. A centimetre of stem beneath it is enough.';
+
+  @override
+  String get cuttingGuideLeavesTitle => 'The leaves';
+
+  @override
+  String get cuttingGuideLeavesBody =>
+      'The lower leaves are removed and the node is left bare. Two or three leaves at the top feed the cutting.';
+
+  @override
+  String get cuttingGuideWaterTitle => 'Water';
+
+  @override
+  String get cuttingGuideWaterBody =>
+      'The node under water, the leaves above it. Room-temperature water, bright light, no direct sun.';
+
+  @override
+  String get cuttingGuideRootsTitle => 'Roots';
+
+  @override
+  String get cuttingGuideRootsBody =>
+      'The water is changed every week. The first roots appear after two to six weeks.';
+
+  @override
+  String get cuttingGuidePotTitle => 'The pot';
+
+  @override
+  String get cuttingGuidePotBody =>
+      'With a few centimetres of roots, the cutting goes into a pot with a light potting mix and gets a first watering.';
+
+  @override
+  String get cuttingGuideStart => 'Create the cutting';
+
+  @override
+  String cuttingGuideRefined(String species) {
+    return 'Steps refined by the AI for $species.';
+  }
+
+  @override
   String get parentPlant => 'Parent plant';
 
   @override

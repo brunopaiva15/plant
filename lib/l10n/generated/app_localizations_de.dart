@@ -527,6 +527,56 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideStemTitle => 'Der Trieb';
+
+  @override
+  String get cuttingGuideStemBody =>
+      'Ein gesunder Trieb mit mindestens einem Knoten: der Verdickung, an der die Blätter ansetzen. Zwei oder drei Blätter darüber reichen.';
+
+  @override
+  String get cuttingGuideCutTitle => 'Der Schnitt';
+
+  @override
+  String get cuttingGuideCutBody =>
+      'Eine saubere Klinge, ein glatter Schnitt knapp unter dem Knoten. Ein Zentimeter Stiel darunter reicht.';
+
+  @override
+  String get cuttingGuideLeavesTitle => 'Die Blätter';
+
+  @override
+  String get cuttingGuideLeavesBody =>
+      'Die unteren Blätter werden entfernt, der Knoten bleibt frei. Zwei oder drei Blätter oben versorgen den Ableger.';
+
+  @override
+  String get cuttingGuideWaterTitle => 'Das Wasser';
+
+  @override
+  String get cuttingGuideWaterBody =>
+      'Der Knoten unter Wasser, die Blätter darüber. Zimmerwarmes Wasser, helles Licht ohne direkte Sonne.';
+
+  @override
+  String get cuttingGuideRootsTitle => 'Die Wurzeln';
+
+  @override
+  String get cuttingGuideRootsBody =>
+      'Das Wasser wird jede Woche gewechselt. Die ersten Wurzeln zeigen sich nach zwei bis sechs Wochen.';
+
+  @override
+  String get cuttingGuidePotTitle => 'Der Topf';
+
+  @override
+  String get cuttingGuidePotBody =>
+      'Bei einigen Zentimetern Wurzeln kommt der Ableger in einen Topf mit leichter Erde und wird einmal angegossen.';
+
+  @override
+  String get cuttingGuideStart => 'Ableger anlegen';
+
+  @override
+  String cuttingGuideRefined(String species) {
+    return 'Schritte von der KI für $species präzisiert.';
+  }
+
+  @override
   String get parentPlant => 'Mutterpflanze';
 
   @override

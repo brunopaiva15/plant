@@ -528,6 +528,56 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideStemTitle => 'La tige';
+
+  @override
+  String get cuttingGuideStemBody =>
+      'Une tige saine, avec au moins un nœud : le renflement d\'où partent les feuilles. Deux ou trois feuilles au-dessus suffisent.';
+
+  @override
+  String get cuttingGuideCutTitle => 'La coupe';
+
+  @override
+  String get cuttingGuideCutBody =>
+      'Une lame propre, une coupe nette juste sous le nœud. Un centimètre de tige en dessous suffit.';
+
+  @override
+  String get cuttingGuideLeavesTitle => 'Les feuilles';
+
+  @override
+  String get cuttingGuideLeavesBody =>
+      'Les feuilles du bas sont retirées, le nœud reste nu. Deux ou trois feuilles en haut nourrissent la bouture.';
+
+  @override
+  String get cuttingGuideWaterTitle => 'L\'eau';
+
+  @override
+  String get cuttingGuideWaterBody =>
+      'Le nœud sous l\'eau, les feuilles au-dessus. Eau à température ambiante, lumière vive sans soleil direct.';
+
+  @override
+  String get cuttingGuideRootsTitle => 'Les racines';
+
+  @override
+  String get cuttingGuideRootsBody =>
+      'L\'eau se change chaque semaine. Les premières racines apparaissent en deux à six semaines.';
+
+  @override
+  String get cuttingGuidePotTitle => 'Le pot';
+
+  @override
+  String get cuttingGuidePotBody =>
+      'À quelques centimètres de racines, la bouture passe en pot, dans un terreau léger, et reçoit un premier arrosage.';
+
+  @override
+  String get cuttingGuideStart => 'Créer la bouture';
+
+  @override
+  String cuttingGuideRefined(String species) {
+    return 'Étapes précisées par l\'IA pour $species.';
+  }
+
+  @override
   String get parentPlant => 'Plante mère';
 
   @override

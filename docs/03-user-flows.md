@@ -27,6 +27,33 @@ Plantes ─[tap +]⟶ Sheet plein écran
 - Quand l'application passe derrière (multitâche, appel), le système reprend la caméra : le viseur est *suspendu*, pas absent. Le cadre garde ses commandes et la page sa mise en page, et l'aperçu revient au retour. La carte du multitâche montre donc la même étape.
 - Reprendre efface la photo et les vues prises avec elle : elles montraient le même sujet. Les vues ne sont proposées que si un moteur d'identification est configuré, et ne sont jamais gardées.
 
+## 1b. Créer une bouture (le guide, puis la création)
+```
+Fiche plante ─[Créer une bouture]⟶ Guide de bouturage (sheet plein écran)
+  Six étapes, une par écran : un objet d'argile rendu sous Blender joue le
+  geste sur un halo, puis respire ; un titre, une phrase.
+    La tige      la plante mère pousse, un anneau se pose sur le nœud choisi
+    La coupe     les ciseaux arrivent, se ferment sous le nœud, le brin se détache
+    Les feuilles la feuille du bas se décroche, le nœud reste nu
+    L'eau        la bouture descend dans le verre, le nœud sous la surface
+    Les racines  elles sortent du nœud et s'allongent
+    Le pot       la bouture racinée descend dans la terre
+  [Continuer] × 5 · [Créer la bouture] ⟶ flow de création, nom « Bouture de … »
+  Passer ⟶ flow de création tout de suite · × ⟶ rien n'est créé
+```
+- Les phrases sont celles d'une bouture de tige dans l'eau. Quand la plante
+  mère a une espèce et que « Compléter les fiches avec l'IA » est laissé
+  allumé, le nom scientifique part une fois et les six phrases sont réécrites
+  pour l'espèce : où est le nœud, eau ou substrat, délai, saison. Le texte
+  générique s'affiche d'abord, le texte précis le remplace en fondu, et une
+  ligne dit « Étapes précisées par l'IA pour … ». Les titres ne changent pas.
+- La réponse est gardée sur l'appareil, par espèce et par langue : la
+  bouture suivante de la même plante ne redemande rien. Une réponse vide
+  (espèce inconnue) se garde aussi. Sans clé, IA coupée, ou en cas d'erreur,
+  le guide reste générique et rien ne se voit.
+- Chaque séquence se rejoue quand on revient sur son écran ; avec « réduire
+  les animations », c'est la dernière image qui est montrée, posée.
+
 ## 2. Arroser une plante (1 tap)
 ```
 Aujourd'hui ─ carte Monstera « 💧 Arroser aujourd'hui » ─[tap Arroser]⟶

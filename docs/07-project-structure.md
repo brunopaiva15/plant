@@ -23,6 +23,7 @@ lib/
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
 │   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisRecord (compte rendu gardé)
+│   ├── cuttings/                  CuttingStep, CuttingGuideRefinement, CuttingGuideRefiner, CuttingGuideStore
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison), HomeClimateAdvisor
 │   └── auth/                      AuthRepository, AppUser
@@ -35,6 +36,7 @@ lib/
 │   ├── onboarding/
 │   ├── today/
 │   ├── plants/                    list, detail, create, edit, timeline, gallery, schedule
+│   ├── cuttings/                  guide de bouturage : séquences d'argile, scène, sheet ; étapes précisées par l'IA
 │   ├── actions/                   add action sheet, quick actions
 │   ├── locations/
 │   ├── garden/                    onglet segmenté : emplacements · inventaire · calendrier
@@ -56,6 +58,9 @@ test/
 ├── domain/care_engine_test.dart
 ├── domain/reminder_planner_test.dart
 ├── data/plant_repository_test.dart
+├── data/infomaniak_cutting_refiner_test.dart   ce qui part à l'IA, ce qu'on garde de la réponse
+├── features/cutting_guide_test.dart            le guide : six étapes, trois sorties, texte précisé
+├── assets/cutting_sequences_test.dart          les six séquences sont là et s'animent
 └── l10n/arb_tone_test.dart       ton des textes, sur les quatre ARB
 docs/                              cette documentation
 ```
