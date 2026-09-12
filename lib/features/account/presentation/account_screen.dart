@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -14,7 +16,8 @@ import '../../../domain/sync/sync_state.dart';
 import '../application/membership_providers.dart';
 import 'gardens_screen.dart' show gardenLabel;
 
-/// Compte : connexion (Apple, Google, e-mail par code), état de synchronisation.
+/// Compte : connexion (Apple sur iOS, e-mail par code ; Google derrière
+/// `AppConfig.googleSignInEnabled`), état de synchronisation.
 class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key});
 
@@ -75,11 +78,13 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             Text(l10n.signInHint, style: context.text.callout),
             const SizedBox(height: Space.xl),
             if (defaultTargetPlatform == TargetPlatform.iOS) ...[
-              FloraButton(label: l10n.continueWithApple, icon: CupertinoIcons.person_crop_circle, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
+              FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
               const SizedBox(height: Space.xs),
             ],
-            FloraButton(label: l10n.continueWithGoogle, icon: CupertinoIcons.globe, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => _run(auth.signInWithGoogle)),
-            const SizedBox(height: Space.xs),
+            if (AppConfig.googleSignInEnabled) ...[
+              FloraButton(label: l10n.continueWithGoogle, icon: CupertinoIcons.globe, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => _run(auth.signInWithGoogle)),
+              const SizedBox(height: Space.xs),
+            ],
             FloraButton(label: l10n.continueWithEmail, icon: CupertinoIcons.mail, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => setState(() => _emailMode = true)),
             AnimatedSize(
               duration: Motion.of(context, Motion.standard),
