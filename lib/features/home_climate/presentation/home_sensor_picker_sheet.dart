@@ -4,21 +4,23 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/home/home_climate.dart';
 
-/// Le choix du capteur : la maison d'abord, quand il y en a plusieurs, puis
-/// les accessoires de cette maison, pièce par pièce, avec ce que chacun
-/// mesure. Rend le capteur choisi, ou `null` si la feuille se referme.
-Future<HomeSensor?> showHomeSensorPicker(BuildContext context, {required List<HomeSensor> sensors, String? selectedId}) {
+/// Le choix d'un capteur pour une grandeur : la maison d'abord, quand il y
+/// en a plusieurs, puis les accessoires de cette maison qui la mesurent,
+/// pièce par pièce, avec ce que chacun sait mesurer. Rend le capteur choisi,
+/// ou `null` si la feuille se referme.
+Future<HomeSensor?> showHomeSensorPicker(BuildContext context, {required List<HomeSensor> sensors, required HomeQuantity quantity, String? selectedId}) {
   return showFloraSheet<HomeSensor>(
     context,
     scrollable: true,
-    builder: (ctx) => _HomeSensorPickerBody(sensors: sensors, selectedId: selectedId),
+    builder: (ctx) => _HomeSensorPickerBody(sensors: [for (final s in sensors) if (s.measures(quantity)) s], quantity: quantity, selectedId: selectedId),
   );
 }
 
 class _HomeSensorPickerBody extends StatefulWidget {
-  const _HomeSensorPickerBody({required this.sensors, required this.selectedId});
+  const _HomeSensorPickerBody({required this.sensors, required this.quantity, required this.selectedId});
 
   final List<HomeSensor> sensors;
+  final HomeQuantity quantity;
   final String? selectedId;
 
   @override
@@ -68,7 +70,7 @@ class _HomeSensorPickerBodyState extends State<_HomeSensorPickerBody> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SheetHeader(title: l10n.homeClimateChoose),
+        SheetHeader(title: widget.quantity == HomeQuantity.temperature ? l10n.homeClimateTemperatureSensor : l10n.homeClimateHumiditySensor),
         Padding(
           padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.xl),
           child: Column(
@@ -93,7 +95,7 @@ class _HomeSensorPickerBodyState extends State<_HomeSensorPickerBody> {
                     for (final s in inHome)
                       if (s.roomName == room)
                         FloraListRow(
-                          leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
+                          leading: Text(widget.quantity == HomeQuantity.temperature ? '🌡️' : '💧', style: const TextStyle(fontSize: 18)),
                           title: s.name,
                           subtitle: measuresLabel(l10n, s),
                           trailing: s.id == widget.selectedId ? Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage) : null,

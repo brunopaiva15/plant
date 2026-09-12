@@ -10,8 +10,8 @@ import '../application/home_climate_providers.dart';
 import 'home_climate_widgets.dart';
 import 'home_sensor_picker_sheet.dart';
 
-/// Profil › Apple Maison : le capteur retenu, sa mesure, et les autres
-/// capteurs de la maison pour en changer.
+/// Profil › Apple Maison : le capteur de température, celui de l'humidité,
+/// leur mesure, et de quoi en changer.
 class HomeClimateSettingsScreen extends ConsumerStatefulWidget {
   const HomeClimateSettingsScreen({super.key});
 
@@ -68,15 +68,31 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     }
   }
 
-  Future<void> _pick() async {
-    final chosen = await showHomeSensorPicker(context, sensors: _sensors, selectedId: ref.read(preferencesProvider).homeSensor?.id);
-    if (chosen != null) await _select(chosen);
+  Future<void> _pick([HomeQuantity quantity = HomeQuantity.temperature]) async {
+    final prefs = ref.read(preferencesProvider);
+    final current = quantity == HomeQuantity.temperature ? prefs.homeSensor : (prefs.homeHumiditySensor ?? prefs.homeSensor);
+    final chosen = await showHomeSensorPicker(context, sensors: _sensors, quantity: quantity, selectedId: current?.id);
+    if (chosen == null) return;
+    if (quantity == HomeQuantity.temperature) {
+      await _select(chosen);
+    } else {
+      await ref.read(preferencesProvider.notifier).setHomeHumiditySensor(chosen.id == prefs.homeSensor?.id ? null : chosen);
+      ref.invalidate(homeReadingProvider);
+      Haptics.success();
+    }
   }
 
   Future<void> _select(HomeSensor sensor) async {
     await ref.read(preferencesProvider.notifier).setHomeSensor(sensor);
     ref.invalidate(homeReadingProvider);
     Haptics.success();
+  }
+
+  /// Ce que dit un capteur sous son nom : l'accessoire quand la pièce fait
+  /// titre, et la maison.
+  static String? _detail(HomeSensor s) {
+    final parts = [if (s.roomName != null) s.name, ?s.homeName];
+    return parts.isEmpty ? null : parts.join(' · ');
   }
 
   Future<void> _remove() async {
@@ -90,7 +106,9 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final l10n = context.l10n;
     final c = context.colors;
     final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
+    final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
     final reading = ref.watch(homeReadingProvider);
+    final canPick = _sensors.isNotEmpty && !_busy;
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return FloraPage(
       title: l10n.homeClimate,
@@ -100,12 +118,14 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
           Text(l10n.homeClimateHint, style: context.text.callout),
           const SizedBox(height: Space.lg),
           FloraGroup(
-            header: l10n.homeClimateSensor,
+            header: l10n.homeClimateSensors,
             children: [
+              // Un capteur par grandeur : chaque ligne s'ouvre sur la feuille
+              // de choix, limitée aux accessoires qui mesurent celle-là.
               FloraListRow(
-                leading: Text(sensor == null ? '🏠' : '🌡️', style: const TextStyle(fontSize: 18)),
-                title: sensor?.label ?? l10n.homeClimateNone,
-                subtitle: sensor == null ? null : [if (sensor.roomName != null) sensor.name, ?sensor.homeName].join(' · '),
+                leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
+                title: l10n.careTemperature,
+                subtitle: sensor == null ? l10n.homeClimateNone : [sensor.label, ?_detail(sensor)].join(' · '),
                 trailing: sensor == null
                     ? null
                     : FloraIconButton(
@@ -115,8 +135,17 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                         color: c.inkTertiary,
                         onPressed: _remove,
                       ),
-                chevron: false,
+                chevron: canPick,
+                onTap: canPick ? () => _pick(HomeQuantity.temperature) : null,
               ),
+              if (sensor != null)
+                FloraListRow(
+                  leading: const Text('💧', style: TextStyle(fontSize: 18)),
+                  title: l10n.weatherHumidity,
+                  subtitle: humiditySensor == null ? l10n.homeClimateSameSensor : [humiditySensor.label, ?_detail(humiditySensor)].join(' · '),
+                  chevron: canPick,
+                  onTap: canPick ? () => _pick(HomeQuantity.humidity) : null,
+                ),
               if (sensor != null)
                 FloraListRow(
                   leading: const Text('📈', style: TextStyle(fontSize: 18)),
@@ -140,17 +169,11 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
           const SizedBox(height: Space.lg),
           if (_busy)
             const Padding(padding: EdgeInsets.all(Space.md), child: Center(child: AdaptiveProgress()))
-          else if (_sensors.isNotEmpty)
+          else if (_sensors.isNotEmpty && sensor == null)
             // La maison, la pièce, l'accessoire : le choix se fait dans une
             // feuille, la même qu'à l'onboarding.
-            FloraButton(
-              label: sensor == null ? l10n.homeClimateChoose : l10n.homeClimateChange,
-              icon: CupertinoIcons.house_fill,
-              style: sensor == null ? FloraButtonStyle.primary : FloraButtonStyle.tonal,
-              expand: true,
-              onPressed: _pick,
-            )
-          else if (sensor == null || _searched)
+            FloraButton(label: l10n.homeClimateChoose, icon: CupertinoIcons.house_fill, expand: true, onPressed: _pick)
+          else if (_sensors.isEmpty && (sensor == null || _searched))
             FloraButton(label: l10n.homeClimateConnect, icon: CupertinoIcons.house_fill, style: sensor == null ? FloraButtonStyle.primary : FloraButtonStyle.ghost, expand: true, onPressed: _connect),
         ],
       ),

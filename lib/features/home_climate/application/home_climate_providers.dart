@@ -9,18 +9,31 @@ import '../../../domain/repositories/repositories.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../weather/application/weather_providers.dart';
 
-/// La mesure du capteur retenu ; `null` sans capteur, ou s'il ne répond pas.
-/// Relue toutes les quinze minutes : l'air d'une pièce ne change pas plus
-/// vite, et HomeKit n'aime pas qu'on le harcèle.
+/// La mesure des capteurs retenus ; `null` sans capteur, ou s'ils ne
+/// répondent pas. Relue toutes les quinze minutes : l'air d'une pièce ne
+/// change pas plus vite, et HomeKit n'aime pas qu'on le harcèle.
+///
+/// La température vient du capteur de température ; l'humidité du capteur
+/// d'humidité s'il y en a un, sinon du même capteur, s'il la mesure.
 final homeReadingProvider = FutureProvider<HomeReading?>((ref) async {
   final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
+  final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
   if (sensor == null) return null;
   final timer = Timer(const Duration(minutes: 15), ref.invalidateSelf);
   ref.onDispose(timer.cancel);
+  final service = ref.watch(homeClimateServiceProvider);
   try {
-    final reading = await ref.watch(homeClimateServiceProvider).read(sensor.id);
-    if (reading == null) return null;
-    return HomeReading(at: reading.at, temperatureC: reading.temperatureC, humidity: reading.humidity, sensor: sensor);
+    final main = await service.read(sensor.id);
+    final other = humiditySensor == null || humiditySensor.id == sensor.id ? null : await service.read(humiditySensor.id);
+    final humidity = other != null ? other.humidity : (humiditySensor == null ? main?.humidity : null);
+    if (main?.temperatureC == null && humidity == null) return null;
+    return HomeReading(
+      at: main?.at ?? other!.at,
+      temperatureC: main?.temperatureC,
+      humidity: humidity,
+      sensor: sensor,
+      humiditySensor: other == null ? null : humiditySensor,
+    );
   } catch (_) {
     // Un capteur muet n'est pas une panne de l'application : la ligne
     // disparaît, tout le reste continue.

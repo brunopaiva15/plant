@@ -147,6 +147,13 @@ class PreferencesService {
   Future<void> setHomeSensor(String encoded) => _prefs.setString('home_sensor', encoded);
   Future<void> clearHomeSensor() => _prefs.remove('home_sensor');
 
+  /// Le capteur qui donne l'humidité, quand ce n'est pas le même : un
+  /// thermostat mesure la température, un hygromètre à côté l'humidité.
+  /// `null` = l'humidité vient du capteur de température, s'il la mesure.
+  String? get homeHumiditySensor => _prefs.getString('home_humidity_sensor');
+  Future<void> setHomeHumiditySensor(String encoded) => _prefs.setString('home_humidity_sensor', encoded);
+  Future<void> clearHomeHumiditySensor() => _prefs.remove('home_humidity_sensor');
+
   // Synchronisation
   DateTime? syncCursor(String table) {
     final raw = _prefs.getString('sync_cursor_$table');
