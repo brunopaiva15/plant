@@ -3531,7 +3531,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get finderStepSpot => 'Où va-t-elle vivre ?';
 
   @override
-  String get finderStepSpotHint => 'La lumière décide de presque tout.';
+  String get finderStepSpotHint =>
+      'Trois questions suffisent. Celle-ci compte le plus : la lumière décide de presque tout.';
 
   @override
   String get finderSpotBright => 'Pièce lumineuse';
@@ -3575,12 +3576,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get finderSafetyNo => 'Pas de contrainte';
 
   @override
-  String get finderStepKind => 'Quel genre de plante ?';
-
-  @override
-  String get finderStepKindHint => 'Plusieurs choix possibles, ou aucun.';
-
-  @override
   String get finderNote => 'Autre chose ?';
 
   @override
@@ -3588,34 +3583,20 @@ class AppLocalizationsFr extends AppLocalizations {
       'Une salle de bain sans fenêtre, un chat qui mordille tout…';
 
   @override
-  String get finderNoteFooter =>
-      'Utilisé seulement si vous demandez l\'avis de l\'IA.';
-
-  @override
-  String get finderSubmit => 'Voir les propositions';
-
-  @override
   String get finderResults => 'Nos propositions';
-
-  @override
-  String get finderResultsHint =>
-      'D\'après la fiche d\'entretien de chaque espèce.';
 
   @override
   String get finderEmptyTitle => 'Rien de convaincant';
 
   @override
   String get finderEmptySubtitle =>
-      'Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l\'IA.';
+      'Aucune espèce du catalogue ne coche toutes vos cases. Changez une réponse, ou élargissez les genres de plantes.';
 
   @override
   String get finderRestart => 'Recommencer';
 
   @override
   String get finderAdd => 'Ajouter au jardin';
-
-  @override
-  String get finderCare => 'Voir la fiche';
 
   @override
   String get finderAskAi => 'Demander à l\'IA';
@@ -3651,15 +3632,85 @@ class AppLocalizationsFr extends AppLocalizations {
   String get finderAnyAnswer => 'Peu importe';
 
   @override
+  String finderQuestionOf(int n, int total) {
+    return 'Question $n sur $total';
+  }
+
+  @override
+  String get finderSpotBrightHint => 'Près d\'une fenêtre, beaucoup de jour';
+
+  @override
+  String get finderSpotMediumHint => 'À quelques pas d\'une fenêtre';
+
+  @override
+  String get finderSpotDarkHint => 'Loin des fenêtres, peu de jour';
+
+  @override
+  String get finderSpotOutdoorHint => 'Balcon, terrasse ou jardin';
+
+  @override
+  String get finderEffortForgivingHint =>
+      'Une plante qui pardonne, s\'il vous plaît';
+
+  @override
+  String get finderEffortNormalHint => 'Un arrosage par semaine, à peu près';
+
+  @override
+  String get finderEffortAttentiveHint =>
+      'Brumiser, rempoter, surveiller : avec plaisir';
+
+  @override
+  String get finderSafetyYesHint => 'Seulement des espèces non toxiques';
+
+  @override
+  String get finderSafetyNoHint => 'Toutes les espèces, toxiques comprises';
+
+  @override
+  String get finderTopPick => 'Notre premier choix';
+
+  @override
+  String get finderAlternatives => 'Elles s\'y plairaient aussi';
+
+  @override
+  String get finderChangeAnswer => 'Modifier cette réponse';
+
+  @override
+  String get finderChipSpotAny => 'Endroit : peu importe';
+
+  @override
+  String get finderChipEffortAny => 'Entretien : peu importe';
+
+  @override
+  String get finderChipSafe => 'Sans risque';
+
+  @override
+  String finderFactWater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Eau tous les $count j',
+      one: 'Eau chaque jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finderAiTitle => 'Aller plus loin';
+
+  @override
+  String get finderAiBody =>
+      'L\'IA cherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.';
+
+  @override
+  String get finderPhotoSource =>
+      'Photos : observations GBIF, libres de droits.';
+
+  @override
   String get onbWelcomeTitle => 'Bienvenue sur Auxine';
 
   @override
   String get onbWelcomeBody =>
       'Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.';
-
-  @override
-  String get finderIntro =>
-      'Quatre questions sur l\'endroit et sur vos habitudes, puis des plantes qui s\'y plairont, chacune avec sa fiche d\'entretien.';
 
   @override
   String get careMatchAssisted => 'Complétée par l\'IA';

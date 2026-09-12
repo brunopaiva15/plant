@@ -3517,7 +3517,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderStepSpot => 'Wo soll sie stehen?';
 
   @override
-  String get finderStepSpotHint => 'Das Licht entscheidet fast alles.';
+  String get finderStepSpotHint =>
+      'Drei Fragen genügen. Diese zählt am meisten: das Licht entscheidet fast alles.';
 
   @override
   String get finderSpotBright => 'Heller Raum';
@@ -3560,12 +3561,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderSafetyNo => 'Keine Einschränkung';
 
   @override
-  String get finderStepKind => 'Welche Art Pflanze?';
-
-  @override
-  String get finderStepKindHint => 'Mehrere möglich, oder keine.';
-
-  @override
   String get finderNote => 'Sonst noch etwas?';
 
   @override
@@ -3573,32 +3568,20 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein Bad ohne Fenster, eine Katze, die an allem knabbert …';
 
   @override
-  String get finderNoteFooter => 'Wird nur verwendet, wenn Sie die KI fragen.';
-
-  @override
-  String get finderSubmit => 'Vorschläge ansehen';
-
-  @override
   String get finderResults => 'Unsere Vorschläge';
-
-  @override
-  String get finderResultsHint => 'Nach den Pflegeinfos jeder Art.';
 
   @override
   String get finderEmptyTitle => 'Nichts Überzeugendes';
 
   @override
   String get finderEmptySubtitle =>
-      'Keine Art im Katalog erfüllt alle Kriterien. Etwas lockern, oder die KI fragen.';
+      'Keine Art im Katalog erfüllt alle Kriterien. Ändern Sie eine Antwort, oder lassen Sie mehr Pflanzenarten zu.';
 
   @override
   String get finderRestart => 'Von vorne';
 
   @override
   String get finderAdd => 'Zum Garten hinzufügen';
-
-  @override
-  String get finderCare => 'Pflegeinfos ansehen';
 
   @override
   String get finderAskAi => 'Die KI fragen';
@@ -3634,15 +3617,82 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderAnyAnswer => 'Egal';
 
   @override
+  String finderQuestionOf(int n, int total) {
+    return 'Frage $n von $total';
+  }
+
+  @override
+  String get finderSpotBrightHint => 'Nah am Fenster, viel Tageslicht';
+
+  @override
+  String get finderSpotMediumHint => 'Ein paar Schritte vom Fenster entfernt';
+
+  @override
+  String get finderSpotDarkHint => 'Weit vom Fenster, wenig Tageslicht';
+
+  @override
+  String get finderSpotOutdoorHint => 'Balkon, Terrasse oder Garten';
+
+  @override
+  String get finderEffortForgivingHint => 'Bitte eine Pflanze, die verzeiht';
+
+  @override
+  String get finderEffortNormalHint => 'Etwa einmal pro Woche gießen';
+
+  @override
+  String get finderEffortAttentiveHint => 'Sprühen, umtopfen, nachsehen: gern';
+
+  @override
+  String get finderSafetyYesHint => 'Nur ungiftige Arten';
+
+  @override
+  String get finderSafetyNoHint => 'Alle Arten, auch giftige';
+
+  @override
+  String get finderTopPick => 'Unsere erste Wahl';
+
+  @override
+  String get finderAlternatives => 'Auch sie würden sich dort wohlfühlen';
+
+  @override
+  String get finderChangeAnswer => 'Diese Antwort ändern';
+
+  @override
+  String get finderChipSpotAny => 'Standort: egal';
+
+  @override
+  String get finderChipEffortAny => 'Pflege: egal';
+
+  @override
+  String get finderChipSafe => 'Ungiftig';
+
+  @override
+  String finderFactWater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Alle $count T. gießen',
+      one: 'Täglich gießen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finderAiTitle => 'Weiter suchen';
+
+  @override
+  String get finderAiBody =>
+      'Die KI sucht über den Katalog hinaus, anhand Ihrer Antworten und dem, was Sie hier ergänzen.';
+
+  @override
+  String get finderPhotoSource => 'Fotos: GBIF-Beobachtungen, frei lizenziert.';
+
+  @override
   String get onbWelcomeTitle => 'Willkommen bei Auxine';
 
   @override
   String get onbWelcomeBody =>
       'Das Tagebuch deiner Pflanzen, vom ersten Gießen bis zum neuen Blatt.';
-
-  @override
-  String get finderIntro =>
-      'Vier Fragen zum Standort und zu deinen Gewohnheiten, dann Pflanzen, die sich dort wohlfühlen, jede mit ihren Pflegeinfos.';
 
   @override
   String get careMatchAssisted => 'Von der KI ergänzt';

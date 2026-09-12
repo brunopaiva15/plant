@@ -1631,7 +1631,7 @@
   "finderTitle": "Trouver une plante",
   "finderEntryHint": "Vous ne savez pas quoi choisir ?",
   "finderStepSpot": "Où va-t-elle vivre ?",
-  "finderStepSpotHint": "La lumière décide de presque tout.",
+  "finderStepSpotHint": "Trois questions suffisent. Celle-ci compte le plus : la lumière décide de presque tout.",
   "finderSpotBright": "Pièce lumineuse",
   "finderSpotMedium": "Lumière moyenne",
   "finderSpotDark": "Coin sombre",
@@ -1645,19 +1645,13 @@
   "finderStepSafetyHint": "Beaucoup de plantes d'intérieur sont toxiques si on les mordille.",
   "finderSafetyYes": "Oui, sans risque de préférence",
   "finderSafetyNo": "Pas de contrainte",
-  "finderStepKind": "Quel genre de plante ?",
-  "finderStepKindHint": "Plusieurs choix possibles, ou aucun.",
   "finderNote": "Autre chose ?",
   "finderNoteHint": "Une salle de bain sans fenêtre, un chat qui mordille tout…",
-  "finderNoteFooter": "Utilisé seulement si vous demandez l'avis de l'IA.",
-  "finderSubmit": "Voir les propositions",
   "finderResults": "Nos propositions",
-  "finderResultsHint": "D'après la fiche d'entretien de chaque espèce.",
   "finderEmptyTitle": "Rien de convaincant",
-  "finderEmptySubtitle": "Aucune espèce du catalogue ne coche tous vos critères. Élargissez un peu, ou demandez à l'IA.",
+  "finderEmptySubtitle": "Aucune espèce du catalogue ne coche toutes vos cases. Changez une réponse, ou élargissez les genres de plantes.",
   "finderRestart": "Recommencer",
   "finderAdd": "Ajouter au jardin",
-  "finderCare": "Voir la fiche",
   "finderAskAi": "Demander à l'IA",
   "finderAiSection": "Propositions de l'IA",
   "finderAiHint": "Hors catalogue, à vérifier avant d'acheter.",
@@ -1669,9 +1663,45 @@
   "finderReasonSafe": "Non toxique",
   "finderReasonOutdoor": "Tient dehors",
   "finderAnyAnswer": "Peu importe",
+  "finderQuestionOf": "Question {n} sur {total}",
+  "@finderQuestionOf": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "finderSpotBrightHint": "Près d'une fenêtre, beaucoup de jour",
+  "finderSpotMediumHint": "À quelques pas d'une fenêtre",
+  "finderSpotDarkHint": "Loin des fenêtres, peu de jour",
+  "finderSpotOutdoorHint": "Balcon, terrasse ou jardin",
+  "finderEffortForgivingHint": "Une plante qui pardonne, s'il vous plaît",
+  "finderEffortNormalHint": "Un arrosage par semaine, à peu près",
+  "finderEffortAttentiveHint": "Brumiser, rempoter, surveiller : avec plaisir",
+  "finderSafetyYesHint": "Seulement des espèces non toxiques",
+  "finderSafetyNoHint": "Toutes les espèces, toxiques comprises",
+  "finderTopPick": "Notre premier choix",
+  "finderAlternatives": "Elles s'y plairaient aussi",
+  "finderChangeAnswer": "Modifier cette réponse",
+  "finderChipSpotAny": "Endroit : peu importe",
+  "finderChipEffortAny": "Entretien : peu importe",
+  "finderChipSafe": "Sans risque",
+  "finderFactWater": "{count, plural, =1{Eau chaque jour} other{Eau tous les {count} j}}",
+  "@finderFactWater": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "finderAiTitle": "Aller plus loin",
+  "finderAiBody": "L'IA cherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.",
+  "finderPhotoSource": "Photos : observations GBIF, libres de droits.",
   "onbWelcomeTitle": "Bienvenue sur Auxine",
   "onbWelcomeBody": "Le carnet de vos plantes, du premier arrosage à la nouvelle feuille.",
-  "finderIntro": "Quatre questions sur l'endroit et sur vos habitudes, puis des plantes qui s'y plairont, chacune avec sa fiche d'entretien.",
   "careMatchAssisted": "Complétée par l'IA",
   "careAssistedNote": "Le catalogue ne connaît pas cette espèce, ces repères viennent donc de l'IA. Seul le nom scientifique lui a été envoyé, et la toxicité n'en fait pas partie.",
   "careAssistSetting": "Compléter les fiches avec l'IA",
