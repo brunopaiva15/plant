@@ -1248,6 +1248,5 @@
   "viewPlant": "Die Pflanze",
   "viewLeafClose": "Ein Blatt aus der Nähe",
   "viewAnother": "Weitere Ansicht",
-  "viewForModel": "Dieses Foto hilft {name}, die Art zu erkennen. Es wird nicht behalten.",
-  "viewsCaption": "Fotos für {name}, danach gelöscht"
+  "viewForModel": "Dieses Foto hilft {name}, die Art zu erkennen. Es wird nicht behalten."
 }

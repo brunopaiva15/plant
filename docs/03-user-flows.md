@@ -10,7 +10,7 @@ Plantes ─[tap +]⟶ Sheet plein écran
                [tap cadre] ou [◯] déclenche · Continuer sans photo
     On la      la photo prise remplit le cadre (c'est la confirmation)
     garde ?    dessous, si Iris est là : « La plante » · [+ Une feuille de près] · [+ Autre vue]
-               légende « Photos pour Iris, supprimées ensuite » · [Continuer] · Reprendre
+               [Continuer] · Reprendre
     Une vue    [tap emplacement] ⟶ le viseur revient sous le titre de l'emplacement,
     de plus    rend la main dès la prise ; × ou Annuler ramène à la photo
   Étape 2 · Nom

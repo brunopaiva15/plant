@@ -480,7 +480,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// dessus, la galerie dans un coin. Rien à chercher ailleurs.
   /// **On la garde ?** : la photo prise remplit le cadre — c'est la confirmation —,
   /// et dessous, des emplacements qui disent quoi photographier de plus pour
-  /// aider Iris, et que ces vues ne seront pas gardées.
+  /// aider Iris.
   /// **Une vue de plus** : le viseur revient pour l'emplacement touché, avec
   /// son titre, et rend la main dès la prise.
   ///
@@ -535,17 +535,6 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                   hints: hints,
                   onAdd: full ? null : _openExtraSlot,
                   onRemove: _removeIdentificationPhoto,
-                ),
-                const SizedBox(height: Space.xs),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const IrisMark(size: 18),
-                    const SizedBox(width: 6),
-                    // Pliable : à 200 % de Dynamic Type, la phrase ne tient
-                    // plus sur une ligne, et elle ne doit pas se faire couper.
-                    Flexible(child: Text(l10n.viewsCaption(AppConfig.modelName), style: context.text.caption, maxLines: 2)),
-                  ],
                 ),
               ],
             ],
@@ -959,8 +948,7 @@ class _Shutter extends StatelessWidget {
 ///
 /// Trois cases égales ne disaient rien : laquelle est la photo de la plante,
 /// à quoi servent les autres, que deviennent-elles. Ici la première est
-/// « La plante », les suivantes portent le sujet conseillé, et la légende
-/// sous la bande dit qu'elles ne sont pas gardées.
+/// « La plante », les suivantes portent le sujet conseillé.
 class _ViewsStrip extends StatelessWidget {
   const _ViewsStrip({required this.plantThumb, required this.extras, required this.hints, required this.onAdd, required this.onRemove});
 
