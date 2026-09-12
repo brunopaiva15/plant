@@ -275,6 +275,32 @@ void main() {
     }
   });
 
+  testWidgets('the archive screen offers a way back', (tester) async {
+    // Le gabarit à grand titre sert d'abord aux quatre onglets, qui sont des
+    // racines : rien à dépiler, donc pas de retour. « Anciennes plantes » le
+    // reprend alors qu'elle est poussée depuis les réglages, et n'offrait
+    // rien pour revenir — ni bouton, ni chevron.
+    final handle = tester.ensureSemantics();
+    final container = await boot(tester, seed: (c) async {
+      final plants = c.read(plantRepositoryProvider);
+      final old = await plants.create(const NewPlant(name: 'Basilic'));
+      await plants.archive([old.id], reason: 'died');
+    });
+    await pumpApp(tester, container);
+    container.read(routerProvider).push(Routes.archive);
+    await settle(tester);
+    expect(find.text('Anciennes plantes'), findsWidgets);
+
+    final back = find.bySemanticsLabel('Retour');
+    expect(back, findsOneWidget);
+    await tester.tap(back);
+    await settle(tester);
+    // De retour dans le shell à onglets, qui n'a rien à dépiler.
+    expect(find.bySemanticsLabel('Retour'), findsNothing);
+    expect(tester.takeException(), isNull);
+    handle.dispose();
+  });
+
   testWidgets('onboarding leads to Today after entering a name', (tester) async {
     final container = await boot(tester, onboardingDone: false);
     await pumpApp(tester, container, settleAfter: false);
