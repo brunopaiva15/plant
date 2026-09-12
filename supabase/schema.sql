@@ -528,7 +528,11 @@ create policy "invites write" on garden_invites for all
 
 -- Code à 8 caractères, sans I, L, O, 0 ni 1 : il se dicte au téléphone.
 -- Tirage par rejet pour rester uniforme (256 n'est pas multiple de 31).
-create or replace function new_invite_code() returns text language plpgsql as $$
+-- `gen_random_bytes` vient de pgcrypto, que Supabase installe dans le schéma
+-- `extensions` : sans lui dans le search_path, « function gen_random_bytes
+-- does not exist », et aucune invitation ne se crée. Un schéma absent du
+-- search_path est ignoré : le fichier reste valable sur un Postgres nu.
+create or replace function new_invite_code() returns text language plpgsql set search_path = public, extensions as $$
 declare
   alphabet constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   code text := '';
@@ -545,7 +549,7 @@ begin
 end $$;
 
 create or replace function create_invite(p_garden_id uuid, p_email text default null, p_role text default 'member', p_days int default 14)
-returns garden_invites language plpgsql security definer set search_path = public as $$
+returns garden_invites language plpgsql security definer set search_path = public, extensions as $$
 declare v garden_invites; v_code text;
 begin
   if not exists (select 1 from gardens where id = p_garden_id and owner_id = auth.uid()) then raise exception 'not_owner'; end if;
