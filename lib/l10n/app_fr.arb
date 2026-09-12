@@ -789,6 +789,7 @@
   "diagnosisRefused": "L'analyse n'a pas pu être effectuée pour cette photo.",
   "diagnosisUnauthorized": "Le diagnostic est indisponible pour le moment. Réessayez plus tard.",
   "possibleCauses": "Pistes possibles",
+  "causesHint": "Classées par vraisemblance, à confirmer.",
   "likelihoodLikely": "Probable",
   "likelihoodPossible": "Possible",
   "likelihoodUnlikely": "Peu probable",

@@ -1216,7 +1216,16 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
 - **Réponse** : un JSON demandé par la consigne et par `response_format`
   (`json_object`) ; si le service refuse ce paramètre, la même demande
   repart sans lui et le lecteur extrait le JSON du texte, balises Markdown
-  comprises. Une photo sans plante lisible rend un résumé et aucune cause.
+  comprises.
+- **Toujours au moins une piste** : la consigne interdit d'en faire une de la
+  photo — « la feuille sèche n'est pas visible sur l'image » n'est pas un
+  diagnostic, et le symptôme a bien été vu sur la plante même quand le
+  cadrage l'a manqué. Ce que la personne décrit part donc comme observé, et
+  un compte rendu revenu sans aucune piste en redemande une dernière fois,
+  sans les photos puisqu'elles n'ont rien donné : l'espèce, les symptômes
+  décrits et la liste des problèmes connus suffisent à une piste incertaine,
+  qui vaut mieux qu'un compte rendu vide. Ce repli est un bonus, jamais un
+  motif d'échec.
 - **Ce qui est gardé** : l'analyse enregistrée l'est entière. La note du
   journal en garde le résumé et les trois premières pistes ; le compte rendu
   complet — chaque piste avec son explication et ses gestes, l'urgence, les

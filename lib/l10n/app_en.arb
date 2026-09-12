@@ -551,6 +551,7 @@
   "diagnosisRefused": "This photo couldn't be analyzed.",
   "diagnosisUnauthorized": "Diagnosis is unavailable right now. Try again later.",
   "possibleCauses": "Possible causes",
+  "causesHint": "Ranked by likelihood, to confirm.",
   "likelihoodLikely": "Likely",
   "likelihoodPossible": "Possible",
   "likelihoodUnlikely": "Less likely",

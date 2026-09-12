@@ -1611,6 +1611,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get possibleCauses => 'Pistes possibles';
 
   @override
+  String get causesHint => 'Classées par vraisemblance, à confirmer.';
+
+  @override
   String get likelihoodLikely => 'Probable';
 
   @override

@@ -81,8 +81,109 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       allowed: {for (final p in candidates) p.id},
       byName: namesOf(candidates, language),
     );
-    return _numberLeftovers(diagnosis, candidates, language);
+    final complete = diagnosis.causes.isNotEmpty
+        ? diagnosis
+        : await _causesFromWords(
+            diagnosis,
+            language: language,
+            plantName: plantName,
+            species: species,
+            symptoms: symptoms,
+            candidates: candidates,
+            frequentIds: frequentIds,
+          );
+    return _numberLeftovers(complete, candidates, language);
   }
+
+  /// Passe de repli : un compte rendu revenu sans aucune piste.
+  ///
+  /// La consigne en demande toujours une. Un modèle qui ne reconnaît rien sur
+  /// la photo retombe pourtant sur « rien à signaler », voire sur « ce que
+  /// vous décrivez n'est pas sur l'image » — alors que le symptôme, lui, a
+  /// bien été vu sur la plante. Un compte rendu sans piste ne sert personne.
+  ///
+  /// On redemande donc sans les photos, puisqu'elles n'ont rien donné : il
+  /// reste l'espèce, ce que la personne a décrit et la liste des problèmes
+  /// connus. Quelques centimes de jetons, et seulement dans ce cas-là.
+  ///
+  /// Comme la deuxième passe, c'est un bonus : la moindre difficulté rend le
+  /// compte rendu de la première passe tel quel.
+  Future<Diagnosis> _causesFromWords(
+    Diagnosis diagnosis, {
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    required List<PlantProblem> candidates,
+    required Set<String> frequentIds,
+  }) async {
+    try {
+      final body = buildFallbackRequest(
+        model: model,
+        language: language,
+        plantName: plantName,
+        species: species,
+        symptoms: symptoms,
+        candidates: candidates,
+        frequentIds: frequentIds,
+      );
+      var response = await _post(body, timeout: const Duration(seconds: 60));
+      if (response.statusCode == 400) {
+        response = await _post({...body}..remove('response_format'), timeout: const Duration(seconds: 60));
+      }
+      if (response.statusCode != 200) return diagnosis;
+      final repli = parseResponse(
+        response.body,
+        allowed: {for (final p in candidates) p.id},
+        byName: namesOf(candidates, language),
+      );
+      if (repli.causes.isEmpty) return diagnosis;
+      // Le résumé reste celui de la première passe : c'est elle qui a vu les
+      // photos. Le repli n'apporte que les pistes.
+      return Diagnosis(
+        summary: diagnosis.summary.isEmpty ? repli.summary : diagnosis.summary,
+        causes: repli.causes,
+        urgent: diagnosis.urgent || repli.urgent,
+      );
+    } on Object {
+      return diagnosis;
+    }
+  }
+
+  /// Corps de la passe de repli (exposé pour les tests).
+  static Map<String, Object?> buildFallbackRequest({
+    required String model,
+    required String language,
+    String? plantName,
+    String? species,
+    String? symptoms,
+    List<PlantProblem> candidates = const [],
+    Set<String> frequentIds = const {},
+  }) =>
+      {
+        'model': model,
+        'max_tokens': 900,
+        'temperature': 0.2,
+        'response_format': {'type': 'json_object'},
+        'messages': [
+          {'role': 'system', 'content': systemPrompt(language)},
+          {
+            'role': 'user',
+            'content': [
+              'The photos gave nothing to go on, so judge from what is written below and do not mention them at all.',
+              userPrompt(
+                language: language,
+                plantName: plantName,
+                species: species,
+                symptoms: symptoms,
+                candidates: candidates,
+                frequentIds: frequentIds,
+              ),
+              'Give the one or two most plausible causes, as "possible" or "unlikely".',
+            ].join(' '),
+          },
+        ],
+      };
 
   /// Deuxième passe, pour les pistes revenues sans numéro.
   ///
@@ -230,8 +331,14 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Rate each cause with "likelihood", one of exactly these three words: "likely", "possible", "unlikely". '
       'Do not use numbers or percentages: you cannot measure this from a photo, and a figure would suggest a precision you do not have. '
       'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
-      'If the plant looks healthy, say so with a single "unlikely" cause at most. Set "urgent" only for pests, rot or rapid decline. '
-      'If the photos do not show a plant clearly enough, say so in "summary" and return no cause. '
+      'Always give at least one cause, whatever the photos show: "causes" is never empty. '
+      'Every cause is a problem of the plant — a disorder, a pest, a disease, a care mistake. The photo is never a cause: never write that the '
+      'reported symptom is missing from it, that it is unclear, or that another photo is needed, neither as a title, nor as an explanation, '
+      'nor as an action, nor in "summary". Describe what the photos do show, never what they fail to show. '
+      'When the photos do not show what the owner describes, work from the description, the species and the season: the owner has the plant in '
+      'front of them, and what they report happened even if the frame missed it. Such causes are "possible" or "unlikely", never "likely". '
+      'If the plant looks healthy on the photos, say so in "summary" and still give the one or two most plausible causes of what the owner '
+      'reports, as "unlikely". Set "urgent" only for pests, rot or rapid decline. '
       'The message lists known problems for this plant, each as a three-digit number and a name. Read that list before you name anything. '
       'For every cause, decide "problem" first, before writing its title: the number of the listed problem it is, or null when it is none of them. '
       'Always include the key, never write a number that is not on the list, and when a listed problem fits, use its number even if you would '
@@ -259,7 +366,12 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // donne au modèle un vocabulaire au lieu de le laisser improviser un
       // nom à chaque analyse, et c'est ce nom-là que l'application affichera.
       ...shortlist(candidates, frequentIds, language),
-      if (symptoms != null && symptoms.trim().isNotEmpty) 'What the owner noticed: ${symptoms.trim()}',
+      // Ce que la personne décrit a été vu sur la plante, pas sur la photo :
+      // le cadrage rate souvent la feuille dont elle parle, et le modèle
+      // répondait alors que le symptôme n'était pas visible au lieu de
+      // chercher une cause.
+      if (symptoms != null && symptoms.trim().isNotEmpty)
+        'What the owner noticed, on the plant itself, true whether or not the photos show it: ${symptoms.trim()}',
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');

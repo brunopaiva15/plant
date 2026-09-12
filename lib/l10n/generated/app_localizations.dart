@@ -2874,6 +2874,12 @@ abstract class AppLocalizations {
   /// **'Pistes possibles'**
   String get possibleCauses;
 
+  /// No description provided for @causesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classées par vraisemblance, à confirmer.'**
+  String get causesHint;
+
   /// No description provided for @likelihoodLikely.
   ///
   /// In fr, this message translates to:
