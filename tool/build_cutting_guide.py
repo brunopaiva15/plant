@@ -105,10 +105,15 @@ def sphere(name, centre, r, mat, seg=24):
     return _objet(name, bm, mat)
 
 
-def anneau(name, centre, axe, R, r, mat, seg=48, sec=16):
-    """Un tore de rayon [R], de section [r], autour de [axe]."""
+def anneau(name, centre, axe, R, r, mat, seg=48, sec=16, long=None, etire=1.0):
+    """Un tore de rayon [R], de section [r], autour de [axe]. Donne [long]
+    et [etire] pour l'allonger dans cette direction : les anneaux d'une
+    paire de ciseaux sont ovales."""
     Z = Vector(axe).normalized()
-    X = UP.cross(Z)
+    if long is not None:
+        X = Vector(long) - Vector(long).dot(Z) * Z
+    else:
+        X = UP.cross(Z)
     if X.length < 1e-4:
         X = Vector((1, 0, 0)).cross(Z)
     X.normalize()
@@ -116,8 +121,8 @@ def anneau(name, centre, axe, R, r, mat, seg=48, sec=16):
     verts, faces = [], []
     for i in range(seg):
         a = 2.0 * pi * i / seg
-        c = Vector(centre) + (X * cos(a) + Y * sin(a)) * R
-        radial = (X * cos(a) + Y * sin(a))
+        c = Vector(centre) + X * (cos(a) * R * etire) + Y * (sin(a) * R)
+        radial = (X * (cos(a) / etire) + Y * sin(a)).normalized()
         for j in range(sec):
             b = 2.0 * pi * j / sec
             verts.append(c + radial * (r * cos(b)) + Z * (r * sin(b)))
@@ -483,9 +488,13 @@ def racines_du_noeud(M, mats, avancement):
 # ------------------------------------------------------------
 # les ciseaux
 # ------------------------------------------------------------
+LAME = 0.56
+
+
 def ciseaux(mats, pivot, Y, Z, ouverture):
-    """Deux lames et deux anneaux, articules en [pivot], dans le plan (Y, Z)
-    ou Y est l'axe des lames et Z regarde la camera. [ouverture] en degres."""
+    """Deux lames et deux anneaux ovales, articules en [pivot], dans le plan
+    (Y, Z) ou Y est l'axe des lames et Z regarde la camera. [ouverture] en
+    degres."""
     Y = Vector(Y).normalized()
     Z = Vector(Z).normalized()
     X = Y.cross(Z).normalized()
@@ -499,13 +508,14 @@ def ciseaux(mats, pivot, Y, Z, ouverture):
     for signe, nom in ((1.0, "A"), (-1.0, "B")):
         R = Matrix.Rotation(radians(ouverture / 2.0) * signe, 4, "Z")
         M = base @ R @ Matrix.Translation(Vector((0, 0, 0.011 * signe)))
-        objets.append(lame("Lame_" + nom, M, 0.62, 0.105, 0.026, 0.022, mats["acier"]))
+        objets.append(lame("Lame_" + nom, M, LAME, 0.10, 0.024, 0.022, mats["acier"]))
+        # Le bras, puis l'anneau ovale, allonge dans l'axe du bras.
+        bras = [M @ Vector((0, -0.02, 0)), M @ Vector((0, -0.20, 0))]
+        objets.append(tube_along("Bras_" + nom, bras, [0.036, 0.034], mat=mats["poignee"], seg=12, cap=3))
         centre = M @ Vector((0.0, -0.36, 0.0))
-        objets.append(anneau("Anneau_" + nom, centre, rot(M, (0, 0, 1)), 0.15, 0.040, mats["poignee"]))
-        # Le bras entre le pivot et l'anneau.
-        bras = [M @ Vector((0, -0.02, 0)), M @ Vector((0, -0.22, 0))]
-        objets.append(tube_along("Bras_" + nom, bras, [0.036, 0.036], mat=mats["poignee"], seg=12, cap=3))
-    objets.append(sphere("Rivet", pivot + Z * 0.0, 0.040, mats["poignee"], seg=18))
+        objets.append(anneau("Anneau_" + nom, centre, rot(M, (0, 0, 1)), 0.115, 0.038, mats["poignee"],
+                             long=rot(M, (0, 1, 0)), etire=1.38))
+    objets.append(sphere("Rivet", pivot, 0.040, mats["poignee"], seg=18))
     return objets
 
 
@@ -580,9 +590,11 @@ def verre_et_eau(mats, niveau):
 
 
 def anneau_du_noeud(mats, taille):
+    """L'anneau marque l'endroit de la coupe : juste sous le noeud choisi,
+    la ou les ciseaux se fermeront a l'etape suivante."""
     if taille <= 0.02:
         return []
-    t = LIANE_HERO["noeuds"][NOEUD_CHOISI][0]
+    t = T_COUPE
     centre = _point_tige(LIANE_HERO, t)
     axe = tangente(LIANE_HERO["P0"], LIANE_HERO["P1"], LIANE_HERO["P2"], t)
     return [anneau("Anneau_Noeud", centre, axe, 0.160 * taille, 0.034 * taille, mats["anneau"])]
@@ -595,17 +607,17 @@ def etape_tige(mats, f):
 
 
 def etape_coupe(mats, f):
-    approche = adouci(f / 0.28)
-    fermeture = adouci((f - 0.30) / 0.16)
-    retrait = adouci((f - 0.50) / 0.30)
-    levee = adouci((f - 0.50) / 0.42)
+    approche = adouci(f / 0.30)
+    fermeture = adouci((f - 0.34) / 0.11)
+    retrait = adouci((f - 0.54) / 0.32)
+    levee = adouci((f - 0.52) / 0.42)
     coupe = fermeture >= 0.999
     C = _point_tige(LIANE_HERO, T_COUPE)
     T = tangente(LIANE_HERO["P0"], LIANE_HERO["P1"], LIANE_HERO["P2"], T_COUPE)
-    # L'axe des lames, en travers de la tige et dans le plan de l'ecran ; les
-    # anneaux du cote droit, d'ou viennent les ciseaux.
+    # L'axe des lames : en travers de la tige, dans le plan de l'ecran, et
+    # vers le bas. Les ciseaux viennent d'en haut, comme une main qui coupe.
     Y = T.cross(VUE).normalized()
-    if Y.dot(DROITE) > 0:
+    if Y.dot(UP) > 0:
         Y = -Y
     objets = pot_et_terre(mats)
     for i, spec in enumerate(LIANES_AUTRES):
@@ -618,11 +630,15 @@ def etape_coupe(mats, f):
         objets += liane("Liane1_Bouture", LIANE_HERO, mats, t0=T_COUPE + 0.012, M=M)
     else:
         objets += liane("Liane1_Haut", LIANE_HERO, mats, t0=T_COUPE)
-    # Les ciseaux : ils arrivent ouverts, se ferment, repartent en s'ouvrant.
-    recul = (1.0 - approche) * 1.30 + retrait * 0.90
-    pivot = C - Y * recul + UP * (0.18 * retrait) + VUE * 0.02
-    ouverture = 34.0 * (1.0 - fermeture) + 24.0 * retrait
-    objets += ciseaux(mats, pivot, Y, VUE, ouverture)
+    # La tige repose sur les lames, a un tiers de leur longueur depuis le
+    # pivot : c'est la que des ciseaux coupent, pas au rivet.
+    cible = C - Y * (0.36 * LAME) + VUE * 0.03
+    depart = UP * 0.85 + DROITE * 0.60
+    pivot = cible + depart * (1.0 - approche) + (UP * 0.55 + DROITE * 0.42) * retrait
+    ouverture = 38.0 * (1.0 - fermeture) + 24.0 * retrait
+    # Un leger balancement a l'arrivee : les ciseaux se redressent en se posant.
+    bascule = Matrix.Rotation(radians(-18.0) * (1.0 - approche) + radians(10.0) * retrait, 3, VUE)
+    objets += ciseaux(mats, pivot, bascule @ Y, VUE, ouverture)
     return objets
 
 
@@ -669,7 +685,7 @@ def etape_pot(mats, f):
 
 ETAPES = [
     ("etape_1", 30, etape_tige, (0.0, 0.55, 1.0)),
-    ("etape_2", 38, etape_coupe, (0.0, 0.30, 0.45, 1.0)),
+    ("etape_2", 38, etape_coupe, (0.0, 0.30, 0.46, 1.0)),
     ("etape_3", 30, etape_feuilles, (0.0, 0.5, 1.0)),
     ("etape_4", 30, etape_eau, (0.0, 1.0)),
     ("etape_5", 36, etape_racines, (0.0, 1.0)),
