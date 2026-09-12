@@ -72,7 +72,13 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 
 ## Mise en place
 1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Erreur de synchronisation » sur l'écran Compte, avec le message du serveur dessous (« Could not find the '…' column » : une colonne manque ; « new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).
-2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`).
+2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`). Tant qu'elle ne l'est pas, un lien envoyé répond `{"code":"NOT_FOUND","message":"Requested function was not found"}`. Depuis un poste avec la CLI Supabase :
+   ```bash
+   supabase login
+   supabase link --project-ref <ref du projet>      # la partie avant .supabase.co dans l'URL
+   supabase functions deploy share --no-verify-jwt
+   ```
+   `--no-verify-jwt` est indispensable (et déjà inscrit dans `supabase/config.toml`) : la page s'ouvre depuis un navigateur, sans clé. `SUPABASE_URL` et `SUPABASE_ANON_KEY` sont fournis à la fonction par Supabase, rien à configurer. À refaire à chaque changement de `supabase/functions/share/index.ts`.
 3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `flora://login-callback`.
 4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
 

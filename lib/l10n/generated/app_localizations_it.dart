@@ -3554,12 +3554,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderSafetyNo => 'Nessun vincolo';
 
   @override
-  String get finderStepKind => 'Che tipo di pianta?';
-
-  @override
-  String get finderStepKindHint => 'Più scelte, o nessuna.';
-
-  @override
   String get finderNote => 'Dettagli';
 
   @override
@@ -3567,32 +3561,20 @@ class AppLocalizationsIt extends AppLocalizations {
       'Un bagno senza finestre, un gatto che mordicchia tutto…';
 
   @override
-  String get finderNoteFooter => 'Usato solo se chiede all\'IA.';
-
-  @override
-  String get finderSubmit => 'Vedi le proposte';
-
-  @override
   String get finderResults => 'Proposte';
-
-  @override
-  String get finderResultsHint => 'In base alla scheda di cura di ogni specie.';
 
   @override
   String get finderEmptyTitle => 'Nessun risultato';
 
   @override
   String get finderEmptySubtitle =>
-      'Nessuna specie del catalogo corrisponde a tutti i criteri. Ampliateli o chiedete all\'IA.';
+      'Nessuna specie del catalogo corrisponde a tutti i criteri. Modificate una risposta o ampliate i tipi di pianta.';
 
   @override
   String get finderRestart => 'Ricomincia';
 
   @override
   String get finderAdd => 'Aggiungi al giardino';
-
-  @override
-  String get finderCare => 'Vedi la scheda';
 
   @override
   String get finderAskAi => 'Chiedi all\'IA';
@@ -3629,14 +3611,83 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderAnyAnswer => 'Non importa';
 
   @override
+  String finderQuestionOf(int n, int total) {
+    return 'Domanda $n di $total';
+  }
+
+  @override
+  String get finderSpotBrightHint => 'Vicino a una finestra, molta luce';
+
+  @override
+  String get finderSpotMediumHint => 'A qualche passo da una finestra';
+
+  @override
+  String get finderSpotDarkHint => 'Lontano dalle finestre, poca luce';
+
+  @override
+  String get finderSpotOutdoorHint => 'Balcone, terrazzo o giardino';
+
+  @override
+  String get finderEffortForgivingHint => 'Una pianta che perdona, per favore';
+
+  @override
+  String get finderEffortNormalHint => 'Circa un\'annaffiatura a settimana';
+
+  @override
+  String get finderEffortAttentiveHint =>
+      'Nebulizzare, rinvasare, controllare: volentieri';
+
+  @override
+  String get finderSafetyYesHint => 'Solo specie non tossiche';
+
+  @override
+  String get finderSafetyNoHint => 'Tutte le specie, anche tossiche';
+
+  @override
+  String get finderTopPick => 'La nostra prima scelta';
+
+  @override
+  String get finderAlternatives => 'Anche loro starebbero bene lì';
+
+  @override
+  String get finderChangeAnswer => 'Cambia questa risposta';
+
+  @override
+  String get finderChipSpotAny => 'Posto: indifferente';
+
+  @override
+  String get finderChipEffortAny => 'Cura: indifferente';
+
+  @override
+  String get finderChipSafe => 'Senza rischi';
+
+  @override
+  String finderFactWater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Acqua ogni $count g',
+      one: 'Acqua ogni giorno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get finderAiTitle => 'Andare oltre';
+
+  @override
+  String get finderAiBody =>
+      'L\'IA cerca oltre il catalogo, partendo dalle sue risposte e da ciò che aggiunge qui.';
+
+  @override
+  String get finderPhotoSource =>
+      'Foto: osservazioni GBIF, con licenza libera.';
+
+  @override
   String get onbWelcomeTitle => 'Benvenuto in Auxine';
 
   @override
   String get onbWelcomeBody => 'Il diario di cura delle vostre piante.';
-
-  @override
-  String get finderIntro =>
-      'Quattro domande, poi una selezione di specie adatte, con la scheda di cura.';
 
   @override
   String get careMatchAssisted => 'Completata dall\'IA';
@@ -3657,7 +3708,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'Il giardino selezionato è quello mostrato nell\'app.';
+      'Il giardino aperto è quello che vedete ovunque nell\'app. Potete passare dall\'uno all\'altro quando volete.';
 
   @override
   String get gardenMine => 'Il mio giardino';
@@ -3703,19 +3754,20 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Inserite il codice d\'invito o aprite il link ricevuto.';
+      'Inserite il codice ricevuto, o aprite il link d\'invito.';
 
   @override
   String get inviteCodeHint => 'Codice d\'invito';
 
   @override
-  String get joinLook => 'Verifica codice';
+  String get joinLook => 'Vedi l\'invito';
 
   @override
   String get joinConfirm => 'Unisciti';
 
   @override
-  String get joinInvalid => 'Codice non valido, scaduto o già usato.';
+  String get joinInvalid =>
+      'Questo codice non vale più. Già usato, scaduto o inesistente.';
 
   @override
   String get joinWrongEmail =>
