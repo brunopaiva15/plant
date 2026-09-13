@@ -1032,7 +1032,6 @@
   "waterAllHere": "Water everything here",
   "fertilizeAllHere": "Feed everything here",
   "repotAllHere": "Repot everything here",
-  "plantNumber": "No. {number}",
   "searchByNumberHint": "Type #42 to find plant no. 42.",
   "inventoryGroups": "Groups",
   "manageGroups": "Manage groups",

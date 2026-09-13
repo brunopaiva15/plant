@@ -3089,11 +3089,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repotAllHere => 'Repot everything here';
 
   @override
-  String plantNumber(int number) {
-    return 'No. $number';
-  }
-
-  @override
   String get searchByNumberHint => 'Type #42 to find plant no. 42.';
 
   @override

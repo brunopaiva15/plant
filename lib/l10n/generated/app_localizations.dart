@@ -5322,12 +5322,6 @@ abstract class AppLocalizations {
   /// **'Rempoter tout ici'**
   String get repotAllHere;
 
-  /// No description provided for @plantNumber.
-  ///
-  /// In fr, this message translates to:
-  /// **'N° {number}'**
-  String plantNumber(int number);
-
   /// No description provided for @searchByNumberHint.
   ///
   /// In fr, this message translates to:
