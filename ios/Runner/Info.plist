@@ -78,7 +78,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>flora</string>
+				<string>auxine</string>
 			</array>
 		</dict>
 	</array>

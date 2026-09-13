@@ -31,7 +31,7 @@ inventory_items  id, garden_id, category_key(fertilizer|soil|substrate|pot|tool|
                  created_at, updated_at, deleted_at
 ```
 Les catégories intégrées de l'inventaire sont un enum localisé ; les groupes personnalisés vivent dans `inventory_groups` (schéma v9).
-Les QR codes encodent `flora://plant/<id>` et `flora://item/<id>`, sans table dédiée.
+Les QR codes encodent `auxine://plant/<id>` et `auxine://item/<id>`, sans table dédiée.
 
 ## Phase 3 (schémas v3–v4)
 ```

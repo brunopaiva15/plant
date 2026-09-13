@@ -6,8 +6,9 @@ abstract final class SupabaseConfig {
   static const String anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
   static const String photoBucket = 'plant-photos';
 
-  /// Redirection OAuth (Google) : `flora://login-callback`.
-  static const String authRedirect = 'flora://login-callback';
+  /// Redirection OAuth (Google) : `auxine://login-callback`, à déclarer
+  /// telle quelle dans les *Redirect URLs* de Supabase.
+  static const String authRedirect = 'auxine://login-callback';
 
   static bool get isConfigured => url.isNotEmpty && anonKey.isNotEmpty;
 

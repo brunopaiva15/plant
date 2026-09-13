@@ -36,12 +36,11 @@ abstract final class AppConfig {
   static const String version = '1.0.0';
   static const int build = 1;
 
-  /// Schéma des liens encodés dans les QR codes (`flora://plant/<id>`).
-  ///
-  /// Il garde le nom de travail : les étiquettes déjà imprimées le portent,
-  /// et c'est aussi l'URL de redirection déclarée côté Supabase pour la
-  /// connexion Google. Rien de tout cela n'est visible dans l'application.
-  static const String linkScheme = 'flora';
+  /// Schéma des liens encodés dans les QR codes (`auxine://plant/<id>`),
+  /// de la redirection déclarée côté Supabase pour la connexion Google, et
+  /// du retour des raccourcis. Le nom de l'application, tel que la personne
+  /// le voit : une étiquette qui l'affiche en clair dit d'où elle vient.
+  static const String linkScheme = 'auxine';
 
   /// Fournisseurs tiers proposés sur l'écran Compte, en plus de l'e-mail par
   /// code. Apple est livré (natif, iPhone et iPad, entitlement

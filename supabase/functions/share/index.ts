@@ -13,8 +13,8 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const PHOTO_BUCKET = 'plant-photos';
 
-/** Schéma des liens de l'application : `flora://join/<code>`. */
-const APP_SCHEME = 'flora';
+/** Schéma des liens de l'application : `auxine://join/<code>`. */
+const APP_SCHEME = 'auxine';
 
 /** Échappe le texte inséré dans le HTML : aucun contenu utilisateur n'est brut. */
 function esc(value: unknown): string {

@@ -120,7 +120,7 @@ class SupabaseCollaborationService implements CollaborationService {
       });
 
   /// Adresse https, pour que le lien reste cliquable dans un message ; la page
-  /// qu'elle sert ne fait qu'ouvrir l'application sur `flora://join/<code>`.
+  /// qu'elle sert ne fait qu'ouvrir l'application sur `auxine://join/<code>`.
   @override
   String inviteLink(String code) => '${SupabaseConfig.shareBaseUrl.replaceAll(RegExp(r'/+$'), '')}/join/$code';
 

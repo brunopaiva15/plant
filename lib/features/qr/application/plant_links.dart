@@ -17,10 +17,10 @@ class FloraLink {
   int get hashCode => Object.hash(kind, id);
 }
 
-/// Liens encodés dans les QR codes : `flora://plant/<id>` et
-/// `flora://item/<id>`. Le même format servira aux tags NFC (Phase 4).
+/// Liens encodés dans les QR codes : `auxine://plant/<id>` et
+/// `auxine://item/<id>`. Le même format servira aux tags NFC (Phase 4).
 ///
-/// `flora://join/<code>` s'y ajoute pour les invitations : c'est le bouton
+/// `auxine://join/<code>` s'y ajoute pour les invitations : c'est le bouton
 /// « Ouvrir dans Auxine » de la page d'atterrissage qui l'appelle.
 abstract final class PlantLinks {
   static String encode(String plantId) => '${AppConfig.linkScheme}://plant/$plantId';

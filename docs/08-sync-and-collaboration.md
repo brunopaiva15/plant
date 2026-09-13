@@ -57,7 +57,7 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 ## Collaboration
 - `garden_members` : `owner` / `member` / `viewer`. Le domaine en fait `GardenRole` (`domain/sharing/garden_collaboration.dart`) : `canEdit`, `canManageMembers`.
 - **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : la feuille « Rejoindre un jardin » lui propose « Continuer avec Apple » sur place, et accepte l'invitation dans la foulée (`accept_invite`). Là où la connexion n'existe pas (Android, pour l'heure), la feuille le dit d'emblée. Même règle sur Mes jardins et Membres : un bouton « Se connecter » vers l'écran Compte quand la connexion existe, le texte seul sinon (`signInAvailable`, dans `account/application`).
-- Le lien envoyé est une adresse https (`…/functions/v1/share/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`flora://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît.
+- Le lien envoyé est une adresse https (`…/functions/v1/share/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`auxine://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît.
 - `my_gardens()` liste les jardins du compte avec le rôle, le nom du propriétaire, le nombre de membres et de plantes. `set_member_role`, `remove_member`, `leave_garden`, `revoke_invite` complètent la gestion — toutes `security definer`, propriétaire seul sauf `leave_garden`.
 - Chaque action et photo porte `user_id` ; la timeline affiche « · Laura » quand l'auteur n'est pas l'utilisateur courant (cache local `profiles`).
 - Un `viewer` voit tout et ne peut rien écrire (RLS) ; l'UI masque les boutons d'ajout et les entrées d'édition, et les actions de soin refusent avec un message.
@@ -79,7 +79,7 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
    supabase functions deploy share --no-verify-jwt
    ```
    `--no-verify-jwt` est indispensable (et déjà inscrit dans `supabase/config.toml`) : la page s'ouvre depuis un navigateur, sans clé. `SUPABASE_URL` et `SUPABASE_ANON_KEY` sont fournis à la fonction par Supabase, rien à configurer. À refaire à chaque changement de `supabase/functions/share/index.ts`.
-3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `flora://login-callback`.
+3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `auxine://login-callback`.
 4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
 
 ### Sign in with Apple
@@ -113,7 +113,7 @@ Sans l'étape 1, le build ne se signe pas ; sans la 2, Supabase refuse le jeton
 (« Unacceptable audience ») ; sans la 3, le bouton n'est pas dessiné.
 
 Google n'est pas livré : `signInWithGoogle` et sa redirection
-`flora://login-callback` restent codés, mais le bouton attend
+`auxine://login-callback` restent codés, mais le bouton attend
 `AppConfig.googleSignInEnabled`. La règle 4.8 de l'App Store n'exige Apple qu'en
 présence d'un autre fournisseur tiers ; Apple seul est permis, et Google
 pourra suivre quand Android deviendra prioritaire — en activant alors aussi le

@@ -97,7 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: onboardingDone ? Routes.today : Routes.onboarding,
     redirect: (context, state) {
-      // Un lien `flora://…` — QR scanné depuis l'appareil photo du système,
+      // Un lien `auxine://…` — QR scanné depuis l'appareil photo du système,
       // retour de connexion — est livré tel quel : le routeur n'y voit
       // aucune route et affichait « Page Not Found ». Les emplacements
       // internes, eux, n'ont jamais de schéma.

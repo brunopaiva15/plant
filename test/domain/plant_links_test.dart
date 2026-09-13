@@ -9,8 +9,8 @@ void main() {
 
   test('rejects foreign or malformed payloads', () {
     expect(PlantLinks.decode('https://example.com/plant/abc'), isNull);
-    expect(PlantLinks.decode('flora://location/abc'), isNull);
-    expect(PlantLinks.decode('flora://plant/'), isNull);
+    expect(PlantLinks.decode('auxine://location/abc'), isNull);
+    expect(PlantLinks.decode('auxine://plant/'), isNull);
     expect(PlantLinks.decode('not a uri at all ::'), isNull);
   });
 }
