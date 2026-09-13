@@ -7,8 +7,8 @@
 //     --dart-define=STORE_LANG=fr
 //
 // Le jeu de démo (core/demo/demo_seed.dart) fournit les plantes ; ici on
-// règle les préférences d'un téléphone déjà en usage (prénom, ville, capteur
-// de la maison), puis on parcourt les écrans comme un doigt le ferait, et
+// règle les préférences d'un téléphone déjà en usage (prénom, ville pour la
+// météo), puis on parcourt les écrans comme un doigt le ferait, et
 // chaque capture part vers le driver, qui l'écrit sur la machine. Une scène
 // qui échoue est dite, pas fatale : les autres captures se prennent quand même.
 import 'package:flora/app/app.dart';
@@ -37,9 +37,9 @@ void main() {
     await prefs.setBool('notification_prompt_shown', true);
     await prefs.setString('display_name', 'Camille');
     await prefs.setString('weather_place', 'Lausanne|46.5197|6.6323');
-    final room = en ? 'Living room' : 'Salon';
-    await prefs.setString('home_sensor', 'shortcut|${en ? 'Shortcut' : 'Raccourci'}|$room||1|1');
-    await prefs.setString('home_shortcut_reading', '22.5|41|${DateTime.now().millisecondsSinceEpoch}|$room');
+    // La question des photos d'entraînement d'Iris se pose après une
+    // identification : déjà posée, pour que la feuille « Espèce » reste seule.
+    await prefs.setBool('iris_feedback_asked', true);
 
     await app.main();
     await wait(tester, 5000);

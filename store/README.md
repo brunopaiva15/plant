@@ -44,8 +44,9 @@ aujourd'hui ; ses textes libres suivent la langue de l'app. Avant le
 chargement, le test d'intégration comme `capture.mjs` écrivent les
 préférences d'un téléphone déjà réglé : onboarding passé, un prénom pour
 « Bonjour », une ville pour la météo (Open-Meteo ; sur le web, relayée par
-`curl` comme les polices), un capteur Apple Maison transmis par Raccourcis
-avec une mesure du moment, et l'invite aux rappels déjà vue. Sur le web, là
+`curl` comme les polices), l'invite aux rappels déjà vue et la question des
+photos d'entraînement d'Iris déjà posée. Apple Maison ne se lit que par
+HomeKit, sur un iPhone : ni le web ni le simulateur n'en montrent. Sur le web, là
 où la molette n'entraîne presque rien, la page se fait défiler par un
 glissement tactile synthétique.
 
@@ -71,8 +72,8 @@ Le script démarre le simulateur, sert les photos de démo, désinstalle l'app,
 puis lance `integration_test/store_screenshots_test.dart` par `flutter drive`
 avec `--dart-define=DEMO=true` : le jeu de démo se charge au premier
 lancement, le test règle les préférences d'un téléphone déjà en usage
-(prénom, ville pour la météo, capteur Apple Maison transmis par Raccourcis)
-et parcourt les écrans en prenant les captures, que
+(prénom, ville pour la météo) et parcourt les écrans en prenant les
+captures, que
 `test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`.
 L'identification par Iris et le diagnostic rouvert depuis le journal sont
 ceux de l'app. Une scène qui échoue est signalée dans la sortie de

@@ -24,19 +24,19 @@ const swipe = async (x, y0, y1, steps = 20) => {
 };
 // Les préférences d'un téléphone déjà réglé, écrites comme shared_preferences
 // les garde sur le web (clé préfixée, valeur en JSON) : l'onboarding passé,
-// un prénom pour « Bonjour », une ville pour la météo, un capteur Apple Maison
-// transmis par Raccourcis avec une mesure du moment, et l'invite aux rappels
-// (« Un rappel utile, chaque jour ») déjà vue.
+// un prénom pour « Bonjour », une ville pour la météo, l'invite aux rappels
+// (« Un rappel utile, chaque jour ») déjà vue, la question des photos
+// d'entraînement d'Iris déjà posée. Apple Maison ne se lit que par HomeKit,
+// sur un iPhone : rien à régler ici.
 const en = locale.startsWith('en');
-await p.addInitScript(({ en }) => {
+await p.addInitScript(() => {
   const set = (k, v) => localStorage.setItem('flutter.' + k, JSON.stringify(v));
   set('onboarding_done', true);
   set('notification_prompt_shown', true);
+  set('iris_feedback_asked', true);
   set('display_name', 'Camille');
   set('weather_place', 'Lausanne|46.5197|6.6323');
-  set('home_sensor', `shortcut|${en ? 'Shortcut' : 'Raccourci'}|${en ? 'Living room' : 'Salon'}||1|1`);
-  set('home_shortcut_reading', `22.5|41|${Date.now()}|${en ? 'Living room' : 'Salon'}`);
-}, { en });
+});
 // La météo (Open-Meteo) suit le même relais par curl que les polices.
 await p.route(/open-meteo\.com/, async route => {
   try {
