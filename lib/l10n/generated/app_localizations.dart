@@ -2538,6 +2538,18 @@ abstract class AppLocalizations {
   /// **'Les photos identifiées et le nom retenu servent à entraîner $name. Elles sont retirées avec le compte. Désactivé, rien ne part.'**
   String irisFeedbackHint(String name);
 
+  /// No description provided for @irisFeedbackAskTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos d\'entraînement'**
+  String get irisFeedbackAskTitle;
+
+  /// No description provided for @irisFeedbackAskBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les photos identifiées et le nom retenu peuvent servir à entraîner $name. Elles sont retirées avec le compte, et le choix se change dans les réglages d\'identification.'**
+  String irisFeedbackAskBody(String name);
+
   /// No description provided for @modelMissing.
   ///
   /// In fr, this message translates to:

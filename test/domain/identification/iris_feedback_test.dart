@@ -38,6 +38,24 @@ void main() {
     });
   });
 
+  group('poser la question', () {
+    test('une fois, à qui n’a pas encore dit oui, là où un oui peut servir', () {
+      expect(shouldAskForFeedback(asked: false, enabled: false, available: true), isTrue);
+    });
+
+    test('jamais deux fois, quelle qu’ait été la réponse', () {
+      expect(shouldAskForFeedback(asked: true, enabled: false, available: true), isFalse);
+    });
+
+    test('pas à qui a déjà dit oui', () {
+      expect(shouldAskForFeedback(asked: false, enabled: true, available: true), isFalse);
+    });
+
+    test('pas sans compte distant ni Supabase : on ne promet pas ce qu’on ne peut pas tenir', () {
+      expect(shouldAskForFeedback(asked: false, enabled: false, available: false), isFalse);
+    });
+  });
+
   test('le retour porte son type', () {
     final f = IrisFeedback(photos: const [], local: local, chosenName: 'Hoya carnosa', chosenSource: ChosenSource.local, modelVersion: '8');
     expect(f.kind, FeedbackKind.confirmee);

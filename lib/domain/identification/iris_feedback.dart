@@ -84,6 +84,11 @@ FeedbackKind feedbackKind(List<IdentificationCandidate> local, String chosenName
   return FeedbackKind.corrigee;
 }
 
+/// Faut-il poser la question ? Une fois, jamais deux ; pas à qui a déjà
+/// dit oui ; et seulement là où un oui pourrait servir à quelque chose.
+bool shouldAskForFeedback({required bool asked, required bool enabled, required bool available}) =>
+    !asked && !enabled && available;
+
 /// Où partent les retours. Nulle part sans consentement, sans compte
 /// distant ou sans Supabase — c'est le fournisseur qui choisit.
 abstract class IrisFeedbackRecorder {

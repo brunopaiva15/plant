@@ -208,6 +208,7 @@ class AppPreferences {
     required this.identificationFallbackEnabled,
     required this.careAssistEnabled,
     required this.irisFeedbackEnabled,
+    required this.irisFeedbackAsked,
     required this.weatherPlace,
     required this.homeSensor,
     required this.archiveName,
@@ -236,6 +237,9 @@ class AppPreferences {
 
   /// Les photos identifiées partent entraîner Iris. Faux par défaut.
   final bool irisFeedbackEnabled;
+
+  /// La question a déjà été posée, quelle qu'ait été la réponse.
+  final bool irisFeedbackAsked;
   final WeatherPlace? weatherPlace;
 
   /// Le capteur d'Apple Maison qui donne le climat de l'intérieur, ou `null`
@@ -270,6 +274,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       identificationFallbackEnabled: s.identificationFallbackEnabled,
       careAssistEnabled: s.careAssistEnabled,
       irisFeedbackEnabled: s.irisFeedbackEnabled,
+      irisFeedbackAsked: s.irisFeedbackAsked,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       homeSensor: HomeSensor.decode(s.homeSensor),
       archiveName: s.archiveName,
@@ -294,6 +299,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
   Future<void> setCareAssistEnabled(bool value) => _apply((s) => s.setCareAssistEnabled(value));
   Future<void> setIrisFeedbackEnabled(bool value) => _apply((s) => s.setIrisFeedbackEnabled(value));
+  Future<void> setIrisFeedbackAsked() => _apply((s) => s.setIrisFeedbackAsked());
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
@@ -344,10 +350,18 @@ final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>(
 /// Où partent les photos étiquetées en enregistrant, si elles partent :
 /// nulle part sans le consentement des réglages, sans compte distant, ou
 /// sans Supabase. Les trois se lisent ici, pas dans les écrans.
+/// Un retour peut-il partir quelque part ? Supabase configuré et un compte
+/// distant. Sans ça, demander la permission promettrait ce qu'on ne peut
+/// pas tenir — la question ne se pose pas.
+final irisFeedbackAvailableProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider).value;
+  return SupabaseConfig.isConfigured && user != null && !user.isLocal;
+});
+
 final irisFeedbackRecorderProvider = Provider<IrisFeedbackRecorder>((ref) {
   final enabled = ref.watch(preferencesProvider.select((p) => p.irisFeedbackEnabled));
   final user = ref.watch(currentUserProvider).value;
-  if (!enabled || !SupabaseConfig.isConfigured || user == null || user.isLocal) return const NoFeedbackRecorder();
+  if (!enabled || !ref.watch(irisFeedbackAvailableProvider) || user == null) return const NoFeedbackRecorder();
   return SupabaseIrisFeedbackRecorder(Supabase.instance.client, userId: user.id);
 });
 

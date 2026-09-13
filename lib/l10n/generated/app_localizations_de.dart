@@ -1432,6 +1432,14 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get irisFeedbackAskTitle => 'Trainingsfotos';
+
+  @override
+  String irisFeedbackAskBody(String name) {
+    return 'Identifizierte Fotos und der gewählte Name können dem Training von $name dienen. Sie werden mit dem Konto entfernt; die Wahl lässt sich in den Einstellungen zur Erkennung ändern.';
+  }
+
+  @override
   String modelMissing(String name) {
     return '$name auf diesem Gerät nicht verfügbar';
   }

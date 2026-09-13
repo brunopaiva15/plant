@@ -15,6 +15,7 @@ import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
+import '../../identification/presentation/iris_feedback_prompt.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -461,7 +462,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     ref.read(analyticsProvider).track(AnalyticsEvents.plantCreated, {'with_photo': _photo != null});
     Haptics.success();
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.plantAdded(plant.name), emoji: '🌱'));
+    if (mounted && _chosenSource != null && _identificationPaths.isNotEmpty) await _maybeAskIrisFeedback();
     if (mounted) Navigator.of(context, rootNavigator: true).pop(plant.id);
+  }
+
+  /// Le bon moment pour demander : la personne vient d'enregistrer une
+  /// plante identifiée, elle sait de quoi il s'agit. Une seule fois — et rien
+  /// n'est parti avant le oui : l'envoi de cette plante-ci est passé par
+  /// l'enregistreur muet.
+  Future<void> _maybeAskIrisFeedback() async {
+    final p = ref.read(preferencesProvider);
+    if (!shouldAskForFeedback(asked: p.irisFeedbackAsked, enabled: p.irisFeedbackEnabled,
+        available: ref.read(irisFeedbackAvailableProvider))) {
+      return;
+    }
+    await showIrisFeedbackPrompt(context, ref);
   }
 
   @override

@@ -2886,7 +2886,10 @@ photo de salon n'est pas une observation naturaliste. Il commence par
 > vaut plus qu'une correction : selon d'où vient le nom retenu, la même
 > photo est *confirmée*, *reclassée* ou *corrigée*, et les confirmations
 > sont les photos du bon domaine qu'aucune source publique ne donne.
-> Consentement éteint par défaut dans les réglages d'identification ; table
+> Consentement demandé **une fois**, juste après le premier enregistrement
+> d'une plante identifiée — le moment où la question se comprend — et
+> éteint tant que la réponse n'est pas oui ; l'interrupteur des réglages
+> reste là pour changer d'avis. Table
 > `iris_feedback` et seau `iris-feedback`, lisibles par l'auteur seul,
 > retirés avec le compte ; la cascade garde ce qu'Iris croyait (`lastLocal`)
 > même quand elle a basculé d'elle-même sur Pl@ntNet. Côté entraînement,

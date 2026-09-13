@@ -1428,6 +1428,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get irisFeedbackAskTitle => 'Training photos';
+
+  @override
+  String irisFeedbackAskBody(String name) {
+    return 'Identified photos and the chosen name can be used to train $name. They are removed with the account, and the choice can be changed in the identification settings.';
+  }
+
+  @override
   String modelMissing(String name) {
     return '$name unavailable on this device';
   }
