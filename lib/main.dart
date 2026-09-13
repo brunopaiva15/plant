@@ -19,7 +19,9 @@ import 'domain/auth/auth_repository.dart';
 import 'data/db/database.dart';
 import 'data/services/notification_service.dart';
 import 'data/services/preferences_service.dart';
+import 'data/services/today_widget_service.dart';
 import 'features/today/application/reminder_scheduler.dart';
+import 'features/today/application/today_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,6 +105,14 @@ Future<void> main() async {
   container.read(photoMaintenanceProvider).run().catchError((Object _) => 0);
   // Démarre la synchronisation si un compte est connecté (no-op sinon).
   container.listen(syncCoordinatorProvider, (_, _) {});
+  // Le widget de l'écran d'accueil suit la base : chaque soin enregistré,
+  // chaque plante ajoutée le redessine. Au retour au premier plan, le jour a
+  // pu changer : on recompte avec la date du moment.
+  final widgets = TodayWidgetService();
+  container.listen(todayWidgetSnapshotProvider, (_, snapshot) {
+    if (snapshot != null) widgets.publish(snapshot.encode());
+  }, fireImmediately: true);
+  AppLifecycleListener(onResume: () => container.invalidate(todayWidgetSnapshotProvider));
 
   runApp(UncontrolledProviderScope(container: container, child: const FloraApp()));
 }

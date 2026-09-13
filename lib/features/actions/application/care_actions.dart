@@ -55,7 +55,12 @@ class CareActions {
   }) async {
     if (_blockedReadOnly()) throw StateError('read-only');
     final action = await _actions.log(data);
-    Haptics.success();
+    // L'arrosage a sa goutte ; tout autre soin, le roulement commun.
+    if (data.typeKey == CareKind.watering.key) {
+      Haptics.drop();
+    } else {
+      Haptics.success();
+    }
     _analytics.track(data.typeKey == CareKind.watering.key ? AnalyticsEvents.wateringLogged : AnalyticsEvents.actionLogged, {'type': data.typeKey});
     _toast.show(ToastData(
       message: message,
@@ -78,7 +83,11 @@ class CareActions {
     if (_blockedReadOnly()) return;
     final custom = _ref.read(actionTypeByKeyProvider)[typeKey];
     final logged = await _actions.logMany(plantIds, typeKey);
-    Haptics.success();
+    if (typeKey == CareKind.watering.key) {
+      Haptics.drop();
+    } else {
+      Haptics.success();
+    }
     _analytics.track(AnalyticsEvents.actionLogged, {'type': typeKey, 'count': plantIds.length});
     _toast.show(ToastData(
       message: l10n.multiActionDone(plantIds.length, l10n.kindName(typeKey, custom: custom)),

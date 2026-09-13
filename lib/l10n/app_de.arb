@@ -481,6 +481,7 @@
   "qrCode": "QR-Code",
   "qrHint": "Gescannt öffnet dieser Code die Pflanzenseite.",
   "scan": "Scannen",
+  "quickActionScan": "Etikett scannen",
   "scanHint": "Richte die Kamera auf den QR-Code einer Pflanze.",
   "unknownQr": "Unbekannter QR-Code.",
   "shareQr": "Teilen",

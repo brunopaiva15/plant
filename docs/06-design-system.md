@@ -182,7 +182,26 @@ plutôt que d'être recopié — sinon la synthèse vocale bégaie. `SectionHead
 se déclare `header: true`, ce qui rend le rotor « Titres » utilisable.
 
 ## Haptics (`core/haptics.dart`)
-- `selection` : changement de chip / onglet · `light` : tap bouton · `success` : action enregistrée · `warning` : archivage.
+- `selection` : changement de chip / onglet · `light` : tap bouton · `drop` : arrosage enregistré · `success` : toute autre action enregistrée · `warning` : archivage, suppression.
+
+Sur iPhone, les trois retours qui racontent quelque chose sont des motifs
+Core Haptics (`ios/Runner/HapticsChannel.swift`), là où `HapticFeedback`
+n'offre qu'un coup : la **goutte** — deux impulsions légères, puis celle qui
+touche la terre et s'y étale —, le **roulement** d'une action faite, qui monte
+et se pose, et le **coup sourd** d'un geste sensible, suivi de son écho. La
+sélection et le tap restent ceux du système, qui sont déjà les bons. Partout
+ailleurs, et dès que le moteur manque (iPad, simulateur, *Vibrations* coupé),
+le repli est le retour d'avant ; le natif n'est sollicité qu'une fois pour le
+savoir. `test/core/haptics_test.dart` vérifie l'aiguillage.
+
+## La barre d'onglets et le retour au sommet (`app/tab_scroll.dart`)
+Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
+Chaque branche du shell pose son propre `ScrollController` en
+`PrimaryScrollController` *dans* sa route (`TabScrollScope`) : il passe
+devant celui que la route fournit d'elle-même, la liste de l'onglet s'y
+attache sans qu'on le lui dise, et le tap sur la barre d'état — que le
+`Scaffold` sert avec ce même contrôleur — continue de marcher. La remontée
+suit *réduire les animations* : un saut au lieu d'une glissade.
 
 ## Les textes (`lib/l10n/*.arb`)
 Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court.

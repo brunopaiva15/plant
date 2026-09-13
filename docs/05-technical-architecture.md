@@ -18,6 +18,7 @@
 | Complément de fiche | AI Services d'Infomaniak (`CareCompleter`) | seulement quand le catalogue n'a que des repères généraux ; nom scientifique seul, réponse gardée sur l'appareil |
 | Météo | Open-Meteo (`WeatherService`) | gratuit, sans compte |
 | Climat de la maison | HomeKit, par un canal natif (`HomeClimateService` → `ios/Runner/HomeClimateChannel.swift`) | iPhone et iPad seulement ; lecture de deux caractéristiques, rien d'écrit, rien ne sort de l'appareil |
+| Widgets, raccourcis, haptiques | WidgetKit, `UIApplicationShortcutItem`, Core Haptics, par trois canaux natifs (`ios/Runner/TodayWidgetChannel.swift`, `QuickActionsChannel.swift`, `HapticsChannel.swift`) | iPhone et iPad seulement ; muets ailleurs, sans plugin |
 
 ## Couches
 ```
@@ -76,6 +77,47 @@ Sans connexion, leurs requêtes ne partaient pas *et ne revenaient pas* — un
 
 ## Auth
 `AuthRepository` (domain) ⇒ `LocalAuthRepository` (P1, compte sur appareil, aucune donnée sortante) ⇒ `SupabaseAuthRepository` (P2 : Apple, Google, e-mail). La migration local → compte réattribue `owner_id` du jardin.
+
+## Widgets de l'écran d'accueil (`features/today/application/today_widget.dart`, `ios/AuxineWidget/`)
+L'écran du matin, sur l'écran d'accueil et l'écran verrouillé : le chiffre du
+jour, les premières plantes qui attendent, « Tout est en ordre » le reste du
+temps. Cinq familles : petit et moyen sur l'écran d'accueil ; rond,
+rectangle et ligne sur l'écran verrouillé.
+
+- **L'extension ne calcule rien et ne traduit rien.** `todayWidgetSnapshotProvider`
+  réduit les soins échus, les tâches libres et le compte des plantes à un
+  instantané JSON (`TodayWidgetSnapshot`), libellés compris, dans la langue
+  de l'interface — les pluriels de `careCount` sont ceux de l'écran. Il est
+  recalculé à chaque changement de la base ; `main.dart` l'écoute et le
+  publie par `TodayWidgetService` (`ch.vergasta.plant/widgets`). Au retour
+  au premier plan, il est recompté avec la date du jour.
+- Le natif dépose le JSON dans les préférences de l'App Group
+  `group.ch.vergasta.plant` (clé `today`) et appelle
+  `WidgetCenter.reloadAllTimelines()`. L'extension lit la même clé, et
+  repasse à minuit. Sans instantané — première installation, galerie des
+  widgets —, elle montre un exemple dans la langue de l'appareil, les seuls
+  mots qu'elle porte elle-même.
+- Toucher le widget ouvre l'accueil (`auxine://today`) ; une ligne du widget
+  moyen ouvre la fiche (`auxine://plant/<id>`), par le routage des liens
+  `auxine://` qui existe déjà.
+- La palette est celle de docs/06, recopiée dans `AuxineWidget.swift` : à
+  tenir à jour avec `colors.dart`.
+- Cible Xcode `AuxineWidget` (`ch.vergasta.plant.widget`, iOS 16), embarquée
+  par Runner ; l'App Group est déclaré dans les deux entitlements. Il doit
+  aussi l'être sur les deux App ID du portail développeur, sans quoi la
+  signature automatique refuse le profil.
+
+## Raccourcis de l'icône (`app/quick_actions.dart`)
+L'appui long sur l'icône propose trois raccourcis : ajouter une plante,
+scanner une étiquette, trouver une plante. `QuickActionsHost`, posé autour
+de la coquille, les pose dans la langue de l'interface (et les repose si
+elle change) et exécute celui qui a été choisi. Le natif
+(`QuickActionsChannel`, enregistré comme délégué de scène de Flutter plutôt
+qu'en surchargeant `SceneDelegate`) le rend de deux façons : par `perform`
+quand l'application tourne, par `launchAction` quand c'est lui qui l'a
+lancée — il attend alors que Dart le demande, sans quoi il partirait avant
+que personne n'écoute. `pendingQuickActionProvider` le garde jusqu'à ce que
+la coquille soit là, après l'onboarding s'il y en a un.
 
 ## Notifications
 - `ReminderPlanner` calcule chaque jour à l'heure préférée un résumé groupé : « Monstera et Pilea ont probablement besoin d'eau aujourd'hui. »

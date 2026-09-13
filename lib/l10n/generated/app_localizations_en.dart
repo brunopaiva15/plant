@@ -1502,6 +1502,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scan => 'Scan';
 
   @override
+  String get quickActionScan => 'Scan a label';
+
+  @override
   String get scanHint => 'Point at a plant\'s QR code.';
 
   @override

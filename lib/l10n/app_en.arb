@@ -481,6 +481,7 @@
   "qrCode": "QR code",
   "qrHint": "When scanned, this code opens the plant's page.",
   "scan": "Scan",
+  "quickActionScan": "Scan a label",
   "scanHint": "Point at a plant's QR code.",
   "unknownQr": "Unknown QR code.",
   "shareQr": "Share",

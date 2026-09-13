@@ -481,6 +481,7 @@
   "qrCode": "Codice QR",
   "qrHint": "Scansionato, questo codice apre la scheda della pianta.",
   "scan": "Scansiona",
+  "quickActionScan": "Scansionare un'etichetta",
   "scanHint": "Inquadra il codice QR di una pianta.",
   "unknownQr": "Codice QR sconosciuto.",
   "shareQr": "Condividi",
