@@ -11,6 +11,9 @@ import { execSync } from 'node:child_process';
 const out = process.argv[2], locale = process.argv[3] || 'fr-FR';
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--no-sandbox'] });
 const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, locale, colorScheme: process.env.DARK ? 'dark' : 'light' });
+// L'invite aux rappels (« Un rappel utile, chaque jour ») est une préférence :
+// on la marque déjà vue plutôt que de viser son bouton à l'aveugle.
+await p.addInitScript(() => { localStorage.setItem('flutter.notification_prompt_shown', 'true'); });
 await p.route(/fonts\.gstatic\.com|fonts\.googleapis\.com/, async route => {
   try {
     const body = execSync(`curl -sS --max-time 30 "${route.request().url()}"`, { maxBuffer: 64 * 1024 * 1024 });
@@ -33,20 +36,16 @@ const tap = async (text) => {
 
 await go('/onboarding', 7000);
 await p.mouse.click(350, 22); await p.waitForTimeout(1500);           // Passer
-await go('/today', 5000);
-// « Pas maintenant » / « Not now » : le bouton n'a pas la même largeur selon la langue.
-await p.mouse.click(193, 347); await p.waitForTimeout(800);
-await p.mouse.click(168, 327); await p.waitForTimeout(1500);
-await shot('today');
+await go('/today', 5000); await shot('today');
 await go('/plants', 4000); await shot('plants');
 await p.mouse.click(104, 375); await p.waitForTimeout(3000);          // Basilic
 await shot('plant');
 // Sous l'en-tête photo, la carte d'entretien est hors écran : on descend à la molette
 // (un glissement de souris ne fait pas défiler Flutter web), puis on tape dessus.
 await p.mouse.move(195, 500); for (let i = 0; i < 6; i++) { await p.mouse.wheel(0, 400); await p.waitForTimeout(250); }
-await p.waitForTimeout(1200); await p.mouse.click(195, 745); await p.waitForTimeout(3500); await shot('care');
+await p.waitForTimeout(1200); await p.mouse.click(195, 770); await p.waitForTimeout(3500); await shot('care');
 await go('/plants', 4000); await p.mouse.click(104, 375); await p.waitForTimeout(3000);
-await p.mouse.click(340, 543); await p.waitForTimeout(3500); await shot('schedule');   // Planning
+await p.mouse.click(320, 563); await p.waitForTimeout(3500); await shot('schedule');   // Planning
 await go('/garden', 4000); await shot('garden');
 await p.mouse.click(326, 168); await p.waitForTimeout(2500); await shot('garden-calendar');
 await p.mouse.click(150, 168); await p.waitForTimeout(2500); await shot('garden-tasks');
