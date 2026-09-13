@@ -1701,7 +1701,7 @@ abstract class AppLocalizations {
   /// No description provided for @reduceMotionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Par défaut, Auxine suit le réglage du système.'**
+  /// **'Par défaut, le réglage du système s\'applique.'**
   String get reduceMotionHint;
 
   /// No description provided for @notifications.
@@ -2751,7 +2751,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'{name} reconnaît les espèces sur l\'appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
+  /// **'Reconnaissance des espèces sur l\'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
   String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.
@@ -2775,7 +2775,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationFallbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
+  /// **'En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
   String identificationFallbackHint(String name);
 
   /// No description provided for @modelMissing.
@@ -6195,7 +6195,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbIrisBody.
   ///
   /// In fr, this message translates to:
-  /// **'Si Iris ne reconnaît pas une plante, la recherche continue en ligne.'**
+  /// **'Plante inconnue d\'Iris : la recherche continue en ligne.'**
   String get onbIrisBody;
 
   /// No description provided for @onbPrivacyTitle.
@@ -6273,7 +6273,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisDoubtBody.
   ///
   /// In fr, this message translates to:
-  /// **'Quand deux espèces se ressemblent, Iris propose les deux.'**
+  /// **'Deux espèces qui se ressemblent : les deux sont proposées.'**
   String get whatsNewIrisDoubtBody;
 
   /// No description provided for @onbStepOf.
@@ -6741,7 +6741,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderAiBody.
   ///
   /// In fr, this message translates to:
-  /// **'L\'IA cherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.'**
+  /// **'Recherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.'**
   String get finderAiBody;
 
   /// No description provided for @finderPhotoSource.
@@ -6795,7 +6795,7 @@ abstract class AppLocalizations {
   /// No description provided for @gardensHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le jardin ouvert est celui que vous voyez partout dans l\'application. Vous passez de l\'un à l\'autre quand vous voulez.'**
+  /// **'Le jardin ouvert est celui affiché partout dans l\'application. Le passage de l\'un à l\'autre se fait ici.'**
   String get gardensHint;
 
   /// No description provided for @gardenMine.

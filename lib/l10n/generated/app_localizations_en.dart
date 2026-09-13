@@ -929,8 +929,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reduceMotion => 'Reduce motion';
 
   @override
-  String get reduceMotionHint =>
-      'By default, Auxine follows the system setting.';
+  String get reduceMotionHint => 'By default, the system setting applies.';
 
   @override
   String get notifications => 'Notifications';
@@ -1546,7 +1545,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return '$name recognises species on the device, without a network. When in doubt, the photo can be sent to Pl@ntNet.';
+    return 'Species recognised on the device by $name, without a network. When in doubt, the photo can be sent to Pl@ntNet.';
   }
 
   @override
@@ -1560,7 +1559,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'When $name is unsure, the photo is sent to Pl@ntNet. Off, everything stays on the device.';
+    return 'When $name is in doubt, the photo is sent to Pl@ntNet. Off, everything stays on the device.';
   }
 
   @override
@@ -3628,7 +3627,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'If Iris does not recognise a plant, the search continues online.';
+      'Plant unknown to Iris: the search continues online.';
 
   @override
   String get onbPrivacyTitle => 'Everything stays on your phone';
@@ -3672,7 +3671,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsNewIrisDoubtBody =>
-      'When two species look alike, Iris offers both.';
+      'Two species that look alike: both are offered.';
 
   @override
   String onbStepOf(int current, int total) {
@@ -3931,7 +3930,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finderAiBody =>
-      'The AI looks beyond the catalogue, from your answers and whatever you add here.';
+      'Search beyond the catalogue, from your answers and whatever you add here.';
 
   @override
   String get finderPhotoSource => 'Photos: GBIF observations, freely licensed.';
@@ -3961,7 +3960,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'The open garden is the one you see everywhere in the app. Switch between them whenever you like.';
+      'The open garden is the one shown everywhere in the app. Switching between them happens here.';
 
   @override
   String get gardenMine => 'My garden';
