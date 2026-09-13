@@ -144,10 +144,14 @@ class EmojiTile extends StatelessWidget {
   const EmojiTile({
     super.key,
     required this.emoji,
-    this.size = 40,
+    this.size = side,
     this.background,
     this.variant = 0,
   });
+
+  /// Côté de la tuile. Il ne suit pas la taille du texte : une mise en page
+  /// qui mesure la hauteur d'une ligne de liste le compte tel quel.
+  static const double side = 40;
 
   final String emoji;
   final double size;
