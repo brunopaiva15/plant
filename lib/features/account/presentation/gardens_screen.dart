@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
+import '../../../app/sync_coordinator.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/db/database.dart';
@@ -162,7 +163,7 @@ class GardensScreen extends ConsumerWidget {
       initial: garden.name == _defaultGardenName ? '' : garden.name,
     );
     final trimmed = name?.trim() ?? '';
-    if (trimmed.isEmpty) return;
+    if (trimmed.isEmpty || trimmed == garden.name) return;
     final db = ref.read(databaseProvider);
     await db.transaction(() async {
       await (db.update(db.gardens)..where((g) => g.id.equals(garden.id)))
@@ -171,6 +172,9 @@ class GardensScreen extends ConsumerWidget {
     });
     Haptics.success();
     ref.invalidate(myGardensProvider);
+    // Le nom part sans attendre les trois secondes de la synchro différée :
+    // c'est celui que voient les invités, et la liste se relit du serveur.
+    await ref.read(syncCoordinatorProvider.notifier).syncNow();
   }
 }
 
