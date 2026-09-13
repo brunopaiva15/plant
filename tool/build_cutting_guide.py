@@ -633,11 +633,16 @@ def etape_coupe(mats, f):
     # La tige repose sur les lames, a un tiers de leur longueur depuis le
     # pivot : c'est la que des ciseaux coupent, pas au rivet.
     cible = C - Y * (0.36 * LAME) + VUE * 0.03
+    # Les ciseaux repartent par ou ils sont venus : a la derniere image ils
+    # sont exactement comme a la premiere, meme place, meme ouverture, meme
+    # inclinaison.
     depart = UP * 0.85 + DROITE * 0.60
-    pivot = cible + depart * (1.0 - approche) + (UP * 0.55 + DROITE * 0.42) * retrait
-    ouverture = 38.0 * (1.0 - fermeture) + 24.0 * retrait
-    # Un leger balancement a l'arrivee : les ciseaux se redressent en se posant.
-    bascule = Matrix.Rotation(radians(-18.0) * (1.0 - approche) + radians(10.0) * retrait, 3, VUE)
+    retour = 1.0 - approche + retrait
+    pivot = cible + depart * retour
+    ouverture = 38.0 * (1.0 - fermeture + retrait)
+    # Un leger balancement a l'arrivee : les ciseaux se redressent en se
+    # posant, et se penchent a nouveau en repartant.
+    bascule = Matrix.Rotation(radians(-18.0) * retour, 3, VUE)
     objets += ciseaux(mats, pivot, bascule @ Y, VUE, ouverture)
     return objets
 

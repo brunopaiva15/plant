@@ -145,6 +145,7 @@
   "editSchedule": "Edit the schedule",
   "createCutting": "Create a cutting",
   "cuttingOf": "Cutting of {name}",
+  "cuttingGuideIntroBody": "Six steps, from stem to pot. Each is shown as a gesture, then said in one sentence, adapted to the species when it is known.",
   "cuttingGuideStemTitle": "The stem",
   "cuttingGuideStemBody": "A healthy stem with at least one node: the swelling where the leaves attach. Two or three leaves above it are enough.",
   "cuttingGuideCutTitle": "The cut",

@@ -145,6 +145,7 @@
   "editSchedule": "Pflegeplan anpassen",
   "createCutting": "Ableger anlegen",
   "cuttingOf": "Ableger von {name}",
+  "cuttingGuideIntroBody": "Sechs Schritte, vom Trieb bis zum Topf. Jeder wird als Geste gezeigt und dann in einem Satz gesagt, an die Art angepasst, wenn sie bekannt ist.",
   "cuttingGuideStemTitle": "Der Trieb",
   "cuttingGuideStemBody": "Ein gesunder Trieb mit mindestens einem Knoten: der Verdickung, an der die Blätter ansetzen. Zwei oder drei Blätter darüber reichen.",
   "cuttingGuideCutTitle": "Der Schnitt",
