@@ -1115,10 +1115,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'For a HomePod: HomeKit does not give its sensors to third-party apps, Shortcuts reads them.';
 
   @override
-  String get homeClimateGuideTitle => 'Reading a HomePod';
+  String get homeClimateGuideTitle => 'HomePod sensors';
 
   @override
-  String get homeClimateGuideSubtitle => 'Four steps in Shortcuts.';
+  String get homeClimateGuideSubtitle =>
+      'Temperature and humidity, through Shortcuts, in four steps.';
 
   @override
   String get homeClimateGuideWhy =>

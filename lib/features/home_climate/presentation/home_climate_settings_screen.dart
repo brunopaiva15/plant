@@ -202,7 +202,7 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
             footer: l10n.homeClimateShortcutFooter,
             children: [
               FloraListRow(
-                leading: const Text('🔊', style: TextStyle(fontSize: 18)),
+                leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
                 title: l10n.homeClimateGuideTitle,
                 subtitle: l10n.homeClimateGuideSubtitle,
                 onTap: () => showHomeShortcutGuide(context),

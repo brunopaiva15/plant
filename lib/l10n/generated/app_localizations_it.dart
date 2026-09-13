@@ -1116,10 +1116,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Per un HomePod: HomeKit non dà i suoi sensori alle app di terze parti, Comandi rapidi li legge.';
 
   @override
-  String get homeClimateGuideTitle => 'Leggere un HomePod';
+  String get homeClimateGuideTitle => 'Sensori di un HomePod';
 
   @override
-  String get homeClimateGuideSubtitle => 'Quattro passaggi in Comandi rapidi.';
+  String get homeClimateGuideSubtitle =>
+      'Temperatura e umidità, con Comandi rapidi, in quattro passaggi.';
 
   @override
   String get homeClimateGuideWhy =>

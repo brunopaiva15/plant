@@ -8,7 +8,7 @@ import '../../../design_system/design_system.dart';
 import '../application/home_climate_providers.dart';
 import 'home_climate_widgets.dart';
 
-/// « Lire un HomePod » : pourquoi HomeKit ne le donne pas, et les quatre
+/// « Capteurs d'un HomePod » : pourquoi HomeKit ne le donne pas, et les quatre
 /// gestes dans Raccourcis pour que sa mesure arrive quand même.
 Future<void> showHomeShortcutGuide(BuildContext context) => showFloraSheet<void>(context, scrollable: true, builder: (_) => const _GuideBody());
 

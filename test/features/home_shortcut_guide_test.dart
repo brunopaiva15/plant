@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// La feuille « Lire un HomePod » : le pourquoi, quatre étapes numérotées,
+/// La feuille « Capteurs d'un HomePod » : le pourquoi, quatre étapes numérotées,
 /// et la dernière valeur reçue par le raccourci.
 void main() {
   testWidgets('la feuille explique, en quatre étapes, et montre ce qui est arrivé', (tester) async {
@@ -38,7 +38,7 @@ void main() {
     );
     await tester.tap(find.text('ouvrir'));
     await tester.pumpAndSettle();
-    expect(find.text('Lire un HomePod'), findsOneWidget);
+    expect(find.text("Capteurs d'un HomePod"), findsOneWidget);
     for (final n in ['1', '2', '3', '4']) {
       expect(find.text(n), findsOneWidget);
     }

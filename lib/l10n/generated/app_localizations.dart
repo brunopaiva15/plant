@@ -2043,13 +2043,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateGuideTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Lire un HomePod'**
+  /// **'Capteurs d\'un HomePod'**
   String get homeClimateGuideTitle;
 
   /// No description provided for @homeClimateGuideSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Quatre étapes dans Raccourcis.'**
+  /// **'Température et humidité, par Raccourcis, en quatre étapes.'**
   String get homeClimateGuideSubtitle;
 
   /// No description provided for @homeClimateGuideWhy.

@@ -103,7 +103,7 @@ class _HomeSensorPickerBodyState extends State<_HomeSensorPickerBody> {
                     onTap: () => Navigator.of(context).pop(HomeSensor(id: HomeSensor.shortcutId, name: l10n.homeClimateShortcut)),
                   ),
                   FloraListRow(
-                    leading: const Text('🔊', style: TextStyle(fontSize: 18)),
+                    leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
                     title: l10n.homeClimateGuideTitle,
                     subtitle: l10n.homeClimateGuideSubtitle,
                     onTap: () => showHomeShortcutGuide(context),

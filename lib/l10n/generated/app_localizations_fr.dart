@@ -1116,10 +1116,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pour un HomePod : HomeKit ne donne pas ses capteurs aux apps tierces, Raccourcis les lit.';
 
   @override
-  String get homeClimateGuideTitle => 'Lire un HomePod';
+  String get homeClimateGuideTitle => 'Capteurs d\'un HomePod';
 
   @override
-  String get homeClimateGuideSubtitle => 'Quatre étapes dans Raccourcis.';
+  String get homeClimateGuideSubtitle =>
+      'Température et humidité, par Raccourcis, en quatre étapes.';
 
   @override
   String get homeClimateGuideWhy =>
