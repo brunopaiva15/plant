@@ -27,6 +27,8 @@ class OnboardingStage extends StatelessWidget {
     required this.entry,
     required this.height,
     required this.reduceMotion,
+    required this.compact,
+    required this.compactFrom,
     this.tint,
   });
 
@@ -49,6 +51,19 @@ class OnboardingStage extends StatelessWidget {
   final double height;
 
   final bool reduceMotion;
+
+  /// Part de sa taille que garde la scène sur les étapes qui portent leurs
+  /// propres boutons sous le texte. L'écran la mesure : c'est ce que leur
+  /// texte et leurs boutons lui laissent.
+  final double compact;
+
+  /// La première de ces étapes, celle du lieu. La scène rapetisse sur l'écran
+  /// qui la précède, au rythme du doigt, et reste petite jusqu'au bout.
+  ///
+  /// Elle ne rapetissait qu'à l'approche du dernier objet : là où Apple
+  /// Maison existe, c'est la maison, et l'étape du lieu gardait une scène de
+  /// pleine taille sous laquelle ses boutons tombaient hors de l'écran.
+  final int compactFrom;
 
   /// La couleur de l'écran courant, déjà mêlée à celle du suivant pendant le
   /// geste. Sans elle, le halo prend le vert de l'app.
@@ -84,19 +99,15 @@ class OnboardingStage extends StatelessWidget {
   /// halo qui s'efface le temps d'un écran, c'est le halo qui cède.
   static const int mark = 5;
 
-  /// Taille visible de la scène : elle rapetisse à l'approche du dernier
-  /// écran, qui a ses propres boutons sous le texte, puis se referme quand on
-  /// le quitte, pour laisser toute la hauteur au prénom.
+  /// Taille visible de la scène : elle rapetisse à l'approche des étapes qui
+  /// ont leurs propres boutons sous le texte, puis se referme quand on quitte
+  /// les objets, pour laisser toute la hauteur au prénom.
   double get visibleHeight => height * shrink * (1 - _leaving);
 
-  /// Part de sa taille que garde la scène sur le dernier écran.
-  static const double compact = 0.62;
-
-  /// De 1 (pleine taille) à [compact] entre l'avant-dernier et le dernier
-  /// écran.
+  /// De 1 (pleine taille) à [compact] sur l'écran qui précède [compactFrom].
   double get shrink => 1 - (1 - compact) * _compacting;
 
-  double get _compacting => count < 2 ? 0 : (offset - (count - 2)).clamp(0.0, 1.0);
+  double get _compacting => (offset - (compactFrom - 1)).clamp(0.0, 1.0);
 
   /// De 0 à 1 quand on passe du dernier écran à la page du prénom.
   double get _leaving => (offset - (count - 1)).clamp(0.0, 1.0);

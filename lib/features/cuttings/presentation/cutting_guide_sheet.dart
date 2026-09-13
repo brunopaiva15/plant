@@ -22,8 +22,9 @@ Future<bool?> showCuttingGuide(BuildContext context, {String? species}) {
   return showFloraFlow<bool>(context, builder: (ctx) => CuttingGuideView(species: species));
 }
 
-/// Le guide de bouturage : six étapes, chacune un objet d'argile qui joue
-/// son geste sur un halo, un titre, une phrase.
+/// Le guide de bouturage : une page qui réunit les six gestes, puis six
+/// étapes, chacune un objet d'argile qui joue son geste sur un halo, un
+/// titre, une phrase.
 ///
 /// Les textes sont ceux d'une bouture de tige dans l'eau. Quand l'espèce de
 /// la plante mère est connue et que l'IA est permise, ils sont précisés pour
@@ -82,10 +83,18 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
     if (page != null && page != _offset) setState(() => _offset = page);
   }
 
-  /// Charge d'avance la séquence de l'étape suivante.
+  /// Nombre de pages : l'introduction, puis une par étape.
+  static int get _count => CuttingGuideStage.count;
+
+  /// L'étape d'une page, ou `null` pour l'introduction.
+  static CuttingGuideStep? _stepOf(int page) => page == 0 ? null : cuttingGuideSteps[page - 1];
+
+  /// Charge d'avance la séquence de la page suivante. L'introduction les
+  /// montre toutes : elles sont alors déjà là.
   void _keepSequences(int page) {
     for (final i in {page, page + 1}) {
-      if (i < cuttingGuideSteps.length) ClaySequence.precache(cuttingGuideSteps[i].asset);
+      final step = i < _count ? _stepOf(i) : null;
+      if (step != null) ClaySequence.precache(step.asset);
     }
   }
 
@@ -132,7 +141,7 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
   }
 
   Color _tint(FloraColors c) {
-    final tints = [for (final step in cuttingGuideSteps) step.tint(c)];
+    final tints = [c.sage, for (final step in cuttingGuideSteps) step.tint(c)];
     final o = _offset.clamp(0.0, (tints.length - 1).toDouble());
     final i = o.floor();
     final next = math.min(i + 1, tints.length - 1);
@@ -148,7 +157,7 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
     final species = widget.species?.trim() ?? '';
     final language = Localizations.localeOf(context).languageCode;
     final refined = species.isEmpty ? null : ref.watch(cuttingGuideRefinementProvider((species: species, language: language))).value;
-    final last = _page == cuttingGuideSteps.length - 1;
+    final last = _page == _count - 1;
 
     return Scaffold(
       backgroundColor: OnboardingBackdrop.wash(c, tint),
@@ -187,15 +196,18 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
                     controller: _pages,
                     onPageChanged: _onPageChanged,
                     children: [
-                      for (final (i, step) in cuttingGuideSteps.indexed)
+                      for (var i = 0; i < _count; i++)
                         AnimatedBuilder(
                           animation: _reveal,
-                          builder: (context, _) => _StepText(
-                            step: step,
-                            refined: refined?.of(step.step),
-                            t: reduce ? 1.0 : _revealOf(i),
-                            parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0),
-                          ),
+                          builder: (context, _) {
+                            final step = _stepOf(i);
+                            return _PageText(
+                              title: step == null ? l10n.createCutting : step.title(l10n),
+                              body: step == null ? l10n.cuttingGuideIntroBody : refined?.of(step.step) ?? step.body(l10n),
+                              t: reduce ? 1.0 : _revealOf(i),
+                              parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0),
+                            );
+                          },
                         ),
                     ],
                   ),
@@ -205,10 +217,14 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Center(child: OnboardingProgress(count: cuttingGuideSteps.length, index: _page, color: tint)),
+                      Center(child: OnboardingProgress(count: _count, index: _page, color: tint)),
                       const SizedBox(height: Space.lg),
                       OnboardingButton(
-                        label: last ? l10n.cuttingGuideStart : l10n.continueLabel,
+                        label: last
+                            ? l10n.cuttingGuideStart
+                            : _page == 0
+                                ? l10n.next
+                                : l10n.continueLabel,
                         trailingIcon: last ? CupertinoIcons.leaf_arrow_circlepath : CupertinoIcons.arrow_right,
                         onPressed: () => last ? _close(true) : _goTo(_page + 1),
                       ),
@@ -224,24 +240,20 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
   }
 }
 
-/// Le texte d'une étape : le titre qui se lève, puis la phrase — générique
-/// d'abord, précisée par l'IA quand elle arrive.
-class _StepText extends StatelessWidget {
-  const _StepText({required this.step, required this.refined, required this.t, required this.parallax});
+/// Le texte d'une page : le titre qui se lève, puis la phrase — pour une
+/// étape, générique d'abord, précisée par l'IA quand elle arrive.
+class _PageText extends StatelessWidget {
+  const _PageText({required this.title, required this.body, required this.t, required this.parallax});
 
-  final CuttingGuideStep step;
-
-  /// Le texte précisé pour l'espèce, ou `null` tant qu'il n'y en a pas.
-  final String? refined;
+  final String title;
+  final String body;
   final double t;
   final double parallax;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final width = MediaQuery.sizeOf(context).width;
     final fade = (1 - parallax.abs() * 1.6).clamp(0.0, 1.0);
-    final body = refined ?? step.body(l10n);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, Space.xl, Space.page, 0),
@@ -255,7 +267,7 @@ class _StepText extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                RisingTitle(text: step.title(l10n), style: onboardingTitleStyle(context), t: t),
+                RisingTitle(text: title, style: onboardingTitleStyle(context), t: t),
                 const SizedBox(height: Space.sm),
                 Stagger(
                   t: t,

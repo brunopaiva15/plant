@@ -51,6 +51,14 @@ final _slides = <_Slide>[
   _Slide(title: (l) => l.onbPrivacyTitle, body: (l) => l.onbPrivacyBody, tint: (c) => c.rose),
 ];
 
+/// Hauteur qu'occupe [text] dans [style] à la largeur [width].
+double _textHeight(String text, TextStyle style, double width, TextScaler scaler, TextDirection direction) {
+  final painter = TextPainter(text: TextSpan(text: text, style: style), textDirection: direction, textScaler: scaler)..layout(maxWidth: width);
+  final height = painter.height;
+  painter.dispose();
+  return height;
+}
+
 /// Couleur de l'étape « Où sont vos plantes ? », qui suit les présentations.
 Color _placeTint(FloraColors c) => c.water;
 
@@ -108,11 +116,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// Le choix fait sur la page du prénom, à honorer une fois l'onboarding fini.
   bool _addPlant = false;
 
-  /// Hauteur du bloc de texte, mesurée sur le plus long des écrans, et la
-  /// clé de mesure qui l'a produite : la largeur, la taille de police et la
-  /// langue. Elle ne se recalcule que si l'un des trois change.
+  /// Hauteur du bloc de texte des présentations et hauteur du contenu des
+  /// étapes qui portent leurs propres boutons, chacune mesurée sur le plus
+  /// long de ses écrans, avec la clé de mesure qui les a produites : la
+  /// largeur, la taille de police et la langue. Elles ne se recalculent que
+  /// si l'un des trois change.
   double _textBlock = 0;
-  Object? _textBlockKey;
+  double _actionBlock = 0;
+  Object? _blocksKey;
 
   /// L'étape du lieu vient après les présentations : elle garde la scène et
   /// son objet, mais a ses propres boutons.
@@ -140,9 +151,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// plus la maison là où Apple Maison existe.
   int get _objectCount => _slides.length + (_hasHome ? 2 : 1);
 
-  /// En-tête (« Passer ») et pied (points, bouton), avec leurs marges.
+  /// En-tête (« Passer ») et pied, avec leurs marges. Le pied porte les
+  /// points ; sur les présentations, le bouton les suit — les étapes qui ont
+  /// leurs propres boutons sous le texte le laissent vide.
   static const double _topHeight = Space.sm + 40;
-  static const double _bottomHeight = Space.md + 7 + Space.lg + 56 + Space.md;
+  static const double _footerHeight = Space.md + 7 + Space.lg + Space.md;
+  static const double _bottomHeight = _footerHeight + 56;
+
+  /// Les boutons d'une étape qui porte les siens : l'écart qui les sépare du
+  /// texte, le bouton plein, puis « Plus tard ».
+  static const double _actionsHeight = Space.xl + 56 + Space.xs + 48;
 
   /// La scène prend ce que la hauteur laisse une fois le texte servi. Le
   /// texte est mesuré, pas estimé : le titre le plus long, dans la langue et
@@ -151,19 +169,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// devenir énorme.
   double _stageHeight(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final free = mq.size.height - mq.padding.vertical - _topHeight - _bottomHeight - _textBlockHeight(context);
+    _measureBlocks(context);
+    final free = mq.size.height - mq.padding.vertical - _topHeight - _bottomHeight - _textBlock;
     return free.clamp(200.0, 440.0);
   }
 
-  double _textBlockHeight(BuildContext context) {
+  /// Ce que la scène garde de sa taille sur les étapes qui portent leurs
+  /// propres boutons — le lieu, la maison. Là, le pied n'a plus de bouton à
+  /// loger, mais la page en a deux sous son texte et sa carte : la scène leur
+  /// laisse la place et prend ce qui reste. Elle est mesurée comme le reste,
+  /// parce qu'une part fixe tenait sur un grand téléphone et pas sur un
+  /// petit : les boutons y tombaient sous la ligne de flottaison et il
+  /// fallait faire défiler pour les atteindre.
+  double _stageCompact(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final full = _stageHeight(context);
+    final free = mq.size.height - mq.padding.vertical - _topHeight - _footerHeight - _actionBlock;
+    return (free / full).clamp(0.0, 1.0);
+  }
+
+  void _measureBlocks(BuildContext context) {
     final mq = MediaQuery.of(context);
     final width = mq.size.width - 2 * Space.page;
     final key = (width, mq.textScaler.scale(100), Localizations.localeOf(context).toString());
-    if (key != _textBlockKey) {
-      _textBlockKey = key;
-      _textBlock = _measureTextBlock(context, width);
-    }
-    return _textBlock;
+    if (key == _blocksKey) return;
+    _blocksKey = key;
+    _textBlock = _measureTextBlock(context, width);
+    _actionBlock = _measureActionBlock(context, width);
   }
 
   double _measureTextBlock(BuildContext context, double width) {
@@ -176,11 +208,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     var tallest = 0.0;
     for (final slide in _slides) {
       final t = RisingTitle.layoutLines(slide.title(l10n), title, width, scaler, direction).fold(0.0, (h, line) => h + line.height);
-      final painter = TextPainter(text: TextSpan(text: slide.body(l10n), style: body), textDirection: direction, textScaler: scaler)..layout(maxWidth: width);
-      tallest = math.max(tallest, t + Space.sm + painter.height);
-      painter.dispose();
+      tallest = math.max(tallest, t + Space.sm + _textHeight(slide.body(l10n), body, width, scaler, direction));
     }
     return _SlideText.top + tallest + _SlideText.bottom;
+  }
+
+  /// Hauteur de la plus haute des étapes qui portent leurs propres boutons :
+  /// le lieu, et la maison là où Apple Maison existe. Leur carte est comptée
+  /// comme si elle était déjà là — elle arrive au milieu de l'étape, et la
+  /// scène n'a pas à reculer sous elle.
+  double _measureActionBlock(BuildContext context, double width) {
+    final l10n = context.l10n;
+    final scaler = MediaQuery.textScalerOf(context);
+    final direction = Directionality.of(context);
+    final base = DefaultTextStyle.of(context).style;
+    final title = base.merge(onboardingTitleStyle(context));
+    final body = base.merge(onboardingBodyStyle(context));
+    var tallest = 0.0;
+    for (final (heading, sentence) in [
+      (l10n.onbPlaceTitle, l10n.onbPlaceBody),
+      if (_hasHome) (l10n.onbHomeTitle, l10n.onbHomeBody),
+    ]) {
+      final height = _textHeight(heading, title, width, scaler, direction) + Space.sm + _textHeight(sentence, body, width, scaler, direction);
+      tallest = math.max(tallest, height);
+    }
+    // La carte, dans ses marges : une tuile d'emoji, ou le nom du capteur et
+    // la ligne qui le détaille — sa pièce, sa maison, sa mesure —, comptée
+    // sur deux lignes, car elle y passe presque toujours. Les noms viennent
+    // de la maison de l'utilisateur : un nom à rallonge fait défiler la page,
+    // et c'est à cela que sert le défilement.
+    final lines = _textHeight('Ag', base.merge(context.text.title3), width, scaler, direction) + _textHeight('Ag\nAg', base.merge(context.text.callout), width, scaler, direction);
+    final card = 2 * Space.md + math.max(EmojiTile.side, lines);
+    return Space.xl + tallest + Space.lg + card + _actionsHeight;
   }
 
   @override
@@ -295,7 +354,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     final onSlides = _page < _slides.length;
     final current = math.min(_page, _objectCount - 1);
     final tint = _tint(c);
+    // Les deux hauteurs se prennent ici, sur le contexte de l'écran : plus
+    // bas, la `SafeArea` a déjà mangé les encoches et la scène se croirait au
+    // large.
     final stageHeight = _stageHeight(context);
+    final stageCompact = _stageCompact(context);
 
     return Scaffold(
       backgroundColor: OnboardingBackdrop.wash(c, tint),
@@ -344,6 +407,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                     entry: reduce ? 1 : _entry.value,
                     height: stageHeight,
                     reduceMotion: reduce,
+                    compact: stageCompact,
+                    compactFrom: _placeIndex,
                     tint: tint,
                   ),
                 ),

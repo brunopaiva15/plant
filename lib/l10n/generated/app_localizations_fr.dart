@@ -528,6 +528,10 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideIntroBody =>
+      'Six étapes, de la tige au pot. Chacune est montrée en geste, puis dite en une phrase, adaptée à l\'espèce quand elle est connue.';
+
+  @override
   String get cuttingGuideStemTitle => 'La tige';
 
   @override

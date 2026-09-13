@@ -12,11 +12,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flora/l10n/generated/app_localizations.dart';
 
+/// Part de sa taille que garde la scène sur les étapes qui ont leurs propres
+/// boutons. L'écran la mesure ; ici, une valeur d'exemple.
+const _compact = 0.62;
+
 Future<void> _pump(
   WidgetTester tester, {
   required double offset,
   required int page,
   int count = 5,
+  int? compactFrom,
   double entry = 1,
   bool reduceMotion = false,
 }) async {
@@ -39,6 +44,8 @@ Future<void> _pump(
           entry: entry,
           height: 360,
           reduceMotion: reduceMotion,
+          compact: _compact,
+          compactFrom: compactFrom ?? count - 1,
         ),
       ),
     ),
@@ -126,18 +133,28 @@ void main() {
       expect(tester.getSize(find.byType(OnboardingStage)).height, 0);
     });
 
-    testWidgets("la scène rapetisse à l'approche du dernier écran, qui a ses boutons", (tester) async {
+    testWidgets("la scène rapetisse à l'approche de l'étape qui a ses boutons", (tester) async {
       await _pump(tester, offset: 3, page: 3);
       expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360, 1));
       await _pump(tester, offset: 3.5, page: 3);
       expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * (1 - 0.19), 1));
       await _pump(tester, offset: 4, page: 4);
-      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * OnboardingStage.compact, 1));
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * _compact, 1));
+    });
+
+    testWidgets("et le reste jusqu'au bout, même s'il reste un objet après", (tester) async {
+      // Là où Apple Maison existe, la maison suit le lieu : la scène était
+      // restée de pleine taille sur le lieu, et ses boutons tombaient sous la
+      // ligne de flottaison.
+      await _pump(tester, offset: 4, page: 4, count: 6, compactFrom: 4);
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * _compact, 1));
+      await _pump(tester, offset: 5, page: 5, count: 6, compactFrom: 4);
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * _compact, 1));
     });
 
     testWidgets("la scène se referme à mesure qu'on la quitte", (tester) async {
       await _pump(tester, offset: 4.5, page: 4);
-      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * OnboardingStage.compact * 0.5, 1));
+      expect(tester.getSize(find.byType(OnboardingStage)).height, closeTo(360 * _compact * 0.5, 1));
     });
   });
 

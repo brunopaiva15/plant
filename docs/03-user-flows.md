@@ -30,10 +30,13 @@ Plantes ─[tap +]⟶ Sheet plein écran
 ## 1b. Créer une bouture (le guide, puis la création)
 ```
 Fiche plante ─[Créer une bouture]⟶ Guide de bouturage (sheet plein écran)
+  Créer une bouture   les six gestes réunis, qui jouent et dérivent ; une
+                      phrase d'introduction · [Suivant]
   Six étapes, une par écran : un objet d'argile rendu sous Blender joue le
   geste sur un halo, puis respire ; un titre, une phrase.
-    La tige      la plante mère pousse, un anneau se pose sur le nœud choisi
-    La coupe     les ciseaux arrivent, se ferment sous le nœud, le brin se détache
+    La tige      la plante mère pousse, un anneau se pose sur le point de coupe
+    La coupe     les ciseaux viennent d'en haut, se ferment sur l'anneau, le brin
+                 se détache, les ciseaux repartent par où ils sont venus
     Les feuilles la feuille du bas se décroche, le nœud reste nu
     L'eau        la bouture descend dans le verre, le nœud sous la surface
     Les racines  elles sortent du nœud et s'allongent

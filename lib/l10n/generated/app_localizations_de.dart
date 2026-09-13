@@ -527,6 +527,10 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideIntroBody =>
+      'Sechs Schritte, vom Trieb bis zum Topf. Jeder wird als Geste gezeigt und dann in einem Satz gesagt, an die Art angepasst, wenn sie bekannt ist.';
+
+  @override
   String get cuttingGuideStemTitle => 'Der Trieb';
 
   @override

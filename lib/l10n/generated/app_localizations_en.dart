@@ -527,6 +527,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideIntroBody =>
+      'Six steps, from stem to pot. Each is shown as a gesture, then said in one sentence, adapted to the species when it is known.';
+
+  @override
   String get cuttingGuideStemTitle => 'The stem';
 
   @override

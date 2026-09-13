@@ -7,9 +7,11 @@ import '../../../design_system/design_system.dart';
 import '../../onboarding/presentation/onboarding_stage.dart';
 import '../application/cutting_guide_steps.dart';
 import 'clay_sequence.dart';
+import 'cutting_intro_cluster.dart';
 
-/// La scène du guide de bouturage : les objets des six étapes, qui se
-/// succèdent au centre de l'écran sur un halo de couleur.
+/// La scène du guide de bouturage : les six gestes réunis, puis l'objet de
+/// chaque étape, qui se succèdent au centre de l'écran sur un halo de
+/// couleur.
 ///
 /// C'est la scène de l'onboarding, en plus simple : le halo reste là et
 /// change de couleur, les objets changent de place au rythme du doigt. Celui
@@ -45,6 +47,9 @@ class CuttingGuideStage extends StatelessWidget {
   /// pendant le geste.
   final Color tint;
 
+  /// Nombre d'objets : la page d'introduction, puis une étape par objet.
+  static int get count => cuttingGuideSteps.length + 1;
+
   /// Côté de l'objet central pour une scène donnée : il prend presque toute
   /// la hauteur, sans jamais déborder des marges de la page.
   static double sideOf(double height, double width) => math.min(height * 0.92, width - 2 * Space.page).roundToDouble();
@@ -65,7 +70,7 @@ class CuttingGuideStage extends StatelessWidget {
             scale: reduceMotion ? 1 : 0.9 + 0.1 * rise,
             child: ClayHalo(color: tint, size: side * 1.18, dark: c.isDark),
           ),
-          for (var i = cuttingGuideSteps.length - 1; i >= 0; i--) _object(i, width, side, rise),
+          for (var i = count - 1; i >= 0; i--) _object(i, width, side, rise),
         ],
       ),
     );
@@ -88,10 +93,13 @@ class CuttingGuideStage extends StatelessWidget {
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
     final vivant = index == page && near < 0.02;
 
+    // La première place réunit les six gestes ; les autres en montrent un.
     final object = ImageFiltered(
       enabled: blur > 0.05,
       imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-      child: ClaySequence(asset: cuttingGuideSteps[index].asset, side: side, animate: vivant),
+      child: index == 0
+          ? CuttingIntroCluster(side: side, animate: vivant)
+          : ClaySequence(asset: cuttingGuideSteps[index - 1].asset, side: side, animate: vivant),
     );
     return Transform.translate(
       offset: Offset(dx, dy),

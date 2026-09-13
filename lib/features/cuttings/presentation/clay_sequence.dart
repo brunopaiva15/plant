@@ -20,7 +20,7 @@ import '../../onboarding/presentation/clay_illustration.dart';
 /// geste qu'on revient regarder. Avec « réduire les animations », c'est la
 /// dernière image qui est montrée, d'emblée.
 class ClaySequence extends StatefulWidget {
-  const ClaySequence({super.key, required this.asset, required this.side, this.animate = true});
+  const ClaySequence({super.key, required this.asset, required this.side, this.animate = true, this.float = true});
 
   /// Chemin de l'image animée (WebP, fond transparent).
   final String asset;
@@ -31,6 +31,11 @@ class ClaySequence extends StatefulWidget {
   /// L'objet est-il au centre de l'écran ? À `false`, la séquence patiente
   /// sur l'image où elle en est.
   final bool animate;
+
+  /// L'objet flotte-t-il sur son ombre une fois la séquence jouée ? À
+  /// `false`, il est posé tel quel, sans ombre : c'est le cas des objets
+  /// réunis sur la page d'introduction, dont la dérive vient d'ailleurs.
+  final bool float;
 
   /// Charge d'avance les octets d'une séquence, pour que l'objet suivant
   /// arrive sans temps mort. Le décodage, lui, se fait à l'arrivée.
@@ -143,6 +148,9 @@ class _ClaySequenceState extends State<ClaySequence> with SingleTickerProviderSt
     _decoding = false;
     if (_index >= last && !_done) {
       _done = true;
+      // Sans flottement, il n'y a plus rien à animer une fois la dernière
+      // image posée.
+      if (!widget.float) return _park();
       _sync();
     }
   }
@@ -164,6 +172,7 @@ class _ClaySequenceState extends State<ClaySequence> with SingleTickerProviderSt
       if (_elapsed >= _due) _advance(_index + 1);
       return;
     }
+    if (!widget.float) return _park();
     _breath.advance(elapsed, breathing: _wanted);
     setState(() => _pose = _breath.pose);
     if (!_wanted && _breath.resting) _park();
@@ -205,12 +214,10 @@ class _ClaySequenceState extends State<ClaySequence> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final image = _image;
-    return ClayFloat(
-      side: widget.side,
-      pose: _pose,
-      child: image == null
-          ? const SizedBox.shrink()
-          : RawImage(image: image, width: widget.side, height: widget.side, fit: BoxFit.contain, filterQuality: FilterQuality.high),
-    );
+    final child = image == null
+        ? const SizedBox.shrink()
+        : RawImage(image: image, width: widget.side, height: widget.side, fit: BoxFit.contain, filterQuality: FilterQuality.high);
+    if (!widget.float) return SizedBox.square(dimension: widget.side, child: Center(child: child));
+    return ClayFloat(side: widget.side, pose: _pose, child: child);
   }
 }
