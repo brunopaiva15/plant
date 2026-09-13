@@ -1495,19 +1495,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get irisFeedback => 'Training photos';
+  String get irisFeedback => 'Sending identified photos';
 
   @override
   String irisFeedbackHint(String name) {
-    return 'Identified photos and the chosen name are used to train $name. They are removed with the account. Off, nothing is sent.';
+    return 'The photos taken to identify and the chosen name are sent as soon as a plant is named, and train the next versions of the $name model. They are readable only by the account that sends them, and deleting it erases them. Off, they do not leave the device.';
   }
 
   @override
-  String get irisFeedbackAskTitle => 'Training photos';
+  String get irisFeedbackNeedsAccount => 'An account is needed to send photos.';
+
+  @override
+  String get irisFeedbackAskTitle => 'Sending identified photos';
 
   @override
   String irisFeedbackAskBody(String name) {
-    return 'Identified photos and the chosen name can be used to train $name. They are removed with the account, and the choice can be changed in the identification settings.';
+    return 'The photos taken to identify and the chosen name can be sent to train the next versions of the $name model. They are readable only by the account that sends them, and deleting it erases them. The choice can be changed in the identification settings.';
   }
 
   @override
