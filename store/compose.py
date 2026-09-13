@@ -411,7 +411,7 @@ COPY = {
         ("Une fiche d'entretien\npour chaque espèce", 'arrosage, lumière, engrais, rempotage'),
         ('Quelle est\ncette plante ?', 'une photo suffit, même sans réseau'),
         ('Lieux, calendrier,\ninventaire', 'pour un appartement ou un jardin entier'),
-        ('Tout reste sur\nvotre téléphone', 'sans compte, sans publicité'),
+        ('Un diagnostic\nsur photo', 'plus de 200 troubles, ravageurs, maladies'),
     ],
     'en': [
         ('Each morning,\nwhat needs doing', 'the day’s care, to tick off'),
@@ -420,7 +420,7 @@ COPY = {
         ('A care guide\nfor every species', 'watering, light, feeding, repotting'),
         ('What plant\nis this?', 'one photo is enough, even offline'),
         ('Rooms, calendar,\ninventory', 'for a whole flat or garden'),
-        ('Everything stays\non your phone', 'no account, no ads'),
+        ('A diagnosis\nfrom a photo', '200+ disorders, pests and diseases'),
     ],
 }
 
@@ -431,7 +431,7 @@ SCENES = [
     ('care', 'sun', 'onboarding_3.png'),
     ('add-plant', 'earth', 'collection_caoutchouc.webp'),
     ('garden-calendar', 'lavender', 'onboarding_7.png'),
-    ('profile', 'rose', 'onboarding_5.png'),
+    ('diagnosis', 'rose', 'collection_sansevieria.webp'),
 ]
 # Chaque visuel : la capture, la teinte du papier, l'objet d'argile qui dépasse.
 

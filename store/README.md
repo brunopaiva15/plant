@@ -16,7 +16,7 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 | 4 | Fiche d'entretien | anneau et goutte | soleil |
 | 5 | Ajout d'une plante, étape Photo, avec la feuille « Espèce » ouverte | caoutchouc en pot | terre |
 | 6 | Jardin, calendrier | la maison | lavande |
-| 7 | Profil (« Vos données restent sur ce téléphone. ») | carte, cadenas, nuage | rose |
+| 7 | Diagnostic gardé au journal de la Calathea, rouvert en entier | sansevieria en pot | rose |
 
 Le cinquième montre l'identification sur l'appareil. La feuille « Espèce »
 est redessinée par `compose.py` dans le téléphone, sur la page assombrie,
@@ -31,9 +31,21 @@ dans `IDENT_RESULTS`, régénérer.
 Sur la page d'une plante, la photo continue sous la barre d'état dessinée
 (en miroir, floue, assombrie), et les icônes passent en blanc.
 
+Le septième montre le compte rendu d'un diagnostic tel que l'app le rend :
+le jeu de démo en garde un au journal de la Calathea (air trop sec, tétranyques,
+excès d'eau — des numéros de `assets/problems/catalog.txt`), et la capture
+le rouvre depuis la fiche. Le service de diagnostic lui-même n'est pas
+configuré sur le build web ; le rapport, lui, est le vrai.
+
 Le jeu de démo (`?demo`) est réglé pour ces visuels : un seul soin en
-retard, d'un jour, le reste dû aujourd'hui. L'invite aux rappels est marquée
-déjà vue par `capture.mjs` avant le chargement.
+retard, d'un jour, le reste dû aujourd'hui ; ses textes libres suivent la
+langue du navigateur. Avant le chargement, `capture.mjs` écrit les
+préférences d'un téléphone déjà réglé : onboarding passé, un prénom pour
+« Bonjour », une ville pour la météo (Open-Meteo, relayée par `curl` comme
+les polices), un capteur Apple Maison transmis par Raccourcis avec une
+mesure du moment, et l'invite aux rappels déjà vue. Là où la molette
+n'entraîne presque rien, la page se fait défiler par un glissement tactile
+synthétique.
 
 `fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect ;
 les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](listing.md).

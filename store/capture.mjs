@@ -10,10 +10,40 @@ import { chromium } from 'playwright';
 import { execSync } from 'node:child_process';
 const out = process.argv[2], locale = process.argv[3] || 'fr-FR';
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--no-sandbox'] });
-const p = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, locale, colorScheme: process.env.DARK ? 'dark' : 'light' });
-// L'invite aux rappels (« Un rappel utile, chaque jour ») est une préférence :
-// on la marque déjà vue plutôt que de viser son bouton à l'aveugle.
-await p.addInitScript(() => { localStorage.setItem('flutter.notification_prompt_shown', 'true'); });
+const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, locale, colorScheme: process.env.DARK ? 'dark' : 'light', hasTouch: true });
+const p = await ctx.newPage();
+// Un glissement du doigt, par le protocole du navigateur : là où la molette
+// n'entraîne presque rien sur certaines pages, le geste tactile défile comme
+// sur un téléphone.
+const cdp = await ctx.newCDPSession(p);
+const swipe = async (x, y0, y1, steps = 20) => {
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: y0 }] });
+  for (let i = 1; i <= steps; i++) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y0 + (y1 - y0) * i / steps }] }); await p.waitForTimeout(16); }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await p.waitForTimeout(2000);
+};
+// Les préférences d'un téléphone déjà réglé, écrites comme shared_preferences
+// les garde sur le web (clé préfixée, valeur en JSON) : l'onboarding passé,
+// un prénom pour « Bonjour », une ville pour la météo, un capteur Apple Maison
+// transmis par Raccourcis avec une mesure du moment, et l'invite aux rappels
+// (« Un rappel utile, chaque jour ») déjà vue.
+const en = locale.startsWith('en');
+await p.addInitScript(({ en }) => {
+  const set = (k, v) => localStorage.setItem('flutter.' + k, JSON.stringify(v));
+  set('onboarding_done', true);
+  set('notification_prompt_shown', true);
+  set('display_name', 'Camille');
+  set('weather_place', 'Lausanne|46.5197|6.6323');
+  set('home_sensor', `shortcut|${en ? 'Shortcut' : 'Raccourci'}|${en ? 'Living room' : 'Salon'}||1|1`);
+  set('home_shortcut_reading', `22.5|41|${Date.now()}|${en ? 'Living room' : 'Salon'}`);
+}, { en });
+// La météo (Open-Meteo) suit le même relais par curl que les polices.
+await p.route(/open-meteo\.com/, async route => {
+  try {
+    const body = execSync(`curl -sS --max-time 30 "${route.request().url()}"`, { maxBuffer: 16 * 1024 * 1024 });
+    await route.fulfill({ status: 200, body, headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' } });
+  } catch (e) { await route.abort(); }
+});
 await p.route(/fonts\.gstatic\.com|fonts\.googleapis\.com/, async route => {
   try {
     const body = execSync(`curl -sS --max-time 30 "${route.request().url()}"`, { maxBuffer: 64 * 1024 * 1024 });
@@ -34,9 +64,7 @@ const tap = async (text) => {
   await p.waitForTimeout(2500);
 };
 
-await go('/onboarding', 7000);
-await p.mouse.click(350, 22); await p.waitForTimeout(1500);           // Passer
-await go('/today', 5000); await shot('today');
+await go('/today', 7000); await shot('today');
 await go('/plants', 4000); await shot('plants');
 await p.mouse.click(104, 375); await p.waitForTimeout(3000);          // Basilic
 await shot('plant');
@@ -53,6 +81,11 @@ await p.mouse.click(240, 168); await p.waitForTimeout(2500); await shot('garden-
 await go('/dashboard', 4000); await shot('dashboard');
 await go('/settings/backup', 4000); await shot('backup');
 await go('/profile', 4000); await shot('profile');
+// Le diagnostic gardé au journal de la Calathea, rouvert en entier. Le
+// journal vient juste sous la carte d'entretien : un glissement, et la
+// carte « Diagnostic » est au milieu de l'écran.
+await go('/plants', 4000); await p.mouse.click(286, 375); await p.waitForTimeout(3000);
+await swipe(195, 760, 60); await p.mouse.click(195, 660); await p.waitForTimeout(3000); await shot('diagnosis');
 // En dernier : la feuille « Une photo ? » de l'ajout reste ouverte par-dessus tout.
 await go('/plants', 4000); await p.mouse.click(362, 22); await p.waitForTimeout(3000); await shot('add-plant');
 await b.close();
