@@ -36,7 +36,7 @@ lib/
 │   ├── onboarding/
 │   ├── today/
 │   ├── plants/                    list, detail, create, edit, timeline, gallery, schedule
-│   ├── cuttings/                  guide de bouturage : séquences d'argile, scène, sheet ; étapes précisées par l'IA
+│   ├── cuttings/                  guide de bouturage : introduction, séquences d'argile, scène, sheet ; étapes précisées par l'IA
 │   ├── actions/                   add action sheet, quick actions
 │   ├── locations/
 │   ├── garden/                    onglet segmenté : emplacements · inventaire · calendrier

@@ -266,6 +266,7 @@
       }
     }
   },
+  "cuttingGuideIntroBody": "Six étapes, de la tige au pot. Chacune est montrée en geste, puis dite en une phrase, adaptée à l'espèce quand elle est connue.",
   "cuttingGuideStemTitle": "La tige",
   "cuttingGuideStemBody": "Une tige saine, avec au moins un nœud : le renflement d'où partent les feuilles. Deux ou trois feuilles au-dessus suffisent.",
   "cuttingGuideCutTitle": "La coupe",
@@ -506,6 +507,7 @@
   "homeClimateTemperatureSensor": "Capteur de température",
   "homeClimateHumiditySensor": "Capteur d'humidité",
   "homeClimateSameSensor": "Même capteur",
+  "homeClimateHumidityMissing": "Humidité non reçue. Un autre capteur peut la donner.",
   "homeClimateNone": "Aucun capteur",
   "homeClimateRemove": "Retirer le capteur",
   "homeClimateReading": "Mesure",

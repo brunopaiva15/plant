@@ -3,6 +3,7 @@ import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/cuttings/cutting_guide.dart';
 import 'package:flora/features/cuttings/presentation/cutting_guide_sheet.dart';
+import 'package:flora/features/cuttings/presentation/cutting_intro_cluster.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,9 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Le guide de bouturage : six étapes qu'on feuillette, un texte générique
-/// qui se précise pour l'espèce quand l'IA la connaît, et trois sorties —
-/// au bout du guide, en le passant, ou en renonçant.
+/// Le guide de bouturage : une introduction qui réunit les six gestes, six
+/// étapes qu'on feuillette, un texte générique qui se précise pour l'espèce
+/// quand l'IA la connaît, et trois sorties — au bout du guide, en le
+/// passant, ou en renonçant.
 
 const _precis = [
   'Le nœud de cette liane porte une racine aérienne : elle reprend vite.',
@@ -89,10 +91,15 @@ Future<({_FakeRefiner refiner, List<bool?> resultats})> _pump(WidgetTester teste
 
 void main() {
   group('le guide de bouturage', () {
-    testWidgets("montre six étapes, dans l'ordre du geste, puis crée la bouture", (tester) async {
+    testWidgets("ouvre sur les six gestes réunis, puis les montre dans l'ordre, puis crée la bouture", (tester) async {
       final t = await _pump(tester);
       // Le titre se lève ligne à ligne, et la police du banc d'essai le plie
       // vite : c'est son étiquette de synthèse vocale qui le dit d'un bloc.
+      expect(find.bySemanticsLabel('Créer une bouture'), findsOneWidget);
+      expect(find.byType(CuttingIntroCluster), findsOneWidget);
+      expect(find.text('Continuer'), findsNothing);
+      await tester.tap(find.text('Suivant'));
+      await tester.pumpAndSettle();
       for (final titre in ['La tige', 'La coupe', 'Les feuilles', "L'eau", 'Les racines']) {
         expect(find.bySemanticsLabel(titre), findsOneWidget);
         expect(find.text('Créer la bouture'), findsNothing);
@@ -121,6 +128,8 @@ void main() {
 
     testWidgets("le texte précisé par l'IA remplace le générique", (tester) async {
       final t = await _pump(tester, species: 'Epipremnum aureum');
+      await tester.tap(find.text('Suivant'));
+      await tester.pumpAndSettle();
       expect(t.refiner.demandes, ['fr|Epipremnum aureum']);
       expect(find.text(_precis[0]), findsOneWidget);
       expect(find.textContaining('Une tige saine'), findsNothing);
@@ -132,12 +141,16 @@ void main() {
 
     testWidgets('sans espèce, le générique reste et rien ne part', (tester) async {
       final t = await _pump(tester);
+      await tester.tap(find.text('Suivant'));
+      await tester.pumpAndSettle();
       expect(t.refiner.demandes, isEmpty);
       expect(find.textContaining('Une tige saine'), findsOneWidget);
     });
 
     testWidgets("l'IA coupée dans les réglages : générique, sans appel", (tester) async {
       final t = await _pump(tester, species: 'Epipremnum aureum', prefs: {'care_assist': false});
+      await tester.tap(find.text('Suivant'));
+      await tester.pumpAndSettle();
       expect(t.refiner.demandes, isEmpty);
       expect(find.textContaining('Une tige saine'), findsOneWidget);
     });
@@ -145,6 +158,8 @@ void main() {
     testWidgets('une réponse déjà obtenue se lit sans réseau', (tester) async {
       final brut = CuttingGuideStore.encode({'fr|epipremnum aureum': const CuttingGuideRefinement(steps: _precis)});
       final t = await _pump(tester, species: 'Epipremnum aureum', prefs: {'cutting_guides': brut});
+      await tester.tap(find.text('Suivant'));
+      await tester.pumpAndSettle();
       expect(t.refiner.demandes, isEmpty);
       expect(find.text(_precis[0]), findsOneWidget);
     });

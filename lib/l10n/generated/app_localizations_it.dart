@@ -528,6 +528,10 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get cuttingGuideIntroBody =>
+      'Sei passaggi, dal fusto al vaso. Ognuno è mostrato con un gesto, poi detto in una frase, adattata alla specie quando è nota.';
+
+  @override
   String get cuttingGuideStemTitle => 'Il fusto';
 
   @override
@@ -1075,6 +1079,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateSameSensor => 'Stesso sensore';
+
+  @override
+  String get homeClimateHumidityMissing =>
+      'Umidità non ricevuta. Un altro sensore può fornirla.';
 
   @override
   String get homeClimateNone => 'Nessun sensore';

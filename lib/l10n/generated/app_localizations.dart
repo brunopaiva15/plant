@@ -972,6 +972,12 @@ abstract class AppLocalizations {
   /// **'Bouture de {name}'**
   String cuttingOf(String name);
 
+  /// No description provided for @cuttingGuideIntroBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Six étapes, de la tige au pot. Chacune est montrée en geste, puis dite en une phrase, adaptée à l\'espèce quand elle est connue.'**
+  String get cuttingGuideIntroBody;
+
   /// No description provided for @cuttingGuideStemTitle.
   ///
   /// In fr, this message translates to:
@@ -1973,6 +1979,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Même capteur'**
   String get homeClimateSameSensor;
+
+  /// No description provided for @homeClimateHumidityMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humidité non reçue. Un autre capteur peut la donner.'**
+  String get homeClimateHumidityMissing;
 
   /// No description provided for @homeClimateNone.
   ///

@@ -110,9 +110,14 @@ void main() {
     expect(back.homeName, 'Chalet');
     expect(back.label, 'Salon');
     expect(back, const HomeSensor(id: 'A B', name: 'Eve Room', roomName: 'Salon', homeName: 'Chalet'));
-    // Une préférence écrite avant la maison se relit encore.
+    // Une préférence écrite avant la maison, ou avant ce que le capteur
+    // mesure, se relit encore : on le suppose complet.
     expect(HomeSensor.decode('x|Capteur|')!.label, 'Capteur');
     expect(HomeSensor.decode('x|Capteur|')!.homeName, isNull);
+    expect(HomeSensor.decode('x|Capteur||Chalet')!.hasHumidity, isTrue);
+    final thermostat = HomeSensor.decode(const HomeSensor(id: 't', name: 'Thermostat', hasHumidity: false).encode())!;
+    expect(thermostat.hasTemperature, isTrue);
+    expect(thermostat.hasHumidity, isFalse);
     expect(HomeSensor.decode(''), isNull);
     expect(HomeSensor.decode('seul'), isNull);
   });
