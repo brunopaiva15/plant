@@ -1498,19 +1498,23 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get irisFeedback => 'Photos d\'entraînement';
+  String get irisFeedback => 'Envoi des photos identifiées';
 
   @override
   String irisFeedbackHint(String name) {
-    return 'Les photos identifiées et le nom retenu servent à entraîner $name. Elles sont retirées avec le compte. Désactivé, rien ne part.';
+    return 'Les photos prises pour identifier et le nom retenu sont envoyés dès qu\'une plante est nommée, et entraînent les prochaines versions du modèle $name. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l\'appareil.';
   }
 
   @override
-  String get irisFeedbackAskTitle => 'Photos d\'entraînement';
+  String get irisFeedbackNeedsAccount =>
+      'Il faut un compte pour envoyer des photos.';
+
+  @override
+  String get irisFeedbackAskTitle => 'Envoi des photos identifiées';
 
   @override
   String irisFeedbackAskBody(String name) {
-    return 'Les photos identifiées et le nom retenu peuvent servir à entraîner $name. Elles sont retirées avec le compte, et le choix se change dans les réglages d\'identification.';
+    return 'Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle $name. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d\'identification.';
   }
 
   @override

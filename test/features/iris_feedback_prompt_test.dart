@@ -9,8 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// La demande de consentement pour les photos d'entraînement. Ce qui doit
-/// tenir quoi qu'il arrive : elle n'est posée qu'une fois, et rien ne
+/// La demande de consentement pour l'envoi des photos identifiées. Ce qui
+/// doit tenir quoi qu'il arrive : elle n'est posée qu'une fois, et rien ne
 /// s'allume sans un oui explicite.
 Future<PreferencesService> _pump(WidgetTester tester) async {
   SharedPreferences.setMockInitialValues({});
@@ -57,7 +57,7 @@ void main() {
 
   testWidgets('la feuille dit de quoi il s’agit, avec les deux réponses', (tester) async {
     await _pump(tester);
-    expect(find.text('Photos d’entraînement'), findsOneWidget);
+    expect(find.text('Envoi des photos identifiées'), findsOneWidget);
     expect(find.text('Activer'), findsOneWidget);
     expect(find.text('Plus tard'), findsOneWidget);
   });

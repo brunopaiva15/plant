@@ -120,7 +120,7 @@ Fichiers :
 | `lib/domain/identification/cascade_identifier.dart` | la cascade |
 | `lib/domain/identification/identification_metrics.dart` | compteurs + magasin |
 | `lib/data/services/preferences_metrics_store.dart` | compteurs persistés dans `SharedPreferences` |
-| `lib/features/identification/presentation/identification_settings_screen.dart` | interrupteur « Repli en ligne » + ligne de compteurs |
+| `lib/features/identification/presentation/identification_settings_screen.dart` | interrupteurs « Repli en ligne » et « Envoi des photos identifiées » + ligne de compteurs |
 
 ### 3.1 Règle de repli
 
@@ -2889,7 +2889,10 @@ photo de salon n'est pas une observation naturaliste. Il commence par
 > Consentement demandé **une fois**, juste après le premier enregistrement
 > d'une plante identifiée — le moment où la question se comprend — et
 > éteint tant que la réponse n'est pas oui ; l'interrupteur des réglages
-> reste là pour changer d'avis. Table
+> (« Envoi des photos identifiées ») reste là pour changer d'avis, et il
+> dit ce qui part, où, et ce que « désactivé » vaut. Sans compte distant,
+> rien ne peut partir : l'interrupteur est alors inerte et l'écran le dit,
+> plutôt que de laisser croire à un envoi. Table
 > `iris_feedback` et seau `iris-feedback`, lisibles par l'auteur seul,
 > retirés avec le compte ; la cascade garde ce qu'Iris croyait (`lastLocal`)
 > même quand elle a basculé d'elle-même sur Pl@ntNet. Côté entraînement,
