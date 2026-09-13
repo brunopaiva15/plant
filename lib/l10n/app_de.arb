@@ -110,6 +110,7 @@
   "newPlant": "Neue Pflanze",
   "stepPhotoTitle": "Foto",
   "stepPhotoSubtitle": "Nimm die ganze Pflanze bei Tageslicht auf.",
+  "stepPhotoSubtitleCutting": "Nimm den ganzen Ableger bei Tageslicht auf.",
   "takePhoto": "Foto aufnehmen",
   "choosePhoto": "Foto auswählen",
   "withoutPhoto": "Ohne Foto fortfahren",

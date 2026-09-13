@@ -409,6 +409,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cadrez la plante en entier, à la lumière du jour.';
 
   @override
+  String get stepPhotoSubtitleCutting =>
+      'Cadrez la bouture en entier, à la lumière du jour.';
+
+  @override
   String get takePhoto => 'Prendre une photo';
 
   @override

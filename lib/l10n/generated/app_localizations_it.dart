@@ -409,6 +409,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Inquadra la pianta intera, alla luce del giorno.';
 
   @override
+  String get stepPhotoSubtitleCutting =>
+      'Inquadra la talea intera, alla luce del giorno.';
+
+  @override
   String get takePhoto => 'Scatta una foto';
 
   @override

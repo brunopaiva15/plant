@@ -762,6 +762,12 @@ abstract class AppLocalizations {
   /// **'Cadrez la plante en entier, à la lumière du jour.'**
   String get stepPhotoSubtitle;
 
+  /// No description provided for @stepPhotoSubtitleCutting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cadrez la bouture en entier, à la lumière du jour.'**
+  String get stepPhotoSubtitleCutting;
+
   /// No description provided for @takePhoto.
   ///
   /// In fr, this message translates to:

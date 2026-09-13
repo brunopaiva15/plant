@@ -408,6 +408,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stepPhotoSubtitle => 'Nimm die ganze Pflanze bei Tageslicht auf.';
 
   @override
+  String get stepPhotoSubtitleCutting =>
+      'Nimm den ganzen Ableger bei Tageslicht auf.';
+
+  @override
   String get takePhoto => 'Foto aufnehmen';
 
   @override

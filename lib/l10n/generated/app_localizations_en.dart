@@ -408,6 +408,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepPhotoSubtitle => 'Frame the whole plant, in daylight.';
 
   @override
+  String get stepPhotoSubtitleCutting =>
+      'Frame the whole cutting, in daylight.';
+
+  @override
   String get takePhoto => 'Take a photo';
 
   @override
