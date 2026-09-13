@@ -17,6 +17,7 @@ import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
 import '../../../domain/home/home_climate.dart';
 import '../../../domain/models/models.dart';
+import '../../../domain/problems/plant_problem.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../actions/application/care_actions.dart';
 import '../../home_climate/application/home_climate_providers.dart';
@@ -204,9 +205,23 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   }
 
   Future<void> _markWatch() async {
-    await ref.read(plantRepositoryProvider).update(widget.plant.copyWith(health: PlantHealth.watch));
+    await ref.read(plantRepositoryProvider).update(widget.plant.copyWith(health: PlantHealth.watch, healthIssue: () => _suggestedIssue() ?? widget.plant.healthIssue));
     Haptics.light();
     if (mounted) Navigator.of(context).pop();
+  }
+
+  /// Ce que la fiche retiendra comme problème : la nature de la piste la plus
+  /// vraisemblable, quand la base la classe en ravageur ou en maladie. Les
+  /// troubles (eau, lumière, carence) ne se devinent pas d'une catégorie,
+  /// on ne les invente pas.
+  HealthIssue? _suggestedIssue() {
+    final catalog = ref.read(problemCatalogProvider).value;
+    final top = _result?.causes.where((c) => c.likelihood == Likelihood.likely && c.problemId != null).firstOrNull;
+    return switch (catalog?[top?.problemId]?.kind) {
+      ProblemKind.pest => HealthIssue.pests,
+      ProblemKind.disease => HealthIssue.disease,
+      _ => null,
+    };
   }
 
   @override

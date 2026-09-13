@@ -40,7 +40,7 @@ class CareGuideScreen extends ConsumerWidget {
         duration: Motion.of(context, Motion.standard),
         child: KeyedSubtree(
           key: ValueKey(care.match),
-          child: CareGuideBody(care: care, plantName: plant?.name, speciesName: plant?.speciesName, location: location),
+          child: CareGuideBody(care: care, plantName: plant?.name, speciesName: plant?.speciesName, location: location, plantLight: plant?.light),
         ),
       ),
     );
@@ -65,7 +65,7 @@ class CareGuideScreen extends ConsumerWidget {
 
 /// Corps de la fiche, réutilisable en sheet (création de plante, espèce).
 class CareGuideBody extends ConsumerWidget {
-  const CareGuideBody({super.key, required this.care, this.plantName, this.speciesName, this.location, this.header});
+  const CareGuideBody({super.key, required this.care, this.plantName, this.speciesName, this.location, this.header, this.plantLight});
 
   final ResolvedCare care;
   final String? plantName;
@@ -76,6 +76,10 @@ class CareGuideBody extends ConsumerWidget {
   final Location? location;
   final Widget? header;
 
+  /// Lumière renseignée sur la plante elle-même ; elle prime sur celle de
+  /// l'emplacement.
+  final LightNeed? plantLight;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -83,7 +87,7 @@ class CareGuideBody extends ConsumerWidget {
     final p = care.profile;
     final now = DateTime.now();
     final south = ref.watch(southernHemisphereProvider);
-    final actualLight = _lightOf(location);
+    final actualLight = plantLight ?? _lightOf(location);
     final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
 
     final badges = <(String, String)>[

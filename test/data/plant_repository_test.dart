@@ -6,6 +6,7 @@ import 'package:flora/data/repositories/location_repository_impl.dart';
 import 'package:flora/data/repositories/plant_repository_impl.dart';
 import 'package:flora/data/repositories/tag_repository_impl.dart';
 import 'package:flora/domain/care/care_engine.dart';
+import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/repositories/repositories.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -186,5 +187,75 @@ void main() {
     expect(CareEngine.daysUntil(updated.nextDueAt, DateTime.now()), 8);
     final manual = await care.upsert(updated.copyWith(strategy: CareStrategy.manual));
     expect(manual.nextDueAt, isNull);
+  });
+
+  test('les besoins et la précision de santé sont gardés, et « en forme » efface la précision', () async {
+    final p = await plants.create(const NewPlant(name: 'Calathea'));
+    await plants.update(p.copyWith(
+      health: PlantHealth.sick,
+      healthIssue: () => HealthIssue.pests,
+      light: () => LightNeed.brightIndirect,
+      humidity: () => HumidityNeed.high,
+      lifespan: () => Lifespan.perennial,
+      hardiness: () => Hardiness.tender,
+      cuttingMonth: () => 4,
+    ));
+    var saved = (await plants.getPlant(p.id))!;
+    expect(saved.healthIssue, HealthIssue.pests);
+    expect(saved.light, LightNeed.brightIndirect);
+    expect(saved.humidity, HumidityNeed.high);
+    expect(saved.lifespan, Lifespan.perennial);
+    expect(saved.hardiness, Hardiness.tender);
+    expect(saved.cuttingMonth, 4);
+
+    await plants.update(saved.copyWith(health: PlantHealth.healthy));
+    saved = (await plants.getPlant(p.id))!;
+    expect(saved.health, PlantHealth.healthy);
+    expect(saved.healthIssue, isNull);
+    expect(saved.light, LightNeed.brightIndirect, reason: 'les besoins ne dépendent pas de la santé');
+  });
+
+  test('une valeur inconnue en base se lit comme non renseignée', () async {
+    final p = await plants.create(const NewPlant(name: 'Hoya'));
+    await db.customStatement("UPDATE plants SET health_issue = 'later', light = 'neon', lifespan = 'x', hardiness = 'y'");
+    final saved = (await plants.getPlant(p.id))!;
+    expect(saved.healthIssue, isNull);
+    expect(saved.light, isNull);
+    expect(saved.lifespan, isNull);
+    expect(saved.hardiness, isNull);
+  });
+
+  test('les tris : santé, emplacement, derniers soins, acquisition, modification', () async {
+    final salon = await locations.create(name: 'Salon', icon: '🛋️');
+    final balcon = await locations.create(name: 'Balcon', icon: '🌤️');
+    final a = await plants.create(NewPlant(name: 'Aloe', locationId: salon.id, acquiredAt: DateTime(2024, 3, 1)));
+    final b = await plants.create(NewPlant(name: 'Basilic', locationId: balcon.id));
+    final c = await plants.create(NewPlant(name: 'Cactus', acquiredAt: DateTime(2025, 1, 1)));
+    await plants.update(b.copyWith(health: PlantHealth.watch));
+    await plants.update(c.copyWith(health: PlantHealth.sick));
+
+    Future<List<String>> names(PlantSort sort) async => [for (final s in await plants.watchSummaries(PlantFilter(sort: sort)).first) s.plant.name];
+
+    expect(await names(PlantSort.health), ['Cactus', 'Basilic', 'Aloe'], reason: 'malade, à surveiller, en forme');
+    expect(await names(PlantSort.location), ['Basilic', 'Aloe', 'Cactus'], reason: 'par nom d\'emplacement, les sans-emplacement en dernier');
+    expect(await names(PlantSort.acquired), ['Cactus', 'Aloe', 'Basilic'], reason: 'acquisition la plus récente d\'abord, inconnue en dernier');
+    // Les dates sont à la seconde : on les pose à la main pour les départager.
+    for (final (id, daysAgo) in [(a.id, 3), (b.id, 1), (c.id, 2)]) {
+      await db.customStatement('UPDATE plants SET updated_at = ${DateTime.now().subtract(Duration(days: daysAgo)).millisecondsSinceEpoch ~/ 1000} WHERE id = \'$id\'');
+    }
+    expect(await names(PlantSort.recentlyEdited), ['Basilic', 'Cactus', 'Aloe']);
+
+    final now = DateTime.now();
+    await actions.log(NewAction(plantId: a.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 5))));
+    await actions.log(NewAction(plantId: c.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 1))));
+    await actions.log(NewAction(plantId: b.id, typeKey: 'repotting', occurredAt: now.subtract(const Duration(days: 30))));
+    expect(await names(PlantSort.lastWatered), ['Cactus', 'Aloe', 'Basilic'], reason: 'arrosée le plus récemment d\'abord, jamais arrosée en dernier');
+    expect(await names(PlantSort.lastRepotted), ['Basilic', 'Aloe', 'Cactus']);
+    expect(await names(PlantSort.lastFertilized), ['Aloe', 'Basilic', 'Cactus'], reason: 'sans engrais, l\'ordre retombe sur le nom');
+
+    final summaries = await plants.watchSummaries(const PlantFilter(sort: PlantSort.lastWatered)).first;
+    expect(summaries.first.lastWateredAt, isNotNull);
+    expect(summaries.last.lastWateredAt, isNull);
+    expect(summaries.firstWhere((s) => s.plant.name == 'Basilic').lastRepottedAt, isNotNull);
   });
 }

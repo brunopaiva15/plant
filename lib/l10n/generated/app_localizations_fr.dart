@@ -306,6 +306,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sortRecent => 'Ajout récent';
 
   @override
+  String get sortEdited => 'Modification récente';
+
+  @override
+  String get sortLastWatered => 'Dernier arrosage';
+
+  @override
+  String get sortLastFertilized => 'Dernier engrais';
+
+  @override
+  String get sortLastRepotted => 'Dernier rempotage';
+
+  @override
+  String get sortAcquired => 'Acquisition';
+
+  @override
   String get filterLocation => 'Emplacement';
 
   @override
@@ -656,6 +671,66 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get healthSick => 'Malade';
+
+  @override
+  String get healthIssue => 'Problème';
+
+  @override
+  String get issueOverwatering => 'Excès d\'eau';
+
+  @override
+  String get issueUnderwatering => 'Manque d\'eau';
+
+  @override
+  String get issuePests => 'Ravageurs';
+
+  @override
+  String get issueDisease => 'Maladie';
+
+  @override
+  String get issueRootRot => 'Pourriture des racines';
+
+  @override
+  String get issueTransplantShock => 'Choc de rempotage';
+
+  @override
+  String get issueDeficiency => 'Carence';
+
+  @override
+  String get issueSunburn => 'Brûlure du soleil';
+
+  @override
+  String get issueFrost => 'Gel';
+
+  @override
+  String get needsSection => 'Besoins';
+
+  @override
+  String get detailsSection => 'Détails';
+
+  @override
+  String get lifespan => 'Cycle de vie';
+
+  @override
+  String get lifespanAnnual => 'Annuelle';
+
+  @override
+  String get lifespanBiennial => 'Bisannuelle';
+
+  @override
+  String get lifespanPerennial => 'Vivace';
+
+  @override
+  String get hardiness => 'Rusticité';
+
+  @override
+  String get hardinessHardy => 'Rustique';
+
+  @override
+  String get hardinessTender => 'Gélive';
+
+  @override
+  String get cuttingMonth => 'Mois de bouturage';
 
   @override
   String get noSchedule => 'Aucun rappel';

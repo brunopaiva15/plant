@@ -9,9 +9,13 @@ import '../../../domain/models/models.dart';
 
 /// Carte de grille : grande photo, nom, emplacement, prochain soin.
 class PlantGridCard extends ConsumerWidget {
-  const PlantGridCard({super.key, required this.summary, required this.onTap, this.onLongPress, this.selected = false, this.selecting = false});
+  const PlantGridCard({super.key, required this.summary, required this.onTap, this.onLongPress, this.selected = false, this.selecting = false, this.caption});
 
   final PlantSummary summary;
+
+  /// Remplace la ligne sous le nom (emplacement ou espèce) : ce que le tri
+  /// en cours regarde, pour que l'ordre se lise sur la carte.
+  final String? caption;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
   final bool selected;
@@ -89,7 +93,7 @@ class PlantGridCard extends ConsumerWidget {
                   children: [
                     Text(summary.plant.name, style: context.text.title3, maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
-                    Text(summary.locationName ?? summary.plant.speciesName ?? '', style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(caption ?? summary.locationName ?? summary.plant.speciesName ?? '', style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: Space.xs),
                     if (summary.nextDueAt != null && emoji != null)
                       DueBadge(emoji: emoji, label: l10n.dueLabel(summary.nextDueAt, now), status: summary.dueStatus(now), compact: true)
@@ -108,9 +112,10 @@ class PlantGridCard extends ConsumerWidget {
 
 /// Ligne de liste (mode liste) : miniature, nom, emplacement, prochain soin.
 class PlantListRow extends ConsumerWidget {
-  const PlantListRow({super.key, required this.summary, required this.onTap, this.onLongPress, this.selected = false, this.selecting = false});
+  const PlantListRow({super.key, required this.summary, required this.onTap, this.onLongPress, this.selected = false, this.selecting = false, this.caption});
 
   final PlantSummary summary;
+  final String? caption;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
   final bool selected;
@@ -144,7 +149,7 @@ class PlantListRow extends ConsumerWidget {
               children: [
                 Text(summary.plant.name, style: context.text.title3, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
-                Text(summary.locationName ?? summary.plant.speciesName ?? '', style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(caption ?? summary.locationName ?? summary.plant.speciesName ?? '', style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),

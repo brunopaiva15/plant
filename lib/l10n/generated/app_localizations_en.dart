@@ -306,6 +306,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortRecent => 'Recently added';
 
   @override
+  String get sortEdited => 'Recently edited';
+
+  @override
+  String get sortLastWatered => 'Last watered';
+
+  @override
+  String get sortLastFertilized => 'Last fertilised';
+
+  @override
+  String get sortLastRepotted => 'Last repotted';
+
+  @override
+  String get sortAcquired => 'Acquired';
+
+  @override
   String get filterLocation => 'Location';
 
   @override
@@ -655,6 +670,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get healthSick => 'Sick';
+
+  @override
+  String get healthIssue => 'Problem';
+
+  @override
+  String get issueOverwatering => 'Overwatering';
+
+  @override
+  String get issueUnderwatering => 'Underwatering';
+
+  @override
+  String get issuePests => 'Pests';
+
+  @override
+  String get issueDisease => 'Disease';
+
+  @override
+  String get issueRootRot => 'Root rot';
+
+  @override
+  String get issueTransplantShock => 'Transplant shock';
+
+  @override
+  String get issueDeficiency => 'Nutrient deficiency';
+
+  @override
+  String get issueSunburn => 'Sunburn';
+
+  @override
+  String get issueFrost => 'Frost damage';
+
+  @override
+  String get needsSection => 'Needs';
+
+  @override
+  String get detailsSection => 'Details';
+
+  @override
+  String get lifespan => 'Life cycle';
+
+  @override
+  String get lifespanAnnual => 'Annual';
+
+  @override
+  String get lifespanBiennial => 'Biennial';
+
+  @override
+  String get lifespanPerennial => 'Perennial';
+
+  @override
+  String get hardiness => 'Hardiness';
+
+  @override
+  String get hardinessHardy => 'Hardy';
+
+  @override
+  String get hardinessTender => 'Tender';
+
+  @override
+  String get cuttingMonth => 'Cutting month';
 
   @override
   String get noSchedule => 'No reminders';

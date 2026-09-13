@@ -151,7 +151,8 @@ _Advice _adviceFor(WidgetRef ref, String plantId) {
   final plant = ref.watch(plantSummaryProvider(plantId)).value?.plant;
   final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: speciesFamilyLookup(ref)(plant?.speciesName));
   final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
-  return _Advice(care: care, light: lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
+  // La lumière dite sur la plante prime sur celle de son emplacement.
+  return _Advice(care: care, light: plant?.light ?? lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
 }
 
 Future<void> showScheduleEditSheet(BuildContext context, {required CareSchedule schedule}) =>
