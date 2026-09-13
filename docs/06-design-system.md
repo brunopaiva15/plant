@@ -33,10 +33,17 @@ dessine jamais sa propre ombre.
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
 image, comme dans *Art Attack* : elle tombe, s'écrase au sol en projetant
-six gouttes, rebondit en tremblant de moins en moins, respire en se
+des gouttes, rebondit en tremblant de moins en moins, respire en se
 remodelant, se ramasse et repart. Un cycle dure 1,6 s. La silhouette ondule
 en permanence (trois harmoniques lentes), l'ombre au sol rétrécit quand elle
 saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
+
+Les éclaboussures existent en cinq jeux de cinq à sept gouttes, réglées une
+à une (angle, portée, taille, poids, retard) : dans un jeu, aucune goutte
+n'est le miroir d'une autre, et la motte change de jeu à chaque cycle, si
+bien que la boucle ne se voit pas. Chaque motte démarre sur un jeu au
+hasard. Les gouttes retombent et se posent au sol, elles ne le traversent
+pas.
 
 `AdaptiveProgress` (toutes les attentes de l'app) et l'état `loading` de
 `FloraButton` l'utilisent ; `size` est le diamètre au repos (36 par défaut,
