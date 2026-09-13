@@ -106,7 +106,12 @@ et l'humidité relative, et rien d'autre.
   automatisation « Quand Auxine est ouverte » l'appelle avec l'état lu par
   Maison « Obtenir l'état », et le capteur « Raccourci » (`HomeSensor.shortcutId`)
   relit cette valeur au réveil de l'app. Une valeur de plus de six heures ne
-  compte plus.
+  compte plus. Deux gestes depuis l'app (`HomeShortcut`) : ajouter le
+  raccourci partagé (lien iCloud `HOME_SHORTCUT_URL`, recette dans
+  tool/README.md) et le lancer par `shortcuts://x-callback-url/run-shortcut`,
+  avec retour `auxine://home-climate/updated` ou `…/failed` traité par
+  `openFloraLink`. L'automatisation, elle, ne se crée que dans Raccourcis :
+  iOS ne le permet à aucune app.
 - Le diagnostic joint la mesure à la question, pour une plante qui n'est pas
   dehors, et le dit sous le champ des symptômes.
 - Réglages : `NSHomeKitUsageDescription` dans `Info.plist`, entitlement

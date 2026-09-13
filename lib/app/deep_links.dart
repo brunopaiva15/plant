@@ -5,6 +5,7 @@ import '../core/haptics.dart';
 import '../core/l10n/l10n.dart';
 import '../design_system/design_system.dart';
 import '../features/account/presentation/join_garden_sheet.dart';
+import '../features/home_climate/application/home_climate_providers.dart';
 import '../features/inventory/presentation/inventory_item_sheet.dart';
 import '../features/qr/application/plant_links.dart';
 import 'providers.dart';
@@ -37,6 +38,19 @@ Future<void> openFloraLink(Ref ref, GoRouter router, FloraLink link) async {
       final inviteContext = rootNavigatorKey.currentContext;
       if (inviteContext == null || !inviteContext.mounted) return;
       await showJoinGardenSheet(inviteContext, code: link.id);
+    case FloraLinkKind.homeClimate:
+      // Retour du raccourci « Climat Auxine » : la valeur vient d'être
+      // écrite dans les préférences, on la relit et on revient au réglage,
+      // d'où le raccourci est parti.
+      ref.invalidate(homeShortcutReadingProvider);
+      ref.invalidate(homeReadingProvider);
+      router.push(Routes.homeClimate);
+      if (link.id == 'failed') {
+        final context = rootNavigatorKey.currentContext;
+        if (context == null || !context.mounted) return;
+        Haptics.warning();
+        ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.homeClimateShortcutFailed, emoji: '⚡️'));
+      }
   }
 }
 

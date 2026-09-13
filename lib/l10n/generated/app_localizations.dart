@@ -2034,6 +2034,60 @@ abstract class AppLocalizations {
   /// **'Ouvrir Raccourcis'**
   String get homeClimateOpenShortcuts;
 
+  /// No description provided for @homeClimateAddShortcut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter le raccourci'**
+  String get homeClimateAddShortcut;
+
+  /// No description provided for @homeClimateAddShortcutSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'un tap, depuis un lien partagé. Au premier lancement, choisir le HomePod.'**
+  String get homeClimateAddShortcutSubtitle;
+
+  /// No description provided for @homeClimateRunShortcut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour maintenant'**
+  String get homeClimateRunShortcut;
+
+  /// No description provided for @homeClimateRunShortcutSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lance « {name} » dans Raccourcis et revient ici.'**
+  String homeClimateRunShortcutSubtitle(String name);
+
+  /// No description provided for @homeClimateShortcutFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le raccourci n\'a pas abouti. Il se vérifie dans Raccourcis.'**
+  String get homeClimateShortcutFailed;
+
+  /// No description provided for @homeClimateOneTapStep1Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le raccourci, d\'un tap'**
+  String get homeClimateOneTapStep1Title;
+
+  /// No description provided for @homeClimateOneTapStep1Body.
+  ///
+  /// In fr, this message translates to:
+  /// **'« Ajouter le raccourci » ouvre « {name} » dans Raccourcis : Ajouter. Puis, dans l\'action Maison, toucher l\'accessoire pour désigner le HomePod.'**
+  String homeClimateOneTapStep1Body(String name);
+
+  /// No description provided for @homeClimateOneTapStep3Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'À chaque ouverture, si voulu'**
+  String get homeClimateOneTapStep3Title;
+
+  /// No description provided for @homeClimateOneTapStep3Body.
+  ///
+  /// In fr, this message translates to:
+  /// **'« Mettre à jour » lance le raccourci d\'ici. Pour que ce soit automatique : Raccourcis › Automatisation › App › Auxine › « Est ouverte » › exécuter ce raccourci, immédiatement.'**
+  String get homeClimateOneTapStep3Body;
+
   /// No description provided for @homeClimateShortcutFooter.
   ///
   /// In fr, this message translates to:

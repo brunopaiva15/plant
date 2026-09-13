@@ -13,4 +13,10 @@ void main() {
     expect(PlantLinks.decode('auxine://plant/'), isNull);
     expect(PlantLinks.decode('not a uri at all ::'), isNull);
   });
+
+  test('le retour du raccourci du climat est un lien comme un autre', () {
+    expect(PlantLinks.decodeLink('auxine://home-climate/updated'), const FloraLink(FloraLinkKind.homeClimate, 'updated'));
+    expect(PlantLinks.decodeLink('auxine://home-climate/failed'), const FloraLink(FloraLinkKind.homeClimate, 'failed'));
+    expect(PlantLinks.decodeLink('auxine://home-climate/'), isNull);
+  });
 }

@@ -1,7 +1,10 @@
 import '../../../core/config/app_config.dart';
 
 /// Ce vers quoi pointe un lien Flora.
-enum FloraLinkKind { plant, item, join }
+/// Ce qu'un lien `auxine://` désigne : une plante, un article, une
+/// invitation, ou le retour du raccourci du climat (`home-climate/updated`,
+/// `home-climate/failed`).
+enum FloraLinkKind { plant, item, join, homeClimate }
 
 /// Cible décodée d'un QR code.
 class FloraLink {
@@ -53,6 +56,7 @@ abstract final class PlantLinks {
       'plant' => FloraLinkKind.plant,
       'item' => FloraLinkKind.item,
       'join' => FloraLinkKind.join,
+      'home-climate' => FloraLinkKind.homeClimate,
       _ => null,
     };
     if (kind == null || uri.pathSegments.length != 1) return null;

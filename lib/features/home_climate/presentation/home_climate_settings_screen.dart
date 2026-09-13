@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/home/home_climate.dart';
 import '../application/home_climate_providers.dart';
+import '../application/home_shortcut_launcher.dart';
 import 'home_climate_widgets.dart';
 import 'home_sensor_picker_sheet.dart';
 import 'home_shortcut_guide_sheet.dart';
@@ -201,6 +203,21 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
             header: l10n.homeClimateShortcut,
             footer: l10n.homeClimateShortcutFooter,
             children: [
+              // Le raccourci s'ajoute d'un tap quand l'éditeur l'a partagé,
+              // et se lance d'ici : un aller-retour par Raccourcis.
+              if (HomeShortcut.canAdd)
+                FloraListRow(
+                  leading: const Text('➕', style: TextStyle(fontSize: 18)),
+                  title: l10n.homeClimateAddShortcut,
+                  subtitle: l10n.homeClimateAddShortcutSubtitle,
+                  onTap: HomeShortcut.add,
+                ),
+              FloraListRow(
+                leading: const Text('🔄', style: TextStyle(fontSize: 18)),
+                title: l10n.homeClimateRunShortcut,
+                subtitle: l10n.homeClimateRunShortcutSubtitle(AppConfig.homeShortcutName),
+                onTap: HomeShortcut.run,
+              ),
               FloraListRow(
                 leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
                 title: l10n.homeClimateGuideTitle,

@@ -1112,6 +1112,40 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeClimateOpenShortcuts => 'Ouvrir Raccourcis';
 
   @override
+  String get homeClimateAddShortcut => 'Ajouter le raccourci';
+
+  @override
+  String get homeClimateAddShortcutSubtitle =>
+      'D\'un tap, depuis un lien partagé. Au premier lancement, choisir le HomePod.';
+
+  @override
+  String get homeClimateRunShortcut => 'Mettre à jour maintenant';
+
+  @override
+  String homeClimateRunShortcutSubtitle(String name) {
+    return 'Lance « $name » dans Raccourcis et revient ici.';
+  }
+
+  @override
+  String get homeClimateShortcutFailed =>
+      'Le raccourci n\'a pas abouti. Il se vérifie dans Raccourcis.';
+
+  @override
+  String get homeClimateOneTapStep1Title => 'Le raccourci, d\'un tap';
+
+  @override
+  String homeClimateOneTapStep1Body(String name) {
+    return '« Ajouter le raccourci » ouvre « $name » dans Raccourcis : Ajouter. Puis, dans l\'action Maison, toucher l\'accessoire pour désigner le HomePod.';
+  }
+
+  @override
+  String get homeClimateOneTapStep3Title => 'À chaque ouverture, si voulu';
+
+  @override
+  String get homeClimateOneTapStep3Body =>
+      '« Mettre à jour » lance le raccourci d\'ici. Pour que ce soit automatique : Raccourcis › Automatisation › App › Auxine › « Est ouverte » › exécuter ce raccourci, immédiatement.';
+
+  @override
   String get homeClimateShortcutFooter =>
       'Pour un HomePod, dont les capteurs ne sont pas accessibles aux apps tierces : la valeur passe par Raccourcis.';
 

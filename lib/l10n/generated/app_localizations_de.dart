@@ -1113,6 +1113,40 @@ class AppLocalizationsDe extends AppLocalizations {
   String get homeClimateOpenShortcuts => 'Kurzbefehle öffnen';
 
   @override
+  String get homeClimateAddShortcut => 'Kurzbefehl hinzufügen';
+
+  @override
+  String get homeClimateAddShortcutSubtitle =>
+      'Mit einem Tipp, über einen geteilten Link. Beim ersten Start den HomePod wählen.';
+
+  @override
+  String get homeClimateRunShortcut => 'Jetzt aktualisieren';
+
+  @override
+  String homeClimateRunShortcutSubtitle(String name) {
+    return 'Führt „$name“ in Kurzbefehle aus und kehrt hierher zurück.';
+  }
+
+  @override
+  String get homeClimateShortcutFailed =>
+      'Der Kurzbefehl wurde nicht abgeschlossen. Er lässt sich in Kurzbefehle prüfen.';
+
+  @override
+  String get homeClimateOneTapStep1Title => 'Der Kurzbefehl, mit einem Tipp';
+
+  @override
+  String homeClimateOneTapStep1Body(String name) {
+    return '„Kurzbefehl hinzufügen“ öffnet „$name“ in Kurzbefehle: Hinzufügen. Dann in der Home-Aktion das Zubehör antippen und den HomePod wählen.';
+  }
+
+  @override
+  String get homeClimateOneTapStep3Title => 'Bei jedem Öffnen, falls gewünscht';
+
+  @override
+  String get homeClimateOneTapStep3Body =>
+      '„Jetzt aktualisieren“ führt den Kurzbefehl von hier aus. Automatisch: Kurzbefehle › Automation › App › Auxine › „Wird geöffnet“ › diesen Kurzbefehl ausführen, sofort.';
+
+  @override
   String get homeClimateShortcutFooter =>
       'Für einen HomePod, dessen Sensoren Dritt-Apps nicht zugänglich sind: der Wert kommt über Kurzbefehle.';
 

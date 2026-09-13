@@ -1110,6 +1110,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeClimateOpenShortcuts => 'Open Shortcuts';
 
   @override
+  String get homeClimateAddShortcut => 'Add the shortcut';
+
+  @override
+  String get homeClimateAddShortcutSubtitle =>
+      'One tap, from a shared link. On first run, pick the HomePod.';
+
+  @override
+  String get homeClimateRunShortcut => 'Update now';
+
+  @override
+  String homeClimateRunShortcutSubtitle(String name) {
+    return 'Runs “$name” in Shortcuts and comes back here.';
+  }
+
+  @override
+  String get homeClimateShortcutFailed =>
+      'The shortcut did not complete. It can be checked in Shortcuts.';
+
+  @override
+  String get homeClimateOneTapStep1Title => 'The shortcut, in one tap';
+
+  @override
+  String homeClimateOneTapStep1Body(String name) {
+    return '“Add the shortcut” opens “$name” in Shortcuts: Add. Then, in the Home action, tap the accessory to point at the HomePod.';
+  }
+
+  @override
+  String get homeClimateOneTapStep3Title => 'On every opening, if wanted';
+
+  @override
+  String get homeClimateOneTapStep3Body =>
+      '“Update now” runs the shortcut from here. To make it automatic: Shortcuts › Automation › App › Auxine › “Is Opened” › run this shortcut, immediately.';
+
+  @override
   String get homeClimateShortcutFooter =>
       'For a HomePod, whose sensors are not accessible to third-party apps: the value goes through Shortcuts.';
 

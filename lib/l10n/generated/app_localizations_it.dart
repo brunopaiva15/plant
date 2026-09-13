@@ -1112,6 +1112,40 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeClimateOpenShortcuts => 'Apri Comandi rapidi';
 
   @override
+  String get homeClimateAddShortcut => 'Aggiungi il comando rapido';
+
+  @override
+  String get homeClimateAddShortcutSubtitle =>
+      'Con un tocco, da un link condiviso. Al primo avvio, scegliere l\'HomePod.';
+
+  @override
+  String get homeClimateRunShortcut => 'Aggiorna ora';
+
+  @override
+  String homeClimateRunShortcutSubtitle(String name) {
+    return 'Esegue «$name» in Comandi rapidi e torna qui.';
+  }
+
+  @override
+  String get homeClimateShortcutFailed =>
+      'Il comando rapido non è andato a buon fine. Si verifica in Comandi rapidi.';
+
+  @override
+  String get homeClimateOneTapStep1Title => 'Il comando rapido, con un tocco';
+
+  @override
+  String homeClimateOneTapStep1Body(String name) {
+    return '«Aggiungi il comando rapido» apre «$name» in Comandi rapidi: Aggiungi. Poi, nell\'azione Casa, toccare l\'accessorio per indicare l\'HomePod.';
+  }
+
+  @override
+  String get homeClimateOneTapStep3Title => 'A ogni apertura, se si vuole';
+
+  @override
+  String get homeClimateOneTapStep3Body =>
+      '«Aggiorna ora» esegue il comando rapido da qui. Per renderlo automatico: Comandi rapidi › Automazione › App › Auxine › «Viene aperta» › esegui questo comando rapido, subito.';
+
+  @override
   String get homeClimateShortcutFooter =>
       'Per un HomePod, i cui sensori non sono accessibili alle app di terze parti: il valore passa da Comandi rapidi.';
 
