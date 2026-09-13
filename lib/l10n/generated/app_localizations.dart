@@ -2034,11 +2034,77 @@ abstract class AppLocalizations {
   /// **'Ouvrir Raccourcis'**
   String get homeClimateOpenShortcuts;
 
-  /// No description provided for @homeClimateShortcutHow.
+  /// No description provided for @homeClimateShortcutFooter.
   ///
   /// In fr, this message translates to:
-  /// **'Les capteurs des HomePod ne sont pas lisibles par une app tierce, mais Raccourcis les lit. Dans Raccourcis › Automatisation : « Quand Auxine est ouverte », exécuter immédiatement, avec deux actions : Maison « Obtenir l\'état » du HomePod (humidité relative, puis température si voulu), et Auxine « Transmettre le climat à Auxine » avec ces valeurs. Choisir ensuite « Raccourci » comme capteur ci-dessus.'**
-  String get homeClimateShortcutHow;
+  /// **'Pour un HomePod : HomeKit ne donne pas ses capteurs aux apps tierces, Raccourcis les lit.'**
+  String get homeClimateShortcutFooter;
+
+  /// No description provided for @homeClimateGuideTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire un HomePod'**
+  String get homeClimateGuideTitle;
+
+  /// No description provided for @homeClimateGuideSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quatre étapes dans Raccourcis.'**
+  String get homeClimateGuideSubtitle;
+
+  /// No description provided for @homeClimateGuideWhy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les capteurs de température et d\'humidité d\'un HomePod n\'apparaissent que dans l\'app Maison : Apple ne les donne pas aux autres apps. L\'app Raccourcis, elle, les lit, et peut transmettre la valeur à Auxine à chaque ouverture. Rien ne quitte l\'appareil.'**
+  String get homeClimateGuideWhy;
+
+  /// No description provided for @homeClimateStep1Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une automatisation à l\'ouverture'**
+  String get homeClimateStep1Title;
+
+  /// No description provided for @homeClimateStep1Body.
+  ///
+  /// In fr, this message translates to:
+  /// **'Raccourcis › Automatisation › nouvelle automatisation › App › Auxine › « Est ouverte », en exécution immédiate.'**
+  String get homeClimateStep1Body;
+
+  /// No description provided for @homeClimateStep2Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire le HomePod'**
+  String get homeClimateStep2Title;
+
+  /// No description provided for @homeClimateStep2Body.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action Maison « Obtenir l\'état » : choisir le HomePod, puis « Humidité relative actuelle ». Une seconde action pour « Température actuelle » si voulu.'**
+  String get homeClimateStep2Body;
+
+  /// No description provided for @homeClimateStep3Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transmettre à Auxine'**
+  String get homeClimateStep3Title;
+
+  /// No description provided for @homeClimateStep3Body.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action Auxine « Transmettre le climat à Auxine » : placer les valeurs obtenues dans Humidité et Température, et la pièce si voulu.'**
+  String get homeClimateStep3Body;
+
+  /// No description provided for @homeClimateStep4Title.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir « Raccourci » comme capteur'**
+  String get homeClimateStep4Title;
+
+  /// No description provided for @homeClimateStep4Body.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l\'ouverture suivante d\'Auxine, la mesure est là.'**
+  String get homeClimateStep4Body;
 
   /// No description provided for @homeClimateNone.
   ///
@@ -2073,7 +2139,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateNoSensors.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison.'**
+  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison. Un HomePod se lit par Raccourcis, dans Profil › Apple Maison.'**
   String get homeClimateNoSensors;
 
   /// No description provided for @homeClimateDenied.

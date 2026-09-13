@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
@@ -10,6 +9,7 @@ import '../../../domain/home/home_climate.dart';
 import '../application/home_climate_providers.dart';
 import 'home_climate_widgets.dart';
 import 'home_sensor_picker_sheet.dart';
+import 'home_shortcut_guide_sheet.dart';
 
 /// Profil › Apple Maison : le capteur de température, celui de l'humidité,
 /// leur mesure, et de quoi en changer.
@@ -199,8 +199,14 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
           // la dernière valeur reçue.
           FloraGroup(
             header: l10n.homeClimateShortcut,
-            footer: l10n.homeClimateShortcutHow,
+            footer: l10n.homeClimateShortcutFooter,
             children: [
+              FloraListRow(
+                leading: const Text('🔊', style: TextStyle(fontSize: 18)),
+                title: l10n.homeClimateGuideTitle,
+                subtitle: l10n.homeClimateGuideSubtitle,
+                onTap: () => showHomeShortcutGuide(context),
+              ),
               FloraListRow(
                 leading: const Text('⚡️', style: TextStyle(fontSize: 18)),
                 title: l10n.homeClimateShortcutLast,
@@ -215,11 +221,6 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                     : Text(homeReadingLabel(shortcut, metric: metric), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
                 chevron: false,
                 onTap: () => ref.invalidate(homeShortcutReadingProvider),
-              ),
-              FloraListRow(
-                leading: const Text('🔗', style: TextStyle(fontSize: 18)),
-                title: l10n.homeClimateOpenShortcuts,
-                onTap: () => launchUrl(Uri.parse('shortcuts://'), mode: LaunchMode.externalApplication),
               ),
             ],
           ),

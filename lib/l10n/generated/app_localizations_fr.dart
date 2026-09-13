@@ -1112,8 +1112,46 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeClimateOpenShortcuts => 'Ouvrir Raccourcis';
 
   @override
-  String get homeClimateShortcutHow =>
-      'Les capteurs des HomePod ne sont pas lisibles par une app tierce, mais Raccourcis les lit. Dans Raccourcis › Automatisation : « Quand Auxine est ouverte », exécuter immédiatement, avec deux actions : Maison « Obtenir l\'état » du HomePod (humidité relative, puis température si voulu), et Auxine « Transmettre le climat à Auxine » avec ces valeurs. Choisir ensuite « Raccourci » comme capteur ci-dessus.';
+  String get homeClimateShortcutFooter =>
+      'Pour un HomePod : HomeKit ne donne pas ses capteurs aux apps tierces, Raccourcis les lit.';
+
+  @override
+  String get homeClimateGuideTitle => 'Lire un HomePod';
+
+  @override
+  String get homeClimateGuideSubtitle => 'Quatre étapes dans Raccourcis.';
+
+  @override
+  String get homeClimateGuideWhy =>
+      'Les capteurs de température et d\'humidité d\'un HomePod n\'apparaissent que dans l\'app Maison : Apple ne les donne pas aux autres apps. L\'app Raccourcis, elle, les lit, et peut transmettre la valeur à Auxine à chaque ouverture. Rien ne quitte l\'appareil.';
+
+  @override
+  String get homeClimateStep1Title => 'Une automatisation à l\'ouverture';
+
+  @override
+  String get homeClimateStep1Body =>
+      'Raccourcis › Automatisation › nouvelle automatisation › App › Auxine › « Est ouverte », en exécution immédiate.';
+
+  @override
+  String get homeClimateStep2Title => 'Lire le HomePod';
+
+  @override
+  String get homeClimateStep2Body =>
+      'Action Maison « Obtenir l\'état » : choisir le HomePod, puis « Humidité relative actuelle ». Une seconde action pour « Température actuelle » si voulu.';
+
+  @override
+  String get homeClimateStep3Title => 'Transmettre à Auxine';
+
+  @override
+  String get homeClimateStep3Body =>
+      'Action Auxine « Transmettre le climat à Auxine » : placer les valeurs obtenues dans Humidité et Température, et la pièce si voulu.';
+
+  @override
+  String get homeClimateStep4Title => 'Choisir « Raccourci » comme capteur';
+
+  @override
+  String get homeClimateStep4Body =>
+      'Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l\'ouverture suivante d\'Auxine, la mesure est là.';
 
   @override
   String get homeClimateNone => 'Aucun capteur';
@@ -1141,7 +1179,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Aucun capteur de température ou d\'humidité dans Apple Maison.';
+      'Aucun capteur de température ou d\'humidité dans Apple Maison. Un HomePod se lit par Raccourcis, dans Profil › Apple Maison.';
 
   @override
   String get homeClimateDenied =>

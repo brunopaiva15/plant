@@ -1111,8 +1111,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeClimateOpenShortcuts => 'Open Shortcuts';
 
   @override
-  String get homeClimateShortcutHow =>
-      'HomePod sensors cannot be read by a third-party app, but Shortcuts reads them. In Shortcuts › Automation: “When Auxine is opened”, run immediately, with two actions: Home “Get State” of the HomePod (relative humidity, then temperature if wanted), and Auxine “Report climate to Auxine” with those values. Then choose “Shortcut” as the sensor above.';
+  String get homeClimateShortcutFooter =>
+      'For a HomePod: HomeKit does not give its sensors to third-party apps, Shortcuts reads them.';
+
+  @override
+  String get homeClimateGuideTitle => 'Reading a HomePod';
+
+  @override
+  String get homeClimateGuideSubtitle => 'Four steps in Shortcuts.';
+
+  @override
+  String get homeClimateGuideWhy =>
+      'A HomePod\'s temperature and humidity sensors only appear in the Home app: Apple does not give them to other apps. The Shortcuts app reads them, and can hand the value to Auxine each time it opens. Nothing leaves the device.';
+
+  @override
+  String get homeClimateStep1Title => 'An automation on opening';
+
+  @override
+  String get homeClimateStep1Body =>
+      'Shortcuts › Automation › new automation › App › Auxine › “Is Opened”, run immediately.';
+
+  @override
+  String get homeClimateStep2Title => 'Read the HomePod';
+
+  @override
+  String get homeClimateStep2Body =>
+      'Home action “Get State”: pick the HomePod, then “Current Relative Humidity”. A second action for “Current Temperature” if wanted.';
+
+  @override
+  String get homeClimateStep3Title => 'Hand it to Auxine';
+
+  @override
+  String get homeClimateStep3Body =>
+      'Auxine action “Report climate to Auxine”: put the values obtained into Humidity and Temperature, and the room if wanted.';
+
+  @override
+  String get homeClimateStep4Title => 'Choose “Shortcut” as the sensor';
+
+  @override
+  String get homeClimateStep4Body =>
+      'In Profile › Apple Home, Humidity or Temperature row › “Shortcut”. Next time Auxine opens, the reading is there.';
 
   @override
   String get homeClimateNone => 'No sensor';
@@ -1140,7 +1178,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'No temperature or humidity sensor in Apple Home.';
+      'No temperature or humidity sensor in Apple Home. A HomePod is read through Shortcuts, in Profile › Apple Home.';
 
   @override
   String get homeClimateDenied =>
