@@ -2880,6 +2880,23 @@ consentement explicite, une tuyauterie, et du soin sur la vie privée — une
 photo de salon n'est pas une observation naturaliste. Il commence par
 **poser la question dans l'application**, pas par entraîner.
 
+> **Le robinet est ouvert.** Enregistrer une plante après l'avoir identifiée
+> étiquette ses photos sans rien demander de plus — c'est le geste de la
+> personne qui écarte Iris, cherche en ligne et choisit elle-même, et il
+> vaut plus qu'une correction : selon d'où vient le nom retenu, la même
+> photo est *confirmée*, *reclassée* ou *corrigée*, et les confirmations
+> sont les photos du bon domaine qu'aucune source publique ne donne.
+> Consentement demandé **une fois**, juste après le premier enregistrement
+> d'une plante identifiée — le moment où la question se comprend — et
+> éteint tant que la réponse n'est pas oui ; l'interrupteur des réglages
+> reste là pour changer d'avis. Table
+> `iris_feedback` et seau `iris-feedback`, lisibles par l'auteur seul,
+> retirés avec le compte ; la cascade garde ce qu'Iris croyait (`lastLocal`)
+> même quand elle a basculé d'elle-même sur Pl@ntNet. Côté entraînement,
+> `tools/plant_dataset/auxine.py` tire la table, met en `review` ce que ni
+> Iris ni Pl@ntNet ne confirment, et liste les espèces hors catalogue comme
+> candidates.
+
 **3. Répondre au niveau du genre.** Aucun entraînement : sommer le softmax
 par genre porte le top-1 d'au moins 5,3 points, et « un épicéa, espèce
 incertaine » est une réponse vraie là où cinq noms n'en sont pas une. Le

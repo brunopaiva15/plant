@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/observability/observability.dart';
 import '../data/db/database.dart';
@@ -58,6 +59,8 @@ import '../domain/location/location_service.dart';
 import '../domain/species/species_info.dart';
 import '../core/utils/scientific_name.dart';
 import '../data/services/preferences_metrics_store.dart';
+import '../data/services/supabase_iris_feedback_recorder.dart';
+import '../domain/identification/iris_feedback.dart';
 import '../data/services/local_plant_model_factory.dart';
 import '../domain/identification/cascade_identifier.dart';
 import '../domain/identification/identification_metrics.dart';
@@ -207,6 +210,8 @@ class AppPreferences {
     required this.displayName,
     required this.identificationFallbackEnabled,
     required this.careAssistEnabled,
+    required this.irisFeedbackEnabled,
+    required this.irisFeedbackAsked,
     required this.weatherPlace,
     required this.homeSensor,
     required this.homeHumiditySensor,
@@ -233,6 +238,12 @@ class AppPreferences {
 
   /// Complément des fiches d'entretien par l'IA autorisé.
   final bool careAssistEnabled;
+
+  /// Les photos identifiées partent entraîner Iris. Faux par défaut.
+  final bool irisFeedbackEnabled;
+
+  /// La question a déjà été posée, quelle qu'ait été la réponse.
+  final bool irisFeedbackAsked;
   final WeatherPlace? weatherPlace;
 
   /// Le capteur d'Apple Maison qui donne le climat de l'intérieur, ou `null`
@@ -270,6 +281,8 @@ class PreferencesController extends Notifier<AppPreferences> {
       displayName: s.displayName ?? '',
       identificationFallbackEnabled: s.identificationFallbackEnabled,
       careAssistEnabled: s.careAssistEnabled,
+      irisFeedbackEnabled: s.irisFeedbackEnabled,
+      irisFeedbackAsked: s.irisFeedbackAsked,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       homeSensor: HomeSensor.decode(s.homeSensor),
       homeHumiditySensor: HomeSensor.decode(s.homeHumiditySensor),
@@ -294,6 +307,8 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
   Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
   Future<void> setCareAssistEnabled(bool value) => _apply((s) => s.setCareAssistEnabled(value));
+  Future<void> setIrisFeedbackEnabled(bool value) => _apply((s) => s.setIrisFeedbackEnabled(value));
+  Future<void> setIrisFeedbackAsked() => _apply((s) => s.setIrisFeedbackAsked());
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
@@ -351,6 +366,24 @@ class LocalModelStatus {
 
 /// Compteurs de la cascade, persistés dans les réglages.
 final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>((ref) => PreferencesMetricsStore(ref.watch(preferencesServiceProvider)));
+
+/// Où partent les photos étiquetées en enregistrant, si elles partent :
+/// nulle part sans le consentement des réglages, sans compte distant, ou
+/// sans Supabase. Les trois se lisent ici, pas dans les écrans.
+/// Un retour peut-il partir quelque part ? Supabase configuré et un compte
+/// distant. Sans ça, demander la permission promettrait ce qu'on ne peut
+/// pas tenir — la question ne se pose pas.
+final irisFeedbackAvailableProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider).value;
+  return SupabaseConfig.isConfigured && user != null && !user.isLocal;
+});
+
+final irisFeedbackRecorderProvider = Provider<IrisFeedbackRecorder>((ref) {
+  final enabled = ref.watch(preferencesProvider.select((p) => p.irisFeedbackEnabled));
+  final user = ref.watch(currentUserProvider).value;
+  if (!enabled || !ref.watch(irisFeedbackAvailableProvider) || user == null) return const NoFeedbackRecorder();
+  return SupabaseIrisFeedbackRecorder(Supabase.instance.client, userId: user.id);
+});
 
 /// Identification : modèle local puis Pl@ntNet en repli si une clé est
 /// configurée. Sans modèle ni clé, service inactif.

@@ -1498,6 +1498,22 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get irisFeedback => 'Photos d\'entraînement';
+
+  @override
+  String irisFeedbackHint(String name) {
+    return 'Les photos identifiées et le nom retenu servent à entraîner $name. Elles sont retirées avec le compte. Désactivé, rien ne part.';
+  }
+
+  @override
+  String get irisFeedbackAskTitle => 'Photos d\'entraînement';
+
+  @override
+  String irisFeedbackAskBody(String name) {
+    return 'Les photos identifiées et le nom retenu peuvent servir à entraîner $name. Elles sont retirées avec le compte, et le choix se change dans les réglages d\'identification.';
+  }
+
+  @override
   String modelMissing(String name) {
     return '$name indisponible sur cet appareil';
   }

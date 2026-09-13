@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -12,6 +13,7 @@ import '../../../core/l10n/likelihood_labels.dart';
 import '../../../design_system/design_system.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/iris_feedback.dart';
 import '../../../domain/identification/identification_confidence.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../../domain/identification/plant_identifier.dart';
@@ -145,6 +147,25 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// de l'appareil ne convenait. L'appel se fait sur ce geste et pas avant :
   /// c'est ce qui évite de payer un appel pour chaque photo. Toutes les
   /// photos partent, le quota se compte à l'appel et non à l'image.
+  /// Retenir une candidate, c'est l'enregistrer : l'appelant écrit l'espèce
+  /// dès le retour. Si la personne l'a permis, les photos partent entraîner
+  /// Iris — à côté, sans retenir la feuille.
+  void _use(IdentificationCandidate c) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is CascadeIdentifier) {
+      unawaited(ref.read(irisFeedbackRecorderProvider).record(IrisFeedback(
+        photos: _files,
+        local: identifier.lastLocal,
+        chosenName: c.scientificName,
+        chosenId: c.internalId,
+        chosenSource: c.source == IdentificationSource.remote ? ChosenSource.remote : ChosenSource.local,
+        remoteTop: c.source == IdentificationSource.remote ? c : null,
+        modelVersion: identifier.local.version ?? '',
+      )));
+    }
+    Navigator.of(context).pop(c);
+  }
+
   Future<void> _searchOnline() async {
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is! CascadeIdentifier) return;
@@ -293,7 +314,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                     ],
                   ],
                   const SizedBox(height: Space.sm),
-                  FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => Navigator.of(context).pop(c))]),
+                  FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => _use(c))]),
                   _PhotoSourceNote(candidates: results),
                   // La photo d'abord, l'appel réseau ensuite : l'une est
                   // gratuite et immédiate, l'autre se prend sur un quota. Le

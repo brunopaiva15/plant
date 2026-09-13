@@ -208,6 +208,37 @@ répond 429. Le connecteur attend et réessaie, puis **laisse l'erreur
 remonter** : une source qui tombe doit s'écrire `ÉCHEC` dans le journal, pas
 se déguiser en « cette espèce n'a pas d'images ».
 
+## Les photos des utilisateurs
+
+La seule source qui photographie les plantes **telles qu'on les cultive** —
+au téléphone, dans un salon — et la seule où l'étiquette vient de quelqu'un
+qui possède la plante. C'est le domaine que 991 000 images de GBIF ne
+couvrent pas (§ 13.1 de [`docs/09`](../../docs/09-plant-recognition.md)).
+
+Dans l'application, enregistrer une plante après l'avoir identifiée
+étiquette ses photos sans rien demander de plus — si la personne l'a permis
+dans les réglages d'identification, éteint par défaut. Trois types de
+retour : **confirmée** (la première proposition d'Iris, acceptée),
+**reclassée** (une proposition d'Iris, mais pas la première), **corrigée**
+(un nom pris chez Pl@ntNet ou au sélecteur : ce qu'Iris rate, et pour quoi
+il l'avait pris).
+
+```bash
+SUPABASE_URL=… SUPABASE_SERVICE_KEY=… python3 auxine.py --out dataset --plants plants.csv
+python3 auxine.py --out dataset --plants plants.csv --dry-run     # lister sans télécharger
+```
+
+**L'étiquette est l'opinion de la personne.** Une correction où elle a pris
+exactement ce que Pl@ntNet proposait avec un bon score est solide ; un nom
+que ni Iris ni Pl@ntNet ne proposaient ne l'est pas. `auxine.py` tranche à
+l'ingestion : ce qui n'est pas solide entre en `review`, dans `_review/`,
+pour l'écran de validation — jamais directement à l'entraînement.
+
+Une identification est **un groupe d'observation** : ses photos vont
+ensemble au découpage. Elles sont toutes `captive`. Et une espèce hors
+catalogue n'entre pas : elle est listée à part, comme candidate — quelqu'un
+possède cette plante, et l'a nommée.
+
 ## Licences acceptées
 
 Les images sous **CC0 1.0**, **Public Domain Mark** ou **CC BY** (toutes

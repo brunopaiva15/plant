@@ -1499,6 +1499,22 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get irisFeedback => 'Foto per l\'addestramento';
+
+  @override
+  String irisFeedbackHint(String name) {
+    return 'Le foto identificate e il nome scelto servono ad addestrare $name. Vengono rimosse con l\'account. Disattivato, non parte nulla.';
+  }
+
+  @override
+  String get irisFeedbackAskTitle => 'Foto per l\'addestramento';
+
+  @override
+  String irisFeedbackAskBody(String name) {
+    return 'Le foto identificate e il nome scelto possono servire ad addestrare $name. Vengono rimosse con l\'account e la scelta si cambia nelle impostazioni di identificazione.';
+  }
+
+  @override
   String modelMissing(String name) {
     return '$name non disponibile su questo dispositivo';
   }
