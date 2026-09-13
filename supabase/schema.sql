@@ -90,6 +90,16 @@ create or replace function plant_garden(p uuid) returns uuid language sql stable
   select garden_id from plants where id = p;
 $$;
 
+-- v11 : précision de l'état de santé et besoins propres à la plante.
+alter table plants add column if not exists health_issue text
+  check (health_issue in ('overwatering','underwatering','pests','disease','rootRot','transplantShock','deficiency','sunburn','frost'));
+alter table plants add column if not exists light text
+  check (light in ('shade','lowLight','indirect','brightIndirect','someSun','fullSun'));
+alter table plants add column if not exists humidity text check (humidity in ('low','average','high'));
+alter table plants add column if not exists lifespan text check (lifespan in ('annual','biennial','perennial'));
+alter table plants add column if not exists hardiness text check (hardiness in ('hardy','tender'));
+alter table plants add column if not exists cutting_month int check (cutting_month between 1 and 12);
+
 -- Libellé et URL externe des photos (v7).
 create table if not exists plant_photos (
   id uuid primary key,

@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/care_labels.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../../species/presentation/species_field.dart';
@@ -33,6 +36,12 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
   late String? _locationId = widget.plant.locationId;
   late DateTime? _acquiredAt = widget.plant.acquiredAt;
   late PlantHealth _health = widget.plant.health;
+  late HealthIssue? _issue = widget.plant.healthIssue;
+  late LightNeed? _light = widget.plant.light;
+  late HumidityNeed? _humidity = widget.plant.humidity;
+  late Lifespan? _lifespan = widget.plant.lifespan;
+  late Hardiness? _hardiness = widget.plant.hardiness;
+  late int? _cuttingMonth = widget.plant.cuttingMonth;
   bool _more = false;
   bool _saving = false;
 
@@ -59,6 +68,12 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
           potSize: () => parse(_pot.text),
           notes: () => _notes.text,
           health: _health,
+          healthIssue: () => _health == PlantHealth.healthy ? null : _issue,
+          light: () => _light,
+          humidity: () => _humidity,
+          lifespan: () => _lifespan,
+          hardiness: () => _hardiness,
+          cuttingMonth: () => _cuttingMonth,
         ));
     Haptics.success();
     ref.read(toastProvider.notifier).show(ToastData(message: savedLabel));
@@ -71,6 +86,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
     final c = context.colors;
     final locations = ref.watch(locationsProvider).value ?? const <Location>[];
     final location = locations.where((l) => l.id == _locationId).firstOrNull;
+    final months = DateFormat.MMM(context.localeTag).dateSymbols.STANDALONESHORTMONTHS;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
       child: Column(
@@ -106,6 +122,26 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                       value: _health,
                       onChanged: (v) => setState(() => _health = v),
                     ),
+                    // Ce qui ne va pas ne se demande que quand quelque chose
+                    // ne va pas ; la réponse reste facultative.
+                    AnimatedSize(
+                      duration: Motion.of(context, Motion.standard),
+                      curve: Motion.easeOut,
+                      alignment: Alignment.topCenter,
+                      child: _health == PlantHealth.healthy
+                          ? const SizedBox(width: double.infinity)
+                          : Padding(
+                              padding: const EdgeInsets.only(top: Space.sm),
+                              child: _Choice<HealthIssue>(
+                                label: l10n.healthIssue,
+                                values: HealthIssue.values,
+                                selected: _issue,
+                                labelOf: l10n.healthIssueName,
+                                emojiOf: (v) => v.emoji,
+                                onChanged: (v) => setState(() => _issue = v),
+                              ),
+                            ),
+                    ),
                   ],
                 ),
               ),
@@ -129,26 +165,83 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
             alignment: Alignment.topCenter,
             child: !_more
                 ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.only(top: Space.md),
-                    child: FloraGroup(
-                      children: [
-                        FloraListRow(
-                          leading: Icon(CupertinoIcons.calendar, size: 20, color: c.inkSecondary),
-                          title: l10n.acquiredAt,
-                          trailing: Text(_acquiredAt == null ? l10n.none : Dates.dayYear(context, _acquiredAt!), style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
-                          chevron: false,
-                          onTap: () async {
-                            final d = await showAdaptiveDatePicker(context, initial: _acquiredAt ?? DateTime.now(), last: DateTime.now(), doneLabel: l10n.done);
-                            if (d != null) setState(() => _acquiredAt = d);
-                          },
-                        ),
-                        _Field(label: l10n.source, child: FloraTextField(controller: _source, hint: l10n.sourceHint)),
-                        _Field(label: l10n.price, child: FloraTextField(controller: _price, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
-                        _Field(label: '${l10n.potSize} (cm)', child: FloraTextField(controller: _pot, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
-                        _Field(label: l10n.notes, child: FloraTextField(controller: _notes, hint: l10n.notesHint, minLines: 2, maxLines: 6)),
-                      ],
-                    ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: Space.md),
+                      Text(l10n.needsSection, style: context.text.caption),
+                      const SizedBox(height: Space.xs),
+                      FloraGroup(
+                        children: [
+                          _Field(
+                            child: _Choice<LightNeed>(
+                              label: l10n.light,
+                              values: LightNeed.values,
+                              selected: _light,
+                              labelOf: l10n.lightName,
+                              onChanged: (v) => setState(() => _light = v),
+                            ),
+                          ),
+                          _Field(
+                            child: _Choice<HumidityNeed>(
+                              label: l10n.careHumidity,
+                              values: HumidityNeed.values,
+                              selected: _humidity,
+                              labelOf: l10n.humidityName,
+                              onChanged: (v) => setState(() => _humidity = v),
+                            ),
+                          ),
+                          _Field(
+                            child: _Choice<Lifespan>(
+                              label: l10n.lifespan,
+                              values: Lifespan.values,
+                              selected: _lifespan,
+                              labelOf: l10n.lifespanName,
+                              onChanged: (v) => setState(() => _lifespan = v),
+                            ),
+                          ),
+                          _Field(
+                            child: _Choice<Hardiness>(
+                              label: l10n.hardiness,
+                              values: Hardiness.values,
+                              selected: _hardiness,
+                              labelOf: l10n.hardinessName,
+                              onChanged: (v) => setState(() => _hardiness = v),
+                            ),
+                          ),
+                          _Field(
+                            child: _Choice<int>(
+                              label: l10n.cuttingMonth,
+                              values: [for (var m = 1; m <= 12; m++) m],
+                              selected: _cuttingMonth,
+                              labelOf: (m) => months[m - 1],
+                              onChanged: (v) => setState(() => _cuttingMonth = v),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: Space.md),
+                      Text(l10n.detailsSection, style: context.text.caption),
+                      const SizedBox(height: Space.xs),
+                      FloraGroup(
+                        children: [
+                          FloraListRow(
+                            leading: Icon(CupertinoIcons.calendar, size: 20, color: c.inkSecondary),
+                            title: l10n.acquiredAt,
+                            trailing: Text(_acquiredAt == null ? l10n.none : Dates.dayYear(context, _acquiredAt!), style: context.text.callout.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                            chevron: false,
+                            onTap: () async {
+                              final d = await showAdaptiveDatePicker(context, initial: _acquiredAt ?? DateTime.now(), last: DateTime.now(), doneLabel: l10n.done);
+                              if (d != null) setState(() => _acquiredAt = d);
+                            },
+                          ),
+                          _Field(label: l10n.source, child: FloraTextField(controller: _source, hint: l10n.sourceHint)),
+                          _Field(label: l10n.price, child: FloraTextField(controller: _price, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
+                          _Field(label: '${l10n.potSize} (cm)', child: FloraTextField(controller: _pot, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
+                          _Field(label: l10n.notes, child: FloraTextField(controller: _notes, hint: l10n.notesHint, minLines: 2, maxLines: 6)),
+                        ],
+                      ),
+                    ],
                   ),
           ),
           const SizedBox(height: Space.xl),
@@ -160,9 +253,9 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
 }
 
 class _Field extends StatelessWidget {
-  const _Field({required this.label, required this.child});
+  const _Field({this.label, required this.child});
 
-  final String label;
+  final String? label;
   final Widget child;
 
   @override
@@ -171,8 +264,49 @@ class _Field extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, Space.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text(label, style: context.text.caption), const SizedBox(height: 6), child],
+        children: [
+          if (label != null) ...[Text(label!, style: context.text.caption), const SizedBox(height: 6)],
+          child,
+        ],
       ),
+    );
+  }
+}
+
+/// Un choix facultatif parmi quelques valeurs : des puces, une seule
+/// allumée, qu'on éteint d'un second toucher. Même geste que la lumière d'un
+/// emplacement.
+class _Choice<T extends Object> extends StatelessWidget {
+  const _Choice({required this.label, required this.values, required this.selected, required this.labelOf, required this.onChanged, this.emojiOf});
+
+  final String label;
+  final List<T> values;
+  final T? selected;
+  final String Function(T) labelOf;
+  final String Function(T)? emojiOf;
+  final ValueChanged<T?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: context.text.caption),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: Space.xs,
+          runSpacing: Space.xs,
+          children: [
+            for (final v in values)
+              FloraChip(
+                emoji: emojiOf?.call(v),
+                label: labelOf(v),
+                selected: selected == v,
+                onTap: () => onChanged(selected == v ? null : v),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }

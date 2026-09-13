@@ -1445,6 +1445,17 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
     requiredDuringInsert: false,
     defaultValue: const Constant('healthy'),
   );
+  static const VerificationMeta _healthIssueMeta = const VerificationMeta(
+    'healthIssue',
+  );
+  @override
+  late final GeneratedColumn<String> healthIssue = GeneratedColumn<String>(
+    'health_issue',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isFavoriteMeta = const VerificationMeta(
     'isFavorite',
   );
@@ -1459,6 +1470,59 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
       'CHECK ("is_favorite" IN (0, 1))',
     ),
     defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lightMeta = const VerificationMeta('light');
+  @override
+  late final GeneratedColumn<String> light = GeneratedColumn<String>(
+    'light',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _humidityMeta = const VerificationMeta(
+    'humidity',
+  );
+  @override
+  late final GeneratedColumn<String> humidity = GeneratedColumn<String>(
+    'humidity',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lifespanMeta = const VerificationMeta(
+    'lifespan',
+  );
+  @override
+  late final GeneratedColumn<String> lifespan = GeneratedColumn<String>(
+    'lifespan',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _hardinessMeta = const VerificationMeta(
+    'hardiness',
+  );
+  @override
+  late final GeneratedColumn<String> hardiness = GeneratedColumn<String>(
+    'hardiness',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cuttingMonthMeta = const VerificationMeta(
+    'cuttingMonth',
+  );
+  @override
+  late final GeneratedColumn<int> cuttingMonth = GeneratedColumn<int>(
+    'cutting_month',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _acquiredAtMeta = const VerificationMeta(
     'acquiredAt',
@@ -1566,7 +1630,13 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
     primaryPhotoId,
     status,
     health,
+    healthIssue,
     isFavorite,
+    light,
+    humidity,
+    lifespan,
+    hardiness,
+    cuttingMonth,
     acquiredAt,
     source,
     price,
@@ -1668,10 +1738,52 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
         health.isAcceptableOrUnknown(data['health']!, _healthMeta),
       );
     }
+    if (data.containsKey('health_issue')) {
+      context.handle(
+        _healthIssueMeta,
+        healthIssue.isAcceptableOrUnknown(
+          data['health_issue']!,
+          _healthIssueMeta,
+        ),
+      );
+    }
     if (data.containsKey('is_favorite')) {
       context.handle(
         _isFavoriteMeta,
         isFavorite.isAcceptableOrUnknown(data['is_favorite']!, _isFavoriteMeta),
+      );
+    }
+    if (data.containsKey('light')) {
+      context.handle(
+        _lightMeta,
+        light.isAcceptableOrUnknown(data['light']!, _lightMeta),
+      );
+    }
+    if (data.containsKey('humidity')) {
+      context.handle(
+        _humidityMeta,
+        humidity.isAcceptableOrUnknown(data['humidity']!, _humidityMeta),
+      );
+    }
+    if (data.containsKey('lifespan')) {
+      context.handle(
+        _lifespanMeta,
+        lifespan.isAcceptableOrUnknown(data['lifespan']!, _lifespanMeta),
+      );
+    }
+    if (data.containsKey('hardiness')) {
+      context.handle(
+        _hardinessMeta,
+        hardiness.isAcceptableOrUnknown(data['hardiness']!, _hardinessMeta),
+      );
+    }
+    if (data.containsKey('cutting_month')) {
+      context.handle(
+        _cuttingMonthMeta,
+        cuttingMonth.isAcceptableOrUnknown(
+          data['cutting_month']!,
+          _cuttingMonthMeta,
+        ),
       );
     }
     if (data.containsKey('acquired_at')) {
@@ -1787,10 +1899,34 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
         DriftSqlType.string,
         data['${effectivePrefix}health'],
       )!,
+      healthIssue: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}health_issue'],
+      ),
       isFavorite: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_favorite'],
       )!,
+      light: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}light'],
+      ),
+      humidity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}humidity'],
+      ),
+      lifespan: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lifespan'],
+      ),
+      hardiness: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hardiness'],
+      ),
+      cuttingMonth: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cutting_month'],
+      ),
       acquiredAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}acquired_at'],
@@ -1851,7 +1987,15 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
   final String? primaryPhotoId;
   final String status;
   final String health;
+  final String? healthIssue;
   final bool isFavorite;
+
+  /// Besoins propres à la plante (v11) : noms d'enum, `null` = non renseigné.
+  final String? light;
+  final String? humidity;
+  final String? lifespan;
+  final String? hardiness;
+  final int? cuttingMonth;
   final DateTime? acquiredAt;
   final String? source;
   final double? price;
@@ -1873,7 +2017,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     this.primaryPhotoId,
     required this.status,
     required this.health,
+    this.healthIssue,
     required this.isFavorite,
+    this.light,
+    this.humidity,
+    this.lifespan,
+    this.hardiness,
+    this.cuttingMonth,
     this.acquiredAt,
     this.source,
     this.price,
@@ -1904,7 +2054,25 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     }
     map['status'] = Variable<String>(status);
     map['health'] = Variable<String>(health);
+    if (!nullToAbsent || healthIssue != null) {
+      map['health_issue'] = Variable<String>(healthIssue);
+    }
     map['is_favorite'] = Variable<bool>(isFavorite);
+    if (!nullToAbsent || light != null) {
+      map['light'] = Variable<String>(light);
+    }
+    if (!nullToAbsent || humidity != null) {
+      map['humidity'] = Variable<String>(humidity);
+    }
+    if (!nullToAbsent || lifespan != null) {
+      map['lifespan'] = Variable<String>(lifespan);
+    }
+    if (!nullToAbsent || hardiness != null) {
+      map['hardiness'] = Variable<String>(hardiness);
+    }
+    if (!nullToAbsent || cuttingMonth != null) {
+      map['cutting_month'] = Variable<int>(cuttingMonth);
+    }
     if (!nullToAbsent || acquiredAt != null) {
       map['acquired_at'] = Variable<DateTime>(acquiredAt);
     }
@@ -1954,7 +2122,25 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           : Value(primaryPhotoId),
       status: Value(status),
       health: Value(health),
+      healthIssue: healthIssue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(healthIssue),
       isFavorite: Value(isFavorite),
+      light: light == null && nullToAbsent
+          ? const Value.absent()
+          : Value(light),
+      humidity: humidity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(humidity),
+      lifespan: lifespan == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lifespan),
+      hardiness: hardiness == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hardiness),
+      cuttingMonth: cuttingMonth == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cuttingMonth),
       acquiredAt: acquiredAt == null && nullToAbsent
           ? const Value.absent()
           : Value(acquiredAt),
@@ -2002,7 +2188,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       primaryPhotoId: serializer.fromJson<String?>(json['primaryPhotoId']),
       status: serializer.fromJson<String>(json['status']),
       health: serializer.fromJson<String>(json['health']),
+      healthIssue: serializer.fromJson<String?>(json['healthIssue']),
       isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      light: serializer.fromJson<String?>(json['light']),
+      humidity: serializer.fromJson<String?>(json['humidity']),
+      lifespan: serializer.fromJson<String?>(json['lifespan']),
+      hardiness: serializer.fromJson<String?>(json['hardiness']),
+      cuttingMonth: serializer.fromJson<int?>(json['cuttingMonth']),
       acquiredAt: serializer.fromJson<DateTime?>(json['acquiredAt']),
       source: serializer.fromJson<String?>(json['source']),
       price: serializer.fromJson<double?>(json['price']),
@@ -2029,7 +2221,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       'primaryPhotoId': serializer.toJson<String?>(primaryPhotoId),
       'status': serializer.toJson<String>(status),
       'health': serializer.toJson<String>(health),
+      'healthIssue': serializer.toJson<String?>(healthIssue),
       'isFavorite': serializer.toJson<bool>(isFavorite),
+      'light': serializer.toJson<String?>(light),
+      'humidity': serializer.toJson<String?>(humidity),
+      'lifespan': serializer.toJson<String?>(lifespan),
+      'hardiness': serializer.toJson<String?>(hardiness),
+      'cuttingMonth': serializer.toJson<int?>(cuttingMonth),
       'acquiredAt': serializer.toJson<DateTime?>(acquiredAt),
       'source': serializer.toJson<String?>(source),
       'price': serializer.toJson<double?>(price),
@@ -2054,7 +2252,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     Value<String?> primaryPhotoId = const Value.absent(),
     String? status,
     String? health,
+    Value<String?> healthIssue = const Value.absent(),
     bool? isFavorite,
+    Value<String?> light = const Value.absent(),
+    Value<String?> humidity = const Value.absent(),
+    Value<String?> lifespan = const Value.absent(),
+    Value<String?> hardiness = const Value.absent(),
+    Value<int?> cuttingMonth = const Value.absent(),
     Value<DateTime?> acquiredAt = const Value.absent(),
     Value<String?> source = const Value.absent(),
     Value<double?> price = const Value.absent(),
@@ -2078,7 +2282,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
         : this.primaryPhotoId,
     status: status ?? this.status,
     health: health ?? this.health,
+    healthIssue: healthIssue.present ? healthIssue.value : this.healthIssue,
     isFavorite: isFavorite ?? this.isFavorite,
+    light: light.present ? light.value : this.light,
+    humidity: humidity.present ? humidity.value : this.humidity,
+    lifespan: lifespan.present ? lifespan.value : this.lifespan,
+    hardiness: hardiness.present ? hardiness.value : this.hardiness,
+    cuttingMonth: cuttingMonth.present ? cuttingMonth.value : this.cuttingMonth,
     acquiredAt: acquiredAt.present ? acquiredAt.value : this.acquiredAt,
     source: source.present ? source.value : this.source,
     price: price.present ? price.value : this.price,
@@ -2112,9 +2322,19 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           : this.primaryPhotoId,
       status: data.status.present ? data.status.value : this.status,
       health: data.health.present ? data.health.value : this.health,
+      healthIssue: data.healthIssue.present
+          ? data.healthIssue.value
+          : this.healthIssue,
       isFavorite: data.isFavorite.present
           ? data.isFavorite.value
           : this.isFavorite,
+      light: data.light.present ? data.light.value : this.light,
+      humidity: data.humidity.present ? data.humidity.value : this.humidity,
+      lifespan: data.lifespan.present ? data.lifespan.value : this.lifespan,
+      hardiness: data.hardiness.present ? data.hardiness.value : this.hardiness,
+      cuttingMonth: data.cuttingMonth.present
+          ? data.cuttingMonth.value
+          : this.cuttingMonth,
       acquiredAt: data.acquiredAt.present
           ? data.acquiredAt.value
           : this.acquiredAt,
@@ -2149,7 +2369,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           ..write('primaryPhotoId: $primaryPhotoId, ')
           ..write('status: $status, ')
           ..write('health: $health, ')
+          ..write('healthIssue: $healthIssue, ')
           ..write('isFavorite: $isFavorite, ')
+          ..write('light: $light, ')
+          ..write('humidity: $humidity, ')
+          ..write('lifespan: $lifespan, ')
+          ..write('hardiness: $hardiness, ')
+          ..write('cuttingMonth: $cuttingMonth, ')
           ..write('acquiredAt: $acquiredAt, ')
           ..write('source: $source, ')
           ..write('price: $price, ')
@@ -2176,7 +2402,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     primaryPhotoId,
     status,
     health,
+    healthIssue,
     isFavorite,
+    light,
+    humidity,
+    lifespan,
+    hardiness,
+    cuttingMonth,
     acquiredAt,
     source,
     price,
@@ -2202,7 +2434,13 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           other.primaryPhotoId == this.primaryPhotoId &&
           other.status == this.status &&
           other.health == this.health &&
+          other.healthIssue == this.healthIssue &&
           other.isFavorite == this.isFavorite &&
+          other.light == this.light &&
+          other.humidity == this.humidity &&
+          other.lifespan == this.lifespan &&
+          other.hardiness == this.hardiness &&
+          other.cuttingMonth == this.cuttingMonth &&
           other.acquiredAt == this.acquiredAt &&
           other.source == this.source &&
           other.price == this.price &&
@@ -2226,7 +2464,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
   final Value<String?> primaryPhotoId;
   final Value<String> status;
   final Value<String> health;
+  final Value<String?> healthIssue;
   final Value<bool> isFavorite;
+  final Value<String?> light;
+  final Value<String?> humidity;
+  final Value<String?> lifespan;
+  final Value<String?> hardiness;
+  final Value<int?> cuttingMonth;
   final Value<DateTime?> acquiredAt;
   final Value<String?> source;
   final Value<double?> price;
@@ -2249,7 +2493,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     this.primaryPhotoId = const Value.absent(),
     this.status = const Value.absent(),
     this.health = const Value.absent(),
+    this.healthIssue = const Value.absent(),
     this.isFavorite = const Value.absent(),
+    this.light = const Value.absent(),
+    this.humidity = const Value.absent(),
+    this.lifespan = const Value.absent(),
+    this.hardiness = const Value.absent(),
+    this.cuttingMonth = const Value.absent(),
     this.acquiredAt = const Value.absent(),
     this.source = const Value.absent(),
     this.price = const Value.absent(),
@@ -2273,7 +2523,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     this.primaryPhotoId = const Value.absent(),
     this.status = const Value.absent(),
     this.health = const Value.absent(),
+    this.healthIssue = const Value.absent(),
     this.isFavorite = const Value.absent(),
+    this.light = const Value.absent(),
+    this.humidity = const Value.absent(),
+    this.lifespan = const Value.absent(),
+    this.hardiness = const Value.absent(),
+    this.cuttingMonth = const Value.absent(),
     this.acquiredAt = const Value.absent(),
     this.source = const Value.absent(),
     this.price = const Value.absent(),
@@ -2301,7 +2557,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     Expression<String>? primaryPhotoId,
     Expression<String>? status,
     Expression<String>? health,
+    Expression<String>? healthIssue,
     Expression<bool>? isFavorite,
+    Expression<String>? light,
+    Expression<String>? humidity,
+    Expression<String>? lifespan,
+    Expression<String>? hardiness,
+    Expression<int>? cuttingMonth,
     Expression<DateTime>? acquiredAt,
     Expression<String>? source,
     Expression<double>? price,
@@ -2325,7 +2587,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
       if (primaryPhotoId != null) 'primary_photo_id': primaryPhotoId,
       if (status != null) 'status': status,
       if (health != null) 'health': health,
+      if (healthIssue != null) 'health_issue': healthIssue,
       if (isFavorite != null) 'is_favorite': isFavorite,
+      if (light != null) 'light': light,
+      if (humidity != null) 'humidity': humidity,
+      if (lifespan != null) 'lifespan': lifespan,
+      if (hardiness != null) 'hardiness': hardiness,
+      if (cuttingMonth != null) 'cutting_month': cuttingMonth,
       if (acquiredAt != null) 'acquired_at': acquiredAt,
       if (source != null) 'source': source,
       if (price != null) 'price': price,
@@ -2351,7 +2619,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     Value<String?>? primaryPhotoId,
     Value<String>? status,
     Value<String>? health,
+    Value<String?>? healthIssue,
     Value<bool>? isFavorite,
+    Value<String?>? light,
+    Value<String?>? humidity,
+    Value<String?>? lifespan,
+    Value<String?>? hardiness,
+    Value<int?>? cuttingMonth,
     Value<DateTime?>? acquiredAt,
     Value<String?>? source,
     Value<double?>? price,
@@ -2375,7 +2649,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
       primaryPhotoId: primaryPhotoId ?? this.primaryPhotoId,
       status: status ?? this.status,
       health: health ?? this.health,
+      healthIssue: healthIssue ?? this.healthIssue,
       isFavorite: isFavorite ?? this.isFavorite,
+      light: light ?? this.light,
+      humidity: humidity ?? this.humidity,
+      lifespan: lifespan ?? this.lifespan,
+      hardiness: hardiness ?? this.hardiness,
+      cuttingMonth: cuttingMonth ?? this.cuttingMonth,
       acquiredAt: acquiredAt ?? this.acquiredAt,
       source: source ?? this.source,
       price: price ?? this.price,
@@ -2425,8 +2705,26 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     if (health.present) {
       map['health'] = Variable<String>(health.value);
     }
+    if (healthIssue.present) {
+      map['health_issue'] = Variable<String>(healthIssue.value);
+    }
     if (isFavorite.present) {
       map['is_favorite'] = Variable<bool>(isFavorite.value);
+    }
+    if (light.present) {
+      map['light'] = Variable<String>(light.value);
+    }
+    if (humidity.present) {
+      map['humidity'] = Variable<String>(humidity.value);
+    }
+    if (lifespan.present) {
+      map['lifespan'] = Variable<String>(lifespan.value);
+    }
+    if (hardiness.present) {
+      map['hardiness'] = Variable<String>(hardiness.value);
+    }
+    if (cuttingMonth.present) {
+      map['cutting_month'] = Variable<int>(cuttingMonth.value);
     }
     if (acquiredAt.present) {
       map['acquired_at'] = Variable<DateTime>(acquiredAt.value);
@@ -2475,7 +2773,13 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
           ..write('primaryPhotoId: $primaryPhotoId, ')
           ..write('status: $status, ')
           ..write('health: $health, ')
+          ..write('healthIssue: $healthIssue, ')
           ..write('isFavorite: $isFavorite, ')
+          ..write('light: $light, ')
+          ..write('humidity: $humidity, ')
+          ..write('lifespan: $lifespan, ')
+          ..write('hardiness: $hardiness, ')
+          ..write('cuttingMonth: $cuttingMonth, ')
           ..write('acquiredAt: $acquiredAt, ')
           ..write('source: $source, ')
           ..write('price: $price, ')
@@ -13608,7 +13912,13 @@ typedef $$PlantsTableCreateCompanionBuilder = PlantsCompanion Function({
   Value<String?> primaryPhotoId,
   Value<String> status,
   Value<String> health,
+  Value<String?> healthIssue,
   Value<bool> isFavorite,
+  Value<String?> light,
+  Value<String?> humidity,
+  Value<String?> lifespan,
+  Value<String?> hardiness,
+  Value<int?> cuttingMonth,
   Value<DateTime?> acquiredAt,
   Value<String?> source,
   Value<double?> price,
@@ -13632,7 +13942,13 @@ typedef $$PlantsTableUpdateCompanionBuilder = PlantsCompanion Function({
   Value<String?> primaryPhotoId,
   Value<String> status,
   Value<String> health,
+  Value<String?> healthIssue,
   Value<bool> isFavorite,
+  Value<String?> light,
+  Value<String?> humidity,
+  Value<String?> lifespan,
+  Value<String?> hardiness,
+  Value<int?> cuttingMonth,
   Value<DateTime?> acquiredAt,
   Value<String?> source,
   Value<double?> price,
@@ -13709,8 +14025,38 @@ class $$PlantsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get healthIssue => $composableBuilder(
+    column: $table.healthIssue,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get isFavorite => $composableBuilder(
     column: $table.isFavorite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get light => $composableBuilder(
+    column: $table.light,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get humidity => $composableBuilder(
+    column: $table.humidity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lifespan => $composableBuilder(
+    column: $table.lifespan,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hardiness => $composableBuilder(
+    column: $table.hardiness,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cuttingMonth => $composableBuilder(
+    column: $table.cuttingMonth,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13824,8 +14170,38 @@ class $$PlantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get healthIssue => $composableBuilder(
+    column: $table.healthIssue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isFavorite => $composableBuilder(
     column: $table.isFavorite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get light => $composableBuilder(
+    column: $table.light,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get humidity => $composableBuilder(
+    column: $table.humidity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lifespan => $composableBuilder(
+    column: $table.lifespan,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hardiness => $composableBuilder(
+    column: $table.hardiness,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cuttingMonth => $composableBuilder(
+    column: $table.cuttingMonth,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -13923,8 +14299,30 @@ class $$PlantsTableAnnotationComposer
   GeneratedColumn<String> get health =>
       $composableBuilder(column: $table.health, builder: (column) => column);
 
+  GeneratedColumn<String> get healthIssue => $composableBuilder(
+    column: $table.healthIssue,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get isFavorite => $composableBuilder(
     column: $table.isFavorite,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get light =>
+      $composableBuilder(column: $table.light, builder: (column) => column);
+
+  GeneratedColumn<String> get humidity =>
+      $composableBuilder(column: $table.humidity, builder: (column) => column);
+
+  GeneratedColumn<String> get lifespan =>
+      $composableBuilder(column: $table.lifespan, builder: (column) => column);
+
+  GeneratedColumn<String> get hardiness =>
+      $composableBuilder(column: $table.hardiness, builder: (column) => column);
+
+  GeneratedColumn<int> get cuttingMonth => $composableBuilder(
+    column: $table.cuttingMonth,
     builder: (column) => column,
   );
 
@@ -14003,7 +14401,13 @@ class $$PlantsTableTableManager
                 Value<String?> primaryPhotoId = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String> health = const Value.absent(),
+                Value<String?> healthIssue = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
+                Value<String?> light = const Value.absent(),
+                Value<String?> humidity = const Value.absent(),
+                Value<String?> lifespan = const Value.absent(),
+                Value<String?> hardiness = const Value.absent(),
+                Value<int?> cuttingMonth = const Value.absent(),
                 Value<DateTime?> acquiredAt = const Value.absent(),
                 Value<String?> source = const Value.absent(),
                 Value<double?> price = const Value.absent(),
@@ -14026,7 +14430,13 @@ class $$PlantsTableTableManager
                 primaryPhotoId: primaryPhotoId,
                 status: status,
                 health: health,
+                healthIssue: healthIssue,
                 isFavorite: isFavorite,
+                light: light,
+                humidity: humidity,
+                lifespan: lifespan,
+                hardiness: hardiness,
+                cuttingMonth: cuttingMonth,
                 acquiredAt: acquiredAt,
                 source: source,
                 price: price,
@@ -14051,7 +14461,13 @@ class $$PlantsTableTableManager
                 Value<String?> primaryPhotoId = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String> health = const Value.absent(),
+                Value<String?> healthIssue = const Value.absent(),
                 Value<bool> isFavorite = const Value.absent(),
+                Value<String?> light = const Value.absent(),
+                Value<String?> humidity = const Value.absent(),
+                Value<String?> lifespan = const Value.absent(),
+                Value<String?> hardiness = const Value.absent(),
+                Value<int?> cuttingMonth = const Value.absent(),
                 Value<DateTime?> acquiredAt = const Value.absent(),
                 Value<String?> source = const Value.absent(),
                 Value<double?> price = const Value.absent(),
@@ -14074,7 +14490,13 @@ class $$PlantsTableTableManager
                 primaryPhotoId: primaryPhotoId,
                 status: status,
                 health: health,
+                healthIssue: healthIssue,
                 isFavorite: isFavorite,
+                light: light,
+                humidity: humidity,
+                lifespan: lifespan,
+                hardiness: hardiness,
+                cuttingMonth: cuttingMonth,
                 acquiredAt: acquiredAt,
                 source: source,
                 price: price,

@@ -8,6 +8,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../domain/models/models.dart';
+import '../../../domain/repositories/repositories.dart';
 import '../application/plant_providers.dart';
 import 'create_plant_flow.dart';
 import 'plant_card.dart';
@@ -72,6 +73,7 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
         ? PlantGridCard(
             key: ValueKey(s.plant.id),
             summary: s,
+            caption: sortCaption(context, s, filter.sort),
             selected: selection.contains(s.plant.id),
             selecting: selecting,
             onTap: () => _open(s),
@@ -80,6 +82,7 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
         : PlantListRow(
             key: ValueKey(s.plant.id),
             summary: s,
+            caption: sortCaption(context, s, filter.sort),
             selected: selection.contains(s.plant.id),
             selecting: selecting,
             onTap: () => _open(s),
@@ -158,4 +161,20 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
       ],
     );
   }
+}
+
+/// Ce que le tri regarde, écrit sous le nom : la date du dernier arrosage
+/// quand on trie par dernier arrosage, l'état quand on trie par santé. Les
+/// autres tris laissent la carte telle quelle.
+String? sortCaption(BuildContext context, PlantSummary s, PlantSort sort) {
+  final l10n = context.l10n;
+  String? dated(CareKind kind, DateTime? at) => at == null ? null : '${kind.emoji} ${l10n.kindName(kind.key)} · ${Dates.day(context, at)}';
+  return switch (sort) {
+    PlantSort.lastWatered => dated(CareKind.watering, s.lastWateredAt),
+    PlantSort.lastFertilized => dated(CareKind.fertilizing, s.lastFertilizedAt),
+    PlantSort.lastRepotted => dated(CareKind.repotting, s.lastRepottedAt),
+    PlantSort.health => l10n.healthLabel(s.plant),
+    PlantSort.acquired => s.plant.acquiredAt == null ? null : l10n.sinceDate(Dates.monthYear(context, s.plant.acquiredAt!)),
+    _ => null,
+  };
 }

@@ -21,7 +21,7 @@ Root
     │   └── Action rapide (in-place, Undo toast)
     ├── Plantes
     │   ├── Recherche (inline)
-    │   ├── Filtres / tri (sheet)
+    │   ├── Filtres / tri (sheet) : dix tris, mémorisés ; la carte dit ce que le tri regarde
     │   ├── Grille ⇄ liste
     │   ├── Multi-sélection (long press) → barre d'actions
     │   ├── + Ajouter → Flow création (sheet plein écran, 3 étapes)
@@ -32,7 +32,7 @@ Root
     │       ├── Planning d'entretien (push)
     │       ├── Croissance (push) : timelapse, avant / après, visionneuse plein écran
     │       ├── Timeline complète (push)
-    │       ├── Modifier (sheet)
+    │       ├── Modifier (sheet) : nom, espèce, emplacement, santé (+ problème) · Plus d'options : besoins, détails
     │       └── Menu ⋯ : favori, bouture, déplacer, archiver
     ├── Jardin
     │   ├── Emplacements (arborescence)

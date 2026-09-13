@@ -36,7 +36,7 @@ class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -87,6 +87,14 @@ class FloraDatabase extends _$FloraDatabase {
           if (from < 10) {
             await m.createTable(eventCategories);
             await m.createTable(calendarEntries);
+          }
+          if (from < 11) {
+            await m.addColumn(plants, plants.healthIssue);
+            await m.addColumn(plants, plants.light);
+            await m.addColumn(plants, plants.humidity);
+            await m.addColumn(plants, plants.lifespan);
+            await m.addColumn(plants, plants.hardiness);
+            await m.addColumn(plants, plants.cuttingMonth);
           }
           await _createIndexes();
         },

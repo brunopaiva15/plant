@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../../domain/care/care_profile.dart';
 import '../../domain/models/models.dart';
 import 'database.dart';
 
@@ -14,8 +15,14 @@ extension PlantRowMapper on PlantRow {
         locationId: locationId,
         primaryPhotoId: primaryPhotoId,
         status: PlantStatus.values.byName(status),
-        health: PlantHealth.values.byName(health),
+        health: PlantHealth.values.asNameMap()[health] ?? PlantHealth.healthy,
+        healthIssue: HealthIssue.parse(healthIssue),
         isFavorite: isFavorite,
+        light: light == null ? null : LightNeed.values.asNameMap()[light!],
+        humidity: humidity == null ? null : HumidityNeed.values.asNameMap()[humidity!],
+        lifespan: Lifespan.parse(lifespan),
+        hardiness: Hardiness.parse(hardiness),
+        cuttingMonth: cuttingMonth,
         acquiredAt: acquiredAt,
         source: source,
         price: price,

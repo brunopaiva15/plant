@@ -11,6 +11,9 @@ class PlantSummary {
     this.thumbUrl,
     this.nextDueAt,
     this.nextDueTypeKey,
+    this.lastWateredAt,
+    this.lastFertilizedAt,
+    this.lastRepottedAt,
     this.tags = const [],
   });
 
@@ -22,6 +25,12 @@ class PlantSummary {
   final String? thumbUrl;
   final DateTime? nextDueAt;
   final String? nextDueTypeKey;
+
+  /// Derniers soins enregistrés, pour les tris qui s'y réfèrent et la
+  /// légende des cartes.
+  final DateTime? lastWateredAt;
+  final DateTime? lastFertilizedAt;
+  final DateTime? lastRepottedAt;
   final List<String> tags;
 
   DueStatus dueStatus(DateTime now) => CareEngine.status(nextDueAt, now);

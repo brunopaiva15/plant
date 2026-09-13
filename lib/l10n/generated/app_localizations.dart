@@ -654,6 +654,36 @@ abstract class AppLocalizations {
   /// **'Ajout récent'**
   String get sortRecent;
 
+  /// No description provided for @sortEdited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modification récente'**
+  String get sortEdited;
+
+  /// No description provided for @sortLastWatered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier arrosage'**
+  String get sortLastWatered;
+
+  /// No description provided for @sortLastFertilized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier engrais'**
+  String get sortLastFertilized;
+
+  /// No description provided for @sortLastRepotted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier rempotage'**
+  String get sortLastRepotted;
+
+  /// No description provided for @sortAcquired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acquisition'**
+  String get sortAcquired;
+
   /// No description provided for @filterLocation.
   ///
   /// In fr, this message translates to:
@@ -1253,6 +1283,126 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Malade'**
   String get healthSick;
+
+  /// No description provided for @healthIssue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problème'**
+  String get healthIssue;
+
+  /// No description provided for @issueOverwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excès d\'eau'**
+  String get issueOverwatering;
+
+  /// No description provided for @issueUnderwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Manque d\'eau'**
+  String get issueUnderwatering;
+
+  /// No description provided for @issuePests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ravageurs'**
+  String get issuePests;
+
+  /// No description provided for @issueDisease.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maladie'**
+  String get issueDisease;
+
+  /// No description provided for @issueRootRot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourriture des racines'**
+  String get issueRootRot;
+
+  /// No description provided for @issueTransplantShock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choc de rempotage'**
+  String get issueTransplantShock;
+
+  /// No description provided for @issueDeficiency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carence'**
+  String get issueDeficiency;
+
+  /// No description provided for @issueSunburn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brûlure du soleil'**
+  String get issueSunburn;
+
+  /// No description provided for @issueFrost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gel'**
+  String get issueFrost;
+
+  /// No description provided for @needsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Besoins'**
+  String get needsSection;
+
+  /// No description provided for @detailsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails'**
+  String get detailsSection;
+
+  /// No description provided for @lifespan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cycle de vie'**
+  String get lifespan;
+
+  /// No description provided for @lifespanAnnual.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuelle'**
+  String get lifespanAnnual;
+
+  /// No description provided for @lifespanBiennial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bisannuelle'**
+  String get lifespanBiennial;
+
+  /// No description provided for @lifespanPerennial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vivace'**
+  String get lifespanPerennial;
+
+  /// No description provided for @hardiness.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rusticité'**
+  String get hardiness;
+
+  /// No description provided for @hardinessHardy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rustique'**
+  String get hardinessHardy;
+
+  /// No description provided for @hardinessTender.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gélive'**
+  String get hardinessTender;
+
+  /// No description provided for @cuttingMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois de bouturage'**
+  String get cuttingMonth;
 
   /// No description provided for @noSchedule.
   ///

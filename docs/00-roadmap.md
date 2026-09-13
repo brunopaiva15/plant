@@ -80,6 +80,9 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Prévisions météo sur cinq jours : min / max, précipitations, risque de pluie, vent, humidité | ✅ |
 | Apple Maison (iOS) : température et humidité d'un capteur HomeKit, étape d'onboarding après la ville, ligne et conseils du jour pour les plantes d'intérieur, carte « Chez vous » dans la fiche d'entretien, mesure jointe au diagnostic | ✅ |
 | Sauvegarde : export par sections, restauration avec aperçu, rapport d'import | ✅ |
+| Champs de plante : lumière, humidité, cycle de vie, rusticité, mois de bouturage — des puces facultatives sous « Plus d'options », lus dans Informations ; la lumière de la plante prime sur celle de l'emplacement dans les conseils d'arrosage | ✅ |
+| États de santé : les trois états restent (en forme, à surveiller, malade) et se précisent d'un problème parmi neuf (excès d'eau, manque d'eau, ravageurs, maladie, pourriture des racines, choc de rempotage, carence, brûlure, gel) ; le diagnostic le renseigne quand sa piste la plus vraisemblable est un ravageur ou une maladie | ✅ |
+| Tris de la liste : nom, emplacement, prochain soin, santé, dernier arrosage / engrais / rempotage, ajout, modification, acquisition ; la carte écrit sous le nom ce que le tri regarde | ✅ |
 
 ## Au-delà de HortusFox
 | Fonction | État |
