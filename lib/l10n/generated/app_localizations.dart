@@ -1980,6 +1980,12 @@ abstract class AppLocalizations {
   /// **'Même capteur'**
   String get homeClimateSameSensor;
 
+  /// No description provided for @homeClimateHumidityMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humidité non reçue. Un autre capteur peut la donner.'**
+  String get homeClimateHumidityMissing;
+
   /// No description provided for @homeClimateNone.
   ///
   /// In fr, this message translates to:

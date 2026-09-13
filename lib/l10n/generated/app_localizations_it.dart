@@ -1081,6 +1081,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeClimateSameSensor => 'Stesso sensore';
 
   @override
+  String get homeClimateHumidityMissing =>
+      'Umidità non ricevuta. Un altro sensore può fornirla.';
+
+  @override
   String get homeClimateNone => 'Nessun sensore';
 
   @override

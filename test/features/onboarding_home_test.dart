@@ -94,7 +94,7 @@ void main() {
 
     await _tap(tester, 'Connecter Apple Maison');
     expect(home.sensorCalls, 1);
-    expect(_prefs.homeSensor, 'A|Eve Room|Salon|Appartement');
+    expect(_prefs.homeSensor, 'A|Eve Room|Salon|Appartement|1|1');
     expect(find.text('Salon'), findsOneWidget);
     expect(find.textContaining('21° · 38 %'), findsOneWidget);
 
@@ -131,7 +131,7 @@ void main() {
     await _step(tester);
     await tester.tap(find.text('Eve Room 2'));
     await _step(tester);
-    expect(_prefs.homeSensor, 'B|Eve Room 2|Chambre|Appartement');
+    expect(_prefs.homeSensor, 'B|Eve Room 2|Chambre|Appartement|1|0');
     expect(find.text('Chambre'), findsOneWidget);
     expect(find.text('Continuer'), findsWidgets);
   });
@@ -156,8 +156,8 @@ void main() {
     expect(find.text('Hygromètre chambre'), findsOneWidget);
     await tester.tap(find.text('Hygromètre chambre'));
     await _step(tester);
-    expect(_prefs.homeSensor, 'T|Thermostat|Salon|Appartement');
-    expect(_prefs.homeHumiditySensor, 'H2|Hygromètre chambre|Chambre|Appartement');
+    expect(_prefs.homeSensor, 'T|Thermostat|Salon|Appartement|1|0');
+    expect(_prefs.homeHumiditySensor, 'H2|Hygromètre chambre|Chambre|Appartement|0|1');
     expect(find.text('Salon + Chambre'), findsOneWidget);
   });
 

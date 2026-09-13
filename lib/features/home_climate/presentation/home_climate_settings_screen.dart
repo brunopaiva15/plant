@@ -109,6 +109,11 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
     final reading = ref.watch(homeReadingProvider);
     final canPick = _sensors.isNotEmpty && !_busy;
+    // Ce que le capteur de température sait mesurer, d'après la liste
+    // fraîche quand on l'a, sinon d'après la préférence.
+    final live = sensor == null ? null : _sensors.where((s) => s.id == sensor.id).firstOrNull ?? sensor;
+    final humidityExpected = humiditySensor != null || (live?.hasHumidity ?? false);
+    final hygrometers = _sensors.any((s) => s.hasHumidity && s.id != sensor?.id);
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return FloraPage(
       title: l10n.homeClimate,
@@ -125,7 +130,9 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
               FloraListRow(
                 leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
                 title: l10n.careTemperature,
-                subtitle: sensor == null ? l10n.homeClimateNone : [sensor.label, ?_detail(sensor)].join(' · '),
+                // Sous le nom, ce que HomeKit dit que l'accessoire mesure :
+                // si « Humidité » n'y est pas, on sait d'où vient le tiret.
+                subtitle: sensor == null ? l10n.homeClimateNone : [sensor.label, ?_detail(sensor), measuresLabel(l10n, live ?? sensor)].join(' · '),
                 trailing: sensor == null
                     ? null
                     : FloraIconButton(
@@ -142,18 +149,33 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                 FloraListRow(
                   leading: const Text('💧', style: TextStyle(fontSize: 18)),
                   title: l10n.weatherHumidity,
-                  subtitle: humiditySensor == null ? l10n.homeClimateSameSensor : [humiditySensor.label, ?_detail(humiditySensor)].join(' · '),
-                  chevron: canPick,
-                  onTap: canPick ? () => _pick(HomeQuantity.humidity) : null,
+                  // « Même capteur » seulement s'il mesure vraiment
+                  // l'humidité ; sinon il n'y a pas d'hygromètre, et la
+                  // ligne le dit, et mène à en choisir un s'il en existe.
+                  subtitle: humiditySensor != null
+                      ? [humiditySensor.label, ?_detail(humiditySensor)].join(' · ')
+                      : (live?.hasHumidity ?? false)
+                          ? l10n.homeClimateSameSensor
+                          : l10n.homeClimateNone,
+                  chevron: canPick && (hygrometers || humiditySensor != null),
+                  onTap: canPick && (hygrometers || humiditySensor != null) ? () => _pick(HomeQuantity.humidity) : null,
                 ),
               if (sensor != null)
                 FloraListRow(
                   leading: const Text('📈', style: TextStyle(fontSize: 18)),
                   title: l10n.homeClimateReading,
                   subtitle: switch (reading) {
+                    // Une humidité attendue et absente se dit : sans cela,
+                    // « 24° » seul ne distingue pas un capteur muet d'un
+                    // capteur qui ne la mesure pas.
+                    AsyncData(:final value) when value != null && !value.isEmpty && value.humidity == null && humidityExpected => l10n.homeClimateHumidityMissing,
                     AsyncData(:final value) when value != null && !value.isEmpty => l10n.homeClimateUpdatedAgo(DateTime.now().difference(value.at).inMinutes),
                     AsyncLoading() => null,
                     _ => l10n.homeClimateUnavailable,
+                  },
+                  subtitleColor: switch (reading) {
+                    AsyncData(:final value) when value != null && !value.isEmpty && value.humidity == null && humidityExpected => c.danger,
+                    _ => null,
                   },
                   trailing: switch (reading) {
                     AsyncData(:final value) when value != null && !value.isEmpty =>
