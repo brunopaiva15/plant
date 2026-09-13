@@ -26,6 +26,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// Le banc d'essai n'a pas de caméra : c'est le chemin sans viseur qui est
 /// parcouru ici, celui où les gestes reviennent en boutons.
+///
+/// Et ce que l'étape suivante doit faire en s'ouvrant : rien. Le clavier ne
+/// monte pas tout seul sur le nom — les propositions d'identification se
+/// lisent d'abord.
 
 class _FakePaths extends PathProviderPlatform with MockPlatformInterfaceMixin {
   _FakePaths(this.root);
@@ -173,6 +177,23 @@ void main() {
     expect(find.text('Photo'), findsOneWidget);
     expect(find.text('La plante'), findsNothing);
     expect(photoFiles(), isEmpty, reason: 'rien ne reste sur le disque');
+  });
+
+  testWidgets("l'étape du nom s'ouvre sans clavier, et le champ à un toucher", (tester) async {
+    await pumpFlow(tester);
+    await tester.tap(find.widgetWithText(FloraButton, 'Continuer sans photo'));
+    await tester.pumpAndSettle();
+
+    final name = find.byWidgetPredicate((w) => w is FloraTextField && w.hint == 'Nom de la plante');
+    expect(name, findsOneWidget);
+    for (final field in tester.widgetList<EditableText>(find.byType(EditableText))) {
+      expect(field.focusNode.hasFocus, isFalse, reason: 'aucun champ ne prend le clavier en arrivant');
+    }
+
+    await tester.tap(name);
+    await tester.pumpAndSettle();
+    final edit = tester.widget<EditableText>(find.descendant(of: name, matching: find.byType(EditableText)));
+    expect(edit.focusNode.hasFocus, isTrue, reason: 'le champ reste à un toucher');
   });
 
   testWidgets("sans moteur d'identification, aucune vue n'est proposée", (tester) async {
