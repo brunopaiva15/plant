@@ -26,13 +26,20 @@ final homeReadingProvider = FutureProvider<HomeReading?>((ref) async {
     final main = await service.read(sensor.id);
     final other = humiditySensor == null || humiditySensor.id == sensor.id ? null : await service.read(humiditySensor.id);
     final humidity = other != null ? other.humidity : (humiditySensor == null ? main?.humidity : null);
-    if (main?.temperatureC == null && humidity == null) return null;
+    // La raison d'une valeur manquante, celle du capteur qui devait la donner.
+    final humidityError = other?.error ?? (humiditySensor == null ? main?.error : null);
+    final error = {
+      if (main?.temperatureC == null) ?main?.error,
+      if (humidity == null) ?humidityError,
+    }.join('; ');
+    if (main?.temperatureC == null && humidity == null && error.isEmpty) return null;
     return HomeReading(
-      at: main?.at ?? other!.at,
+      at: main?.at ?? other?.at ?? DateTime.now(),
       temperatureC: main?.temperatureC,
       humidity: humidity,
       sensor: sensor,
-      humiditySensor: other == null ? null : humiditySensor,
+      humiditySensor: humiditySensor,
+      error: error.isEmpty ? null : error,
     );
   } catch (_) {
     // Un capteur muet n'est pas une panne de l'application : la ligne

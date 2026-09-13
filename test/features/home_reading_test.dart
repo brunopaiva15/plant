@@ -56,6 +56,23 @@ void main() {
     expect(reading.temperatureC, 19);
     // Le second capteur a été choisi pour l'humidité : celle du premier n'est pas reprise à sa place.
     expect(reading.humidity, isNull);
+    expect(reading.error, isNull);
+  });
+
+  test("la raison d'un hygromètre en échec remonte avec la mesure", () async {
+    final home = FakeHomeClimateService(readings: {
+      'T': HomeReading(at: at, temperatureC: 19),
+      'H': HomeReading(at: at, error: 'Accessoire injoignable (4)'),
+    });
+    final c = await container({'home_sensor': thermostat.encode(), 'home_humidity_sensor': hygro.encode()}, home);
+    final reading = (await c.read(homeReadingProvider.future))!;
+    expect(reading.temperatureC, 19);
+    expect(reading.humidity, isNull);
+    expect(reading.error, 'Accessoire injoignable (4)');
+    // La raison du capteur de température ne se mêle pas à celle de l'humidité quand sa valeur est là.
+    final both = FakeHomeClimateService(readings: {'T': HomeReading(at: at, temperatureC: 19, error: 'lent'), 'H': HomeReading(at: at, humidity: 40)});
+    final c2 = await container({'home_sensor': thermostat.encode(), 'home_humidity_sensor': hygro.encode()}, both);
+    expect((await c2.read(homeReadingProvider.future))!.error, isNull);
   });
 
   test('retirer le capteur de température emporte celui de l’humidité', () async {

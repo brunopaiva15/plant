@@ -29,7 +29,10 @@ final class HomeClimateChannel: NSObject, HMHomeManagerDelegate {
   /// Délai au-delà duquel on répond avec ce qu'on a : HomeKit peut mettre
   /// quelques secondes à livrer les maisons, mais pas l'éternité.
   private let loadTimeout: TimeInterval = 10
-  private let readTimeout: TimeInterval = 10
+  /// Les capteurs Bluetooth (Eve, entre autres) mettent parfois vingt
+  /// secondes à répondre : on leur laisse le temps, et on répond dès qu'ils
+  /// l'ont fait.
+  private let readTimeout: TimeInterval = 30
 
   private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
@@ -159,18 +162,25 @@ final class HomeClimateChannel: NSObject, HMHomeManagerDelegate {
     let (temperature, humidity) = characteristics(of: accessory)
     let group = DispatchGroup()
     let once = Once()
+    var errors: [String] = []
     for c in temperature + humidity {
       group.enter()
       // Une lecture qui échoue garde la dernière valeur connue : un capteur
-      // qui a répondu il y a dix minutes vaut mieux qu'un tiret.
-      c.readValue { _ in group.leave() }
+      // qui a répondu il y a dix minutes vaut mieux qu'un tiret. La raison
+      // de l'échec part avec la réponse, pour que l'écran puisse la dire.
+      c.readValue { error in
+        if let e = error as NSError? { errors.append("\(e.localizedDescription) (\(e.code))") }
+        group.leave()
+      }
     }
     let answer = {
       once.run {
         var out: [String: Any] = ["at": Int(Date().timeIntervalSince1970 * 1000)]
         if let t = self.firstValue(temperature) { out["temperature"] = t }
         if let h = self.firstValue(humidity) { out["humidity"] = h }
-        result(out.count > 1 ? out : nil)
+        if !accessory.isReachable { errors.insert("unreachable", at: 0) }
+        if !errors.isEmpty { out["error"] = errors.joined(separator: "; ") }
+        result(out)
       }
     }
     group.notify(queue: .main) { answer() }

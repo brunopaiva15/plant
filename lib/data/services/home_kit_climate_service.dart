@@ -80,9 +80,12 @@ class HomeKitClimateService implements HomeClimateService {
     if (raw == null) return null;
     final temperature = (raw['temperature'] as num?)?.toDouble();
     final humidity = (raw['humidity'] as num?)?.round();
-    if (temperature == null && humidity == null) return null;
+    final error = _text(raw['error']);
+    // Rien lu et rien à expliquer : pas de mesure. Rien lu mais une raison :
+    // une mesure vide qui la porte.
+    if (temperature == null && humidity == null && error == null) return null;
     final at = raw['at'] is num ? DateTime.fromMillisecondsSinceEpoch((raw['at'] as num).toInt()) : DateTime.now();
-    return HomeReading(at: at, temperatureC: temperature, humidity: humidity?.clamp(0, 100));
+    return HomeReading(at: at, temperatureC: temperature, humidity: humidity?.clamp(0, 100), error: error);
   }
 
   static String? _text(Object? v) => v is String && v.trim().isNotEmpty ? v.trim() : null;

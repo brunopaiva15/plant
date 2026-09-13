@@ -51,6 +51,16 @@ void main() {
     expect(reading.at, DateTime.fromMillisecondsSinceEpoch(1000));
   });
 
+  test("une lecture en échec garde la raison, pour l'écran", () async {
+    answer((call) => {'at': 1, 'temperature': 25.0, 'error': 'unreachable; Accessoire injoignable (4)'});
+    final reading = (await HomeKitClimateService().read('A'))!;
+    expect(reading.temperatureC, 25);
+    expect(reading.humidity, isNull);
+    expect(reading.error, 'unreachable; Accessoire injoignable (4)');
+    answer((call) => {'at': 1, 'error': 'timeout'});
+    expect((await HomeKitClimateService().read('A'))!.isEmpty, isTrue);
+  });
+
   test('une mesure vide vaut null, un canal absent aussi', () async {
     answer((call) => {'at': 1});
     expect(await HomeKitClimateService().read('A'), isNull);

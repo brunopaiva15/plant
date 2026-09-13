@@ -168,13 +168,15 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                     // Une humidité attendue et absente se dit : sans cela,
                     // « 24° » seul ne distingue pas un capteur muet d'un
                     // capteur qui ne la mesure pas.
-                    AsyncData(:final value) when value != null && !value.isEmpty && value.humidity == null && humidityExpected => l10n.homeClimateHumidityMissing,
+                    AsyncData(:final value) when value != null && value.humidity == null && humidityExpected =>
+                      [l10n.homeClimateHumidityMissing, ?value.error].join(' '),
                     AsyncData(:final value) when value != null && !value.isEmpty => l10n.homeClimateUpdatedAgo(DateTime.now().difference(value.at).inMinutes),
+                    AsyncData(:final value) when value != null => [l10n.homeClimateUnavailable, ?value.error].join(' '),
                     AsyncLoading() => null,
                     _ => l10n.homeClimateUnavailable,
                   },
                   subtitleColor: switch (reading) {
-                    AsyncData(:final value) when value != null && !value.isEmpty && value.humidity == null && humidityExpected => c.danger,
+                    AsyncData(:final value) when value != null && ((value.humidity == null && humidityExpected) || value.isEmpty) => c.danger,
                     _ => null,
                   },
                   trailing: switch (reading) {

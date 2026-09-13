@@ -72,7 +72,7 @@ enum HomeQuantity { temperature, humidity }
 
 /// Une mesure, au moment où elle a été lue.
 class HomeReading {
-  const HomeReading({required this.at, this.temperatureC, this.humidity, this.sensor, this.humiditySensor});
+  const HomeReading({required this.at, this.temperatureC, this.humidity, this.sensor, this.humiditySensor, this.error});
 
   final DateTime at;
 
@@ -87,6 +87,10 @@ class HomeReading {
 
   /// Le capteur d'humidité, quand ce n'est pas le même.
   final HomeSensor? humiditySensor;
+
+  /// Ce que HomeKit a répondu quand une lecture a échoué, tel quel : de quoi
+  /// distinguer un capteur hors de portée d'un capteur qui ne mesure pas.
+  final String? error;
 
   bool get isEmpty => temperatureC == null && humidity == null;
 }
