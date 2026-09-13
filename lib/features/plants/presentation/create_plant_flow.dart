@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -13,6 +14,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/iris_feedback.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -86,6 +88,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// toutes les photos voient remonte, celle qui ne tenait qu'à un cliché
   /// ambigu redescend.
   final _identificationPaths = <String>[];
+
+  /// La candidate retenue et d'où elle vient — `null` tant que le nom a
+  /// été tapé à la main, auquel cas rien n'est étiqueté.
+  IdentificationCandidate? _chosen;
+  ChosenSource? _chosenSource;
 
   /// Au-delà, une photo de plus n'apporte plus grand-chose.
   static const int maxIdentificationPhotos = 3;
@@ -400,6 +407,26 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     if (mounted) Navigator.of(context, rootNavigator: true).pop();
   }
 
+  /// La personne vient d'étiqueter ses photos en enregistrant. Si elle l'a
+  /// permis, elles partent entraîner Iris — sans jamais retenir la fiche :
+  /// l'envoi se fait à côté, et un échec ne se voit pas.
+  void _recordFeedback() {
+    final identifier = ref.read(plantIdentifierProvider);
+    final source = _chosenSource;
+    final species = _species.text.trim();
+    if (identifier is! CascadeIdentifier || source == null || species.isEmpty || _identificationPaths.isEmpty) return;
+    final chosen = _chosen;
+    unawaited(ref.read(irisFeedbackRecorderProvider).record(IrisFeedback(
+      photos: [for (final p in _identificationPaths) File(p)],
+      local: identifier.lastLocal,
+      chosenName: species,
+      chosenId: chosen?.internalId,
+      chosenSource: source,
+      remoteTop: chosen?.source == IdentificationSource.remote ? chosen : null,
+      modelVersion: identifier.local.version ?? '',
+    )));
+  }
+
   Future<void> _finish() async {
     final name = _name.text.trim();
     if (name.isEmpty || _saving) return;
@@ -415,6 +442,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           wateringIntervalDays: _watering,
           fertilizingIntervalDays: _fertilizing,
         ));
+    _recordFeedback();
     // Bouture : la fille hérite des champs personnalisés de la plante mère.
     if (widget.parentPlantId != null) {
       await ref.read(attributeRepositoryProvider).cloneAttributes(fromPlantId: widget.parentPlantId!, toPlantId: plant.id);
@@ -703,6 +731,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             onPicked: (s) {
               if (_name.text.trim().isEmpty) _name.text = s.commonName ?? s.scientificName.split(' ').first;
               _applyCareProfile(s.scientificName, family: s.family);
+              _chosen = null;
+              _chosenSource = ChosenSource.picker;
             },
           ),
           _CarePreview(speciesName: _species.text),
@@ -779,6 +809,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   void _applyCandidate(IdentificationCandidate c) {
     setState(() {
+      _chosen = c;
+      _chosenSource = c.source == IdentificationSource.remote ? ChosenSource.remote : ChosenSource.local;
       _species.text = c.scientificName;
       if (_name.text.trim().isEmpty) _name.text = c.commonName ?? c.scientificName.split(' ').first;
     });

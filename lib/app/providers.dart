@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/observability/observability.dart';
 import '../data/db/database.dart';
@@ -55,6 +56,8 @@ import '../domain/location/location_service.dart';
 import '../domain/species/species_info.dart';
 import '../core/utils/scientific_name.dart';
 import '../data/services/preferences_metrics_store.dart';
+import '../data/services/supabase_iris_feedback_recorder.dart';
+import '../domain/identification/iris_feedback.dart';
 import '../data/services/local_plant_model_factory.dart';
 import '../domain/identification/cascade_identifier.dart';
 import '../domain/identification/identification_metrics.dart';
@@ -204,6 +207,7 @@ class AppPreferences {
     required this.displayName,
     required this.identificationFallbackEnabled,
     required this.careAssistEnabled,
+    required this.irisFeedbackEnabled,
     required this.weatherPlace,
     required this.homeSensor,
     required this.archiveName,
@@ -229,6 +233,9 @@ class AppPreferences {
 
   /// Complément des fiches d'entretien par l'IA autorisé.
   final bool careAssistEnabled;
+
+  /// Les photos identifiées partent entraîner Iris. Faux par défaut.
+  final bool irisFeedbackEnabled;
   final WeatherPlace? weatherPlace;
 
   /// Le capteur d'Apple Maison qui donne le climat de l'intérieur, ou `null`
@@ -262,6 +269,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       displayName: s.displayName ?? '',
       identificationFallbackEnabled: s.identificationFallbackEnabled,
       careAssistEnabled: s.careAssistEnabled,
+      irisFeedbackEnabled: s.irisFeedbackEnabled,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       homeSensor: HomeSensor.decode(s.homeSensor),
       archiveName: s.archiveName,
@@ -285,6 +293,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setSupported(bool value) => _apply((s) => s.setSupported(value));
   Future<void> setIdentificationFallbackEnabled(bool value) => _apply((s) => s.setIdentificationFallbackEnabled(value));
   Future<void> setCareAssistEnabled(bool value) => _apply((s) => s.setCareAssistEnabled(value));
+  Future<void> setIrisFeedbackEnabled(bool value) => _apply((s) => s.setIrisFeedbackEnabled(value));
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
         (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
       );
@@ -331,6 +340,16 @@ class LocalModelStatus {
 
 /// Compteurs de la cascade, persistés dans les réglages.
 final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>((ref) => PreferencesMetricsStore(ref.watch(preferencesServiceProvider)));
+
+/// Où partent les photos étiquetées en enregistrant, si elles partent :
+/// nulle part sans le consentement des réglages, sans compte distant, ou
+/// sans Supabase. Les trois se lisent ici, pas dans les écrans.
+final irisFeedbackRecorderProvider = Provider<IrisFeedbackRecorder>((ref) {
+  final enabled = ref.watch(preferencesProvider.select((p) => p.irisFeedbackEnabled));
+  final user = ref.watch(currentUserProvider).value;
+  if (!enabled || !SupabaseConfig.isConfigured || user == null || user.isLocal) return const NoFeedbackRecorder();
+  return SupabaseIrisFeedbackRecorder(Supabase.instance.client, userId: user.id);
+});
 
 /// Identification : modèle local puis Pl@ntNet en repli si une clé est
 /// configurée. Sans modèle ni clé, service inactif.

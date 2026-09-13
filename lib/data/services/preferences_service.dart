@@ -46,6 +46,12 @@ class PreferencesService {
   bool get identificationFallbackEnabled => _prefs.getBool('identification_fallback') ?? true;
   Future<void> setIdentificationFallbackEnabled(bool value) => _prefs.setBool('identification_fallback', value);
 
+  /// Les photos identifiées peuvent partir entraîner Iris. Éteint tant que
+  /// la personne ne l'a pas allumé : une photo de salon est une donnée
+  /// personnelle, et le silence n'est pas un consentement.
+  bool get irisFeedbackEnabled => _prefs.getBool('iris_feedback') ?? false;
+  Future<void> setIrisFeedbackEnabled(bool value) => _prefs.setBool('iris_feedback', value);
+
   /// Complément des fiches d'entretien par l'IA, quand le catalogue ne
   /// connaît pas l'espèce. Coupé, la fiche s'en tient à ses repères.
   bool get careAssistEnabled => _prefs.getBool('care_assist') ?? true;

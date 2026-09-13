@@ -2526,6 +2526,18 @@ abstract class AppLocalizations {
   /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
   String identificationFallbackHint(String name);
 
+  /// No description provided for @irisFeedback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos d\'entraînement'**
+  String get irisFeedback;
+
+  /// No description provided for @irisFeedbackHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les photos identifiées et le nom retenu servent à entraîner $name. Elles sont retirées avec le compte. Désactivé, rien ne part.'**
+  String irisFeedbackHint(String name);
+
   /// No description provided for @modelMissing.
   ///
   /// In fr, this message translates to:

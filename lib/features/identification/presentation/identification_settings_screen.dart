@@ -81,6 +81,20 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: Space.xs),
           Text(l10n.identificationFallbackHint(AppConfig.modelName), style: context.text.caption),
+          const SizedBox(height: Space.lg),
+          FloraGroup(
+            children: [
+              FloraListRow(
+                title: l10n.irisFeedback,
+                trailing: AdaptiveSwitch(
+                  value: ref.watch(preferencesProvider.select((p) => p.irisFeedbackEnabled)),
+                  onChanged: (v) => ref.read(preferencesProvider.notifier).setIrisFeedbackEnabled(v),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+          Text(l10n.irisFeedbackHint(AppConfig.modelName), style: context.text.caption),
           const SizedBox(height: Space.sm),
           Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
           if (identifier is CascadeIdentifier) ...[

@@ -1424,6 +1424,14 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get irisFeedback => 'Trainingsfotos';
+
+  @override
+  String irisFeedbackHint(String name) {
+    return 'Identifizierte Fotos und der gewählte Name dienen dem Training von $name. Sie werden mit dem Konto entfernt. Ausgeschaltet wird nichts gesendet.';
+  }
+
+  @override
   String modelMissing(String name) {
     return '$name auf diesem Gerät nicht verfügbar';
   }
