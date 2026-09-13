@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/config/supabase_config.dart';
+import '../../core/network/network_failure.dart';
 import '../../domain/sharing/shared_link.dart';
 
 /// Partage public adossé à Supabase : la table `shared_links` porte le jeton,
@@ -22,9 +23,12 @@ class SupabaseSharingService implements SharingService {
   @override
   String get baseUrl => SupabaseConfig.shareBaseUrl;
 
+  /// Postgrest attend la réponse aussi longtemps qu'il faut. Sans réseau, il
+  /// n'y en a jamais : chaque appel est donc borné, faute de quoi l'écran des
+  /// liens tourne indéfiniment sur un appareil hors ligne.
   @override
   Future<List<SharedLink>> list() async {
-    final rows = await _db.from('shared_links').select().eq('garden_id', gardenId).order('created_at', ascending: false);
+    final rows = await _db.from('shared_links').select().eq('garden_id', gardenId).order('created_at', ascending: false).timeout(networkTimeout);
     return rows.map(_fromRow).toList();
   }
 
@@ -45,17 +49,18 @@ class SupabaseSharingService implements SharingService {
           'expires_at': data.expiresAt?.toUtc().toIso8601String(),
         })
         .select()
-        .single();
+        .single()
+        .timeout(networkTimeout);
     return _fromRow(row);
   }
 
   @override
   Future<void> revoke(String id) async {
-    await _db.from('shared_links').update({'revoked_at': DateTime.now().toUtc().toIso8601String()}).eq('id', id);
+    await _db.from('shared_links').update({'revoked_at': DateTime.now().toUtc().toIso8601String()}).eq('id', id).timeout(networkTimeout);
   }
 
   @override
-  Future<void> delete(String id) async => _db.from('shared_links').delete().eq('id', id);
+  Future<void> delete(String id) async => _db.from('shared_links').delete().eq('id', id).timeout(networkTimeout);
 
   /// Jeton d'URL : 22 caractères tirés d'un générateur cryptographique,
   /// sans caractère ambigu ni besoin d'échappement.

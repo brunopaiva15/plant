@@ -7,8 +7,11 @@ import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
+import '../../../core/network/network_failure.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
+import '../../network/presentation/offline_notice.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel, leaveGarden;
@@ -54,6 +57,9 @@ class MembersScreen extends ConsumerWidget {
         children: [
           Text(isOwner ? l10n.membersHint : l10n.membersGuestHint, style: context.text.callout),
           const SizedBox(height: Space.lg),
+          // La liste se lit hors ligne — elle vient de la base, alimentée par
+          // la synchro. Ce qui la modifie, non.
+          OfflineBanner(message: l10n.offlineCollaboration),
           FloraGroup(
             header: gardenName,
             children: [
@@ -144,12 +150,14 @@ class MembersScreen extends ConsumerWidget {
   Future<void> _setRole(BuildContext context, WidgetRef ref, GardenMemberInfo member, GardenRole role) async {
     final l10n = context.l10n;
     try {
-      await ref.read(collaborationServiceProvider).setRole(gardenId: ref.read(gardenIdProvider), userId: member.userId, role: role);
+      await ref.online(() => ref.read(collaborationServiceProvider).setRole(gardenId: ref.read(gardenIdProvider), userId: member.userId, role: role));
       Haptics.success();
       await ref.read(syncCoordinatorProvider.notifier).syncNow();
       if (context.mounted) {
         ref.read(toastProvider.notifier).show(ToastData(message: l10n.roleChanged(member.label, _roleName(context, role)), emoji: '✓'));
       }
+    } on OfflineException {
+      if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineActionFailed, emoji: '📡'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'set-role');
       if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.genericError, emoji: '!'));
@@ -168,9 +176,11 @@ class MembersScreen extends ConsumerWidget {
     );
     if (!ok) return;
     try {
-      await ref.read(collaborationServiceProvider).removeMember(gardenId: ref.read(gardenIdProvider), userId: member.userId);
+      await ref.online(() => ref.read(collaborationServiceProvider).removeMember(gardenId: ref.read(gardenIdProvider), userId: member.userId));
       Haptics.warning();
       await ref.read(syncCoordinatorProvider.notifier).syncNow();
+    } on OfflineException {
+      if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineActionFailed, emoji: '📡'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'remove-member');
       if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.genericError, emoji: '!'));
@@ -229,7 +239,15 @@ class _PendingInvites extends ConsumerWidget {
       destructive: true,
     );
     if (!ok) return;
-    await ref.read(collaborationServiceProvider).revokeInvite(invite.id);
+    try {
+      await ref.online(() => ref.read(collaborationServiceProvider).revokeInvite(invite.id));
+    } catch (error) {
+      final offline = error is OfflineException;
+      if (!offline) ref.read(crashReporterProvider).report(error, StackTrace.current, context: 'revoke-invite');
+      if (!context.mounted) return;
+      ref.read(toastProvider.notifier).show(ToastData(message: offline ? l10n.offlineActionFailed : l10n.genericError, emoji: offline ? '📡' : '!'));
+      return;
+    }
     Haptics.warning();
     ref.invalidate(gardenInvitesProvider);
     if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.inviteRevoked, emoji: '🚫'));

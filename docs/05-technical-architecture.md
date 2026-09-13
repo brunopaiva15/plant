@@ -35,6 +35,45 @@ Règle : les widgets ne connaissent ni drift ni la plateforme ; ils consomment d
 3. `SyncService` (P2) draine l'outbox quand la connectivité revient, applique `updated_at` *last-write-wins* par champ, et écoute Realtime pour les autres appareils.
 4. Les conflits sur photos sont impossibles (immutables) ; les actions sont *append-only*.
 
+## État du réseau (`core/network/`)
+Le jardin, les soins et le journal vivent sur l'appareil et ne demandent rien à
+personne. Une poignée de fonctions, elles, n'existent que sur le réseau :
+liens de partage, collaboration, diagnostic, recherche GBIF, achat de soutien.
+Sans connexion, leurs requêtes ne partaient pas *et ne revenaient pas* — un
+écran tournait indéfiniment plutôt que de dire ce qui manquait.
+
+- **Constat.** `ConnectivityController` (`connectivityProvider`) tient un
+  `NetworkStatus`, tenu à jour par une sonde de joignabilité
+  (`Reachability` → `DnsReachability`, une résolution DNS bornée à cinq
+  secondes sur deux hôtes). Elle part au démarrage, à chaque retour au premier
+  plan, et toutes les huit secondes tant que le réseau manque — jamais quand
+  l'application est en ligne, jamais en arrière-plan. L'application démarre
+  « en ligne » : on ne conclut pas avant d'avoir regardé.
+- **Branchement.** Par défaut `reachabilityProvider` rend une sonde inerte qui
+  répond « en ligne » ; c'est `main` qui installe `DnsReachability`, comme il
+  installe la base et les préférences. Un test qui ne parle pas du réseau n'a
+  donc ni attente ni minuteur, et celui qui joue une coupure passe sa propre
+  sonde.
+- **Garde.** `ref.online(() => …)` entoure un appel qui a besoin du réseau :
+  hors ligne il lève `OfflineException` sans rien tenter ; sinon l'appel part,
+  sa réussite confirme la connexion, et son échec ne devient « hors ligne »
+  qu'après confirmation par la sonde — un serveur muet n'est pas un réseau
+  coupé. Les providers concernés observent `connectivityProvider`, si bien que
+  le retour du réseau relance la requête et remplit l'écran tout seul.
+- **Délais.** Les clients HTTP bornaient déjà leurs appels ; Postgrest, non.
+  Toute requête Supabase — partage, collaboration, synchronisation — est
+  bornée par `networkTimeout` (20 s), les transferts de photos par deux
+  minutes. Une synchronisation qui échoue sur le réseau passe en
+  `SyncStatus.offline` plutôt qu'en erreur, et repart dès que la connexion
+  revient (`SyncCoordinator` écoute `connectivityProvider`).
+- **Ce que voit l'utilisateur.** `OfflineNotice` remplace le contenu d'un écran
+  qui n'existe que sur le réseau, avec un bouton qui relit l'état ;
+  `OfflineBanner` coiffe un écran qui marche à moitié — la liste des membres se
+  lit hors ligne, inviter attend. Chaque fonction dit ce qui lui manque
+  (`offlineSharing`, `offlineCollaboration`, `offlineDiagnosis`,
+  `offlineIdentification`, `offlineSupport`), et un geste refusé rend
+  `offlineActionFailed` plutôt qu'« une erreur est survenue ».
+
 ## Auth
 `AuthRepository` (domain) ⇒ `LocalAuthRepository` (P1, compte sur appareil, aucune donnée sortante) ⇒ `SupabaseAuthRepository` (P2 : Apple, Google, e-mail). La migration local → compte réattribue `owner_id` du jardin.
 

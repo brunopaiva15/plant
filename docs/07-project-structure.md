@@ -12,6 +12,7 @@ lib/
 │   ├── haptics.dart
 │   ├── observability/             Analytics / CrashReporter (interfaces + no-op)
 │   ├── l10n/                      helpers (relative dates, pluriels)
+│   ├── network/                   état du réseau (sonde, garde `ref.online`, délais)
 │   └── utils/                     date helpers, extensions
 ├── design_system/
 │   ├── tokens/                    colors, typography (Shantell Sans + système), spacing, radius, motion
@@ -39,6 +40,7 @@ lib/
 │   ├── cuttings/                  guide de bouturage : introduction, séquences d'argile, scène, sheet ; étapes précisées par l'IA
 │   ├── actions/                   add action sheet, quick actions
 │   ├── locations/
+│   ├── network/                   ce qui s'affiche hors ligne (état vide, bandeau)
 │   ├── garden/                    onglet segmenté : emplacements · inventaire · calendrier
 │   ├── inventory/
 │   ├── calendar/
@@ -60,6 +62,8 @@ test/
 ├── data/plant_repository_test.dart
 ├── data/infomaniak_cutting_refiner_test.dart   ce qui part à l'IA, ce qu'on garde de la réponse
 ├── features/cutting_guide_test.dart            le guide : six étapes, trois sorties, texte précisé
+├── core/connectivity_test.dart                 état du réseau, garde des appels
+├── features/shared_links_offline_test.dart     hors ligne, l'écran le dit au lieu de tourner
 ├── assets/cutting_sequences_test.dart          les six séquences sont là et s'animent
 └── l10n/arb_tone_test.dart       ton des textes, sur les quatre ARB
 docs/                              cette documentation

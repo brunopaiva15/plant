@@ -7,11 +7,23 @@ import 'package:share_plus/share_plus.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
+import '../../../core/network/network_failure.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/shared_link.dart';
+import '../../network/presentation/offline_notice.dart';
 
 /// Liens de partage du jardin, rafraîchis à chaque ouverture.
-final sharedLinksProvider = FutureProvider.autoDispose<List<SharedLink>>((ref) => ref.watch(sharingServiceProvider).list());
+///
+/// Ils n'existent que sur le serveur : hors ligne, la requête ne sortirait
+/// pas de l'appareil et l'écran tournerait sans fin. On regarde donc le
+/// réseau d'abord, et le retour de la connexion relance la requête — la liste
+/// se remplit alors d'elle-même.
+final sharedLinksProvider = FutureProvider.autoDispose<List<SharedLink>>((ref) {
+  ref.watch(connectivityProvider);
+  final service = ref.watch(sharingServiceProvider);
+  return ref.online(service.list);
+});
 
 /// Crée un lien public vers une plante ou une photo.
 Future<void> showShareLinkSheet(BuildContext context, {required String plantId, String? photoId, String? suggestedTitle}) => showFloraSheet<void>(
@@ -57,7 +69,7 @@ class _ShareBodyState extends ConsumerState<_ShareBody> {
     });
     final l10n = context.l10n;
     try {
-      final link = await ref.read(sharingServiceProvider).create(NewSharedLink(
+      final link = await ref.online(() => ref.read(sharingServiceProvider).create(NewSharedLink(
             plantId: widget.plantId,
             photoId: widget.photoId,
             kind: widget.photoId == null ? SharedKind.plant : SharedKind.photo,
@@ -66,16 +78,18 @@ class _ShareBodyState extends ConsumerState<_ShareBody> {
             keywords: _keywords.text,
             unlisted: _unlisted,
             expiresAt: _expiresAt,
-          ));
+          )));
       Haptics.success();
       ref.invalidate(sharedLinksProvider);
       if (mounted) setState(() => _created = link);
-    } catch (_) {
+    } catch (error) {
       Haptics.warning();
       if (mounted) {
         setState(() {
           _saving = false;
-          _error = l10n.shareFailed;
+          // Sans réseau, rien n'a été tenté : « le lien n'a pas pu être créé »
+          // laisserait croire à un refus du serveur.
+          _error = error is OfflineException ? l10n.offlineActionFailed : l10n.shareFailed;
         });
       }
     }
@@ -108,6 +122,21 @@ class _ShareBodyState extends ConsumerState<_ShareBody> {
     }
 
     final link = _created;
+    // Le lien se crée sur le serveur : hors ligne, le formulaire n'aurait
+    // qu'un bouton qui échoue. Une fois le lien obtenu, en revanche, il est là
+    // et se copie sans réseau.
+    if (link == null && !ref.watch(isOnlineProvider)) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SheetHeader(title: widget.photoId == null ? l10n.sharePlant : l10n.sharePhoto),
+            OfflineNotice(subtitle: l10n.offlineSharing),
+          ],
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
       child: Column(

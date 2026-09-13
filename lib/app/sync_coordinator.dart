@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/config/supabase_config.dart';
+import '../core/network/connectivity.dart';
 import '../data/services/preferences_service.dart';
 import '../data/sync/supabase_remote_data_source.dart';
 import '../data/sync/sync_service.dart';
@@ -60,6 +61,11 @@ class SyncCoordinator extends Notifier<SyncState> with WidgetsBindingObserver {
       return SyncState.initial;
     }
     _setup(user.id, gardenId);
+    // Le réseau revient : la file d'attente part sans attendre le prochain
+    // geste ni le retour au premier plan.
+    ref.listen(connectivityProvider, (previous, next) {
+      if (previous == NetworkStatus.offline && next == NetworkStatus.online) _service?.sync();
+    });
     return _service?.currentState ?? SyncState.initial;
   }
 

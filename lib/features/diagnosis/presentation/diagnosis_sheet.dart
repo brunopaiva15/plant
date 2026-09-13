@@ -8,6 +8,8 @@ import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/likelihood_labels.dart';
+import '../../../core/network/connectivity.dart';
+import '../../../core/network/network_failure.dart';
 import '../../../data/problems/problem_catalog.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
@@ -21,6 +23,7 @@ import '../../../domain/repositories/repositories.dart';
 import '../../actions/application/care_actions.dart';
 import '../../home_climate/application/home_climate_providers.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
+import '../../network/presentation/offline_notice.dart';
 import '../../weather/application/weather_providers.dart';
 import 'analysis_wait.dart';
 import 'diagnosis_report.dart';
@@ -92,7 +95,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
       final frequent = ProblemCatalog.idsForIssues(_knownIssues()).toSet();
       final catalog = await ref.read(problemCatalogProvider.future);
       final measured = _indoorClimate();
-      final result = await ref.read(plantDiagnoserProvider).diagnose(
+      final result = await ref.online(() => ref.read(plantDiagnoserProvider).diagnose(
             images: files,
             language: lang,
             plantName: widget.plant.name,
@@ -106,9 +109,13 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             frequentIds: frequent,
             indoorClimate: measured,
             reportedClimate: _reportedClimate(measured),
-          );
+          ));
       Haptics.success();
       if (mounted) setState(() => _result = result);
+    } on OfflineException {
+      // L'analyse se fait chez le prestataire : hors ligne, les photos ne
+      // partent pas et il n'y a rien à attendre.
+      ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineDiagnosis, emoji: '📡'));
     } on DiagnosisException catch (e) {
       final message = switch (e.message) {
         'refusal' => l10n.diagnosisRefused,
@@ -310,7 +317,12 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
               Text(l10n.diagnosisWithHome(homeReadingLabel(measured, metric: metric)), style: context.text.caption),
             ],
             const SizedBox(height: Space.lg),
-            FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
+            // L'analyse part chez le prestataire : sans réseau le bouton
+            // n'aurait qu'un échec à rendre, et il vaut mieux le dire avant.
+            if (!ref.watch(isOnlineProvider))
+              OfflineBanner(message: l10n.offlineDiagnosis, padding: EdgeInsets.zero)
+            else
+              FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
           ] else ...[
             // Le même corps que la réouverture depuis le journal : ce qu'on
             // lit ici est exactement ce qu'on retrouvera plus tard.

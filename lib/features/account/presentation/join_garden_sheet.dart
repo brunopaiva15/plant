@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
+import '../../../core/network/network_failure.dart';
 import '../../../data/db/database.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
@@ -65,7 +67,7 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
       _error = null;
     });
     try {
-      final preview = await ref.read(collaborationServiceProvider).previewInvite(_clean);
+      final preview = await ref.online(() => ref.read(collaborationServiceProvider).previewInvite(_clean));
       if (!mounted) return;
       setState(() {
         if (preview == null) {
@@ -74,6 +76,8 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
           _preview = preview;
         }
       });
+    } on OfflineException {
+      if (mounted) setState(() => _error = context.l10n.offlineActionFailed);
     } on CollaborationException catch (e) {
       if (mounted) setState(() => _error = _message(e.error));
     } catch (e, st) {
@@ -116,7 +120,7 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
     setState(() => _busy = true);
     final l10n = context.l10n;
     try {
-      final gardenId = await ref.read(collaborationServiceProvider).acceptInvite(_clean);
+      final gardenId = await ref.online(() => ref.read(collaborationServiceProvider).acceptInvite(_clean));
       // Le rôle est inscrit tout de suite : sans lui, l'application croirait
       // l'invité propriétaire jusqu'à la première synchronisation, et lui
       // proposerait des gestes que le serveur refuserait. Le compte est lu
@@ -134,6 +138,8 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
       if (!mounted) return;
       ref.read(toastProvider.notifier).show(ToastData(message: l10n.joined(_preview?.gardenName ?? ''), emoji: '🌿'));
       Navigator.of(context).pop(true);
+    } on OfflineException {
+      if (mounted) setState(() => _error = l10n.offlineActionFailed);
     } on CollaborationException catch (e) {
       if (mounted) setState(() => _error = _message(e.error));
     } catch (e, st) {
@@ -162,6 +168,7 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
     final user = ref.watch(currentUserProvider).value;
     final signedIn = user != null && !user.isLocal;
     final canSignIn = !signedIn && signInAvailable(ref.watch(authRepositoryProvider));
+    final online = ref.watch(isOnlineProvider);
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xl),
       child: Column(
@@ -207,7 +214,11 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
             Text(canSignIn ? l10n.joinSignInHint : l10n.joinNeedsAccount, style: context.text.caption, textAlign: TextAlign.center),
           ],
           const SizedBox(height: Space.lg),
-          if (canSignIn)
+          // Le code s'échange sur le serveur, et la connexion Apple aussi :
+          // hors ligne le bouton ne peut rien faire, et il le dit.
+          if (!online)
+            Text(l10n.offlineCollaboration, style: context.text.caption, textAlign: TextAlign.center)
+          else if (canSignIn)
             FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: _signInThenContinue)
           else
             FloraButton(
