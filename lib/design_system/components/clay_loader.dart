@@ -26,11 +26,16 @@ class ClayLoader extends StatefulWidget {
 }
 
 class _ClayLoaderState extends State<ClayLoader> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600));
+  /// Un cycle dure 1,6 s ; le contrôleur en enchaîne cinq, un par jeu de
+  /// gouttes, avant de reboucler.
+  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600) * _ClayLoaderPainter.variantCount);
 
   @override
   void initState() {
     super.initState();
+    // Chaque motte commence sur un jeu au hasard : deux mottes à l'écran ne
+    // projettent pas les mêmes gouttes au même moment.
+    _c.value = math.Random().nextInt(_ClayLoaderPainter.variantCount) / _ClayLoaderPainter.variantCount;
     _c.repeat();
   }
 
@@ -52,7 +57,7 @@ class _ClayLoaderState extends State<ClayLoader> with SingleTickerProviderStateM
       child: CustomPaint(
         size: Size(width, height),
         painter: _ClayLoaderPainter(
-          progress: reduce ? const AlwaysStoppedAnimation(0.72) : _c,
+          progress: reduce ? AlwaysStoppedAnimation(0.72 / _ClayLoaderPainter.variantCount) : _c,
           color: widget.color ?? c.terracotta,
           shadow: c.isDark ? Colors.black : const Color(0xFF5E2C14),
           dark: c.isDark,
@@ -83,21 +88,66 @@ class _ClayLoaderPainter extends CustomPainter {
 
   // Les gouttes, réglées une à une : le côté, l'angle de départ (rasant →
   // haut), la portée, la taille, le poids (la vitesse de la retombée) et un
-  // léger retard sur l'impact. À gauche, une goutte basse et longue et deux
-  // plus courtes ; à droite, une grosse qui part haut et deux petites qui
-  // filent bas. Rien ne se répond d'un côté à l'autre.
-  static const _drops = [
-    (side: -1.0, angle: 0.18, reach: 0.72, size: 0.15, weight: 1.25, delay: 0.0),
-    (side: -1.0, angle: 0.72, reach: 0.60, size: 0.11, weight: 0.95, delay: 0.015),
-    (side: -1.0, angle: 1.15, reach: 0.45, size: 0.08, weight: 1.05, delay: 0.035),
-    (side: 1.0, angle: 0.30, reach: 0.70, size: 0.09, weight: 1.15, delay: 0.01),
-    (side: 1.0, angle: 0.52, reach: 0.95, size: 0.07, weight: 1.3, delay: 0.03),
-    (side: 1.0, angle: 0.95, reach: 0.80, size: 0.17, weight: 0.85, delay: 0.0),
+  // léger retard sur l'impact. Dans chaque jeu, rien ne se répond d'un côté
+  // à l'autre ; et d'un cycle au suivant, la motte change de jeu, si bien
+  // que la boucle ne se voit pas.
+  static const _variants = [
+    // Une goutte basse et longue à gauche, une grosse qui part haut à droite.
+    [
+      (side: -1.0, angle: 0.18, reach: 0.72, size: 0.15, weight: 1.25, delay: 0.0),
+      (side: -1.0, angle: 0.72, reach: 0.60, size: 0.11, weight: 0.95, delay: 0.015),
+      (side: -1.0, angle: 1.15, reach: 0.45, size: 0.08, weight: 1.05, delay: 0.035),
+      (side: 1.0, angle: 0.30, reach: 0.70, size: 0.09, weight: 1.15, delay: 0.01),
+      (side: 1.0, angle: 0.52, reach: 0.95, size: 0.07, weight: 1.3, delay: 0.03),
+      (side: 1.0, angle: 0.95, reach: 0.80, size: 0.17, weight: 0.85, delay: 0.0),
+    ],
+    // La grosse part à gauche, haut ; à droite deux basses et une rasante longue.
+    [
+      (side: -1.0, angle: 1.05, reach: 0.75, size: 0.16, weight: 0.9, delay: 0.0),
+      (side: -1.0, angle: 0.40, reach: 0.55, size: 0.08, weight: 1.2, delay: 0.02),
+      (side: 1.0, angle: 0.15, reach: 0.75, size: 0.12, weight: 1.1, delay: 0.0),
+      (side: 1.0, angle: 0.45, reach: 0.40, size: 0.07, weight: 1.0, delay: 0.04),
+      (side: 1.0, angle: 0.80, reach: 1.00, size: 0.10, weight: 1.15, delay: 0.01),
+    ],
+    // Sept gouttes : un éclat plus large, deux minuscules très hautes.
+    [
+      (side: -1.0, angle: 0.25, reach: 0.65, size: 0.13, weight: 1.2, delay: 0.0),
+      (side: -1.0, angle: 0.60, reach: 0.90, size: 0.06, weight: 1.25, delay: 0.02),
+      (side: -1.0, angle: 1.30, reach: 0.55, size: 0.05, weight: 1.0, delay: 0.03),
+      (side: -1.0, angle: 0.88, reach: 0.35, size: 0.10, weight: 0.9, delay: 0.045),
+      (side: 1.0, angle: 0.20, reach: 0.55, size: 0.10, weight: 1.15, delay: 0.01),
+      (side: 1.0, angle: 0.65, reach: 0.70, size: 0.14, weight: 0.95, delay: 0.0),
+      (side: 1.0, angle: 1.20, reach: 0.95, size: 0.06, weight: 1.1, delay: 0.025),
+    ],
+    // Presque tout part à droite, une seule goutte lourde à gauche.
+    [
+      (side: -1.0, angle: 0.35, reach: 0.65, size: 0.17, weight: 1.1, delay: 0.0),
+      (side: 1.0, angle: 0.22, reach: 0.72, size: 0.08, weight: 1.2, delay: 0.03),
+      (side: 1.0, angle: 0.50, reach: 0.50, size: 0.12, weight: 1.0, delay: 0.0),
+      (side: 1.0, angle: 0.78, reach: 0.90, size: 0.09, weight: 1.25, delay: 0.015),
+      (side: 1.0, angle: 1.10, reach: 0.60, size: 0.06, weight: 0.95, delay: 0.04),
+      (side: 1.0, angle: 0.95, reach: 0.30, size: 0.11, weight: 0.85, delay: 0.02),
+    ],
+    // Deux grosses basses de chaque côté, pas à la même hauteur, et une fine qui monte.
+    [
+      (side: -1.0, angle: 0.22, reach: 0.60, size: 0.16, weight: 1.15, delay: 0.01),
+      (side: -1.0, angle: 0.55, reach: 0.85, size: 0.09, weight: 1.2, delay: 0.0),
+      (side: -1.0, angle: 0.90, reach: 0.40, size: 0.07, weight: 1.0, delay: 0.035),
+      (side: 1.0, angle: 0.12, reach: 0.70, size: 0.13, weight: 1.3, delay: 0.0),
+      (side: 1.0, angle: 0.70, reach: 0.55, size: 0.16, weight: 0.9, delay: 0.02),
+    ],
   ];
+
+  /// Nombre de jeux de gouttes ; le contrôleur parcourt les cinq en un tour.
+  static int get variantCount => _variants.length;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final t = progress.value;
+    // Le contrôleur fait un tour pour cinq cycles : la partie entière choisit
+    // le jeu de gouttes, la partie fractionnaire est l'avancement du cycle.
+    final v = progress.value * _variants.length;
+    final t = v - v.floorToDouble();
+    final drops = _variants[v.floor() % _variants.length];
     final r = diameter / 2;
     final floor = size.height - r * 0.35;
     final cx = size.width / 2;
@@ -145,19 +195,21 @@ class _ClayLoaderPainter extends CustomPainter {
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 0.16),
     );
 
-    // Les éclaboussures : six gouttes qui partent à l'impact et retombent.
-    // Aucune n'est le miroir d'une autre : un éclat de terre n'est pas
-    // symétrique, et l'œil voit tout de suite un motif répété.
+    // Les éclaboussures : les gouttes du jeu courant partent à l'impact,
+    // retombent et se posent au sol, où elles s'effacent. Aucune n'est le
+    // miroir d'une autre : un éclat de terre n'est pas symétrique, et l'œil
+    // voit tout de suite un motif répété.
     if (t >= _drop + 0.02 && t < _settle) {
-      for (final d in _drops) {
+      for (final d in drops) {
         final p = ((t - _drop - 0.02 - d.delay) / (_settle - _drop - 0.02 - d.delay)).clamp(0.0, 1.0);
         if (p <= 0) continue;
         final fly = Curves.easeOutCubic.transform(p);
         final fade = (1 - Curves.easeIn.transform(p)).clamp(0.0, 1.0);
         final dist = r * 1.05 + r * d.reach * fly;
         final gravity = r * d.weight * p * p;
-        final o = Offset(cx + d.side * math.cos(d.angle) * dist, floor - r * 0.25 - math.sin(d.angle) * dist * 0.9 + gravity);
         final dr = r * d.size * (1 - 0.5 * p);
+        final y = math.min(floor - r * 0.25 - math.sin(d.angle) * dist * 0.9 + gravity, floor + r * 0.02 - dr);
+        final o = Offset(cx + d.side * math.cos(d.angle) * dist, y);
         canvas.drawCircle(o, dr, Paint()..color = color.withValues(alpha: fade));
         canvas.drawCircle(o.translate(-dr * 0.3, -dr * 0.3), dr * 0.35, Paint()..color = Colors.white.withValues(alpha: 0.45 * fade));
       }
