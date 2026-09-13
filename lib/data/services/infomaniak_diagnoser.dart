@@ -45,6 +45,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
+    ReportedClimate? reportedClimate,
   }) async {
     if (!isConfigured) throw const DiagnosisException('unconfigured');
     if (images.isEmpty) throw const DiagnosisException('no_images');
@@ -64,6 +65,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           candidates: candidates,
           frequentIds: frequentIds,
           indoorClimate: indoorClimate,
+          reportedClimate: reportedClimate,
         ),
       },
     ];
@@ -362,14 +364,15 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
+    ReportedClimate? reportedClimate,
   }) {
     final parts = <String>[
       if (plantName != null && plantName.isNotEmpty) 'Plant: $plantName.',
       if (species != null && species.isNotEmpty) 'Species: $species.',
-      // Ce que le capteur de la maison mesure, quand il y en a un : une
-      // donnée de plus pour départager un air sec d'un manque d'eau, jamais
-      // une réponse.
-      ?climateLine(indoorClimate),
+      // Ce que le capteur de la maison mesure, quand il y en a un, et ce que
+      // la personne a donné à sa place : une donnée de plus pour départager
+      // un air sec d'un manque d'eau, jamais une réponse.
+      ?climateLine(indoorClimate, reported: reportedClimate),
       // La base locale, réduite à ce qui peut concerner cette plante. Elle
       // donne au modèle un vocabulaire au lieu de le laisser improviser un
       // nom à chaque analyse, et c'est ce nom-là que l'application affichera.
@@ -385,17 +388,25 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     return parts.join(' ');
   }
 
-  /// La phrase qui décrit le climat mesuré, ou `null` s'il n'y a rien à dire.
-  static String? climateLine(HomeReading? reading) {
-    if (reading == null || reading.isEmpty) return null;
-    final facts = [
-      if (reading.temperatureC != null) '${reading.temperatureC!.toStringAsFixed(1)} °C',
-      if (reading.humidity != null) '${reading.humidity} % relative humidity',
-    ];
-    final room = reading.sensor?.roomName;
-    return 'Measured indoors right now by a home sensor${room == null || room.isEmpty ? '' : ' in the room "$room"'}: ${facts.join(', ')}. '
-        'Take these conditions into account when weighing dry air, cold or heat as causes.';
+  /// La phrase qui décrit le climat, mesuré par le capteur ou donné par la
+  /// personne, ou `null` s'il n'y a rien à dire. Le modèle sait d'où vient
+  /// chaque valeur : une mesure et une estimation ne pèsent pas pareil.
+  static String? climateLine(HomeReading? reading, {ReportedClimate? reported}) {
+    final measured = reading == null || reading.isEmpty ? null : _facts(reading.temperatureC, reading.humidity);
+    final given = reported == null || reported.isEmpty ? null : _facts(reported.temperatureC, reported.humidity);
+    if (measured == null && given == null) return null;
+    final room = reading?.sensor?.roomName;
+    return [
+      if (measured != null) 'Measured indoors right now by a home sensor${room == null || room.isEmpty ? '' : ' in the room "$room"'}: $measured.',
+      if (given != null) 'Given by the owner for where the plant lives: $given.',
+      'Take these conditions into account when weighing dry air, cold or heat as causes.',
+    ].join(' ');
   }
+
+  static String _facts(double? temperatureC, int? humidity) => [
+        if (temperatureC != null) '${temperatureC.toStringAsFixed(1)} °C',
+        if (humidity != null) '$humidity % relative humidity',
+      ].join(', ');
 
   /// Les noms des pistes soumises, normalisés, pour le filet de rattrapage.
   ///

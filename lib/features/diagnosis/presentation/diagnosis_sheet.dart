@@ -41,6 +41,10 @@ class _DiagnosisBody extends ConsumerStatefulWidget {
 class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   final _photos = <StoredPhoto>[];
   final _symptoms = TextEditingController();
+
+  /// Ce que le capteur ne donne pas se demande, sans obligation.
+  final _temperature = TextEditingController();
+  final _humidity = TextEditingController();
   bool _busy = false;
   Diagnosis? _result;
 
@@ -48,15 +52,25 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   /// appartiennent alors, et le compte rendu les remontrera à sa réouverture.
   bool _keepPhotos = false;
 
+  /// Gardé dès le départ : `ref` ne se lit plus au moment de disposer.
+  late final PhotoStorageService _storage;
+
+  @override
+  void initState() {
+    super.initState();
+    _storage = ref.read(photoStorageProvider);
+  }
+
   @override
   void dispose() {
     _symptoms.dispose();
+    _temperature.dispose();
+    _humidity.dispose();
     // Une analyse qu'on n'a pas gardée n'a laissé que des fichiers : on
     // nettoie. Celle qu'on a enregistrée garde les siens.
     if (!_keepPhotos) {
-      final storage = ref.read(photoStorageProvider);
       for (final p in _photos) {
-        storage.deleteFiles(p.filePath, p.thumbPath);
+        _storage.deleteFiles(p.filePath, p.thumbPath);
       }
     }
     super.dispose();
@@ -77,6 +91,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
       final files = [for (final p in _photos) File(await storage.absolutePath(p.filePath))];
       final frequent = ProblemCatalog.idsForIssues(_knownIssues()).toSet();
       final catalog = await ref.read(problemCatalogProvider.future);
+      final measured = _indoorClimate();
       final result = await ref.read(plantDiagnoserProvider).diagnose(
             images: files,
             language: lang,
@@ -89,7 +104,8 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
               pinned: frequent,
             ),
             frequentIds: frequent,
-            indoorClimate: _indoorClimate(),
+            indoorClimate: measured,
+            reportedClimate: _reportedClimate(measured),
           );
       Haptics.success();
       if (mounted) setState(() => _result = result);
@@ -117,6 +133,18 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     if (location != null && outdoor.contains(location)) return null;
     final reading = watch ? ref.watch(homeReadingProvider).value : ref.read(homeReadingProvider).value;
     return reading == null || reading.isEmpty ? null : reading;
+  }
+
+  /// Ce que la personne a tapé pour ce que le capteur ne donne pas, ou
+  /// `null` si elle n'a rien donné. Une valeur que le capteur mesure déjà
+  /// n'est pas demandée, donc pas relue.
+  ReportedClimate? _reportedClimate(HomeReading? measured) {
+    final reported = ReportedClimate.parse(
+      temperature: measured?.temperatureC == null ? _temperature.text : null,
+      humidity: measured?.humidity == null ? _humidity.text : null,
+      fahrenheit: !ref.read(preferencesProvider).metricUnits,
+    );
+    return reported.isEmpty ? null : reported;
   }
 
   /// Ce dont l'espèce souffre habituellement, d'après sa fiche d'entretien.
@@ -185,6 +213,10 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final c = context.colors;
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
+    final measured = _indoorClimate(watch: true);
+    final askTemperature = measured?.temperatureC == null;
+    final askHumidity = measured?.humidity == null;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
       child: Column(
@@ -238,14 +270,44 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             ),
             const SizedBox(height: Space.sm),
             FloraTextField(controller: _symptoms, hint: l10n.diagnosisSymptomsHint, minLines: 1, maxLines: 3),
-            if (_indoorClimate(watch: true) case final reading?) ...[
+            if (askTemperature || askHumidity) ...[
+              // Ce que le capteur ne mesure pas — ou tout, sans capteur, ou
+              // pour une plante dehors — se demande, sans obligation : un
+              // air à 30 % explique des pointes sèches mieux qu'une photo.
+              const SizedBox(height: Space.sm),
+              Row(
+                children: [
+                  if (askTemperature)
+                    Expanded(
+                      child: FloraTextField(
+                        controller: _temperature,
+                        hint: l10n.careTemperature,
+                        suffix: Text(metric ? '°C' : '°F', style: context.text.body.copyWith(color: c.inkTertiary)),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                        textCapitalization: TextCapitalization.none,
+                      ),
+                    ),
+                  if (askTemperature && askHumidity) const SizedBox(width: Space.sm),
+                  if (askHumidity)
+                    Expanded(
+                      child: FloraTextField(
+                        controller: _humidity,
+                        hint: l10n.weatherHumidity,
+                        suffix: Text('%', style: context.text.body.copyWith(color: c.inkTertiary)),
+                        keyboardType: TextInputType.number,
+                        textCapitalization: TextCapitalization.none,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: Space.xs),
+              Text(l10n.diagnosisClimateHint, style: context.text.caption),
+            ],
+            if (measured != null) ...[
               // Dire ce qui part avec les photos : la mesure du capteur, et
               // rien d'autre.
               const SizedBox(height: Space.sm),
-              Text(
-                l10n.diagnosisWithHome(homeReadingLabel(reading, metric: ref.watch(preferencesProvider.select((p) => p.metricUnits)))),
-                style: context.text.caption,
-              ),
+              Text(l10n.diagnosisWithHome(homeReadingLabel(measured, metric: metric)), style: context.text.caption),
             ],
             const SizedBox(height: Space.lg),
             FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),

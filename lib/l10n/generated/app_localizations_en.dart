@@ -1087,106 +1087,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Humidity not received from this sensor. Another one is chosen in the Humidity row.';
 
   @override
-  String get homeClimateOtherSource => 'Other source';
-
-  @override
-  String get homeClimateShortcut => 'Shortcut';
-
-  @override
-  String get homeClimateShortcutSubtitle =>
-      'Value handed over by the Shortcuts app (a HomePod, for example).';
-
-  @override
-  String get homeClimateShortcutLast => 'Last value received';
-
-  @override
-  String get homeClimateShortcutNone => 'Nothing received yet.';
-
-  @override
-  String get homeClimateShortcutStale =>
-      'Value received more than six hours ago, not used.';
-
-  @override
-  String get homeClimateOpenShortcuts => 'Open Shortcuts';
-
-  @override
-  String get homeClimateAddShortcut => 'Add the shortcut';
-
-  @override
-  String get homeClimateAddShortcutSubtitle =>
-      'One tap, from a shared link. On first run, pick the HomePod.';
-
-  @override
-  String get homeClimateRunShortcut => 'Update now';
-
-  @override
-  String homeClimateRunShortcutSubtitle(String name) {
-    return 'Runs “$name” in Shortcuts and comes back here.';
-  }
-
-  @override
-  String get homeClimateShortcutFailed =>
-      'The shortcut did not complete. It can be checked in Shortcuts.';
-
-  @override
-  String get homeClimateOneTapStep1Title => 'The shortcut, in one tap';
-
-  @override
-  String homeClimateOneTapStep1Body(String name) {
-    return '“Add the shortcut” opens “$name” in Shortcuts: Add. Then, in the Home action, tap the accessory to point at the HomePod.';
-  }
-
-  @override
-  String get homeClimateOneTapStep3Title => 'On every opening, if wanted';
-
-  @override
-  String get homeClimateOneTapStep3Body =>
-      '“Update now” runs the shortcut from here. To make it automatic: Shortcuts › Automation › App › Auxine › “Is Opened” › run this shortcut, immediately.';
-
-  @override
-  String get homeClimateShortcutFooter =>
-      'For a HomePod, whose sensors are not accessible to third-party apps: the value goes through Shortcuts.';
-
-  @override
-  String get homeClimateGuideTitle => 'HomePod sensors';
-
-  @override
-  String get homeClimateGuideSubtitle =>
-      'Temperature and humidity, through Shortcuts, in four steps.';
-
-  @override
-  String get homeClimateGuideWhy =>
-      'A HomePod\'s temperature and humidity sensors are only accessible to the Home app. Through a Shortcuts automation, their value is handed to Auxine each time it opens. Nothing leaves the device.';
-
-  @override
-  String get homeClimateStep1Title => 'An automation on opening';
-
-  @override
-  String get homeClimateStep1Body =>
-      'Shortcuts › Automation › new automation › App › Auxine › “Is Opened”, run immediately.';
-
-  @override
-  String get homeClimateStep2Title => 'The HomePod\'s state';
-
-  @override
-  String get homeClimateStep2Body =>
-      'Home action “Get State”: pick the HomePod, then “Current Relative Humidity”. A second action for “Current Temperature” if wanted.';
-
-  @override
-  String get homeClimateStep3Title => 'The value to Auxine';
-
-  @override
-  String get homeClimateStep3Body =>
-      'Auxine action “Report climate to Auxine”: put the values obtained into Humidity and Temperature, and the room if wanted.';
-
-  @override
-  String get homeClimateStep4Title => 'Choose “Shortcut” as the sensor';
-
-  @override
-  String get homeClimateStep4Body =>
-      'In Profile › Apple Home, Humidity or Temperature row › “Shortcut”. Next time Auxine opens, the reading shows.';
-
-  @override
   String get homeClimateNone => 'No sensor';
 
   @override
@@ -1212,7 +1112,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'No temperature or humidity sensor in Apple Home. For a HomePod, the value goes through Shortcuts: Profile › Apple Home.';
+      'No temperature or humidity sensor in Apple Home.';
 
   @override
   String get homeClimateDenied =>
@@ -1890,6 +1790,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
+
+  @override
+  String get diagnosisClimateHint =>
+      'Optional: the conditions around the plant sharpen the analysis.';
 
   @override
   String get analyze => 'Analyze';

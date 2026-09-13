@@ -100,20 +100,14 @@ et l'humidité relative, et rien d'autre.
   autres ; air humide au-delà de 70 % ; froid sous le minimum de l'espèce ;
   chaleur au-delà de sa plage idéale, ou de 30° sans plage.
 - Les HomePod sont invisibles pour HomeKit vu d'une app tierce (Apple les
-  réserve à Maison). Le pont passe par Raccourcis : l'action App Intents
-  « Transmettre le climat à Auxine » (`ios/Runner/HomeClimateIntents.swift`)
-  écrit `home_shortcut_reading` dans les préférences de l'app, une
-  automatisation « Quand Auxine est ouverte » l'appelle avec l'état lu par
-  Maison « Obtenir l'état », et le capteur « Raccourci » (`HomeSensor.shortcutId`)
-  relit cette valeur au réveil de l'app. Une valeur de plus de six heures ne
-  compte plus. Deux gestes depuis l'app (`HomeShortcut`) : ajouter le
-  raccourci partagé (lien iCloud `HOME_SHORTCUT_URL`, recette dans
-  tool/README.md) et le lancer par `shortcuts://x-callback-url/run-shortcut`,
-  avec retour `auxine://home-climate/updated` ou `…/failed` traité par
-  `openFloraLink`. L'automatisation, elle, ne se crée que dans Raccourcis :
-  iOS ne le permet à aucune app.
+  réserve à Maison) : leurs capteurs ne se lisent pas, et l'application ne
+  cherche pas à les contourner.
 - Le diagnostic joint la mesure à la question, pour une plante qui n'est pas
-  dehors, et le dit sous le champ des symptômes.
+  dehors, et le dit sous le champ des symptômes. Ce que le capteur ne donne
+  pas — l'humidité d'un thermostat seul, tout sans capteur ou pour une plante
+  dehors — se demande là aussi, deux champs facultatifs sous les symptômes,
+  dans l'unité de la personne (`ReportedClimate`, converti en Celsius, hors
+  plage ignoré). Le modèle sait ce qui est mesuré et ce qui est donné.
 - Réglages : `NSHomeKitUsageDescription` dans `Info.plist`, entitlement
   `com.apple.developer.homekit`, capability *HomeKit* sur l'App ID. Sans
   capteur dans la maison, l'étape d'onboarding se passe d'un geste.

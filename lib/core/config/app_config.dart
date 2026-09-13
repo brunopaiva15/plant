@@ -36,10 +36,10 @@ abstract final class AppConfig {
   static const String version = '1.0.0';
   static const int build = 1;
 
-  /// Schéma des liens encodés dans les QR codes (`auxine://plant/<id>`),
-  /// de la redirection déclarée côté Supabase pour la connexion Google, et
-  /// du retour des raccourcis. Le nom de l'application, tel que la personne
-  /// le voit : une étiquette qui l'affiche en clair dit d'où elle vient.
+  /// Schéma des liens encodés dans les QR codes (`auxine://plant/<id>`) et
+  /// de la redirection déclarée côté Supabase pour la connexion Google. Le
+  /// nom de l'application, tel que la personne le voit : une étiquette qui
+  /// l'affiche en clair dit d'où elle vient.
   static const String linkScheme = 'auxine';
 
   /// Fournisseurs tiers proposés sur l'écran Compte, en plus de l'e-mail par
@@ -50,17 +50,6 @@ abstract final class AppConfig {
   /// la priorité, et la règle 4.8 de l'App Store n'exige Apple qu'en présence
   /// d'un autre fournisseur tiers — proposer Apple seul est permis.
   static const bool googleSignInEnabled = false;
-
-  /// Le raccourci « Climat Auxine », qui lit un HomePod dans Raccourcis et
-  /// transmet la valeur à l'application (voir docs/05, Apple Maison).
-  ///
-  /// [homeShortcutName] est le nom sous lequel l'application le lance ;
-  /// [homeShortcutUrl] est le lien iCloud du raccourci partagé, qui
-  /// s'ajoute d'un tap. Vide, le bouton « Ajouter le raccourci » n'est pas
-  /// dessiné et il reste la marche à suivre à la main. Le raccourci se crée
-  /// une fois sur un iPhone, avec le compte de l'éditeur : voir tool/README.md.
-  static const String homeShortcutName = 'Climat Auxine';
-  static const String homeShortcutUrl = String.fromEnvironment('HOME_SHORTCUT_URL');
 
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.

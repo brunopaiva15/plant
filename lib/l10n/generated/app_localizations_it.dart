@@ -1089,106 +1089,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Umidità non ricevuta da questo sensore. Un altro si sceglie nella riga Umidità.';
 
   @override
-  String get homeClimateOtherSource => 'Altra fonte';
-
-  @override
-  String get homeClimateShortcut => 'Comando rapido';
-
-  @override
-  String get homeClimateShortcutSubtitle =>
-      'Valore trasmesso dall\'app Comandi rapidi (un HomePod, per esempio).';
-
-  @override
-  String get homeClimateShortcutLast => 'Ultimo valore ricevuto';
-
-  @override
-  String get homeClimateShortcutNone => 'Nulla ricevuto per ora.';
-
-  @override
-  String get homeClimateShortcutStale =>
-      'Valore ricevuto più di sei ore fa, non usato.';
-
-  @override
-  String get homeClimateOpenShortcuts => 'Apri Comandi rapidi';
-
-  @override
-  String get homeClimateAddShortcut => 'Aggiungi il comando rapido';
-
-  @override
-  String get homeClimateAddShortcutSubtitle =>
-      'Con un tocco, da un link condiviso. Al primo avvio, scegliere l\'HomePod.';
-
-  @override
-  String get homeClimateRunShortcut => 'Aggiorna ora';
-
-  @override
-  String homeClimateRunShortcutSubtitle(String name) {
-    return 'Esegue «$name» in Comandi rapidi e torna qui.';
-  }
-
-  @override
-  String get homeClimateShortcutFailed =>
-      'Il comando rapido non è andato a buon fine. Si verifica in Comandi rapidi.';
-
-  @override
-  String get homeClimateOneTapStep1Title => 'Il comando rapido, con un tocco';
-
-  @override
-  String homeClimateOneTapStep1Body(String name) {
-    return '«Aggiungi il comando rapido» apre «$name» in Comandi rapidi: Aggiungi. Poi, nell\'azione Casa, toccare l\'accessorio per indicare l\'HomePod.';
-  }
-
-  @override
-  String get homeClimateOneTapStep3Title => 'A ogni apertura, se si vuole';
-
-  @override
-  String get homeClimateOneTapStep3Body =>
-      '«Aggiorna ora» esegue il comando rapido da qui. Per renderlo automatico: Comandi rapidi › Automazione › App › Auxine › «Viene aperta» › esegui questo comando rapido, subito.';
-
-  @override
-  String get homeClimateShortcutFooter =>
-      'Per un HomePod, i cui sensori non sono accessibili alle app di terze parti: il valore passa da Comandi rapidi.';
-
-  @override
-  String get homeClimateGuideTitle => 'Sensori di un HomePod';
-
-  @override
-  String get homeClimateGuideSubtitle =>
-      'Temperatura e umidità, con Comandi rapidi, in quattro passaggi.';
-
-  @override
-  String get homeClimateGuideWhy =>
-      'I sensori di temperatura e umidità di un HomePod sono accessibili solo all\'app Casa. Con un\'automazione di Comandi rapidi, il loro valore è trasmesso ad Auxine a ogni apertura. Nulla lascia il dispositivo.';
-
-  @override
-  String get homeClimateStep1Title => 'Un\'automazione all\'apertura';
-
-  @override
-  String get homeClimateStep1Body =>
-      'Comandi rapidi › Automazione › nuova automazione › App › Auxine › «Viene aperta», esecuzione immediata.';
-
-  @override
-  String get homeClimateStep2Title => 'Lo stato dell\'HomePod';
-
-  @override
-  String get homeClimateStep2Body =>
-      'Azione Casa «Ottieni stato»: scegliere l\'HomePod, poi «Umidità relativa attuale». Una seconda azione per «Temperatura attuale» se si vuole.';
-
-  @override
-  String get homeClimateStep3Title => 'Il valore ad Auxine';
-
-  @override
-  String get homeClimateStep3Body =>
-      'Azione Auxine «Trasmetti il clima ad Auxine»: mettere i valori ottenuti in Umidità e Temperatura, e la stanza se si vuole.';
-
-  @override
-  String get homeClimateStep4Title => 'Scegliere «Comando rapido» come sensore';
-
-  @override
-  String get homeClimateStep4Body =>
-      'In Profilo › Casa di Apple, riga Umidità o Temperatura › «Comando rapido». Alla prossima apertura di Auxine la misura compare.';
-
-  @override
   String get homeClimateNone => 'Nessun sensore';
 
   @override
@@ -1214,7 +1114,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Nessun sensore di temperatura o umidità in Casa di Apple. Per un HomePod, il valore passa da Comandi rapidi: Profilo › Casa di Apple.';
+      'Nessun sensore di temperatura o umidità in Casa di Apple.';
 
   @override
   String get homeClimateDenied =>
@@ -1896,6 +1796,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
+
+  @override
+  String get diagnosisClimateHint =>
+      'Facoltativo: le condizioni intorno alla pianta affinano l\'analisi.';
 
   @override
   String get analyze => 'Analizza';

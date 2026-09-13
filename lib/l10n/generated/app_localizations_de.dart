@@ -1090,106 +1090,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine Luftfeuchtigkeit von diesem Sensor empfangen. Ein anderer wird in der Zeile Luftfeuchtigkeit gewählt.';
 
   @override
-  String get homeClimateOtherSource => 'Andere Quelle';
-
-  @override
-  String get homeClimateShortcut => 'Kurzbefehl';
-
-  @override
-  String get homeClimateShortcutSubtitle =>
-      'Wert, den die App Kurzbefehle übergibt (zum Beispiel ein HomePod).';
-
-  @override
-  String get homeClimateShortcutLast => 'Zuletzt empfangener Wert';
-
-  @override
-  String get homeClimateShortcutNone => 'Bisher nichts empfangen.';
-
-  @override
-  String get homeClimateShortcutStale =>
-      'Wert vor mehr als sechs Stunden empfangen, nicht verwendet.';
-
-  @override
-  String get homeClimateOpenShortcuts => 'Kurzbefehle öffnen';
-
-  @override
-  String get homeClimateAddShortcut => 'Kurzbefehl hinzufügen';
-
-  @override
-  String get homeClimateAddShortcutSubtitle =>
-      'Mit einem Tipp, über einen geteilten Link. Beim ersten Start den HomePod wählen.';
-
-  @override
-  String get homeClimateRunShortcut => 'Jetzt aktualisieren';
-
-  @override
-  String homeClimateRunShortcutSubtitle(String name) {
-    return 'Führt „$name“ in Kurzbefehle aus und kehrt hierher zurück.';
-  }
-
-  @override
-  String get homeClimateShortcutFailed =>
-      'Der Kurzbefehl wurde nicht abgeschlossen. Er lässt sich in Kurzbefehle prüfen.';
-
-  @override
-  String get homeClimateOneTapStep1Title => 'Der Kurzbefehl, mit einem Tipp';
-
-  @override
-  String homeClimateOneTapStep1Body(String name) {
-    return '„Kurzbefehl hinzufügen“ öffnet „$name“ in Kurzbefehle: Hinzufügen. Dann in der Home-Aktion das Zubehör antippen und den HomePod wählen.';
-  }
-
-  @override
-  String get homeClimateOneTapStep3Title => 'Bei jedem Öffnen, falls gewünscht';
-
-  @override
-  String get homeClimateOneTapStep3Body =>
-      '„Jetzt aktualisieren“ führt den Kurzbefehl von hier aus. Automatisch: Kurzbefehle › Automation › App › Auxine › „Wird geöffnet“ › diesen Kurzbefehl ausführen, sofort.';
-
-  @override
-  String get homeClimateShortcutFooter =>
-      'Für einen HomePod, dessen Sensoren Dritt-Apps nicht zugänglich sind: der Wert kommt über Kurzbefehle.';
-
-  @override
-  String get homeClimateGuideTitle => 'Sensoren eines HomePod';
-
-  @override
-  String get homeClimateGuideSubtitle =>
-      'Temperatur und Luftfeuchtigkeit, über Kurzbefehle, in vier Schritten.';
-
-  @override
-  String get homeClimateGuideWhy =>
-      'Die Temperatur- und Feuchtigkeitssensoren eines HomePod sind nur der Home-App zugänglich. Über eine Automation in Kurzbefehle wird ihr Wert bei jedem Öffnen an Auxine übergeben. Nichts verlässt das Gerät.';
-
-  @override
-  String get homeClimateStep1Title => 'Eine Automation beim Öffnen';
-
-  @override
-  String get homeClimateStep1Body =>
-      'Kurzbefehle › Automation › neue Automation › App › Auxine › „Wird geöffnet“, sofort ausführen.';
-
-  @override
-  String get homeClimateStep2Title => 'Der Status des HomePod';
-
-  @override
-  String get homeClimateStep2Body =>
-      'Home-Aktion „Status abrufen“: den HomePod wählen, dann „Aktuelle relative Luftfeuchtigkeit“. Eine zweite Aktion für „Aktuelle Temperatur“, falls gewünscht.';
-
-  @override
-  String get homeClimateStep3Title => 'Der Wert an Auxine';
-
-  @override
-  String get homeClimateStep3Body =>
-      'Auxine-Aktion „Klima an Auxine übermitteln“: die erhaltenen Werte in Luftfeuchtigkeit und Temperatur eintragen, den Raum falls gewünscht.';
-
-  @override
-  String get homeClimateStep4Title => '„Kurzbefehl“ als Sensor wählen';
-
-  @override
-  String get homeClimateStep4Body =>
-      'Unter Profil › Apple Home, Zeile Luftfeuchtigkeit oder Temperatur › „Kurzbefehl“. Beim nächsten Öffnen von Auxine erscheint der Messwert.';
-
-  @override
   String get homeClimateNone => 'Kein Sensor';
 
   @override
@@ -1215,7 +1115,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Kein Temperatur- oder Feuchtigkeitssensor in Apple Home. Bei einem HomePod kommt der Wert über Kurzbefehle: Profil › Apple Home.';
+      'Kein Temperatur- oder Feuchtigkeitssensor in Apple Home.';
 
   @override
   String get homeClimateDenied =>
@@ -1895,6 +1795,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
+
+  @override
+  String get diagnosisClimateHint =>
+      'Optional: Die Bedingungen rund um die Pflanze schärfen die Analyse.';
 
   @override
   String get analyze => 'Analysieren';
