@@ -103,13 +103,13 @@ final class HomeClimateChannel: NSObject, HMHomeManagerDelegate {
     for home in manager.homes {
       for accessory in home.accessories {
         let (temperature, humidity) = characteristics(of: accessory)
-        if temperature == nil && humidity == nil { continue }
+        if temperature.isEmpty && humidity.isEmpty { continue }
         var item: [String: Any] = [
           "id": accessory.uniqueIdentifier.uuidString,
           "name": accessory.name,
           "home": home.name,
-          "temperature": temperature != nil,
-          "humidity": humidity != nil,
+          "temperature": !temperature.isEmpty,
+          "humidity": !humidity.isEmpty,
         ]
         if let room = accessory.room?.name, !room.isEmpty { item["room"] = room }
         out.append(item)
@@ -126,17 +126,27 @@ final class HomeClimateChannel: NSObject, HMHomeManagerDelegate {
     return nil
   }
 
-  /// Les deux caractéristiques qui nous intéressent, si l'accessoire les a.
-  private func characteristics(of accessory: HMAccessory) -> (HMCharacteristic?, HMCharacteristic?) {
-    var temperature: HMCharacteristic?
-    var humidity: HMCharacteristic?
+  /// Les caractéristiques qui nous intéressent, toutes : un accessoire peut
+  /// porter la même grandeur sur plusieurs services (un thermostat et son
+  /// capteur de pièce), et le premier n'est pas toujours celui qui répond.
+  private func characteristics(of accessory: HMAccessory) -> (temperature: [HMCharacteristic], humidity: [HMCharacteristic]) {
+    var temperature: [HMCharacteristic] = []
+    var humidity: [HMCharacteristic] = []
     for service in accessory.services {
       for c in service.characteristics {
-        if c.characteristicType == HMCharacteristicTypeCurrentTemperature, temperature == nil { temperature = c }
-        if c.characteristicType == HMCharacteristicTypeCurrentRelativeHumidity, humidity == nil { humidity = c }
+        if c.characteristicType == HMCharacteristicTypeCurrentTemperature { temperature.append(c) }
+        if c.characteristicType == HMCharacteristicTypeCurrentRelativeHumidity { humidity.append(c) }
       }
     }
     return (temperature, humidity)
+  }
+
+  /// La première valeur connue parmi plusieurs caractéristiques.
+  private func firstValue(_ list: [HMCharacteristic]) -> Double? {
+    for c in list {
+      if let n = c.value as? NSNumber { return n.doubleValue }
+    }
+    return nil
   }
 
   // MARK: - Mesure
@@ -149,7 +159,7 @@ final class HomeClimateChannel: NSObject, HMHomeManagerDelegate {
     let (temperature, humidity) = characteristics(of: accessory)
     let group = DispatchGroup()
     let once = Once()
-    for c in [temperature, humidity].compactMap({ $0 }) {
+    for c in temperature + humidity {
       group.enter()
       // Une lecture qui échoue garde la dernière valeur connue : un capteur
       // qui a répondu il y a dix minutes vaut mieux qu'un tiret.
@@ -158,8 +168,8 @@ final class HomeClimateChannel: NSObject, HMHomeManagerDelegate {
     let answer = {
       once.run {
         var out: [String: Any] = ["at": Int(Date().timeIntervalSince1970 * 1000)]
-        if let t = temperature?.value as? NSNumber { out["temperature"] = t.doubleValue }
-        if let h = humidity?.value as? NSNumber { out["humidity"] = h.doubleValue }
+        if let t = self.firstValue(temperature) { out["temperature"] = t }
+        if let h = self.firstValue(humidity) { out["humidity"] = h }
         result(out.count > 1 ? out : nil)
       }
     }

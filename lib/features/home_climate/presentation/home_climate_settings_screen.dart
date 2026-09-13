@@ -130,7 +130,9 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
               FloraListRow(
                 leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
                 title: l10n.careTemperature,
-                subtitle: sensor == null ? l10n.homeClimateNone : [sensor.label, ?_detail(sensor)].join(' · '),
+                // Sous le nom, ce que HomeKit dit que l'accessoire mesure :
+                // si « Humidité » n'y est pas, on sait d'où vient le tiret.
+                subtitle: sensor == null ? l10n.homeClimateNone : [sensor.label, ?_detail(sensor), measuresLabel(l10n, live ?? sensor)].join(' · '),
                 trailing: sensor == null
                     ? null
                     : FloraIconButton(
