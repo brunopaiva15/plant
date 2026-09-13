@@ -1992,6 +1992,54 @@ abstract class AppLocalizations {
   /// **'Humidité non reçue. Un autre capteur peut la donner.'**
   String get homeClimateHumidityMissing;
 
+  /// No description provided for @homeClimateOtherSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre source'**
+  String get homeClimateOtherSource;
+
+  /// No description provided for @homeClimateShortcut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Raccourci'**
+  String get homeClimateShortcut;
+
+  /// No description provided for @homeClimateShortcutSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur transmise par l\'app Raccourcis (HomePod, par exemple).'**
+  String get homeClimateShortcutSubtitle;
+
+  /// No description provided for @homeClimateShortcutLast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernière valeur reçue'**
+  String get homeClimateShortcutLast;
+
+  /// No description provided for @homeClimateShortcutNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien reçu pour l\'instant.'**
+  String get homeClimateShortcutNone;
+
+  /// No description provided for @homeClimateShortcutStale.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur reçue il y a plus de six heures, non utilisée.'**
+  String get homeClimateShortcutStale;
+
+  /// No description provided for @homeClimateOpenShortcuts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir Raccourcis'**
+  String get homeClimateOpenShortcuts;
+
+  /// No description provided for @homeClimateShortcutHow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les capteurs des HomePod ne sont pas lisibles par une app tierce, mais Raccourcis les lit. Dans Raccourcis › Automatisation : « Quand Auxine est ouverte », exécuter immédiatement, avec deux actions : Maison « Obtenir l\'état » du HomePod (humidité relative, puis température si voulu), et Auxine « Transmettre le climat à Auxine » avec ces valeurs. Choisir ensuite « Raccourci » comme capteur ci-dessus.'**
+  String get homeClimateShortcutHow;
+
   /// No description provided for @homeClimateNone.
   ///
   /// In fr, this message translates to:

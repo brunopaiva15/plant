@@ -88,6 +88,22 @@ class _HomeSensorPickerBodyState extends State<_HomeSensorPickerBody> {
                 ),
                 const SizedBox(height: Space.lg),
               ],
+              // Ce que HomeKit ne donne pas — les HomePod — peut venir d'un
+              // raccourci, quel que soit le capteur derrière.
+              FloraGroup(
+                header: l10n.homeClimateOtherSource,
+                children: [
+                  FloraListRow(
+                    leading: const Text('⚡️', style: TextStyle(fontSize: 18)),
+                    title: l10n.homeClimateShortcut,
+                    subtitle: l10n.homeClimateShortcutSubtitle,
+                    trailing: widget.selectedId == HomeSensor.shortcutId ? Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage) : null,
+                    chevron: false,
+                    onTap: () => Navigator.of(context).pop(HomeSensor(id: HomeSensor.shortcutId, name: l10n.homeClimateShortcut)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Space.md),
               for (final room in rooms) ...[
                 FloraGroup(
                   header: room ?? l10n.homeClimateNoRoom,

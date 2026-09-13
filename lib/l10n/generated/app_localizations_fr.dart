@@ -1089,6 +1089,33 @@ class AppLocalizationsFr extends AppLocalizations {
       'Humidité non reçue. Un autre capteur peut la donner.';
 
   @override
+  String get homeClimateOtherSource => 'Autre source';
+
+  @override
+  String get homeClimateShortcut => 'Raccourci';
+
+  @override
+  String get homeClimateShortcutSubtitle =>
+      'Valeur transmise par l\'app Raccourcis (HomePod, par exemple).';
+
+  @override
+  String get homeClimateShortcutLast => 'Dernière valeur reçue';
+
+  @override
+  String get homeClimateShortcutNone => 'Rien reçu pour l\'instant.';
+
+  @override
+  String get homeClimateShortcutStale =>
+      'Valeur reçue il y a plus de six heures, non utilisée.';
+
+  @override
+  String get homeClimateOpenShortcuts => 'Ouvrir Raccourcis';
+
+  @override
+  String get homeClimateShortcutHow =>
+      'Les capteurs des HomePod ne sont pas lisibles par une app tierce, mais Raccourcis les lit. Dans Raccourcis › Automatisation : « Quand Auxine est ouverte », exécuter immédiatement, avec deux actions : Maison « Obtenir l\'état » du HomePod (humidité relative, puis température si voulu), et Auxine « Transmettre le climat à Auxine » avec ces valeurs. Choisir ensuite « Raccourci » comme capteur ci-dessus.';
+
+  @override
   String get homeClimateNone => 'Aucun capteur';
 
   @override

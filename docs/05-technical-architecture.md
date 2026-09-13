@@ -99,6 +99,14 @@ et l'humidité relative, et rien d'autre.
   air sec sous 45 % pour les espèces à forte humidité, sous 30 % pour les
   autres ; air humide au-delà de 70 % ; froid sous le minimum de l'espèce ;
   chaleur au-delà de sa plage idéale, ou de 30° sans plage.
+- Les HomePod sont invisibles pour HomeKit vu d'une app tierce (Apple les
+  réserve à Maison). Le pont passe par Raccourcis : l'action App Intents
+  « Transmettre le climat à Auxine » (`ios/Runner/HomeClimateIntents.swift`)
+  écrit `home_shortcut_reading` dans les préférences de l'app, une
+  automatisation « Quand Auxine est ouverte » l'appelle avec l'état lu par
+  Maison « Obtenir l'état », et le capteur « Raccourci » (`HomeSensor.shortcutId`)
+  relit cette valeur au réveil de l'app. Une valeur de plus de six heures ne
+  compte plus.
 - Le diagnostic joint la mesure à la question, pour une plante qui n'est pas
   dehors, et le dit sous le champ des symptômes.
 - Réglages : `NSHomeKitUsageDescription` dans `Info.plist`, entitlement

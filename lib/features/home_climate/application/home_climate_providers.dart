@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart' show AppLifecycleListener;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
@@ -22,9 +23,25 @@ final homeReadingProvider = FutureProvider<HomeReading?>((ref) async {
   final timer = Timer(const Duration(minutes: 15), ref.invalidateSelf);
   ref.onDispose(timer.cancel);
   final service = ref.watch(homeClimateServiceProvider);
+  final prefs = ref.watch(preferencesServiceProvider);
+  // Le raccourci écrit dans le fichier des préférences pendant que l'app
+  // dort ; au réveil on le relit, et la mesure repart.
+  final lifecycle = AppLifecycleListener(onResume: () async {
+    await prefs.reload();
+    ref.invalidateSelf();
+  });
+  ref.onDispose(lifecycle.dispose);
+
+  /// La mesure d'un capteur : HomeKit, ou la valeur transmise par Raccourcis.
+  Future<HomeReading?> readOf(HomeSensor s) async {
+    if (!s.isShortcut) return service.read(s.id);
+    await prefs.reload();
+    return decodeShortcutReading(prefs.homeShortcutReading) ?? HomeReading(at: DateTime.now(), error: 'shortcut');
+  }
+
   try {
-    final main = await service.read(sensor.id);
-    final other = humiditySensor == null || humiditySensor.id == sensor.id ? null : await service.read(humiditySensor.id);
+    final main = await readOf(sensor);
+    final other = humiditySensor == null || humiditySensor.id == sensor.id ? null : await readOf(humiditySensor);
     final humidity = other != null ? other.humidity : (humiditySensor == null ? main?.humidity : null);
     // La raison d'une valeur manquante, celle du capteur qui devait la donner.
     final humidityError = other?.error ?? (humiditySensor == null ? main?.error : null);
@@ -37,7 +54,8 @@ final homeReadingProvider = FutureProvider<HomeReading?>((ref) async {
       at: main?.at ?? other?.at ?? DateTime.now(),
       temperatureC: main?.temperatureC,
       humidity: humidity,
-      sensor: sensor,
+      // La pièce d'un raccourci est celle que le raccourci a donnée.
+      sensor: sensor.isShortcut && main?.sensor?.roomName != null ? main!.sensor! : sensor,
       humiditySensor: humiditySensor,
       error: error.isEmpty ? null : error,
     );
@@ -88,3 +106,11 @@ class DismissedHomeTipsController extends Notifier<DateTime?> {
 }
 
 final dismissedHomeTipsProvider = NotifierProvider<DismissedHomeTipsController, DateTime?>(DismissedHomeTipsController.new);
+
+/// La dernière valeur transmise par Raccourcis, telle quelle, pour l'écran
+/// de réglage : reçue ou non, périmée ou non.
+final homeShortcutReadingProvider = FutureProvider.autoDispose<HomeReading?>((ref) async {
+  final prefs = ref.watch(preferencesServiceProvider);
+  await prefs.reload();
+  return decodeShortcutReading(prefs.homeShortcutReading);
+});

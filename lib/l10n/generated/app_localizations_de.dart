@@ -1091,6 +1091,33 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine Luftfeuchtigkeit empfangen. Ein anderer Sensor kann sie liefern.';
 
   @override
+  String get homeClimateOtherSource => 'Andere Quelle';
+
+  @override
+  String get homeClimateShortcut => 'Kurzbefehl';
+
+  @override
+  String get homeClimateShortcutSubtitle =>
+      'Wert, den die App Kurzbefehle übergibt (zum Beispiel ein HomePod).';
+
+  @override
+  String get homeClimateShortcutLast => 'Zuletzt empfangener Wert';
+
+  @override
+  String get homeClimateShortcutNone => 'Bisher nichts empfangen.';
+
+  @override
+  String get homeClimateShortcutStale =>
+      'Wert vor mehr als sechs Stunden empfangen, nicht verwendet.';
+
+  @override
+  String get homeClimateOpenShortcuts => 'Kurzbefehle öffnen';
+
+  @override
+  String get homeClimateShortcutHow =>
+      'Die Sensoren der HomePods kann eine Dritt-App nicht lesen, Kurzbefehle aber schon. In Kurzbefehle › Automation: „Wenn Auxine geöffnet wird“, sofort ausführen, mit zwei Aktionen: Home „Status abrufen“ des HomePod (relative Luftfeuchtigkeit, dann Temperatur, falls gewünscht) und Auxine „Klima an Auxine übermitteln“ mit diesen Werten. Danach oben „Kurzbefehl“ als Sensor wählen.';
+
+  @override
   String get homeClimateNone => 'Kein Sensor';
 
   @override

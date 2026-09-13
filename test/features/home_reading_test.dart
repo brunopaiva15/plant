@@ -11,6 +11,8 @@ import 'fakes/fake_home_climate_service.dart';
 /// La mesure de la maison, quand la température et l'humidité ne viennent
 /// pas du même capteur.
 void main() {
+  // La mesure écoute le réveil de l'application : il faut un binding.
+  TestWidgetsFlutterBinding.ensureInitialized();
   const thermostat = HomeSensor(id: 'T', name: 'Thermostat', roomName: 'Salon', hasHumidity: false);
   const hygro = HomeSensor(id: 'H', name: 'Hygromètre', roomName: 'Salon', hasTemperature: false);
   final at = DateTime(2026, 9, 12, 10);
@@ -73,6 +75,37 @@ void main() {
     final both = FakeHomeClimateService(readings: {'T': HomeReading(at: at, temperatureC: 19, error: 'lent'), 'H': HomeReading(at: at, humidity: 40)});
     final c2 = await container({'home_sensor': thermostat.encode(), 'home_humidity_sensor': hygro.encode()}, both);
     expect((await c2.read(homeReadingProvider.future))!.error, isNull);
+  });
+
+  test("l'humidité vient d'un raccourci : la valeur transmise, avec sa pièce", () async {
+    final home = FakeHomeClimateService(readings: {'T': HomeReading(at: at, temperatureC: 21)});
+    const shortcut = HomeSensor(id: HomeSensor.shortcutId, name: 'Raccourci');
+    final written = DateTime.now().subtract(const Duration(minutes: 5)).millisecondsSinceEpoch;
+    final c = await container({
+      'home_sensor': thermostat.encode(),
+      'home_humidity_sensor': shortcut.encode(),
+      'home_shortcut_reading': '|45.0|$written|Salle de jeux',
+    }, home);
+    final reading = (await c.read(homeReadingProvider.future))!;
+    expect(reading.temperatureC, 21);
+    expect(reading.humidity, 45);
+    expect(reading.error, isNull);
+    expect(home.readCalls, 1);
+  });
+
+  test('une valeur de raccourci trop vieille ne compte plus, et le dit', () async {
+    final old = DateTime.now().subtract(const Duration(hours: 7)).millisecondsSinceEpoch;
+    final c = await container({
+      'home_sensor': const HomeSensor(id: HomeSensor.shortcutId, name: 'Raccourci').encode(),
+      'home_shortcut_reading': '22.5|45|$old|Salon',
+    }, FakeHomeClimateService());
+    final reading = (await c.read(homeReadingProvider.future))!;
+    expect(reading.temperatureC, isNull);
+    expect(reading.humidity, isNull);
+    expect(reading.error, 'stale');
+    expect(decodeShortcutReading('22.5|45|$old|Salon', now: DateTime.fromMillisecondsSinceEpoch(old + 1000))!.humidity, 45);
+    expect(decodeShortcutReading('||1'), isNull);
+    expect(decodeShortcutReading('x'), isNull);
   });
 
   test('retirer le capteur de température emporte celui de l’humidité', () async {

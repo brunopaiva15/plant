@@ -1088,6 +1088,33 @@ class AppLocalizationsEn extends AppLocalizations {
       'Humidity not received. Another sensor can provide it.';
 
   @override
+  String get homeClimateOtherSource => 'Other source';
+
+  @override
+  String get homeClimateShortcut => 'Shortcut';
+
+  @override
+  String get homeClimateShortcutSubtitle =>
+      'Value handed over by the Shortcuts app (a HomePod, for example).';
+
+  @override
+  String get homeClimateShortcutLast => 'Last value received';
+
+  @override
+  String get homeClimateShortcutNone => 'Nothing received yet.';
+
+  @override
+  String get homeClimateShortcutStale =>
+      'Value received more than six hours ago, not used.';
+
+  @override
+  String get homeClimateOpenShortcuts => 'Open Shortcuts';
+
+  @override
+  String get homeClimateShortcutHow =>
+      'HomePod sensors cannot be read by a third-party app, but Shortcuts reads them. In Shortcuts › Automation: “When Auxine is opened”, run immediately, with two actions: Home “Get State” of the HomePod (relative humidity, then temperature if wanted), and Auxine “Report climate to Auxine” with those values. Then choose “Shortcut” as the sensor above.';
+
+  @override
   String get homeClimateNone => 'No sensor';
 
   @override

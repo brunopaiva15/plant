@@ -1089,6 +1089,33 @@ class AppLocalizationsIt extends AppLocalizations {
       'Umidità non ricevuta. Un altro sensore può fornirla.';
 
   @override
+  String get homeClimateOtherSource => 'Altra fonte';
+
+  @override
+  String get homeClimateShortcut => 'Comando rapido';
+
+  @override
+  String get homeClimateShortcutSubtitle =>
+      'Valore trasmesso dall\'app Comandi rapidi (un HomePod, per esempio).';
+
+  @override
+  String get homeClimateShortcutLast => 'Ultimo valore ricevuto';
+
+  @override
+  String get homeClimateShortcutNone => 'Nulla ricevuto per ora.';
+
+  @override
+  String get homeClimateShortcutStale =>
+      'Valore ricevuto più di sei ore fa, non usato.';
+
+  @override
+  String get homeClimateOpenShortcuts => 'Apri Comandi rapidi';
+
+  @override
+  String get homeClimateShortcutHow =>
+      'I sensori degli HomePod non sono leggibili da un\'app di terze parti, ma Comandi rapidi li legge. In Comandi rapidi › Automazione: «Quando Auxine viene aperta», esegui subito, con due azioni: Casa «Ottieni stato» dell\'HomePod (umidità relativa, poi temperatura se si vuole) e Auxine «Trasmetti il clima ad Auxine» con quei valori. Poi scegliere «Comando rapido» come sensore qui sopra.';
+
+  @override
   String get homeClimateNone => 'Nessun sensore';
 
   @override

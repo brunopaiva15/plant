@@ -154,6 +154,18 @@ class PreferencesService {
   Future<void> setHomeHumiditySensor(String encoded) => _prefs.setString('home_humidity_sensor', encoded);
   Future<void> clearHomeHumiditySensor() => _prefs.remove('home_humidity_sensor');
 
+  /// La dernière valeur transmise par Raccourcis
+  /// (`température|humidité|millisecondes|pièce`), écrite par l'action
+  /// « Transmettre le climat à Auxine » (ios/Runner/HomeClimateIntents.swift)
+  /// dans les mêmes préférences, sans passer par ici.
+  String? get homeShortcutReading => _prefs.getString('home_shortcut_reading');
+  Future<void> clearHomeShortcutReading() => _prefs.remove('home_shortcut_reading');
+
+  /// Relit le fichier : une valeur écrite par une autre voie (l'action de
+  /// Raccourcis, en arrière-plan) n'est pas dans le cache tant qu'on ne
+  /// relit pas.
+  Future<void> reload() => _prefs.reload();
+
   // Synchronisation
   DateTime? syncCursor(String table) {
     final raw = _prefs.getString('sync_cursor_$table');

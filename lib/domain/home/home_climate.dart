@@ -11,8 +11,15 @@ library;
 class HomeSensor {
   const HomeSensor({required this.id, required this.name, this.roomName, this.homeName, this.hasTemperature = true, this.hasHumidity = true});
 
-  /// Identifiant stable de l'accessoire, celui de HomeKit.
+  /// Identifiant stable de l'accessoire, celui de HomeKit — ou [shortcutId]
+  /// pour la valeur transmise par un raccourci.
   final String id;
+
+  /// Le « capteur » qu'est un raccourci : les HomePod ne se lisent pas par
+  /// HomeKit depuis une app tierce, mais Raccourcis les lit et peut
+  /// transmettre la valeur.
+  static const shortcutId = 'shortcut';
+  bool get isShortcut => id == shortcutId;
   final String name;
 
   /// La pièce où Apple Maison le range, s'il en a une.
@@ -69,6 +76,24 @@ class HomeSensor {
 
 /// Ce qu'un capteur mesure, et ce qu'on lui demande.
 enum HomeQuantity { temperature, humidity }
+
+/// La valeur transmise par un raccourci, telle que les préférences la
+/// gardent (`température|humidité|millisecondes|pièce`).
+HomeReading? decodeShortcutReading(String? raw, {Duration maxAge = const Duration(hours: 6), DateTime? now}) {
+  if (raw == null || raw.isEmpty) return null;
+  final parts = raw.split('|');
+  if (parts.length < 3) return null;
+  final temperature = double.tryParse(parts[0]);
+  final humidity = double.tryParse(parts[1])?.round();
+  final millis = int.tryParse(parts[2]);
+  if (millis == null || (temperature == null && humidity == null)) return null;
+  final at = DateTime.fromMillisecondsSinceEpoch(millis);
+  final room = parts.length > 3 && parts[3].isNotEmpty ? parts[3] : null;
+  final sensor = HomeSensor(id: HomeSensor.shortcutId, name: 'Raccourci', roomName: room, hasTemperature: temperature != null, hasHumidity: humidity != null);
+  // Une valeur d'hier n'est plus une mesure : elle est gardée, mais marquée.
+  final stale = (now ?? DateTime.now()).difference(at) > maxAge;
+  return HomeReading(at: at, temperatureC: stale ? null : temperature, humidity: stale ? null : humidity?.clamp(0, 100), sensor: sensor, error: stale ? 'stale' : null);
+}
 
 /// Une mesure, au moment où elle a été lue.
 class HomeReading {

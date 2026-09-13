@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
@@ -108,12 +109,15 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
     final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
     final reading = ref.watch(homeReadingProvider);
-    final canPick = _sensors.isNotEmpty && !_busy;
+    // Le raccourci est toujours une source possible : la feuille s'ouvre
+    // même sans capteur HomeKit.
+    final canPick = !_busy;
     // Ce que le capteur de température sait mesurer, d'après la liste
     // fraîche quand on l'a, sinon d'après la préférence.
     final live = sensor == null ? null : _sensors.where((s) => s.id == sensor.id).firstOrNull ?? sensor;
     final humidityExpected = humiditySensor != null || (live?.hasHumidity ?? false);
-    final hygrometers = _sensors.any((s) => s.hasHumidity && s.id != sensor?.id);
+    final shortcut = ref.watch(homeShortcutReadingProvider).value;
+    final usesShortcut = (sensor?.isShortcut ?? false) || (humiditySensor?.isShortcut ?? false);
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return FloraPage(
       title: l10n.homeClimate,
@@ -157,8 +161,8 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                       : (live?.hasHumidity ?? false)
                           ? l10n.homeClimateSameSensor
                           : l10n.homeClimateNone,
-                  chevron: canPick && (hygrometers || humiditySensor != null),
-                  onTap: canPick && (hygrometers || humiditySensor != null) ? () => _pick(HomeQuantity.humidity) : null,
+                  chevron: canPick,
+                  onTap: canPick ? () => _pick(HomeQuantity.humidity) : null,
                 ),
               if (sensor != null)
                 FloraListRow(
@@ -188,6 +192,35 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                   chevron: false,
                   onTap: () => ref.invalidate(homeReadingProvider),
                 ),
+            ],
+          ),
+          const SizedBox(height: Space.lg),
+          // Le pont par Raccourcis, pour les HomePod : la marche à suivre, et
+          // la dernière valeur reçue.
+          FloraGroup(
+            header: l10n.homeClimateShortcut,
+            footer: l10n.homeClimateShortcutHow,
+            children: [
+              FloraListRow(
+                leading: const Text('⚡️', style: TextStyle(fontSize: 18)),
+                title: l10n.homeClimateShortcutLast,
+                subtitle: shortcut == null
+                    ? l10n.homeClimateShortcutNone
+                    : shortcut.error == 'stale'
+                        ? l10n.homeClimateShortcutStale
+                        : [?shortcut.sensor?.roomName, l10n.homeClimateUpdatedAgo(DateTime.now().difference(shortcut.at).inMinutes)].join(' · '),
+                subtitleColor: usesShortcut && (shortcut == null || shortcut.error == 'stale') ? c.danger : null,
+                trailing: shortcut == null || shortcut.isEmpty
+                    ? null
+                    : Text(homeReadingLabel(shortcut, metric: metric), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
+                chevron: false,
+                onTap: () => ref.invalidate(homeShortcutReadingProvider),
+              ),
+              FloraListRow(
+                leading: const Text('🔗', style: TextStyle(fontSize: 18)),
+                title: l10n.homeClimateOpenShortcuts,
+                onTap: () => launchUrl(Uri.parse('shortcuts://'), mode: LaunchMode.externalApplication),
+              ),
             ],
           ),
           const SizedBox(height: Space.lg),
