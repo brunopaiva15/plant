@@ -33,10 +33,17 @@ dessine jamais sa propre ombre.
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
 image, comme dans *Art Attack* : elle tombe, s'écrase au sol en projetant
-six gouttes, rebondit en tremblant de moins en moins, respire en se
+des gouttes, rebondit en tremblant de moins en moins, respire en se
 remodelant, se ramasse et repart. Un cycle dure 1,6 s. La silhouette ondule
 en permanence (trois harmoniques lentes), l'ombre au sol rétrécit quand elle
 saute. Elle est peinte avec `paintClay`, la même recette que les cartes.
+
+Les éclaboussures existent en cinq jeux de cinq à sept gouttes, réglées une
+à une (angle, portée, taille, poids, retard) : dans un jeu, aucune goutte
+n'est le miroir d'une autre, et la motte change de jeu à chaque cycle, si
+bien que la boucle ne se voit pas. Chaque motte démarre sur un jeu au
+hasard. Les gouttes retombent et se posent au sol, elles ne le traversent
+pas.
 
 `AdaptiveProgress` (toutes les attentes de l'app) et l'état `loading` de
 `FloraButton` l'utilisent ; `size` est le diamètre au repos (36 par défaut,
@@ -203,7 +210,25 @@ d'exclamation, pas de titre en forme de question, et une liste de tournures
 interdites par langue. Une tournure à bannir de plus s'ajoute là.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · ActionTile · PlantCard · CareCard · ActionChip · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+
+## L'écran du matin (`features/today/`)
+Sous le grand titre, le jour et ce qu'il fait : la date, puis une rangée de
+`FloraPill` — le temps dehors, l'air de la maison — qui mènent aux
+prévisions et au capteur. Une pilule fait la hauteur de la cible tactile et
+pas plus : c'est sa surface qui écoute, aucun vide autour. Les emplacements
+de « Votre jardin » sont les mêmes pilules, avec leur compte en retrait.
+
+Ce qui demande un regard tient dans une `TodayNotice`, toujours la même :
+une tuile d'emoji, un titre qui est un nom (« Pluie aujourd'hui »,
+« 25° · 41 % · Salon », « Rappel quotidien »), une phrase qui est un
+constat, parfois un ou deux boutons, une croix quand la carte se ferme
+pour la journée. La teinte dit le sujet — bleu poussière pour la pluie,
+ocre pour l'air de la maison, sauge pour les rappels — et la carte de
+repos, « Tout est en ordre », reste crème. Sur une carte teintée, la tuile
+reste `surface`. `TodayNoticeSlot` pose la marge commune et fond la carte
+quand elle disparaît, sans laisser de vide. La carte du jour, en terre
+cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)
 Un seul chemin pour en ajouter une, `showPhotoCaptureFlow` : le viseur dans

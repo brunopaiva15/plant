@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -13,6 +14,8 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/iris_feedback.dart';
+import '../../identification/presentation/iris_feedback_prompt.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -96,6 +99,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// ambigu redescend.
   final _identificationPaths = <String>[];
 
+  /// La candidate retenue et d'où elle vient — `null` tant que le nom a
+  /// été tapé à la main, auquel cas rien n'est étiqueté.
+  IdentificationCandidate? _chosen;
+  ChosenSource? _chosenSource;
+
   /// Au-delà, une photo de plus n'apporte plus grand-chose.
   static const int maxIdentificationPhotos = 3;
 
@@ -154,9 +162,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   void _go(int step) {
     Haptics.selection();
-    // Le clavier de l'étape du nom ne doit pas suivre : ouvert, il écrase la
-    // mise en page des autres étapes (l'aperçu photo notamment).
-    if (step != 1) FocusManager.instance.primaryFocus?.unfocus();
+    // Le clavier ne suit aucun changement d'étape : ouvert, il écrase la mise
+    // en page (l'aperçu photo, les propositions d'identification).
+    FocusManager.instance.primaryFocus?.unfocus();
     // Le viseur n'a de raison de tourner qu'à l'étape photo, et seulement
     // tant qu'il reste de la place : ailleurs, il ne ferait que tenir la
     // caméra et vider la batterie. Il ne s'éteint plus à la première photo —
@@ -409,6 +417,26 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     if (mounted) Navigator.of(context, rootNavigator: true).pop();
   }
 
+  /// La personne vient d'étiqueter ses photos en enregistrant. Si elle l'a
+  /// permis, elles partent entraîner Iris — sans jamais retenir la fiche :
+  /// l'envoi se fait à côté, et un échec ne se voit pas.
+  void _recordFeedback() {
+    final identifier = ref.read(plantIdentifierProvider);
+    final source = _chosenSource;
+    final species = _species.text.trim();
+    if (identifier is! CascadeIdentifier || source == null || species.isEmpty || _identificationPaths.isEmpty) return;
+    final chosen = _chosen;
+    unawaited(ref.read(irisFeedbackRecorderProvider).record(IrisFeedback(
+      photos: [for (final p in _identificationPaths) File(p)],
+      local: identifier.lastLocal,
+      chosenName: species,
+      chosenId: chosen?.internalId,
+      chosenSource: source,
+      remoteTop: chosen?.source == IdentificationSource.remote ? chosen : null,
+      modelVersion: identifier.local.version ?? '',
+    )));
+  }
+
   Future<void> _finish() async {
     final name = _name.text.trim();
     if (name.isEmpty || _saving) return;
@@ -424,6 +452,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           wateringIntervalDays: _watering,
           fertilizingIntervalDays: _fertilizing,
         ));
+    _recordFeedback();
     // Bouture : la fille hérite des champs personnalisés de la plante mère.
     if (widget.parentPlantId != null) {
       await ref.read(attributeRepositoryProvider).cloneAttributes(fromPlantId: widget.parentPlantId!, toPlantId: plant.id);
@@ -442,7 +471,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     ref.read(analyticsProvider).track(AnalyticsEvents.plantCreated, {'with_photo': _photo != null});
     Haptics.success();
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.plantAdded(plant.name), emoji: '🌱'));
+    if (mounted && _chosenSource != null && _identificationPaths.isNotEmpty) await _maybeAskIrisFeedback();
     if (mounted) Navigator.of(context, rootNavigator: true).pop(plant.id);
+  }
+
+  /// Le bon moment pour demander : la personne vient d'enregistrer une
+  /// plante identifiée, elle sait de quoi il s'agit. Une seule fois — et rien
+  /// n'est parti avant le oui : l'envoi de cette plante-ci est passé par
+  /// l'enregistreur muet.
+  Future<void> _maybeAskIrisFeedback() async {
+    final p = ref.read(preferencesProvider);
+    if (!shouldAskForFeedback(asked: p.irisFeedbackAsked, enabled: p.irisFeedbackEnabled,
+        available: ref.read(irisFeedbackAvailableProvider))) {
+      return;
+    }
+    await showIrisFeedbackPrompt(context, ref);
   }
 
   @override
@@ -696,10 +739,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Sans autofocus : en arrivant, ce sont les propositions
+          // d'identification qu'il y a à lire, et le clavier les couvrirait.
+          // Le champ s'ouvre d'un toucher.
           FloraTextField(
             controller: _name,
             hint: l10n.plantNameHint,
-            autofocus: _step == 1,
             large: true,
             textInputAction: TextInputAction.next,
             // Une majuscule à la première lettre seulement : « Monstera du
@@ -713,6 +758,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             onPicked: (s) {
               if (_name.text.trim().isEmpty) _name.text = s.commonName ?? s.scientificName.split(' ').first;
               _applyCareProfile(s.scientificName, family: s.family);
+              _chosen = null;
+              _chosenSource = ChosenSource.picker;
             },
           ),
           _CarePreview(speciesName: _species.text),
@@ -789,6 +836,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   void _applyCandidate(IdentificationCandidate c) {
     setState(() {
+      _chosen = c;
+      _chosenSource = c.source == IdentificationSource.remote ? ChosenSource.remote : ChosenSource.local;
       _species.text = c.scientificName;
       if (_name.text.trim().isEmpty) _name.text = c.commonName ?? c.scientificName.split(' ').first;
     });

@@ -13,7 +13,6 @@
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		7A1C0A052F0100AA00C63705 /* HomeClimateChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0A042F0100AA00C63704 /* HomeClimateChannel.swift */; };
-		7A1C0A072F0100AA00C63707 /* HomeClimateIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0A062F0100AA00C63706 /* HomeClimateIntents.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		7A1C0A022F0100AA00C63702 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7A1C0A012F0100AA00C63701 /* PrivacyInfo.xcprivacy */; };
@@ -56,7 +55,6 @@
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7A1C0A042F0100AA00C63704 /* HomeClimateChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeClimateChannel.swift; sourceTree = "<group>"; };
-		7A1C0A062F0100AA00C63706 /* HomeClimateIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeClimateIntents.swift; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -131,7 +129,6 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				7A1C0A042F0100AA00C63704 /* HomeClimateChannel.swift */,
-				7A1C0A062F0100AA00C63706 /* HomeClimateIntents.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				7A1C0A012F0100AA00C63701 /* PrivacyInfo.xcprivacy */,
 				7A1C0A032F0100AA00C63703 /* Runner.entitlements */,
@@ -297,7 +294,6 @@
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 				7A1C0A052F0100AA00C63705 /* HomeClimateChannel.swift in Sources */,
-				7A1C0A072F0100AA00C63707 /* HomeClimateIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

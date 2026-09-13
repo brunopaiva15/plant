@@ -273,7 +273,7 @@
   "themeLight": "Hell",
   "themeDark": "Dunkel",
   "reduceMotion": "Bewegung reduzieren",
-  "reduceMotionHint": "Standardmäßig folgt Auxine der Systemeinstellung.",
+  "reduceMotionHint": "Standardmäßig gilt die Systemeinstellung.",
   "notifications": "Mitteilungen",
   "enableNotifications": "Tägliche Erinnerung",
   "notificationTime": "Uhrzeit",
@@ -321,26 +321,7 @@
   "homeClimateTemperatureSensor": "Temperatursensor",
   "homeClimateHumiditySensor": "Feuchtigkeitssensor",
   "homeClimateSameSensor": "Derselbe Sensor",
-  "homeClimateHumidityMissing": "Keine Luftfeuchtigkeit empfangen. Ein anderer Sensor kann sie liefern.",
-  "homeClimateOtherSource": "Andere Quelle",
-  "homeClimateShortcut": "Kurzbefehl",
-  "homeClimateShortcutSubtitle": "Wert, den die App Kurzbefehle übergibt (zum Beispiel ein HomePod).",
-  "homeClimateShortcutLast": "Zuletzt empfangener Wert",
-  "homeClimateShortcutNone": "Bisher nichts empfangen.",
-  "homeClimateShortcutStale": "Wert vor mehr als sechs Stunden empfangen, nicht verwendet.",
-  "homeClimateOpenShortcuts": "Kurzbefehle öffnen",
-  "homeClimateShortcutFooter": "Für einen HomePod: HomeKit gibt seine Sensoren nicht an Dritt-Apps, Kurzbefehle liest sie.",
-  "homeClimateGuideTitle": "Einen HomePod lesen",
-  "homeClimateGuideSubtitle": "Vier Schritte in Kurzbefehle.",
-  "homeClimateGuideWhy": "Die Temperatur- und Feuchtigkeitssensoren eines HomePod erscheinen nur in der Home-App: Apple gibt sie anderen Apps nicht. Die App Kurzbefehle liest sie und kann den Wert bei jedem Öffnen an Auxine übergeben. Nichts verlässt das Gerät.",
-  "homeClimateStep1Title": "Eine Automation beim Öffnen",
-  "homeClimateStep1Body": "Kurzbefehle › Automation › neue Automation › App › Auxine › „Wird geöffnet“, sofort ausführen.",
-  "homeClimateStep2Title": "Den HomePod lesen",
-  "homeClimateStep2Body": "Home-Aktion „Status abrufen“: den HomePod wählen, dann „Aktuelle relative Luftfeuchtigkeit“. Eine zweite Aktion für „Aktuelle Temperatur“, falls gewünscht.",
-  "homeClimateStep3Title": "An Auxine übergeben",
-  "homeClimateStep3Body": "Auxine-Aktion „Klima an Auxine übermitteln“: die erhaltenen Werte in Luftfeuchtigkeit und Temperatur eintragen, den Raum falls gewünscht.",
-  "homeClimateStep4Title": "„Kurzbefehl“ als Sensor wählen",
-  "homeClimateStep4Body": "Unter Profil › Apple Home, Zeile Luftfeuchtigkeit oder Temperatur › „Kurzbefehl“. Beim nächsten Öffnen von Auxine ist der Messwert da.",
+  "homeClimateHumidityMissing": "Keine Luftfeuchtigkeit von diesem Sensor empfangen. Ein anderer wird in der Zeile Luftfeuchtigkeit gewählt.",
   "homeClimateNone": "Kein Sensor",
   "homeClimateRemove": "Sensor entfernen",
   "homeClimateReading": "Messwert",
@@ -353,7 +334,7 @@
       }
     }
   },
-  "homeClimateNoSensors": "Kein Temperatur- oder Feuchtigkeitssensor in Apple Home. Ein HomePod wird über Kurzbefehle gelesen, unter Profil › Apple Home.",
+  "homeClimateNoSensors": "Kein Temperatur- oder Feuchtigkeitssensor in Apple Home.",
   "homeClimateDenied": "Zugriff auf Apple Home abgelehnt. Er lässt sich unter Einstellungen › Datenschutz › Home wieder erteilen.",
   "homeClimateFailed": "Apple Home nicht verfügbar. Du kannst unter Profil › Apple Home einen Sensor verbinden.",
   "homeClimateAtHome": "Bei dir",
@@ -362,53 +343,34 @@
   "homeClimateTooHumid": "Luft zu feucht für diese Art.",
   "homeClimateTooCold": "Zu kalt für diese Art.",
   "homeClimateTooHot": "Zu warm für diese Art.",
-  "homeTipDryAir": "Trockene Luft ({humidity} %): {names} besprühen oder zusammenstellen.",
+  "homeTipDryAir": "Trockene Luft: {names} besprühen oder zusammenstellen.",
   "@homeTipDryAir": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHumidAir": "Feuchte Luft ({humidity} %): den Raum lüften.",
-  "@homeTipHumidAir": {
-    "placeholders": {
-      "humidity": {
-        "type": "int"
-      }
-    }
-  },
-  "homeTipHumidAirPlants": "Feuchte Luft ({humidity} %): lüften, und {names} zwischen zwei Wassergaben abtrocknen lassen.",
+  "homeTipHumidAir": "Feuchte Luft: den Raum lüften.",
+  "homeTipHumidAirPlants": "Feuchte Luft: lüften, und {names} zwischen zwei Wassergaben abtrocknen lassen.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipCold": "{temperature} bei dir: zu kalt für {names}.",
+  "homeTipCold": "Zu kalt für {names}.",
   "@homeTipCold": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHot": "{temperature} bei dir: {names} trocknen schneller aus, Erde prüfen.",
+  "homeTipHot": "Hitze: {names} trocknen schneller aus, Erde prüfen.",
   "@homeTipHot": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
@@ -510,11 +472,18 @@
   "identifyError": "Bestimmung nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "useThis": "Verwenden",
   "identificationSettings": "Bestimmung",
-  "identificationHint": "{name} erkennt Arten auf dem Gerät, ohne Netz. Im Zweifel kann das Foto an Pl@ntNet gesendet werden.",
+  "identificationHint": "Arterkennung auf dem Gerät durch {name}, ohne Netz. Im Zweifel kann das Foto an Pl@ntNet gesendet werden.",
   "identificationEnabled": "Bestimmung aktiviert",
   "identificationDisabled": "Nicht konfiguriert",
   "identificationFallback": "Online-Rückfall",
-  "identificationFallbackHint": "Wenn {name} unsicher ist, wird das Foto an Pl@ntNet gesendet. Aus: alles bleibt auf dem Gerät.",
+  "identificationFallbackHint": "Im Zweifel von {name} wird das Foto an Pl@ntNet gesendet. Aus: alles bleibt auf dem Gerät.",
+  "irisFeedback": "Senden identifizierter Fotos",
+  "irisFeedbackHint": "Die zum Identifizieren aufgenommenen Fotos und der gewählte Name werden gesendet, sobald eine Pflanze benannt wird, und trainieren die nächsten Versionen des Modells {name}. Sie sind nur für das sendende Konto lesbar, und dessen Löschung entfernt sie. Ausgeschaltet verlassen sie das Gerät nicht.",
+  "@irisFeedbackHint": {"placeholders": {"name": {"type": "String"}}},
+  "irisFeedbackNeedsAccount": "Zum Senden von Fotos braucht es ein Konto.",
+  "irisFeedbackAskTitle": "Senden identifizierter Fotos",
+  "irisFeedbackAskBody": "Die zum Identifizieren aufgenommenen Fotos und der gewählte Name können gesendet werden, um die nächsten Versionen des Modells {name} zu trainieren. Sie sind nur für das sendende Konto lesbar, und dessen Löschung entfernt sie. Die Wahl lässt sich in den Einstellungen zur Erkennung ändern.",
+  "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
   "modelMissing": "{name} auf diesem Gerät nicht verfügbar",
   "modelLoading": "Modell wird geladen…",
   "identificationStats": "{local} auf dem Gerät analysiert, {accepted} hier entschieden; {remote} online gesendet",
@@ -574,7 +543,8 @@
   "weatherNone": "Kein Ort",
   "weatherRemove": "Ort entfernen",
   "weatherNoResults": "Kein Ort gefunden.",
-  "weatherRainSkip": "Heute Regen: Gießen von {names} verschoben.",
+  "weatherRainTitle": "Heute Regen",
+  "weatherRainSkip": "Das Gießen von {names} kann warten.",
   "postpone": "Verschieben",
   "postponedCount": "{count, plural, =1{1 Gießen auf morgen verschoben} other{{count} Gießvorgänge auf morgen verschoben}}",
   "condClear": "Klar",
@@ -686,6 +656,7 @@
   "diagnosisTitle": "Diagnose",
   "diagnosisHint": "Fotografieren Sie Blätter, Stängel oder Erde aus mehreren Winkeln. Die Ergebnisse sind Hinweise.",
   "diagnosisSymptomsHint": "Was dir aufgefallen ist (optional)…",
+  "diagnosisClimateHint": "Optional: Die Bedingungen rund um die Pflanze schärfen die Analyse.",
   "analyze": "Analysieren",
   "analyzing": "Analyse läuft…",
   "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
@@ -1068,7 +1039,6 @@
   "waterAllHere": "Hier alles gießen",
   "fertilizeAllHere": "Hier alles düngen",
   "repotAllHere": "Hier alles umtopfen",
-  "plantNumber": "Nr. {number}",
   "searchByNumberHint": "#42 eingeben, um Pflanze Nr. 42 zu finden.",
   "inventoryGroups": "Gruppen",
   "manageGroups": "Gruppen verwalten",
@@ -1196,7 +1166,7 @@
   "onbGardenTitle": "Räume, Fotos, Kalender",
   "onbGardenBody": "Jedes Gießen, jedes Umtopfen wird datiert und bei der Pflanze abgelegt.",
   "onbIrisTitle": "{name} erkennt deine Pflanzen offline",
-  "onbIrisBody": "Erkennt Iris eine Pflanze nicht, geht die Suche online weiter.",
+  "onbIrisBody": "Iris unbekannte Pflanze: die Suche geht online weiter.",
   "onbPrivacyTitle": "Alles bleibt auf deinem Handy",
   "onbPrivacyBody": "Kein Pflichtkonto, keine Werbung.",
   "onbStart": "Loslegen",
@@ -1209,7 +1179,7 @@
   "whatsNewIrisOfflineTitle": "Weiterhin auf dem Gerät",
   "whatsNewIrisOfflineBody": "Die Erkennung bleibt lokal: Ohne deine Zustimmung geht nichts raus, und der Online-Rückfall lässt sich abschalten.",
   "whatsNewIrisDoubtTitle": "Zweifel werden angezeigt",
-  "whatsNewIrisDoubtBody": "Wenn sich zwei Arten ähneln, schlägt Iris beide vor.",
+  "whatsNewIrisDoubtBody": "Zwei Arten, die sich ähneln: beide werden vorgeschlagen.",
   "onbStepOf": "Schritt {current} von {total}",
   "weatherPickPlace": "Ort wählen",
   "speciesMoreOffline": "Weitere Arten",
@@ -1287,7 +1257,7 @@
   "finderChipSafe": "Ungiftig",
   "finderFactWater": "{count, plural, =1{Täglich gießen} other{Alle {count} T. gießen}}",
   "finderAiTitle": "Weiter suchen",
-  "finderAiBody": "Die KI sucht über den Katalog hinaus, anhand Ihrer Antworten und dem, was Sie hier ergänzen.",
+  "finderAiBody": "Suche über den Katalog hinaus, anhand Ihrer Antworten und dem, was Sie hier ergänzen.",
   "finderPhotoSource": "Fotos: GBIF-Beobachtungen, frei lizenziert.",
   "onbWelcomeTitle": "Willkommen bei Auxine",
   "onbWelcomeBody": "Das Pflegetagebuch Ihrer Pflanzen.",
@@ -1296,7 +1266,7 @@
   "careAssistSetting": "Pflegeinfos mit der KI ergänzen",
   "careAssistHint": "Bei einer Art, die nicht im Katalog ist, wird der wissenschaftliche Name an die KI gesendet, um die Anleitung zu ergänzen. Sonst verlässt nichts das Gerät. Die Antwort wird gespeichert.",
   "gardensTitle": "Meine Gärten",
-  "gardensHint": "Der geöffnete Garten ist der, den Sie überall in der App sehen. Wechseln Sie jederzeit.",
+  "gardensHint": "Der geöffnete Garten ist der überall in der App angezeigte. Der Wechsel geschieht hier.",
   "gardenMine": "Mein Garten",
   "gardenUnnamed": "Geteilter Garten",
   "gardenSharedBy": "Geteilt von {name}",

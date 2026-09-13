@@ -446,7 +446,7 @@
   "themeLight": "Clair",
   "themeDark": "Sombre",
   "reduceMotion": "Réduire les animations",
-  "reduceMotionHint": "Par défaut, Auxine suit le réglage du système.",
+  "reduceMotionHint": "Par défaut, le réglage du système s'applique.",
   "notifications": "Notifications",
   "enableNotifications": "Rappel quotidien",
   "notificationTime": "Heure",
@@ -508,26 +508,7 @@
   "homeClimateTemperatureSensor": "Capteur de température",
   "homeClimateHumiditySensor": "Capteur d'humidité",
   "homeClimateSameSensor": "Même capteur",
-  "homeClimateHumidityMissing": "Humidité non reçue. Un autre capteur peut la donner.",
-  "homeClimateOtherSource": "Autre source",
-  "homeClimateShortcut": "Raccourci",
-  "homeClimateShortcutSubtitle": "Valeur transmise par l'app Raccourcis (HomePod, par exemple).",
-  "homeClimateShortcutLast": "Dernière valeur reçue",
-  "homeClimateShortcutNone": "Rien reçu pour l'instant.",
-  "homeClimateShortcutStale": "Valeur reçue il y a plus de six heures, non utilisée.",
-  "homeClimateOpenShortcuts": "Ouvrir Raccourcis",
-  "homeClimateShortcutFooter": "Pour un HomePod : HomeKit ne donne pas ses capteurs aux apps tierces, Raccourcis les lit.",
-  "homeClimateGuideTitle": "Lire un HomePod",
-  "homeClimateGuideSubtitle": "Quatre étapes dans Raccourcis.",
-  "homeClimateGuideWhy": "Les capteurs de température et d'humidité d'un HomePod n'apparaissent que dans l'app Maison : Apple ne les donne pas aux autres apps. L'app Raccourcis, elle, les lit, et peut transmettre la valeur à Auxine à chaque ouverture. Rien ne quitte l'appareil.",
-  "homeClimateStep1Title": "Une automatisation à l'ouverture",
-  "homeClimateStep1Body": "Raccourcis › Automatisation › nouvelle automatisation › App › Auxine › « Est ouverte », en exécution immédiate.",
-  "homeClimateStep2Title": "Lire le HomePod",
-  "homeClimateStep2Body": "Action Maison « Obtenir l'état » : choisir le HomePod, puis « Humidité relative actuelle ». Une seconde action pour « Température actuelle » si voulu.",
-  "homeClimateStep3Title": "Transmettre à Auxine",
-  "homeClimateStep3Body": "Action Auxine « Transmettre le climat à Auxine » : placer les valeurs obtenues dans Humidité et Température, et la pièce si voulu.",
-  "homeClimateStep4Title": "Choisir « Raccourci » comme capteur",
-  "homeClimateStep4Body": "Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l'ouverture suivante d'Auxine, la mesure est là.",
+  "homeClimateHumidityMissing": "Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.",
   "homeClimateNone": "Aucun capteur",
   "homeClimateRemove": "Retirer le capteur",
   "homeClimateReading": "Mesure",
@@ -540,7 +521,7 @@
       }
     }
   },
-  "homeClimateNoSensors": "Aucun capteur de température ou d'humidité dans Apple Maison. Un HomePod se lit par Raccourcis, dans Profil › Apple Maison.",
+  "homeClimateNoSensors": "Aucun capteur de température ou d'humidité dans Apple Maison.",
   "homeClimateDenied": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
   "homeClimateFailed": "Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.",
   "homeClimateAtHome": "Chez vous",
@@ -549,53 +530,34 @@
   "homeClimateTooHumid": "Air trop humide pour cette espèce.",
   "homeClimateTooCold": "Trop froid pour cette espèce.",
   "homeClimateTooHot": "Trop chaud pour cette espèce.",
-  "homeTipDryAir": "Air sec ({humidity} %) : brumiser ou regrouper {names}.",
+  "homeTipDryAir": "Air sec : brumiser ou regrouper {names}.",
   "@homeTipDryAir": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHumidAir": "Air humide ({humidity} %) : aérer la pièce.",
-  "@homeTipHumidAir": {
-    "placeholders": {
-      "humidity": {
-        "type": "int"
-      }
-    }
-  },
-  "homeTipHumidAirPlants": "Air humide ({humidity} %) : aérer, et laisser sécher {names} entre deux arrosages.",
+  "homeTipHumidAir": "Air humide : aérer la pièce.",
+  "homeTipHumidAirPlants": "Air humide : aérer, et laisser sécher {names} entre deux arrosages.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipCold": "{temperature} chez vous : trop froid pour {names}.",
+  "homeTipCold": "Trop froid pour {names}.",
   "@homeTipCold": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHot": "{temperature} chez vous : {names} sèchent plus vite, vérifier la terre.",
+  "homeTipHot": "Chaleur : {names} sèchent plus vite, vérifier la terre.",
   "@homeTipHot": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
@@ -767,13 +729,20 @@
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
   "useThis": "Utiliser",
   "identificationSettings": "Identification",
-  "identificationHint": "{name} reconnaît les espèces sur l'appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.",
+  "identificationHint": "Reconnaissance des espèces sur l'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.",
   "@identificationHint": {"placeholders": {"name": {"type": "String"}}},
   "identificationEnabled": "Identification activée",
   "identificationDisabled": "Non configurée",
   "identificationFallback": "Repli en ligne",
-  "identificationFallbackHint": "Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil.",
+  "identificationFallbackHint": "En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil.",
   "@identificationFallbackHint": {"placeholders": {"name": {"type": "String"}}},
+  "irisFeedback": "Envoi des photos identifiées",
+  "irisFeedbackHint": "Les photos prises pour identifier et le nom retenu sont envoyés dès qu'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l'appareil.",
+  "@irisFeedbackHint": {"placeholders": {"name": {"type": "String"}}},
+  "irisFeedbackNeedsAccount": "Il faut un compte pour envoyer des photos.",
+  "irisFeedbackAskTitle": "Envoi des photos identifiées",
+  "irisFeedbackAskBody": "Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d'identification.",
+  "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
   "modelMissing": "{name} indisponible sur cet appareil",
   "@modelMissing": {"placeholders": {"name": {"type": "String"}}},
   "modelLoading": "Chargement du modèle…",
@@ -812,7 +781,8 @@
   "weatherNone": "Aucun lieu",
   "weatherRemove": "Retirer le lieu",
   "weatherNoResults": "Aucun lieu trouvé.",
-  "weatherRainSkip": "Pluie aujourd'hui : arrosage de {names} reporté.",
+  "weatherRainTitle": "Pluie aujourd'hui",
+  "weatherRainSkip": "L'arrosage de {names} peut attendre.",
   "@weatherRainSkip": {
     "placeholders": {
       "names": {
@@ -924,6 +894,7 @@
   "diagnosisTitle": "Diagnostic",
   "diagnosisHint": "Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.",
   "diagnosisSymptomsHint": "Ce que vous avez remarqué (facultatif)…",
+  "diagnosisClimateHint": "Facultatif : les conditions autour de la plante affinent l'analyse.",
   "analyze": "Analyser",
   "analyzing": "Analyse en cours…",
   "diagnosisError": "Analyse impossible. Vérifiez votre connexion et réessayez.",
@@ -1488,14 +1459,6 @@
   "waterAllHere": "Arroser tout ici",
   "fertilizeAllHere": "Fertiliser tout ici",
   "repotAllHere": "Rempoter tout ici",
-  "plantNumber": "N° {number}",
-  "@plantNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
   "searchByNumberHint": "Tapez #42 pour retrouver la plante n° 42.",
   "inventoryGroups": "Groupes",
   "manageGroups": "Gérer les groupes",
@@ -1701,7 +1664,7 @@
   "onbGardenBody": "Chaque arrosage, chaque rempotage est daté et rangé avec la plante.",
   "onbIrisTitle": "{name} reconnaît vos plantes hors ligne",
   "@onbIrisTitle": {"placeholders": {"name": {"type": "String"}}},
-  "onbIrisBody": "Si Iris ne reconnaît pas une plante, la recherche continue en ligne.",
+  "onbIrisBody": "Plante inconnue d'Iris : la recherche continue en ligne.",
   "onbPrivacyTitle": "Tout reste sur votre téléphone",
   "onbPrivacyBody": "Pas de compte obligatoire, pas de publicité.",
   "onbStart": "Commencer",
@@ -1721,7 +1684,7 @@
   "whatsNewIrisOfflineTitle": "Toujours sur l'appareil",
   "whatsNewIrisOfflineBody": "La reconnaissance reste locale : rien ne part sans votre accord, et le repli en ligne se coupe d'un interrupteur.",
   "whatsNewIrisDoubtTitle": "Doute signalé",
-  "whatsNewIrisDoubtBody": "Quand deux espèces se ressemblent, Iris propose les deux.",
+  "whatsNewIrisDoubtBody": "Deux espèces qui se ressemblent : les deux sont proposées.",
   "onbStepOf": "Étape {current} sur {total}",
   "@onbStepOf": {
     "placeholders": {
@@ -1840,7 +1803,7 @@
     }
   },
   "finderAiTitle": "Aller plus loin",
-  "finderAiBody": "L'IA cherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.",
+  "finderAiBody": "Recherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.",
   "finderPhotoSource": "Photos : observations GBIF, libres de droits.",
   "onbWelcomeTitle": "Bienvenue sur Auxine",
   "onbWelcomeBody": "Le carnet d'entretien de vos plantes.",
@@ -1849,7 +1812,7 @@
   "careAssistSetting": "Compléter les fiches avec l'IA",
   "careAssistHint": "Pour une espèce absente du catalogue, le nom scientifique est envoyé à l'IA pour compléter la fiche. Rien d'autre ne quitte l'appareil. La réponse est conservée.",
   "gardensTitle": "Mes jardins",
-  "gardensHint": "Le jardin ouvert est celui que vous voyez partout dans l'application. Vous passez de l'un à l'autre quand vous voulez.",
+  "gardensHint": "Le jardin ouvert est celui affiché partout dans l'application. Le passage de l'un à l'autre se fait ici.",
   "gardenMine": "Mon jardin",
   "gardenUnnamed": "Jardin partagé",
   "gardenSharedBy": "Partagé par {name}",

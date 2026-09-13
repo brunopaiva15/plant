@@ -188,7 +188,7 @@ void main() {
     });
 
     test('un lien inconnu est rejeté', () {
-      for (final raw in ['https://example.test/p1', 'flora://other/p1', 'flora://item/', 'flora://item/a/b', 'nimportequoi']) {
+      for (final raw in ['https://example.test/p1', 'auxine://other/p1', 'auxine://item/', 'auxine://item/a/b', 'nimportequoi']) {
         expect(PlantLinks.decodeLink(raw), isNull, reason: raw);
       }
     });

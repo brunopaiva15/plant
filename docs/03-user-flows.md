@@ -14,7 +14,8 @@ Plantes ─[tap +]⟶ Sheet plein écran
     Une vue    [tap emplacement] ⟶ le viseur revient sous le titre de l'emplacement,
     de plus    rend la main dès la prise ; × ou Annuler ramène à la photo
   Étape 2 · Nom
-    Champ unique, clavier ouvert, suggestion = nom d'espèce si connu
+    Champ unique, clavier fermé — les propositions d'identification se lisent
+    d'abord, le champ s'ouvre d'un toucher ; suggestion = nom d'espèce si connu
     [Continuer]
   Étape 3 · Emplacement
     Chips : Salon · Cuisine · Chambre · Balcon · + Nouveau

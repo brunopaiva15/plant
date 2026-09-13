@@ -46,6 +46,17 @@ class PreferencesService {
   bool get identificationFallbackEnabled => _prefs.getBool('identification_fallback') ?? true;
   Future<void> setIdentificationFallbackEnabled(bool value) => _prefs.setBool('identification_fallback', value);
 
+  /// Les photos identifiées peuvent partir entraîner Iris. Éteint tant que
+  /// la personne ne l'a pas allumé : une photo de salon est une donnée
+  /// personnelle, et le silence n'est pas un consentement.
+  bool get irisFeedbackEnabled => _prefs.getBool('iris_feedback') ?? false;
+  Future<void> setIrisFeedbackEnabled(bool value) => _prefs.setBool('iris_feedback', value);
+
+  /// La question a été posée — une fois, et c'est tout. « Plus tard » vaut
+  /// réponse, fermer la feuille aussi : redemander serait du harcèlement.
+  bool get irisFeedbackAsked => _prefs.getBool('iris_feedback_asked') ?? false;
+  Future<void> setIrisFeedbackAsked() => _prefs.setBool('iris_feedback_asked', true);
+
   /// Complément des fiches d'entretien par l'IA, quand le catalogue ne
   /// connaît pas l'espèce. Coupé, la fiche s'en tient à ses repères.
   bool get careAssistEnabled => _prefs.getBool('care_assist') ?? true;
@@ -153,18 +164,6 @@ class PreferencesService {
   String? get homeHumiditySensor => _prefs.getString('home_humidity_sensor');
   Future<void> setHomeHumiditySensor(String encoded) => _prefs.setString('home_humidity_sensor', encoded);
   Future<void> clearHomeHumiditySensor() => _prefs.remove('home_humidity_sensor');
-
-  /// La dernière valeur transmise par Raccourcis
-  /// (`température|humidité|millisecondes|pièce`), écrite par l'action
-  /// « Transmettre le climat à Auxine » (ios/Runner/HomeClimateIntents.swift)
-  /// dans les mêmes préférences, sans passer par ici.
-  String? get homeShortcutReading => _prefs.getString('home_shortcut_reading');
-  Future<void> clearHomeShortcutReading() => _prefs.remove('home_shortcut_reading');
-
-  /// Relit le fichier : une valeur écrite par une autre voie (l'action de
-  /// Raccourcis, en arrière-plan) n'est pas dans le cache tant qu'on ne
-  /// relit pas.
-  Future<void> reload() => _prefs.reload();
 
   // Synchronisation
   DateTime? syncCursor(String table) {

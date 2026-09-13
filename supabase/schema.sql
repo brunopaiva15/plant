@@ -451,6 +451,43 @@ create policy "photos write" on storage.objects for insert with check (bucket_id
 drop policy if exists "photos delete" on storage.objects;
 create policy "photos delete" on storage.objects for delete using (bucket_id = 'plant-photos' and can_edit((storage.foldername(name))[1]::uuid));
 
+-- ---------- Retours pour Iris ----------
+-- Une identification que la personne a enregistrée : ses photos, ce qu'Iris
+-- croyait, le nom retenu. Le geste d'enregistrer étiquette la photo sans rien
+-- demander de plus (docs/09 § 13.3, chantier 2). Consentement explicite côté
+-- application, éteint par défaut ; les lignes et les fichiers ne sont lisibles
+-- que par leur auteur, et partent avec le compte.
+create table if not exists iris_feedback (
+  id uuid primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  storage_path text not null,          -- iris-feedback/{user_id}/{id}/{n}.jpg, n < photos
+  photos int not null check (photos between 1 and 3),
+  species_id text not null,            -- identifiant interne, ex. hoya-kerrii
+  species_name text not null,
+  kind text not null check (kind in ('corrigee', 'confirmee', 'reclassee')),
+  chosen_source text not null check (chosen_source in ('local', 'remote', 'picker')),
+  local_top5 jsonb not null,           -- [{id, name, score}] ce qu'Iris croyait, dans l'ordre
+  remote_top1 jsonb,                   -- {name, score} ce que Pl@ntNet a répondu, s'il a été appelé
+  model_version text not null,
+  app_version text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_iris_feedback_created on iris_feedback(created_at);
+
+alter table iris_feedback enable row level security;
+drop policy if exists "own feedback" on iris_feedback;
+create policy "own feedback" on iris_feedback for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- Storage : bucket privé, chemin iris-feedback/{user_id}/... ; l'auteur seul.
+-- Pas le seau des photos de jardin : celui-là est partagé avec les membres.
+insert into storage.buckets (id, name, public) values ('iris-feedback', 'iris-feedback', false) on conflict do nothing;
+drop policy if exists "feedback read" on storage.objects;
+create policy "feedback read" on storage.objects for select using (bucket_id = 'iris-feedback' and (storage.foldername(name))[1]::uuid = auth.uid());
+drop policy if exists "feedback write" on storage.objects;
+create policy "feedback write" on storage.objects for insert with check (bucket_id = 'iris-feedback' and (storage.foldername(name))[1]::uuid = auth.uid());
+drop policy if exists "feedback delete" on storage.objects;
+create policy "feedback delete" on storage.objects for delete using (bucket_id = 'iris-feedback' and (storage.foldername(name))[1]::uuid = auth.uid());
+
 -- ---------- Profils & invitations ----------
 -- Un profil par utilisateur, créé à l'inscription (nom d'affichage pour « Arrosée par Laura »).
 create or replace function handle_new_user() returns trigger language plpgsql security definer as $$

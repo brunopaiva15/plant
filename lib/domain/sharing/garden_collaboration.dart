@@ -54,6 +54,18 @@ class GardenAccess {
 
   /// Partagé dès qu'il y a quelqu'un d'autre dedans.
   bool get isShared => memberCount > 1;
+
+  /// Le même jardin sous un autre nom : un renommage encore en file d'attente
+  /// prime sur le nom que renvoie le serveur.
+  GardenAccess withName(String value) => GardenAccess(
+        id: id,
+        name: value,
+        role: role,
+        ownerId: ownerId,
+        ownerName: ownerName,
+        memberCount: memberCount,
+        plantCount: plantCount,
+      );
 }
 
 /// Un membre du jardin, avec de quoi l'afficher.

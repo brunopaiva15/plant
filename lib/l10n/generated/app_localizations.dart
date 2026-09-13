@@ -1701,7 +1701,7 @@ abstract class AppLocalizations {
   /// No description provided for @reduceMotionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Par défaut, Auxine suit le réglage du système.'**
+  /// **'Par défaut, le réglage du système s\'applique.'**
   String get reduceMotionHint;
 
   /// No description provided for @notifications.
@@ -1989,122 +1989,8 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateHumidityMissing.
   ///
   /// In fr, this message translates to:
-  /// **'Humidité non reçue. Un autre capteur peut la donner.'**
+  /// **'Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.'**
   String get homeClimateHumidityMissing;
-
-  /// No description provided for @homeClimateOtherSource.
-  ///
-  /// In fr, this message translates to:
-  /// **'Autre source'**
-  String get homeClimateOtherSource;
-
-  /// No description provided for @homeClimateShortcut.
-  ///
-  /// In fr, this message translates to:
-  /// **'Raccourci'**
-  String get homeClimateShortcut;
-
-  /// No description provided for @homeClimateShortcutSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Valeur transmise par l\'app Raccourcis (HomePod, par exemple).'**
-  String get homeClimateShortcutSubtitle;
-
-  /// No description provided for @homeClimateShortcutLast.
-  ///
-  /// In fr, this message translates to:
-  /// **'Dernière valeur reçue'**
-  String get homeClimateShortcutLast;
-
-  /// No description provided for @homeClimateShortcutNone.
-  ///
-  /// In fr, this message translates to:
-  /// **'Rien reçu pour l\'instant.'**
-  String get homeClimateShortcutNone;
-
-  /// No description provided for @homeClimateShortcutStale.
-  ///
-  /// In fr, this message translates to:
-  /// **'Valeur reçue il y a plus de six heures, non utilisée.'**
-  String get homeClimateShortcutStale;
-
-  /// No description provided for @homeClimateOpenShortcuts.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir Raccourcis'**
-  String get homeClimateOpenShortcuts;
-
-  /// No description provided for @homeClimateShortcutFooter.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pour un HomePod : HomeKit ne donne pas ses capteurs aux apps tierces, Raccourcis les lit.'**
-  String get homeClimateShortcutFooter;
-
-  /// No description provided for @homeClimateGuideTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Lire un HomePod'**
-  String get homeClimateGuideTitle;
-
-  /// No description provided for @homeClimateGuideSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Quatre étapes dans Raccourcis.'**
-  String get homeClimateGuideSubtitle;
-
-  /// No description provided for @homeClimateGuideWhy.
-  ///
-  /// In fr, this message translates to:
-  /// **'Les capteurs de température et d\'humidité d\'un HomePod n\'apparaissent que dans l\'app Maison : Apple ne les donne pas aux autres apps. L\'app Raccourcis, elle, les lit, et peut transmettre la valeur à Auxine à chaque ouverture. Rien ne quitte l\'appareil.'**
-  String get homeClimateGuideWhy;
-
-  /// No description provided for @homeClimateStep1Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une automatisation à l\'ouverture'**
-  String get homeClimateStep1Title;
-
-  /// No description provided for @homeClimateStep1Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Raccourcis › Automatisation › nouvelle automatisation › App › Auxine › « Est ouverte », en exécution immédiate.'**
-  String get homeClimateStep1Body;
-
-  /// No description provided for @homeClimateStep2Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Lire le HomePod'**
-  String get homeClimateStep2Title;
-
-  /// No description provided for @homeClimateStep2Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Action Maison « Obtenir l\'état » : choisir le HomePod, puis « Humidité relative actuelle ». Une seconde action pour « Température actuelle » si voulu.'**
-  String get homeClimateStep2Body;
-
-  /// No description provided for @homeClimateStep3Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Transmettre à Auxine'**
-  String get homeClimateStep3Title;
-
-  /// No description provided for @homeClimateStep3Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Action Auxine « Transmettre le climat à Auxine » : placer les valeurs obtenues dans Humidité et Température, et la pièce si voulu.'**
-  String get homeClimateStep3Body;
-
-  /// No description provided for @homeClimateStep4Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Choisir « Raccourci » comme capteur'**
-  String get homeClimateStep4Title;
-
-  /// No description provided for @homeClimateStep4Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l\'ouverture suivante d\'Auxine, la mesure est là.'**
-  String get homeClimateStep4Body;
 
   /// No description provided for @homeClimateNone.
   ///
@@ -2139,7 +2025,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateNoSensors.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison. Un HomePod se lit par Raccourcis, dans Profil › Apple Maison.'**
+  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison.'**
   String get homeClimateNoSensors;
 
   /// No description provided for @homeClimateDenied.
@@ -2193,32 +2079,32 @@ abstract class AppLocalizations {
   /// No description provided for @homeTipDryAir.
   ///
   /// In fr, this message translates to:
-  /// **'Air sec ({humidity} %) : brumiser ou regrouper {names}.'**
-  String homeTipDryAir(int humidity, String names);
+  /// **'Air sec : brumiser ou regrouper {names}.'**
+  String homeTipDryAir(String names);
 
   /// No description provided for @homeTipHumidAir.
   ///
   /// In fr, this message translates to:
-  /// **'Air humide ({humidity} %) : aérer la pièce.'**
-  String homeTipHumidAir(int humidity);
+  /// **'Air humide : aérer la pièce.'**
+  String get homeTipHumidAir;
 
   /// No description provided for @homeTipHumidAirPlants.
   ///
   /// In fr, this message translates to:
-  /// **'Air humide ({humidity} %) : aérer, et laisser sécher {names} entre deux arrosages.'**
-  String homeTipHumidAirPlants(int humidity, String names);
+  /// **'Air humide : aérer, et laisser sécher {names} entre deux arrosages.'**
+  String homeTipHumidAirPlants(String names);
 
   /// No description provided for @homeTipCold.
   ///
   /// In fr, this message translates to:
-  /// **'{temperature} chez vous : trop froid pour {names}.'**
-  String homeTipCold(String temperature, String names);
+  /// **'Trop froid pour {names}.'**
+  String homeTipCold(String names);
 
   /// No description provided for @homeTipHot.
   ///
   /// In fr, this message translates to:
-  /// **'{temperature} chez vous : {names} sèchent plus vite, vérifier la terre.'**
-  String homeTipHot(String temperature, String names);
+  /// **'Chaleur : {names} sèchent plus vite, vérifier la terre.'**
+  String homeTipHot(String names);
 
   /// No description provided for @diagnosisWithHome.
   ///
@@ -2751,7 +2637,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'{name} reconnaît les espèces sur l\'appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
+  /// **'Reconnaissance des espèces sur l\'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
   String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.
@@ -2775,8 +2661,38 @@ abstract class AppLocalizations {
   /// No description provided for @identificationFallbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
+  /// **'En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
   String identificationFallbackHint(String name);
+
+  /// No description provided for @irisFeedback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi des photos identifiées'**
+  String get irisFeedback;
+
+  /// No description provided for @irisFeedbackHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les photos prises pour identifier et le nom retenu sont envoyés dès qu\'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l\'appareil.'**
+  String irisFeedbackHint(String name);
+
+  /// No description provided for @irisFeedbackNeedsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il faut un compte pour envoyer des photos.'**
+  String get irisFeedbackNeedsAccount;
+
+  /// No description provided for @irisFeedbackAskTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi des photos identifiées'**
+  String get irisFeedbackAskTitle;
+
+  /// No description provided for @irisFeedbackAskBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d\'identification.'**
+  String irisFeedbackAskBody(String name);
 
   /// No description provided for @modelMissing.
   ///
@@ -2940,10 +2856,16 @@ abstract class AppLocalizations {
   /// **'Aucun lieu trouvé.'**
   String get weatherNoResults;
 
+  /// No description provided for @weatherRainTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pluie aujourd\'hui'**
+  String get weatherRainTitle;
+
   /// No description provided for @weatherRainSkip.
   ///
   /// In fr, this message translates to:
-  /// **'Pluie aujourd\'hui : arrosage de {names} reporté.'**
+  /// **'L\'arrosage de {names} peut attendre.'**
   String weatherRainSkip(String names);
 
   /// No description provided for @postpone.
@@ -3275,6 +3197,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ce que vous avez remarqué (facultatif)…'**
   String get diagnosisSymptomsHint;
+
+  /// No description provided for @diagnosisClimateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif : les conditions autour de la plante affinent l\'analyse.'**
+  String get diagnosisClimateHint;
 
   /// No description provided for @analyze.
   ///
@@ -5424,12 +5352,6 @@ abstract class AppLocalizations {
   /// **'Rempoter tout ici'**
   String get repotAllHere;
 
-  /// No description provided for @plantNumber.
-  ///
-  /// In fr, this message translates to:
-  /// **'N° {number}'**
-  String plantNumber(int number);
-
   /// No description provided for @searchByNumberHint.
   ///
   /// In fr, this message translates to:
@@ -6195,7 +6117,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbIrisBody.
   ///
   /// In fr, this message translates to:
-  /// **'Si Iris ne reconnaît pas une plante, la recherche continue en ligne.'**
+  /// **'Plante inconnue d\'Iris : la recherche continue en ligne.'**
   String get onbIrisBody;
 
   /// No description provided for @onbPrivacyTitle.
@@ -6273,7 +6195,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisDoubtBody.
   ///
   /// In fr, this message translates to:
-  /// **'Quand deux espèces se ressemblent, Iris propose les deux.'**
+  /// **'Deux espèces qui se ressemblent : les deux sont proposées.'**
   String get whatsNewIrisDoubtBody;
 
   /// No description provided for @onbStepOf.
@@ -6741,7 +6663,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderAiBody.
   ///
   /// In fr, this message translates to:
-  /// **'L\'IA cherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.'**
+  /// **'Recherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.'**
   String get finderAiBody;
 
   /// No description provided for @finderPhotoSource.
@@ -6795,7 +6717,7 @@ abstract class AppLocalizations {
   /// No description provided for @gardensHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le jardin ouvert est celui que vous voyez partout dans l\'application. Vous passez de l\'un à l\'autre quand vous voulez.'**
+  /// **'Le jardin ouvert est celui affiché partout dans l\'application. Le passage de l\'un à l\'autre se fait ici.'**
   String get gardensHint;
 
   /// No description provided for @gardenMine.

@@ -41,7 +41,7 @@ void main() {
     final container = await harness.boot(tester);
     await harness.pumpApp(tester, container);
 
-    container.read(routerProvider).go('flora://login-callback');
+    container.read(routerProvider).go('auxine://login-callback');
     await harness.settle(tester);
 
     expect(find.textContaining('Page Not Found'), findsNothing);

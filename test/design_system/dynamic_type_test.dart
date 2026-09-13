@@ -136,6 +136,7 @@ void main() {
               children: [
                 FloraListRow(title: 'Monstera deliciosa', subtitle: 'Arrosée il y a 3 jours', onTap: () {}),
                 FloraChip(label: 'Salon', onTap: () {}),
+                FloraPill(emoji: '☁️', label: '22° · Nuageux · 38 % de pluie', chevron: true, onTap: () {}),
               ],
             ),
           ),

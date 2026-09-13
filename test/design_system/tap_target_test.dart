@@ -51,6 +51,13 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('une pilule de lecture', (tester) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, FloraPill(emoji: '🏠', label: '21° · 38 %', detail: 'Salon', chevron: true, onTap: () {}));
+      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+      handle.dispose();
+    });
+
     testWidgets('les boutons − et + du stepper', (tester) async {
       final handle = tester.ensureSemantics();
       await _pump(tester, QuantityStepper(value: 3, label: '3 jours', onChanged: (_) {}));

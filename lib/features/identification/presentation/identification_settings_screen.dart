@@ -20,6 +20,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final configured = ref.watch(plantIdentifierProvider).isConfigured;
     final metrics = ref.watch(identificationMetricsStoreProvider).read();
+    final feedbackAvailable = ref.watch(irisFeedbackAvailableProvider);
     final model = ref.watch(localModelStatusProvider);
     final status = model.asData?.value;
     return FloraPage(
@@ -81,6 +82,26 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: Space.xs),
           Text(l10n.identificationFallbackHint(AppConfig.modelName), style: context.text.caption),
+          const SizedBox(height: Space.lg),
+          FloraGroup(
+            children: [
+              // Sans compte distant, un oui ne ferait rien partir
+              // (`irisFeedbackAvailableProvider`) : l'interrupteur ne
+              // s'allume pas et la ligne dit pourquoi, plutôt que de
+              // promettre un envoi qui n'aurait pas lieu.
+              FloraListRow(
+                title: l10n.irisFeedback,
+                titleMaxLines: 2,
+                subtitle: feedbackAvailable ? null : l10n.irisFeedbackNeedsAccount,
+                trailing: AdaptiveSwitch(
+                  value: ref.watch(preferencesProvider.select((p) => p.irisFeedbackEnabled)),
+                  onChanged: feedbackAvailable ? (v) => ref.read(preferencesProvider.notifier).setIrisFeedbackEnabled(v) : null,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+          Text(l10n.irisFeedbackHint(AppConfig.modelName), style: context.text.caption),
           const SizedBox(height: Space.sm),
           Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
           if (identifier is CascadeIdentifier) ...[

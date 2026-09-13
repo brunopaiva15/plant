@@ -10,7 +10,7 @@ import '../features/qr/application/plant_links.dart';
 import 'providers.dart';
 import 'router.dart';
 
-/// Ouvre un lien `flora://…` livré par le système : QR scanné depuis
+/// Ouvre un lien `auxine://…` livré par le système : QR scanné depuis
 /// l'appareil photo, étiquette partagée, plus tard tag NFC.
 ///
 /// La cible s'ouvre par-dessus l'accueil plutôt qu'à sa place — sinon le

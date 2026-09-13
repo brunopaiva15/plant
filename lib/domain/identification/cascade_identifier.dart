@@ -52,6 +52,12 @@ class CascadeIdentifier implements PlantIdentifier {
         _now = now ?? DateTime.now;
 
   final LocalPlantModel local;
+
+  /// Ce que le modèle local a proposé à la dernière identification, même
+  /// quand la cascade a ensuite basculé sur le service distant et rendu
+  /// autre chose. C'est ce qu'on rapporte quand la personne enregistre :
+  /// ce qu'Iris croyait, et pour quoi il avait pris la plante.
+  List<IdentificationCandidate> lastLocal = const [];
   final PlantIdentifier fallback;
   final FallbackPolicy policy;
   final IdentificationMetricsStore metricsStore;
@@ -137,6 +143,7 @@ class CascadeIdentifier implements PlantIdentifier {
       m = m.copyWith(local: m.local + 1);
       try {
         localResult = _mark(await _classifyAll(images), IdentificationSource.local, language);
+        lastLocal = localResult;
         verdict = policy.decide(localResult);
       } on Object {
         // Un modèle qui plante ou dépasse le délai ne doit pas bloquer

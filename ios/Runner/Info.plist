@@ -33,6 +33,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -78,12 +80,14 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>flora</string>
+				<string>auxine</string>
 			</array>
 		</dict>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Auxine utilise votre position, une fois, pour trouver la ville de la météo. Elle n'est ni gardée ni partagée.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Auxine utilise votre position, une fois, pour trouver la ville de la météo, quand l'application est ouverte. Elle ne la suit pas en arrière-plan, ne la garde pas et ne la partage pas.</string>
 	<key>NSHomeKitUsageDescription</key>
 	<string>Auxine lit la température et l'humidité de vos capteurs Apple Maison pour adapter les conseils et les diagnostics de vos plantes d'intérieur. Rien n'est écrit dans votre maison, rien ne quitte l'appareil.</string>
 	<key>NSCameraUsageDescription</key>

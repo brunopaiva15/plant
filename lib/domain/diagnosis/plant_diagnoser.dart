@@ -137,7 +137,40 @@ abstract class PlantDiagnoser {
     /// d'intérieur. Un air à 30 % explique des pointes sèches mieux qu'une
     /// photo ; sans capteur, ou pour une plante dehors, rien n'est transmis.
     HomeReading? indoorClimate,
+
+    /// Ce que la personne a donné elle-même, pour ce que le capteur ne
+    /// mesure pas — ou tout, sans capteur.
+    ReportedClimate? reportedClimate,
   });
+}
+
+/// La température et l'humidité autour de la plante, données de la main de
+/// la personne quand aucun capteur ne les mesure. Facultatives, l'une comme
+/// l'autre.
+class ReportedClimate {
+  const ReportedClimate({this.temperatureC, this.humidity});
+
+  final double? temperatureC;
+  final int? humidity;
+
+  bool get isEmpty => temperatureC == null && humidity == null;
+
+  /// Lit ce qui a été tapé : virgule ou point, dans l'unité affichée. Une
+  /// valeur hors de toute plage vraisemblable (−30 à 60 °C, 0 à 100 %) est
+  /// ignorée plutôt que transmise.
+  static ReportedClimate parse({String? temperature, String? humidity, bool fahrenheit = false}) {
+    double? number(String? s) {
+      final v = s == null ? null : double.tryParse(s.trim().replaceAll(',', '.'));
+      return v == null || !v.isFinite ? null : v;
+    }
+
+    var t = number(temperature);
+    if (t != null && fahrenheit) t = (t - 32) * 5 / 9;
+    if (t != null && (t < -30 || t > 60)) t = null;
+    var h = number(humidity)?.round();
+    if (h != null && (h < 0 || h > 100)) h = null;
+    return ReportedClimate(temperatureC: t, humidity: h);
+  }
 }
 
 class UnconfiguredDiagnoser implements PlantDiagnoser {
@@ -154,6 +187,7 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
+    ReportedClimate? reportedClimate,
   }) =>
       throw const DiagnosisException('unconfigured');
 }

@@ -6,6 +6,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../application/reminder_scheduler.dart';
+import 'today_notice.dart';
 
 /// Proposition contextuelle d'activer les rappels : n'apparaît qu'une fois,
 /// après qu'au moins une action a été enregistrée, jamais au lancement.
@@ -51,40 +52,19 @@ class _NotificationPromptState extends ConsumerState<NotificationPrompt> {
     final prefs = ref.watch(preferencesProvider);
     final hasActions = ref.watch(_hasAnyActionProvider).value ?? false;
     final show = !_hidden && !service.notificationPromptShown && !prefs.notificationsEnabled && hasActions;
-    return AnimatedSize(
-      duration: Motion.of(context, Motion.emphasis),
-      curve: Motion.emphasized,
+    return TodayNoticeSlot(
+      visible: show,
       child: !show
           ? const SizedBox.shrink()
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, 0),
-              child: FloraCard(
-                color: context.colors.sageSoft,
-                padding: const EdgeInsets.all(Space.lg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('🔔', style: TextStyle(fontSize: 20)),
-                        const SizedBox(width: Space.xs),
-                        Expanded(child: Text(l10n.notificationAskTitle, style: context.text.title3)),
-                      ],
-                    ),
-                    const SizedBox(height: Space.xs),
-                    Text(l10n.notificationAskBody, style: context.text.callout),
-                    const SizedBox(height: Space.md),
-                    Wrap(
-                      spacing: Space.xs,
-                      runSpacing: Space.xs,
-                      children: [
-                        FloraButton(label: l10n.enable, size: FloraButtonSize.small, onPressed: _enable),
-                        FloraButton(label: l10n.notNow, size: FloraButtonSize.small, style: FloraButtonStyle.ghost, onPressed: _dismiss),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+          : TodayNotice(
+              emoji: '🔔',
+              color: context.colors.sageSoft,
+              title: l10n.notificationAskTitle,
+              body: l10n.notificationAskBody,
+              actions: [
+                FloraButton(label: l10n.enable, size: FloraButtonSize.small, onPressed: _enable),
+                FloraButton(label: l10n.notNow, size: FloraButtonSize.small, style: FloraButtonStyle.ghost, onPressed: _dismiss),
+              ],
             ),
     );
   }

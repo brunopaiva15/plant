@@ -931,7 +931,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Per impostazione predefinita, Auxine segue il sistema.';
+      'Per impostazione predefinita, vale il valore del sistema.';
 
   @override
   String get notifications => 'Notifiche';
@@ -1086,72 +1086,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Umidità non ricevuta. Un altro sensore può fornirla.';
-
-  @override
-  String get homeClimateOtherSource => 'Altra fonte';
-
-  @override
-  String get homeClimateShortcut => 'Comando rapido';
-
-  @override
-  String get homeClimateShortcutSubtitle =>
-      'Valore trasmesso dall\'app Comandi rapidi (un HomePod, per esempio).';
-
-  @override
-  String get homeClimateShortcutLast => 'Ultimo valore ricevuto';
-
-  @override
-  String get homeClimateShortcutNone => 'Nulla ricevuto per ora.';
-
-  @override
-  String get homeClimateShortcutStale =>
-      'Valore ricevuto più di sei ore fa, non usato.';
-
-  @override
-  String get homeClimateOpenShortcuts => 'Apri Comandi rapidi';
-
-  @override
-  String get homeClimateShortcutFooter =>
-      'Per un HomePod: HomeKit non dà i suoi sensori alle app di terze parti, Comandi rapidi li legge.';
-
-  @override
-  String get homeClimateGuideTitle => 'Leggere un HomePod';
-
-  @override
-  String get homeClimateGuideSubtitle => 'Quattro passaggi in Comandi rapidi.';
-
-  @override
-  String get homeClimateGuideWhy =>
-      'I sensori di temperatura e umidità di un HomePod compaiono solo nell\'app Casa: Apple non li dà alle altre app. L\'app Comandi rapidi li legge e può trasmettere il valore ad Auxine a ogni apertura. Nulla lascia il dispositivo.';
-
-  @override
-  String get homeClimateStep1Title => 'Un\'automazione all\'apertura';
-
-  @override
-  String get homeClimateStep1Body =>
-      'Comandi rapidi › Automazione › nuova automazione › App › Auxine › «Viene aperta», esecuzione immediata.';
-
-  @override
-  String get homeClimateStep2Title => 'Leggere l\'HomePod';
-
-  @override
-  String get homeClimateStep2Body =>
-      'Azione Casa «Ottieni stato»: scegliere l\'HomePod, poi «Umidità relativa attuale». Una seconda azione per «Temperatura attuale» se si vuole.';
-
-  @override
-  String get homeClimateStep3Title => 'Trasmettere ad Auxine';
-
-  @override
-  String get homeClimateStep3Body =>
-      'Azione Auxine «Trasmetti il clima ad Auxine»: mettere i valori ottenuti in Umidità e Temperatura, e la stanza se si vuole.';
-
-  @override
-  String get homeClimateStep4Title => 'Scegliere «Comando rapido» come sensore';
-
-  @override
-  String get homeClimateStep4Body =>
-      'In Profilo › Casa di Apple, riga Umidità o Temperatura › «Comando rapido». Alla prossima apertura di Auxine la misura è lì.';
+      'Umidità non ricevuta da questo sensore. Un altro si sceglie nella riga Umidità.';
 
   @override
   String get homeClimateNone => 'Nessun sensore';
@@ -1179,7 +1114,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Nessun sensore di temperatura o umidità in Casa di Apple. Un HomePod si legge con Comandi rapidi, in Profilo › Casa di Apple.';
+      'Nessun sensore di temperatura o umidità in Casa di Apple.';
 
   @override
   String get homeClimateDenied =>
@@ -1208,28 +1143,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeClimateTooHot => 'Troppo caldo per questa specie.';
 
   @override
-  String homeTipDryAir(int humidity, String names) {
-    return 'Aria secca ($humidity %): nebulizzare o raggruppare $names.';
+  String homeTipDryAir(String names) {
+    return 'Aria secca: nebulizzare o raggruppare $names.';
   }
 
   @override
-  String homeTipHumidAir(int humidity) {
-    return 'Aria umida ($humidity %): arieggiare la stanza.';
+  String get homeTipHumidAir => 'Aria umida: arieggiare la stanza.';
+
+  @override
+  String homeTipHumidAirPlants(String names) {
+    return 'Aria umida: arieggiare, e lasciare asciugare $names tra due annaffiature.';
   }
 
   @override
-  String homeTipHumidAirPlants(int humidity, String names) {
-    return 'Aria umida ($humidity %): arieggiare, e lasciare asciugare $names tra due annaffiature.';
+  String homeTipCold(String names) {
+    return 'Troppo freddo per $names.';
   }
 
   @override
-  String homeTipCold(String temperature, String names) {
-    return '$temperature da voi: troppo freddo per $names.';
-  }
-
-  @override
-  String homeTipHot(String temperature, String names) {
-    return '$temperature da voi: $names si asciugano più in fretta, controllare la terra.';
+  String homeTipHot(String names) {
+    return 'Caldo: $names si asciugano più in fretta, controllare la terra.';
   }
 
   @override
@@ -1548,7 +1481,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return '$name riconosce le specie sul dispositivo, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
+    return 'Riconoscimento delle specie sul dispositivo da parte di $name, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
   }
 
   @override
@@ -1562,7 +1495,27 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'Quando $name è incerto, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
+    return 'In caso di dubbio di $name, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
+  }
+
+  @override
+  String get irisFeedback => 'Invio delle foto identificate';
+
+  @override
+  String irisFeedbackHint(String name) {
+    return 'Le foto scattate per identificare e il nome scelto vengono inviati appena una pianta viene nominata, e addestrano le prossime versioni del modello $name. Sono leggibili solo dall\'account che le invia, e la sua eliminazione le cancella. Disattivato, non lasciano il dispositivo.';
+  }
+
+  @override
+  String get irisFeedbackNeedsAccount =>
+      'Serve un account per inviare le foto.';
+
+  @override
+  String get irisFeedbackAskTitle => 'Invio delle foto identificate';
+
+  @override
+  String irisFeedbackAskBody(String name) {
+    return 'Le foto scattate per identificare e il nome scelto possono essere inviati per addestrare le prossime versioni del modello $name. Sono leggibili solo dall\'account che le invia, e la sua eliminazione le cancella. La scelta si cambia nelle impostazioni di identificazione.';
   }
 
   @override
@@ -1660,8 +1613,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get weatherNoResults => 'Nessun luogo trovato.';
 
   @override
+  String get weatherRainTitle => 'Pioggia oggi';
+
+  @override
   String weatherRainSkip(String names) {
-    return 'Pioggia oggi: irrigazione di $names rinviata.';
+    return 'L\'irrigazione di $names può aspettare.';
   }
 
   @override
@@ -1861,6 +1817,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
+
+  @override
+  String get diagnosisClimateHint =>
+      'Facoltativo: le condizioni intorno alla pianta affinano l\'analisi.';
 
   @override
   String get analyze => 'Analizza';
@@ -3164,11 +3124,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get repotAllHere => 'Rinvasa tutto qui';
 
   @override
-  String plantNumber(int number) {
-    return 'N. $number';
-  }
-
-  @override
   String get searchByNumberHint => 'Digita #42 per trovare la pianta n. 42.';
 
   @override
@@ -3642,7 +3597,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Se Iris non riconosce una pianta, la ricerca continua online.';
+      'Pianta sconosciuta a Iris: la ricerca continua online.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';
@@ -3688,7 +3643,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get whatsNewIrisDoubtBody =>
-      'Quando due specie si somigliano, Iris propone entrambe.';
+      'Due specie che si somigliano: vengono proposte entrambe.';
 
   @override
   String onbStepOf(int current, int total) {
@@ -3951,7 +3906,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get finderAiBody =>
-      'L\'IA cerca oltre il catalogo, partendo dalle sue risposte e da ciò che aggiunge qui.';
+      'Ricerca oltre il catalogo, partendo dalle sue risposte e da ciò che aggiunge qui.';
 
   @override
   String get finderPhotoSource =>
@@ -3982,7 +3937,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'Il giardino aperto è quello che vedete ovunque nell\'app. Potete passare dall\'uno all\'altro quando volete.';
+      'Il giardino aperto è quello mostrato ovunque nell\'app. Il passaggio dall\'uno all\'altro avviene qui.';
 
   @override
   String get gardenMine => 'Il mio giardino';
