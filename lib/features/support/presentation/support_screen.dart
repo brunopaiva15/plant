@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/support/support_service.dart';
+import '../../network/presentation/offline_notice.dart';
 import '../../onboarding/presentation/growing_plant.dart';
 
 /// Le soutien facultatif au développeur.
@@ -113,7 +115,11 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: Space.xl),
-        if (!supported)
+        // L'achat passe par le magasin, et le magasin par le réseau : hors
+        // ligne le bouton échouerait au moment de payer.
+        if (!supported && !ref.watch(isOnlineProvider))
+          OfflineBanner(message: l10n.offlineSupport, padding: EdgeInsets.zero)
+        else if (!supported)
           offer.when(
             loading: () => const Center(child: AdaptiveProgress()),
             error: (_, _) => _Unavailable(message: l10n.supportUnavailable),

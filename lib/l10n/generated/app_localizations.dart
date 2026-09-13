@@ -240,6 +240,54 @@ abstract class AppLocalizations {
   /// **'Une erreur est survenue. Réessayez.'**
   String get genericError;
 
+  /// No description provided for @offlineTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne'**
+  String get offlineTitle;
+
+  /// No description provided for @offlineHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette fonction demande une connexion. Les données déjà sur l\'appareil restent lisibles.'**
+  String get offlineHint;
+
+  /// No description provided for @offlineActionFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne. Réessayez une fois le réseau revenu.'**
+  String get offlineActionFailed;
+
+  /// No description provided for @offlineSharing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer, révoquer et lister des liens demande une connexion.'**
+  String get offlineSharing;
+
+  /// No description provided for @offlineCollaboration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inviter, rejoindre un jardin et changer un rôle demande une connexion.'**
+  String get offlineCollaboration;
+
+  /// No description provided for @offlineDiagnosis.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse demande une connexion.'**
+  String get offlineDiagnosis;
+
+  /// No description provided for @offlineIdentification.
+  ///
+  /// In fr, this message translates to:
+  /// **'La recherche en ligne demande une connexion. La reconnaissance sur l\'appareil, non.'**
+  String get offlineIdentification;
+
+  /// No description provided for @offlineSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'achat demande une connexion.'**
+  String get offlineSupport;
+
   /// No description provided for @tabToday.
   ///
   /// In fr, this message translates to:

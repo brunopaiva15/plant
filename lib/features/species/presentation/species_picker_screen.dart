@@ -8,6 +8,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
 import '../../../data/species/species_catalog.dart';
 import '../../../data/species/species_index.dart';
 import '../../../design_system/design_system.dart';
@@ -96,7 +97,10 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
     setState(() => _loading = true);
     final lang = Localizations.localeOf(context).languageCode;
     try {
-      final page = await ref.read(speciesServiceProvider).search(q, offset: offset, limit: 30, languageCode: lang);
+      // Hors ligne, la requête GBIF ne part pas : la phrase qui l'explique
+      // arrive tout de suite plutôt qu'au bout du délai d'attente, et les
+      // deux catalogues embarqués, eux, répondent comme d'habitude.
+      final page = await ref.online(() => ref.read(speciesServiceProvider).search(q, offset: offset, limit: 30, languageCode: lang));
       if (!mounted || _query != q) return;
       final seen = _remote.map((s) => s.scientificName.toLowerCase()).toSet();
       setState(() {

@@ -8,10 +8,13 @@ import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
+import '../../../core/network/network_failure.dart';
 import '../../../data/db/database.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
 import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
+import '../../network/presentation/offline_notice.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'join_garden_sheet.dart';
@@ -55,12 +58,17 @@ class GardensScreen extends ConsumerWidget {
             })
           : gardens.when(
               loading: () => const Padding(padding: EdgeInsets.all(Space.xxl), child: Center(child: AdaptiveProgress())),
-              error: (_, _) => EmptyState(emoji: '📡', title: l10n.genericError, compact: true),
+              error: (error, _) => error is OfflineException
+                  ? OfflineNotice(subtitle: l10n.offlineCollaboration, onRetry: () => ref.invalidate(myGardensProvider))
+                  : EmptyState(emoji: '📡', title: l10n.genericError, actionLabel: l10n.retry, onAction: () => ref.invalidate(myGardensProvider), compact: true),
               data: (items) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(l10n.gardensHint, style: context.text.callout),
                   const SizedBox(height: Space.lg),
+                  // Hors ligne, la liste vient de la base : elle se lit, mais
+                  // rejoindre un jardin demande le serveur.
+                  OfflineBanner(message: l10n.offlineCollaboration),
                   FloraGroup(
                     children: [
                       for (final g in items)
@@ -203,11 +211,15 @@ Future<void> leaveGarden(BuildContext context, WidgetRef ref, String gardenId, S
   );
   if (!ok) return;
   try {
-    await ref.read(collaborationServiceProvider).leaveGarden(gardenId);
+    // Partir se décide sur le serveur : le faire localement laisserait le
+    // compte membre du jardin, et la prochaine synchro le ramènerait.
+    await ref.online(() => ref.read(collaborationServiceProvider).leaveGarden(gardenId));
     if (ref.read(gardenIdProvider) == gardenId) await ref.read(activeGardenProvider.notifier).reset();
     ref.invalidate(myGardensProvider);
     Haptics.warning();
     if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.leftGarden(name), emoji: '👋'));
+  } on OfflineException {
+    if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineActionFailed, emoji: '📡'));
   } catch (e, st) {
     ref.read(crashReporterProvider).report(e, st, context: 'leave-garden');
     if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.genericError, emoji: '!'));

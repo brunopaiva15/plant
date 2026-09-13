@@ -11,6 +11,7 @@ import 'app/router.dart';
 import 'app/sync_coordinator.dart';
 import 'core/l10n/l10n.dart';
 import 'core/config/supabase_config.dart';
+import 'core/network/connectivity.dart';
 import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
 import 'data/auth/supabase_auth_repository.dart';
@@ -76,6 +77,9 @@ Future<void> main() async {
     preferencesServiceProvider.overrideWithValue(prefs),
     notificationServiceProvider.overrideWithValue(notifications),
     authRepositoryProvider.overrideWithValue(auth),
+    // La vraie sonde de réseau se branche ici : l'application peut alors dire
+    // « hors ligne » plutôt que de faire tourner un écran sans fin.
+    reachabilityProvider.overrideWithValue(const DnsReachability()),
   ]);
 
   // Emplacements de départ, dans la langue de l'appareil.

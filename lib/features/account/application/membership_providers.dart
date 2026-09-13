@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/network/connectivity.dart';
 import '../../../data/db/database.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
 
@@ -57,6 +58,9 @@ final myGardensProvider = FutureProvider<List<GardenAccess>>((ref) async {
   final db = ref.watch(databaseProvider);
   final user = ref.watch(currentUserProvider).value;
   final own = ref.watch(gardenIdProvider);
+  // Le retour du réseau redemande la liste : hors ligne c'est la base locale
+  // qui répond, et elle ne se met pas à jour toute seule.
+  ref.watch(connectivityProvider);
   if (!service.isAvailable || user == null || user.isLocal) {
     final garden = await (db.select(db.gardens)..where((g) => g.id.equals(own))).getSingleOrNull();
     return [GardenAccess(id: own, name: garden?.name ?? '', role: GardenRole.owner, ownerId: garden?.ownerId)];
@@ -68,7 +72,7 @@ final myGardensProvider = FutureProvider<List<GardenAccess>>((ref) async {
     // file se relève avant l'appel et après, car elle peut se vider pendant :
     // le nom reçu daterait alors d'avant l'envoi.
     final sent = await _queuedGardens(db);
-    final gardens = await service.gardens();
+    final gardens = await ref.online(service.gardens);
     final queued = <String, String>{};
     await db.transaction(() async {
       final now = DateTime.now();
@@ -110,8 +114,14 @@ Future<Set<String>> _queuedGardens(FloraDatabase db) async =>
     (await (db.select(db.syncOutbox)..where((o) => o.entity.equals('gardens'))).get()).map((o) => o.entityId).toSet();
 
 /// Invitations en cours pour le jardin ouvert (propriétaire seulement).
+///
+/// Elles ne vivent que sur le serveur : hors ligne il n'y a rien à montrer,
+/// et l'écran des membres se contente de le dire. Le retour du réseau relance
+/// la requête.
 final gardenInvitesProvider = FutureProvider<List<GardenInvite>>((ref) async {
   final service = ref.watch(collaborationServiceProvider);
   if (!service.isAvailable || !ref.watch(canManageMembersProvider)) return const [];
-  return service.invites(ref.watch(gardenIdProvider));
+  final gardenId = ref.watch(gardenIdProvider);
+  ref.watch(connectivityProvider);
+  return ref.online(() => service.invites(gardenId));
 });

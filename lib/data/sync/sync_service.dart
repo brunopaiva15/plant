@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 
+import '../../core/network/network_failure.dart';
 import '../../domain/sync/remote_data_source.dart';
 import '../../domain/sync/sync_state.dart';
 import '../db/database.dart';
@@ -131,10 +132,12 @@ class SyncService {
         await _throttledRepair();
         _emit(SyncState(status: SyncStatus.idle, lastSyncedAt: DateTime.now(), pendingCount: await _pendingCount()));
       } while (_again);
-    } on SocketException catch (_) {
-      _emit(_current.copyWith(status: SyncStatus.offline, pendingCount: await _pendingCount()));
     } catch (e) {
-      _emit(_current.copyWith(status: SyncStatus.error, message: e.toString(), pendingCount: await _pendingCount()));
+      // Réseau absent ou requête expirée : ce n'est pas une erreur de
+      // synchronisation, c'est une reprise à faire plus tard. L'outbox garde
+      // tout, et le compteur dit combien.
+      final status = isNetworkFailure(e) ? SyncStatus.offline : SyncStatus.error;
+      _emit(_current.copyWith(status: status, message: status == SyncStatus.error ? e.toString() : null, pendingCount: await _pendingCount()));
     } finally {
       _running = false;
     }

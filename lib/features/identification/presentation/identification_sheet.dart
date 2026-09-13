@@ -9,6 +9,7 @@ import '../../../app/providers.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
 import '../../../core/l10n/likelihood_labels.dart';
 import '../../../design_system/design_system.dart';
 import '../../../data/services/photo_storage_service.dart';
@@ -322,7 +323,12 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   // bande, et celui qui se paie reste ici-bas.
                   if (results.first.source == IdentificationSource.local && _canSearchOnline) ...[
                     const SizedBox(height: Space.sm),
-                    FloraButton(label: l10n.searchOnline, expand: true, style: FloraButtonStyle.ghost, onPressed: _searchOnline),
+                    // Le modèle embarqué a déjà répondu : ce bouton-là sort
+                    // sur le réseau, et sans lui il ne rendrait qu'une erreur.
+                    if (ref.watch(isOnlineProvider))
+                      FloraButton(label: l10n.searchOnline, expand: true, style: FloraButtonStyle.ghost, onPressed: _searchOnline)
+                    else
+                      Text(l10n.offlineIdentification, style: context.text.caption, textAlign: TextAlign.center),
                   ],
                 ],
               );

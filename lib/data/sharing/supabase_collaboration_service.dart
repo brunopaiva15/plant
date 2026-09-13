@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/config/supabase_config.dart';
+import '../../core/network/network_failure.dart';
 import '../../domain/sharing/garden_collaboration.dart';
 
 /// Collaboration adossée à Supabase. Tout passe par des fonctions SQL
@@ -17,13 +18,20 @@ class SupabaseCollaborationService implements CollaborationService {
   @override
   bool get isAvailable => SupabaseConfig.isConfigured;
 
-  /// Un appel RPC, avec les erreurs du backend traduites en [CollaborationException].
+  /// Un appel RPC, avec les erreurs du backend traduites en
+  /// [CollaborationException].
+  ///
+  /// Borné dans le temps : hors réseau, le client attendrait une réponse qui
+  /// ne viendra pas, et la feuille resterait sur son bouton en chargement.
   Future<T> _rpc<T>(Future<T> Function() call) async {
     try {
-      return await call();
+      return await call().timeout(networkTimeout);
     } on CollaborationException {
       rethrow;
     } catch (e) {
+      // Un appel qui n'est pas sorti de l'appareil n'a pas de réponse à
+      // traduire : le réseau se dit partout de la même façon.
+      if (isNetworkFailure(e)) throw const OfflineException();
       throw CollaborationException.from(e);
     }
   }

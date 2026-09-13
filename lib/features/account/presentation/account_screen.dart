@@ -13,6 +13,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/sync/sync_state.dart';
+import '../../network/presentation/offline_notice.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel;
@@ -68,6 +69,9 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
           ] else ...[
             Text(l10n.signInHint, style: context.text.callout),
             const SizedBox(height: Space.xl),
+            // Se connecter passe par Apple puis par le serveur : hors ligne le
+            // bouton ne rendrait qu'« impossible », sans dire pourquoi.
+            OfflineBanner(message: l10n.offlineCollaboration),
             if (defaultTargetPlatform == TargetPlatform.iOS)
               FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
             if (AppConfig.googleSignInEnabled) ...[

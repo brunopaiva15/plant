@@ -79,6 +79,35 @@ class AppLocalizationsFr extends AppLocalizations {
   String get genericError => 'Une erreur est survenue. Réessayez.';
 
   @override
+  String get offlineTitle => 'Hors ligne';
+
+  @override
+  String get offlineHint =>
+      'Cette fonction demande une connexion. Les données déjà sur l\'appareil restent lisibles.';
+
+  @override
+  String get offlineActionFailed =>
+      'Hors ligne. Réessayez une fois le réseau revenu.';
+
+  @override
+  String get offlineSharing =>
+      'Créer, révoquer et lister des liens demande une connexion.';
+
+  @override
+  String get offlineCollaboration =>
+      'Inviter, rejoindre un jardin et changer un rôle demande une connexion.';
+
+  @override
+  String get offlineDiagnosis => 'L\'analyse demande une connexion.';
+
+  @override
+  String get offlineIdentification =>
+      'La recherche en ligne demande une connexion. La reconnaissance sur l\'appareil, non.';
+
+  @override
+  String get offlineSupport => 'L\'achat demande une connexion.';
+
+  @override
   String get tabToday => 'Aujourd\'hui';
 
   @override

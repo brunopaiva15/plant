@@ -79,6 +79,34 @@ class AppLocalizationsIt extends AppLocalizations {
   String get genericError => 'Si è verificato un errore. Riprova.';
 
   @override
+  String get offlineTitle => 'Offline';
+
+  @override
+  String get offlineHint =>
+      'Serve una connessione. I dati già sul dispositivo restano leggibili.';
+
+  @override
+  String get offlineActionFailed => 'Offline. Riprova quando la rete torna.';
+
+  @override
+  String get offlineSharing =>
+      'Creare, revocare ed elencare i link richiede una connessione.';
+
+  @override
+  String get offlineCollaboration =>
+      'Invitare, unirsi a un giardino e cambiare ruolo richiede una connessione.';
+
+  @override
+  String get offlineDiagnosis => 'L\'analisi richiede una connessione.';
+
+  @override
+  String get offlineIdentification =>
+      'La ricerca online richiede una connessione. Il riconoscimento sul dispositivo no.';
+
+  @override
+  String get offlineSupport => 'L\'acquisto richiede una connessione.';
+
+  @override
   String get tabToday => 'Oggi';
 
   @override
