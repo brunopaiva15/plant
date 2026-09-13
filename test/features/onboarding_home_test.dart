@@ -19,11 +19,14 @@ import 'fakes/fake_home_climate_service.dart';
 
 late PreferencesService _prefs;
 
-Future<void> _pump(WidgetTester tester, FakeHomeClimateService home) async {
-  SharedPreferences.setMockInitialValues({'locale': 'fr'});
+Future<void> _pump(WidgetTester tester, FakeHomeClimateService home, {Map<String, Object> stored = const {}}) async {
+  SharedPreferences.setMockInitialValues({'locale': 'fr', ...stored});
   _prefs = await PreferencesService.load();
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
+  // L'encoche et la barre d'accueil du téléphone : la scène et les pages se
+  // partagent ce qu'elles laissent, et c'est là que la place manque.
+  tester.view.padding = const FakeViewPadding(top: 141, bottom: 102);
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     ProviderScope(
@@ -55,9 +58,9 @@ Future<void> _step(WidgetTester tester) async {
   }
 }
 
-/// Touche le bouton de la page courante qui porte ce texte (voir
+/// Le texte tel qu'il est posé sur la page courante (voir
 /// onboarding_account_test.dart pour le pourquoi).
-Future<void> _tap(WidgetTester tester, String text) async {
+Finder _onPage(WidgetTester tester, String text) {
   final width = tester.view.physicalSize.width / tester.view.devicePixelRatio;
   final onScreen = find.text(text).evaluate().where((e) {
     final box = e.renderObject as RenderBox?;
@@ -66,7 +69,12 @@ Future<void> _tap(WidgetTester tester, String text) async {
     return x >= 0 && x < width;
   }).toList();
   expect(onScreen, hasLength(1), reason: '« $text » attendu une fois sur la page courante');
-  final target = find.byElementPredicate((e) => identical(e, onScreen.single));
+  return find.byElementPredicate((e) => identical(e, onScreen.single));
+}
+
+/// Touche le bouton de la page courante qui porte ce texte.
+Future<void> _tap(WidgetTester tester, String text) async {
+  final target = _onPage(tester, text);
   await tester.ensureVisible(target);
   await tester.pump();
   await tester.tap(target);
@@ -170,6 +178,24 @@ void main() {
     expect(find.text('Votre intérieur'), findsOneWidget);
     await _tap(tester, 'Plus tard');
     expect(find.text('Votre prénom'), findsOneWidget);
+  });
+
+  testWidgets("la ville tient à l'écran, carte et boutons compris", (tester) async {
+    // La scène ne rapetissait qu'à l'approche du dernier objet : là où Apple
+    // Maison existe, c'est la maison, et la ville gardait au-dessus d'elle une
+    // scène de pleine taille. Ses boutons tombaient sous le bord de l'écran,
+    // et il fallait faire défiler pour les atteindre.
+    await _pump(tester, FakeHomeClimateService(sensorList: const [_salon]), stored: {'weather_place': 'St-Imier, Suisse|47.15|6.99'});
+    await _tap(tester, 'Passer');
+    expect(find.text('Votre ville'), findsOneWidget);
+    expect(_onPage(tester, 'St-Imier, Suisse'), findsOneWidget);
+
+    final page = tester.state<ScrollableState>(find.ancestor(of: _onPage(tester, 'Votre ville'), matching: find.byType(Scrollable)).first);
+    expect(page.position.maxScrollExtent, 0, reason: 'la page du lieu déborde de son écran');
+    final view = tester.view;
+    final floor = (view.physicalSize.height - view.padding.bottom) / view.devicePixelRatio;
+    expect(tester.getRect(_onPage(tester, 'Continuer')).bottom, lessThan(floor));
+    expect(tester.getRect(_onPage(tester, 'Plus tard')).bottom, lessThan(floor));
   });
 
   testWidgets("sans Apple Maison, la ville mène droit au prénom", (tester) async {
