@@ -508,6 +508,7 @@
   "homeClimateTemperatureSensor": "Capteur de température",
   "homeClimateHumiditySensor": "Capteur d'humidité",
   "homeClimateSameSensor": "Même capteur",
+  "homeClimateHumidityMissing": "Humidité non reçue. Un autre capteur peut la donner.",
   "homeClimateNone": "Aucun capteur",
   "homeClimateRemove": "Retirer le capteur",
   "homeClimateReading": "Mesure",

@@ -321,6 +321,7 @@
   "homeClimateTemperatureSensor": "Temperature sensor",
   "homeClimateHumiditySensor": "Humidity sensor",
   "homeClimateSameSensor": "Same sensor",
+  "homeClimateHumidityMissing": "Humidity not received. Another sensor can provide it.",
   "homeClimateNone": "No sensor",
   "homeClimateRemove": "Remove sensor",
   "homeClimateReading": "Reading",

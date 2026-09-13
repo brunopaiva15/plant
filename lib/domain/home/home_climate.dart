@@ -27,17 +27,26 @@ class HomeSensor {
   /// l'accessoire lui-même.
   String get label => roomName?.trim().isNotEmpty == true ? roomName!.trim() : name;
 
-  /// Sérialisation compacte pour les préférences (`id|nom|pièce|maison`).
-  String encode() => [id, name, roomName ?? '', homeName ?? ''].map((s) => s.replaceAll('|', ' ')).join('|');
+  /// Sérialisation compacte pour les préférences
+  /// (`id|nom|pièce|maison|température|humidité`, les deux derniers à 1 ou 0).
+  String encode() =>
+      [id, name, roomName ?? '', homeName ?? '', hasTemperature ? '1' : '0', hasHumidity ? '1' : '0'].map((s) => s.replaceAll('|', ' ')).join('|');
 
   /// Deux capteurs sont le même s'ils portent le même identifiant, le même
   /// nom, la même pièce et la même maison : les préférences relisent le leur à chaque
   /// changement, et un `select` ne doit pas y voir un capteur neuf.
   @override
-  bool operator ==(Object other) => other is HomeSensor && other.id == id && other.name == name && other.roomName == roomName && other.homeName == homeName;
+  bool operator ==(Object other) =>
+      other is HomeSensor &&
+      other.id == id &&
+      other.name == name &&
+      other.roomName == roomName &&
+      other.homeName == homeName &&
+      other.hasTemperature == hasTemperature &&
+      other.hasHumidity == hasHumidity;
 
   @override
-  int get hashCode => Object.hash(id, name, roomName, homeName);
+  int get hashCode => Object.hash(id, name, roomName, homeName, hasTemperature, hasHumidity);
 
   static HomeSensor? decode(String? raw) {
     if (raw == null || raw.isEmpty) return null;
@@ -45,7 +54,16 @@ class HomeSensor {
     if (parts.length < 2 || parts[0].isEmpty) return null;
     final room = parts.length > 2 ? parts[2] : '';
     final home = parts.length > 3 ? parts[3] : '';
-    return HomeSensor(id: parts[0], name: parts[1], roomName: room.isEmpty ? null : room, homeName: home.isEmpty ? null : home);
+    // Une préférence écrite avant que l'on note ce que le capteur mesure :
+    // on le suppose complet, la liste des capteurs corrigera à l'affichage.
+    return HomeSensor(
+      id: parts[0],
+      name: parts[1],
+      roomName: room.isEmpty ? null : room,
+      homeName: home.isEmpty ? null : home,
+      hasTemperature: parts.length > 4 ? parts[4] != '0' : true,
+      hasHumidity: parts.length > 5 ? parts[5] != '0' : true,
+    );
   }
 }
 
