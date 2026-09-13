@@ -110,6 +110,7 @@
   "newPlant": "Nuova pianta",
   "stepPhotoTitle": "Foto",
   "stepPhotoSubtitle": "Inquadra la pianta intera, alla luce del giorno.",
+  "stepPhotoSubtitleCutting": "Inquadra la talea intera, alla luce del giorno.",
   "takePhoto": "Scatta una foto",
   "choosePhoto": "Scegli una foto",
   "withoutPhoto": "Continua senza foto",

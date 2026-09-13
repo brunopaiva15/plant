@@ -110,6 +110,7 @@
   "newPlant": "New plant",
   "stepPhotoTitle": "Photo",
   "stepPhotoSubtitle": "Frame the whole plant, in daylight.",
+  "stepPhotoSubtitleCutting": "Frame the whole cutting, in daylight.",
   "takePhoto": "Take a photo",
   "choosePhoto": "Choose a photo",
   "withoutPhoto": "Continue without photo",

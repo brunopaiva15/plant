@@ -203,6 +203,7 @@
   "newPlant": "Nouvelle plante",
   "stepPhotoTitle": "Photo",
   "stepPhotoSubtitle": "Cadrez la plante en entier, à la lumière du jour.",
+  "stepPhotoSubtitleCutting": "Cadrez la bouture en entier, à la lumière du jour.",
   "takePhoto": "Prendre une photo",
   "choosePhoto": "Choisir une photo",
   "withoutPhoto": "Continuer sans photo",

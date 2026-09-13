@@ -510,7 +510,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         // seul l'aperçu lui-même attend d'être prêt.
         final live = _camera.hasViewfinder;
         final (title, subtitle) = switch (_mode) {
-          _PhotoMode.aim => (l10n.stepPhotoTitle, l10n.stepPhotoSubtitle),
+          // Une bouture se cadre comme une plante, mais c'est elle qu'on nomme.
+          _PhotoMode.aim => (l10n.stepPhotoTitle, widget.parentPlantId == null ? l10n.stepPhotoSubtitle : l10n.stepPhotoSubtitleCutting),
           _PhotoMode.review => (
               l10n.stepPhotoDoneTitle,
               identifier.isConfigured && !full ? l10n.stepPhotoDoneSubtitle(AppConfig.modelName) : l10n.stepPhotoDonePlain,
