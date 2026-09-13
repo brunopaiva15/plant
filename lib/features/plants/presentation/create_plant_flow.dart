@@ -154,9 +154,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   void _go(int step) {
     Haptics.selection();
-    // Le clavier de l'étape du nom ne doit pas suivre : ouvert, il écrase la
-    // mise en page des autres étapes (l'aperçu photo notamment).
-    if (step != 1) FocusManager.instance.primaryFocus?.unfocus();
+    // Le clavier ne suit aucun changement d'étape : ouvert, il écrase la mise
+    // en page (l'aperçu photo, les propositions d'identification).
+    FocusManager.instance.primaryFocus?.unfocus();
     // Le viseur n'a de raison de tourner qu'à l'étape photo, et seulement
     // tant qu'il reste de la place : ailleurs, il ne ferait que tenir la
     // caméra et vider la batterie. Il ne s'éteint plus à la première photo —
@@ -696,10 +696,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Sans autofocus : en arrivant, ce sont les propositions
+          // d'identification qu'il y a à lire, et le clavier les couvrirait.
+          // Le champ s'ouvre d'un toucher.
           FloraTextField(
             controller: _name,
             hint: l10n.plantNameHint,
-            autofocus: _step == 1,
             large: true,
             textInputAction: TextInputAction.next,
             // Une majuscule à la première lettre seulement : « Monstera du
