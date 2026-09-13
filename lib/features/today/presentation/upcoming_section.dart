@@ -49,8 +49,11 @@ class UpcomingSection extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: Space.page),
           sliver: grid
               ? SliverGrid.builder(
+                  // La même largeur de colonne que la collection : deux
+                  // tuiles par rangée sur tout iPhone, Pro Max compris, et
+                  // davantage sur iPad.
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 180,
+                    maxCrossAxisExtent: 220,
                     mainAxisSpacing: Space.sm,
                     crossAxisSpacing: Space.sm,
                     childAspectRatio: _tileRatio(context),
