@@ -633,12 +633,14 @@ def etape_coupe(mats, f):
     # La tige repose sur les lames, a un tiers de leur longueur depuis le
     # pivot : c'est la que des ciseaux coupent, pas au rivet.
     cible = C - Y * (0.36 * LAME) + VUE * 0.03
-    # Les ciseaux repartent par ou ils sont venus : a la derniere image ils
-    # sont exactement comme a la premiere, meme place, meme ouverture, meme
-    # inclinaison.
-    depart = UP * 0.85 + DROITE * 0.60
+    # Les ciseaux arrivent par la droite et repartent vers le haut, un peu
+    # a gauche : le brin coupe se souleve vers la droite, et ils le laissent
+    # libre. A la derniere image ils ont retrouve l'ouverture et
+    # l'inclinaison de la premiere.
+    arrivee = UP * 0.85 + DROITE * 0.60
+    sortie = UP * 1.08 - DROITE * 0.10
     retour = 1.0 - approche + retrait
-    pivot = cible + depart * retour
+    pivot = cible + arrivee * (1.0 - approche) + sortie * retrait
     ouverture = 38.0 * (1.0 - fermeture + retrait)
     # Un leger balancement a l'arrivee : les ciseaux se redressent en se
     # posant, et se penchent a nouveau en repartant.
