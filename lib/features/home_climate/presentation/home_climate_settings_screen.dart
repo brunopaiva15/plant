@@ -2,16 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
-import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/home/home_climate.dart';
 import '../application/home_climate_providers.dart';
-import '../application/home_shortcut_launcher.dart';
 import 'home_climate_widgets.dart';
 import 'home_sensor_picker_sheet.dart';
-import 'home_shortcut_guide_sheet.dart';
 
 /// Profil › Apple Maison : le capteur de température, celui de l'humidité,
 /// leur mesure, et de quoi en changer.
@@ -111,15 +108,12 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final sensor = ref.watch(preferencesProvider.select((p) => p.homeSensor));
     final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
     final reading = ref.watch(homeReadingProvider);
-    // Le raccourci est toujours une source possible : la feuille s'ouvre
-    // même sans capteur HomeKit.
-    final canPick = !_busy;
+    final canPick = _sensors.isNotEmpty && !_busy;
     // Ce que le capteur de température sait mesurer, d'après la liste
     // fraîche quand on l'a, sinon d'après la préférence.
     final live = sensor == null ? null : _sensors.where((s) => s.id == sensor.id).firstOrNull ?? sensor;
     final humidityExpected = humiditySensor != null || (live?.hasHumidity ?? false);
-    final shortcut = ref.watch(homeShortcutReadingProvider).value;
-    final usesShortcut = (sensor?.isShortcut ?? false) || (humiditySensor?.isShortcut ?? false);
+    final hygrometers = _sensors.any((s) => s.hasHumidity && s.id != sensor?.id);
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return FloraPage(
       title: l10n.homeClimate,
@@ -163,8 +157,8 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                       : (live?.hasHumidity ?? false)
                           ? l10n.homeClimateSameSensor
                           : l10n.homeClimateNone,
-                  chevron: canPick,
-                  onTap: canPick ? () => _pick(HomeQuantity.humidity) : null,
+                  chevron: canPick && (hygrometers || humiditySensor != null),
+                  onTap: canPick && (hygrometers || humiditySensor != null) ? () => _pick(HomeQuantity.humidity) : null,
                 ),
               if (sensor != null)
                 FloraListRow(
@@ -194,51 +188,6 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                   chevron: false,
                   onTap: () => ref.invalidate(homeReadingProvider),
                 ),
-            ],
-          ),
-          const SizedBox(height: Space.lg),
-          // Le pont par Raccourcis, pour les HomePod : la marche à suivre, et
-          // la dernière valeur reçue.
-          FloraGroup(
-            header: l10n.homeClimateShortcut,
-            footer: l10n.homeClimateShortcutFooter,
-            children: [
-              // Le raccourci s'ajoute d'un tap quand l'éditeur l'a partagé,
-              // et se lance d'ici : un aller-retour par Raccourcis.
-              if (HomeShortcut.canAdd)
-                FloraListRow(
-                  leading: const Text('➕', style: TextStyle(fontSize: 18)),
-                  title: l10n.homeClimateAddShortcut,
-                  subtitle: l10n.homeClimateAddShortcutSubtitle,
-                  onTap: HomeShortcut.add,
-                ),
-              FloraListRow(
-                leading: const Text('🔄', style: TextStyle(fontSize: 18)),
-                title: l10n.homeClimateRunShortcut,
-                subtitle: l10n.homeClimateRunShortcutSubtitle(AppConfig.homeShortcutName),
-                onTap: HomeShortcut.run,
-              ),
-              FloraListRow(
-                leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
-                title: l10n.homeClimateGuideTitle,
-                subtitle: l10n.homeClimateGuideSubtitle,
-                onTap: () => showHomeShortcutGuide(context),
-              ),
-              FloraListRow(
-                leading: const Text('⚡️', style: TextStyle(fontSize: 18)),
-                title: l10n.homeClimateShortcutLast,
-                subtitle: shortcut == null
-                    ? l10n.homeClimateShortcutNone
-                    : shortcut.error == 'stale'
-                        ? l10n.homeClimateShortcutStale
-                        : [?shortcut.sensor?.roomName, l10n.homeClimateUpdatedAgo(DateTime.now().difference(shortcut.at).inMinutes)].join(' · '),
-                subtitleColor: usesShortcut && (shortcut == null || shortcut.error == 'stale') ? c.danger : null,
-                trailing: shortcut == null || shortcut.isEmpty
-                    ? null
-                    : Text(homeReadingLabel(shortcut, metric: metric), style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600)),
-                chevron: false,
-                onTap: () => ref.invalidate(homeShortcutReadingProvider),
-              ),
             ],
           ),
           const SizedBox(height: Space.lg),

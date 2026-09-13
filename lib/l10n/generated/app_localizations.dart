@@ -1992,174 +1992,6 @@ abstract class AppLocalizations {
   /// **'Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.'**
   String get homeClimateHumidityMissing;
 
-  /// No description provided for @homeClimateOtherSource.
-  ///
-  /// In fr, this message translates to:
-  /// **'Autre source'**
-  String get homeClimateOtherSource;
-
-  /// No description provided for @homeClimateShortcut.
-  ///
-  /// In fr, this message translates to:
-  /// **'Raccourci'**
-  String get homeClimateShortcut;
-
-  /// No description provided for @homeClimateShortcutSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Valeur transmise par l\'app Raccourcis (HomePod, par exemple).'**
-  String get homeClimateShortcutSubtitle;
-
-  /// No description provided for @homeClimateShortcutLast.
-  ///
-  /// In fr, this message translates to:
-  /// **'Dernière valeur reçue'**
-  String get homeClimateShortcutLast;
-
-  /// No description provided for @homeClimateShortcutNone.
-  ///
-  /// In fr, this message translates to:
-  /// **'Rien reçu pour l\'instant.'**
-  String get homeClimateShortcutNone;
-
-  /// No description provided for @homeClimateShortcutStale.
-  ///
-  /// In fr, this message translates to:
-  /// **'Valeur reçue il y a plus de six heures, non utilisée.'**
-  String get homeClimateShortcutStale;
-
-  /// No description provided for @homeClimateOpenShortcuts.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir Raccourcis'**
-  String get homeClimateOpenShortcuts;
-
-  /// No description provided for @homeClimateAddShortcut.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ajouter le raccourci'**
-  String get homeClimateAddShortcut;
-
-  /// No description provided for @homeClimateAddShortcutSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'D\'un tap, depuis un lien partagé. Au premier lancement, choisir le HomePod.'**
-  String get homeClimateAddShortcutSubtitle;
-
-  /// No description provided for @homeClimateRunShortcut.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mettre à jour maintenant'**
-  String get homeClimateRunShortcut;
-
-  /// No description provided for @homeClimateRunShortcutSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Lance « {name} » dans Raccourcis et revient ici.'**
-  String homeClimateRunShortcutSubtitle(String name);
-
-  /// No description provided for @homeClimateShortcutFailed.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le raccourci n\'a pas abouti. Il se vérifie dans Raccourcis.'**
-  String get homeClimateShortcutFailed;
-
-  /// No description provided for @homeClimateOneTapStep1Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le raccourci, d\'un tap'**
-  String get homeClimateOneTapStep1Title;
-
-  /// No description provided for @homeClimateOneTapStep1Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'« Ajouter le raccourci » ouvre « {name} » dans Raccourcis : Ajouter. Puis, dans l\'action Maison, toucher l\'accessoire pour désigner le HomePod.'**
-  String homeClimateOneTapStep1Body(String name);
-
-  /// No description provided for @homeClimateOneTapStep3Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'À chaque ouverture, si voulu'**
-  String get homeClimateOneTapStep3Title;
-
-  /// No description provided for @homeClimateOneTapStep3Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'« Mettre à jour » lance le raccourci d\'ici. Pour que ce soit automatique : Raccourcis › Automatisation › App › Auxine › « Est ouverte » › exécuter ce raccourci, immédiatement.'**
-  String get homeClimateOneTapStep3Body;
-
-  /// No description provided for @homeClimateShortcutFooter.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pour un HomePod, dont les capteurs ne sont pas accessibles aux apps tierces : la valeur passe par Raccourcis.'**
-  String get homeClimateShortcutFooter;
-
-  /// No description provided for @homeClimateGuideTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Capteurs d\'un HomePod'**
-  String get homeClimateGuideTitle;
-
-  /// No description provided for @homeClimateGuideSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Température et humidité, par Raccourcis, en quatre étapes.'**
-  String get homeClimateGuideSubtitle;
-
-  /// No description provided for @homeClimateGuideWhy.
-  ///
-  /// In fr, this message translates to:
-  /// **'Les capteurs de température et d\'humidité d\'un HomePod ne sont accessibles qu\'à l\'app Maison. Par une automatisation de Raccourcis, leur valeur est transmise à Auxine à chaque ouverture. Rien ne quitte l\'appareil.'**
-  String get homeClimateGuideWhy;
-
-  /// No description provided for @homeClimateStep1Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une automatisation à l\'ouverture'**
-  String get homeClimateStep1Title;
-
-  /// No description provided for @homeClimateStep1Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Raccourcis › Automatisation › nouvelle automatisation › App › Auxine › « Est ouverte », en exécution immédiate.'**
-  String get homeClimateStep1Body;
-
-  /// No description provided for @homeClimateStep2Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'état du HomePod'**
-  String get homeClimateStep2Title;
-
-  /// No description provided for @homeClimateStep2Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Action Maison « Obtenir l\'état » : choisir le HomePod, puis « Humidité relative actuelle ». Une seconde action pour « Température actuelle » si voulu.'**
-  String get homeClimateStep2Body;
-
-  /// No description provided for @homeClimateStep3Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'La valeur vers Auxine'**
-  String get homeClimateStep3Title;
-
-  /// No description provided for @homeClimateStep3Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Action Auxine « Transmettre le climat à Auxine » : placer les valeurs obtenues dans Humidité et Température, et la pièce si voulu.'**
-  String get homeClimateStep3Body;
-
-  /// No description provided for @homeClimateStep4Title.
-  ///
-  /// In fr, this message translates to:
-  /// **'Choisir « Raccourci » comme capteur'**
-  String get homeClimateStep4Title;
-
-  /// No description provided for @homeClimateStep4Body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l\'ouverture suivante d\'Auxine, la mesure s\'affiche.'**
-  String get homeClimateStep4Body;
-
   /// No description provided for @homeClimateNone.
   ///
   /// In fr, this message translates to:
@@ -2193,7 +2025,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateNoSensors.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison. Pour un HomePod, la valeur passe par Raccourcis : Profil › Apple Maison.'**
+  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison.'**
   String get homeClimateNoSensors;
 
   /// No description provided for @homeClimateDenied.
@@ -3329,6 +3161,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ce que vous avez remarqué (facultatif)…'**
   String get diagnosisSymptomsHint;
+
+  /// No description provided for @diagnosisClimateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif : les conditions autour de la plante affinent l\'analyse.'**
+  String get diagnosisClimateHint;
 
   /// No description provided for @analyze.
   ///

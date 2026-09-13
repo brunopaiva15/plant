@@ -62,7 +62,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       FloraLinkKind.plant => await ref.read(plantRepositoryProvider).getPlant(link.id),
       FloraLinkKind.item => await ref.read(inventoryRepositoryProvider).get(link.id),
       FloraLinkKind.join => null, // traité juste au-dessus
-      FloraLinkKind.homeClimate => null, // pas une étiquette
     };
     if (!mounted) return;
     if (target == null) {

@@ -171,25 +171,6 @@ la dessine.
 blender -b -noaudio -t 4 -P tool/build_home.py -- --output assets/onboarding/onboarding_7.png
 ```
 
-# Le raccourci « Climat Auxine » (HomePod)
-
-Les capteurs d'un HomePod ne sont accessibles qu'à l'app Maison ; Raccourcis
-les lit. Le raccourci partagé s'ajoute d'un tap depuis Profil › Apple
-Maison, à condition d'exister sous un lien iCloud. Il se crée une fois, sur
-un iPhone, avec le compte de l'éditeur :
-
-1. Raccourcis › + › nom « Climat Auxine » (`AppConfig.homeShortcutName`).
-2. Action Maison « Obtenir l'état » : choisir un HomePod, « Humidité
-   relative actuelle ». Une seconde pour « Température actuelle ».
-3. Action Auxine « Transmettre le climat à Auxine » : Humidité et
-   Température reçoivent les deux valeurs, Pièce le nom de la pièce.
-4. Partager › Copier le lien iCloud, et le fournir au build :
-   `--dart-define=HOME_SHORTCUT_URL=https://www.icloud.com/shortcuts/…`.
-
-La personne qui l'ajoute doit désigner son propre HomePod dans l'action
-Maison : un accessoire ne se partage pas d'une maison à l'autre. Sans lien
-fourni, l'écran garde la marche à suivre à la main.
-
 # Les quatre familles de problèmes
 
 `build_category_logos.py` rend les symboles des quatre valeurs du champ `type`
