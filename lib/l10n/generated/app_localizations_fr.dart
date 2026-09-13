@@ -3112,11 +3112,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repotAllHere => 'Rempoter tout ici';
 
   @override
-  String plantNumber(int number) {
-    return 'N° $number';
-  }
-
-  @override
   String get searchByNumberHint => 'Tapez #42 pour retrouver la plante n° 42.';
 
   @override

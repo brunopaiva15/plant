@@ -1452,14 +1452,6 @@
   "waterAllHere": "Arroser tout ici",
   "fertilizeAllHere": "Fertiliser tout ici",
   "repotAllHere": "Rempoter tout ici",
-  "plantNumber": "N° {number}",
-  "@plantNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
   "searchByNumberHint": "Tapez #42 pour retrouver la plante n° 42.",
   "inventoryGroups": "Groupes",
   "manageGroups": "Gérer les groupes",
