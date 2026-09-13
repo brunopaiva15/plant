@@ -33,6 +33,7 @@ await p.addInitScript(() => {
   const set = (k, v) => localStorage.setItem('flutter.' + k, JSON.stringify(v));
   set('onboarding_done', true);
   set('notification_prompt_shown', true);
+  set('upcoming_grid_view', true);
   set('iris_feedback_asked', true);
   set('display_name', 'Camille');
   set('weather_place', 'Lausanne|46.5197|6.6323');

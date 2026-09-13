@@ -35,6 +35,8 @@ void main() {
     await prefs.setString('locale', lang);
     await prefs.setBool('onboarding_done', true);
     await prefs.setBool('notification_prompt_shown', true);
+    // « À venir » en grille sur l'écran du matin.
+    await prefs.setBool('upcoming_grid_view', true);
     await prefs.setString('display_name', 'Camille');
     await prefs.setString('weather_place', 'Lausanne|46.5197|6.6323');
     // La question des photos d'entraînement d'Iris se pose après une

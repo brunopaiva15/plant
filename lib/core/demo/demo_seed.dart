@@ -76,16 +76,18 @@ abstract final class DemoSeed {
       await photos.setPrimary(plant.id, photo.id);
     }
 
-    // Historique : arrosages passés qui rendent certains soins dus aujourd'hui,
-    // et un seul en retard, d'un jour.
-    await actions.log(NewAction(plantId: monstera.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 8))));
-    await actions.log(NewAction(plantId: pilea.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 5))));
-    await actions.log(NewAction(plantId: calathea.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 4))));
-    await actions.log(NewAction(plantId: ficus.id, typeKey: 'fertilizing', occurredAt: now.subtract(const Duration(days: 30))));
-    await actions.log(NewAction(plantId: basilic.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 2))));
-    await actions.log(NewAction(plantId: olivier.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 3))));
-    await actions.log(NewAction(plantId: hoya.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 1))));
-    await actions.log(NewAction(plantId: pothos.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 4))));
+    // Historique : des arrosages récents, pour que rien ne soit dû
+    // aujourd'hui et que l'écran du matin dise « Tout est en ordre » puis
+    // montre « À venir » en grille, à des échéances variées.
+    await actions.log(NewAction(plantId: monstera.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 4))));
+    await actions.log(NewAction(plantId: pilea.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 4))));
+    await actions.log(NewAction(plantId: calathea.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 2))));
+    await actions.log(NewAction(plantId: ficus.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 5))));
+    await actions.log(NewAction(plantId: ficus.id, typeKey: 'fertilizing', occurredAt: now.subtract(const Duration(days: 27))));
+    await actions.log(NewAction(plantId: basilic.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 1))));
+    await actions.log(NewAction(plantId: olivier.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 2))));
+    await actions.log(NewAction(plantId: hoya.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 7))));
+    await actions.log(NewAction(plantId: pothos.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 3))));
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'note', occurredAt: now.subtract(const Duration(days: 12)), notes: en ? 'New leaf on its way.' : 'Nouvelle feuille en train de sortir.'));
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'repotting', occurredAt: now.subtract(const Duration(days: 40))));
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'measurement', occurredAt: now.subtract(const Duration(days: 90)), metadata: {'kind': 'height', 'value': 34, 'unit': 'cm'}));

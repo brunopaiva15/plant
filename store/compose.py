@@ -416,7 +416,7 @@ def identification_shot(shot_path):
 # minuscules, sans point. Pas de phrase.
 COPY = {
     'fr': [
-        ("Chaque matin,\nce qu'il y a à faire", 'les soins du jour, à cocher'),
+        ("Chaque matin,\nl'état des plantes", 'les soins qui viennent, à cocher'),
         ('Toutes vos plantes,\nau même endroit', 'avec leur photo, leur espèce et leur pièce'),
         ('Chaque plante\na sa page', 'photos, prochains soins, journal'),
         ("Une fiche d'entretien\npour chaque espèce", 'arrosage, lumière, engrais, rempotage'),
@@ -425,7 +425,7 @@ COPY = {
         ('Un diagnostic\nsur photo', 'plus de 200 troubles, ravageurs, maladies'),
     ],
     'en': [
-        ('Each morning,\nwhat needs doing', 'the day’s care, to tick off'),
+        ('Each morning,\nwhere things stand', 'upcoming care, to tick off'),
         ('All your plants,\nin one place', 'with their photo, species and room'),
         ('Every plant\nhas its page', 'photos, upcoming care, journal'),
         ('A care guide\nfor every species', 'watering, light, feeding, repotting'),

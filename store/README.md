@@ -10,7 +10,7 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
-| 1 | Aujourd'hui | trois rangées cochées | eau |
+| 1 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
 | 2 | Plantes (la collection) | monstera en pot | sauge |
 | 3 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
 | 4 | Fiche d'entretien | anneau et goutte | soleil |
@@ -39,8 +39,9 @@ le rouvre depuis la fiche. Le service de diagnostic lui-même n'est pas
 configuré sur le build web ; le rapport, lui, est le vrai.
 
 Le jeu de démo (`?demo` sur le web, `--dart-define=DEMO=true` ailleurs) est
-réglé pour ces visuels : un seul soin en retard, d'un jour, le reste dû
-aujourd'hui ; ses textes libres suivent la langue de l'app. Avant le
+réglé pour ces visuels : rien de dû aujourd'hui, tous les soins à venir à
+des échéances variées, pour l'écran du matin en grille ; ses textes libres
+suivent la langue de l'app. Avant le
 chargement, le test d'intégration comme `capture.mjs` écrivent les
 préférences d'un téléphone déjà réglé : onboarding passé, un prénom pour
 « Bonjour », une ville pour la météo (Open-Meteo ; sur le web, relayée par
