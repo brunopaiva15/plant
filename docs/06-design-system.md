@@ -33,7 +33,7 @@ dessine jamais sa propre ombre.
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
 image, comme dans *Art Attack* : elle tombe, s'écrase au sol en projetant
-six gouttes, rebondit en tremblant de moins en moins, respire en se
+six gouttes qui ne se répondent pas, rebondit en tremblant de moins en moins, respire en se
 remodelant, se ramasse et repart. Un cycle dure 1,6 s. La silhouette ondule
 en permanence (trois harmoniques lentes), l'ombre au sol rétrécit quand elle
 saute. Elle est peinte avec `paintClay`, la même recette que les cartes.

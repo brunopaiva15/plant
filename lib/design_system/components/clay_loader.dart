@@ -81,6 +81,20 @@ class _ClayLoaderPainter extends CustomPainter {
   //   0.92 – 1.00  elle décolle (étirée) et la boucle reprend en l'air
   static const _drop = 0.20, _splat = 0.30, _settle = 0.62, _crouch = 0.84, _launch = 0.92;
 
+  // Les gouttes, réglées une à une : le côté, l'angle de départ (rasant →
+  // haut), la portée, la taille, le poids (la vitesse de la retombée) et un
+  // léger retard sur l'impact. À gauche, une goutte basse et longue et deux
+  // plus courtes ; à droite, une grosse qui part haut et deux petites qui
+  // filent bas. Rien ne se répond d'un côté à l'autre.
+  static const _drops = [
+    (side: -1.0, angle: 0.18, reach: 0.72, size: 0.15, weight: 1.25, delay: 0.0),
+    (side: -1.0, angle: 0.72, reach: 0.60, size: 0.11, weight: 0.95, delay: 0.015),
+    (side: -1.0, angle: 1.15, reach: 0.45, size: 0.08, weight: 1.05, delay: 0.035),
+    (side: 1.0, angle: 0.30, reach: 0.70, size: 0.09, weight: 1.15, delay: 0.01),
+    (side: 1.0, angle: 0.52, reach: 0.95, size: 0.07, weight: 1.3, delay: 0.03),
+    (side: 1.0, angle: 0.95, reach: 0.80, size: 0.17, weight: 0.85, delay: 0.0),
+  ];
+
   @override
   void paint(Canvas canvas, Size size) {
     final t = progress.value;
@@ -131,20 +145,19 @@ class _ClayLoaderPainter extends CustomPainter {
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 0.16),
     );
 
-    // Les éclaboussures : cinq gouttes qui partent à l'impact et retombent.
+    // Les éclaboussures : six gouttes qui partent à l'impact et retombent.
+    // Aucune n'est le miroir d'une autre : un éclat de terre n'est pas
+    // symétrique, et l'œil voit tout de suite un motif répété.
     if (t >= _drop + 0.02 && t < _settle) {
-      final p = ((t - _drop - 0.02) / (_settle - _drop - 0.02)).clamp(0.0, 1.0);
-      final fly = Curves.easeOutCubic.transform(p);
-      final fade = (1 - Curves.easeIn.transform(p)).clamp(0.0, 1.0);
-      for (var i = 0; i < 6; i++) {
-        // Trois gouttes de chaque côté, qui jaillissent du bord écrasé.
-        final side = i < 3 ? -1 : 1;
-        final k = i % 3;
-        final angle = side * (0.25 + 0.4 * k); // rasant → plus haut
-        final dist = r * 1.05 + r * (0.55 + 0.35 * k) * fly;
-        final gravity = r * 1.1 * p * p;
-        final o = Offset(cx + side * math.cos(angle) * dist, floor - r * 0.25 - math.sin(angle.abs()) * dist * 0.9 + gravity);
-        final dr = r * (0.16 - 0.03 * k) * (1 - 0.5 * p);
+      for (final d in _drops) {
+        final p = ((t - _drop - 0.02 - d.delay) / (_settle - _drop - 0.02 - d.delay)).clamp(0.0, 1.0);
+        if (p <= 0) continue;
+        final fly = Curves.easeOutCubic.transform(p);
+        final fade = (1 - Curves.easeIn.transform(p)).clamp(0.0, 1.0);
+        final dist = r * 1.05 + r * d.reach * fly;
+        final gravity = r * d.weight * p * p;
+        final o = Offset(cx + d.side * math.cos(d.angle) * dist, floor - r * 0.25 - math.sin(d.angle) * dist * 0.9 + gravity);
+        final dr = r * d.size * (1 - 0.5 * p);
         canvas.drawCircle(o, dr, Paint()..color = color.withValues(alpha: fade));
         canvas.drawCircle(o.translate(-dr * 0.3, -dr * 0.3), dr * 0.35, Paint()..color = Colors.white.withValues(alpha: 0.45 * fade));
       }
@@ -174,4 +187,3 @@ class _ClayLoaderPainter extends CustomPainter {
   @override
   bool shouldRepaint(_ClayLoaderPainter old) => old.color != color || old.dark != dark || old.diameter != diameter || old.progress != progress;
 }
-
