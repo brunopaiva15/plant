@@ -12,7 +12,7 @@ import Foundation
 @available(iOS 16.0, *)
 struct ReportHomeClimateIntent: AppIntent {
   static var title: LocalizedStringResource = "Transmettre le climat à Auxine"
-  static var description = IntentDescription("Donne à Auxine la température et l'humidité d'une pièce, lues par Raccourcis (un HomePod, par exemple).")
+  static var description = IntentDescription("Température et humidité d'une pièce, transmises à Auxine (celles d'un HomePod, par exemple).")
   /// Sans ouvrir l'application : l'action tourne en arrière-plan.
   static var openAppWhenRun = false
 

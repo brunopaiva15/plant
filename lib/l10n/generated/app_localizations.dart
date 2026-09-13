@@ -1989,7 +1989,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateHumidityMissing.
   ///
   /// In fr, this message translates to:
-  /// **'Humidité non reçue. Un autre capteur peut la donner.'**
+  /// **'Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.'**
   String get homeClimateHumidityMissing;
 
   /// No description provided for @homeClimateOtherSource.
@@ -2037,7 +2037,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateShortcutFooter.
   ///
   /// In fr, this message translates to:
-  /// **'Pour un HomePod : HomeKit ne donne pas ses capteurs aux apps tierces, Raccourcis les lit.'**
+  /// **'Pour un HomePod, dont les capteurs ne sont pas accessibles aux apps tierces : la valeur passe par Raccourcis.'**
   String get homeClimateShortcutFooter;
 
   /// No description provided for @homeClimateGuideTitle.
@@ -2055,7 +2055,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateGuideWhy.
   ///
   /// In fr, this message translates to:
-  /// **'Les capteurs de température et d\'humidité d\'un HomePod n\'apparaissent que dans l\'app Maison : Apple ne les donne pas aux autres apps. L\'app Raccourcis, elle, les lit, et peut transmettre la valeur à Auxine à chaque ouverture. Rien ne quitte l\'appareil.'**
+  /// **'Les capteurs de température et d\'humidité d\'un HomePod ne sont accessibles qu\'à l\'app Maison. Par une automatisation de Raccourcis, leur valeur est transmise à Auxine à chaque ouverture. Rien ne quitte l\'appareil.'**
   String get homeClimateGuideWhy;
 
   /// No description provided for @homeClimateStep1Title.
@@ -2073,7 +2073,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateStep2Title.
   ///
   /// In fr, this message translates to:
-  /// **'Lire le HomePod'**
+  /// **'L\'état du HomePod'**
   String get homeClimateStep2Title;
 
   /// No description provided for @homeClimateStep2Body.
@@ -2085,7 +2085,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateStep3Title.
   ///
   /// In fr, this message translates to:
-  /// **'Transmettre à Auxine'**
+  /// **'La valeur vers Auxine'**
   String get homeClimateStep3Title;
 
   /// No description provided for @homeClimateStep3Body.
@@ -2103,7 +2103,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateStep4Body.
   ///
   /// In fr, this message translates to:
-  /// **'Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l\'ouverture suivante d\'Auxine, la mesure est là.'**
+  /// **'Dans Profil › Apple Maison, ligne Humidité ou Température › « Raccourci ». À l\'ouverture suivante d\'Auxine, la mesure s\'affiche.'**
   String get homeClimateStep4Body;
 
   /// No description provided for @homeClimateNone.
@@ -2139,7 +2139,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateNoSensors.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison. Un HomePod se lit par Raccourcis, dans Profil › Apple Maison.'**
+  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison. Pour un HomePod, la valeur passe par Raccourcis : Profil › Apple Maison.'**
   String get homeClimateNoSensors;
 
   /// No description provided for @homeClimateDenied.

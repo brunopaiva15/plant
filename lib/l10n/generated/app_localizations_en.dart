@@ -1085,7 +1085,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Humidity not received. Another sensor can provide it.';
+      'Humidity not received from this sensor. Another one is chosen in the Humidity row.';
 
   @override
   String get homeClimateOtherSource => 'Other source';
@@ -1112,7 +1112,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateShortcutFooter =>
-      'For a HomePod: HomeKit does not give its sensors to third-party apps, Shortcuts reads them.';
+      'For a HomePod, whose sensors are not accessible to third-party apps: the value goes through Shortcuts.';
 
   @override
   String get homeClimateGuideTitle => 'HomePod sensors';
@@ -1123,7 +1123,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateGuideWhy =>
-      'A HomePod\'s temperature and humidity sensors only appear in the Home app: Apple does not give them to other apps. The Shortcuts app reads them, and can hand the value to Auxine each time it opens. Nothing leaves the device.';
+      'A HomePod\'s temperature and humidity sensors are only accessible to the Home app. Through a Shortcuts automation, their value is handed to Auxine each time it opens. Nothing leaves the device.';
 
   @override
   String get homeClimateStep1Title => 'An automation on opening';
@@ -1133,14 +1133,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Shortcuts › Automation › new automation › App › Auxine › “Is Opened”, run immediately.';
 
   @override
-  String get homeClimateStep2Title => 'Read the HomePod';
+  String get homeClimateStep2Title => 'The HomePod\'s state';
 
   @override
   String get homeClimateStep2Body =>
       'Home action “Get State”: pick the HomePod, then “Current Relative Humidity”. A second action for “Current Temperature” if wanted.';
 
   @override
-  String get homeClimateStep3Title => 'Hand it to Auxine';
+  String get homeClimateStep3Title => 'The value to Auxine';
 
   @override
   String get homeClimateStep3Body =>
@@ -1151,7 +1151,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateStep4Body =>
-      'In Profile › Apple Home, Humidity or Temperature row › “Shortcut”. Next time Auxine opens, the reading is there.';
+      'In Profile › Apple Home, Humidity or Temperature row › “Shortcut”. Next time Auxine opens, the reading shows.';
 
   @override
   String get homeClimateNone => 'No sensor';
@@ -1179,7 +1179,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'No temperature or humidity sensor in Apple Home. A HomePod is read through Shortcuts, in Profile › Apple Home.';
+      'No temperature or humidity sensor in Apple Home. For a HomePod, the value goes through Shortcuts: Profile › Apple Home.';
 
   @override
   String get homeClimateDenied =>

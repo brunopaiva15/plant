@@ -1086,7 +1086,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Umidità non ricevuta. Un altro sensore può fornirla.';
+      'Umidità non ricevuta da questo sensore. Un altro si sceglie nella riga Umidità.';
 
   @override
   String get homeClimateOtherSource => 'Altra fonte';
@@ -1113,7 +1113,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateShortcutFooter =>
-      'Per un HomePod: HomeKit non dà i suoi sensori alle app di terze parti, Comandi rapidi li legge.';
+      'Per un HomePod, i cui sensori non sono accessibili alle app di terze parti: il valore passa da Comandi rapidi.';
 
   @override
   String get homeClimateGuideTitle => 'Sensori di un HomePod';
@@ -1124,7 +1124,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateGuideWhy =>
-      'I sensori di temperatura e umidità di un HomePod compaiono solo nell\'app Casa: Apple non li dà alle altre app. L\'app Comandi rapidi li legge e può trasmettere il valore ad Auxine a ogni apertura. Nulla lascia il dispositivo.';
+      'I sensori di temperatura e umidità di un HomePod sono accessibili solo all\'app Casa. Con un\'automazione di Comandi rapidi, il loro valore è trasmesso ad Auxine a ogni apertura. Nulla lascia il dispositivo.';
 
   @override
   String get homeClimateStep1Title => 'Un\'automazione all\'apertura';
@@ -1134,14 +1134,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Comandi rapidi › Automazione › nuova automazione › App › Auxine › «Viene aperta», esecuzione immediata.';
 
   @override
-  String get homeClimateStep2Title => 'Leggere l\'HomePod';
+  String get homeClimateStep2Title => 'Lo stato dell\'HomePod';
 
   @override
   String get homeClimateStep2Body =>
       'Azione Casa «Ottieni stato»: scegliere l\'HomePod, poi «Umidità relativa attuale». Una seconda azione per «Temperatura attuale» se si vuole.';
 
   @override
-  String get homeClimateStep3Title => 'Trasmettere ad Auxine';
+  String get homeClimateStep3Title => 'Il valore ad Auxine';
 
   @override
   String get homeClimateStep3Body =>
@@ -1152,7 +1152,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateStep4Body =>
-      'In Profilo › Casa di Apple, riga Umidità o Temperatura › «Comando rapido». Alla prossima apertura di Auxine la misura è lì.';
+      'In Profilo › Casa di Apple, riga Umidità o Temperatura › «Comando rapido». Alla prossima apertura di Auxine la misura compare.';
 
   @override
   String get homeClimateNone => 'Nessun sensore';
@@ -1180,7 +1180,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Nessun sensore di temperatura o umidità in Casa di Apple. Un HomePod si legge con Comandi rapidi, in Profilo › Casa di Apple.';
+      'Nessun sensore di temperatura o umidità in Casa di Apple. Per un HomePod, il valore passa da Comandi rapidi: Profilo › Casa di Apple.';
 
   @override
   String get homeClimateDenied =>

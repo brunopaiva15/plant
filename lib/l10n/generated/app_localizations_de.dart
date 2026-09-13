@@ -1088,7 +1088,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Keine Luftfeuchtigkeit empfangen. Ein anderer Sensor kann sie liefern.';
+      'Keine Luftfeuchtigkeit von diesem Sensor empfangen. Ein anderer wird in der Zeile Luftfeuchtigkeit gewählt.';
 
   @override
   String get homeClimateOtherSource => 'Andere Quelle';
@@ -1115,7 +1115,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateShortcutFooter =>
-      'Für einen HomePod: HomeKit gibt seine Sensoren nicht an Dritt-Apps, Kurzbefehle liest sie.';
+      'Für einen HomePod, dessen Sensoren Dritt-Apps nicht zugänglich sind: der Wert kommt über Kurzbefehle.';
 
   @override
   String get homeClimateGuideTitle => 'Sensoren eines HomePod';
@@ -1126,7 +1126,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateGuideWhy =>
-      'Die Temperatur- und Feuchtigkeitssensoren eines HomePod erscheinen nur in der Home-App: Apple gibt sie anderen Apps nicht. Die App Kurzbefehle liest sie und kann den Wert bei jedem Öffnen an Auxine übergeben. Nichts verlässt das Gerät.';
+      'Die Temperatur- und Feuchtigkeitssensoren eines HomePod sind nur der Home-App zugänglich. Über eine Automation in Kurzbefehle wird ihr Wert bei jedem Öffnen an Auxine übergeben. Nichts verlässt das Gerät.';
 
   @override
   String get homeClimateStep1Title => 'Eine Automation beim Öffnen';
@@ -1136,14 +1136,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Kurzbefehle › Automation › neue Automation › App › Auxine › „Wird geöffnet“, sofort ausführen.';
 
   @override
-  String get homeClimateStep2Title => 'Den HomePod lesen';
+  String get homeClimateStep2Title => 'Der Status des HomePod';
 
   @override
   String get homeClimateStep2Body =>
       'Home-Aktion „Status abrufen“: den HomePod wählen, dann „Aktuelle relative Luftfeuchtigkeit“. Eine zweite Aktion für „Aktuelle Temperatur“, falls gewünscht.';
 
   @override
-  String get homeClimateStep3Title => 'An Auxine übergeben';
+  String get homeClimateStep3Title => 'Der Wert an Auxine';
 
   @override
   String get homeClimateStep3Body =>
@@ -1154,7 +1154,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateStep4Body =>
-      'Unter Profil › Apple Home, Zeile Luftfeuchtigkeit oder Temperatur › „Kurzbefehl“. Beim nächsten Öffnen von Auxine ist der Messwert da.';
+      'Unter Profil › Apple Home, Zeile Luftfeuchtigkeit oder Temperatur › „Kurzbefehl“. Beim nächsten Öffnen von Auxine erscheint der Messwert.';
 
   @override
   String get homeClimateNone => 'Kein Sensor';
@@ -1182,7 +1182,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Kein Temperatur- oder Feuchtigkeitssensor in Apple Home. Ein HomePod wird über Kurzbefehle gelesen, unter Profil › Apple Home.';
+      'Kein Temperatur- oder Feuchtigkeitssensor in Apple Home. Bei einem HomePod kommt der Wert über Kurzbefehle: Profil › Apple Home.';
 
   @override
   String get homeClimateDenied =>
