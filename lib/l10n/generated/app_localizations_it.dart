@@ -573,11 +573,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get cuttingGuideStart => 'Crea la talea';
 
   @override
-  String cuttingGuideRefined(String species) {
-    return 'Passaggi precisati dall\'IA per $species.';
-  }
-
-  @override
   String get parentPlant => 'Pianta madre';
 
   @override

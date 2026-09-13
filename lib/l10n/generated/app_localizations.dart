@@ -1050,12 +1050,6 @@ abstract class AppLocalizations {
   /// **'Créer la bouture'**
   String get cuttingGuideStart;
 
-  /// No description provided for @cuttingGuideRefined.
-  ///
-  /// In fr, this message translates to:
-  /// **'Étapes précisées par l\'IA pour {species}.'**
-  String cuttingGuideRefined(String species);
-
   /// No description provided for @parentPlant.
   ///
   /// In fr, this message translates to:

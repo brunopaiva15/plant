@@ -119,11 +119,10 @@ void main() {
       expect(t.resultats, [false]);
     });
 
-    testWidgets("le texte précisé par l'IA remplace le générique, et dit d'où il vient", (tester) async {
+    testWidgets("le texte précisé par l'IA remplace le générique", (tester) async {
       final t = await _pump(tester, species: 'Epipremnum aureum');
       expect(t.refiner.demandes, ['fr|Epipremnum aureum']);
       expect(find.text(_precis[0]), findsOneWidget);
-      expect(find.text("Étapes précisées par l'IA pour Epipremnum aureum."), findsOneWidget);
       expect(find.textContaining('Une tige saine'), findsNothing);
       // La réponse est gardée : la prochaine bouture de la même plante ne
       // redemande rien.

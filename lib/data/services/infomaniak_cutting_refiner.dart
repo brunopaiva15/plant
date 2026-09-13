@@ -77,9 +77,9 @@ class InfomaniakCuttingRefiner implements CuttingGuideRefiner {
   static const List<String> genericSteps = [
     'stem: choose a healthy stem with at least one node (the swelling where leaves attach) and two or three leaves above it',
     'cut: with a clean blade, cut cleanly just below the node, leaving about a centimetre of stem under it',
-    'leaves: remove the lower leaves so the node is bare; keep two or three leaves at the top',
-    'water: place the cutting in a glass of room-temperature water, node submerged, leaves above; bright light, no direct sun',
-    'roots: change the water every week; the first roots appear after two to six weeks',
+    'leaves: remove the lower leaves so the node is bare. Keep two or three leaves at the top',
+    'water: place the cutting in a glass of room-temperature water, node submerged, leaves above. Bright light, no direct sun',
+    'roots: change the water every week. The first roots appear after two to six weeks',
     'pot: once the roots are a few centimetres long, pot the cutting in a light potting mix and water it',
   ];
 
@@ -94,8 +94,9 @@ class InfomaniakCuttingRefiner implements CuttingGuideRefiner {
       '(leaf cutting, division, offsets, layering, seed) while keeping exactly six steps in the same order of ideas. '
       'Never invent: if you do not know the species, return {"known": false} and nothing else. '
       'Never mention toxicity or safety. '
-      'Tone: plain, factual, short, at most 35 words per step, in the indicative, no exclamation marks, no greetings, no reassurance, '
-      'no praise, no "probably". Write every step in the language with code "$language". '
+      'Tone: plain, factual, short, at most 35 words per step, in the indicative, no exclamation marks, no semicolons, no greetings, '
+      'no reassurance, no praise, no "probably". Full sentences, each starting with a capital letter and ending with a period. '
+      'Write every step in the language with code "$language". '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
       '"known" (boolean), "method" (one of stemCutting, leafCutting, division, offsets, layering, seed, water, tuber), '
       '"steps" (array of exactly six strings, in order).';
@@ -136,16 +137,21 @@ class InfomaniakCuttingRefiner implements CuttingGuideRefiner {
   }
 
   /// Ce que le ton de l'application exige, appliqué à un texte qui vient
-  /// d'ailleurs : pas de point d'exclamation, pas d'espaces en trop, une
-  /// longueur qui tient sous l'illustration.
+  /// d'ailleurs : pas de point d'exclamation ni de point-virgule, des
+  /// phrases qui commencent par une majuscule et finissent par un point, pas
+  /// d'espaces en trop, une longueur qui tient sous l'illustration.
   static String sanitize(String text) {
-    var s = text.replaceAll(RegExp(r'\s*!+'), '.').replaceAll(RegExp(r'\s+'), ' ').trim();
-    s = s.replaceAll(RegExp(r'\.{2,}'), '.');
+    var s = text.replaceAll(RegExp(r'\s*[!;]+'), '.').replaceAll(RegExp(r'\s+'), ' ').trim();
+    s = s.replaceAll(RegExp(r'\.(\s*\.)+'), '.');
+    if (s.isEmpty) return s;
     if (s.length > maxStepLength) {
       final cut = s.lastIndexOf('. ', maxStepLength);
       s = cut > maxStepLength ~/ 2 ? s.substring(0, cut + 1) : '${s.substring(0, maxStepLength - 1).trimRight()}.';
     }
-    return s;
+    if (!RegExp(r'[.?…]$').hasMatch(s)) s = '$s.';
+    // Une majuscule ouvre chaque phrase : la première, et celles qui suivent
+    // un point ou un point d'interrogation.
+    return s.replaceAllMapped(RegExp(r'(^|[.?]\s+)(\p{Ll})', unicode: true), (m) => '${m[1]}${m[2]!.toUpperCase()}');
   }
 
   static Map<String, dynamic>? _extractJson(String text) {

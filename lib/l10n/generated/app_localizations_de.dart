@@ -572,11 +572,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cuttingGuideStart => 'Ableger anlegen';
 
   @override
-  String cuttingGuideRefined(String species) {
-    return 'Schritte von der KI für $species präzisiert.';
-  }
-
-  @override
   String get parentPlant => 'Mutterpflanze';
 
   @override

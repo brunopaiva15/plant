@@ -28,7 +28,7 @@ Future<bool?> showCuttingGuide(BuildContext context, {String? species}) {
 /// Les textes sont ceux d'une bouture de tige dans l'eau. Quand l'espèce de
 /// la plante mère est connue et que l'IA est permise, ils sont précisés pour
 /// elle : le texte générique s'affiche d'abord, le texte précis le remplace
-/// en fondu quand il arrive, et une ligne dit d'où il vient.
+/// en fondu quand il arrive.
 class CuttingGuideView extends ConsumerStatefulWidget {
   const CuttingGuideView({super.key, this.species});
 
@@ -193,7 +193,6 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
                           builder: (context, _) => _StepText(
                             step: step,
                             refined: refined?.of(step.step),
-                            species: species,
                             t: reduce ? 1.0 : _revealOf(i),
                             parallax: reduce ? 0 : (_offset - i).clamp(-1.0, 1.0),
                           ),
@@ -226,23 +225,20 @@ class _CuttingGuideViewState extends ConsumerState<CuttingGuideView> with Ticker
 }
 
 /// Le texte d'une étape : le titre qui se lève, puis la phrase — générique
-/// d'abord, précisée par l'IA quand elle arrive — et la ligne qui dit d'où
-/// vient la précision.
+/// d'abord, précisée par l'IA quand elle arrive.
 class _StepText extends StatelessWidget {
-  const _StepText({required this.step, required this.refined, required this.species, required this.t, required this.parallax});
+  const _StepText({required this.step, required this.refined, required this.t, required this.parallax});
 
   final CuttingGuideStep step;
 
   /// Le texte précisé pour l'espèce, ou `null` tant qu'il n'y en a pas.
   final String? refined;
-  final String species;
   final double t;
   final double parallax;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final c = context.colors;
     final width = MediaQuery.sizeOf(context).width;
     final fade = (1 - parallax.abs() * 1.6).clamp(0.0, 1.0);
     final body = refined ?? step.body(l10n);
@@ -274,17 +270,7 @@ class _StepText extends StatelessWidget {
                       alignment: Alignment.topLeft,
                       children: [...previous, ?current],
                     ),
-                    child: Column(
-                      key: ValueKey(body),
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(body, style: onboardingBodyStyle(context)),
-                        if (refined != null) ...[
-                          const SizedBox(height: Space.sm),
-                          Text(l10n.cuttingGuideRefined(species), style: context.text.caption.copyWith(color: c.inkTertiary)),
-                        ],
-                      ],
-                    ),
+                    child: Text(body, key: ValueKey(body), style: onboardingBodyStyle(context)),
                   ),
                 ),
               ],
