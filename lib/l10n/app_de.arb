@@ -343,53 +343,34 @@
   "homeClimateTooHumid": "Luft zu feucht für diese Art.",
   "homeClimateTooCold": "Zu kalt für diese Art.",
   "homeClimateTooHot": "Zu warm für diese Art.",
-  "homeTipDryAir": "Trockene Luft ({humidity} %): {names} besprühen oder zusammenstellen.",
+  "homeTipDryAir": "Trockene Luft: {names} besprühen oder zusammenstellen.",
   "@homeTipDryAir": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHumidAir": "Feuchte Luft ({humidity} %): den Raum lüften.",
-  "@homeTipHumidAir": {
-    "placeholders": {
-      "humidity": {
-        "type": "int"
-      }
-    }
-  },
-  "homeTipHumidAirPlants": "Feuchte Luft ({humidity} %): lüften, und {names} zwischen zwei Wassergaben abtrocknen lassen.",
+  "homeTipHumidAir": "Feuchte Luft: den Raum lüften.",
+  "homeTipHumidAirPlants": "Feuchte Luft: lüften, und {names} zwischen zwei Wassergaben abtrocknen lassen.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipCold": "{temperature} bei dir: zu kalt für {names}.",
+  "homeTipCold": "Zu kalt für {names}.",
   "@homeTipCold": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHot": "{temperature} bei dir: {names} trocknen schneller aus, Erde prüfen.",
+  "homeTipHot": "Hitze: {names} trocknen schneller aus, Erde prüfen.",
   "@homeTipHot": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
@@ -555,7 +536,8 @@
   "weatherNone": "Kein Ort",
   "weatherRemove": "Ort entfernen",
   "weatherNoResults": "Kein Ort gefunden.",
-  "weatherRainSkip": "Heute Regen: Gießen von {names} verschoben.",
+  "weatherRainTitle": "Heute Regen",
+  "weatherRainSkip": "Das Gießen von {names} kann warten.",
   "postpone": "Verschieben",
   "postponedCount": "{count, plural, =1{1 Gießen auf morgen verschoben} other{{count} Gießvorgänge auf morgen verschoben}}",
   "condClear": "Klar",

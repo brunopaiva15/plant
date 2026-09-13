@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../core/haptics.dart';
 import '../theme/flora_theme.dart';
@@ -103,6 +103,66 @@ class QuickActionChip extends StatelessWidget {
             const SizedBox(height: Space.xs),
             Text(label, style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Pilule de lecture : un emoji, un libellé, un détail en retrait, et le
+/// chevron quand elle mène quelque part. C'est ce qui porte, sur l'écran du
+/// matin, la météo, la mesure de la maison et les emplacements du jardin :
+/// une même forme pour « voici où l'on en est, touchez pour en voir plus ».
+///
+/// Elle fait la hauteur de la cible tactile — pas plus : sa surface est la
+/// zone qui écoute, aucun vide autour.
+class FloraPill extends StatelessWidget {
+  const FloraPill({super.key, required this.label, this.emoji, this.detail, this.chevron = false, this.onTap});
+
+  final String label;
+  final String? emoji;
+
+  /// Un complément en retrait, après le libellé : un compte, une pièce.
+  final String? detail;
+  final bool chevron;
+  final VoidCallback? onTap;
+
+  /// Largeur au-delà de laquelle le libellé se coupe.
+  static const double maxWidth = 320;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Pressable(
+      onTap: onTap,
+      scale: 0.95,
+      // Dans une bande qui défile, la largeur n'est pas bornée : la pilule
+      // prend celle de son texte, jusqu'à un plafond. Dans une colonne, elle
+      // cède la place et coupe son libellé. C'est [IntrinsicWidth] qui borne
+      // la ligne dans les deux cas, pour que le libellé puisse plier.
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: maxWidth, minHeight: kMinTapTarget),
+        child: IntrinsicWidth(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs),
+            decoration: BoxDecoration(color: c.surface, borderRadius: Radii.fullAll, border: Border.all(color: c.line)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (emoji != null) ...[Text(emoji!, style: const TextStyle(fontSize: 15)), const SizedBox(width: 6)],
+                Flexible(
+                  child: Text(
+                    label,
+                    style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (detail != null) ...[const SizedBox(width: 6), Text(detail!, style: context.text.caption)],
+                if (chevron) ...[const SizedBox(width: 2), Icon(CupertinoIcons.chevron_right, size: 13, color: c.inkTertiary)],
+              ],
+            ),
+          ),
         ),
       ),
     );

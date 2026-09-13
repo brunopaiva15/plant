@@ -1141,28 +1141,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeClimateTooHot => 'Too warm for this species.';
 
   @override
-  String homeTipDryAir(int humidity, String names) {
-    return 'Dry air ($humidity%): mist or group $names.';
+  String homeTipDryAir(String names) {
+    return 'Dry air: mist or group $names.';
   }
 
   @override
-  String homeTipHumidAir(int humidity) {
-    return 'Humid air ($humidity%): air the room.';
+  String get homeTipHumidAir => 'Humid air: air the room.';
+
+  @override
+  String homeTipHumidAirPlants(String names) {
+    return 'Humid air: air the room, and let $names dry out between waterings.';
   }
 
   @override
-  String homeTipHumidAirPlants(int humidity, String names) {
-    return 'Humid air ($humidity%): air the room, and let $names dry out between waterings.';
+  String homeTipCold(String names) {
+    return 'Too cold for $names.';
   }
 
   @override
-  String homeTipCold(String temperature, String names) {
-    return '$temperature at home: too cold for $names.';
-  }
-
-  @override
-  String homeTipHot(String temperature, String names) {
-    return '$temperature at home: $names dry out faster, check the soil.';
+  String homeTipHot(String names) {
+    return 'Heat: $names dry out faster, check the soil.';
   }
 
   @override
@@ -1591,8 +1589,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weatherNoResults => 'No place found.';
 
   @override
+  String get weatherRainTitle => 'Rain today';
+
+  @override
   String weatherRainSkip(String names) {
-    return 'Rain today: watering of $names postponed.';
+    return 'Watering of $names can wait.';
   }
 
   @override
