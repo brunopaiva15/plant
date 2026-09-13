@@ -18,15 +18,16 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 | 6 | Jardin, calendrier | la maison | lavande |
 | 7 | Diagnostic gardé au journal de la Calathea, rouvert en entier | sansevieria en pot | rose |
 
-Le cinquième montre l'identification sur l'appareil. La feuille « Espèce »
-est redessinée par `compose.py` dans le téléphone, sur la page assombrie,
-comme l'app la présente ; ce qu'elle affiche est vrai : la photo est une
-observation iNaturalist en CC0 (`ident/ficus-lyrata.jpg`, observation
-359128431, photo 655212161), absente du jeu d'entraînement, et les trois
-propositions avec leur cran de confiance sont la réponse du modèle livré,
-obtenue par `ident/score.py`, lue avec les seuils de l'app.
-Après chaque nouveau modèle : relancer `score.py`, reporter ses résultats
-dans `IDENT_RESULTS`, régénérer.
+Le cinquième montre l'identification sur l'appareil : sur le simulateur,
+c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
+Ficus lyrata de la démo. Sur le web, où le modèle ne tourne pas,
+`compose.py` la redessine dans le téléphone, sur la page assombrie, avec
+des résultats vrais : la photo est une observation iNaturalist en CC0
+(`ident/ficus-lyrata.jpg`, observation 359128431, photo 655212161), absente
+du jeu d'entraînement, et les trois propositions avec leur cran de
+confiance sont la réponse du modèle livré, obtenue par `ident/score.py`,
+lue avec les seuils de l'app. Après chaque nouveau modèle : relancer
+`score.py`, reporter ses résultats dans `IDENT_RESULTS`, régénérer.
 
 Sur la page d'une plante, la photo continue sous la barre d'état dessinée
 (en miroir, floue, assombrie), et les icônes passent en blanc.
@@ -37,20 +38,56 @@ excès d'eau — des numéros de `assets/problems/catalog.txt`), et la capture
 le rouvre depuis la fiche. Le service de diagnostic lui-même n'est pas
 configuré sur le build web ; le rapport, lui, est le vrai.
 
-Le jeu de démo (`?demo`) est réglé pour ces visuels : un seul soin en
-retard, d'un jour, le reste dû aujourd'hui ; ses textes libres suivent la
-langue du navigateur. Avant le chargement, `capture.mjs` écrit les
+Le jeu de démo (`?demo` sur le web, `--dart-define=DEMO=true` ailleurs) est
+réglé pour ces visuels : un seul soin en retard, d'un jour, le reste dû
+aujourd'hui ; ses textes libres suivent la langue de l'app. Avant le
+chargement, le test d'intégration comme `capture.mjs` écrivent les
 préférences d'un téléphone déjà réglé : onboarding passé, un prénom pour
-« Bonjour », une ville pour la météo (Open-Meteo, relayée par `curl` comme
-les polices), un capteur Apple Maison transmis par Raccourcis avec une
-mesure du moment, et l'invite aux rappels déjà vue. Là où la molette
-n'entraîne presque rien, la page se fait défiler par un glissement tactile
-synthétique.
+« Bonjour », une ville pour la météo (Open-Meteo ; sur le web, relayée par
+`curl` comme les polices), un capteur Apple Maison transmis par Raccourcis
+avec une mesure du moment, et l'invite aux rappels déjà vue. Sur le web, là
+où la molette n'entraîne presque rien, la page se fait défiler par un
+glissement tactile synthétique.
 
 `fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect ;
 les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](listing.md).
 
 ## Régénérer
+
+### Sur le simulateur iPhone (les vraies captures)
+
+Depuis un Mac avec Xcode et Flutter, un simulateur « iPhone 16 Pro Max »
+installé (format 6,7 pouces, 1290 × 2796) :
+
+```bash
+pip install pillow numpy
+store/capture_ios.sh                      # fr puis en, captures et composition
+LANGS=fr store/capture_ios.sh             # une seule langue
+DEVICE="iPhone 15 Pro Max" store/capture_ios.sh
+```
+
+Le script démarre le simulateur, sert les photos de démo, désinstalle l'app,
+puis lance `integration_test/store_screenshots_test.dart` par `flutter drive`
+avec `--dart-define=DEMO=true` : le jeu de démo se charge au premier
+lancement, le test règle les préférences d'un téléphone déjà en usage
+(prénom, ville pour la météo, capteur Apple Maison transmis par Raccourcis)
+et parcourt les écrans en prenant les captures, que
+`test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`.
+L'identification par Iris et le diagnostic rouvert depuis le journal sont
+ceux de l'app. Une scène qui échoue est signalée dans la sortie de
+`flutter drive`, les autres se prennent quand même ; il suffit alors de
+relancer `compose.py` après correction.
+
+Les captures d'appareil sont l'écran entier, avec la place de la barre
+d'état en haut (marqueur `.device` dans le dossier) : `compose.py` y
+dessine la sienne, l'heure d'Apple.
+
+### Sur le web (à défaut)
+
+Le build web imite iOS (`?demo&ios`) sans être l'app : les composants
+Cupertino y sont dessinés par Flutter, pas par le système, et le modèle
+d'identification n'y tourne pas. Ce chemin reste utile pour vérifier une
+composition sans Mac.
 
 ```bash
 flutter build web --profile --no-web-resources-cdn
@@ -59,7 +96,7 @@ python3 store/serve.py 8081 build/web &
 # Les photos de démo (CC0, voir demo-photos/SOURCES.md) à côté du build
 cp -r store/demo-photos build/web/
 
-# Captures réelles (390 × 844 à 3×), données de démo, iOS
+# Captures (390 × 844 à 3×), données de démo, iOS imité
 node store/capture.mjs store/shots-fr fr-FR
 node store/capture.mjs store/shots-en en-US
 
@@ -68,6 +105,9 @@ pip install pillow numpy
 python3 store/compose.py store/shots-fr store/fr fr
 python3 store/compose.py store/shots-en store/en en
 ```
+
+Sans capture `identify.png`, `compose.py` redessine la feuille « Espèce »
+sur l'étape Photo de l'ajout, avec les résultats mesurés par `ident/score.py`.
 
 `capture.mjs` demande Playwright (`npm i playwright`) ; la variable `CHROMIUM`
 peut pointer un binaire précis. Les emojis de l'app sont fournis par Flutter

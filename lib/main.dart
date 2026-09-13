@@ -87,7 +87,7 @@ Future<void> main() async {
     (name: l10n.defaultBalcony, icon: '🌤️', outdoor: true),
   ]);
 
-  if (DemoSeed.requested) await DemoSeed.apply(db, gardenId);
+  if (DemoSeed.requested) await DemoSeed.apply(db, gardenId, language: prefs.localeCode);
 
   notifications.onOpen = (payload) {
     if (payload != null && payload.isNotEmpty) container.read(routerProvider).go(payload);

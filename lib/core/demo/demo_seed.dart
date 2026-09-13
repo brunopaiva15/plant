@@ -16,12 +16,24 @@ import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
 
 /// Jeu de données de démonstration pour la revue visuelle sur le web
-/// (`?demo`), jamais en release. Les photos sont des liens vers des
-/// fichiers CC0 servis à côté du build (store/demo-photos).
+/// (`?demo`) et les captures du magasin sur le simulateur
+/// (`--dart-define=DEMO=true`), jamais en release. Les photos sont des liens
+/// vers des fichiers CC0 (store/demo-photos), servis à côté du build web ou
+/// par `store/serve.py` sur la machine (`--dart-define=DEMO_PHOTOS=…`).
 abstract final class DemoSeed {
-  static bool get requested => !kReleaseMode && kIsWeb && Uri.base.queryParameters.containsKey('demo');
+  static bool get requested =>
+      !kReleaseMode && (kIsWeb ? Uri.base.queryParameters.containsKey('demo') : const bool.fromEnvironment('DEMO'));
 
-  static Future<void> apply(FloraDatabase db, String gardenId) async {
+  /// D'où viennent les photos de démo, sans barre oblique finale.
+  static String get photoBase {
+    const defined = String.fromEnvironment('DEMO_PHOTOS');
+    if (defined.isNotEmpty) return defined;
+    return kIsWeb ? '${Uri.base.origin}/demo-photos' : 'http://localhost:8081/demo-photos';
+  }
+
+  /// [language] est celle de l'app quand elle est réglée ; sinon celle de
+  /// l'appareil.
+  static Future<void> apply(FloraDatabase db, String gardenId, {String? language}) async {
     final plants = DriftPlantRepository(db, gardenId);
     if ((await plants.watchSummaries(const PlantFilter()).first).isNotEmpty) return;
     final locations = DriftLocationRepository(db, gardenId);
@@ -34,7 +46,7 @@ abstract final class DemoSeed {
 
     // Les textes libres suivent la langue du navigateur : la démo sert aussi
     // aux visuels du magasin, en français et en anglais.
-    final en = PlatformDispatcher.instance.locale.languageCode == 'en';
+    final en = (language ?? PlatformDispatcher.instance.locale.languageCode) == 'en';
     final all = await locations.watchAll().first;
     String? loc(String name) => all.where((l) => l.name.toLowerCase().startsWith(name)).firstOrNull?.id;
     final salon = loc('salon') ?? loc('living') ?? (await locations.create(name: en ? 'Living room' : 'Salon', icon: '🛋️')).id;
@@ -57,10 +69,10 @@ abstract final class DemoSeed {
 
     // Des photos, pour que la démo ressemble à une vraie collection : des
     // observations iNaturalist en CC0 (store/demo-photos, avec leurs
-    // sources), servies à côté du build web. Distantes, donc jamais copiées.
+    // sources), servies à côté du build. Distantes, donc jamais copiées.
     final photos = DriftPhotoRepository(db);
     for (final (plant, slug) in [(monstera, 'monstera'), (pilea, 'pilea'), (ficus, 'ficus'), (calathea, 'calathea'), (olivier, 'olivier'), (basilic, 'basilic'), (pothos, 'pothos'), (hoya, 'hoya')]) {
-      final photo = await photos.addFromUrl(plantId: plant.id, url: '${Uri.base.origin}/demo-photos/$slug.jpg');
+      final photo = await photos.addFromUrl(plantId: plant.id, url: '$photoBase/$slug.jpg');
       await photos.setPrimary(plant.id, photo.id);
     }
 

@@ -9,6 +9,10 @@ ce qu'on vend : rien ne le recouvre, à part l'objet sur son coin bas. Les
 ombres sont brunes, jamais noires : c'est la lumière de l'atelier, pas celle
 d'un studio.
 
+Les captures viennent du simulateur iPhone (store/capture_ios.sh, écran
+entier, marqueur `.device` dans le dossier) ou, à défaut, du build web
+(capture.mjs, 390 × 844 à 3×, sans barre d'état).
+
 Usage : compose.py <dossier captures> <dossier sortie> [fr|en]
 """
 import csv
@@ -173,30 +177,37 @@ def status_bar(width, height, bg, INK):
     return bar
 
 
-def phone(shot, scrim=0.0, sheet=None):
-    """La capture (390 × 844 à 3×) habillée en iPhone, au même facteur 3.
-    [shot] est un chemin, ou une capture déjà retouchée. Avec [scrim] et
+def phone(shot, scrim=0.0, sheet=None, device=False):
+    """La capture habillée en iPhone, au facteur 3 de la capture.
+    [shot] est un chemin, ou une capture déjà retouchée. Une capture du web
+    (390 × 844) n'a pas de barre d'état : on la dessine au-dessus. Une
+    capture d'appareil ([device]) est l'écran entier : la place de la barre
+    d'état y est déjà réservée en haut, on dessine dedans. Avec [scrim] et
     [sheet], une feuille modale est posée sur l'écran entier, barre d'état
     comprise, comme l'app le fait."""
     shot = (Image.open(shot) if isinstance(shot, str) else shot).convert('RGB')
     sw, sh = shot.size
     top = 3 * 54
-    screen = Image.new('RGBA', (sw, sh + top))
+    if device:
+        screen = shot.convert('RGBA')
+    else:
+        screen = Image.new('RGBA', (sw, sh + top))
+        screen.paste(shot, (0, top))
     strip = shot.crop((0, 0, sw, top))
     if max(abs(a - b) for a, b in zip(strip.getpixel((sw // 2, 6)), CANVAS)) < 24:
         # Le papier de l'app : la barre d'état est du même papier.
         bar = status_bar(sw, top, strip.getpixel((sw // 2, 6)), INK)
     else:
-        # Une photo en tête de page : elle continue sous la barre d'état, en
-        # miroir et un peu floue, assombrie vers le haut, et les icônes
-        # passent en blanc dessus.
-        bar = strip.transpose(Image.FLIP_TOP_BOTTOM).filter(ImageFilter.GaussianBlur(6)).convert('RGBA')
+        # Une photo en tête de page : elle continue sous la barre d'état
+        # (en miroir et un peu floue quand la capture s'arrête au bord),
+        # assombrie vers le haut, et les icônes passent en blanc dessus.
+        bar = strip.convert('RGBA') if device else strip.transpose(Image.FLIP_TOP_BOTTOM).filter(ImageFilter.GaussianBlur(6)).convert('RGBA')
         veil = np.zeros((top, sw, 4), dtype=np.uint8)
         veil[..., 3] = np.linspace(120, 30, top).astype(np.uint8)[:, None]
         bar.alpha_composite(Image.fromarray(veil, 'RGBA'))
         bar.alpha_composite(status_bar(sw, top, None, (255, 255, 255)))
     screen.paste(bar, (0, 0))
-    screen.paste(shot, (0, top))
+    sh = screen.height - top
     if scrim:
         # La barrière modale, brune comme les ombres
         screen.alpha_composite(Image.new('RGBA', screen.size, SHADOW + (int(255 * scrim),)))
@@ -429,7 +440,7 @@ SCENES = [
     ('plants', 'sage', 'collection_monstera.webp'),
     ('plant', 'terracotta', 'collection_ronde.webp'),
     ('care', 'sun', 'onboarding_3.png'),
-    ('add-plant', 'earth', 'collection_caoutchouc.webp'),
+    ('identify', 'earth', 'collection_caoutchouc.webp'),
     ('garden-calendar', 'lavender', 'onboarding_7.png'),
     ('diagnosis', 'rose', 'collection_sansevieria.webp'),
 ]
@@ -444,16 +455,20 @@ PHONE_WIDTH, PHONE_GAP, PHONE_CLAY = 920, 200, 560
 
 def build(shots, out, lang):
     os.makedirs(out, exist_ok=True)
+    # Des captures d'appareil (store/capture_ios.sh) ou du web (capture.mjs).
+    device = os.path.exists(os.path.join(shots, '.device'))
     copy = COPY[lang]
     size = title_size([t for t, _ in copy])
     for i, ((title, subtitle), (name, tint, clay)) in enumerate(zip(copy, SCENES), start=1):
         img = background(tint)
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
-        modal = {}
-        if name == 'add-plant':
-            shot = identification_shot(shot)
-            modal = {'scrim': 0.36, 'sheet': ident_sheet(lang)}
+        modal = {'device': device}
+        if name == 'identify' and not os.path.exists(shot):
+            # Pas de modèle sur le web : la feuille « Espèce » est redessinée
+            # sur l'étape Photo de l'ajout, avec les vrais résultats.
+            shot = identification_shot(os.path.join(shots, 'add-plant.png'))
+            modal.update(scrim=0.36, sheet=ident_sheet(lang))
         place_clay(img, clay, PHONE_CLAY, bottom - 30, PHONE_WIDTH)
         place_phone(img, shot, y=bottom + PHONE_GAP, width=PHONE_WIDTH, **modal)
         img.convert('RGB').save(os.path.join(out, f'{i}.png'), optimize=True)
