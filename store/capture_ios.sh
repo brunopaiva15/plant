@@ -2,9 +2,9 @@
 # Captures réelles de l'app sur le simulateur iPhone, pour les visuels du
 # magasin, puis composition. À lancer depuis un Mac avec Xcode et Flutter :
 #
-#   store/capture_ios.sh              # fr puis en, sur l'iPhone 16 Pro Max
+#   store/capture_ios.sh              # fr puis en, sur le plus grand iPhone installé
 #   LANGS=fr store/capture_ios.sh     # une langue
-#   DEVICE="iPhone 15 Pro Max" store/capture_ios.sh
+#   DEVICE="iPhone 17 Pro" store/capture_ios.sh
 #
 # Le simulateur doit exister (Xcode › Settings › Platforms). Le jeu de démo
 # (core/demo/demo_seed.dart) est chargé au premier lancement, les photos CC0
@@ -13,20 +13,29 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-DEVICE="${DEVICE:-iPhone 16 Pro Max}"
+# Le plus grand iPhone que Xcode propose, sauf si DEVICE en nomme un autre.
+# Les visuels restent composés au format 6,7 pouces par compose.py, quelle
+# que soit la taille de la capture.
+DEVICE="${DEVICE:-}"
 LANGS="${LANGS:-fr en}"
 
 UDID=$(xcrun simctl list devices available -j | python3 -c '
 import json, sys
-name = sys.argv[1]
-devices = [d for runtime in json.load(sys.stdin)["devices"].values() for d in runtime if d["name"] == name]
-devices.sort(key=lambda d: d["state"] != "Booted")
-print(devices[0]["udid"] if devices else "")' "$DEVICE")
+wanted = [sys.argv[1]] if sys.argv[1] else ["iPhone 17 Pro Max", "iPhone 16 Pro Max", "iPhone 15 Pro Max", "iPhone 17 Pro", "iPhone 16 Pro", "iPhone 17"]
+devices = [d for runtime in json.load(sys.stdin)["devices"].values() for d in runtime]
+for name in wanted:
+    found = sorted((d for d in devices if d["name"] == name), key=lambda d: d["state"] != "Booted")
+    if found:
+        print(found[0]["udid"], found[0]["name"], sep="\t")
+        break' "$DEVICE")
 if [ -z "$UDID" ]; then
-  echo "Simulateur « $DEVICE » introuvable. Ceux qui existent :" >&2
+  echo "Aucun simulateur iPhone attendu${DEVICE:+ (« $DEVICE »)}. Ceux qui existent :" >&2
   xcrun simctl list devices available | grep -i iphone >&2
   exit 1
 fi
+NAME="${UDID#*	}"
+UDID="${UDID%%	*}"
+echo "Simulateur : $NAME ($UDID)"
 
 xcrun simctl boot "$UDID" 2>/dev/null || true
 open -a Simulator

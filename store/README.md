@@ -56,14 +56,15 @@ les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](li
 
 ### Sur le simulateur iPhone (les vraies captures)
 
-Depuis un Mac avec Xcode et Flutter, un simulateur « iPhone 16 Pro Max »
-installé (format 6,7 pouces, 1290 × 2796) :
+Depuis un Mac avec Xcode et Flutter ; le script prend le plus grand iPhone
+que Xcode propose (17 Pro Max, sinon 16 ou 15 Pro Max), `DEVICE` en impose
+un autre :
 
 ```bash
 pip install pillow numpy
 store/capture_ios.sh                      # fr puis en, captures et composition
 LANGS=fr store/capture_ios.sh             # une seule langue
-DEVICE="iPhone 15 Pro Max" store/capture_ios.sh
+DEVICE="iPhone 17 Pro" store/capture_ios.sh
 ```
 
 Le script démarre le simulateur, sert les photos de démo, désinstalle l'app,
