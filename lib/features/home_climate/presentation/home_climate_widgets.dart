@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +9,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/home/home_climate.dart';
 import '../../../domain/home/home_climate_advisor.dart';
+import '../../today/presentation/today_notice.dart';
 import '../application/home_climate_providers.dart';
 
 /// « 21° · 38 % » : la mesure, dans l'unité de l'utilisateur.
@@ -20,47 +21,37 @@ String homeReadingLabel(HomeReading reading, {required bool metric}) {
   return parts.join(' · ');
 }
 
-/// La température seule, dans l'unité de l'utilisateur, pour une phrase.
-String homeTemperatureLabel(num celsius, {required bool metric}) => metric ? '${celsius.round()}°' : '${(celsius * 9 / 5 + 32).round()}°F';
+/// « 25° · 41 % · Salon », ou « Chez vous · 25° » quand le capteur n'a pas
+/// de pièce : la mesure en titre, telle que la pilule du jour la montre.
+String homeReadingTitle(AppLocalizations l10n, HomeReading reading, {required bool metric}) {
+  final room = reading.sensor?.label;
+  final value = homeReadingLabel(reading, metric: metric);
+  return room == null || room.isEmpty ? '${l10n.homeClimateAtHome} · $value' : '$value · $room';
+}
 
-/// Ligne discrète « 🏠 21° · 38 % · Salon » sous la météo de l'écran Aujourd'hui.
-class HomeClimateLine extends ConsumerWidget {
-  const HomeClimateLine({super.key});
+/// « 🏠 21° · 38 % · Salon › » : la pilule de la maison, à côté de celle du
+/// temps, sous la date de l'écran Aujourd'hui. Mène aux réglages du capteur.
+class HomeClimatePill extends ConsumerWidget {
+  const HomeClimatePill({super.key, required this.reading});
+
+  final HomeReading reading;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reading = ref.watch(homeReadingProvider).value;
-    if (reading == null || reading.isEmpty) return const SizedBox.shrink();
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
-    final label = reading.sensor?.label;
-    final text = [homeReadingLabel(reading, metric: metric), if (label != null && label.isNotEmpty) label].join(' · ');
-    return Padding(
-      padding: const EdgeInsets.only(top: 2),
-      child: Pressable(
-        onTap: () => context.push(Routes.homeClimate),
-        scale: 1,
-        child: Row(
-          children: [
-            const Text('🏠', style: TextStyle(fontSize: 13)),
-            const SizedBox(width: 4),
-            Flexible(child: Text(text, style: context.text.caption, maxLines: 1, overflow: TextOverflow.ellipsis)),
-            const SizedBox(width: 2),
-            Icon(CupertinoIcons.chevron_right, size: 11, color: context.colors.inkTertiary),
-          ],
-        ),
-      ),
-    );
+    return FloraPill(emoji: '🏠', label: homeReadingLabel(reading, metric: metric), detail: reading.sensor?.label, chevron: true, onTap: () => context.push(Routes.homeClimate));
   }
 }
 
-/// Le texte d'un conseil, dans la langue et l'unité de l'utilisateur.
-String homeTipText(AppLocalizations l10n, HomeClimateTip tip, {required bool metric}) {
+/// Le texte d'un conseil, dans la langue de l'utilisateur. La mesure n'y est
+/// pas : c'est le titre de la carte qui la porte.
+String homeTipText(AppLocalizations l10n, HomeClimateTip tip) {
   final names = l10n.joinNames(tip.plantNames);
   return switch (tip.kind) {
-    HomeClimateTipKind.dryAir => l10n.homeTipDryAir(tip.value.round(), names),
-    HomeClimateTipKind.humidAir => tip.plantNames.isEmpty ? l10n.homeTipHumidAir(tip.value.round()) : l10n.homeTipHumidAirPlants(tip.value.round(), names),
-    HomeClimateTipKind.cold => l10n.homeTipCold(homeTemperatureLabel(tip.value, metric: metric), names),
-    HomeClimateTipKind.hot => l10n.homeTipHot(homeTemperatureLabel(tip.value, metric: metric), names),
+    HomeClimateTipKind.dryAir => l10n.homeTipDryAir(names),
+    HomeClimateTipKind.humidAir => tip.plantNames.isEmpty ? l10n.homeTipHumidAir : l10n.homeTipHumidAirPlants(names),
+    HomeClimateTipKind.cold => l10n.homeTipCold(names),
+    HomeClimateTipKind.hot => l10n.homeTipHot(names),
   };
 }
 
@@ -71,7 +62,8 @@ String homeTipEmoji(HomeClimateTipKind kind) => switch (kind) {
       HomeClimateTipKind.hot => '🥵',
     };
 
-/// « Air sec (32 %) : brumiser ou regrouper Calathea et Monstera. » [×]
+/// « 25° · 41 % · Salon » puis, dessous, ce que l'air de la pièce demande :
+/// « Air sec : brumiser ou regrouper Calathea et Monstera. » [×]
 ///
 /// Une carte, un conseil par ligne, trois au plus. Elle se ferme pour la
 /// journée ; demain la mesure aura changé, ou pas, et elle reviendra.
@@ -81,49 +73,24 @@ class HomeClimateAdviceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final c = context.colors;
     final tips = ref.watch(homeClimateTipsProvider);
+    final reading = ref.watch(homeReadingProvider).value;
     ref.watch(dismissedHomeTipsProvider);
     final dismissed = ref.watch(dismissedHomeTipsProvider.notifier).isDismissedToday;
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
-    final show = tips.isNotEmpty && !dismissed;
-    return AnimatedSize(
-      duration: Motion.of(context, Motion.emphasis),
-      curve: Motion.emphasized,
+    final show = tips.isNotEmpty && reading != null && !dismissed;
+    final shown = tips.take(3).toList();
+    return TodayNoticeSlot(
+      visible: show,
       child: !show
           ? const SizedBox.shrink()
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, 0),
-              child: FloraCard(
-                color: c.sunSoft,
-                padding: const EdgeInsets.all(Space.md),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (final (i, tip) in tips.take(3).indexed)
-                            Padding(
-                              padding: EdgeInsets.only(top: i == 0 ? 0 : Space.xs),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(homeTipEmoji(tip.kind), style: const TextStyle(fontSize: 20)),
-                                  const SizedBox(width: Space.sm),
-                                  Expanded(child: Text(homeTipText(l10n, tip, metric: metric), style: context.text.callout.copyWith(color: c.ink))),
-                                ],
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: Space.xs),
-                    FloraIconButton(icon: CupertinoIcons.xmark, semanticLabel: l10n.close, filled: false, size: 32, onPressed: () => ref.read(dismissedHomeTipsProvider.notifier).dismissToday()),
-                  ],
-                ),
-              ),
+          : TodayNotice(
+              // Un seul conseil : son emoji. Plusieurs : la maison.
+              emoji: shown.length == 1 ? homeTipEmoji(shown.single.kind) : '🏠',
+              color: context.colors.sunSoft,
+              title: homeReadingTitle(l10n, reading, metric: metric),
+              body: shown.map((t) => homeTipText(l10n, t)).join('\n'),
+              onDismiss: () => ref.read(dismissedHomeTipsProvider.notifier).dismissToday(),
             ),
     );
   }

@@ -560,53 +560,34 @@
   "homeClimateTooHumid": "Air trop humide pour cette espèce.",
   "homeClimateTooCold": "Trop froid pour cette espèce.",
   "homeClimateTooHot": "Trop chaud pour cette espèce.",
-  "homeTipDryAir": "Air sec ({humidity} %) : brumiser ou regrouper {names}.",
+  "homeTipDryAir": "Air sec : brumiser ou regrouper {names}.",
   "@homeTipDryAir": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHumidAir": "Air humide ({humidity} %) : aérer la pièce.",
-  "@homeTipHumidAir": {
-    "placeholders": {
-      "humidity": {
-        "type": "int"
-      }
-    }
-  },
-  "homeTipHumidAirPlants": "Air humide ({humidity} %) : aérer, et laisser sécher {names} entre deux arrosages.",
+  "homeTipHumidAir": "Air humide : aérer la pièce.",
+  "homeTipHumidAirPlants": "Air humide : aérer, et laisser sécher {names} entre deux arrosages.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipCold": "{temperature} chez vous : trop froid pour {names}.",
+  "homeTipCold": "Trop froid pour {names}.",
   "@homeTipCold": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHot": "{temperature} chez vous : {names} sèchent plus vite, vérifier la terre.",
+  "homeTipHot": "Chaleur : {names} sèchent plus vite, vérifier la terre.",
   "@homeTipHot": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
@@ -823,7 +804,8 @@
   "weatherNone": "Aucun lieu",
   "weatherRemove": "Retirer le lieu",
   "weatherNoResults": "Aucun lieu trouvé.",
-  "weatherRainSkip": "Pluie aujourd'hui : arrosage de {names} reporté.",
+  "weatherRainTitle": "Pluie aujourd'hui",
+  "weatherRainSkip": "L'arrosage de {names} peut attendre.",
   "@weatherRainSkip": {
     "placeholders": {
       "names": {

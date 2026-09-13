@@ -15,11 +15,14 @@ import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../tasks/application/task_providers.dart';
 import '../../tasks/presentation/task_row.dart';
+import '../../home_climate/application/home_climate_providers.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
+import '../../weather/application/weather_providers.dart';
 import '../../weather/presentation/weather_widgets.dart';
 import '../application/completed_tasks.dart';
 import 'care_task_card.dart';
 import 'notification_prompt.dart';
+import 'today_notice.dart';
 import 'upcoming_section.dart';
 
 /// Écran principal : « Qu'est-ce que je dois faire aujourd'hui ? »
@@ -68,15 +71,9 @@ class TodayScreen extends ConsumerWidget {
               onPressed: () => startCreatePlantFlow(context, ref),
             ),
       slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xs),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [Text(Dates.longDate(context, now), style: context.text.callout), const WeatherLine(), const HomeClimateLine()],
-            ),
-          ),
-        ),
+        // Le jour, et ce qu'il fait : la date, puis le temps dehors et l'air
+        // de la maison sur une même rangée de pilules.
+        const SliverToBoxAdapter(child: _DayHeader()),
         // La carte du jour : la seule pièce de terre cuite pleine de l'écran,
         // celle qui compte. Elle s'efface quand tout est fait.
         if (plantCount > 0 && dueCount > 0)
@@ -102,28 +99,7 @@ class TodayScreen extends ConsumerWidget {
         else ...[
           if (dueCount == 0 && tasks.hasValue)
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, 0),
-                child: FloraCard(
-                  padding: const EdgeInsets.all(Space.lg),
-                  child: Row(
-                    children: [
-                      const EmojiTile(emoji: '🌿', size: 48),
-                      const SizedBox(width: Space.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(l10n.allDoneTitle, style: context.text.title3),
-                            const SizedBox(height: 2),
-                            Text(l10n.allDoneSubtitle, style: context.text.callout),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: TodayNoticeSlot(child: TodayNotice(emoji: '🌿', title: l10n.allDoneTitle, body: l10n.allDoneSubtitle)),
             ),
           if (dueTasks.isNotEmpty) _FreeTaskSection(tasks: dueTasks),
           if (overdue.isNotEmpty) _TaskSection(title: l10n.sectionOverdue, tasks: overdue),
@@ -134,6 +110,58 @@ class TodayScreen extends ConsumerWidget {
           const _RecentActivity(),
         ],
       ],
+    );
+  }
+}
+
+/// La date, et dessous le temps qu'il fait et l'air de la maison, chacun
+/// sur sa pilule. Une seule rangée : les deux lectures se tiennent côte à
+/// côte, et il n'y a rien quand il n'y a rien à lire.
+class _DayHeader extends ConsumerWidget {
+  const _DayHeader();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weather = ref.watch(todayWeatherProvider).value;
+    final hasOutdoor = ref.watch(outdoorLocationIdsProvider).isNotEmpty;
+    final reading = ref.watch(homeReadingProvider).value;
+    final pills = <Widget>[
+      if (weather != null && hasOutdoor) WeatherPill(weather: weather),
+      if (reading != null && !reading.isEmpty) HomeClimatePill(reading: reading),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xs),
+          child: Text(Dates.longDate(context, DateTime.now()), style: context.text.callout),
+        ),
+        if (pills.isNotEmpty) _PillStrip(children: pills),
+      ],
+    );
+  }
+}
+
+/// Une rangée de pilules qui déborde à droite plutôt que de se couper :
+/// les lectures du jour, les emplacements du jardin.
+class _PillStrip extends StatelessWidget {
+  const _PillStrip({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: Space.page),
+      child: Row(
+        children: [
+          for (final (i, child) in children.indexed) ...[
+            if (i > 0) const SizedBox(width: Space.xs),
+            child,
+          ],
+        ],
+      ),
     );
   }
 }
@@ -220,34 +248,16 @@ class _GardenSummary extends ConsumerWidget {
           ),
           if (flat.isNotEmpty) ...[
             const SizedBox(height: Space.sm),
-            SizedBox(
-              height: 44,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: Space.page),
-                itemCount: flat.length,
-                separatorBuilder: (_, _) => const SizedBox(width: Space.xs),
-                itemBuilder: (context, i) {
-                  final n = flat[i];
-                  return Pressable(
+            _PillStrip(
+              children: [
+                for (final n in flat)
+                  FloraPill(
+                    emoji: n.location.icon,
+                    label: n.location.name,
+                    detail: '${n.totalPlantCount}',
                     onTap: () => context.push(Routes.location(n.location.id)),
-                    scale: 0.95,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: Space.md),
-                      decoration: BoxDecoration(color: context.colors.surface, borderRadius: Radii.fullAll, border: Border.all(color: context.colors.line)),
-                      child: Row(
-                        children: [
-                          Text(n.location.icon, style: const TextStyle(fontSize: 15)),
-                          const SizedBox(width: 6),
-                          Text(n.location.name, style: context.text.callout.copyWith(color: context.colors.ink, fontWeight: FontWeight.w500)),
-                          const SizedBox(width: 6),
-                          Text('${n.totalPlantCount}', style: context.text.caption),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+              ],
             ),
           ],
         ],

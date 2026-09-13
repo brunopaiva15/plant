@@ -2247,32 +2247,32 @@ abstract class AppLocalizations {
   /// No description provided for @homeTipDryAir.
   ///
   /// In fr, this message translates to:
-  /// **'Air sec ({humidity} %) : brumiser ou regrouper {names}.'**
-  String homeTipDryAir(int humidity, String names);
+  /// **'Air sec : brumiser ou regrouper {names}.'**
+  String homeTipDryAir(String names);
 
   /// No description provided for @homeTipHumidAir.
   ///
   /// In fr, this message translates to:
-  /// **'Air humide ({humidity} %) : aérer la pièce.'**
-  String homeTipHumidAir(int humidity);
+  /// **'Air humide : aérer la pièce.'**
+  String get homeTipHumidAir;
 
   /// No description provided for @homeTipHumidAirPlants.
   ///
   /// In fr, this message translates to:
-  /// **'Air humide ({humidity} %) : aérer, et laisser sécher {names} entre deux arrosages.'**
-  String homeTipHumidAirPlants(int humidity, String names);
+  /// **'Air humide : aérer, et laisser sécher {names} entre deux arrosages.'**
+  String homeTipHumidAirPlants(String names);
 
   /// No description provided for @homeTipCold.
   ///
   /// In fr, this message translates to:
-  /// **'{temperature} chez vous : trop froid pour {names}.'**
-  String homeTipCold(String temperature, String names);
+  /// **'Trop froid pour {names}.'**
+  String homeTipCold(String names);
 
   /// No description provided for @homeTipHot.
   ///
   /// In fr, this message translates to:
-  /// **'{temperature} chez vous : {names} sèchent plus vite, vérifier la terre.'**
-  String homeTipHot(String temperature, String names);
+  /// **'Chaleur : {names} sèchent plus vite, vérifier la terre.'**
+  String homeTipHot(String names);
 
   /// No description provided for @diagnosisWithHome.
   ///
@@ -2994,10 +2994,16 @@ abstract class AppLocalizations {
   /// **'Aucun lieu trouvé.'**
   String get weatherNoResults;
 
+  /// No description provided for @weatherRainTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pluie aujourd\'hui'**
+  String get weatherRainTitle;
+
   /// No description provided for @weatherRainSkip.
   ///
   /// In fr, this message translates to:
-  /// **'Pluie aujourd\'hui : arrosage de {names} reporté.'**
+  /// **'L\'arrosage de {names} peut attendre.'**
   String weatherRainSkip(String names);
 
   /// No description provided for @postpone.

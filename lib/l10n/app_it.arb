@@ -373,53 +373,34 @@
   "homeClimateTooHumid": "Aria troppo umida per questa specie.",
   "homeClimateTooCold": "Troppo freddo per questa specie.",
   "homeClimateTooHot": "Troppo caldo per questa specie.",
-  "homeTipDryAir": "Aria secca ({humidity} %): nebulizzare o raggruppare {names}.",
+  "homeTipDryAir": "Aria secca: nebulizzare o raggruppare {names}.",
   "@homeTipDryAir": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHumidAir": "Aria umida ({humidity} %): arieggiare la stanza.",
-  "@homeTipHumidAir": {
-    "placeholders": {
-      "humidity": {
-        "type": "int"
-      }
-    }
-  },
-  "homeTipHumidAirPlants": "Aria umida ({humidity} %): arieggiare, e lasciare asciugare {names} tra due annaffiature.",
+  "homeTipHumidAir": "Aria umida: arieggiare la stanza.",
+  "homeTipHumidAirPlants": "Aria umida: arieggiare, e lasciare asciugare {names} tra due annaffiature.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipCold": "{temperature} da voi: troppo freddo per {names}.",
+  "homeTipCold": "Troppo freddo per {names}.",
   "@homeTipCold": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHot": "{temperature} da voi: {names} si asciugano più in fretta, controllare la terra.",
+  "homeTipHot": "Caldo: {names} si asciugano più in fretta, controllare la terra.",
   "@homeTipHot": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
@@ -585,7 +566,8 @@
   "weatherNone": "Nessun luogo",
   "weatherRemove": "Rimuovi luogo",
   "weatherNoResults": "Nessun luogo trovato.",
-  "weatherRainSkip": "Pioggia oggi: irrigazione di {names} rinviata.",
+  "weatherRainTitle": "Pioggia oggi",
+  "weatherRainSkip": "L'irrigazione di {names} può aspettare.",
   "postpone": "Rimanda",
   "postponedCount": "{count, plural, =1{1 annaffiatura rimandata a domani} other{{count} annaffiature rimandate a domani}}",
   "condClear": "Sereno",

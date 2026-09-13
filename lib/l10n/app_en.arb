@@ -373,53 +373,34 @@
   "homeClimateTooHumid": "Air too humid for this species.",
   "homeClimateTooCold": "Too cold for this species.",
   "homeClimateTooHot": "Too warm for this species.",
-  "homeTipDryAir": "Dry air ({humidity}%): mist or group {names}.",
+  "homeTipDryAir": "Dry air: mist or group {names}.",
   "@homeTipDryAir": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHumidAir": "Humid air ({humidity}%): air the room.",
-  "@homeTipHumidAir": {
-    "placeholders": {
-      "humidity": {
-        "type": "int"
-      }
-    }
-  },
-  "homeTipHumidAirPlants": "Humid air ({humidity}%): air the room, and let {names} dry out between waterings.",
+  "homeTipHumidAir": "Humid air: air the room.",
+  "homeTipHumidAirPlants": "Humid air: air the room, and let {names} dry out between waterings.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
-      "humidity": {
-        "type": "int"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipCold": "{temperature} at home: too cold for {names}.",
+  "homeTipCold": "Too cold for {names}.",
   "@homeTipCold": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
     }
   },
-  "homeTipHot": "{temperature} at home: {names} dry out faster, check the soil.",
+  "homeTipHot": "Heat: {names} dry out faster, check the soil.",
   "@homeTipHot": {
     "placeholders": {
-      "temperature": {
-        "type": "String"
-      },
       "names": {
         "type": "String"
       }
@@ -585,7 +566,8 @@
   "weatherNone": "No place",
   "weatherRemove": "Remove place",
   "weatherNoResults": "No place found.",
-  "weatherRainSkip": "Rain today: watering of {names} postponed.",
+  "weatherRainTitle": "Rain today",
+  "weatherRainSkip": "Watering of {names} can wait.",
   "postpone": "Postpone",
   "postponedCount": "{count, plural, =1{1 watering postponed to tomorrow} other{{count} waterings postponed to tomorrow}}",
   "condClear": "Clear sky",
