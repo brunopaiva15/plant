@@ -62,19 +62,32 @@ final myGardensProvider = FutureProvider<List<GardenAccess>>((ref) async {
     return [GardenAccess(id: own, name: garden?.name ?? '', role: GardenRole.owner, ownerId: garden?.ownerId)];
   }
   try {
+    // Un renommage encore en file d'attente est plus récent que ce que le
+    // serveur renvoie : recopier le nom distant l'effacerait — à l'écran, en
+    // base, et jusque dans la synchro, qui repartirait avec l'ancien nom. La
+    // file se relève avant l'appel et après, car elle peut se vider pendant :
+    // le nom reçu daterait alors d'avant l'envoi.
+    final sent = await _queuedGardens(db);
     final gardens = await service.gardens();
+    final queued = <String, String>{};
     await db.transaction(() async {
       final now = DateTime.now();
+      final pending = sent.union(await _queuedGardens(db));
       for (final g in gardens) {
         await db.into(db.gardens).insert(
               GardensCompanion.insert(id: g.id, ownerId: g.ownerId ?? '', name: g.name, createdAt: now, updatedAt: now),
               mode: InsertMode.insertOrIgnore,
             );
-        await (db.update(db.gardens)..where((x) => x.id.equals(g.id))).write(GardensCompanion(name: Value(g.name)));
+        if (pending.contains(g.id)) {
+          final row = await (db.select(db.gardens)..where((x) => x.id.equals(g.id))).getSingleOrNull();
+          if (row != null) queued[g.id] = row.name;
+        } else {
+          await (db.update(db.gardens)..where((x) => x.id.equals(g.id))).write(GardensCompanion(name: Value(g.name)));
+        }
         await db.into(db.gardenMembers).insertOnConflictUpdate(GardenMembersCompanion.insert(gardenId: g.id, userId: user.id, role: g.role.key));
       }
     });
-    return gardens;
+    return [for (final g in gardens) queued.containsKey(g.id) ? g.withName(queued[g.id]!) : g];
   } catch (_) {
     // Hors ligne : on retombe sur ce que la base connaît déjà.
     final rows = await (db.select(db.gardens).join([
@@ -91,6 +104,10 @@ final myGardensProvider = FutureProvider<List<GardenAccess>>((ref) async {
     ];
   }
 });
+
+/// Les jardins dont une écriture locale attend encore d'être poussée.
+Future<Set<String>> _queuedGardens(FloraDatabase db) async =>
+    (await (db.select(db.syncOutbox)..where((o) => o.entity.equals('gardens'))).get()).map((o) => o.entityId).toSet();
 
 /// Invitations en cours pour le jardin ouvert (propriétaire seulement).
 final gardenInvitesProvider = FutureProvider<List<GardenInvite>>((ref) async {
