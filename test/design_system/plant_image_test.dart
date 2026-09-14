@@ -53,23 +53,28 @@ void main() {
 
   tearDown(() => temp.deleteSync(recursive: true));
 
-  testWidgets('la photo tient dès l’image suivante quand le parent se reconstruit', (tester) async {
-    late StateSetter rebuild;
+  testWidgets('la photo est là dès la première image après une remontée', (tester) async {
+    var key = UniqueKey();
+    late StateSetter remount;
     await tester.pumpWidget(_host(
       StatefulBuilder(
         builder: (context, setState) {
-          rebuild = setState;
-          return PlantImage(relativePath: 'a_thumb.jpg', cacheWidth: 64);
+          remount = setState;
+          return PlantImage(key: key, relativePath: 'a_thumb.jpg', cacheWidth: 64);
         },
       ),
     ));
-    await tester.pumpAndSettle();
+    // Le dossier des photos se résout par une vraie écriture sur le disque :
+    // en temps simulé, sa promesse ne se terminerait jamais.
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 100)));
+    await tester.pump();
     expect(find.byType(Image), findsOneWidget);
 
-    // Une reconstruction, une seule image de plus : la photo est encore là.
-    // Avec une promesse refaite à chaque construction, elle laissait ici la
-    // place à l'aplat d'attente.
-    rebuild(() {});
+    // Une clé neuve remonte la vignette, comme le fait la carte de la
+    // collection quand son onglet redevient visible. Le dossier est connu :
+    // la photo doit être là tout de suite. Tant qu'on le redemandait par une
+    // promesse, cette image-ci montrait l'aplat d'attente.
+    remount(() => key = UniqueKey());
     await tester.pump();
     expect(find.byType(Image), findsOneWidget);
   });
