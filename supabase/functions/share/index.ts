@@ -16,6 +16,10 @@ const PHOTO_BUCKET = 'plant-photos';
 /** Schéma des liens de l'application : `auxine://join/<code>`. */
 const APP_SCHEME = 'auxine';
 
+/** La page ne charge rien d'ailleurs : ses styles sont en ligne, ses images
+ * viennent du stockage public. */
+const CSP = "default-src 'none'; img-src https: data:; style-src 'unsafe-inline'";
+
 /** Échappe le texte inséré dans le HTML : aucun contenu utilisateur n'est brut. */
 function esc(value: unknown): string {
   return String(value ?? '')
@@ -73,7 +77,12 @@ ${opts.image ? `<meta property="og:image" content="${esc(opts.image)}">` : ''}
       'cache-control': opts.noindex ? 'private, max-age=0, no-store' : 'public, max-age=300',
       'x-robots-tag': opts.noindex ? 'noindex, nofollow' : 'all',
       'referrer-policy': 'no-referrer',
-      'content-security-policy': "default-src 'none'; img-src https: data:; style-src 'unsafe-inline'",
+      'content-security-policy': CSP,
+      // Le même en-tête sous un nom que la passerelle laisse passer. Sur
+      // `*.supabase.co`, elle réécrit celui du dessus en `sandbox` — ce qui
+      // empêcherait « Ouvrir dans Auxine » d'ouvrir quoi que ce soit. Le
+      // relais public (`share-proxy/worker.js`) le remet à sa place.
+      'x-auxine-csp': CSP,
     },
   });
 }

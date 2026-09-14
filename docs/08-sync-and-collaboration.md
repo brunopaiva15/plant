@@ -76,7 +76,8 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 ## Collaboration
 - `garden_members` : `owner` / `member` / `viewer`. Le domaine en fait `GardenRole` (`domain/sharing/garden_collaboration.dart`) : `canEdit`, `canManageMembers`.
 - **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : la feuille « Rejoindre un jardin » lui propose « Continuer avec Apple » sur place, et accepte l'invitation dans la foulée (`accept_invite`). Là où la connexion n'existe pas (Android, pour l'heure), la feuille le dit d'emblée. Même règle sur Mes jardins et Membres : un bouton « Se connecter » vers l'écran Compte quand la connexion existe, le texte seul sinon (`signInAvailable`, dans `account/application`).
-- Le lien envoyé est une adresse https (`…/functions/v1/share/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`auxine://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît.
+- Le lien envoyé est une adresse https (`…/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`auxine://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît — `PlantLinks.decodeLink` accepte n'importe quel domaine, seuls les deux derniers segments du chemin comptent.
+- Sa base est `SHARE_BASE_URL` (`--dart-define`), et elle ne peut pas être l'URL Supabase : la passerelle force `text/plain` sur le HTML servi depuis `*.supabase.co`, sa protection contre les pages d'hameçonnage hébergées sous son nom. La page arrive alors en code source, accents cassés faute de `charset`. D'où le relais de `share-proxy/` — § Mise en place, étape 3.
 - `my_gardens()` liste les jardins du compte avec le rôle, le nom du propriétaire, le nombre de membres et de plantes. `set_member_role`, `remove_member`, `leave_garden`, `revoke_invite` complètent la gestion — toutes `security definer`, propriétaire seul sauf `leave_garden`.
 - Renommer son jardin écrit la ligne locale, la met en file et la pousse sans attendre le débounce de trois secondes. La liste venant de `my_gardens()`, un nom encore en file prime sur celui que renvoie le serveur : la réponse distante, antérieure à l'envoi, réécrivait sinon la ligne locale et le renommage repartait à l'envers dans la synchro.
 - Chaque action et photo porte `user_id` ; la timeline affiche « · Laura » quand l'auteur n'est pas l'utilisateur courant (cache local `profiles`).
@@ -104,8 +105,17 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
    `--no-verify-jwt` est indispensable (et déjà inscrit dans `supabase/config.toml`) : la page s'ouvre depuis un navigateur, sans clé. `SUPABASE_URL` et `SUPABASE_ANON_KEY` sont fournis à la fonction par Supabase, rien à configurer. À refaire à chaque changement de `supabase/functions/share/index.ts`.
 
    Pour vérifier, `curl -i https://<ref>.supabase.co/functions/v1/share/join/ABCD1234` : la page HTML « Lien indisponible » signale une fonction déployée qui répond (le code n'existe pas), le JSON `NOT_FOUND` une fonction toujours absente.
-3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `auxine://login-callback`.
-4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
+3. Déployer le relais public `share-proxy/` : la fonction sert la page, ce Worker Cloudflare la sert sous un domaine qui n'est pas `*.supabase.co` et lui rend son `content-type` (et sa politique de sécurité, que la passerelle remplace sinon par un `sandbox` qui empêcherait « Ouvrir dans Auxine » d'ouvrir l'application). La page reste dans `index.ts` : le Worker ne fait que relayer.
+   ```bash
+   cd share-proxy
+   npx wrangler login
+   npx wrangler deploy --var SHARE_UPSTREAM:https://<ref>.supabase.co/functions/v1/share
+   ```
+   Wrangler annonce l'adresse obtenue, en `https://auxine-share.<compte>.workers.dev` — c'est elle qui devient `SHARE_BASE_URL` à l'étape 5. Un domaine à soi se branche ensuite sur le même Worker (Cloudflare › Workers › Custom Domains) sans rien réécrire, et ouvre la voie aux Universal Links / App Links, qui feraient ouvrir l'application sans passer par la page.
+
+   `curl -i https://auxine-share.<compte>.workers.dev/join/ABCD1234` doit répondre `content-type: text/html; charset=utf-8`. Tant qu'il répond `text/plain`, c'est l'adresse Supabase qui est interrogée, pas le relais.
+4. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `auxine://login-callback`.
+5. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=… --dart-define=SHARE_BASE_URL=https://auxine-share.<compte>.workers.dev`. Sur la CI (Codemagic), ces `--dart-define` vont dans les arguments de build : sans les deux premiers, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion ; sans le troisième, les liens partagés repartent vers Supabase et s'affichent en code source. Les liens déjà envoyés gardent l'ancienne adresse — ils sont écrits au moment du partage.
 
 ### Sign in with Apple
 Le bouton « Continuer avec Apple » n'apparaît qu'avec un backend configuré, sur
@@ -132,7 +142,7 @@ fois (commit c13bbcd), et la raison pour laquelle l'entitlement avait été reti
    le flux natif ; le *Secret Key* (JWT signé avec la clé `.p8`) ne sert qu'au
    flux OAuth web, que l'app n'utilise pas.
 3. **Codemagic** : passer `SUPABASE_URL` et `SUPABASE_ANON_KEY` en
-   `--dart-define` (§ Mise en place, étape 4).
+   `--dart-define` (§ Mise en place, étape 5).
 
 Sans l'étape 1, le build ne se signe pas ; sans la 2, Supabase refuse le jeton
 (« Unacceptable audience ») ; sans la 3, le bouton n'est pas dessiné.

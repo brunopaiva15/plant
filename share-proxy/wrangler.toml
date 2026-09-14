@@ -1,0 +1,12 @@
+# Worker Cloudflare qui sert les liens de partage et d'invitation.
+# `wrangler deploy` depuis ce dossier ; voir docs/08-sync-and-collaboration.md.
+name = "auxine-share"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Fonction Edge `share` du projet Supabase. <ref> est la partie avant
+# `.supabase.co` dans l'URL du projet. Pour ne pas l'inscrire dans le dépôt,
+# laisser le gabarit et passer la vraie valeur au déploiement :
+# `wrangler deploy --var SHARE_UPSTREAM:https://<ref>.supabase.co/functions/v1/share`
+SHARE_UPSTREAM = "https://<ref>.supabase.co/functions/v1/share"

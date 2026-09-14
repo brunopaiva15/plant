@@ -226,7 +226,7 @@ groupe :
 | `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
 | `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
-| `SHARE_BASE_URL` | base des liens de partage ; facultatif | l'URL Supabase |
+| `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
 
 Le `--dart-define` est indispensable : une variable d'environnement de CI
 n'entre pas toute seule dans le binaire Flutter.
