@@ -207,10 +207,15 @@ class _TaskSection extends StatelessWidget {
           sliver: SliverList.separated(
             itemCount: tasks.length,
             separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-            itemBuilder: (context, i) => CareTaskCard(
+            // La clé porte sur l'entrée : une carte déjà posée ne rejoue rien
+            // quand la liste se réordonne sous elle.
+            itemBuilder: (context, i) => Appear(
               key: ValueKey(tasks[i].schedule.id),
-              task: tasks[i],
-              onOpen: () => context.push(Routes.plant(tasks[i].plantId)),
+              rank: i,
+              child: CareTaskCard(
+                task: tasks[i],
+                onOpen: () => context.push(Routes.plant(tasks[i].plantId)),
+              ),
             ),
           ),
         ),

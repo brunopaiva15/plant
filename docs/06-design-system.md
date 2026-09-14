@@ -27,8 +27,12 @@ un héros de 300 px ont le même rendu.
   (10 % en sombre). C'est le grain du papier ; il est ignoré par le pointeur.
 
 `FloraCard`, `FloraButton`, `EmojiTile`, `QuickActionChip`, `FloraTabBar`,
-`SelectionBar` et le toast reposent tous sur `ClayBox` : un composant ne
-dessine jamais sa propre ombre.
+`FloraAvatar`, la pastille d'`EmptyState`, `SelectionBar` et le toast reposent
+tous sur `ClayBox` : un composant ne dessine jamais sa propre ombre.
+
+La pastille d'un état vide et celle d'un avatar sont des `blob` : leur forme
+est tirée de l'emoji ou du nom, donc stable d'un écran à l'autre et différente
+d'une personne à l'autre. Une pièce modelée, pas un rond.
 
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
@@ -165,6 +169,57 @@ fonte variable des titres n'écoute que `FontVariation`.
 ## Motion (`motion.dart`)
 - Durées : 150 (micro) · 250 (standard) · 400 (emphase). Courbes : `easeOutCubic`, `Curves.easeInOutCubicEmphasized` pour les sheets.
 - `reduced motion` : durées → 0, pas de translation, uniquement fondu.
+
+### Les ressorts
+Ce qui bouge **sous le doigt** ou se déplace d'un point à un autre suit une
+physique, pas une durée fixe. Une courbe met toujours le même temps d'où
+qu'elle parte ; un ressort reprend la vitesse en cours — c'est la différence
+entre une pièce qui répond et une pièce qui rejoue une animation. Le rapport
+d'amortissement, `damping / (2·√(mass · stiffness))`, décide du dépassement.
+
+| Ressort | Amortissement | Usage |
+|---|---|---|
+| `Springs.press` | 1,00 | l'aller sous le doigt : franc, sans tremblement |
+| `Springs.release` | 0,44 | le retour : dépasse d'un cheveu, comme une pâte qui se détend |
+| `Springs.glide` | 0,81 | ce qui se déplace : la bulle de la barre d'onglets |
+
+`AnimationController.springTo` les mène, sur un contrôleur **sans bornes** :
+le dépassement sort de l'intervalle 0–1, et c'est voulu. Avec *réduire les
+animations*, il saute à la valeur — un ressort qu'on raccourcit n'est plus un
+ressort.
+
+Le réglage se lit dans `didChangeDependencies`, jamais dans le rappel du
+geste : une pièce qui disparaît sous le doigt annule son appui *pendant*
+qu'elle se démonte, et un élément désactivé ne peut plus remonter à son
+`MediaQuery`.
+
+### L'appui (`Pressable`)
+Deux choses le distinguent d'un simple rétrécissement.
+
+- **La pièce s'aplatit plus qu'elle ne s'éloigne** : l'axe vertical cède
+  environ quatre fois plus que l'horizontal (0,968 contre 0,992 pour une
+  carte), comme une pâte qu'on écrase. Un rétrécissement égal dans les deux
+  axes, c'est du papier qui s'en va. L'écrasement reste sous le
+  rétrécissement lui-même : une carte pleine largeur ne déborde jamais de ses
+  marges sous le doigt.
+- **Le relief rentre avec elle** : `Pressable` diffuse sa pression aux
+  `ClayBox` qui sont dessous (`PressDepth`), et `paintClay` rapproche la pièce
+  de son ombre portée, pâlit son reflet et creuse son ombre intérieure. C'est
+  le même dessin sous le doigt, pas une autre pièce. Seul le peintre repasse ;
+  le contenu de la carte ne se reconstruit pas.
+
+### Une liste qui se pose (`Appear`)
+Une pièce monte de huit points en s'éclaircissant, une seule fois, avec trente
+millisecondes de retard par rang — plafonné à huit rangs, sans quoi une longue
+liste se déroulerait encore alors que le doigt défile déjà. Le retard vit dans
+la courbe et non dans un minuteur : un `Timer` en attente survivrait au widget.
+Avec une clé stable, une carte déjà posée ne rejoue rien quand la liste se
+réordonne. L'écran Aujourd'hui s'en sert pour ses soins du jour.
+
+`test/design_system/spring_motion_test.dart` verrouille les trois : les deux
+axes qui ne cèdent pas pareil, le retour qui passe au-dessus de la taille au
+repos, la bulle qui glisse, et le fait que rien de tout cela ne joue avec
+*réduire les animations*.
 ## Cibles tactiles
 44 × 44 points minimum, la règle des HIG. `Pressable` s'en charge pour tout le
 monde via `MinTapTarget` : le dessin garde sa taille — un rond de 32 reste un
@@ -179,7 +234,11 @@ pleine largeur se pose exactement comme avant).
 « Monstera, arrosée il y a trois jours » d'un seul tenant, au lieu d'un bouton
 sans nom suivi de deux fragments. Le libellé se compose des textes de la ligne
 plutôt que d'être recopié — sinon la synthèse vocale bégaie. `SectionHeader`
-se déclare `header: true`, ce qui rend le rotor « Titres » utilisable.
+se déclare `header: true`, ce qui rend le rotor « Titres » utilisable. Un
+onglet de `FloraTabBar` exclut la sémantique de son contenu : son libellé est
+déjà celui de l'onglet, et le texte dessiné en ajoutait un second — « Jardin,
+Jardin ». Ce qu'il annonce suit l'onglet choisi, pas la bulle, qui met le
+temps d'un ressort à y arriver.
 
 ## Haptics (`core/haptics.dart`)
 - `selection` : changement de chip / onglet · `light` : tap bouton · `drop` : arrosage enregistré · `success` : toute autre action enregistrée · `warning` : archivage, suppression.
@@ -195,6 +254,13 @@ le repli est le retour d'avant ; le natif n'est sollicité qu'une fois pour le
 savoir. `test/core/haptics_test.dart` vérifie l'aiguillage.
 
 ## La barre d'onglets et le retour au sommet (`app/tab_scroll.dart`)
+La bulle active est **une seule pièce qui se déplace** (`Springs.glide`), et
+non un fond qui s'allume sous chaque onglet à son tour : c'est ce qui relie le
+départ et l'arrivée. Les libellés virent au passage — leur couleur suit la
+part de l'onglet que la bulle recouvre — au lieu de basculer à l'arrivée, et
+l'icône qui l'accueille se pose au ressort.
+
+
 Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
 Chaque branche du shell pose son propre `ScrollController` en
 `PrimaryScrollController` *dans* sa route (`TabScrollScope`) : il passe
@@ -229,7 +295,7 @@ d'exclamation, pas de titre en forme de question, et une liste de tournures
 interdites par langue. Une tournure à bannir de plus s'ajoute là.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
 Sous le grand titre, le jour et ce qu'il fait : la date, puis une rangée de
