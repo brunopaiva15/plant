@@ -47,20 +47,22 @@ class PlantImage extends ConsumerWidget {
         child: Text(placeholderEmoji, style: const TextStyle(fontSize: 40)),
       );
     } else {
-      final storage = ref.watch(photoStorageProvider);
-      child = FutureBuilder<String>(
-        future: storage.absolutePath(relativePath!),
-        builder: (context, snap) {
-          if (!snap.hasData) return ColoredBox(color: c.surfaceMuted);
-          return Image.file(
-            File(snap.data!),
-            fit: fit,
-            cacheWidth: cacheWidth,
-            gaplessPlayback: true,
-            errorBuilder: (_, _, _) => ColoredBox(color: c.surfaceMuted),
-          );
-        },
-      );
+      // Le dossier des photos se résout une fois pour toutes, et la vignette
+      // compose son chemin sans attendre. Une promesse née ici est refaite à
+      // chaque construction : au moindre remontage — la carte de la
+      // collection en connaît un, quand son onglet redevient visible —,
+      // l'image repart de son aplat d'attente.
+      final root = ref.watch(photosDirectoryProvider).valueOrNull;
+      final path = root == null ? null : ref.watch(photoStorageProvider).absolutePathNow(relativePath!);
+      child = path == null
+          ? ColoredBox(color: c.surfaceMuted)
+          : Image.file(
+              File(path),
+              fit: fit,
+              cacheWidth: cacheWidth,
+              gaplessPlayback: true,
+              errorBuilder: (_, _, _) => ColoredBox(color: c.surfaceMuted),
+            );
     }
     if (heroTag != null) child = PlantHero(tag: heroTag!, radius: heroRadius, child: child);
     return child;

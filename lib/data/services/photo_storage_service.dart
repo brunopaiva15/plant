@@ -50,6 +50,18 @@ class PhotoStorageService {
   /// Chemin absolu d'un chemin relatif stocké en base.
   Future<String> absolutePath(String relative) async => p.join((await _photosDir()).path, relative);
 
+  /// Le dossier des photos, pour qui veut le résoudre une fois pour toutes
+  /// et composer ensuite ses chemins sans attendre.
+  Future<Directory> photosDirectory() => _photosDir();
+
+  /// Chemin absolu tout de suite, ou `null` tant que le dossier n'est pas
+  /// connu. Une vignette qui se reconstruit ne peut pas attendre une
+  /// promesse de plus à chaque image : elle repartirait de son aplat gris.
+  String? absolutePathNow(String relative) {
+    final root = _root;
+    return root == null ? null : p.join(root.path, relative);
+  }
+
   /// Ouvre le picker natif ; retourne `null` si l'utilisateur annule.
   Future<StoredPhoto?> pick(PhotoSource source) async {
     final file = await _picker.pickImage(

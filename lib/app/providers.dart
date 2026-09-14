@@ -127,6 +127,16 @@ final activeGardenProvider = NotifierProvider<ActiveGarden, String>(ActiveGarden
 final gardenIdProvider = Provider<String>((ref) => ref.watch(activeGardenProvider));
 
 final photoStorageProvider = Provider<PhotoStorageService>((ref) => PhotoStorageService());
+
+/// Le dossier des photos, résolu une fois pour la vie de l'application.
+///
+/// Les vignettes en ont besoin à chaque construction. Le demander par une
+/// promesse née dans `build` la recrée à chaque fois, et l'image repart de
+/// son aplat d'attente : sur une grille qui se reconstruit souvent, elle
+/// n'arrive jamais. Ici la valeur est gardée, et la construction suivante
+/// la trouve déjà là. Le type est le chemin et non le dossier : `dart:io`
+/// n'a rien à faire dans ce fichier.
+final photosDirectoryProvider = FutureProvider<String>((ref) async => (await ref.watch(photoStorageProvider).photosDirectory()).path);
 final photoMaintenanceProvider = Provider<PhotoMaintenance>((ref) => PhotoMaintenance(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
 final analyticsProvider = Provider<Analytics>((ref) => const NoopAnalytics());
 final crashReporterProvider = Provider<CrashReporter>((ref) => const NoopCrashReporter());
