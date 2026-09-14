@@ -212,17 +212,25 @@ Deux choses le distinguent d'un simple rétrécissement.
   le même dessin sous le doigt, pas une autre pièce. Seul le peintre repasse ;
   le contenu de la carte ne se reconstruit pas.
 
-### Une carte qui s'en va (`features/today/`)
-Un soin enregistré repousse l'échéance à la seconde même. La carte changeait
-donc de section — de « En retard » à « À venir » — avant d'avoir rien montré :
-elle disparaissait d'un coup sous le doigt pour réapparaître ailleurs.
+### Une pièce qui s'en va (`features/today/`)
+Un soin enregistré repousse l'échéance à la seconde même. L'échéance décide de
+la section **et du rang** : la pièce changeait donc de place avant d'avoir rien
+montré. Une carte passait de « En retard » à « À venir » ; une tuile de la
+grille filait en fin de liste pendant qu'une autre prenait sa case. Dans les
+deux cas, de l'écran, cela ressemblait à une disparition instantanée.
 
-Désormais la version d'avant prime sur celle de la base tant que la tâche
-séjourne dans `completedTasksProvider` : la carte tient sa place une seconde en
-« Arrosée », le temps qu'on puisse annuler, puis part vers la droite en
-s'effaçant **pendant que la place qu'elle occupait se referme**. Sans cette
-fermeture, la carte s'en allait bien en douceur mais les suivantes sautaient
-d'un cran à l'instant où la liste se reconstruisait sans elle.
+Tant que la tâche séjourne dans `completedTasksProvider`, c'est donc **la
+version d'avant qui prime** sur celle de la base, et l'écran se range sur
+l'échéance qu'il affiche. Le tri est *stable* : beaucoup de soins tombent le
+même jour, et un ordre qui se rejoue à chaque image serait pire que le saut
+qu'on répare.
+
+La pièce tient alors sa place une seconde en « Arrosée », le temps qu'on
+puisse annuler, puis s'en va — une carte vers la droite en s'effaçant, une
+tuile en se rétractant sur place, sans pousser ses voisines. La carte referme
+**en même temps la place qu'elle occupait** ; sans cela elle s'en allait bien
+en douceur mais les suivantes sautaient d'un cran à l'instant où la liste se
+reconstruisait sans elle.
 
 ### Une liste qui se pose (`Appear`)
 Une pièce monte de huit points en s'éclaircissant, une seule fois, avec trente
