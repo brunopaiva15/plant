@@ -109,8 +109,9 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
    ```bash
    cd share-proxy
    npx wrangler login
-   npx wrangler deploy --var SHARE_UPSTREAM:https://<ref>.supabase.co/functions/v1/share
+   npx wrangler deploy
    ```
+   La fonction relayée est `SHARE_UPSTREAM`, dans `wrangler.toml` — à changer là, pas en argument : un `--var CLE:valeur` se fait couper en deux par PowerShell, qui prend la valeur pour une commande.
    Wrangler annonce l'adresse obtenue, en `https://auxine-share.<compte>.workers.dev` — c'est elle qui devient `SHARE_BASE_URL` à l'étape 5. Un domaine à soi se branche ensuite sur le même Worker (Cloudflare › Workers › Custom Domains) sans rien réécrire, et ouvre la voie aux Universal Links / App Links, qui feraient ouvrir l'application sans passer par la page.
 
    `curl -i https://auxine-share.<compte>.workers.dev/join/ABCD1234` doit répondre `content-type: text/html; charset=utf-8`. Tant qu'il répond `text/plain`, c'est l'adresse Supabase qui est interrogée, pas le relais.
