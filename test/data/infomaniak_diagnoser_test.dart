@@ -8,6 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+/// Le service annonce son JSON en UTF-8 ; sans cet en-tête, `http.Response`
+/// encode le corps en latin1 et refuse le moindre « … ».
+http.Response _reponse(String corps, int code) =>
+    http.Response(corps, code, headers: const {'content-type': 'application/json; charset=utf-8'});
+
 String _completion(Object content, {String finish = 'stop'}) => jsonEncode({
       'choices': [
         {
@@ -227,7 +232,7 @@ void main() {
       late http.Request captured;
       final client = MockClient((req) async {
         captured = req;
-        return http.Response(_completion(_ok), 200);
+        return _reponse(_completion(_ok), 200);
       });
       final tmp = await _tmpImage();
       final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', plantName: 'Monstera', symptoms: 'taches brunes');
@@ -279,7 +284,7 @@ void main() {
       late http.Request captured;
       final client = MockClient((req) async {
         captured = req;
-        return http.Response(_completion(_ok), 200);
+        return _reponse(_completion(_ok), 200);
       });
       final tmp = await _tmpImage();
       await _diagnoser(client).diagnose(
@@ -306,7 +311,7 @@ void main() {
       late http.Request captured;
       final client = MockClient((req) async {
         captured = req;
-        return http.Response(_completion(_ok), 200);
+        return _reponse(_completion(_ok), 200);
       });
       final tmp = await _tmpImage();
       await _diagnoser(client).diagnose(images: [tmp], language: 'fr', species: 'Inconnue quelconque');
@@ -319,7 +324,7 @@ void main() {
       late http.Request captured;
       final client = MockClient((req) async {
         captured = req;
-        return http.Response(_completion(_ok), 200);
+        return _reponse(_completion(_ok), 200);
       });
       final tmp = await _tmpImage();
       await _diagnoser(client).diagnose(
@@ -333,7 +338,7 @@ void main() {
     });
 
     test('un numéro qu\'on n\'a pas soumis est écarté', () async {
-      final client = MockClient((_) async => http.Response(
+      final client = MockClient((_) async => _reponse(
             _completion(jsonEncode({
               'summary': '…',
               'causes': [
@@ -354,7 +359,7 @@ void main() {
       final client = MockClient((req) async {
         final body = jsonDecode(req.body) as Map<String, dynamic>;
         bodies.add(body);
-        return body.containsKey('response_format') ? http.Response('{"error":"response_format"}', 400) : http.Response(_completion(_ok), 200);
+        return body.containsKey('response_format') ? _reponse('{"error":"response_format"}', 400) : _reponse(_completion(_ok), 200);
       });
       final tmp = await _tmpImage();
       final result = await _diagnoser(client).diagnose(images: [tmp], language: 'de');
@@ -366,7 +371,7 @@ void main() {
 
     test('traduit les codes HTTP en erreurs parlantes', () async {
       for (final (code, expected) in [(401, 'unauthorized'), (403, 'unauthorized'), (429, 'quota'), (500, 'http 500')]) {
-        final client = MockClient((_) async => http.Response('', code));
+        final client = MockClient((_) async => _reponse('', code));
         final tmp = await _tmpImage();
         await expectLater(
           _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
@@ -390,7 +395,7 @@ void main() {
     MockClient service(String diagnostic, String rattachement, List<String> corps) => MockClient((req) async {
           corps.add(req.body);
           final avecImage = req.body.contains('image_url');
-          return http.Response(avecImage ? diagnostic : rattachement, 200);
+          return _reponse(avecImage ? diagnostic : rattachement, 200);
         });
 
     test('rattache une piste que la première passe avait laissée sans numéro', () async {
@@ -454,11 +459,11 @@ void main() {
       final client = MockClient((req) async {
         appels++;
         if (req.body.contains('image_url')) {
-          return http.Response(premierJet([
+          return _reponse(premierJet([
             {'title': 'Blessure mécanique', 'likelihood': 'possible'},
           ]), 200);
         }
-        return http.Response('', 500);
+        return _reponse('', 500);
       });
       final tmp = await _tmpImage();
       final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
@@ -506,7 +511,7 @@ void main() {
     /// La demande de repli se reconnaît à l'absence d'image.
     MockClient service(String premier, String repli, List<String> corps) => MockClient((req) async {
           corps.add(req.body);
-          return http.Response(req.body.contains('image_url') ? premier : repli, 200);
+          return _reponse(req.body.contains('image_url') ? premier : repli, 200);
         });
 
     final sansPiste = _completion(jsonEncode({'summary': 'Feuillage vert, sans tache visible.', 'causes': []}));
@@ -549,7 +554,7 @@ void main() {
       final corps = <String>[];
       final client = MockClient((req) async {
         corps.add(req.body);
-        return req.body.contains('image_url') ? http.Response(sansPiste, 200) : http.Response('', 500);
+        return req.body.contains('image_url') ? _reponse(sansPiste, 200) : _reponse('', 500);
       });
       final tmp = await _tmpImage();
       final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', symptoms: 'feuille sèche tombante');
