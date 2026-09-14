@@ -4,9 +4,18 @@ Ce que l'on saisit dans App Store Connect, par langue. Les visuels sont
 décrits dans [README.md](README.md) ; ici, seuls les textes.
 
 Limites d'Apple, respectées ci-dessous : **titre 30 caractères**, **sous-titre
-30**, **mots-clés 100 au total, virgules comprises**. Les mots-clés n'ont pas
-besoin de reprendre le titre ni le sous-titre — Apple les indexe déjà — ni
-d'espace après les virgules, qui coûterait un caractère pour rien.
+30**, **mots-clés 100 au total, virgules comprises**, **description 4 000**.
+Les mots-clés n'ont pas besoin de reprendre le titre ni le sous-titre — Apple
+les indexe déjà — ni d'espace après les virgules, qui coûterait un caractère
+pour rien.
+
+Les descriptions suivent le patron des concurrents plutôt que celui des
+autres apps de la maison : une phrase qui dit ce que l'app fait, puis des
+blocs nommés, et rien de juridique en tête. PictureThis ouvre sur son taux
+de reconnaissance, Greg sur « zero-guesswork », Blossom sur « pocket plant
+identifier » ; tous gardent les conditions d'abonnement pour la fin. Auxine
+n'en a pas, et le dit à la place : pas d'abonnement, pas de compte, pas de
+publicité, et la reconnaissance qui tourne sur l'appareil.
 
 ## Français (langue principale)
 
@@ -17,76 +26,52 @@ d'espace après les virgules, qui coûterait un caractère pour rien.
 | Mots-clés | `rappel,arrosage,fleurs,jardinage,entretien,arroser,botanique,malade,calendrier,rempotage,photo,pot` | 98 / 100 |
 
 
-### Description (3993 / 4000 caractères)
+### Description (3205 / 4000 caractères)
 
 ```
-CLAUSE DE NON-RESPONSABILITÉ
+Auxine est le carnet de vos plantes : elle reconnaît l'espèce sur une photo, sans réseau, tient leur journal et vous dit chaque matin lesquelles ont soif. Gratuite, sans abonnement, sans compte et sans publicité.
 
-Auxine est une application éditée par Vergasta Digital, privée et indépendante. Elle ne représente pas, n'est pas affiliée à et n'est pas commanditée par un jardin botanique, une université, une pépinière ou un fabricant de produits horticoles. Les fiches d'entretien, les identifications et les diagnostics sont des aides à la décision : ils ne remplacent ni l'observation de vos plantes ni l'avis d'un professionnel. Certaines plantes sont toxiques pour l'humain et pour l'animal ; vérifiez auprès d'une source fiable avant toute manipulation ou consommation.
+RECONNAÎTRE UNE PLANTE, MÊME HORS LIGNE
 
-SOURCE DES INFORMATIONS
+Photographiez-la : Iris, le modèle de reconnaissance embarqué dans l'application, propose l'espèce parmi 1 444, sur l'appareil. Dans l'avion, à la cave, au fond du jardin — rien n'a besoin de partir sur Internet. Il montre un cran de confiance et plusieurs pistes plutôt qu'une réponse unique, et deux photos de la même plante valent bien mieux qu'une.
 
-Noms scientifiques et noms courants : catalogue intégré, rapproché de GBIF (Global Biodiversity Information Facility) et de Wikidata.
-Identification : Iris, le modèle de reconnaissance livré dans l'application, entraîné sur des images sous CC0, CC BY ou CC BY-SA. Pl@ntNet n'est consulté qu'en cas d'hésitation, et seulement si vous l'autorisez.
-Troubles, ravageurs et maladies : base de 200 entrées livrée avec l'application, dont les hôtes sont rapprochés de la taxonomie GBIF.
-Fiches d'entretien : profils par espèce, genre, famille ou catégorie d'usage.
-Météo : Open-Meteo, pour la ville que vous choisissez.
+COMPRENDRE CE QUI NE VA PAS
 
-Vous ne savez plus laquelle a soif, ni depuis quand ? Vous avez oublié le nom de celle qu'on vous a offerte, et ses feuilles brunissent sans raison visible ? Auxine est le carnet de vos plantes : ce qu'elles sont, ce qu'elles demandent, et ce que vous leur avez déjà fait.
+Des feuilles qui brunissent, une toile sous les feuilles, une terre qui reste trempée ? Photographiez le problème. L'application le rapproche d'une base de plus de 200 troubles, ravageurs et maladies, dit ce qu'elle voit, classe les pistes par vraisemblance et propose quoi faire — sans jamais trancher à votre place.
 
-COMMENT ÇA MARCHE
+UNE FICHE D'ENTRETIEN PAR ESPÈCE
 
-1. Photographiez votre plante : Iris propose l'espèce, sur l'appareil, même sans réseau.
-2. L'application ouvre sa fiche d'entretien et propose un rythme d'arrosage, de lumière et d'engrais.
-3. Chaque matin, l'écran Aujourd'hui montre ce qui est dû et ce qui vient.
-4. Un geste pour cocher un soin, un autre pour ajouter une photo au journal.
+Arrosage l'été et l'hiver, lumière, engrais, rempotage, humidité, température, bouturage, ennuis fréquents, et la toxicité pour les animaux et les enfants. Quand l'espèce exacte manque, la fiche du genre, de la famille ou du type de plante prend le relais.
 
-FONCTIONNALITÉS
+L'ÉTAT DE TOUTES VOS PLANTES EN UN COUP D'ŒIL
 
-- Identification par photo sur l'appareil, sans réseau : 1 444 espèces
-- Diagnostic sur photo : plus de 200 troubles, ravageurs et maladies
-- Fiche d'entretien par espèce : arrosage, lumière, engrais, rempotage, humidité, température, bouturage
-- Écran du matin : les soins dus, ceux qui viennent, la météo de votre ville
-- Collection en grille ou en liste, avec recherche, filtres et tri
-- Une page par plante : photos, journal, prochains soins, mesures, avant / après
-- Jardin : lieux, calendrier, tâches, inventaire
-- Guide de bouturage
-- Rappels de soins
-- Sauvegarde et restauration, pour changer de téléphone
-- Partage d'un jardin à plusieurs, si vous le souhaitez
-- Français, anglais, allemand, italien
+L'écran du matin montre ce qui est dû aujourd'hui et ce qui vient, avec la météo de votre ville. Un geste pour cocher un arrosage. Le reste du temps il dit « tout est en ordre », et c'est tout ce qu'on lui demande.
+
+UN JOURNAL QUI SE REMPLIT TOUT SEUL
+
+Chaque soin, chaque photo, chaque mesure se range dans la page de la plante. Un avant / après compare deux photos à des mois d'écart ; la courbe de hauteur montre ce que l'œil ne voit pas d'un jour sur l'autre.
+
+TOUT LE JARDIN, PAS SEULEMENT LE SALON
+
+Des lieux — le balcon, la cuisine, la serre —, un calendrier des soins à venir, des tâches, et un inventaire des pots, terreaux et engrais.
 
 SUR IPHONE ET IPAD
 
-- Widgets d'écran d'accueil et d'écran verrouillé avec les soins du jour
-- Appui long sur l'icône pour ajouter une plante ou scanner une étiquette
-- Un capteur de température ou d'humidité d'Apple Maison peut affiner les conseils
-- Dynamic Type, Texte en gras et Augmenter le contraste suivis
+Widgets d'écran d'accueil et d'écran verrouillé avec les soins du jour. Appui long sur l'icône pour ajouter une plante ou scanner une étiquette. Un capteur de température ou d'humidité d'Apple Maison peut affiner les conseils. Dynamic Type, Texte en gras et Augmenter le contraste suivis.
 
-PARAMÈTRES PERSONNALISABLES
+GRATUITE, VRAIMENT
 
-- Langue et apparence
-- Notifications et heure des rappels
-- Unités métriques ou impériales
-- Ville pour la météo
-- Identification et diagnostic, activables ou non
+Toutes les fonctions sont ouvertes : pas d'abonnement, pas de limite de plantes ni de photos, pas de publicité, pas de compte à créer. Un achat unique permet de soutenir le travail ; il ne déverrouille rien.
 
-REMARQUE IMPORTANTE
+VOS PLANTES RESTENT CHEZ VOUS
 
-Une identification ou un diagnostic est une proposition, jamais une certitude : l'application montre un cran de confiance et plusieurs pistes plutôt qu'une réponse unique. Regardez la plante et recoupez avant d'agir, surtout avant un traitement.
+Vos plantes, vos photos et votre journal vivent sur l'appareil. La reconnaissance tourne sur l'appareil, et le recours en ligne se coupe dans les réglages. Seul le diagnostic sur photo demande une connexion : l'image part chez Infomaniak, hébergeur suisse, le temps de l'analyse. Aucun pistage. Un compte ne sert qu'à partager un jardin à plusieurs.
 
-CONFIDENTIALITÉ
+D'OÙ VIENNENT LES DONNÉES
 
-- Aucun compte requis
-- Vos plantes, vos photos et votre journal restent sur l'appareil
-- L'identification tourne sur l'appareil ; le recours à Pl@ntNet se coupe
-- Le diagnostic sur photo demande une connexion : la photo part chez Infomaniak, hébergeur suisse, le temps de l'analyse
-- Aucune publicité, aucun pistage
-- Un compte n'est nécessaire que pour partager un jardin
+Noms et taxonomie rapprochés de GBIF et de Wikidata. Iris est entraîné sur des images sous CC0, CC BY ou CC BY-SA, et consulte Pl@ntNet en cas d'hésitation, si vous l'y autorisez. Météo : Open-Meteo.
 
-GRATUITE
-
-Toutes les fonctions sont ouvertes, sans limite de plantes ni de photos. Un achat unique soutient le développement ; il ne déverrouille rien.
+Français, anglais, allemand, italien.
 
 Téléchargez Auxine et sachez, chaque matin, ce dont vos plantes ont besoin.
 ```
@@ -100,76 +85,52 @@ Téléchargez Auxine et sachez, chaque matin, ce dont vos plantes ont besoin.
 | Mots-clés | `tagebuch,erinnerung,garten,blumen,umpflanzen,dünger,zimmerpflanze,wachstum,kalender,botanik,tracker` | 99 / 100 |
 
 
-### Description (3973 / 4000 caractères)
+### Description (3161 / 4000 caractères)
 
 ```
-HAFTUNGSAUSSCHLUSS
+Auxine ist das Tagebuch Ihrer Pflanzen: Es erkennt die Art auf einem Foto, ohne Netz, führt ihre Geschichte und sagt Ihnen jeden Morgen, welche Durst hat. Kostenlos, ohne Abo, ohne Konto, ohne Werbung.
 
-Auxine ist eine von Vergasta Digital herausgegebene, private und unabhängige App. Sie vertritt keinen botanischen Garten, keine Universität, keine Gärtnerei und keinen Hersteller von Gartenprodukten, ist mit ihnen nicht verbunden und wird von ihnen nicht unterstützt. Pflegeblätter, Erkennungen und Diagnosen sind Entscheidungshilfen: Sie ersetzen weder den Blick auf Ihre Pflanzen noch den Rat einer Fachperson. Manche Pflanzen sind für Menschen und Tiere giftig; prüfen Sie eine verlässliche Quelle, bevor Sie eine Pflanze anfassen oder verzehren.
+EINE PFLANZE ERKENNEN, AUCH OHNE NETZ
 
-QUELLEN DER INFORMATIONEN
+Fotografieren Sie sie: Iris, das in der App mitgelieferte Erkennungsmodell, schlägt die Art aus 1 444 vor, auf dem Gerät. Im Flugzeug, im Keller, hinten im Garten — nichts muss ins Internet. Es zeigt eine Sicherheitsstufe und mehrere Spuren statt einer einzigen Antwort, und zwei Fotos derselben Pflanze sind weit mehr wert als eines.
 
-Wissenschaftliche und gebräuchliche Namen: mitgelieferter Katalog, abgeglichen mit GBIF (Global Biodiversity Information Facility) und Wikidata.
-Erkennung: Iris, das in der App mitgelieferte Erkennungsmodell, trainiert auf Bildern unter CC0, CC BY oder CC BY-SA. Pl@ntNet wird nur bei Zweifeln befragt, und nur wenn Sie es erlauben.
-Störungen, Schädlinge und Krankheiten: eine mitgelieferte Basis von 200 Einträgen, deren Wirtspflanzen mit der GBIF-Taxonomie abgeglichen sind.
-Pflegeblätter: Profile nach Art, Gattung, Familie oder Nutzungsgruppe.
-Wetter: Open-Meteo, für den von Ihnen gewählten Ort.
+VERSTEHEN, WAS NICHT STIMMT
 
-Sie wissen nicht mehr, welche Pflanze Durst hat und seit wann? Sie haben den Namen der geschenkten Pflanze vergessen, und ihre Blätter werden braun, ohne dass Sie wüssten warum? Auxine ist das Tagebuch Ihrer Pflanzen: was sie sind, was sie brauchen und was Sie bereits für sie getan haben.
+Braune Blattränder, Gespinst unter den Blättern, Erde, die nass bleibt? Fotografieren Sie das Problem. Die App gleicht es mit einer Basis von über 200 Störungen, Schädlingen und Krankheiten ab, sagt, was sie sieht, ordnet die Spuren nach Wahrscheinlichkeit und schlägt vor, was zu tun ist — ohne je an Ihrer Stelle zu entscheiden.
 
-SO FUNKTIONIERT ES
+EIN PFLEGEBLATT FÜR JEDE ART
 
-1. Fotografieren Sie Ihre Pflanze: Iris schlägt die Art vor, auf dem Gerät, auch ohne Netz.
-2. Die App öffnet ihr Pflegeblatt und schlägt einen Rhythmus für Gießen, Licht und Dünger vor.
-3. Jeden Morgen zeigt der Heute-Bildschirm, was ansteht und was folgt.
-4. Ein Tippen hakt eine Pflege ab, ein weiteres legt ein Foto ins Tagebuch.
+Gießen im Sommer und im Winter, Licht, Dünger, Umtopfen, Luftfeuchte, Temperatur, Vermehrung, die üblichen Schwierigkeiten der Art und die Giftigkeit für Tiere und Kinder. Fehlt die genaue Art, übernimmt das Blatt der Gattung, der Familie oder der Pflanzengruppe.
 
-FUNKTIONEN
+ALLE PFLANZEN AUF EINEN BLICK
 
-- Erkennung per Foto auf dem Gerät, ohne Netz: 1 444 Arten
-- Diagnose nach Foto: über 200 Störungen, Schädlinge und Krankheiten
-- Ein Pflegeblatt je Art: Gießen, Licht, Dünger, Umtopfen, Luftfeuchte, Temperatur, Vermehrung
-- Der Morgen auf einen Blick: was ansteht, was folgt, das Wetter bei Ihnen
-- Sammlung als Raster oder Liste, mit Suche, Filtern und Sortierung
-- Eine Seite je Pflanze: Fotos, Tagebuch, nächste Pflege, Messungen, Vorher / Nachher
-- Garten: Orte, Kalender, Aufgaben, Bestand
-- Anleitung zum Vermehren
-- Pflegeerinnerungen
-- Sicherung und Wiederherstellung, für den Wechsel des Telefons
-- Einen Garten zu mehreren teilen, wenn Sie möchten
-- Französisch, Englisch, Deutsch, Italienisch
+Der Morgen-Bildschirm zeigt, was heute ansteht und was folgt, mit dem Wetter bei Ihnen. Ein Tippen hakt ein Gießen ab. Sonst sagt er, dass alles in Ordnung ist — mehr will man von ihm nicht.
+
+EIN TAGEBUCH, DAS SICH VON SELBST FÜLLT
+
+Jede Pflege, jedes Foto, jede Messung landet auf der Seite der Pflanze. Ein Vorher / Nachher stellt zwei Fotos aus verschiedenen Monaten nebeneinander; die Höhenkurve zeigt, was das Auge von einem Tag auf den anderen nicht sieht.
+
+DER GANZE GARTEN, NICHT NUR DAS WOHNZIMMER
+
+Orte — der Balkon, die Küche, das Gewächshaus —, ein Kalender der nächsten Pflege, Aufgaben und ein Bestand an Töpfen, Erden und Düngern.
 
 AUF IPHONE UND IPAD
 
-- Widgets für Home- und Sperrbildschirm mit der Pflege des Tages
-- Langes Drücken auf das Symbol, um eine Pflanze anzulegen oder ein Etikett zu scannen
-- Ein Temperatur- oder Feuchtesensor aus Apple Home kann die Hinweise schärfen
-- Dynamic Type, Fetter Text und Kontrast erhöhen werden befolgt
+Widgets für Home- und Sperrbildschirm mit der Pflege des Tages. Langes Drücken auf das Symbol, um eine Pflanze anzulegen oder ein Etikett zu scannen. Ein Temperatur- oder Feuchtesensor aus Apple Home kann die Hinweise schärfen. Dynamic Type, Fetter Text und Kontrast erhöhen werden befolgt.
 
-EINSTELLUNGEN
+WIRKLICH KOSTENLOS
 
-- Sprache und Erscheinungsbild
-- Mitteilungen und Uhrzeit der Erinnerungen
-- Metrische oder imperiale Einheiten
-- Ort für das Wetter
-- Erkennung und Diagnose, ein- oder ausschaltbar
+Alle Funktionen sind offen: kein Abo, keine Grenze an Pflanzen oder Fotos, keine Werbung, kein Konto anzulegen. Ein einmaliger Kauf unterstützt die Arbeit; er schaltet nichts frei.
 
-WICHTIGER HINWEIS
+IHRE PFLANZEN BLEIBEN BEI IHNEN
 
-Eine Erkennung oder eine Diagnose ist ein Vorschlag, nie eine Gewissheit: Die App zeigt eine Sicherheitsstufe und mehrere Spuren statt einer einzigen Antwort. Sehen Sie die Pflanze an und prüfen Sie gegen, bevor Sie handeln — besonders vor einer Behandlung.
+Ihre Pflanzen, Ihre Fotos und Ihr Tagebuch leben auf dem Gerät. Die Erkennung läuft auf dem Gerät, der Rückgriff aufs Netz lässt sich in den Einstellungen abschalten. Nur die Diagnose nach Foto braucht eine Verbindung: Das Bild geht für die Dauer der Analyse zu Infomaniak, einem Schweizer Anbieter. Kein Tracking. Ein Konto dient allein dem Teilen eines Gartens.
 
-DATENSCHUTZ
+WOHER DIE DATEN KOMMEN
 
-- Kein Konto nötig
-- Ihre Pflanzen, Ihre Fotos und Ihr Tagebuch bleiben auf dem Gerät
-- Die Erkennung läuft auf dem Gerät; der Rückgriff auf Pl@ntNet lässt sich abschalten
-- Die Diagnose nach Foto braucht eine Verbindung: Das Foto geht für die Dauer der Analyse zu Infomaniak, einem Schweizer Anbieter
-- Keine Werbung, kein Tracking
-- Ein Konto ist nur zum Teilen eines Gartens nötig
+Namen und Taxonomie abgeglichen mit GBIF und Wikidata. Iris ist auf Bildern unter CC0, CC BY oder CC BY-SA trainiert und fragt bei Zweifeln Pl@ntNet, wenn Sie es erlauben. Wetter: Open-Meteo.
 
-KOSTENLOS
-
-Alle Funktionen sind offen, ohne Grenze an Pflanzen oder Fotos. Ein einmaliger Kauf unterstützt die Arbeit; er schaltet nichts frei.
+Französisch, Englisch, Deutsch, Italienisch.
 
 Laden Sie Auxine und wissen Sie jeden Morgen, was Ihre Pflanzen brauchen.
 ```
@@ -183,76 +144,52 @@ Laden Sie Auxine und wissen Sie jeden Morgen, was Ihre Pflanzen brauchen.
 | Mots-clés | `diary,reminder,garden,flowers,repotting,fertilizer,indoor,houseplant,growth,tracker,calendar,botany` | 99 / 100 |
 
 
-### Description (3581 / 4000 caractères)
+### Description (2974 / 4000 caractères)
 
 ```
-DISCLAIMER
+Auxine is the journal of your plants: it names the species from a photo without a network, keeps their history, and tells you every morning which ones are thirsty. Free, no subscription, no account, no ads.
 
-Auxine is published by Vergasta Digital and is a private, independent application. It does not represent, is not affiliated with and is not sponsored by any botanical garden, university, nursery or horticultural manufacturer. Care guides, identifications and diagnoses are decision aids: they replace neither looking at your plants nor the advice of a professional. Some plants are toxic to people and to animals; check a reliable source before handling or eating any of them.
+NAME A PLANT, EVEN OFFLINE
 
-WHERE THE INFORMATION COMES FROM
+Photograph it: Iris, the recognition model shipped inside the app, suggests the species out of 1,444, on the device. On a plane, in a cellar, at the far end of the garden — nothing needs to leave for the internet. It shows a confidence level and several leads rather than a single answer, and two photos of the same plant are worth far more than one.
 
-Scientific and common names: a built-in catalogue matched against GBIF (Global Biodiversity Information Facility) and Wikidata.
-Identification: Iris, the recognition model shipped inside the app, trained on images under CC0, CC BY or CC BY-SA. Pl@ntNet is consulted only when Iris hesitates, and only if you allow it.
-Disorders, pests and diseases: a base of 200 entries shipped with the app, whose hosts are matched against GBIF taxonomy.
-Care guides: profiles set by species, genus, family or use category.
-Weather: Open-Meteo, for the town you choose.
+WORK OUT WHAT IS WRONG
 
-Can't remember which one needs water, or when you last watered it? Forgotten the name of the one you were given, with leaves browning for no reason you can see? Auxine is the journal of your plants: what they are, what they ask for, and what you have already done for them.
+Browning leaves, webbing under the foliage, soil that stays soaked? Photograph the problem. The app matches it against a base of more than 200 disorders, pests and diseases, says what it sees, ranks the leads by likelihood and suggests what to do — without ever deciding for you.
 
-HOW IT WORKS
+A CARE GUIDE FOR EVERY SPECIES
 
-1. Photograph your plant: Iris suggests the species, on the device, even offline.
-2. The app opens its care guide and proposes a rhythm for watering, light and feeding.
-3. Every morning, the Today screen shows what is due and what is coming.
-4. One tap to tick off a care task, another to add a photo to the journal.
+Watering in summer and in winter, light, feeding, repotting, humidity, temperature, propagation, the usual troubles of the species, and toxicity for pets and children. When the exact species is missing, the guide for the genus, the family or the kind of plant takes over.
 
-FEATURES
+EVERY PLANT AT A GLANCE
 
-- Photo identification on the device, offline: 1,444 species
-- Diagnosis from a photo: 200+ disorders, pests and diseases
-- A care guide per species: watering, light, feeding, repotting, humidity, temperature, propagation
-- Morning screen: what is due, what is coming, the weather where you live
-- Collection as a grid or a list, with search, filters and sorting
-- One page per plant: photos, journal, upcoming care, measurements, before / after
-- Garden: rooms, calendar, tasks, inventory
-- Propagation guide
-- Care reminders
-- Backup and restore, for moving to a new phone
-- Share a garden with others, if you want to
-- French, English, German, Italian
+The morning screen shows what is due today and what is coming, with the weather where you live. One tap ticks off a watering. The rest of the time it says everything is in order, which is all you want from it.
+
+A JOURNAL THAT FILLS ITSELF
+
+Every care task, every photo, every measurement lands on the plant's page. A before / after compares two photos months apart; the height curve shows what the eye misses from one day to the next.
+
+THE WHOLE GARDEN, NOT JUST THE LIVING ROOM
+
+Rooms — the balcony, the kitchen, the greenhouse — a calendar of upcoming care, tasks, and an inventory of pots, soils and fertilisers.
 
 ON IPHONE AND IPAD
 
-- Home screen and Lock Screen widgets with today's care
-- Long-press the icon to add a plant or scan a label
-- A temperature or humidity sensor from Apple Home can refine the advice
-- Dynamic Type, Bold Text and Increase Contrast respected
+Home Screen and Lock Screen widgets with today's care. Long-press the icon to add a plant or scan a label. A temperature or humidity sensor from Apple Home can refine the advice. Dynamic Type, Bold Text and Increase Contrast respected.
 
-SETTINGS
+FREE, ACTUALLY
 
-- Language and appearance
-- Notifications and reminder time
-- Metric or imperial units
-- Town for the weather
-- Identification and diagnosis, on or off
+Every feature is open: no subscription, no limit on plants or photos, no advertising, no account to create. A one-off purchase lets you support the work; it unlocks nothing.
 
-IMPORTANT NOTE
+YOUR PLANTS STAY WITH YOU
 
-An identification or a diagnosis is a proposal, never a certainty: the app shows a confidence level and several leads rather than a single answer. Look at the plant and cross-check before acting, especially before treating it.
+Your plants, your photos and your journal live on the device. Recognition runs on the device, and the online fallback can be switched off in the settings. Only diagnosis from a photo needs a connection: the image goes to Infomaniak, a Swiss host, for the time of the analysis. No tracking. An account is only for sharing a garden with others.
 
-PRIVACY
+WHERE THE DATA COMES FROM
 
-- No account required
-- Your plants, your photos and your journal stay on the device
-- Identification runs on the device; the Pl@ntNet fallback can be turned off
-- Diagnosis from a photo needs a connection: the photo goes to Infomaniak, a Swiss host, for the time of the analysis
-- No advertising, no tracking
-- An account is needed only to share a garden
+Names and taxonomy matched against GBIF and Wikidata. Iris is trained on images under CC0, CC BY or CC BY-SA, and consults Pl@ntNet when it hesitates, if you allow it. Weather: Open-Meteo.
 
-FREE
-
-Every feature is open, with no limit on plants or photos. A one-off purchase lets you support the work; it unlocks nothing.
+French, English, German, Italian.
 
 Download Auxine and know, every morning, what your plants need.
 ```
@@ -266,76 +203,52 @@ Download Auxine and know, every morning, what your plants need.
 | Mots-clés | `promemoria,giardino,fiori,annaffiatura,rinvaso,fertilizzante,crescita,calendario,botanica,tracker` | 97 / 100 |
 
 
-### Description (3890 / 4000 caractères)
+### Description (3165 / 4000 caractères)
 
 ```
-ESCLUSIONE DI RESPONSABILITÀ
+Auxine è il diario delle vostre piante: riconosce la specie da una foto, senza rete, ne tiene la storia e vi dice ogni mattina quali hanno sete. Gratuita, senza abbonamento, senza account e senza pubblicità.
 
-Auxine è un'applicazione pubblicata da Vergasta Digital, privata e indipendente. Non rappresenta, non è affiliata e non è sponsorizzata da orti botanici, università, vivai o produttori di articoli per il giardinaggio. Le schede di cura, i riconoscimenti e le diagnosi sono ausili alla decisione: non sostituiscono né l'osservazione delle vostre piante né il parere di un professionista. Alcune piante sono tossiche per le persone e per gli animali; verificate presso una fonte affidabile prima di manipolarle o consumarle.
+RICONOSCERE UNA PIANTA, ANCHE SENZA RETE
 
-FONTE DELLE INFORMAZIONI
+Fotografatela: Iris, il modello di riconoscimento fornito dentro l'applicazione, propone la specie fra 1 444, sul dispositivo. In aereo, in cantina, in fondo al giardino — niente deve partire per Internet. Mostra un livello di fiducia e più piste invece di una risposta unica, e due foto della stessa pianta valgono molto più di una.
 
-Nomi scientifici e nomi comuni: catalogo integrato, allineato a GBIF (Global Biodiversity Information Facility) e a Wikidata.
-Riconoscimento: Iris, il modello fornito dentro l'applicazione, addestrato su immagini con licenza CC0, CC BY o CC BY-SA. Pl@ntNet viene consultato solo in caso di dubbio, e solo se lo autorizzate.
-Disturbi, parassiti e malattie: una base di 200 voci fornita con l'applicazione, i cui ospiti sono allineati alla tassonomia GBIF.
-Schede di cura: profili per specie, genere, famiglia o categoria d'uso.
-Meteo: Open-Meteo, per la località che scegliete.
+CAPIRE CHE COSA NON VA
 
-Non ricordate più quale ha sete, né da quando? Avete dimenticato il nome di quella che vi hanno regalato, e le sue foglie imbruniscono senza che sappiate perché? Auxine è il diario delle vostre piante: che cosa sono, che cosa chiedono e che cosa avete già fatto per loro.
+Foglie che imbruniscono, una ragnatela sotto le foglie, terra che resta fradicia? Fotografate il problema. L'applicazione lo confronta con una base di oltre 200 disturbi, parassiti e malattie, dice che cosa vede, ordina le piste per verosimiglianza e propone che cosa fare — senza mai decidere al posto vostro.
 
-COME FUNZIONA
+UNA SCHEDA DI CURA PER OGNI SPECIE
 
-1. Fotografate la pianta: Iris propone la specie, sul dispositivo, anche senza rete.
-2. L'applicazione apre la sua scheda di cura e propone un ritmo di annaffiatura, luce e concime.
-3. Ogni mattina la schermata Oggi mostra ciò che è dovuto e ciò che arriva.
-4. Un gesto per spuntare una cura, un altro per aggiungere una foto al diario.
+Annaffiatura d'estate e d'inverno, luce, concime, rinvaso, umidità, temperatura, propagazione, i guai frequenti della specie e la tossicità per animali e bambini. Quando manca la specie esatta, subentra la scheda del genere, della famiglia o del tipo di pianta.
 
-FUNZIONALITÀ
+TUTTE LE PIANTE A COLPO D'OCCHIO
 
-- Riconoscimento da foto sul dispositivo, senza rete: 1 444 specie
-- Diagnosi da una foto: oltre 200 disturbi, parassiti e malattie
-- Una scheda di cura per specie: annaffiatura, luce, concime, rinvaso, umidità, temperatura, propagazione
-- La mattina a colpo d'occhio: le cure dovute, quelle in arrivo, il meteo di casa vostra
-- Collezione a griglia o a elenco, con ricerca, filtri e ordinamento
-- Una pagina per pianta: foto, diario, prossime cure, misure, prima / dopo
-- Giardino: luoghi, calendario, attività, inventario
-- Guida alla propagazione
-- Promemoria delle cure
-- Backup e ripristino, per cambiare telefono
-- Condivisione di un giardino, se lo desiderate
-- Francese, inglese, tedesco, italiano
+La schermata del mattino mostra ciò che è dovuto oggi e ciò che arriva, con il meteo di casa vostra. Un gesto per spuntare un'annaffiatura. Il resto del tempo dice che è tutto in ordine, ed è quanto le si chiede.
+
+UN DIARIO CHE SI RIEMPIE DA SÉ
+
+Ogni cura, ogni foto, ogni misura si deposita nella pagina della pianta. Un prima / dopo accosta due foto a mesi di distanza; la curva dell'altezza mostra ciò che l'occhio non coglie da un giorno all'altro.
+
+TUTTO IL GIARDINO, NON SOLO IL SALOTTO
+
+Luoghi — il balcone, la cucina, la serra —, un calendario delle cure in arrivo, attività e un inventario di vasi, terricci e concimi.
 
 SU IPHONE E IPAD
 
-- Widget per schermata Home e schermata di blocco con le cure del giorno
-- Pressione prolungata sull'icona per aggiungere una pianta o scansionare un'etichetta
-- Un sensore di temperatura o umidità di Apple Casa può affinare i consigli
-- Dynamic Type, Testo in grassetto e Aumenta contrasto rispettati
+Widget per schermata Home e schermata di blocco con le cure del giorno. Pressione prolungata sull'icona per aggiungere una pianta o scansionare un'etichetta. Un sensore di temperatura o umidità di Apple Casa può affinare i consigli. Dynamic Type, Testo in grassetto e Aumenta contrasto rispettati.
 
-IMPOSTAZIONI
+GRATUITA, DAVVERO
 
-- Lingua e aspetto
-- Notifiche e ora dei promemoria
-- Unità metriche o imperiali
-- Località per il meteo
-- Riconoscimento e diagnosi, attivabili o no
+Tutte le funzioni sono aperte: nessun abbonamento, nessun limite di piante o di foto, nessuna pubblicità, nessun account da creare. Un acquisto unico permette di sostenere il lavoro; non sblocca nulla.
 
-NOTA IMPORTANTE
+LE VOSTRE PIANTE RESTANO DA VOI
 
-Un riconoscimento o una diagnosi è una proposta, mai una certezza: l'applicazione mostra un livello di fiducia e più piste invece di una risposta unica. Guardate la pianta e verificate prima di agire, soprattutto prima di un trattamento.
+Le vostre piante, le vostre foto e il vostro diario vivono sul dispositivo. Il riconoscimento gira sul dispositivo, e il ricorso alla rete si disattiva nelle impostazioni. Solo la diagnosi da foto richiede una connessione: l'immagine va a Infomaniak, fornitore svizzero, per il tempo dell'analisi. Nessun tracciamento. Un account serve solo a condividere un giardino.
 
-PRIVACY
+DA DOVE VENGONO I DATI
 
-- Nessun account richiesto
-- Le vostre piante, le vostre foto e il vostro diario restano sul dispositivo
-- Il riconoscimento gira sul dispositivo; il ricorso a Pl@ntNet si può disattivare
-- La diagnosi da foto richiede una connessione: la foto va a Infomaniak, fornitore svizzero, per il tempo dell'analisi
-- Nessuna pubblicità, nessun tracciamento
-- Un account serve solo per condividere un giardino
+Nomi e tassonomia allineati a GBIF e a Wikidata. Iris è addestrato su immagini con licenza CC0, CC BY o CC BY-SA e consulta Pl@ntNet in caso di dubbio, se lo autorizzate. Meteo: Open-Meteo.
 
-GRATUITA
-
-Tutte le funzioni sono aperte, senza limiti di piante o di foto. Un acquisto unico permette di sostenere il lavoro; non sblocca nulla.
+Francese, inglese, tedesco, italiano.
 
 Scaricate Auxine e sappiate, ogni mattina, di che cosa hanno bisogno le vostre piante.
 ```
