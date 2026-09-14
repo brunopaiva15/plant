@@ -21,7 +21,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1290, 2796
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -249,13 +249,11 @@ def paste_with_shadow(canvas, layer, pos, blur=40, offset=(0, 30), alpha=0.28):
     canvas.alpha_composite(layer, pos)
 
 
-def clay_card(size, radius, color=SURFACE):
-    """Une carte d'argile comme celles de l'app : l'aplat, un reflet en haut
-    à gauche, une ombre en bas à droite, rognés à la forme. Le calque rendu
-    est transparent hors de la carte ; l'ombre portée se pose à part."""
-    w, h = size
-    mask = Image.new('L', (w, h), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+def clay_shape(mask, color=SURFACE):
+    """Une pièce d'argile à la forme donnée : l'aplat, un reflet en haut à
+    gauche, une ombre en bas à droite, rognés à la forme. Le calque rendu est
+    transparent hors de la pièce ; l'ombre portée se pose à part."""
+    w, h = mask.size
     layer = Image.new('RGBA', (w, h), color + (255,))
 
     def rim(dx, dy, blur):
@@ -273,6 +271,22 @@ def clay_card(size, radius, color=SURFACE):
     layer.alpha_composite(shade)
     layer.putalpha(mask)
     return layer
+
+
+def clay_card(size, radius, color=SURFACE):
+    """Une carte d'argile comme celles de l'app."""
+    mask = Image.new('L', size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), radius=radius, fill=255)
+    return clay_shape(mask, color)
+
+
+def clay_arch(width, height, color=SURFACE):
+    """Une arche : un plein cintre posé sur des montants droits. Elle sort du
+    cadre par le bas, et rien dans la fiche ne se retrouve dans une boîte
+    dans une boîte."""
+    mask = Image.new('L', (width, height), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, width - 1, height + width), radius=width // 2, fill=255)
+    return clay_shape(mask, color)
 
 
 def place_phone(canvas, shot, y, width=1030, **modal):
@@ -406,8 +420,7 @@ COVER = {
     'fr': {
         'claim': 'Le carnet\nde vos plantes',
         'chips': ['Soins', 'Journal', 'Identification'],
-        'photo': 'ficus.jpg',
-        'species': 'Ficus lyrata',
+        'species': 'Dracaena trifasciata',
         'action': 'Arroser',
         'due': 'Aujourd’hui',
         'badge': ['Gratuite', 'sans compte,\nsans publicité'],
@@ -415,8 +428,7 @@ COVER = {
     'en': {
         'claim': 'The journal\nof your plants',
         'chips': ['Care', 'Journal', 'Identification'],
-        'photo': 'ficus.jpg',
-        'species': 'Ficus lyrata',
+        'species': 'Dracaena trifasciata',
         'action': 'Water',
         'due': 'Today',
         'badge': ['Free', 'no account,\nno ads'],
@@ -444,27 +456,6 @@ def starburst(size, points, inner, color):
     return layer
 
 
-def framed_photo(name, size, radius=56, border=22, angle=0.0):
-    """Une photo dans son cadre crème, épais : l'app montre des photos, et
-    une photo posée sans bord se confond avec le fond."""
-    photo = Image.open(os.path.join(HERE, 'demo-photos', name)).convert('RGB')
-    # Une photo d'intérieur sort terne à côté d'un aplat saturé : on la
-    # remonte comme le ferait un tirage, sans la dénaturer.
-    photo = ImageEnhance.Brightness(photo).enhance(1.16)
-    photo = ImageEnhance.Color(photo).enhance(1.26)
-    photo = ImageEnhance.Contrast(photo).enhance(1.08)
-    w, h = size
-    scale = max(w / photo.width, h / photo.height)
-    photo = photo.resize((int(photo.width * scale), int(photo.height * scale)), Image.LANCZOS)
-    photo = photo.crop(((photo.width - w) // 2, (photo.height - h) // 2, (photo.width - w) // 2 + w, (photo.height - h) // 2 + h))
-    card = Image.new('RGBA', (w + 2 * border, h + 2 * border), (0, 0, 0, 0))
-    ImageDraw.Draw(card).rounded_rectangle((0, 0, card.width - 1, card.height - 1), radius=radius + border, fill=CREAM + (255,))
-    mask = Image.new('L', (w, h), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
-    card.paste(photo, (border, border), mask)
-    return card.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else card
-
-
 def chip(text, fnt, fill, ink, height=98, pad=44, radius=None):
     """Une pastille pleine : les boutons et les badges de l'app, en plus gros."""
     d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
@@ -475,36 +466,40 @@ def chip(text, fnt, fill, ink, height=98, pad=44, radius=None):
     return layer
 
 
+# Le massif du bas de l'arche : l'asset, sa hauteur, l'abscisse de son pot.
+# Trois plantes de l'onboarding qui se chevauchent, comme un coin de pièce.
+COVER_PLANTS = [
+    ('collection_ronde.webp', 1080, 350),
+    ('collection_sansevieria.webp', 1660, 645),
+    ('collection_semis.webp', 960, 945),
+]
+
+
 def cover(lang):
-    """La fiche d'ouverture : le papier crème de l'app, une dalle d'argile
-    sauge posée dessus, et sur la dalle une vraie photo dans son cadre, les
-    objets d'argile de l'app et ses pastilles. Le nom est tracé à la main,
-    la revendication est en gras : c'est la seule fiche qui hausse le ton."""
+    """La fiche d'ouverture : le nom tracé sur le papier de l'app, puis une
+    arche d'argile sauge qui sort du cadre. Dedans, la revendication en gras,
+    les mots de la fiche, un massif de plantes d'argile, et les pastilles de
+    l'app posées à cheval sur le bord."""
     t = COVER[lang]
     img = background('sage')
-
-    # Quelques éclats d'argile, comme sur un autocollant.
-    for (sx, sy, ss, a) in ((96, 300, 120, 0.9), (1090, 250, 90, 0.7), (60, 2520, 104, 0.8), (1150, 2610, 82, 0.6)):
-        spark = starburst(ss, 4, 0.3, TINTS['sage'][0] + (int(255 * a),))
-        img.alpha_composite(spark, (sx, sy))
-
-    d = ImageDraw.Draw(img)
-    d.text((W // 2, 120), 'Auxine', font=hand(200, 800), fill=INK, anchor='mt')
-
-    # La dalle : la même argile que les cartes de l'app, en grand.
-    slab_x, slab_y, slab_w, slab_h = 54, 560, W - 108, 2120
-    slab = clay_card((slab_w, slab_h), 96, color=SAGE_SOLID)
-    paste_with_shadow(img, slab, (slab_x, slab_y), blur=70, offset=(16, 54), alpha=0.34)
     d = ImageDraw.Draw(img)
 
-    y = slab_y + 90
+    d.text((W // 2, 130), 'Auxine', font=hand(180, 800), fill=INK, anchor='mt')
+
+    # L'arche, qui descend hors du cadre.
+    arch_w, arch_top = 1100, 480
+    arch = clay_arch(arch_w, H - arch_top + 40, color=SAGE_SOLID)
+    ax = (W - arch_w) // 2
+    paste_with_shadow(img, arch, (ax, arch_top), blur=80, offset=(18, 40), alpha=0.30)
+    d = ImageDraw.Draw(img)
+
+    y = arch_top + 210
     f = font('Black', 112)
     for line in t['claim'].split('\n'):
         d.text((W // 2, y), line, font=f, fill=CREAM, anchor='mt')
         y += 132
 
-    # Les trois mots de la fiche, en pastilles crème.
-    y += 44
+    y += 40
     chips = [chip(c, font('Bold', 44), CREAM, SAGE_SOLID) for c in t['chips']]
     total = sum(c.width for c in chips) + 22 * (len(chips) - 1)
     x = (W - total) // 2
@@ -512,37 +507,32 @@ def cover(lang):
         img.alpha_composite(c, (x, y))
         x += c.width + 22
 
-    # La photo, penchée, dans son cadre crème — l'app montre de vraies photos,
-    # et c'est elle qui remplit la dalle.
-    card = framed_photo(t['photo'], (800, 1250), angle=-4)
-    px, py = (W - card.width) // 2, y + 130
-    paste_with_shadow(img, card, (px, py), blur=64, offset=(16, 48), alpha=0.34)
+    # Le massif, posé au bas de l'arche et coupé par le cadre.
+    base = H + 20
+    for name, height, cx in COVER_PLANTS:
+        src = Image.open(os.path.join(CLAY, name)).convert('RGBA')
+        src = src.crop(src.getbbox())
+        w = int(src.width * height / src.height)
+        paste_with_shadow(img, src.resize((w, height), Image.LANCZOS), (cx - w // 2, base - height), blur=56, offset=(14, 40), alpha=0.26)
 
-    # L'anneau d'arrosage, collé sur le coin haut de la photo.
-    ring = Image.open(os.path.join(CLAY, 'onboarding_3.png')).convert('RGBA')
-    ring = ring.crop(ring.getbbox())
-    rh = 230
-    ring = ring.resize((int(ring.width * rh / ring.height), rh), Image.LANCZOS)
-    paste_with_shadow(img, ring, (px + card.width - rh + 30, py + 16), blur=40, offset=(10, 28), alpha=0.28)
+    # Les pastilles de l'app, à cheval sur le bord de l'arche.
+    sp = chip(t['species'], font('Bold', 48), CREAM, INK, height=108)
+    paste_with_shadow(img, sp, (ax - 76, y + 300), blur=34, offset=(8, 22), alpha=0.30)
+    due = chip(t['due'], font('Bold', 44), TINTS['water'][1], WATER, height=96)
+    paste_with_shadow(img, due, (ax + arch_w - due.width + 86, y + 560), blur=34, offset=(8, 22), alpha=0.30)
+    act = chip(t['action'], font('Black', 52), WATER, (255, 255, 255), height=124, pad=60)
+    paste_with_shadow(img, act, (ax - 46, H - 480), blur=40, offset=(10, 26), alpha=0.34)
 
-    # Les pastilles de l'app, à cheval sur la photo.
-    sp = chip(t['species'], font('Bold', 46), CREAM, INK, height=104)
-    paste_with_shadow(img, sp, (px + 36, py + 60), blur=32, offset=(8, 20), alpha=0.30)
-    due = chip(t['due'], font('Bold', 42), TINTS['water'][1], WATER, height=90)
-    paste_with_shadow(img, due, (px + 46, py + card.height - 236), blur=32, offset=(8, 20), alpha=0.30)
-    act = chip(t['action'], font('Black', 50), WATER, (255, 255, 255), height=118, pad=58)
-    paste_with_shadow(img, act, (px + 42, py + card.height - 132), blur=38, offset=(10, 24), alpha=0.34)
-
-    # L'autocollant, collé de travers sur le coin de la dalle.
-    size = 480
+    # L'autocollant, collé de travers sur le bord droit de l'arche.
+    size = 460
     star = starburst(size, 16, 0.85, TERRACOTTA + (255,)).rotate(-11, resample=Image.BICUBIC)
     ds = ImageDraw.Draw(star)
-    ds.text((size // 2, size // 2 - 42), t['badge'][0], font=font('Black', 88), fill=(255, 255, 255), anchor='mm')
+    ds.text((size // 2, size // 2 - 40), t['badge'][0], font=font('Black', 86), fill=(255, 255, 255), anchor='mm')
     ty = size // 2 + 10
     for line in t['badge'][1].split('\n'):
         ds.text((size // 2, ty), line, font=font('SemiBold', 38), fill=(255, 233, 221), anchor='mt')
         ty += 46
-    paste_with_shadow(img, star, (W - size - 30, py + card.height - size + 150), blur=42, offset=(10, 26), alpha=0.32)
+    paste_with_shadow(img, star, (W - size - 16, H - 660), blur=42, offset=(10, 26), alpha=0.32)
     return img
 
 
