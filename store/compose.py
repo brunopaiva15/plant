@@ -28,6 +28,7 @@ ROOT = os.path.join(HERE, '..')
 FONTS = os.path.join(HERE, 'fonts/inter/extras/ttf')
 HAND = os.path.join(ROOT, 'assets', 'fonts', 'ShantellSans-VF.ttf')
 CLAY = os.path.join(ROOT, 'assets', 'onboarding')
+ICON = os.path.join(ROOT, 'assets', 'icon', 'icon_ios_foreground.png')
 INTER_ZIP = 'https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip'
 
 
@@ -394,7 +395,68 @@ def ident_sheet(lang, width=1170):
 # recouvre dans l'app.
 
 
-# --- les sept visuels ---------------------------------------------------------
+# --- la fiche de présentation -------------------------------------------------
+
+# Ce que l'app est, en tête de série : le nom, ce qu'elle fait, et ce qui se
+# décide avant d'ouvrir une fiche — tout est gratuit, rien ne part.
+COVER = {
+    'fr': {
+        'tagline': 'Carnet de plantes',
+        'points': ['Les soins du jour, à cocher', 'L’espèce reconnue sur l’appareil, sans réseau', 'Photos, journal, calendrier, inventaire'],
+        'footer': 'Gratuite, sans compte, sans publicité',
+    },
+    'en': {
+        'tagline': 'Plant journal',
+        'points': ['The day’s care, to tick off', 'Species recognised on your device, offline', 'Photos, journal, calendar, inventory'],
+        'footer': 'Free, no account, no ads',
+    },
+}
+
+
+def cover(lang):
+    """Le premier visuel : pas une capture, une présentation. Le nom en
+    Shantell Sans plein, la plante de l'icône posée dessus, ce que l'app
+    fait sur une carte d'argile, et ce qu'elle ne fait pas en pied."""
+    t = COVER[lang]
+    img = background('sage')
+    d = ImageDraw.Draw(img)
+
+    # La plante de l'icône, en grand, avec son ombre brune.
+    mark = Image.open(ICON).convert('RGBA')
+    size = 700
+    paste_with_shadow(img, mark.resize((size, size), Image.LANCZOS), ((W - size) // 2, 360), blur=60, offset=(12, 46), alpha=0.22)
+
+    d.text((W // 2, 1140), 'Auxine', font=hand(210, 800), fill=INK, anchor='mt')
+    d.text((W // 2, 1440), t['tagline'], font=font('Bold', 74), fill=SAGE, anchor='mt')
+
+    # Ce que l'app fait, sur une carte d'argile comme les listes de l'app :
+    # un losange sauge par ligne, le même signe que les propositions d'Iris.
+    f = font('SemiBold', 58)
+    pad, x0, card_w = 72, 90, W - 180
+    text_x = pad + 104
+    rows = [wrap(d, point, f, card_w - text_x - pad) for point in t['points']]
+    heights = [len(lines) * 76 + 96 for lines in rows]
+    card = clay_card((card_w, sum(heights)), 3 * 24)
+    top = 1700
+    paste_with_shadow(img, card, (x0, top), blur=50, offset=(10, 34), alpha=0.22)
+    d = ImageDraw.Draw(img)
+    y = top
+    for i, (lines, h) in enumerate(zip(rows, heights)):
+        cy = y + h // 2
+        d.polygon([(x0 + pad + 26, cy - 26), (x0 + pad + 52, cy), (x0 + pad + 26, cy + 26), (x0 + pad, cy)], fill=SAGE)
+        ty = cy - len(lines) * 38
+        for line in lines:
+            d.text((x0 + text_x, ty), line, font=f, fill=INK)
+            ty += 76
+        if i < len(rows) - 1:
+            d.line((x0 + text_x, y + h, x0 + card_w - pad, y + h), fill=(232, 220, 204), width=3)
+        y += h
+
+    d.text((W // 2, y + 150), t['footer'], font=font('Medium', 52), fill=INK2, anchor='mt')
+    return img
+
+
+# --- les visuels --------------------------------------------------------------
 
 # Le registre des fiches App Store : un titre court, puis un fragment en
 # minuscules, sans point. Pas de phrase.
@@ -443,7 +505,8 @@ def build(shots, out, lang):
     device = os.path.exists(os.path.join(shots, '.device'))
     copy = COPY[lang]
     size = title_size([t for t, _ in copy])
-    for i, ((title, subtitle), (name, tint, clay)) in enumerate(zip(copy, SCENES), start=1):
+    cover(lang).convert('RGB').save(os.path.join(out, '1.png'), optimize=True)
+    for i, ((title, subtitle), (name, tint, clay)) in enumerate(zip(copy, SCENES), start=2):
         img = background(tint)
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')

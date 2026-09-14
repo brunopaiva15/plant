@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 import '../../data/db/database.dart';
@@ -10,6 +12,7 @@ import '../../data/repositories/photo_repository_impl.dart';
 import '../../data/repositories/plant_repository_impl.dart';
 import '../../data/repositories/tag_repository_impl.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import '../../data/services/photo_storage_service.dart';
 import '../../domain/diagnosis/diagnosis_record.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
 import '../../domain/models/models.dart';
@@ -32,8 +35,9 @@ abstract final class DemoSeed {
   }
 
   /// [language] est celle de l'app quand elle est réglée ; sinon celle de
-  /// l'appareil.
-  static Future<void> apply(FloraDatabase db, String gardenId, {String? language}) async {
+  /// l'appareil. Avec [storage], les photos sont rangées comme de vraies
+  /// photos de plante plutôt que laissées à leur adresse.
+  static Future<void> apply(FloraDatabase db, String gardenId, {String? language, PhotoStorageService? storage}) async {
     final plants = DriftPlantRepository(db, gardenId);
     if ((await plants.watchSummaries(const PlantFilter()).first).isNotEmpty) return;
     final locations = DriftLocationRepository(db, gardenId);
@@ -69,10 +73,11 @@ abstract final class DemoSeed {
 
     // Des photos, pour que la démo ressemble à une vraie collection : des
     // observations iNaturalist en CC0 (store/demo-photos, avec leurs
-    // sources), servies à côté du build. Distantes, donc jamais copiées.
+    // sources), servies à côté du build.
     final photos = DriftPhotoRepository(db);
     for (final (plant, slug) in [(monstera, 'monstera'), (pilea, 'pilea'), (ficus, 'ficus'), (calathea, 'calathea'), (olivier, 'olivier'), (basilic, 'basilic'), (pothos, 'pothos'), (hoya, 'hoya')]) {
-      final photo = await photos.addFromUrl(plantId: plant.id, url: '$photoBase/$slug.jpg');
+      final url = '$photoBase/$slug.jpg';
+      final photo = await _addPhoto(photos, storage, plant.id, url, slug);
       await photos.setPrimary(plant.id, photo.id);
     }
 
@@ -151,6 +156,37 @@ abstract final class DemoSeed {
     // Une routine saisonnière pour la variété.
     final hoyaSchedules = await care.watchByPlant(hoya.id).first;
     await care.upsert(hoyaSchedules.first.copyWith(strategy: CareStrategy.seasonal));
+  }
+
+  /// La photo d'une plante de démo, rangée comme l'app range les siennes
+  /// quand elle le peut.
+  ///
+  /// Une photo laissée à son adresse s'affiche, mais n'a pas de fichier :
+  /// Iris n'a alors rien à lire et la feuille « Espèce » répond « Aucune
+  /// correspondance fiable ». Sur le web, où rien ne s'écrit sur disque,
+  /// c'est le seul chemin ; ailleurs on la télécharge et on l'importe.
+  static Future<PlantPhoto> _addPhoto(PhotoRepository photos, PhotoStorageService? storage, String plantId, String url, String slug) async {
+    if (storage == null || kIsWeb) return photos.addFromUrl(plantId: plantId, url: url);
+
+    try {
+      final client = HttpClient();
+      final File temp;
+      try {
+        final response = await (await client.getUrl(Uri.parse(url))).close();
+        if (response.statusCode != 200) throw HttpException('${response.statusCode}', uri: Uri.parse(url));
+        temp = File('${Directory.systemTemp.path}/flora-demo-$slug.jpg')..writeAsBytesSync(await consolidateHttpClientResponseBytes(response));
+      } finally {
+        client.close();
+      }
+      final stored = await storage.importFile(temp);
+      if (temp.existsSync()) temp.deleteSync();
+      return await photos.add(plantId: plantId, filePath: stored.filePath, thumbPath: stored.thumbPath, width: stored.width, height: stored.height);
+    } catch (e) {
+      // Pas de serveur en face : la photo reste distante, la collection
+      // garde son allure, et seule l'identification n'aura rien à lire.
+      debugPrint('photo de démo « $slug » non téléchargée ($e) : elle reste distante');
+      return await photos.addFromUrl(plantId: plantId, url: url);
+    }
   }
 
   /// Ce qu'une analyse dit d'une Calathea aux bords bruns : l'air sec en

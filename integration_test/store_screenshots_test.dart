@@ -221,6 +221,9 @@ void main() {
       await tapLabel(l10n.more);
       await tapText(l10n.identify);
       await wait(tester, 8000);
+      // Une feuille vide ne vaut pas un visuel : sans fichier à lire, Iris
+      // ne répond rien, et c'est la scène qu'il faut réparer.
+      if (find.text(l10n.identifyNone).evaluate().isNotEmpty) throw StateError('Iris n’a rien reconnu : la photo de démo n’a pas de fichier local');
       await shot('identify');
       await dismiss();
     });

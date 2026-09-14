@@ -1,7 +1,9 @@
 # Visuels du magasin
 
-Sept visuels par langue, au format iPhone 6,7 pouces (1290 × 2796), sans le
-nom de l'application. Chacun montre une capture réelle de l'app dans un
+Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
+premier présente l'application : la plante de l'icône, le nom en Shantell
+Sans plein, ce qu'elle fait sur une carte d'argile, et ce qu'elle ne fait
+pas en pied. Les sept autres montrent une capture réelle de l'app dans un
 iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
 rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
 « main » de l'app) ; entre le titre et le téléphone, un objet 3D de la série
@@ -10,15 +12,16 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
-| 1 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
-| 2 | Plantes (la collection) | monstera en pot | sauge |
-| 3 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
-| 4 | Fiche d'entretien | anneau et goutte | soleil |
-| 5 | Fiche du Ficus, feuille « Espèce » ouverte | caoutchouc en pot | terre |
-| 6 | Jardin, calendrier | la maison | lavande |
-| 7 | Diagnostic gardé au journal de la Calathea, rouvert en entier | sansevieria en pot | rose |
+| 1 | Présentation : le nom, trois lignes, ce qui est gratuit | la plante de l'icône | sauge |
+| 2 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
+| 3 | Plantes (la collection) | monstera en pot | sauge |
+| 4 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
+| 5 | Fiche d'entretien | anneau et goutte | soleil |
+| 6 | Fiche du Ficus, feuille « Espèce » ouverte | caoutchouc en pot | terre |
+| 7 | Jardin, calendrier | la maison | lavande |
+| 8 | Diagnostic gardé au journal de la Calathea, rouvert en entier | sansevieria en pot | rose |
 
-Le cinquième montre l'identification sur l'appareil : sur le simulateur,
+Le sixième montre l'identification sur l'appareil : sur le simulateur,
 c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
 Ficus lyrata de la démo. Sur le web, où le modèle ne tourne pas,
 `compose.py` la redessine sur la fiche du Ficus assombrie — celle-là même
@@ -32,11 +35,17 @@ lue avec les seuils de l'app. Après chaque nouveau modèle : relancer
 Sur la page d'une plante, la photo continue sous la barre d'état dessinée
 (en miroir, floue, assombrie), et les icônes passent en blanc.
 
-Le septième montre le compte rendu d'un diagnostic tel que l'app le rend :
+Le huitième montre le compte rendu d'un diagnostic tel que l'app le rend :
 le jeu de démo en garde un au journal de la Calathea (air trop sec, tétranyques,
 excès d'eau — des numéros de `assets/problems/catalog.txt`), et la capture
 le rouvre depuis la fiche. Le service de diagnostic lui-même n'est pas
 configuré sur le build web ; le rapport, lui, est le vrai.
+
+Hors du web, les photos de la démo sont téléchargées et rangées comme de
+vraies photos de plante : une photo laissée à son adresse s'affiche, mais
+n'a pas de fichier, et Iris n'aurait rien à lire — la feuille « Espèce »
+répondrait « Aucune correspondance fiable ». Le test s'en assure et fait
+échouer la scène plutôt que de livrer un visuel vide.
 
 Le jeu de démo (`?demo` sur le web, `--dart-define=DEMO=true` ailleurs) est
 réglé pour ces visuels : rien de dû aujourd'hui, tous les soins à venir à
@@ -127,5 +136,6 @@ le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
-que chaque titre tienne sur deux lignes ; la taille est commune aux sept.
-L'ordre des écrans, les teintes et les objets sont dans `SCENES`.
+que chaque titre tienne sur deux lignes ; la taille est commune aux sept
+captures. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
+les textes de la fiche de présentation dans `COVER`.
