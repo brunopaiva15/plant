@@ -1700,7 +1700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'For outdoor plants, watering is postponed on rainy days. Open-Meteo data, no account or key required.';
+      'For outdoor plants: rain that has fallen counts as watering, rain that is forecast postpones it, and frost and heat are flagged. Open-Meteo data, no account or key required.';
 
   @override
   String get weatherPlace => 'Place';
@@ -4332,5 +4332,148 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String viewForModel(String name) {
     return 'Used by $name to recognise the species, not kept.';
+  }
+
+  @override
+  String get strategyWeather => 'Weather';
+
+  @override
+  String get strategyWeatherHint =>
+      'The seasonal interval, shortened by dry heat, stretched by rain and cold.';
+
+  @override
+  String strategyWeatherNow(String interval) {
+    return 'With this week\'s weather: $interval';
+  }
+
+  @override
+  String get strategyWeatherNoPlace =>
+      'Without a weather place, the interval stays the seasonal one.';
+
+  @override
+  String get weatherWhenTonight => 'tonight';
+
+  @override
+  String get weatherWhenToday => 'today';
+
+  @override
+  String get weatherWhenTomorrow => 'tomorrow';
+
+  @override
+  String weatherWhenInDays(int count) {
+    return 'in $count days';
+  }
+
+  @override
+  String weatherFrostTitle(String when, String temp) {
+    return 'Frost $when · $temp';
+  }
+
+  @override
+  String weatherHeatTitle(String when, String temp) {
+    return 'Heat $when · $temp';
+  }
+
+  @override
+  String weatherFrostBody(String names) {
+    return 'To bring in or cover: $names.';
+  }
+
+  @override
+  String weatherHeatBody(String names) {
+    return 'To move into shade, and water early: $names.';
+  }
+
+  @override
+  String weatherAlertMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'and $count more',
+      one: 'and 1 more',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifFrost(String when, String names) {
+    return 'Frost $when · to bring in or cover: $names.';
+  }
+
+  @override
+  String notifHeat(String when, String names) {
+    return 'Heat $when · to move into shade: $names.';
+  }
+
+  @override
+  String weatherRainFallenTitle(String mm) {
+    return 'Rain · $mm mm';
+  }
+
+  @override
+  String weatherRainWatered(String names) {
+    return 'Watering logged for $names.';
+  }
+
+  @override
+  String weatherRainWaterable(String names) {
+    return 'The rain covers the watering for $names.';
+  }
+
+  @override
+  String get weatherRainMarkWatered => 'Log as watered';
+
+  @override
+  String weatherRainWateredToast(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count waterings logged',
+      one: '1 watering logged',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherRainNote(String mm) {
+    return 'Watered by rain ($mm mm).';
+  }
+
+  @override
+  String get weatherRainCounts => 'Rain counts as watering';
+
+  @override
+  String get weatherRainCountsHint =>
+      'Above 5 mm over three days, watering at outdoor locations is logged as done. Turned off, the morning screen offers it in one tap. A pot sheltered by foliage gets less rain.';
+
+  @override
+  String get weatherClimate => 'Climate';
+
+  @override
+  String get weatherClimateHint =>
+      'Plant suggestions for outdoors follow the winters and summers of the place.';
+
+  @override
+  String weatherClimateZone(String zone) {
+    return 'Zone $zone';
+  }
+
+  @override
+  String weatherClimateRange(String low, String high) {
+    return 'Winters at $low, summers at $high';
+  }
+
+  @override
+  String get weatherClimateNone => 'Unknown';
+
+  @override
+  String get finderReasonHardy => 'Winters outdoors here';
+
+  @override
+  String get finderReasonSheltered => 'Winters outdoors, sheltered';
+
+  @override
+  String finderRegion(String zone, String low) {
+    return 'Zone $zone · winters at $low';
   }
 }

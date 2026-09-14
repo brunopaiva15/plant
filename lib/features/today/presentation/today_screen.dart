@@ -101,6 +101,8 @@ class TodayScreen extends ConsumerWidget {
               child: _DueHero(count: dueCount),
             ),
           ),
+        // Le gel et la canicule d'abord : ils ont une échéance, la pluie non.
+        const SliverToBoxAdapter(child: OutdoorAlertCard()),
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
         const SliverToBoxAdapter(child: HomeClimateAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
@@ -140,7 +142,7 @@ class _DayHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final weather = ref.watch(todayWeatherProvider).value;
+    final weather = ref.watch(todayWeatherProvider);
     final hasOutdoor = ref.watch(outdoorLocationIdsProvider).isNotEmpty;
     final reading = ref.watch(homeReadingProvider).value;
     final pills = <Widget>[

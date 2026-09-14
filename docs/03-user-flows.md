@@ -120,14 +120,18 @@ Aussi accessible inline depuis l'étape 3 de création de plante (« + Nouveau �
 ```
 Fiche plante ─[tap « Planning »]⟶ Écran planning
   Liste des routines : 💧 Arrosage · tous les 7 jours · prochain : dans 2 j
-  [tap ligne]⟶ Sheet : stratégie (Fixe / Saisonnier / Manuel), intervalle (stepper), activé
+  [tap ligne]⟶ Sheet : stratégie (Fixe / Saisonnier / Météo / Manuel), intervalle (stepper), activé
     Sous le stepper, d'où sort le chiffre : « Intervalle conseillé · Fiche de
     l'espèce », et la valeur conseillée dès qu'on s'en écarte. Rien quand la
     fiche est générique : l'intervalle ne vient alors pas de la plante.
   [+ Ajouter une routine] ⟶ type (chips) puis même sheet
 ✓ prochaine échéance recalculée et affichée immédiatement
 ```
-Stratégie *Intelligent* (météo / exposition) : Phase 3, même sheet, explication textuelle du décalage.
+Stratégie *Météo* : l'intervalle saisonnier corrigé par la semaine du lieu.
+Sous le sélecteur, ce qu'elle donne aujourd'hui — « Avec le temps de la
+semaine : 6 jours » —, ou ce qui manque pour le dire : un lieu météo. Sans
+réseau elle vaut exactement le saisonnier, et ne le dit pas : le stepper
+montre déjà ce chiffre.
 
 ## 6. Première expérience (onboarding)
 ```

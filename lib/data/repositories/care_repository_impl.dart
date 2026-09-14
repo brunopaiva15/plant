@@ -7,13 +7,15 @@ import 'package:uuid/uuid.dart';
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/weather/weather_trend.dart';
 import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftCareRepository implements CareRepository {
-  DriftCareRepository(this._db, this._plants, {String? gardenId, bool Function()? southernHemisphere})
+  DriftCareRepository(this._db, this._plants, {String? gardenId, bool Function()? southernHemisphere, WeatherTrend? Function()? weatherTrend})
       : _gardenId = gardenId,
-        _south = southernHemisphere ?? (() => false);
+        _south = southernHemisphere ?? (() => false),
+        _trend = weatherTrend ?? (() => null);
 
   final FloraDatabase _db;
   final PlantRepository _plants;
@@ -23,6 +25,10 @@ class DriftCareRepository implements CareRepository {
 
   /// L'hémisphère du jardin, relu à chaque calcul d'échéance.
   final bool Function() _south;
+
+  /// Le temps qu'il fait au lieu choisi, relu à chaque calcul : il ne sert
+  /// qu'aux routines en stratégie météo, et vaut `null` hors ligne.
+  final WeatherTrend? Function() _trend;
   static const _uuid = Uuid();
 
   @override
@@ -116,7 +122,7 @@ class DriftCareRepository implements CareRepository {
         existing.enabled != schedule.enabled;
     DateTime? nextDue = existing?.nextDueAt;
     if (changed) {
-      nextDue = CareEngine.nextDueAfter(withId, lastCompleted ?? now, south: _south());
+      nextDue = CareEngine.nextDueAfter(withId, lastCompleted ?? now, south: _south(), trend: _trend());
       final today = DateTime(now.year, now.month, now.day);
       if (nextDue != null && nextDue.isBefore(today)) nextDue = today;
     }

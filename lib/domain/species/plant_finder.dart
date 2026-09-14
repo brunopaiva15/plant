@@ -1,5 +1,6 @@
 import '../care/care_guide.dart';
 import '../care/care_profile.dart';
+import '../weather/region_climate.dart';
 import 'species_info.dart';
 
 /// Où la plante va vivre. La lumière décide de presque tout, donc la question
@@ -11,12 +12,25 @@ enum FinderEffort { forgiving, normal, attentive }
 
 /// Ce qui fait qu'une espèce est proposée. Rendu tel quel par le moteur, la
 /// couche l10n en fait une phrase.
-enum FinderReason { light, lowLight, forgiving, easy, safe, outdoor }
+enum FinderReason {
+  light,
+  lowLight,
+  forgiving,
+  easy,
+  safe,
+  outdoor,
+
+  /// Elle passe l'hiver dehors ici, sans rien.
+  hardy,
+
+  /// Elle le passe dehors, protégée.
+  sheltered,
+}
 
 /// Ce que l'utilisateur a répondu. Tout est facultatif : sans réponse, le
 /// critère ne pèse simplement pas.
 class FinderCriteria {
-  const FinderCriteria({this.spot, this.effort, this.safeOnly = false, this.categories = const {}, this.note = ''});
+  const FinderCriteria({this.spot, this.effort, this.safeOnly = false, this.categories = const {}, this.note = '', this.region});
 
   final FinderSpot? spot;
   final FinderEffort? effort;
@@ -30,6 +44,11 @@ class FinderCriteria {
   /// Texte libre, utilisé seulement si l'utilisateur demande l'avis de l'IA.
   final String note;
 
+  /// Le climat du lieu météo. Ce n'est pas une réponse de l'utilisateur mais
+  /// ce que l'application sait déjà de sa région ; il ne pèse que sur un
+  /// emplacement extérieur — un salon a le même climat à Oslo qu'à Séville.
+  final RegionClimate? region;
+
   bool get isEmpty => spot == null && effort == null && !safeOnly && categories.isEmpty && note.trim().isEmpty;
 
   FinderCriteria copyWith({
@@ -38,6 +57,7 @@ class FinderCriteria {
     bool? safeOnly,
     Set<SpeciesCategory>? categories,
     String? note,
+    RegionClimate? Function()? region,
   }) =>
       FinderCriteria(
         spot: spot != null ? spot() : this.spot,
@@ -45,7 +65,11 @@ class FinderCriteria {
         safeOnly: safeOnly ?? this.safeOnly,
         categories: categories ?? this.categories,
         note: note ?? this.note,
+        region: region != null ? region() : this.region,
       );
+
+  /// Le climat compte-t-il ici ? Dehors, et seulement si on le connaît.
+  RegionClimate? get outdoorRegion => spot == FinderSpot.outdoor ? region : null;
 
   /// Les critères en anglais, pour le prompt de l'IA. Déterministe, donc
   /// testable, et lisible dans les journaux de requête.
@@ -66,6 +90,9 @@ class FinderCriteria {
       },
       if (safeOnly) 'Constraint: pets or children at home, only species that are non-toxic when chewed.',
       if (categories.isNotEmpty) 'Wanted kinds: ${categories.map((c) => c.name).join(', ')}.',
+      // La région, pas la ville : deux températures et une zone disent le
+      // climat sans désigner personne.
+      if (outdoorRegion case final r?) r.describe(),
       if (note.trim().isNotEmpty) 'In their own words: ${note.trim()}',
     ];
     return parts.where((p) => p.isNotEmpty).join(' ');
@@ -146,15 +173,33 @@ class PlantFinder {
 
   double _score(FinderCriteria c, CareProfile p) {
     // Chaque critère répondu apporte son poids et sa note (0 à 1).
+    final region = c.outdoorRegion;
     final parts = <(double, double)>[
       if (c.spot != null) (0.55, _lightScore(p.light, _targetLight(c.spot!))),
       if (c.effort != null) (0.45, _effortScore(c.effort!, p)),
+      // La région, quand on la connaît et qu'on cherche pour dehors : pas
+      // une exclusion — un géranium se rentre, et personne ne dira qu'il
+      // n'est pas une plante de balcon —, un rang.
+      if (region != null) (0.5, _regionScore(region, p)),
       // Prior d'aisance : à critères égaux, la plante la plus facile passe
       // devant. Poids volontairement faible, il ne décide jamais seul.
       (0.05, _easeScore(p)),
     ];
     final total = parts.fold(0.0, (sum, part) => sum + part.$1);
     return parts.fold(0.0, (sum, part) => sum + part.$1 * part.$2) / total;
+  }
+
+  /// Ce que la région vaut à une espèce : rustique sur place d'abord, puis
+  /// ce qui passe l'hiver sous un voile, puis ce qui rentre tous les ans.
+  /// Un été trop chaud pour sa plage idéale coûte un quart de sa note.
+  static double _regionScore(RegionClimate region, CareProfile p) {
+    final base = switch (region.hardinessOf(p.minTempC)) {
+      RegionHardiness.hardy => 1.0,
+      RegionHardiness.sheltered => 0.7,
+      RegionHardiness.indoors => 0.35,
+      RegionHardiness.unknown => 0.6,
+    };
+    return region.suffersInSummer(p.idealTempMaxC) ? base * 0.75 : base;
   }
 
   static LightNeed _targetLight(FinderSpot spot) => switch (spot) {
@@ -199,7 +244,16 @@ class PlantFinder {
         FinderReason.lowLight
       else if (c.spot != null && (p.light.index - _targetLight(c.spot!).index).abs() <= 1)
         FinderReason.light,
-      if (c.spot == FinderSpot.outdoor && p.outdoorFriendly) FinderReason.outdoor,
+      // Dehors, la rusticité dit mieux que « tient dehors » : elle dit si la
+      // plante y reste l'hiver. Elle la remplace donc quand on la connaît.
+      if (c.outdoorRegion case final r? when p.outdoorFriendly)
+        switch (r.hardinessOf(p.minTempC)) {
+          RegionHardiness.hardy => FinderReason.hardy,
+          RegionHardiness.sheltered => FinderReason.sheltered,
+          _ => FinderReason.outdoor,
+        }
+      else if (c.spot == FinderSpot.outdoor && p.outdoorFriendly)
+        FinderReason.outdoor,
       if (c.effort == FinderEffort.forgiving && p.wateringSummerDays >= 10) FinderReason.forgiving,
       if (p.difficulty == CareDifficulty.easy) FinderReason.easy,
       if (c.safeOnly && p.toxicity == Toxicity.safe) FinderReason.safe,
