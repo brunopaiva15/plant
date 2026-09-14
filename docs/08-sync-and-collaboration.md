@@ -94,11 +94,16 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Colonnes inconnues du serveur » sur l'écran Compte, sous l'état de la synchronisation, qui les nomme en « table.colonne ». Le reste passe quand même — la colonne en trop est retirée de la ligne, et reprend sa place d'elle-même une fois le fichier rejoué —, mais ces champs-là ne quittent pas l'appareil. Les autres refus du serveur arrêtent la synchronisation et s'affichent au mot près sous « Erreur de synchronisation » (« new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).
 2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`). Tant qu'elle ne l'est pas, un lien envoyé répond `{"code":"NOT_FOUND","message":"Requested function was not found"}`. Depuis un poste avec la CLI Supabase :
    ```bash
+   cd <racine du dépôt>                             # le dossier qui contient supabase/
    supabase login
    supabase link --project-ref <ref du projet>      # la partie avant .supabase.co dans l'URL
    supabase functions deploy share --no-verify-jwt
    ```
+   Les commandes se lancent depuis la racine du dépôt : la CLI cherche `supabase/functions/share/index.ts` sous le dossier courant, et retient le projet lié au même endroit (`supabase/.temp/`). Ailleurs, elle part avec une source vide et le déploiement échoue en `400 Entrypoint path does not exist` — un `WARNING: Docker is not running` peut apparaître au passage, il n'y est pour rien.
+
    `--no-verify-jwt` est indispensable (et déjà inscrit dans `supabase/config.toml`) : la page s'ouvre depuis un navigateur, sans clé. `SUPABASE_URL` et `SUPABASE_ANON_KEY` sont fournis à la fonction par Supabase, rien à configurer. À refaire à chaque changement de `supabase/functions/share/index.ts`.
+
+   Pour vérifier, `curl -i https://<ref>.supabase.co/functions/v1/share/join/ABCD1234` : la page HTML « Lien indisponible » signale une fonction déployée qui répond (le code n'existe pas), le JSON `NOT_FOUND` une fonction toujours absente.
 3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `auxine://login-callback`.
 4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
 
