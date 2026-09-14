@@ -52,9 +52,9 @@ FORMATS = {
         # Les formes du fond : le rayon des trois taches, puis la lumière.
         'blobs': (900, 1020, 880), 'radial': ((240, 1250), 880),
         # L'appareil tient en entier dans le cadre, écran complet : sa largeur,
-        # le vide entre le sous-titre et lui (où l'objet d'argile dépasse), la
-        # taille de l'objet, et celle de l'ornement du titre.
-        'phone_width': 850, 'phone_gap': 170, 'phone_clay': 500, 'ornament': 1.0,
+        # le vide entre le sous-titre et lui (où l'objet d'argile dépasse), et
+        # la taille de l'objet.
+        'phone_width': 850, 'phone_gap': 170, 'phone_clay': 500,
         # Les cotes de l'appareil, en points : la barre d'état, le rayon des
         # coins, le cadre, l'île (ou, sans elle, l'œil de la caméra).
         'device': {'px': 3, 'status': 54, 'radius': 55, 'bezel': 12, 'island': (126, 37), 'camera': 0, 'cellular': True},
@@ -75,7 +75,7 @@ FORMATS = {
         # par le bas. Le même geste, aux deux tiers.
         'tilt': 0.7,
         'blobs': (1400, 1580, 1360), 'radial': ((390, 1230), 1340),
-        'phone_width': 1310, 'phone_gap': 115, 'phone_clay': 620, 'ornament': 1.5,
+        'phone_width': 1310, 'phone_gap': 115, 'phone_clay': 620,
         'device': {'px': 2, 'status': 24, 'radius': 26, 'bezel': 20, 'island': None, 'camera': 5, 'cellular': False},
         'cover': {
             'title': 320, 'plant': 950, 'plant_dx': 30, 'plant_overlap': 170,
@@ -780,35 +780,6 @@ SCENES = [
     ('garden-calendar', 'lavender', 'onboarding_7.png', 3.0, 'left'),
     ('diagnosis', 'rose', 'collection_sansevieria.webp', -3.5, 'right'),
 ]
-# Ce que chaque fiche porte en marge : un tracé à la main, et parfois un mot.
-# (genre, x, y, angle, taille, texte) — le mot est traduit dans ACCENT_WORDS.
-# L'ornement du titre : un petit objet d'argile de l'app, pose en marge du
-# bloc de texte et coupe par le bord droit. (chemin, taille, angle)
-ORNAMENT = {
-    2: ('assets/problems/icons/001.webp', 215, 14),
-    3: ('assets/onboarding/collection_semis.webp', 205, -10),
-    4: ('assets/problems/clay_affection.webp', 225, -14),
-    5: ('assets/problems/clay_abiotique.webp', 215, 16),
-    6: ('assets/problems/icons/060.webp', 230, 12),
-    7: ('assets/onboarding/collection_ronde.webp', 210, -12),
-    8: ('assets/problems/clay_ravageur.webp', 200, 10),
-}
-
-
-def ornament(img, index, top, bottom):
-    """L'objet qui accompagne le titre : petit, cale sur la hauteur du bloc
-    de texte, et coupe d'un tiers par le bord droit — assez pour se lire
-    comme un ornement de la mise en page, pas comme un autocollant pose."""
-    if index not in ORNAMENT:
-        return
-    path, size, angle = ORNAMENT[index]
-    obj = crisp(path, box=int(size * L['ornament']))
-    if angle:
-        obj = obj.rotate(angle, resample=Image.BICUBIC, expand=True)
-    y = top + (bottom - top - obj.height) // 2
-    paste_with_shadow(img, obj, (W - obj.width + obj.width // 3, y), blur=36, offset=(8, 24), alpha=0.18)
-
-
 # Chaque visuel : la capture, la teinte du papier, l'objet d'argile qui dépasse.
 
 
@@ -837,7 +808,6 @@ def build(shots, out, lang, fmt='iphone'):
             # précédent reste en place, et on le dit.
             print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
             continue
-        ornament(img, i, L['text_top'], bottom)
         box = place_phone(img, shot, y=bottom + L['phone_gap'], angle=angle, **modal)
         place_object(img, clay, L['phone_clay'], corner, box)
         img.convert('RGB').save(os.path.join(out, f'{i}.png'), optimize=True)

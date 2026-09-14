@@ -21,13 +21,13 @@ dessiné, légèrement incliné, l'écran complet : c'est l'écran qu'on vend,
 rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
 « main » de l'app) et une ligne qui le précise.
 
-La série tient par trois règles communes. Le fond est le pastel plein de la
+La série tient par deux règles communes. Le fond est le pastel plein de la
 teinte, avec deux ou trois formes organiques qui sortent du cadre — jamais
 un aplat, jamais une version laiteuse : à côté d'une fiche du magasin, un
-fond trop clair passe pour un blanc raté. Un petit objet d'argile accompagne
-le titre, calé sur la hauteur du bloc de texte et coupé d'un tiers par le
-bord droit. Et un objet de l'onboarding se pose devant l'appareil, sur un
-coin bas, entier et à sa taille native — jamais derrière, jamais coupé.
+fond trop clair passe pour un blanc raté. Et un objet de l'onboarding se
+pose devant l'appareil, sur un coin bas, entier et à sa taille native —
+jamais derrière, jamais coupé. Le titre, lui, reste seul : un second objet
+posé en marge faisait deux fois le même geste sur la même fiche.
 
 Le nom de l'application, sur la première fiche, a sa taille à lui
 (`cover.title` du gabarit) : ce n'est pas un titre de fiche, il se lit de
