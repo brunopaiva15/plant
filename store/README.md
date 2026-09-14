@@ -1,7 +1,9 @@
 # Visuels du magasin
 
-Huit visuels dans les quatre langues de l'app (fr, en, de, it), au format
-iPhone 6,7 pouces (1290 × 2796). Le
+Huit visuels dans les quatre langues de l'app (fr, en, de, it), en deux
+séries : iPhone 6,7 pouces (1290 × 2796) et iPad 13 pouces (2064 × 2752).
+Le projet Xcode déclare les deux familles (`TARGETED_DEVICE_FAMILY = "1,2"`)
+et App Store en réclame alors une série chacune. Le
 premier ne montre pas un écran, mais il en suit la mise en page : la marge
 de page de l'app, un grand titre en haut à gauche, puis des cartes en
 colonne. Une bande sauge porte le nom tracé à la main et la revendication
@@ -14,29 +16,32 @@ arrosage et sa lumière sont ceux de son profil de soin
 livré. Rien de plus — une
 fiche chargée ne se lit pas dans une grille de vignettes.
 
-Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
-(`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
-les fait fondre. Les sept autres montrent une capture réelle de l'app dans un iPhone dessiné,
-légèrement incliné, l'écran complet : c'est l'écran qu'on vend, rien ne le
-recouvre. Au-dessus, un titre tracé en Shantell Sans (la police « main » de
-l'app) et une ligne qui le précise.
+Les sept autres montrent une capture réelle de l'app dans un appareil
+dessiné, légèrement incliné, l'écran complet : c'est l'écran qu'on vend,
+rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
+« main » de l'app) et une ligne qui le précise.
 
 La série tient par trois règles communes. Le fond est le pastel plein de la
 teinte, avec deux ou trois formes organiques qui sortent du cadre — jamais
 un aplat, jamais une version laiteuse : à côté d'une fiche du magasin, un
 fond trop clair passe pour un blanc raté. Un petit objet d'argile accompagne
 le titre, calé sur la hauteur du bloc de texte et coupé d'un tiers par le
-bord droit. Et un objet de l'onboarding se pose devant le téléphone, sur un
+bord droit. Et un objet de l'onboarding se pose devant l'appareil, sur un
 coin bas, entier et à sa taille native — jamais derrière, jamais coupé.
 
-Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
-(`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
-les fait fondre.
-
 Le nom de l'application, sur la première fiche, a sa taille à lui
-(`COVER_TITLE`) : ce n'est pas un titre de fiche, il se lit de loin dans la
-grille du magasin. Cette fiche se cale par le bas — la barre de terre cuite
-d'abord, la carte de verre au-dessus, la plante posée sur elle.
+(`cover.title` du gabarit) : ce n'est pas un titre de fiche, il se lit de
+loin dans la grille du magasin. Cette fiche se cale par le bas — la barre de
+terre cuite d'abord, la carte de verre au-dessus, la plante posée sur elle.
+
+Les deux gabarits sont dans `FORMATS` ; `use()` règle celui du moment et tout
+le fichier lit ses cotes dans `L`. Un iPad n'est pas un grand iPhone : presque
+carré, il laisse moins de hauteur au texte, l'appareil y prend moins de
+largeur, il s'incline aux deux tiers pour ne pas déborder par le bas, sa
+capture est au facteur 2 quand celle de l'iPhone est au 3, et son cadre n'a
+ni île ni antenne — un œil de caméra au milieu du bord haut, l'heure, le
+wifi, la batterie. Sur sa fiche d'ouverture, les trois soins passent côte à
+côte : en colonne, ils laisseraient la moitié droite vide.
 
 Le sixième montre l'identification sur l'appareil : sur le simulateur,
 c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
@@ -77,21 +82,24 @@ HomeKit, sur un iPhone : ni le web ni le simulateur n'en montrent. Sur le web, l
 où la molette n'entraîne presque rien, la page se fait défiler par un
 glissement tactile synthétique.
 
-`fr/`, `en/`, `de/` et `it/` contiennent les fichiers prêts à déposer dans
-App Store Connect ;
+`fr/`, `en/`, `de/` et `it/` contiennent les visuels iPhone prêts à déposer
+dans App Store Connect, `ipad-fr/`, `ipad-en/`, `ipad-de/` et `ipad-it/` ceux
+de l'iPad ;
 les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](listing.md).
 
 ## Régénérer
 
-### Sur le simulateur iPhone (les vraies captures)
+### Sur le simulateur (les vraies captures)
 
-Depuis un Mac avec Xcode et Flutter ; le script prend le plus grand iPhone
-que Xcode propose (17 Pro Max, sinon 16 ou 15 Pro Max), `DEVICE` en impose
-un autre :
+Depuis un Mac avec Xcode et Flutter ; le script prend le plus grand appareil
+de la famille que Xcode propose (iPhone 17 Pro Max, sinon 16 ou 15 Pro Max ;
+iPad Pro 13 pouces, sinon 12,9), `DEVICE` en impose un autre. Les deux séries
+demandent les deux passages :
 
 ```bash
 pip install pillow numpy
-store/capture_ios.sh                      # les quatre langues, captures et composition
+store/capture_ios.sh                      # iPhone, les quatre langues, captures et composition
+FORMAT=ipad store/capture_ios.sh          # iPad, la même série
 LANGS="fr en" store/capture_ios.sh        # deux langues
 DEVICE="iPhone 17 Pro" store/capture_ios.sh
 ```
@@ -102,7 +110,8 @@ avec `--dart-define=DEMO=true` : le jeu de démo se charge au premier
 lancement, le test règle les préférences d'un téléphone déjà en usage
 (prénom, ville pour la météo) et parcourt les écrans en prenant les
 captures, que
-`test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`.
+`test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`
+(`store/shots-ipad-<langue>/` pour l'iPad).
 L'identification par Iris et le diagnostic rouvert depuis le journal sont
 ceux de l'app. Une scène qui échoue est signalée dans la sortie de
 `flutter drive` (avec ce qu'on lisait à l'écran, et une capture
@@ -120,6 +129,10 @@ Le build web imite iOS (`?demo&ios`) sans être l'app : les composants
 Cupertino y sont dessinés par Flutter, pas par le système, et le modèle
 d'identification n'y tourne pas. Ce chemin reste utile pour vérifier une
 composition sans Mac.
+
+Ce repli ne vaut que pour l'iPhone : la feuille « Espèce » redessinée est
+taillée pour une capture de téléphone, et l'iPad n'a pas d'autre source que
+son simulateur.
 
 ```bash
 flutter build web --profile --no-web-resources-cdn
@@ -157,8 +170,12 @@ le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 `compose.py` télécharge la police Inter (SIL OFL) dans `store/fonts/` au
 premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
+Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
+(`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
+les fait fondre.
+
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
 que chaque titre tienne sur deux lignes ; la taille est commune aux sept
-captures. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
+captures et calculée par gabarit. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
 les textes de la fiche d'ouverture dans `COVER` ; le verre dépoli est
 `glass()`, l'argile `clay_shape()`.

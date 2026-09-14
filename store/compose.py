@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-"""Compose les visuels App Store (1290 × 2796) à partir des captures réelles.
+"""Compose les visuels App Store à partir des captures réelles.
 
 Chaque visuel : un papier crème teinté, avec son grain, un titre tracé en
-Shantell Sans (la police « main » de l'app), un iPhone dessiné (bordure,
-Dynamic Island, barre d'état) qui montre la capture presque entière, et un
-objet 3D de la série clay posé au pied du téléphone, devant lui. L'écran est
+Shantell Sans (la police « main » de l'app), un appareil dessiné (bordure,
+barre d'état, île ou œil de caméra) qui montre la capture presque entière,
+et un objet 3D de la série clay posé à son pied, devant lui. L'écran est
 ce qu'on vend : rien ne le recouvre, à part l'objet sur son coin bas. Les
 ombres sont brunes, jamais noires : c'est la lumière de l'atelier, pas celle
 d'un studio.
 
-Les captures viennent du simulateur iPhone (store/capture_ios.sh, écran
-entier, marqueur `.device` dans le dossier) ou, à défaut, du build web
-(capture.mjs, 390 × 844 à 3×, sans barre d'état).
+Deux gabarits : l'iPhone 6,7 pouces (1290 × 2796) et l'iPad 13 pouces
+(2064 × 2752), les deux séries que demande App Store d'une app universelle.
 
-Usage : compose.py <dossier captures> <dossier sortie> [fr|en]
+Les captures viennent du simulateur (store/capture_ios.sh, écran entier,
+marqueur `.device` dans le dossier) ou, à défaut, du build web (capture.mjs,
+390 × 844 à 3×, sans barre d'état).
+
+Usage : compose.py <dossier captures> <dossier sortie> [fr|en|de|it] [iphone|ipad]
 """
 import csv
 import os
@@ -22,7 +25,6 @@ import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
-W, H = 1290, 2796
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..')
 FONTS = os.path.join(HERE, 'fonts/inter/extras/ttf')
@@ -30,6 +32,72 @@ HAND = os.path.join(ROOT, 'assets', 'fonts', 'ShantellSans-VF.ttf')
 CLAY = os.path.join(ROOT, 'assets', 'onboarding')
 ICON = os.path.join(ROOT, 'assets', 'icon', 'icon_ios_foreground.png')
 INTER_ZIP = 'https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip'
+
+# --- les deux gabarits --------------------------------------------------------
+
+# Le projet Xcode déclare les deux familles (TARGETED_DEVICE_FAMILY = « 1,2 »),
+# et App Store réclame alors une série par famille : 6,7 pouces pour l'iPhone,
+# 13 pouces pour l'iPad. Les deux disent la même chose avec la même grammaire
+# — papier teinté, titre à la main, appareil incliné, objet d'argile devant.
+# Mais un iPad n'est pas un grand iPhone : presque carré, il laisse moins de
+# hauteur au texte, l'appareil y prend moins de largeur, et sa capture est au
+# facteur 2 quand celle de l'iPhone est au 3. Chaque gabarit porte donc ses
+# mesures ; tout le fichier les lit dans L, réglé par use().
+FORMATS = {
+    'iphone': {
+        'size': (1290, 2796),
+        'margin': 96, 'text_top': 200, 'text_width': 1110,
+        'title_max': 136, 'title_min': 96, 'title_line': 1.18,
+        'sub_size': 54, 'sub_line': 66, 'sub_gap': 22, 'tilt': 1.0,
+        # Les formes du fond : le rayon des trois taches, puis la lumière.
+        'blobs': (900, 1020, 880), 'radial': ((240, 1250), 880),
+        # L'appareil tient en entier dans le cadre, écran complet : sa largeur,
+        # le vide entre le sous-titre et lui (où l'objet d'argile dépasse), la
+        # taille de l'objet, et celle de l'ornement du titre.
+        'phone_width': 850, 'phone_gap': 170, 'phone_clay': 500, 'ornament': 1.0,
+        # Les cotes de l'appareil, en points : la barre d'état, le rayon des
+        # coins, le cadre, l'île (ou, sans elle, l'œil de la caméra).
+        'device': {'px': 3, 'status': 54, 'radius': 55, 'bezel': 12, 'island': (126, 37), 'camera': 0, 'cellular': True},
+        'cover': {
+            'title': 296, 'plant': 900, 'plant_dx': 40, 'plant_overlap': 130,
+            'card_h': 860, 'card_gap': 86, 'radius': 72, 'pad': 76,
+            'name': 88, 'species': 54, 'species_y': 118, 'rows_y': 234,
+            'rows': 'liste', 'row_h': 132, 'row_gap': 26, 'row_icon': 88, 'row_x': 126, 'row_label': 54, 'row_value': 58,
+            'bar_h': 232, 'bar_bottom': 150, 'footer': 56,
+        },
+    },
+    'ipad': {
+        'size': (2064, 2752),
+        'margin': 150, 'text_top': 175, 'text_width': 1660,
+        'title_max': 165, 'title_min': 128, 'title_line': 1.18,
+        'sub_size': 68, 'sub_line': 84, 'sub_gap': 26,
+        # L'iPad est presque carré : incliné comme un téléphone, il déborderait
+        # par le bas. Le même geste, aux deux tiers.
+        'tilt': 0.7,
+        'blobs': (1400, 1580, 1360), 'radial': ((390, 1230), 1340),
+        'phone_width': 1310, 'phone_gap': 115, 'phone_clay': 620, 'ornament': 1.5,
+        'device': {'px': 2, 'status': 24, 'radius': 26, 'bezel': 20, 'island': None, 'camera': 5, 'cellular': False},
+        'cover': {
+            'title': 320, 'plant': 950, 'plant_dx': 30, 'plant_overlap': 170,
+            'card_h': 980, 'card_gap': 90, 'radius': 90, 'pad': 100,
+            'name': 116, 'species': 70, 'species_y': 156, 'rows_y': 420,
+            # Trois soins côte à côte : sur une fiche presque carrée, une liste
+            # en colonne laisse la moitié droite vide et monte trop haut.
+            'rows': 'grille', 'row_h': 340, 'row_gap': 0, 'row_icon': 160, 'row_x': 0, 'row_label': 62, 'row_value': 74,
+            'bar_h': 250, 'bar_bottom': 120, 'footer': 72,
+        },
+    },
+}
+
+L = FORMATS['iphone']
+W, H = L['size']
+
+
+def use(fmt):
+    """Règle le gabarit courant : la taille de la fiche et toutes ses cotes."""
+    global L, W, H
+    L = FORMATS[fmt]
+    W, H = L['size']
 
 
 def ensure_fonts():
@@ -129,11 +197,13 @@ def background(tint, seed=0):
     # Le pastel plein de la teinte, pas sa version laiteuse : a cote d'une
     # fiche du magasin, un fond trop clair passe pour un blanc rate.
     base = tuple(int(a * 0.74 + b * 0.26) for a, b in zip(soft, strong))
+    r1, r2, r3 = L['blobs']
+    light, light_r = L['radial']
     img = Image.new('RGBA', (W, H), base + (255,))
-    img.alpha_composite(blob((W * 1.02, H * 0.06), 900, strong, 0.34, seed=seed))
-    img.alpha_composite(blob((-W * 0.06, H * 0.66), 1020, strong, 0.26, seed=seed + 11))
-    img.alpha_composite(blob((W * 0.62, H * 1.06), 880, strong, 0.22, seed=seed + 23))
-    img.alpha_composite(radial((W, H), (240, 1250), 880, (255, 253, 248), 0.40))
+    img.alpha_composite(blob((W * 1.02, H * 0.06), r1, strong, 0.34, seed=seed))
+    img.alpha_composite(blob((-W * 0.06, H * 0.66), r2, strong, 0.26, seed=seed + 11))
+    img.alpha_composite(blob((W * 0.62, H * 1.06), r3, strong, 0.22, seed=seed + 23))
+    img.alpha_composite(radial((W, H), light, light_r, (255, 253, 248), 0.40))
     return grain(img)
 
 
@@ -153,69 +223,83 @@ def wrap(draw, text, fnt, max_width):
     return lines
 
 
-def title_size(titles, width=1110):
+def title_size(titles, width=None):
     """Une seule taille pour la série : la plus grande où chaque ligne de
     chaque titre tient dans la largeur. Les visuels restent accordés."""
+    width = L['text_width'] if width is None else width
     draw = ImageDraw.Draw(Image.new('RGB', (10, 10)))
-    size = 136
+    size = L['title_max']
     lines = [l for t in titles for l in t.split('\n')]
-    while size > 96 and max(draw.textlength(l, font=hand(size, 800)) for l in lines) > width:
+    while size > L['title_min'] and max(draw.textlength(l, font=hand(size, 800)) for l in lines) > width:
         size -= 2
     return size
 
 
-def draw_text_block(img, title, subtitle, size, x=96, y=200, width=1110):
+def draw_text_block(img, title, subtitle, size, x=None, y=None, width=None):
     """Le titre est coupé à la main (retours à la ligne dans la copie)."""
+    x = L['margin'] if x is None else x
+    y = L['text_top'] if y is None else y
+    width = L['text_width'] if width is None else width
     draw = ImageDraw.Draw(img)
     lines = title.split('\n')
     t_font = hand(size, 800)
     for line in lines:
         draw.text((x, y), line, font=t_font, fill=INK)
-        y += int(size * 1.18)
-    y += 22
-    s_font = font('Medium', 54)
+        y += int(size * L['title_line'])
+    y += L['sub_gap']
+    s_font = font('Medium', L['sub_size'])
     for line in wrap(draw, subtitle, s_font, width - 40):
         draw.text((x + 4, y), line, font=s_font, fill=INK2)
-        y += 66
+        y += L['sub_line']
     return y
 
 
-# --- iPhone -------------------------------------------------------------------
+# --- l'appareil ---------------------------------------------------------------
 
-def status_bar(width, height, bg, INK):
+def status_bar(width, height, bg, ink, u=1.0, cellular=True):
     """Une barre d'état iOS : l'heure d'Apple, réseau, wifi, batterie.
-    Sans [bg], la barre est transparente, à poser sur une photo."""
+    Sans [bg], la barre est transparente, à poser sur une photo.
+
+    Les cotes sont celles d'une capture d'iPhone au facteur 3 ; [u] les ramène
+    au facteur de la capture (2/3 pour un iPad, qui capture au facteur 2). Un
+    iPad wifi n'a pas d'antenne : [cellular] efface les quatre barres."""
+    def s(v):
+        return int(round(v * u))
+
     bar = Image.new('RGBA', (width, height), bg + (255,) if bg else (0, 0, 0, 0))
     d = ImageDraw.Draw(bar)
-    d.text((100, height // 2 - 4), '9:41', font=font('SemiBold', 50), fill=INK, anchor='lm')
+    d.text((s(100), height // 2 - s(4)), '9:41', font=font('SemiBold', s(50)), fill=ink, anchor='lm')
     # Signal : quatre barres qui montent
-    x0 = width - 300
-    for i in range(4):
-        h = 18 + i * 10
-        d.rounded_rectangle((x0 + i * 20, height // 2 + 20 - h, x0 + i * 20 + 12, height // 2 + 20), radius=3, fill=INK)
+    x0 = width - s(300)
+    if cellular:
+        for i in range(4):
+            h = s(18 + i * 10)
+            d.rounded_rectangle((x0 + s(i * 20), height // 2 + s(20) - h, x0 + s(i * 20) + s(12), height // 2 + s(20)), radius=s(3), fill=ink)
     # Wifi : trois arcs
-    cx, cy = width - 190, height // 2 + 20
+    cx, cy = width - s(190), height // 2 + s(20)
     for r, wdt in ((44, 9), (28, 9), (10, 10)):
-        d.arc((cx - r, cy - r, cx + r, cy + r), start=225, end=315, fill=INK, width=wdt)
+        d.arc((cx - s(r), cy - s(r), cx + s(r), cy + s(r)), start=225, end=315, fill=ink, width=s(wdt))
     # Batterie
-    bx = width - 130
-    d.rounded_rectangle((bx, height // 2 - 18, bx + 78, height // 2 + 18), radius=10, outline=INK, width=4)
-    d.rounded_rectangle((bx + 6, height // 2 - 12, bx + 60, height // 2 + 12), radius=6, fill=INK)
-    d.rounded_rectangle((bx + 80, height // 2 - 7, bx + 86, height // 2 + 7), radius=3, fill=INK)
+    bx = width - s(130)
+    d.rounded_rectangle((bx, height // 2 - s(18), bx + s(78), height // 2 + s(18)), radius=s(10), outline=ink, width=s(4))
+    d.rounded_rectangle((bx + s(6), height // 2 - s(12), bx + s(60), height // 2 + s(12)), radius=s(6), fill=ink)
+    d.rounded_rectangle((bx + s(80), height // 2 - s(7), bx + s(86), height // 2 + s(7)), radius=s(3), fill=ink)
     return bar
 
 
 def phone(shot, scrim=0.0, sheet=None, device=False):
-    """La capture habillée en iPhone, au facteur 3 de la capture.
+    """La capture habillée en appareil, aux cotes du gabarit courant.
     [shot] est un chemin, ou une capture déjà retouchée. Une capture du web
     (390 × 844) n'a pas de barre d'état : on la dessine au-dessus. Une
     capture d'appareil ([device]) est l'écran entier : la place de la barre
     d'état y est déjà réservée en haut, on dessine dedans. Avec [scrim] et
     [sheet], une feuille modale est posée sur l'écran entier, barre d'état
     comprise, comme l'app le fait."""
+    dev = L['device']
+    px, u = dev['px'], dev['px'] / 3
     shot = (Image.open(shot) if isinstance(shot, str) else shot).convert('RGB')
     sw, sh = shot.size
-    top = 3 * 54
+    top = dev['status'] * px
     if device:
         screen = shot.convert('RGBA')
     else:
@@ -224,7 +308,7 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
     strip = shot.crop((0, 0, sw, top))
     if max(abs(a - b) for a, b in zip(strip.getpixel((sw // 2, 6)), CANVAS)) < 24:
         # Le papier de l'app : la barre d'état est du même papier.
-        bar = status_bar(sw, top, strip.getpixel((sw // 2, 6)), INK)
+        bar = status_bar(sw, top, strip.getpixel((sw // 2, 6)), INK, u, dev['cellular'])
     else:
         # Une photo en tête de page : elle continue sous la barre d'état
         # (en miroir et un peu floue quand la capture s'arrête au bord),
@@ -233,7 +317,7 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
         veil = np.zeros((top, sw, 4), dtype=np.uint8)
         veil[..., 3] = np.linspace(120, 30, top).astype(np.uint8)[:, None]
         bar.alpha_composite(Image.fromarray(veil))
-        bar.alpha_composite(status_bar(sw, top, None, (255, 255, 255)))
+        bar.alpha_composite(status_bar(sw, top, None, (255, 255, 255), u, dev['cellular']))
     screen.paste(bar, (0, 0))
     sh = screen.height - top
     if scrim:
@@ -243,19 +327,26 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
         screen.alpha_composite(sheet, (0, screen.height - sheet.height))
     screen = screen.convert('RGB')
     # Coins de l'écran
-    radius = 3 * 55
+    radius = dev['radius'] * px
     mask = Image.new('L', screen.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, sw - 1, sh + top - 1), radius=radius, fill=255)
-    bezel = 3 * 12
+    bezel = dev['bezel'] * px
+    edge = max(1, int(round(3 * u)))
     body = Image.new('RGBA', (sw + 2 * bezel, sh + top + 2 * bezel), (0, 0, 0, 0))
     d = ImageDraw.Draw(body)
     d.rounded_rectangle((0, 0, body.width - 1, body.height - 1), radius=radius + bezel, fill=(46, 36, 30, 255))
-    d.rounded_rectangle((3, 3, body.width - 4, body.height - 4), radius=radius + bezel - 3, outline=(92, 76, 66, 255), width=3)
+    d.rounded_rectangle((edge, edge, body.width - 1 - edge, body.height - 1 - edge), radius=radius + bezel - edge, outline=(92, 76, 66, 255), width=edge)
     body.paste(screen, (bezel, bezel), mask)
-    # Dynamic Island
-    iw, ih = 3 * 126, 3 * 37
-    ix, iy = bezel + (sw - iw) // 2, bezel + 3 * 11
-    d.rounded_rectangle((ix, iy, ix + iw, iy + ih), radius=ih // 2, fill=(14, 11, 9, 255))
+    if dev['island']:
+        # Dynamic Island
+        iw, ih = dev['island'][0] * px, dev['island'][1] * px
+        ix, iy = bezel + (sw - iw) // 2, bezel + 11 * px
+        d.rounded_rectangle((ix, iy, ix + iw, iy + ih), radius=ih // 2, fill=(14, 11, 9, 255))
+    elif dev['camera']:
+        # L'iPad n'a pas d'île : un œil de caméra au milieu du cadre du haut.
+        r = dev['camera'] * px
+        cx, cy = bezel + sw // 2, bezel // 2
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(20, 16, 13, 255))
     return body
 
 
@@ -315,10 +406,12 @@ def clay_arch(width, height, color=SURFACE):
     return clay_shape(mask, color)
 
 
-def place_phone(canvas, shot, y, width=1030, angle=0.0, **modal):
-    """Le telephone, legerement incline : droit, huit fiches d'affilee font
+def place_phone(canvas, shot, y, width=None, angle=0.0, **modal):
+    """L'appareil, legerement incline : droit, huit fiches d'affilee font
     une planche de catalogue ; penche, la serie respire. Rend sa boite pour
     que l'objet d'argile sache ou se poser."""
+    width = L['phone_width'] if width is None else width
+    angle *= L['tilt']
     ph = phone(shot, **modal)
     scale = width / ph.width
     ph = ph.resize((width, int(ph.height * scale)), Image.LANCZOS)
@@ -366,6 +459,15 @@ IDENT_COPY = {
 def common_names(lang):
     with open(os.path.join(ROOT, 'tools', 'plant_dataset', 'plants.csv'), newline='', encoding='utf-8') as f:
         return {r['scientific_name']: r.get(f'common_{lang}', '') for r in csv.DictReader(f)}
+
+
+def fit(d, text, name, size, max_width):
+    """La plus grande taille où [text] tient dans [max_width]. « Tous les 8
+    jours » et « Alle 8 Tage » n'ont pas la même longueur, et la fiche est la
+    même dans les quatre langues."""
+    while size > 20 and d.textlength(text, font=font(name, size)) > max_width:
+        size -= 2
+    return font(name, size)
 
 
 def ellipsize(d, text, fnt, max_width):
@@ -509,7 +611,6 @@ COVER = {
 SAGE_SOLID = (44, 119, 78)
 CREAM = (250, 245, 236)
 TERRACOTTA = (156, 72, 44)
-COVER_TITLE = 296
 
 
 def rounded_mask(size, radius):
@@ -570,45 +671,60 @@ def crisp(path, height=None, width=None, box=None):
 
 def cover(lang, size):
     """La fiche d'ouverture entre dans le même gabarit que les sept autres :
-    même fond, même titre au même endroit, même sous-titre. À la place du
-    téléphone, la plante de l'icône, la carte de ce que l'app dit d'une
+    même fond, même titre au même endroit, même sous-titre. À la place de
+    l'appareil, la plante de l'icône, la carte de ce que l'app dit d'une
     plante en verre dépoli, et la carte pleine de terre cuite."""
-    t = COVER[lang]
+    t, c, m = COVER[lang], L['cover'], L['margin']
     img = background('sage', seed=1)
     # Le nom de l'app n'est pas un titre de fiche : il se lit de loin, dans la
     # grille du magasin, et il porte la serie. Il a donc sa taille a lui.
-    draw_text_block(img, t['title'], t['subtitle'], COVER_TITLE)
+    draw_text_block(img, t['title'], t['subtitle'], c['title'])
 
     # La fiche se cale par le bas : la barre d'abord, la carte au-dessus, la
     # plante posee sur elle. Sans quoi le bas de la fiche reste vide.
-    bar_h = 232
-    by = H - 150 - bar_h
-    gw, gh = W - 192, 860
-    gx, gy = 96, by - 86 - gh
+    bar_h = c['bar_h']
+    by = H - c['bar_bottom'] - bar_h
+    gw, gh = W - 2 * m, c['card_h']
+    gx, gy = m, by - c['card_gap'] - gh
 
-    plant = crisp('assets/icon/icon_ios_foreground.png', width=900)
-    paste_with_shadow(img, plant, ((W - plant.width) // 2 + 40, gy + 130 - plant.height), blur=64, offset=(16, 46), alpha=0.28)
+    # Sur l'iPhone la plante est au milieu, au-dessus de la carte ; sur l'iPad,
+    # ou le titre ne prend que la moitie de la largeur, elle passe a sa droite.
+    plant = crisp('assets/icon/icon_ios_foreground.png', width=c['plant'])
+    paste_with_shadow(img, plant, ((W - plant.width) // 2 + c['plant_dx'], gy + c['plant_overlap'] - plant.height), blur=64, offset=(16, 46), alpha=0.28)
 
-    glass(img, (gx, gy, gw, gh), radius=72, blur=56, alpha=0.58)
+    glass(img, (gx, gy, gw, gh), radius=c['radius'], blur=56, alpha=0.58)
     d = ImageDraw.Draw(img)
-    pad = 76
-    d.text((gx + pad, gy + pad - 6), t['name'], font=font('Bold', 88), fill=INK)
-    d.text((gx + pad, gy + pad + 118), t['species'], font=font('MediumItalic', 54), fill=SAGE)
-    yy = gy + pad + 234
-    for i, (icon, label, value) in enumerate(t['rows']):
-        if i:
-            d.line((gx + pad + 126, yy, gx + gw - pad, yy), fill=(255, 255, 255, 160), width=3)
-        yy += 26
-        obj = crisp(icon, box=88)
-        img.alpha_composite(obj, (gx + pad + (88 - obj.width) // 2, yy + (98 - obj.height) // 2))
-        d = ImageDraw.Draw(img)
-        d.text((gx + pad + 126, yy + 49), label, font=font('Medium', 54), fill=INK2, anchor='lm')
-        d.text((gx + gw - pad, yy + 49), value, font=font('Bold', 58), fill=INK, anchor='rm')
-        yy += 132
+    pad = c['pad']
+    d.text((gx + pad, gy + pad - 6), t['name'], font=font('Bold', c['name']), fill=INK)
+    d.text((gx + pad, gy + pad + c['species_y']), t['species'], font=font('MediumItalic', c['species']), fill=SAGE)
+    yy = gy + pad + c['rows_y']
+    icon_box, row_h = c['row_icon'], c['row_h']
+    if c['rows'] == 'grille':
+        cw = (gw - 2 * pad) // len(t['rows'])
+        for i, (icon, label, value) in enumerate(t['rows']):
+            cx = gx + pad + cw * i + cw // 2
+            if i:
+                d.line((cx - cw // 2, yy + 20, cx - cw // 2, yy + row_h - 40), fill=(255, 255, 255, 160), width=3)
+            obj = crisp(icon, box=icon_box)
+            img.alpha_composite(obj, (cx - obj.width // 2, yy + (icon_box - obj.height) // 2))
+            d = ImageDraw.Draw(img)
+            d.text((cx, yy + icon_box + 56), label, font=font('Medium', c['row_label']), fill=INK2, anchor='mm')
+            d.text((cx, yy + icon_box + 146), value, font=fit(d, value, 'Bold', c['row_value'], cw - 60), fill=INK, anchor='mm')
+    else:
+        for i, (icon, label, value) in enumerate(t['rows']):
+            if i:
+                d.line((gx + pad + c['row_x'], yy, gx + gw - pad, yy), fill=(255, 255, 255, 160), width=3)
+            yy += c['row_gap']
+            obj = crisp(icon, box=icon_box)
+            img.alpha_composite(obj, (gx + pad + (icon_box - obj.width) // 2, yy + (icon_box + 10 - obj.height) // 2))
+            d = ImageDraw.Draw(img)
+            d.text((gx + pad + c['row_x'], yy + row_h // 2 - 17), label, font=font('Medium', c['row_label']), fill=INK2, anchor='lm')
+            d.text((gx + gw - pad, yy + row_h // 2 - 17), value, font=font('Bold', c['row_value']), fill=INK, anchor='rm')
+            yy += row_h
 
     # La carte pleine de terre cuite : dans l'app, c'est celle qui compte.
-    paste_with_shadow(img, clay_card((W - 192, bar_h), 72, color=TERRACOTTA), (96, by), blur=52, offset=(12, 36), alpha=0.28)
-    ImageDraw.Draw(img).text((W // 2, by + bar_h // 2), t['footer'], font=font('Bold', 56), fill=CREAM, anchor='mm')
+    paste_with_shadow(img, clay_card((gw, bar_h), c['radius'], color=TERRACOTTA), (m, by), blur=52, offset=(12, 36), alpha=0.28)
+    ImageDraw.Draw(img).text((W // 2, by + bar_h // 2), t['footer'], font=font('Bold', c['footer']), fill=CREAM, anchor='mm')
     return img
 
 
@@ -686,7 +802,7 @@ def ornament(img, index, top, bottom):
     if index not in ORNAMENT:
         return
     path, size, angle = ORNAMENT[index]
-    obj = crisp(path, box=size)
+    obj = crisp(path, box=int(size * L['ornament']))
     if angle:
         obj = obj.rotate(angle, resample=Image.BICUBIC, expand=True)
     y = top + (bottom - top - obj.height) // 2
@@ -696,13 +812,8 @@ def ornament(img, index, top, bottom):
 # Chaque visuel : la capture, la teinte du papier, l'objet d'argile qui dépasse.
 
 
-# Le téléphone tient en entier dans le cadre, écran complet : sa largeur, le
-# vide entre le sous-titre et lui (où l'objet d'argile dépasse), et la taille
-# de l'objet.
-PHONE_WIDTH, PHONE_GAP, PHONE_CLAY = 850, 170, 500
-
-
-def build(shots, out, lang):
+def build(shots, out, lang, fmt='iphone'):
+    use(fmt)
     os.makedirs(out, exist_ok=True)
     # Des captures d'appareil (store/capture_ios.sh) ou du web (capture.mjs).
     device = os.path.exists(os.path.join(shots, '.device'))
@@ -714,9 +825,11 @@ def build(shots, out, lang):
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
         modal = {'device': device}
-        if name == 'identify' and not os.path.exists(shot):
+        if name == 'identify' and not os.path.exists(shot) and fmt == 'iphone':
             # Pas de modèle sur le web : la feuille « Espèce » est redessinée
-            # sur la fiche du Ficus, avec les vrais résultats.
+            # sur la fiche du Ficus, avec les vrais résultats. Le repli est
+            # taillé pour une capture de téléphone ; sur iPad, mieux vaut pas
+            # de visuel qu'une feuille aux mauvaises proportions.
             shot = os.path.join(shots, 'plant-ficus.png')
             modal.update(scrim=0.36, sheet=ident_sheet(lang))
         if isinstance(shot, str) and not os.path.exists(shot):
@@ -724,12 +837,13 @@ def build(shots, out, lang):
             # précédent reste en place, et on le dit.
             print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
             continue
-        ornament(img, i, 200, bottom)
-        box = place_phone(img, shot, y=bottom + PHONE_GAP, width=PHONE_WIDTH, angle=angle, **modal)
-        place_object(img, clay, PHONE_CLAY, corner, box)
+        ornament(img, i, L['text_top'], bottom)
+        box = place_phone(img, shot, y=bottom + L['phone_gap'], angle=angle, **modal)
+        place_object(img, clay, L['phone_clay'], corner, box)
         img.convert('RGB').save(os.path.join(out, f'{i}.png'), optimize=True)
 
 
 if __name__ == '__main__':
     ensure_fonts()
-    build(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else 'fr')
+    build(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else 'fr',
+          sys.argv[4] if len(sys.argv) > 4 else 'iphone')
