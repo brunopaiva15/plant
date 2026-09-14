@@ -71,20 +71,23 @@ Deno.serve(async (req) => {
   const segments = new URL(req.url).pathname.split('/').filter(Boolean);
   const last = segments.pop() ?? '';
   const kind = segments[segments.length - 1];
-  // Ce qui précède la route : vide derrière le relais, `/functions/v1/share`
-  // en attaquant Supabase en direct. Les liens de la page s'y accrochent,
-  // pour qu'elle s'habille des deux côtés.
-  const prefix = (parts: string[]) => (parts.length ? `/${parts.join('/')}` : '');
+  // La page pointe ses pièces en relatif, jamais depuis la racine : ce qui
+  // précède la route n'est pas le même des deux côtés — vide derrière le
+  // relais, `/share` dans le runtime Supabase, qui a déjà retiré
+  // `/functions/v1`. Or l'asset est toujours le voisin de la route : d'un
+  // `/join/<code>` il est un cran plus haut, d'un `/<jeton>` il est à côté.
+  // Cela suffit, et la page s'habille des deux côtés sans rien deviner.
+  const UP = '..';
+  const HERE = '.';
 
   if (kind === 'asset') {
-    return assetResponse(last) ?? notFound(prefix(segments.slice(0, -1)));
+    return assetResponse(last) ?? notFound(HERE);
   }
   if (kind === 'join') {
-    const assetBase = prefix(segments.slice(0, -1));
-    return /^[A-Za-z0-9]{6,16}$/.test(last) ? await invitePage(last.toUpperCase(), assetBase) : notFound(assetBase);
+    return /^[A-Za-z0-9]{6,16}$/.test(last) ? await invitePage(last.toUpperCase(), UP) : notFound(UP);
   }
 
-  const assetBase = prefix(segments);
+  const assetBase = HERE;
   if (!/^[A-Za-z0-9]{16,40}$/.test(last)) return notFound(assetBase);
 
   const client = createClient(SUPABASE_URL, ANON_KEY);
