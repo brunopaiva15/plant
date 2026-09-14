@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -44,15 +45,27 @@ class TodayScreen extends ConsumerWidget {
     // **à leur place d'origine**, en état « ✓ Fait », puis s'en vont.
     //
     // C'est la version d'avant qui prime, et non celle de la base : un soin
-    // enregistré repousse l'échéance à la seconde même, si bien que la carte
+    // enregistré repousse l'échéance à la seconde même. Sans cela la pièce
     // changeait de section — de « En retard » à « À venir » — avant d'avoir pu
-    // montrer quoi que ce soit. Elle disparaissait d'un coup sous le doigt,
-    // pour réapparaître ailleurs.
+    // montrer quoi que ce soit.
+    //
+    // Et comme l'échéance décide aussi du rang, on range sur celle qu'on
+    // affiche : une tuile arrosée garde sa case le temps de le dire, au lieu
+    // de filer en fin de grille pendant qu'une autre prend sa place. Le tri
+    // est **stable** — beaucoup de soins tombent le même jour, et un ordre qui
+    // se rejoue à chaque image serait pire que le saut qu'on répare.
+    final liveIds = live.map((t) => t.schedule.id).toSet();
     final all = [
-      for (final t in live)
-        if (!lingering.containsKey(t.schedule.id)) t,
-      for (final l in lingering.values) l.task,
+      for (final t in live) lingering[t.schedule.id]?.task ?? t,
+      for (final l in lingering.values)
+        if (!liveIds.contains(l.task.schedule.id)) l.task,
     ];
+    mergeSort(all, compare: (a, b) => switch ((a.dueAt, b.dueAt)) {
+      (null, null) => 0,
+      (null, _) => 1,
+      (_, null) => -1,
+      (final x?, final y?) => x.compareTo(y),
+    });
     DueStatus statusOf(CareTask t) => t.status(now);
     final overdue = all.where((t) => statusOf(t) == DueStatus.overdue).toList();
     final today = all.where((t) => statusOf(t) == DueStatus.today).toList();
