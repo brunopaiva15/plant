@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flora/app/providers.dart';
 import 'package:flora/core/network/connectivity.dart';
+import 'package:flora/core/network/network_failure.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/sharing/shared_link.dart';
 import 'package:flora/features/sharing/presentation/share_link_sheet.dart';
@@ -31,7 +32,9 @@ class _Sharing implements SharingService {
   @override
   Future<List<SharedLink>> list() {
     calls++;
-    return hangs ? Completer<List<SharedLink>>().future : Future.value(links);
+    // Le vrai service borne sa requête Postgrest de la même façon : sans cela
+    // une requête partie sans réseau n'a ni réponse ni erreur.
+    return hangs ? Completer<List<SharedLink>>().future.timeout(networkTimeout) : Future.value(links);
   }
 
   @override
@@ -107,6 +110,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(sharing.calls, before);
     expect(find.text('Hors ligne'), findsOneWidget);
+
+    // La requête partie avant que la sonde n'ait tranché s'éteint toute seule,
+    // et son résultat tardif ne ramène pas le tourniquet. Dans l'application,
+    // la sonde part au lancement : cet aller-retour n'a lieu qu'au tout
+    // premier instant.
+    await tester.pump(networkTimeout + const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('Hors ligne'), findsOneWidget);
+    expect(find.byType(AdaptiveProgress), findsNothing);
   });
 
   testWidgets('en ligne, la liste s\'affiche', (tester) async {
@@ -115,6 +127,28 @@ void main() {
 
     expect(find.text('Mon monstera'), findsOneWidget);
     expect(find.text('Hors ligne'), findsNothing);
+    expect(sharing.calls, 1);
+  });
+
+  testWidgets('une requête partie qui ne revient pas finit par rendre la main', (tester) async {
+    // La sonde se trompe — un réseau qui laisse ouvrir une connexion mais ne
+    // porte rien — et la requête reste en l'air. C'est le cas qui faisait
+    // tourner l'écran sans fin : Riverpod réessayait dix fois derrière le
+    // tourniquet, et la branche « erreur » n'arrivait qu'au bout de plusieurs
+    // minutes. Une tentative, un délai, un écran sur lequel on peut agir.
+    final sharing = _Sharing(hangs: true);
+    await _pump(tester, sharing: sharing, probe: _Probe(true));
+
+    // Deux tours : le premier laisse le provider partir en requête, le second
+    // dépasse son délai d'expiration.
+    await tester.pump(networkTimeout + const Duration(seconds: 1));
+    await tester.pump(networkTimeout + const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdaptiveProgress), findsNothing);
+    expect(find.text('Réessayer'), findsOneWidget);
+    // Une seule tentative : la reprise est au doigt de la personne, pas dans
+    // une boucle invisible.
     expect(sharing.calls, 1);
   });
 

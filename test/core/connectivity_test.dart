@@ -26,7 +26,7 @@ late Future<String> Function() _call;
 var _attempts = 0;
 
 /// Un appel réseau passé par la garde, comme le font les écrans.
-final _guarded = FutureProvider<String>((ref) {
+final _guarded = FutureProvider<String>(retry: noRetry, (ref) {
   ref.watch(connectivityProvider);
   return ref.online(() {
     _attempts++;
@@ -51,14 +51,22 @@ void main() {
 
   tearDown(() => container.dispose());
 
-  /// Laisse le provider se poser et rend son état. Riverpod ne construit que
-  /// ce qu'on écoute : sans abonné, un `FutureProvider` reste en chargement.
+  /// Laisse le provider se poser et rend son état, une fois vérifié qu'il
+  /// s'est bien posé.
+  ///
+  /// Deux pièges valaient la peine d'être verrouillés ici : Riverpod ne
+  /// construit que ce qu'on écoute, et un provider en erreur qu'il réessaie
+  /// reste en `AsyncLoading` — son erreur se lit quand même, si bien qu'un
+  /// test qui ne regarde que `.error` passe alors que l'écran, lui, tourne
+  /// toujours.
   Future<AsyncValue<String>> settle() async {
     container.listen(_guarded, (_, _) {});
     for (var i = 0; i < 8 && container.read(_guarded).isLoading; i++) {
       await Future<void>.delayed(Duration.zero);
     }
-    return container.read(_guarded);
+    final state = container.read(_guarded);
+    expect(state.isLoading, isFalse, reason: 'l\'écran serait resté sur son tourniquet : $state');
+    return state;
   }
 
   group('état du réseau', () {
@@ -98,7 +106,9 @@ void main() {
       container = build(reachable: false);
       await container.read(connectivityProvider.notifier).refresh();
 
-      expect((await settle()).error, isA<OfflineException>());
+      final state = await settle();
+      expect(state.hasError, isTrue);
+      expect(state.error, isA<OfflineException>());
       // C'est tout l'intérêt : l'écran ne part pas attendre une réponse qui
       // ne viendra pas, il le dit tout de suite.
       expect(_attempts, 0);
@@ -109,7 +119,9 @@ void main() {
       probe.reachable = false;
       _call = () async => throw const SocketException('Failed host lookup: x.test');
 
-      expect((await settle()).error, isA<OfflineException>());
+      final state = await settle();
+      expect(state.hasError, isTrue);
+      expect(state.error, isA<OfflineException>());
       expect(_attempts, 1);
       expect(container.read(connectivityProvider), NetworkStatus.offline);
     });
@@ -121,7 +133,9 @@ void main() {
       // « hors ligne » à quelqu'un qui ne l'est pas.
       _call = () async => throw StateError('permission denied');
 
-      expect((await settle()).error, isA<StateError>());
+      final state = await settle();
+      expect(state.hasError, isTrue);
+      expect(state.error, isA<StateError>());
       expect(container.read(connectivityProvider), NetworkStatus.online);
     });
 
@@ -133,7 +147,9 @@ void main() {
       // Le réseau est revenu : la sonde du réessai le voit, et l'appel part.
       probe.reachable = true;
       await container.read(connectivityProvider.notifier).refresh();
-      expect((await settle()).value, 'ok');
+      final state = await settle();
+      expect(state.hasValue, isTrue);
+      expect(state.value, 'ok');
       expect(container.read(connectivityProvider), NetworkStatus.online);
     });
   });

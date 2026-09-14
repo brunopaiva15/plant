@@ -118,7 +118,7 @@ Future<Set<String>> _queuedGardens(FloraDatabase db) async =>
 /// Elles ne vivent que sur le serveur : hors ligne il n'y a rien à montrer,
 /// et l'écran des membres se contente de le dire. Le retour du réseau relance
 /// la requête.
-final gardenInvitesProvider = FutureProvider<List<GardenInvite>>((ref) async {
+final gardenInvitesProvider = FutureProvider<List<GardenInvite>>(retry: noRetry, (ref) async {
   final service = ref.watch(collaborationServiceProvider);
   if (!service.isAvailable || !ref.watch(canManageMembersProvider)) return const [];
   final gardenId = ref.watch(gardenIdProvider);

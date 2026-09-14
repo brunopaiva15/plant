@@ -19,7 +19,7 @@ import '../../network/presentation/offline_notice.dart';
 /// pas de l'appareil et l'écran tournerait sans fin. On regarde donc le
 /// réseau d'abord, et le retour de la connexion relance la requête — la liste
 /// se remplit alors d'elle-même.
-final sharedLinksProvider = FutureProvider.autoDispose<List<SharedLink>>((ref) {
+final sharedLinksProvider = FutureProvider.autoDispose<List<SharedLink>>(retry: noRetry, (ref) {
   ref.watch(connectivityProvider);
   final service = ref.watch(sharingServiceProvider);
   return ref.online(service.list);

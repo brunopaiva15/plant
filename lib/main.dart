@@ -74,14 +74,17 @@ Future<void> main() async {
   final notifications = NotificationService();
   await notifications.init();
 
-  final container = ProviderContainer(overrides: [
+  // Un provider en erreur montre son erreur, il ne la couve pas : la reprise
+  // automatique de Riverpod laisserait l'écran sur son tourniquet pendant que
+  // dix tentatives s'épuisent. Les écrans ont un bouton pour réessayer.
+  final container = ProviderContainer(retry: noRetry, overrides: [
     databaseProvider.overrideWithValue(db),
     preferencesServiceProvider.overrideWithValue(prefs),
     notificationServiceProvider.overrideWithValue(notifications),
     authRepositoryProvider.overrideWithValue(auth),
     // La vraie sonde de réseau se branche ici : l'application peut alors dire
     // « hors ligne » plutôt que de faire tourner un écran sans fin.
-    reachabilityProvider.overrideWithValue(const DnsReachability()),
+    reachabilityProvider.overrideWithValue(const SocketReachability()),
   ]);
 
   // Emplacements de départ, dans la langue de l'appareil.
@@ -103,6 +106,10 @@ Future<void> main() async {
   // Ménage des fichiers photo orphelins, en tâche de fond : personne ne
   // l'attend, et un échec ne doit pas retarder l'ouverture de l'application.
   container.read(photoMaintenanceProvider).run().catchError((Object _) => 0);
+  // L'état du réseau se constate au lancement, pas quand un écran en a besoin :
+  // sans cela, le premier écran qui dépend du réseau part quand même en
+  // requête et n'apprend la coupure qu'une fois la sonde revenue.
+  container.read(connectivityProvider);
   // Démarre la synchronisation si un compte est connecté (no-op sinon).
   container.listen(syncCoordinatorProvider, (_, _) {});
   // Le widget de l'écran d'accueil suit la base : chaque soin enregistré,

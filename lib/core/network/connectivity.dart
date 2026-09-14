@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../config/supabase_config.dart';
 import 'network_failure.dart';
 
 /// Ce que l'application sait du réseau.
@@ -15,35 +16,69 @@ abstract class Reachability {
   Future<bool> probe();
 }
 
-/// Une résolution DNS : la question la plus courte qui sépare un appareil
-/// sans réseau d'un serveur lent.
+/// Une connexion réellement ouverte, plutôt qu'un nom résolu.
 ///
-/// Deux hôtes plutôt qu'un : le premier peut être filtré par un réseau
-/// d'entreprise sans que la connexion soit coupée. Une seule réponse suffit.
-class DnsReachability implements Reachability {
-  const DnsReachability({this.hosts = defaultHosts, this.timeout = const Duration(seconds: 5)});
+/// Résoudre un nom ne dit presque rien sur un téléphone : le résolveur répond
+/// de son cache, et sur un iPhone les noms courants y sont toujours. En mode
+/// avion, l'appareil se croyait donc joignable — la requête partait quand
+/// même, et l'écran attendait son délai d'expiration pour rien. Ouvrir une
+/// connexion tranche : sans route, le système répond « réseau injoignable »
+/// sur-le-champ.
+///
+/// Trois destinations tentées **en même temps**, la première qui répond
+/// suffit : le serveur de l'application — celui dont on a réellement besoin —
+/// et deux adresses IP écrites en clair, qui ne demandent aucun DNS. Trois
+/// plutôt qu'une parce que se tromper en disant « hors ligne » est la pire
+/// erreur des deux : elle éteint des fonctions qui marchaient.
+class SocketReachability implements Reachability {
+  const SocketReachability({this.timeout = const Duration(seconds: 4), this.port = 443});
 
-  /// Deux noms qui existent partout et ne renvoient rien d'autre qu'une adresse.
-  static const defaultHosts = ['cloudflare.com', 'apple.com'];
+  /// Deux résolveurs publics, joignables en TCP sur 443. En chiffres : aucun
+  /// DNS à interroger, donc aucun cache pour répondre à sa place.
+  static const literals = ['1.1.1.1', '8.8.8.8'];
 
-  final List<String> hosts;
   final Duration timeout;
+  final int port;
+
+  /// Ce qu'on essaie d'atteindre : le backend d'abord, quand il est configuré.
+  List<String> get hosts => [
+        if (SupabaseConfig.isConfigured) Uri.parse(SupabaseConfig.url).host,
+        ...literals,
+      ].where((h) => h.isNotEmpty).toList();
 
   @override
   Future<bool> probe() async {
-    // Sur le web, le navigateur ne résout pas de noms pour l'application :
-    // faute de sonde, on la croit en ligne et ce sont les appels qui
-    // tranchent.
+    // Sur le web, le navigateur n'ouvre pas de connexion pour l'application :
+    // faute de sonde, on la croit en ligne et ce sont les appels qui tranchent.
     if (kIsWeb) return true;
-    for (final host in hosts) {
-      try {
-        final addresses = await InternetAddress.lookup(host).timeout(timeout);
-        if (addresses.isNotEmpty) return true;
-      } on Object {
-        continue;
-      }
+    final targets = hosts;
+    if (targets.isEmpty) return true;
+    final answer = Completer<bool>();
+    var left = targets.length;
+    for (final host in targets) {
+      unawaited(_reaches(host).then((reached) {
+        left--;
+        if (answer.isCompleted) return;
+        if (reached) {
+          answer.complete(true);
+        } else if (left == 0) {
+          answer.complete(false);
+        }
+      }));
     }
-    return false;
+    return answer.future;
+  }
+
+  Future<bool> _reaches(String host) async {
+    try {
+      // Deux bornes : celle de `connect` couvre la poignée de main, la
+      // seconde le nom à résoudre, qui peut traîner avant elle.
+      final socket = await Socket.connect(host, port, timeout: timeout).timeout(timeout);
+      socket.destroy();
+      return true;
+    } on Object {
+      return false;
+    }
   }
 }
 
@@ -134,10 +169,21 @@ class AlwaysReachable implements Reachability {
   Future<bool> probe() async => true;
 }
 
+/// Ce qu'il faut faire d'un provider réseau qui a échoué : rien de plus.
+///
+/// Riverpod réessaie de lui-même — dix fois, en doublant l'attente — et garde
+/// l'état sur `AsyncLoading` pendant tout ce temps. La branche `error:` d'un
+/// écran ne s'affichait donc qu'après plusieurs minutes : le tourniquet que
+/// cette page devait supprimer, réintroduit par en dessous.
+///
+/// Ici la reprise est explicite et visible : la sonde rouvre le passage quand
+/// le réseau revient, et le bouton « Réessayer » est à l'écran.
+Duration? noRetry(int retryCount, Object error) => null;
+
 /// Comment l'application constate la présence du réseau.
 ///
 /// Par défaut elle ne constate rien et se croit en ligne : c'est `main` qui
-/// branche [DnsReachability], comme il branche la base et les préférences.
+/// branche [SocketReachability], comme il branche la base et les préférences.
 /// Un test qui ne parle pas du réseau n'a donc ni attente ni minuteur en
 /// cours ; celui qui veut jouer l'un ou l'autre passe sa propre sonde.
 final reachabilityProvider = Provider<Reachability>((ref) => const AlwaysReachable());
