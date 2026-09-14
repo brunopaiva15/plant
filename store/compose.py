@@ -312,9 +312,6 @@ IDENT_COPY = {
     'en': {'title': 'Species', 'hint': 'Recognised by Iris on the device. Choose the species.', 'use': 'Use',
            'online': 'Search online', 'likely': 'Likely', 'possible': 'Possible', 'unlikely': 'Less likely'},
 }
-# La case « Prendre une photo » de l'étape Photo, dans la capture (3×).
-PHOTO_BOX = (60, 541, 1110, 2068)
-
 
 def common_names(lang):
     with open(os.path.join(ROOT, 'tools', 'plant_dataset', 'plants.csv'), newline='', encoding='utf-8') as f:
@@ -392,22 +389,9 @@ def ident_sheet(lang, width=1170):
     return sheet
 
 
-def identification_shot(shot_path):
-    """L'étape Photo de l'ajout, une fois la photo prise : elle remplit la
-    case du viseur. La page s'assombrit et la feuille « Espèce » monte
-    ensuite, dans le téléphone."""
-    shot = Image.open(shot_path).convert('RGB')
-    x0, y0, x1, y1 = PHOTO_BOX
-    pw, ph = x1 - x0, y1 - y0
-    photo = Image.open(IDENT_PHOTO).convert('RGB')
-    scale = max(pw / photo.width, ph / photo.height)
-    photo = photo.resize((int(photo.width * scale), int(photo.height * scale)), Image.LANCZOS)
-    ox, oy = (photo.width - pw) // 2, (photo.height - ph) // 2
-    photo = photo.crop((ox, oy, ox + pw, oy + ph))
-    pm = Image.new('L', photo.size, 0)
-    ImageDraw.Draw(pm).rounded_rectangle((0, 0, pw - 1, ph - 1), radius=3 * 24, fill=255)
-    shot.paste(photo, (x0, y0), pm)
-    return shot
+# Sans capture de la feuille « Espèce » — le modèle ne tourne pas sur le
+# web —, elle est redessinée sur la fiche du Ficus, celle-là même qu'elle
+# recouvre dans l'app.
 
 
 # --- les sept visuels ---------------------------------------------------------
@@ -464,10 +448,10 @@ def build(shots, out, lang):
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
         modal = {'device': device}
-        if name == 'identify' and not os.path.exists(shot) and not device:
+        if name == 'identify' and not os.path.exists(shot):
             # Pas de modèle sur le web : la feuille « Espèce » est redessinée
-            # sur l'étape Photo de l'ajout, avec les vrais résultats.
-            shot = identification_shot(os.path.join(shots, 'add-plant.png'))
+            # sur la fiche du Ficus, avec les vrais résultats.
+            shot = os.path.join(shots, 'plant-ficus.png')
             modal.update(scrim=0.36, sheet=ident_sheet(lang))
         if isinstance(shot, str) and not os.path.exists(shot):
             # Une capture manquée ne bloque pas les autres : le visuel

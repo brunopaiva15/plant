@@ -87,6 +87,7 @@ await go('/profile', 4000); await shot('profile');
 // carte « Diagnostic » est au milieu de l'écran.
 await go('/plants', 4000); await p.mouse.click(286, 375); await p.waitForTimeout(3000);
 await swipe(195, 760, 60); await p.mouse.click(195, 660); await p.waitForTimeout(3000); await shot('diagnosis');
-// En dernier : la feuille « Une photo ? » de l'ajout reste ouverte par-dessus tout.
-await go('/plants', 4000); await p.mouse.click(362, 22); await p.waitForTimeout(3000); await shot('add-plant');
+// La fiche du Ficus : c'est elle que la feuille « Espèce » recouvre, et
+// c'est sur elle que compose.py la redessine faute de modèle sur le web.
+await go('/plants', 4000); await p.mouse.click(104, 543); await p.waitForTimeout(3000); await shot('plant-ficus');
 await b.close();

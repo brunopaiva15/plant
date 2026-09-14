@@ -230,13 +230,12 @@ void main() {
       await dismiss();
     });
 
-    // En dernier : l'ajout d'une plante, à l'étape Photo.
-    await scene('add-plant', () async {
+    // La fiche du Ficus seule : c'est elle que la feuille « Espèce »
+    // recouvre, et le repli du web la redessine par-dessus.
+    await scene('plant-ficus', () async {
       await go(Routes.plants);
-      await tapLabel(l10n.addPlant);
-      await wait(tester, 2000);
-      await shot('add-plant');
-      await dismiss();
+      await tapText('Ficus lyrata');
+      await shot('plant-ficus');
     });
   });
 }

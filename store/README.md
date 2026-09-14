@@ -14,15 +14,15 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 | 2 | Plantes (la collection) | monstera en pot | sauge |
 | 3 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
 | 4 | Fiche d'entretien | anneau et goutte | soleil |
-| 5 | Ajout d'une plante, étape Photo, avec la feuille « Espèce » ouverte | caoutchouc en pot | terre |
+| 5 | Fiche du Ficus, feuille « Espèce » ouverte | caoutchouc en pot | terre |
 | 6 | Jardin, calendrier | la maison | lavande |
 | 7 | Diagnostic gardé au journal de la Calathea, rouvert en entier | sansevieria en pot | rose |
 
 Le cinquième montre l'identification sur l'appareil : sur le simulateur,
 c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
 Ficus lyrata de la démo. Sur le web, où le modèle ne tourne pas,
-`compose.py` la redessine dans le téléphone, sur la page assombrie, avec
-des résultats vrais : la photo est une observation iNaturalist en CC0
+`compose.py` la redessine sur la fiche du Ficus assombrie — celle-là même
+qu'elle recouvre dans l'app —, avec des résultats vrais : la photo est une observation iNaturalist en CC0
 (`ident/ficus-lyrata.jpg`, observation 359128431, photo 655212161), absente
 du jeu d'entraînement, et les trois propositions avec leur cran de
 confiance sont la réponse du modèle livré, obtenue par `ident/score.py`,
@@ -112,7 +112,11 @@ python3 store/compose.py store/shots-en store/en en
 ```
 
 Sans capture `identify.png`, `compose.py` redessine la feuille « Espèce »
-sur l'étape Photo de l'ajout, avec les résultats mesurés par `ident/score.py`.
+sur `plant-ficus.png`, avec les résultats mesurés par `ident/score.py`.
+
+L'étape Photo de la création n'est capturée nulle part : son viseur porte
+son déclencheur, et ni le web ni le simulateur n'ont de caméra — la capture
+ne montrerait que le repli sans viseur, deux boutons sur un cadre vide.
 
 `capture.mjs` demande Playwright (`npm i playwright`) ; la variable `CHROMIUM`
 peut pointer un binaire précis. Les emojis de l'app sont fournis par Flutter
