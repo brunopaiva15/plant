@@ -41,7 +41,8 @@ pas entre le 1 543ᵉ et le 3 543ᵉ rang. Voir le § 12.11 de `docs/09`.
 ## Les classes qui sont la même plante
 
 ```bash
-python3 doublons.py --labels ../../assets/model/labels.txt
+python3 doublons.py --labels ../../assets/model/labels.txt   # les classes livrées
+python3 doublons.py --catalogue                              # les lignes à collecter
 ```
 
 *Sansevieria trifasciata* et *Dracaena trifasciata* sont une seule plante —
@@ -58,6 +59,21 @@ groupe ceux qui tombent sur la même clé. Pas d'heuristique : chercher les
 doublons — *Populus alba* et *Salix alba* ne sont pas la même plante. Les
 clés sont mises en cache, une reprise ne redemande rien. Voir le § 12.14 de
 `docs/09`.
+
+**Les deux ensembles ne servent pas au même moment.** `--labels` lit les
+classes que le modèle expose : le mal est fait, on constate. `--catalogue`
+lit les 5 778 lignes de `plants.csv`, c'est-à-dire ce qui *sera* collecté —
+et c'est là que la réponse paie, puisqu'une ligne retirée avant la collecte
+n'aura pas dépensé d'images à fabriquer une confusion (§ 13.6 de `docs/09`).
+
+**Une seule garde, et elle compte à cette échelle.** GBIF ne répond jamais
+« je ne sais pas » : faute d'espèce, il remonte d'un cran. *Harpephyllum
+afrum* tombe sur la clé 6 — *Plantae* —, *Piper methysticum* sur sa famille,
+*Rosa × hybrida* sur son genre. Sur les 1 444 étiquettes livrées, toutes
+résolues à l'espèce, ça ne se voyait pas ; sur le catalogue entier, ça
+grouperait toutes les inconnues en une seule plante. Seule une
+correspondance au rang de l'espèce est retenue — la règle qui décide déjà ce
+que la collecte accepte.
 
 ## Fichiers
 

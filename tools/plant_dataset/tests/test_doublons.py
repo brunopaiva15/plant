@@ -52,3 +52,94 @@ def test_le_compte_dimages_dit_ce_que_la_scission_separe(tmp_path):
         'sansevieria-trifasciata,train\n'
         'dracaena-trifasciata,test\n', encoding='utf-8')
     assert images_par_classe(tmp_path) == {'sansevieria-trifasciata': 2, 'dracaena-trifasciata': 1}
+
+
+# --- La garde de rang : un nom inconnu rend son genre, pas rien -------------
+#
+# GBIF ne répond jamais « je ne sais pas » : faute d'espèce, il remonte d'un
+# cran. *Harpephyllum afrum* tombe sur la clé 6, qui est *Plantae*. Sans
+# garde, toutes les inconnues du catalogue tomberaient sur la même clé et
+# l'outil annoncerait une plante de 5 000 noms.
+
+from doublons import CACHE_VERSION, cle_acceptee, ecrire_cache, lire_cache  # noqa: E402
+from plant_dataset.fetchers.gbif import TaxonMatch  # noqa: E402
+
+
+class _ClientFictif:
+    def __init__(self, m):
+        self._m = m
+
+    def match(self, nom):
+        return self._m
+
+
+def _match(**kw):
+    base = dict(key=1, canonical_name='', scientific_name='', rank='SPECIES', status='ACCEPTED',
+                match_type='EXACT', confidence=99, family='', genus='', accepted_key=None)
+    return TaxonMatch(**(base | kw))
+
+
+def test_un_nom_resolu_a_lespece_rend_sa_cle():
+    assert cle_acceptee(_ClientFictif(_match(key=2868536)), 'Monstera deliciosa') == 2868536
+
+
+def test_un_synonyme_rend_la_cle_du_nom_accepte():
+    # Sinon le synonyme se rangerait à part de son nom accepté, c'est-à-dire
+    # exactement le doublon qu'on cherche.
+    assert cle_acceptee(_ClientFictif(_match(key=5363644, accepted_key=2987867)), 'Aronia mitschurinii') == 2987867
+
+
+def test_le_regne_nest_pas_une_plante():
+    m = _match(key=6, rank='KINGDOM', match_type='HIGHERRANK', confidence=95)
+    assert cle_acceptee(_ClientFictif(m), 'Harpephyllum afrum') is None
+
+
+def test_le_genre_dun_hybride_horticole_nest_pas_une_plante():
+    # Rosa × hybrida, Protea × hybrida, Cymbidium hybridum : sans ça, tous
+    # les Rosa non résolus du catalogue deviendraient un seul doublon.
+    m = _match(key=8395064, rank='GENUS', match_type='HIGHERRANK', confidence=99)
+    assert cle_acceptee(_ClientFictif(m), 'Rosa × hybrida') is None
+
+
+def test_un_nom_inconnu_de_gbif_ne_groupe_avec_personne():
+    assert cle_acceptee(_ClientFictif(None), 'Plante imaginaire') is None
+
+
+def test_une_correspondance_floue_mais_sure_est_retenue():
+    # Clematis armandi → Clematis armandii, 98 de confiance : la ligne du
+    # catalogue est bien cette plante, et deux lignes qui y tombent sont
+    # bien un doublon.
+    m = _match(key=6375061, match_type='FUZZY', confidence=98)
+    assert cle_acceptee(_ClientFictif(m), 'Clematis armandi') == 6375061
+
+
+def test_une_correspondance_floue_incertaine_est_ecartee():
+    m = _match(key=42, match_type='FUZZY', confidence=80)
+    assert cle_acceptee(_ClientFictif(m), 'Nom approximatif') is None
+
+
+# --- Le cache ne survit pas à une correction de l'outil ---------------------
+
+def test_le_cache_se_relit(tmp_path):
+    c = tmp_path / 'doublons.json'
+    ecrire_cache(c, {'monstera-deliciosa': 2868536, 'inconnue': None})
+    assert lire_cache(c) == {'monstera-deliciosa': 2868536, 'inconnue': None}
+
+
+def test_un_cache_dune_autre_version_se_jette(tmp_path):
+    # Les clés résolues avant la garde de rang sont des genres et des
+    # règnes : les relire rendrait la réponse fausse en silence.
+    c = tmp_path / 'doublons.json'
+    c.write_text('{"harpephyllum-afrum": 6, "erythrina-afra": 2945830}', encoding='utf-8')
+    assert lire_cache(c) == {}
+
+
+def test_un_cache_absent_ne_fait_pas_echouer(tmp_path):
+    assert lire_cache(tmp_path / 'rien.json') == {}
+
+
+def test_la_version_du_cache_est_ecrite(tmp_path):
+    import json
+    c = tmp_path / 'doublons.json'
+    ecrire_cache(c, {'a': 1})
+    assert json.loads(c.read_text())['version'] == CACHE_VERSION
