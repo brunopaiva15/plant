@@ -122,7 +122,16 @@ void main() {
     Future<void> reveal(Finder finder) async {
       final size = tester.view.physicalSize / tester.view.devicePixelRatio;
       final from = Offset(size.width / 2, size.height * 0.62);
-      for (var i = 0; i < 25 && finder.hitTestable().evaluate().isEmpty; i++) {
+      // La barre d'onglets flotte au-dessus du bas de la page : une cible
+      // qui s'arrête dessous est visible mais intouchable, et le doigt
+      // tomberait sur un onglet. On déroule jusqu'à ce qu'elle remonte.
+      final ceiling = size.height * 0.78;
+      bool reached() {
+        final found = finder.hitTestable().evaluate();
+        return found.isNotEmpty && tester.getCenter(finder.hitTestable().first).dy < ceiling;
+      }
+
+      for (var i = 0; i < 25 && !reached(); i++) {
         await tester.dragFrom(from, const Offset(0, -260));
         await wait(tester, 400);
       }

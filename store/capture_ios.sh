@@ -68,4 +68,4 @@ done
 for lang in $LANGS; do
   python3 store/compose.py "store/shots-$lang" "store/$lang" "$lang"
 done
-echo "Visuels composés dans store/{$LANGS// /,}"
+echo "Visuels composés dans ${LANGS// /, } : $(for l in $LANGS; do printf 'store/%s ' "$l"; done)"
