@@ -43,7 +43,7 @@ final class QuickActionsChannel: NSObject, FlutterSceneLifeCycleDelegate {
         result(FlutterError(code: "bad_args", message: "items expected", details: nil))
         return
       }
-      UIApplication.shared.shortcutItems = items.compactMap { item in
+      UIApplication.shared.shortcutItems = items.compactMap { item -> UIApplicationShortcutItem? in
         guard let type = item["type"], let title = item["title"] else { return nil }
         let icon = item["icon"].map { UIApplicationShortcutIcon(systemImageName: $0) }
         return UIApplicationShortcutItem(type: type, localizedTitle: title, localizedSubtitle: nil, icon: icon, userInfo: nil)
@@ -69,7 +69,7 @@ final class QuickActionsChannel: NSObject, FlutterSceneLifeCycleDelegate {
   // MARK: - FlutterSceneLifeCycleDelegate
 
   @objc(scene:willConnectToSession:options:)
-  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UISceneConnectionOptions?) -> Bool {
+  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions?) -> Bool {
     if let item = connectionOptions?.shortcutItem { deliver(item.type) }
     // On a regardé, on n'a rien pris : la scène reste à Flutter.
     return false
