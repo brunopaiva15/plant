@@ -298,6 +298,12 @@ void main() {
     // De retour dans le shell à onglets, qui n'a rien à dépiler.
     expect(find.bySemanticsLabel('Retour'), findsNothing);
     expect(tester.takeException(), isNull);
+    // Libérer les providers arme un minuteur à zéro chez drift, qui ferme ses
+    // flux de requêtes. Le cadre démonte l'arbre après le corps du test et
+    // vérifie aussitôt qu'aucun minuteur ne pend : on démonte donc ici, puis
+    // on pompe, pour le laisser partir pendant qu'on en a encore le temps.
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
     handle.dispose();
   });
 

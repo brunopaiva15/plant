@@ -52,6 +52,8 @@ Future<String> essai(String quoi, Future<dynamic> Function() f) async {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('quel pas pend', () async {
     final db = FloraDatabase(NativeDatabase.memory());
     addTearDown(db.close);
@@ -72,6 +74,15 @@ void main() {
       await essai('2. currentUserProvider.future', () => c.read(currentUserProvider.future)),
       await essai('3. connectivityProvider', () async => c.read(connectivityProvider)),
       await essai('4. myGardensProvider.future', () => c.read(myGardensProvider.future)),
+      await essai('5. currentUserProvider.future, ecouteur retenu', () async {
+        final sub = c.listen(currentUserProvider, (_, _) {});
+        try {
+          return await c.read(currentUserProvider.future);
+        } finally {
+          sub.close();
+        }
+      }),
+      await essai('6. myGardensProvider.future apres 5', () => c.read(myGardensProvider.future)),
     ];
     // ignore: avoid_print
     print('\n===== DIAGNOSTIC =====\n${lignes.join('\n')}\n======================\n');
