@@ -106,9 +106,15 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// en ligne est le meilleur recours.
   static const int maxPhotos = 3;
 
+  /// Le magasin de photos, gardé dès l'ouverture : `dispose` efface les
+  /// photos prises ici, et `ref` n'est plus lisible à ce moment-là — le
+  /// widget est déjà démonté, et Riverpod le refuse.
+  late final PhotoStorageService _storage;
+
   @override
   void initState() {
     super.initState();
+    _storage = ref.read(photoStorageProvider);
     _future = _identify();
   }
 
@@ -117,7 +123,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     // Les photos prises ici ne servaient qu'à identifier : elles ne sont la
     // photo d'aucune plante et n'ont rien à faire sur l'appareil après coup.
     // Celles que l'appelant a prêtées ne bougent pas.
-    final storage = ref.read(photoStorageProvider);
+    final storage = _storage;
     for (final shot in _shots) {
       final stored = shot.stored;
       if (stored != null) storage.deleteFiles(stored.filePath, stored.thumbPath);

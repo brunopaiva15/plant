@@ -112,19 +112,21 @@ void main() {
       await wait(tester, 2500);
     }
 
-    /// La page qui défile, à l'écran : le plus grand des défilements
-    /// verticaux touchables.
-    Finder pageScrollable() {
-      final candidates = find.byType(Scrollable).hitTestable().evaluate().where((e) => (e.widget as Scrollable).axis == Axis.vertical).toList();
-      candidates.sort((a, b) => (b.size?.height ?? 0).compareTo(a.size?.height ?? 0));
-      if (candidates.isEmpty) throw StateError('aucune page qui défile à l’écran');
-      final best = candidates.first;
-      return find.byElementPredicate((e) => e == best);
-    }
-
-    /// Fait défiler la page jusqu'à ce que [finder] soit visible.
+    /// Fait défiler la page jusqu'à ce que [finder] soit touchable, par des
+    /// glissements au milieu de l'écran.
+    ///
+    /// Pas `dragUntilVisible` : il s'accroche à un défilement précis, et
+    /// celui de la fiche est reconstruit en cours de route — le finder ne
+    /// retrouve alors plus rien. Un doigt au milieu de la page, lui, tombe
+    /// toujours sur la bonne liste.
     Future<void> reveal(Finder finder) async {
-      await tester.dragUntilVisible(finder, pageScrollable(), const Offset(0, -250));
+      final size = tester.view.physicalSize / tester.view.devicePixelRatio;
+      final from = Offset(size.width / 2, size.height * 0.62);
+      for (var i = 0; i < 25 && finder.hitTestable().evaluate().isEmpty; i++) {
+        await tester.dragFrom(from, const Offset(0, -260));
+        await wait(tester, 400);
+      }
+      if (finder.hitTestable().evaluate().isEmpty) throw StateError('rien trouvé après avoir déroulé la page');
       await wait(tester, 800);
     }
 
@@ -215,11 +217,15 @@ void main() {
     });
 
     // Le diagnostic gardé au journal de la Calathea, rouvert en entier.
+    // La carte du journal se cherche par son texte, pas par son étiquette :
+    // le texte est là quoi qu'il arrive à l'arbre sémantique.
     await scene('diagnosis', () async {
       await go(Routes.plants);
       await tapText('Calathea');
-      await reveal(find.bySemanticsLabel(l10n.diagnosisOpen));
-      await tapLabel(l10n.diagnosisOpen);
+      final open = find.textContaining(l10n.diagnosisOpen);
+      await reveal(open);
+      await tester.tap(open.hitTestable().first, warnIfMissed: false);
+      await wait(tester, 2500);
       await shot('diagnosis');
       await dismiss();
     });
