@@ -518,6 +518,7 @@
   "irisFeedbackAskTitle": "Senden identifizierter Fotos",
   "irisFeedbackAskBody": "Die zum Identifizieren aufgenommenen Fotos und der gewählte Name können gesendet werden, um die nächsten Versionen des Modells {name} zu trainieren. Sie sind nur für das sendende Konto lesbar, und dessen Löschung entfernt sie. Die Wahl lässt sich in den Einstellungen zur Erkennung ändern.",
   "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
+  "genusUncertainSpecies": "Art unsicher",
   "modelMissing": "{name} auf diesem Gerät nicht verfügbar",
   "modelLoading": "Modell wird geladen…",
   "identificationStats": "{local} auf dem Gerät analysiert, {accepted} hier entschieden; {remote} online gesendet",

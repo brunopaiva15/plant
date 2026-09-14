@@ -2898,6 +2898,12 @@ abstract class AppLocalizations {
   /// **'Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d\'identification.'**
   String irisFeedbackAskBody(String name);
 
+  /// No description provided for @genusUncertainSpecies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèce incertaine'**
+  String get genusUncertainSpecies;
+
   /// No description provided for @modelMissing.
   ///
   /// In fr, this message translates to:

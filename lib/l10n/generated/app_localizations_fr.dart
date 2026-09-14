@@ -1625,6 +1625,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get genusUncertainSpecies => 'Espèce incertaine';
+
+  @override
   String modelMissing(String name) {
     return '$name indisponible sur cet appareil';
   }

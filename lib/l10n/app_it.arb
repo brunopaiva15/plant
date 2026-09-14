@@ -518,6 +518,7 @@
   "irisFeedbackAskTitle": "Invio delle foto identificate",
   "irisFeedbackAskBody": "Le foto scattate per identificare e il nome scelto possono essere inviati per addestrare le prossime versioni del modello {name}. Sono leggibili solo dall'account che le invia, e la sua eliminazione le cancella. La scelta si cambia nelle impostazioni di identificazione.",
   "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
+  "genusUncertainSpecies": "Specie incerta",
   "modelMissing": "{name} non disponibile su questo dispositivo",
   "modelLoading": "Caricamento del modello…",
   "identificationStats": "{local} analizzate sul dispositivo, {accepted} decise qui; {remote} inviate online",

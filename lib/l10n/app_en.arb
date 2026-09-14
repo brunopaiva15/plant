@@ -518,6 +518,7 @@
   "irisFeedbackAskTitle": "Sending identified photos",
   "irisFeedbackAskBody": "The photos taken to identify and the chosen name can be sent to train the next versions of the {name} model. They are readable only by the account that sends them, and deleting it erases them. The choice can be changed in the identification settings.",
   "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
+  "genusUncertainSpecies": "Species uncertain",
   "modelMissing": "{name} unavailable on this device",
   "modelLoading": "Loading the model…",
   "identificationStats": "{local} analysed on device, {accepted} decided here; {remote} sent online",

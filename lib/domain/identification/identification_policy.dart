@@ -149,7 +149,8 @@ SecondPhotoOffer secondPhotoOffer(
 
 /// Le genre que le modèle désigne quand il n'ose aucune espèce.
 class GenusAnswer {
-  const GenusAnswer({required this.genus, required this.mass, required this.species});
+  const GenusAnswer({required this.genus, required this.mass, required this.species,
+      this.source = IdentificationSource.local});
 
   /// Le nom du genre, « Picea ».
   final String genus;
@@ -160,6 +161,10 @@ class GenusAnswer {
   /// Combien d'espèces de ce genre la réponse recouvre. Jamais une seule :
   /// sa masse serait son score, et elle n'aurait pas passé le seuil.
   final int species;
+
+  /// D'où viennent les candidates sommées — toujours l'appareil, la cascade
+  /// ne proposant le genre que sur une réponse locale.
+  final IdentificationSource source;
 }
 
 /// Le genre à proposer, ou `null` s'il n'y a rien à en dire.

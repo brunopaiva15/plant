@@ -777,6 +777,7 @@
   "irisFeedbackAskTitle": "Envoi des photos identifiées",
   "irisFeedbackAskBody": "Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d'identification.",
   "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
+  "genusUncertainSpecies": "Espèce incertaine",
   "modelMissing": "{name} indisponible sur cet appareil",
   "@modelMissing": {"placeholders": {"name": {"type": "String"}}},
   "modelLoading": "Chargement du modèle…",

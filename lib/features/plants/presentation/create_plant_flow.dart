@@ -16,6 +16,7 @@ import '../../../data/services/photo_storage_service.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../identification/presentation/iris_feedback_prompt.dart';
+import '../../identification/presentation/genus_row.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -314,6 +315,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     if (identifier is! CascadeIdentifier) return SecondPhotoOffer.none;
     return secondPhotoOffer(identifier.policy, results,
         photos: _identificationPaths.length, maxPhotos: maxIdentificationPhotos);
+  }
+
+  /// Le genre, quand aucune espèce ne passe le seuil : « Épicéa, espèce
+  /// incertaine » vaut mieux que cinq noms dont un serait retenu au hasard,
+  /// avec son profil de soin.
+  GenusAnswer? _identificationGenus(List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    return identifier is CascadeIdentifier ? genusAnswer(identifier.policy, results) : null;
   }
 
   /// Une photo de plus pour trancher. Gratuite, hors ligne et immédiate, là
@@ -775,6 +784,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _chooseIdentificationSource : null,
               onRemovePhoto: _removeIdentificationPhoto,
               offer: _identificationOffer,
+              genus: _identificationGenus,
             ),
           const SizedBox(height: Space.lg),
           Pressable(
@@ -883,6 +893,7 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onAddPhoto,
     this.onRemovePhoto,
     this.offer,
+    this.genus,
   });
 
   final Future<List<IdentificationCandidate>> future;
@@ -906,6 +917,9 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// cascade, comme dans la fiche d'identification.
   final SecondPhotoOffer Function(List<IdentificationCandidate>)? offer;
 
+  /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
+  final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -921,6 +935,8 @@ class _IdentificationSuggestions extends StatelessWidget {
         final results = (snap.data ?? const <IdentificationCandidate>[]).take(3).toList();
         if (results.isEmpty) return const SizedBox.shrink();
         final photoOffer = offer?.call(results) ?? SecondPhotoOffer.none;
+        // Sur toutes les candidates rendues, pas sur les trois affichées.
+        final genre = genus?.call(snap.data ?? const []);
         // La bande montre ce qui est parti dès qu'il y a plusieurs photos, et
         // la place libre seulement si la cascade en veut une de plus. Le
         // compte n'est plus écrit — « · 2 photos » disait l'état sans jamais
@@ -957,6 +973,10 @@ class _IdentificationSuggestions extends StatelessWidget {
                 ],
               ],
               const SizedBox(height: Space.xs),
+              if (genre != null) ...[
+                GenusRow(answer: genre, onUse: () => onPick(genusCandidate(genre, l10n.localeName))),
+                const SizedBox(height: Space.xs),
+              ],
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
               // La photo d'abord, l'appel réseau ensuite : l'une est gratuite
               // et immédiate, l'autre se prend sur un quota mensuel. Le geste

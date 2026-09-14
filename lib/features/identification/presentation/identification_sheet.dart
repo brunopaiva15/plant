@@ -21,6 +21,7 @@ import '../../../domain/identification/plant_identifier.dart';
 import '../../../domain/species/species_info.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
+import 'genus_row.dart';
 
 /// La photo d'illustration d'un candidat, cherchée chez GBIF après coup.
 /// Séparée de l'identification elle-même : la liste s'affiche dès que les
@@ -183,6 +184,13 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     return secondPhotoOffer(identifier.policy, results, photos: _paths.length, maxPhotos: maxPhotos);
   }
 
+  /// Le genre, quand aucune espèce ne passe le seuil. Même politique que le
+  /// reste : c'est elle qui dit ce que « sûr » veut dire.
+  GenusAnswer? _genus(List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    return identifier is CascadeIdentifier ? genusAnswer(identifier.policy, results) : null;
+  }
+
   /// Une photo de plus, et on recommence. C'est gratuit, hors ligne et
   /// instantané, là où la recherche en ligne se prend sur un quota mensuel.
   Future<void> _addPhoto(PhotoSource source) async {
@@ -286,6 +294,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               final results = (data ?? const <IdentificationCandidate>[]).take(5).toList();
               if (results.isEmpty) return EmptyState(emoji: '🤔', title: l10n.identifyNone, compact: true);
               final offer = _offer(results);
+              // Le genre se somme sur toutes les candidates rendues, pas sur
+              // les cinq affichées : c'est la masse qui décide, et elle se
+              // perdrait à tronquer deux fois.
+              final genus = _genus(data ?? const []);
               // La bande montre ce qui est parti dès qu'il y a plusieurs
               // photos, et la place libre seulement si la cascade en veut
               // une de plus. Le compte n'est plus écrit — « · 2 photos »
@@ -315,6 +327,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                     ],
                   ],
                   const SizedBox(height: Space.sm),
+                  if (genus != null) ...[
+                    GenusRow(answer: genus, onUse: () => _use(genusCandidate(genus, l10n.localeName))),
+                    const SizedBox(height: Space.xs),
+                  ],
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => _use(c))]),
                   _PhotoSourceNote(candidates: results),
                   // La photo d'abord, l'appel réseau ensuite : l'une est
