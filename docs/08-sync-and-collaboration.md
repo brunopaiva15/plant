@@ -23,6 +23,25 @@
 | plant_actions, plant_photos, measurements, tags, plant_tags | append-only : `insert or ignore`, suppression logique par `deleted_at` |
 | photos (fichiers) | immuables, nommées par UUID : jamais de conflit |
 
+## Un schéma distant en retard
+Le projet Supabase peut avoir une version de retard : `supabase/schema.sql`
+n'a pas été rejoué depuis la dernière colonne ajoutée. PostgREST refuse alors
+la ligne entière pour ce seul champ (`PGRST204`, « Could not find the
+'cutting_month' column of 'plants' »), et comme le cycle s'arrête à la
+première erreur, toute la file d'envoi restait à quai — les autres tables
+comprises.
+- **À l'envoi**, la colonne inconnue est retirée et la ligne repart sans
+  elle. Le champ ne monte pas, le reste passe. Ce qui a été retiré est oublié
+  à chaque push : le schéma remis à jour se reprend tout seul, sans relancer
+  l'application.
+- **À la lecture**, le serveur ne renvoie pas ce qu'il n'a pas. Les colonnes
+  absentes de la ligne distante gardent leur valeur locale, faute de quoi la
+  ligne les viderait — un champ qui ne monte pas est un désagrément, un champ
+  effacé est une perte. Une valeur mise à null ailleurs, elle, revient avec sa
+  clé : seule l'absence de la clé vaut « garder ce qui est là ».
+- **À l'écran**, Compte liste les colonnes en cause sous l'état de la
+  synchronisation. Rejouer `supabase/schema.sql` les fait disparaître.
+
 ## Les fichiers des photos
 La ligne et l'image voyagent séparément, et l'image coûte mille fois plus cher.
 - **Téléversement seulement quand l'image change.** Une écriture qui ne touche
@@ -72,7 +91,7 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 | Feuille « Rejoindre un jardin » | code saisi ou reçu par lien, aperçu de l'invitation, acceptation |
 
 ## Mise en place
-1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Erreur de synchronisation » sur l'écran Compte, avec le message du serveur dessous (« Could not find the '…' column » : une colonne manque ; « new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).
+1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Colonnes inconnues du serveur » sur l'écran Compte, sous l'état de la synchronisation, qui les nomme en « table.colonne ». Le reste passe quand même — la colonne en trop est retirée de la ligne, et reprend sa place d'elle-même une fois le fichier rejoué —, mais ces champs-là ne quittent pas l'appareil. Les autres refus du serveur arrêtent la synchronisation et s'affichent au mot près sous « Erreur de synchronisation » (« new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).
 2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`). Tant qu'elle ne l'est pas, un lien envoyé répond `{"code":"NOT_FOUND","message":"Requested function was not found"}`. Depuis un poste avec la CLI Supabase :
    ```bash
    supabase login

@@ -140,6 +140,15 @@ class _SignedIn extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
                 child: SelectableText(sync.message!, style: context.text.caption.copyWith(color: c.inkSecondary)),
               ),
+            // Le schéma du serveur est en retard : la synchronisation passe,
+            // mais ces champs-là restent sur l'appareil. Sans cette ligne,
+            // « À jour » serait vrai à un détail près, et le détail se
+            // perdrait sans bruit — rejouer `supabase/schema.sql` le règle.
+            if (sync.unknownColumns.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
+                child: SelectableText(l10n.syncUnknownColumns(sync.unknownColumns.join(', ')), style: context.text.caption.copyWith(color: c.inkSecondary)),
+              ),
             FloraListRow(leading: Icon(CupertinoIcons.arrow_2_circlepath, size: 20, color: c.inkSecondary), title: l10n.syncNow, onTap: () => ref.read(syncCoordinatorProvider.notifier).syncNow(), chevron: false),
           ],
         ),

@@ -23,8 +23,17 @@ class FakeRemote implements RemoteDataSource {
         _ => (row['id'] ?? row['key']).toString(),
       };
 
+  /// Colonnes absentes du schéma du faux serveur, par table : un projet
+  /// Supabase où `supabase/schema.sql` n'a pas été rejoué.
+  final unknown = <String, Set<String>>{};
+
   @override
   Future<void> upsert(String table, Map<String, Object?> row) async {
+    // PostgREST refuse la ligne entière dès qu'une colonne lui est inconnue,
+    // et n'en nomme qu'une à la fois.
+    for (final column in unknown[table] ?? const <String>{}) {
+      if (row.containsKey(column)) throw UnknownColumnException(table, column);
+    }
     final rows = tables.putIfAbsent(table, () => {});
     final key = _key(table, row);
     // PostgREST ne met à jour que les colonnes envoyées : les autres gardent
@@ -131,6 +140,59 @@ void main() {
     expect(await db.select(db.syncOutbox).get(), isEmpty);
     expect(sync.currentState.pendingCount, 0);
     expect(sync.currentState.lastSyncedAt, isNotNull);
+  });
+
+  test('une colonne absente du serveur ne bloque plus la file d\'envoi', () async {
+    final plants = DriftPlantRepository(db, garden);
+    final locations = DriftLocationRepository(db, garden);
+    // Un serveur en retard de plusieurs versions : trois colonnes de `plants`
+    // lui manquent, dont `number`, que la ligne locale, elle, ne peut pas
+    // laisser vide.
+    remote.unknown['plants'] = {'cutting_month', 'hardiness', 'number'};
+    final salon = await locations.create(name: 'Salon', icon: '🛋️');
+    final plant = await plants.create(NewPlant(name: 'Monstera', locationId: salon.id));
+    await plants.update((await plants.getPlant(plant.id))!.copyWith(cuttingMonth: () => 5));
+    final number = plant.number;
+    expect(number, isPositive, reason: 'la plante a bien un numéro court avant de partir');
+
+    await sync.sync();
+    expect(sync.currentState.message, isNull, reason: 'sync error: ${sync.currentState.message}');
+
+    // La plante est passée, sans le champ que le serveur ne sait pas ranger.
+    final row = remote.tables['plants']![plant.id]!;
+    expect(row['name'], 'Monstera');
+    expect(row['location_id'], salon.id);
+    expect(row.containsKey('cutting_month'), isFalse);
+    expect(row.containsKey('hardiness'), isFalse);
+    expect(row.containsKey('number'), isFalse);
+    // Et tout ce qui attendait derrière elle aussi.
+    expect(remote.tables['locations']![salon.id]!['name'], 'Salon');
+    expect(remote.tables['care_schedules']!.length, 2);
+    expect(await db.select(db.syncOutbox).get(), isEmpty);
+    expect(sync.currentState.pendingCount, 0);
+    expect(sync.currentState.unknownColumns, ['plants.cutting_month', 'plants.hardiness', 'plants.number']);
+    // La ligne redescend amputée de ces colonnes : elle ne doit pas pour
+    // autant effacer ce que l'appareil, lui, avait bien.
+    expect((await plants.getPlant(plant.id))!.cuttingMonth, 5);
+    expect((await plants.getPlant(plant.id))!.number, number, reason: 'le numéro court ne retombe pas à zéro');
+
+    // Même chose pour une modification venue d'un autre appareil, qui elle
+    // écrase franchement la ligne locale.
+    final ailleurs = remote.tables['plants']![plant.id]!;
+    ailleurs['name'] = 'Monstera deliciosa';
+    ailleurs['updated_at'] = DateTime.now().add(const Duration(seconds: 5)).toUtc().toIso8601String();
+    await sync.pull();
+    final apres = (await plants.getPlant(plant.id))!;
+    expect(apres.name, 'Monstera deliciosa');
+    expect(apres.cuttingMonth, 5);
+    expect(apres.number, number);
+
+    // Le schéma est rejoué : le champ repart de lui-même, sans relancer l'app.
+    remote.unknown.clear();
+    await plants.update((await plants.getPlant(plant.id))!.copyWith(cuttingMonth: () => 6));
+    await sync.sync();
+    expect(remote.tables['plants']![plant.id]!['cutting_month'], 6);
+    expect(sync.currentState.unknownColumns, isEmpty);
   });
 
   test('pull applies remote rows created elsewhere and downloads their photos', () async {

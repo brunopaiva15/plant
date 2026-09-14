@@ -726,3 +726,10 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public_invite(text) from public;
 grant execute on function public_invite(text) to anon, authenticated;
+
+-- PostgREST sert les colonnes qu'il a en cache, pas celles de la base : après
+-- un `alter table`, tant que le cache n'est pas relu, l'API répond encore
+-- « Could not find the '…' column of '…' in the schema cache » (PGRST204).
+-- Supabase le relit de lui-même sur les changements de schéma ; le dire ici
+-- rend le rejeu de ce fichier effectif tout de suite, sans attendre.
+notify pgrst, 'reload schema';

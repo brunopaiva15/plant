@@ -3282,6 +3282,12 @@ abstract class AppLocalizations {
   /// **'Erreur de synchronisation'**
   String get syncError;
 
+  /// No description provided for @syncUnknownColumns.
+  ///
+  /// In fr, this message translates to:
+  /// **'Colonnes inconnues du serveur : {columns}'**
+  String syncUnknownColumns(String columns);
+
   /// No description provided for @syncSyncing.
   ///
   /// In fr, this message translates to:

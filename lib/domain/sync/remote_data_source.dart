@@ -11,6 +11,22 @@ class RemoteChange {
   final String id;
 }
 
+/// Colonne absente du schéma distant : le serveur est en retard d'une version
+/// sur l'application, et ne sait pas où ranger ce champ.
+///
+/// PostgREST refuse la ligne entière pour une seule colonne inconnue. Sans
+/// cette distinction, un champ ajouté par une mise à jour arrêtait la file
+/// d'envoi sur place — et tout ce qui attendait derrière avec elle.
+class UnknownColumnException implements Exception {
+  const UnknownColumnException(this.table, this.column);
+
+  final String table;
+  final String column;
+
+  @override
+  String toString() => 'UnknownColumnException($table.$column)';
+}
+
 /// Accès distant abstrait. Implémenté par Supabase ; remplaçable.
 abstract class RemoteDataSource {
   /// Crée ou met à jour une ligne (clé primaire `id`, ou clés composites pour `plant_tags`).

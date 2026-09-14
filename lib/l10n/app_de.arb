@@ -649,6 +649,14 @@
   "syncPending": "{count, plural, =1{1 ausstehende Änderung} other{{count} ausstehende Änderungen}}",
   "syncOffline": "Offline · wird automatisch fortgesetzt",
   "syncError": "Synchronisierungsfehler",
+  "syncUnknownColumns": "Dem Server unbekannte Spalten: {columns}",
+  "@syncUnknownColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
   "syncSyncing": "Synchronisiere…",
   "authError": "Anmeldung nicht möglich. Prüfe die Adresse und versuche es erneut.",
   "appleUnavailable": "Apple-Anmeldung ist auf iPhone und iPad verfügbar.",
