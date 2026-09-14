@@ -737,6 +737,7 @@
   "qrCode": "QR code",
   "qrHint": "Scanné, ce code ouvre la fiche de la plante.",
   "scan": "Scanner",
+  "quickActionScan": "Scanner une étiquette",
   "scanHint": "Visez le QR code d'une plante.",
   "unknownQr": "QR code inconnu.",
   "shareQr": "Partager",

@@ -50,6 +50,16 @@ accompagne les photos d'un diagnostic. Lecture sur l'appareil par HomeKit
 rien n'est écrit dans la maison, rien n'est gardé. Sur Android, l'étape et le
 réglage n'apparaissent pas. Détails : docs/05.
 
+## Sur l'écran d'accueil d'iOS
+Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,
+rond, rectangle et ligne sur l'écran verrouillé) ; l'appui long sur l'icône
+propose d'ajouter une plante, de scanner une étiquette ou d'en trouver une ;
+l'arrosage, la validation et les gestes sensibles ont leurs motifs Core
+Haptics. Tout passe par des canaux natifs, sans plugin (`ios/Runner/*Channel.swift`,
+`ios/AuxineWidget/`). L'App Group `group.ch.vergasta.plant` doit exister sur
+l'App ID de l'application et sur celui du widget (`ch.vergasta.plant.widget`).
+Sur Android, rien de tout cela n'apparaît. Détails : docs/05 et docs/06.
+
 ## Gratuite, avec un soutien facultatif
 Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique
 permet seulement de remercier le développeur — il ne déverrouille rien.

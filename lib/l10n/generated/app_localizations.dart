@@ -2688,6 +2688,12 @@ abstract class AppLocalizations {
   /// **'Scanner'**
   String get scan;
 
+  /// No description provided for @quickActionScan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner une étiquette'**
+  String get quickActionScan;
+
   /// No description provided for @scanHint.
   ///
   /// In fr, this message translates to:
