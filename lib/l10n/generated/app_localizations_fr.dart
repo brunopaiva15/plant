@@ -3513,16 +3513,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get activityTaskDone => 'Tâche terminée';
 
   @override
-  String get archiveNameTitle => 'Nom des archives';
-
-  @override
-  String get archiveNameHint => 'Mémorial, Le passé…';
-
-  @override
-  String get archiveNameExplain =>
-      'Laissez vide pour garder le nom par défaut.';
-
-  @override
   String get searchArchives => 'Rechercher dans les archives';
 
   @override

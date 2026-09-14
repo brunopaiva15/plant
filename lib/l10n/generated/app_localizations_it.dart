@@ -3504,16 +3504,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get activityTaskDone => 'Attività completata';
 
   @override
-  String get archiveNameTitle => 'Nome dell\'archivio';
-
-  @override
-  String get archiveNameHint => 'Memoriale, Il passato…';
-
-  @override
-  String get archiveNameExplain =>
-      'Lascia vuoto per mantenere il nome predefinito.';
-
-  @override
   String get searchArchives => 'Cerca negli archivi';
 
   @override

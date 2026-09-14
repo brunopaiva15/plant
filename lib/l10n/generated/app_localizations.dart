@@ -6018,24 +6018,6 @@ abstract class AppLocalizations {
   /// **'Tâche terminée'**
   String get activityTaskDone;
 
-  /// No description provided for @archiveNameTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nom des archives'**
-  String get archiveNameTitle;
-
-  /// No description provided for @archiveNameHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mémorial, Le passé…'**
-  String get archiveNameHint;
-
-  /// No description provided for @archiveNameExplain.
-  ///
-  /// In fr, this message translates to:
-  /// **'Laissez vide pour garder le nom par défaut.'**
-  String get archiveNameExplain;
-
   /// No description provided for @searchArchives.
   ///
   /// In fr, this message translates to:
