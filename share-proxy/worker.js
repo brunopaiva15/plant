@@ -30,9 +30,12 @@ export default {
     const origin = await fetch(`${upstream}${pathname}${search}`, { method: request.method });
 
     const response = new Response(origin.body, origin);
-    // La fonction ne rend que du HTML : le `text/plain` reçu est la
-    // réécriture de la passerelle, jamais un choix de sa part.
-    response.headers.set('content-type', 'text/html; charset=utf-8');
+    // La passerelle ne réécrit que le HTML, et toujours en `text/plain` :
+    // là où elle est passée, le type d'origine revient. La fonte et le grain
+    // servis sous `/asset/` gardent le leur.
+    if ((response.headers.get('content-type') ?? '').startsWith('text/plain')) {
+      response.headers.set('content-type', 'text/html; charset=utf-8');
+    }
     // Même histoire pour la politique de sécurité, remplacée en chemin par
     // un `sandbox` qui empêcherait « Ouvrir dans Auxine » de s'ouvrir. La
     // fonction en publie un double sous un nom que la passerelle laisse
