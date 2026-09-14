@@ -139,3 +139,26 @@ def test_un_404_nest_pas_repris_indefiniment(monkeypatch):
     monkeypatch.setattr(requests, 'get', get)
     assert _proto._telecharger('http://x/1.jpg', 0, essais=3) is None
     assert len(appels) == 3, 'trois essais, pas une boucle'
+
+
+def test_la_reprise_repart_dune_seconde_pas_de_quinze(monkeypatch):
+    """Wikimedia annonce 600 000 requêtes par minute et nous en consommons
+    une : un 429 est un hoquet, pas un quota. L'échelle de quinze secondes
+    coûtait 3 min 30 par photo et allongeait la récolte de vingt minutes à
+    plusieurs heures."""
+    import requests
+    dodos = []
+    monkeypatch.setattr(_proto.time, 'sleep', lambda s: dodos.append(s))
+    monkeypatch.setattr(requests, 'get', lambda *a, **k: _Reponse(429))
+    _proto._telecharger('http://x/1.jpg', 0, essais=5)
+    assert dodos == [1, 2, 4, 8, 16], f'attendu une montée douce, obtenu {dodos}'
+
+
+def test_retry_after_fait_foi_quand_le_serveur_le_donne(monkeypatch):
+    import requests
+    dodos = []
+    monkeypatch.setattr(_proto.time, 'sleep', lambda s: dodos.append(s))
+    reponses = [_Reponse(429, retry_after='3'), _Reponse(200, b'ok')]
+    monkeypatch.setattr(requests, 'get', lambda *a, **k: reponses.pop(0))
+    assert _proto._telecharger('http://x/1.jpg', 0) == b'ok'
+    assert dodos[0] == 3, 'le serveur sait mieux que nous'

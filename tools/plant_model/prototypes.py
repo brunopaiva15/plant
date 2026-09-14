@@ -164,7 +164,14 @@ def _telecharger(url: str, pause: float, essais: int = 5) -> bytes | None:
             r = requests.get(url, timeout=60,
                              headers={'User-Agent': 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant)'})
             if r.status_code == 429:
-                time.sleep(float(r.headers.get('Retry-After') or min(15 * (essai + 1), 60)))
+                # `Retry-After` fait foi quand le serveur le donne. Sinon on
+                # repart d'une seconde, pas de quinze : les en-têtes de
+                # Wikimedia annoncent 600 000 requêtes par minute et nous en
+                # consommons une, donc un 429 ici est un hoquet de cache et
+                # non un quota. L'échelle précédente — 15, 30, 45, 60, 60 —
+                # coûtait 3 min 30 par photo perdue et faisait passer la
+                # récolte de vingt minutes à plusieurs heures.
+                time.sleep(float(r.headers.get('Retry-After') or min(2 ** essai, 20)))
                 continue
             r.raise_for_status()
             time.sleep(pause)      # la même cadence que les appels d'API
