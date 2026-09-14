@@ -1044,6 +1044,101 @@ Le chiffre publié et le chiffre rigoureux bougent ici dans le même sens
 (+6,7 et +6,8) — assez rare pour être noté : aucune des deux mesures ne
 raconte d'histoire.
 
+#### Combien d'espèces exposer ? La courbe, et ce qu'elle refuse de donner
+
+`retailler.py` fait de l'ensemble exposé un **cadran**. Restait à savoir où
+le tourner : le § 6.7 bis ne connaissait que les deux bouts, 1 444 → 0,6543
+et 5 259 → 0,5528.
+
+`tools/plant_model/courbe.py` lit toute la courbe en **une seule passe
+d'inférence** : masquer un softmax aux classes gardées puis le renormaliser
+donne exactement ce que rendrait un modèle retaillé à ces classes, si bien
+que chaque taille n'est plus qu'une addition sur les mêmes probabilités.
+Le tirage reproduit celui de `compare_models.py` — même graine, même
+filtre — donc la ligne du cœur seul doit retomber sur les chiffres publiés.
+Elle l'a fait au dix-millième : c'est ce qui permet de lire le reste.
+
+#### Il n'y a pas d'espèces gratuites, et c'est une mesure
+
+Une espèce ne coûte que si elle passe devant la bonne réponse. On a donc
+compté, pour chacune des 3 815 candidates, combien d'images du cœur elle
+ferait basculer de juste à fausse — son **coût de vol** — puis ajouté par
+coût croissant, la priorité de culture ne départageant que les ex æquo.
+**La sélection se fait sur la validation et la mesure sur le test** : choisir
+et mesurer sur les mêmes images aurait flatté le résultat. C'est cette
+séparation qui a tout dit.
+
+| sur 12 000 images de validation | |
+|---|---|
+| images que le cœur seul reconnaît | 7 849 |
+| candidates qui n'en volent **aucune** | **2 202** |
+| candidates qui en volent plus de 20 | **0** |
+
+Deux mille deux cents espèces gratuites, donc — sur la validation. Sur le
+test, les exposer coûte au cœur **5,9 points de top-1**. « Ne rien voler sur
+7 849 images » ne se transporte pas : le vol est réel, simplement trop
+diffus pour qu'aucune image de validation ne l'attrape. Aucune candidate ne
+dépasse 20 vols sur 7 849 — **il n'y a pas de brebis galeuses à écarter**,
+et c'est pour ça qu'il n'y a pas de coude.
+
+#### Le prix d'une espèce exposée
+
+| espèces exposées | cœur, top-1 | autonomie | justesse | espèces ajoutées, top-1 |
+|---|---|---|---|---|
+| 1 444 | 0,6543 | 54,2 % | 0,9081 | — |
+| 1 800 | 0,6418 | 51,9 % | 0,9101 | 0,6761 |
+| 2 200 | 0,6290 | 50,1 % | 0,9082 | 0,6413 |
+| 2 800 | 0,6138 | 47,9 % | 0,9050 | 0,5982 |
+| 3 646 | 0,5952 | 45,6 % | 0,8988 | 0,5802 |
+| 4 400 | 0,5753 | 42,6 % | 0,8932 | 0,5502 |
+| 5 259 | 0,5528 | 39,7 % | 0,8870 | 0,5230 |
+
+**Le coût est régulier : 0,22 à 0,35 point de top-1 par tranche de cent
+espèces**, et il ne s'emballe nulle part. Ordonner par coût de vol plutôt
+que par priorité de culture rend 0,4 à 1,2 point selon la taille — **et
+jusqu'à 3,5 points sur les plantes en pot**, où l'ordre par culture faisait
+entrer les sosies du cœur en premier. Le gain est réel ; il ne crée pas de
+coude pour autant.
+
+> **Ce que l'étendue coûte, c'est l'autonomie, pas la justesse.** De 1 444 à
+> 5 259 sorties, le top-1 perd 10,2 points et l'autonomie 14,5 — mais la
+> justesse des réponses acceptées ne perd que 2,1. Un catalogue plus large
+> ne rend pas l'application plus souvent fausse : il la rend plus souvent
+> hésitante, donc plus dépendante de Pl@ntNet. C'est un coût en euros et en
+> attente, pas en confiance.
+
+#### La question n'était pas « où est le coude » mais « à partir de quand »
+
+Une espèce exposée fait perdre au cœur, et gagner à qui la photographie.
+L'échange est rentable dès que la part des photos portant sur les espèces
+ajoutées dépasse `perte / (précision sur elles + perte)`. Sur les plantes en
+pot — le domaine de l'application :
+
+| espèces exposées | ajoutées | perte du cœur | top-1 sur elles | rentable au-delà de |
+|---|---|---|---|---|
+| 1 800 | 356 | 1,85 pt | 0,7007 | **2,6 %** des photos |
+| 2 200 | 756 | 2,84 pt | 0,5930 | 4,6 % |
+| 2 800 | 1 356 | 4,08 pt | 0,5459 | 7,0 % |
+| 3 646 | 2 202 | 5,56 pt | 0,5277 | 9,5 % |
+| 4 400 | 2 956 | 7,78 pt | 0,5116 | 13,2 % |
+| 5 259 | 3 815 | 11,12 pt | 0,4698 | 19,1 % |
+
+Les 356 premières ajoutées — les plus cultivées parmi celles qui ne volent
+rien — sont reconnues à **70 % sur les photos en pot, mieux que le cœur
+lui-même**. Le seuil de 2,6 % est bas ; il est probablement franchi.
+
+**Mais « probablement » n'est pas une mesure, et le terme manquant arrive.**
+La part des photos qui portent sur telle ou telle espèce, personne ne la
+connaît — sauf les retours des utilisateurs (§ 13.3, chantier 2), ouverts
+depuis. Attendre ne coûte rien : le tableau ci-dessus est prêt, il suffira
+d'y reporter un chiffre mesuré au lieu d'un pari.
+
+> **À faire avant d'élargir, quand la décision sera prise.** Le coût de vol
+> est mesuré sur *toutes* les images du cœur, pas seulement celles de plantes
+> cultivées — d'où les 0,52 point de la première tranche en pot, la plus
+> chère de toutes. Mesurer le vol sur les seules photos en pot réordonnerait
+> les candidates pour le domaine qui compte.
+
 #### Le coût, et il est réel
 
 **13 espèces que l'Iris 7 nommait et que l'Iris 8 n'a pas apprises**, dont
@@ -2857,15 +2952,20 @@ C'est le vrai gain de la v8, et il vaut plus que ses six points.
 
 ### 13.3 Les chantiers, par rapport mesuré
 
-**1. Choisir l'ensemble exposé — en le mesurant.** Le plus gros effet connu
-(dix points), aucun entraînement, aucune collecte. On ne connaît que les
-deux bouts de la courbe : 1 444 → 0,6543 et 5 259 → 0,5528. Le coude est
-entre les deux et personne ne sait où. Quatre exports et quatre passes de
-`compare_models.py` le disent — quelques heures de GPU, sur un jeu déjà
-collecté.
+**1. ✅ Choisir l'ensemble exposé — mesuré, et la réponse n'est pas un
+nombre.** La courbe est lue (§ 6.7 bis) : il n'y a **pas de coude**, le coût
+est régulier à 0,22-0,35 point de top-1 par tranche de cent espèces, et il
+n'existe **pas d'espèces gratuites** — 2 202 candidates ne volent rien sur
+12 000 images de validation et coûtent quand même 5,9 points sur le test.
+Le vol est trop diffus pour qu'on puisse l'éviter en écartant quelques
+coupables.
 
-C'est le premier chantier **parce qu'il conditionne les autres** : nourrir
-une espèce qu'on n'exposera pas est un travail perdu.
+Ce que la courbe donne à la place vaut mieux qu'un coude : un **seuil de
+rentabilité** par taille d'ensemble. Exposer 356 espèces de plus paie dès
+que 2,6 % des photos portent sur elles ; 2 202 de plus, dès 9,5 %. Le terme
+manquant — la part des photos par espèce — est exactement ce que le chantier
+2 produit. **Les deux chantiers se tiennent par là**, et la décision attend
+un chiffre mesuré plutôt qu'un pari.
 
 **2. Les photos des utilisateurs.** La seule source qui règle **les deux**
 problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
