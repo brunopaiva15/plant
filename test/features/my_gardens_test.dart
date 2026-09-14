@@ -44,11 +44,6 @@ class _FakeCollaboration extends UnavailableCollaborationService {
 }
 
 void main() {
-  // La liste des jardins regarde la connectivité depuis qu'elle sait dire
-  // « hors ligne », et le contrôleur de réseau s'inscrit auprès de
-  // WidgetsBinding. Sans liaison, il n'y a pas d'instance à qui s'inscrire.
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   late FloraDatabase db;
   late _FakeCollaboration collaboration;
 

@@ -298,10 +298,6 @@ void main() {
     // De retour dans le shell à onglets, qui n'a rien à dépiler.
     expect(find.bySemanticsLabel('Retour'), findsNothing);
     expect(tester.takeException(), isNull);
-    // Dépiler l'écran libère ses providers, et drift arme alors un minuteur à
-    // zéro pour fermer ses flux de requêtes. Une dernière pompe le laisse
-    // partir : sinon il pend encore quand l'arbre est démonté.
-    await tester.pump();
     handle.dispose();
   });
 
