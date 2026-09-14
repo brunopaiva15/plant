@@ -66,11 +66,16 @@ from plant_dataset.fetchers.gbif import TaxonMatch  # noqa: E402
 
 
 class _ClientFictif:
-    def __init__(self, m):
-        self._m = m
+    """Rend une correspondance par nom demandé ; un nom absent de la table
+    ne résout pas, ce qui est le cas du repli par synonyme."""
+
+    def __init__(self, m, table=None):
+        self._m, self._table = m, table
+        self.demandes = []
 
     def match(self, nom):
-        return self._m
+        self.demandes.append(nom)
+        return self._table.get(nom) if self._table is not None else self._m
 
 
 def _match(**kw):
@@ -143,3 +148,37 @@ def test_la_version_du_cache_est_ecrite(tmp_path):
     c = tmp_path / 'doublons.json'
     ecrire_cache(c, {'a': 1})
     assert json.loads(c.read_text())['version'] == CACHE_VERSION
+
+
+# --- Le repli par synonyme, sans quoi six vrais doublons manquaient -------
+
+def test_le_synonyme_resout_quand_le_nom_echoue():
+    # Allium porrum ne résout pas — GBIF rend le genre — mais Allium
+    # ampeloprasum, son synonyme au catalogue, porte la clé du poireau.
+    c = _ClientFictif(None, {'Allium ampeloprasum': _match(key=2856037)})
+    assert cle_acceptee(c, 'Allium porrum', ['Allium ampeloprasum']) == 2856037
+
+
+def test_le_nom_prime_sur_ses_synonymes():
+    c = _ClientFictif(None, {'Sorbus aria': _match(key=111), 'Aria edulis': _match(key=222)})
+    assert cle_acceptee(c, 'Sorbus aria', ['Aria edulis']) == 111
+    assert c.demandes == ['Sorbus aria'], 'un nom qui résout n\'interroge pas ses synonymes'
+
+
+def test_un_genre_rendu_pour_le_synonyme_ne_compte_pas_davantage():
+    # La garde de rang vaut pour le repli : sinon le synonyme rouvrirait la
+    # porte que le nom vient de fermer.
+    genre = _match(key=3020559, rank='GENUS', match_type='HIGHERRANK')
+    c = _ClientFictif(None, {'Prunus dulcis': genre, 'Prunus amygdalus': genre})
+    assert cle_acceptee(c, 'Prunus dulcis', ['Prunus amygdalus']) is None
+
+
+def test_sans_synonyme_le_comportement_ne_change_pas():
+    c = _ClientFictif(None, {})
+    assert cle_acceptee(c, 'Harpephyllum afrum', []) is None
+
+
+def test_tous_les_synonymes_sont_essayes_dans_lordre():
+    c = _ClientFictif(None, {'Troisieme nom': _match(key=7)})
+    assert cle_acceptee(c, 'Premier nom', ['Deuxieme nom', 'Troisieme nom']) == 7
+    assert c.demandes == ['Premier nom', 'Deuxieme nom', 'Troisieme nom']

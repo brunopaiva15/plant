@@ -97,7 +97,7 @@ def images_par_classe(dataset: Path) -> dict[str, int]:
     return dict(compte)
 
 
-def cle_acceptee(client, nom: str) -> int | None:
+def cle_acceptee(client, nom: str, synonymes: 'list[str] | tuple[str, ...]' = ()) -> int | None:
     """Le taxon accepté d'un nom, ou `None` si GBIF ne le résout pas **au
     rang de l'espèce**.
 
@@ -121,11 +121,20 @@ def cle_acceptee(client, nom: str) -> int | None:
     l'espèce, exacte ou floue mais sûre. C'est déjà la règle qui décide ce
     que la collecte accepte (`fetchers/gbif.py`), et deux lignes collectées
     sous la même clé sont bien deux classes pour une plante.
+
+    **Et on demande le nom puis ses synonymes**, comme `enrich_plants.py`
+    ligne 41. C'est ce qui sépare une vraie réponse d'une réponse
+    tronquée : *Allium porrum* ne résout pas — GBIF rend le genre —, mais
+    *Allium ampeloprasum*, qui est dans sa colonne `synonyms`, résout et
+    porte la clé du poireau. Sans ce repli, six doublons pourtant réels
+    manquaient à l'appel : le poireau, l'amande, l'alisier, la mandarine,
+    le rince-bouteille et l'alisier de Suède.
     """
-    m = client.match(nom)
-    if m is None or not m.usable:
-        return None
-    return int(m.accepted_key or m.key)
+    for n in [nom, *synonymes]:
+        m = client.match(n)
+        if m is not None and m.usable:
+            return int(m.accepted_key or m.key)
+    return None
 
 
 def _afficher(groupes: list[list[str]], noms: dict[str, str], images: dict[str, int], total: int,
@@ -160,8 +169,10 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     plants = Path(args.plants)
-    noms = ({r['internal_id']: r['scientific_name'] for r in csv.DictReader(plants.open(encoding='utf-8'))}
-            if plants.exists() else {})
+    lignes = list(csv.DictReader(plants.open(encoding='utf-8'))) if plants.exists() else []
+    noms = {r['internal_id']: r['scientific_name'] for r in lignes}
+    synonymes = {r['internal_id']: [x.strip() for x in (r.get('synonyms') or '').split('|') if x.strip()]
+                 for r in lignes}
     if args.catalogue:
         if not noms:
             print(f'{plants} introuvable : --catalogue n\'a rien à lire.', file=sys.stderr)
@@ -175,14 +186,20 @@ def main(argv: list[str] | None = None) -> int:
 
     cache = Path(args.cache)
     cles: dict[str, int | None] = lire_cache(cache)
-    manquants = [i for i in labels if i not in cles]
+    # Une clé absente **et** une clé nulle sont à redemander : « non résolu »
+    # n'est pas une réponse acquise, c'est l'état d'un nom que la dorsale de
+    # GBIF ne portait pas ce jour-là. Elles sont 57 sur le catalogue, donc le
+    # surcoût d'une reprise est négligeable devant le risque d'entériner un
+    # trou.
+    manquants = [i for i in labels if cles.get(i) is None]
     if manquants:
         from plant_dataset.fetchers.gbif import GbifClient   # réseau : pas à l'import du module
         client = GbifClient(pause=args.pause)
         print(f'{len(manquants)} noms à résoudre chez GBIF…', file=sys.stderr, flush=True)
         for n, interne in enumerate(manquants, 1):
             try:
-                cles[interne] = cle_acceptee(client, noms.get(interne, interne.replace('-', ' ')))
+                cles[interne] = cle_acceptee(client, noms.get(interne, interne.replace('-', ' ')),
+                                             synonymes.get(interne, []))
             except Exception as e:      # une source qui tombe ne doit pas passer pour « non résolu »
                 print(f'  {interne} : ÉCHEC ({type(e).__name__}: {e})', file=sys.stderr)
             if n % 100 == 0:

@@ -66,6 +66,13 @@ lit les 5 778 lignes de `plants.csv`, c'est-à-dire ce qui *sera* collecté —
 et c'est là que la réponse paie, puisqu'une ligne retirée avant la collecte
 n'aura pas dépensé d'images à fabriquer une confusion (§ 13.6 de `docs/09`).
 
+**Le nom, puis ses synonymes.** `enrich_plants.py` résout déjà ainsi, et
+`doublons.py` doit faire pareil : *Allium porrum* ne résout pas — GBIF rend
+le genre — mais *Allium ampeloprasum*, dans sa colonne `synonyms`, porte la
+clé du poireau. Sans ce repli, six doublons pourtant réels manquaient :
+le poireau, l'amande, l'alisier, la mandarine, le rince-bouteille et
+l'alisier de Suède.
+
 **Une seule garde, et elle compte à cette échelle.** GBIF ne répond jamais
 « je ne sais pas » : faute d'espèce, il remonte d'un cran. *Harpephyllum
 afrum* tombe sur la clé 6 — *Plantae* —, *Piper methysticum* sur sa famille,
