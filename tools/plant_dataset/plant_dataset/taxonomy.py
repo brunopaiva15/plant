@@ -31,6 +31,8 @@ def normalize_scientific_name(raw: str) -> str:
     'Citrus × aurantium'
     >>> normalize_scientific_name('Ficus benjamina var. nuda (Miq.) Barrett')
     'Ficus benjamina var. nuda'
+    >>> normalize_scientific_name('× Fatshedera lizei')
+    '× Fatshedera lizei'
     """
     s = _fold(raw or '').replace('_', ' ').strip()
     # Le signe d'hybride est parfois collé à l'épithète (« Citrus ×sinensis »
@@ -44,12 +46,22 @@ def normalize_scientific_name(raw: str) -> str:
     words = s.split(' ')
     out: list[str] = []
     expecting_epithet = False
+    genus_taken = False
     for i, w in enumerate(words):
         token = w.strip(',;')
         if not token:
             continue
-        if i == 0:
+        # Un hybride intergénérique — « × Fatshedera lizei » — ouvre sur le
+        # signe : ce n'est pas le genre, c'est le mot d'après qui le porte.
+        # Sans cette distinction, le signe passait pour le genre et la
+        # majuscule de « Fatshedera » se lisait comme un nom d'auteur, ce qui
+        # coupait le nom à cet endroit et le rendait vide.
+        if not genus_taken:
+            if not out and token in ('x', 'X', _HYBRID):
+                out.append(_HYBRID)
+                continue
             out.append(token[:1].upper() + token[1:].lower())
+            genus_taken = True
             expecting_epithet = True
             continue
         low = token.lower().rstrip('.')

@@ -35,12 +35,23 @@ String normalizeScientificName(String raw) {
   if (s.isEmpty) return '';
   final out = <String>[];
   var expectingEpithet = false;
+  var genusTaken = false;
   final words = s.split(' ');
   for (var i = 0; i < words.length; i++) {
     final token = words[i].replaceAll(RegExp(r'^[,;]+|[,;]+$'), '');
     if (token.isEmpty) continue;
-    if (i == 0) {
+    // Un hybride intergénérique — « × Fatshedera lizei » — ouvre sur le
+    // signe : ce n'est pas le genre, c'est le mot d'après qui le porte.
+    // Sans cette distinction, le signe passait pour le genre et la
+    // majuscule de « Fatshedera » se lisait comme un nom d'auteur, ce qui
+    // coupait le nom à cet endroit et le rendait vide.
+    if (!genusTaken) {
+      if (out.isEmpty && (token == _hybrid || token == 'x' || token == 'X')) {
+        out.add(_hybrid);
+        continue;
+      }
       out.add(token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase());
+      genusTaken = true;
       expectingEpithet = true;
       continue;
     }
