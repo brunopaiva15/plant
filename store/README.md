@@ -6,7 +6,11 @@ de page de l'app, un grand titre en haut à gauche, puis des cartes en
 colonne. Une bande sauge porte le nom tracé à la main et la revendication
 en gras ; la plante de l'icône se pose sur son bord ; une carte de verre
 dépoli mord sur la bande et porte ce que l'app dit d'une plante ; une
-carte pleine de terre cuite dit ce qui est gratuit. Rien de plus — une
+carte pleine de terre cuite dit ce qui est gratuit. L'espèce montrée est la
+monstera, celle que tout le monde reconnaît et celle de l'icône ; son
+arrosage et sa lumière sont ceux de son profil de soin
+(`data/species/care_profiles.dart`), son nom courant celui du catalogue
+livré. Rien de plus — une
 fiche chargée ne se lit pas dans une grille de vignettes.
 
 Les objets d'argile ne sont jamais agrandis au-delà de leur taille native

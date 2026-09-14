@@ -423,22 +423,22 @@ def ident_sheet(lang, width=1170):
 COVER = {
     'fr': {
         'claim': ['Le carnet', 'de vos plantes'],
-        'name': 'Langue de belle-mère',
-        'species': 'Dracaena trifasciata',
+        'name': 'Monstera deliciosa',
+        'species': 'Faux philodendron',
         'rows': [
-            ('assets/onboarding/onboarding_3.png', 'Arrosage', 'Tous les 14 jours'),
-            ('assets/problems/clay_abiotique.webp', 'Lumière', 'Moyenne'),
+            ('assets/onboarding/onboarding_3.png', 'Arrosage', 'Tous les 8 jours'),
+            ('assets/problems/clay_abiotique.webp', 'Lumière', 'Vive indirecte'),
             ('assets/onboarding/onboarding_2.png', 'Dernier soin', 'Il y a 2 jours'),
         ],
         'footer': 'Gratuite, sans compte, sans publicité',
     },
     'en': {
         'claim': ['The journal', 'of your plants'],
-        'name': 'Snake plant',
-        'species': 'Dracaena trifasciata',
+        'name': 'Monstera deliciosa',
+        'species': 'Swiss cheese plant',
         'rows': [
-            ('assets/onboarding/onboarding_3.png', 'Watering', 'Every 14 days'),
-            ('assets/problems/clay_abiotique.webp', 'Light', 'Medium'),
+            ('assets/onboarding/onboarding_3.png', 'Watering', 'Every 8 days'),
+            ('assets/problems/clay_abiotique.webp', 'Light', 'Bright indirect'),
             ('assets/onboarding/onboarding_2.png', 'Last care', '2 days ago'),
         ],
         'footer': 'Free, no account, no ads',
@@ -489,13 +489,18 @@ def glass(img, box, radius=72, blur=70, alpha=0.46):
     img.alpha_composite(pane, (x, y))
 
 
-def crisp(path, height=None, width=None):
+def crisp(path, height=None, width=None, box=None):
     """Un objet d'argile à sa taille, jamais au-delà : ces images font 640 ou
     1024 pixels, et les étirer plus loin les fait fondre — c'est ce qui
     donnait à la fiche son air bon marché."""
     im = Image.open(os.path.join(ROOT, path)).convert('RGBA')
     im = im.crop(im.getbbox())
-    if height:
+    if box:
+        # Tenir dans un carré : les objets n'ont pas tous la même allure, et
+        # caler sur la hauteur ferait déborder les larges sur le libellé.
+        scale = box / max(im.width, im.height)
+        width, height = int(im.width * scale), int(im.height * scale)
+    elif height:
         width = int(im.width * height / im.height)
     else:
         height = int(im.height * width / im.width)
@@ -537,10 +542,10 @@ def cover(lang):
     yy = gy + pad + 234
     for i, (icon, label, value) in enumerate(t['rows']):
         if i:
-            d.line((gx + pad, yy, gx + gw - pad, yy), fill=(255, 255, 255, 150), width=3)
+            d.line((gx + pad + 126, yy, gx + gw - pad, yy), fill=(255, 255, 255, 160), width=3)
         yy += 26
-        obj = crisp(icon, height=86)
-        img.alpha_composite(obj, (gx + pad, yy + (98 - obj.height) // 2))
+        obj = crisp(icon, box=88)
+        img.alpha_composite(obj, (gx + pad + (88 - obj.width) // 2, yy + (98 - obj.height) // 2))
         d = ImageDraw.Draw(img)
         d.text((gx + pad + 126, yy + 49), label, font=font('Medium', 54), fill=INK2, anchor='lm')
         d.text((gx + gw - pad, yy + 49), value, font=font('Bold', 58), fill=INK, anchor='rm')
