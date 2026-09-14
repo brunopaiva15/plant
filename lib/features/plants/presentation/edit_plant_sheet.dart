@@ -133,7 +133,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                           ? const SizedBox(width: double.infinity)
                           : Padding(
                               padding: const EdgeInsets.only(top: Space.sm),
-                              child: _Choice<HealthIssue>(
+                              child: FloraChoice<HealthIssue>(
                                 label: l10n.healthIssue,
                                 values: HealthIssue.values,
                                 selected: _issue,
@@ -175,7 +175,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                       FloraGroup(
                         children: [
                           _Field(
-                            child: _Choice<LightNeed>(
+                            child: FloraChoice<LightNeed>(
                               label: l10n.light,
                               values: LightNeed.values,
                               selected: _light,
@@ -184,7 +184,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                             ),
                           ),
                           _Field(
-                            child: _Choice<HumidityNeed>(
+                            child: FloraChoice<HumidityNeed>(
                               label: l10n.careHumidity,
                               values: HumidityNeed.values,
                               selected: _humidity,
@@ -193,7 +193,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                             ),
                           ),
                           _Field(
-                            child: _Choice<Lifespan>(
+                            child: FloraChoice<Lifespan>(
                               label: l10n.lifespan,
                               values: Lifespan.values,
                               selected: _lifespan,
@@ -202,7 +202,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                             ),
                           ),
                           _Field(
-                            child: _Choice<Hardiness>(
+                            child: FloraChoice<Hardiness>(
                               label: l10n.hardiness,
                               values: Hardiness.values,
                               selected: _hardiness,
@@ -211,7 +211,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                             ),
                           ),
                           _Field(
-                            child: _Choice<int>(
+                            child: FloraChoice<int>(
                               label: l10n.cuttingMonth,
                               values: [for (var m = 1; m <= 12; m++) m],
                               selected: _cuttingMonth,
@@ -270,46 +270,6 @@ class _Field extends StatelessWidget {
           child,
         ],
       ),
-    );
-  }
-}
-
-/// Un choix facultatif parmi quelques valeurs : des puces, une seule
-/// allumée, qu'on éteint d'un second toucher. Même geste que la lumière d'un
-/// emplacement.
-class _Choice<T extends Object> extends StatelessWidget {
-  const _Choice({required this.label, required this.values, required this.selected, required this.labelOf, required this.onChanged, this.emojiOf, this.leadingOf});
-
-  final String label;
-  final List<T> values;
-  final T? selected;
-  final String Function(T) labelOf;
-  final String Function(T)? emojiOf;
-  final Widget Function(T)? leadingOf;
-  final ValueChanged<T?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: context.text.caption),
-        const SizedBox(height: 6),
-        Wrap(
-          spacing: Space.xs,
-          runSpacing: Space.xs,
-          children: [
-            for (final v in values)
-              FloraChip(
-                emoji: emojiOf?.call(v),
-                leading: leadingOf?.call(v),
-                label: labelOf(v),
-                selected: selected == v,
-                onTap: () => onChanged(selected == v ? null : v),
-              ),
-          ],
-        ),
-      ],
     );
   }
 }

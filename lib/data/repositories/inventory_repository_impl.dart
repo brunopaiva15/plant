@@ -71,9 +71,15 @@ class DriftInventoryRepository implements InventoryRepository {
     String? notes,
     String? photoPath,
     String? thumbPath,
+    FertilizerForm? fertilizerForm,
+    FertilizerOrigin? fertilizerOrigin,
+    double? nitrogen,
+    double? phosphorus,
+    double? potassium,
   }) async {
     final now = DateTime.now();
     final id = const Uuid().v4();
+    final fert = _Fertilizer.of(category, fertilizerForm, fertilizerOrigin, nitrogen, phosphorus, potassium);
     await _db.into(_db.inventoryItems).insert(InventoryItemsCompanion.insert(
           id: id,
           gardenId: _gardenId,
@@ -87,6 +93,11 @@ class DriftInventoryRepository implements InventoryRepository {
           notes: Value(notes?.trim().isEmpty ?? true ? null : notes!.trim()),
           photoPath: Value(photoPath),
           thumbPath: Value(thumbPath),
+          fertilizerForm: Value(fert.form),
+          fertilizerOrigin: Value(fert.origin),
+          nitrogen: Value(fert.n),
+          phosphorus: Value(fert.p),
+          potassium: Value(fert.k),
           createdAt: now,
           updatedAt: now,
         ));
@@ -96,6 +107,7 @@ class DriftInventoryRepository implements InventoryRepository {
 
   @override
   Future<void> update(InventoryItem item) async {
+    final fert = _Fertilizer.of(item.category, item.fertilizerForm, item.fertilizerOrigin, item.nitrogen, item.phosphorus, item.potassium);
     await (_db.update(_db.inventoryItems)..where((i) => i.id.equals(item.id))).write(InventoryItemsCompanion(
       categoryKey: Value(item.category.key),
       groupId: Value(item.groupId),
@@ -107,6 +119,11 @@ class DriftInventoryRepository implements InventoryRepository {
       notes: Value(item.notes?.trim().isEmpty ?? true ? null : item.notes!.trim()),
       photoPath: Value(item.photoPath),
       thumbPath: Value(item.thumbPath),
+      fertilizerForm: Value(fert.form),
+      fertilizerOrigin: Value(fert.origin),
+      nitrogen: Value(fert.n),
+      phosphorus: Value(fert.p),
+      potassium: Value(fert.k),
       updatedAt: Value(DateTime.now()),
     ));
     await _db.enqueueSync('inventory_items', item.id, 'upsert', {'name': item.name});
@@ -220,5 +237,30 @@ class DriftInventoryRepository implements InventoryRepository {
     for (final id in orderedIds) {
       await _db.enqueueSync('inventory_groups', id, 'upsert', const {});
     }
+  }
+}
+
+/// Les cinq colonnes propres aux engrais, telles qu'elles partent en base.
+///
+/// Deux invariants tenus ici plutôt que dans chaque formulaire : une
+/// catégorie autre qu'« engrais » les efface toutes — un pot ne garde pas le
+/// NPK qu'il avait quand il était rangé en engrais — et un pourcentage reste
+/// entre 0 et 100.
+typedef _FertilizerColumns = ({String? form, String? origin, double? n, double? p, double? k});
+
+abstract final class _Fertilizer {
+  static _FertilizerColumns of(
+    InventoryCategory category,
+    FertilizerForm? form,
+    FertilizerOrigin? origin,
+    double? nitrogen,
+    double? phosphorus,
+    double? potassium,
+  ) {
+    if (category != InventoryCategory.fertilizer) {
+      return (form: null, origin: null, n: null, p: null, k: null);
+    }
+    double? percent(double? v) => v?.clamp(0, 100).toDouble();
+    return (form: form?.name, origin: origin?.name, n: percent(nitrogen), p: percent(phosphorus), k: percent(potassium));
   }
 }

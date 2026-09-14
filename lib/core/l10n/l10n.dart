@@ -144,6 +144,28 @@ extension ActionTypeLabels on AppLocalizations {
         InventoryCategory.accessory => catAccessory,
       };
 
+  String fertilizerFormName(FertilizerForm f) => switch (f) {
+        FertilizerForm.liquid => fertFormLiquid,
+        FertilizerForm.granules => fertFormGranules,
+        FertilizerForm.sticks => fertFormSticks,
+        FertilizerForm.solublePowder => fertFormSolublePowder,
+        FertilizerForm.foliar => fertFormFoliar,
+        FertilizerForm.other => fertFormOther,
+      };
+
+  String fertilizerOriginName(FertilizerOrigin o) => switch (o) {
+        FertilizerOrigin.mineral => fertOriginMineral,
+        FertilizerOrigin.organic => fertOriginOrganic,
+        FertilizerOrigin.organomineral => fertOriginOrganomineral,
+      };
+
+  /// « NPK 7-3-5 », ou `null` quand l'article n'annonce aucun dosage — un
+  /// engrais sans NPK ne dit rien de plus qu'un autre article.
+  String? npkLabel(InventoryItem item) {
+    final npk = item.npk;
+    return npk == null ? null : '$fertNpk $npk';
+  }
+
   String measurementKindName(MeasurementKind k) => switch (k) {
         MeasurementKind.height => measureHeight,
         MeasurementKind.width => measureWidth,

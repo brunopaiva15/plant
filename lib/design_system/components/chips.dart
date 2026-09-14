@@ -77,6 +77,58 @@ class FloraChip extends StatelessWidget {
   }
 }
 
+/// Un choix facultatif parmi quelques valeurs : des puces, une seule
+/// allumée, qu'on éteint d'un second toucher. Même geste que la lumière d'un
+/// emplacement ou la forme d'un engrais.
+class FloraChoice<T extends Object> extends StatelessWidget {
+  const FloraChoice({
+    super.key,
+    required this.label,
+    required this.values,
+    required this.selected,
+    required this.labelOf,
+    required this.onChanged,
+    this.emojiOf,
+    this.leadingOf,
+  });
+
+  final String label;
+  final List<T> values;
+  final T? selected;
+  final String Function(T) labelOf;
+  final String Function(T)? emojiOf;
+  final Widget Function(T)? leadingOf;
+
+  /// `null` quand la valeur allumée est touchée de nouveau : le choix
+  /// facultatif redevient vide.
+  final ValueChanged<T?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: context.text.caption),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: Space.xs,
+          runSpacing: Space.xs,
+          children: [
+            for (final v in values)
+              FloraChip(
+                emoji: emojiOf?.call(v),
+                leading: leadingOf?.call(v),
+                label: labelOf(v),
+                selected: selected == v,
+                onTap: () => onChanged(selected == v ? null : v),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 /// Action rapide : une tuile d'argile aux coins irréguliers, l'emoji dedans,
 /// le libellé dessous. [variant] varie la forme d'une tuile à l'autre.
 class QuickActionChip extends StatelessWidget {

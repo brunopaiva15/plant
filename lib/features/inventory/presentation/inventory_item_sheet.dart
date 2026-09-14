@@ -39,15 +39,24 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
   late final _notes = TextEditingController(text: widget.existing?.notes ?? '');
   late String _unit = widget.existing?.unit ?? _category.defaultUnit;
   late String? _locationId = widget.existing?.locationId;
+
+  // Propres aux engrais : saisis ici quelle que soit la catégorie, mais le
+  // dépôt ne les garde que si l'article est bien rangé en « engrais ».
+  late FertilizerForm? _fertForm = widget.existing?.fertilizerForm;
+  late FertilizerOrigin? _fertOrigin = widget.existing?.fertilizerOrigin;
+  late final _nitrogen = TextEditingController(text: _percent(widget.existing?.nitrogen));
+  late final _phosphorus = TextEditingController(text: _percent(widget.existing?.phosphorus));
+  late final _potassium = TextEditingController(text: _percent(widget.existing?.potassium));
   bool _more = false;
   bool _saving = false;
 
   static String _fmt(double v) => v == v.roundToDouble() ? v.toInt().toString() : v.toString();
+  static String _percent(double? v) => v == null ? '' : _fmt(v);
   static double? _parse(String s) => double.tryParse(s.trim().replaceAll(',', '.'));
 
   @override
   void dispose() {
-    for (final c in [_name, _quantity, _threshold, _notes]) {
+    for (final c in [_name, _quantity, _threshold, _notes, _nitrogen, _phosphorus, _potassium]) {
       c.dispose();
     }
     super.dispose();
@@ -60,7 +69,21 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
     final qty = _parse(_quantity.text) ?? 0;
     final threshold = _parse(_threshold.text);
     if (widget.existing == null) {
-      final created = await repo.create(category: _category, groupId: _groupId, name: _name.text, quantity: qty, unit: _unit, lowThreshold: threshold, locationId: _locationId, notes: _notes.text);
+      final created = await repo.create(
+        category: _category,
+        groupId: _groupId,
+        name: _name.text,
+        quantity: qty,
+        unit: _unit,
+        lowThreshold: threshold,
+        locationId: _locationId,
+        notes: _notes.text,
+        fertilizerForm: _fertForm,
+        fertilizerOrigin: _fertOrigin,
+        nitrogen: _parse(_nitrogen.text),
+        phosphorus: _parse(_phosphorus.text),
+        potassium: _parse(_potassium.text),
+      );
       await repo.setItemTags(created.id, _tagIds);
     } else {
       await repo.setItemTags(widget.existing!.id, _tagIds);
@@ -73,6 +96,11 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
         lowThreshold: () => threshold,
         locationId: () => _locationId,
         notes: () => _notes.text,
+        fertilizerForm: () => _fertForm,
+        fertilizerOrigin: () => _fertOrigin,
+        nitrogen: () => _parse(_nitrogen.text),
+        phosphorus: () => _parse(_phosphorus.text),
+        potassium: () => _parse(_potassium.text),
       ));
     }
     Haptics.success();
@@ -172,6 +200,50 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
               ],
             ),
           ),
+          AnimatedSize(
+            duration: Motion.of(context, Motion.standard),
+            curve: Motion.easeOut,
+            alignment: Alignment.topCenter,
+            child: _category != InventoryCategory.fertilizer
+                ? const SizedBox(width: double.infinity)
+                : Padding(
+                    padding: const EdgeInsets.only(top: Space.md),
+                    child: FloraGroup(
+                      children: [
+                        _field(FloraChoice<FertilizerForm>(
+                          label: l10n.fertForm,
+                          values: FertilizerForm.values,
+                          selected: _fertForm,
+                          labelOf: l10n.fertilizerFormName,
+                          onChanged: (v) => setState(() => _fertForm = v),
+                        )),
+                        _field(FloraChoice<FertilizerOrigin>(
+                          label: l10n.fertOrigin,
+                          values: FertilizerOrigin.values,
+                          selected: _fertOrigin,
+                          labelOf: l10n.fertilizerOriginName,
+                          onChanged: (v) => setState(() => _fertOrigin = v),
+                        )),
+                        _field(Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l10n.fertNpkPercent, style: context.text.caption),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Expanded(child: _npkField(_nitrogen, 'N')),
+                                const SizedBox(width: Space.xs),
+                                Expanded(child: _npkField(_phosphorus, 'P')),
+                                const SizedBox(width: Space.xs),
+                                Expanded(child: _npkField(_potassium, 'K')),
+                              ],
+                            ),
+                          ],
+                        )),
+                      ],
+                    ),
+                  ),
+          ),
           const SizedBox(height: Space.md),
           Pressable(
             onTap: () => setState(() => _more = !_more),
@@ -234,6 +306,18 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
       ),
     );
   }
+
+  /// Une ligne de [FloraGroup] : la marge que porte déjà « Plus d'options ».
+  Widget _field(Widget child) => Padding(padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, Space.sm), child: child);
+
+  /// Un pourcentage du NPK. La lettre reste en repère tant que le champ est
+  /// vide ; l'ordre N, P, K est celui qu'impriment les sacs.
+  Widget _npkField(TextEditingController controller, String symbol) => FloraTextField(
+        controller: controller,
+        hint: symbol,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        textCapitalization: TextCapitalization.none,
+      );
 }
 
 /// Choix du groupe : les groupes personnalisés, plus « sans groupe ».

@@ -24,6 +24,30 @@ enum InventoryCategory {
   static InventoryCategory fromKey(String key) => values.firstWhere((c) => c.key == key, orElse: () => InventoryCategory.accessory);
 }
 
+/// Forme d'un engrais : ce qu'on tient dans la main au moment de doser.
+/// Propre à [InventoryCategory.fertilizer] ; nulle partout ailleurs.
+enum FertilizerForm {
+  liquid,
+  granules,
+  sticks,
+  solublePowder,
+  foliar,
+  other;
+
+  /// Depuis la valeur stockée ; `null` pour une valeur inconnue plutôt
+  /// qu'une erreur — une version plus récente peut en connaître d'autres.
+  static FertilizerForm? parse(String? raw) => raw == null ? null : values.asNameMap()[raw];
+}
+
+/// Origine d'un engrais : d'où viennent ses éléments.
+enum FertilizerOrigin {
+  mineral,
+  organic,
+  organomineral;
+
+  static FertilizerOrigin? parse(String? raw) => raw == null ? null : values.asNameMap()[raw];
+}
+
 class InventoryItem {
   const InventoryItem({
     required this.id,
@@ -41,6 +65,11 @@ class InventoryItem {
     this.notes,
     this.photoPath,
     this.thumbPath,
+    this.fertilizerForm,
+    this.fertilizerOrigin,
+    this.nitrogen,
+    this.phosphorus,
+    this.potassium,
   });
 
   final String id;
@@ -62,10 +91,31 @@ class InventoryItem {
   final String? notes;
   final String? photoPath;
   final String? thumbPath;
+
+  /// Caractérisation d'un engrais. Ces cinq champs ne valent que pour
+  /// [InventoryCategory.fertilizer] : le dépôt les efface dès que l'article
+  /// change de catégorie, pour qu'un pot ne traîne jamais un NPK.
+  final FertilizerForm? fertilizerForm;
+  final FertilizerOrigin? fertilizerOrigin;
+
+  /// Azote, phosphore et potassium, en pourcentage de la masse. Chacun
+  /// facultatif : un engrais peut n'annoncer qu'un seul élément.
+  final double? nitrogen;
+  final double? phosphorus;
+  final double? potassium;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   bool get isLow => lowThreshold != null && quantity <= lowThreshold!;
+
+  /// « 7-3-5 », l'ordre que tous les sacs impriment. Un élément non renseigné
+  /// s'écrit « – » : absent n'est pas zéro. `null` quand aucun des trois
+  /// n'est connu, pour que l'affichage saute simplement la mention.
+  String? get npk {
+    if (nitrogen == null && phosphorus == null && potassium == null) return null;
+    String part(double? v) => v == null ? '–' : (v == v.roundToDouble() ? v.toInt().toString() : v.toString());
+    return '${part(nitrogen)}-${part(phosphorus)}-${part(potassium)}';
+  }
 
   InventoryItem copyWith({
     InventoryCategory? category,
@@ -79,6 +129,11 @@ class InventoryItem {
     String? Function()? notes,
     String? Function()? photoPath,
     String? Function()? thumbPath,
+    FertilizerForm? Function()? fertilizerForm,
+    FertilizerOrigin? Function()? fertilizerOrigin,
+    double? Function()? nitrogen,
+    double? Function()? phosphorus,
+    double? Function()? potassium,
     DateTime? updatedAt,
   }) =>
       InventoryItem(
@@ -95,6 +150,11 @@ class InventoryItem {
         notes: notes != null ? notes() : this.notes,
         photoPath: photoPath != null ? photoPath() : this.photoPath,
         thumbPath: thumbPath != null ? thumbPath() : this.thumbPath,
+        fertilizerForm: fertilizerForm != null ? fertilizerForm() : this.fertilizerForm,
+        fertilizerOrigin: fertilizerOrigin != null ? fertilizerOrigin() : this.fertilizerOrigin,
+        nitrogen: nitrogen != null ? nitrogen() : this.nitrogen,
+        phosphorus: phosphorus != null ? phosphorus() : this.phosphorus,
+        potassium: potassium != null ? potassium() : this.potassium,
         createdAt: createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
