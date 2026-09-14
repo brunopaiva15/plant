@@ -649,6 +649,14 @@
   "syncPending": "{count, plural, =1{1 modifica in attesa} other{{count} modifiche in attesa}}",
   "syncOffline": "Offline · riprenderà automaticamente",
   "syncError": "Errore di sincronizzazione",
+  "syncUnknownColumns": "Colonne sconosciute al server: {columns}",
+  "@syncUnknownColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
   "syncSyncing": "Sincronizzazione…",
   "authError": "Accesso non riuscito. Controlla l'indirizzo e riprova.",
   "appleUnavailable": "L'accesso con Apple è disponibile su iPhone e iPad.",

@@ -1859,6 +1859,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get syncError => 'Synchronisierungsfehler';
 
   @override
+  String syncUnknownColumns(String columns) {
+    return 'Dem Server unbekannte Spalten: $columns';
+  }
+
+  @override
   String get syncSyncing => 'Synchronisiere…';
 
   @override

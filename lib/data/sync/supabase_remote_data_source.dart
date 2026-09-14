@@ -30,9 +30,23 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   /// exist »), et donc plus aucune lecture.
   static const _unstamped = {'plant_tags', 'inventory_tags', 'action_types', 'measurements'};
 
+  /// « Could not find the 'cutting_month' column of 'plants' in the schema
+  /// cache » : le nom de la colonne et celui de la table ne figurent nulle
+  /// part ailleurs que dans ce message.
+  static final _missingColumn = RegExp("Could not find the '([^']+)' column of '([^']+)'");
+
   @override
   Future<void> upsert(String table, RemoteRow row) async {
-    await _client.from(table).upsert(row).timeout(networkTimeout);
+    try {
+      await _client.from(table).upsert(row).timeout(networkTimeout);
+    } on PostgrestException catch (e) {
+      // PGRST204 : une colonne du payload manque au schéma du serveur. La
+      // ligne n'a rien d'invalide, c'est le schéma distant qui est en retard ;
+      // l'appelant la renverra sans ce champ.
+      final m = e.code == 'PGRST204' ? _missingColumn.firstMatch(e.message) : null;
+      if (m == null || m.group(2) != table) rethrow;
+      throw UnknownColumnException(table, m.group(1)!);
+    }
   }
 
   @override

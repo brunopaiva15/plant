@@ -901,6 +901,14 @@
   },
   "syncOffline": "Hors ligne · reprise automatique",
   "syncError": "Erreur de synchronisation",
+  "syncUnknownColumns": "Colonnes inconnues du serveur : {columns}",
+  "@syncUnknownColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
   "syncSyncing": "Synchronisation…",
   "authError": "Connexion impossible. Vérifiez l'adresse et réessayez.",
   "appleUnavailable": "Apple est disponible sur iPhone et iPad.",

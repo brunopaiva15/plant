@@ -1858,6 +1858,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get syncError => 'Errore di sincronizzazione';
 
   @override
+  String syncUnknownColumns(String columns) {
+    return 'Colonne sconosciute al server: $columns';
+  }
+
+  @override
   String get syncSyncing => 'Sincronizzazione…';
 
   @override

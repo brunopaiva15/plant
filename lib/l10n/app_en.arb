@@ -649,6 +649,14 @@
   "syncPending": "{count, plural, =1{1 pending change} other{{count} pending changes}}",
   "syncOffline": "Offline · will resume automatically",
   "syncError": "Sync error",
+  "syncUnknownColumns": "Columns unknown to the server: {columns}",
+  "@syncUnknownColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
   "syncSyncing": "Syncing…",
   "authError": "Couldn't sign in. Check the address and try again.",
   "appleUnavailable": "Apple sign-in is available on iPhone and iPad.",
