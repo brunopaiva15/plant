@@ -89,3 +89,23 @@ def test_a_wrong_genus_answer_counts_against_precision():
     probs = sortie({'picea-abies': 0.3, 'picea-glauca': 0.25, 'picea-pungens': 0.25, 'monstera-deliciosa': 0.2})
     r = mesurer(np.stack([probs]), np.array([3]), M, np.array([1, 1, 1, 0]), 0.70)
     assert r['genre_taux'] == 1.0 and r['genre_precision'] == 0.0
+
+
+def test_truncating_to_the_top_k_is_what_the_cascade_sees():
+    """`classify` trie et coupe à cinq : un genre étalé sur vingt espèces à
+    0,04 lui échappe entièrement, et c'est ce que `--top` chiffre."""
+    from genre import tronquer
+    P = np.array([[0.4, 0.3, 0.2, 0.1]], dtype=np.float32)
+    assert np.allclose(tronquer(P, 2), [[0.4, 0.3, 0.0, 0.0]])
+    assert np.allclose(tronquer(P, 0), P)
+    assert np.allclose(tronquer(P, 9), P)
+
+
+def test_a_genus_spread_too_thin_is_lost_to_a_truncated_view():
+    distincts, M = table_genres(genres_des(LABELS))
+    probs = sortie({'picea-abies': 0.3, 'picea-glauca': 0.25, 'picea-pungens': 0.25, 'monstera-deliciosa': 0.2})
+    genre_de = np.array([1, 1, 1, 0])
+    entier = mesurer(np.stack([probs]), np.array([0]), M, genre_de, 0.70)
+    coupe = mesurer(np.stack([probs]), np.array([0]), M, genre_de, 0.70, top=2)
+    assert entier['genre_taux'] == 1.0        # 0,80 : le genre répond
+    assert coupe['genre_taux'] == 0.0         # 0,55 sur deux classes : perdu
