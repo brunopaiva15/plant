@@ -397,62 +397,134 @@ def ident_sheet(lang, width=1170):
 
 # --- la fiche de présentation -------------------------------------------------
 
-# Ce que l'app est, en tête de série : le nom, ce qu'elle fait, et ce qui se
-# décide avant d'ouvrir une fiche — tout est gratuit, rien ne part.
+# Ce que l'app est, en tête de série : le nom, ce qu'elle fait en une phrase,
+# les trois mots de la fiche App Store, et la collection d'argile posée sur
+# son étagère. Tout vient de l'app : les plantes de l'onboarding, les objets
+# de ses étapes, ses cartes et ses tags.
 COVER = {
     'fr': {
         'tagline': 'Carnet de plantes',
-        'points': ['Les soins du jour, à cocher', 'L’espèce reconnue sur l’appareil, sans réseau', 'Photos, journal, calendrier, inventaire'],
+        'pitch': 'Comprendre l’état de toutes ses plantes en quelques secondes, enregistrer un soin en un ou deux gestes.',
+        'tags': ['Journal', 'Soins', 'Identification'],
+        'cards': ['Soins du jour', 'Espèce, santé', 'Lieux, jardin'],
         'footer': 'Gratuite, sans compte, sans publicité',
     },
     'en': {
         'tagline': 'Plant journal',
-        'points': ['The day’s care, to tick off', 'Species recognised on your device, offline', 'Photos, journal, calendar, inventory'],
+        'pitch': 'See how every plant is doing in seconds, log a care task in a gesture or two.',
+        'tags': ['Journal', 'Care', 'Identification'],
+        'cards': ['Daily care', 'Species, health', 'Rooms, garden'],
         'footer': 'Free, no account, no ads',
     },
 }
 
+# La collection de l'onboarding, posée sur une étagère : l'asset, sa hauteur
+# une fois dessinée, et l'abscisse de son pot. La monstera de l'icône tient
+# le milieu, les autres l'entourent par tailles décroissantes.
+# Les trois cartes du milieu : l'objet d'argile de l'app, et ce qu'il dit.
+CARDS = [
+    os.path.join(CLAY, 'onboarding_2.png'),
+    os.path.join(ROOT, 'assets', 'problems', 'icons', '060.webp'),
+    os.path.join(CLAY, 'onboarding_7.png'),
+]
+
+SHELF = [
+    ('collection_semis.webp', 300, 150),
+    ('collection_ronde.webp', 400, 400),
+    (None, 520, 700),
+    ('collection_caoutchouc.webp', 380, 990),
+    ('collection_sansevieria.webp', 330, 1180),
+]
+
+
+def clay_pill(text, fnt, color=SURFACE, ink=INK, pad=38, height=104):
+    """Un tag de l'app : une pilule d'argile qui tient son mot."""
+    d = ImageDraw.Draw(Image.new('RGB', (10, 10)))
+    w = int(d.textlength(text, font=fnt)) + 2 * pad
+    pill = clay_card((w, height), height // 2)
+    layer = Image.new('RGBA', (w, height), (0, 0, 0, 0))
+    layer.alpha_composite(pill)
+    ImageDraw.Draw(layer).text((w // 2, height // 2), text, font=fnt, fill=ink, anchor='mm')
+    if color != SURFACE:
+        tinted = clay_card((w, height), height // 2, color=color)
+        layer = Image.new('RGBA', (w, height), (0, 0, 0, 0))
+        layer.alpha_composite(tinted)
+        ImageDraw.Draw(layer).text((w // 2, height // 2), text, font=fnt, fill=ink, anchor='mm')
+    return layer
+
+
+def on_shelf(img, y_base):
+    """Les plantes de la collection, alignées sur une même ligne de sol.
+    Chaque image porte du vide autour d'elle : c'est sa boîte pleine, pas sa
+    toile, qui se pose sur l'étagère."""
+    for name, height, cx in SHELF:
+        src = Image.open(ICON if name is None else os.path.join(CLAY, name)).convert('RGBA')
+        src = src.crop(src.getbbox())
+        w = int(src.width * height / src.height)
+        obj = src.resize((w, height), Image.LANCZOS)
+        paste_with_shadow(img, obj, (cx - w // 2, y_base - height), blur=46, offset=(10, 34), alpha=0.24)
+
+
+def feature_cards(img, labels, y, height=500):
+    """Trois cartes d'argile côte à côte : l'objet au-dessus, le mot
+    dessous. Les mêmes cartes que les listes de l'app, les mêmes objets que
+    ses étapes."""
+    gap, x0 = 28, 96
+    width = (W - 2 * x0 - 2 * gap) // 3
+    f = font('SemiBold', 42)
+    d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
+    for i, (path, label) in enumerate(zip(CARDS, labels)):
+        x = x0 + i * (width + gap)
+        card = clay_card((width, height), 3 * 24)
+        obj = Image.open(path).convert('RGBA')
+        obj = obj.crop(obj.getbbox())
+        side = 260
+        obj = obj.resize((int(obj.width * side / max(obj.width, obj.height)), int(obj.height * side / max(obj.width, obj.height))), Image.LANCZOS)
+        card.alpha_composite(obj, ((width - obj.width) // 2, 66 + (side - obj.height) // 2))
+        dc = ImageDraw.Draw(card)
+        lines = wrap(d0, label, f, width - 26)
+        ty = height - 58 - len(lines) * 56
+        for line in lines:
+            dc.text((width // 2, ty), line, font=f, fill=INK, anchor='mt')
+            ty += 56
+        paste_with_shadow(img, card, (x, y), blur=44, offset=(8, 28), alpha=0.20)
+
 
 def cover(lang):
-    """Le premier visuel : pas une capture, une présentation. Le nom en
-    Shantell Sans plein, la plante de l'icône posée dessus, ce que l'app
-    fait sur une carte d'argile, et ce qu'elle ne fait pas en pied."""
+    """Le premier visuel : pas une capture, une présentation."""
     t = COVER[lang]
     img = background('sage')
     d = ImageDraw.Draw(img)
+    x = 96
 
-    # La plante de l'icône, en grand, avec son ombre brune.
-    mark = Image.open(ICON).convert('RGBA')
-    size = 700
-    paste_with_shadow(img, mark.resize((size, size), Image.LANCZOS), ((W - size) // 2, 360), blur=60, offset=(12, 46), alpha=0.22)
+    d.text((x, 170), 'Auxine', font=hand(250, 800), fill=INK)
+    d.text((x + 8, 520), t['tagline'], font=font('Bold', 78), fill=SAGE)
 
-    d.text((W // 2, 1140), 'Auxine', font=hand(210, 800), fill=INK, anchor='mt')
-    d.text((W // 2, 1440), t['tagline'], font=font('Bold', 74), fill=SAGE, anchor='mt')
+    y = 680
+    f = font('Medium', 54)
+    for line in wrap(d, t['pitch'], f, W - 2 * x):
+        d.text((x + 8, y), line, font=f, fill=INK2)
+        y += 76
 
-    # Ce que l'app fait, sur une carte d'argile comme les listes de l'app :
-    # un losange sauge par ligne, le même signe que les propositions d'Iris.
-    f = font('SemiBold', 58)
-    pad, x0, card_w = 72, 90, W - 180
-    text_x = pad + 104
-    rows = [wrap(d, point, f, card_w - text_x - pad) for point in t['points']]
-    heights = [len(lines) * 76 + 96 for lines in rows]
-    card = clay_card((card_w, sum(heights)), 3 * 24)
-    top = 1700
-    paste_with_shadow(img, card, (x0, top), blur=50, offset=(10, 34), alpha=0.22)
+    # Les trois mots de la fiche, en tags d'argile.
+    y += 60
+    tag_font = font('SemiBold', 46)
+    tag_x = x + 4
+    for i, tag in enumerate(t['tags']):
+        pill = clay_pill(tag, tag_font, color=TINTS['sage'][1] if i == 0 else SURFACE, ink=SAGE if i == 0 else INK)
+        paste_with_shadow(img, pill, (tag_x, y), blur=30, offset=(6, 18), alpha=0.18)
+        tag_x += pill.width + 22
+
+    feature_cards(img, t['cards'], 1140)
+
+    # L'étagère et sa collection : la ligne de sol, puis les plantes dessus.
+    shelf_y = 2400
     d = ImageDraw.Draw(img)
-    y = top
-    for i, (lines, h) in enumerate(zip(rows, heights)):
-        cy = y + h // 2
-        d.polygon([(x0 + pad + 26, cy - 26), (x0 + pad + 52, cy), (x0 + pad + 26, cy + 26), (x0 + pad, cy)], fill=SAGE)
-        ty = cy - len(lines) * 38
-        for line in lines:
-            d.text((x0 + text_x, ty), line, font=f, fill=INK)
-            ty += 76
-        if i < len(rows) - 1:
-            d.line((x0 + text_x, y + h, x0 + card_w - pad, y + h), fill=(232, 220, 204), width=3)
-        y += h
+    d.line((x, shelf_y, W - x, shelf_y), fill=(214, 200, 184), width=4)
+    on_shelf(img, shelf_y)
 
-    d.text((W // 2, y + 150), t['footer'], font=font('Medium', 52), fill=INK2, anchor='mt')
+    d = ImageDraw.Draw(img)
+    d.text((W // 2, shelf_y + 150), t['footer'], font=font('Medium', 50), fill=INK2, anchor='mt')
     return img
 
 

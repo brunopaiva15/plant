@@ -1,9 +1,11 @@
 # Visuels du magasin
 
 Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
-premier présente l'application : la plante de l'icône, le nom en Shantell
-Sans plein, ce qu'elle fait sur une carte d'argile, et ce qu'elle ne fait
-pas en pied. Les sept autres montrent une capture réelle de l'app dans un
+premier présente l'application : le nom en Shantell Sans plein, la phrase
+de ce qu'elle fait, les trois mots de la fiche App Store en tags, trois
+cartes d'argile — les objets de l'onboarding et un icône de la base des
+problèmes —, et la collection de l'onboarding posée sur son étagère. Les
+sept autres montrent une capture réelle de l'app dans un
 iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
 rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
 « main » de l'app) ; entre le titre et le téléphone, un objet 3D de la série
@@ -12,7 +14,7 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
-| 1 | Présentation : le nom, trois lignes, ce qui est gratuit | la plante de l'icône | sauge |
+| 1 | Présentation : le nom, trois cartes, la collection sur son étagère | les plantes de l'onboarding | sauge |
 | 2 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
 | 3 | Plantes (la collection) | monstera en pot | sauge |
 | 4 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
@@ -138,4 +140,5 @@ premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les 
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
 que chaque titre tienne sur deux lignes ; la taille est commune aux sept
 captures. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
-les textes de la fiche de présentation dans `COVER`.
+les textes de la fiche de présentation dans `COVER`, ses cartes dans
+`CARDS` et son étagère dans `SHELF`.
