@@ -126,12 +126,14 @@ def background(tint, seed=0):
     sortent du cadre. C'est ce qui fait qu'une fiche ne se lit pas comme un
     aplat, et le même système sur les huit fait tenir la série."""
     strong, soft = TINTS[tint]
-    base = tuple(int(s * 0.55 + c * 0.45) for s, c in zip(soft, CANVAS))
+    # Le pastel plein de la teinte, pas sa version laiteuse : a cote d'une
+    # fiche du magasin, un fond trop clair passe pour un blanc rate.
+    base = tuple(int(a * 0.74 + b * 0.26) for a, b in zip(soft, strong))
     img = Image.new('RGBA', (W, H), base + (255,))
-    img.alpha_composite(blob((W * 1.02, H * 0.06), 880, strong, 0.30, seed=seed))
-    img.alpha_composite(blob((-W * 0.06, H * 0.66), 1000, strong, 0.20, seed=seed + 11))
-    img.alpha_composite(blob((W * 0.62, H * 1.06), 860, strong, 0.16, seed=seed + 23))
-    img.alpha_composite(radial((W, H), (200, 1300), 900, (255, 253, 248), 0.45))
+    img.alpha_composite(blob((W * 1.02, H * 0.06), 900, strong, 0.34, seed=seed))
+    img.alpha_composite(blob((-W * 0.06, H * 0.66), 1020, strong, 0.26, seed=seed + 11))
+    img.alpha_composite(blob((W * 0.62, H * 1.06), 880, strong, 0.22, seed=seed + 23))
+    img.alpha_composite(radial((W, H), (240, 1250), 880, (255, 253, 248), 0.40))
     return grain(img)
 
 
@@ -176,51 +178,6 @@ def draw_text_block(img, title, subtitle, size, x=96, y=200, width=1110):
         draw.text((x + 4, y), line, font=s_font, fill=INK2)
         y += 66
     return y
-
-
-# --- les tracés à la main -----------------------------------------------------
-
-def _stroke(size, points, color, width, angle):
-    layer = Image.new('RGBA', size, (0, 0, 0, 0))
-    ImageDraw.Draw(layer).line(points, fill=color + (255,), width=width, joint='curve')
-    return layer.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else layer
-
-
-def squiggle(color, size=300, width=11, angle=0.0):
-    """Une boucle tracée d'un trait, comme au feutre dans la marge."""
-    pts = []
-    for i in range(200):
-        a = 2.4 * np.pi * i / 199
-        r = size / 2 * (0.18 + 0.82 * i / 199)
-        pts.append((size / 2 + r * np.cos(a), size / 2 + r * np.sin(a) * 0.72))
-    return _stroke((size, size), pts, color, width, angle)
-
-
-def wave(color, size=320, width=11, angle=0.0):
-    """Trois vagues, le gribouillis le plus court du carnet."""
-    pts = [(size * i / 119, size * 0.5 + size * 0.22 * np.sin(3 * np.pi * i / 119)) for i in range(120)]
-    return _stroke((size, int(size * 0.8) + width), pts, color, width, angle)
-
-
-def curved_arrow(color, size=300, width=11, angle=0.0):
-    """Une flèche qui se courbe, celle qui désigne ce qu'il faut regarder."""
-    pts = [(size * 0.08 + size * 0.84 * (i / 99), size * 0.9 - size * 0.62 * np.sin(np.pi * 0.5 * i / 99) ** 1.6) for i in range(100)]
-    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    d.line(pts, fill=color + (255,), width=width, joint='curve')
-    hx, hy = pts[-1]
-    d.line([(hx - size * 0.16, hy - size * 0.02), (hx, hy), (hx - size * 0.04, hy + size * 0.17)], fill=color + (255,), width=width, joint='curve')
-    return layer.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else layer
-
-
-def handwriting(text, color, size=60, angle=0.0):
-    """Un mot écrit à la main dans la marge, dans la police de l'app."""
-    f = hand(size, 600)
-    d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
-    w = int(d0.textlength(text, font=f)) + 20
-    layer = Image.new('RGBA', (w, int(size * 1.9)), (0, 0, 0, 0))
-    ImageDraw.Draw(layer).text((10, size * 0.3), text, font=f, fill=color + (255,))
-    return layer.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else layer
 
 
 # --- iPhone -------------------------------------------------------------------
@@ -524,7 +481,7 @@ COVER = {
 SAGE_SOLID = (44, 119, 78)
 CREAM = (250, 245, 236)
 TERRACOTTA = (156, 72, 44)
-BAND = 1560
+COVER_TITLE = 296
 
 
 def rounded_mask(size, radius):
@@ -590,15 +547,20 @@ def cover(lang, size):
     plante en verre dépoli, et la carte pleine de terre cuite."""
     t = COVER[lang]
     img = background('sage', seed=1)
-    bottom = draw_text_block(img, t['title'], t['subtitle'], size)
-    draw_accent(img, 1, 'sage', lang)
+    # Le nom de l'app n'est pas un titre de fiche : il se lit de loin, dans la
+    # grille du magasin, et il porte la serie. Il a donc sa taille a lui.
+    draw_text_block(img, t['title'], t['subtitle'], COVER_TITLE)
 
-    # La plante de l'icône, à la place du téléphone.
-    plant = crisp('assets/icon/icon_ios_foreground.png', width=880)
-    paste_with_shadow(img, plant, ((W - plant.width) // 2 + 60, bottom + 120), blur=64, offset=(16, 46), alpha=0.28)
+    # La fiche se cale par le bas : la barre d'abord, la carte au-dessus, la
+    # plante posee sur elle. Sans quoi le bas de la fiche reste vide.
+    bar_h = 232
+    by = H - 150 - bar_h
+    gw, gh = W - 192, 860
+    gx, gy = 96, by - 86 - gh
 
-    # La carte de verre, posée à cheval sur le bas de la plante.
-    gx, gy, gw, gh = 96, bottom + 120 + plant.height - 120, W - 192, 860
+    plant = crisp('assets/icon/icon_ios_foreground.png', width=900)
+    paste_with_shadow(img, plant, ((W - plant.width) // 2 + 40, gy + 130 - plant.height), blur=64, offset=(16, 46), alpha=0.28)
+
     glass(img, (gx, gy, gw, gh), radius=72, blur=56, alpha=0.58)
     d = ImageDraw.Draw(img)
     pad = 76
@@ -617,7 +579,6 @@ def cover(lang, size):
         yy += 132
 
     # La carte pleine de terre cuite : dans l'app, c'est celle qui compte.
-    bar_h, by = 232, gy + gh + 86
     paste_with_shadow(img, clay_card((W - 192, bar_h), 72, color=TERRACOTTA), (96, by), blur=52, offset=(12, 36), alpha=0.28)
     ImageDraw.Draw(img).text((W // 2, by + bar_h // 2), t['footer'], font=font('Bold', 56), fill=CREAM, anchor='mm')
     return img
@@ -659,34 +620,32 @@ SCENES = [
 ]
 # Ce que chaque fiche porte en marge : un tracé à la main, et parfois un mot.
 # (genre, x, y, angle, taille, texte) — le mot est traduit dans ACCENT_WORDS.
-ACCENTS = {
-    1: ('wave', 1000, 150, -8, 300, None),
-    2: ('arrow', 1040, 130, -18, 280, None),
-    3: ('squiggle', 1020, 140, 0, 290, None),
-    4: ('wave', 1000, 150, -6, 310, None),
-    5: ('squiggle', 1030, 130, 150, 280, None),
-    6: ('arrow', 1030, 140, 14, 280, None),
-    7: ('wave', 1000, 140, 6, 310, None),
-    8: ('word', 1010, 170, -8, 92, 'note'),
+# L'ornement du titre : un petit objet d'argile de l'app, pose en marge du
+# bloc de texte et coupe par le bord droit. (chemin, taille, angle)
+ORNAMENT = {
+    2: ('assets/problems/icons/001.webp', 215, 14),
+    3: ('assets/onboarding/collection_semis.webp', 205, -10),
+    4: ('assets/problems/clay_affection.webp', 225, -14),
+    5: ('assets/problems/clay_abiotique.webp', 215, 16),
+    6: ('assets/problems/icons/060.webp', 230, 12),
+    7: ('assets/onboarding/collection_ronde.webp', 210, -12),
+    8: ('assets/problems/clay_ravageur.webp', 200, 10),
 }
-ACCENT_WORDS = {'note': {'fr': 'noté', 'en': 'noted'}}
 
 
-def draw_accent(img, index, tint, lang):
-    """Le trace de la marge, pose par-dessus le telephone : dans les fiches
-    du magasin, c est lui qui donne le geste de la main."""
-    if index not in ACCENTS:
+def ornament(img, index, top, bottom):
+    """L'objet qui accompagne le titre : petit, cale sur la hauteur du bloc
+    de texte, et coupe d'un tiers par le bord droit — assez pour se lire
+    comme un ornement de la mise en page, pas comme un autocollant pose."""
+    if index not in ORNAMENT:
         return
-    kind, ax, ay, angle, scale, word = ACCENTS[index]
-    # Un ton plus dense que celui du fond : un trait à la main doit se voir.
-    tone = tuple(int(c * 0.82) for c in TINTS[tint][0])
-    mark = {
-        'arrow': lambda: curved_arrow(tone, size=scale, angle=angle),
-        'squiggle': lambda: squiggle(tone, size=scale, angle=angle),
-        'wave': lambda: wave(tone, size=scale, angle=angle),
-        'word': lambda: handwriting(ACCENT_WORDS[word][lang], tone, size=scale, angle=angle),
-    }[kind]()
-    img.alpha_composite(mark, (ax, ay))
+    path, size, angle = ORNAMENT[index]
+    obj = crisp(path, box=size)
+    if angle:
+        obj = obj.rotate(angle, resample=Image.BICUBIC, expand=True)
+    y = top + (bottom - top - obj.height) // 2
+    paste_with_shadow(img, obj, (W - obj.width + obj.width // 3, y), blur=36, offset=(8, 24), alpha=0.18)
+
 
 # Chaque visuel : la capture, la teinte du papier, l'objet d'argile qui dépasse.
 
@@ -694,7 +653,7 @@ def draw_accent(img, index, tint, lang):
 # Le téléphone tient en entier dans le cadre, écran complet : sa largeur, le
 # vide entre le sous-titre et lui (où l'objet d'argile dépasse), et la taille
 # de l'objet.
-PHONE_WIDTH, PHONE_GAP, PHONE_CLAY = 850, 170, 420
+PHONE_WIDTH, PHONE_GAP, PHONE_CLAY = 850, 170, 500
 
 
 def build(shots, out, lang):
@@ -719,8 +678,8 @@ def build(shots, out, lang):
             # précédent reste en place, et on le dit.
             print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
             continue
+        ornament(img, i, 200, bottom)
         box = place_phone(img, shot, y=bottom + PHONE_GAP, width=PHONE_WIDTH, angle=angle, **modal)
-        draw_accent(img, i, tint, lang)
         place_object(img, clay, PHONE_CLAY, corner, box)
         img.convert('RGB').save(os.path.join(out, f'{i}.png'), optimize=True)
 

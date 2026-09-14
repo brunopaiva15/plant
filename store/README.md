@@ -20,12 +20,22 @@ légèrement incliné, l'écran complet : c'est l'écran qu'on vend, rien ne le
 recouvre. Au-dessus, un titre tracé en Shantell Sans (la police « main » de
 l'app) et une ligne qui le précise.
 
-La série tient par trois règles communes. Le fond est le papier de l'app
-teinté, avec deux ou trois formes organiques qui sortent du cadre — jamais
-un aplat. Un tracé à la main occupe le coin haut droit : une boucle, trois
-vagues, une flèche courbe, ou un mot écrit dans la police de l'app. Et un
-objet d'argile de l'onboarding se pose devant le téléphone, sur un coin bas,
-entier et à sa taille native — jamais derrière, jamais coupé.
+La série tient par trois règles communes. Le fond est le pastel plein de la
+teinte, avec deux ou trois formes organiques qui sortent du cadre — jamais
+un aplat, jamais une version laiteuse : à côté d'une fiche du magasin, un
+fond trop clair passe pour un blanc raté. Un petit objet d'argile accompagne
+le titre, calé sur la hauteur du bloc de texte et coupé d'un tiers par le
+bord droit. Et un objet de l'onboarding se pose devant le téléphone, sur un
+coin bas, entier et à sa taille native — jamais derrière, jamais coupé.
+
+Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
+(`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
+les fait fondre.
+
+Le nom de l'application, sur la première fiche, a sa taille à lui
+(`COVER_TITLE`) : ce n'est pas un titre de fiche, il se lit de loin dans la
+grille du magasin. Cette fiche se cale par le bas — la barre de terre cuite
+d'abord, la carte de verre au-dessus, la plante posée sur elle.
 
 Le sixième montre l'identification sur l'appareil : sur le simulateur,
 c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
