@@ -3347,9 +3347,36 @@ achète du temps, et donc des essais. À `--input-size 320`, `LOAD_SIZE` monte
 le tuyau plafonne autour de **750 images/s**, mesuré pendant l'encodage de
 la v8. Dix-huit minutes d'époque dont l'essentiel est du JPEG.
 
-Stocker le jeu **déjà réduit** à la taille de chargement supprime ce
-décodage. Sur une L40 dont la carte attend le processeur (`docs/11` § 1), le
-gain est direct : plus d'époques par euro, donc plus de recettes essayées.
+~~Stocker le jeu **déjà réduit** à la taille de chargement supprime ce
+décodage.~~ **Le raisonnement était juste et le chiffre à l'envers.**
+
+`read_and_square` fait trois choses : décoder, prendre le **carré central**,
+redimensionner à `LOAD_SIZE`. Or le jeu est stocké à `MAX_SIDE = 384` px de
+**grand** côté (`plant_dataset/images.py`), donc son carré central vaut le
+**petit** — 288 px pour une photo en 4:3, 256 en 3:2, 216 en 16:9. À
+`--input-size 320`, `LOAD_SIZE` vaut 366 : la plupart des images sont
+**agrandies**, pas réduites. Stocker le jeu à 366 px ajouterait donc des
+pixels à décoder.
+
+Ce qui en retire, c'est l'inverse : **pré-découper au carré, sans jamais
+agrandir**. Le décodeur ne lit plus que le carré — 288² au lieu de 384×288,
+soit un quart de pixels en moins —, le recadrage disparaît, et le
+redimensionnement final reste où il est. L'image que le réseau voit ne
+change pas.
+
+`tools/plant_model/prereduire.py` mesure d'abord et ne convertit que sur
+demande : convertir 794 000 images coûte une heure, savoir ce que ça rend
+coûte trente secondes sur un échantillon (§ 12.7, la même leçon).
+
+> **Et la mesure dira plus que le gain.** Si le carré central médian est
+> nettement sous `LOAD_SIZE`, l'entraînement à 320 px ne voit pas plus de
+> détail qu'à 288 — seulement plus de pixels. Le gain du § 12.6 serait
+> alors réel mais mal attribué. Le garde-fou de `set_input_size` ne
+> pouvait pas le voir : il comparait `LOAD_SIZE` au **grand** côté, et il
+> le comparait à **448**, une taille de stockage de génération précédente,
+> alors que le jeu est recollecté à 384 depuis la v6. Corrigé, mais il
+> reste grossier par construction — passer le garde-fou ne veut pas dire
+> qu'on n'agrandit pas.
 
 **2. ✅ `doublons.py` a été lancé avant la collecte**, et les 51 lignes en
 double sont retirées (§ 13.3, chantier 5). La prochaine collecte part donc

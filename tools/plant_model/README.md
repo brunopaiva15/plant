@@ -5,6 +5,33 @@ La vue d'ensemble est dans
 [`docs/09-plant-recognition.md`](../../docs/09-plant-recognition.md) ; le jeu
 d'images est construit par [`../plant_dataset`](../plant_dataset/README.md).
 
+## Le jeu pré-découpé au carré
+
+```bash
+python3 prereduire.py --dataset /data2/dataset-v8 --input-size 320
+python3 prereduire.py --dataset /data2/dataset-v8 --input-size 320 \
+                      --out /ephemeral/dataset-v8-carre --convertir
+```
+
+Le jeu est relu et redécodé à chaque époque, et le tuyau plafonne autour de
+750 images/s : l'essentiel du temps d'époque est du JPEG. `read_and_square`
+décode, prend le **carré central**, puis redimensionne à `LOAD_SIZE`.
+
+Le § 13.6 voulait stocker le jeu « déjà réduit à `LOAD_SIZE` ». C'est
+l'inverse qu'il faut : le jeu est stocké à 384 px de **grand** côté, donc
+son carré central vaut le **petit** — 288 px en 4:3 —, et `LOAD_SIZE` vaut
+366 à `--input-size 320`. Réduire à 366 **ajouterait** des pixels. Pré-
+découper au carré sans jamais agrandir en retire un quart, fait disparaître
+le recadrage, et ne change pas l'image que le réseau voit.
+
+La première commande n'écrit rien : elle dit la distribution des carrés
+centraux, la proportion d'images que le chargement agrandit, et chronomètre
+un chargement réel. Convertir coûte une heure ; savoir si ça paie coûte
+trente secondes.
+
+`splits.csv` est recopié tel quel, les chemins ne bougent pas :
+`train.py --dataset <sortie>` suffit, sans toucher à `train.py`.
+
 ## Installation
 
 ```bash

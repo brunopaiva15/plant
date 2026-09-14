@@ -60,7 +60,18 @@ def usable_classes(rows: dict, min_train: int, min_val: int) -> list[str]:
 
 
 LOAD_SIZE = 256    # on garde un peu de marge autour de 224 pour le recadrage
-SOURCE_SIZE = 448  # taille de stockage du jeu (plant_dataset/images.py, MAX_SIDE)
+# Le **grand** côté auquel le jeu est stocké — le `MAX_SIDE` de
+# `plant_dataset/images.py`. Il valait 448 ici, une taille de stockage de
+# génération précédente, alors que le jeu est recollecté à 384 depuis la
+# v6 : le garde-fou laissait donc passer 64 px de plus que ce que le
+# disque porte.
+#
+# Et il reste **grossier**, même juste : `read_and_square` se sert du carré
+# central, donc du **petit** côté — 288 px pour une photo en 4:3, 216 en
+# 16:9. Passer ce garde-fou ne veut pas dire qu'on n'agrandit pas.
+# `prereduire.py --dataset … --input-size N` dit sur quelle proportion
+# d'images l'agrandissement a réellement lieu.
+SOURCE_SIZE = 384
 
 
 def set_input_size(px: int) -> None:
@@ -75,7 +86,9 @@ def set_input_size(px: int) -> None:
 
     Au-delà de `SOURCE_SIZE`, on demanderait au jeu plus de pixels qu'il n'en
     a été stocké : l'agrandissement ne créerait pas de détail, il ferait
-    seulement croire qu'on en a.
+    seulement croire qu'on en a. Le garde-fou compare au **grand** côté
+    quand le chargement se sert du **petit** : il écarte l'absurde, il ne
+    promet pas qu'on n'agrandit jamais (voir `prereduire.py`).
     """
     global IMAGE_SIZE, LOAD_SIZE
     load = round(px * LOAD_SIZE / IMAGE_SIZE)
