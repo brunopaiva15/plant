@@ -30,6 +30,10 @@ Une `FloraChip` accepte une pièce dessinée devant son libellé (`leading`) plu
 qu'un emoji : c'est ce qui porte les illustrations d'argile des problèmes de
 santé, dans la feuille d'édition d'une plante (voir docs/04).
 
+`FloraChoice` en assemble plusieurs sous un libellé : un choix facultatif dont
+une seule puce est allumée, qu'un second toucher éteint. Même geste pour la
+lumière d'une plante, son cycle de vie, la forme et l'origine d'un engrais.
+
 `FloraCard`, `FloraButton`, `EmojiTile`, `QuickActionChip`, `FloraTabBar`,
 `FloraAvatar`, la pastille d'`EmptyState`, `SelectionBar` et le toast reposent
 tous sur `ClayBox` : un composant ne dessine jamais sa propre ombre.

@@ -213,6 +213,15 @@ class InventoryItems extends Table with Timestamps {
   TextColumn get notes => text().nullable()();
   TextColumn get photoPath => text().nullable()();
   TextColumn get thumbPath => text().nullable()();
+
+  /// Engrais seulement (`category_key = 'fertilizer'`) : forme, origine et
+  /// dosage NPK en pourcentage. Nuls pour toutes les autres catégories, et
+  /// nuls sur les articles d'avant la v12.
+  TextColumn get fertilizerForm => text().nullable()();
+  TextColumn get fertilizerOrigin => text().nullable()();
+  RealColumn get nitrogen => real().nullable()();
+  RealColumn get phosphorus => real().nullable()();
+  RealColumn get potassium => real().nullable()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
   @override

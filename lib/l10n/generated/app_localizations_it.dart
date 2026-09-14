@@ -1433,6 +1433,45 @@ class AppLocalizationsIt extends AppLocalizations {
   String get catAccessory => 'Accessori';
 
   @override
+  String get fertForm => 'Forma';
+
+  @override
+  String get fertFormLiquid => 'Liquido';
+
+  @override
+  String get fertFormGranules => 'Granuli';
+
+  @override
+  String get fertFormSticks => 'Bastoncini';
+
+  @override
+  String get fertFormSolublePowder => 'Polvere solubile';
+
+  @override
+  String get fertFormFoliar => 'Fogliare';
+
+  @override
+  String get fertFormOther => 'Altro';
+
+  @override
+  String get fertOrigin => 'Origine';
+
+  @override
+  String get fertOriginMineral => 'Minerale';
+
+  @override
+  String get fertOriginOrganic => 'Organico';
+
+  @override
+  String get fertOriginOrganomineral => 'Organo-minerale';
+
+  @override
+  String get fertNpk => 'NPK';
+
+  @override
+  String get fertNpkPercent => 'NPK (%)';
+
+  @override
   String get unit => 'Unità';
 
   @override

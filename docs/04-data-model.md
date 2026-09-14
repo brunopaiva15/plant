@@ -68,6 +68,7 @@ plants.lifespan        annual|biennial|perennial, ou null
 plants.hardiness       hardy|tender, ou null
 plants.cutting_month   1–12, ou null
 ```
+
 Tous facultatifs : `null` veut dire « non renseigné », jamais une valeur par défaut. `health` garde ses trois
 états ; `health_issue` ne s'écrit que si l'état n'est pas `healthy` (le dépôt l'efface sinon). Une valeur
 inconnue en base, venue d'une version plus récente, se lit comme `null` plutôt que de faire échouer la lecture.
@@ -75,6 +76,17 @@ Les noms d'enum sont stockés tels quels, en camelCase, et contrôlés par `chec
 
 Les tris de la liste qui regardent un dernier soin (`PlantSort.lastWatered`…) lisent `MAX(occurred_at)` dans
 `plant_actions` par type, dans la même requête que les cartes ; aucune colonne dénormalisée.
+
+## Caractérisation des engrais (schéma v12)
+```
+inventory_items.fertilizer_form     liquid|granules|sticks|solublePowder|foliar|other, ou null
+inventory_items.fertilizer_origin   mineral|organic|organomineral, ou null
+inventory_items.nitrogen            N en %, ou null                — de même phosphorus (P) et potassium (K)
+```
+Ces cinq colonnes ne valent que pour `category_key = 'fertilizer'` : le dépôt
+les efface dès qu'un article passe dans une autre catégorie, et un pourcentage
+y est ramené entre 0 et 100. Toutes facultatives, donc nulles sur les articles
+d'avant la v12. Les autres catégories d'inventaire ne changent pas.
 
 Le calendrier mêle deux sources : les événements stockés dans `calendar_entries` et les échéances de soin
 projetées à la volée par `CalendarProjector` à partir des routines et de l'historique.
