@@ -299,18 +299,16 @@ void main() {
     expect(find.bySemanticsLabel('Retour'), findsNothing);
     expect(tester.takeException(), isNull);
     // Libérer les providers arme un minuteur à zéro chez drift, qui ferme ses
-    // flux de requêtes. Ce minuteur naît dans la purge des microtâches, à la
-    // fin d'une pompe et après son `elapse` : il survit donc à la pompe qui
-    // l'a créé, et `pumpAndSettle` rend la main sans l'avoir vu puisqu'un
-    // minuteur ne programme pas d'image. Le cadre démonte l'arbre après le
-    // corps du test et vérifie aussitôt qu'il n'en reste aucun.
+    // flux de requêtes ; `pumpAndSettle` rend la main sans l'avoir vu, puisqu'un
+    // minuteur ne programme pas d'image, et le cadre démonte l'arbre après le
+    // corps du test puis vérifie aussitôt qu'il n'en reste aucun.
     //
-    // On démonte donc ici, puis on pompe : chaque tour libère les providers
-    // du tour précédent et en arme d'autres, jusqu'à ce qu'il n'en reste plus.
+    // On démonte donc ici, et on pompe **avec une durée** : une pompe sans
+    // argument n'avance pas l'horloge simulée — elle purge les microtâches et
+    // dessine, rien de plus —, et un minuteur à zéro attend un `elapse` pour
+    // partir. C'est pour la même raison que `settle` passe 100 ms.
     await tester.pumpWidget(const SizedBox());
-    for (var i = 0; i < 4; i++) {
-      await tester.pump();
-    }
+    await tester.pump(const Duration(milliseconds: 100));
     handle.dispose();
   });
 
