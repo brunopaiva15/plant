@@ -27,22 +27,49 @@ DEVICE="${DEVICE:-}"
 LANGS="${LANGS:-fr en de it}"
 
 case "$FORMAT" in
-  iphone) CANDIDATES='iPhone 17 Pro Max|iPhone 16 Pro Max|iPhone 15 Pro Max|iPhone 17 Pro|iPhone 16 Pro|iPhone 17'; SUFFIX='' ;;
-  ipad)   CANDIDATES='iPad Pro 13-inch (M4)|iPad Pro (12.9-inch) (6th generation)|iPad Pro 11-inch (M4)|iPad Air 13-inch (M3)|iPad Air 13-inch (M2)|iPad Pro (11-inch) (4th generation)'; SUFFIX='ipad-' ;;
+  iphone) SUFFIX='' ;;
+  ipad)   SUFFIX='ipad-' ;;
   *) echo "FORMAT doit être « iphone » ou « ipad », pas « $FORMAT »." >&2; exit 1 ;;
 esac
 
-UDID=$(xcrun simctl list devices available -j | python3 -c '
-import json, sys
-wanted = [sys.argv[1]] if sys.argv[1] else sys.argv[2].split("|")
+# Le choix se fait par classement et non par une liste de noms : Xcode en
+# ajoute à chaque version, et une liste se périme au premier iPad suivant.
+UDID=$(xcrun simctl list devices available -j | FAMILY="$FORMAT" WANTED="$DEVICE" python3 -c '
+import json, os, re, sys
+
+family, wanted = os.environ["FAMILY"], os.environ["WANTED"]
 devices = [d for runtime in json.load(sys.stdin)["devices"].values() for d in runtime]
-for name in wanted:
-    found = sorted((d for d in devices if d["name"] == name), key=lambda d: d["state"] != "Booted")
-    if found:
-        print(found[0]["udid"], found[0]["name"], sep="\t")
-        break' "$DEVICE" "$CANDIDATES")
+devices = [d for d in devices if d["name"] == wanted] if wanted else [d for d in devices if d["name"].lower().startswith(family)]
+
+
+def generation(name):
+    # M5, 17, « 6th generation » : la génération, sous le nom quelle porte.
+    # Les puces M passent devant les générations numérotées, plus anciennes.
+    m = re.search(r"\(m(\d+)\)", name)
+    if m:
+        return 100 + int(m.group(1))
+    m = re.search(r"\((\d+)(?:st|nd|rd|th) generation\)", name) or re.search(r"iphone (\d+)", name)
+    return int(m.group(1)) if m else 0
+
+
+def rank(device):
+    # App Store veut la plus grande taille de chaque famille : le plus grand
+    # écran dabord, puis le haut de gamme, puis le plus récent.
+    n = device["name"].lower()
+    if family == "ipad":
+        size = 3 if ("13-inch" in n or "12.9-inch" in n) else 0 if "mini" in n else 2 if "11-inch" in n else 1
+        tier = 2 if "pro" in n else 1 if "air" in n else 0
+    else:
+        size = 4 if "pro max" in n else 3 if "plus" in n else 2 if "pro" in n else 0 if ("mini" in n or n.endswith(" se")) else 1
+        tier = 0
+    return (size, tier, generation(n))
+
+
+if devices:
+    best = max(devices, key=rank)
+    print(best["udid"], best["name"], sep="\t")')
 if [ -z "$UDID" ]; then
-  echo "Aucun simulateur $FORMAT attendu${DEVICE:+ (« $DEVICE »)}. Ceux qui existent :" >&2
+  echo "Aucun simulateur $FORMAT${DEVICE:+ « $DEVICE »} disponible. Ceux qui existent :" >&2
   xcrun simctl list devices available | grep -i "$FORMAT" >&2
   exit 1
 fi
