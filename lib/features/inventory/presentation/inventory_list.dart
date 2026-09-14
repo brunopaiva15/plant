@@ -8,6 +8,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
 import '../application/inventory_export.dart';
+import 'fertilizer_form_icon.dart';
 import 'inventory_item_sheet.dart';
 
 final inventoryProvider = StreamProvider.autoDispose<List<InventoryItem>>((ref) => ref.watch(inventoryRepositoryProvider).watchAll());
@@ -219,9 +220,28 @@ class _ItemRow extends ConsumerWidget {
     return FloraListRow(
       title: item.name,
       subtitle: parts.join(' · '),
+      leadingWidth: !selecting && item.category == InventoryCategory.fertilizer ? 48 : 32,
       leading: selecting
           ? Icon(selected ? CupertinoIcons.checkmark_circle_fill : CupertinoIcons.circle, size: 22, color: selected ? c.sage : c.inkTertiary)
-          : (item.isLow ? Icon(CupertinoIcons.exclamationmark_circle_fill, size: 20, color: c.terracotta) : Text(item.category.emoji, style: const TextStyle(fontSize: 18))),
+          : item.category == InventoryCategory.fertilizer
+              ? Stack(
+                  children: [
+                    FertilizerFormIcon(form: item.fertilizerForm, size: 48),
+                    if (item.isLow)
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(color: c.surface, shape: BoxShape.circle),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2),
+                            child: Icon(CupertinoIcons.exclamationmark_circle_fill, size: 16, color: c.terracotta),
+                          ),
+                        ),
+                      ),
+                  ],
+                )
+              : (item.isLow ? Icon(CupertinoIcons.exclamationmark_circle_fill, size: 20, color: c.terracotta) : Text(item.category.emoji, style: const TextStyle(fontSize: 18))),
       trailing: selecting
           ? null
           : Row(

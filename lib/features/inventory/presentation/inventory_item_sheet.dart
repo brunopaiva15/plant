@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
+import 'fertilizer_form_icon.dart';
 import 'inventory_list.dart';
 import 'inventory_qr_sheet.dart';
 
@@ -146,7 +147,8 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
             children: [
               for (final cat in InventoryCategory.values)
                 FloraChip(
-                  emoji: cat.emoji,
+                  emoji: cat == InventoryCategory.fertilizer ? null : cat.emoji,
+                  leading: cat == InventoryCategory.fertilizer ? const FertilizerFormIcon(size: 28) : null,
                   label: l10n.categoryName(cat),
                   selected: cat == _category,
                   onTap: () => setState(() {
@@ -215,6 +217,7 @@ class _ItemBodyState extends ConsumerState<_ItemBody> {
                           values: FertilizerForm.values,
                           selected: _fertForm,
                           labelOf: l10n.fertilizerFormName,
+                          leadingOf: (form) => FertilizerFormIcon(form: form),
                           onChanged: (v) => setState(() => _fertForm = v),
                         )),
                         _field(FloraChoice<FertilizerOrigin>(
