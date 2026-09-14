@@ -33,22 +33,22 @@ et non « un cran de confiance ».
 | Mots-clés | `rappel,arrosage,fleurs,jardinage,entretien,arroser,botanique,malade,calendrier,rempotage,photo,pot` | 98 / 100 |
 
 
-### Description (3089 / 4000 caractères)
+### Description (3062 / 4000 caractères)
 
 ```
 Auxine est un carnet pour vos plantes. Chaque plante a sa page, avec son espèce, sa pièce, ses photos et l'historique de ses soins. L'écran d'accueil indique les arrosages du jour et ceux des jours suivants. Gratuite, sans abonnement, sans compte et sans publicité.
 
 RECONNAISSANCE DES ESPÈCES, SANS CONNEXION
 
-Prenez la plante en photo pour obtenir le nom de son espèce. Le modèle de reconnaissance, appelé Iris, est installé avec l'application. La photo ne quitte donc pas le téléphone, et le résultat arrive même sans réseau. 1 444 espèces sont couvertes. Plusieurs propositions sont affichées, classées par probabilité. Deux photos de la même plante améliorent nettement le résultat.
+Prenez la plante en photo pour obtenir le nom de son espèce. Le modèle de reconnaissance, appelé Iris, est installé avec l'application. La photo ne quitte donc pas le téléphone, et le résultat arrive même sans réseau. Plusieurs propositions sont affichées, classées par probabilité. Deux photos de la même plante améliorent nettement le résultat.
 
 DIAGNOSTIC SUR PHOTO
 
-Feuilles brunes, toile d'araignée, terre toujours humide. Photographiez le problème pour obtenir plusieurs causes possibles, classées par probabilité, avec les gestes correctifs. La base compte plus de 200 troubles, ravageurs et maladies. Le diagnostic nécessite une connexion.
+Feuilles brunes, toile d'araignée, terre toujours humide ? Photographiez le problème pour obtenir plusieurs causes possibles, classées par probabilité, avec les gestes correctifs. La base compte plus de 200 troubles, ravageurs et maladies. Le diagnostic nécessite une connexion.
 
 FICHE D'ENTRETIEN PAR ESPÈCE
 
-Fréquence d'arrosage en été et en hiver, exposition, engrais, rempotage, humidité de l'air, température, bouturage, problèmes fréquents, toxicité pour les animaux et les enfants. Pour une espèce absente du catalogue, la fiche de son genre ou de sa famille s'applique.
+Fréquence d'arrosage en été et en hiver, exposition, engrais, rempotage, humidité de l'air, température, bouturage, problèmes fréquents, toxicité pour les animaux et les enfants... Pour une espèce absente du catalogue, la fiche de son genre ou de sa famille s'applique.
 
 SOINS DU JOUR
 
@@ -92,22 +92,22 @@ Téléchargez Auxine pour savoir chaque matin quelles plantes arroser.
 | Mots-clés | `tagebuch,erinnerung,garten,blumen,umpflanzen,dünger,zimmerpflanze,wachstum,kalender,botanik,tracker` | 99 / 100 |
 
 
-### Description (3019 / 4000 caractères)
+### Description (2993 / 4000 caractères)
 
 ```
 Auxine ist ein Notizbuch für Ihre Pflanzen. Jede Pflanze hat ihre eigene Seite, mit Art, Zimmer, Fotos und dem Verlauf ihrer Pflege. Der Startbildschirm zeigt das Gießen von heute und von den nächsten Tagen. Kostenlos, ohne Abo, ohne Konto, ohne Werbung.
 
 ARTERKENNUNG, OHNE VERBINDUNG
 
-Fotografieren Sie die Pflanze, um den Namen ihrer Art zu erhalten. Das Erkennungsmodell, Iris genannt, wird mit der App installiert. Das Foto verlässt das Telefon also nicht, und das Ergebnis kommt auch ohne Netz. 1 444 Arten sind abgedeckt. Mehrere Vorschläge werden angezeigt, nach Wahrscheinlichkeit geordnet. Zwei Fotos derselben Pflanze verbessern das Ergebnis deutlich.
+Fotografieren Sie die Pflanze, um den Namen ihrer Art zu erhalten. Das Erkennungsmodell, Iris genannt, wird mit der App installiert. Das Foto verlässt das Telefon also nicht, und das Ergebnis kommt auch ohne Netz. Mehrere Vorschläge werden angezeigt, nach Wahrscheinlichkeit geordnet. Zwei Fotos derselben Pflanze verbessern das Ergebnis deutlich.
 
 DIAGNOSE NACH FOTO
 
-Braune Blätter, Gespinst, dauerhaft nasse Erde. Fotografieren Sie das Problem, um mehrere mögliche Ursachen zu erhalten, nach Wahrscheinlichkeit geordnet, mit den passenden Maßnahmen. Die Basis umfasst über 200 Störungen, Schädlinge und Krankheiten. Die Diagnose benötigt eine Verbindung.
+Braune Blätter, Gespinst, dauerhaft nasse Erde? Fotografieren Sie das Problem, um mehrere mögliche Ursachen zu erhalten, nach Wahrscheinlichkeit geordnet, mit den passenden Maßnahmen. Die Basis umfasst über 200 Störungen, Schädlinge und Krankheiten. Die Diagnose benötigt eine Verbindung.
 
 PFLEGEBLATT JE ART
 
-Gießabstand im Sommer und im Winter, Licht, Dünger, Umtopfen, Luftfeuchte, Temperatur, Vermehrung, häufige Probleme, Giftigkeit für Tiere und Kinder. Fehlt eine Art im Katalog, gilt das Blatt ihrer Gattung oder ihrer Familie.
+Gießabstand im Sommer und im Winter, Licht, Dünger, Umtopfen, Luftfeuchte, Temperatur, Vermehrung, häufige Probleme, Giftigkeit für Tiere und Kinder... Fehlt eine Art im Katalog, gilt das Blatt ihrer Gattung oder ihrer Familie.
 
 PFLEGE VON HEUTE
 
@@ -151,22 +151,22 @@ Laden Sie Auxine, um jeden Morgen zu wissen, welche Pflanzen zu gießen sind.
 | Mots-clés | `diary,reminder,garden,flowers,repotting,fertilizer,indoor,houseplant,growth,tracker,calendar,botany` | 99 / 100 |
 
 
-### Description (2749 / 4000 caractères)
+### Description (2724 / 4000 caractères)
 
 ```
 Auxine is a notebook for your plants. Each plant has its own page, with its species, its room, its photos and the history of its care. The home screen lists the waterings due today and over the coming days. Free, no subscription, no account, no ads.
 
 SPECIES RECOGNITION, OFFLINE
 
-Photograph the plant to get the name of its species. The recognition model, called Iris, is installed with the app. The photo therefore never leaves the phone, and the result arrives without a network. 1,444 species are covered. Several suggestions are shown, ranked by probability. Two photos of the same plant improve the result considerably.
+Photograph the plant to get the name of its species. The recognition model, called Iris, is installed with the app. The photo therefore never leaves the phone, and the result arrives without a network. Several suggestions are shown, ranked by probability. Two photos of the same plant improve the result considerably.
 
 DIAGNOSIS FROM A PHOTO
 
-Brown leaves, webbing, soil that stays wet. Photograph the problem to get several possible causes, ranked by probability, with the corrective steps. The base holds more than 200 disorders, pests and diseases. Diagnosis requires a connection.
+Brown leaves, webbing, soil that stays wet? Photograph the problem to get several possible causes, ranked by probability, with the corrective steps. The base holds more than 200 disorders, pests and diseases. Diagnosis requires a connection.
 
 CARE GUIDE PER SPECIES
 
-Watering frequency in summer and in winter, light, fertiliser, repotting, air humidity, temperature, propagation, common problems, toxicity for pets and children. For a species missing from the catalogue, the guide for its genus or its family applies.
+Watering frequency in summer and in winter, light, fertiliser, repotting, air humidity, temperature, propagation, common problems, toxicity for pets and children... For a species missing from the catalogue, the guide for its genus or its family applies.
 
 CARE DUE TODAY
 
@@ -210,22 +210,22 @@ Download Auxine to know each morning which plants to water.
 | Mots-clés | `promemoria,giardino,fiori,annaffiatura,rinvaso,fertilizzante,crescita,calendario,botanica,tracker` | 97 / 100 |
 
 
-### Description (2997 / 4000 caractères)
+### Description (2972 / 4000 caractères)
 
 ```
 Auxine è un taccuino per le vostre piante. Ogni pianta ha la sua pagina, con la specie, la stanza, le foto e lo storico delle cure. La schermata iniziale indica le annaffiature di oggi e quelle dei giorni successivi. Gratuita, senza abbonamento, senza account e senza pubblicità.
 
 RICONOSCIMENTO DELLE SPECIE, SENZA CONNESSIONE
 
-Fotografate la pianta per ottenere il nome della sua specie. Il modello di riconoscimento, chiamato Iris, è installato con l'applicazione. La foto non lascia quindi il telefono, e il risultato arriva anche senza rete. Sono coperte 1 444 specie. Vengono mostrate più proposte, ordinate per probabilità. Due foto della stessa pianta migliorano nettamente il risultato.
+Fotografate la pianta per ottenere il nome della sua specie. Il modello di riconoscimento, chiamato Iris, è installato con l'applicazione. La foto non lascia quindi il telefono, e il risultato arriva anche senza rete. Vengono mostrate più proposte, ordinate per probabilità. Due foto della stessa pianta migliorano nettamente il risultato.
 
 DIAGNOSI DA FOTO
 
-Foglie brune, ragnatela, terra sempre umida. Fotografate il problema per ottenere più cause possibili, ordinate per probabilità, con gli interventi da fare. La base contiene oltre 200 disturbi, parassiti e malattie. La diagnosi richiede una connessione.
+Foglie brune, ragnatela, terra sempre umida? Fotografate il problema per ottenere più cause possibili, ordinate per probabilità, con gli interventi da fare. La base contiene oltre 200 disturbi, parassiti e malattie. La diagnosi richiede una connessione.
 
 SCHEDA DI CURA PER SPECIE
 
-Frequenza di annaffiatura in estate e in inverno, esposizione, concime, rinvaso, umidità dell'aria, temperatura, propagazione, problemi frequenti, tossicità per animali e bambini. Per una specie assente dal catalogo, vale la scheda del suo genere o della sua famiglia.
+Frequenza di annaffiatura in estate e in inverno, esposizione, concime, rinvaso, umidità dell'aria, temperatura, propagazione, problemi frequenti, tossicità per animali e bambini... Per una specie assente dal catalogo, vale la scheda del suo genere o della sua famiglia.
 
 CURE DI OGGI
 
