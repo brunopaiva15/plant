@@ -415,12 +415,14 @@ def ident_sheet(lang, width=1170):
 # un aplat sauge. Les concurrents du magasin font tous la même chose — un
 # aplat saturé, un titre énorme, une vraie photo, des pastilles d'interface
 # posées dessus. Ici les pastilles sont celles de l'app, à sa palette.
-# La fiche d'ouverture, sobre : le papier de l'app avec ses nuances, un
-# massif d'argile au fond, et une plaque de verre dépoli posée dessus qui
-# porte ce que l'app dit d'une plante. Rien d'autre.
+# La fiche d'ouverture suit la mise en page de l'app : la marge de page, un
+# grand titre en haut à gauche, puis des cartes en colonne. Elle y ajoute une
+# bande sauge, la plante de l'icône posée sur son bord, et une carte de verre
+# dépoli qui mord sur la bande. Rien de plus : une fiche chargée ne se lit
+# pas dans une grille de vignettes.
 COVER = {
     'fr': {
-        'claim': 'Le carnet de vos plantes',
+        'claim': ['Le carnet', 'de vos plantes'],
         'name': 'Langue de belle-mère',
         'species': 'Dracaena trifasciata',
         'rows': [
@@ -431,7 +433,7 @@ COVER = {
         'footer': 'Gratuite, sans compte, sans publicité',
     },
     'en': {
-        'claim': 'The journal of your plants',
+        'claim': ['The journal', 'of your plants'],
         'name': 'Snake plant',
         'species': 'Dracaena trifasciata',
         'rows': [
@@ -445,18 +447,8 @@ COVER = {
 
 SAGE_SOLID = (44, 119, 78)
 CREAM = (250, 245, 236)
-WATER = (58, 110, 168)
-
-# Le massif du fond : l'asset, sa hauteur, l'abscisse de son pot.
-# Le massif du fond : l'asset, sa hauteur, l'abscisse de son pot. Ils se
-# tiennent sur les côtés — au milieu, le verre a besoin d'un fond calme.
-# (asset, hauteur, abscisse du pot, retourné). Deux hautes de part et
-# d'autre pour encadrer la plaque, une ronde devant pour la profondeur.
-COVER_PLANTS = [
-    ('collection_sansevieria.webp', 1980, 205, True),
-    ('collection_sansevieria.webp', 2120, 1060, False),
-    ('collection_ronde.webp', 1320, 430, False),
-]
+TERRACOTTA = (156, 72, 44)
+BAND = 1560
 
 
 def rounded_mask(size, radius):
@@ -497,68 +489,67 @@ def glass(img, box, radius=72, blur=70, alpha=0.46):
     img.alpha_composite(pane, (x, y))
 
 
+def crisp(path, height=None, width=None):
+    """Un objet d'argile à sa taille, jamais au-delà : ces images font 640 ou
+    1024 pixels, et les étirer plus loin les fait fondre — c'est ce qui
+    donnait à la fiche son air bon marché."""
+    im = Image.open(os.path.join(ROOT, path)).convert('RGBA')
+    im = im.crop(im.getbbox())
+    if height:
+        width = int(im.width * height / im.height)
+    else:
+        height = int(im.height * width / im.width)
+    return im.resize((width, height), Image.LANCZOS)
+
+
 def cover(lang):
-    """La fiche d'ouverture : le papier de l'app, un massif d'argile au fond,
-    et une plaque de verre dépoli qui porte ce que l'app dit d'une plante.
-    Sobre : pas de pastille criarde, pas d'autocollant — la matière parle."""
+    """La fiche d'ouverture : une bande sauge qui porte le nom et la
+    revendication, la plante de l'icône posée sur son bord, la carte de ce
+    que l'app dit d'une plante en verre dépoli, et la carte pleine de terre
+    cuite pour ce qui est gratuit."""
     t = COVER[lang]
-
-    # Le fond : le papier de l'app, avec des nappes de couleur plus larges
-    # que sur les autres fiches. C'est ce qui donne au verre de quoi jouer.
-    base = tuple(int(a * 0.5 + b * 0.5) for a, b in zip(TINTS['sage'][1], CANVAS))
-    img = Image.new('RGBA', (W, H), base + (255,))
-    img.alpha_composite(radial((W, H), (1240, 200), 1200, TINTS['sage'][0], 0.26))
-    img.alpha_composite(radial((W, H), (80, 1500), 1000, TINTS['water'][0], 0.10))
-    img.alpha_composite(radial((W, H), (1100, 2700), 1100, TINTS['terracotta'][0], 0.12))
-    img.alpha_composite(radial((W, H), (300, 2500), 900, (255, 253, 248), 0.55))
-    img = grain(img, strength=0.035)
+    img = Image.new('RGBA', (W, H), CANVAS + (255,))
+    img.alpha_composite(radial((W, H), (1150, 2500), 1000, TINTS['sage'][0], 0.10))
+    band = Image.new('RGBA', (W, BAND), SAGE_SOLID + (255,))
+    band.alpha_composite(radial((W, BAND), (1180, 120), 1000, (104, 186, 134), 0.55))
+    img.alpha_composite(band, (0, 0))
+    img = grain(img, strength=0.032)
 
     d = ImageDraw.Draw(img)
-    d.text((W // 2, 186), 'Auxine', font=hand(220, 750), fill=INK, anchor='mt')
-    d.text((W // 2, 540), t['claim'], font=font('SemiBold', 76), fill=INK2, anchor='mt')
+    d.text((96, 170), 'Auxine', font=hand(208, 800), fill=CREAM)
+    y = 520
+    for line in t['claim']:
+        d.text((96, y), line, font=font('Black', 124), fill=CREAM)
+        y += 146
 
-    # Le massif, au fond, coupé par le bas du cadre.
-    ground = H + 140
-    for name, height, cx, flip in COVER_PLANTS:
-        src = Image.open(os.path.join(CLAY, name)).convert('RGBA')
-        src = src.crop(src.getbbox())
-        if flip:
-            src = src.transpose(Image.FLIP_LEFT_RIGHT)
-        w = int(src.width * height / src.height)
-        paste_with_shadow(img, src.resize((w, height), Image.LANCZOS), (cx - w // 2, ground - height), blur=60, offset=(14, 44), alpha=0.22)
+    # La plante de l'icône, posée sur le bord de la bande.
+    plant = crisp('assets/icon/icon_ios_foreground.png', width=780)
+    paste_with_shadow(img, plant, (W - plant.width + 40, BAND - plant.height), blur=64, offset=(16, 46), alpha=0.30)
 
-    # La plaque de verre, posée au milieu du massif.
-    gx, gy, gw, gh = 84, 980, W - 168, 1010
-    glass(img, (gx, gy, gw, gh), radius=80)
+    # La carte de verre, qui mord sur la bande : c'est ce passage du vert au
+    # papier qui la fait voir comme une plaque et non comme un aplat.
+    gx, gy, gw, gh = 96, 1500, W - 192, 860
+    glass(img, (gx, gy, gw, gh), radius=72, blur=56, alpha=0.58)
     d = ImageDraw.Draw(img)
-
     pad = 76
-    d.text((gx + pad, gy + pad - 8), t['name'], font=font('Bold', 92), fill=INK)
-    d.text((gx + pad, gy + pad + 122), t['species'], font=font('MediumItalic', 56), fill=SAGE)
-
-    y = gy + pad + 250
+    d.text((gx + pad, gy + pad - 6), t['name'], font=font('Bold', 88), fill=INK)
+    d.text((gx + pad, gy + pad + 118), t['species'], font=font('MediumItalic', 54), fill=SAGE)
+    yy = gy + pad + 234
     for i, (icon, label, value) in enumerate(t['rows']):
         if i:
-            d.line((gx + pad, y, gx + gw - pad, y), fill=(255, 255, 255, 150), width=3)
-        y += 30
-        obj = Image.open(os.path.join(ROOT, icon)).convert('RGBA')
-        obj = obj.crop(obj.getbbox())
-        side = 92
-        obj = obj.resize((int(obj.width * side / max(obj.width, obj.height)), int(obj.height * side / max(obj.width, obj.height))), Image.LANCZOS)
-        img.alpha_composite(obj, (gx + pad, y + (104 - obj.height) // 2))
+            d.line((gx + pad, yy, gx + gw - pad, yy), fill=(255, 255, 255, 150), width=3)
+        yy += 26
+        obj = crisp(icon, height=86)
+        img.alpha_composite(obj, (gx + pad, yy + (98 - obj.height) // 2))
         d = ImageDraw.Draw(img)
-        d.text((gx + pad + 132, y + 52), label, font=font('Medium', 56), fill=INK2, anchor='lm')
-        d.text((gx + gw - pad, y + 52), value, font=font('Bold', 60), fill=INK, anchor='rm')
-        y += 142
+        d.text((gx + pad + 126, yy + 49), label, font=font('Medium', 54), fill=INK2, anchor='lm')
+        d.text((gx + gw - pad, yy + 49), value, font=font('Bold', 58), fill=INK, anchor='rm')
+        yy += 132
 
-    # Ce qui est gratuit, sur une plaque du même verre : le fond est chargé
-    # à cet endroit, et le texte nu s'y perdait.
-    f_foot = font('SemiBold', 52)
-    fw = int(d.textlength(t['footer'], font=f_foot)) + 128
-    fh = 132
-    fx, fy = (W - fw) // 2, H - 290
-    glass(img, (fx, fy, fw, fh), radius=fh // 2, blur=50, alpha=0.52)
-    ImageDraw.Draw(img).text((W // 2, fy + fh // 2), t['footer'], font=f_foot, fill=INK, anchor='mm')
+    # La carte pleine de terre cuite : dans l'app, c'est celle qui compte.
+    bar_h, by = 232, gy + gh + 86
+    paste_with_shadow(img, clay_card((W - 192, bar_h), 72, color=TERRACOTTA), (96, by), blur=52, offset=(12, 36), alpha=0.28)
+    ImageDraw.Draw(img).text((W // 2, by + bar_h // 2), t['footer'], font=font('Bold', 56), fill=CREAM, anchor='mm')
     return img
 
 

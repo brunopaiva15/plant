@@ -1,16 +1,17 @@
 # Visuels du magasin
 
 Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
-premier ne montre pas un écran : un massif de plantes d'argile occupe la
-fiche, et une plaque de verre dépoli posée dessus porte ce que l'app dit
-d'une plante — son nom, son espèce, son arrosage, sa lumière, son dernier
-soin. Le verre reprend ce qu'il y a dessous, le floute largement et
-l'éclaircit ; ce sont les feuilles qui passent au travers qui lui donnent
-sa couleur, et le liseré clair du pourtour son épaisseur. Le massif se
-tient sur les côtés et le flou est franc : derrière une plaque, un
-feuillage net se lit comme du bruit, et la carte cesse d'être lisible. Le nom est tracé à
-la main sur le papier de l'app, et ce qui est gratuit tient sur une petite
-plaque du même verre. Les sept autres montrent une capture réelle de l'app dans un
+premier ne montre pas un écran, mais il en suit la mise en page : la marge
+de page de l'app, un grand titre en haut à gauche, puis des cartes en
+colonne. Une bande sauge porte le nom tracé à la main et la revendication
+en gras ; la plante de l'icône se pose sur son bord ; une carte de verre
+dépoli mord sur la bande et porte ce que l'app dit d'une plante ; une
+carte pleine de terre cuite dit ce qui est gratuit. Rien de plus — une
+fiche chargée ne se lit pas dans une grille de vignettes.
+
+Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
+(`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
+les fait fondre. Les sept autres montrent une capture réelle de l'app dans un
 iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
 rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
 « main » de l'app) ; entre le titre et le téléphone, un objet 3D de la série
@@ -19,7 +20,7 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
-| 1 | Fiche d'ouverture : massif d'argile derrière une plaque de verre | trois plantes de l'onboarding | sauge |
+| 1 | Fiche d'ouverture : bande sauge, carte de verre, carte terre cuite | la plante de l'icône | sauge |
 | 2 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
 | 3 | Plantes (la collection) | monstera en pot | sauge |
 | 4 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
@@ -145,5 +146,5 @@ premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les 
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
 que chaque titre tienne sur deux lignes ; la taille est commune aux sept
 captures. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
-les textes de la fiche d'ouverture dans `COVER`, son massif dans
-`COVER_PLANTS` ; le verre dépoli est `glass()`, l'argile `clay_shape()`.
+les textes de la fiche d'ouverture dans `COVER` ; le verre dépoli est
+`glass()`, l'argile `clay_shape()`.
