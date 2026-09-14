@@ -11,6 +11,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
+import '../../problems/presentation/problem_kind_icon.dart';
 import '../../species/presentation/species_field.dart';
 
 /// Édition d'une plante : l'essentiel d'abord, le reste sous « Plus d'options ».
@@ -137,7 +138,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                                 values: HealthIssue.values,
                                 selected: _issue,
                                 labelOf: l10n.healthIssueName,
-                                emojiOf: (v) => v.emoji,
+                                leadingOf: (v) => HealthIssueIcon(issue: v),
                                 onChanged: (v) => setState(() => _issue = v),
                               ),
                             ),
@@ -277,13 +278,14 @@ class _Field extends StatelessWidget {
 /// allumée, qu'on éteint d'un second toucher. Même geste que la lumière d'un
 /// emplacement.
 class _Choice<T extends Object> extends StatelessWidget {
-  const _Choice({required this.label, required this.values, required this.selected, required this.labelOf, required this.onChanged, this.emojiOf});
+  const _Choice({required this.label, required this.values, required this.selected, required this.labelOf, required this.onChanged, this.emojiOf, this.leadingOf});
 
   final String label;
   final List<T> values;
   final T? selected;
   final String Function(T) labelOf;
   final String Function(T)? emojiOf;
+  final Widget Function(T)? leadingOf;
   final ValueChanged<T?> onChanged;
 
   @override
@@ -300,6 +302,7 @@ class _Choice<T extends Object> extends StatelessWidget {
             for (final v in values)
               FloraChip(
                 emoji: emojiOf?.call(v),
+                leading: leadingOf?.call(v),
                 label: labelOf(v),
                 selected: selected == v,
                 onTap: () => onChanged(selected == v ? null : v),

@@ -313,7 +313,11 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       children: [
                         if (plant.health != PlantHealth.healthy)
                           DueBadge(
-                            emoji: plant.healthIssue?.emoji ?? plant.health.emoji,
+                            // L'emoji de l'état, pas celui du problème : le
+                            // libellé nomme déjà le problème, et une
+                            // illustration d'argile ne se lit pas à cette
+                            // taille (voir ProblemIcon).
+                            emoji: plant.health.emoji,
                             label: plant.healthIssue == null ? l10n.healthName(plant.health) : l10n.healthIssueName(plant.healthIssue!),
                             status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today,
                             compact: true,

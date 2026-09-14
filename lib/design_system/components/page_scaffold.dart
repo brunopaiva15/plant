@@ -148,6 +148,13 @@ class LargeTitlePage extends StatelessWidget {
       backgroundColor: c.canvas,
       body: CustomScrollView(
         controller: controller,
+        // Sans contrôleur à elle, la page s'attache à celui de son onglet
+        // (`app/tab_scroll.dart`) — dit explicitement, et non laissé à
+        // l'heuristique de plateforme de `PrimaryScrollController` : c'est ce
+        // qui fait marcher le retour au sommet et le tap sur la barre d'état.
+        // La physique reste la nôtre, `primary` ne la remplace que si on n'en
+        // passe aucune.
+        primary: controller == null ? true : null,
         physics: floraScrollPhysics,
         slivers: [
           header,

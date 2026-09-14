@@ -26,6 +26,10 @@ un héros de 300 px ont le même rendu.
 - `GrainOverlay` : `assets/textures/grain.png` répété par-dessus l'app à 7 %
   (10 % en sombre). C'est le grain du papier ; il est ignoré par le pointeur.
 
+Une `FloraChip` accepte une pièce dessinée devant son libellé (`leading`) plutôt
+qu'un emoji : c'est ce qui porte les illustrations d'argile des problèmes de
+santé, dans la feuille d'édition d'une plante (voir docs/04).
+
 `FloraCard`, `FloraButton`, `EmojiTile`, `QuickActionChip`, `FloraTabBar`,
 `FloraAvatar`, la pastille d'`EmptyState`, `SelectionBar` et le toast reposent
 tous sur `ClayBox` : un composant ne dessine jamais sa propre ombre.
@@ -208,6 +212,18 @@ Deux choses le distinguent d'un simple rétrécissement.
   le même dessin sous le doigt, pas une autre pièce. Seul le peintre repasse ;
   le contenu de la carte ne se reconstruit pas.
 
+### Une carte qui s'en va (`features/today/`)
+Un soin enregistré repousse l'échéance à la seconde même. La carte changeait
+donc de section — de « En retard » à « À venir » — avant d'avoir rien montré :
+elle disparaissait d'un coup sous le doigt pour réapparaître ailleurs.
+
+Désormais la version d'avant prime sur celle de la base tant que la tâche
+séjourne dans `completedTasksProvider` : la carte tient sa place une seconde en
+« Arrosée », le temps qu'on puisse annuler, puis part vers la droite en
+s'effaçant **pendant que la place qu'elle occupait se referme**. Sans cette
+fermeture, la carte s'en allait bien en douceur mais les suivantes sautaient
+d'un cran à l'instant où la liste se reconstruisait sans elle.
+
 ### Une liste qui se pose (`Appear`)
 Une pièce monte de huit points en s'éclaircissant, une seule fois, avec trente
 millisecondes de retard par rang — plafonné à huit rangs, sans quoi une longue
@@ -254,6 +270,18 @@ le repli est le retour d'avant ; le natif n'est sollicité qu'une fois pour le
 savoir. `test/core/haptics_test.dart` vérifie l'aiguillage.
 
 ## La barre d'onglets et le retour au sommet (`app/tab_scroll.dart`)
+Un second tap sur l'onglet courant remonte sa liste ; ce n'est qu'une fois en
+haut qu'il revient à la racine de la branche. Les deux dans le même geste se
+gênaient : revenir à la racine reconstruit la page, et la remontée n'avait pas
+le temps de se jouer.
+
+L'attache de la liste au contrôleur de son onglet est **dite explicitement**
+par `LargeTitlePage` (`primary: true` quand la page n'a pas de contrôleur à
+elle), et non laissée à l'heuristique de plateforme de
+`PrimaryScrollController` : une page qui ne s'attache pas ne remonte pas, et
+rien ne le signale. Le test couvre les deux plateformes pour cette raison.
+
+
 La bulle active est **une seule pièce qui se déplace** (`Springs.glide`), et
 non un fond qui s'allume sous chaque onglet à son tour : c'est ce qui relie le
 départ et l'arrivée. Les libellés virent au passage — leur couleur suit la

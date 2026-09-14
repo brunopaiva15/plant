@@ -8,9 +8,13 @@ import '../design_system/tokens/motion.dart';
 ///
 /// Chaque branche du shell pose le sien en [PrimaryScrollController] *dans*
 /// sa route ([TabScrollScope]) : il passe alors devant celui que la route
-/// fournit d'elle-même, si bien que la liste de l'onglet s'y attache sans
-/// qu'on le lui dise, et que le tap sur la barre d'état d'iOS — que le
-/// `Scaffold` sert avec ce même contrôleur — continue de marcher.
+/// fournit d'elle-même, si bien que la liste de l'onglet s'y attache, et que
+/// le tap sur la barre d'état d'iOS — que le `Scaffold` sert avec ce même
+/// contrôleur — continue de marcher.
+///
+/// L'attache est dite explicitement par `LargeTitlePage` (`primary: true`) et
+/// non laissée à l'heuristique de plateforme de [PrimaryScrollController] :
+/// une page qui ne s'attache pas ne remonte pas, et rien ne le signale.
 class TabScrolls {
   TabScrolls(int count) : controllers = [for (var i = 0; i < count; i++) ScrollController(debugLabel: 'tab-$i')];
 

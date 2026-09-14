@@ -17,6 +17,7 @@ class FloraChip extends StatelessWidget {
     this.onTap,
     this.emoji,
     this.icon,
+    this.leading,
     this.dashed = false,
   });
 
@@ -25,6 +26,12 @@ class FloraChip extends StatelessWidget {
   final VoidCallback? onTap;
   final String? emoji;
   final IconData? icon;
+
+  /// Une pièce dessinée devant le libellé, quand un emoji ne suffit pas —
+  /// l'illustration d'argile d'un problème, par exemple. Elle chasse la
+  /// marge verticale, pour que la chip grandisse autour d'elle au lieu de la
+  /// rogner.
+  final Widget? leading;
   final bool dashed;
 
   @override
@@ -43,7 +50,7 @@ class FloraChip extends StatelessWidget {
       child: AnimatedContainer(
         duration: Motion.of(context, Motion.standard),
         curve: Motion.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs + 2),
+        padding: EdgeInsets.symmetric(horizontal: leading == null ? Space.md : Space.sm, vertical: leading == null ? Space.xs + 2 : 6),
         decoration: BoxDecoration(
           color: selected ? c.sage : c.surface,
           borderRadius: Radii.fullAll,
@@ -52,6 +59,7 @@ class FloraChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (leading != null) ...[leading!, const SizedBox(width: Space.xs)],
             if (emoji != null) ...[Text(emoji!, style: const TextStyle(fontSize: 15)), const SizedBox(width: 6)],
             if (icon != null) ...[Icon(icon, size: 16, color: selected ? c.onSage : c.ink), const SizedBox(width: 6)],
             Flexible(
