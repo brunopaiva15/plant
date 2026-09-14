@@ -2673,13 +2673,23 @@ dont les quatre langues existent, vérifié une par une.
 citron, la bergamote n'est pas un citron pour qui la cultive, et aucun des
 deux catalogues ne la porte — il n'y a pas de contradiction à lever.
 
-#### Ce qui reste, pour la v8
+> **Et laissée de côté *ici* seulement.** Cette table dit quel nom
+> l'application affiche ; `plants.csv` dit ce que la collecte va chercher.
+> Ce sont deux fichiers et deux décisions (§ 13.5). La ligne
+> *Citrus × bergamia* a bien quitté le catalogue de collecte — elle y
+> partageait une clé avec le citron, donc les mêmes photos —, sans que la
+> bergamote devienne un citron pour autant : côté application, elle n'est
+> toujours pas dans cette table.
+
+#### ✅ Ce qui restait, et qui est fait
 
 Les cinq couples sont inscrits dans la colonne `synonyms` de `plants.csv`,
 donc lisibles par la collecte. **Retirer les lignes en double du catalogue
-de collecte est la décision suivante** : elle change le jeu d'étiquettes du
-modèle, donc elle se prend en ouvrant la v8, pas en passant. Les images se
-rejoindront alors, et six classes fantômes quitteront le décompte.
+de collecte était la décision suivante** : elle change le jeu d'étiquettes
+du modèle, donc elle se prend en ouvrant une version, pas en passant. Elle
+s'est prise en ouvrant l'Iris 9, sur les 46 groupes et non les six — voir
+plus bas. Les images se rejoignent, et les classes fantômes quittent le
+décompte.
 
 #### Et le catalogue de la v8 en a ramené quarante de plus
 
@@ -2701,12 +2711,85 @@ Autant de plantes dont les images se partageaient entre deux classes qui se
 disputaient ensuite la réponse — une part, petite mais réelle, des dix
 points du § 6.7 bis.
 
-**Et 46 est une borne basse.** *Saintpaulia ionantha* et *Streptocarpus
-ionanthus* sont deux lignes du catalogue pour une seule plante, et leurs
-clés GBIF diffèrent : le comptage par clé ne les voit pas. C'est
-`doublons.py`, qui demande à GBIF le taxon *accepté* de chaque nom, qui
-donne le vrai chiffre — à lancer sur les 5 778 lignes avant la prochaine
-collecte, pas après.
+#### ✅ Mesuré sur les 5 778 lignes : 46 n'est pas une borne basse
+
+Ce paragraphe disait le contraire, et il avait tort sur les deux points.
+
+Il annonçait que `doublons.py`, en demandant à GBIF le taxon *accepté* de
+chaque nom, trouverait davantage que le comptage par clé. La passe est
+faite : **46 groupes, 51 lignes de trop**, et les deux routes rendent
+**exactement le même ensemble** — mêmes groupes, mêmes membres. Le
+catalogue compte 46 plantes deux fois, pas davantage.
+
+Il donnait *Saintpaulia ionantha* / *Streptocarpus ionanthus* comme
+l'exemple de ce que le comptage par clé rate. **C'est l'inverse** : GBIF
+leur donne deux clés acceptées distinctes — 10796900 et 6710927 —, donc
+`doublons.py` ne les voit pas non plus. C'est la limite déjà écrite dans
+l'outil, celle de *Schefflera* et *Heptapleurum* : la dorsale retarde sur
+certains transferts. La colonne `synonyms` de la violette du Cap, elle,
+porte l'autre nom depuis toujours. **Nos propres données savent ce que
+GBIF ignore**, et c'est un exemple de ce que l'outil manque, pas de ce
+qu'il trouve.
+
+#### Ce que la passe a appris sur l'outil lui-même
+
+Deux corrections, l'une et l'autre invisibles à l'échelle des 1 444
+étiquettes livrées et décisives à celle du catalogue.
+
+**GBIF ne répond jamais « je ne sais pas ».** Faute d'espèce, il remonte
+d'un cran : *Rosa × hybrida* rend son genre, *Piper methysticum* sa
+famille, *Harpephyllum afrum* la clé 6 — *Plantae*. Sur une liste curée,
+toute résolue à l'espèce, ça ne se voit pas. Sur 5 778 lignes, sans garde
+de rang, l'outil annonce six groupes de plus, tous faux :
+
+| | |
+|---|---|
+| *Echinoagave striata = E. stricta = Gaudium laevigatum = Harpephyllum afrum = Quetzalcoatlia superba* | cinq familles, unies par le **règne** |
+| *Sabdariffa acetosella = gossypiifolia = heterophylla = radiata* | le genre |
+| *Photinia serrulata = Sorbus aria = Sorbus intermedia* | la **famille** |
+| *Elodea canadensis = Triplaris americana* | l'**embranchement** |
+
+Une élodée et un arbre sud-américain donnés pour la même plante. Et le
+piège est meilleur que ça : sans garde, l'outil rend **46 groupes** — le
+même nombre que le comptage par clé. Une fausse confirmation, que rien
+n'aurait signalée.
+
+**Le nom seul ne suffit pas, ses synonymes comptent.** Avec la garde mais
+sans repli, la passe rendait 40 groupes au lieu de 46 : *Allium porrum* ne
+résout pas, mais *Allium ampeloprasum*, dans sa colonne `synonyms`,
+porte la clé du poireau. `enrich_plants.py` et `build_dataset.py`
+résolvaient déjà ainsi — le nom, puis les synonymes —, `doublons.py` non.
+Six doublons pourtant réels y tenaient : le poireau, l'amande, l'alisier,
+la mandarine, le rince-bouteille et l'alisier de Suède.
+
+#### ✅ Et les 51 lignes sont retirées
+
+`tools/plant_dataset/fusionner.py`. Le § 12.14 laissait la décision « à
+prendre en ouvrant la v8, pas en passant » ; elle se prend en ouvrant
+l'Iris 9. **Et ce n'était pas un arbitrage** : `build_dataset.py` collecte
+les images par la clé GBIF, donc deux lignes qui partagent une clé
+téléchargent *les mêmes photos* dans deux classes. Les garder ne conserve
+aucune distinction, ça fabrique la confusion.
+
+Quel nom survit, dans l'ordre : ce que l'app sait résoudre — fiche soignée
+d'abord, catalogue étendu ensuite — pour **32** groupes ; le nom accepté
+par GBIF, signe d'hybride ignoré, pour **12** ; et pour **2**, l'alphabet,
+parce que le nom accepté est un troisième nom absent du catalogue
+(*Grindelia hirsutula*, *Pinus ponderosa scopulorum*) — l'outil le dit au
+lieu de choisir en silence.
+
+Le critère est bien « l'app peut-elle **afficher** ce nom », pas « est-ce
+une classe livrée » : *Citrus medica* est une classe de l'Iris 8 et n'est
+dans aucun des deux catalogues, donc *Citrus hassaku* l'emporte.
+
+**5 778 → 5 727 lignes**, plus aucune clé partagée, et les 51 noms retirés
+tous conservés en synonyme — `_first_usable` continue donc de les
+résoudre, et la collecte ne perd pas une orthographe.
+
+> **Un défaut voisin, relevé en passant et laissé de côté** : 152 des 1 444
+> classes de l'Iris 8 ne sont dans **aucun** des deux catalogues de l'app.
+> Le modèle peut donc répondre un nom que l'application ne sait pas
+> résoudre. C'est antérieur à ce chantier et ça mérite le sien.
 
 ### 12.15 Répondre au niveau du genre, plutôt qu'une tête hiérarchique
 
@@ -3013,7 +3096,7 @@ beaucoup de choix.
 | tripler le jeu rend **+6,8 points** sur les espèces déjà connues | § 6.7 bis | la collecte large **paie**, dans l'entraînement |
 | exposer 5 259 sorties au lieu de 1 444 coûte **−10,2 points** | § 6.7 bis | la même largeur **coûte**, dans les sorties |
 | sommer le softmax par genre : **+5,3 points au moins**, sans entraînement | § 12.15 | une réponse plus vague et vraie vaut mieux que cinq noms faux |
-| **46 clés GBIF** portées par plusieurs lignes du catalogue | § 12.14 | des classes qui se disputent les mêmes images, sans qu'aucune photo puisse trancher |
+| **46 clés GBIF** portées par plusieurs lignes du catalogue | § 12.14 | des classes qui se disputent les mêmes images, sans qu'aucune photo puisse trancher — ✅ mesuré exactement, et les 51 lignes retirées |
 
 Les deux lignes du milieu sont la découverte de la v8, et elles se
 contredisent en apparence. C'est la clé de tout le reste.
@@ -3147,11 +3230,15 @@ d'iNaturalist qu'on n'utilise qu'à 50 % de la cible. Pour des plantes que
 les gens possèdent, cette proportion devrait être inversée. C'est le
 chantier qui attaque directement les 73 % d'erreurs hors famille.
 
-**5. Les doublons, avant la collecte et pas après.** 46 clés GBIF en double
-au minimum dans les 5 778 lignes, et c'est une borne basse (§ 12.14).
-`doublons.py` donne le vrai chiffre en une passe. Deux classes pour une
-plante, ce sont des images partagées et une confusion imperdable : du
-travail de collecte dépensé à fabriquer une erreur.
+**5. ✅ Les doublons, avant la collecte et pas après.** Fait. La passe sur
+les 5 778 lignes rend **46 groupes, 51 lignes** — et ce n'est pas une borne
+basse, contrairement à ce que le § 12.14 annonçait : les deux routes de
+comptage rendent exactement le même ensemble. `fusionner.py` a retiré les
+51 lignes, le catalogue est à **5 727**. Le chantier a coûté deux
+corrections à l'outil, l'une et l'autre invisibles sur les 1 444 étiquettes
+livrées et décisives sur le catalogue : une garde de rang, sans quoi GBIF
+range toutes les inconnues sous *Plantae*, et le repli par synonyme, sans
+quoi six doublons réels manquaient à l'appel (§ 12.14).
 
 **6. Le découpage — déjà fait.** Le § 12.19 rendra ~112 espèces que la v8
 avait écartées pour une image de validation manquante. Rien à décider, ça
@@ -3264,9 +3351,9 @@ Stocker le jeu **déjà réduit** à la taille de chargement supprime ce
 décodage. Sur une L40 dont la carte attend le processeur (`docs/11` § 1), le
 gain est direct : plus d'époques par euro, donc plus de recettes essayées.
 
-**2. Lancer `doublons.py` avant la collecte**, pas après (§ 13.3, chantier
-5). Une ligne en double, c'est de la collecte dépensée à fabriquer une
-confusion imperdable.
+**2. ✅ `doublons.py` a été lancé avant la collecte**, et les 51 lignes en
+double sont retirées (§ 13.3, chantier 5). La prochaine collecte part donc
+d'un catalogue à 5 727 lignes où aucune clé GBIF n'est portée deux fois.
 
 **3. Le découpage corrigé** (§ 12.19) est déjà dans `splits.py` : il vise
 maintenant `--min-val` images, pas « au moins un groupe ».

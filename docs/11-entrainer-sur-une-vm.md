@@ -120,7 +120,7 @@ journal le dit : `sudo cat /var/lib/dkms/*/*/build/make.log | tail -40`.
 
 ```bash
 sudo apt install -y git tmux python3-venv python3-pip
-python3 -m venv ~/venv-tf && source ~/venv-tf/bin/activate
+python3 -m venv ~/venv-tf && source ~/venv-tf/bin/activate   # le nom est le vôtre
 pip install -U pip
 pip install --no-cache-dir "tensorflow[and-cuda]==2.19.*"
 python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
@@ -131,6 +131,13 @@ python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'
 ```
 [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
 ```
+
+> **Le nom du venv n'est pas une convention du dépôt.** Rien ne le lit :
+> ni les scripts, ni la doc ailleurs. La VM de référence a fini avec
+> `~/venv`, pas `~/venv-tf`. Si vous revenez sur une machine montée il y a
+> des semaines, `ls -d ~/venv* ~/.venv*` répond plus vite que la mémoire —
+> et attention, `ls -d` affiche aussi les fichiers, donc un `.venv.rc` de
+> `virtualenvwrapper` peut passer pour un environnement.
 
 **Épingler la version.** `requirements-gpu.txt` demande `>=2.19` ; sur une VM
 neuve, pip sert la dernière en date. Ici, une **2.21 embarquant du CUDA 12.9**
