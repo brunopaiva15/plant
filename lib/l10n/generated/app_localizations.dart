@@ -2841,7 +2841,7 @@ abstract class AppLocalizations {
   /// No description provided for @identifyHint.
   ///
   /// In fr, this message translates to:
-  /// **'Suggestions d\'espèce, à confirmer.'**
+  /// **'Suggestions d\'espèce, à confirmer'**
   String get identifyHint;
 
   /// No description provided for @searchOnline.
@@ -2877,25 +2877,25 @@ abstract class AppLocalizations {
   /// No description provided for @suggestionsLocal.
   ///
   /// In fr, this message translates to:
-  /// **'Trouvé sur votre appareil, sans réseau.'**
+  /// **'Trouvé sur votre appareil, sans réseau'**
   String get suggestionsLocal;
 
   /// No description provided for @suggestionsRemote.
   ///
   /// In fr, this message translates to:
-  /// **'Proposé en ligne par Pl@ntNet.'**
+  /// **'Proposé en ligne par Pl@ntNet'**
   String get suggestionsRemote;
 
   /// No description provided for @identifyOnDevice.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnu par {name} sur l\'appareil. Choisissez l\'espèce.'**
+  /// **'Reconnu par {name} sur l\'appareil. Choisissez l\'espèce'**
   String identifyOnDevice(String name);
 
   /// No description provided for @identifyViaPlantNet.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnu en ligne par Pl@ntNet. Choisissez l\'espèce.'**
+  /// **'Reconnu en ligne par Pl@ntNet. Choisissez l\'espèce'**
   String get identifyViaPlantNet;
 
   /// No description provided for @identifyPhotoSource.

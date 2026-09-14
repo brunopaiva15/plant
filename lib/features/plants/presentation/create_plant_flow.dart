@@ -17,6 +17,7 @@ import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../identification/presentation/iris_feedback_prompt.dart';
 import '../../identification/presentation/genus_row.dart';
+import '../../identification/presentation/identification_source_note.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -948,14 +949,15 @@ class _IdentificationSuggestions extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // D'où viennent ces noms : l'utilisateur a le droit de savoir si
-              // sa photo est partie sur le réseau, et de le demander sinon.
-              Text(
-                switch (results.first.source) {
+              // sa photo est partie sur le réseau, et de le demander sinon. Le
+              // téléphone et le nuage le disent avant la phrase.
+              IdentificationSourceNote(
+                source: results.first.source,
+                label: switch (results.first.source) {
                   IdentificationSource.local => l10n.suggestionsLocal,
                   IdentificationSource.remote => l10n.suggestionsRemote,
                   IdentificationSource.unknown => l10n.identifyHint,
                 },
-                style: context.text.caption,
               ),
               if (showStrip) ...[
                 const SizedBox(height: Space.xs),

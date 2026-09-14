@@ -359,6 +359,35 @@ affichées — `SpeciesImage.isFreelyDisplayable`, la même règle qu'au § 4.1
 pour le jeu d'entraînement. Le CC BY-NC que GBIF sert volontiers est écarté
 deux fois : au filtre de la requête, puis sur le média lui-même.
 
+### 3.8 Le signe de la provenance
+
+Au-dessus des propositions, une phrase dit d'où elles viennent : « Trouvé sur
+votre appareil, sans réseau » ou « Proposé en ligne par Pl@ntNet ». Une
+légende grise au-dessus d'une liste se saute, et c'est pourtant la seule
+ligne de l'écran qui engage le § 3.6.
+
+Elle porte donc un signe à sa gauche (`IdentificationSourceNote`) : un
+**téléphone** quand le modèle embarqué a répondu, un **nuage** quand la photo
+est partie chez Pl@ntNet. Il ne remplace pas la phrase, il se lit avant elle ;
+pour la synthèse vocale il est décoratif, puisqu'elle lit déjà la phrase.
+
+Trois règles le tiennent honnête :
+
+- **`unknown` n'a pas de signe.** Un dessin qui affirme « appareil » ou
+  « réseau » quand on ne sait pas mentirait ; la phrase générique, elle, ne
+  promet rien. C'est le cas pendant une relance : la liste à l'écran est la
+  précédente, et la provenance de la suivante n'est pas encore connue.
+- **Un signe par liste, pas par ligne.** La cascade marque de la même source
+  toutes les candidates d'une réponse (`_mark`) ; le répéter à chaque ligne
+  ne dirait rien de plus.
+- **Il suit le texte.** Sa taille est prise sur `textScaler`, et il s'aligne
+  sur la première ligne de la légende — pas sur le bloc, qui passe à deux
+  lignes dès qu'on grossit le texte.
+
+Les deux écrans qui proposent des espèces le portent : la feuille « Espèce »
+(`identification_sheet.dart`) et l'étape *Nom* du flux de création
+(`create_plant_flow.dart`).
+
 ## 4. Sources d'images et licences
 
 ### 4.1 Règle

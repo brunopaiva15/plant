@@ -1582,7 +1582,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifyTitle => 'Specie';
 
   @override
-  String get identifyHint => 'Suggerimenti di specie, da confermare.';
+  String get identifyHint => 'Suggerimenti di specie, da confermare';
 
   @override
   String get searchOnline => 'Cerca online';
@@ -1601,19 +1601,19 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchingOnline => 'Ricerca online…';
 
   @override
-  String get suggestionsLocal => 'Trovato sul tuo dispositivo, senza rete.';
+  String get suggestionsLocal => 'Trovato sul tuo dispositivo, senza rete';
 
   @override
-  String get suggestionsRemote => 'Proposto online da Pl@ntNet.';
+  String get suggestionsRemote => 'Proposto online da Pl@ntNet';
 
   @override
   String identifyOnDevice(String name) {
-    return 'Riconosciuta da $name sul dispositivo. Scegliete la specie.';
+    return 'Riconosciuta da $name sul dispositivo. Scegliete la specie';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Riconosciuta online da Pl@ntNet. Scegliete la specie.';
+      'Riconosciuta online da Pl@ntNet. Scegliete la specie';
 
   @override
   String get identifyPhotoSource =>
