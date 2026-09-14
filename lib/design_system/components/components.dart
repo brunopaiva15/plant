@@ -1,5 +1,6 @@
 export 'adaptive.dart';
 export 'animated_check.dart';
+export 'appear.dart';
 export 'avatar.dart';
 export 'buttons.dart';
 export 'cards.dart';

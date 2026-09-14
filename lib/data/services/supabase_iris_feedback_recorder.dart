@@ -36,6 +36,10 @@ class SupabaseIrisFeedbackRecorder implements IrisFeedbackRecorder {
     // Sans passage par Iris, il n'y a rien à lui apprendre ; et sans photo,
     // rien à envoyer.
     if (feedback.local.isEmpty || feedback.photos.isEmpty) return;
+    // Un nom de genre — « Picea », retenu quand aucune espèce ne passait —
+    // n'est pas une étiquette d'espèce : `auxine.py` ne saurait pas le
+    // rattacher à une classe, et le modèle n'en apprendrait rien.
+    if (!feedback.chosenName.trim().contains(' ')) return;
     try {
       final id = _uuid.v4();
       final folder = '$userId/$id';

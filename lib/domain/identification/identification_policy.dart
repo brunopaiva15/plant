@@ -1,3 +1,4 @@
+import '../../core/utils/scientific_name.dart';
 import 'plant_identifier.dart';
 
 /// Ce que la cascade conclut d'une liste de candidats.
@@ -37,8 +38,14 @@ class FallbackPolicy {
   /// Score minimal du premier candidat pour l'accepter sans discuter.
   ///
   /// **Un seuil ne se transporte pas d'un modèle à l'autre.** Il valait 0,70
-  /// pour la v5, 0,60 pour la v6, et il **remonte à 0,70** avec Iris 7 —
-  /// c'est la première fois. Mesuré sur les photos de plantes cultivées, dans
+  /// pour la v5, 0,60 pour la v6, et il **est remonté à 0,70** avec Iris 7 —
+  /// c'était la première fois. L'Iris 8 l'a gardé tel quel : au même seuil il
+  /// est à la fois plus autonome et plus juste, si bien qu'il n'y avait rien
+  /// à arbitrer (§ 6.7 bis de docs/09). Ce que le couple (seuil, marge) rend
+  /// sur le modèle livré n'est pas recopié ici : `assets/model/model.json`
+  /// le porte, pour chaque couple, et c'est lui qui fait foi.
+  ///
+  /// Le recalage d'Iris 7, mesuré sur les photos de plantes cultivées dans
   /// le calcul exact que fait la cascade (`tools/plant_model/multi_photo.py`,
   /// listes de cinq candidats) :
   ///
@@ -51,7 +58,7 @@ class FallbackPolicy {
   ///
   /// Les deux versions précédentes avaient dépensé leur surplus de justesse
   /// en autonomie : plus sûres, elles pouvaient répondre plus souvent. Iris 7
-  /// permet l'inverse, et c'est plus intéressant. **À 0,70 elle rend
+  /// a permis l'inverse, et c'est plus intéressant. **À 0,70 elle rendait
   /// exactement l'autonomie qu'avait la v6 à 0,60 — 47 % — avec 85,9 % de
   /// justesse au lieu de 82,8 %.** L'utilisateur voit l'application trancher
   /// aussi souvent qu'avant, et elle se trompe trois points de moins.
@@ -61,11 +68,11 @@ class FallbackPolicy {
   /// pas de question. Une liste seulement plausible, elle, est montrée avec
   /// ses cinq candidats et il tranche lui-même.
   ///
-  /// Le gain est réel des deux côtés, pas un déplacement le long d'une
-  /// courbe : sur les 1 439 espèces que les deux modèles connaissent, à
-  /// images identiques, Iris 7 au seuil 0,70 accepte 46,8 % des photos contre
-  /// 43 % pour la v6, et se trompe moins en le faisant (89,1 % contre
-  /// 84,5 %).
+  /// Le gain était réel des deux côtés, pas un déplacement le long d'une
+  /// courbe : sur les 1 439 espèces que les deux modèles connaissaient, à
+  /// images identiques, Iris 7 au seuil 0,70 acceptait 46,8 % des photos
+  /// contre 43 % pour la v6, et se trompait moins en le faisant (89,1 %
+  /// contre 84,5 %). Iris 8 a repris le même mouvement au même seuil.
   final double acceptThreshold;
 
   /// Au-dessus de ce score, la liste locale est montrée sans appel distant,
@@ -117,9 +124,10 @@ enum SecondPhotoOffer {
   /// Discrète, sous les candidats. La réponse est acceptée — elle s'affiche
   /// comme « probable » et l'utilisateur ne se pose pas de question —, mais
   /// à 0,70 **une réponse acceptée sur dix est fausse** (89,9 % de justesse
-  /// sur les plantes d'appartement en pot, § 12.12). Ne rien proposer,
-  /// c'est réserver le correctif aux cas où le modèle a le bon goût de
-  /// douter. Le proposer en travers du chemin, c'est ajouter un geste à un
+  /// sur les plantes d'appartement en pot, mesuré sur l'Iris 7 au § 12.12 ;
+  /// le `threshold_curve` de `model.json` donne le chiffre du modèle livré).
+  /// Ne rien proposer, c'est réserver le correctif aux cas où le modèle a le
+  /// bon goût de douter. Le proposer en travers du chemin, c'est ajouter un geste à un
   /// parcours qui marchait : d'où le registre effacé.
   quiet,
 }
@@ -144,4 +152,58 @@ SecondPhotoOffer secondPhotoOffer(
   return policy.decide(candidates) == IdentificationVerdict.accepted
       ? SecondPhotoOffer.quiet
       : SecondPhotoOffer.prominent;
+}
+
+/// Le genre que le modèle désigne quand il n'ose aucune espèce.
+class GenusAnswer {
+  const GenusAnswer({required this.genus, required this.mass, required this.species,
+      this.source = IdentificationSource.local});
+
+  /// Le nom du genre, « Picea ».
+  final String genus;
+
+  /// La somme des scores de ses espèces. C'est elle qui passe le seuil.
+  final double mass;
+
+  /// Combien d'espèces de ce genre la réponse recouvre. Jamais une seule :
+  /// sa masse serait son score, et elle n'aurait pas passé le seuil.
+  final int species;
+
+  /// D'où viennent les candidates sommées — toujours l'appareil, la cascade
+  /// ne proposant le genre que sur une réponse locale.
+  final IdentificationSource source;
+}
+
+/// Le genre à proposer, ou `null` s'il n'y a rien à en dire.
+///
+/// Cinq *Picea* à 0,15 pèsent 0,75 : « un Picea, espèce incertaine » est une
+/// réponse **vraie**, là où cinq noms n'en sont pas une et où l'utilisateur
+/// n'a d'autre recours que de chercher en ligne ou de choisir au hasard — ce
+/// qui inscrirait une espèce fausse, et son profil de soin avec.
+///
+/// **L'espèce garde la priorité** : le genre ne parle que là où elle
+/// renonçait, c'est un gain net et jamais un remplacement. Et seulement sur
+/// une réponse locale : une réponse distante a déjà tranché.
+///
+/// Mesuré sur l'Iris 8 (§ 12.15) : le genre répond sur 6,6 % des photos en
+/// pot que l'espèce n'accepte pas, et il a raison 88,7 % du temps — presque
+/// aussi souvent qu'une réponse à l'espèce.
+GenusAnswer? genusAnswer(FallbackPolicy policy, List<IdentificationCandidate> candidates) {
+  if (candidates.isEmpty) return null;
+  final sorted = [...candidates]..sort((a, b) => b.score.compareTo(a.score));
+  if (sorted.first.source != IdentificationSource.local) return null;
+  if (sorted.first.score >= policy.acceptThreshold) return null;
+
+  final masses = <String, double>{};
+  final counts = <String, int>{};
+  for (final c in sorted) {
+    final g = genusOf(c.scientificName);
+    if (g.isEmpty) continue;
+    masses[g] = (masses[g] ?? 0) + c.score;
+    counts[g] = (counts[g] ?? 0) + 1;
+  }
+  if (masses.isEmpty) return null;
+  final best = masses.entries.reduce((a, b) => b.value > a.value ? b : a);
+  if (best.value < policy.acceptThreshold) return null;
+  return GenusAnswer(genus: best.key, mass: best.value, species: counts[best.key]!);
 }

@@ -28,6 +28,18 @@ void main() {
     expect(internalPlantId('Citrus ×sinensis'), 'citrus-x-sinensis');
   });
 
+  test('intergeneric hybrid: the sign opens the name, the genus follows', () {
+    // × Fatshedera lizei se vend en jardinerie, et Pl@ntNet le rend sous ce
+    // nom. Le signe de tête n'est pas le genre : tant qu'il passait pour
+    // tel, la majuscule du mot suivant se lisait comme un nom d'auteur, le
+    // nom se coupait là et ne rendait rien — donc aucune fiche d'entretien.
+    expect(normalizeScientificName('× Fatshedera lizei'), '× Fatshedera lizei');
+    expect(normalizeScientificName('×Fatshedera lizei'), '× Fatshedera lizei');
+    expect(normalizeScientificName('x Fatshedera lizei'), '× Fatshedera lizei');
+    expect(normalizeScientificName('×'), '');
+    expect(internalPlantId('× Fatshedera lizei'), 'x-fatshedera-lizei');
+  });
+
   test('cultivar keeps its capitals', () {
     expect(normalizeScientificName("Rosa 'Peace'"), "Rosa 'Peace'");
   });

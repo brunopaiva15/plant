@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
+import '../../domain/repositories/repositories.dart';
+import '../../domain/weather/outdoor_alert.dart';
 import '../../domain/weather/weather.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../utils/dates.dart';
@@ -77,6 +79,7 @@ extension ActionTypeLabels on AppLocalizations {
   String strategyName(CareStrategy strategy) => switch (strategy) {
         CareStrategy.fixed => strategyFixed,
         CareStrategy.seasonal => strategySeasonal,
+        CareStrategy.weather => strategyWeather,
         CareStrategy.manual => strategyManual,
       };
 
@@ -84,6 +87,50 @@ extension ActionTypeLabels on AppLocalizations {
         PlantHealth.healthy => healthHealthy,
         PlantHealth.watch => healthWatch,
         PlantHealth.sick => healthSick,
+      };
+
+  String healthIssueName(HealthIssue issue) => switch (issue) {
+        HealthIssue.overwatering => issueOverwatering,
+        HealthIssue.underwatering => issueUnderwatering,
+        HealthIssue.pests => issuePests,
+        HealthIssue.disease => issueDisease,
+        HealthIssue.rootRot => issueRootRot,
+        HealthIssue.transplantShock => issueTransplantShock,
+        HealthIssue.deficiency => issueDeficiency,
+        HealthIssue.sunburn => issueSunburn,
+        HealthIssue.frost => issueFrost,
+      };
+
+  /// « 🤒 Malade », « 👀 À surveiller · Ravageurs » : l'état, et sa précision
+  /// quand il y en a une.
+  String healthLabel(Plant plant) {
+    final issue = plant.healthIssue;
+    final base = '${plant.health.emoji} ${healthName(plant.health)}';
+    return issue == null || plant.health == PlantHealth.healthy ? base : '$base · ${healthIssueName(issue)}';
+  }
+
+  String lifespanName(Lifespan v) => switch (v) {
+        Lifespan.annual => lifespanAnnual,
+        Lifespan.biennial => lifespanBiennial,
+        Lifespan.perennial => lifespanPerennial,
+      };
+
+  String hardinessName(Hardiness v) => switch (v) {
+        Hardiness.hardy => hardinessHardy,
+        Hardiness.tender => hardinessTender,
+      };
+
+  String sortLabel(PlantSort sort) => switch (sort) {
+        PlantSort.name => sortName,
+        PlantSort.location => filterLocation,
+        PlantSort.nextCare => sortNextCare,
+        PlantSort.health => health,
+        PlantSort.lastWatered => sortLastWatered,
+        PlantSort.lastFertilized => sortLastFertilized,
+        PlantSort.lastRepotted => sortLastRepotted,
+        PlantSort.recentlyAdded => sortRecent,
+        PlantSort.recentlyEdited => sortEdited,
+        PlantSort.acquired => sortAcquired,
       };
 
   String categoryName(InventoryCategory c) => switch (c) {
@@ -116,6 +163,24 @@ extension ActionTypeLabels on AppLocalizations {
         WeatherCondition.unknown => '',
       };
 
+  /// « cette nuit », « demain », « dans 3 jours » : le jour d'un
+  /// avertissement, en minuscules, pour tenir dans un titre. Le gel se dit
+  /// de la nuit, la chaleur du jour — la même date, deux mots différents.
+  String alertWhen(OutdoorAlert alert, DateTime now) {
+    final days = alert.daysFrom(now);
+    if (days <= 0) return alert.kind == OutdoorAlertKind.frost ? weatherWhenTonight : weatherWhenToday;
+    if (days == 1) return weatherWhenTomorrow;
+    return weatherWhenInDays(days);
+  }
+
+  /// « Olivier, Basilic et 2 autres » : les noms qu'on montre, et le compte
+  /// de ceux qui ne tenaient pas dans la carte.
+  String namesWithMore(List<String> shown, int total) {
+    final joined = joinNames(shown);
+    final rest = total - shown.length;
+    return rest <= 0 ? joined : '$joined ${weatherAlertMore(rest)}';
+  }
+
   /// « 42 cm », « 9 » (sans unité), « 1,5 L ».
   String formatQuantity(double value, String unit) {
     final text = value == value.roundToDouble() ? value.toInt().toString() : value.toStringAsFixed(1);
@@ -136,6 +201,9 @@ abstract final class Dates {
   static String day(BuildContext context, DateTime date) => DateFormat.MMMMd(context.localeTag).format(date);
   static String dayYear(BuildContext context, DateTime date) => DateFormat.yMMMMd(context.localeTag).format(date);
   static String monthYear(BuildContext context, DateTime date) => DateFormat.yMMMM(context.localeTag).format(date);
+
+  /// Nom d'un mois (1–12), seul : « mars ».
+  static String monthName(BuildContext context, int month) => DateFormat.MMMM(context.localeTag).dateSymbols.STANDALONEMONTHS[month - 1];
   static String time(BuildContext context, DateTime date) => DateFormat.Hm(context.localeTag).format(date);
   static String weekdayShort(BuildContext context, DateTime date) => DateFormat.E(context.localeTag).format(date);
 

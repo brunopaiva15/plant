@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
-import '../../archive/presentation/archive_screen.dart' show archiveTitle, editArchiveName;
 import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -76,6 +75,11 @@ class ProfileScreen extends ConsumerWidget {
                       onTap: () => context.push(Routes.account),
                     ),
                     if (signedIn) const _GardensRow(),
+                    // Les liens publics tiennent avec le compte et les jardins :
+                    // ce qui sort de l'appareil reste au même endroit. Sans
+                    // compte, il n'y a rien à partager, donc rien à montrer.
+                    if (signedIn)
+                      FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
                   ],
                 );
               }),
@@ -127,20 +131,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   FloraListRow(leading: const Text('🏷️', style: TextStyle(fontSize: 18)), title: l10n.tags, onTap: () => context.push(Routes.tags)),
                   FloraListRow(leading: const Text('🗒️', style: TextStyle(fontSize: 18)), title: l10n.fieldTemplates, onTap: () => context.push(Routes.fieldTemplates)),
-                  FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
-                  FloraListRow(
-                    leading: const Text('🍂', style: TextStyle(fontSize: 18)),
-                    title: archiveTitle(context, prefs.archiveName),
-                    onTap: () => context.push(Routes.archive),
-                  ),
-                  // Sans valeur en regard : la ligne au-dessus porte déjà le
-                  // nom, et le titre y perdrait sa fin.
-                  FloraListRow(
-                    leading: const Text('✏️', style: TextStyle(fontSize: 18)),
-                    title: l10n.archiveNameTitle,
-                    chevron: true,
-                    onTap: () => editArchiveName(context, ref),
-                  ),
+                  FloraListRow(leading: const Text('🍂', style: TextStyle(fontSize: 18)), title: l10n.archives, onTap: () => context.push(Routes.archive)),
                   FloraListRow(leading: const Text('📜', style: TextStyle(fontSize: 18)), title: l10n.activityLogTitle, onTap: () => context.push(Routes.activityLog)),
                 ],
               ),

@@ -6,12 +6,8 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
-import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
 import '../../plants/application/plant_providers.dart';
 import '../application/archive_providers.dart';
-
-/// Nom des archives : celui de l'utilisateur, sinon le libellé traduit.
-String archiveTitle(BuildContext context, String custom) => custom.trim().isEmpty ? context.l10n.archives : custom.trim();
 
 /// « Anciennes plantes » : recherche, tri, navigation par année, deux vues.
 class ArchiveScreen extends ConsumerStatefulWidget {
@@ -46,7 +42,6 @@ class _ArchiveScreenState extends ConsumerState<ArchiveScreen> {
     final filter = ref.watch(archiveFilterProvider);
     final years = ref.watch(archiveYearsProvider);
     final grid = ref.watch(archiveGridProvider);
-    final name = archiveTitle(context, ref.watch(preferencesProvider).archiveName);
 
     final searchField = isCupertino(context)
         ? CupertinoSearchTextField(
@@ -65,7 +60,7 @@ class _ArchiveScreenState extends ConsumerState<ArchiveScreen> {
           );
 
     return LargeTitlePage(
-      title: name,
+      title: l10n.archives,
       searchField: all.isEmpty ? null : searchField,
       trailing: all.isEmpty
           ? null
@@ -254,13 +249,4 @@ class _ArchiveCard extends ConsumerWidget {
       ),
     );
   }
-}
-
-/// Réglage du nom des archives, appelé depuis les Réglages.
-Future<void> editArchiveName(BuildContext context, WidgetRef ref) async {
-  final l10n = context.l10n;
-  final current = ref.read(preferencesProvider).archiveName;
-  final name = await showRenameSheet(context, title: l10n.archiveNameTitle, hint: l10n.archiveNameHint, initial: current);
-  if (name == null) return;
-  await ref.read(preferencesProvider.notifier).setArchiveName(name);
 }

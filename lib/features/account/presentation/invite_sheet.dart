@@ -8,8 +8,11 @@ import 'package:share_plus/share_plus.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
+import '../../../core/network/network_failure.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
+import '../../network/presentation/offline_notice.dart';
 import '../application/membership_providers.dart';
 
 /// Créer une invitation, puis en partager le lien.
@@ -52,14 +55,18 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
     });
     final l10n = context.l10n;
     try {
-      final invite = await ref.read(collaborationServiceProvider).createInvite(
+      final invite = await ref.online(() => ref.read(collaborationServiceProvider).createInvite(
             gardenId: ref.read(gardenIdProvider),
             email: _email.text,
             role: _role,
-          );
+          ));
       Haptics.success();
       ref.invalidate(gardenInvitesProvider);
       if (mounted) setState(() => _invite = invite);
+    } on OfflineException {
+      // Le code d'invitation est tiré par le serveur : hors ligne il n'y a
+      // rien à créer, et rien à montrer du serveur puisqu'il n'a rien dit.
+      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineActionFailed, emoji: '📡'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'invite');
       if (mounted) {
@@ -82,7 +89,14 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SheetHeader(title: invite == null ? l10n.inviteSomeone : l10n.inviteReady),
-          if (invite == null) ..._form(context) else ..._share(context, invite),
+          // Une invitation créée se partage hors ligne — le code est déjà là.
+          // Le formulaire, lui, n'a rien à proposer sans serveur.
+          if (invite == null && !ref.watch(isOnlineProvider))
+            OfflineNotice(subtitle: l10n.offlineCollaboration)
+          else if (invite == null)
+            ..._form(context)
+          else
+            ..._share(context, invite),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +26,18 @@ import 'notification_prompt.dart';
 import 'today_notice.dart';
 import 'upcoming_section.dart';
 
+/// L'heure à partir de laquelle on dit « Bonsoir » : celle de l'appareil,
+/// donc celle que la personne a sous les yeux.
+const int _eveningHour = 18;
+
+/// « Bonjour Paul » le jour, « Bonsoir Paul » le soir, et sans le nom tant
+/// qu'on n'en a pas.
+String _greeting(AppLocalizations l10n, String name, DateTime now) {
+  final evening = now.hour >= _eveningHour;
+  if (name.isEmpty) return evening ? l10n.greetingEveningAnonymous : l10n.greetingAnonymous;
+  return evening ? l10n.greetingEvening(name) : l10n.greeting(name);
+}
+
 /// Écran principal : « Qu'est-ce que je dois faire aujourd'hui ? »
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -36,18 +49,35 @@ class TodayScreen extends ConsumerWidget {
     final tasks = ref.watch(careTasksProvider);
     final plantCount = ref.watch(activePlantCountProvider).value ?? 0;
     final now = DateTime.now();
-    final greeting = prefs.displayName.isEmpty ? l10n.greetingAnonymous : l10n.greeting(prefs.displayName);
+    final greeting = _greeting(l10n, prefs.displayName, now);
 
     final live = tasks.value ?? const <CareTask>[];
     final lingering = ref.watch(completedTasksProvider);
     // Les tâches qui viennent d'être complétées restent affichées un instant,
-    // à leur place d'origine, en état « ✓ Fait ».
+    // **à leur place d'origine**, en état « ✓ Fait », puis s'en vont.
+    //
+    // C'est la version d'avant qui prime, et non celle de la base : un soin
+    // enregistré repousse l'échéance à la seconde même. Sans cela la pièce
+    // changeait de section — de « En retard » à « À venir » — avant d'avoir pu
+    // montrer quoi que ce soit.
+    //
+    // Et comme l'échéance décide aussi du rang, on range sur celle qu'on
+    // affiche : une tuile arrosée garde sa case le temps de le dire, au lieu
+    // de filer en fin de grille pendant qu'une autre prend sa place. Le tri
+    // est **stable** — beaucoup de soins tombent le même jour, et un ordre qui
+    // se rejoue à chaque image serait pire que le saut qu'on répare.
     final liveIds = live.map((t) => t.schedule.id).toSet();
     final all = [
-      ...live,
+      for (final t in live) lingering[t.schedule.id]?.task ?? t,
       for (final l in lingering.values)
         if (!liveIds.contains(l.task.schedule.id)) l.task,
     ];
+    mergeSort(all, compare: (a, b) => switch ((a.dueAt, b.dueAt)) {
+      (null, null) => 0,
+      (null, _) => 1,
+      (_, null) => -1,
+      (final x?, final y?) => x.compareTo(y),
+    });
     DueStatus statusOf(CareTask t) => t.status(now);
     final overdue = all.where((t) => statusOf(t) == DueStatus.overdue).toList();
     final today = all.where((t) => statusOf(t) == DueStatus.today).toList();
@@ -57,6 +87,9 @@ class TodayScreen extends ConsumerWidget {
 
     return LargeTitlePage(
       title: greeting,
+      // Replié, le salut ne dit plus où l'on est : c'est le nom de
+      // l'application qui reste dans la barre.
+      collapsedTitle: l10n.appName,
       leading: FloraIconButton(
         icon: CupertinoIcons.chart_bar,
         semanticLabel: l10n.dashboardTitle,
@@ -83,6 +116,8 @@ class TodayScreen extends ConsumerWidget {
               child: _DueHero(count: dueCount),
             ),
           ),
+        // Le gel et la canicule d'abord : ils ont une échéance, la pluie non.
+        const SliverToBoxAdapter(child: OutdoorAlertCard()),
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
         const SliverToBoxAdapter(child: HomeClimateAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
@@ -122,7 +157,7 @@ class _DayHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final weather = ref.watch(todayWeatherProvider).value;
+    final weather = ref.watch(todayWeatherProvider);
     final hasOutdoor = ref.watch(outdoorLocationIdsProvider).isNotEmpty;
     final reading = ref.watch(homeReadingProvider).value;
     final pills = <Widget>[
@@ -207,10 +242,15 @@ class _TaskSection extends StatelessWidget {
           sliver: SliverList.separated(
             itemCount: tasks.length,
             separatorBuilder: (_, _) => const SizedBox(height: Space.sm),
-            itemBuilder: (context, i) => CareTaskCard(
+            // La clé porte sur l'entrée : une carte déjà posée ne rejoue rien
+            // quand la liste se réordonne sous elle.
+            itemBuilder: (context, i) => Appear(
               key: ValueKey(tasks[i].schedule.id),
-              task: tasks[i],
-              onOpen: () => context.push(Routes.plant(tasks[i].plantId)),
+              rank: i,
+              child: CareTaskCard(
+                task: tasks[i],
+                onOpen: () => context.push(Routes.plant(tasks[i].plantId)),
+              ),
             ),
           ),
         ),

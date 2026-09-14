@@ -79,6 +79,34 @@ class AppLocalizationsIt extends AppLocalizations {
   String get genericError => 'Si è verificato un errore. Riprova.';
 
   @override
+  String get offlineTitle => 'Offline';
+
+  @override
+  String get offlineHint =>
+      'Serve una connessione. I dati già sul dispositivo restano leggibili.';
+
+  @override
+  String get offlineActionFailed => 'Offline. Riprova quando la rete torna.';
+
+  @override
+  String get offlineSharing =>
+      'Creare, revocare ed elencare i link richiede una connessione.';
+
+  @override
+  String get offlineCollaboration =>
+      'Invitare, unirsi a un giardino e cambiare ruolo richiede una connessione.';
+
+  @override
+  String get offlineDiagnosis => 'L\'analisi richiede una connessione.';
+
+  @override
+  String get offlineIdentification =>
+      'La ricerca online richiede una connessione. Il riconoscimento sul dispositivo no.';
+
+  @override
+  String get offlineSupport => 'L\'acquisto richiede una connessione.';
+
+  @override
   String get tabToday => 'Oggi';
 
   @override
@@ -97,6 +125,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get greetingAnonymous => 'Ciao';
+
+  @override
+  String greetingEvening(String name) {
+    return 'Buonasera $name';
+  }
+
+  @override
+  String get greetingEveningAnonymous => 'Buonasera';
 
   @override
   String careCount(int count) {
@@ -304,6 +340,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get sortRecent => 'Aggiunte di recente';
+
+  @override
+  String get sortEdited => 'Modifica recente';
+
+  @override
+  String get sortLastWatered => 'Ultima annaffiatura';
+
+  @override
+  String get sortLastFertilized => 'Ultima concimazione';
+
+  @override
+  String get sortLastRepotted => 'Ultimo rinvaso';
+
+  @override
+  String get sortAcquired => 'Acquisto';
 
   @override
   String get filterLocation => 'Posizione';
@@ -656,6 +707,66 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get healthSick => 'Malata';
+
+  @override
+  String get healthIssue => 'Problema';
+
+  @override
+  String get issueOverwatering => 'Troppa acqua';
+
+  @override
+  String get issueUnderwatering => 'Poca acqua';
+
+  @override
+  String get issuePests => 'Parassiti';
+
+  @override
+  String get issueDisease => 'Malattia';
+
+  @override
+  String get issueRootRot => 'Marciume radicale';
+
+  @override
+  String get issueTransplantShock => 'Shock da trapianto';
+
+  @override
+  String get issueDeficiency => 'Carenza';
+
+  @override
+  String get issueSunburn => 'Scottatura solare';
+
+  @override
+  String get issueFrost => 'Gelo';
+
+  @override
+  String get needsSection => 'Esigenze';
+
+  @override
+  String get detailsSection => 'Dettagli';
+
+  @override
+  String get lifespan => 'Ciclo di vita';
+
+  @override
+  String get lifespanAnnual => 'Annuale';
+
+  @override
+  String get lifespanBiennial => 'Biennale';
+
+  @override
+  String get lifespanPerennial => 'Perenne';
+
+  @override
+  String get hardiness => 'Rusticità';
+
+  @override
+  String get hardinessHardy => 'Rustica';
+
+  @override
+  String get hardinessTender => 'Sensibile al gelo';
+
+  @override
+  String get cuttingMonth => 'Mese di talea';
 
   @override
   String get noSchedule => 'Nessun promemoria';
@@ -1401,6 +1512,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get scan => 'Scansiona';
 
   @override
+  String get quickActionScan => 'Scansionare un\'etichetta';
+
+  @override
   String get scanHint => 'Inquadra il codice QR di una pianta.';
 
   @override
@@ -1519,6 +1633,9 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get genusUncertainSpecies => 'Specie incerta';
+
+  @override
   String modelMissing(String name) {
     return '$name non disponibile su questo dispositivo';
   }
@@ -1595,7 +1712,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto, l\'irrigazione viene rinviata nei giorni di pioggia. Dati Open-Meteo, senza account né chiave.';
+      'Per le piante all\'aperto: la pioggia caduta vale come annaffiatura, quella prevista la rinvia, e gelo e caldo vengono segnalati. Dati Open-Meteo, senza account né chiave.';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -1750,6 +1867,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get syncError => 'Errore di sincronizzazione';
+
+  @override
+  String syncUnknownColumns(String columns) {
+    return 'Colonne sconosciute al server: $columns';
+  }
 
   @override
   String get syncSyncing => 'Sincronizzazione…';
@@ -3398,16 +3520,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get activityTaskDone => 'Attività completata';
 
   @override
-  String get archiveNameTitle => 'Nome dell\'archivio';
-
-  @override
-  String get archiveNameHint => 'Memoriale, Il passato…';
-
-  @override
-  String get archiveNameExplain =>
-      'Lascia vuoto per mantenere il nome predefinito.';
-
-  @override
   String get searchArchives => 'Cerca negli archivi';
 
   @override
@@ -4251,5 +4363,148 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String viewForModel(String name) {
     return 'Usata da $name per riconoscere la specie, non conservata.';
+  }
+
+  @override
+  String get strategyWeather => 'Meteo';
+
+  @override
+  String get strategyWeatherHint =>
+      'L\'intervallo della stagione, accorciato dal caldo secco, allungato da pioggia e freddo.';
+
+  @override
+  String strategyWeatherNow(String interval) {
+    return 'Con il tempo di questa settimana: $interval';
+  }
+
+  @override
+  String get strategyWeatherNoPlace =>
+      'Senza un luogo meteo, l\'intervallo resta quello della stagione.';
+
+  @override
+  String get weatherWhenTonight => 'stanotte';
+
+  @override
+  String get weatherWhenToday => 'oggi';
+
+  @override
+  String get weatherWhenTomorrow => 'domani';
+
+  @override
+  String weatherWhenInDays(int count) {
+    return 'tra $count giorni';
+  }
+
+  @override
+  String weatherFrostTitle(String when, String temp) {
+    return 'Gelo $when · $temp';
+  }
+
+  @override
+  String weatherHeatTitle(String when, String temp) {
+    return 'Caldo $when · $temp';
+  }
+
+  @override
+  String weatherFrostBody(String names) {
+    return 'Da riparare o coprire: $names.';
+  }
+
+  @override
+  String weatherHeatBody(String names) {
+    return 'Da spostare all\'ombra e annaffiare presto: $names.';
+  }
+
+  @override
+  String weatherAlertMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'e altre $count',
+      one: 'e 1 altra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifFrost(String when, String names) {
+    return 'Gelo $when · da riparare o coprire: $names.';
+  }
+
+  @override
+  String notifHeat(String when, String names) {
+    return 'Caldo $when · da spostare all\'ombra: $names.';
+  }
+
+  @override
+  String weatherRainFallenTitle(String mm) {
+    return 'Pioggia · $mm mm';
+  }
+
+  @override
+  String weatherRainWatered(String names) {
+    return 'Annaffiatura registrata per $names.';
+  }
+
+  @override
+  String weatherRainWaterable(String names) {
+    return 'La pioggia vale l\'annaffiatura di $names.';
+  }
+
+  @override
+  String get weatherRainMarkWatered => 'Segna annaffiata';
+
+  @override
+  String weatherRainWateredToast(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count annaffiature registrate',
+      one: '1 annaffiatura registrata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherRainNote(String mm) {
+    return 'Annaffiata dalla pioggia ($mm mm).';
+  }
+
+  @override
+  String get weatherRainCounts => 'La pioggia vale come annaffiatura';
+
+  @override
+  String get weatherRainCountsHint =>
+      'Oltre 5 mm in tre giorni, l\'annaffiatura dei luoghi esterni viene registrata come fatta. Disattivato, la schermata del mattino la propone con un tocco. Un vaso riparato dalle foglie riceve meno pioggia.';
+
+  @override
+  String get weatherClimate => 'Clima';
+
+  @override
+  String get weatherClimateHint =>
+      'Le proposte di piante per l\'esterno seguono gli inverni e le estati del luogo.';
+
+  @override
+  String weatherClimateZone(String zone) {
+    return 'Zona $zone';
+  }
+
+  @override
+  String weatherClimateRange(String low, String high) {
+    return 'Inverni a $low, estati a $high';
+  }
+
+  @override
+  String get weatherClimateNone => 'Sconosciuto';
+
+  @override
+  String get finderReasonHardy => 'Sverna all\'aperto qui';
+
+  @override
+  String get finderReasonSheltered => 'Sverna all\'aperto, riparata';
+
+  @override
+  String finderRegion(String zone, String low) {
+    return 'Zona $zone · inverni a $low';
   }
 }

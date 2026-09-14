@@ -298,6 +298,17 @@ void main() {
     // De retour dans le shell à onglets, qui n'a rien à dépiler.
     expect(find.bySemanticsLabel('Retour'), findsNothing);
     expect(tester.takeException(), isNull);
+    // Libérer les providers arme un minuteur à zéro chez drift, qui ferme ses
+    // flux de requêtes ; `pumpAndSettle` rend la main sans l'avoir vu, puisqu'un
+    // minuteur ne programme pas d'image, et le cadre démonte l'arbre après le
+    // corps du test puis vérifie aussitôt qu'il n'en reste aucun.
+    //
+    // On démonte donc ici, et on pompe **avec une durée** : une pompe sans
+    // argument n'avance pas l'horloge simulée — elle purge les microtâches et
+    // dessine, rien de plus —, et un minuteur à zéro attend un `elapse` pour
+    // partir. C'est pour la même raison que `settle` passe 100 ms.
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(milliseconds: 100));
     handle.dispose();
   });
 
@@ -332,7 +343,10 @@ void main() {
     expect(find.text('Auxine est gratuite'), findsOneWidget);
     await tester.tap(find.text('Continuer sans'));
     await settle(tester);
-    expect(find.text('Bonjour Bruno'), findsWidgets);
+    // Le salut suit l'heure de la machine qui fait tourner le test, comme il
+    // suit celle de l'appareil : « Bonsoir » à partir de dix-huit heures.
+    final salut = DateTime.now().hour >= 18 ? 'Bonsoir Bruno' : 'Bonjour Bruno';
+    expect(find.text(salut), findsWidgets);
     expect(container.read(preferencesProvider).onboardingDone, isTrue);
   });
 }

@@ -26,9 +26,17 @@ un héros de 300 px ont le même rendu.
 - `GrainOverlay` : `assets/textures/grain.png` répété par-dessus l'app à 7 %
   (10 % en sombre). C'est le grain du papier ; il est ignoré par le pointeur.
 
+Une `FloraChip` accepte une pièce dessinée devant son libellé (`leading`) plutôt
+qu'un emoji : c'est ce qui porte les illustrations d'argile des problèmes de
+santé, dans la feuille d'édition d'une plante (voir docs/04).
+
 `FloraCard`, `FloraButton`, `EmojiTile`, `QuickActionChip`, `FloraTabBar`,
-`SelectionBar` et le toast reposent tous sur `ClayBox` : un composant ne
-dessine jamais sa propre ombre.
+`FloraAvatar`, la pastille d'`EmptyState`, `SelectionBar` et le toast reposent
+tous sur `ClayBox` : un composant ne dessine jamais sa propre ombre.
+
+La pastille d'un état vide et celle d'un avatar sont des `blob` : leur forme
+est tirée de l'emoji ou du nom, donc stable d'un écran à l'autre et différente
+d'une personne à l'autre. Une pièce modelée, pas un rond.
 
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
@@ -165,6 +173,77 @@ fonte variable des titres n'écoute que `FontVariation`.
 ## Motion (`motion.dart`)
 - Durées : 150 (micro) · 250 (standard) · 400 (emphase). Courbes : `easeOutCubic`, `Curves.easeInOutCubicEmphasized` pour les sheets.
 - `reduced motion` : durées → 0, pas de translation, uniquement fondu.
+
+### Les ressorts
+Ce qui bouge **sous le doigt** ou se déplace d'un point à un autre suit une
+physique, pas une durée fixe. Une courbe met toujours le même temps d'où
+qu'elle parte ; un ressort reprend la vitesse en cours — c'est la différence
+entre une pièce qui répond et une pièce qui rejoue une animation. Le rapport
+d'amortissement, `damping / (2·√(mass · stiffness))`, décide du dépassement.
+
+| Ressort | Amortissement | Usage |
+|---|---|---|
+| `Springs.press` | 1,00 | l'aller sous le doigt : franc, sans tremblement |
+| `Springs.release` | 0,44 | le retour : dépasse d'un cheveu, comme une pâte qui se détend |
+| `Springs.glide` | 0,81 | ce qui se déplace : la bulle de la barre d'onglets |
+
+`AnimationController.springTo` les mène, sur un contrôleur **sans bornes** :
+le dépassement sort de l'intervalle 0–1, et c'est voulu. Avec *réduire les
+animations*, il saute à la valeur — un ressort qu'on raccourcit n'est plus un
+ressort.
+
+Le réglage se lit dans `didChangeDependencies`, jamais dans le rappel du
+geste : une pièce qui disparaît sous le doigt annule son appui *pendant*
+qu'elle se démonte, et un élément désactivé ne peut plus remonter à son
+`MediaQuery`.
+
+### L'appui (`Pressable`)
+Deux choses le distinguent d'un simple rétrécissement.
+
+- **La pièce s'aplatit plus qu'elle ne s'éloigne** : l'axe vertical cède
+  environ quatre fois plus que l'horizontal (0,968 contre 0,992 pour une
+  carte), comme une pâte qu'on écrase. Un rétrécissement égal dans les deux
+  axes, c'est du papier qui s'en va. L'écrasement reste sous le
+  rétrécissement lui-même : une carte pleine largeur ne déborde jamais de ses
+  marges sous le doigt.
+- **Le relief rentre avec elle** : `Pressable` diffuse sa pression aux
+  `ClayBox` qui sont dessous (`PressDepth`), et `paintClay` rapproche la pièce
+  de son ombre portée, pâlit son reflet et creuse son ombre intérieure. C'est
+  le même dessin sous le doigt, pas une autre pièce. Seul le peintre repasse ;
+  le contenu de la carte ne se reconstruit pas.
+
+### Une pièce qui s'en va (`features/today/`)
+Un soin enregistré repousse l'échéance à la seconde même. L'échéance décide de
+la section **et du rang** : la pièce changeait donc de place avant d'avoir rien
+montré. Une carte passait de « En retard » à « À venir » ; une tuile de la
+grille filait en fin de liste pendant qu'une autre prenait sa case. Dans les
+deux cas, de l'écran, cela ressemblait à une disparition instantanée.
+
+Tant que la tâche séjourne dans `completedTasksProvider`, c'est donc **la
+version d'avant qui prime** sur celle de la base, et l'écran se range sur
+l'échéance qu'il affiche. Le tri est *stable* : beaucoup de soins tombent le
+même jour, et un ordre qui se rejoue à chaque image serait pire que le saut
+qu'on répare.
+
+La pièce tient alors sa place une seconde en « Arrosée », le temps qu'on
+puisse annuler, puis s'en va — une carte vers la droite en s'effaçant, une
+tuile en se rétractant sur place, sans pousser ses voisines. La carte referme
+**en même temps la place qu'elle occupait** ; sans cela elle s'en allait bien
+en douceur mais les suivantes sautaient d'un cran à l'instant où la liste se
+reconstruisait sans elle.
+
+### Une liste qui se pose (`Appear`)
+Une pièce monte de huit points en s'éclaircissant, une seule fois, avec trente
+millisecondes de retard par rang — plafonné à huit rangs, sans quoi une longue
+liste se déroulerait encore alors que le doigt défile déjà. Le retard vit dans
+la courbe et non dans un minuteur : un `Timer` en attente survivrait au widget.
+Avec une clé stable, une carte déjà posée ne rejoue rien quand la liste se
+réordonne. L'écran Aujourd'hui s'en sert pour ses soins du jour.
+
+`test/design_system/spring_motion_test.dart` verrouille les trois : les deux
+axes qui ne cèdent pas pareil, le retour qui passe au-dessus de la taille au
+repos, la bulle qui glisse, et le fait que rien de tout cela ne joue avec
+*réduire les animations*.
 ## Cibles tactiles
 44 × 44 points minimum, la règle des HIG. `Pressable` s'en charge pour tout le
 monde via `MinTapTarget` : le dessin garde sa taille — un rond de 32 reste un
@@ -179,10 +258,52 @@ pleine largeur se pose exactement comme avant).
 « Monstera, arrosée il y a trois jours » d'un seul tenant, au lieu d'un bouton
 sans nom suivi de deux fragments. Le libellé se compose des textes de la ligne
 plutôt que d'être recopié — sinon la synthèse vocale bégaie. `SectionHeader`
-se déclare `header: true`, ce qui rend le rotor « Titres » utilisable.
+se déclare `header: true`, ce qui rend le rotor « Titres » utilisable. Un
+onglet de `FloraTabBar` exclut la sémantique de son contenu : son libellé est
+déjà celui de l'onglet, et le texte dessiné en ajoutait un second — « Jardin,
+Jardin ». Ce qu'il annonce suit l'onglet choisi, pas la bulle, qui met le
+temps d'un ressort à y arriver.
 
 ## Haptics (`core/haptics.dart`)
-- `selection` : changement de chip / onglet · `light` : tap bouton · `success` : action enregistrée · `warning` : archivage.
+- `selection` : changement de chip / onglet · `light` : tap bouton · `drop` : arrosage enregistré · `success` : toute autre action enregistrée · `warning` : archivage, suppression.
+
+Sur iPhone, les trois retours qui racontent quelque chose sont des motifs
+Core Haptics (`ios/Runner/HapticsChannel.swift`), là où `HapticFeedback`
+n'offre qu'un coup : la **goutte** — deux impulsions légères, puis celle qui
+touche la terre et s'y étale —, le **roulement** d'une action faite, qui monte
+et se pose, et le **coup sourd** d'un geste sensible, suivi de son écho. La
+sélection et le tap restent ceux du système, qui sont déjà les bons. Partout
+ailleurs, et dès que le moteur manque (iPad, simulateur, *Vibrations* coupé),
+le repli est le retour d'avant ; le natif n'est sollicité qu'une fois pour le
+savoir. `test/core/haptics_test.dart` vérifie l'aiguillage.
+
+## La barre d'onglets et le retour au sommet (`app/tab_scroll.dart`)
+Un second tap sur l'onglet courant remonte sa liste ; ce n'est qu'une fois en
+haut qu'il revient à la racine de la branche. Les deux dans le même geste se
+gênaient : revenir à la racine reconstruit la page, et la remontée n'avait pas
+le temps de se jouer.
+
+L'attache de la liste au contrôleur de son onglet est **dite explicitement**
+par `LargeTitlePage` (`primary: true` quand la page n'a pas de contrôleur à
+elle), et non laissée à l'heuristique de plateforme de
+`PrimaryScrollController` : une page qui ne s'attache pas ne remonte pas, et
+rien ne le signale. Le test couvre les deux plateformes pour cette raison.
+
+
+La bulle active est **une seule pièce qui se déplace** (`Springs.glide`), et
+non un fond qui s'allume sous chaque onglet à son tour : c'est ce qui relie le
+départ et l'arrivée. Les libellés virent au passage — leur couleur suit la
+part de l'onglet que la bulle recouvre — au lieu de basculer à l'arrivée, et
+l'icône qui l'accueille se pose au ressort.
+
+
+Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
+Chaque branche du shell pose son propre `ScrollController` en
+`PrimaryScrollController` *dans* sa route (`TabScrollScope`) : il passe
+devant celui que la route fournit d'elle-même, la liste de l'onglet s'y
+attache sans qu'on le lui dise, et le tap sur la barre d'état — que le
+`Scaffold` sert avec ce même contrôleur — continue de marcher. La remontée
+suit *réduire les animations* : un saut au lieu d'une glissade.
 
 ## Les textes (`lib/l10n/*.arb`)
 Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court.
@@ -210,9 +331,18 @@ d'exclamation, pas de titre en forme de question, et une liste de tournures
 interdites par langue. Une tournure à bannir de plus s'ajoute là.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
+Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
+Paul » ensuite, à l'heure de l'appareil, et sans le nom tant qu'on n'en a pas.
+Replié dans la barre, ce salut ne dit plus où l'on est : c'est **Auxine** qui
+y reste (`collapsedTitle` de `LargeTitlePage`). Le petit titre arrive dans le
+fondu du gabarit natif, celui-là même qui emporte le grand, et monte de
+quelques pixels au passage — une montée tirée du défilement, pas une
+animation qui se rejoue. Les autres onglets n'en ont pas besoin : leur titre
+est déjà un nom.
+
 Sous le grand titre, le jour et ce qu'il fait : la date, puis une rangée de
 `FloraPill` — le temps dehors, l'air de la maison — qui mènent aux
 prévisions et au capteur. Une pilule fait la hauteur de la cible tactile et
@@ -229,6 +359,26 @@ repos, « Tout est en ordre », reste crème. Sur une carte teintée, la tuile
 reste `surface`. `TodayNoticeSlot` pose la marge commune et fond la carte
 quand elle disparaît, sans laisser de vide. La carte du jour, en terre
 cuite, reste à part : c'est le chiffre du matin, pas un avis.
+
+## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
+Cinq volets se pratiquent — arrosage, lumière, humidité, engrais, rempotage —
+et chacun a sa carte, teintée de la couleur de son sujet : bleu poussière pour
+l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre cuite
+pour le rempotage. Une douzaine de lignes dans une seule liste ne se
+distinguaient qu'à la lecture ; une carte se retrouve à sa couleur.
+
+L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
+sur toute carte teintée —, le nom du volet, le constat dessous, puis ce qui ne
+vaut que pour lui : la saison de l'engrais, le substrat avec le rempotage (le
+jour où il sert), « Brumiser » sous l'humidité, « Repos hivernal » sous
+l'arrosage. L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau :
+c'est la question qu'on se pose en premier. La carte « Chez vous » se pose
+après l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
+
+Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
+`FloraGroup` à la suite, avant les conseils, ce qu'il faut surveiller, les
+problèmes connus et la multiplication ; la provenance de la fiche ferme la
+page. `test/features/care_guide_test.dart` tient la séparation.
 
 ## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)
 Un seul chemin pour en ajouter une, `showPhotoCaptureFlow` : le viseur dans
@@ -310,3 +460,41 @@ déclinaisons d'iOS, d'Android et du web, sans chaîne Flutter installée.
 `dart run flutter_launcher_icons` fait le même travail depuis
 `flutter_launcher_icons.yaml`, à deux réserves près : il rééchantillonne
 autrement, et il retaille les « maskable » comme les autres.
+
+## La page web de partage (`supabase/functions/share/`)
+Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent
+avant que l'application soit installée : c'est le premier Auxine que voit la
+personne invitée. Elle porte donc la même identité — papier crème grainé,
+pièces d'argile, titres à la main.
+
+- `page.ts` tient la feuille de style et la coquille ; `index.ts` route et
+  interroge. La page se rend donc sans Supabase, ce qui permet de la
+  photographier avant de la déployer.
+- Les valeurs sont recopiées des tokens Dart. Les changer d'un côté sans
+  l'autre ferait deux Auxine.
+- `assets.ts` emporte les trois pièces qui ne se recréent pas en CSS :
+  Shantell Sans réduite à l'axe 600–700 et au latin étendu, la tuile de grain
+  de 128 px, et la vignette des messageries. Servies sous `/asset/`, gardées
+  un an par le navigateur ; la page elle-même pèse cinq kilo-octets. Le
+  fichier est produit, pas écrit :
+  ```bash
+  node tool/build_share_preview.mjs     # la vignette, 1200 × 630
+  python3 tool/build_share_assets.py    # les trois dans assets.ts
+  ```
+- **La vignette** (`preview.jpg`) est ce que WhatsApp, Telegram ou Messages
+  montrent sous le lien. La monstera du master de l'icône sur le papier
+  grainé, « Auxine » tracé à la main : elle est composée en HTML puis
+  photographiée par Chromium, seule façon d'avoir la vraie fonte et le vrai
+  grain sans les redessiner. En JPEG — le grain est du bruit, il pèse trois
+  fois moins là qu'en PNG. Rien n'y nomme le jardin ni la personne : c'est
+  `og:title` qui porte le particulier, la vignette ne vieillit qu'avec la
+  marque. Une plante partagée garde sa photo ; sans photo, elle retombe sur
+  la vignette plutôt que sur un lien nu.
+- **Le relief ne se recopie pas chiffre pour chiffre.** Un flou CSS vaut deux
+  fois le sigma de Flutter, et surtout les deux ombres intérieures n'y sont
+  pas la même figure : `paintClay` floute une bande large de quelques points,
+  CSS floute un bord. À opacité égale la bande perd presque tout à la
+  convolution, le bord en garde la moitié — un reflet à 0,75 recopié tel quel
+  délave la carte. Les opacités du reflet et du creux sont donc celles qui
+  rendent le même pic ; l'ombre portée, même figure des deux côtés, garde
+  les siennes.

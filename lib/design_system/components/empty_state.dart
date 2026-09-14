@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/spacing.dart';
 import 'buttons.dart';
+import 'clay.dart';
 
 /// État vide : un emoji sur pastille douce, un titre, une phrase, une action.
 class EmptyState extends StatelessWidget {
@@ -37,10 +38,13 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
+          // Une pièce de pâte plutôt qu'un rond : la forme est tirée de
+          // l'emoji, si bien que deux écrans vides ne se ressemblent pas.
+          ClayBox(
             width: compact ? 64 : 88,
             height: compact ? 64 : 88,
-            decoration: BoxDecoration(color: c.sageSoft, shape: BoxShape.circle),
+            color: c.sageSoft,
+            shape: ClayShape.blob(emoji.hashCode),
             alignment: Alignment.center,
             child: Text(emoji, style: TextStyle(fontSize: compact ? 28 : 40, height: 1)),
           ),

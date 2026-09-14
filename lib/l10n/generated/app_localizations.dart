@@ -240,6 +240,54 @@ abstract class AppLocalizations {
   /// **'Une erreur est survenue. Réessayez.'**
   String get genericError;
 
+  /// No description provided for @offlineTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne'**
+  String get offlineTitle;
+
+  /// No description provided for @offlineHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette fonction demande une connexion. Les données déjà sur l\'appareil restent lisibles.'**
+  String get offlineHint;
+
+  /// No description provided for @offlineActionFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne. Réessayez une fois le réseau revenu.'**
+  String get offlineActionFailed;
+
+  /// No description provided for @offlineSharing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer, révoquer et lister des liens demande une connexion.'**
+  String get offlineSharing;
+
+  /// No description provided for @offlineCollaboration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inviter, rejoindre un jardin et changer un rôle demande une connexion.'**
+  String get offlineCollaboration;
+
+  /// No description provided for @offlineDiagnosis.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse demande une connexion.'**
+  String get offlineDiagnosis;
+
+  /// No description provided for @offlineIdentification.
+  ///
+  /// In fr, this message translates to:
+  /// **'La recherche en ligne demande une connexion. La reconnaissance sur l\'appareil, non.'**
+  String get offlineIdentification;
+
+  /// No description provided for @offlineSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'achat demande une connexion.'**
+  String get offlineSupport;
+
   /// No description provided for @tabToday.
   ///
   /// In fr, this message translates to:
@@ -275,6 +323,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Bonjour'**
   String get greetingAnonymous;
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir {name}'**
+  String greetingEvening(String name);
+
+  /// No description provided for @greetingEveningAnonymous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir'**
+  String get greetingEveningAnonymous;
 
   /// No description provided for @careCount.
   ///
@@ -605,6 +665,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ajout récent'**
   String get sortRecent;
+
+  /// No description provided for @sortEdited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modification récente'**
+  String get sortEdited;
+
+  /// No description provided for @sortLastWatered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier arrosage'**
+  String get sortLastWatered;
+
+  /// No description provided for @sortLastFertilized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier engrais'**
+  String get sortLastFertilized;
+
+  /// No description provided for @sortLastRepotted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernier rempotage'**
+  String get sortLastRepotted;
+
+  /// No description provided for @sortAcquired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acquisition'**
+  String get sortAcquired;
 
   /// No description provided for @filterLocation.
   ///
@@ -1205,6 +1295,126 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Malade'**
   String get healthSick;
+
+  /// No description provided for @healthIssue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problème'**
+  String get healthIssue;
+
+  /// No description provided for @issueOverwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excès d\'eau'**
+  String get issueOverwatering;
+
+  /// No description provided for @issueUnderwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Manque d\'eau'**
+  String get issueUnderwatering;
+
+  /// No description provided for @issuePests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ravageurs'**
+  String get issuePests;
+
+  /// No description provided for @issueDisease.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maladie'**
+  String get issueDisease;
+
+  /// No description provided for @issueRootRot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourriture des racines'**
+  String get issueRootRot;
+
+  /// No description provided for @issueTransplantShock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choc de rempotage'**
+  String get issueTransplantShock;
+
+  /// No description provided for @issueDeficiency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carence'**
+  String get issueDeficiency;
+
+  /// No description provided for @issueSunburn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brûlure du soleil'**
+  String get issueSunburn;
+
+  /// No description provided for @issueFrost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gel'**
+  String get issueFrost;
+
+  /// No description provided for @needsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Besoins'**
+  String get needsSection;
+
+  /// No description provided for @detailsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails'**
+  String get detailsSection;
+
+  /// No description provided for @lifespan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cycle de vie'**
+  String get lifespan;
+
+  /// No description provided for @lifespanAnnual.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuelle'**
+  String get lifespanAnnual;
+
+  /// No description provided for @lifespanBiennial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bisannuelle'**
+  String get lifespanBiennial;
+
+  /// No description provided for @lifespanPerennial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vivace'**
+  String get lifespanPerennial;
+
+  /// No description provided for @hardiness.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rusticité'**
+  String get hardiness;
+
+  /// No description provided for @hardinessHardy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rustique'**
+  String get hardinessHardy;
+
+  /// No description provided for @hardinessTender.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gélive'**
+  String get hardinessTender;
+
+  /// No description provided for @cuttingMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois de bouturage'**
+  String get cuttingMonth;
 
   /// No description provided for @noSchedule.
   ///
@@ -2490,6 +2700,12 @@ abstract class AppLocalizations {
   /// **'Scanner'**
   String get scan;
 
+  /// No description provided for @quickActionScan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scanner une étiquette'**
+  String get quickActionScan;
+
   /// No description provided for @scanHint.
   ///
   /// In fr, this message translates to:
@@ -2694,6 +2910,12 @@ abstract class AppLocalizations {
   /// **'Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d\'identification.'**
   String irisFeedbackAskBody(String name);
 
+  /// No description provided for @genusUncertainSpecies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèce incertaine'**
+  String get genusUncertainSpecies;
+
   /// No description provided for @modelMissing.
   ///
   /// In fr, this message translates to:
@@ -2823,7 +3045,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour les plantes en extérieur, l\'arrosage est reporté les jours de pluie. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo, sans compte ni clé.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -3077,6 +3299,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Erreur de synchronisation'**
   String get syncError;
+
+  /// No description provided for @syncUnknownColumns.
+  ///
+  /// In fr, this message translates to:
+  /// **'Colonnes inconnues du serveur : {columns}'**
+  String syncUnknownColumns(String columns);
 
   /// No description provided for @syncSyncing.
   ///
@@ -5814,24 +6042,6 @@ abstract class AppLocalizations {
   /// **'Tâche terminée'**
   String get activityTaskDone;
 
-  /// No description provided for @archiveNameTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nom des archives'**
-  String get archiveNameTitle;
-
-  /// No description provided for @archiveNameHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mémorial, Le passé…'**
-  String get archiveNameHint;
-
-  /// No description provided for @archiveNameExplain.
-  ///
-  /// In fr, this message translates to:
-  /// **'Laissez vide pour garder le nom par défaut.'**
-  String get archiveNameExplain;
-
   /// No description provided for @searchArchives.
   ///
   /// In fr, this message translates to:
@@ -7229,6 +7439,192 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Utilisée par {name} pour reconnaître l\'espèce, non conservée.'**
   String viewForModel(String name);
+
+  /// No description provided for @strategyWeather.
+  ///
+  /// In fr, this message translates to:
+  /// **'Météo'**
+  String get strategyWeather;
+
+  /// No description provided for @strategyWeatherHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid.'**
+  String get strategyWeatherHint;
+
+  /// No description provided for @strategyWeatherNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec le temps de la semaine : {interval}'**
+  String strategyWeatherNow(String interval);
+
+  /// No description provided for @strategyWeatherNoPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans lieu météo, l\'intervalle reste celui de la saison.'**
+  String get strategyWeatherNoPlace;
+
+  /// No description provided for @weatherWhenTonight.
+  ///
+  /// In fr, this message translates to:
+  /// **'cette nuit'**
+  String get weatherWhenTonight;
+
+  /// No description provided for @weatherWhenToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'aujourd\'hui'**
+  String get weatherWhenToday;
+
+  /// No description provided for @weatherWhenTomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'demain'**
+  String get weatherWhenTomorrow;
+
+  /// No description provided for @weatherWhenInDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'dans {count} jours'**
+  String weatherWhenInDays(int count);
+
+  /// No description provided for @weatherFrostTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gel {when} · {temp}'**
+  String weatherFrostTitle(String when, String temp);
+
+  /// No description provided for @weatherHeatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur {when} · {temp}'**
+  String weatherHeatTitle(String when, String temp);
+
+  /// No description provided for @weatherFrostBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À rentrer ou à couvrir : {names}.'**
+  String weatherFrostBody(String names);
+
+  /// No description provided for @weatherHeatBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À mettre à l\'ombre, et à arroser tôt : {names}.'**
+  String weatherHeatBody(String names);
+
+  /// No description provided for @weatherAlertMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{et 1 autre} other{et {count} autres}}'**
+  String weatherAlertMore(int count);
+
+  /// No description provided for @notifFrost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gel {when} · à rentrer ou à couvrir : {names}.'**
+  String notifFrost(String when, String names);
+
+  /// No description provided for @notifHeat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur {when} · à mettre à l\'ombre : {names}.'**
+  String notifHeat(String when, String names);
+
+  /// No description provided for @weatherRainFallenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pluie · {mm} mm'**
+  String weatherRainFallenTitle(String mm);
+
+  /// No description provided for @weatherRainWatered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosage noté fait pour {names}.'**
+  String weatherRainWatered(String names);
+
+  /// No description provided for @weatherRainWaterable.
+  ///
+  /// In fr, this message translates to:
+  /// **'La pluie vaut l\'arrosage de {names}.'**
+  String weatherRainWaterable(String names);
+
+  /// No description provided for @weatherRainMarkWatered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noter arrosé'**
+  String get weatherRainMarkWatered;
+
+  /// No description provided for @weatherRainWateredToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 arrosage noté} other{{count} arrosages notés}}'**
+  String weatherRainWateredToast(int count);
+
+  /// No description provided for @weatherRainNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosée par la pluie ({mm} mm).'**
+  String weatherRainNote(String mm);
+
+  /// No description provided for @weatherRainCounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'La pluie compte comme un arrosage'**
+  String get weatherRainCounts;
+
+  /// No description provided for @weatherRainCountsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au-delà de 5 mm sur trois jours, l\'arrosage des emplacements extérieurs est noté fait. Coupé, l\'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie.'**
+  String get weatherRainCountsHint;
+
+  /// No description provided for @weatherClimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Climat'**
+  String get weatherClimate;
+
+  /// No description provided for @weatherClimateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les propositions de plantes pour l\'extérieur suivent les hivers et les étés du lieu.'**
+  String get weatherClimateHint;
+
+  /// No description provided for @weatherClimateZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone {zone}'**
+  String weatherClimateZone(String zone);
+
+  /// No description provided for @weatherClimateRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hivers à {low}, étés à {high}'**
+  String weatherClimateRange(String low, String high);
+
+  /// No description provided for @weatherClimateNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inconnu'**
+  String get weatherClimateNone;
+
+  /// No description provided for @finderReasonHardy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passe l\'hiver dehors ici'**
+  String get finderReasonHardy;
+
+  /// No description provided for @finderReasonSheltered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hiverne dehors, protégée'**
+  String get finderReasonSheltered;
+
+  /// No description provided for @finderRegion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone {zone} · hivers à {low}'**
+  String finderRegion(String zone, String low);
 }
 
 class _AppLocalizationsDelegate

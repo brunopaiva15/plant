@@ -23,6 +23,25 @@
 | plant_actions, plant_photos, measurements, tags, plant_tags | append-only : `insert or ignore`, suppression logique par `deleted_at` |
 | photos (fichiers) | immuables, nommées par UUID : jamais de conflit |
 
+## Un schéma distant en retard
+Le projet Supabase peut avoir une version de retard : `supabase/schema.sql`
+n'a pas été rejoué depuis la dernière colonne ajoutée. PostgREST refuse alors
+la ligne entière pour ce seul champ (`PGRST204`, « Could not find the
+'cutting_month' column of 'plants' »), et comme le cycle s'arrête à la
+première erreur, toute la file d'envoi restait à quai — les autres tables
+comprises.
+- **À l'envoi**, la colonne inconnue est retirée et la ligne repart sans
+  elle. Le champ ne monte pas, le reste passe. Ce qui a été retiré est oublié
+  à chaque push : le schéma remis à jour se reprend tout seul, sans relancer
+  l'application.
+- **À la lecture**, le serveur ne renvoie pas ce qu'il n'a pas. Les colonnes
+  absentes de la ligne distante gardent leur valeur locale, faute de quoi la
+  ligne les viderait — un champ qui ne monte pas est un désagrément, un champ
+  effacé est une perte. Une valeur mise à null ailleurs, elle, revient avec sa
+  clé : seule l'absence de la clé vaut « garder ce qui est là ».
+- **À l'écran**, Compte liste les colonnes en cause sous l'état de la
+  synchronisation. Rejouer `supabase/schema.sql` les fait disparaître.
+
 ## Les fichiers des photos
 La ligne et l'image voyagent séparément, et l'image coûte mille fois plus cher.
 - **Téléversement seulement quand l'image change.** Une écriture qui ne touche
@@ -57,7 +76,9 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 ## Collaboration
 - `garden_members` : `owner` / `member` / `viewer`. Le domaine en fait `GardenRole` (`domain/sharing/garden_collaboration.dart`) : `canEdit`, `canManageMembers`.
 - **Invitation par lien** : le propriétaire crée une invitation (`create_invite`), qui tire côté serveur un code de 8 caractères sans I, L, O, 0 ni 1. Le code est **à usage unique**, expire par défaut au bout de 14 jours, et peut être réservé à une adresse e-mail. L'invité n'a pas besoin d'avoir déjà un compte : la feuille « Rejoindre un jardin » lui propose « Continuer avec Apple » sur place, et accepte l'invitation dans la foulée (`accept_invite`). Là où la connexion n'existe pas (Android, pour l'heure), la feuille le dit d'emblée. Même règle sur Mes jardins et Membres : un bouton « Se connecter » vers l'écran Compte quand la connexion existe, le texte seul sinon (`signInAvailable`, dans `account/application`).
-- Le lien envoyé est une adresse https (`…/functions/v1/share/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`auxine://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît.
+- Le lien envoyé est une adresse https (`…/join/<code>`) : cliquable dans un message, elle sert une page qui dit qui invite et propose « Ouvrir dans Auxine » (`auxine://join/<code>`). Le même lien est affiché en QR, et le scanner de l'application le reconnaît — `PlantLinks.decodeLink` accepte n'importe quel domaine, seuls les deux derniers segments du chemin comptent.
+- Dans une messagerie, le lien s'accompagne d'une carte : le titre dit qui invite et dans quel jardin, la phrase dit ce que l'invitation donne, la vignette est celle d'Auxine (docs/06). Le nom du jardin part donc dans les caches de WhatsApp et de Telegram, et s'affiche pour tout un groupe — c'est le prix d'un lien qui se reconnaît. La page reste `noindex` et `no-store` : les moteurs n'en veulent pas, les robots d'aperçu, eux, ne lisent pas cette consigne.
+- Sa base est `SHARE_BASE_URL` (`--dart-define`), et elle ne peut pas être l'URL Supabase : la passerelle force `text/plain` sur le HTML servi depuis `*.supabase.co`, sa protection contre les pages d'hameçonnage hébergées sous son nom. La page arrive alors en code source, accents cassés faute de `charset`. D'où le relais de `share-proxy/` — § Mise en place, étape 3.
 - `my_gardens()` liste les jardins du compte avec le rôle, le nom du propriétaire, le nombre de membres et de plantes. `set_member_role`, `remove_member`, `leave_garden`, `revoke_invite` complètent la gestion — toutes `security definer`, propriétaire seul sauf `leave_garden`.
 - Renommer son jardin écrit la ligne locale, la met en file et la pousse sans attendre le débounce de trois secondes. La liste venant de `my_gardens()`, un nom encore en file prime sur celui que renvoie le serveur : la réponse distante, antérieure à l'envoi, réécrivait sinon la ligne locale et le renommage repartait à l'envers dans la synchro.
 - Chaque action et photo porte `user_id` ; la timeline affiche « · Laura » quand l'auteur n'est pas l'utilisateur courant (cache local `profiles`).
@@ -72,16 +93,31 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 | Feuille « Rejoindre un jardin » | code saisi ou reçu par lien, aperçu de l'invitation, acceptation |
 
 ## Mise en place
-1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Erreur de synchronisation » sur l'écran Compte, avec le message du serveur dessous (« Could not find the '…' column » : une colonne manque ; « new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).
+1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Colonnes inconnues du serveur » sur l'écran Compte, sous l'état de la synchronisation, qui les nomme en « table.colonne ». Le reste passe quand même — la colonne en trop est retirée de la ligne, et reprend sa place d'elle-même une fois le fichier rejoué —, mais ces champs-là ne quittent pas l'appareil. Les autres refus du serveur arrêtent la synchronisation et s'affichent au mot près sous « Erreur de synchronisation » (« new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).
 2. Déployer la fonction Edge `share` (elle sert aussi les pages `/join/<code>`). Tant qu'elle ne l'est pas, un lien envoyé répond `{"code":"NOT_FOUND","message":"Requested function was not found"}`. Depuis un poste avec la CLI Supabase :
    ```bash
+   cd <racine du dépôt>                             # le dossier qui contient supabase/
    supabase login
    supabase link --project-ref <ref du projet>      # la partie avant .supabase.co dans l'URL
    supabase functions deploy share --no-verify-jwt
    ```
-   `--no-verify-jwt` est indispensable (et déjà inscrit dans `supabase/config.toml`) : la page s'ouvre depuis un navigateur, sans clé. `SUPABASE_URL` et `SUPABASE_ANON_KEY` sont fournis à la fonction par Supabase, rien à configurer. À refaire à chaque changement de `supabase/functions/share/index.ts`.
-3. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `auxine://login-callback`.
-4. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=…`. Sur la CI (Codemagic), les deux `--dart-define` vont dans les arguments de build : sans eux, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion.
+   Les commandes se lancent depuis la racine du dépôt : la CLI cherche `supabase/functions/share/index.ts` sous le dossier courant, et retient le projet lié au même endroit (`supabase/.temp/`). Ailleurs, elle part avec une source vide et le déploiement échoue en `400 Entrypoint path does not exist` — un `WARNING: Docker is not running` peut apparaître au passage, il n'y est pour rien.
+
+   `--no-verify-jwt` est indispensable (et déjà inscrit dans `supabase/config.toml`) : la page s'ouvre depuis un navigateur, sans clé. `SUPABASE_URL` et `SUPABASE_ANON_KEY` sont fournis à la fonction par Supabase, rien à configurer. À refaire à chaque changement du dossier `supabase/functions/share/` — la page y est habillée du design system de l'app, fonte et grain compris (docs/06).
+
+   Pour vérifier, `curl -i https://<ref>.supabase.co/functions/v1/share/join/ABCD1234` : la page HTML « Lien indisponible » signale une fonction déployée qui répond (le code n'existe pas), le JSON `NOT_FOUND` une fonction toujours absente.
+3. Déployer le relais public `share-proxy/` : la fonction sert la page, ce Worker Cloudflare la sert sous un domaine qui n'est pas `*.supabase.co` et lui rend son `content-type` (et sa politique de sécurité, que la passerelle remplace sinon par un `sandbox` qui empêcherait « Ouvrir dans Auxine » d'ouvrir l'application). La page reste dans `index.ts` : le Worker ne fait que relayer.
+   ```bash
+   cd share-proxy
+   npx wrangler login
+   npx wrangler deploy
+   ```
+   La fonction relayée est `SHARE_UPSTREAM`, dans `wrangler.toml` — à changer là, pas en argument : un `--var CLE:valeur` se fait couper en deux par PowerShell, qui prend la valeur pour une commande.
+   Wrangler annonce l'adresse obtenue, en `https://auxine-share.<compte>.workers.dev` — c'est elle qui devient `SHARE_BASE_URL` à l'étape 5. Un domaine à soi se branche ensuite sur le même Worker (Cloudflare › Workers › Custom Domains) sans rien réécrire, et ouvre la voie aux Universal Links / App Links, qui feraient ouvrir l'application sans passer par la page.
+
+   `curl -i https://auxine-share.<compte>.workers.dev/join/ABCD1234` doit répondre `content-type: text/html; charset=utf-8`. Tant qu'il répond `text/plain`, c'est l'adresse Supabase qui est interrogée, pas le relais.
+4. Activer le fournisseur Auth **Apple** (voir ci-dessous) — et lui seul : pas d'e-mail, et Google n'est pas livré ; le jour où il l'est, l'activer aussi et ajouter l'URL de redirection `auxine://login-callback`.
+5. Lancer l'app avec `flutter run --dart-define=SUPABASE_URL=… --dart-define=SUPABASE_ANON_KEY=… --dart-define=SHARE_BASE_URL=https://auxine-share.<compte>.workers.dev`. Sur la CI (Codemagic), ces `--dart-define` vont dans les arguments de build : sans les deux premiers, l'app tombe sur `LocalAuthRepository` et l'écran Compte ne propose aucune connexion ; sans le troisième, les liens partagés repartent vers Supabase et s'affichent en code source. Les liens déjà envoyés gardent l'ancienne adresse — ils sont écrits au moment du partage.
 
 ### Sign in with Apple
 Le bouton « Continuer avec Apple » n'apparaît qu'avec un backend configuré, sur
@@ -108,7 +144,7 @@ fois (commit c13bbcd), et la raison pour laquelle l'entitlement avait été reti
    le flux natif ; le *Secret Key* (JWT signé avec la clé `.p8`) ne sert qu'au
    flux OAuth web, que l'app n'utilise pas.
 3. **Codemagic** : passer `SUPABASE_URL` et `SUPABASE_ANON_KEY` en
-   `--dart-define` (§ Mise en place, étape 4).
+   `--dart-define` (§ Mise en place, étape 5).
 
 Sans l'étape 1, le build ne se signe pas ; sans la 2, Supabase refuse le jeton
 (« Unacceptable audience ») ; sans la 3, le bouton n'est pas dessiné.

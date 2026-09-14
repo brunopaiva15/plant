@@ -44,6 +44,7 @@ import '../features/weather/presentation/weather_settings_screen.dart';
 import 'deep_links.dart';
 import 'providers.dart';
 import 'shell.dart';
+import 'tab_scroll.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -122,16 +123,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, shell) => AppShell(shell: shell),
         branches: [
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.today, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const TodayScreen())),
+            GoRoute(path: Routes.today, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const TabScrollScope(index: 0, child: TodayScreen()))),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.plants, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const PlantsScreen())),
+            GoRoute(path: Routes.plants, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const TabScrollScope(index: 1, child: PlantsScreen()))),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.garden, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const GardenScreen())),
+            GoRoute(path: Routes.garden, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const TabScrollScope(index: 2, child: GardenScreen()))),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: Routes.profile, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const ProfileScreen())),
+            GoRoute(path: Routes.profile, pageBuilder: (c, s) => NoTransitionPage(key: s.pageKey, child: const TabScrollScope(index: 3, child: ProfileScreen()))),
           ]),
         ],
       ),

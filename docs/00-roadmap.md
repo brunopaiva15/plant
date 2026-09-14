@@ -47,6 +47,10 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Fonction | État |
 |---|---|
 | Météo (Open-Meteo, sans clé) : emplacements « extérieur », ligne météo sur Aujourd'hui, conseil « pluie prévue : pas besoin d'arroser » avec report en un tap | ✅ |
+| La pluie tombée vaut un arrosage : au-delà de 5 mm sur trois jours, les arrosages extérieurs du jour sont notés faits, avec Undo ; réglage dans Profil › Météo, actif par défaut | ✅ |
+| Gel et chaleur : les trois prochains jours lus pour les plantes du dehors, comparés au minimum et à la plage idéale de chaque fiche ; carte du matin et ligne dans le rappel quotidien quand c'est pour la nuit ou le lendemain | ✅ |
+| Stratégie d'arrosage « Météo » : l'intervalle saisonnier corrigé par la semaine du lieu (chaleur sèche ×0,7, pluie ×1,35, borné à 0,6–1,6), et la correction écrite sous le sélecteur | ✅ |
+| Climat de la région (archives Open-Meteo sur trois ans, mises en cache) : zone de rusticité du lieu, et propositions de plantes d'extérieur classées par ce qu'elles font de l'hiver — l'IA reçoit le climat, jamais la ville | ✅ |
 | Export complet (ZIP : `data.json` de toutes les tables + photos), partage natif | ✅ |
 | Timelapse de croissance (photos en fondu, chronologiques) | ✅ |
 | Stock bas regroupé dans le rappel quotidien | ✅ |
@@ -80,6 +84,9 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Prévisions météo sur cinq jours : min / max, précipitations, risque de pluie, vent, humidité | ✅ |
 | Apple Maison (iOS) : température et humidité d'un capteur HomeKit, étape d'onboarding après la ville, ligne et conseils du jour pour les plantes d'intérieur, carte « Chez vous » dans la fiche d'entretien, mesure jointe au diagnostic | ✅ |
 | Sauvegarde : export par sections, restauration avec aperçu, rapport d'import | ✅ |
+| Champs de plante : lumière, humidité, cycle de vie, rusticité, mois de bouturage — des puces facultatives sous « Plus d'options », lus dans Informations ; la lumière de la plante prime sur celle de l'emplacement dans les conseils d'arrosage | ✅ |
+| États de santé : les trois états restent (en forme, à surveiller, malade) et se précisent d'un problème parmi neuf (excès d'eau, manque d'eau, ravageurs, maladie, pourriture des racines, choc de rempotage, carence, brûlure, gel) ; le diagnostic le renseigne quand sa piste la plus vraisemblable est un ravageur ou une maladie | ✅ |
+| Tris de la liste : nom, emplacement, prochain soin, santé, dernier arrosage / engrais / rempotage, ajout, modification, acquisition ; la carte écrit sous le nom ce que le tri regarde | ✅ |
 
 ## Au-delà de HortusFox
 | Fonction | État |
@@ -97,7 +104,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 - Apple Watch
 - Automatisations, Shortcuts / Siri, Home Assistant, capteurs
 - Import HortusFox (l'export complet JSON / CSV / ZIP est livré)
-- Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : livrée avec **Iris 7**, le modèle embarqué (1 457 espèces, 320 px, 8,8 Mo ; +7,3 points de top-1 sur Iris 6 à armes égales). Deux photos de la même plante valent quatorze points de top-1 — [docs/09-plant-recognition.md](09-plant-recognition.md). Ce qu'il reste à faire, et dans quel ordre : [§ 12](09-plant-recognition.md#12-ce-quil-reste-à-faire-dans-lordre)
+- Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : livrée, et le modèle embarqué en est à **Iris 8** (+6,7 points de top-1 sur Iris 7, au même seuil de repli, en entraînant large pour exposer étroit). Ce qu'il pèse, ce qu'il sait et ce qu'il vaut ne se recopient pas ici : la fiche est au [§ 0 de docs/09](09-plant-recognition.md#0-le-nom), recopiée de `assets/model/model.json`. Deux photos de la même plante valent quatorze points de top-1 — [docs/09-plant-recognition.md](09-plant-recognition.md). Ce qu'il reste à faire, et dans quel ordre : [§ 12](09-plant-recognition.md#12-ce-quil-reste-à-faire-dans-lordre) et [§ 13](09-plant-recognition.md#13-cadrage-de-liris-9--entraîner-large-exposer-étroit)
 
 ## Principes de livraison
 1. Simplicité > élégance > vitesse > clarté > fiabilité > profondeur.

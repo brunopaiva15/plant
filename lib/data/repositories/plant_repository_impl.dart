@@ -5,25 +5,35 @@ import '../../core/config/app_config.dart';
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/weather/weather_trend.dart';
 import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftPlantRepository implements PlantRepository {
-  DriftPlantRepository(this._db, this._gardenId, {bool Function()? southernHemisphere})
-      : _south = southernHemisphere ?? (() => false);
+  DriftPlantRepository(this._db, this._gardenId, {bool Function()? southernHemisphere, WeatherTrend? Function()? weatherTrend})
+      : _south = southernHemisphere ?? (() => false),
+        _trend = weatherTrend ?? (() => null);
 
   final FloraDatabase _db;
   final String _gardenId;
 
   /// L'hémisphère du jardin, relu à chaque calcul d'échéance.
   final bool Function() _south;
+
+  /// Le temps qu'il fait au lieu choisi, relu à chaque calcul : il ne sert
+  /// qu'aux routines en stratégie météo, et vaut `null` hors ligne.
+  final WeatherTrend? Function() _trend;
   static const _uuid = Uuid();
 
   /// Séparateur des tags concaténés ; interdit dans un nom de tag (voir TagRepository).
   static const tagSeparator = '|';
 
-  /// Requête unique pour les cartes : plante + emplacement + miniature + prochain soin.
-  static const _summarySql = '''
+  /// Date du dernier soin d'un type, `NULL` s'il n'y en a jamais eu.
+  static String _lastAction(String typeKey) =>
+      "(SELECT MAX(a.occurred_at) FROM plant_actions a WHERE a.plant_id = p.id AND a.type_key = '$typeKey' AND a.deleted_at IS NULL)";
+
+  /// Requête unique pour les cartes : plante + emplacement + miniature + prochain soin + derniers soins.
+  static final _summarySql = '''
     SELECT p.*, l.name AS location_name, ph.thumb_path AS thumb_path, ph.remote_url AS thumb_url,
       (SELECT cs.next_due_at FROM care_schedules cs
          WHERE cs.plant_id = p.id AND cs.enabled = 1 AND cs.next_due_at IS NOT NULL
@@ -32,14 +42,17 @@ class DriftPlantRepository implements PlantRepository {
          WHERE cs.plant_id = p.id AND cs.enabled = 1 AND cs.next_due_at IS NOT NULL
          ORDER BY cs.next_due_at ASC LIMIT 1) AS next_type,
       (SELECT GROUP_CONCAT(t.name, '$tagSeparator') FROM plant_tags pt JOIN tags t ON t.id = pt.tag_id
-         WHERE pt.plant_id = p.id) AS tag_names
+         WHERE pt.plant_id = p.id) AS tag_names,
+      ${_lastAction('watering')} AS last_watered,
+      ${_lastAction('fertilizing')} AS last_fertilized,
+      ${_lastAction('repotting')} AS last_repotted
     FROM plants p
     LEFT JOIN locations l ON l.id = p.location_id
     LEFT JOIN plant_photos ph ON ph.id = p.primary_photo_id
   ''';
 
   Set<ResultSetImplementation> get _summaryTables =>
-      {_db.plants, _db.locations, _db.plantPhotos, _db.careSchedules, _db.plantTags, _db.tags, _db.plantAttributes};
+      {_db.plants, _db.locations, _db.plantPhotos, _db.careSchedules, _db.plantTags, _db.tags, _db.plantAttributes, _db.plantActions};
 
   PlantSummary _mapSummary(QueryRow row) {
     final data = Map<String, Object?>.from(row.data)
@@ -48,7 +61,10 @@ class DriftPlantRepository implements PlantRepository {
       ..remove('thumb_url')
       ..remove('next_due_at')
       ..remove('next_type')
-      ..remove('tag_names');
+      ..remove('tag_names')
+      ..remove('last_watered')
+      ..remove('last_fertilized')
+      ..remove('last_repotted');
     final plant = _db.plants.map(data).toDomain();
     final rawTags = row.readNullable<String>('tag_names');
     return PlantSummary(
@@ -58,6 +74,9 @@ class DriftPlantRepository implements PlantRepository {
       thumbUrl: row.readNullable<String>('thumb_url'),
       nextDueAt: row.readNullable<DateTime>('next_due_at'),
       nextDueTypeKey: row.readNullable<String>('next_type'),
+      lastWateredAt: row.readNullable<DateTime>('last_watered'),
+      lastFertilizedAt: row.readNullable<DateTime>('last_fertilized'),
+      lastRepottedAt: row.readNullable<DateTime>('last_repotted'),
       tags: rawTags == null || rawTags.isEmpty ? const [] : rawTags.split(tagSeparator),
     );
   }
@@ -92,10 +111,19 @@ class DriftPlantRepository implements PlantRepository {
       final like = Variable.withString('%$q%');
       vars.addAll([like, like, like, like, like, like, like, like]);
     }
+    // Les alias de la requête (`next_due_at`, `last_watered`…) sont
+    // utilisables dans ORDER BY. Une date absente passe en dernier.
     final order = switch (filter.sort) {
       PlantSort.name => 'lower(p.name) ASC',
+      PlantSort.location => 'l.name IS NULL, lower(l.name) ASC, lower(p.name) ASC',
       PlantSort.nextCare => 'next_due_at IS NULL, next_due_at ASC, lower(p.name) ASC',
+      PlantSort.health => "CASE p.health WHEN 'sick' THEN 0 WHEN 'watch' THEN 1 ELSE 2 END ASC, lower(p.name) ASC",
+      PlantSort.lastWatered => 'last_watered IS NULL, last_watered DESC, lower(p.name) ASC',
+      PlantSort.lastFertilized => 'last_fertilized IS NULL, last_fertilized DESC, lower(p.name) ASC',
+      PlantSort.lastRepotted => 'last_repotted IS NULL, last_repotted DESC, lower(p.name) ASC',
       PlantSort.recentlyAdded => 'p.created_at DESC',
+      PlantSort.recentlyEdited => 'p.updated_at DESC, lower(p.name) ASC',
+      PlantSort.acquired => 'p.acquired_at IS NULL, p.acquired_at DESC, lower(p.name) ASC',
     };
     final sql = '$_summarySql WHERE ${where.join(' AND ')} ORDER BY $order';
     return _db.customSelect(sql, variables: vars, readsFrom: _summaryTables).watch().map((rows) {
@@ -188,7 +216,7 @@ class DriftPlantRepository implements PlantRepository {
               typeKey: kind.key,
               strategy: schedule.strategy.name,
               intervalDays: days,
-              nextDueAt: Value(CareEngine.initialDue(schedule, now, south: _south())),
+              nextDueAt: Value(CareEngine.initialDue(schedule, now, south: _south(), trend: _trend())),
               createdAt: now,
               updatedAt: now,
             ));
@@ -209,7 +237,14 @@ class DriftPlantRepository implements PlantRepository {
       primaryPhotoId: Value(plant.primaryPhotoId),
       status: Value(plant.status.name),
       health: Value(plant.health.name),
+      // En forme, c'est en forme : la précision ne survit pas à l'état.
+      healthIssue: Value(plant.health == PlantHealth.healthy ? null : plant.healthIssue?.name),
       isFavorite: Value(plant.isFavorite),
+      light: Value(plant.light?.name),
+      humidity: Value(plant.humidity?.name),
+      lifespan: Value(plant.lifespan?.name),
+      hardiness: Value(plant.hardiness?.name),
+      cuttingMonth: Value(plant.cuttingMonth),
       acquiredAt: Value(plant.acquiredAt),
       source: Value(plant.source?.trim().nullIfEmpty),
       price: Value(plant.price),
@@ -278,7 +313,7 @@ class DriftPlantRepository implements PlantRepository {
         final s = row.toDomain().copyWith(enabled: true);
         await (_db.update(_db.careSchedules)..where((x) => x.id.equals(s.id))).write(CareSchedulesCompanion(
           enabled: const Value(true),
-          nextDueAt: Value(CareEngine.initialDue(s, now, south: _south())),
+          nextDueAt: Value(CareEngine.initialDue(s, now, south: _south(), trend: _trend())),
           updatedAt: Value(now),
         ));
         await _db.enqueueSync('care_schedules', s.id, 'upsert', const {});

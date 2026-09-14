@@ -48,7 +48,7 @@ class _FilterBody extends ConsumerWidget {
             children: [
               for (final s in PlantSort.values)
                 FloraChip(
-                  label: switch (s) { PlantSort.name => l10n.sortName, PlantSort.nextCare => l10n.sortNextCare, PlantSort.recentlyAdded => l10n.sortRecent },
+                  label: l10n.sortLabel(s),
                   selected: filter.sort == s,
                   onTap: () => ctrl.update((f) => f.copyWith(sort: s)),
                 ),

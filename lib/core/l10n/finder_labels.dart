@@ -53,6 +53,8 @@ extension FinderLabels on AppLocalizations {
         FinderReason.easy => finderReasonEasy,
         FinderReason.safe => finderReasonSafe,
         FinderReason.outdoor => finderReasonOutdoor,
+        FinderReason.hardy => finderReasonHardy,
+        FinderReason.sheltered => finderReasonSheltered,
       };
 
   String speciesCategoryName(SpeciesCategory category) => switch (category) {

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
+import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
 import 'buttons.dart';
@@ -84,6 +85,7 @@ class LargeTitlePage extends StatelessWidget {
     super.key,
     required this.title,
     required this.slivers,
+    this.collapsedTitle,
     this.trailing,
     this.leading,
     this.searchField,
@@ -92,6 +94,16 @@ class LargeTitlePage extends StatelessWidget {
   });
 
   final String title;
+
+  /// Le titre qui reste dans la barre quand le grand titre est parti.
+  ///
+  /// Par défaut c'est le grand titre lui-même qui s'y replie, et c'est ce
+  /// qu'on veut d'un titre qui est un nom — « Jardin », « Profil ». L'écran
+  /// du matin, lui, salue la personne : une fois replié, « Bonsoir Paul »
+  /// n'est plus un repère, il ne dit pas où l'on est. Il passe donc le nom
+  /// de l'application, qui le dit.
+  final String? collapsedTitle;
+
   final List<Widget> slivers;
   final Widget? trailing;
   final Widget? leading;
@@ -107,6 +119,14 @@ class LargeTitlePage extends StatelessWidget {
     if (isCupertino(context)) {
       header = CupertinoSliverNavigationBar(
         largeTitle: Text(title),
+        middle: collapsedTitle == null ? null : _CollapsedTitle(text: collapsedTitle!),
+        // Sans cela le gabarit natif tient le `middle` allumé en permanence :
+        // le petit titre se lirait au-dessus du grand. À faux, il ne le
+        // montre qu'une fois le grand titre parti, et les deux se croisent
+        // dans le même fondu. Sans titre replié, on lui rend sa valeur par
+        // défaut : c'est le grand titre qui occupe la case, et il doit s'y
+        // replier comme avant.
+        alwaysShowMiddle: collapsedTitle == null,
         leading: lead,
         trailing: trailing,
         backgroundColor: c.canvas.withValues(alpha: 0.82),
@@ -125,7 +145,7 @@ class LargeTitlePage extends StatelessWidget {
       );
     } else {
       header = SliverAppBar.large(
-        title: Text(title),
+        title: collapsedTitle == null ? Text(title) : _SwappedTitle(large: title, collapsed: collapsedTitle!),
         leading: lead,
         automaticallyImplyLeading: false,
         actions: trailing == null ? null : [Padding(padding: const EdgeInsets.only(right: Space.xs), child: trailing)],
@@ -148,6 +168,13 @@ class LargeTitlePage extends StatelessWidget {
       backgroundColor: c.canvas,
       body: CustomScrollView(
         controller: controller,
+        // Sans contrôleur à elle, la page s'attache à celui de son onglet
+        // (`app/tab_scroll.dart`) — dit explicitement, et non laissé à
+        // l'heuristique de plateforme de `PrimaryScrollController` : c'est ce
+        // qui fait marcher le retour au sommet et le tap sur la barre d'état.
+        // La physique reste la nôtre, `primary` ne la remplace que si on n'en
+        // passe aucune.
+        primary: controller == null ? true : null,
         physics: floraScrollPhysics,
         slivers: [
           header,
@@ -161,6 +188,110 @@ class LargeTitlePage extends StatelessWidget {
           SliverPadding(padding: EdgeInsets.only(bottom: bottomPadding)),
         ],
       ),
+    );
+  }
+}
+
+/// Le titre replié, sur iOS.
+///
+/// Le fondu est celui du gabarit natif : il croise exactement la disparition
+/// du grand titre, à la même image et sur la même durée. S'y ajoute une
+/// montée de quelques pixels, tirée du défilement lui-même : le mot arrive
+/// d'en bas, poussé par le titre qui s'en va, au lieu de se poser d'un coup
+/// au milieu de la barre.
+///
+/// La course est celle du repli — les 52 points que le gabarit donne au grand
+/// titre —, dont on prend la seconde moitié : la montée se termine quand la
+/// barre est repliée, et n'a pas commencé tant qu'on n'a pas vraiment quitté
+/// le haut de la liste. Un point de défilement en trop ou en moins ne coûte
+/// que quelques pixels de retard ; le fondu, lui, reste calé par le gabarit.
+class _CollapsedTitle extends StatefulWidget {
+  const _CollapsedTitle({required this.text});
+
+  final String text;
+
+  @override
+  State<_CollapsedTitle> createState() => _CollapsedTitleState();
+}
+
+class _CollapsedTitleState extends State<_CollapsedTitle> {
+  /// Le repli du grand titre, en points de défilement.
+  static const double _collapse = 52;
+
+  /// De combien le mot monte pour se poser, et d'où il part.
+  static const double _rise = 7;
+  static const double _start = _collapse / 2;
+
+  ScrollPosition? _position;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _position = Scrollable.maybeOf(context)?.position;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Text(widget.text);
+    final position = _position;
+    // Sans liste sous la barre, ou quand la personne a demandé moins
+    // d'animations, il ne reste que le fondu du gabarit.
+    if (position == null || MediaQuery.disableAnimationsOf(context)) return text;
+    return AnimatedBuilder(
+      animation: position,
+      builder: (context, child) {
+        final pixels = position.hasPixels ? position.pixels : 0.0;
+        final t = Motion.easeOut.transform(((pixels - _start) / (_collapse - _start)).clamp(0.0, 1.0));
+        return Transform.translate(offset: Offset(0, (1 - t) * _rise), child: child);
+      },
+      child: text,
+    );
+  }
+}
+
+/// Le titre replié, sur Android.
+///
+/// Le gabarit Material n'a qu'une case pour les deux titres : il rend le même
+/// widget à deux endroits — en grand dans l'en-tête déployé, en petit dans la
+/// barre, où il le fait paraître en fondu une fois l'en-tête **entièrement**
+/// replié. Le texte change donc à cet instant-là et pas avant : le grand
+/// titre est alors rogné à zéro, la bascule ne se voit nulle part, et c'est
+/// le fondu du gabarit qui l'anime.
+///
+/// L'instant est celui que le gabarit retient lui aussi : la course entre
+/// l'en-tête déployé (152) et la barre seule (64), la marge d'état se
+/// simplifiant des deux côtés.
+class _SwappedTitle extends StatefulWidget {
+  const _SwappedTitle({required this.large, required this.collapsed});
+
+  final String large;
+  final String collapsed;
+
+  @override
+  State<_SwappedTitle> createState() => _SwappedTitleState();
+}
+
+class _SwappedTitleState extends State<_SwappedTitle> {
+  static const double _collapse = 152.0 - 64.0;
+
+  ScrollPosition? _position;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _position = Scrollable.maybeOf(context)?.position;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final position = _position;
+    if (position == null) return Text(widget.large);
+    return AnimatedBuilder(
+      animation: position,
+      builder: (context, child) {
+        final pixels = position.hasPixels ? position.pixels : 0.0;
+        return Text(pixels >= _collapse ? widget.collapsed : widget.large);
+      },
     );
   }
 }

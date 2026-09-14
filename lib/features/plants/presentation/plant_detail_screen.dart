@@ -9,6 +9,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/care_labels.dart';
 import '../../../core/observability/observability.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
@@ -311,7 +312,16 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       runSpacing: 6,
                       children: [
                         if (plant.health != PlantHealth.healthy)
-                          DueBadge(emoji: plant.health.emoji, label: l10n.healthName(plant.health), status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today, compact: true),
+                          DueBadge(
+                            // L'emoji de l'état, pas celui du problème : le
+                            // libellé nomme déjà le problème, et une
+                            // illustration d'argile ne se lit pas à cette
+                            // taille (voir ProblemIcon).
+                            emoji: plant.health.emoji,
+                            label: plant.healthIssue == null ? l10n.healthName(plant.health) : l10n.healthIssueName(plant.healthIssue!),
+                            status: plant.health == PlantHealth.sick ? DueStatus.overdue : DueStatus.today,
+                            compact: true,
+                          ),
                         for (final t in summary.tags) DueBadge(emoji: '🏷️', label: t, status: DueStatus.upcoming, compact: true),
                       ],
                     ),
@@ -691,7 +701,12 @@ class _Info extends ConsumerWidget {
     final rows = <(String, String)>[
       if (p.speciesName != null) (l10n.speciesHint.split(' ').first, p.speciesName!),
       (l10n.filterLocation, summary.locationName ?? l10n.noLocation),
-      (l10n.health, '${p.health.emoji} ${l10n.healthName(p.health)}'),
+      (l10n.health, l10n.healthLabel(p)),
+      if (p.light != null) (l10n.light, l10n.lightName(p.light!)),
+      if (p.humidity != null) (l10n.careHumidity, l10n.humidityName(p.humidity!)),
+      if (p.lifespan != null) (l10n.lifespan, l10n.lifespanName(p.lifespan!)),
+      if (p.hardiness != null) (l10n.hardiness, l10n.hardinessName(p.hardiness!)),
+      if (p.cuttingMonth != null) (l10n.cuttingMonth, Dates.monthName(context, p.cuttingMonth!)),
       if (p.acquiredAt != null) (l10n.acquiredAt, Dates.dayYear(context, p.acquiredAt!)),
       if (p.source != null) (l10n.source, p.source!),
       if (p.price != null) (l10n.price, p.price!.toStringAsFixed(p.price! == p.price!.roundToDouble() ? 0 : 2)),

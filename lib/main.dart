@@ -11,6 +11,7 @@ import 'app/router.dart';
 import 'app/sync_coordinator.dart';
 import 'core/l10n/l10n.dart';
 import 'core/config/supabase_config.dart';
+import 'core/network/connectivity.dart';
 import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
 import 'data/auth/supabase_auth_repository.dart';
@@ -18,7 +19,9 @@ import 'domain/auth/auth_repository.dart';
 import 'data/db/database.dart';
 import 'data/services/notification_service.dart';
 import 'data/services/preferences_service.dart';
+import 'data/services/today_widget_service.dart';
 import 'features/today/application/reminder_scheduler.dart';
+import 'features/today/application/today_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,11 +74,17 @@ Future<void> main() async {
   final notifications = NotificationService();
   await notifications.init();
 
-  final container = ProviderContainer(overrides: [
+  // Un provider en erreur montre son erreur, il ne la couve pas : la reprise
+  // automatique de Riverpod laisserait l'écran sur son tourniquet pendant que
+  // dix tentatives s'épuisent. Les écrans ont un bouton pour réessayer.
+  final container = ProviderContainer(retry: noRetry, overrides: [
     databaseProvider.overrideWithValue(db),
     preferencesServiceProvider.overrideWithValue(prefs),
     notificationServiceProvider.overrideWithValue(notifications),
     authRepositoryProvider.overrideWithValue(auth),
+    // La vraie sonde de réseau se branche ici : l'application peut alors dire
+    // « hors ligne » plutôt que de faire tourner un écran sans fin.
+    reachabilityProvider.overrideWithValue(const SocketReachability()),
   ]);
 
   // Emplacements de départ, dans la langue de l'appareil.
@@ -97,8 +106,20 @@ Future<void> main() async {
   // Ménage des fichiers photo orphelins, en tâche de fond : personne ne
   // l'attend, et un échec ne doit pas retarder l'ouverture de l'application.
   container.read(photoMaintenanceProvider).run().catchError((Object _) => 0);
+  // L'état du réseau se constate au lancement, pas quand un écran en a besoin :
+  // sans cela, le premier écran qui dépend du réseau part quand même en
+  // requête et n'apprend la coupure qu'une fois la sonde revenue.
+  container.read(connectivityProvider);
   // Démarre la synchronisation si un compte est connecté (no-op sinon).
   container.listen(syncCoordinatorProvider, (_, _) {});
+  // Le widget de l'écran d'accueil suit la base : chaque soin enregistré,
+  // chaque plante ajoutée le redessine. Au retour au premier plan, le jour a
+  // pu changer : on recompte avec la date du moment.
+  final widgets = TodayWidgetService();
+  container.listen(todayWidgetSnapshotProvider, (_, snapshot) {
+    if (snapshot != null) widgets.publish(snapshot.encode());
+  }, fireImmediately: true);
+  AppLifecycleListener(onResume: () => container.invalidate(todayWidgetSnapshotProvider));
 
   runApp(UncontrolledProviderScope(container: container, child: const FloraApp()));
 }

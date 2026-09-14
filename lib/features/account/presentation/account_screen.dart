@@ -13,6 +13,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/sync/sync_state.dart';
+import '../../network/presentation/offline_notice.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel;
@@ -68,6 +69,9 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
           ] else ...[
             Text(l10n.signInHint, style: context.text.callout),
             const SizedBox(height: Space.xl),
+            // Se connecter passe par Apple puis par le serveur : hors ligne le
+            // bouton ne rendrait qu'« impossible », sans dire pourquoi.
+            OfflineBanner(message: l10n.offlineCollaboration),
             if (defaultTargetPlatform == TargetPlatform.iOS)
               FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
             if (AppConfig.googleSignInEnabled) ...[
@@ -135,6 +139,15 @@ class _SignedIn extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
                 child: SelectableText(sync.message!, style: context.text.caption.copyWith(color: c.inkSecondary)),
+              ),
+            // Le schéma du serveur est en retard : la synchronisation passe,
+            // mais ces champs-là restent sur l'appareil. Sans cette ligne,
+            // « À jour » serait vrai à un détail près, et le détail se
+            // perdrait sans bruit — rejouer `supabase/schema.sql` le règle.
+            if (sync.unknownColumns.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
+                child: SelectableText(l10n.syncUnknownColumns(sync.unknownColumns.join(', ')), style: context.text.caption.copyWith(color: c.inkSecondary)),
               ),
             FloraListRow(leading: Icon(CupertinoIcons.arrow_2_circlepath, size: 20, color: c.inkSecondary), title: l10n.syncNow, onTap: () => ref.read(syncCoordinatorProvider.notifier).syncNow(), chevron: false),
           ],

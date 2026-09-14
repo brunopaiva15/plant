@@ -1,6 +1,7 @@
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/diagnosis/presentation/analysis_wait.dart';
 import 'package:flora/features/problems/presentation/problem_kind_icon.dart';
+import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,6 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 /// avance à la main et on démonte la scène pour l'arrêter.
 void main() {
   Widget scene({bool reduceMotion = false}) => MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: buildFloraTheme(Brightness.light),
         home: MediaQuery(
           data: MediaQueryData(disableAnimations: reduceMotion),

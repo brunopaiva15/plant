@@ -1,16 +1,23 @@
 # 09 — Reconnaissance de plantes : Iris, le modèle embarqué, repli Pl@ntNet
 
 > État au 9 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 131
-> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 457
-> classes**, entrée 320 px, livré dans l'app en TFLite (8,8 Mo). La cascade
-> identifie **sur l'appareil** et n'appelle Pl@ntNet que sur hésitation ;
-> deux photos de la même plante valent quatorze points de top-1, trois en
-> valent vingt-deux.
+> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large livré dans
+> l'app en TFLite. Ce qu'il pèse, ce qu'il sait et ce qu'il vaut se lisent
+> dans **sa fiche au § 0**, recopiée de `assets/model/model.json` : ces
+> chiffres-là ne s'écrivent qu'à un seul endroit. La cascade identifie **sur
+> l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
+> même plante valent quatorze points de top-1, trois en valent vingt-deux.
 
-Le modèle embarqué s'appelle **Iris**, et la version livrée est la septième :
-c'est donc **Iris 7** que l'application nomme à l'écran. Le reste de ce
-document parle de « la v7 » quand il compare des entraînements entre eux —
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la huitième :
+c'est donc **Iris 8** que l'application nomme à l'écran. Le reste de ce
+document parle de « la v8 » quand il compare des entraînements entre eux —
 ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
+
+Les numéros plus anciens qu'on croise ici — la v6, l'Iris 7 — **datent une
+mesure** : ils disent sur quel modèle un chiffre a été obtenu, et une section
+entière peut ainsi décrire une version révolue sans cesser d'être vraie. Un
+chiffre qui décrit le modèle d'**aujourd'hui**, lui, ne s'écrit qu'à un
+endroit : la fiche.
 
 ## 0. Le nom
 
@@ -18,11 +25,49 @@ ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
 ne s'écrit **jamais** à la main : le modèle l'annonce dans
 `assets/model/model.json`, `TflitePlantModel` le lit au chargement et
 `AppConfig.modelDisplayName(version)` le colle au nom. Livrer un modèle
-réentraîné suffit donc à faire dire « Iris 8 » à l'écran des réglages, et
+réentraîné suffit donc à faire dire « Iris 9 » à l'écran des réglages, et
 l'application ne peut pas afficher un numéro qui ment.
 
 Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
 l'application dit « Iris » tout court plutôt que d'inventer un numéro.
+
+### La fiche du modèle livré
+
+Ce que `model.json` annonce, et rien d'autre. **C'est la seule table de ce
+document qui décrit le modèle d'aujourd'hui** : partout ailleurs, un chiffre
+appartient à la version qui le porte et ne bouge plus. Recopier une de ces
+valeurs dans un autre fichier, c'est se donner rendez-vous avec une
+documentation fausse à la livraison suivante — `test/docs/model_facts_test.dart`
+relit le fichier et fait échouer la suite si cette table s'en écarte.
+
+<!-- fiche:model.json -->
+
+| clé de `model.json` | valeur | |
+|---|---|---|
+| `version` | 8 | le numéro affiché, collé à « Iris » |
+| `architecture` | MobileNetV3Large | la dorsale |
+| `classes` | 1 444 | espèces exposées, une ligne de `labels.txt` chacune |
+| `input_size` | 320 | pixels de côté à l'inférence |
+| `load_size` | 366 | décodage avant recadrage |
+| `source_size` | 448 | côté des images du jeu |
+| `preprocessing` | `included_in_graph_uint8_0_255` | la normalisation est dans le graphe |
+| `bytes` | 8 765 332 | soit 8,77 Mo de `.tflite` |
+| `sha256` | 9760ded18778… | empreinte du fichier de poids |
+| `metrics.images` | 28 836 | images de test |
+| `metrics.top1` | 0,6627 | la bonne espèce en tête |
+| `metrics.top3` | 0,8047 | dans les trois premières |
+| `metrics.macro_f1` | 0,6472 | moyenne par classe, sans pondérer par le volume |
+| `metrics.mean_confidence` | 0,6843 | score moyen du premier candidat |
+| `metrics.captive.images` | 3 946 | sous-ensemble des plantes cultivées |
+| `metrics.captive.top1` | 0,6483 | ce que voit qui photographie son pot |
+| `metrics.captive.top3` | 0,7960 | |
+
+<!-- /fiche -->
+
+Le fichier porte en plus `threshold_curve` — pour chaque couple (seuil,
+marge), l'autonomie et la justesse qui vont avec. C'est de là que sort le
+réglage de `FallbackPolicy` (§ 3.1), et c'est pour cela qu'il se remesure à
+chaque version plutôt que de se reprendre d'une version à l'autre.
 
 ### Là où l'utilisateur le rencontre
 
@@ -46,7 +91,7 @@ n'a rien à faire sur le deuxième écran d'une app qui s'ouvre.
 d'espèces et le fait qu'il réponde hors ligne.
 
 Le compte d'espèces n'est pas écrit dans l'écran : il sort du même
-`model.json` que la version. Livrer une v8 change la section sans qu'on touche
+`model.json` que la version. Livrer une v9 change la section sans qu'on touche
 à une ligne de présentation.
 
 La carte remplace la ligne d'état tant que le modèle est chargé — la voir,
@@ -138,16 +183,19 @@ Sous **0,10**, la liste ne vaut rien (image hors sujet) : `noCandidate`.
 
 **Un seuil ne se transporte pas d'un modèle à l'autre**, et celui-ci a bougé
 à chaque version : 0,90 sur la v1 et ses 78 classes, 0,70 sur la v5, 0,60 sur
-la v6, **0,70 de nouveau sur Iris 7**. Un réseau qui répartit sa confiance sur
-plus d'espèces sort des scores structurellement plus bas ; un réseau mieux
+la v6, **0,70 de nouveau depuis l'Iris 7**. Un réseau qui répartit sa confiance
+sur plus d'espèces sort des scores structurellement plus bas ; un réseau mieux
 calibré en sort de plus honnêtes. Le recalage se fait avec
 `tools/plant_model/multi_photo.py`, sur les photos de plantes cultivées et
 dans le calcul exact que fait la cascade — mesure et raisonnement au § 6.7.
 
-C'est la première fois qu'il **remonte**. Les versions précédentes dépensaient
-leur surplus de justesse en autonomie ; Iris 7 permet l'inverse, et à 0,70 elle
-rend l'autonomie qu'avait la v6 à 0,60 — 47 % de réponses seules — avec 85,9 %
-de justesse au lieu de 82,8 %.
+Avec l'Iris 7, il a **remonté** pour la première fois : les versions
+précédentes dépensaient leur surplus de justesse en autonomie, et à 0,70 elle
+rendait l'autonomie qu'avait la v6 à 0,60 — 47 % de réponses seules — avec
+85,9 % de justesse au lieu de 82,8 %. L'Iris 8 ne l'a pas fait bouger, et
+c'est l'intérêt de la version : au **même** seuil elle est à la fois plus
+autonome et plus juste (§ 6.7 bis). Ce que ce couple rend sur le modèle
+livré est dans `model.json`, pas ici.
 
 **La marge est aujourd'hui sans effet** : les scores d'un softmax somment à 1,
 donc un premier candidat à 0,70 laisse au plus 0,30 au deuxième — la marge vaut
@@ -226,7 +274,7 @@ groupe :
 | `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
 | `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
-| `SHARE_BASE_URL` | base des liens de partage ; facultatif | l'URL Supabase |
+| `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
 
 Le `--dart-define` est indispensable : une variable d'environnement de CI
 n'entre pas toute seule dans le binaire Flutter.
@@ -1044,6 +1092,101 @@ Le chiffre publié et le chiffre rigoureux bougent ici dans le même sens
 (+6,7 et +6,8) — assez rare pour être noté : aucune des deux mesures ne
 raconte d'histoire.
 
+#### Combien d'espèces exposer ? La courbe, et ce qu'elle refuse de donner
+
+`retailler.py` fait de l'ensemble exposé un **cadran**. Restait à savoir où
+le tourner : le § 6.7 bis ne connaissait que les deux bouts, 1 444 → 0,6543
+et 5 259 → 0,5528.
+
+`tools/plant_model/courbe.py` lit toute la courbe en **une seule passe
+d'inférence** : masquer un softmax aux classes gardées puis le renormaliser
+donne exactement ce que rendrait un modèle retaillé à ces classes, si bien
+que chaque taille n'est plus qu'une addition sur les mêmes probabilités.
+Le tirage reproduit celui de `compare_models.py` — même graine, même
+filtre — donc la ligne du cœur seul doit retomber sur les chiffres publiés.
+Elle l'a fait au dix-millième : c'est ce qui permet de lire le reste.
+
+#### Il n'y a pas d'espèces gratuites, et c'est une mesure
+
+Une espèce ne coûte que si elle passe devant la bonne réponse. On a donc
+compté, pour chacune des 3 815 candidates, combien d'images du cœur elle
+ferait basculer de juste à fausse — son **coût de vol** — puis ajouté par
+coût croissant, la priorité de culture ne départageant que les ex æquo.
+**La sélection se fait sur la validation et la mesure sur le test** : choisir
+et mesurer sur les mêmes images aurait flatté le résultat. C'est cette
+séparation qui a tout dit.
+
+| sur 12 000 images de validation | |
+|---|---|
+| images que le cœur seul reconnaît | 7 849 |
+| candidates qui n'en volent **aucune** | **2 202** |
+| candidates qui en volent plus de 20 | **0** |
+
+Deux mille deux cents espèces gratuites, donc — sur la validation. Sur le
+test, les exposer coûte au cœur **5,9 points de top-1**. « Ne rien voler sur
+7 849 images » ne se transporte pas : le vol est réel, simplement trop
+diffus pour qu'aucune image de validation ne l'attrape. Aucune candidate ne
+dépasse 20 vols sur 7 849 — **il n'y a pas de brebis galeuses à écarter**,
+et c'est pour ça qu'il n'y a pas de coude.
+
+#### Le prix d'une espèce exposée
+
+| espèces exposées | cœur, top-1 | autonomie | justesse | espèces ajoutées, top-1 |
+|---|---|---|---|---|
+| 1 444 | 0,6543 | 54,2 % | 0,9081 | — |
+| 1 800 | 0,6418 | 51,9 % | 0,9101 | 0,6761 |
+| 2 200 | 0,6290 | 50,1 % | 0,9082 | 0,6413 |
+| 2 800 | 0,6138 | 47,9 % | 0,9050 | 0,5982 |
+| 3 646 | 0,5952 | 45,6 % | 0,8988 | 0,5802 |
+| 4 400 | 0,5753 | 42,6 % | 0,8932 | 0,5502 |
+| 5 259 | 0,5528 | 39,7 % | 0,8870 | 0,5230 |
+
+**Le coût est régulier : 0,22 à 0,35 point de top-1 par tranche de cent
+espèces**, et il ne s'emballe nulle part. Ordonner par coût de vol plutôt
+que par priorité de culture rend 0,4 à 1,2 point selon la taille — **et
+jusqu'à 3,5 points sur les plantes en pot**, où l'ordre par culture faisait
+entrer les sosies du cœur en premier. Le gain est réel ; il ne crée pas de
+coude pour autant.
+
+> **Ce que l'étendue coûte, c'est l'autonomie, pas la justesse.** De 1 444 à
+> 5 259 sorties, le top-1 perd 10,2 points et l'autonomie 14,5 — mais la
+> justesse des réponses acceptées ne perd que 2,1. Un catalogue plus large
+> ne rend pas l'application plus souvent fausse : il la rend plus souvent
+> hésitante, donc plus dépendante de Pl@ntNet. C'est un coût en euros et en
+> attente, pas en confiance.
+
+#### La question n'était pas « où est le coude » mais « à partir de quand »
+
+Une espèce exposée fait perdre au cœur, et gagner à qui la photographie.
+L'échange est rentable dès que la part des photos portant sur les espèces
+ajoutées dépasse `perte / (précision sur elles + perte)`. Sur les plantes en
+pot — le domaine de l'application :
+
+| espèces exposées | ajoutées | perte du cœur | top-1 sur elles | rentable au-delà de |
+|---|---|---|---|---|
+| 1 800 | 356 | 1,85 pt | 0,7007 | **2,6 %** des photos |
+| 2 200 | 756 | 2,84 pt | 0,5930 | 4,6 % |
+| 2 800 | 1 356 | 4,08 pt | 0,5459 | 7,0 % |
+| 3 646 | 2 202 | 5,56 pt | 0,5277 | 9,5 % |
+| 4 400 | 2 956 | 7,78 pt | 0,5116 | 13,2 % |
+| 5 259 | 3 815 | 11,12 pt | 0,4698 | 19,1 % |
+
+Les 356 premières ajoutées — les plus cultivées parmi celles qui ne volent
+rien — sont reconnues à **70 % sur les photos en pot, mieux que le cœur
+lui-même**. Le seuil de 2,6 % est bas ; il est probablement franchi.
+
+**Mais « probablement » n'est pas une mesure, et le terme manquant arrive.**
+La part des photos qui portent sur telle ou telle espèce, personne ne la
+connaît — sauf les retours des utilisateurs (§ 13.3, chantier 2), ouverts
+depuis. Attendre ne coûte rien : le tableau ci-dessus est prêt, il suffira
+d'y reporter un chiffre mesuré au lieu d'un pari.
+
+> **À faire avant d'élargir, quand la décision sera prise.** Le coût de vol
+> est mesuré sur *toutes* les images du cœur, pas seulement celles de plantes
+> cultivées — d'où les 0,52 point de la première tranche en pot, la plus
+> chère de toutes. Mesurer le vol sur les seules photos en pot réordonnerait
+> les candidates pour le domaine qui compte.
+
 #### Le coût, et il est réel
 
 **13 espèces que l'Iris 7 nommait et que l'Iris 8 n'a pas apprises**, dont
@@ -1108,7 +1251,7 @@ Deux enseignements de cet entraînement, tous deux corrigés :
 > **C'est le plan d'origine, pas la recette livrée**, et il est gardé pour
 > ce qu'il montre du chemin parcouru. Quatre points n'ont jamais été suivis
 > et un lecteur pressé les prendrait pour l'existant : la tête n'a **pas**
-> de classe « autre » — le modèle a 1 457 sorties, pas 1 458, et le § 12.7
+> de classe « autre » — le modèle n'a que des sorties d'espèces, et le § 12.7
 > explique pourquoi elle n'a toujours pas été faite ; EfficientNet-Lite0 n'a
 > jamais été essayé ; le réglage fin ne dégèle pas « tout le réseau » mais
 > ses cent dernières couches (§ 6.7) ; et le déséquilibre est traité par des
@@ -1175,8 +1318,9 @@ référence par classe (`test/fixtures/`), correspondance `labels.txt` ↔
 ## 8. Mises à jour du modèle
 
 Une version livrée = un numéro de plus dans `model.json`, donc un nom de plus
-à l'écran : après Iris 6 vient Iris 7. Rien d'autre à renommer — ni le code,
-ni les traductions, qui reçoivent le nom composé (§ 0).
+à l'écran : après Iris 7 est venu Iris 8, et la suivante s'appellera Iris 9
+sans qu'on l'écrive nulle part. Rien d'autre à renommer — ni le code, ni les
+traductions, qui reçoivent le nom composé (§ 0).
 
 Deux options, à trancher au moment de la phase 2 :
 
@@ -1291,21 +1435,37 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | images, doublons, orientation, réduction | `tools/plant_dataset/tests/test_images_dedup.py` |
 | manifeste, attributions | `tools/plant_dataset/tests/test_manifest.py` |
 | répartition | `tools/plant_dataset/tests/test_splits.py` |
+| entraînement, export, retaille, courbe des tailles | `tools/plant_model/tests/` |
 | règle de repli | `test/domain/identification/identification_policy_test.dart` |
+| réponse au genre | `test/domain/identification/genus_answer_test.dart` |
+| crans de vraisemblance | `test/domain/identification/identification_confidence_test.dart` |
+| proposition de la seconde photo | `test/domain/identification/second_photo_offer_test.dart` |
 | cascade : acceptation, repli, réglage, quota, cache, erreurs, fusion multi-photos, métriques | `test/domain/identification/cascade_identifier_test.dart` |
 | rattachement au catalogue | `test/domain/identification/catalog_mapping_test.dart` |
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
+| nom affiché du modèle, et la fiche du § 0 contre `model.json` | `test/core/model_name_test.dart`, `test/docs/model_facts_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 124 tests
-flutter test                                        # dont 33 pour l'identification
+(cd tools/plant_dataset && python3 -m pytest -q)    # sans réseau
+(cd tools/plant_model   && python3 -m pytest -q)    # sans carte graphique
+flutter test
 ```
+
+Le nombre de tests ne s'écrit pas ici : il change à chaque commit, et un
+compte faux dans un document est plus coûteux qu'un compte absent.
 
 ## 12. Ce qu'il reste à faire, dans l'ordre
 
-> **État au 9 septembre 2026.** Les § 12.1, 12.5 et 12.6 sont faits et livrés
-> dans Iris 7 : ils valent ensemble **+7,26 points de top-1** à armes égales
-> contre Iris 6 (§ 6.7). Le reste attend.
+> **État au 9 septembre 2026.** Les § 12.1, 12.5 et 12.6 ont été livrés dans
+> Iris 7 : ils valaient ensemble **+7,26 points de top-1** à armes égales
+> contre Iris 6 (§ 6.7). Les § 12.3, 12.4, 12.10, 12.17 et 12.19 ont suivi, et
+> l'Iris 8 livré rend **+6,7 points de top-1** sur Iris 7 (§ 6.7 bis) — non
+> pas en élargissant le répertoire, mais en entraînant large pour exposer
+> étroit. La suite est cadrée au § 13. Le reste attend.
+
+> Les numéros d'espèces et de classes cités dans ce § 12 sont ceux de l'Iris 7,
+> sur lequel les mesures ont été faites. Ce que le modèle livré expose
+> aujourd'hui est dans la fiche du § 0.
 
 La carte graphique change l'économie de cette liste. Une passe à l'heure au
 lieu de dix ([`10-entrainer-sur-son-poste.md`](10-entrainer-sur-son-poste.md))
@@ -1845,9 +2005,9 @@ tomber la confiance moyenne de 5,7 points sans que la justesse baisse
 précisément le défaut que la calibration de température devait corriger. Ce
 levier-là a perdu de son intérêt.
 
-De l'autre, aucune calibration ne résout le vrai problème. **Un classifieur à
-1 457 sorties de plantes n'a aucun moyen de dire « ceci n'est pas une
-plante » :** il répartit sa masse entre les espèces qu'il connaît, quoi qu'on
+De l'autre, aucune calibration ne résout le vrai problème. **Un classifieur
+dont toutes les sorties sont des plantes n'a aucun moyen de dire « ceci n'est
+pas une plante » :** il répartit sa masse entre les espèces qu'il connaît, quoi qu'on
 lui montre. Devant un chat, il répond une plante — la seule question est avec
 quelle assurance.
 
@@ -2247,6 +2407,11 @@ mais mesurés séparément :
 
 ### 12.12 Ce que le modèle rend sur les plantes d'appartement
 
+*Mesuré sur l'Iris 7 ; ce que le modèle livré annonce depuis est dans la
+fiche du § 0. Ce que la section établit — l'écart entre les plantes
+d'appartement et le reste, et le prix de l'étendue — ne dépend pas de la
+version.*
+
 Le top-1 publié — **0,5961** — est une moyenne sur 1 457 espèces dont la
 plupart sont sauvages, européennes, et que personne ne photographie dans son
 salon. L'application, elle, sert d'abord les 167 noms de
@@ -2579,11 +2744,48 @@ Le plancher se lit déjà dans les chiffres du § 12.4 :
 
 Ce sont des planchers : ils ne comptent que les cas où la *première*
 réponse tombait dans le bon genre, pas ceux où la masse du genre était
-juste mais répartie. Le vrai chiffre demande de garder les distributions —
-un mode `--proba` dans `confusions.py`, une passe de trois quarts d'heure.
+juste mais répartie.
 
 Et à 5 000 classes, plus d'espèces par genre : ce que ça rapporte augmente
 avec le catalogue, contrairement au top-1.
+
+#### Le chiffre, mesuré
+
+`genre.py` garde les distributions et somme par genre ; le plancher devient
+un chiffre. Sur les 6 000 images de test d'Iris 8, **62 % portent sur une
+espèce dont le genre en compte plusieurs** — les seules où le genre ajoute
+quelque chose.
+
+| top-1 | |
+|---|---|
+| espèce | 0,6543 |
+| **genre** | **0,7130** |
+
+Six points au-dessus de l'espèce, et le plancher du § 12.4 était bien un
+plancher.
+
+Ce que ça donne dans la cascade, masses sommées sur les **cinq** candidates
+affichées et non sur les 1 444 classes — la configuration réelle de
+l'application, au seuil 0,70 :
+
+| | le genre répond | et il a raison |
+|---|---|---|
+| toutes les photos | 5,5 % | 89,9 % |
+| photos en pot | 6,6 % | 88,7 % |
+
+**Une réponse sur dix-huit**, juste neuf fois sur dix. C'est peu, et c'est
+attendu : l'espèce garde la priorité, le genre ne parle que là où elle
+renonçait. Le taux monte avec le seuil — à 0,80, 6,3 % des photos et 93,4 %
+de justesse — parce qu'un seuil plus haut fait renoncer l'espèce plus
+souvent et laisse au genre les cas qu'il traite bien.
+
+> **Ce que la rareté implique pour le test.** Une fonctionnalité qui répond
+> une fois sur dix-huit ne se vérifie pas en scannant trois plantes : il
+> faudrait onze scans pour une chance sur deux. Elle se vérifie par la
+> mesure ci-dessus et par ses tests unitaires, pas à l'œil. Le signe visible,
+> pour qui veut la provoquer : la première ligne doit annoncer « Possible »
+> et non « Probable » — au-dessus de 0,70 l'espèce ne renonce pas, et
+> `genusAnswer()` rend `null` sans regarder plus loin.
 
 ### 12.16 Les cultivars : un second axe, pas des classes
 
@@ -2857,15 +3059,20 @@ C'est le vrai gain de la v8, et il vaut plus que ses six points.
 
 ### 13.3 Les chantiers, par rapport mesuré
 
-**1. Choisir l'ensemble exposé — en le mesurant.** Le plus gros effet connu
-(dix points), aucun entraînement, aucune collecte. On ne connaît que les
-deux bouts de la courbe : 1 444 → 0,6543 et 5 259 → 0,5528. Le coude est
-entre les deux et personne ne sait où. Quatre exports et quatre passes de
-`compare_models.py` le disent — quelques heures de GPU, sur un jeu déjà
-collecté.
+**1. ✅ Choisir l'ensemble exposé — mesuré, et la réponse n'est pas un
+nombre.** La courbe est lue (§ 6.7 bis) : il n'y a **pas de coude**, le coût
+est régulier à 0,22-0,35 point de top-1 par tranche de cent espèces, et il
+n'existe **pas d'espèces gratuites** — 2 202 candidates ne volent rien sur
+12 000 images de validation et coûtent quand même 5,9 points sur le test.
+Le vol est trop diffus pour qu'on puisse l'éviter en écartant quelques
+coupables.
 
-C'est le premier chantier **parce qu'il conditionne les autres** : nourrir
-une espèce qu'on n'exposera pas est un travail perdu.
+Ce que la courbe donne à la place vaut mieux qu'un coude : un **seuil de
+rentabilité** par taille d'ensemble. Exposer 356 espèces de plus paie dès
+que 2,6 % des photos portent sur elles ; 2 202 de plus, dès 9,5 %. Le terme
+manquant — la part des photos par espèce — est exactement ce que le chantier
+2 produit. **Les deux chantiers se tiennent par là**, et la décision attend
+un chiffre mesuré plutôt qu'un pari.
 
 **2. Les photos des utilisateurs.** La seule source qui règle **les deux**
 problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
@@ -2900,10 +3107,39 @@ photo de salon n'est pas une observation naturaliste. Il commence par
 > Iris ni Pl@ntNet ne confirment, et liste les espèces hors catalogue comme
 > candidates.
 
-**3. Répondre au niveau du genre.** Aucun entraînement : sommer le softmax
-par genre porte le top-1 d'au moins 5,3 points, et « un épicéa, espèce
-incertaine » est une réponse vraie là où cinq noms n'en sont pas une. Le
-gain grandit avec le catalogue, contrairement au top-1.
+> **Mis en service le 14 septembre 2026**, vérifié de bout en bout sur
+> téléphone : la feuille de consentement s'ouvre une fois, le premier
+> enregistrement n'écrit rien — c'est lui qui pose la question, et il passe
+> par l'enregistreur muet —, les trois `kind` arrivent corrects, les photos
+> partent à 640 px pour ~67 Ko, et retenir un genre n'écrit rien, comme
+> prévu.
+>
+> **Les quatre premiers scans terrain, et ce qu'ils ne prouvent pas.**
+> *Epipremnum pinnatum* rendu *Dieffenbachia seguine* à 0,859 — donc
+> `accepted`, affirmé sans réserve, et les deux espèces sont au catalogue.
+> *Ficus elastica* rendu plante ZZ, *Peperomia obtusifolia*, *Ficus
+> benjamina* : absent du top-3 alors que le modèle expose neuf *Ficus*, et
+> les trois candidates partagent une feuille épaisse et luisante — le
+> regroupement se fait sur la texture, pas sur le port. Un pin sans aucune
+> proposition locale, la cascade passée à Pl@ntNet. **n = 4 : ça nomme une
+> catégorie, ça n'en donne pas la fréquence.** Mais l'écart avec les 0,6543
+> de top-1 du jeu de test est précisément l'écart de domaine que ce chantier
+> existe pour combler, et il se mesurera quand les lignes s'accumuleront.
+>
+> **Ce que ces cas apprennent sur le reste de l'architecture** : l'erreur
+> confiante est invisible à tout mécanisme fondé sur la confiance. Ni le
+> seuil, ni la marge, ni le genre, ni le repli ne voient un faux à 0,859 —
+> seule la correction humaine le révèle. C'est l'argument le plus fort pour
+> ce chantier, et il ne se lit dans aucune métrique agrégée.
+
+**3. ✅ Répondre au niveau du genre.** Aucun entraînement : sommer le
+softmax par genre porte le top-1 de **5,9 points** sur le modèle livré —
+0,6543 à l'espèce, 0,7130 au genre (§ 12.15) —, et « un épicéa, espèce
+incertaine » est une réponse vraie là où cinq noms n'en sont pas une. Dans
+la cascade, où l'espèce garde la priorité et où les masses ne se somment
+que sur les cinq candidates affichées, le genre répond sur **5,5 %** des
+photos et a raison **neuf fois sur dix**. Le gain grandit avec le
+catalogue, contrairement au top-1.
 
 **4. Nourrir les 76 espèces faibles — le domaine avant le volume.**
 `(potted)` de Commons, branché à la v8 (§ 12.17), et `captive=true`

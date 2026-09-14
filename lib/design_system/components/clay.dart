@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
+import 'pressable.dart';
 
 /// Profondeur du relief : léger pour une carte crème, franc pour un bouton
 /// plein ou une carte de couleur.
@@ -87,16 +88,29 @@ class ClayBox extends StatelessWidget {
     Widget content = Padding(padding: padding, child: child);
     if (alignment != null) content = Align(alignment: alignment!, child: content);
     if (clip) content = _ClayClip(shape: shape, child: content);
+    content = minHeight == null
+        ? SizedBox(width: width, height: height, child: content)
+        : ConstrainedBox(
+            constraints: BoxConstraints(minHeight: minHeight!),
+            child: SizedBox(width: width, height: height, child: content),
+          );
+    // Sous un [Pressable], la pièce s'enfonce pendant qu'on appuie : seul le
+    // peintre repasse, le contenu ne se reconstruit pas.
+    final press = PressDepth.maybeOf(context);
     return RepaintBoundary(
-      child: CustomPaint(
-        painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark),
-        child: minHeight == null
-            ? SizedBox(width: width, height: height, child: content)
-            : ConstrainedBox(
-                constraints: BoxConstraints(minHeight: minHeight!),
-                child: SizedBox(width: width, height: height, child: content),
+      child: press == null
+          ? CustomPaint(
+              painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark),
+              child: content,
+            )
+          : AnimatedBuilder(
+              animation: press,
+              builder: (context, child) => CustomPaint(
+                painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark, press: press.value.clamp(0.0, 1.0)),
+                child: child,
               ),
-      ),
+              child: content,
+            ),
     );
   }
 }
@@ -128,43 +142,53 @@ class _ShapeClipper extends CustomClipper<Path> {
 /// Le peintre de l'argile, exposé pour les décors qui ne passent pas par
 /// [ClayBox].
 class ClayPainter extends CustomPainter {
-  const ClayPainter({required this.color, required this.shape, required this.depth, required this.dark});
+  const ClayPainter({required this.color, required this.shape, required this.depth, required this.dark, this.press = 0});
 
   final Color color;
   final ClayShape shape;
   final ClayDepth depth;
   final bool dark;
 
+  /// De 0 (au repos) à 1 (enfoncée sous le doigt).
+  final double press;
+
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    paintClay(canvas, Path()..addRRect(shape.toRRect(rect)), bounds: rect, color: color, depth: depth, dark: dark);
+    paintClay(canvas, Path()..addRRect(shape.toRRect(rect)), bounds: rect, color: color, depth: depth, dark: dark, press: press);
   }
 
   @override
-  bool shouldRepaint(ClayPainter old) => old.color != color || old.shape.radius != shape.radius || old.shape.blob != shape.blob || old.depth != depth || old.dark != dark;
+  bool shouldRepaint(ClayPainter old) => old.color != color || old.shape.radius != shape.radius || old.shape.blob != shape.blob || old.depth != depth || old.dark != dark || old.press != press;
 }
 
 /// La recette de l'argile, sur n'importe quel [path] : ombre portée teintée
 /// (sauf si [dropShadow] est faux), aplat, reflet en haut à gauche, ombre en
 /// bas à droite. [bounds] sert à proportionner le relief et à rogner les
 /// ombres intérieures.
-void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color color, required ClayDepth depth, required bool dark, bool dropShadow = true}) {
+///
+/// [press], de 0 à 1, enfonce la pièce : elle se rapproche de son ombre
+/// portée, son reflet pâlit et son ombre intérieure se creuse. C'est le même
+/// dessin, sous le doigt — pas une autre pièce.
+void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color color, required ClayDepth depth, required bool dark, bool dropShadow = true, double press = 0}) {
   final deep = depth == ClayDepth.deep;
   // Le relief s'accorde à la taille : une tuile de 40 points n'a pas
   // l'ombre d'une carte de 300.
   final unit = (bounds.shortestSide / 48).clamp(0.6, 1.6);
   final shade = Color.lerp(color, Colors.black, 0.3)!;
+  // Enfoncée, la pièce se rapproche de la surface : son ombre portée se
+  // resserre et s'éclaircit.
+  final lift = 1 - 0.55 * press;
 
   // L'ombre portée, dans la teinte de la pièce, décalée en bas à droite :
   // la lumière vient d'un coin.
   if (dropShadow) {
-    final drop = deep ? (dark ? 0.32 : 0.24) : (dark ? 0.28 : 0.14);
+    final drop = (deep ? (dark ? 0.32 : 0.24) : (dark ? 0.28 : 0.14)) * (1 - 0.30 * press);
     canvas.drawPath(
-      path.shift(Offset(5 * unit, 7 * unit)),
+      path.shift(Offset(5 * unit * lift, 7 * unit * lift)),
       Paint()
         ..color = (dark ? Colors.black : shade).withValues(alpha: drop)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 9 * unit),
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 9 * unit * lift),
     );
   }
   canvas.drawPath(path, Paint()..color = color);
@@ -172,7 +196,7 @@ void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color c
   // Les ombres intérieures : tout ce qui est hors de la forme, décalé et
   // flouté, rogné à la forme. Décalé vers le bas à droite, le trou laisse
   // une lumière en haut à gauche ; vers le haut à gauche, une ombre en
-  // bas à droite.
+  // bas à droite. Sous le doigt, le reflet cède et le creux gagne.
   final outside = bounds.inflate(bounds.shortestSide + 16);
   Path rim(Offset by) => Path.combine(PathOperation.difference, Path()..addRect(outside), path.shift(by));
   canvas.save();
@@ -180,13 +204,13 @@ void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color c
   canvas.drawPath(
     rim(Offset(3 * unit, 3 * unit)),
     Paint()
-      ..color = Colors.white.withValues(alpha: deep ? (dark ? 0.22 : 0.30) : (dark ? 0.10 : 0.75))
+      ..color = Colors.white.withValues(alpha: (deep ? (dark ? 0.22 : 0.30) : (dark ? 0.10 : 0.75)) * (1 - 0.55 * press))
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * unit),
   );
   canvas.drawPath(
     rim(Offset(-4 * unit, -5 * unit)),
     Paint()
-      ..color = shade.withValues(alpha: deep ? (dark ? 0.40 : 0.28) : (dark ? 0.35 : 0.10))
+      ..color = shade.withValues(alpha: ((deep ? (dark ? 0.40 : 0.28) : (dark ? 0.35 : 0.10)) * (1 + 0.9 * press)).clamp(0.0, 1.0))
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 7 * unit),
   );
   canvas.restore();

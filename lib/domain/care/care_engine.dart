@@ -1,5 +1,6 @@
 import '../../core/utils/dates.dart';
 import '../models/care_schedule.dart';
+import '../weather/weather_trend.dart';
 import 'season.dart';
 
 /// État d'une échéance par rapport à « maintenant ».
@@ -20,35 +21,41 @@ abstract final class CareEngine {
   /// [south] dit que le jardin est dans l'hémisphère sud, où décembre est un
   /// mois de croissance et juillet un mois de repos. Sans lui, une plante de
   /// Melbourne serait arrosée au rythme de l'hiver en plein été.
-  static int effectiveInterval(CareSchedule schedule, DateTime at, {bool south = false}) {
+  ///
+  /// [trend] est le temps qu'il fait au lieu choisi, et ne sert qu'à la
+  /// stratégie météo. `null` — hors ligne, sans lieu — la ramène au
+  /// saisonnier : une routine ne s'arrête pas parce que le réseau manque.
+  static int effectiveInterval(CareSchedule schedule, DateTime at, {bool south = false, WeatherTrend? trend}) {
     switch (schedule.strategy) {
       case CareStrategy.fixed:
       case CareStrategy.manual:
         return schedule.intervalDays;
       case CareStrategy.seasonal:
+      case CareStrategy.weather:
         final rules = schedule.seasonalRules ?? defaultSeasonalRules;
         final factor = rules[Season.of(at, southernHemisphere: south).name] ?? 1.0;
-        return (schedule.intervalDays * factor).round().clamp(1, 3650);
+        final weather = schedule.strategy == CareStrategy.weather ? trend?.wateringFactor ?? 1.0 : 1.0;
+        return (schedule.intervalDays * factor * weather).round().clamp(1, 3650);
     }
   }
 
   /// Prochaine échéance après une complétion à [completedAt].
   /// `null` pour la stratégie manuelle (jamais de rappel).
-  static DateTime? nextDueAfter(CareSchedule schedule, DateTime completedAt, {bool south = false}) {
+  static DateTime? nextDueAfter(CareSchedule schedule, DateTime completedAt, {bool south = false, WeatherTrend? trend}) {
     if (schedule.strategy == CareStrategy.manual || !schedule.enabled) return null;
-    final interval = effectiveInterval(schedule, completedAt, south: south);
+    final interval = effectiveInterval(schedule, completedAt, south: south, trend: trend);
     return completedAt.dateOnly.addDays(interval);
   }
 
   /// Échéance initiale d'une routine nouvellement créée (sans historique).
-  static DateTime? initialDue(CareSchedule schedule, DateTime now, {bool south = false}) =>
-      nextDueAfter(schedule, now, south: south);
+  static DateTime? initialDue(CareSchedule schedule, DateTime now, {bool south = false, WeatherTrend? trend}) =>
+      nextDueAfter(schedule, now, south: south, trend: trend);
 
   /// Applique une complétion et retourne la routine mise à jour.
-  static CareSchedule complete(CareSchedule schedule, DateTime completedAt, {bool south = false}) =>
+  static CareSchedule complete(CareSchedule schedule, DateTime completedAt, {bool south = false, WeatherTrend? trend}) =>
       schedule.copyWith(
         lastCompletedAt: () => completedAt,
-        nextDueAt: () => nextDueAfter(schedule, completedAt, south: south),
+        nextDueAt: () => nextDueAfter(schedule, completedAt, south: south, trend: trend),
         updatedAt: completedAt,
       );
 

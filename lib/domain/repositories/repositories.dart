@@ -56,7 +56,9 @@ class PlantFilter {
   int get hashCode => Object.hash(query, locationId, status, needsAttention, favoritesOnly, tagId, sort);
 }
 
-enum PlantSort { name, nextCare, recentlyAdded }
+/// Tris de la collection. Les dates vont du plus récent au plus ancien, les
+/// plantes sans valeur en dernier ; la santé met les malades en tête.
+enum PlantSort { name, location, nextCare, health, lastWatered, lastFertilized, lastRepotted, recentlyAdded, recentlyEdited, acquired }
 
 /// Données de création d'une plante (3 étapes : photo, nom, emplacement).
 class NewPlant {

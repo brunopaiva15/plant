@@ -10,6 +10,8 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/weather/weather.dart';
+import '../application/weather_providers.dart';
+import 'weather_widgets.dart' show weatherTemp;
 
 /// Choix du lieu météo (recherche de ville Open-Meteo).
 class WeatherSettingsScreen extends ConsumerStatefulWidget {
@@ -95,6 +97,28 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
                 ),
             ],
           ),
+          if (place != null) ...[
+            const SizedBox(height: Space.lg),
+            FloraGroup(
+              header: l10n.weatherClimate,
+              footer: l10n.weatherClimateHint,
+              children: const [_ClimateRow()],
+            ),
+            const SizedBox(height: Space.lg),
+            FloraGroup(
+              footer: l10n.weatherRainCountsHint,
+              children: [
+                FloraListRow(
+                  leading: const Text('🌧️', style: TextStyle(fontSize: 18)),
+                  title: l10n.weatherRainCounts,
+                  trailing: AdaptiveSwitch(
+                    value: ref.watch(preferencesProvider.select((p) => p.rainCountsAsWatering)),
+                    onChanged: (v) => ref.read(preferencesProvider.notifier).setRainCountsAsWatering(v),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: Space.lg),
           FloraTextField(
             controller: _query,
@@ -127,6 +151,33 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
             Padding(padding: const EdgeInsets.all(Space.md), child: Text(l10n.weatherNoResults, style: context.text.callout, textAlign: TextAlign.center)),
         ],
       ),
+    );
+  }
+}
+
+/// « 🌡️ Zone 8a · Hivers à −6°, étés à 32° ». Le climat met un appel
+/// d'archives à arriver la première fois ; la ligne attend sans rien dire de
+/// plus, et reste sur « Inconnu » si l'historique ne donne rien.
+class _ClimateRow extends ConsumerWidget {
+  const _ClimateRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
+    final climate = ref.watch(regionClimateProvider);
+    final value = climate.value;
+    return FloraListRow(
+      leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
+      title: switch ((climate, value)) {
+        (_, final v?) => l10n.weatherClimateZone(v.hardinessLabel),
+        (AsyncLoading(), _) => l10n.locating,
+        _ => l10n.weatherClimateNone,
+      },
+      subtitle: value == null
+          ? null
+          : l10n.weatherClimateRange(weatherTemp(value.winterLowC, metric: metric), weatherTemp(value.summerHighC, metric: metric)),
+      chevron: false,
     );
   }
 }

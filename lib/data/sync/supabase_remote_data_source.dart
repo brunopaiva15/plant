@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/config/supabase_config.dart';
+import '../../core/network/network_failure.dart';
 import '../../domain/sync/remote_data_source.dart';
 import 'sync_service.dart';
 
@@ -12,6 +13,11 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   SupabaseRemoteDataSource(this._client);
 
   final SupabaseClient _client;
+
+  /// Une photo passe par le réseau en entier : elle a droit à plus de temps
+  /// qu'une requête, sans pour autant attendre indéfiniment. Passé ce délai,
+  /// la ligne reste dans l'outbox et repartira au prochain cycle.
+  static const _fileTimeout = Duration(minutes: 2);
 
   /// Tables sans `garden_id` : filtrées via la plante parente.
   static const _childOfPlant = {'plant_photos', 'plant_actions', 'care_schedules', 'plant_tags', 'measurements'};
@@ -24,14 +30,28 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   /// exist »), et donc plus aucune lecture.
   static const _unstamped = {'plant_tags', 'inventory_tags', 'action_types', 'measurements'};
 
+  /// « Could not find the 'cutting_month' column of 'plants' in the schema
+  /// cache » : le nom de la colonne et celui de la table ne figurent nulle
+  /// part ailleurs que dans ce message.
+  static final _missingColumn = RegExp("Could not find the '([^']+)' column of '([^']+)'");
+
   @override
   Future<void> upsert(String table, RemoteRow row) async {
-    await _client.from(table).upsert(row);
+    try {
+      await _client.from(table).upsert(row).timeout(networkTimeout);
+    } on PostgrestException catch (e) {
+      // PGRST204 : une colonne du payload manque au schéma du serveur. La
+      // ligne n'a rien d'invalide, c'est le schéma distant qui est en retard ;
+      // l'appelant la renverra sans ce champ.
+      final m = e.code == 'PGRST204' ? _missingColumn.firstMatch(e.message) : null;
+      if (m == null || m.group(2) != table) rethrow;
+      throw UnknownColumnException(table, m.group(1)!);
+    }
   }
 
   @override
   Future<void> delete(String table, Map<String, Object?> keys) async {
-    await _client.from(table).delete().match(keys.map((k, v) => MapEntry(k, v as Object)));
+    await _client.from(table).delete().match(keys.map((k, v) => MapEntry(k, v as Object))).timeout(networkTimeout);
   }
 
   @override
@@ -53,7 +73,7 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
       query = _client.from(table).select().eq('garden_id', gardenId);
     }
     if (since != null && !_unstamped.contains(table)) query = query.gt(stamp, since.toUtc().toIso8601String());
-    final rows = await query;
+    final rows = await query.timeout(networkTimeout);
     return [
       for (final r in rows)
         Map<String, Object?>.from(r)
@@ -64,7 +84,7 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
 
   /// Membres et profils via la fonction `garden_members_with_names` (RLS-safe).
   Future<List<RemoteRow>> _pullMembership(String table, String gardenId) async {
-    final rows = await _client.rpc<List<dynamic>>('garden_members_with_names', params: {'p_garden_id': gardenId});
+    final rows = await _client.rpc<List<dynamic>>('garden_members_with_names', params: {'p_garden_id': gardenId}).timeout(networkTimeout);
     final list = rows.cast<Map<String, dynamic>>();
     if (table == 'garden_members') {
       return [for (final r in list) {'garden_id': gardenId, 'user_id': r['user_id'], 'role': r['role']}];
@@ -74,13 +94,16 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
 
   @override
   Future<String> uploadFile(String storagePath, File file) async {
-    await _client.storage.from(SupabaseConfig.photoBucket).upload(storagePath, file, fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
+    await _client.storage
+        .from(SupabaseConfig.photoBucket)
+        .upload(storagePath, file, fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'))
+        .timeout(_fileTimeout);
     return storagePath;
   }
 
   @override
   Future<void> downloadFile(String storagePath, File target) async {
-    final bytes = await _client.storage.from(SupabaseConfig.photoBucket).download(storagePath);
+    final bytes = await _client.storage.from(SupabaseConfig.photoBucket).download(storagePath).timeout(_fileTimeout);
     await target.parent.create(recursive: true);
     await target.writeAsBytes(bytes, flush: true);
   }
@@ -88,7 +111,7 @@ class SupabaseRemoteDataSource implements RemoteDataSource {
   @override
   Future<void> removeFiles(List<String> paths) async {
     if (paths.isEmpty) return;
-    await _client.storage.from(SupabaseConfig.photoBucket).remove(paths);
+    await _client.storage.from(SupabaseConfig.photoBucket).remove(paths).timeout(networkTimeout);
   }
 
   @override

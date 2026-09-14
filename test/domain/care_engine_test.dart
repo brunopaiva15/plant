@@ -1,6 +1,7 @@
 import 'package:flora/domain/care/care_engine.dart';
 import 'package:flora/domain/care/season.dart';
 import 'package:flora/domain/models/models.dart';
+import 'package:flora/domain/weather/weather_trend.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CareSchedule schedule({CareStrategy strategy = CareStrategy.fixed, int interval = 7, bool enabled = true, Map<String, double>? rules}) {
@@ -103,6 +104,43 @@ void main() {
     test('sans le dire, rien ne change', () {
       final s = schedule(strategy: CareStrategy.seasonal, interval: 10);
       expect(CareEngine.effectiveInterval(s, janvier), CareEngine.effectiveInterval(s, janvier, south: false));
+    });
+  });
+
+  group('la stratégie météo', () {
+    // Juillet : le saisonnier vaut déjà ×0,8, soit 8 jours sur 10.
+    final summer = DateTime(2026, 7, 10);
+    const dryHeat = WeatherTrend(meanMaxC: 33, rainMm: 0, days: 7);
+    const wet = WeatherTrend(meanMaxC: 18, rainMm: 42, days: 7);
+
+    test('sans tendance, elle vaut exactement le saisonnier', () {
+      final s = schedule(strategy: CareStrategy.weather, interval: 10);
+      final seasonal = schedule(strategy: CareStrategy.seasonal, interval: 10);
+      expect(CareEngine.effectiveInterval(s, summer), CareEngine.effectiveInterval(seasonal, summer));
+    });
+
+    test('une canicule sèche resserre l\'intervalle saisonnier', () {
+      final s = schedule(strategy: CareStrategy.weather, interval: 10);
+      expect(CareEngine.effectiveInterval(s, summer, trend: dryHeat), 5); // 10 × 0,8 (saison) × 0,7 (chaleur) × 0,9 (sécheresse)
+    });
+
+    test('une semaine pluvieuse l\'espace', () {
+      final s = schedule(strategy: CareStrategy.weather, interval: 10);
+      expect(CareEngine.effectiveInterval(s, summer, trend: wet), 11); // 10 × 0,8 (saison) × 1,35 (pluie)
+    });
+
+    test('les autres stratégies ignorent la météo', () {
+      expect(CareEngine.effectiveInterval(schedule(interval: 10), summer, trend: dryHeat), 10);
+      expect(CareEngine.effectiveInterval(schedule(strategy: CareStrategy.seasonal, interval: 10), summer, trend: dryHeat), 8);
+    });
+
+    test('la complétion reporte l\'échéance d\'un intervalle corrigé', () {
+      final s = schedule(strategy: CareStrategy.weather, interval: 10);
+      expect(CareEngine.complete(s, summer, trend: dryHeat).nextDueAt, DateTime(2026, 7, 15));
+    });
+
+    test('elle reste une échéance automatique, contrairement au mode manuel', () {
+      expect(CareEngine.nextDueAfter(schedule(strategy: CareStrategy.weather), summer, trend: dryHeat), isNotNull);
     });
   });
 }

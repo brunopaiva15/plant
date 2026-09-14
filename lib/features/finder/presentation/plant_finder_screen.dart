@@ -14,6 +14,8 @@ import '../../../domain/species/plant_finder.dart';
 import '../../../domain/species/species_info.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../species/presentation/care_guide_screen.dart';
+import '../../weather/application/weather_providers.dart';
+import '../../weather/presentation/weather_widgets.dart' show weatherTemp;
 import 'finder_cards.dart';
 
 /// « Trouver une plante » : trois questions, puis des espèces du catalogue
@@ -143,7 +145,7 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
     setState(() => _asking = true);
     try {
       final results = await ref.read(plantAdvisorProvider).suggest(
-            criteria: _criteria.copyWith(note: _note.text),
+            criteria: _withRegion.copyWith(note: _note.text),
             language: Localizations.localeOf(context).languageCode,
             exclude: [for (final m in matches) m.entry.scientificName, for (final s in _suggestions) s.scientificName],
           );
@@ -274,10 +276,15 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
     );
   }
 
+  /// Les réponses, plus ce que l'application sait déjà du lieu. La question
+  /// n'est pas posée : le climat n'est pas une réponse, c'est un fait.
+  FinderCriteria get _withRegion => _criteria.copyWith(region: () => ref.watch(regionClimateProvider).value);
+
   Widget _resultsStep() {
     final l10n = context.l10n;
     final advisor = ref.watch(plantAdvisorProvider);
-    final matches = ref.watch(plantFinderProvider).search(_criteria);
+    final criteria = _withRegion;
+    final matches = ref.watch(plantFinderProvider).search(criteria);
     final side = Space.page + readableInset(context);
     final shown = [for (final m in matches) m.entry.scientificName, for (final s in _suggestions) s.scientificName];
 
@@ -294,6 +301,18 @@ class _PlantFinderScreenState extends ConsumerState<PlantFinderScreen> {
       padding: const EdgeInsets.only(top: Space.lg, bottom: Space.huge),
       children: [
         inset(Text(l10n.finderResults, style: context.text.title1)),
+        // Dehors, ce qui a trié : la zone du lieu et son hiver. Rien à
+        // l'intérieur — un salon a le même climat à Oslo qu'à Séville.
+        if (criteria.outdoorRegion case final region?) ...[
+          const SizedBox(height: Space.xxs),
+          inset(Text(
+            l10n.finderRegion(
+              region.hardinessLabel,
+              weatherTemp(region.winterLowC, metric: ref.watch(preferencesProvider.select((p) => p.metricUnits))),
+            ),
+            style: context.text.caption,
+          )),
+        ],
         const SizedBox(height: Space.sm),
         // Les réponses, en puces : chacune ramène à sa question, et la
         // nouvelle réponse revient ici. Pas besoin de tout recommencer pour

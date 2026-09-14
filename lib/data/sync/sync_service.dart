@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 
+import '../../core/network/network_failure.dart';
 import '../../domain/sync/remote_data_source.dart';
 import '../../domain/sync/sync_state.dart';
 import '../db/database.dart';
@@ -70,6 +71,11 @@ class SyncService {
   /// Dernier passage de rattrapage des fichiers photo manquants.
   DateTime? _lastRepair;
 
+  /// Colonnes que le serveur a refusées faute de les connaître, par table.
+  /// Remis à zéro à chaque push : un schéma remis à jour se reprend seul, à
+  /// la synchronisation suivante, sans qu'on ait à relancer l'application.
+  final _unknownColumns = <String, Set<String>>{};
+
   final _state = StreamController<SyncState>.broadcast();
   SyncState _current = SyncState.initial;
   bool _running = false;
@@ -129,12 +135,14 @@ class SyncService {
         await push();
         await pull();
         await _throttledRepair();
-        _emit(SyncState(status: SyncStatus.idle, lastSyncedAt: DateTime.now(), pendingCount: await _pendingCount()));
+        _emit(SyncState(status: SyncStatus.idle, lastSyncedAt: DateTime.now(), pendingCount: await _pendingCount(), unknownColumns: unknownColumns));
       } while (_again);
-    } on SocketException catch (_) {
-      _emit(_current.copyWith(status: SyncStatus.offline, pendingCount: await _pendingCount()));
     } catch (e) {
-      _emit(_current.copyWith(status: SyncStatus.error, message: e.toString(), pendingCount: await _pendingCount()));
+      // Réseau absent ou requête expirée : ce n'est pas une erreur de
+      // synchronisation, c'est une reprise à faire plus tard. L'outbox garde
+      // tout, et le compteur dit combien.
+      final status = isNetworkFailure(e) ? SyncStatus.offline : SyncStatus.error;
+      _emit(_current.copyWith(status: status, message: status == SyncStatus.error ? e.toString() : null, pendingCount: await _pendingCount(), unknownColumns: unknownColumns));
     } finally {
       _running = false;
     }
@@ -142,9 +150,16 @@ class SyncService {
 
   Future<int> _pendingCount() async => (await _db.select(_db.syncOutbox).get()).length;
 
+  /// Colonnes absentes du schéma distant, en « table.colonne ».
+  List<String> get unknownColumns => [
+        for (final e in _unknownColumns.entries)
+          for (final column in e.value) '${e.key}.$column',
+      ]..sort();
+
   // ---------------------------------------------------------------- push
 
   Future<void> push() async {
+    _unknownColumns.clear();
     final entries = await (_db.select(_db.syncOutbox)..orderBy([(o) => OrderingTerm.asc(o.id)])).get();
     // Dédoublonnage : la dernière opération par (entité, id) suffit, la ligne locale est relue.
     final latest = <String, SyncOutboxRow>{};
@@ -179,7 +194,33 @@ class SyncService {
       return;
     }
     if (e.entity == 'plant_photos') await _pushPhotoFiles(e.entityId, row, withFiles: withFiles);
-    await _remote.upsert(e.entity, row);
+    await _upsert(e.entity, row);
+  }
+
+  /// Upsert qui survit à un schéma distant en retard : la colonne que le
+  /// serveur ne connaît pas est retirée, et la ligne repart sans elle.
+  ///
+  /// PostgREST refuse la ligne entière pour un seul champ inconnu, et le
+  /// cycle s'arrête à la première erreur : une colonne ajoutée par une mise à
+  /// jour de l'application, sur un projet Supabase où `supabase/schema.sql`
+  /// n'a pas été rejoué, bloquait toute la file d'envoi — les autres tables
+  /// comprises. Le champ en trop se perd, le reste passe, et l'écran Compte
+  /// dit lesquels pour qu'on sache quoi rattraper.
+  Future<void> _upsert(String table, Map<String, Object?> row) async {
+    final known = _unknownColumns[table];
+    var payload = known == null ? row : ({...row}..removeWhere((k, _) => known.contains(k)));
+    while (true) {
+      try {
+        await _remote.upsert(table, payload);
+        return;
+      } on UnknownColumnException catch (e) {
+        // Une colonne retirée à chaque tour : la boucle s'épuise avec la
+        // ligne. Si elle n'y était pas, l'erreur parle d'autre chose.
+        if (!payload.containsKey(e.column)) rethrow;
+        _unknownColumns.putIfAbsent(table, () => <String>{}).add(e.column);
+        payload = {...payload}..remove(e.column);
+      }
+    }
   }
 
   /// Une écriture qui ne touche qu'aux métadonnées le dit dans son payload
@@ -403,10 +444,11 @@ class SyncService {
       // les tables qui la suivent, arrosages compris ; le prochain cycle la
       // rattrapera (voir [repairPhotoFiles]).
       if (table == 'plant_photos') await _fetchNewPhotoFiles(rows);
+      final keepLocal = await _absentColumns(table, rows);
       DateTime? newest = since;
       await _db.transaction(() async {
         for (final row in rows) {
-          await _applyRemote(table, row);
+          await _applyRemote(table, row, keepLocal: keepLocal);
           final stamp = _stampOf(row);
           if (stamp != null && (newest == null || stamp.isAfter(newest!))) newest = stamp;
         }
@@ -435,12 +477,62 @@ class SyncService {
     });
   }
 
+  /// Colonnes que la ligne distante n'a pas et que la ligne locale a.
+  ///
+  /// Le serveur ne renvoie pas ce qu'il n'a pas : sur un projet où
+  /// `supabase/schema.sql` n'a pas été rejoué, les lignes reviennent amputées
+  /// des colonnes récentes, et les appliquer telles quelles viderait sur
+  /// l'appareil des champs qu'il avait bien. Un champ qui ne monte pas est un
+  /// désagrément ; un champ effacé est une perte.
+  ///
+  /// Une valeur mise à null ailleurs, elle, revient avec sa clé : seule
+  /// l'absence de la clé vaut « garder ce qui est là ».
+  ///
+  /// Les lignes d'une table reviennent toutes avec les mêmes colonnes : la
+  /// première qui a une contrepartie locale suffit à le dire, et le cas
+  /// ordinaire coûte alors une lecture par table. Des lignes que l'appareil
+  /// ne connaît pas encore n'ont, elles, rien à perdre.
+  Future<Set<String>> _absentColumns(String table, List<RemoteRow> rows) async {
+    for (final row in rows) {
+      final local = await _localRowFor(table, row);
+      if (local == null) continue;
+      return {
+        for (final column in local.keys)
+          if (!row.containsKey(column)) column,
+      };
+    }
+    return const {};
+  }
+
+  /// La ligne locale correspondant à une ligne distante, au format distant.
+  Future<Map<String, Object?>?> _localRowFor(String table, RemoteRow remote) async {
+    final id = switch (table) {
+      'plant_tags' => '${remote['plant_id']}/${remote['tag_id']}',
+      'inventory_tags' => '${remote['item_id']}/${remote['tag_id']}',
+      'action_types' => remote['key'] as String?,
+      _ => remote['id'] as String?,
+    };
+    return id == null ? null : _remoteRowFor(table, id);
+  }
+
   DateTime? _stampOf(Map<String, Object?> row) {
     final raw = row['updated_at'] ?? row['created_at'];
     return raw is String ? DateTime.parse(raw) : null;
   }
 
-  Future<void> _applyRemote(String table, Map<String, Object?> remote) async {
+  Future<void> _applyRemote(String table, Map<String, Object?> remote, {Set<String> keepLocal = const {}}) async {
+    // Les colonnes absentes de la ligne distante (voir [_absentColumns])
+    // reprennent leur valeur locale, faute de quoi la ligne les viderait.
+    if (keepLocal.isNotEmpty) {
+      final local = await _localRowFor(table, remote);
+      if (local != null) {
+        remote = {
+          ...remote,
+          for (final column in keepLocal)
+            if (local.containsKey(column)) column: local[column],
+        };
+      }
+    }
     // `owner_id` est gardé : c'est lui qui dit si le jardin est le nôtre ou
     // celui de quelqu'un qui nous y a invités.
     final json = RowCodec.toLocalJson(remote, drop: {'storage_path'});

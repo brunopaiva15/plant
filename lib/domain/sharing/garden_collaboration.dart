@@ -154,7 +154,9 @@ enum CollaborationError {
   /// Il faut un compte pour rejoindre un jardin.
   notSignedIn,
 
-  /// Réseau, serveur, ou tout ce qu'on n'a pas su nommer.
+  /// Serveur, ou tout ce qu'on n'a pas su nommer. Le réseau absent, lui, ne
+  /// passe pas par ici : il se dit partout de la même façon, par
+  /// `OfflineException`.
   unknown,
 }
 

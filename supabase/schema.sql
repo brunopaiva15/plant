@@ -90,6 +90,16 @@ create or replace function plant_garden(p uuid) returns uuid language sql stable
   select garden_id from plants where id = p;
 $$;
 
+-- v11 : précision de l'état de santé et besoins propres à la plante.
+alter table plants add column if not exists health_issue text
+  check (health_issue in ('overwatering','underwatering','pests','disease','rootRot','transplantShock','deficiency','sunburn','frost'));
+alter table plants add column if not exists light text
+  check (light in ('shade','lowLight','indirect','brightIndirect','someSun','fullSun'));
+alter table plants add column if not exists humidity text check (humidity in ('low','average','high'));
+alter table plants add column if not exists lifespan text check (lifespan in ('annual','biennial','perennial'));
+alter table plants add column if not exists hardiness text check (hardiness in ('hardy','tender'));
+alter table plants add column if not exists cutting_month int check (cutting_month between 1 and 12);
+
 -- Libellé et URL externe des photos (v7).
 create table if not exists plant_photos (
   id uuid primary key,
@@ -133,7 +143,7 @@ create table if not exists care_schedules (
   id uuid primary key,
   plant_id uuid not null references plants(id) on delete cascade,
   type_key text not null,
-  strategy text not null check (strategy in ('fixed','seasonal','manual')),
+  strategy text not null check (strategy in ('fixed','seasonal','weather','manual')),
   interval_days int not null,
   seasonal_rules jsonb,
   next_due_at timestamptz,
@@ -716,3 +726,10 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public_invite(text) from public;
 grant execute on function public_invite(text) to anon, authenticated;
+
+-- PostgREST sert les colonnes qu'il a en cache, pas celles de la base : après
+-- un `alter table`, tant que le cache n'est pas relu, l'API répond encore
+-- « Could not find the '…' column of '…' in the schema cache » (PGRST204).
+-- Supabase le relit de lui-même sur les changements de schéma ; le dire ici
+-- rend le rejeu de ce fichier effectif tout de suite, sans attendre.
+notify pgrst, 'reload schema';

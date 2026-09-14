@@ -55,7 +55,12 @@ class CareActions {
   }) async {
     if (_blockedReadOnly()) throw StateError('read-only');
     final action = await _actions.log(data);
-    Haptics.success();
+    // L'arrosage a sa goutte ; tout autre soin, le roulement commun.
+    if (data.typeKey == CareKind.watering.key) {
+      Haptics.drop();
+    } else {
+      Haptics.success();
+    }
     _analytics.track(data.typeKey == CareKind.watering.key ? AnalyticsEvents.wateringLogged : AnalyticsEvents.actionLogged, {'type': data.typeKey});
     _toast.show(ToastData(
       message: message,
@@ -78,7 +83,11 @@ class CareActions {
     if (_blockedReadOnly()) return;
     final custom = _ref.read(actionTypeByKeyProvider)[typeKey];
     final logged = await _actions.logMany(plantIds, typeKey);
-    Haptics.success();
+    if (typeKey == CareKind.watering.key) {
+      Haptics.drop();
+    } else {
+      Haptics.success();
+    }
     _analytics.track(AnalyticsEvents.actionLogged, {'type': typeKey, 'count': plantIds.length});
     _toast.show(ToastData(
       message: l10n.multiActionDone(plantIds.length, l10n.kindName(typeKey, custom: custom)),
@@ -92,6 +101,45 @@ class CareActions {
       },
     ));
     await _reschedule();
+  }
+
+  /// La pluie a arrosé : les arrosages extérieurs du jour sont notés faits,
+  /// avec ce qui est tombé en note et dans les métadonnées.
+  ///
+  /// Un seul toast et un seul Undo pour l'averse entière, comme pour une
+  /// multi-sélection : c'est un événement, pas une série de gestes. Sans
+  /// [BuildContext] — l'automatisme part de l'écran du matin au moment où il
+  /// se construit, et un contexte n'y survivrait pas à l'attente.
+  Future<int> logRainWatering(AppLocalizations l10n, {required List<CareTask> tasks, required double rainMm}) async {
+    if (tasks.isEmpty || _blockedReadOnly()) return 0;
+    final mm = l10n.formatQuantity(rainMm, '');
+    final logged = <PlantAction>[];
+    for (final task in tasks) {
+      logged.add(await _actions.log(NewAction(
+        plantId: task.plantId,
+        typeKey: CareKind.watering.key,
+        notes: l10n.weatherRainNote(mm),
+        // La quantité, en clair et sans langue : c'est elle qu'on relira si
+        // un jour le journal veut distinguer la pluie de l'arrosoir.
+        metadata: {'source': 'rain', 'rain_mm': rainMm},
+      )));
+    }
+    Haptics.drop();
+    _analytics.track(AnalyticsEvents.wateringLogged, {'type': CareKind.watering.key, 'source': 'rain', 'count': logged.length});
+    _toast.show(ToastData(
+      message: l10n.weatherRainWateredToast(logged.length),
+      emoji: '🌧️',
+      undoLabel: l10n.undo,
+      onUndo: () async {
+        for (final a in logged) {
+          await _actions.undo(a);
+          _ref.read(completedTasksProvider.notifier).forgetPlant(a.plantId, a.typeKey);
+        }
+        await _reschedule();
+      },
+    ));
+    await _reschedule();
+    return logged.length;
   }
 
   Future<void> snooze(BuildContext context, {required String scheduleId, required String plantName}) async {

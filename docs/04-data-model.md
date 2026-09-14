@@ -59,6 +59,23 @@ calendar_entries  id, garden_id, plant_id?, category_id?, title, notes?,
 Colonnes ajoutées au passage : `plants.number` et `gardens.plant_counter` (numéros `#42` jamais réattribués, v8),
 `locations.notes/photo_path/thumb_path` (v8), `plant_photos.label/remote_url` (v7), `inventory_items.group_id` (v9).
 
+## Champs de plante et précision de santé (schéma v11)
+```
+plants.health_issue    overwatering|underwatering|pests|disease|rootRot|transplantShock|deficiency|sunburn|frost, ou null
+plants.light           LightNeed (shade … fullSun), ou null        — prime sur locations.light dans les conseils
+plants.humidity        HumidityNeed (low|average|high), ou null
+plants.lifespan        annual|biennial|perennial, ou null
+plants.hardiness       hardy|tender, ou null
+plants.cutting_month   1–12, ou null
+```
+Tous facultatifs : `null` veut dire « non renseigné », jamais une valeur par défaut. `health` garde ses trois
+états ; `health_issue` ne s'écrit que si l'état n'est pas `healthy` (le dépôt l'efface sinon). Une valeur
+inconnue en base, venue d'une version plus récente, se lit comme `null` plutôt que de faire échouer la lecture.
+Les noms d'enum sont stockés tels quels, en camelCase, et contrôlés par `check` côté Postgres.
+
+Les tris de la liste qui regardent un dernier soin (`PlantSort.lastWatered`…) lisent `MAX(occurred_at)` dans
+`plant_actions` par type, dans la même requête que les cartes ; aucune colonne dénormalisée.
+
 Le calendrier mêle deux sources : les événements stockés dans `calendar_entries` et les échéances de soin
 projetées à la volée par `CalendarProjector` à partir des routines et de l'historique.
 
@@ -175,10 +192,19 @@ leur famille, ce qui est l'état normal de la plupart des entrées et non un cas
 d'erreur. `illustrated_problems.dart`, écrit par le même outil que les images,
 dit lesquelles existent sans interroger le disque.
 
-Elles ne servent qu'aux cartes de diagnostic, à cinquante-deux points. En
-dessous de quarante elles se valent toutes — une plante en pot reste une
-plante en pot —, d'où les lignes sans vignette et le regroupement par famille
-sur la fiche de soin.
+Elles servent aux cartes de diagnostic, à cinquante-deux points. En dessous de
+quarante elles se valent toutes — une plante en pot reste une plante en pot —,
+d'où les lignes sans vignette et le regroupement par famille sur la fiche de
+soin.
+
+Les neuf problèmes de santé d'une fiche (`HealthIssue`) y puisent aussi :
+chacun désigne l'entrée de la base qui dit la même chose (« Manque d'eau » →
+`001`) et reprend son dessin ; « Ravageurs » et « Maladie » ne désignent rien
+de précis et portent le symbole de leur famille, qui est exactement ce
+qu'elles nomment. `HealthIssueIcon` les pose à trente-deux points, seule
+entorse à la règle ci-dessus : leur nom est écrit juste à côté, et il y en a
+neuf, pas deux cents. `test/features/problem_kind_icon_test.dart` vérifie que
+chaque entrée désignée existe et relève bien de la famille annoncée.
 
 Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
 exemples, un genre ne rend pas toutes ses espèces sensibles, et la

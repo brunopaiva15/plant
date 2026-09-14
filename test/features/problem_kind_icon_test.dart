@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flora/data/problems/problem_catalog.dart';
+import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flora/features/problems/presentation/illustrated_problems.dart';
 import 'package:flora/features/problems/presentation/problem_kind_icon.dart';
@@ -65,19 +66,72 @@ void main() {
       }
     });
 
-    test('un problème illustré prend son image, les autres celle de leur famille', () {
+    test('un problème illustré prend son image', () {
       final illustre = catalog[illustratedProblems.first]!;
       expect(ProblemIcon.isIllustrated(illustre), isTrue);
       expect(ProblemIcon.assetOf(illustre), 'assets/problems/icons/${illustre.id}.webp');
+    });
 
-      // 001 n'est pas encore dessiné : il retombe sur le symbole des troubles.
-      final sansImage = catalog.problems.firstWhere((p) => !illustratedProblems.contains(p.id));
-      expect(ProblemIcon.assetOf(sansImage), ProblemKindIcon.assetOf(sansImage.kind));
+    test('les deux cents entrées de la base ont toutes la leur', () {
+      final sansImage = catalog.problems.where((p) => !illustratedProblems.contains(p.id)).map((p) => p.id);
+      expect(sansImage, isEmpty, reason: 'ces entrées retomberaient sur le symbole de leur famille');
+    });
+
+    test('un problème qu\'on ne sait pas dessiner retombe sur sa famille', () {
+      // Le repli n'a plus d'exemple dans la base : les illustrations sont
+      // arrivées par lots jusqu'à les couvrir toutes. Il reste le chemin
+      // d'une entrée qu'une version plus récente apporterait, et c'est lui
+      // qu'on vérifie.
+      const inconnu = PlantProblem(
+        id: '999',
+        kind: ProblemKind.pest,
+        scope: ProblemScope.general,
+        fr: 'Inconnu',
+        en: 'Unknown',
+        it: 'Sconosciuto',
+        de: 'Unbekannt',
+        hosts: ['Tracheophyta'],
+      );
+      expect(ProblemIcon.isIllustrated(inconnu), isFalse);
+      expect(ProblemIcon.assetOf(inconnu), ProblemKindIcon.assetOf(ProblemKind.pest));
     });
 
     test('le dossier des illustrations est déclaré à part dans le pubspec', () {
       // Une entrée de dossier ne descend pas dans les sous-dossiers.
       expect(File('pubspec.yaml').readAsStringSync(), contains('- assets/problems/icons/'));
+    });
+  });
+
+  group('les problèmes de santé d\'une fiche', () {
+    final catalog = ProblemCatalog.parse(File('assets/problems/catalog.txt').readAsStringSync());
+
+    test('chacun a son image, présente et non vide', () {
+      for (final issue in HealthIssue.values) {
+        final file = File(HealthIssueIcon.assetOf(issue));
+        expect(file.existsSync(), isTrue, reason: '${issue.name} → ${file.path}');
+        expect(file.lengthSync(), greaterThan(1024), reason: issue.name);
+      }
+    });
+
+    test('celui qui désigne une entrée de la base en prend le dessin', () {
+      for (final issue in HealthIssue.values.where((i) => i.problemId != null)) {
+        expect(HealthIssueIcon.assetOf(issue), 'assets/problems/icons/${issue.problemId}.webp', reason: issue.name);
+      }
+    });
+
+    test('les deux familles portent le symbole de leur famille', () {
+      for (final issue in [HealthIssue.pests, HealthIssue.disease]) {
+        expect(issue.problemId, isNull, reason: issue.name);
+        expect(HealthIssueIcon.assetOf(issue), ProblemKindIcon.assetOf(issue.kind), reason: issue.name);
+      }
+    });
+
+    test('l\'entrée désignée dit bien la même chose, et de la même famille', () {
+      for (final issue in HealthIssue.values.where((i) => i.problemId != null)) {
+        final problem = catalog[issue.problemId];
+        expect(problem, isNotNull, reason: '${issue.name} désigne ${issue.problemId}, absent de la base');
+        expect(problem!.kind, issue.kind, reason: issue.name);
+      }
     });
   });
 }

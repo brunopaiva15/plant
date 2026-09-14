@@ -13,6 +13,20 @@ import 'search_text.dart';
 const _hybrid = '×';
 const _ranks = {'subsp', 'ssp', 'var', 'f', 'forma', 'cv', 'subvar'};
 
+/// Le genre d'un nom scientifique : son premier mot, normalisé.
+///
+/// Le nom passe d'abord par [normalizeScientificName], sans quoi « picea
+/// abies » et « Picea abies » donneraient deux genres. Un hybride
+/// intergénérique — « × Fatshedera lizei » — commence par le signe d'hybride :
+/// c'est le mot suivant qui porte le nom.
+String genusOf(String scientificName) {
+  final words = normalizeScientificName(scientificName).split(' ');
+  for (final w in words) {
+    if (w != _hybrid && w.isNotEmpty) return w;
+  }
+  return '';
+}
+
 String normalizeScientificName(String raw) {
   // Le signe d'hybride est parfois collé à l'épithète (« Citrus ×sinensis »
   // chez GBIF comme dans les flores) : sans ce décollement, le nom donnerait
@@ -21,12 +35,23 @@ String normalizeScientificName(String raw) {
   if (s.isEmpty) return '';
   final out = <String>[];
   var expectingEpithet = false;
+  var genusTaken = false;
   final words = s.split(' ');
   for (var i = 0; i < words.length; i++) {
     final token = words[i].replaceAll(RegExp(r'^[,;]+|[,;]+$'), '');
     if (token.isEmpty) continue;
-    if (i == 0) {
+    // Un hybride intergénérique — « × Fatshedera lizei » — ouvre sur le
+    // signe : ce n'est pas le genre, c'est le mot d'après qui le porte.
+    // Sans cette distinction, le signe passait pour le genre et la
+    // majuscule de « Fatshedera » se lisait comme un nom d'auteur, ce qui
+    // coupait le nom à cet endroit et le rendait vide.
+    if (!genusTaken) {
+      if (out.isEmpty && (token == _hybrid || token == 'x' || token == 'X')) {
+        out.add(_hybrid);
+        continue;
+      }
       out.add(token.substring(0, 1).toUpperCase() + token.substring(1).toLowerCase());
+      genusTaken = true;
       expectingEpithet = true;
       continue;
     }

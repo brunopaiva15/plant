@@ -35,7 +35,7 @@ Sans configuration, l'app est 100 % locale. Pour la synchronisation et les compt
 ```bash
 flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co --dart-define=SUPABASE_ANON_KEY=...
 ```
-Schéma et politiques RLS : `supabase/schema.sql`, à rejouer en entier dans l'éditeur SQL. Les liens de partage et d'invitation demandent en plus la fonction Edge `share` (`supabase functions deploy share --no-verify-jwt`). Connexion par Apple, sur
+Schéma et politiques RLS : `supabase/schema.sql`, à rejouer en entier dans l'éditeur SQL. Les liens de partage et d'invitation demandent en plus la fonction Edge `share` (`supabase functions deploy share --no-verify-jwt`, depuis la racine du dépôt) et le relais `share-proxy/` qui la sert sous un domaine à soi (docs/08). Connexion par Apple, sur
 iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
 (`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
@@ -49,6 +49,16 @@ accompagne les photos d'un diagnostic. Lecture sur l'appareil par HomeKit
 (`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur l'App ID) ;
 rien n'est écrit dans la maison, rien n'est gardé. Sur Android, l'étape et le
 réglage n'apparaissent pas. Détails : docs/05.
+
+## Sur l'écran d'accueil d'iOS
+Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,
+rond, rectangle et ligne sur l'écran verrouillé) ; l'appui long sur l'icône
+propose d'ajouter une plante, de scanner une étiquette ou d'en trouver une ;
+l'arrosage, la validation et les gestes sensibles ont leurs motifs Core
+Haptics. Tout passe par des canaux natifs, sans plugin (`ios/Runner/*Channel.swift`,
+`ios/AuxineWidget/`). L'App Group `group.ch.vergasta.plant` doit exister sur
+l'App ID de l'application et sur celui du widget (`ch.vergasta.plant.widget`).
+Sur Android, rien de tout cela n'apparaît. Détails : docs/05 et docs/06.
 
 ## Gratuite, avec un soutien facultatif
 Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique

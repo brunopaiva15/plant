@@ -62,7 +62,15 @@ class Plants extends Table with Timestamps {
   TextColumn get primaryPhotoId => text().nullable()();
   TextColumn get status => text().withDefault(const Constant('active'))();
   TextColumn get health => text().withDefault(const Constant('healthy'))();
+  TextColumn get healthIssue => text().nullable()();
   BoolColumn get isFavorite => boolean().withDefault(const Constant(false))();
+
+  /// Besoins propres à la plante (v11) : noms d'enum, `null` = non renseigné.
+  TextColumn get light => text().nullable()();
+  TextColumn get humidity => text().nullable()();
+  TextColumn get lifespan => text().nullable()();
+  TextColumn get hardiness => text().nullable()();
+  IntColumn get cuttingMonth => integer().nullable()();
   DateTimeColumn get acquiredAt => dateTime().nullable()();
   TextColumn get source => text().nullable()();
   RealColumn get price => real().nullable()();
