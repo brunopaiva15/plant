@@ -3,3 +3,4 @@ shots*/
 node_modules/
 package.json
 package-lock.json
+test-out/
