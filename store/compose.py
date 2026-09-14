@@ -16,12 +16,11 @@ entier, marqueur `.device` dans le dossier) ou, à défaut, du build web
 Usage : compose.py <dossier captures> <dossier sortie> [fr|en]
 """
 import csv
-import math
 import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 W, H = 1290, 2796
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -416,123 +415,144 @@ def ident_sheet(lang, width=1170):
 # un aplat sauge. Les concurrents du magasin font tous la même chose — un
 # aplat saturé, un titre énorme, une vraie photo, des pastilles d'interface
 # posées dessus. Ici les pastilles sont celles de l'app, à sa palette.
+# La fiche d'ouverture, sobre : le papier de l'app avec ses nuances, un
+# massif d'argile au fond, et une plaque de verre dépoli posée dessus qui
+# porte ce que l'app dit d'une plante. Rien d'autre.
 COVER = {
     'fr': {
-        'claim': 'Le carnet\nde vos plantes',
-        'chips': ['Soins', 'Journal', 'Identification'],
+        'claim': 'Le carnet de vos plantes',
+        'name': 'Langue de belle-mère',
         'species': 'Dracaena trifasciata',
-        'action': 'Arroser',
-        'due': 'Aujourd’hui',
-        'badge': ['Gratuite', 'sans compte,\nsans publicité'],
+        'rows': [
+            ('assets/onboarding/onboarding_3.png', 'Arrosage', 'Tous les 14 jours'),
+            ('assets/problems/clay_abiotique.webp', 'Lumière', 'Moyenne'),
+            ('assets/onboarding/onboarding_2.png', 'Dernier soin', 'Il y a 2 jours'),
+        ],
+        'footer': 'Gratuite, sans compte, sans publicité',
     },
     'en': {
-        'claim': 'The journal\nof your plants',
-        'chips': ['Care', 'Journal', 'Identification'],
+        'claim': 'The journal of your plants',
+        'name': 'Snake plant',
         'species': 'Dracaena trifasciata',
-        'action': 'Water',
-        'due': 'Today',
-        'badge': ['Free', 'no account,\nno ads'],
+        'rows': [
+            ('assets/onboarding/onboarding_3.png', 'Watering', 'Every 14 days'),
+            ('assets/problems/clay_abiotique.webp', 'Light', 'Medium'),
+            ('assets/onboarding/onboarding_2.png', 'Last care', '2 days ago'),
+        ],
+        'footer': 'Free, no account, no ads',
     },
 }
 
 SAGE_SOLID = (44, 119, 78)
 CREAM = (250, 245, 236)
 WATER = (58, 110, 168)
-TERRACOTTA = (156, 72, 44)
 
-
-def starburst(size, points, inner, color):
-    """Une pastille en étoile, comme les autocollants qu'on colle sur une
-    vitrine. Rien d'autre dans la série n'a cette forme : c'est ce qui la
-    fait remarquer."""
-    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    cx = cy = size / 2
-    pts = []
-    for i in range(points * 2):
-        r = size / 2 if i % 2 == 0 else size / 2 * inner
-        a = math.pi * i / points - math.pi / 2
-        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
-    ImageDraw.Draw(layer).polygon(pts, fill=color)
-    return layer
-
-
-def chip(text, fnt, fill, ink, height=98, pad=44, radius=None):
-    """Une pastille pleine : les boutons et les badges de l'app, en plus gros."""
-    d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
-    w = int(d0.textlength(text, font=fnt)) + 2 * pad
-    layer = Image.new('RGBA', (w, height), (0, 0, 0, 0))
-    ImageDraw.Draw(layer).rounded_rectangle((0, 0, w - 1, height - 1), radius=radius or height // 2, fill=fill + (255,))
-    ImageDraw.Draw(layer).text((w // 2, height // 2), text, font=fnt, fill=ink, anchor='mm')
-    return layer
-
-
-# Le massif du bas de l'arche : l'asset, sa hauteur, l'abscisse de son pot.
-# Trois plantes de l'onboarding qui se chevauchent, comme un coin de pièce.
+# Le massif du fond : l'asset, sa hauteur, l'abscisse de son pot.
 COVER_PLANTS = [
-    ('collection_ronde.webp', 1080, 350),
-    ('collection_sansevieria.webp', 1660, 645),
-    ('collection_semis.webp', 960, 945),
+    ('collection_semis.webp', 1100, 190),
+    ('collection_sansevieria.webp', 2200, 620),
+    ('collection_ronde.webp', 1400, 1080),
 ]
 
 
+def rounded_mask(size, radius):
+    mask = Image.new('L', size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), radius=radius, fill=255)
+    return mask
+
+
+def glass(img, box, radius=72, blur=52, alpha=0.26):
+    """Une plaque de verre dépoli posée sur la fiche.
+
+    Le verre n'a rien à montrer s'il n'y a rien dessous : on reprend ce que
+    la fiche porte déjà à cet endroit, on le floute, on l'éclaircit d'un
+    souffle, et on pose un voile blanc dessus. Un liseré clair sur le
+    pourtour et une lumière qui glisse du haut font le reste — c'est ce
+    liseré qui donne son épaisseur à la plaque."""
+    x, y, w, h = box
+    region = img.crop((x, y, x + w, y + h)).convert('RGB').filter(ImageFilter.GaussianBlur(blur))
+    region = ImageEnhance.Brightness(region).enhance(1.05)
+    pane = region.convert('RGBA')
+    pane.alpha_composite(Image.new('RGBA', (w, h), (255, 253, 250, int(255 * alpha))))
+    # La lumière du haut, qui s'éteint vers le bas.
+    grad = np.zeros((h, w, 4), dtype=np.uint8)
+    grad[..., :3] = 255
+    grad[..., 3] = np.clip(np.linspace(86, 0, h) ** 1.2, 0, 255).astype(np.uint8)[:, None]
+    pane.alpha_composite(Image.fromarray(grad))
+    d = ImageDraw.Draw(pane)
+    d.rounded_rectangle((1, 1, w - 2, h - 2), radius=radius, outline=(255, 255, 255, 150), width=3)
+    d.rounded_rectangle((4, 4, w - 5, h - 5), radius=radius - 3, outline=(255, 255, 255, 60), width=2)
+    pane.putalpha(Image.fromarray(np.minimum(np.asarray(pane.split()[-1]), np.asarray(rounded_mask((w, h), radius)))))
+    # L'ombre portée, brune et très douce : la plaque flotte, elle ne colle pas.
+    pad = 90
+    sh = Image.new('L', (w + 2 * pad, h + 2 * pad), 0)
+    sh.paste(rounded_mask((w, h), radius).point(lambda v: int(v * 0.22)), (pad, pad + 26))
+    shadow = Image.new('RGBA', sh.size, SHADOW + (0,))
+    shadow.putalpha(sh.filter(ImageFilter.GaussianBlur(46)))
+    img.alpha_composite(shadow, (x - pad, y - pad))
+    img.alpha_composite(pane, (x, y))
+
+
 def cover(lang):
-    """La fiche d'ouverture : le nom tracé sur le papier de l'app, puis une
-    arche d'argile sauge qui sort du cadre. Dedans, la revendication en gras,
-    les mots de la fiche, un massif de plantes d'argile, et les pastilles de
-    l'app posées à cheval sur le bord."""
+    """La fiche d'ouverture : le papier de l'app, un massif d'argile au fond,
+    et une plaque de verre dépoli qui porte ce que l'app dit d'une plante.
+    Sobre : pas de pastille criarde, pas d'autocollant — la matière parle."""
     t = COVER[lang]
-    img = background('sage')
+
+    # Le fond : le papier de l'app, avec des nappes de couleur plus larges
+    # que sur les autres fiches. C'est ce qui donne au verre de quoi jouer.
+    base = tuple(int(a * 0.5 + b * 0.5) for a, b in zip(TINTS['sage'][1], CANVAS))
+    img = Image.new('RGBA', (W, H), base + (255,))
+    img.alpha_composite(radial((W, H), (1240, 200), 1200, TINTS['sage'][0], 0.26))
+    img.alpha_composite(radial((W, H), (80, 1500), 1000, TINTS['water'][0], 0.10))
+    img.alpha_composite(radial((W, H), (1100, 2700), 1100, TINTS['terracotta'][0], 0.12))
+    img.alpha_composite(radial((W, H), (300, 2500), 900, (255, 253, 248), 0.55))
+    img = grain(img, strength=0.035)
+
     d = ImageDraw.Draw(img)
+    d.text((W // 2, 176), 'Auxine', font=hand(172, 750), fill=INK, anchor='mt')
+    d.text((W // 2, 458), t['claim'], font=font('Medium', 58), fill=INK2, anchor='mt')
 
-    d.text((W // 2, 130), 'Auxine', font=hand(180, 800), fill=INK, anchor='mt')
-
-    # L'arche, qui descend hors du cadre.
-    arch_w, arch_top = 1100, 480
-    arch = clay_arch(arch_w, H - arch_top + 40, color=SAGE_SOLID)
-    ax = (W - arch_w) // 2
-    paste_with_shadow(img, arch, (ax, arch_top), blur=80, offset=(18, 40), alpha=0.30)
-    d = ImageDraw.Draw(img)
-
-    y = arch_top + 210
-    f = font('Black', 112)
-    for line in t['claim'].split('\n'):
-        d.text((W // 2, y), line, font=f, fill=CREAM, anchor='mt')
-        y += 132
-
-    y += 40
-    chips = [chip(c, font('Bold', 44), CREAM, SAGE_SOLID) for c in t['chips']]
-    total = sum(c.width for c in chips) + 22 * (len(chips) - 1)
-    x = (W - total) // 2
-    for c in chips:
-        img.alpha_composite(c, (x, y))
-        x += c.width + 22
-
-    # Le massif, posé au bas de l'arche et coupé par le cadre.
-    base = H + 20
+    # Le massif, au fond, coupé par le bas du cadre.
+    ground = H + 140
     for name, height, cx in COVER_PLANTS:
         src = Image.open(os.path.join(CLAY, name)).convert('RGBA')
         src = src.crop(src.getbbox())
         w = int(src.width * height / src.height)
-        paste_with_shadow(img, src.resize((w, height), Image.LANCZOS), (cx - w // 2, base - height), blur=56, offset=(14, 40), alpha=0.26)
+        paste_with_shadow(img, src.resize((w, height), Image.LANCZOS), (cx - w // 2, ground - height), blur=60, offset=(14, 44), alpha=0.22)
 
-    # Les pastilles de l'app, à cheval sur le bord de l'arche.
-    sp = chip(t['species'], font('Bold', 48), CREAM, INK, height=108)
-    paste_with_shadow(img, sp, (ax - 76, y + 300), blur=34, offset=(8, 22), alpha=0.30)
-    due = chip(t['due'], font('Bold', 44), TINTS['water'][1], WATER, height=96)
-    paste_with_shadow(img, due, (ax + arch_w - due.width + 86, y + 560), blur=34, offset=(8, 22), alpha=0.30)
-    act = chip(t['action'], font('Black', 52), WATER, (255, 255, 255), height=124, pad=60)
-    paste_with_shadow(img, act, (ax - 46, H - 480), blur=40, offset=(10, 26), alpha=0.34)
+    # La plaque de verre, posée au milieu du massif.
+    gx, gy, gw, gh = 108, 1180, W - 216, 880
+    glass(img, (gx, gy, gw, gh))
+    d = ImageDraw.Draw(img)
 
-    # L'autocollant, collé de travers sur le bord droit de l'arche.
-    size = 460
-    star = starburst(size, 16, 0.85, TERRACOTTA + (255,)).rotate(-11, resample=Image.BICUBIC)
-    ds = ImageDraw.Draw(star)
-    ds.text((size // 2, size // 2 - 40), t['badge'][0], font=font('Black', 86), fill=(255, 255, 255), anchor='mm')
-    ty = size // 2 + 10
-    for line in t['badge'][1].split('\n'):
-        ds.text((size // 2, ty), line, font=font('SemiBold', 38), fill=(255, 233, 221), anchor='mt')
-        ty += 46
-    paste_with_shadow(img, star, (W - size - 16, H - 660), blur=42, offset=(10, 26), alpha=0.32)
+    pad = 66
+    d.text((gx + pad, gy + pad - 6), t['name'], font=font('Bold', 74), fill=INK)
+    d.text((gx + pad, gy + pad + 96), t['species'], font=font('MediumItalic', 46), fill=SAGE)
+
+    y = gy + pad + 196
+    for i, (icon, label, value) in enumerate(t['rows']):
+        if i:
+            d.line((gx + pad, y, gx + gw - pad, y), fill=(255, 255, 255, 120), width=2)
+        y += 26
+        obj = Image.open(os.path.join(ROOT, icon)).convert('RGBA')
+        obj = obj.crop(obj.getbbox())
+        side = 76
+        obj = obj.resize((int(obj.width * side / max(obj.width, obj.height)), int(obj.height * side / max(obj.width, obj.height))), Image.LANCZOS)
+        img.alpha_composite(obj, (gx + pad, y + (88 - obj.height) // 2))
+        d = ImageDraw.Draw(img)
+        d.text((gx + pad + 108, y + 44), label, font=font('Medium', 46), fill=INK2, anchor='lm')
+        d.text((gx + gw - pad, y + 44), value, font=font('SemiBold', 48), fill=INK, anchor='rm')
+        y += 114
+
+    # Ce qui est gratuit, sur une plaque de verre à sa taille : le fond est
+    # chargé à cet endroit, et le texte nu s'y perdait.
+    f_foot = font('SemiBold', 44)
+    fw = int(d.textlength(t['footer'], font=f_foot)) + 108
+    fh = 108
+    fx, fy = (W - fw) // 2, H - 250
+    glass(img, (fx, fy, fw, fh), radius=fh // 2, blur=36, alpha=0.34)
+    ImageDraw.Draw(img).text((W // 2, fy + fh // 2), t['footer'], font=f_foot, fill=INK, anchor='mm')
     return img
 
 

@@ -1,15 +1,14 @@
 # Visuels du magasin
 
 Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
-premier ne montre pas un écran : il hausse le ton, comme le font les
-fiches des concurrents du magasin — un aplat saturé, un titre énorme, des
-pastilles d'interface posées dessus. Ici l'aplat est une arche d'argile
-sauge qui sort du cadre par le bas, posée sur le papier de l'app ; dedans,
-un massif de trois plantes de l'onboarding à grande échelle, et les
-pastilles de l'app à sa palette — l'espèce, l'échéance, le bouton
-d'arrosage. Ce qui est gratuit tient sur un autocollant en étoile, terre
-cuite. Le nom est tracé à la main sur le papier, au-dessus de l'arche.
-Les sept autres montrent une capture réelle de l'app dans un
+premier ne montre pas un écran : un massif de plantes d'argile occupe la
+fiche, et une plaque de verre dépoli posée dessus porte ce que l'app dit
+d'une plante — son nom, son espèce, son arrosage, sa lumière, son dernier
+soin. Le verre reprend ce qu'il y a dessous, le floute et l'éclaircit d'un
+souffle ; ce sont les feuilles qui passent au travers qui lui donnent sa
+couleur, et le liseré clair du pourtour son épaisseur. Le nom est tracé à
+la main sur le papier de l'app, et ce qui est gratuit tient sur une petite
+plaque du même verre. Les sept autres montrent une capture réelle de l'app dans un
 iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
 rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
 « main » de l'app) ; entre le titre et le téléphone, un objet 3D de la série
@@ -18,7 +17,7 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
-| 1 | Fiche d'ouverture : arche d'argile, massif de plantes, autocollant | trois plantes de l'onboarding | sauge |
+| 1 | Fiche d'ouverture : massif d'argile derrière une plaque de verre | trois plantes de l'onboarding | sauge |
 | 2 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
 | 3 | Plantes (la collection) | monstera en pot | sauge |
 | 4 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
@@ -145,4 +144,4 @@ Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
 que chaque titre tienne sur deux lignes ; la taille est commune aux sept
 captures. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
 les textes de la fiche d'ouverture dans `COVER`, son massif dans
-`COVER_PLANTS`.
+`COVER_PLANTS` ; le verre dépoli est `glass()`, l'argile `clay_shape()`.
