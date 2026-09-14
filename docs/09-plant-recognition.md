@@ -1974,9 +1974,16 @@ n'en changer qu'un à la fois.
 
 ### 12.6 ✅ L'entrée à 320 px
 
-Le levier classique de la reconnaissance fine, et le jeu est stocké en 448 px :
-**pas besoin de recollecter** — `--input-size 320` suffit, et le chargement
-suit tout seul à la même marge de recadrage.
+Le levier classique de la reconnaissance fine, et ~~le jeu est stocké en
+448 px~~ : **pas besoin de recollecter** — `--input-size 320` suffit, et le
+chargement suit tout seul à la même marge de recadrage.
+
+> **Cette phrase est fausse, et c'est d'elle que tout vient.** Le jeu est
+> stocké à **384 px de grand côté** (`MAX_SIDE`, `plant_dataset/images.py`),
+> et recollecté à cette taille depuis la v6 ; 448 était la taille d'une
+> génération précédente. `train.py` portait la même erreur dans son
+> `SOURCE_SIZE`, avec un commentaire disant recopier ce `MAX_SIDE`. Voir
+> plus bas ce que la mesure en dit.
 
 **Ce que ça coûte n'est pas la taille du fichier.** MobileNetV3 est
 entièrement convolutif et sa tête part d'une moyenne globale : le nombre de
@@ -1991,6 +1998,103 @@ Ce raisonnement, tenu avant l'entraînement, comparait deux attentes alors
 que l'inférence tournait sur l'isolat principal et produisait donc deux
 gels. Le § 6.7 dit ce qui a été corrigé après coup ; la décision, elle, ne
 change pas.
+
+#### Ce que le jeu porte vraiment : 288 px, pas 448
+
+Mesuré sur 4 000 images tirées au hasard des 991 926 du jeu de l'Iris 8
+(`tools/plant_model/prereduire.py --dataset … --input-size 320`) :
+
+| | |
+|---|---|
+| carré central médian — **ce que le tuyau utilise** | **288 px** |
+| p10 / p25 / p75 / p90 | 216 / 274 / 288 / 289 px |
+| étendue | 144 à 384 px |
+| `LOAD_SIZE` demandé à `--input-size 320` | **366 px** |
+| images que le chargement **agrandit** | **3 894 / 4 000 — 97 %** |
+
+Le jeu est stocké à 384 px de **grand** côté ; `read_and_square` prend le
+**carré central**, donc le **petit** — 288 px pour une photo en 4:3, et
+c'est de très loin le cas le plus fréquent, comme le montre la
+concentration entre p25 et p90.
+
+**L'Iris 8 n'a donc jamais vu 320 px de détail.** La chaîne est : carré de
+288 px réels → agrandi à 366 → recadré à 320. Le recadrage garde 320/366
+de l'image, si bien que l'entrée de 320 px du réseau porte environ **252 px
+de détail réel**. Le reste est de l'interpolation.
+
+#### Le gain est réel, son explication ne l'était pas
+
+Rien de tout ceci n'annule les points mesurés au § 6.7 : ils l'ont été à
+armes égales, et 320 px a bien rapporté. Mais **ce n'était pas « plus de
+finesse »**, puisqu'il n'y avait pas de finesse à prendre. Ce qui a changé,
+c'est le nombre de pixels traversant le réseau — donc le calcul, et la
+taille relative du champ réceptif — pas la quantité d'information.
+
+La conséquence pour l'Iris 9 est directe, et elle va dans les deux sens :
+
+- **monter encore la taille d'entrée ne peut rien rapporter en détail.** À
+  `MAX_SIDE = 384`, le carré médian ne dépassera pas 288 px, quoi qu'on
+  demande. Il faudrait recollecter plus grand — et le § 12.11 rappelle ce
+  que la place sur disque décide : le nombre d'espèces, qui compte plus ;
+- **et la question inverse n'a jamais été posée.** À `--input-size 252`,
+  `LOAD_SIZE` vaut 288 : exactement le carré médian, pas un pixel inventé,
+  et 38 % de pixels en moins à traverser le réseau — donc une inférence
+  plus rapide sur le téléphone, ce que tout le § ci-dessus présentait comme
+  le seul coût. Deux entraînements courts sur un sous-ensemble diraient si
+  le gain du § 6.7 survit à la baisse. **Rien ne le garantit** : le gain
+  vient du calcul, et le retirer pourrait le reprendre.
+
+#### La conséquence la plus lourde est côté application, et elle reste à mesurer
+
+`source_size` n'est pas qu'une métadonnée : `tflite_plant_model.dart` le lit
+dans `model.json` et s'en sert. Le § 6.7 explique pourquoi — les images
+d'entraînement ont été réduites en deux temps, une réduction de qualité
+puis un bilinéaire, et une photo de téléphone ramenée d'un coup à 366 px
+produirait un crénelage que le modèle n'a jamais vu. L'intention est juste.
+**Les deux chemins ne se rejoignent pourtant pas**, et pour deux raisons
+qui s'ajoutent :
+
+| | entraînement | application |
+|---|---|---|
+| ordre | réduction du **cadre entier** à 384 px (LANCZOS, à la collecte), **puis** carré | **carré d'abord**, puis réduction |
+| taille intermédiaire | 384 px de grand côté → carré de ~288 | `source_size` = **448** |
+| arrivée à 366 px | **agrandissement** depuis ~288 | **réduction** depuis 448 |
+
+Le modèle a donc appris sur des carrés de 288 px étirés à 366 — flous par
+construction — et reçoit à l'inférence des carrés de 448 px réduits à 366,
+c'est-à-dire **nets**. C'est exactement la classe de défaut qui a coûté
+4,4 points à la v1 (§ 6.7) : le réseau voit autre chose que ce qu'il a vu.
+
+**Ce n'est pas encore un chiffre, et il ne faut pas le traiter comme tel.**
+Trois choses restent ouvertes : l'ampleur réelle de l'écart, son signe — une
+image plus nette que l'entraînement n'est pas forcément moins bien
+reconnue —, et le fait qu'aucun des deux bouts n'a été mesuré contre
+l'autre. La mesure est pourtant simple et ne demande pas de réentraînement :
+passer le jeu de test dans les **deux** recettes et comparer, à armes
+égales (§ 12.10). Si l'écart est réel, la correction l'est aussi — réduire
+le cadre entier à 384 avant le carré, au lieu du carré à 448 — et elle ne
+coûte qu'un export.
+
+> Et s'il y a un écart, il touche une conclusion du § 13.3 : les quatre
+> scans terrain y sont lus comme un écart de **domaine** entre le jeu de
+> test et les photos de salon. Une partie pourrait n'être qu'un écart de
+> **prétraitement**, qui se corrige sans collecter une seule image. Les
+> deux hypothèses ne s'excluent pas ; elles ne se distinguent que par la
+> mesure ci-dessus.
+
+#### Et le garde-fou ne pouvait pas le voir
+
+`set_input_size` refuse une taille dont le `LOAD_SIZE` dépasse
+`SOURCE_SIZE`, au motif que « l'agrandissement ne créerait pas de détail,
+il ferait seulement croire qu'on en a ». C'est exactement ce qui s'est
+produit, et le garde-fou a laissé passer, pour deux raisons :
+
+1. `SOURCE_SIZE` valait **448** au lieu de 384 — corrigé ;
+2. il compare au **grand** côté quand le chargement se sert du **petit**.
+   Cette seconde raison ne se corrige pas par une constante : le petit côté
+   dépend de chaque image. Le garde-fou écarte l'absurde, il ne promet pas
+   qu'on n'agrandit pas — c'est écrit dans le code et dans un test, et
+   `prereduire.py` est l'outil qui répond pour un jeu donné.
 
 ### 12.7 La classe « autre » — et d'abord savoir si elle manque
 

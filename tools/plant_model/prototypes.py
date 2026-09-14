@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -142,6 +143,42 @@ def temoin(vecteurs: np.ndarray, etiquettes: list[str], melanges: int = 200,
     }
 
 
+def _telecharger(url: str, pause: float, essais: int = 5) -> bytes | None:
+    """Les octets d'une image de Commons, ou `None` après avoir vraiment essayé.
+
+    `CommonsClient` traite déjà le 429 pour les appels d'API — cinq essais,
+    `Retry-After` respecté, une pause entre chacun. Les **images**, elles,
+    partaient par un `requests.get` nu : pas de pause, pas de reprise, et un
+    429 perdait la photo en silence sous un « ÉCHEC (HTTPError) » qui ne
+    disait même pas le code.
+
+    Ça ne se voyait pas comme un bug parce que la récolte continue. Mais
+    `--minimum 3` écarte tout cultivar tombé sous trois photos, et le
+    § 12.18 prévient que les petits échantillons en grande dimension se
+    séparent d'eux-mêmes : perdre des photos ne fait pas que réduire la
+    mesure, ça la rend plus facile à tromper.
+    """
+    import requests
+    for essai in range(essais):
+        try:
+            r = requests.get(url, timeout=60,
+                             headers={'User-Agent': 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant)'})
+            if r.status_code == 429:
+                time.sleep(float(r.headers.get('Retry-After') or min(15 * (essai + 1), 60)))
+                continue
+            r.raise_for_status()
+            time.sleep(pause)      # la même cadence que les appels d'API
+            return r.content
+        except requests.RequestException as e:
+            code = getattr(getattr(e, 'response', None), 'status_code', '?')
+            if essai == essais - 1:
+                print(f'    {url} : abandon après {essais} essais (HTTP {code})', file=sys.stderr)
+                return None
+            time.sleep(min(2 ** essai, 30))
+    print(f'    {url} : abandon, 429 jusqu\'au bout', file=sys.stderr)
+    return None
+
+
 def _recolter(especes: list[str], dossier: Path, par_cultivar: int, pause: float) -> None:
     """Les photos de cultivars que Commons a vraiment, rangées par espèce.
 
@@ -150,7 +187,6 @@ def _recolter(especes: list[str], dossier: Path, par_cultivar: int, pause: float
     cultivar nommé. Chercher `Acer palmatum 'Bloodgood'` rend zéro — c'est
     l'erreur de méthode qui a failli faire conclure trop vite (§ 12.16).
     """
-    import requests
     from plant_dataset.fetchers.wikimedia import CommonsClient
     client = CommonsClient(pause=pause)
     for espece in especes:
@@ -161,18 +197,16 @@ def _recolter(especes: list[str], dossier: Path, par_cultivar: int, pause: float
             nom = cat.split("'")[1] if "'" in cat else cat.replace(espece, '').strip()
             cible = dossier / espece.replace(' ', '-') / (nom or cat).replace(' ', '-')
             cible.mkdir(parents=True, exist_ok=True)
-            gardees = 0
+            gardees = perdues = 0
             for cand in client.image_candidates(cat, max_files=par_cultivar, allow_share_alike=True):
-                fichier = cible / f'{gardees:03d}.jpg'
-                try:
-                    r = requests.get(cand.image_url, timeout=60,
-                                     headers={'User-Agent': 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant)'})
-                    r.raise_for_status()
-                    fichier.write_bytes(r.content)
-                    gardees += 1
-                except Exception as e:
-                    print(f'    {cand.image_url} : ÉCHEC ({type(e).__name__})', file=sys.stderr)
-            print(f'   {nom:28s} {gardees} photos', flush=True)
+                octets = _telecharger(cand.image_url, pause)
+                if octets is None:
+                    perdues += 1
+                    continue
+                (cible / f'{gardees:03d}.jpg').write_bytes(octets)
+                gardees += 1
+            suffixe = f'  ({perdues} perdues)' if perdues else ''
+            print(f'   {nom:28s} {gardees} photos{suffixe}', flush=True)
 
 
 def _lire(dossier: Path) -> list[tuple[Path, str, str]]:

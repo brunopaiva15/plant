@@ -74,3 +74,68 @@ def test_un_cultivar_par_prototype_et_pas_un_de_plus():
 
 def test_la_normalisation_ne_divise_pas_par_zero():
     assert np.all(np.isfinite(normaliser(np.zeros((2, 4), dtype=np.float32))))
+
+
+# --- Le téléchargement des images, qui n'avait aucune reprise --------------
+#
+# `CommonsClient` gère le 429 pour les appels d'API ; les images partaient
+# par un `requests.get` nu. Un 429 perdait la photo en silence, et
+# `--minimum 3` écarte ensuite le cultivar tombé sous trois photos.
+
+import time as _time  # noqa: E402
+
+# Sous un alias : le module porte le même nom que la fonction `prototypes`
+# que ce fichier importe plus haut, et l'importer tel quel la masquerait.
+import prototypes as _proto  # noqa: E402
+
+
+class _Reponse:
+    def __init__(self, code, contenu=b'', retry_after=None):
+        self.status_code, self.content = code, contenu
+        self.headers = {'Retry-After': retry_after} if retry_after else {}
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            import requests
+            raise requests.HTTPError(str(self.status_code), response=self)
+
+
+def _sans_attente(monkeypatch):
+    monkeypatch.setattr(_time, 'sleep', lambda *_: None)
+    monkeypatch.setattr(_proto.time, 'sleep', lambda *_: None)
+
+
+def test_une_image_qui_repond_est_rendue(monkeypatch):
+    _sans_attente(monkeypatch)
+    import requests
+    monkeypatch.setattr(requests, 'get', lambda *a, **k: _Reponse(200, b'jpeg'))
+    assert _proto._telecharger('http://x/1.jpg', 0) == b'jpeg'
+
+
+def test_un_429_est_repris_et_finit_par_passer(monkeypatch):
+    _sans_attente(monkeypatch)
+    import requests
+    reponses = [_Reponse(429, retry_after='1'), _Reponse(429), _Reponse(200, b'ok')]
+    monkeypatch.setattr(requests, 'get', lambda *a, **k: reponses.pop(0))
+    assert _proto._telecharger('http://x/1.jpg', 0) == b'ok'
+    assert reponses == [], 'les trois réponses ont été consommées'
+
+
+def test_un_429_permanent_finit_par_rendre_none(monkeypatch):
+    _sans_attente(monkeypatch)
+    import requests
+    monkeypatch.setattr(requests, 'get', lambda *a, **k: _Reponse(429))
+    assert _proto._telecharger('http://x/1.jpg', 0, essais=3) is None
+
+
+def test_un_404_nest_pas_repris_indefiniment(monkeypatch):
+    _sans_attente(monkeypatch)
+    import requests
+    appels = []
+
+    def get(*a, **k):
+        appels.append(1)
+        return _Reponse(404)
+    monkeypatch.setattr(requests, 'get', get)
+    assert _proto._telecharger('http://x/1.jpg', 0, essais=3) is None
+    assert len(appels) == 3, 'trois essais, pas une boucle'
