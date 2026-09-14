@@ -1618,7 +1618,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get identifyPhotoSource =>
-      'Fotos von Pl@ntNet und GBIF – für die Artenseite antippen.';
+      'Fotos von Pl@ntNet und GBIF. Ein Foto antippen, um die Artenseite zu öffnen.';
 
   @override
   String get identifyNone => 'Keine zuverlässige Übereinstimmung.';

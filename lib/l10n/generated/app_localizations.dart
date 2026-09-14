@@ -2901,7 +2901,7 @@ abstract class AppLocalizations {
   /// No description provided for @identifyPhotoSource.
   ///
   /// In fr, this message translates to:
-  /// **'Photos Pl@ntNet et GBIF — touchez-en une pour la fiche.'**
+  /// **'Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l\'espèce.'**
   String get identifyPhotoSource;
 
   /// No description provided for @identifyNone.

@@ -1617,7 +1617,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get identifyPhotoSource =>
-      'Foto da Pl@ntNet e GBIF — toccane una per la scheda.';
+      'Foto da Pl@ntNet e GBIF. Toccane una per aprire la scheda della specie.';
 
   @override
   String get identifyNone => 'Nessuna corrispondenza affidabile.';

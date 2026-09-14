@@ -516,7 +516,7 @@
   "suggestionsRemote": "Proposto online da Pl@ntNet",
   "identifyOnDevice": "Riconosciuta da {name} sul dispositivo. Scegliete la specie",
   "identifyViaPlantNet": "Riconosciuta online da Pl@ntNet. Scegliete la specie",
-  "identifyPhotoSource": "Foto da Pl@ntNet e GBIF — toccane una per la scheda.",
+  "identifyPhotoSource": "Foto da Pl@ntNet e GBIF. Toccane una per aprire la scheda della specie.",
   "identifyNone": "Nessuna corrispondenza affidabile.",
   "identifyError": "Identificazione impossibile. Controlla la connessione e riprova.",
   "useThis": "Usa",
