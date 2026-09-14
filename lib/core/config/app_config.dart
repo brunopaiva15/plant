@@ -15,11 +15,11 @@ abstract final class AppConfig {
   ///
   /// Le numéro de version ne s'écrit pas ici : le modèle l'annonce lui-même
   /// dans `assets/model/model.json`, et [modelDisplayName] le colle au nom —
-  /// « Iris 6 ». Un modèle réentraîné change donc de numéro sans qu'on touche
-  /// au code, et l'écran ne peut pas afficher un numéro qui ment.
+  /// « Iris 8 » aujourd'hui. Un modèle réentraîné change donc de numéro sans
+  /// qu'on touche au code, et l'écran ne peut pas afficher un numéro qui ment.
   static const String modelName = 'Iris';
 
-  /// « Iris 6 » quand le modèle a annoncé sa version, « Iris » tout court
+  /// « Iris 8 » quand le modèle a annoncé sa version, « Iris » tout court
   /// tant qu'il n'a rien dit — pas encore chargé, ou métadonnées absentes.
   static String modelDisplayName([String? version]) =>
       version == null || version.isEmpty ? modelName : '$modelName $version';

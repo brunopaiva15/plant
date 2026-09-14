@@ -1,16 +1,23 @@
 # 09 — Reconnaissance de plantes : Iris, le modèle embarqué, repli Pl@ntNet
 
 > État au 9 septembre 2026 : 1 558 plantes au catalogue de collecte, 290 131
-> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large à **1 457
-> classes**, entrée 320 px, livré dans l'app en TFLite (8,8 Mo). La cascade
-> identifie **sur l'appareil** et n'appelle Pl@ntNet que sur hésitation ;
-> deux photos de la même plante valent quatorze points de top-1, trois en
-> valent vingt-deux.
+> images sous CC0, CC BY ou CC BY-SA, modèle MobileNetV3-Large livré dans
+> l'app en TFLite. Ce qu'il pèse, ce qu'il sait et ce qu'il vaut se lisent
+> dans **sa fiche au § 0**, recopiée de `assets/model/model.json` : ces
+> chiffres-là ne s'écrivent qu'à un seul endroit. La cascade identifie **sur
+> l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
+> même plante valent quatorze points de top-1, trois en valent vingt-deux.
 
-Le modèle embarqué s'appelle **Iris**, et la version livrée est la septième :
-c'est donc **Iris 7** que l'application nomme à l'écran. Le reste de ce
-document parle de « la v7 » quand il compare des entraînements entre eux —
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la huitième :
+c'est donc **Iris 8** que l'application nomme à l'écran. Le reste de ce
+document parle de « la v8 » quand il compare des entraînements entre eux —
 ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
+
+Les numéros plus anciens qu'on croise ici — la v6, l'Iris 7 — **datent une
+mesure** : ils disent sur quel modèle un chiffre a été obtenu, et une section
+entière peut ainsi décrire une version révolue sans cesser d'être vraie. Un
+chiffre qui décrit le modèle d'**aujourd'hui**, lui, ne s'écrit qu'à un
+endroit : la fiche.
 
 ## 0. Le nom
 
@@ -18,11 +25,49 @@ ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
 ne s'écrit **jamais** à la main : le modèle l'annonce dans
 `assets/model/model.json`, `TflitePlantModel` le lit au chargement et
 `AppConfig.modelDisplayName(version)` le colle au nom. Livrer un modèle
-réentraîné suffit donc à faire dire « Iris 8 » à l'écran des réglages, et
+réentraîné suffit donc à faire dire « Iris 9 » à l'écran des réglages, et
 l'application ne peut pas afficher un numéro qui ment.
 
 Tant que le modèle n'a rien dit — pas encore chargé, métadonnées absentes —
 l'application dit « Iris » tout court plutôt que d'inventer un numéro.
+
+### La fiche du modèle livré
+
+Ce que `model.json` annonce, et rien d'autre. **C'est la seule table de ce
+document qui décrit le modèle d'aujourd'hui** : partout ailleurs, un chiffre
+appartient à la version qui le porte et ne bouge plus. Recopier une de ces
+valeurs dans un autre fichier, c'est se donner rendez-vous avec une
+documentation fausse à la livraison suivante — `test/docs/model_facts_test.dart`
+relit le fichier et fait échouer la suite si cette table s'en écarte.
+
+<!-- fiche:model.json -->
+
+| clé de `model.json` | valeur | |
+|---|---|---|
+| `version` | 8 | le numéro affiché, collé à « Iris » |
+| `architecture` | MobileNetV3Large | la dorsale |
+| `classes` | 1 444 | espèces exposées, une ligne de `labels.txt` chacune |
+| `input_size` | 320 | pixels de côté à l'inférence |
+| `load_size` | 366 | décodage avant recadrage |
+| `source_size` | 448 | côté des images du jeu |
+| `preprocessing` | `included_in_graph_uint8_0_255` | la normalisation est dans le graphe |
+| `bytes` | 8 765 332 | soit 8,77 Mo de `.tflite` |
+| `sha256` | 9760ded18778… | empreinte du fichier de poids |
+| `metrics.images` | 28 836 | images de test |
+| `metrics.top1` | 0,6627 | la bonne espèce en tête |
+| `metrics.top3` | 0,8047 | dans les trois premières |
+| `metrics.macro_f1` | 0,6472 | moyenne par classe, sans pondérer par le volume |
+| `metrics.mean_confidence` | 0,6843 | score moyen du premier candidat |
+| `metrics.captive.images` | 3 946 | sous-ensemble des plantes cultivées |
+| `metrics.captive.top1` | 0,6483 | ce que voit qui photographie son pot |
+| `metrics.captive.top3` | 0,7960 | |
+
+<!-- /fiche -->
+
+Le fichier porte en plus `threshold_curve` — pour chaque couple (seuil,
+marge), l'autonomie et la justesse qui vont avec. C'est de là que sort le
+réglage de `FallbackPolicy` (§ 3.1), et c'est pour cela qu'il se remesure à
+chaque version plutôt que de se reprendre d'une version à l'autre.
 
 ### Là où l'utilisateur le rencontre
 
@@ -46,7 +91,7 @@ n'a rien à faire sur le deuxième écran d'une app qui s'ouvre.
 d'espèces et le fait qu'il réponde hors ligne.
 
 Le compte d'espèces n'est pas écrit dans l'écran : il sort du même
-`model.json` que la version. Livrer une v8 change la section sans qu'on touche
+`model.json` que la version. Livrer une v9 change la section sans qu'on touche
 à une ligne de présentation.
 
 La carte remplace la ligne d'état tant que le modèle est chargé — la voir,
@@ -138,16 +183,19 @@ Sous **0,10**, la liste ne vaut rien (image hors sujet) : `noCandidate`.
 
 **Un seuil ne se transporte pas d'un modèle à l'autre**, et celui-ci a bougé
 à chaque version : 0,90 sur la v1 et ses 78 classes, 0,70 sur la v5, 0,60 sur
-la v6, **0,70 de nouveau sur Iris 7**. Un réseau qui répartit sa confiance sur
-plus d'espèces sort des scores structurellement plus bas ; un réseau mieux
+la v6, **0,70 de nouveau depuis l'Iris 7**. Un réseau qui répartit sa confiance
+sur plus d'espèces sort des scores structurellement plus bas ; un réseau mieux
 calibré en sort de plus honnêtes. Le recalage se fait avec
 `tools/plant_model/multi_photo.py`, sur les photos de plantes cultivées et
 dans le calcul exact que fait la cascade — mesure et raisonnement au § 6.7.
 
-C'est la première fois qu'il **remonte**. Les versions précédentes dépensaient
-leur surplus de justesse en autonomie ; Iris 7 permet l'inverse, et à 0,70 elle
-rend l'autonomie qu'avait la v6 à 0,60 — 47 % de réponses seules — avec 85,9 %
-de justesse au lieu de 82,8 %.
+Avec l'Iris 7, il a **remonté** pour la première fois : les versions
+précédentes dépensaient leur surplus de justesse en autonomie, et à 0,70 elle
+rendait l'autonomie qu'avait la v6 à 0,60 — 47 % de réponses seules — avec
+85,9 % de justesse au lieu de 82,8 %. L'Iris 8 ne l'a pas fait bouger, et
+c'est l'intérêt de la version : au **même** seuil elle est à la fois plus
+autonome et plus juste (§ 6.7 bis). Ce que ce couple rend sur le modèle
+livré est dans `model.json`, pas ici.
 
 **La marge est aujourd'hui sans effet** : les scores d'un softmax somment à 1,
 donc un premier candidat à 0,70 laisse au plus 0,30 au deuxième — la marge vaut
@@ -1203,7 +1251,7 @@ Deux enseignements de cet entraînement, tous deux corrigés :
 > **C'est le plan d'origine, pas la recette livrée**, et il est gardé pour
 > ce qu'il montre du chemin parcouru. Quatre points n'ont jamais été suivis
 > et un lecteur pressé les prendrait pour l'existant : la tête n'a **pas**
-> de classe « autre » — le modèle a 1 457 sorties, pas 1 458, et le § 12.7
+> de classe « autre » — le modèle n'a que des sorties d'espèces, et le § 12.7
 > explique pourquoi elle n'a toujours pas été faite ; EfficientNet-Lite0 n'a
 > jamais été essayé ; le réglage fin ne dégèle pas « tout le réseau » mais
 > ses cent dernières couches (§ 6.7) ; et le déséquilibre est traité par des
@@ -1270,8 +1318,9 @@ référence par classe (`test/fixtures/`), correspondance `labels.txt` ↔
 ## 8. Mises à jour du modèle
 
 Une version livrée = un numéro de plus dans `model.json`, donc un nom de plus
-à l'écran : après Iris 6 vient Iris 7. Rien d'autre à renommer — ni le code,
-ni les traductions, qui reçoivent le nom composé (§ 0).
+à l'écran : après Iris 7 est venu Iris 8, et la suivante s'appellera Iris 9
+sans qu'on l'écrive nulle part. Rien d'autre à renommer — ni le code, ni les
+traductions, qui reçoivent le nom composé (§ 0).
 
 Deux options, à trancher au moment de la phase 2 :
 
@@ -1386,21 +1435,37 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
 | images, doublons, orientation, réduction | `tools/plant_dataset/tests/test_images_dedup.py` |
 | manifeste, attributions | `tools/plant_dataset/tests/test_manifest.py` |
 | répartition | `tools/plant_dataset/tests/test_splits.py` |
+| entraînement, export, retaille, courbe des tailles | `tools/plant_model/tests/` |
 | règle de repli | `test/domain/identification/identification_policy_test.dart` |
+| réponse au genre | `test/domain/identification/genus_answer_test.dart` |
+| crans de vraisemblance | `test/domain/identification/identification_confidence_test.dart` |
+| proposition de la seconde photo | `test/domain/identification/second_photo_offer_test.dart` |
 | cascade : acceptation, repli, réglage, quota, cache, erreurs, fusion multi-photos, métriques | `test/domain/identification/cascade_identifier_test.dart` |
 | rattachement au catalogue | `test/domain/identification/catalog_mapping_test.dart` |
 | Pl@ntNet : parse | `test/data/plantnet_identifier_test.dart` |
+| nom affiché du modèle, et la fiche du § 0 contre `model.json` | `test/core/model_name_test.dart`, `test/docs/model_facts_test.dart` |
 
 ```bash
-cd tools/plant_dataset && python3 -m pytest -q      # 124 tests
-flutter test                                        # dont 33 pour l'identification
+(cd tools/plant_dataset && python3 -m pytest -q)    # sans réseau
+(cd tools/plant_model   && python3 -m pytest -q)    # sans carte graphique
+flutter test
 ```
+
+Le nombre de tests ne s'écrit pas ici : il change à chaque commit, et un
+compte faux dans un document est plus coûteux qu'un compte absent.
 
 ## 12. Ce qu'il reste à faire, dans l'ordre
 
-> **État au 9 septembre 2026.** Les § 12.1, 12.5 et 12.6 sont faits et livrés
-> dans Iris 7 : ils valent ensemble **+7,26 points de top-1** à armes égales
-> contre Iris 6 (§ 6.7). Le reste attend.
+> **État au 9 septembre 2026.** Les § 12.1, 12.5 et 12.6 ont été livrés dans
+> Iris 7 : ils valaient ensemble **+7,26 points de top-1** à armes égales
+> contre Iris 6 (§ 6.7). Les § 12.3, 12.4, 12.10, 12.17 et 12.19 ont suivi, et
+> l'Iris 8 livré rend **+6,7 points de top-1** sur Iris 7 (§ 6.7 bis) — non
+> pas en élargissant le répertoire, mais en entraînant large pour exposer
+> étroit. La suite est cadrée au § 13. Le reste attend.
+
+> Les numéros d'espèces et de classes cités dans ce § 12 sont ceux de l'Iris 7,
+> sur lequel les mesures ont été faites. Ce que le modèle livré expose
+> aujourd'hui est dans la fiche du § 0.
 
 La carte graphique change l'économie de cette liste. Une passe à l'heure au
 lieu de dix ([`10-entrainer-sur-son-poste.md`](10-entrainer-sur-son-poste.md))
@@ -1940,9 +2005,9 @@ tomber la confiance moyenne de 5,7 points sans que la justesse baisse
 précisément le défaut que la calibration de température devait corriger. Ce
 levier-là a perdu de son intérêt.
 
-De l'autre, aucune calibration ne résout le vrai problème. **Un classifieur à
-1 457 sorties de plantes n'a aucun moyen de dire « ceci n'est pas une
-plante » :** il répartit sa masse entre les espèces qu'il connaît, quoi qu'on
+De l'autre, aucune calibration ne résout le vrai problème. **Un classifieur
+dont toutes les sorties sont des plantes n'a aucun moyen de dire « ceci n'est
+pas une plante » :** il répartit sa masse entre les espèces qu'il connaît, quoi qu'on
 lui montre. Devant un chat, il répond une plante — la seule question est avec
 quelle assurance.
 
@@ -2341,6 +2406,11 @@ mais mesurés séparément :
 5. les recettes, une à la fois, comme pour la v7.
 
 ### 12.12 Ce que le modèle rend sur les plantes d'appartement
+
+*Mesuré sur l'Iris 7 ; ce que le modèle livré annonce depuis est dans la
+fiche du § 0. Ce que la section établit — l'écart entre les plantes
+d'appartement et le reste, et le prix de l'étendue — ne dépend pas de la
+version.*
 
 Le top-1 publié — **0,5961** — est une moyenne sur 1 457 espèces dont la
 plupart sont sauvages, européennes, et que personne ne photographie dans son

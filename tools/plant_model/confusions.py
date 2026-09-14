@@ -61,9 +61,10 @@ def genre(internal_id: str, noms: dict[str, str] | None = None) -> str:
 def famille(internal_id: str, familles: dict[str, str] | None = None) -> str:
     """La famille d'une espèce, quand `plants.csv` la donne.
 
-    Elle la donne pour les 1 457 classes de l'Iris 7, mais l'outil doit
-    tourner sans : une famille inconnue vaut son propre identifiant, donc
-    elle ne se confond avec aucune autre.
+    Elle la donnait pour les 1 457 classes de l'Iris 7 et la donne pour
+    celles du modèle livré, mais l'outil doit tourner sans : une famille
+    inconnue vaut son propre identifiant, donc elle ne se confond avec
+    aucune autre.
     """
     if familles and internal_id in familles:
         return familles[internal_id].strip().lower()
