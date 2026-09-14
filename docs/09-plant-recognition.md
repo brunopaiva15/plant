@@ -2674,11 +2674,48 @@ Le plancher se lit déjà dans les chiffres du § 12.4 :
 
 Ce sont des planchers : ils ne comptent que les cas où la *première*
 réponse tombait dans le bon genre, pas ceux où la masse du genre était
-juste mais répartie. Le vrai chiffre demande de garder les distributions —
-un mode `--proba` dans `confusions.py`, une passe de trois quarts d'heure.
+juste mais répartie.
 
 Et à 5 000 classes, plus d'espèces par genre : ce que ça rapporte augmente
 avec le catalogue, contrairement au top-1.
+
+#### Le chiffre, mesuré
+
+`genre.py` garde les distributions et somme par genre ; le plancher devient
+un chiffre. Sur les 6 000 images de test d'Iris 8, **62 % portent sur une
+espèce dont le genre en compte plusieurs** — les seules où le genre ajoute
+quelque chose.
+
+| top-1 | |
+|---|---|
+| espèce | 0,6543 |
+| **genre** | **0,7130** |
+
+Six points au-dessus de l'espèce, et le plancher du § 12.4 était bien un
+plancher.
+
+Ce que ça donne dans la cascade, masses sommées sur les **cinq** candidates
+affichées et non sur les 1 444 classes — la configuration réelle de
+l'application, au seuil 0,70 :
+
+| | le genre répond | et il a raison |
+|---|---|---|
+| toutes les photos | 5,5 % | 89,9 % |
+| photos en pot | 6,6 % | 88,7 % |
+
+**Une réponse sur dix-huit**, juste neuf fois sur dix. C'est peu, et c'est
+attendu : l'espèce garde la priorité, le genre ne parle que là où elle
+renonçait. Le taux monte avec le seuil — à 0,80, 6,3 % des photos et 93,4 %
+de justesse — parce qu'un seuil plus haut fait renoncer l'espèce plus
+souvent et laisse au genre les cas qu'il traite bien.
+
+> **Ce que la rareté implique pour le test.** Une fonctionnalité qui répond
+> une fois sur dix-huit ne se vérifie pas en scannant trois plantes : il
+> faudrait onze scans pour une chance sur deux. Elle se vérifie par la
+> mesure ci-dessus et par ses tests unitaires, pas à l'œil. Le signe visible,
+> pour qui veut la provoquer : la première ligne doit annoncer « Possible »
+> et non « Probable » — au-dessus de 0,70 l'espèce ne renonce pas, et
+> `genusAnswer()` rend `null` sans regarder plus loin.
 
 ### 12.16 Les cultivars : un second axe, pas des classes
 
@@ -3000,10 +3037,39 @@ photo de salon n'est pas une observation naturaliste. Il commence par
 > Iris ni Pl@ntNet ne confirment, et liste les espèces hors catalogue comme
 > candidates.
 
-**3. Répondre au niveau du genre.** Aucun entraînement : sommer le softmax
-par genre porte le top-1 d'au moins 5,3 points, et « un épicéa, espèce
-incertaine » est une réponse vraie là où cinq noms n'en sont pas une. Le
-gain grandit avec le catalogue, contrairement au top-1.
+> **Mis en service le 14 septembre 2026**, vérifié de bout en bout sur
+> téléphone : la feuille de consentement s'ouvre une fois, le premier
+> enregistrement n'écrit rien — c'est lui qui pose la question, et il passe
+> par l'enregistreur muet —, les trois `kind` arrivent corrects, les photos
+> partent à 640 px pour ~67 Ko, et retenir un genre n'écrit rien, comme
+> prévu.
+>
+> **Les quatre premiers scans terrain, et ce qu'ils ne prouvent pas.**
+> *Epipremnum pinnatum* rendu *Dieffenbachia seguine* à 0,859 — donc
+> `accepted`, affirmé sans réserve, et les deux espèces sont au catalogue.
+> *Ficus elastica* rendu plante ZZ, *Peperomia obtusifolia*, *Ficus
+> benjamina* : absent du top-3 alors que le modèle expose neuf *Ficus*, et
+> les trois candidates partagent une feuille épaisse et luisante — le
+> regroupement se fait sur la texture, pas sur le port. Un pin sans aucune
+> proposition locale, la cascade passée à Pl@ntNet. **n = 4 : ça nomme une
+> catégorie, ça n'en donne pas la fréquence.** Mais l'écart avec les 0,6543
+> de top-1 du jeu de test est précisément l'écart de domaine que ce chantier
+> existe pour combler, et il se mesurera quand les lignes s'accumuleront.
+>
+> **Ce que ces cas apprennent sur le reste de l'architecture** : l'erreur
+> confiante est invisible à tout mécanisme fondé sur la confiance. Ni le
+> seuil, ni la marge, ni le genre, ni le repli ne voient un faux à 0,859 —
+> seule la correction humaine le révèle. C'est l'argument le plus fort pour
+> ce chantier, et il ne se lit dans aucune métrique agrégée.
+
+**3. ✅ Répondre au niveau du genre.** Aucun entraînement : sommer le
+softmax par genre porte le top-1 de **5,9 points** sur le modèle livré —
+0,6543 à l'espèce, 0,7130 au genre (§ 12.15) —, et « un épicéa, espèce
+incertaine » est une réponse vraie là où cinq noms n'en sont pas une. Dans
+la cascade, où l'espèce garde la priorité et où les masses ne se somment
+que sur les cinq candidates affichées, le genre répond sur **5,5 %** des
+photos et a raison **neuf fois sur dix**. Le gain grandit avec le
+catalogue, contrairement au top-1.
 
 **4. Nourrir les 76 espèces faibles — le domaine avant le volume.**
 `(potted)` de Commons, branché à la v8 (§ 12.17), et `captive=true`
