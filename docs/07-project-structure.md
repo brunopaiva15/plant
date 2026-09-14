@@ -63,6 +63,7 @@ test/
 ├── data/infomaniak_cutting_refiner_test.dart   ce qui part à l'IA, ce qu'on garde de la réponse
 ├── features/cutting_guide_test.dart            le guide : six étapes, trois sorties, texte précisé
 ├── core/connectivity_test.dart                 état du réseau, garde des appels
+├── core/reachability_test.dart                 la sonde, sur de vraies connexions
 ├── features/shared_links_offline_test.dart     hors ligne, l'écran le dit au lieu de tourner
 ├── assets/cutting_sequences_test.dart          les six séquences sont là et s'animent
 └── l10n/arb_tone_test.dart       ton des textes, sur les quatre ARB

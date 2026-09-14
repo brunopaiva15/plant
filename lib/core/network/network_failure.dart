@@ -6,13 +6,18 @@ import 'package:http/http.dart' as http;
 /// Délai au-delà duquel un appel réseau est tenu pour perdu.
 ///
 /// Sans lui, un appareil privé de réseau ne reçoit ni réponse ni erreur : la
-/// requête reste en l'air et l'écran tourne indéfiniment. Vingt secondes
-/// laissent passer une connexion lente et coupent court au reste.
+/// requête reste en l'air et l'écran tourne indéfiniment. C'est le filet, pas
+/// la règle : hors ligne, la sonde de joignabilité arrête l'appel avant qu'il
+/// ne parte, et ce délai ne joue que pour un serveur joignable mais muet.
+///
+/// Douze secondes : une requête Supabase se compte en dixièmes de seconde, et
+/// au-delà d'une douzaine on ne fait plus attendre quelqu'un devant un écran
+/// qui tourne.
 ///
 /// Les services HTTP de l'application bornent déjà leurs appels un par un ;
 /// cette durée est celle des clients qui ne le font pas d'eux-mêmes —
 /// Supabase et ses requêtes Postgrest.
-const Duration networkTimeout = Duration(seconds: 20);
+const Duration networkTimeout = Duration(seconds: 12);
 
 /// Le réseau est hors de portée : l'appel n'a pas été tenté, ou n'est jamais
 /// sorti de l'appareil.

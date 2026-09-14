@@ -45,13 +45,23 @@ Sans connexion, leurs requêtes ne partaient pas *et ne revenaient pas* — un
 
 - **Constat.** `ConnectivityController` (`connectivityProvider`) tient un
   `NetworkStatus`, tenu à jour par une sonde de joignabilité
-  (`Reachability` → `DnsReachability`, une résolution DNS bornée à cinq
-  secondes sur deux hôtes). Elle part au démarrage, à chaque retour au premier
-  plan, et toutes les huit secondes tant que le réseau manque — jamais quand
+  (`Reachability` → `SocketReachability`). Elle part au lancement — `main` lit
+  le provider avant le premier écran —, à chaque retour au premier plan, et
+  toutes les huit secondes tant que le réseau manque ; jamais quand
   l'application est en ligne, jamais en arrière-plan. L'application démarre
   « en ligne » : on ne conclut pas avant d'avoir regardé.
+- **La sonde ouvre une connexion, elle ne résout pas un nom.** Une résolution
+  DNS ne prouve rien sur un téléphone : le résolveur répond de son cache, et
+  sur un iPhone les noms courants y sont toujours. En mode avion, l'appareil
+  se croyait joignable, la requête partait quand même et l'écran attendait son
+  délai d'expiration — le tourniquet sans fin, exactement. Trois destinations
+  sont tentées **en même temps**, la première qui répond suffit : le serveur de
+  l'application, puis `1.1.1.1` et `8.8.8.8` en TCP sur 443, écrits en chiffres
+  pour se passer de DNS. Trois plutôt qu'une parce que se tromper en disant
+  « hors ligne » est la pire erreur des deux : elle éteint des fonctions qui
+  marchaient.
 - **Branchement.** Par défaut `reachabilityProvider` rend une sonde inerte qui
-  répond « en ligne » ; c'est `main` qui installe `DnsReachability`, comme il
+  répond « en ligne » ; c'est `main` qui installe `SocketReachability`, comme il
   installe la base et les préférences. Un test qui ne parle pas du réseau n'a
   donc ni attente ni minuteur, et celui qui joue une coupure passe sa propre
   sonde.
@@ -61,10 +71,18 @@ Sans connexion, leurs requêtes ne partaient pas *et ne revenaient pas* — un
   qu'après confirmation par la sonde — un serveur muet n'est pas un réseau
   coupé. Les providers concernés observent `connectivityProvider`, si bien que
   le retour du réseau relance la requête et remplit l'écran tout seul.
+- **Pas de reprise invisible.** Riverpod réessaie de lui-même un provider en
+  erreur — dix fois, en doublant l'attente — et garde l'état sur
+  `AsyncLoading` pendant ce temps : la branche `error:` d'un écran ne
+  s'affichait qu'après plusieurs minutes, tourniquet compris. Le conteneur de
+  `main` et les providers réseau portent donc `retry: noRetry` ; la reprise est
+  celle qu'on voit, le bouton « Réessayer » et le retour du réseau.
 - **Délais.** Les clients HTTP bornaient déjà leurs appels ; Postgrest, non.
   Toute requête Supabase — partage, collaboration, synchronisation — est
-  bornée par `networkTimeout` (20 s), les transferts de photos par deux
-  minutes. Une synchronisation qui échoue sur le réseau passe en
+  bornée par `networkTimeout` (12 s), les transferts de photos par deux
+  minutes. C'est le filet, pas la règle : hors ligne la sonde arrête l'appel
+  avant qu'il ne parte, et ce délai ne joue que pour un serveur joignable mais
+  muet. Une synchronisation qui échoue sur le réseau passe en
   `SyncStatus.offline` plutôt qu'en erreur, et repart dès que la connexion
   revient (`SyncCoordinator` écoute `connectivityProvider`).
 - **Ce que voit l'utilisateur.** `OfflineNotice` remplace le contenu d'un écran
