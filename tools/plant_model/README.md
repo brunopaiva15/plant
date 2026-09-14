@@ -5,6 +5,37 @@ La vue d'ensemble est dans
 [`docs/09-plant-recognition.md`](../../docs/09-plant-recognition.md) ; le jeu
 d'images est construit par [`../plant_dataset`](../plant_dataset/README.md).
 
+## Les deux recettes de prétraitement, et ce qui les sépare
+
+```bash
+python3 recettes.py --dataset /data2/dataset-v8 --modele ../../assets/model --echantillon 800
+```
+
+Les images d'entraînement sont réduites **à la collecte** : cadre entier à
+384 px de grand côté, en LANCZOS. `read_and_square` prend ensuite leur carré
+central — 288 px pour une 4:3 — et l'agrandit à `LOAD_SIZE`.
+`tflite_plant_model.dart` fait l'inverse dans l'autre ordre : carré
+**d'abord**, réduction à `source_size` (448 selon `model.json`) ensuite, puis
+descente à `LOAD_SIZE`. Le réseau apprend sur du flou et reçoit du net.
+
+L'outil compare trois recettes sur le même modèle et les mêmes images :
+celle de l'entraînement (la référence), celle de l'application, et une
+correction — réduire le cadre entier à 384 avant le carré, comme la
+collecte. Si l'application s'écarte et que la correction rejoint, le défaut
+est réel et se corrige par un export, sans réentraîner.
+
+**Il re-télécharge les originaux depuis `manifest.jsonl`**, et ce n'est pas
+un luxe : sur le jeu tel qu'il est stocké, le carré vaut 288 px, la
+condition `carré > 448` de l'application est fausse, la moyenne de zone est
+sautée et les deux recettes coïncident au pixel près. L'écart n'existe que
+sur un original haute résolution.
+
+Ordre de grandeur mesuré sur des images de synthèse, écart moyen par canal
+sur 0-255 : **0,06 sur un dégradé lisse, 11,3 sur une texture fine**. Le
+défaut ne touche pas les aplats, il touche le détail — nervures, écorce,
+pilosité. La correction ramène ces 11,3 à 6,1 ; le reste est le filtre, que
+l'application ne peut pas égaler exactement.
+
 ## Le jeu pré-découpé au carré
 
 ```bash
