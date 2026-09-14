@@ -48,15 +48,16 @@ abstract final class DemoSeed {
     final calendar = DriftCalendarRepository(db, gardenId);
     final tasks = DriftTaskRepository(db, gardenId);
 
-    // Les textes libres suivent la langue du navigateur : la démo sert aussi
-    // aux visuels du magasin, en français et en anglais.
-    final en = (language ?? PlatformDispatcher.instance.locale.languageCode) == 'en';
+    // Les textes libres suivent la langue de l'app : la démo sert aussi aux
+    // visuels du magasin, dans les quatre langues.
+    final lang = language ?? PlatformDispatcher.instance.locale.languageCode;
+    String tr(String fr, String en, String de, String it) => switch (lang) { 'en' => en, 'de' => de, 'it' => it, _ => fr };
     final all = await locations.watchAll().first;
     String? loc(String name) => all.where((l) => l.name.toLowerCase().startsWith(name)).firstOrNull?.id;
-    final salon = loc('salon') ?? loc('living') ?? (await locations.create(name: en ? 'Living room' : 'Salon', icon: '🛋️')).id;
+    final salon = loc('salon') ?? loc('living') ?? (await locations.create(name: tr('Salon', 'Living room', 'Wohnzimmer', 'Soggiorno'), icon: '🛋️')).id;
     final cuisine = loc('cuisine') ?? loc('kitchen');
     final balcon = loc('balcon') ?? loc('balcony');
-    final bureau = (await locations.create(name: en ? 'Office' : 'Bureau', icon: '🖥️')).id;
+    final bureau = (await locations.create(name: tr('Bureau', 'Office', 'Büro', 'Studio'), icon: '🖥️')).id;
 
     final now = DateTime.now();
     Future<Plant> mk(String name, String? species, String? location, {int water = 7, int fert = 30, DateTime? acquired}) =>
@@ -66,8 +67,8 @@ abstract final class DemoSeed {
     final pilea = await mk('Pilea', 'Pilea peperomioides', salon, water: 5);
     final ficus = await mk('Ficus lyrata', 'Ficus lyrata', bureau, water: 8);
     final calathea = await mk('Calathea', 'Goeppertia orbifolia', cuisine, water: 4, fert: 21);
-    final olivier = await mk(en ? 'Olive tree' : 'Olivier', 'Olea europaea', balcon, water: 6, fert: 45);
-    final basilic = await mk(en ? 'Basil' : 'Basilic', 'Ocimum basilicum', balcon, water: 2, fert: 14);
+    final olivier = await mk(tr('Olivier', 'Olive tree', 'Olivenbaum', 'Olivo'), 'Olea europaea', balcon, water: 6, fert: 45);
+    final basilic = await mk(tr('Basilic', 'Basil', 'Basilikum', 'Basilico'), 'Ocimum basilicum', balcon, water: 2, fert: 14);
     final pothos = await mk('Pothos', 'Epipremnum aureum', bureau, water: 9);
     final hoya = await mk('Hoya', 'Hoya carnosa', salon, water: 12, fert: 60);
 
@@ -93,7 +94,7 @@ abstract final class DemoSeed {
     await actions.log(NewAction(plantId: olivier.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 2))));
     await actions.log(NewAction(plantId: hoya.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 7))));
     await actions.log(NewAction(plantId: pothos.id, typeKey: 'watering', occurredAt: now.subtract(const Duration(days: 3))));
-    await actions.log(NewAction(plantId: monstera.id, typeKey: 'note', occurredAt: now.subtract(const Duration(days: 12)), notes: en ? 'New leaf on its way.' : 'Nouvelle feuille en train de sortir.'));
+    await actions.log(NewAction(plantId: monstera.id, typeKey: 'note', occurredAt: now.subtract(const Duration(days: 12)), notes: tr('Nouvelle feuille en train de sortir.', 'New leaf on its way.', 'Neues Blatt im Anmarsch.', 'Sta spuntando una foglia nuova.')));
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'repotting', occurredAt: now.subtract(const Duration(days: 40))));
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'measurement', occurredAt: now.subtract(const Duration(days: 90)), metadata: {'kind': 'height', 'value': 34, 'unit': 'cm'}));
     await actions.log(NewAction(plantId: monstera.id, typeKey: 'measurement', occurredAt: now.subtract(const Duration(days: 30)), metadata: {'kind': 'height', 'value': 42, 'unit': 'cm'}));
@@ -106,19 +107,19 @@ abstract final class DemoSeed {
       plantId: calathea.id,
       typeKey: 'note',
       occurredAt: now.subtract(const Duration(days: 3)),
-      notes: en ? 'Brown, dry leaf edges on several leaves.' : 'Bords bruns et secs sur plusieurs feuilles.',
-      metadata: {DiagnosisRecord.metadataKey: _demoDiagnosis(en).toJson()},
+      notes: tr('Bords bruns et secs sur plusieurs feuilles.', 'Brown, dry leaf edges on several leaves.', 'Braune, trockene Blattränder an mehreren Blättern.', 'Bordi bruni e secchi su diverse foglie.'),
+      metadata: {DiagnosisRecord.metadataKey: _demoDiagnosis(tr).toJson()},
     ));
 
-    final tropical = await tags.create(en ? 'Tropical' : 'Tropicale');
-    final rare = await tags.create(en ? 'Rare' : 'Rare');
+    final tropical = await tags.create(tr('Tropicale', 'Tropical', 'Tropisch', 'Tropicale'));
+    final rare = await tags.create(tr('Rare', 'Rare', 'Selten', 'Rara'));
     await tags.setPlantTags(monstera.id, [tropical.id]);
     await tags.setPlantTags(calathea.id, [tropical.id, rare.id]);
     await plants.setFavorite(monstera.id, true);
 
     await inventory.create(
       category: InventoryCategory.fertilizer,
-      name: en ? 'Green plant fertiliser' : 'Engrais plantes vertes',
+      name: tr('Engrais plantes vertes', 'Green plant fertiliser', 'Grünpflanzendünger', 'Concime per piante verdi'),
       quantity: 420,
       unit: 'ml',
       lowThreshold: 100,
@@ -128,29 +129,29 @@ abstract final class DemoSeed {
       phosphorus: 3,
       potassium: 5,
     );
-    await inventory.create(category: InventoryCategory.soil, name: en ? 'Tropical potting mix' : 'Terreau tropical', quantity: 7, unit: 'L', lowThreshold: 5);
+    await inventory.create(category: InventoryCategory.soil, name: tr('Terreau tropical', 'Tropical potting mix', 'Tropenerde', 'Terriccio tropicale'), quantity: 7, unit: 'L', lowThreshold: 5);
     await inventory.create(category: InventoryCategory.substrate, name: 'Perlite', quantity: 2, unit: 'L', lowThreshold: 3);
-    await inventory.create(category: InventoryCategory.pot, name: en ? 'Ø15 cm pots' : 'Pots Ø15 cm', quantity: 4, unit: '');
+    await inventory.create(category: InventoryCategory.pot, name: tr('Pots Ø15 cm', 'Ø15 cm pots', 'Töpfe Ø15 cm', 'Vasi Ø15 cm'), quantity: 4, unit: '');
 
     // Un groupe d'inventaire, avec un article étiqueté.
-    final etagere = await inventory.createGroup(label: en ? 'Balcony shelf' : 'Étagère du balcon', emoji: '🪟');
-    final graines = await inventory.create(category: InventoryCategory.seed, name: en ? 'Basil seeds' : 'Graines de basilic', quantity: 3, unit: '', groupId: etagere.id);
+    final etagere = await inventory.createGroup(label: tr('Étagère du balcon', 'Balcony shelf', 'Balkonregal', 'Scaffale del balcone'), emoji: '🪟');
+    final graines = await inventory.create(category: InventoryCategory.seed, name: tr('Graines de basilic', 'Basil seeds', 'Basilikumsamen', 'Semi di basilico'), quantity: 3, unit: '', groupId: etagere.id);
     await inventory.setItemTags(graines.id, [rare.id]);
 
     // Deux événements de calendrier et leur catégorie.
-    final sorties = await calendar.createCategory(label: en ? 'Outings' : 'Sorties', emoji: '🛒');
-    await calendar.create(NewCalendarEntry(title: en ? 'Plant market' : 'Marché aux plantes', startAt: now.add(const Duration(days: 3)), categoryId: sorties.id, reminderMinutes: 60));
+    final sorties = await calendar.createCategory(label: tr('Sorties', 'Outings', 'Ausflüge', 'Uscite'), emoji: '🛒');
+    await calendar.create(NewCalendarEntry(title: tr('Marché aux plantes', 'Plant market', 'Pflanzenmarkt', 'Mercato delle piante'), startAt: now.add(const Duration(days: 3)), categoryId: sorties.id, reminderMinutes: 60));
     await calendar.create(NewCalendarEntry(
-      title: en ? 'Spring repotting' : 'Rempotage de printemps',
+      title: tr('Rempotage de printemps', 'Spring repotting', 'Umtopfen im Frühjahr', 'Rinvaso di primavera'),
       startAt: now.add(const Duration(days: 9)),
       endAt: now.add(const Duration(days: 10)),
       plantId: ficus.id,
-      notes: en ? 'Get potting mix and a wider pot.' : 'Prévoir du terreau et un pot plus large.',
+      notes: tr('Prévoir du terreau et un pot plus large.', 'Get potting mix and a wider pot.', 'Erde und einen breiteren Topf besorgen.', 'Procurare terriccio e un vaso più largo.'),
     ));
 
     // Une tâche libre ouverte, et une plante archivée pour les archives.
-    await tasks.create(NewTask(title: en ? 'Order potting mix' : 'Commander du terreau', dueAt: now.add(const Duration(days: 1))));
-    final disparue = await mk(en ? 'Fern' : 'Fougère', 'Nephrolepis exaltata', cuisine, acquired: DateTime(now.year - 2, 5, 4));
+    await tasks.create(NewTask(title: tr('Commander du terreau', 'Order potting mix', 'Blumenerde bestellen', 'Ordinare del terriccio'), dueAt: now.add(const Duration(days: 1))));
+    final disparue = await mk(tr('Fougère', 'Fern', 'Farn', 'Felce'), 'Nephrolepis exaltata', cuisine, acquired: DateTime(now.year - 2, 5, 4));
     await plants.archive([disparue.id], reason: 'died');
 
     // Une routine saisonnière pour la variété.
@@ -191,39 +192,83 @@ abstract final class DemoSeed {
 
   /// Ce qu'une analyse dit d'une Calathea aux bords bruns : l'air sec en
   /// tête, les tétranyques en doute, l'excès d'eau écarté.
-  static DiagnosisRecord _demoDiagnosis(bool en) => DiagnosisRecord(
-        symptoms: en ? 'Leaf edges have been browning for two weeks.' : 'Les bords des feuilles brunissent depuis deux semaines.',
+  static DiagnosisRecord _demoDiagnosis(String Function(String, String, String, String) tr) => DiagnosisRecord(
+        symptoms: tr(
+          'Les bords des feuilles brunissent depuis deux semaines.',
+          'Leaf edges have been browning for two weeks.',
+          'Die Blattränder werden seit zwei Wochen braun.',
+          'I bordi delle foglie imbruniscono da due settimane.',
+        ),
         diagnosis: Diagnosis(
-          summary: en
-              ? 'Brown, dry tips and edges on several leaves, blades curling slightly. No visible sign of pests.'
-              : "Pointes et bords bruns et secs sur plusieurs feuilles, limbe qui s'enroule légèrement. Aucune trace visible de parasites.",
+          summary: tr(
+            "Pointes et bords bruns et secs sur plusieurs feuilles, limbe qui s'enroule légèrement. Aucune trace visible de parasites.",
+            'Brown, dry tips and edges on several leaves, blades curling slightly. No visible sign of pests.',
+            'Braune, trockene Spitzen und Ränder an mehreren Blättern, Blattspreiten leicht eingerollt. Keine sichtbaren Schädlinge.',
+            'Punte e bordi bruni e secchi su diverse foglie, lamina leggermente arrotolata. Nessuna traccia visibile di parassiti.',
+          ),
           causes: [
             DiagnosisCause(
-              title: en ? 'Low air humidity' : 'Air trop sec',
+              title: tr('Air trop sec', 'Low air humidity', 'Zu trockene Luft', "Aria troppo secca"),
               problemId: '013',
               likelihood: Likelihood.likely,
-              explanation: en
-                  ? 'Dry brown edges on old and young leaves alike are the mark of air too dry for a prayer plant, especially near a heater.'
-                  : "Des bords bruns et secs, sur les feuilles anciennes comme sur les jeunes, sont la marque d'un air trop sec pour une Marantacée, surtout près d'un radiateur.",
-              actions: en
-                  ? ['Group the plant with others, or stand the pot on a tray of damp clay pebbles', 'Move it away from radiators and draughts', 'Trim the dry parts back to healthy tissue']
-                  : ["Regrouper la plante avec d'autres, ou poser le pot sur un lit de billes d'argile humides", "L'éloigner des radiateurs et des courants d'air", 'Couper les parties sèches au ras du tissu sain'],
+              explanation: tr(
+                "Des bords bruns et secs, sur les feuilles anciennes comme sur les jeunes, sont la marque d'un air trop sec pour une Marantacée, surtout près d'un radiateur.",
+                'Dry brown edges on old and young leaves alike are the mark of air too dry for a prayer plant, especially near a heater.',
+                'Trockene braune Ränder an alten wie an jungen Blättern sprechen für zu trockene Luft, besonders in der Nähe einer Heizung.',
+                "Bordi bruni e secchi, sulle foglie vecchie come su quelle giovani, indicano un'aria troppo secca, soprattutto vicino a un radiatore.",
+              ),
+              actions: [
+                tr("Regrouper la plante avec d'autres, ou poser le pot sur un lit de billes d'argile humides",
+                   'Group the plant with others, or stand the pot on a tray of damp clay pebbles',
+                   'Die Pflanze zu anderen stellen oder den Topf auf feuchte Blähtonkugeln setzen',
+                   "Raggruppare la pianta con altre, o posare il vaso su argilla espansa umida"),
+                tr("L'éloigner des radiateurs et des courants d'air",
+                   'Move it away from radiators and draughts',
+                   'Von Heizkörpern und Zugluft wegstellen',
+                   'Allontanarla dai radiatori e dalle correnti'),
+                tr('Couper les parties sèches au ras du tissu sain',
+                   'Trim the dry parts back to healthy tissue',
+                   'Die trockenen Stellen bis zum gesunden Gewebe zurückschneiden',
+                   'Tagliare le parti secche a filo del tessuto sano'),
+              ],
             ),
             DiagnosisCause(
-              title: en ? 'Spider mites' : 'Tétranyques',
+              title: tr('Tétranyques', 'Spider mites', 'Spinnmilben', 'Acari tetranichidi'),
               problemId: '060',
               likelihood: Likelihood.possible,
-              explanation: en
-                  ? 'Curling blades and fine speckling can announce spider mites, which thrive in dry air. No webbing visible in the photo.'
-                  : "Un limbe qui s'enroule et de fines mouchetures peuvent annoncer des tétranyques, qui prospèrent dans l'air sec. Aucune toile visible sur la photo.",
-              actions: en ? ['Check the undersides of the leaves with a magnifier', 'Shower the foliage with lukewarm water'] : ['Examiner le revers des feuilles à la loupe', "Doucher le feuillage à l'eau tiède"],
+              explanation: tr(
+                "Un limbe qui s'enroule et de fines mouchetures peuvent annoncer des tétranyques, qui prospèrent dans l'air sec. Aucune toile visible sur la photo.",
+                'Curling blades and fine speckling can announce spider mites, which thrive in dry air. No webbing visible in the photo.',
+                'Eingerollte Blätter und feine Sprenkel können auf Spinnmilben deuten, die trockene Luft lieben. Auf dem Foto sind keine Gespinste zu sehen.',
+                "Una lamina arrotolata e fini punteggiature possono annunciare acari tetranichidi, che prosperano nell'aria secca. Nessuna ragnatela visibile nella foto.",
+              ),
+              actions: [
+                tr('Examiner le revers des feuilles à la loupe',
+                   'Check the undersides of the leaves with a magnifier',
+                   'Die Blattunterseiten mit der Lupe prüfen',
+                   'Esaminare il rovescio delle foglie con la lente'),
+                tr("Doucher le feuillage à l'eau tiède",
+                   'Shower the foliage with lukewarm water',
+                   'Das Laub mit lauwarmem Wasser abbrausen',
+                   'Docciare il fogliame con acqua tiepida'),
+              ],
             ),
             DiagnosisCause(
-              title: en ? 'Waterlogging' : "Excès d'eau",
+              title: tr("Excès d'eau", 'Waterlogging', 'Staunässe', "Eccesso d'acqua"),
               problemId: '002',
               likelihood: Likelihood.unlikely,
-              explanation: en ? 'The potting mix does not look soaked and the leaves stay firm.' : "Le terreau n'a pas l'air détrempé et les feuilles restent fermes.",
-              actions: en ? ['Let the top two centimetres dry out between waterings'] : ['Laisser sécher les deux premiers centimètres entre deux arrosages'],
+              explanation: tr(
+                "Le terreau n'a pas l'air détrempé et les feuilles restent fermes.",
+                'The potting mix does not look soaked and the leaves stay firm.',
+                'Die Erde wirkt nicht durchnässt und die Blätter bleiben fest.',
+                'Il terriccio non sembra inzuppato e le foglie restano sode.',
+              ),
+              actions: [
+                tr('Laisser sécher les deux premiers centimètres entre deux arrosages',
+                   'Let the top two centimetres dry out between waterings',
+                   'Die obersten zwei Zentimeter zwischen zwei Wassergaben abtrocknen lassen',
+                   'Lasciare asciugare i primi due centimetri tra due annaffiature'),
+              ],
             ),
           ],
         ),

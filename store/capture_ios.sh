@@ -2,8 +2,8 @@
 # Captures réelles de l'app sur le simulateur iPhone, pour les visuels du
 # magasin, puis composition. À lancer depuis un Mac avec Xcode et Flutter :
 #
-#   store/capture_ios.sh              # fr puis en, sur le plus grand iPhone installé
-#   LANGS=fr store/capture_ios.sh     # une langue
+#   store/capture_ios.sh              # les quatre langues, sur le plus grand iPhone installé
+#   LANGS="fr en" store/capture_ios.sh   # deux langues
 #   DEVICE="iPhone 17 Pro" store/capture_ios.sh
 #   STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh   # rejouer deux scènes
 #
@@ -18,7 +18,7 @@ cd "$(dirname "$0")/.."
 # Les visuels restent composés au format 6,7 pouces par compose.py, quelle
 # que soit la taille de la capture.
 DEVICE="${DEVICE:-}"
-LANGS="${LANGS:-fr en}"
+LANGS="${LANGS:-fr en de it}"
 
 UDID=$(xcrun simctl list devices available -j | python3 -c '
 import json, sys

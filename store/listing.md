@@ -42,8 +42,5 @@ d'espace après les virgules, qui coûterait un caractère pour rien.
 
 ## Reste à faire
 
-- Les visuels ne sont générés qu'en `fr/` et `en/` : l'allemand et l'italien
-  reprendront ceux de la langue principale tant que `compose.py` n'a pas de
-  `COPY` pour eux.
 - La description longue, les nouveautés de version et l'URL de politique de
   confidentialité ne sont pas encore écrites.

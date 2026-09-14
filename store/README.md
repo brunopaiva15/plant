@@ -1,6 +1,7 @@
 # Visuels du magasin
 
-Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
+Huit visuels dans les quatre langues de l'app (fr, en, de, it), au format
+iPhone 6,7 pouces (1290 × 2796). Le
 premier ne montre pas un écran, mais il en suit la mise en page : la marge
 de page de l'app, un grand titre en haut à gauche, puis des cartes en
 colonne. Une bande sauge porte le nom tracé à la main et la revendication
@@ -66,7 +67,7 @@ répondrait « Aucune correspondance fiable ». Le test s'en assure et fait
 Le jeu de démo (`?demo` sur le web, `--dart-define=DEMO=true` ailleurs) est
 réglé pour ces visuels : rien de dû aujourd'hui, tous les soins à venir à
 des échéances variées, pour l'écran du matin en grille ; ses textes libres
-suivent la langue de l'app. Avant le
+suivent la langue de l'app, dans les quatre langues. Avant le
 chargement, le test d'intégration comme `capture.mjs` écrivent les
 préférences d'un téléphone déjà réglé : onboarding passé, un prénom pour
 « Bonjour », une ville pour la météo (Open-Meteo ; sur le web, relayée par
@@ -76,7 +77,8 @@ HomeKit, sur un iPhone : ni le web ni le simulateur n'en montrent. Sur le web, l
 où la molette n'entraîne presque rien, la page se fait défiler par un
 glissement tactile synthétique.
 
-`fr/` et `en/` contiennent les fichiers prêts à déposer dans App Store Connect ;
+`fr/`, `en/`, `de/` et `it/` contiennent les fichiers prêts à déposer dans
+App Store Connect ;
 les textes de la fiche (titre, sous-titre, mots-clés) sont dans [listing.md](listing.md).
 
 ## Régénérer
@@ -89,8 +91,8 @@ un autre :
 
 ```bash
 pip install pillow numpy
-store/capture_ios.sh                      # fr puis en, captures et composition
-LANGS=fr store/capture_ios.sh             # une seule langue
+store/capture_ios.sh                      # les quatre langues, captures et composition
+LANGS="fr en" store/capture_ios.sh        # deux langues
 DEVICE="iPhone 17 Pro" store/capture_ios.sh
 ```
 
@@ -129,11 +131,15 @@ cp -r store/demo-photos build/web/
 # Captures (390 × 844 à 3×), données de démo, iOS imité
 node store/capture.mjs store/shots-fr fr-FR
 node store/capture.mjs store/shots-en en-US
+node store/capture.mjs store/shots-de de-DE
+node store/capture.mjs store/shots-it it-IT
 
 # Composition
 pip install pillow numpy
 python3 store/compose.py store/shots-fr store/fr fr
 python3 store/compose.py store/shots-en store/en en
+python3 store/compose.py store/shots-de store/de de
+python3 store/compose.py store/shots-it store/it it
 ```
 
 Sans capture `identify.png`, `compose.py` redessine la feuille « Espèce »

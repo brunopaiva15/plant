@@ -357,6 +357,10 @@ IDENT_COPY = {
            'online': 'Chercher en ligne', 'likely': 'Probable', 'possible': 'Possible', 'unlikely': 'Peu probable'},
     'en': {'title': 'Species', 'hint': 'Recognised by Iris on the device. Choose the species.', 'use': 'Use',
            'online': 'Search online', 'likely': 'Likely', 'possible': 'Possible', 'unlikely': 'Less likely'},
+    'de': {'title': 'Art', 'hint': 'Von Iris auf dem Gerät erkannt. Wählen Sie die Art.', 'use': 'Verwenden',
+           'online': 'Online suchen', 'likely': 'Wahrscheinlich', 'possible': 'Möglich', 'unlikely': 'Wenig wahrscheinlich'},
+    'it': {'title': 'Specie', 'hint': 'Riconosciuta da Iris sul dispositivo. Scegliete la specie.', 'use': 'Usa',
+           'online': 'Cerca online', 'likely': 'Probabile', 'possible': 'Possibile', 'unlikely': 'Poco probabile'},
 }
 
 def common_names(lang):
@@ -475,6 +479,30 @@ COVER = {
             ('assets/onboarding/onboarding_2.png', 'Last care', '2 days ago'),
         ],
         'footer': 'Free, no account, no ads',
+    },
+    'de': {
+        'title': 'Auxine',
+        'subtitle': 'das Tagebuch Ihrer Pflanzen',
+        'name': 'Monstera deliciosa',
+        'species': 'Fensterblatt',
+        'rows': [
+            ('assets/onboarding/onboarding_3.png', 'Gießen', 'Alle 8 Tage'),
+            ('assets/problems/clay_abiotique.webp', 'Licht', 'Hell, indirekt'),
+            ('assets/onboarding/onboarding_2.png', 'Letzte Pflege', 'Vor 2 Tagen'),
+        ],
+        'footer': 'Kostenlos, ohne Konto, ohne Werbung',
+    },
+    'it': {
+        'title': 'Auxine',
+        'subtitle': 'il diario delle vostre piante',
+        'name': 'Monstera deliciosa',
+        'species': 'Monstera',
+        'rows': [
+            ('assets/onboarding/onboarding_3.png', 'Annaffiatura', 'Ogni 8 giorni'),
+            ('assets/problems/clay_abiotique.webp', 'Luce', 'Viva indiretta'),
+            ('assets/onboarding/onboarding_2.png', 'Ultima cura', '2 giorni fa'),
+        ],
+        'footer': 'Gratuita, senza account, senza pubblicità',
     },
 }
 
@@ -606,6 +634,24 @@ COPY = {
         ('What plant\nis this?', 'one photo is enough, even offline'),
         ('Rooms, calendar,\ninventory', 'for a whole flat or garden'),
         ('A diagnosis\nfrom a photo', '200+ disorders, pests and diseases'),
+    ],
+    'de': [
+        ('Jeden Morgen,\nder Stand der Dinge', 'die anstehende Pflege, zum Abhaken'),
+        ('Alle Pflanzen,\nan einem Ort', 'mit Foto, Art und Zimmer'),
+        ('Jede Pflanze\nhat ihre Seite', 'Fotos, nächste Pflege, Tagebuch'),
+        ('Ein Pflegeblatt\nfür jede Art', 'Gießen, Licht, Dünger, Umtopfen'),
+        ('Welche Pflanze\nist das?', 'ein Foto genügt, auch ohne Netz'),
+        ('Orte, Kalender,\nBestand', 'für eine Wohnung oder einen ganzen Garten'),
+        ('Eine Diagnose\nnach Foto', 'über 200 Störungen, Schädlinge, Krankheiten'),
+    ],
+    'it': [
+        ('Ogni mattina,\nlo stato delle piante', 'le cure in arrivo, da spuntare'),
+        ('Tutte le piante,\nnello stesso posto', 'con foto, specie e stanza'),
+        ('Ogni pianta\nha la sua pagina', 'foto, prossime cure, diario'),
+        ('Una scheda di cura\nper ogni specie', 'annaffiatura, luce, concime, rinvaso'),
+        ('Che pianta\nè questa?', 'basta una foto, anche senza rete'),
+        ('Luoghi, calendario,\ninventario', 'per un appartamento o un giardino intero'),
+        ('Una diagnosi\nda una foto', 'oltre 200 disturbi, parassiti, malattie'),
     ],
 }
 

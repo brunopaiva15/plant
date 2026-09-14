@@ -31,7 +31,7 @@ void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('captures du magasin ($lang)', (tester) async {
-    final en = lang == 'en';
+    String tr(String fr, String en, String de, String it) => switch (lang) { 'en' => en, 'de' => de, 'it' => it, _ => fr };
 
     // Un téléphone déjà réglé, pas un premier lancement.
     final prefs = await SharedPreferences.getInstance();
@@ -52,7 +52,7 @@ void main() {
 
     final l10n = lookupAppLocalizations(Locale(lang));
     final router = ProviderScope.containerOf(tester.element(find.byType(FloraApp))).read(routerProvider);
-    final basil = en ? 'Basil' : 'Basilic';
+    final basil = tr('Basilic', 'Basil', 'Basilikum', 'Basilico');
 
     Future<void> go(String path, [int ms = 3000]) async {
       router.go(path);

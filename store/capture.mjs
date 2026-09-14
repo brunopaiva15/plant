@@ -4,7 +4,7 @@
 // `python3 store/serve.py 8081 build/web`. Le jeu de données de démo (`?demo`)
 // et le mode iOS (`&ios`) viennent de l'app elle-même.
 //
-// Usage : node store/capture.mjs <dossier de sortie> [fr-FR|en-US]
+// Usage : node store/capture.mjs <dossier de sortie> [fr-FR|en-US|de-DE|it-IT]
 // Mode sombre : DARK=1 node store/capture.mjs …
 import { chromium } from 'playwright';
 import { execSync } from 'node:child_process';
@@ -28,7 +28,6 @@ const swipe = async (x, y0, y1, steps = 20) => {
 // (« Un rappel utile, chaque jour ») déjà vue, la question des photos
 // d'entraînement d'Iris déjà posée. Apple Maison ne se lit que par HomeKit,
 // sur un iPhone : rien à régler ici.
-const en = locale.startsWith('en');
 await p.addInitScript(() => {
   const set = (k, v) => localStorage.setItem('flutter.' + k, JSON.stringify(v));
   set('onboarding_done', true);
