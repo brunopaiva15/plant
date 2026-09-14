@@ -13,6 +13,20 @@ import 'search_text.dart';
 const _hybrid = '×';
 const _ranks = {'subsp', 'ssp', 'var', 'f', 'forma', 'cv', 'subvar'};
 
+/// Le genre d'un nom scientifique : son premier mot, normalisé.
+///
+/// Le nom passe d'abord par [normalizeScientificName], sans quoi « picea
+/// abies » et « Picea abies » donneraient deux genres. Un hybride
+/// intergénérique — « × Fatshedera lizei » — commence par le signe d'hybride :
+/// c'est le mot suivant qui porte le nom.
+String genusOf(String scientificName) {
+  final words = normalizeScientificName(scientificName).split(' ');
+  for (final w in words) {
+    if (w != _hybrid && w.isNotEmpty) return w;
+  }
+  return '';
+}
+
 String normalizeScientificName(String raw) {
   // Le signe d'hybride est parfois collé à l'épithète (« Citrus ×sinensis »
   // chez GBIF comme dans les flores) : sans ce décollement, le nom donnerait

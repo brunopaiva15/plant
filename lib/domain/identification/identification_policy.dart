@@ -1,3 +1,4 @@
+import '../../core/utils/scientific_name.dart';
 import 'plant_identifier.dart';
 
 /// Ce que la cascade conclut d'une liste de candidats.
@@ -144,4 +145,53 @@ SecondPhotoOffer secondPhotoOffer(
   return policy.decide(candidates) == IdentificationVerdict.accepted
       ? SecondPhotoOffer.quiet
       : SecondPhotoOffer.prominent;
+}
+
+/// Le genre que le modèle désigne quand il n'ose aucune espèce.
+class GenusAnswer {
+  const GenusAnswer({required this.genus, required this.mass, required this.species});
+
+  /// Le nom du genre, « Picea ».
+  final String genus;
+
+  /// La somme des scores de ses espèces. C'est elle qui passe le seuil.
+  final double mass;
+
+  /// Combien d'espèces de ce genre la réponse recouvre. Jamais une seule :
+  /// sa masse serait son score, et elle n'aurait pas passé le seuil.
+  final int species;
+}
+
+/// Le genre à proposer, ou `null` s'il n'y a rien à en dire.
+///
+/// Cinq *Picea* à 0,15 pèsent 0,75 : « un Picea, espèce incertaine » est une
+/// réponse **vraie**, là où cinq noms n'en sont pas une et où l'utilisateur
+/// n'a d'autre recours que de chercher en ligne ou de choisir au hasard — ce
+/// qui inscrirait une espèce fausse, et son profil de soin avec.
+///
+/// **L'espèce garde la priorité** : le genre ne parle que là où elle
+/// renonçait, c'est un gain net et jamais un remplacement. Et seulement sur
+/// une réponse locale : une réponse distante a déjà tranché.
+///
+/// Mesuré sur l'Iris 8 (§ 12.15) : le genre répond sur 6,6 % des photos en
+/// pot que l'espèce n'accepte pas, et il a raison 88,7 % du temps — presque
+/// aussi souvent qu'une réponse à l'espèce.
+GenusAnswer? genusAnswer(FallbackPolicy policy, List<IdentificationCandidate> candidates) {
+  if (candidates.isEmpty) return null;
+  final sorted = [...candidates]..sort((a, b) => b.score.compareTo(a.score));
+  if (sorted.first.source != IdentificationSource.local) return null;
+  if (sorted.first.score >= policy.acceptThreshold) return null;
+
+  final masses = <String, double>{};
+  final counts = <String, int>{};
+  for (final c in sorted) {
+    final g = genusOf(c.scientificName);
+    if (g.isEmpty) continue;
+    masses[g] = (masses[g] ?? 0) + c.score;
+    counts[g] = (counts[g] ?? 0) + 1;
+  }
+  if (masses.isEmpty) return null;
+  final best = masses.entries.reduce((a, b) => b.value > a.value ? b : a);
+  if (best.value < policy.acceptThreshold) return null;
+  return GenusAnswer(genus: best.key, mass: best.value, species: counts[best.key]!);
 }
