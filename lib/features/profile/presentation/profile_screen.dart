@@ -76,8 +76,10 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     if (signedIn) const _GardensRow(),
                     // Les liens publics tiennent avec le compte et les jardins :
-                    // ce qui sort de l'appareil reste au même endroit.
-                    FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
+                    // ce qui sort de l'appareil reste au même endroit. Sans
+                    // compte, il n'y a rien à partager, donc rien à montrer.
+                    if (signedIn)
+                      FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
                   ],
                 );
               }),
