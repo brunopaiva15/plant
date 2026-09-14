@@ -89,71 +89,82 @@ class CareGuideBody extends ConsumerWidget {
     final south = ref.watch(southernHemisphereProvider);
     final actualLight = plantLight ?? _lightOf(location);
     final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
-
-    final badges = <(String, String)>[
-      if (p.mistLeaves) ('💦', l10n.careBadgeMist),
-      if (p.dormantInWinter) ('❄️', l10n.careBadgeDormant),
-      if (p.outdoorFriendly) ('🌤️', l10n.careBadgeOutdoor),
-    ];
-
     final tips = [for (final key in p.tipKeys) l10n.careTip(key)].whereType<String>().toList();
 
+    // Chaque volet du soin a sa carte et sa teinte : l'arrosage en bleu,
+    // la lumière en ocre, l'humidité en rose, l'engrais en sauge, le
+    // rempotage en terre cuite. Ce qui ne se pratique pas — température,
+    // difficulté, toxicité — reste une liste, à la suite.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ?header,
 
-        // Arrosage : la question qu'on se pose en premier.
-        FloraCard(
-          padding: const EdgeInsets.all(Space.lg),
-          color: c.waterSoft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Text('💧', style: TextStyle(fontSize: 22)),
-                  const SizedBox(width: Space.sm),
-                  Text(l10n.careWatering, style: context.text.title3),
-                ],
-              ),
-              const SizedBox(height: Space.sm),
-              Text(l10n.careWateringNow(currentDays), style: context.text.title2.copyWith(color: c.water)),
-              const SizedBox(height: 2),
-              Text(l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays), style: context.text.callout),
-            ],
-          ),
+        // Arrosage : la question qu'on se pose en premier, et le seul chiffre
+        // de la fiche qui change avec la saison.
+        _AspectCard(
+          emoji: '💧',
+          variant: 0,
+          tint: c.waterSoft,
+          title: l10n.careWatering,
+          value: l10n.careWateringNow(currentDays),
+          valueColor: c.water,
+          prominent: true,
+          detail: l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays),
+          badge: p.dormantInWinter ? ('❄️', l10n.careBadgeDormant) : null,
         ),
         const SizedBox(height: Space.md),
 
-        if (badges.isNotEmpty) ...[
-          Wrap(
-            spacing: Space.xs,
-            runSpacing: Space.xs,
-            children: [for (final (emoji, label) in badges) FloraChip(label: label, emoji: emoji)],
-          ),
-          const SizedBox(height: Space.md),
-        ],
+        _AspectCard(
+          emoji: '☀️',
+          variant: 1,
+          tint: c.sunSoft,
+          title: l10n.careLight,
+          value: l10n.lightName(p.light),
+          badge: p.outdoorFriendly ? ('🌤️', l10n.careBadgeOutdoor) : null,
+        ),
+        const SizedBox(height: Space.md),
 
-        // La pièce, mesurée : ce que la fiche demande, et ce qu'elle a.
+        _AspectCard(
+          emoji: '💨',
+          variant: 2,
+          tint: c.roseSoft,
+          title: l10n.careHumidity,
+          value: l10n.humidityName(p.humidity),
+          badge: p.mistLeaves ? ('💦', l10n.careBadgeMist) : null,
+        ),
+        const SizedBox(height: Space.md),
+
+        // La pièce, mesurée : elle répond à la lumière et à l'air d'au-dessus.
         HomeClimateFitCard(profile: p),
+
+        _AspectCard(
+          emoji: '🧪',
+          variant: 3,
+          tint: c.sageSoft,
+          title: l10n.careFertilizing,
+          value: p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
+          detail: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
+        ),
+        const SizedBox(height: Space.md),
+
+        // Le substrat se lit avec le rempotage : c'est le jour où il sert.
+        _AspectCard(
+          emoji: '🪴',
+          variant: 0,
+          tint: c.terracottaSoft,
+          title: l10n.careRepotting,
+          value: l10n.repotLabel(p.repotEveryMonths),
+          detail: '${l10n.careSoil} · ${l10n.soilName(p.soil)}',
+        ),
+        const SizedBox(height: Space.md),
 
         FloraGroup(
           children: [
-            _row('☀️', l10n.careLight, l10n.lightName(p.light)),
-            _row('💨', l10n.careHumidity, l10n.humidityName(p.humidity)),
             if (p.idealTempMinC != null && p.idealTempMaxC != null)
               _row('🌡️', l10n.careTemperature, l10n.careTempIdeal(p.idealTempMinC!, p.idealTempMaxC!), subtitle: p.minTempC == null ? null : l10n.careTempMin(p.minTempC!))
             else if (p.minTempC != null)
               _row('🌡️', l10n.careTemperature, l10n.careTempMin(p.minTempC!)),
-            _row('🪵', l10n.careSoil, l10n.soilName(p.soil)),
-            _row(
-              '🧪',
-              l10n.careFertilizing,
-              p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-              subtitle: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
-            ),
-            _row('🪴', l10n.careRepotting, l10n.repotLabel(p.repotEveryMonths)),
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),
             _row(
               p.toxicity == Toxicity.toxic ? '☠️' : '🐾',
@@ -241,6 +252,84 @@ class CareGuideBody extends ConsumerWidget {
   /// Lumière réelle de l'emplacement (« faible / moyenne / forte »), quand
   /// elle est renseignée : une plante en pleine lumière boit plus vite.
   static LightNeed? _lightOf(Location? location) => lightNeedFromCode(location?.light);
+}
+
+/// Un volet du soin : arrosage, lumière, humidité, engrais, rempotage.
+///
+/// Une carte par volet, teintée de la couleur du sujet, plutôt qu'une ligne
+/// parmi douze : on retrouve l'arrosage à sa couleur avant d'avoir lu le mot,
+/// et le détail d'un volet reste avec lui. L'anatomie est celle des cartes du
+/// matin — une tuile d'emoji, un titre qui est un nom, un constat — et sur une
+/// carte teintée la tuile reste crème.
+class _AspectCard extends StatelessWidget {
+  const _AspectCard({
+    required this.emoji,
+    required this.variant,
+    required this.tint,
+    required this.title,
+    required this.value,
+    this.detail,
+    this.valueColor,
+    this.badge,
+    this.prominent = false,
+  });
+
+  final String emoji;
+
+  /// Gabarit de la tuile d'argile : les volets se suivent, leurs tuiles ne se
+  /// ressemblent pas tout à fait.
+  final int variant;
+
+  final Color tint;
+  final String title;
+  final String value;
+  final String? detail;
+
+  /// Couleur du constat, quand l'accent tient le texte (le bleu de l'eau).
+  final Color? valueColor;
+
+  /// Le repère qui ne vaut que pour ce volet : « Brumiser » sous l'humidité,
+  /// « Repos hivernal » sous l'arrosage.
+  final (String, String)? badge;
+
+  /// L'arrosage porte son chiffre plus grand : c'est la question qu'on se pose
+  /// en premier.
+  final bool prominent;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return MergeSemantics(
+      child: FloraCard(
+        color: tint,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            EmojiTile(emoji: emoji, background: c.surface, variant: variant),
+            const SizedBox(width: Space.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 2),
+                  Text(value, style: (prominent ? context.text.title2 : context.text.title3).copyWith(color: valueColor ?? c.ink)),
+                  if (detail != null) ...[
+                    const SizedBox(height: 2),
+                    Text(detail!, style: context.text.callout),
+                  ],
+                  if (badge case final b?) ...[
+                    const SizedBox(height: Space.sm),
+                    FloraChip(label: b.$2, emoji: b.$1),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// Ce que la base locale connaît de cette plante en particulier.
