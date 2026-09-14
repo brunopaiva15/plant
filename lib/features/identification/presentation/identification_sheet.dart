@@ -21,6 +21,7 @@ import '../../../domain/identification/plant_identifier.dart';
 import '../../../domain/species/species_info.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
+import 'identification_source_note.dart';
 import 'genus_row.dart';
 
 /// La photo d'illustration d'un candidat, cherchée chez GBIF après coup.
@@ -310,10 +311,14 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               // disait l'état sans jamais dire le geste ; deux vignettes et
               // une case vide disent les deux.
               final showStrip = _paths.length > 1 || offer != SecondPhotoOffer.none;
+              // Pendant une relance, la liste à l'écran est la précédente et
+              // la provenance de la suivante n'est pas encore connue : le
+              // signe attend plutôt que d'affirmer l'ancienne.
+              final source = busy ? IdentificationSource.unknown : results.first.source;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(busy ? l10n.identifying : _sourceHint(l10n, results.first.source), style: context.text.caption),
+                  IdentificationSourceNote(source: source, label: busy ? l10n.identifying : _sourceHint(l10n, source)),
                   if (showStrip) ...[
                     const SizedBox(height: Space.xs),
                     IdentificationPhotoStrip(

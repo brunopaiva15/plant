@@ -1582,7 +1582,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get identifyTitle => 'Espèce';
 
   @override
-  String get identifyHint => 'Suggestions d\'espèce, à confirmer.';
+  String get identifyHint => 'Suggestions d\'espèce, à confirmer';
 
   @override
   String get searchOnline => 'Chercher en ligne';
@@ -1601,19 +1601,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchingOnline => 'Recherche en ligne…';
 
   @override
-  String get suggestionsLocal => 'Trouvé sur votre appareil, sans réseau.';
+  String get suggestionsLocal => 'Trouvé sur votre appareil, sans réseau';
 
   @override
-  String get suggestionsRemote => 'Proposé en ligne par Pl@ntNet.';
+  String get suggestionsRemote => 'Proposé en ligne par Pl@ntNet';
 
   @override
   String identifyOnDevice(String name) {
-    return 'Reconnu par $name sur l\'appareil. Choisissez l\'espèce.';
+    return 'Reconnu par $name sur l\'appareil. Choisissez l\'espèce';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Reconnu en ligne par Pl@ntNet. Choisissez l\'espèce.';
+      'Reconnu en ligne par Pl@ntNet. Choisissez l\'espèce';
 
   @override
   String get identifyPhotoSource =>

@@ -1583,7 +1583,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get identifyTitle => 'Art';
 
   @override
-  String get identifyHint => 'Artvorschläge, zu bestätigen.';
+  String get identifyHint => 'Artvorschläge, zu bestätigen';
 
   @override
   String get searchOnline => 'Online suchen';
@@ -1602,19 +1602,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get searchingOnline => 'Online-Suche…';
 
   @override
-  String get suggestionsLocal => 'Auf deinem Gerät gefunden, ohne Netz.';
+  String get suggestionsLocal => 'Auf deinem Gerät gefunden, ohne Netz';
 
   @override
-  String get suggestionsRemote => 'Online von Pl@ntNet vorgeschlagen.';
+  String get suggestionsRemote => 'Online von Pl@ntNet vorgeschlagen';
 
   @override
   String identifyOnDevice(String name) {
-    return 'Von $name auf dem Gerät erkannt. Wählen Sie die Art.';
+    return 'Von $name auf dem Gerät erkannt. Wählen Sie die Art';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Online von Pl@ntNet erkannt. Wählen Sie die Art.';
+      'Online von Pl@ntNet erkannt. Wählen Sie die Art';
 
   @override
   String get identifyPhotoSource =>

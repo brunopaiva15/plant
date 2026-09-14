@@ -1579,7 +1579,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get identifyTitle => 'Species';
 
   @override
-  String get identifyHint => 'Species suggestions, to confirm.';
+  String get identifyHint => 'Species suggestions, to confirm';
 
   @override
   String get searchOnline => 'Search online';
@@ -1598,19 +1598,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchingOnline => 'Searching online…';
 
   @override
-  String get suggestionsLocal => 'Found on your device, no network.';
+  String get suggestionsLocal => 'Found on your device, no network';
 
   @override
-  String get suggestionsRemote => 'Suggested online by Pl@ntNet.';
+  String get suggestionsRemote => 'Suggested online by Pl@ntNet';
 
   @override
   String identifyOnDevice(String name) {
-    return 'Recognised by $name on the device. Choose the species.';
+    return 'Recognised by $name on the device. Choose the species';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Recognised online by Pl@ntNet. Choose the species.';
+      'Recognised online by Pl@ntNet. Choose the species';
 
   @override
   String get identifyPhotoSource =>
