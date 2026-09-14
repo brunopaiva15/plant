@@ -324,6 +324,18 @@ abstract class AppLocalizations {
   /// **'Bonjour'**
   String get greetingAnonymous;
 
+  /// No description provided for @greetingEvening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir {name}'**
+  String greetingEvening(String name);
+
+  /// No description provided for @greetingEveningAnonymous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir'**
+  String get greetingEveningAnonymous;
+
   /// No description provided for @careCount.
   ///
   /// In fr, this message translates to:

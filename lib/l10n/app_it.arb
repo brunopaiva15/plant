@@ -37,6 +37,8 @@
   "tabProfile": "Profilo",
   "greeting": "Ciao {name}",
   "greetingAnonymous": "Ciao",
+  "greetingEvening": "Buonasera {name}",
+  "greetingEveningAnonymous": "Buonasera",
   "careCount": "{count, plural, =0{Niente da fare} =1{1 cura} other{{count} cure}}",
   "sectionOverdue": "In ritardo",
   "sectionToday": "Oggi",

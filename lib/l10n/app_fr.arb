@@ -44,6 +44,15 @@
     }
   },
   "greetingAnonymous": "Bonjour",
+  "greetingEvening": "Bonsoir {name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingEveningAnonymous": "Bonsoir",
   "careCount": "{count, plural, =0{Aucun soin} =1{1 soin} other{{count} soins}}",
   "@careCount": {
     "placeholders": {
