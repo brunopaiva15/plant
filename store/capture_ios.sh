@@ -92,6 +92,21 @@ python3 store/serve.py 8081 store &
 SERVER=$!
 trap 'kill $SERVER 2>/dev/null || true; xcrun simctl status_bar "$UDID" clear' EXIT
 
+# Le jeu de démo télécharge ses photos ici, avant que l'app ne s'ouvre. Si
+# personne ne répond — un serveur oublié par une exécution interrompue tient
+# souvent le port —, les plantes n'ont pas de fichier, Iris n'a rien à lire,
+# et la feuille « Espèce » sort vide. Autant le dire tout de suite.
+for i in $(seq 20); do
+  curl -sf -o /dev/null http://localhost:8081/demo-photos/SOURCES.md && break
+  if [ "$i" = 20 ]; then
+    echo "Rien ne répond sur http://localhost:8081. Un autre serveur tient le port :" >&2
+    lsof -ti :8081 >&2 || true
+    echo "Le libérer : lsof -ti :8081 | xargs kill" >&2
+    exit 1
+  fi
+  sleep 0.5
+done
+
 for lang in $LANGS; do
   xcrun simctl uninstall "$UDID" ch.vergasta.plant 2>/dev/null || true
   # Sans STORE_SCENES, on repart de zéro ; avec, les captures gardées restent.

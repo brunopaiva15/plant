@@ -170,14 +170,16 @@ abstract final class DemoSeed {
     if (storage == null || kIsWeb) return photos.addFromUrl(plantId: plantId, url: url);
 
     try {
-      final client = HttpClient();
+      final client = HttpClient()..connectionTimeout = const Duration(seconds: 5);
       final File temp;
       try {
-        final response = await (await client.getUrl(Uri.parse(url))).close();
-        if (response.statusCode != 200) throw HttpException('${response.statusCode}', uri: Uri.parse(url));
-        temp = File('${Directory.systemTemp.path}/flora-demo-$slug.jpg')..writeAsBytesSync(await consolidateHttpClientResponseBytes(response));
+        // Un délai, sans quoi un serveur absent ou muet fige le premier
+        // lancement : le jeu de démo se charge avant que l'application ne
+        // s'ouvre, et la capture attendrait sans fin. Passé ce délai, la
+        // photo reste distante, comme sur le web.
+        temp = await _fetch(client, url, slug).timeout(const Duration(seconds: 30));
       } finally {
-        client.close();
+        client.close(force: true);
       }
       final stored = await storage.importFile(temp);
       if (temp.existsSync()) temp.deleteSync();
@@ -188,6 +190,13 @@ abstract final class DemoSeed {
       debugPrint('photo de démo « $slug » non téléchargée ($e) : elle reste distante');
       return await photos.addFromUrl(plantId: plantId, url: url);
     }
+  }
+
+  /// La photo, dans un fichier temporaire.
+  static Future<File> _fetch(HttpClient client, String url, String slug) async {
+    final response = await (await client.getUrl(Uri.parse(url))).close();
+    if (response.statusCode != 200) throw HttpException('${response.statusCode}', uri: Uri.parse(url));
+    return File('${Directory.systemTemp.path}/flora-demo-$slug.jpg')..writeAsBytesSync(await consolidateHttpClientResponseBytes(response));
   }
 
   /// Ce qu'une analyse dit d'une Calathea aux bords bruns : l'air sec en
