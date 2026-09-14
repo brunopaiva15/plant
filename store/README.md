@@ -1,13 +1,14 @@
 # Visuels du magasin
 
 Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
-premier est une planche : le nom tracé en haut, un spécimen d'argile à
-gauche, et en regard quatre notes qui disent ce que l'application sait de
-lui — l'espèce, la lumière, le rythme d'arrosage, le dernier soin. Un fil
-relie chaque note à la feuille qui lui fait face ; il s'accroche au dernier
-pixel plein de la ligne, pas au bord de l'image. Les mots sont ceux de
-l'app, l'espèce est dans son catalogue, les objets viennent de son
-onboarding et de sa base des problèmes. Les sept autres montrent une capture réelle de l'app dans un
+premier ne montre pas un écran : il hausse le ton, comme le font les
+fiches des concurrents du magasin — un aplat saturé, un titre énorme, une
+vraie photo, des pastilles d'interface posées dessus. Ici l'aplat est une
+dalle d'argile sauge sur le papier de l'app, la photo est une des photos
+CC0 de la démo dans un cadre crème penché, les pastilles sont celles de
+l'app à sa palette (l'espèce, l'échéance, le bouton d'arrosage), l'anneau
+d'arrosage vient de l'onboarding, et ce qui est gratuit tient sur un
+autocollant en étoile, terre cuite. Les sept autres montrent une capture réelle de l'app dans un
 iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
 rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
 « main » de l'app) ; entre le titre et le téléphone, un objet 3D de la série
@@ -16,7 +17,7 @@ crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
 
 | # | Écran | Objet | Teinte |
 |---|---|---|---|
-| 1 | Planche : le spécimen annoté par ce que l'app en sait | sansevieria d'argile | sauge |
+| 1 | Fiche d'ouverture : dalle d'argile, photo encadrée, autocollant | anneau d'arrosage | sauge |
 | 2 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
 | 3 | Plantes (la collection) | monstera en pot | sauge |
 | 4 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
@@ -142,5 +143,5 @@ premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les 
 Les textes des visuels sont dans `compose.py` (`COPY`), coupés à la main pour
 que chaque titre tienne sur deux lignes ; la taille est commune aux sept
 captures. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
-les textes de la planche d'ouverture dans `COVER`, son spécimen dans
-`SPECIMEN`.
+les textes de la fiche d'ouverture dans `COVER`, qui nomme aussi la photo
+qu'elle encadre.

@@ -16,11 +16,12 @@ entier, marqueur `.device` dans le dossier) ou, à défaut, du build web
 Usage : compose.py <dossier captures> <dossier sortie> [fr|en]
 """
 import csv
+import math
 import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 W, H = 1290, 2796
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -397,137 +398,151 @@ def ident_sheet(lang, width=1170):
 
 # --- la fiche de présentation -------------------------------------------------
 
-# La fiche d'ouverture est une planche : un spécimen à gauche, et en regard
-# ce que l'application en sait — l'espèce reconnue, la lumière qu'elle
-# demande, son rythme d'arrosage, son dernier soin. Les mots sont ceux de
-# l'app (l10n), l'espèce est dans son catalogue, les objets sont les siens.
+# La première fiche ne montre pas un écran : elle plante le décor, fort, sur
+# un aplat sauge. Les concurrents du magasin font tous la même chose — un
+# aplat saturé, un titre énorme, une vraie photo, des pastilles d'interface
+# posées dessus. Ici les pastilles sont celles de l'app, à sa palette.
 COVER = {
     'fr': {
-        'tagline': 'Carnet de plantes',
-        'pitch': 'Ce que l’application sait de chaque plante, et ce qu’il y a à faire aujourd’hui.',
-        'notes': [
-            ('assets/problems/icons/060.webp', 'Espèce', 'Dracaena trifasciata'),
-            ('assets/problems/clay_abiotique.webp', 'Lumière', 'Moyenne'),
-            ('assets/onboarding/onboarding_3.png', 'Arrosage', 'Tous les 14 jours'),
-            ('assets/onboarding/onboarding_2.png', 'Journal', 'Arrosée il y a 2 jours'),
-        ],
-        'footer': 'Gratuite, sans compte, sans publicité',
+        'claim': 'Le carnet\nde vos plantes',
+        'chips': ['Soins', 'Journal', 'Identification'],
+        'photo': 'ficus.jpg',
+        'species': 'Ficus lyrata',
+        'action': 'Arroser',
+        'due': 'Aujourd’hui',
+        'badge': ['Gratuite', 'sans compte,\nsans publicité'],
     },
     'en': {
-        'tagline': 'Plant journal',
-        'pitch': 'What the app knows about every plant, and what today asks for.',
-        'notes': [
-            ('assets/problems/icons/060.webp', 'Species', 'Dracaena trifasciata'),
-            ('assets/problems/clay_abiotique.webp', 'Light', 'Medium'),
-            ('assets/onboarding/onboarding_3.png', 'Watering', 'Every 14 days'),
-            ('assets/onboarding/onboarding_2.png', 'Journal', 'Watered 2 days ago'),
-        ],
-        'footer': 'Free, no account, no ads',
+        'claim': 'The journal\nof your plants',
+        'chips': ['Care', 'Journal', 'Identification'],
+        'photo': 'ficus.jpg',
+        'species': 'Ficus lyrata',
+        'action': 'Water',
+        'due': 'Today',
+        'badge': ['Free', 'no account,\nno ads'],
     },
 }
 
-SPECIMEN = os.path.join(CLAY, 'collection_sansevieria.webp')
-NOTE_X, NOTE_W, NOTE_GAP = 700, 520, 52
+SAGE_SOLID = (44, 119, 78)
+CREAM = (250, 245, 236)
+WATER = (58, 110, 168)
+TERRACOTTA = (156, 72, 44)
 
 
-def clay_pill(text, fnt, color=SURFACE, ink=INK, pad=38, height=104):
-    """Un tag de l'app : une pilule d'argile qui tient son mot."""
+def starburst(size, points, inner, color):
+    """Une pastille en étoile, comme les autocollants qu'on colle sur une
+    vitrine. Rien d'autre dans la série n'a cette forme : c'est ce qui la
+    fait remarquer."""
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    cx = cy = size / 2
+    pts = []
+    for i in range(points * 2):
+        r = size / 2 if i % 2 == 0 else size / 2 * inner
+        a = math.pi * i / points - math.pi / 2
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    ImageDraw.Draw(layer).polygon(pts, fill=color)
+    return layer
+
+
+def framed_photo(name, size, radius=56, border=22, angle=0.0):
+    """Une photo dans son cadre crème, épais : l'app montre des photos, et
+    une photo posée sans bord se confond avec le fond."""
+    photo = Image.open(os.path.join(HERE, 'demo-photos', name)).convert('RGB')
+    # Une photo d'intérieur sort terne à côté d'un aplat saturé : on la
+    # remonte comme le ferait un tirage, sans la dénaturer.
+    photo = ImageEnhance.Brightness(photo).enhance(1.16)
+    photo = ImageEnhance.Color(photo).enhance(1.26)
+    photo = ImageEnhance.Contrast(photo).enhance(1.08)
+    w, h = size
+    scale = max(w / photo.width, h / photo.height)
+    photo = photo.resize((int(photo.width * scale), int(photo.height * scale)), Image.LANCZOS)
+    photo = photo.crop(((photo.width - w) // 2, (photo.height - h) // 2, (photo.width - w) // 2 + w, (photo.height - h) // 2 + h))
+    card = Image.new('RGBA', (w + 2 * border, h + 2 * border), (0, 0, 0, 0))
+    ImageDraw.Draw(card).rounded_rectangle((0, 0, card.width - 1, card.height - 1), radius=radius + border, fill=CREAM + (255,))
+    mask = Image.new('L', (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=radius, fill=255)
+    card.paste(photo, (border, border), mask)
+    return card.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else card
+
+
+def chip(text, fnt, fill, ink, height=98, pad=44, radius=None):
+    """Une pastille pleine : les boutons et les badges de l'app, en plus gros."""
     d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
     w = int(d0.textlength(text, font=fnt)) + 2 * pad
     layer = Image.new('RGBA', (w, height), (0, 0, 0, 0))
-    layer.alpha_composite(clay_card((w, height), height // 2, color=color))
+    ImageDraw.Draw(layer).rounded_rectangle((0, 0, w - 1, height - 1), radius=radius or height // 2, fill=fill + (255,))
     ImageDraw.Draw(layer).text((w // 2, height // 2), text, font=fnt, fill=ink, anchor='mm')
     return layer
 
 
-def note_card(icon_path, label, value):
-    """Une note de la planche : l'objet d'argile et ce qu'on mesure sur une
-    ligne, la réponse de l'app en dessous."""
-    pad = 34
-    f_value = font('Bold', 42)
-    d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
-    lines = wrap(d0, value, f_value, NOTE_W - 2 * pad)
-    height = 150 + len(lines) * 58
-    card = clay_card((NOTE_W, height), 3 * 22)
-    obj = Image.open(os.path.join(ROOT, icon_path)).convert('RGBA')
-    obj = obj.crop(obj.getbbox())
-    side = 86
-    obj = obj.resize((int(obj.width * side / max(obj.width, obj.height)), int(obj.height * side / max(obj.width, obj.height))), Image.LANCZOS)
-    card.alpha_composite(obj, (pad, pad + (side - obj.height) // 2))
-    d = ImageDraw.Draw(card)
-    d.text((pad + side + 22, pad + side // 2), label, font=font('SemiBold', 38), fill=SAGE, anchor='lm')
-    y = pad + side + 26
-    for line in lines:
-        d.text((pad, y), line, font=f_value, fill=INK)
-        y += 58
-    return card
-
-
 def cover(lang):
-    """La planche : le nom tracé en haut, le spécimen à gauche, ses notes en
-    regard, et en pied ce que l'application ne fait pas."""
+    """La fiche d'ouverture : le papier crème de l'app, une dalle d'argile
+    sauge posée dessus, et sur la dalle une vraie photo dans son cadre, les
+    objets d'argile de l'app et ses pastilles. Le nom est tracé à la main,
+    la revendication est en gras : c'est la seule fiche qui hausse le ton."""
     t = COVER[lang]
     img = background('sage')
+
+    # Quelques éclats d'argile, comme sur un autocollant.
+    for (sx, sy, ss, a) in ((96, 300, 120, 0.9), (1090, 250, 90, 0.7), (60, 2520, 104, 0.8), (1150, 2610, 82, 0.6)):
+        spark = starburst(ss, 4, 0.3, TINTS['sage'][0] + (int(255 * a),))
+        img.alpha_composite(spark, (sx, sy))
+
+    d = ImageDraw.Draw(img)
+    d.text((W // 2, 120), 'Auxine', font=hand(200, 800), fill=INK, anchor='mt')
+
+    # La dalle : la même argile que les cartes de l'app, en grand.
+    slab_x, slab_y, slab_w, slab_h = 54, 560, W - 108, 2120
+    slab = clay_card((slab_w, slab_h), 96, color=SAGE_SOLID)
+    paste_with_shadow(img, slab, (slab_x, slab_y), blur=70, offset=(16, 54), alpha=0.34)
     d = ImageDraw.Draw(img)
 
-    # Le filet de la planche, deux traits comme sur une gravure.
-    for inset, width in ((54, 4), (72, 2)):
-        d.rounded_rectangle((inset, inset, W - inset, H - inset), radius=40, outline=(206, 190, 172), width=width)
+    y = slab_y + 90
+    f = font('Black', 112)
+    for line in t['claim'].split('\n'):
+        d.text((W // 2, y), line, font=f, fill=CREAM, anchor='mt')
+        y += 132
 
-    d.text((W // 2, 170), 'Auxine', font=hand(230, 800), fill=INK, anchor='mt')
-    d.text((W // 2, 500), t['tagline'], font=font('Bold', 70), fill=SAGE, anchor='mt')
-    d.line((W // 2 - 90, 630, W // 2 + 90, 630), fill=(206, 190, 172), width=3)
-    y = 720
-    f = font('Medium', 50)
-    for line in wrap(d, t['pitch'], f, 1000):
-        d.text((W // 2, y), line, font=f, fill=INK2, anchor='mt')
-        y += 70
+    # Les trois mots de la fiche, en pastilles crème.
+    y += 44
+    chips = [chip(c, font('Bold', 44), CREAM, SAGE_SOLID) for c in t['chips']]
+    total = sum(c.width for c in chips) + 22 * (len(chips) - 1)
+    x = (W - total) // 2
+    for c in chips:
+        img.alpha_composite(c, (x, y))
+        x += c.width + 22
 
-    # Les notes, en colonne à droite : leur hauteur donne celle de la planche.
-    cards = [note_card(*note) for note in t['notes']]
-    total = sum(c.height for c in cards) + NOTE_GAP * (len(cards) - 1)
-    top = 1140
+    # La photo, penchée, dans son cadre crème — l'app montre de vraies photos,
+    # et c'est elle qui remplit la dalle.
+    card = framed_photo(t['photo'], (800, 1250), angle=-4)
+    px, py = (W - card.width) // 2, y + 130
+    paste_with_shadow(img, card, (px, py), blur=64, offset=(16, 48), alpha=0.34)
 
-    # Le spécimen, à gauche, exactement à la hauteur de la colonne : chaque
-    # note tombe alors en face d'une feuille.
-    mark = Image.open(SPECIMEN).convert('RGBA')
-    mark = mark.crop(mark.getbbox())
-    width = int(mark.width * total / mark.height)
-    mark = mark.resize((width, total), Image.LANCZOS)
-    sx = 96 + (NOTE_X - 96 - width) // 2
-    paste_with_shadow(img, mark, (sx, top), blur=70, offset=(14, 52), alpha=0.22)
+    # L'anneau d'arrosage, collé sur le coin haut de la photo.
+    ring = Image.open(os.path.join(CLAY, 'onboarding_3.png')).convert('RGBA')
+    ring = ring.crop(ring.getbbox())
+    rh = 230
+    ring = ring.resize((int(ring.width * rh / ring.height), rh), Image.LANCZOS)
+    paste_with_shadow(img, ring, (px + card.width - rh + 30, py + 16), blur=40, offset=(10, 28), alpha=0.28)
 
-    # Le fil de chaque note jusqu'à la feuille qui lui fait face : on cherche
-    # le dernier pixel plein de la ligne plutôt que le bord de l'image, qui
-    # n'est que du vide.
-    alpha = np.asarray(mark.split()[-1])
-    d = ImageDraw.Draw(img)
-    cy = top
-    for card in cards:
-        mid = cy + card.height // 2
-        row = mid - top
-        edge = None
-        for dy in range(0, 90):
-            for probe in {max(0, row - dy), min(total - 1, row + dy)}:
-                cols = np.nonzero(alpha[probe] > 60)[0]
-                if cols.size:
-                    edge = sx + int(cols[-1])
-                    break
-            if edge is not None:
-                break
-        edge = edge if edge is not None else sx + width
-        d.line((edge, mid, NOTE_X, mid), fill=(203, 186, 168), width=3)
-        d.ellipse((edge - 10, mid - 10, edge + 10, mid + 10), fill=SAGE)
-        cy += card.height + NOTE_GAP
-    cy = top
-    for card in cards:
-        paste_with_shadow(img, card, (NOTE_X, cy), blur=40, offset=(8, 26), alpha=0.20)
-        cy += card.height + NOTE_GAP
+    # Les pastilles de l'app, à cheval sur la photo.
+    sp = chip(t['species'], font('Bold', 46), CREAM, INK, height=104)
+    paste_with_shadow(img, sp, (px + 36, py + 60), blur=32, offset=(8, 20), alpha=0.30)
+    due = chip(t['due'], font('Bold', 42), TINTS['water'][1], WATER, height=90)
+    paste_with_shadow(img, due, (px + 46, py + card.height - 236), blur=32, offset=(8, 20), alpha=0.30)
+    act = chip(t['action'], font('Black', 50), WATER, (255, 255, 255), height=118, pad=58)
+    paste_with_shadow(img, act, (px + 42, py + card.height - 132), blur=38, offset=(10, 24), alpha=0.34)
 
-    # Ce qu'elle ne fait pas, sur une pilule d'argile plutôt qu'en note de bas
-    # de page : c'est un argument, pas une mention légale.
-    pill = clay_pill(t['footer'], font('SemiBold', 46), color=TINTS['sage'][1], ink=SAGE, pad=54, height=126)
-    paste_with_shadow(img, pill, ((W - pill.width) // 2, top + total + 210), blur=36, offset=(8, 24), alpha=0.20)
+    # L'autocollant, collé de travers sur le coin de la dalle.
+    size = 480
+    star = starburst(size, 16, 0.85, TERRACOTTA + (255,)).rotate(-11, resample=Image.BICUBIC)
+    ds = ImageDraw.Draw(star)
+    ds.text((size // 2, size // 2 - 42), t['badge'][0], font=font('Black', 88), fill=(255, 255, 255), anchor='mm')
+    ty = size // 2 + 10
+    for line in t['badge'][1].split('\n'):
+        ds.text((size // 2, ty), line, font=font('SemiBold', 38), fill=(255, 233, 221), anchor='mt')
+        ty += 46
+    paste_with_shadow(img, star, (W - size - 30, py + card.height - size + 150), blur=42, offset=(10, 26), alpha=0.32)
     return img
 
 
