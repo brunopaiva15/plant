@@ -17,8 +17,14 @@ class FloraTab {
   final String label;
 }
 
-/// Barre d'onglets flottante en pilule, fond flouté, bulle active animée —
-/// dans l'esprit des barres iOS récentes.
+/// Barre d'onglets flottante en pilule, avec une bulle qui glisse d'un onglet
+/// à l'autre — dans l'esprit des barres iOS récentes.
+///
+/// La bulle est **une seule pièce** qui se déplace, et non un fond qui
+/// s'allume sous chaque onglet à son tour : c'est ce qui relie le départ et
+/// l'arrivée, et ce qui permet aux libellés de virer au passage plutôt que de
+/// changer de couleur d'un coup. Elle suit [Springs.glide] ; l'icône qui
+/// l'accueille se pose au ressort.
 class FloraTabBar extends StatelessWidget {
   const FloraTabBar({super.key, required this.tabs, required this.index, required this.onSelect});
 
@@ -93,21 +99,14 @@ class FloraTabBar extends StatelessWidget {
               shape: const ClayShape.pill(),
               height: height,
               padding: const EdgeInsets.all(6),
-              child: Row(
-                children: [
-                  for (final (i, tab) in tabs.indexed)
-                    Expanded(
-                      child: _TabItem(
-                        tab: tab,
-                        selected: i == index,
-                        labelLines: lines,
-                        onTap: () {
-                          if (i != index) Haptics.selection();
-                          onSelect(i);
-                        },
-                      ),
-                    ),
-                ],
+              child: _TabStrip(
+                tabs: tabs,
+                index: index,
+                labelLines: lines,
+                onSelect: (i) {
+                  if (i != index) Haptics.selection();
+                  onSelect(i);
+                },
               ),
             ),
           ),
@@ -117,11 +116,119 @@ class FloraTabBar extends StatelessWidget {
   }
 }
 
+/// La rangée d'onglets et la bulle qui court dessous.
+class _TabStrip extends StatefulWidget {
+  const _TabStrip({required this.tabs, required this.index, required this.onSelect, required this.labelLines});
+
+  final List<FloraTab> tabs;
+  final int index;
+  final ValueChanged<int> onSelect;
+  final int labelLines;
+
+  @override
+  State<_TabStrip> createState() => _TabStripState();
+}
+
+class _TabStripState extends State<_TabStrip> with TickerProviderStateMixin {
+  /// La position de la bulle, en onglets : 1,4 veut dire « entre le deuxième
+  /// et le troisième ». Sans bornes, parce qu'un ressort dépasse.
+  late final AnimationController _bubble = AnimationController.unbounded(vsync: this, value: widget.index.toDouble());
+
+  /// L'icône qui vient d'être choisie : part rentrée, se pose en dépassant.
+  late final AnimationController _pop = AnimationController.unbounded(vsync: this, value: 1);
+
+  /// D'où l'icône part quand la bulle arrive sur elle.
+  static const double _popFrom = 0.78;
+
+  bool _animate = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _animate = !MediaQuery.disableAnimationsOf(context);
+  }
+
+  @override
+  void didUpdateWidget(_TabStrip old) {
+    super.didUpdateWidget(old);
+    if (old.index == widget.index) return;
+    _bubble.springTo(widget.index.toDouble(), spring: Springs.glide, animate: _animate);
+    if (_animate) _pop.value = _popFrom;
+    _pop.springTo(1, spring: Springs.release, animate: _animate);
+  }
+
+  @override
+  void dispose() {
+    _bubble.dispose();
+    _pop.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final slot = constraints.maxWidth / widget.tabs.length;
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: _bubble,
+                builder: (context, child) => Align(
+                  alignment: Alignment.centerLeft,
+                  child: Transform.translate(
+                    // Le dépassement du ressort est borné aux onglets qui
+                    // existent : aux deux bouts, la bulle se poserait sinon
+                    // un point ou deux en dehors de la pilule.
+                    offset: Offset(_bubble.value.clamp(0, widget.tabs.length - 1) * slot, 0),
+                    child: SizedBox(width: slot, height: double.infinity, child: child),
+                  ),
+                ),
+                child: DecoratedBox(decoration: BoxDecoration(color: c.sage, borderRadius: Radii.fullAll)),
+              ),
+            ),
+            Row(
+              children: [
+                for (final (i, tab) in widget.tabs.indexed)
+                  Expanded(
+                    child: _TabItem(
+                      tab: tab,
+                      index: i,
+                      // Ce que VoiceOver annonce suit l'onglet choisi, pas la
+                      // bulle : au moment où la barre se reconstruit, celle-ci
+                      // est encore à son point de départ.
+                      selected: i == widget.index,
+                      bubble: _bubble,
+                      pop: i == widget.index ? _pop : null,
+                      labelLines: widget.labelLines,
+                      onTap: () => widget.onSelect(i),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _TabItem extends StatelessWidget {
-  const _TabItem({required this.tab, required this.selected, required this.onTap, this.labelLines = 1});
+  const _TabItem({required this.tab, required this.index, required this.selected, required this.bubble, required this.pop, required this.onTap, this.labelLines = 1});
 
   final FloraTab tab;
+  final int index;
+
+  /// L'onglet choisi — ce que le lecteur d'écran annonce.
   final bool selected;
+
+  /// La position de la bulle, pour savoir de combien cet onglet est couvert.
+  final Animation<double> bubble;
+
+  /// Le rebond de l'icône, quand c'est cet onglet qui vient d'être choisi.
+  final Animation<double>? pop;
+
   final VoidCallback onTap;
   final int labelLines;
 
@@ -132,39 +239,51 @@ class _TabItem extends StatelessWidget {
       selected: selected,
       button: true,
       label: tab.label,
+      // Le libellé est déjà celui de l'onglet : sans cela, le texte dessiné
+      // en ajoute un second et le lecteur d'écran annonce « Jardin, Jardin ».
+      excludeSemantics: true,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: AnimatedContainer(
-          duration: Motion.of(context, Motion.standard),
-          curve: Motion.emphasized,
-          decoration: BoxDecoration(color: selected ? c.sage : Colors.transparent, borderRadius: Radii.fullAll),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedSwitcher(
-                duration: Motion.of(context, Motion.micro),
-                child: Icon(
-                  selected ? tab.activeIcon : tab.icon,
-                  key: ValueKey(selected),
-                  size: FloraTabBar._iconSize,
-                  color: selected ? c.onSage : c.inkSecondary,
+        child: AnimatedBuilder(
+          animation: pop == null ? bubble : Listenable.merge([bubble, pop]),
+          builder: (context, _) {
+            // La part de l'onglet que la bulle recouvre : c'est elle qui
+            // décide de la couleur, si bien qu'un libellé vire pendant que la
+            // bulle passe dessus au lieu de basculer à l'arrivée.
+            final covered = (1 - (bubble.value - index).abs()).clamp(0.0, 1.0);
+            final fg = Color.lerp(c.inkSecondary, c.onSage, covered)!;
+            final on = covered > 0.5;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Transform.scale(
+                  scale: pop?.value ?? 1,
+                  child: AnimatedSwitcher(
+                    duration: Motion.of(context, Motion.micro),
+                    child: Icon(
+                      on ? tab.activeIcon : tab.icon,
+                      key: ValueKey(on),
+                      size: FloraTabBar._iconSize,
+                      color: fg,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                tab.label,
-                style: context.text.caption.copyWith(
-                  fontSize: FloraTabBar._labelSize,
-                  color: selected ? c.onSage : c.inkSecondary,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                const SizedBox(height: 2),
+                Text(
+                  tab.label,
+                  style: context.text.caption.copyWith(
+                    fontSize: FloraTabBar._labelSize,
+                    color: fg,
+                    fontWeight: on ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: labelLines,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: labelLines,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+              ],
+            );
+          },
         ),
       ),
     );

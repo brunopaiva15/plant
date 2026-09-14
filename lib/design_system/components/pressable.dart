@@ -13,7 +13,19 @@ import '../tokens/motion.dart';
 /// s'élargit autour, sans rien déplacer.
 const double kMinTapTarget = 44;
 
-/// Surface tactile qui se rétracte légèrement à la pression (sensation iOS).
+/// Surface tactile qui s'écrase sous le doigt et se détend au relâchement.
+///
+/// Deux choses la distinguent d'un simple rétrécissement. D'abord la pièce
+/// **s'aplatit plus qu'elle ne s'éloigne** : l'axe vertical cède environ
+/// quatre fois plus que l'horizontal, comme une pâte qu'on écrase — un
+/// rétrécissement égal dans les deux axes, c'est du papier qui s'en va, pas
+/// de l'argile qui reçoit un doigt. Ensuite le
+/// retour est un **ressort** ([Springs.release]) : il reprend la vitesse en
+/// cours et dépasse d'un cheveu, si bien qu'un doigt relâché en plein appui
+/// ne rejoue pas une animation depuis le début.
+///
+/// Elle diffuse aussi sa pression à l'argile sous elle ([PressDepth]) : le
+/// relief d'un [ClayBox] rentre pendant qu'on appuie dessus.
 class Pressable extends StatefulWidget {
   const Pressable({
     super.key,
@@ -54,11 +66,46 @@ class Pressable extends StatefulWidget {
   State<Pressable> createState() => _PressableState();
 }
 
-class _PressableState extends State<Pressable> {
+class _PressableState extends State<Pressable> with SingleTickerProviderStateMixin {
+  /// La pression, de 0 (au repos) à 1 (enfoncée). Sans bornes : le ressort du
+  /// relâchement passe sous zéro, et c'est ce dépassement qui fait la détente.
+  late final AnimationController _press = AnimationController.unbounded(vsync: this);
+
   bool _down = false;
 
-  void _set(bool v) {
-    if (_down != v) setState(() => _down = v);
+  /// Faut-il jouer le ressort ? Lu à l'abonnement, pas dans le rappel du
+  /// geste : une pièce qui disparaît sous le doigt annule son appui *pendant*
+  /// qu'elle se démonte, et un élément désactivé ne peut plus remonter à son
+  /// [MediaQuery].
+  bool _animate = true;
+
+  /// L'écrasement : ce qu'on retire à la hauteur et qu'on rend à la largeur,
+  /// de part et d'autre du rétrécissement commun.
+  ///
+  /// Borné à deux points de pourcentage — au-delà, un bouton qui se rétracte
+  /// beaucoup (0,9 pour un bouton icône) deviendrait une flaque. Et toujours
+  /// sous le rétrécissement lui-même, pour qu'une carte pleine largeur ne
+  /// déborde jamais de ses marges sous le doigt.
+  static const double _maxSquash = 0.02;
+
+  double get _squash => math.min((1 - widget.scale) * 0.6, _maxSquash);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _animate = !MediaQuery.disableAnimationsOf(context);
+  }
+
+  @override
+  void dispose() {
+    _press.dispose();
+    super.dispose();
+  }
+
+  void _set(bool down) {
+    if (_down == down || !mounted) return;
+    _down = down;
+    _press.springTo(down ? 1 : 0, spring: down ? Springs.press : Springs.release, animate: _animate);
   }
 
   @override
@@ -66,12 +113,12 @@ class _PressableState extends State<Pressable> {
     final interactive = widget.enabled && (widget.onTap != null || widget.onLongPress != null);
     Widget child = widget.child;
     if (widget.highlightColor != null) {
-      child = AnimatedContainer(
-        duration: Motion.of(context, Motion.micro),
-        color: _down && interactive ? widget.highlightColor : widget.highlightColor!.withValues(alpha: 0),
-        child: child,
-      );
+      child = _Highlight(press: _press, color: widget.highlightColor!, enabled: interactive, child: child);
     }
+    // La pression descend aux [ClayBox] de la pièce : le relief s'enfonce
+    // avec elle.
+    child = PressDepth(depth: _press, child: child);
+    final shrink = 1 - widget.scale;
     return Semantics(
       button: interactive,
       enabled: interactive,
@@ -97,10 +144,16 @@ class _PressableState extends State<Pressable> {
             : null,
         child: MinTapTarget(
           enabled: widget.minTapTarget,
-          child: AnimatedScale(
-            scale: _down ? widget.scale : 1,
-            duration: Motion.of(context, Motion.micro),
-            curve: Motion.easeOut,
+          child: AnimatedBuilder(
+            animation: _press,
+            builder: (context, child) {
+              final p = _press.value;
+              return Transform(
+                transform: Matrix4.diagonal3Values(1 - (shrink - _squash) * p, 1 - (shrink + _squash) * p, 1),
+                alignment: Alignment.center,
+                child: child,
+              );
+            },
             child: AnimatedOpacity(
               opacity: widget.enabled ? 1 : 0.45,
               duration: Motion.of(context, Motion.micro),
@@ -111,6 +164,50 @@ class _PressableState extends State<Pressable> {
       ),
     );
   }
+}
+
+/// Le voile d'appui des surfaces qui ne s'écrasent pas — les lignes de liste,
+/// qui doivent malgré tout répondre au doigt. Il suit la même pression, donc
+/// la même détente.
+class _Highlight extends StatelessWidget {
+  const _Highlight({required this.press, required this.color, required this.enabled, required this.child});
+
+  final Animation<double> press;
+  final Color color;
+  final bool enabled;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: press,
+      builder: (context, child) => ColoredBox(
+        color: color.withValues(alpha: color.a * (enabled ? press.value.clamp(0.0, 1.0) : 0)),
+        child: child,
+      ),
+      child: child,
+    );
+  }
+}
+
+/// La pression d'un [Pressable], offerte à l'argile qui se trouve dessous.
+///
+/// C'est un [InheritedWidget] et non un [InheritedNotifier] à dessein : ce qui
+/// change soixante fois par seconde, c'est la valeur du contrôleur, pas le
+/// widget. Les pièces d'argile s'y abonnent elles-mêmes, et seul leur peintre
+/// repasse — le reste de l'arbre ne se reconstruit pas sous le doigt.
+class PressDepth extends InheritedWidget {
+  const PressDepth({super.key, required this.depth, required super.child});
+
+  /// De 0 (au repos) à 1 (enfoncée) ; dépasse un peu de part et d'autre.
+  final Animation<double> depth;
+
+  /// La pression du [Pressable] le plus proche, ou `null` hors de tout appui.
+  static Animation<double>? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<PressDepth>()?.depth;
+
+  @override
+  bool updateShouldNotify(PressDepth old) => old.depth != depth;
 }
 
 /// Réserve [kMinTapTarget] autour de son enfant sans l'étirer : l'enfant garde
