@@ -47,8 +47,12 @@ void main() {
     // identification : déjà posée, pour que la feuille « Espèce » reste seule.
     await prefs.setBool('iris_feedback_asked', true);
 
+    // Deux minutes de silence dans la sortie de `flutter drive`, c'est long
+    // quand on ne sait pas si ça avance : chaque étape se dit.
+    debugPrint('démarrage : le jeu de démo se charge, ses photos comprises…');
     await app.main();
     await wait(tester, 5000);
+    debugPrint('application ouverte en « $lang »');
 
     final l10n = lookupAppLocalizations(Locale(lang));
     final router = ProviderScope.containerOf(tester.element(find.byType(FloraApp))).read(routerProvider);
@@ -62,6 +66,7 @@ void main() {
     Future<void> shot(String name) async {
       await wait(tester, 1000);
       await binding.takeScreenshot(name);
+      debugPrint('  capture « $name »');
     }
 
     // Le navigateur racine, celui des feuilles ; les pages d'un onglet vivent
@@ -141,6 +146,7 @@ void main() {
 
     Future<void> scene(String name, Future<void> Function() body) async {
       if (only.isNotEmpty && !only.split(',').contains(name)) return;
+      debugPrint('scène « $name »…');
       await reset();
       try {
         await body();
