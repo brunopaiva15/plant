@@ -209,6 +209,10 @@ class _ItemRow extends ConsumerWidget {
     final parts = <String>[
       l10n.remaining(l10n.formatQuantity(item.quantity, item.unit)),
       if (item.isLow) l10n.lowStock,
+      // Ce qui distingue deux engrais du même nom : la forme d'abord, le
+      // dosage ensuite. Nuls ailleurs, la ligne ne change pas.
+      if (item.fertilizerForm case final form?) l10n.fertilizerFormName(form),
+      ?l10n.npkLabel(item),
       ...item.tags,
     ];
 

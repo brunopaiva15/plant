@@ -6767,6 +6767,61 @@ class $InventoryItemsTable extends InventoryItems
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _fertilizerFormMeta = const VerificationMeta(
+    'fertilizerForm',
+  );
+  @override
+  late final GeneratedColumn<String> fertilizerForm = GeneratedColumn<String>(
+    'fertilizer_form',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fertilizerOriginMeta = const VerificationMeta(
+    'fertilizerOrigin',
+  );
+  @override
+  late final GeneratedColumn<String> fertilizerOrigin = GeneratedColumn<String>(
+    'fertilizer_origin',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nitrogenMeta = const VerificationMeta(
+    'nitrogen',
+  );
+  @override
+  late final GeneratedColumn<double> nitrogen = GeneratedColumn<double>(
+    'nitrogen',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phosphorusMeta = const VerificationMeta(
+    'phosphorus',
+  );
+  @override
+  late final GeneratedColumn<double> phosphorus = GeneratedColumn<double>(
+    'phosphorus',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _potassiumMeta = const VerificationMeta(
+    'potassium',
+  );
+  @override
+  late final GeneratedColumn<double> potassium = GeneratedColumn<double>(
+    'potassium',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
@@ -6794,6 +6849,11 @@ class $InventoryItemsTable extends InventoryItems
     notes,
     photoPath,
     thumbPath,
+    fertilizerForm,
+    fertilizerOrigin,
+    nitrogen,
+    phosphorus,
+    potassium,
     deletedAt,
   ];
   @override
@@ -6907,6 +6967,42 @@ class $InventoryItemsTable extends InventoryItems
         thumbPath.isAcceptableOrUnknown(data['thumb_path']!, _thumbPathMeta),
       );
     }
+    if (data.containsKey('fertilizer_form')) {
+      context.handle(
+        _fertilizerFormMeta,
+        fertilizerForm.isAcceptableOrUnknown(
+          data['fertilizer_form']!,
+          _fertilizerFormMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fertilizer_origin')) {
+      context.handle(
+        _fertilizerOriginMeta,
+        fertilizerOrigin.isAcceptableOrUnknown(
+          data['fertilizer_origin']!,
+          _fertilizerOriginMeta,
+        ),
+      );
+    }
+    if (data.containsKey('nitrogen')) {
+      context.handle(
+        _nitrogenMeta,
+        nitrogen.isAcceptableOrUnknown(data['nitrogen']!, _nitrogenMeta),
+      );
+    }
+    if (data.containsKey('phosphorus')) {
+      context.handle(
+        _phosphorusMeta,
+        phosphorus.isAcceptableOrUnknown(data['phosphorus']!, _phosphorusMeta),
+      );
+    }
+    if (data.containsKey('potassium')) {
+      context.handle(
+        _potassiumMeta,
+        potassium.isAcceptableOrUnknown(data['potassium']!, _potassiumMeta),
+      );
+    }
     if (data.containsKey('deleted_at')) {
       context.handle(
         _deletedAtMeta,
@@ -6978,6 +7074,26 @@ class $InventoryItemsTable extends InventoryItems
         DriftSqlType.string,
         data['${effectivePrefix}thumb_path'],
       ),
+      fertilizerForm: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fertilizer_form'],
+      ),
+      fertilizerOrigin: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fertilizer_origin'],
+      ),
+      nitrogen: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}nitrogen'],
+      ),
+      phosphorus: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}phosphorus'],
+      ),
+      potassium: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}potassium'],
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -7009,6 +7125,15 @@ class InventoryItemRow extends DataClass
   final String? notes;
   final String? photoPath;
   final String? thumbPath;
+
+  /// Engrais seulement (`category_key = 'fertilizer'`) : forme, origine et
+  /// dosage NPK en pourcentage. Nuls pour toutes les autres catégories, et
+  /// nuls sur les articles d'avant la v12.
+  final String? fertilizerForm;
+  final String? fertilizerOrigin;
+  final double? nitrogen;
+  final double? phosphorus;
+  final double? potassium;
   final DateTime? deletedAt;
   const InventoryItemRow({
     required this.createdAt,
@@ -7025,6 +7150,11 @@ class InventoryItemRow extends DataClass
     this.notes,
     this.photoPath,
     this.thumbPath,
+    this.fertilizerForm,
+    this.fertilizerOrigin,
+    this.nitrogen,
+    this.phosphorus,
+    this.potassium,
     this.deletedAt,
   });
   @override
@@ -7055,6 +7185,21 @@ class InventoryItemRow extends DataClass
     }
     if (!nullToAbsent || thumbPath != null) {
       map['thumb_path'] = Variable<String>(thumbPath);
+    }
+    if (!nullToAbsent || fertilizerForm != null) {
+      map['fertilizer_form'] = Variable<String>(fertilizerForm);
+    }
+    if (!nullToAbsent || fertilizerOrigin != null) {
+      map['fertilizer_origin'] = Variable<String>(fertilizerOrigin);
+    }
+    if (!nullToAbsent || nitrogen != null) {
+      map['nitrogen'] = Variable<double>(nitrogen);
+    }
+    if (!nullToAbsent || phosphorus != null) {
+      map['phosphorus'] = Variable<double>(phosphorus);
+    }
+    if (!nullToAbsent || potassium != null) {
+      map['potassium'] = Variable<double>(potassium);
     }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -7090,6 +7235,21 @@ class InventoryItemRow extends DataClass
       thumbPath: thumbPath == null && nullToAbsent
           ? const Value.absent()
           : Value(thumbPath),
+      fertilizerForm: fertilizerForm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fertilizerForm),
+      fertilizerOrigin: fertilizerOrigin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fertilizerOrigin),
+      nitrogen: nitrogen == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nitrogen),
+      phosphorus: phosphorus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phosphorus),
+      potassium: potassium == null && nullToAbsent
+          ? const Value.absent()
+          : Value(potassium),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
@@ -7116,6 +7276,11 @@ class InventoryItemRow extends DataClass
       notes: serializer.fromJson<String?>(json['notes']),
       photoPath: serializer.fromJson<String?>(json['photoPath']),
       thumbPath: serializer.fromJson<String?>(json['thumbPath']),
+      fertilizerForm: serializer.fromJson<String?>(json['fertilizerForm']),
+      fertilizerOrigin: serializer.fromJson<String?>(json['fertilizerOrigin']),
+      nitrogen: serializer.fromJson<double?>(json['nitrogen']),
+      phosphorus: serializer.fromJson<double?>(json['phosphorus']),
+      potassium: serializer.fromJson<double?>(json['potassium']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
@@ -7137,6 +7302,11 @@ class InventoryItemRow extends DataClass
       'notes': serializer.toJson<String?>(notes),
       'photoPath': serializer.toJson<String?>(photoPath),
       'thumbPath': serializer.toJson<String?>(thumbPath),
+      'fertilizerForm': serializer.toJson<String?>(fertilizerForm),
+      'fertilizerOrigin': serializer.toJson<String?>(fertilizerOrigin),
+      'nitrogen': serializer.toJson<double?>(nitrogen),
+      'phosphorus': serializer.toJson<double?>(phosphorus),
+      'potassium': serializer.toJson<double?>(potassium),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
@@ -7156,6 +7326,11 @@ class InventoryItemRow extends DataClass
     Value<String?> notes = const Value.absent(),
     Value<String?> photoPath = const Value.absent(),
     Value<String?> thumbPath = const Value.absent(),
+    Value<String?> fertilizerForm = const Value.absent(),
+    Value<String?> fertilizerOrigin = const Value.absent(),
+    Value<double?> nitrogen = const Value.absent(),
+    Value<double?> phosphorus = const Value.absent(),
+    Value<double?> potassium = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => InventoryItemRow(
     createdAt: createdAt ?? this.createdAt,
@@ -7172,6 +7347,15 @@ class InventoryItemRow extends DataClass
     notes: notes.present ? notes.value : this.notes,
     photoPath: photoPath.present ? photoPath.value : this.photoPath,
     thumbPath: thumbPath.present ? thumbPath.value : this.thumbPath,
+    fertilizerForm: fertilizerForm.present
+        ? fertilizerForm.value
+        : this.fertilizerForm,
+    fertilizerOrigin: fertilizerOrigin.present
+        ? fertilizerOrigin.value
+        : this.fertilizerOrigin,
+    nitrogen: nitrogen.present ? nitrogen.value : this.nitrogen,
+    phosphorus: phosphorus.present ? phosphorus.value : this.phosphorus,
+    potassium: potassium.present ? potassium.value : this.potassium,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   InventoryItemRow copyWithCompanion(InventoryItemsCompanion data) {
@@ -7196,6 +7380,17 @@ class InventoryItemRow extends DataClass
       notes: data.notes.present ? data.notes.value : this.notes,
       photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
       thumbPath: data.thumbPath.present ? data.thumbPath.value : this.thumbPath,
+      fertilizerForm: data.fertilizerForm.present
+          ? data.fertilizerForm.value
+          : this.fertilizerForm,
+      fertilizerOrigin: data.fertilizerOrigin.present
+          ? data.fertilizerOrigin.value
+          : this.fertilizerOrigin,
+      nitrogen: data.nitrogen.present ? data.nitrogen.value : this.nitrogen,
+      phosphorus: data.phosphorus.present
+          ? data.phosphorus.value
+          : this.phosphorus,
+      potassium: data.potassium.present ? data.potassium.value : this.potassium,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
@@ -7217,6 +7412,11 @@ class InventoryItemRow extends DataClass
           ..write('notes: $notes, ')
           ..write('photoPath: $photoPath, ')
           ..write('thumbPath: $thumbPath, ')
+          ..write('fertilizerForm: $fertilizerForm, ')
+          ..write('fertilizerOrigin: $fertilizerOrigin, ')
+          ..write('nitrogen: $nitrogen, ')
+          ..write('phosphorus: $phosphorus, ')
+          ..write('potassium: $potassium, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
@@ -7238,6 +7438,11 @@ class InventoryItemRow extends DataClass
     notes,
     photoPath,
     thumbPath,
+    fertilizerForm,
+    fertilizerOrigin,
+    nitrogen,
+    phosphorus,
+    potassium,
     deletedAt,
   );
   @override
@@ -7258,6 +7463,11 @@ class InventoryItemRow extends DataClass
           other.notes == this.notes &&
           other.photoPath == this.photoPath &&
           other.thumbPath == this.thumbPath &&
+          other.fertilizerForm == this.fertilizerForm &&
+          other.fertilizerOrigin == this.fertilizerOrigin &&
+          other.nitrogen == this.nitrogen &&
+          other.phosphorus == this.phosphorus &&
+          other.potassium == this.potassium &&
           other.deletedAt == this.deletedAt);
 }
 
@@ -7276,6 +7486,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
   final Value<String?> notes;
   final Value<String?> photoPath;
   final Value<String?> thumbPath;
+  final Value<String?> fertilizerForm;
+  final Value<String?> fertilizerOrigin;
+  final Value<double?> nitrogen;
+  final Value<double?> phosphorus;
+  final Value<double?> potassium;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
   const InventoryItemsCompanion({
@@ -7293,6 +7508,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     this.notes = const Value.absent(),
     this.photoPath = const Value.absent(),
     this.thumbPath = const Value.absent(),
+    this.fertilizerForm = const Value.absent(),
+    this.fertilizerOrigin = const Value.absent(),
+    this.nitrogen = const Value.absent(),
+    this.phosphorus = const Value.absent(),
+    this.potassium = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -7311,6 +7531,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     this.notes = const Value.absent(),
     this.photoPath = const Value.absent(),
     this.thumbPath = const Value.absent(),
+    this.fertilizerForm = const Value.absent(),
+    this.fertilizerOrigin = const Value.absent(),
+    this.nitrogen = const Value.absent(),
+    this.phosphorus = const Value.absent(),
+    this.potassium = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdAt = Value(createdAt),
@@ -7334,6 +7559,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     Expression<String>? notes,
     Expression<String>? photoPath,
     Expression<String>? thumbPath,
+    Expression<String>? fertilizerForm,
+    Expression<String>? fertilizerOrigin,
+    Expression<double>? nitrogen,
+    Expression<double>? phosphorus,
+    Expression<double>? potassium,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
@@ -7352,6 +7582,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
       if (notes != null) 'notes': notes,
       if (photoPath != null) 'photo_path': photoPath,
       if (thumbPath != null) 'thumb_path': thumbPath,
+      if (fertilizerForm != null) 'fertilizer_form': fertilizerForm,
+      if (fertilizerOrigin != null) 'fertilizer_origin': fertilizerOrigin,
+      if (nitrogen != null) 'nitrogen': nitrogen,
+      if (phosphorus != null) 'phosphorus': phosphorus,
+      if (potassium != null) 'potassium': potassium,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -7372,6 +7607,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     Value<String?>? notes,
     Value<String?>? photoPath,
     Value<String?>? thumbPath,
+    Value<String?>? fertilizerForm,
+    Value<String?>? fertilizerOrigin,
+    Value<double?>? nitrogen,
+    Value<double?>? phosphorus,
+    Value<double?>? potassium,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
@@ -7390,6 +7630,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
       notes: notes ?? this.notes,
       photoPath: photoPath ?? this.photoPath,
       thumbPath: thumbPath ?? this.thumbPath,
+      fertilizerForm: fertilizerForm ?? this.fertilizerForm,
+      fertilizerOrigin: fertilizerOrigin ?? this.fertilizerOrigin,
+      nitrogen: nitrogen ?? this.nitrogen,
+      phosphorus: phosphorus ?? this.phosphorus,
+      potassium: potassium ?? this.potassium,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -7440,6 +7685,21 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
     if (thumbPath.present) {
       map['thumb_path'] = Variable<String>(thumbPath.value);
     }
+    if (fertilizerForm.present) {
+      map['fertilizer_form'] = Variable<String>(fertilizerForm.value);
+    }
+    if (fertilizerOrigin.present) {
+      map['fertilizer_origin'] = Variable<String>(fertilizerOrigin.value);
+    }
+    if (nitrogen.present) {
+      map['nitrogen'] = Variable<double>(nitrogen.value);
+    }
+    if (phosphorus.present) {
+      map['phosphorus'] = Variable<double>(phosphorus.value);
+    }
+    if (potassium.present) {
+      map['potassium'] = Variable<double>(potassium.value);
+    }
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
@@ -7466,6 +7726,11 @@ class InventoryItemsCompanion extends UpdateCompanion<InventoryItemRow> {
           ..write('notes: $notes, ')
           ..write('photoPath: $photoPath, ')
           ..write('thumbPath: $thumbPath, ')
+          ..write('fertilizerForm: $fertilizerForm, ')
+          ..write('fertilizerOrigin: $fertilizerOrigin, ')
+          ..write('nitrogen: $nitrogen, ')
+          ..write('phosphorus: $phosphorus, ')
+          ..write('potassium: $potassium, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -16587,6 +16852,11 @@ typedef $$InventoryItemsTableCreateCompanionBuilder =
       Value<String?> notes,
       Value<String?> photoPath,
       Value<String?> thumbPath,
+      Value<String?> fertilizerForm,
+      Value<String?> fertilizerOrigin,
+      Value<double?> nitrogen,
+      Value<double?> phosphorus,
+      Value<double?> potassium,
       Value<DateTime?> deletedAt,
       Value<int> rowid,
     });
@@ -16606,6 +16876,11 @@ typedef $$InventoryItemsTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<String?> photoPath,
       Value<String?> thumbPath,
+      Value<String?> fertilizerForm,
+      Value<String?> fertilizerOrigin,
+      Value<double?> nitrogen,
+      Value<double?> phosphorus,
+      Value<double?> potassium,
       Value<DateTime?> deletedAt,
       Value<int> rowid,
     });
@@ -16686,6 +16961,31 @@ class $$InventoryItemsTableFilterComposer
 
   ColumnFilters<String> get thumbPath => $composableBuilder(
     column: $table.thumbPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fertilizerForm => $composableBuilder(
+    column: $table.fertilizerForm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fertilizerOrigin => $composableBuilder(
+    column: $table.fertilizerOrigin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get nitrogen => $composableBuilder(
+    column: $table.nitrogen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get phosphorus => $composableBuilder(
+    column: $table.phosphorus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get potassium => $composableBuilder(
+    column: $table.potassium,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16774,6 +17074,31 @@ class $$InventoryItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get fertilizerForm => $composableBuilder(
+    column: $table.fertilizerForm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fertilizerOrigin => $composableBuilder(
+    column: $table.fertilizerOrigin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get nitrogen => $composableBuilder(
+    column: $table.nitrogen,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get phosphorus => $composableBuilder(
+    column: $table.phosphorus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get potassium => $composableBuilder(
+    column: $table.potassium,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
@@ -16837,6 +17162,27 @@ class $$InventoryItemsTableAnnotationComposer
   GeneratedColumn<String> get thumbPath =>
       $composableBuilder(column: $table.thumbPath, builder: (column) => column);
 
+  GeneratedColumn<String> get fertilizerForm => $composableBuilder(
+    column: $table.fertilizerForm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fertilizerOrigin => $composableBuilder(
+    column: $table.fertilizerOrigin,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get nitrogen =>
+      $composableBuilder(column: $table.nitrogen, builder: (column) => column);
+
+  GeneratedColumn<double> get phosphorus => $composableBuilder(
+    column: $table.phosphorus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get potassium =>
+      $composableBuilder(column: $table.potassium, builder: (column) => column);
+
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
@@ -16892,6 +17238,11 @@ class $$InventoryItemsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
                 Value<String?> thumbPath = const Value.absent(),
+                Value<String?> fertilizerForm = const Value.absent(),
+                Value<String?> fertilizerOrigin = const Value.absent(),
+                Value<double?> nitrogen = const Value.absent(),
+                Value<double?> phosphorus = const Value.absent(),
+                Value<double?> potassium = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => InventoryItemsCompanion(
@@ -16909,6 +17260,11 @@ class $$InventoryItemsTableTableManager
                 notes: notes,
                 photoPath: photoPath,
                 thumbPath: thumbPath,
+                fertilizerForm: fertilizerForm,
+                fertilizerOrigin: fertilizerOrigin,
+                nitrogen: nitrogen,
+                phosphorus: phosphorus,
+                potassium: potassium,
                 deletedAt: deletedAt,
                 rowid: rowid,
               ),
@@ -16928,6 +17284,11 @@ class $$InventoryItemsTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String?> photoPath = const Value.absent(),
                 Value<String?> thumbPath = const Value.absent(),
+                Value<String?> fertilizerForm = const Value.absent(),
+                Value<String?> fertilizerOrigin = const Value.absent(),
+                Value<double?> nitrogen = const Value.absent(),
+                Value<double?> phosphorus = const Value.absent(),
+                Value<double?> potassium = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => InventoryItemsCompanion.insert(
@@ -16945,6 +17306,11 @@ class $$InventoryItemsTableTableManager
                 notes: notes,
                 photoPath: photoPath,
                 thumbPath: thumbPath,
+                fertilizerForm: fertilizerForm,
+                fertilizerOrigin: fertilizerOrigin,
+                nitrogen: nitrogen,
+                phosphorus: phosphorus,
+                potassium: potassium,
                 deletedAt: deletedAt,
                 rowid: rowid,
               ),

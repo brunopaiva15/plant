@@ -24,8 +24,10 @@ Future<void> shareInventoryCsv(BuildContext context, List<InventoryItem> items) 
 /// européens. Tous les champs sont entre guillemets.
 String buildInventoryCsv(List<InventoryItem> items) {
   String cell(Object? v) => '"${(v ?? '').toString().replaceAll('"', '""')}"';
+  // Les cinq dernières colonnes ne concernent que les engrais : vides pour
+  // toute autre catégorie, elles gardent une seule forme de tableau.
   final rows = <String>[
-    ['nom', 'categorie', 'quantite', 'unite', 'seuil_bas', 'tags', 'notes'].map(cell).join(';'),
+    ['nom', 'categorie', 'quantite', 'unite', 'seuil_bas', 'tags', 'notes', 'forme', 'origine', 'npk_n', 'npk_p', 'npk_k'].map(cell).join(';'),
     for (final i in items)
       [
         i.name,
@@ -35,6 +37,11 @@ String buildInventoryCsv(List<InventoryItem> items) {
         i.lowThreshold == null ? '' : formatNumber(i.lowThreshold!),
         i.tags.join(', '),
         i.notes ?? '',
+        i.fertilizerForm?.name ?? '',
+        i.fertilizerOrigin?.name ?? '',
+        i.nitrogen == null ? '' : formatNumber(i.nitrogen!),
+        i.phosphorus == null ? '' : formatNumber(i.phosphorus!),
+        i.potassium == null ? '' : formatNumber(i.potassium!),
       ].map(cell).join(';'),
   ];
   return rows.join('\r\n');

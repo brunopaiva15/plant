@@ -201,6 +201,11 @@ create table if not exists inventory_items (
   notes text,
   photo_path text,
   thumb_path text,
+  fertilizer_form text check (fertilizer_form in ('liquid','granules','sticks','solublePowder','foliar','other')),
+  fertilizer_origin text check (fertilizer_origin in ('mineral','organic','organomineral')),
+  nitrogen numeric check (nitrogen between 0 and 100),
+  phosphorus numeric check (phosphorus between 0 and 100),
+  potassium numeric check (potassium between 0 and 100),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz
@@ -209,6 +214,15 @@ create table if not exists inventory_items (
 -- PostgREST refusait alors chaque objet poussé par l'app (« Could not find
 -- the 'group_id' column »), ce qui arrêtait toute la synchronisation.
 alter table inventory_items add column if not exists group_id uuid references inventory_groups(id) on delete set null;
+-- Caractérisation des engrais (schéma local v12) : mêmes colonnes, même
+-- raison de les ajouter après coup aux projets déjà en place.
+alter table inventory_items add column if not exists fertilizer_form text
+  check (fertilizer_form in ('liquid','granules','sticks','solublePowder','foliar','other'));
+alter table inventory_items add column if not exists fertilizer_origin text
+  check (fertilizer_origin in ('mineral','organic','organomineral'));
+alter table inventory_items add column if not exists nitrogen numeric check (nitrogen between 0 and 100);
+alter table inventory_items add column if not exists phosphorus numeric check (phosphorus between 0 and 100);
+alter table inventory_items add column if not exists potassium numeric check (potassium between 0 and 100);
 
 create table if not exists tasks (
   id uuid primary key,

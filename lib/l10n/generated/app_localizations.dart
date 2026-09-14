@@ -2568,6 +2568,84 @@ abstract class AppLocalizations {
   /// **'Accessoires'**
   String get catAccessory;
 
+  /// No description provided for @fertForm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Forme'**
+  String get fertForm;
+
+  /// No description provided for @fertFormLiquid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liquide'**
+  String get fertFormLiquid;
+
+  /// No description provided for @fertFormGranules.
+  ///
+  /// In fr, this message translates to:
+  /// **'Granulés'**
+  String get fertFormGranules;
+
+  /// No description provided for @fertFormSticks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bâtonnets'**
+  String get fertFormSticks;
+
+  /// No description provided for @fertFormSolublePowder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poudre soluble'**
+  String get fertFormSolublePowder;
+
+  /// No description provided for @fertFormFoliar.
+  ///
+  /// In fr, this message translates to:
+  /// **'Foliaire'**
+  String get fertFormFoliar;
+
+  /// No description provided for @fertFormOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get fertFormOther;
+
+  /// No description provided for @fertOrigin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Origine'**
+  String get fertOrigin;
+
+  /// No description provided for @fertOriginMineral.
+  ///
+  /// In fr, this message translates to:
+  /// **'Minéral'**
+  String get fertOriginMineral;
+
+  /// No description provided for @fertOriginOrganic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Organique'**
+  String get fertOriginOrganic;
+
+  /// No description provided for @fertOriginOrganomineral.
+  ///
+  /// In fr, this message translates to:
+  /// **'Organo-minéral'**
+  String get fertOriginOrganomineral;
+
+  /// No description provided for @fertNpk.
+  ///
+  /// In fr, this message translates to:
+  /// **'NPK'**
+  String get fertNpk;
+
+  /// No description provided for @fertNpkPercent.
+  ///
+  /// In fr, this message translates to:
+  /// **'NPK (%)'**
+  String get fertNpkPercent;
+
   /// No description provided for @unit.
   ///
   /// In fr, this message translates to:

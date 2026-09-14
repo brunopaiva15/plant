@@ -125,16 +125,34 @@ void main() {
   });
 
   group('export CSV', () {
-    InventoryItem fake({String name = 'Terreau', double quantity = 2, double? threshold, List<String> tags = const [], String? notes}) => InventoryItem(
+    InventoryItem fake({
+      String name = 'Terreau',
+      double quantity = 2,
+      double? threshold,
+      List<String> tags = const [],
+      String? notes,
+      InventoryCategory category = InventoryCategory.fertilizer,
+      FertilizerForm? form,
+      FertilizerOrigin? origin,
+      double? nitrogen,
+      double? phosphorus,
+      double? potassium,
+    }) =>
+        InventoryItem(
           id: 'i1',
           gardenId: gardenId,
-          category: InventoryCategory.fertilizer,
+          category: category,
           name: name,
           quantity: quantity,
           unit: 'ml',
           lowThreshold: threshold,
           tags: tags,
           notes: notes,
+          fertilizerForm: form,
+          fertilizerOrigin: origin,
+          nitrogen: nitrogen,
+          phosphorus: phosphorus,
+          potassium: potassium,
           createdAt: DateTime(2026),
           updatedAt: DateTime(2026),
         );
@@ -160,7 +178,7 @@ void main() {
 
     test('un point-virgule dans les notes ne crée pas de colonne', () {
       final csv = buildInventoryCsv([fake(notes: 'à diluer ; puis arroser')]);
-      expect(csv.split('\r\n')[1].split('";"'), hasLength(7));
+      expect(csv.split('\r\n')[1].split('";"'), hasLength(12));
     });
 
     test('les tags sont regroupés dans une seule colonne', () {
@@ -169,6 +187,19 @@ void main() {
 
     test('un seuil absent laisse la cellule vide', () {
       expect(buildInventoryCsv([fake()]), contains('"ml";"";'));
+    });
+
+    test('un engrais emporte sa forme, son origine et son NPK', () {
+      final csv = buildInventoryCsv([
+        fake(form: FertilizerForm.solublePowder, origin: FertilizerOrigin.organomineral, nitrogen: 7, phosphorus: 3, potassium: 5.5),
+      ]);
+      expect(csv.split('\r\n').first, endsWith('"forme";"origine";"npk_n";"npk_p";"npk_k"'));
+      expect(csv, contains('"solublePowder";"organomineral";"7";"3";"5,5"'));
+    });
+
+    test('une autre catégorie laisse ces cinq cellules vides', () {
+      final csv = buildInventoryCsv([fake(category: InventoryCategory.pot, name: 'Pots 15')]);
+      expect(csv.split('\r\n')[1], endsWith('"";"";"";"";""'));
     });
   });
 

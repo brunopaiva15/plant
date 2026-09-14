@@ -232,7 +232,16 @@ abstract class InventoryRepository {
     String? notes,
     String? photoPath,
     String? thumbPath,
+    FertilizerForm? fertilizerForm,
+    FertilizerOrigin? fertilizerOrigin,
+    double? nitrogen,
+    double? phosphorus,
+    double? potassium,
   });
+
+  /// Met l'article à jour. Les champs propres aux engrais ne sont retenus que
+  /// si [InventoryItem.category] vaut encore `fertilizer` ; sinon ils sont
+  /// effacés, pour qu'aucune autre catégorie ne les traîne.
   Future<void> update(InventoryItem item);
   Future<void> adjustQuantity(String id, double delta);
   Future<void> delete(String id);

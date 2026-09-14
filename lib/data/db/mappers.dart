@@ -145,6 +145,11 @@ extension InventoryItemRowMapper on InventoryItemRow {
         notes: notes,
         photoPath: photoPath,
         thumbPath: thumbPath,
+        fertilizerForm: FertilizerForm.parse(fertilizerForm),
+        fertilizerOrigin: FertilizerOrigin.parse(fertilizerOrigin),
+        nitrogen: nitrogen,
+        phosphorus: phosphorus,
+        potassium: potassium,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

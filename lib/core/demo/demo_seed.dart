@@ -111,7 +111,18 @@ abstract final class DemoSeed {
     await tags.setPlantTags(calathea.id, [tropical.id, rare.id]);
     await plants.setFavorite(monstera.id, true);
 
-    await inventory.create(category: InventoryCategory.fertilizer, name: en ? 'Green plant fertiliser' : 'Engrais plantes vertes', quantity: 420, unit: 'ml', lowThreshold: 100);
+    await inventory.create(
+      category: InventoryCategory.fertilizer,
+      name: en ? 'Green plant fertiliser' : 'Engrais plantes vertes',
+      quantity: 420,
+      unit: 'ml',
+      lowThreshold: 100,
+      fertilizerForm: FertilizerForm.liquid,
+      fertilizerOrigin: FertilizerOrigin.mineral,
+      nitrogen: 7,
+      phosphorus: 3,
+      potassium: 5,
+    );
     await inventory.create(category: InventoryCategory.soil, name: en ? 'Tropical potting mix' : 'Terreau tropical', quantity: 7, unit: 'L', lowThreshold: 5);
     await inventory.create(category: InventoryCategory.substrate, name: 'Perlite', quantity: 2, unit: 'L', lowThreshold: 3);
     await inventory.create(category: InventoryCategory.pot, name: en ? 'Ø15 cm pots' : 'Pots Ø15 cm', quantity: 4, unit: '');
