@@ -3489,15 +3489,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activityTaskDone => 'Task completed';
 
   @override
-  String get archiveNameTitle => 'Archive name';
-
-  @override
-  String get archiveNameHint => 'Memorial, The past…';
-
-  @override
-  String get archiveNameExplain => 'Leave empty to keep the default name.';
-
-  @override
   String get searchArchives => 'Search archives';
 
   @override

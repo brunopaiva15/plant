@@ -215,7 +215,6 @@ class AppPreferences {
     required this.weatherPlace,
     required this.homeSensor,
     required this.homeHumiditySensor,
-    required this.archiveName,
   });
 
   final ThemeMode themeMode;
@@ -253,9 +252,6 @@ class AppPreferences {
   /// Le capteur qui donne l'humidité quand ce n'est pas le même ; `null`,
   /// et c'est [homeSensor] qui la donne, s'il la mesure.
   final HomeSensor? homeHumiditySensor;
-
-  /// Nom donné aux archives, vide si l'utilisateur garde celui par défaut.
-  final String archiveName;
 }
 
 class PreferencesController extends Notifier<AppPreferences> {
@@ -286,7 +282,6 @@ class PreferencesController extends Notifier<AppPreferences> {
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       homeSensor: HomeSensor.decode(s.homeSensor),
       homeHumiditySensor: HomeSensor.decode(s.homeHumiditySensor),
-      archiveName: s.archiveName,
     );
   }
 
@@ -324,7 +319,6 @@ class PreferencesController extends Notifier<AppPreferences> {
       });
   Future<void> setHomeHumiditySensor(HomeSensor? sensor) =>
       _apply((s) => sensor == null ? s.clearHomeHumiditySensor() : s.setHomeHumiditySensor(sensor.encode()));
-  Future<void> setArchiveName(String name) => _apply((s) => s.setArchiveName(name));
   Future<void> setDisplayName(String name) async {
     await ref.read(authRepositoryProvider).updateDisplayName(name);
     state = _read();

@@ -95,11 +95,6 @@ class PreferencesService {
   String get plantSort => _prefs.getString('plant_sort') ?? 'name';
   Future<void> setPlantSort(String value) => _prefs.setString('plant_sort', value);
 
-  /// Nom donné aux archives par l'utilisateur (« Mémorial », « Le passé »…).
-  /// Vide = le libellé traduit par défaut.
-  String get archiveName => _prefs.getString('archive_name') ?? '';
-  Future<void> setArchiveName(String value) => _prefs.setString('archive_name', value.trim());
-
   /// Tri et vue des archives, mémorisés d'une session à l'autre.
   String get archiveSort => _prefs.getString('archive_sort') ?? 'archivedDesc';
   Future<void> setArchiveSort(String value) => _prefs.setString('archive_sort', value);
