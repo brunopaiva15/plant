@@ -351,6 +351,26 @@ reste `surface`. `TodayNoticeSlot` pose la marge commune et fond la carte
 quand elle disparaît, sans laisser de vide. La carte du jour, en terre
 cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
+## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
+Cinq volets se pratiquent — arrosage, lumière, humidité, engrais, rempotage —
+et chacun a sa carte, teintée de la couleur de son sujet : bleu poussière pour
+l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre cuite
+pour le rempotage. Une douzaine de lignes dans une seule liste ne se
+distinguaient qu'à la lecture ; une carte se retrouve à sa couleur.
+
+L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
+sur toute carte teintée —, le nom du volet, le constat dessous, puis ce qui ne
+vaut que pour lui : la saison de l'engrais, le substrat avec le rempotage (le
+jour où il sert), « Brumiser » sous l'humidité, « Repos hivernal » sous
+l'arrosage. L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau :
+c'est la question qu'on se pose en premier. La carte « Chez vous » se pose
+après l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
+
+Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
+`FloraGroup` à la suite, avant les conseils, ce qu'il faut surveiller, les
+problèmes connus et la multiplication ; la provenance de la fiche ferme la
+page. `test/features/care_guide_test.dart` tient la séparation.
+
 ## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)
 Un seul chemin pour en ajouter une, `showPhotoCaptureFlow` : le viseur dans
 la page, comme à la création, avec la dernière photo posée dessus en
