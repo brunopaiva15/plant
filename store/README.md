@@ -15,23 +15,17 @@ fiche chargée ne se lit pas dans une grille de vignettes.
 
 Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
 (`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
-les fait fondre. Les sept autres montrent une capture réelle de l'app dans un
-iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
-rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
-« main » de l'app) ; entre le titre et le téléphone, un objet 3D de la série
-clay de l'onboarding dépasse de derrière l'écran. Le fond est le papier
-crème de l'app, avec son grain ; les ombres sont brunes, jamais noires.
+les fait fondre. Les sept autres montrent une capture réelle de l'app dans un iPhone dessiné,
+légèrement incliné, l'écran complet : c'est l'écran qu'on vend, rien ne le
+recouvre. Au-dessus, un titre tracé en Shantell Sans (la police « main » de
+l'app) et une ligne qui le précise.
 
-| # | Écran | Objet | Teinte |
-|---|---|---|---|
-| 1 | Fiche d'ouverture : bande sauge, carte de verre, carte terre cuite | la plante de l'icône | sauge |
-| 2 | Aujourd'hui, rien à faire, « À venir » en grille | trois rangées cochées | eau |
-| 3 | Plantes (la collection) | monstera en pot | sauge |
-| 4 | Fiche d'une plante (Basilic), photo en tête | plante ronde en pot | terre cuite |
-| 5 | Fiche d'entretien | anneau et goutte | soleil |
-| 6 | Fiche du Ficus, feuille « Espèce » ouverte | caoutchouc en pot | terre |
-| 7 | Jardin, calendrier | la maison | lavande |
-| 8 | Diagnostic gardé au journal de la Calathea, rouvert en entier | sansevieria en pot | rose |
+La série tient par trois règles communes. Le fond est le papier de l'app
+teinté, avec deux ou trois formes organiques qui sortent du cadre — jamais
+un aplat. Un tracé à la main occupe le coin haut droit : une boucle, trois
+vagues, une flèche courbe, ou un mot écrit dans la police de l'app. Et un
+objet d'argile de l'onboarding se pose devant le téléphone, sur un coin bas,
+entier et à sa taille native — jamais derrière, jamais coupé.
 
 Le sixième montre l'identification sur l'appareil : sur le simulateur,
 c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du

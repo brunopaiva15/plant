@@ -90,6 +90,27 @@ def radial(size, center, radius, color, alpha):
     return Image.fromarray(layer)
 
 
+def blob(center, radius, color, alpha, seed=0, wobble=0.2):
+    """Une forme organique, comme celles peintes derrière les fiches : un
+    cercle dont le rayon ondule sur trois harmoniques, adouci au bord. Chaque
+    fiche tire les siennes d'une graine différente : la famille est la même,
+    aucune ne se répète."""
+    rng = np.random.default_rng(seed)
+    phases = rng.uniform(0, 2 * np.pi, 3)
+    amps = rng.uniform(0.5, 1.0, 3) * wobble
+    pts = []
+    for i in range(320):
+        a = 2 * np.pi * i / 320
+        r = radius * (1 + sum(amps[k] * np.sin((k + 2) * a + phases[k]) for k in range(3)))
+        pts.append((center[0] + r * np.cos(a), center[1] + r * np.sin(a)))
+    mask = Image.new('L', (W, H), 0)
+    ImageDraw.Draw(mask).polygon(pts, fill=int(255 * alpha))
+    mask = mask.filter(ImageFilter.GaussianBlur(radius * 0.05))
+    layer = Image.new('RGBA', (W, H), color + (0,))
+    layer.putalpha(mask)
+    return layer
+
+
 def grain(img, strength=0.045, seed=7):
     """Le grain du papier, comme dans l'app : un bruit très fin qui module
     la lumière, sans toucher aux couleurs."""
@@ -100,13 +121,17 @@ def grain(img, strength=0.045, seed=7):
     return Image.fromarray(a).convert('RGBA')
 
 
-def background(tint):
+def background(tint, seed=0):
+    """Le papier de l'app, teinté, avec deux ou trois formes organiques qui
+    sortent du cadre. C'est ce qui fait qu'une fiche ne se lit pas comme un
+    aplat, et le même système sur les huit fait tenir la série."""
     strong, soft = TINTS[tint]
-    base = tuple(int(s * 0.5 + c * 0.5) for s, c in zip(soft, CANVAS))
+    base = tuple(int(s * 0.55 + c * 0.45) for s, c in zip(soft, CANVAS))
     img = Image.new('RGBA', (W, H), base + (255,))
-    img.alpha_composite(radial((W, H), (1180, 380), 980, strong, 0.20))
-    img.alpha_composite(radial((W, H), (120, 2500), 900, (255, 252, 246), 0.6))
-    img.alpha_composite(radial((W, H), (300, 1500), 700, strong, 0.07))
+    img.alpha_composite(blob((W * 1.02, H * 0.06), 880, strong, 0.30, seed=seed))
+    img.alpha_composite(blob((-W * 0.06, H * 0.66), 1000, strong, 0.20, seed=seed + 11))
+    img.alpha_composite(blob((W * 0.62, H * 1.06), 860, strong, 0.16, seed=seed + 23))
+    img.alpha_composite(radial((W, H), (200, 1300), 900, (255, 253, 248), 0.45))
     return grain(img)
 
 
@@ -130,9 +155,9 @@ def title_size(titles, width=1110):
     """Une seule taille pour la série : la plus grande où chaque ligne de
     chaque titre tient dans la largeur. Les visuels restent accordés."""
     draw = ImageDraw.Draw(Image.new('RGB', (10, 10)))
-    size = 116
+    size = 136
     lines = [l for t in titles for l in t.split('\n')]
-    while size > 80 and max(draw.textlength(l, font=hand(size)) for l in lines) > width:
+    while size > 96 and max(draw.textlength(l, font=hand(size, 800)) for l in lines) > width:
         size -= 2
     return size
 
@@ -141,16 +166,61 @@ def draw_text_block(img, title, subtitle, size, x=96, y=200, width=1110):
     """Le titre est coupé à la main (retours à la ligne dans la copie)."""
     draw = ImageDraw.Draw(img)
     lines = title.split('\n')
-    t_font = hand(size)
+    t_font = hand(size, 800)
     for line in lines:
         draw.text((x, y), line, font=t_font, fill=INK)
         y += int(size * 1.18)
     y += 22
-    s_font = font('Medium', 50)
+    s_font = font('Medium', 54)
     for line in wrap(draw, subtitle, s_font, width - 40):
         draw.text((x + 4, y), line, font=s_font, fill=INK2)
         y += 66
     return y
+
+
+# --- les tracés à la main -----------------------------------------------------
+
+def _stroke(size, points, color, width, angle):
+    layer = Image.new('RGBA', size, (0, 0, 0, 0))
+    ImageDraw.Draw(layer).line(points, fill=color + (255,), width=width, joint='curve')
+    return layer.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else layer
+
+
+def squiggle(color, size=300, width=11, angle=0.0):
+    """Une boucle tracée d'un trait, comme au feutre dans la marge."""
+    pts = []
+    for i in range(200):
+        a = 2.4 * np.pi * i / 199
+        r = size / 2 * (0.18 + 0.82 * i / 199)
+        pts.append((size / 2 + r * np.cos(a), size / 2 + r * np.sin(a) * 0.72))
+    return _stroke((size, size), pts, color, width, angle)
+
+
+def wave(color, size=320, width=11, angle=0.0):
+    """Trois vagues, le gribouillis le plus court du carnet."""
+    pts = [(size * i / 119, size * 0.5 + size * 0.22 * np.sin(3 * np.pi * i / 119)) for i in range(120)]
+    return _stroke((size, int(size * 0.8) + width), pts, color, width, angle)
+
+
+def curved_arrow(color, size=300, width=11, angle=0.0):
+    """Une flèche qui se courbe, celle qui désigne ce qu'il faut regarder."""
+    pts = [(size * 0.08 + size * 0.84 * (i / 99), size * 0.9 - size * 0.62 * np.sin(np.pi * 0.5 * i / 99) ** 1.6) for i in range(100)]
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    d.line(pts, fill=color + (255,), width=width, joint='curve')
+    hx, hy = pts[-1]
+    d.line([(hx - size * 0.16, hy - size * 0.02), (hx, hy), (hx - size * 0.04, hy + size * 0.17)], fill=color + (255,), width=width, joint='curve')
+    return layer.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else layer
+
+
+def handwriting(text, color, size=60, angle=0.0):
+    """Un mot écrit à la main dans la marge, dans la police de l'app."""
+    f = hand(size, 600)
+    d0 = ImageDraw.Draw(Image.new('RGB', (10, 10)))
+    w = int(d0.textlength(text, font=f)) + 20
+    layer = Image.new('RGBA', (w, int(size * 1.9)), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).text((10, size * 0.3), text, font=f, fill=color + (255,))
+    return layer.rotate(angle, resample=Image.BICUBIC, expand=True) if angle else layer
 
 
 # --- iPhone -------------------------------------------------------------------
@@ -288,25 +358,29 @@ def clay_arch(width, height, color=SURFACE):
     return clay_shape(mask, color)
 
 
-def place_phone(canvas, shot, y, width=1030, **modal):
-    """Le téléphone, droit et centré, assez bas pour que le titre respire et
-    assez haut pour que l'écran se lise presque en entier : le bas du
-    téléphone sort du cadre, comme sur les fiches d'Apple."""
+def place_phone(canvas, shot, y, width=1030, angle=0.0, **modal):
+    """Le telephone, legerement incline : droit, huit fiches d'affilee font
+    une planche de catalogue ; penche, la serie respire. Rend sa boite pour
+    que l'objet d'argile sache ou se poser."""
     ph = phone(shot, **modal)
     scale = width / ph.width
     ph = ph.resize((width, int(ph.height * scale)), Image.LANCZOS)
+    if angle:
+        ph = ph.rotate(angle, resample=Image.BICUBIC, expand=True)
     x = (W - ph.width) // 2
     paste_with_shadow(canvas, ph, (x, y), blur=60, offset=(14, 50), alpha=0.34)
+    return (x, y, ph.width, ph.height)
 
 
-def place_clay(canvas, name, size, y, phone_width=1030):
-    """Un objet de la série clay, derrière le téléphone, qui dépasse en haut
-    à droite dans le vide gardé entre le sous-titre et l'écran. Il ne cache
-    rien : c'est le téléphone qui le cache à moitié. Il reste dans la largeur
-    du téléphone, pour qu'aucun bout n'en ressorte sur le côté."""
-    obj = Image.open(os.path.join(CLAY, name)).convert('RGBA').resize((size, size), Image.LANCZOS)
-    x = (W + phone_width) // 2 - 36 - size
-    paste_with_shadow(canvas, obj, (x, y), blur=50, offset=(10, 40), alpha=0.26)
+def place_object(canvas, name, size, corner, box):
+    """L'objet d'argile, pose devant le telephone et jamais derriere : il
+    mord sur un coin bas de l'ecran, entier, a sa taille native."""
+    obj = crisp(os.path.join('assets', 'onboarding', name), box=size)
+    x, y, w, h = box
+    px = x - obj.width // 3 if corner == 'left' else x + w - obj.width * 2 // 3
+    # Entier dans le cadre : un objet coupe par le bord n'est plus un objet.
+    py = min(y + h - obj.height - 40, H - obj.height - 70)
+    paste_with_shadow(canvas, obj, (max(20, min(px, W - obj.width - 20)), py), blur=50, offset=(12, 36), alpha=0.26)
 
 
 # --- la feuille « Espèce » ---------------------------------------------------
@@ -422,7 +496,8 @@ def ident_sheet(lang, width=1170):
 # pas dans une grille de vignettes.
 COVER = {
     'fr': {
-        'claim': ['Le carnet', 'de vos plantes'],
+        'title': 'Auxine',
+        'subtitle': 'le carnet de vos plantes',
         'name': 'Monstera deliciosa',
         'species': 'Faux philodendron',
         'rows': [
@@ -433,7 +508,8 @@ COVER = {
         'footer': 'Gratuite, sans compte, sans publicité',
     },
     'en': {
-        'claim': ['The journal', 'of your plants'],
+        'title': 'Auxine',
+        'subtitle': 'the journal of your plants',
         'name': 'Monstera deliciosa',
         'species': 'Swiss cheese plant',
         'rows': [
@@ -507,33 +583,22 @@ def crisp(path, height=None, width=None, box=None):
     return im.resize((width, height), Image.LANCZOS)
 
 
-def cover(lang):
-    """La fiche d'ouverture : une bande sauge qui porte le nom et la
-    revendication, la plante de l'icône posée sur son bord, la carte de ce
-    que l'app dit d'une plante en verre dépoli, et la carte pleine de terre
-    cuite pour ce qui est gratuit."""
+def cover(lang, size):
+    """La fiche d'ouverture entre dans le même gabarit que les sept autres :
+    même fond, même titre au même endroit, même sous-titre. À la place du
+    téléphone, la plante de l'icône, la carte de ce que l'app dit d'une
+    plante en verre dépoli, et la carte pleine de terre cuite."""
     t = COVER[lang]
-    img = Image.new('RGBA', (W, H), CANVAS + (255,))
-    img.alpha_composite(radial((W, H), (1150, 2500), 1000, TINTS['sage'][0], 0.10))
-    band = Image.new('RGBA', (W, BAND), SAGE_SOLID + (255,))
-    band.alpha_composite(radial((W, BAND), (1180, 120), 1000, (104, 186, 134), 0.55))
-    img.alpha_composite(band, (0, 0))
-    img = grain(img, strength=0.032)
+    img = background('sage', seed=1)
+    bottom = draw_text_block(img, t['title'], t['subtitle'], size)
+    draw_accent(img, 1, 'sage', lang)
 
-    d = ImageDraw.Draw(img)
-    d.text((96, 170), 'Auxine', font=hand(208, 800), fill=CREAM)
-    y = 520
-    for line in t['claim']:
-        d.text((96, y), line, font=font('Black', 124), fill=CREAM)
-        y += 146
+    # La plante de l'icône, à la place du téléphone.
+    plant = crisp('assets/icon/icon_ios_foreground.png', width=880)
+    paste_with_shadow(img, plant, ((W - plant.width) // 2 + 60, bottom + 120), blur=64, offset=(16, 46), alpha=0.28)
 
-    # La plante de l'icône, posée sur le bord de la bande.
-    plant = crisp('assets/icon/icon_ios_foreground.png', width=780)
-    paste_with_shadow(img, plant, (W - plant.width + 40, BAND - plant.height), blur=64, offset=(16, 46), alpha=0.30)
-
-    # La carte de verre, qui mord sur la bande : c'est ce passage du vert au
-    # papier qui la fait voir comme une plaque et non comme un aplat.
-    gx, gy, gw, gh = 96, 1500, W - 192, 860
+    # La carte de verre, posée à cheval sur le bas de la plante.
+    gx, gy, gw, gh = 96, bottom + 120 + plant.height - 120, W - 192, 860
     glass(img, (gx, gy, gw, gh), radius=72, blur=56, alpha=0.58)
     d = ImageDraw.Draw(img)
     pad = 76
@@ -584,21 +649,52 @@ COPY = {
 }
 
 SCENES = [
-    ('today', 'water', 'onboarding_2.png'),
-    ('plants', 'sage', 'collection_monstera.webp'),
-    ('plant', 'terracotta', 'collection_ronde.webp'),
-    ('care', 'sun', 'onboarding_3.png'),
-    ('identify', 'earth', 'collection_caoutchouc.webp'),
-    ('garden-calendar', 'lavender', 'onboarding_7.png'),
-    ('diagnosis', 'rose', 'collection_sansevieria.webp'),
+    ('today', 'water', 'onboarding_2.png', -3.5, 'right'),
+    ('plants', 'sage', 'collection_monstera.webp', 3.0, 'left'),
+    ('plant', 'terracotta', 'collection_ronde.webp', -3.0, 'right'),
+    ('care', 'sun', 'onboarding_3.png', 3.5, 'left'),
+    ('identify', 'earth', 'collection_caoutchouc.webp', -3.0, 'right'),
+    ('garden-calendar', 'lavender', 'onboarding_7.png', 3.0, 'left'),
+    ('diagnosis', 'rose', 'collection_sansevieria.webp', -3.5, 'right'),
 ]
+# Ce que chaque fiche porte en marge : un tracé à la main, et parfois un mot.
+# (genre, x, y, angle, taille, texte) — le mot est traduit dans ACCENT_WORDS.
+ACCENTS = {
+    1: ('wave', 1000, 150, -8, 300, None),
+    2: ('arrow', 1040, 130, -18, 280, None),
+    3: ('squiggle', 1020, 140, 0, 290, None),
+    4: ('wave', 1000, 150, -6, 310, None),
+    5: ('squiggle', 1030, 130, 150, 280, None),
+    6: ('arrow', 1030, 140, 14, 280, None),
+    7: ('wave', 1000, 140, 6, 310, None),
+    8: ('word', 1010, 170, -8, 92, 'note'),
+}
+ACCENT_WORDS = {'note': {'fr': 'noté', 'en': 'noted'}}
+
+
+def draw_accent(img, index, tint, lang):
+    """Le trace de la marge, pose par-dessus le telephone : dans les fiches
+    du magasin, c est lui qui donne le geste de la main."""
+    if index not in ACCENTS:
+        return
+    kind, ax, ay, angle, scale, word = ACCENTS[index]
+    # Un ton plus dense que celui du fond : un trait à la main doit se voir.
+    tone = tuple(int(c * 0.82) for c in TINTS[tint][0])
+    mark = {
+        'arrow': lambda: curved_arrow(tone, size=scale, angle=angle),
+        'squiggle': lambda: squiggle(tone, size=scale, angle=angle),
+        'wave': lambda: wave(tone, size=scale, angle=angle),
+        'word': lambda: handwriting(ACCENT_WORDS[word][lang], tone, size=scale, angle=angle),
+    }[kind]()
+    img.alpha_composite(mark, (ax, ay))
+
 # Chaque visuel : la capture, la teinte du papier, l'objet d'argile qui dépasse.
 
 
 # Le téléphone tient en entier dans le cadre, écran complet : sa largeur, le
 # vide entre le sous-titre et lui (où l'objet d'argile dépasse), et la taille
 # de l'objet.
-PHONE_WIDTH, PHONE_GAP, PHONE_CLAY = 920, 200, 560
+PHONE_WIDTH, PHONE_GAP, PHONE_CLAY = 850, 170, 420
 
 
 def build(shots, out, lang):
@@ -606,10 +702,10 @@ def build(shots, out, lang):
     # Des captures d'appareil (store/capture_ios.sh) ou du web (capture.mjs).
     device = os.path.exists(os.path.join(shots, '.device'))
     copy = COPY[lang]
-    size = title_size([t for t, _ in copy])
-    cover(lang).convert('RGB').save(os.path.join(out, '1.png'), optimize=True)
-    for i, ((title, subtitle), (name, tint, clay)) in enumerate(zip(copy, SCENES), start=2):
-        img = background(tint)
+    size = title_size([COVER[lang]['title']] + [t for t, _ in copy])
+    cover(lang, size).convert('RGB').save(os.path.join(out, '1.png'), optimize=True)
+    for i, ((title, subtitle), (name, tint, clay, angle, corner)) in enumerate(zip(copy, SCENES), start=2):
+        img = background(tint, seed=i * 7)
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
         modal = {'device': device}
@@ -623,8 +719,9 @@ def build(shots, out, lang):
             # précédent reste en place, et on le dit.
             print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
             continue
-        place_clay(img, clay, PHONE_CLAY, bottom - 30, PHONE_WIDTH)
-        place_phone(img, shot, y=bottom + PHONE_GAP, width=PHONE_WIDTH, **modal)
+        box = place_phone(img, shot, y=bottom + PHONE_GAP, width=PHONE_WIDTH, angle=angle, **modal)
+        draw_accent(img, i, tint, lang)
+        place_object(img, clay, PHONE_CLAY, corner, box)
         img.convert('RGB').save(os.path.join(out, f'{i}.png'), optimize=True)
 
 
