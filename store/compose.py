@@ -448,10 +448,14 @@ CREAM = (250, 245, 236)
 WATER = (58, 110, 168)
 
 # Le massif du fond : l'asset, sa hauteur, l'abscisse de son pot.
+# Le massif du fond : l'asset, sa hauteur, l'abscisse de son pot. Ils se
+# tiennent sur les côtés — au milieu, le verre a besoin d'un fond calme.
+# (asset, hauteur, abscisse du pot, retourné). Deux hautes de part et
+# d'autre pour encadrer la plaque, une ronde devant pour la profondeur.
 COVER_PLANTS = [
-    ('collection_semis.webp', 1100, 190),
-    ('collection_sansevieria.webp', 2200, 620),
-    ('collection_ronde.webp', 1400, 1080),
+    ('collection_sansevieria.webp', 1980, 205, True),
+    ('collection_sansevieria.webp', 2120, 1060, False),
+    ('collection_ronde.webp', 1320, 430, False),
 ]
 
 
@@ -461,7 +465,7 @@ def rounded_mask(size, radius):
     return mask
 
 
-def glass(img, box, radius=72, blur=52, alpha=0.26):
+def glass(img, box, radius=72, blur=70, alpha=0.46):
     """Une plaque de verre dépoli posée sur la fiche.
 
     Le verre n'a rien à montrer s'il n'y a rien dessous : on reprend ce que
@@ -510,48 +514,50 @@ def cover(lang):
     img = grain(img, strength=0.035)
 
     d = ImageDraw.Draw(img)
-    d.text((W // 2, 176), 'Auxine', font=hand(172, 750), fill=INK, anchor='mt')
-    d.text((W // 2, 458), t['claim'], font=font('Medium', 58), fill=INK2, anchor='mt')
+    d.text((W // 2, 186), 'Auxine', font=hand(220, 750), fill=INK, anchor='mt')
+    d.text((W // 2, 540), t['claim'], font=font('SemiBold', 76), fill=INK2, anchor='mt')
 
     # Le massif, au fond, coupé par le bas du cadre.
     ground = H + 140
-    for name, height, cx in COVER_PLANTS:
+    for name, height, cx, flip in COVER_PLANTS:
         src = Image.open(os.path.join(CLAY, name)).convert('RGBA')
         src = src.crop(src.getbbox())
+        if flip:
+            src = src.transpose(Image.FLIP_LEFT_RIGHT)
         w = int(src.width * height / src.height)
         paste_with_shadow(img, src.resize((w, height), Image.LANCZOS), (cx - w // 2, ground - height), blur=60, offset=(14, 44), alpha=0.22)
 
     # La plaque de verre, posée au milieu du massif.
-    gx, gy, gw, gh = 108, 1180, W - 216, 880
-    glass(img, (gx, gy, gw, gh))
+    gx, gy, gw, gh = 84, 980, W - 168, 1010
+    glass(img, (gx, gy, gw, gh), radius=80)
     d = ImageDraw.Draw(img)
 
-    pad = 66
-    d.text((gx + pad, gy + pad - 6), t['name'], font=font('Bold', 74), fill=INK)
-    d.text((gx + pad, gy + pad + 96), t['species'], font=font('MediumItalic', 46), fill=SAGE)
+    pad = 76
+    d.text((gx + pad, gy + pad - 8), t['name'], font=font('Bold', 92), fill=INK)
+    d.text((gx + pad, gy + pad + 122), t['species'], font=font('MediumItalic', 56), fill=SAGE)
 
-    y = gy + pad + 196
+    y = gy + pad + 250
     for i, (icon, label, value) in enumerate(t['rows']):
         if i:
-            d.line((gx + pad, y, gx + gw - pad, y), fill=(255, 255, 255, 120), width=2)
-        y += 26
+            d.line((gx + pad, y, gx + gw - pad, y), fill=(255, 255, 255, 150), width=3)
+        y += 30
         obj = Image.open(os.path.join(ROOT, icon)).convert('RGBA')
         obj = obj.crop(obj.getbbox())
-        side = 76
+        side = 92
         obj = obj.resize((int(obj.width * side / max(obj.width, obj.height)), int(obj.height * side / max(obj.width, obj.height))), Image.LANCZOS)
-        img.alpha_composite(obj, (gx + pad, y + (88 - obj.height) // 2))
+        img.alpha_composite(obj, (gx + pad, y + (104 - obj.height) // 2))
         d = ImageDraw.Draw(img)
-        d.text((gx + pad + 108, y + 44), label, font=font('Medium', 46), fill=INK2, anchor='lm')
-        d.text((gx + gw - pad, y + 44), value, font=font('SemiBold', 48), fill=INK, anchor='rm')
-        y += 114
+        d.text((gx + pad + 132, y + 52), label, font=font('Medium', 56), fill=INK2, anchor='lm')
+        d.text((gx + gw - pad, y + 52), value, font=font('Bold', 60), fill=INK, anchor='rm')
+        y += 142
 
-    # Ce qui est gratuit, sur une plaque de verre à sa taille : le fond est
-    # chargé à cet endroit, et le texte nu s'y perdait.
-    f_foot = font('SemiBold', 44)
-    fw = int(d.textlength(t['footer'], font=f_foot)) + 108
-    fh = 108
-    fx, fy = (W - fw) // 2, H - 250
-    glass(img, (fx, fy, fw, fh), radius=fh // 2, blur=36, alpha=0.34)
+    # Ce qui est gratuit, sur une plaque du même verre : le fond est chargé
+    # à cet endroit, et le texte nu s'y perdait.
+    f_foot = font('SemiBold', 52)
+    fw = int(d.textlength(t['footer'], font=f_foot)) + 128
+    fh = 132
+    fx, fy = (W - fw) // 2, H - 290
+    glass(img, (fx, fy, fw, fh), radius=fh // 2, blur=50, alpha=0.52)
     ImageDraw.Draw(img).text((W // 2, fy + fh // 2), t['footer'], font=f_foot, fill=INK, anchor='mm')
     return img
 

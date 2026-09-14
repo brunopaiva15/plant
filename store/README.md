@@ -4,9 +4,11 @@ Huit visuels par langue, au format iPhone 6,7 pouces (1290 × 2796). Le
 premier ne montre pas un écran : un massif de plantes d'argile occupe la
 fiche, et une plaque de verre dépoli posée dessus porte ce que l'app dit
 d'une plante — son nom, son espèce, son arrosage, sa lumière, son dernier
-soin. Le verre reprend ce qu'il y a dessous, le floute et l'éclaircit d'un
-souffle ; ce sont les feuilles qui passent au travers qui lui donnent sa
-couleur, et le liseré clair du pourtour son épaisseur. Le nom est tracé à
+soin. Le verre reprend ce qu'il y a dessous, le floute largement et
+l'éclaircit ; ce sont les feuilles qui passent au travers qui lui donnent
+sa couleur, et le liseré clair du pourtour son épaisseur. Le massif se
+tient sur les côtés et le flou est franc : derrière une plaque, un
+feuillage net se lit comme du bruit, et la carte cesse d'être lisible. Le nom est tracé à
 la main sur le papier de l'app, et ce qui est gratuit tient sur une petite
 plaque du même verre. Les sept autres montrent une capture réelle de l'app dans un
 iPhone dessiné, entier et droit, l'écran complet : c'est l'écran qu'on vend,
