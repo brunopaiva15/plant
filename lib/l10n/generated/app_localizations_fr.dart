@@ -128,6 +128,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get greetingAnonymous => 'Bonjour';
 
   @override
+  String greetingEvening(String name) {
+    return 'Bonsoir $name';
+  }
+
+  @override
+  String get greetingEveningAnonymous => 'Bonsoir';
+
+  @override
   String careCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

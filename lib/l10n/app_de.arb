@@ -37,6 +37,8 @@
   "tabProfile": "Profil",
   "greeting": "Hallo {name}",
   "greetingAnonymous": "Hallo",
+  "greetingEvening": "Guten Abend {name}",
+  "greetingEveningAnonymous": "Guten Abend",
   "careCount": "{count, plural, =0{Nichts zu tun} =1{1 Aufgabe} other{{count} Aufgaben}}",
   "sectionOverdue": "Überfällig",
   "sectionToday": "Heute",

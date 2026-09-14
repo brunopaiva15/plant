@@ -26,6 +26,18 @@ import 'notification_prompt.dart';
 import 'today_notice.dart';
 import 'upcoming_section.dart';
 
+/// L'heure à partir de laquelle on dit « Bonsoir » : celle de l'appareil,
+/// donc celle que la personne a sous les yeux.
+const int _eveningHour = 18;
+
+/// « Bonjour Paul » le jour, « Bonsoir Paul » le soir, et sans le nom tant
+/// qu'on n'en a pas.
+String _greeting(AppLocalizations l10n, String name, DateTime now) {
+  final evening = now.hour >= _eveningHour;
+  if (name.isEmpty) return evening ? l10n.greetingEveningAnonymous : l10n.greetingAnonymous;
+  return evening ? l10n.greetingEvening(name) : l10n.greeting(name);
+}
+
 /// Écran principal : « Qu'est-ce que je dois faire aujourd'hui ? »
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -37,7 +49,7 @@ class TodayScreen extends ConsumerWidget {
     final tasks = ref.watch(careTasksProvider);
     final plantCount = ref.watch(activePlantCountProvider).value ?? 0;
     final now = DateTime.now();
-    final greeting = prefs.displayName.isEmpty ? l10n.greetingAnonymous : l10n.greeting(prefs.displayName);
+    final greeting = _greeting(l10n, prefs.displayName, now);
 
     final live = tasks.value ?? const <CareTask>[];
     final lingering = ref.watch(completedTasksProvider);
@@ -75,6 +87,9 @@ class TodayScreen extends ConsumerWidget {
 
     return LargeTitlePage(
       title: greeting,
+      // Replié, le salut ne dit plus où l'on est : c'est le nom de
+      // l'application qui reste dans la barre.
+      collapsedTitle: l10n.appName,
       leading: FloraIconButton(
         icon: CupertinoIcons.chart_bar,
         semanticLabel: l10n.dashboardTitle,
