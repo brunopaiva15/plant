@@ -8,7 +8,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/weather/weather.dart';
 import '../application/weather_providers.dart';
-import 'weather_widgets.dart' show weatherEmoji;
+import 'weather_widgets.dart' show weatherEmoji, weatherTemp;
 
 /// Prévisions sur cinq jours : ce qu'il faut savoir avant d'arroser dehors.
 class ForecastScreen extends ConsumerWidget {
@@ -63,7 +63,7 @@ class _Forecast extends ConsumerWidget {
     final metric = ref.watch(preferencesProvider).metricUnits;
     final today = days.first;
 
-    String temp(double celsius) => metric ? '${celsius.round()}°' : '${(celsius * 9 / 5 + 32).round()}°F';
+    String temp(double celsius) => weatherTemp(celsius, metric: metric);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

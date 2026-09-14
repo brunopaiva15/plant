@@ -6,6 +6,11 @@ enum CareStrategy {
   /// Intervalle ajusté par saison (plus long en hiver, plus court en été).
   seasonal,
 
+  /// Intervalle saisonnier, corrigé par le temps qu'il fait au lieu choisi :
+  /// raccourci par une semaine de chaleur sèche, allongé par la pluie et le
+  /// froid. Sans lieu météo ni réseau, il vaut exactement le saisonnier.
+  weather,
+
   /// Pas d'échéance automatique : l'utilisateur agit quand il veut.
   manual,
 }

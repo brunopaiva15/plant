@@ -146,6 +146,41 @@ class PreferencesService {
       _prefs.setString('weather_place', '${name.replaceAll('|', ' ')}|$lat|$lon');
   Future<void> clearWeatherPlace() => _prefs.remove('weather_place');
 
+  /// La pluie tombée vaut un arrosage pour les plantes qui sont dehors.
+  /// Vrai par défaut : c'est ce qui se passe dans un jardin.
+  bool get rainCountsAsWatering => _prefs.getBool('rain_counts_as_watering') ?? true;
+  Future<void> setRainCountsAsWatering(bool value) => _prefs.setBool('rain_counts_as_watering', value);
+
+  /// Le climat du lieu, mis de côté : « lat|lon|minHiver|maxÉté|années|date ».
+  ///
+  /// Il tient à un appel d'archives sur plusieurs années — lent, et inutile
+  /// à refaire : un climat ne bouge pas d'une saison. Les coordonnées le
+  /// datent autant que la date : déménager le périme.
+  ({double lat, double lon, double winterLow, double summerHigh, int years, DateTime at})? get regionClimate {
+    final parts = _prefs.getString('region_climate')?.split('|') ?? const [];
+    if (parts.length != 6) return null;
+    final lat = double.tryParse(parts[0]);
+    final lon = double.tryParse(parts[1]);
+    final low = double.tryParse(parts[2]);
+    final high = double.tryParse(parts[3]);
+    final years = int.tryParse(parts[4]);
+    final at = DateTime.tryParse(parts[5]);
+    if (lat == null || lon == null || low == null || high == null || years == null || at == null) return null;
+    return (lat: lat, lon: lon, winterLow: low, summerHigh: high, years: years, at: at);
+  }
+
+  Future<void> setRegionClimate({
+    required double lat,
+    required double lon,
+    required double winterLow,
+    required double summerHigh,
+    required int years,
+    required DateTime at,
+  }) =>
+      _prefs.setString('region_climate', '$lat|$lon|$winterLow|$summerHigh|$years|${at.toUtc().toIso8601String()}');
+
+  Future<void> clearRegionClimate() => _prefs.remove('region_climate');
+
   /// Le capteur d'Apple Maison retenu (`id|nom|pièce`), ou `null` si le
   /// climat de la maison n'est pas branché. Les mesures, elles, ne sont
   /// jamais gardées : elles se relisent.

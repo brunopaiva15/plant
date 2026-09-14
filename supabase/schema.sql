@@ -143,7 +143,7 @@ create table if not exists care_schedules (
   id uuid primary key,
   plant_id uuid not null references plants(id) on delete cascade,
   type_key text not null,
-  strategy text not null check (strategy in ('fixed','seasonal','manual')),
+  strategy text not null check (strategy in ('fixed','seasonal','weather','manual')),
   interval_days int not null,
   seasonal_rules jsonb,
   next_due_at timestamptz,

@@ -3,6 +3,7 @@ import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/species/plant_finder.dart';
 import 'package:flora/domain/species/species_info.dart';
+import 'package:flora/domain/weather/region_climate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -115,6 +116,64 @@ void main() {
     test('sans critère, ne dit rien', () {
       expect(const FinderCriteria().describe(), isEmpty);
       expect(const FinderCriteria().isEmpty, isTrue);
+    });
+  });
+
+  group('la région', () {
+    // Un hiver de Lyon et un hiver de Palerme, sur le même balcon.
+    const cold = RegionClimate(winterLowC: -12, summerHighC: 31, years: 3);
+    const mild = RegionClimate(winterLowC: 6, summerHighC: 33, years: 3);
+
+    List<String> namesFor(RegionClimate? region) => finder
+        .search(FinderCriteria(spot: FinderSpot.outdoor, region: region), limit: 8)
+        .map((m) => m.entry.scientificName)
+        .toList();
+
+    test('ne pèse que sur un emplacement extérieur', () {
+      const indoor = FinderCriteria(spot: FinderSpot.brightRoom, region: cold);
+      expect(indoor.outdoorRegion, isNull);
+      expect(namesFor(null), isNotEmpty);
+    });
+
+    test('change le classement selon l\'hiver du lieu', () {
+      expect(namesFor(cold), isNot(equals(namesFor(mild))),
+          reason: 'un hiver à −12° et un hiver à 6° ne proposent pas les mêmes plantes');
+    });
+
+    bool isHardy(FinderMatch m) => (profileOf(m).minTempC ?? 99) <= cold.winterLowC;
+
+    test('remonte ce qui passe l\'hiver sur place', () {
+      final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 8);
+      expect(results, isNotEmpty);
+      expect(results.where(isHardy), isNotEmpty, reason: 'au moins une rustique dans les huit premières');
+      final firstTender = results.indexWhere((m) => !isHardy(m));
+      final lastHardy = results.lastIndexWhere(isHardy);
+      if (firstTender >= 0) expect(lastHardy, lessThan(firstTender), reason: 'les rustiques passent devant');
+    });
+
+    test('n\'écarte personne : un géranium se rentre, il reste une plante de balcon', () {
+      final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 40);
+      expect(results.where((m) => !isHardy(m)), isNotEmpty, reason: 'le rang, pas l\'exclusion');
+    });
+
+    test('dit dans la raison si la plante reste dehors l\'hiver', () {
+      final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 8);
+      final hardy = results.firstWhere((m) => (profileOf(m).minTempC ?? 99) <= cold.winterLowC);
+      expect(hardy.reasons, contains(FinderReason.hardy));
+      expect(hardy.reasons, isNot(contains(FinderReason.outdoor)), reason: 'la rusticité dit mieux que « tient dehors »');
+    });
+
+    test('sans région connue, la raison reste « tient dehors »', () {
+      final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor), limit: 8);
+      expect(results.any((m) => m.reasons.contains(FinderReason.outdoor)), isTrue);
+      expect(results.any((m) => m.reasons.contains(FinderReason.hardy)), isFalse);
+    });
+
+    test('le climat part au prompt de l\'IA, la ville non', () {
+      final text = const FinderCriteria(spot: FinderSpot.outdoor, region: cold).describe();
+      expect(text, contains('zone'));
+      expect(text, contains('-12 °C'));
+      expect(const FinderCriteria(spot: FinderSpot.brightRoom, region: cold).describe(), isNot(contains('zone')));
     });
   });
 }

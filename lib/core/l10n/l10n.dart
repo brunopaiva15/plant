@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/weather/outdoor_alert.dart';
 import '../../domain/weather/weather.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../utils/dates.dart';
@@ -78,6 +79,7 @@ extension ActionTypeLabels on AppLocalizations {
   String strategyName(CareStrategy strategy) => switch (strategy) {
         CareStrategy.fixed => strategyFixed,
         CareStrategy.seasonal => strategySeasonal,
+        CareStrategy.weather => strategyWeather,
         CareStrategy.manual => strategyManual,
       };
 
@@ -160,6 +162,24 @@ extension ActionTypeLabels on AppLocalizations {
         WeatherCondition.thunderstorm => condThunderstorm,
         WeatherCondition.unknown => '',
       };
+
+  /// « cette nuit », « demain », « dans 3 jours » : le jour d'un
+  /// avertissement, en minuscules, pour tenir dans un titre. Le gel se dit
+  /// de la nuit, la chaleur du jour — la même date, deux mots différents.
+  String alertWhen(OutdoorAlert alert, DateTime now) {
+    final days = alert.daysFrom(now);
+    if (days <= 0) return alert.kind == OutdoorAlertKind.frost ? weatherWhenTonight : weatherWhenToday;
+    if (days == 1) return weatherWhenTomorrow;
+    return weatherWhenInDays(days);
+  }
+
+  /// « Olivier, Basilic et 2 autres » : les noms qu'on montre, et le compte
+  /// de ceux qui ne tenaient pas dans la carte.
+  String namesWithMore(List<String> shown, int total) {
+    final joined = joinNames(shown);
+    final rest = total - shown.length;
+    return rest <= 0 ? joined : '$joined ${weatherAlertMore(rest)}';
+  }
 
   /// « 42 cm », « 9 » (sans unité), « 1,5 L ».
   String formatQuantity(double value, String unit) {
