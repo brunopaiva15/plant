@@ -151,9 +151,32 @@ footer b { color:var(--sage); }
 `;
 }
 
+/**
+ * Ce qu'une messagerie affiche du lien.
+ *
+ * WhatsApp, Telegram, Messages et les autres lisent les balises Open Graph
+ * et fabriquent une carte. Trois choses la décident : un titre, une phrase,
+ * une image — et l'image doit porter une adresse absolue, une relative n'est
+ * pas résolue de façon fiable par ces robots.
+ *
+ * Pas d'`og:url` : servie derrière le relais, la fonction ne connaît que sa
+ * propre adresse Supabase, celle qui rend la page en texte brut. Mieux vaut
+ * n'en donner aucune — les robots retiennent alors celle qu'ils ont suivie —
+ * que d'en donner une qui déçoit.
+ */
+export interface PagePreview {
+  /** Adresse absolue de la vignette. */
+  image?: string;
+  /** Ses dimensions, quand elles sont connues : elles décident de la grande
+   * carte plutôt que de la petite. Une photo de plante n'en a pas. */
+  imageWidth?: number;
+  imageHeight?: number;
+  imageAlt?: string;
+}
+
 export function page(
   body: string,
-  opts: { title: string; assetBase: string; description?: string; keywords?: string; noindex: boolean; image?: string; status?: number },
+  opts: PagePreview & { title: string; assetBase: string; description?: string; keywords?: string; noindex: boolean; status?: number },
 ) {
   const html = `<!doctype html>
 <html lang="fr">
@@ -164,9 +187,16 @@ export function page(
 ${opts.noindex ? '<meta name="robots" content="noindex, nofollow">' : ''}
 ${opts.description ? `<meta name="description" content="${esc(opts.description)}">` : ''}
 ${opts.keywords ? `<meta name="keywords" content="${esc(opts.keywords)}">` : ''}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Auxine">
+<meta property="og:locale" content="fr_FR">
 <meta property="og:title" content="${esc(opts.title)}">
 ${opts.description ? `<meta property="og:description" content="${esc(opts.description)}">` : ''}
 ${opts.image ? `<meta property="og:image" content="${esc(opts.image)}">` : ''}
+${opts.imageAlt ? `<meta property="og:image:alt" content="${esc(opts.imageAlt)}">` : ''}
+${opts.imageWidth ? `<meta property="og:image:width" content="${opts.imageWidth}">` : ''}
+${opts.imageHeight ? `<meta property="og:image:height" content="${opts.imageHeight}">` : ''}
+<meta name="twitter:card" content="${opts.image ? 'summary_large_image' : 'summary'}">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6EFE4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#221A15" media="(prefers-color-scheme: dark)">

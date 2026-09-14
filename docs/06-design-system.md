@@ -443,11 +443,24 @@ pièces d'argile, titres à la main.
   photographier avant de la déployer.
 - Les valeurs sont recopiées des tokens Dart. Les changer d'un côté sans
   l'autre ferait deux Auxine.
-- `assets.ts` emporte les deux pièces qui ne se recréent pas en CSS : Shantell
-  Sans, réduite à l'axe 600–700 et au latin étendu, et la tuile de grain de
-  128 px. Servies sous `/asset/`, gardées un an par le navigateur ; la page
-  elle-même pèse cinq kilo-octets. Le fichier est produit, pas écrit : ses
-  commandes de fabrication sont en tête.
+- `assets.ts` emporte les trois pièces qui ne se recréent pas en CSS :
+  Shantell Sans réduite à l'axe 600–700 et au latin étendu, la tuile de grain
+  de 128 px, et la vignette des messageries. Servies sous `/asset/`, gardées
+  un an par le navigateur ; la page elle-même pèse cinq kilo-octets. Le
+  fichier est produit, pas écrit :
+  ```bash
+  node tool/build_share_preview.mjs     # la vignette, 1200 × 630
+  python3 tool/build_share_assets.py    # les trois dans assets.ts
+  ```
+- **La vignette** (`preview.jpg`) est ce que WhatsApp, Telegram ou Messages
+  montrent sous le lien. La monstera du master de l'icône sur le papier
+  grainé, « Auxine » tracé à la main : elle est composée en HTML puis
+  photographiée par Chromium, seule façon d'avoir la vraie fonte et le vrai
+  grain sans les redessiner. En JPEG — le grain est du bruit, il pèse trois
+  fois moins là qu'en PNG. Rien n'y nomme le jardin ni la personne : c'est
+  `og:title` qui porte le particulier, la vignette ne vieillit qu'avec la
+  marque. Une plante partagée garde sa photo ; sans photo, elle retombe sur
+  la vignette plutôt que sur un lien nu.
 - **Le relief ne se recopie pas chiffre pour chiffre.** Un flou CSS vaut deux
   fois le sigma de Flutter, et surtout les deux ombres intérieures n'y sont
   pas la même figure : `paintClay` floute une bande large de quelques points,

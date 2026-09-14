@@ -19,6 +19,17 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const PHOTO_BUCKET = 'plant-photos';
 
+/** La vignette des messageries, servie par cette fonction même. Adresse
+ * absolue et jointe à Supabase : elle vaut de partout, y compris quand la
+ * page, elle, est servie par le relais. La passerelle ne réécrit que le
+ * HTML, une image lui passe entre les doigts. */
+const PREVIEW = {
+  image: `${SUPABASE_URL}/functions/v1/share/asset/preview.jpg`,
+  imageWidth: 1200,
+  imageHeight: 630,
+  imageAlt: 'Auxine',
+};
+
 /** Schéma des liens de l'application : `auxine://join/<code>`. */
 const APP_SCHEME = 'auxine';
 
@@ -41,15 +52,18 @@ async function invitePage(code: string, assetBase: string) {
   const garden = invite.garden_name || 'un jardin';
   const owner = invite.owner_name || '';
   const title = owner ? `${owner} vous invite dans « ${garden} »` : `Invitation dans « ${garden} »`;
+  // La même phrase tient lieu de description dans les messageries : elle dit
+  // ce que l'invitation donne, ce qu'un titre seul laisse deviner.
+  const role = `Vous pourrez ${roleLabels[invite.role] ?? roleLabels.member}.`;
   const body = `<div class="card"><div class="body">
   <h1>${esc(title)}</h1>
-  <p class="lead">Vous pourrez ${esc(roleLabels[invite.role] ?? roleLabels.member)}.</p>
+  <p class="lead">${esc(role)}</p>
   <a class="open" href="${esc(`${APP_SCHEME}://join/${code}`)}">Ouvrir dans Auxine</a>
   <p class="lead">Pas encore l'application ? Installez Auxine, créez un compte${invite.needs_email ? ' avec l’adresse invitée' : ''}, puis saisissez ce code dans <b>Réglages › Mes jardins › Rejoindre un jardin</b> :</p>
   <p class="code">${esc(code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code)}</p>
   <p class="meta">L'invitation ne sert qu'une fois.</p>
 </div></div>`;
-  return page(body, { title, assetBase, noindex: true });
+  return page(body, { title, assetBase, description: role, noindex: true, ...PREVIEW });
 }
 
 /** La fonte et le grain, gardés un an : leur contenu ne change qu'avec leur nom. */
@@ -116,6 +130,9 @@ Deno.serve(async (req) => {
     description: link.description ?? undefined,
     keywords: link.keywords ?? undefined,
     noindex: link.unlisted !== false,
-    image,
+    // La photo quand il y en a une — ses dimensions, elles, sont inconnues,
+    // et les annoncer fausses vaut moins que se taire. Sans photo, la
+    // vignette de l'app plutôt qu'un lien nu.
+    ...(image ? { image, imageAlt: link.photo_label || title } : PREVIEW),
   });
 });
