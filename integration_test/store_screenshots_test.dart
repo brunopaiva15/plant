@@ -162,22 +162,6 @@ void main() {
     await scene('plants', () async {
       await go(Routes.plants);
       await shot('plants');
-      // Diagnostic, à retirer : les vignettes de la collection sortaient
-      // grises alors que les mêmes photos s'affichaient sur l'écran du matin
-      // et sur la fiche. Deux captures de plus disent d'où ça vient — le
-      // temps qu'il leur faut, ou une reconstruction qui les remet à zéro.
-      // compose.py ne regarde que « plants.png » et ignore celles-ci.
-      await wait(tester, 6000);
-      await shot('plants-tard');
-      final size = tester.view.physicalSize / tester.view.devicePixelRatio;
-      final from = Offset(size.width / 2, size.height * 0.6);
-      await tester.dragFrom(from, const Offset(0, -240));
-      await wait(tester, 1200);
-      // Vers le bas au-delà du sommet : le rebond d'iOS ramène la page
-      // exactement où elle était.
-      await tester.dragFrom(from, const Offset(0, 480));
-      await wait(tester, 2500);
-      await shot('plants-defile');
     });
 
     await scene('plant', () async {
