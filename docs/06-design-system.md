@@ -431,3 +431,28 @@ déclinaisons d'iOS, d'Android et du web, sans chaîne Flutter installée.
 `dart run flutter_launcher_icons` fait le même travail depuis
 `flutter_launcher_icons.yaml`, à deux réserves près : il rééchantillonne
 autrement, et il retaille les « maskable » comme les autres.
+
+## La page web de partage (`supabase/functions/share/`)
+Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent
+avant que l'application soit installée : c'est le premier Auxine que voit la
+personne invitée. Elle porte donc la même identité — papier crème grainé,
+pièces d'argile, titres à la main.
+
+- `page.ts` tient la feuille de style et la coquille ; `index.ts` route et
+  interroge. La page se rend donc sans Supabase, ce qui permet de la
+  photographier avant de la déployer.
+- Les valeurs sont recopiées des tokens Dart. Les changer d'un côté sans
+  l'autre ferait deux Auxine.
+- `assets.ts` emporte les deux pièces qui ne se recréent pas en CSS : Shantell
+  Sans, réduite à l'axe 600–700 et au latin étendu, et la tuile de grain de
+  128 px. Servies sous `/asset/`, gardées un an par le navigateur ; la page
+  elle-même pèse cinq kilo-octets. Le fichier est produit, pas écrit : ses
+  commandes de fabrication sont en tête.
+- **Le relief ne se recopie pas chiffre pour chiffre.** Un flou CSS vaut deux
+  fois le sigma de Flutter, et surtout les deux ombres intérieures n'y sont
+  pas la même figure : `paintClay` floute une bande large de quelques points,
+  CSS floute un bord. À opacité égale la bande perd presque tout à la
+  convolution, le bord en garde la moitié — un reflet à 0,75 recopié tel quel
+  délave la carte. Les opacités du reflet et du creux sont donc celles qui
+  rendent le même pic ; l'ombre portée, même figure des deux côtés, garde
+  les siennes.

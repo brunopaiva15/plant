@@ -1,0 +1,12 @@
+# Worker Cloudflare qui sert les liens de partage et d'invitation.
+# `wrangler deploy` depuis ce dossier ; voir docs/08-sync-and-collaboration.md.
+name = "auxine-share"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Fonction Edge `share` du projet Supabase, que ce Worker relaie. La
+# référence du projet n'est pas un secret : elle est dans le binaire de
+# l'application, et dans chaque lien envoyé. La clé anon, elle, ne sert pas
+# ici — la fonction tient la sienne de Supabase.
+SHARE_UPSTREAM = "https://xunsdfmlbqyhpwvpdvpc.supabase.co/functions/v1/share"
