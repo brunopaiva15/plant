@@ -75,6 +75,11 @@ class ProfileScreen extends ConsumerWidget {
                       onTap: () => context.push(Routes.account),
                     ),
                     if (signedIn) const _GardensRow(),
+                    // Les liens publics tiennent avec le compte et les jardins :
+                    // ce qui sort de l'appareil reste au même endroit. Sans
+                    // compte, il n'y a rien à partager, donc rien à montrer.
+                    if (signedIn)
+                      FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
                   ],
                 );
               }),
@@ -126,7 +131,6 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   FloraListRow(leading: const Text('🏷️', style: TextStyle(fontSize: 18)), title: l10n.tags, onTap: () => context.push(Routes.tags)),
                   FloraListRow(leading: const Text('🗒️', style: TextStyle(fontSize: 18)), title: l10n.fieldTemplates, onTap: () => context.push(Routes.fieldTemplates)),
-                  FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
                   FloraListRow(leading: const Text('🍂', style: TextStyle(fontSize: 18)), title: l10n.archives, onTap: () => context.push(Routes.archive)),
                   FloraListRow(leading: const Text('📜', style: TextStyle(fontSize: 18)), title: l10n.activityLogTitle, onTap: () => context.push(Routes.activityLog)),
                 ],

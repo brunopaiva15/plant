@@ -44,6 +44,12 @@ class _FakeCollaboration extends UnavailableCollaborationService {
 }
 
 void main() {
+  // La liste regarde la connectivité depuis qu'elle sait dire « hors ligne »,
+  // et le contrôleur de réseau s'inscrit auprès de WidgetsBinding dès sa
+  // construction. Ce fichier n'a que des test(), donc rien n'initialise la
+  // liaison : sans cette ligne, le provider part en erreur.
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late FloraDatabase db;
   late _FakeCollaboration collaboration;
 
@@ -66,6 +72,13 @@ void main() {
     addTearDown(c.dispose);
     // La liste ne lit le compte qu'une fois le flux parti : sans compte, elle
     // retomberait sur la branche hors ligne et ne prouverait rien.
+    //
+    // L'écouteur est retenu le temps de l'attente : `read` d'un `.future` de
+    // `StreamProvider` n'ouvre son abonnement que pour la durée de la lecture,
+    // et le referme aussitôt — le flux n'est alors jamais écouté et la future
+    // ne se termine pas.
+    final compte = c.listen(currentUserProvider, (_, _) {});
+    addTearDown(compte.close);
     await c.read(currentUserProvider.future);
     return c;
   }

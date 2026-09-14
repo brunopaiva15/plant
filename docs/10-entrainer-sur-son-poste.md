@@ -9,12 +9,17 @@
 > l'installation et le dimensionnement diffèrent :
 > [`11-entrainer-sur-une-vm.md`](11-entrainer-sur-une-vm.md).
 
-Iris 6 — la sixième version du modèle embarqué, celle que l'application
-livre aujourd'hui — a été entraînée sur quatre cœurs sans carte graphique :
-neuf heures 47, par tranches de dix minutes, sur une machine recyclée dès
-qu'elle s'endormait. Sur une carte grand public, la même passe coûte de l'ordre
-d'une heure. C'est ce qui rend la v7 possible : quatre recettes dans un
-après-midi au lieu d'une par nuit.
+Iris 6 — la sixième version du modèle embarqué — a été entraînée sur quatre
+cœurs sans carte graphique : neuf heures 47, par tranches de dix minutes, sur
+une machine recyclée dès qu'elle s'endormait. Sur une carte grand public, la
+même passe coûte de l'ordre d'une heure. C'est ce qui a rendu la v7 puis la v8
+possibles : quatre recettes dans un après-midi au lieu d'une par nuit.
+
+La version que l'application livre aujourd'hui est l'**Iris 8** ; son numéro
+et ses chiffres ne s'écrivent pas ici, ils sont dans
+`assets/model/model.json` et repris une seule fois, au § 0 de
+[`09-plant-recognition.md`](09-plant-recognition.md). La procédure ci-dessous
+ne dépend d'aucun des deux : elle vaut pour la version suivante.
 
 ## Avant de commencer
 
@@ -81,7 +86,7 @@ l'identique depuis les sources, en parts parallèles.
 ```bash
 cd ~/plant/tools/plant_dataset
 pip install -r requirements.txt
-python3 -m pytest -q            # 124 tests, sans réseau
+python3 -m pytest -q            # sans réseau
 
 mkdir -p dataset
 cp cache/*.json dataset/        # heures de résolution de noms déjà faites
@@ -272,9 +277,17 @@ prendrait l'application :
 python3 identify.py ma_plante.jpg --model ../../assets/model --model .cache/v6_gpu
 ```
 
-## 6. Enchaîner les recettes de la v7
+## 6. Enchaîner les recettes, une à la fois
 
-Le défaut mesuré de la v6 est le **sur-apprentissage** : à la douzième
+> Les quatre essais ci-dessous sont ceux de la v7, gardés parce qu'ils
+> montrent comment on s'y prend. Les trois premiers ont été faits et livrés :
+> ils valent ensemble +7,26 points de top-1 (§ 6.7 de
+> [`09-plant-recognition.md`](09-plant-recognition.md)). Le quatrième a été
+> mesuré et écarté (§ 12.8). Ce que la v8 a changé ensuite ne tient pas à une
+> recette mais à la séparation entre ce qu'on entraîne et ce qu'on expose
+> (§ 13).
+
+Le défaut mesuré de la v6 était le **sur-apprentissage** : à la douzième
 époque, 70,5 % à l'entraînement contre 52,2 % en validation. Dix-huit points
 d'écart, c'est la régularisation qui limite, pas le nombre d'époques.
 
@@ -292,10 +305,11 @@ publiés sont des **ResNet18 PyTorch** : rien de réutilisable pour un
 MobileNetV3 TensorFlow, donc ce serait une passe complète de plus, sur
 306 000 images et 32 Go à télécharger. Avant cela, une mesure à dix
 secondes : le recouvrement entre leurs 1 081 espèces
-(`plantnet300K_species_id_2_name.json`, livré avec le jeu) et nos 1 445
-classes (`assets/model/labels.txt`). S'il est fort, le geste utile n'est pas
-de pré-entraîner mais d'**ajouter leurs images aux nôtres** pour les espèces
-communes — même bénéfice, aucune passe supplémentaire.
+(`plantnet300K_species_id_2_name.json`, livré avec le jeu) et nos classes —
+une ligne par espèce dans `assets/model/labels.txt`, comptées par
+`model.json`. S'il est fort, le geste utile n'est pas de pré-entraîner mais
+d'**ajouter leurs images aux nôtres** pour les espèces communes — même
+bénéfice, aucune passe supplémentaire.
 
 ## 7. Livrer
 
@@ -304,13 +318,15 @@ cp .cache/v7_out/{plants.tflite,labels.txt,model.json} ../../assets/model/
 cd ~/plant && flutter analyze && flutter test
 ```
 
-Et **remesurer le seuil** : `acceptThreshold` vaut 0,60 pour la v6 et ne se
-transporte pas d'un modèle à l'autre — un réseau plus large répartit sa
-confiance sur plus de candidats. Le tableau se produit avec :
+Et **remesurer le seuil** : `acceptThreshold` vaut 0,70 depuis l'Iris 7, et
+il ne se transporte pas d'un modèle à l'autre — un réseau plus large répartit
+sa confiance sur plus de candidats. Le couple retenu se relit dans le
+`threshold_curve` du `model.json` produit ; le tableau se produit avec :
 
 ```bash
 python3 multi_photo.py --dataset ../plant_dataset/dataset --model .cache/v7_out
 ```
 
-Le détail du raisonnement est dans `identification_policy.dart` et au § 6.6
-de [`09-plant-recognition.md`](09-plant-recognition.md).
+Le détail du raisonnement est dans `identification_policy.dart`, et dans
+[`09-plant-recognition.md`](09-plant-recognition.md) : la règle de décision
+au § 3.1, la mesure du seuil au § 6.7.

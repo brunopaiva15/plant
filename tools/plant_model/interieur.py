@@ -23,15 +23,16 @@ Deux chiffres répondent, et il faut les deux :
 
 Et, pour la précision, deux lectures qui se répondent :
 
-- **catalogue entier** : les 1 457 sorties restent ouvertes. C'est ce que
-  vit l'utilisateur aujourd'hui ;
+- **catalogue entier** : toutes les sorties du modèle livré restent ouvertes
+  (leur nombre est dans `model.json`). C'est ce que vit l'utilisateur ;
 - **catalogue restreint** : les sorties sont masquées aux seules plantes
   d'intérieur. C'est ce que rendrait un modèle qui n'aurait appris qu'elles.
 
-L'écart entre les deux est le **prix de l'étendue** : ce que les 1 306
-autres espèces coûtent à celui qui n'en photographiera jamais aucune. C'est
-la question que pose le § 12.11 avant de viser 3 000 espèces, et jusqu'ici
-personne ne l'avait chiffrée.
+L'écart entre les deux est le **prix de l'étendue** : ce que les espèces
+qu'on ne photographiera jamais coûtent à celui qui photographie son salon.
+C'est la question que posait le § 12.11 avant de viser 3 000 espèces ; elle
+est chiffrée depuis, ici et au § 6.7 bis, et c'est elle qui a décidé de
+l'ensemble exposé par l'Iris 8.
 """
 from __future__ import annotations
 

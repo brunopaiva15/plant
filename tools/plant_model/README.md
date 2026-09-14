@@ -170,8 +170,9 @@ python3 interieur.py --couverture          # sans TensorFlow ni jeu d'images
 python3 interieur.py --dataset ../plant_dataset/dataset --model ../../assets/model
 ```
 
-Le top-1 publié est une moyenne sur 1 457 espèces, dont la plupart sont
-sauvages. L'application sert d'abord les 167 noms de `phase1_species.txt`.
+Le top-1 publié est une moyenne sur toutes les classes exposées — leur nombre
+est dans `model.json` —, dont la plupart sont sauvages. L'application sert
+d'abord les 167 noms de `phase1_species.txt`.
 L'outil rend deux choses qui ne se remplacent pas : la **couverture** —
 combien de ces plantes le modèle sait seulement nommer, une classe absente
 étant un échec certain et invisible dans toute mesure de précision — puis le
@@ -189,14 +190,18 @@ retenu dans `FallbackPolicy`
 
 **La règle écrite ici — « précision au-dessus de 97 % » — n'est pas celle
 qu'on applique**, et il vaut mieux le dire que laisser croire le contraire.
-Sur l'Iris 7 elle est parfaitement atteignable : le seuil 0,95 rend **97,7 %
-de précision**. Mais il n'accepte plus que **26,6 %** des réponses — trois
-photos sur quatre partiraient chez Pl@ntNet, aux frais du quota mensuel.
-Le seuil livré est 0,70 : **47,3 % d'autonomie pour 89,8 % de précision**.
+Elle est atteignable : sur l'Iris 8, le seuil 0,95 rend **98,2 % de
+précision**. Mais il n'accepte plus que **32,6 %** des réponses — deux photos
+sur trois partiraient chez Pl@ntNet, aux frais du quota mensuel. Le seuil
+livré est 0,70 (marge 0,25) : **54,9 % d'autonomie pour 91,3 % de précision**.
 
-C'est donc un arbitrage assumé, huit points de justesse contre vingt et un
+Ces quatre chiffres se relisent dans le `threshold_curve` du `model.json`
+livré plutôt qu'ici — c'est lui qui fait foi, et il change à chaque version.
+
+C'est donc un arbitrage assumé, sept points de justesse contre vingt-deux
 d'autonomie, et non l'application de la règle ci-dessus. La règle réelle,
 celle du § 6.7 de `docs/09`, porte sur les versions et non sur les seuils :
 **à autonomie égale, prendre la version la plus juste.** C'est elle qui a
-fait remonter le seuil à 0,70 pour l'Iris 7 — il y rend l'autonomie qu'avait
-la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %.
+fait remonter le seuil à 0,70 pour l'Iris 7 — il y rendait l'autonomie qu'avait
+la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %. L'Iris 8 l'a
+gardé tel quel et rend davantage des deux côtés (§ 6.7 bis de `docs/09`).
