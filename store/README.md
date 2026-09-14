@@ -78,8 +78,10 @@ captures, que
 `test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`.
 L'identification par Iris et le diagnostic rouvert depuis le journal sont
 ceux de l'app. Une scène qui échoue est signalée dans la sortie de
-`flutter drive`, les autres se prennent quand même ; il suffit alors de
-relancer `compose.py` après correction.
+`flutter drive` (avec ce qu'on lisait à l'écran, et une capture
+`<scène>-echec.png`), les autres se prennent quand même ; le visuel de la
+scène manquée reste tel quel. Pour rejouer quelques scènes seulement :
+`STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh`.
 
 Les captures d'appareil sont l'écran entier, avec la place de la barre
 d'état en haut (marqueur `.device` dans le dossier) : `compose.py` y

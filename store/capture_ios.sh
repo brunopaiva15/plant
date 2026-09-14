@@ -5,6 +5,7 @@
 #   store/capture_ios.sh              # fr puis en, sur le plus grand iPhone installé
 #   LANGS=fr store/capture_ios.sh     # une langue
 #   DEVICE="iPhone 17 Pro" store/capture_ios.sh
+#   STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh   # rejouer deux scènes
 #
 # Le simulateur doit exister (Xcode › Settings › Platforms). Le jeu de démo
 # (core/demo/demo_seed.dart) est chargé au premier lancement, les photos CC0
@@ -49,7 +50,8 @@ trap 'kill $SERVER 2>/dev/null || true; xcrun simctl status_bar "$UDID" clear' E
 
 for lang in $LANGS; do
   xcrun simctl uninstall "$UDID" ch.vergasta.plant 2>/dev/null || true
-  rm -rf "store/shots-$lang"
+  # Sans STORE_SCENES, on repart de zéro ; avec, les captures gardées restent.
+  [ -n "${STORE_SCENES:-}" ] || rm -rf "store/shots-$lang"
   mkdir -p "store/shots-$lang"
   # Le marqueur dit à compose.py que ces captures viennent d'un appareil :
   # l'écran est entier, la place de la barre d'état est déjà réservée en haut.
@@ -59,7 +61,8 @@ for lang in $LANGS; do
     --target=integration_test/store_screenshots_test.dart \
     --dart-define=DEMO=true \
     --dart-define=DEMO_PHOTOS=http://localhost:8081/demo-photos \
-    --dart-define=STORE_LANG="$lang"
+    --dart-define=STORE_LANG="$lang" \
+    --dart-define=STORE_SCENES="${STORE_SCENES:-}"
 done
 
 for lang in $LANGS; do

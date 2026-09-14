@@ -23,6 +23,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const lang = String.fromEnvironment('STORE_LANG', defaultValue: 'fr');
 
+/// Les scènes à jouer, séparées par des virgules ; toutes sans rien.
+/// `--dart-define=STORE_SCENES=identify,diagnosis` pour en reprendre deux.
+const only = String.fromEnvironment('STORE_SCENES');
+
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -60,35 +64,83 @@ void main() {
       await binding.takeScreenshot(name);
     }
 
-    /// Ferme ce qui est ouvert par-dessus (feuille, page poussée).
+    // Le navigateur racine, celui des feuilles ; les pages d'un onglet vivent
+    // dans le navigateur de leur branche, et chaque branche garde sa pile
+    // d'un passage à l'autre : go() ne la vide pas.
+    NavigatorState rootNavigator() => tester.state<NavigatorState>(find.byType(Navigator).first);
+
+    /// Ferme ce qui est ouvert par-dessus : une feuille sur le navigateur
+    /// racine d'abord, sinon la page poussée dans l'onglet.
     Future<void> dismiss() async {
-      await tester.state<NavigatorState>(find.byType(Navigator).first).maybePop();
+      if (rootNavigator().canPop()) {
+        rootNavigator().pop();
+      } else if (router.canPop()) {
+        router.pop();
+      }
       await wait(tester, 1500);
     }
 
+    /// Remet l'app à plat : plus rien par-dessus, chaque onglet à sa racine.
+    Future<void> reset() async {
+      for (var i = 0; i < 6 && rootNavigator().canPop(); i++) {
+        rootNavigator().pop();
+        await wait(tester, 600);
+      }
+      for (final tab in [Routes.plants, Routes.garden, Routes.profile, Routes.today]) {
+        router.go(tab);
+        await wait(tester, 400);
+        for (var i = 0; i < 6 && router.canPop(); i++) {
+          router.pop();
+          await wait(tester, 600);
+        }
+      }
+      await wait(tester, 1000);
+    }
+
+    /// Ce qui est touchable en premier, ou à défaut la première occurrence :
+    /// les onglets gardent leurs pages en mémoire, et un texte existe souvent
+    /// plusieurs fois dans l'arbre.
+    Finder touchable(Finder finder) => finder.hitTestable().evaluate().isNotEmpty ? finder.hitTestable().first : finder.first;
+
     Future<void> tapText(String text) async {
-      await tester.tap(find.text(text).hitTestable().first);
+      await tester.tap(touchable(find.text(text)), warnIfMissed: false);
       await wait(tester, 2500);
     }
 
     Future<void> tapLabel(String label) async {
-      await tester.tap(find.bySemanticsLabel(label).hitTestable().first);
+      await tester.tap(touchable(find.bySemanticsLabel(label)), warnIfMissed: false);
       await wait(tester, 2500);
+    }
+
+    /// La page qui défile, à l'écran : le plus grand des défilements
+    /// verticaux touchables.
+    Finder pageScrollable() {
+      final candidates = find.byType(Scrollable).hitTestable().evaluate().where((e) => (e.widget as Scrollable).axis == Axis.vertical).toList();
+      candidates.sort((a, b) => (b.size?.height ?? 0).compareTo(a.size?.height ?? 0));
+      if (candidates.isEmpty) throw StateError('aucune page qui défile à l’écran');
+      final best = candidates.first;
+      return find.byElementPredicate((e) => e == best);
     }
 
     /// Fait défiler la page jusqu'à ce que [finder] soit visible.
     Future<void> reveal(Finder finder) async {
-      await tester.dragUntilVisible(finder.hitTestable(), find.byType(Scrollable).hitTestable().first, const Offset(0, -250));
+      await tester.dragUntilVisible(finder, pageScrollable(), const Offset(0, -250));
       await wait(tester, 800);
     }
 
     Future<void> scene(String name, Future<void> Function() body) async {
+      if (only.isNotEmpty && !only.split(',').contains(name)) return;
+      await reset();
       try {
         await body();
       } catch (e, st) {
-        debugPrint('capture « $name » manquée : $e\n$st');
+        // L'écran du moment et ce qu'on y lit, pour comprendre depuis la machine.
+        final visible = find.byType(Text).hitTestable().evaluate().map((e) => (e.widget as Text).data).whereType<String>().take(30).join(' | ');
+        debugPrint('capture « $name » manquée : $e\nà l’écran : $visible\n$st');
+        try {
+          await binding.takeScreenshot('$name-echec');
+        } catch (_) {}
       }
-      await go(Routes.today, 1500);
     }
 
     await scene('today', () async {

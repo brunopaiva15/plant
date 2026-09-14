@@ -86,7 +86,7 @@ def radial(size, center, radius, color, alpha):
     layer = np.zeros((h, w, 4), dtype=np.uint8)
     layer[..., :3] = color
     layer[..., 3] = (a * 255).astype(np.uint8)
-    return Image.fromarray(layer, 'RGBA')
+    return Image.fromarray(layer)
 
 
 def grain(img, strength=0.045, seed=7):
@@ -96,7 +96,7 @@ def grain(img, strength=0.045, seed=7):
     noise = rng.normal(0, 1, (H, W, 1)).astype(np.float32)
     a = np.asarray(img.convert('RGB')).astype(np.float32)
     a = np.clip(a * (1 + noise * strength), 0, 255).astype(np.uint8)
-    return Image.fromarray(a, 'RGB').convert('RGBA')
+    return Image.fromarray(a).convert('RGBA')
 
 
 def background(tint):
@@ -204,7 +204,7 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
         bar = strip.convert('RGBA') if device else strip.transpose(Image.FLIP_TOP_BOTTOM).filter(ImageFilter.GaussianBlur(6)).convert('RGBA')
         veil = np.zeros((top, sw, 4), dtype=np.uint8)
         veil[..., 3] = np.linspace(120, 30, top).astype(np.uint8)[:, None]
-        bar.alpha_composite(Image.fromarray(veil, 'RGBA'))
+        bar.alpha_composite(Image.fromarray(veil))
         bar.alpha_composite(status_bar(sw, top, None, (255, 255, 255)))
     screen.paste(bar, (0, 0))
     sh = screen.height - top
@@ -259,7 +259,7 @@ def clay_card(size, radius, color=SURFACE):
     def rim(dx, dy, blur):
         shifted = Image.new('L', (w, h), 0)
         shifted.paste(mask, (dx, dy))
-        m = Image.fromarray(np.clip(np.asarray(mask).astype(int) - np.asarray(shifted).astype(int), 0, 255).astype(np.uint8), 'L')
+        m = Image.fromarray(np.clip(np.asarray(mask).astype(int) - np.asarray(shifted).astype(int), 0, 255).astype(np.uint8))
         return m.filter(ImageFilter.GaussianBlur(blur))
 
     unit = max(1.0, min(w, h) / 160)
@@ -464,11 +464,16 @@ def build(shots, out, lang):
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
         modal = {'device': device}
-        if name == 'identify' and not os.path.exists(shot):
+        if name == 'identify' and not os.path.exists(shot) and not device:
             # Pas de modèle sur le web : la feuille « Espèce » est redessinée
             # sur l'étape Photo de l'ajout, avec les vrais résultats.
             shot = identification_shot(os.path.join(shots, 'add-plant.png'))
             modal.update(scrim=0.36, sheet=ident_sheet(lang))
+        if isinstance(shot, str) and not os.path.exists(shot):
+            # Une capture manquée ne bloque pas les autres : le visuel
+            # précédent reste en place, et on le dit.
+            print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
+            continue
         place_clay(img, clay, PHONE_CLAY, bottom - 30, PHONE_WIDTH)
         place_phone(img, shot, y=bottom + PHONE_GAP, width=PHONE_WIDTH, **modal)
         img.convert('RGB').save(os.path.join(out, f'{i}.png'), optimize=True)
