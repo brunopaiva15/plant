@@ -16,7 +16,7 @@
 | Identification | cascade `CascadeIdentifier` : modèle local (à venir) puis Pl@ntNet (`PlantIdentifier`) | clé de l'utilisateur, repli coupable, voir [09](09-plant-recognition.md) |
 | Diagnostic | AI Services d'Infomaniak, route compatible OpenAI (`PlantDiagnoser`) | clé de l'éditeur au build, modèle choisi au build, sans plafond |
 | Complément de fiche | AI Services d'Infomaniak (`CareCompleter`) | seulement quand le catalogue n'a que des repères généraux ; nom scientifique seul, réponse gardée sur l'appareil |
-| Météo | Open-Meteo (`WeatherService`) | gratuit, sans compte |
+| Météo | Open-Meteo (`WeatherService`) : prévisions et jours passés en un appel, archives sur trois ans pour le climat du lieu | gratuit, sans compte |
 | Climat de la maison | HomeKit, par un canal natif (`HomeClimateService` → `ios/Runner/HomeClimateChannel.swift`) | iPhone et iPad seulement ; lecture de deux caractéristiques, rien d'écrit, rien ne sort de l'appareil |
 | Widgets, raccourcis, haptiques | WidgetKit, `UIApplicationShortcutItem`, Core Haptics, par trois canaux natifs (`ios/Runner/TodayWidgetChannel.swift`, `QuickActionsChannel.swift`, `HapticsChannel.swift`) | iPhone et iPad seulement ; muets ailleurs, sans plugin |
 
@@ -166,9 +166,41 @@ la coquille soit là, après l'onboarding s'il y en a un.
 `Analytics` et `CrashReporter` interfaces dans `core/observability`, implémentation no-op en P1. Événements : `plant_created`, `watering_logged`, `photo_added`, `location_created`, `reminder_completed`. Jamais de notes, photos ou noms.
 
 ## Tests
-- `test/domain/care_engine_test.dart` : calculs d'échéances (fixe, saisonnier, manuel, retards).
+- `test/domain/care_engine_test.dart` : calculs d'échéances (fixe, saisonnier, météo, manuel, retards).
+- `test/domain/weather_test.dart`, `weather_trend_test.dart`, `outdoor_alert_test.dart`,
+  `region_climate_test.dart` : lecture d'Open-Meteo, conseil de la pluie,
+  correction météo d'un intervalle, gel et chaleur, zone de rusticité.
 - `test/data/*_repository_test.dart` : repositories sur base en mémoire (créer plante, arroser, archiver / restaurer, recherche).
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
+
+## La météo (`domain/weather/`, `features/weather/`)
+Un seul appel sert tout : `weatherWindowProvider` demande trois jours passés,
+aujourd'hui et quatre jours à venir, et se rafraîchit toutes les heures. La
+ligne du jour, les prévisions, la pluie déjà tombée, la tendance des routines
+et les avertissements en sortent — pas cinq requêtes pour cinq écrans.
+
+Il vit dans `app/providers.dart`, à côté de l'hémisphère, et non dans la
+fonctionnalité météo : les dépôts en dépendent. Une routine en stratégie
+météo recalcule son échéance au moment où elle est complétée, sans rien
+savoir de l'écran qui l'a demandée — d'où un `WeatherTrend? Function()`
+passé aux dépôts, lu et non observé, exactement comme `southernHemisphere`.
+
+Quatre pièces pures, toutes testées sans réseau :
+
+- `WeatherAdvisor` : la pluie tombée (≥ 5 mm sur la fenêtre passée) vaut un
+  arrosage, la pluie annoncée le reporte. La première l'emporte sur la
+  seconde.
+- `WeatherTrend` : la moyenne des maximums et le cumul de pluie de la
+  fenêtre, réduits à un multiplicateur d'intervalle borné à 0,6–1,6. La
+  météo corrige la fiche de l'espèce, elle ne la remplace pas.
+- `OutdoorAlertAdvisor` : gel (≤ 2 °C sous abri) et chaleur (≥ 32 °C) des
+  trois prochains jours, croisés avec le minimum supporté et la plage idéale
+  de chaque fiche. Une alerte par sorte, celle du jour le plus dur.
+- `RegionClimate` : la nuit la plus froide et le jour le plus chaud d'une
+  année ordinaire, tirés de trois ans d'archives et gardés dans les
+  préférences six mois. De là, la zone de rusticité, qui classe les
+  propositions de plantes pour l'extérieur. Ce qui part à l'IA, ce sont deux
+  températures et une zone — jamais la ville, jamais les coordonnées.
 
 ## Apple Maison (`domain/home/`, `features/home_climate/`)
 La météo dit ce qu'il fait dehors ; un capteur HomeKit dit ce qu'il fait

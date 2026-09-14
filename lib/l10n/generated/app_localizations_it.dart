@@ -127,6 +127,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get greetingAnonymous => 'Ciao';
 
   @override
+  String greetingEvening(String name) {
+    return 'Buonasera $name';
+  }
+
+  @override
+  String get greetingEveningAnonymous => 'Buonasera';
+
+  @override
   String careCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1704,7 +1712,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto, l\'irrigazione viene rinviata nei giorni di pioggia. Dati Open-Meteo, senza account né chiave.';
+      'Per le piante all\'aperto: la pioggia caduta vale come annaffiatura, quella prevista la rinvia, e gelo e caldo vengono segnalati. Dati Open-Meteo, senza account né chiave.';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -4355,5 +4363,148 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String viewForModel(String name) {
     return 'Usata da $name per riconoscere la specie, non conservata.';
+  }
+
+  @override
+  String get strategyWeather => 'Meteo';
+
+  @override
+  String get strategyWeatherHint =>
+      'L\'intervallo della stagione, accorciato dal caldo secco, allungato da pioggia e freddo.';
+
+  @override
+  String strategyWeatherNow(String interval) {
+    return 'Con il tempo di questa settimana: $interval';
+  }
+
+  @override
+  String get strategyWeatherNoPlace =>
+      'Senza un luogo meteo, l\'intervallo resta quello della stagione.';
+
+  @override
+  String get weatherWhenTonight => 'stanotte';
+
+  @override
+  String get weatherWhenToday => 'oggi';
+
+  @override
+  String get weatherWhenTomorrow => 'domani';
+
+  @override
+  String weatherWhenInDays(int count) {
+    return 'tra $count giorni';
+  }
+
+  @override
+  String weatherFrostTitle(String when, String temp) {
+    return 'Gelo $when · $temp';
+  }
+
+  @override
+  String weatherHeatTitle(String when, String temp) {
+    return 'Caldo $when · $temp';
+  }
+
+  @override
+  String weatherFrostBody(String names) {
+    return 'Da riparare o coprire: $names.';
+  }
+
+  @override
+  String weatherHeatBody(String names) {
+    return 'Da spostare all\'ombra e annaffiare presto: $names.';
+  }
+
+  @override
+  String weatherAlertMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'e altre $count',
+      one: 'e 1 altra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notifFrost(String when, String names) {
+    return 'Gelo $when · da riparare o coprire: $names.';
+  }
+
+  @override
+  String notifHeat(String when, String names) {
+    return 'Caldo $when · da spostare all\'ombra: $names.';
+  }
+
+  @override
+  String weatherRainFallenTitle(String mm) {
+    return 'Pioggia · $mm mm';
+  }
+
+  @override
+  String weatherRainWatered(String names) {
+    return 'Annaffiatura registrata per $names.';
+  }
+
+  @override
+  String weatherRainWaterable(String names) {
+    return 'La pioggia vale l\'annaffiatura di $names.';
+  }
+
+  @override
+  String get weatherRainMarkWatered => 'Segna annaffiata';
+
+  @override
+  String weatherRainWateredToast(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count annaffiature registrate',
+      one: '1 annaffiatura registrata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weatherRainNote(String mm) {
+    return 'Annaffiata dalla pioggia ($mm mm).';
+  }
+
+  @override
+  String get weatherRainCounts => 'La pioggia vale come annaffiatura';
+
+  @override
+  String get weatherRainCountsHint =>
+      'Oltre 5 mm in tre giorni, l\'annaffiatura dei luoghi esterni viene registrata come fatta. Disattivato, la schermata del mattino la propone con un tocco. Un vaso riparato dalle foglie riceve meno pioggia.';
+
+  @override
+  String get weatherClimate => 'Clima';
+
+  @override
+  String get weatherClimateHint =>
+      'Le proposte di piante per l\'esterno seguono gli inverni e le estati del luogo.';
+
+  @override
+  String weatherClimateZone(String zone) {
+    return 'Zona $zone';
+  }
+
+  @override
+  String weatherClimateRange(String low, String high) {
+    return 'Inverni a $low, estati a $high';
+  }
+
+  @override
+  String get weatherClimateNone => 'Sconosciuto';
+
+  @override
+  String get finderReasonHardy => 'Sverna all\'aperto qui';
+
+  @override
+  String get finderReasonSheltered => 'Sverna all\'aperto, riparata';
+
+  @override
+  String finderRegion(String zone, String low) {
+    return 'Zona $zone · inverni a $low';
   }
 }

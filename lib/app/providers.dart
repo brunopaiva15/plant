@@ -68,6 +68,7 @@ import '../domain/identification/local_plant_model.dart';
 import '../domain/identification/plant_identifier.dart';
 import '../domain/support/support_service.dart';
 import '../domain/weather/weather.dart';
+import '../domain/weather/weather_trend.dart';
 import '../features/export/export_service.dart';
 import '../features/export/import_service.dart';
 import '../domain/models/models.dart';
@@ -145,8 +146,8 @@ final southernHemisphereProvider = Provider<bool>((ref) {
 /// écrivent, et doivent voir l'hémisphère du jour sans être reconstruits.
 bool _south(Ref ref) => ref.read(southernHemisphereProvider);
 
-final plantRepositoryProvider = Provider<PlantRepository>(
-    (ref) => DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref)));
+final plantRepositoryProvider = Provider<PlantRepository>((ref) =>
+    DriftPlantRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref), weatherTrend: () => _trend(ref)));
 final locationRepositoryProvider = Provider<LocationRepository>(
     (ref) => DriftLocationRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 String? _remoteUserId(Ref ref) {
@@ -158,9 +159,12 @@ String? _remoteUserId(Ref ref) {
 // interrogent les plantes de tout l'appareil (journal, galerie, routines) se
 // limitent au jardin ouvert.
 final actionRepositoryProvider = Provider<ActionRepository>((ref) => DriftActionRepository(ref.watch(databaseProvider),
-    gardenId: ref.watch(gardenIdProvider), currentUserId: () => _remoteUserId(ref), southernHemisphere: () => _south(ref)));
+    gardenId: ref.watch(gardenIdProvider),
+    currentUserId: () => _remoteUserId(ref),
+    southernHemisphere: () => _south(ref),
+    weatherTrend: () => _trend(ref)));
 final careRepositoryProvider = Provider<CareRepository>((ref) => DriftCareRepository(ref.watch(databaseProvider), ref.watch(plantRepositoryProvider),
-    gardenId: ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref)));
+    gardenId: ref.watch(gardenIdProvider), southernHemisphere: () => _south(ref), weatherTrend: () => _trend(ref)));
 final photoRepositoryProvider = Provider<PhotoRepository>(
     (ref) => DriftPhotoRepository(ref.watch(databaseProvider), gardenId: ref.watch(gardenIdProvider), currentUserId: () => _remoteUserId(ref)));
 final actionTypeRepositoryProvider =
@@ -213,6 +217,7 @@ class AppPreferences {
     required this.irisFeedbackEnabled,
     required this.irisFeedbackAsked,
     required this.weatherPlace,
+    required this.rainCountsAsWatering,
     required this.homeSensor,
     required this.homeHumiditySensor,
   });
@@ -244,6 +249,10 @@ class AppPreferences {
   /// La question a déjà été posée, quelle qu'ait été la réponse.
   final bool irisFeedbackAsked;
   final WeatherPlace? weatherPlace;
+
+  /// La pluie tombée sur un emplacement extérieur vaut un arrosage : la
+  /// routine est notée faite au lieu d'être reportée.
+  final bool rainCountsAsWatering;
 
   /// Le capteur d'Apple Maison qui donne le climat de l'intérieur, ou `null`
   /// tant que rien n'est branché.
@@ -280,6 +289,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       irisFeedbackEnabled: s.irisFeedbackEnabled,
       irisFeedbackAsked: s.irisFeedbackAsked,
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
+      rainCountsAsWatering: s.rainCountsAsWatering,
       homeSensor: HomeSensor.decode(s.homeSensor),
       homeHumiditySensor: HomeSensor.decode(s.homeHumiditySensor),
     );
@@ -304,9 +314,13 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setCareAssistEnabled(bool value) => _apply((s) => s.setCareAssistEnabled(value));
   Future<void> setIrisFeedbackEnabled(bool value) => _apply((s) => s.setIrisFeedbackEnabled(value));
   Future<void> setIrisFeedbackAsked() => _apply((s) => s.setIrisFeedbackAsked());
-  Future<void> setWeatherPlace(WeatherPlace? place) => _apply(
-        (s) => place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude),
-      );
+  /// Changer de lieu périme le climat mis de côté : celui de l'ancienne
+  /// ville n'a plus rien à dire des plantes de la nouvelle.
+  Future<void> setWeatherPlace(WeatherPlace? place) => _apply((s) async {
+        await (place == null ? s.clearWeatherPlace() : s.setWeatherPlace(name: place.name, lat: place.latitude, lon: place.longitude));
+        await s.clearRegionClimate();
+      });
+  Future<void> setRainCountsAsWatering(bool value) => _apply((s) => s.setRainCountsAsWatering(value));
   /// Le capteur de température. Retiré, il emporte celui de l'humidité :
   /// sans maison branchée, il n'y a plus rien à lire.
   Future<void> setHomeSensor(HomeSensor? sensor) => _apply((s) async {
@@ -422,6 +436,35 @@ CatalogMatch? catalogLookup(String scientificName, SpeciesIndex? index, String l
 }
 
 final weatherServiceProvider = Provider<WeatherService>((ref) => OpenMeteoService());
+
+/// La fenêtre météo du lieu : trois jours passés, aujourd'hui, quatre jours
+/// à venir. Un seul appel sert tout — la ligne du jour, les prévisions, la
+/// pluie déjà tombée, la tendance des routines et les avertissements.
+/// Rafraîchie toutes les heures. Vide sans lieu, vide hors ligne.
+///
+/// Elle vit ici, et non dans la fonctionnalité météo, parce que les dépôts
+/// en dépendent : une routine en stratégie météo recalcule son échéance au
+/// moment où elle est complétée, sans rien savoir de l'écran qui l'appelle.
+final weatherWindowProvider = FutureProvider<List<DailyWeather>>((ref) async {
+  final place = ref.watch(preferencesProvider.select((p) => p.weatherPlace));
+  if (place == null) return const [];
+  final timer = Future<void>.delayed(const Duration(hours: 1), () => ref.invalidateSelf());
+  ref.onDispose(() => timer.ignore());
+  try {
+    return await ref.watch(weatherServiceProvider).forecast(place, days: 5, pastDays: 3);
+  } catch (_) {
+    // Hors ligne : pas de météo, l'app reste entièrement utilisable.
+    return const [];
+  }
+});
+
+/// Le temps qu'il fait, réduit à ce qui change un intervalle d'arrosage.
+/// `null` sans fenêtre : la stratégie météo retombe alors sur la saison.
+final weatherTrendProvider = Provider<WeatherTrend?>((ref) => WeatherTrend.of(ref.watch(weatherWindowProvider).value ?? const []));
+
+/// Lue et non observée, comme l'hémisphère : un dépôt qui écrit veut la
+/// tendance du moment, pas une reconstruction à chaque bulletin.
+WeatherTrend? _trend(Ref ref) => ref.read(weatherTrendProvider);
 
 /// La position de l'appareil, pour proposer le lieu de la météo à
 /// l'onboarding. Remplacée dans les tests par un service muet.

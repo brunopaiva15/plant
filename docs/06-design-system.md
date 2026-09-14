@@ -334,6 +334,15 @@ interdites par langue. Une tournure à bannir de plus s'ajoute là.
 Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
+Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
+Paul » ensuite, à l'heure de l'appareil, et sans le nom tant qu'on n'en a pas.
+Replié dans la barre, ce salut ne dit plus où l'on est : c'est **Auxine** qui
+y reste (`collapsedTitle` de `LargeTitlePage`). Le petit titre arrive dans le
+fondu du gabarit natif, celui-là même qui emporte le grand, et monte de
+quelques pixels au passage — une montée tirée du défilement, pas une
+animation qui se rejoue. Les autres onglets n'en ont pas besoin : leur titre
+est déjà un nom.
+
 Sous le grand titre, le jour et ce qu'il fait : la date, puis une rangée de
 `FloraPill` — le temps dehors, l'air de la maison — qui mènent aux
 prévisions et au capteur. Une pilule fait la hauteur de la cible tactile et

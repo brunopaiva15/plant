@@ -6,14 +6,17 @@ import 'package:uuid/uuid.dart';
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/weather/weather_trend.dart';
 import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftActionRepository implements ActionRepository {
-  DriftActionRepository(this._db, {String? gardenId, String? Function()? currentUserId, bool Function()? southernHemisphere})
+  DriftActionRepository(this._db,
+      {String? gardenId, String? Function()? currentUserId, bool Function()? southernHemisphere, WeatherTrend? Function()? weatherTrend})
       : _gardenId = gardenId,
         _currentUserId = currentUserId ?? (() => null),
-        _south = southernHemisphere ?? (() => false);
+        _south = southernHemisphere ?? (() => false),
+        _trend = weatherTrend ?? (() => null);
 
   final FloraDatabase _db;
 
@@ -26,6 +29,10 @@ class DriftActionRepository implements ActionRepository {
   /// L'hémisphère du jardin, relu à chaque complétion : il peut changer si
   /// l'utilisateur déménage, ou renseigne son lieu après coup.
   final bool Function() _south;
+
+  /// Le temps qu'il fait au lieu choisi, relu à chaque calcul : il ne sert
+  /// qu'aux routines en stratégie météo, et vaut `null` hors ligne.
+  final WeatherTrend? Function() _trend;
   static const _uuid = Uuid();
 
   @override
@@ -69,7 +76,7 @@ class DriftActionRepository implements ActionRepository {
       if (schedule != null) {
         metadata['_prev_next_due'] = schedule.nextDueAt?.toIso8601String();
         metadata['_prev_last_completed'] = schedule.lastCompletedAt?.toIso8601String();
-        final completed = CareEngine.complete(schedule, occurredAt, south: _south());
+        final completed = CareEngine.complete(schedule, occurredAt, south: _south(), trend: _trend());
         await (_db.update(_db.careSchedules)..where((s) => s.id.equals(schedule.id))).write(CareSchedulesCompanion(
           nextDueAt: Value(completed.nextDueAt),
           lastCompletedAt: Value(completed.lastCompletedAt),

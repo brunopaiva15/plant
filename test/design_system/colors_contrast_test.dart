@@ -72,6 +72,15 @@ void main() {
         _expectAtLeast(c.ink, c.sageSoft, text, 'ink sur sageSoft');
       });
 
+      test('les cartes du matin tiennent sur leur teinte', () {
+        // Même raison, quatre pastels de plus : la pluie est bleue, le
+        // climat de la maison et la canicule ocre, le gel terre cuite. Un
+        // titre et une phrase entière y sont écrits en pleine encre.
+        for (final (soft, n) in [(c.waterSoft, 'waterSoft'), (c.sunSoft, 'sunSoft'), (c.terracottaSoft, 'terracottaSoft'), (c.roseSoft, 'roseSoft')]) {
+          _expectAtLeast(c.ink, soft, text, 'ink sur $n');
+        }
+      });
+
       test('onAccent se lit sur tous les accents employés comme fond', () {
         // C'est le bouton « Arroser », le héros du matin, le bouton destructif.
         for (final (bg, n) in [(c.sage, 'sage'), (c.terracotta, 'terracotta'), (c.water, 'water'), (c.sun, 'sun'), (c.rose, 'rose'), (c.danger, 'danger')]) {

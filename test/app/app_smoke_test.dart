@@ -343,7 +343,10 @@ void main() {
     expect(find.text('Auxine est gratuite'), findsOneWidget);
     await tester.tap(find.text('Continuer sans'));
     await settle(tester);
-    expect(find.text('Bonjour Bruno'), findsWidgets);
+    // Le salut suit l'heure de la machine qui fait tourner le test, comme il
+    // suit celle de l'appareil : « Bonsoir » à partir de dix-huit heures.
+    final salut = DateTime.now().hour >= 18 ? 'Bonsoir Bruno' : 'Bonjour Bruno';
+    expect(find.text(salut), findsWidgets);
     expect(container.read(preferencesProvider).onboardingDone, isTrue);
   });
 }

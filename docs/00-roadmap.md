@@ -47,6 +47,10 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Fonction | État |
 |---|---|
 | Météo (Open-Meteo, sans clé) : emplacements « extérieur », ligne météo sur Aujourd'hui, conseil « pluie prévue : pas besoin d'arroser » avec report en un tap | ✅ |
+| La pluie tombée vaut un arrosage : au-delà de 5 mm sur trois jours, les arrosages extérieurs du jour sont notés faits, avec Undo ; réglage dans Profil › Météo, actif par défaut | ✅ |
+| Gel et chaleur : les trois prochains jours lus pour les plantes du dehors, comparés au minimum et à la plage idéale de chaque fiche ; carte du matin et ligne dans le rappel quotidien quand c'est pour la nuit ou le lendemain | ✅ |
+| Stratégie d'arrosage « Météo » : l'intervalle saisonnier corrigé par la semaine du lieu (chaleur sèche ×0,7, pluie ×1,35, borné à 0,6–1,6), et la correction écrite sous le sélecteur | ✅ |
+| Climat de la région (archives Open-Meteo sur trois ans, mises en cache) : zone de rusticité du lieu, et propositions de plantes d'extérieur classées par ce qu'elles font de l'hiver — l'IA reçoit le climat, jamais la ville | ✅ |
 | Export complet (ZIP : `data.json` de toutes les tables + photos), partage natif | ✅ |
 | Timelapse de croissance (photos en fondu, chronologiques) | ✅ |
 | Stock bas regroupé dans le rappel quotidien | ✅ |

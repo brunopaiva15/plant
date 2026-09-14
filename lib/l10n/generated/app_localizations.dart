@@ -324,6 +324,18 @@ abstract class AppLocalizations {
   /// **'Bonjour'**
   String get greetingAnonymous;
 
+  /// No description provided for @greetingEvening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir {name}'**
+  String greetingEvening(String name);
+
+  /// No description provided for @greetingEveningAnonymous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonsoir'**
+  String get greetingEveningAnonymous;
+
   /// No description provided for @careCount.
   ///
   /// In fr, this message translates to:
@@ -3033,7 +3045,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour les plantes en extérieur, l\'arrosage est reporté les jours de pluie. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo, sans compte ni clé.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -7427,6 +7439,192 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Utilisée par {name} pour reconnaître l\'espèce, non conservée.'**
   String viewForModel(String name);
+
+  /// No description provided for @strategyWeather.
+  ///
+  /// In fr, this message translates to:
+  /// **'Météo'**
+  String get strategyWeather;
+
+  /// No description provided for @strategyWeatherHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid.'**
+  String get strategyWeatherHint;
+
+  /// No description provided for @strategyWeatherNow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec le temps de la semaine : {interval}'**
+  String strategyWeatherNow(String interval);
+
+  /// No description provided for @strategyWeatherNoPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans lieu météo, l\'intervalle reste celui de la saison.'**
+  String get strategyWeatherNoPlace;
+
+  /// No description provided for @weatherWhenTonight.
+  ///
+  /// In fr, this message translates to:
+  /// **'cette nuit'**
+  String get weatherWhenTonight;
+
+  /// No description provided for @weatherWhenToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'aujourd\'hui'**
+  String get weatherWhenToday;
+
+  /// No description provided for @weatherWhenTomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'demain'**
+  String get weatherWhenTomorrow;
+
+  /// No description provided for @weatherWhenInDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'dans {count} jours'**
+  String weatherWhenInDays(int count);
+
+  /// No description provided for @weatherFrostTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gel {when} · {temp}'**
+  String weatherFrostTitle(String when, String temp);
+
+  /// No description provided for @weatherHeatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur {when} · {temp}'**
+  String weatherHeatTitle(String when, String temp);
+
+  /// No description provided for @weatherFrostBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À rentrer ou à couvrir : {names}.'**
+  String weatherFrostBody(String names);
+
+  /// No description provided for @weatherHeatBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À mettre à l\'ombre, et à arroser tôt : {names}.'**
+  String weatherHeatBody(String names);
+
+  /// No description provided for @weatherAlertMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{et 1 autre} other{et {count} autres}}'**
+  String weatherAlertMore(int count);
+
+  /// No description provided for @notifFrost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gel {when} · à rentrer ou à couvrir : {names}.'**
+  String notifFrost(String when, String names);
+
+  /// No description provided for @notifHeat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur {when} · à mettre à l\'ombre : {names}.'**
+  String notifHeat(String when, String names);
+
+  /// No description provided for @weatherRainFallenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pluie · {mm} mm'**
+  String weatherRainFallenTitle(String mm);
+
+  /// No description provided for @weatherRainWatered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosage noté fait pour {names}.'**
+  String weatherRainWatered(String names);
+
+  /// No description provided for @weatherRainWaterable.
+  ///
+  /// In fr, this message translates to:
+  /// **'La pluie vaut l\'arrosage de {names}.'**
+  String weatherRainWaterable(String names);
+
+  /// No description provided for @weatherRainMarkWatered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noter arrosé'**
+  String get weatherRainMarkWatered;
+
+  /// No description provided for @weatherRainWateredToast.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 arrosage noté} other{{count} arrosages notés}}'**
+  String weatherRainWateredToast(int count);
+
+  /// No description provided for @weatherRainNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosée par la pluie ({mm} mm).'**
+  String weatherRainNote(String mm);
+
+  /// No description provided for @weatherRainCounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'La pluie compte comme un arrosage'**
+  String get weatherRainCounts;
+
+  /// No description provided for @weatherRainCountsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au-delà de 5 mm sur trois jours, l\'arrosage des emplacements extérieurs est noté fait. Coupé, l\'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie.'**
+  String get weatherRainCountsHint;
+
+  /// No description provided for @weatherClimate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Climat'**
+  String get weatherClimate;
+
+  /// No description provided for @weatherClimateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les propositions de plantes pour l\'extérieur suivent les hivers et les étés du lieu.'**
+  String get weatherClimateHint;
+
+  /// No description provided for @weatherClimateZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone {zone}'**
+  String weatherClimateZone(String zone);
+
+  /// No description provided for @weatherClimateRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hivers à {low}, étés à {high}'**
+  String weatherClimateRange(String low, String high);
+
+  /// No description provided for @weatherClimateNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inconnu'**
+  String get weatherClimateNone;
+
+  /// No description provided for @finderReasonHardy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passe l\'hiver dehors ici'**
+  String get finderReasonHardy;
+
+  /// No description provided for @finderReasonSheltered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hiverne dehors, protégée'**
+  String get finderReasonSheltered;
+
+  /// No description provided for @finderRegion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone {zone} · hivers à {low}'**
+  String finderRegion(String zone, String low);
 }
 
 class _AppLocalizationsDelegate

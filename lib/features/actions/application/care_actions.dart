@@ -103,6 +103,45 @@ class CareActions {
     await _reschedule();
   }
 
+  /// La pluie a arrosé : les arrosages extérieurs du jour sont notés faits,
+  /// avec ce qui est tombé en note et dans les métadonnées.
+  ///
+  /// Un seul toast et un seul Undo pour l'averse entière, comme pour une
+  /// multi-sélection : c'est un événement, pas une série de gestes. Sans
+  /// [BuildContext] — l'automatisme part de l'écran du matin au moment où il
+  /// se construit, et un contexte n'y survivrait pas à l'attente.
+  Future<int> logRainWatering(AppLocalizations l10n, {required List<CareTask> tasks, required double rainMm}) async {
+    if (tasks.isEmpty || _blockedReadOnly()) return 0;
+    final mm = l10n.formatQuantity(rainMm, '');
+    final logged = <PlantAction>[];
+    for (final task in tasks) {
+      logged.add(await _actions.log(NewAction(
+        plantId: task.plantId,
+        typeKey: CareKind.watering.key,
+        notes: l10n.weatherRainNote(mm),
+        // La quantité, en clair et sans langue : c'est elle qu'on relira si
+        // un jour le journal veut distinguer la pluie de l'arrosoir.
+        metadata: {'source': 'rain', 'rain_mm': rainMm},
+      )));
+    }
+    Haptics.drop();
+    _analytics.track(AnalyticsEvents.wateringLogged, {'type': CareKind.watering.key, 'source': 'rain', 'count': logged.length});
+    _toast.show(ToastData(
+      message: l10n.weatherRainWateredToast(logged.length),
+      emoji: '🌧️',
+      undoLabel: l10n.undo,
+      onUndo: () async {
+        for (final a in logged) {
+          await _actions.undo(a);
+          _ref.read(completedTasksProvider.notifier).forgetPlant(a.plantId, a.typeKey);
+        }
+        await _reschedule();
+      },
+    ));
+    await _reschedule();
+    return logged.length;
+  }
+
   Future<void> snooze(BuildContext context, {required String scheduleId, required String plantName}) async {
     final message = context.l10n.snoozed(plantName);
     await _ref.read(careRepositoryProvider).snooze(scheduleId, DateTime.now());

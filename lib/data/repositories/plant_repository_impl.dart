@@ -5,18 +5,24 @@ import '../../core/config/app_config.dart';
 import '../../domain/care/care_engine.dart';
 import '../../domain/models/models.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/weather/weather_trend.dart';
 import '../db/database.dart';
 import '../db/mappers.dart';
 
 class DriftPlantRepository implements PlantRepository {
-  DriftPlantRepository(this._db, this._gardenId, {bool Function()? southernHemisphere})
-      : _south = southernHemisphere ?? (() => false);
+  DriftPlantRepository(this._db, this._gardenId, {bool Function()? southernHemisphere, WeatherTrend? Function()? weatherTrend})
+      : _south = southernHemisphere ?? (() => false),
+        _trend = weatherTrend ?? (() => null);
 
   final FloraDatabase _db;
   final String _gardenId;
 
   /// L'hémisphère du jardin, relu à chaque calcul d'échéance.
   final bool Function() _south;
+
+  /// Le temps qu'il fait au lieu choisi, relu à chaque calcul : il ne sert
+  /// qu'aux routines en stratégie météo, et vaut `null` hors ligne.
+  final WeatherTrend? Function() _trend;
   static const _uuid = Uuid();
 
   /// Séparateur des tags concaténés ; interdit dans un nom de tag (voir TagRepository).
@@ -210,7 +216,7 @@ class DriftPlantRepository implements PlantRepository {
               typeKey: kind.key,
               strategy: schedule.strategy.name,
               intervalDays: days,
-              nextDueAt: Value(CareEngine.initialDue(schedule, now, south: _south())),
+              nextDueAt: Value(CareEngine.initialDue(schedule, now, south: _south(), trend: _trend())),
               createdAt: now,
               updatedAt: now,
             ));
@@ -307,7 +313,7 @@ class DriftPlantRepository implements PlantRepository {
         final s = row.toDomain().copyWith(enabled: true);
         await (_db.update(_db.careSchedules)..where((x) => x.id.equals(s.id))).write(CareSchedulesCompanion(
           enabled: const Value(true),
-          nextDueAt: Value(CareEngine.initialDue(s, now, south: _south())),
+          nextDueAt: Value(CareEngine.initialDue(s, now, south: _south(), trend: _trend())),
           updatedAt: Value(now),
         ));
         await _db.enqueueSync('care_schedules', s.id, 'upsert', const {});

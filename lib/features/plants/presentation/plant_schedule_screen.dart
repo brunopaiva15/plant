@@ -7,6 +7,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_engine.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/care_suggestions.dart';
@@ -47,7 +48,7 @@ class PlantScheduleScreen extends ConsumerWidget {
                         ? l10n.strategyManualHint
                         : s.strategy == CareStrategy.manual
                             ? l10n.strategyManual
-                            : '${l10n.everyDays(s.intervalDays)}${s.strategy == CareStrategy.seasonal ? ' · ${l10n.strategySeasonal}' : ''} · ${l10n.dueLabel(s.nextDueAt, now)}',
+                            : '${l10n.everyDays(s.intervalDays)}${s.strategy == CareStrategy.fixed ? '' : ' · ${l10n.strategyName(s.strategy)}'} · ${l10n.dueLabel(s.nextDueAt, now)}',
                     trailing: Opacity(
                       opacity: s.enabled ? 1 : 0.4,
                       child: Icon(CupertinoIcons.chevron_right, size: 16, color: c.inkTertiary),
@@ -177,6 +178,22 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
   /// suivent, sinon « tous les deux ans » serait hors d'atteinte au bouton.
   late final bool _monthly = widget.schedule.typeKey == CareKind.repotting.key;
 
+  /// « Avec le temps de la semaine : 9 jours », ou ce qui manque pour le
+  /// dire : un lieu, un bulletin. Hors ligne, rien — l'intervalle est alors
+  /// exactement celui de la saison, que le stepper montre déjà.
+  String? _weatherNote(AppLocalizations l10n) {
+    if (ref.watch(preferencesProvider.select((p) => p.weatherPlace)) == null) return l10n.strategyWeatherNoPlace;
+    final trend = ref.watch(weatherTrendProvider);
+    if (trend == null) return null;
+    final days = CareEngine.effectiveInterval(
+      widget.schedule.copyWith(strategy: CareStrategy.weather, intervalDays: _interval),
+      DateTime.now(),
+      south: ref.watch(southernHemisphereProvider),
+      trend: trend,
+    );
+    return l10n.strategyWeatherNow(l10n.daysCount(days));
+  }
+
   Future<void> _save() async {
     if (_saving) return;
     setState(() => _saving = true);
@@ -203,11 +220,16 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
     final isNew = widget.schedule.id.isEmpty;
     final hint = switch (_strategy) {
       CareStrategy.seasonal => l10n.strategySeasonalHint,
+      CareStrategy.weather => l10n.strategyWeatherHint,
       CareStrategy.manual => l10n.strategyManualHint,
       // Ce que fait le mode, pas l'intervalle : le chiffre est déjà sous les
       // yeux, au stepper, et l'écrire deux fois le rend illisible.
       CareStrategy.fixed => l10n.strategyFixedHint,
     };
+    // La stratégie météo dit ce qu'elle fait en ce moment : sans ce chiffre,
+    // « resserré par la chaleur sèche » reste une promesse, et le stepper
+    // affiche un intervalle qui n'est pas celui qui sera retenu.
+    final weatherNote = _strategy != CareStrategy.weather ? null : _weatherNote(l10n);
     // D'où vient l'intervalle affiché : la fiche d'entretien de la plante.
     // Tant qu'il vaut ce qu'elle conseille, on le dit sans répéter le chiffre ;
     // une fois réglé à la main, la valeur conseillée reste lisible.
@@ -229,6 +251,10 @@ class _ScheduleEditBodyState extends ConsumerState<_ScheduleEditBody> {
           ),
           const SizedBox(height: Space.xs),
           Text(hint, style: context.text.caption, textAlign: TextAlign.center),
+          if (weatherNote != null) ...[
+            const SizedBox(height: 2),
+            Text(weatherNote, style: context.text.caption.copyWith(color: context.colors.water), textAlign: TextAlign.center),
+          ],
           const SizedBox(height: Space.lg),
           AnimatedOpacity(
             duration: Motion.of(context, Motion.standard),

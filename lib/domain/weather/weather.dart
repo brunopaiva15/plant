@@ -1,3 +1,5 @@
+import 'region_climate.dart';
+
 /// Météo du jour, simplifiée à ce qui compte pour des plantes.
 class DailyWeather {
   const DailyWeather({
@@ -46,8 +48,13 @@ class WeatherPlace {
 
 abstract class WeatherService {
   Future<List<WeatherPlace>> searchPlaces(String query, {String? language});
-  Future<DailyWeather> today(WeatherPlace place);
 
-  /// Prévisions jour par jour, aujourd'hui compris.
-  Future<List<DailyWeather>> forecast(WeatherPlace place, {int days = 5});
+  /// Prévisions jour par jour, aujourd'hui compris. [pastDays] remonte le
+  /// temps d'autant de jours : c'est la pluie déjà tombée, celle qui vaut un
+  /// arrosage, et non celle qu'on annonce.
+  Future<List<DailyWeather>> forecast(WeatherPlace place, {int days = 5, int pastDays = 0});
+
+  /// Le climat du lieu : les extrêmes des années passées, moyennés. `null`
+  /// quand l'historique n'est pas exploitable.
+  Future<RegionClimate?> climate(WeatherPlace place);
 }
