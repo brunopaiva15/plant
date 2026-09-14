@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/utils/dates.dart';
+import '../../../data/services/preferences_service.dart';
 import '../../../domain/home/home_climate.dart';
 import '../../../domain/home/home_climate_advisor.dart';
 import '../../../domain/repositories/repositories.dart';
@@ -74,17 +76,39 @@ final homeClimateTipsProvider = Provider<List<HomeClimateTip>>((ref) {
   return HomeClimateAdvisor.advise(reading: reading, plants: ref.watch(indoorPlantsProvider));
 });
 
-/// Conseils masqués pour la journée (après fermeture).
-class DismissedHomeTipsController extends Notifier<DateTime?> {
+/// La carte des conseils ne paraît qu'une fois par jour.
+///
+/// Les plantes signalées le sont tant que la pièce ne change pas : un salon
+/// à 25° l'est encore ce soir, et la carte reviendrait à chaque passage sur
+/// l'écran du matin redire ce qui a déjà été lu. Le jour de son apparition
+/// part donc dans les réglages, et la relecture s'arrête là jusqu'à demain
+/// — la mesure, elle, reste sur la pilule de la maison, et la fiche de
+/// chaque plante garde sa carte « Chez vous ».
+///
+/// L'état est ce qui se passe maintenant : la carte est à l'écran, ou non.
+/// La noter vue ne doit pas l'effacer sous les yeux de qui la lit, et la
+/// croix, elle, y met fin tout de suite.
+class HomeTipsNoticeController extends Notifier<bool> {
   @override
-  DateTime? build() => null;
-  void dismissToday() => state = DateTime.now();
-  bool get isDismissedToday {
-    final s = state;
-    if (s == null) return false;
-    final now = DateTime.now();
-    return s.year == now.year && s.month == now.month && s.day == now.day;
+  bool build() => false;
+
+  PreferencesService get _prefs => ref.read(preferencesServiceProvider);
+
+  /// La carte a-t-elle sa place ? Tant qu'elle est à l'écran, oui ; sinon,
+  /// seulement si elle n'a pas déjà paru aujourd'hui.
+  bool get canShow => state || !(_prefs.homeTipsShownAt?.isSameDay(DateTime.now()) ?? false);
+
+  /// La carte paraît : le jour est noté, elle reste à l'écran jusqu'à ce
+  /// qu'on la ferme ou qu'on quitte l'application.
+  void markShown() {
+    if (state) return;
+    state = true;
+    unawaited(_prefs.setHomeTipsShownAt(DateTime.now()));
   }
+
+  /// La croix. Le jour noté à l'apparition suffit à la retenir jusqu'à
+  /// demain : il n'y a que l'écran à vider.
+  void dismiss() => state = false;
 }
 
-final dismissedHomeTipsProvider = NotifierProvider<DismissedHomeTipsController, DateTime?>(DismissedHomeTipsController.new);
+final homeTipsNoticeProvider = NotifierProvider<HomeTipsNoticeController, bool>(HomeTipsNoticeController.new);

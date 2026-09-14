@@ -65,20 +65,37 @@ String homeTipEmoji(HomeClimateTipKind kind) => switch (kind) {
 /// « 25° · 41 % · Salon » puis, dessous, ce que l'air de la pièce demande :
 /// « Air sec : brumiser ou regrouper Calathea et Monstera. » [×]
 ///
-/// Une carte, un conseil par ligne, trois au plus. Elle se ferme pour la
-/// journée ; demain la mesure aura changé, ou pas, et elle reviendra.
-class HomeClimateAdviceCard extends ConsumerWidget {
+/// Une carte, un conseil par ligne, trois au plus. Elle paraît une fois par
+/// jour : les plantes signalées le restent tant que la pièce ne change pas,
+/// et les redire à chaque passage serait du bruit. Elle tient jusqu'à la
+/// croix ou jusqu'à la fermeture de l'application ; demain la mesure aura
+/// changé, ou pas, et elle reviendra.
+class HomeClimateAdviceCard extends ConsumerStatefulWidget {
   const HomeClimateAdviceCard({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeClimateAdviceCard> createState() => _HomeClimateAdviceCardState();
+}
+
+class _HomeClimateAdviceCardState extends ConsumerState<HomeClimateAdviceCard> {
+  /// La carte est à l'écran : le jour se note une fois la frame posée —
+  /// pendant la construction, l'écriture rebâtirait l'arbre en plein vol.
+  void _markShownAfterFrame() {
+    if (ref.read(homeTipsNoticeProvider)) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(homeTipsNoticeProvider.notifier).markShown();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tips = ref.watch(homeClimateTipsProvider);
     final reading = ref.watch(homeReadingProvider).value;
-    ref.watch(dismissedHomeTipsProvider);
-    final dismissed = ref.watch(dismissedHomeTipsProvider.notifier).isDismissedToday;
+    ref.watch(homeTipsNoticeProvider);
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
-    final show = tips.isNotEmpty && reading != null && !dismissed;
+    final show = tips.isNotEmpty && reading != null && ref.read(homeTipsNoticeProvider.notifier).canShow;
+    if (show) _markShownAfterFrame();
     final shown = tips.take(3).toList();
     return TodayNoticeSlot(
       visible: show,
@@ -90,7 +107,7 @@ class HomeClimateAdviceCard extends ConsumerWidget {
               color: context.colors.sunSoft,
               title: homeReadingTitle(l10n, reading, metric: metric),
               body: shown.map((t) => homeTipText(l10n, t)).join('\n'),
-              onDismiss: () => ref.read(dismissedHomeTipsProvider.notifier).dismissToday(),
+              onDismiss: () => ref.read(homeTipsNoticeProvider.notifier).dismiss(),
             ),
     );
   }

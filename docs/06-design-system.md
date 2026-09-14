@@ -354,15 +354,17 @@ pas plus : c'est sa surface qui écoute, aucun vide autour. Les emplacements
 de « Votre jardin » sont les mêmes pilules, avec leur compte en retrait.
 
 Ce qui demande un regard tient dans une `TodayNotice`, toujours la même :
-une tuile d'emoji, un titre qui est un nom (« Pluie aujourd'hui »,
-« 25° · 41 % · Salon », « Rappel quotidien »), une phrase qui est un
-constat, parfois un ou deux boutons, une croix quand la carte se ferme
-pour la journée. La teinte dit le sujet — bleu poussière pour la pluie,
-ocre pour l'air de la maison, sauge pour les rappels — et la carte de
-repos, « Tout est en ordre », reste crème. Sur une carte teintée, la tuile
-reste `surface`. `TodayNoticeSlot` pose la marge commune et fond la carte
-quand elle disparaît, sans laisser de vide. La carte du jour, en terre
-cuite, reste à part : c'est le chiffre du matin, pas un avis.
+une tuile d'emoji, un titre qui est un nom (« Pluie aujourd'hui », « 25° ·
+41 % · Salon », « Rappel quotidien »), une phrase qui est un constat,
+parfois un ou deux boutons, une croix quand la carte se ferme pour la
+journée. Celle de l'air de la maison ne paraît qu'une fois par jour : les
+plantes qu'elle signale le restent tant que la pièce ne change pas, et la
+mesure demeure sur la pilule. La teinte dit le sujet — bleu poussière pour
+la pluie, ocre pour l'air de la maison, sauge pour les rappels — et la
+carte de repos, « Tout est en ordre », reste crème. Sur une carte teintée,
+la tuile reste `surface`. `TodayNoticeSlot` pose la marge commune et fond
+la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
+terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
 Cinq volets se pratiquent — arrosage, lumière, humidité, engrais, rempotage —

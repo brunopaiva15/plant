@@ -230,6 +230,15 @@ et l'humidité relative, et rien d'autre.
   air sec sous 45 % pour les espèces à forte humidité, sous 30 % pour les
   autres ; air humide au-delà de 70 % ; froid sous le minimum de l'espèce ;
   chaleur au-delà de sa plage idéale, ou de 30° sans plage.
+- La carte des conseils ne paraît qu'une fois par jour
+  (`HomeTipsNoticeController`) : un salon à 25° l'est encore ce soir, et les
+  plantes signalées le sont toujours — la redonner à chaque passage sur
+  l'écran du matin serait du bruit. Le jour de l'apparition est gardé en
+  préférences (`home_tips_shown_at`), donc relancer l'application ne la
+  ramène pas ; l'état du provider, lui, dit seulement si elle est à l'écran,
+  le temps qu'on la lise, et la croix l'enlève tout de suite. La mesure
+  reste lisible sur la pilule de la maison, et l'écart à l'espèce sur la
+  carte « Chez vous » de chaque fiche.
 - Les HomePod sont invisibles pour HomeKit vu d'une app tierce (Apple les
   réserve à Maison) : leurs capteurs ne se lisent pas, et l'application ne
   cherche pas à les contourner.

@@ -195,6 +195,18 @@ class PreferencesService {
   Future<void> setHomeHumiditySensor(String encoded) => _prefs.setString('home_humidity_sensor', encoded);
   Future<void> clearHomeHumiditySensor() => _prefs.remove('home_humidity_sensor');
 
+  /// Le jour où la carte des conseils de la maison a paru, pour ne la
+  /// montrer qu'une fois par jour : un salon à 25° le reste jusqu'au soir,
+  /// et sans cette trace la carte reviendrait redire la même chose à chaque
+  /// lancement. En heure locale, contrairement aux curseurs de
+  /// synchronisation : c'est une journée de la personne, pas un instant.
+  DateTime? get homeTipsShownAt {
+    final raw = _prefs.getString('home_tips_shown_at');
+    return raw == null ? null : DateTime.tryParse(raw);
+  }
+
+  Future<void> setHomeTipsShownAt(DateTime at) => _prefs.setString('home_tips_shown_at', at.toIso8601String());
+
   // Synchronisation
   DateTime? syncCursor(String table) {
     final raw = _prefs.getString('sync_cursor_$table');
