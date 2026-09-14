@@ -41,12 +41,17 @@ class TodayScreen extends ConsumerWidget {
     final live = tasks.value ?? const <CareTask>[];
     final lingering = ref.watch(completedTasksProvider);
     // Les tâches qui viennent d'être complétées restent affichées un instant,
-    // à leur place d'origine, en état « ✓ Fait ».
-    final liveIds = live.map((t) => t.schedule.id).toSet();
+    // **à leur place d'origine**, en état « ✓ Fait », puis s'en vont.
+    //
+    // C'est la version d'avant qui prime, et non celle de la base : un soin
+    // enregistré repousse l'échéance à la seconde même, si bien que la carte
+    // changeait de section — de « En retard » à « À venir » — avant d'avoir pu
+    // montrer quoi que ce soit. Elle disparaissait d'un coup sous le doigt,
+    // pour réapparaître ailleurs.
     final all = [
-      ...live,
-      for (final l in lingering.values)
-        if (!liveIds.contains(l.task.schedule.id)) l.task,
+      for (final t in live)
+        if (!lingering.containsKey(t.schedule.id)) t,
+      for (final l in lingering.values) l.task,
     ];
     DueStatus statusOf(CareTask t) => t.status(now);
     final overdue = all.where((t) => statusOf(t) == DueStatus.overdue).toList();

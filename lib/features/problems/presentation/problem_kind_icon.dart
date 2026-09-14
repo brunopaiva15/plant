@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../onboarding/presentation/clay_illustration.dart';
 import 'illustrated_problems.dart';
@@ -108,6 +109,46 @@ class ProblemIcon extends StatelessWidget {
       // Le nom du problème quand l'image est la sienne ; la famille sinon,
       // parce que c'est tout ce que l'image dit alors.
       semanticLabel: isIllustrated(problem) ? problem.nameIn(language) : l10n.problemKindName(problem.kind),
+    );
+  }
+}
+
+/// L'image d'un problème de santé de la fiche d'une plante.
+///
+/// Les neuf entrées de [HealthIssue] disent la même chose que la base des
+/// deux cents problèmes : chacune y désigne son entrée, et reprend donc son
+/// illustration. Les deux familles — ravageurs, maladies — n'en désignent
+/// aucune et portent le symbole de leur famille, qui est exactement ce
+/// qu'elles nomment.
+///
+/// Plus petite que [ProblemIcon] — trente-deux points, ce qui pose la chip
+/// pile sur la cible tactile de quarante-quatre. C'est la seule entorse à la
+/// règle des quarante points : ici le nom est écrit juste à côté, et il n'y a
+/// que neuf entrées, pas deux cents. L'image ne porte pas l'information, elle
+/// donne la matière.
+class HealthIssueIcon extends StatelessWidget {
+  const HealthIssueIcon({super.key, required this.issue, this.side = 32});
+
+  final HealthIssue issue;
+  final double side;
+
+  static String assetOf(HealthIssue issue) {
+    final id = issue.problemId;
+    return id != null && illustratedProblems.contains(id)
+        ? 'assets/problems/icons/$id.webp'
+        : ProblemKindIcon.assetOf(issue.kind);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image(
+      image: ClayIllustration.provider(assetOf(issue), side, MediaQuery.devicePixelRatioOf(context)),
+      width: side,
+      height: side,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      // Le nom est écrit juste à côté : l'image ne répète rien.
+      excludeFromSemantics: true,
     );
   }
 }

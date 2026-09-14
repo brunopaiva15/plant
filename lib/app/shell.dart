@@ -27,9 +27,19 @@ class AppShell extends ConsumerWidget {
   final StatefulNavigationShell shell;
 
   void _select(BuildContext context, WidgetRef ref, int i) {
-    final current = i == shell.currentIndex;
-    if (current && ref.read(tabScrollsProvider).scrollToTop(context, i)) Haptics.light();
-    shell.goBranch(i, initialLocation: current);
+    if (i != shell.currentIndex) {
+      shell.goBranch(i);
+      return;
+    }
+    // Déjà sur cet onglet. Un second tap remonte sa liste ; ce n'est qu'une
+    // fois en haut qu'il revient à la racine de la branche. Les deux dans le
+    // même geste se gêneraient : revenir à la racine reconstruit la page, et
+    // la remontée n'aurait pas le temps de se jouer.
+    if (ref.read(tabScrollsProvider).scrollToTop(context, i)) {
+      Haptics.light();
+      return;
+    }
+    shell.goBranch(i, initialLocation: true);
   }
 
   @override

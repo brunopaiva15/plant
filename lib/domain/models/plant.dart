@@ -1,4 +1,5 @@
 import '../care/care_profile.dart';
+import '../problems/plant_problem.dart';
 
 enum PlantStatus { active, archived }
 
@@ -16,20 +17,32 @@ enum PlantHealth {
 
 /// Ce qui ne va pas, quand la plante n'est pas en forme. Facultatif : « à
 /// surveiller » sans dire pourquoi reste permis. Le nom est stocké tel quel.
+///
+/// Chaque entrée pointe vers la base des deux cents problèmes, quand celle-ci
+/// dit la même chose : c'est de là que vient son illustration d'argile, et
+/// c'est ce qui fait que « Manque d'eau » se lit pareil ici, sur la fiche de
+/// soin et dans un diagnostic. Les deux familles — ravageurs, maladies — ne
+/// désignent aucune entrée en particulier ; elles portent le symbole de leur
+/// famille, qui est exactement ce qu'elles disent.
 enum HealthIssue {
-  overwatering('💦'),
-  underwatering('🥀'),
-  pests('🐛'),
-  disease('🍄'),
-  rootRot('🫚'),
-  transplantShock('🪴'),
-  deficiency('🍂'),
-  sunburn('☀️'),
-  frost('❄️');
+  overwatering(kind: ProblemKind.disorder, problemId: '002'),
+  underwatering(kind: ProblemKind.disorder, problemId: '001'),
+  pests(kind: ProblemKind.pest),
+  disease(kind: ProblemKind.disease),
+  rootRot(kind: ProblemKind.disease, problemId: '172'),
+  transplantShock(kind: ProblemKind.disorder, problemId: '007'),
+  deficiency(kind: ProblemKind.disorder, problemId: '025'),
+  sunburn(kind: ProblemKind.disorder, problemId: '009'),
+  frost(kind: ProblemKind.disorder, problemId: '012');
 
-  const HealthIssue(this.emoji);
+  const HealthIssue({required this.kind, this.problemId});
 
-  final String emoji;
+  /// La famille dont relève ce problème, et le symbole qui la représente
+  /// quand aucune entrée précise n'est désignée.
+  final ProblemKind kind;
+
+  /// L'entrée de la base qui dit la même chose, s'il y en a une.
+  final String? problemId;
 
   /// Depuis la valeur stockée ; `null` pour une valeur inconnue plutôt
   /// qu'une erreur — une version plus récente peut en connaître d'autres.
