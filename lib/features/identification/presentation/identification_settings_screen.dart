@@ -118,7 +118,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
 /// geste qui le rend meilleur.
 ///
 /// Le nom et le compte d'espèces viennent du `model.json` livré avec les poids
-/// (§ 0 de docs/09-plant-recognition.md), pas d'ici : livrer une v8 change la
+/// (§ 0 de docs/09-plant-recognition.md), pas d'ici : livrer une v9 change la
 /// section sans qu'on touche à cet écran.
 class _IrisSection extends StatelessWidget {
   const _IrisSection({required this.status});
@@ -213,7 +213,7 @@ class _IrisFact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fusionné : sans cela la synthèse vocale lit « 1 457 », puis
+    // Fusionné : sans cela la synthèse vocale lit le nombre, puis
     // « espèces », comme deux éléments sans rapport.
     return MergeSemantics(
       child: Column(

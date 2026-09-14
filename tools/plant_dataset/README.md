@@ -15,7 +15,7 @@ Ce fichier ne dit que comment lancer l'outil.
 ```bash
 cd tools/plant_dataset
 python3 -m pip install -r requirements.txt   # requests, Pillow, numpy, pytest
-python3 -m pytest -q                          # 124 tests, sans réseau
+python3 -m pytest -q                          # sans réseau
 ```
 
 
