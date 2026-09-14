@@ -128,6 +128,32 @@ void main() {
     });
   });
 
+  group('les commandes posées sur une image ne suivent pas la palette', () {
+    // La galerie dans un coin du viseur, la croix d'une vue de plus : sous
+    // elles il n'y a pas un fond du thème, mais un cadrage. Elles gardent
+    // donc les mêmes couleurs dans les quatre palettes, et leur encre doit
+    // tenir sur la pastille aux deux bouts du fondu — blanche sur un cadrage
+    // clair, grise sur un cadrage noir.
+    Color tileOver(Color framing) => Color.alphaBlend(OnMedia.tile, framing);
+
+    const darkest = Color(0xFF000000);
+    const lightest = Color(0xFFFFFFFF);
+
+    test("l'encre tient sur la pastille, quel que soit le cadrage", () {
+      _expectAtLeast(OnMedia.ink, tileOver(darkest), 4.5, 'OnMedia.ink sur la pastille, cadrage noir');
+      _expectAtLeast(OnMedia.ink, tileOver(lightest), 4.5, 'OnMedia.ink sur la pastille, cadrage blanc');
+    });
+
+    test("l'encre du thème sombre, elle, ne tiendrait pas", () {
+      // C'est le défaut d'où vient ce jeu de couleurs : la pastille est
+      // blanche des deux côtés, `ink` vire au crème en sombre, et le bouton
+      // de la galerie devenait une pastille vide.
+      for (final (c, n) in [(FloraColors.dark, 'sombre'), (FloraColors.darkHighContrast, 'sombre renforcé')]) {
+        expect(_ratio(c.ink, tileOver(darkest)), lessThan(3.0), reason: "l'encre $n sur la pastille");
+      }
+    });
+  });
+
   group('le contraste élevé renforce vraiment', () {
     test('les séparateurs deviennent visibles', () {
       // C'est la première chose qu'attend quelqu'un qui active ce réglage.

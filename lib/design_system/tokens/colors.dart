@@ -218,3 +218,21 @@ class FloraColors {
         brightness: t < 0.5 ? brightness : other.brightness,
       );
 }
+
+/// Ce qu'on pose **sur une image** : les commandes du viseur de l'étape photo
+/// — la galerie dans un coin du cadre, la croix d'une vue de plus.
+///
+/// Elles sont hors du contrat des palettes, comme la marque d'Iris, et pour la
+/// même raison : ce qu'elles ont dessous n'est pas un fond du thème, c'est un
+/// cadrage. Leur pastille est donc blanche des deux côtés — et l'encre qui va
+/// dessus doit l'être aussi. Prendre `ink`, comme avant, la faisait tourner au
+/// crème en thème sombre : l'icône s'effaçait dans sa pastille, à 1,2:1.
+abstract final class OnMedia {
+  /// La pastille : du blanc presque plein, pour tenir aussi bien sur un
+  /// cadrage clair que sur un cadrage sombre.
+  static const Color tile = Color(0xD9FFFFFF);
+
+  /// Ce qu'on dessine dessus : l'encre du thème clair, figée. 8:1 sur la
+  /// pastille au pire du fondu, dans les quatre palettes.
+  static const Color ink = Color(0xFF4A3528);
+}

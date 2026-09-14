@@ -138,6 +138,15 @@ exécution :
 C'est cette dernière règle qui fixe la clarté des accents, et qui a assombri
 la terre cuite, le bleu et l'ocre par rapport aux premières maquettes.
 
+### Les commandes posées sur une image (`OnMedia`)
+La galerie dans un coin du viseur, la croix d'une vue de plus : sous elles il
+n'y a pas un fond du thème mais un cadrage. Elles sont donc hors du contrat,
+comme la marque d'Iris — pastille blanche (`OnMedia.tile`, #FFFFFF à 85 %) et
+encre figée (`OnMedia.ink`, #4A3528) dans les quatre palettes. Prendre `ink`
+de la palette du moment, comme la première version, faisait tourner l'icône au
+crème en thème sombre : elle s'effaçait dans sa pastille, à 1,2:1. L'encre
+figée tient 8:1 sur la pastille au pire du fondu.
+
 ### Contraste élevé
 `FloraColors.lightHighContrast` / `darkHighContrast`, servies par
 `highContrastTheme` de `MaterialApp` quand *Augmenter le contraste* est actif.

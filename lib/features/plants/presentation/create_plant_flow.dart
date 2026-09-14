@@ -661,6 +661,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             bottom: Space.md,
             child: Center(child: _Shutter(busy: _picking, enabled: _camera.isReady, onTap: _capture)),
           ),
+          // La galerie et la croix sont posées sur le cadrage, pas sur un
+          // fond du thème : elles gardent les couleurs d'`OnMedia` dans les
+          // deux thèmes. En sombre, l'encre de la palette tourne au crème et
+          // l'icône disparaissait dans sa pastille blanche.
           if (_mode == _PhotoMode.aim)
             Positioned(
               left: Space.md,
@@ -668,8 +672,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               child: FloraIconButton(
                 icon: CupertinoIcons.photo,
                 semanticLabel: l10n.choosePhoto,
-                background: Colors.white.withValues(alpha: 0.85),
-                color: c.ink,
+                background: OnMedia.tile,
+                color: OnMedia.ink,
                 onPressed: _picking ? null : () => _pick(PhotoSource.gallery),
               ),
             ),
@@ -680,8 +684,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               child: FloraIconButton(
                 icon: CupertinoIcons.xmark,
                 semanticLabel: l10n.cancel,
-                background: Colors.white.withValues(alpha: 0.85),
-                color: c.ink,
+                background: OnMedia.tile,
+                color: OnMedia.ink,
                 onPressed: _cancelExtra,
               ),
             ),
