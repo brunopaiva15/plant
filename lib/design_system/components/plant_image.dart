@@ -52,7 +52,7 @@ class PlantImage extends ConsumerWidget {
       // chaque construction : au moindre remontage — la carte de la
       // collection en connaît un, quand son onglet redevient visible —,
       // l'image repart de son aplat d'attente.
-      final root = ref.watch(photosDirectoryProvider).valueOrNull;
+      final root = ref.watch(photosDirectoryProvider).value;
       final path = root == null ? null : ref.watch(photoStorageProvider).absolutePathNow(relativePath!);
       child = path == null
           ? ColoredBox(color: c.surfaceMuted)
