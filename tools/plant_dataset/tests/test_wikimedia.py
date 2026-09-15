@@ -184,3 +184,88 @@ def test_les_categories_neutres_suivent_sans_etre_ecartees():
 def test_le_plafond_est_respecte():
     noms = [f'X (potted {i})' for i in range(10)]
     assert len(classer_souscategories(noms, 4)) == 4
+
+
+# --- Le 429 dormait deux fois -------------------------------------------
+#
+# `_get` dormait son échelle longue puis levait une `HTTPError` que son
+# propre `except` rattrapait pour redormir. Un seul 429 coûtait près de
+# trois minutes, et la récolte de cultivars restait bloquée sans qu'aucune
+# ligne de log ne le signale.
+
+import time as _time  # noqa: E402
+
+from plant_dataset.fetchers import wikimedia as _wm  # noqa: E402
+
+
+class _Reponse:
+    def __init__(self, code, charge=None, retry_after=None):
+        self.status_code, self._charge = code, charge if charge is not None else {}
+        self.headers = {'Retry-After': retry_after} if retry_after else {}
+
+    def json(self):
+        return self._charge
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise requests.HTTPError(str(self.status_code), response=self)
+
+
+class _Session:
+    def __init__(self, reponses):
+        self.reponses, self.headers, self.appels = list(reponses), {}, 0
+
+    def get(self, *a, **k):
+        self.appels += 1
+        return self.reponses.pop(0)
+
+
+def _client(monkeypatch, reponses):
+    """Le client, et la liste des attentes **de reprise** seulement.
+
+    `_get` dort aussi `self.pause` après chaque requête réussie ; cette
+    attente-là n'est pas une reprise et n'a rien à faire dans la mesure.
+    """
+    dodos = []
+    monkeypatch.setattr(_wm.time, 'sleep', lambda s: dodos.append(s))
+    client = _wm.CommonsClient(session=_Session(reponses), pause=0)
+    return client, _Reprises(dodos)
+
+
+class _Reprises:
+    """Les sommeils, la pause finale retirée."""
+
+    def __init__(self, dodos):
+        self._dodos = dodos
+
+    def __eq__(self, autre):
+        return self._dodos[:-1] == autre
+
+    def __repr__(self):
+        return repr(self._dodos[:-1])
+
+
+def test_un_429_ne_dort_plus_quune_fois(monkeypatch):
+    c, dodos = _client(monkeypatch, [_Reponse(429), _Reponse(200, {'ok': 1})])
+    assert c._get(titles='X') == {'ok': 1}
+    assert dodos == [1], f'un seul sommeil d\'une seconde, obtenu {dodos}'
+
+
+def test_les_429_successifs_montent_en_douceur(monkeypatch):
+    c, dodos = _client(monkeypatch, [_Reponse(429)] * 4 + [_Reponse(200, {'ok': 1})])
+    assert c._get(titles='X') == {'ok': 1}
+    assert dodos == [1, 2, 4, 8], f'attendu 1,2,4,8 — obtenu {dodos}'
+
+
+def test_retry_after_fait_foi(monkeypatch):
+    c, dodos = _client(monkeypatch, [_Reponse(429, retry_after='7'), _Reponse(200, {'ok': 1})])
+    assert c._get(titles='X') == {'ok': 1}
+    assert dodos == [7], 'le serveur sait mieux que nous'
+
+
+def test_une_erreur_serveur_garde_sa_reprise(monkeypatch):
+    # Le 5xx, lui, passe toujours par l'`except` : c'est une panne, pas une
+    # cadence, et sa reprise exponentielle reste la bonne réponse.
+    c, dodos = _client(monkeypatch, [_Reponse(503), _Reponse(200, {'ok': 1})])
+    assert c._get(titles='X') == {'ok': 1}
+    assert dodos == [1]

@@ -151,10 +151,19 @@ class CommonsClient:
             try:
                 r = self.session.get(API, params=params, timeout=self.timeout)
                 if r.status_code == 429:
-                    # Commons ne dit pas toujours combien de temps attendre ;
-                    # à défaut, on recule franchement plutôt que d'insister.
-                    time.sleep(float(r.headers.get('Retry-After') or min(15 * (attempt + 1), 60)))
-                    raise requests.HTTPError('429', response=r)
+                    # **Un seul sommeil, et court.** Lever ici faisait
+                    # redormir l'`except` ci-dessous par-dessus l'attente
+                    # déjà faite : 15+1, puis 30+2, 45+4, 60+8 — près de
+                    # trois minutes pour un seul 429, et une récolte de
+                    # cultivars bloquée cinq minutes sur un cultivar sans
+                    # qu'aucune ligne ne le dise.
+                    #
+                    # `Retry-After` fait foi quand Commons le donne. Sinon
+                    # on repart d'une seconde : ses en-têtes annoncent
+                    # 600 000 requêtes par minute et la collecte en fait
+                    # une, donc ce 429 est un hoquet de cache, pas un quota.
+                    time.sleep(float(r.headers.get('Retry-After') or min(2 ** attempt, 20)))
+                    continue
                 if r.status_code >= 500:
                     raise requests.HTTPError(str(r.status_code), response=r)
                 r.raise_for_status()
