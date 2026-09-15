@@ -7,17 +7,17 @@ import com.google.home.Home
 import com.google.home.HomeClient
 import com.google.home.HomeConfig
 import com.google.home.HomeDevice
-import com.google.home.matter.common.PermissionsResultStatus
-import com.google.home.matter.common.PermissionsState
+import com.google.home.PermissionsResultStatus
+import com.google.home.PermissionsState
 import com.google.home.matter.standard.HumiditySensorDevice
 import com.google.home.matter.standard.RelativeHumidityMeasurement
 import com.google.home.matter.standard.TemperatureMeasurement
 import com.google.home.matter.standard.TemperatureSensorDevice
+import com.google.home.matter.standard.Thermostat
 import com.google.home.matter.standard.ThermostatDevice
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import kotlin.math.abs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -33,15 +33,14 @@ import kotlinx.coroutines.launch
  * température ou l'humidité, la mesure de l'un d'eux. Aucune commande
  * envoyée, aucun autre appareil lu.
  *
- * Cette version-ci ne se compile qu'avec le SDK des Home APIs dans le dépôt
- * Maven local (`-PgoogleHome=true`) ; sans lui, c'est la version muette du
- * jeu de sources `noGoogleHome` qui prend sa place. La marche à suivre —
- * projet déclaré, client OAuth, empreinte SHA-1, SDK — est dans
- * `docs/05-technical-architecture.md`, section « Google Home ».
+ * Cette version-ci ne se compile qu'avec le SDK des Home APIs, dont
+ * l'archive est déjà un dépôt Maven : `-PgoogleHomeRepo=<dossier>`. Sans
+ * lui, c'est la version muette du jeu de sources `noGoogleHome` qui prend sa
+ * place. La marche à suivre est dans `docs/05-technical-architecture.md`,
+ * section « Google Home ».
  *
- * Les appels au SDK suivent la documentation des Home APIs ; ils n'ont pas
- * été compilés ici, faute de SDK, et se vérifient à la première
- * construction avec lui.
+ * Les appels au SDK sont écrits contre les signatures réelles du
+ * `classes.jar` de `play-services-home` 17.1.0.
  */
 object GoogleHomeChannel {
   const val NAME = "ch.vergasta.plant/google_home_climate"
@@ -54,16 +53,19 @@ object GoogleHomeChannel {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
   fun register(activity: Activity, messenger: BinaryMessenger) {
-    // Ce que l'application lit, et rien de plus : deux grandeurs, trois
-    // types d'appareil. Le registre dit au SDK ce qu'il doit savoir rendre.
+    // Ce que l'application lit, et rien de plus : deux grandeurs, trois types
+    // d'appareil. Le registre dit au SDK ce qu'il doit savoir rendre.
     val registry =
         FactoryRegistry(
+            traits = listOf(TemperatureMeasurement, RelativeHumidityMeasurement, Thermostat),
             types = listOf(TemperatureSensorDevice, HumiditySensorDevice, ThermostatDevice),
-            traits = listOf(TemperatureMeasurement, RelativeHumidityMeasurement),
         )
-    val home = Home.getClient(context = activity, homeConfig = HomeConfig(Dispatchers.IO, registry))
+    // Le premier paramètre de `HomeConfig` est un booléen, pas le contexte de
+    // coroutines : tout se nomme, sinon on se trompe silencieusement.
+    val home = Home.getClient(context = activity, homeConfig = HomeConfig(coroutineContext = Dispatchers.IO, factoryRegistry = registry))
     // La fenêtre d'autorisation rend sa réponse à l'activité : sans un
-    // `ActivityResultCaller`, elle ne peut pas être demandée.
+    // `ActivityResultCaller`, elle ne peut pas être demandée. C'est pourquoi
+    // `HostActivity` est un `FlutterFragmentActivity` dans ce jeu de sources.
     (activity as? ActivityResultCaller)?.let { home.registerActivityResultCallerForPermissions(it) }
     client = home
     MethodChannel(messenger, NAME).setMethodCallHandler { call, result -> handle(call, result) }
@@ -102,7 +104,7 @@ object GoogleHomeChannel {
     }
   }
 
-  // MARK: - Autorisation
+  // Autorisation
 
   private suspend fun state(): PermissionsState? =
       client?.hasPermissions()?.first { it != PermissionsState.PERMISSIONS_STATE_UNINITIALIZED }
@@ -125,67 +127,61 @@ object GoogleHomeChannel {
     if (!prompting) return false
     val answer = home.requestPermissions()
     if (answer.status != PermissionsResultStatus.SUCCESS) {
-      refused = answer.status == PermissionsResultStatus.ERROR || answer.status == PermissionsResultStatus.CANCELLED
+      refused = true
       return false
     }
     return true
   }
 
-  // MARK: - Appareils
+  // Appareils
 
+  /**
+   * Les appareils qui mesurent la température ou l'humidité de l'air, avec
+   * leur pièce et leur maison. Tout se demande à plat, puis se recolle par
+   * identifiant.
+   */
   private suspend fun sensors(): List<Map<String, Any>> {
     val home = client ?: return emptyList()
     if (!granted(prompting = true)) return emptyList()
+    val rooms = home.rooms().list().associate { it.id.id to it.name }
+    val structures = home.structures().list().associate { it.id.id to it.name }
     val out = mutableListOf<Map<String, Any>>()
-    for (structure in home.structures().list()) {
-      // La pièce vient de la pièce elle-même : c'est elle qui connaît ses
-      // appareils, et le nom qu'elle porte chez la personne.
-      val roomNames = mutableMapOf<String, String>()
-      for (room in structure.rooms().list()) {
-        for (device in room.devices().list()) {
-          roomNames[device.id.id] = room.name
-        }
-      }
-      for (device in structure.devices().list()) {
-        val (temperature, humidity) = measures(device)
-        if (temperature == null && humidity == null) continue
-        val item =
-            mutableMapOf<String, Any>(
-                "id" to device.id.id,
-                "name" to device.name,
-                "home" to structure.name,
-                "temperature" to (temperature != null),
-                "humidity" to (humidity != null),
-            )
-        roomNames[device.id.id]?.takeIf { it.isNotEmpty() }?.let { item["room"] = it }
-        out.add(item)
-      }
+    for (device in home.devices().list()) {
+      val (temperature, humidity) = measures(device)
+      if (temperature == null && humidity == null) continue
+      val item =
+          mutableMapOf<String, Any>(
+              "id" to device.id.id,
+              "name" to device.name,
+              "temperature" to (temperature != null),
+              "humidity" to (humidity != null),
+          )
+      rooms[device.roomId?.id]?.takeIf { it.isNotEmpty() }?.let { item["room"] = it }
+      structures[device.structureId?.id]?.takeIf { it.isNotEmpty() }?.let { item["home"] = it }
+      out.add(item)
     }
     return out
   }
 
-  private suspend fun device(home: HomeClient, id: String): HomeDevice? {
-    for (structure in home.structures().list()) {
-      structure.devices().list().firstOrNull { it.id.id == id }?.let {
-        return it
-      }
-    }
-    return null
-  }
+  private suspend fun device(home: HomeClient, id: String): HomeDevice? = home.devices().list().firstOrNull { it.id.id == id }
 
   /**
-   * Ce qu'un appareil mesure de l'air d'une pièce : la température et
-   * l'humidité relative, sur n'importe lequel de ses types — un thermostat
-   * mesure la pièce où il est posé, comme un capteur.
+   * Ce qu'un appareil mesure de l'air d'une pièce, en centièmes d'unité comme
+   * Matter les compte.
+   *
+   * `types()` est un flux, pas une liste : on en prend le premier jeu. Trois
+   * traits portent ces grandeurs, et pas de la même façon — un thermostat n'a
+   * pas de trait de mesure, sa température de pièce est `localTemperature`.
    */
-  private suspend fun measures(device: HomeDevice): Pair<Double?, Double?> {
-    var temperature: Double? = null
-    var humidity: Double? = null
-    for (type in device.types().list()) {
+  private suspend fun measures(device: HomeDevice): Pair<Int?, Int?> {
+    var temperature: Int? = null
+    var humidity: Int? = null
+    for (type in device.types().first()) {
       for (trait in type.traits()) {
         when (trait) {
-          is TemperatureMeasurement -> temperature = temperature ?: trait.measuredValue?.toDouble()
-          is RelativeHumidityMeasurement -> humidity = humidity ?: trait.measuredValue?.toDouble()
+          is TemperatureMeasurement -> temperature = temperature ?: trait.measuredValue?.toInt()
+          is RelativeHumidityMeasurement -> humidity = humidity ?: trait.measuredValue?.toInt()
+          is Thermostat -> temperature = temperature ?: trait.localTemperature?.toInt()
           else -> {}
         }
       }
@@ -193,7 +189,7 @@ object GoogleHomeChannel {
     return temperature to humidity
   }
 
-  // MARK: - Mesure
+  // Mesure
 
   private suspend fun read(id: String): Map<String, Any> {
     val out = mutableMapOf<String, Any>("at" to System.currentTimeMillis())
@@ -208,19 +204,10 @@ object GoogleHomeChannel {
       return out
     }
     val (temperature, humidity) = measures(device)
-    temperature?.let { out["temperature"] = celsius(it) }
-    humidity?.let { out["humidity"] = percent(it) }
+    // Matter compte en centièmes de degré et de pour cent.
+    temperature?.let { out["temperature"] = it / 100.0 }
+    humidity?.let { out["humidity"] = it / 100.0 }
     if (temperature == null && humidity == null) out["error"] = "no measurement"
     return out
   }
-
-  /**
-   * Matter compte en centièmes de degré ; selon sa version, le SDK rend déjà
-   * des degrés. Une pièce ne dépasse pas cent degrés : au-delà, la valeur
-   * est en centièmes, et se divise par cent.
-   */
-  private fun celsius(raw: Double): Double = if (abs(raw) > 100) raw / 100 else raw
-
-  /** Même règle pour l'humidité relative, comptée en centièmes de pour cent. */
-  private fun percent(raw: Double): Double = if (raw > 100) raw / 100 else raw
 }
