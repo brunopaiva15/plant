@@ -15,6 +15,7 @@ export 'list_row.dart';
 export 'page_scaffold.dart';
 export 'plant_image.dart';
 export 'pressable.dart';
+export 'scanning_overlay.dart';
 export 'section_header.dart';
 export 'sheets.dart';
 export 'skeleton.dart';
