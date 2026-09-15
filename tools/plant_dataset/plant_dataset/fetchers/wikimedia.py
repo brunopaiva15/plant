@@ -115,6 +115,26 @@ def _plain(html: str) -> str:
     return ' '.join(text.split())[:200]
 
 
+def sans_traqueurs(url: str) -> str:
+    """L'URL d'un fichier, ses paramètres de suivi retirés.
+
+    L'API de Commons rend ses URL décorées d'`utm_source`, `utm_campaign` et
+    `utm_content` — des marqueurs d'audience pour elle, inutiles pour
+    télécharger. Mais ils rendent chaque requête unique côté cache : le CDN
+    ne peut pas servir deux fois la même image, chaque téléchargement tape
+    l'origine, et c'est l'origine qui limite. Une récolte en a ramassé des
+    429 en série sur un même fichier, cinq essais d'affilée.
+
+    On ne retire que les `utm_*` : `width` et consorts décident du fichier
+    servi, et les jeter changerait l'image.
+    """
+    if not url or '?' not in url:
+        return url
+    base, _, requete = url.partition('?')
+    gardes = [p for p in requete.split('&') if p and not p.lower().startswith('utm_')]
+    return f'{base}?{"&".join(gardes)}' if gardes else base
+
+
 def category_names(scientific_name: str) -> list[str]:
     """Les titres de catégorie à essayer pour une espèce, du plus probable au
     moins probable.
@@ -250,7 +270,7 @@ class CommonsClient:
                      or (meta.get('LicenseShortName') or {}).get('value') or '')
             if not is_allowed(parse_license(brute), allow_share_alike=allow_share_alike):
                 continue
-            url = info.get('thumburl') or info.get('url')
+            url = sans_traqueurs(info.get('thumburl') or info.get('url') or '')
             if not url:
                 continue
             yield ImageCandidate(

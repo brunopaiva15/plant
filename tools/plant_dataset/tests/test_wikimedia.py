@@ -269,3 +269,34 @@ def test_une_erreur_serveur_garde_sa_reprise(monkeypatch):
     c, dodos = _client(monkeypatch, [_Reponse(503), _Reponse(200, {'ok': 1})])
     assert c._get(titles='X') == {'ok': 1}
     assert dodos == [1]
+
+
+# --- Les paramètres de suivi font rater le cache --------------------------
+
+from plant_dataset.fetchers.wikimedia import sans_traqueurs  # noqa: E402
+
+_UTM = '?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled'
+
+
+def test_les_utm_partent():
+    assert sans_traqueurs(f'https://upload.wikimedia.org/a/b.jpg{_UTM}') == \
+        'https://upload.wikimedia.org/a/b.jpg'
+
+
+def test_une_url_sans_parametres_ne_bouge_pas():
+    assert sans_traqueurs('https://upload.wikimedia.org/a/b.jpg') == \
+        'https://upload.wikimedia.org/a/b.jpg'
+
+
+def test_les_parametres_utiles_restent():
+    # `width` décide du fichier servi : le jeter changerait l'image.
+    u = sans_traqueurs('https://x/b.jpg?width=800&utm_source=commons&height=600')
+    assert u == 'https://x/b.jpg?width=800&height=600'
+
+
+def test_une_url_vide_ne_fait_pas_echouer():
+    assert sans_traqueurs('') == ''
+
+
+def test_le_point_dinterrogation_ne_reste_pas_seul():
+    assert sans_traqueurs('https://x/b.jpg?utm_source=commons') == 'https://x/b.jpg'
