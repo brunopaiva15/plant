@@ -1,12 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flora/data/services/gbif_species_service.dart';
+import 'package:flora/data/species/catalog_800/species_catalog_800.dart';
 import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue : exactement 650 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
+  test('catalogue : exactement 800 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(650));
+    expect(SpeciesCatalog.entries, hasLength(800));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -45,6 +49,19 @@ void main() {
     expect(SpeciesCatalog.find('Tamarindus indica')?.category, SpeciesCategory.fruit);
     expect(SpeciesCatalog.find('Cyclamen hederifolium')?.category, SpeciesCategory.flower);
     expect(SpeciesCatalog.find('Metasequoia glyptostroboides')?.category, SpeciesCategory.tree);
+  });
+
+  test('catalogue : les 150 entrées du palier 800 sont des classes Iris 8', () {
+    final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
+    final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toSet();
+    final addedNames = SpeciesCatalog800.entries.map((e) => e.scientificName).toList();
+
+    expect(modelJson['classes'], 1444);
+    expect(addedNames, hasLength(150));
+    expect(addedNames.toSet().length, addedNames.length);
+    expect(addedNames.where((name) => !modelSpecies.contains(name)), isEmpty);
+    expect(SpeciesCatalog.find('Abies bracteata')?.category, SpeciesCategory.tree);
+    expect(SpeciesCatalog.find('Salvia microphylla')?.category, SpeciesCategory.flower);
   });
 
   test('GBIF : parse d\'une page de recherche (total, fin de liste)', () {
