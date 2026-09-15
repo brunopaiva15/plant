@@ -163,8 +163,11 @@ List<PropagationOption> resolvePropagationOptions({
   }
 
   if (options.isEmpty) {
-    final touffe = (fam != null && _divisionFamilies.contains(fam)) || (genus != null && _offsetGenera.contains(genus));
-    if (touffe) {
+    // Aucune méthode montrable — une fiche qui ne connaît que le semis. On
+    // retombe sur le geste que le port de la plante appelle.
+    if (genus != null && _offsetGenera.contains(genus)) {
+      ajoute(Propagation.offsets, PropagationGuideKind.offset);
+    } else if (fam != null && _divisionFamilies.contains(fam)) {
       ajoute(Propagation.division, PropagationGuideKind.division);
     } else {
       ajoute(Propagation.stemCutting, _stemKindOf(genus, fam, profile));

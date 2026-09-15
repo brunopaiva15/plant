@@ -132,6 +132,24 @@ void main() {
       expect(propagationStepIds[options.first.kind], isNotEmpty);
     });
 
+    test('le repli suit le port de la plante, pas une règle unique', () {
+      const semis = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        repotEveryMonths: 24,
+        propagation: [Propagation.seed],
+      );
+      // Une plante à rosette part par son rejet, une graminée par sa touffe.
+      expect(resolvePropagationOptions(profile: semis, scientificName: 'Haworthia fasciata').single.kind,
+          PropagationGuideKind.offset);
+      expect(resolvePropagationOptions(profile: semis, scientificName: 'Carex morrowii', family: 'Cyperaceae').single.kind,
+          PropagationGuideKind.division);
+    });
+
     test('le marcottage seul se montre comme une bouture à nœud', () {
       const marcotte = CareProfile(
         wateringSummerDays: 7,
