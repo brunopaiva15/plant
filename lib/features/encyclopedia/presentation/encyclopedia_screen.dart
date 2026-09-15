@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Scrollbar;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
@@ -31,6 +32,7 @@ class EncyclopediaScreen extends ConsumerStatefulWidget {
 
 class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
   final _search = TextEditingController();
+  final _scroll = ScrollController(debugLabel: 'encyclopedia');
 
   EncyclopediaSection _section = EncyclopediaSection.problems;
   String _query = '';
@@ -44,6 +46,7 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
   @override
   void dispose() {
     _search.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -57,6 +60,7 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
       _query = '';
       _search.clear();
     });
+    if (_scroll.hasClients) _scroll.jumpTo(0);
   }
 
   @override
@@ -84,7 +88,7 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
             onChanged: (q) => setState(() => _query = q),
           );
 
-    return LargeTitlePage(
+    final page = LargeTitlePage(
       title: l10n.encyclopediaTitle,
       searchField: searchField,
       slivers: [
@@ -116,6 +120,26 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
           EncyclopediaSection.glossary => GlossarySlivers(query: _query),
         },
       ],
+    );
+
+    // Un contrôleur primaire dédié donne à cette page poussée le même
+    // comportement que les onglets racine : sur iOS, toucher la barre d'état
+    // remonte au sommet. La scrollbar partage exactement ce contrôleur, donc
+    // son curseur peut aussi être saisi pour parcourir les longues listes.
+    return PrimaryScrollController(
+      controller: _scroll,
+      child: isCupertino(context)
+          ? CupertinoScrollbar(
+              controller: _scroll,
+              thumbVisibility: true,
+              child: page,
+            )
+          : Scrollbar(
+              controller: _scroll,
+              thumbVisibility: true,
+              interactive: true,
+              child: page,
+            ),
     );
   }
 }
