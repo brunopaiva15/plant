@@ -160,7 +160,7 @@
   "offspring": "Piante figlie",
   "editSchedule": "Modifica il programma",
   "cuttingOf": "Talea di {name}",
-  "propagate": "Moltiplicare",
+  "propagate": "Crea una talea",
   "pgPickTitle": "Moltiplicare questa pianta",
   "pgPickBody": "Questa pianta si moltiplica in più modi. Il gesto scelto determina i passaggi.",
   "pgRecommended": "Consigliato",
