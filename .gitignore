@@ -67,3 +67,10 @@ app.*.map.json
 *.h5
 *.safetensors
 __pycache__/
+
+# Le SDK des Home APIs de Google, décompressé ici pour qu'Xcode le référence
+# par un chemin relatif portable (`ios/vendor/GoogleHomeSDK`). Six cents
+# mégaoctets de binaires signés qui n'ont rien à faire dans un dépôt, et que
+# Google veut qu'on télécharge soi-même depuis sa console. Voir
+# docs/05-technical-architecture.md, section « Google Home ».
+ios/vendor/
