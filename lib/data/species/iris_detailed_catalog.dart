@@ -4,12 +4,13 @@ import '../../domain/species/species_info.dart';
 import 'species_catalog.dart';
 import 'species_index.dart';
 
-/// Une fiche d'encyclopédie adossée à une classe du modèle Iris.
+/// Une fiche d'encyclopédie. Les classes d'Iris sont toujours incluses ;
+/// l'encyclopédie peut ensuite les compléter avec des espèces hors modèle.
 ///
 /// Les espèces déjà curatées gardent leurs noms et leur catégorie éditoriale.
-/// Pour les autres classes Iris, la famille et les noms viennent du catalogue
-/// étendu hors ligne. On n'invente donc ni taxonomie ni traduction pour
-/// combler l'écart entre le catalogue curaté et le modèle embarqué.
+/// Pour les autres, la famille et les noms viennent du catalogue étendu hors
+/// ligne. On n'invente donc ni taxonomie ni traduction pour atteindre le
+/// nombre de fiches voulu.
 class IrisDetailedSpecies {
   const IrisDetailedSpecies({
     required this.scientificName,
@@ -69,17 +70,21 @@ class IrisDetailedSpecies {
   }
 }
 
-/// Vue détaillée alignée exactement sur les classes du modèle Iris.
-///
-/// Le catalogue curaté reste la source premium pour ses espèces ; les classes
-/// Iris qui n'y figurent pas sont enrichies par [SpeciesIndex]. L'ordre du
-/// modèle est conservé et les doublons éventuels du JSON sont éliminés.
+/// Catalogue détaillé dont la base est toujours l'ensemble exact des classes
+/// Iris. Quand [targetCount] est supérieur au nombre de classes, les fiches
+/// curatées hors Iris sont ajoutées en premier, puis les meilleures entrées
+/// du catalogue étendu jusqu'au seuil demandé.
 class IrisDetailedCatalog {
   const IrisDetailedCatalog(this.entries);
+
+  /// Nombre de fiches affichées dans l'encyclopédie. Cela ne change pas le
+  /// nombre de classes qu'Iris sait reconnaître : Iris 8 reste à 1 444.
+  static const int encyclopediaTargetCount = 1600;
 
   factory IrisDetailedCatalog.from({
     required Iterable<String> modelSpecies,
     required SpeciesIndex index,
+    int? targetCount,
   }) {
     final curated = <String, SpeciesCatalogEntry>{
       for (final entry in SpeciesCatalog.entries) entry.scientificName.toLowerCase(): entry,
@@ -87,26 +92,62 @@ class IrisDetailedCatalog {
     final indexed = <String, SpeciesRecord>{
       for (final record in index.records) record.scientificName.toLowerCase(): record,
     };
-    final seen = <String>{};
+    final seenNames = <String>{};
+    final seenAccepted = <String>{};
     final entries = <IrisDetailedSpecies>[];
+
+    String acceptedKey(String scientificName) =>
+        acceptedSpeciesName(normalizeScientificName(scientificName)).trim().toLowerCase();
 
     for (final rawName in modelSpecies) {
       final scientificName = rawName.trim();
       if (scientificName.isEmpty) continue;
       final key = scientificName.toLowerCase();
-      if (!seen.add(key)) continue;
+      if (!seenNames.add(key)) continue;
 
       // La même résolution qu'ailleurs dans l'app : le nom accepté d'abord.
       // Sans lui, « Vriesea splendens » ou « Heptapleurum arboricola »
-      // ouvraient une fiche sans famille alors que l'app connaît la plante
-      // sous son autre nom (§ 12.14 de docs/09).
-      final accepted = acceptedSpeciesName(normalizeScientificName(scientificName)).toLowerCase();
+      // ouvriraient une fiche sans famille alors que l'app connaît la plante
+      // sous son autre nom.
+      final accepted = acceptedKey(scientificName);
+      seenAccepted.add(accepted);
       final entry = curated[key] ?? curated[accepted];
       if (entry != null) {
         entries.add(IrisDetailedSpecies.fromCurated(entry, scientificName: scientificName));
         continue;
       }
       entries.add(IrisDetailedSpecies.fromIndex(scientificName, indexed[key] ?? indexed[accepted]));
+    }
+
+    final wanted = targetCount;
+    if (wanted != null && wanted > entries.length) {
+      // 1. Les fiches déjà écrites à la main mais hors Iris : on garde leur
+      // catégorie et leurs noms éditoriaux avant d'aller chercher plus loin.
+      for (final entry in SpeciesCatalog.entries) {
+        if (entries.length >= wanted) break;
+        final key = entry.scientificName.toLowerCase();
+        final accepted = acceptedKey(entry.scientificName);
+        if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
+        seenNames.add(key);
+        seenAccepted.add(accepted);
+        entries.add(IrisDetailedSpecies.fromCurated(entry));
+      }
+
+      // 2. Puis le catalogue étendu. Pour qu'une entrée compte comme fiche
+      // détaillée, elle doit au minimum avoir une famille et un nom courant
+      // dans l'une des quatre langues. L'ordre du TSV rend le choix stable.
+      for (final record in index.records) {
+        if (entries.length >= wanted) break;
+        if (record.family.trim().isEmpty) continue;
+        if ([record.fr, record.en, record.de, record.it].every((name) => name.trim().isEmpty)) continue;
+
+        final key = record.scientificName.toLowerCase();
+        final accepted = acceptedKey(record.scientificName);
+        if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
+        seenNames.add(key);
+        seenAccepted.add(accepted);
+        entries.add(IrisDetailedSpecies.fromIndex(record.scientificName, record));
+      }
     }
 
     return IrisDetailedCatalog(List<IrisDetailedSpecies>.unmodifiable(entries));
