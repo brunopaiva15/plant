@@ -63,6 +63,7 @@ void main() {
       expect(from('not_owner'), CollaborationError.notOwner);
       expect(from('owner_cannot_leave'), CollaborationError.ownerCannotLeave);
       expect(from('not_signed_in'), CollaborationError.notSignedIn);
+      expect(from('last_garden'), CollaborationError.lastGarden);
       expect(from('Connection closed'), CollaborationError.unknown);
     });
   });

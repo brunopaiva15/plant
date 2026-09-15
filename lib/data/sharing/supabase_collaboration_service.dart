@@ -127,6 +127,11 @@ class SupabaseCollaborationService implements CollaborationService {
         await _db.rpc('leave_garden', params: {'p_garden_id': gardenId});
       });
 
+  @override
+  Future<void> deleteGarden(String gardenId) => _rpc(() async {
+        await _db.rpc('delete_garden', params: {'p_garden_id': gardenId});
+      });
+
   /// Adresse https, pour que le lien reste cliquable dans un message ; la page
   /// qu'elle sert ne fait qu'ouvrir l'application sur `auxine://join/<code>`.
   @override
