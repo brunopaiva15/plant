@@ -327,16 +327,23 @@ Pour la livrer :
      laissée à *None*, la référence s'écrit sans lier quoi que ce soit, et
      `canImport` reste faux — un build vert qui ne prouve rien.
 
-     Ce que le script répare, parce que chacun a coûté une heure : l'archive
-     porte des attributs `com.apple.quarantine` que `tar` restaure et qui
-     font refuser le dossier à Xcode ; ses fichiers sont en lecture seule,
-     jusqu'à interdire de retirer ces attributs ; et
+     Ce que le script répare : l'archive porte des attributs
+     `com.apple.quarantine` que `tar` restaure et qui font refuser le dossier
+     à Xcode, et ses fichiers sont en lecture seule, jusqu'à interdire de
+     retirer ces attributs.
+
+     Ce qu'il ne répare pas, et qui se règle ailleurs :
      `GoogleHomeTypes.framework` n'a pas d'`Info.plist`, étant une
-     bibliothèque statique dans un dossier `.framework` — Xcode l'embarque
-     quand même, et l'outillage Flutter, qui inspecte le `.app` construit,
-     échoue dessus. Le script fabrique cet `Info.plist`. Un contournement, à
-     revoir avant une soumission : une archive statique n'a rien à faire
-     dans un bundle, et la validation App Store peut la refuser.
+     bibliothèque statique dans un dossier `.framework` — elle est liée à la
+     compilation, pas faite pour être copiée. Xcode l'embarque quand même,
+     sans distinguer statique de dynamique, et l'outillage Flutter, qui
+     inspecte le `.app` construit, échoue sur le fichier manquant. Fabriquer
+     cet `Info.plist` est pire : le framework passe alors pour signable, et
+     la signature échoue sur une archive `ar` (`signature-collection
+     failed`). La cible Runner porte donc une dernière phase de build,
+     « Retirer GoogleHomeTypes du bundle », qui supprime cette copie avant
+     la signature. C'est la bonne réponse, pas un contournement : cette
+     copie ne sert à rien.
 
      Le dossier du paquet doit rester à la racine, pas sous `ios/` : Xcode
      refuse un paquet local voisin du `.xcodeproj`, où vit déjà le paquet
