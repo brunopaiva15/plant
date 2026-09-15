@@ -46,6 +46,27 @@ def test_la_recette_est_serialisable():
     json.loads(json.dumps(train.recette(args())))
 
 
+def test_l_empreinte_distingue_deux_decoupages(tmp_path):
+    """Le cas qui a coûté l'intersection : le redécoupage a écrasé le
+    `splits.csv` de la v8, et rien ne disait que ce n'était plus le même."""
+    a, b = tmp_path / 'a', tmp_path / 'b'
+    a.mkdir(); b.mkdir()
+    (a / 'splits.csv').write_text('path,species,split\nx.jpg,rosa-canina,test\n')
+    (b / 'splits.csv').write_text('path,species,split\nx.jpg,rosa-canina,train\n')
+    assert train.empreinte_decoupage(a) != train.empreinte_decoupage(b)
+
+
+def test_l_empreinte_est_stable(tmp_path):
+    (tmp_path / 'splits.csv').write_text('path,species,split\nx.jpg,rosa-canina,test\n')
+    assert train.empreinte_decoupage(tmp_path) == train.empreinte_decoupage(tmp_path)
+
+
+def test_l_empreinte_absente_ne_leve_pas(tmp_path):
+    """Un jeu sans `splits.csv` n'existe pas en pratique, mais l'export ne
+    doit pas mourir après treize heures de GPU pour un fichier manquant."""
+    assert train.empreinte_decoupage(tmp_path) is None
+
+
 def test_la_precision_mixte_est_un_booleen():
     """`args.mixed_precision` vient de `store_true` ; on ne veut pas d'un
     `None` qui se relirait comme « non » sans qu'on sache si c'est mesuré."""

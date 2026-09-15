@@ -520,6 +520,31 @@ def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     }
 
 
+def empreinte_decoupage(dataset: Path) -> str | None:
+    """L'empreinte du `splits.csv` qui a servi, ou None s'il manque.
+
+    Un `model.json` dit sur combien d'images le modèle a été mesuré, jamais
+    lesquelles. Quand le jeu est redécoupé, l'ancien `splits.csv` est écrasé
+    et le test de la version précédente devient irretrouvable : impossible
+    de refaire passer les deux modèles sur des images qu'aucun des deux n'a
+    vues. C'est arrivé entre la v8 et la v9.
+
+    Le fichier entier pèse des dizaines de méga-octets et `--out` pointe par
+    défaut sur `assets/model`, qui part dans l'application : on n'y copie pas
+    le découpage, on en garde l'empreinte. Elle ne reconstruit rien, mais
+    elle répond à la seule question qui bloquait — deux runs ont-ils vu le
+    même découpage — sans peser un octet de plus dans le paquet livré.
+    """
+    p = dataset / 'splits.csv'
+    if not p.exists():
+        return None
+    h = hashlib.sha256()
+    with open(p, 'rb') as f:
+        for bloc in iter(lambda: f.read(1 << 20), b''):
+            h.update(bloc)
+    return h.hexdigest()
+
+
 def recette(args) -> dict:
     """La recette d'entraînement, telle qu'elle sera écrite dans `model.json`.
 
@@ -531,6 +556,7 @@ def recette(args) -> dict:
     """
     return {
         'dataset': str(args.dataset),
+        'splits_sha256': empreinte_decoupage(Path(args.dataset)),
         'backbone': args.backbone,
         'batch': args.batch,
         'head_epochs': args.head_epochs,
