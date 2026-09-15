@@ -126,6 +126,7 @@ void main() {
     expect(tester.getSize(find.byType(SupportPitch)).height, lessThan(full));
     expect(find.text(l10n.supportPerkFeatures), findsNothing);
     expect(find.text(l10n.supportNoThanks), findsOneWidget);
+    expect(find.text(l10n.supportRestore), findsNothing, reason: 'deux boutons fantômes verts empilés, on ne sait plus lequel est la sortie');
     expect(find.text('CHF 5.00'), findsOneWidget, reason: 'la proposition, elle, reste entière');
   });
 }

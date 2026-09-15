@@ -110,7 +110,7 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
       error: (_, _) => _Unavailable(message: l10n.supportUnavailable),
       data: (offer) => offer == null
           ? _Unavailable(message: l10n.supportUnavailable)
-          : _GiveCard(price: offer.price, busy: _busy, onGive: _give, onRestore: _busy ? null : _restore),
+          : _GiveCard(price: offer.price, busy: _busy, onGive: _give, onRestore: _restore, showRestore: !widget.compact),
     );
   }
 
@@ -232,7 +232,7 @@ class _SupportHero extends StatelessWidget {
                 // arrive ici. Depuis les réglages, sur un lancement neuf, elle
                 // pousse une fois.
                 GrowingPlant(side: side),
-                if (supported) Positioned(right: 0, bottom: halo * 0.14, child: const _Seal()),
+                if (supported) Positioned(right: halo * 0.08, bottom: halo * 0.12, child: const _Seal()),
               ],
             ),
           ),
@@ -396,12 +396,18 @@ class _Perk extends StatelessWidget {
 /// La carte est en terre cuite, la couleur de ce qui compte dans
 /// l'application, et le bouton reste vert, celui de l'action.
 class _GiveCard extends StatelessWidget {
-  const _GiveCard({required this.price, required this.busy, required this.onGive, required this.onRestore});
+  const _GiveCard({required this.price, required this.busy, required this.onGive, required this.onRestore, required this.showRestore});
 
   final String price;
   final bool busy;
   final VoidCallback onGive;
-  final VoidCallback? onRestore;
+  final VoidCallback onRestore;
+
+  /// La restauration est-elle proposée ici ? Dans l'onboarding, non : elle
+  /// ferait un second bouton fantôme vert juste au-dessus de « Continuer
+  /// sans », et l'œil ne saurait plus lequel est la sortie. Elle attend dans
+  /// *Profil › Soutenir le développeur*, à un geste de là.
+  final bool showRestore;
 
   @override
   Widget build(BuildContext context) {
@@ -439,14 +445,16 @@ class _GiveCard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: Space.xxs),
-        FloraButton(
-          label: l10n.supportRestore,
-          style: FloraButtonStyle.ghost,
-          size: FloraButtonSize.small,
-          expand: true,
-          onPressed: onRestore,
-        ),
+        if (showRestore) ...[
+          const SizedBox(height: Space.xxs),
+          FloraButton(
+            label: l10n.supportRestore,
+            style: FloraButtonStyle.ghost,
+            size: FloraButtonSize.small,
+            expand: true,
+            onPressed: busy ? null : onRestore,
+          ),
+        ],
       ],
     );
   }

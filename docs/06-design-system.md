@@ -469,9 +469,12 @@ l'ordre des blocs : on montre ce qui est donné avant de demander.
   C'est le seul endroit où la page récompense quelque chose, puisqu'aucune
   fonction ne le fait.
 - **Dans l'onboarding**, `SupportPitch` se rend en version courte
-  (`compact`) : scène plus petite, pas de relevé. La page y partage la
-  hauteur avec les points de progression, et « Continuer sans » doit rester
-  sous les yeux de qui vient d'installer l'application.
+  (`compact`) : scène plus petite, pas de relevé, et pas de « Restaurer mon
+  soutien » — deux boutons fantômes verts l'un au-dessus de l'autre, et
+  l'œil ne sait plus lequel est la sortie ; la restauration attend dans
+  *Profil › Soutenir le développeur*. La page y partage la hauteur avec les
+  points de progression, et « Continuer sans » doit rester sous les yeux de
+  qui vient d'installer l'application.
 - Les blocs se posent l'un après l'autre (`Appear`), et à partir de 150 % de
   Dynamic Type le relevé repasse sur une colonne.
   `test/features/support_screen_test.dart` tient l'ordre des blocs, le
