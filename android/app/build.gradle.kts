@@ -4,14 +4,19 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Google Home : le SDK des Home APIs ne se prend ni sur Maven Central ni
-// sur le dépôt Google. Il se télécharge depuis la console Google Home pour
-// un projet déclaré, puis s'installe dans le dépôt Maven local ; la
-// construction s'en sert alors avec `-PgoogleHome=true`. Sans lui — la
-// construction par défaut — c'est la version muette du canal qui se compile,
-// et l'application se construit comme avant. Voir
+// Google Home : le SDK des Home APIs ne se prend ni sur Maven Central ni sur
+// le dépôt Google. Il se télécharge depuis la console Google Home pour un
+// projet déclaré, sous la forme d'une archive qui est déjà un dépôt Maven
+// (`com/google/android/gms/play-services-home/...`). Il suffit donc de
+// dézipper et de donner le chemin :
+//
+//     flutter build apk -PgoogleHomeRepo=C:/sdk/home.android.sdk_1_10_1
+//
+// Sans ce chemin — la construction par défaut — c'est la version muette du
+// canal qui se compile, et l'application se construit comme avant. Voir
 // `docs/05-technical-architecture.md`, section « Google Home ».
-val googleHome = (project.findProperty("googleHome") as String?).toBoolean()
+val googleHomeRepo = project.findProperty("googleHomeRepo") as String?
+val googleHome = !googleHomeRepo.isNullOrBlank()
 
 android {
     namespace = "ch.vergasta.plant"
@@ -65,10 +70,11 @@ flutter {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     if (googleHome) {
-        // Installés à la main dans `~/.m2/repository` depuis l'archive de la
-        // console Google Home : le cadre, puis les types et les traits.
-        implementation("com.google.android.gms:play-services-home:17.0.0")
-        implementation("com.google.android.gms:play-services-home-types:17.0.0")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+        // Le cadre, puis les types et les traits. Les deux sont dans
+        // l'archive ; leurs dépendances transitives — dont
+        // `kotlinx-coroutines`, que le canal utilise — viennent de `google()`
+        // et de `mavenCentral()`, déjà déclarés.
+        implementation("com.google.android.gms:play-services-home:17.1.0")
+        implementation("com.google.android.gms:play-services-home-types:17.1.0")
     }
 }

@@ -21,9 +21,10 @@ import Flutter
 /// App Attest, groupe d'applications — est dans
 /// `docs/05-technical-architecture.md`, section « Google Home ».
 ///
-/// Les appels au SDK suivent la documentation des Home APIs ; faute de SDK
-/// ici, ils n'ont pas été compilés, et se vérifient à la première
-/// construction avec lui.
+/// Les appels au SDK sont écrits contre l'interface publique du SDK 1.10.1
+/// (`GoogleHomeSDK.xcframework`, `GoogleHomeTypes.xcframework`) ; ils n'ont
+/// pas encore été compilés, faute de Mac. Le SDK demande iOS 17, d'où la
+/// disponibilité posée sur toute l'extension.
 final class GoogleHomeChannel {
   static let name = "ch.vergasta.plant/google_home_climate"
 
@@ -32,15 +33,26 @@ final class GoogleHomeChannel {
   private static var shared: GoogleHomeChannel?
 
   #if canImport(GoogleHomeSDK)
-    /// La session ouverte, et le consentement refusé — un refus n'est pas
-    /// une question jamais posée, et l'écran ne dit pas la même chose.
-    fileprivate static var session: Home?
+    /// La session ouverte, le consentement refusé — un refus n'est pas une
+    /// question jamais posée, et l'écran ne dit pas la même chose —, et la
+    /// configuration, qui ne se pose qu'une fois.
+    @available(iOS 17.0, *)
+    fileprivate static var session: Home? {
+      get { _session as? Home }
+      set { _session = newValue }
+    }
+    private static var _session: AnyObject?
     fileprivate static var refused = false
     fileprivate static var configured = false
   #endif
 
   static func register(with messenger: FlutterBinaryMessenger) {
     #if canImport(GoogleHomeSDK)
+      guard #available(iOS 17.0, *) else {
+        // Le SDK est là mais le système est trop vieux : même réponse que
+        // s'il n'y était pas.
+        return
+      }
       let instance = GoogleHomeChannel()
       shared = instance
       let channel = FlutterMethodChannel(name: name, binaryMessenger: messenger)
@@ -55,6 +67,7 @@ final class GoogleHomeChannel {
 
 #if canImport(GoogleHomeSDK)
 
+  @available(iOS 17.0, *)
   extension GoogleHomeChannel {
     /// Le projet déclaré dans la console Google Home, lu dans `Info.plist` :
     /// rien de tout cela n'est un secret, mais rien de tout cela n'a sa
@@ -78,15 +91,15 @@ final class GoogleHomeChannel {
     fileprivate func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       switch call.method {
       case "access":
-        Task { result(await self.accessName()) }
+        Task { @MainActor in result(await self.accessName()) }
       case "sensors":
-        Task { result(await self.sensors()) }
+        Task { @MainActor in result(await self.sensors()) }
       case "read":
         guard let args = call.arguments as? [String: Any], let id = args["id"] as? String, !id.isEmpty else {
           result(FlutterError(code: "bad_args", message: "sensor id missing", details: nil))
           return
         }
-        Task { result(await self.read(id: id)) }
+        Task { @MainActor in result(await self.read(id: id)) }
       default:
         result(FlutterMethodNotImplemented)
       }
@@ -100,6 +113,7 @@ final class GoogleHomeChannel {
     /// fenêtre de consentement, et seule la liste des appareils la
     /// déclenche — lire une mesure ne doit pas la poser sous les yeux de qui
     /// consulte une fiche de plante.
+    @MainActor
     private func home(prompting: Bool) async -> Home? {
       if let open = Self.session { return open }
       guard let project = Project() else { return nil }
@@ -126,6 +140,7 @@ final class GoogleHomeChannel {
       }
     }
 
+    @MainActor
     private func accessName() async -> String {
       guard Project() != nil else { return "unavailable" }
       if await home(prompting: false) != nil { return "authorized" }
@@ -136,77 +151,75 @@ final class GoogleHomeChannel {
 
     /// Les appareils qui mesurent la température ou l'humidité de l'air,
     /// avec leur pièce et leur maison.
+    ///
+    /// Les appareils, les pièces et les maisons se demandent à plat, puis se
+    /// recollent par identifiant : un appareil porte la pièce où il est
+    /// rangé, et la pièce porte son nom.
+    @MainActor
     private func sensors() async -> [[String: Any]] {
       guard let home = await home(prompting: true) else { return [] }
-      var out: [[String: Any]] = []
       do {
-        for structure in try await home.structures().list() {
-          // La pièce vient de la pièce elle-même : c'est elle qui connaît
-          // ses appareils, et le nom qu'elle porte chez la personne.
-          var roomNames: [String: String] = [:]
-          for room in try await structure.rooms().list() {
-            for device in try await room.devices().list() {
-              roomNames[device.id.id] = room.name
-            }
-          }
-          for device in try await structure.devices().list() {
-            let (temperature, humidity) = await measures(of: device)
-            if temperature == nil && humidity == nil { continue }
-            var item: [String: Any] = [
-              "id": device.id.id,
-              "name": device.name,
-              "home": structure.name,
-              "temperature": temperature != nil,
-              "humidity": humidity != nil,
-            ]
-            if let room = roomNames[device.id.id], !room.isEmpty { item["room"] = room }
-            out.append(item)
-          }
+        let devices = try await home.devices().list()
+        let rooms = try await home.rooms().list()
+        let structures = try await home.structures().list()
+        // `uniquingKeysWith` plutôt que `uniqueKeysWithValues` : deux
+        // identifiants identiques feraient tomber l'application, et un nom
+        // de pièce ne vaut pas ça.
+        let roomNames = Dictionary(rooms.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first })
+        let structureNames = Dictionary(structures.map { ($0.id, $0.name) }, uniquingKeysWith: { first, _ in first })
+        var out: [[String: Any]] = []
+        for device in devices {
+          let (temperature, humidity) = await measures(of: device)
+          if temperature == nil && humidity == nil { continue }
+          var item: [String: Any] = [
+            "id": device.id,
+            "name": device.name,
+            "temperature": temperature != nil,
+            "humidity": humidity != nil,
+          ]
+          if let id = device.roomID, let room = roomNames[id], !room.isEmpty { item["room"] = room }
+          if let id = device.structureID, let structure = structureNames[id], !structure.isEmpty { item["home"] = structure }
+          out.append(item)
         }
-      } catch {
         return out
+      } catch {
+        return []
       }
-      return out
     }
 
+    @MainActor
     private func device(id: String, in home: Home) async -> HomeDevice? {
-      guard let structures = try? await home.structures().list() else { return nil }
-      for structure in structures {
-        guard let devices = try? await structure.devices().list() else { continue }
-        if let found = devices.first(where: { $0.id.id == id }) { return found }
-      }
-      return nil
+      guard let devices = try? await home.devices().list() else { return nil }
+      return devices.first { $0.id == id }
     }
 
-    /// Ce qu'un appareil mesure de l'air d'une pièce, par les types qui le
-    /// portent : le capteur de température, l'hygromètre, et le thermostat,
-    /// qui mesure la pièce où il est posé. Un type de plus s'ajoute ici.
-    private func measures(of device: HomeDevice) async -> (temperature: Double?, humidity: Double?) {
-      var temperature: Double?
-      var humidity: Double?
-      if let sensor = await device.types.get(Matter.TemperatureSensorDeviceType.self) {
-        temperature = number(sensor.matterTraits.temperatureMeasurementTrait?.attributes.measuredValue)
+    /// Ce qu'un appareil mesure de l'air d'une pièce, en centièmes d'unité
+    /// comme Matter les compte.
+    ///
+    /// Trois types portent ces deux grandeurs : le capteur de température et
+    /// l'hygromètre, chacun avec son trait de mesure, et le thermostat, dont
+    /// la température de la pièce est `localTemperature` — il n'a pas de
+    /// trait de mesure à lui. Un même appareil peut porter plusieurs de ces
+    /// types ; on prend la première valeur trouvée.
+    @MainActor
+    private func measures(of device: HomeDevice) async -> (temperature: Int16?, humidity: UInt16?) {
+      var temperature: Int16?
+      var humidity: UInt16?
+      if let sensor = await device.types.get(TemperatureSensorDeviceType.self) {
+        temperature = sensor.matterTraits.temperatureMeasurementTrait?.attributes.measuredValue
       }
-      if let sensor = await device.types.get(Matter.HumiditySensorDeviceType.self) {
-        humidity = number(sensor.matterTraits.relativeHumidityMeasurementTrait?.attributes.measuredValue)
+      if let sensor = await device.types.get(HumiditySensorDeviceType.self) {
+        humidity = sensor.matterTraits.relativeHumidityMeasurementTrait?.attributes.measuredValue
       }
-      if let thermostat = await device.types.get(Matter.ThermostatDeviceType.self) {
-        temperature = temperature ?? number(thermostat.matterTraits.temperatureMeasurementTrait?.attributes.measuredValue)
-        humidity = humidity ?? number(thermostat.matterTraits.relativeHumidityMeasurementTrait?.attributes.measuredValue)
+      if temperature == nil, let thermostat = await device.types.get(ThermostatDeviceType.self) {
+        temperature = thermostat.matterTraits.thermostatTrait?.attributes.localTemperature
       }
       return (temperature, humidity)
     }
 
-    private func number(_ value: Any?) -> Double? {
-      if let n = value as? NSNumber { return n.doubleValue }
-      if let d = value as? Double { return d }
-      if let i = value as? Int { return Double(i) }
-      if let f = value as? Float { return Double(f) }
-      return nil
-    }
-
     // MARK: - Mesure
 
+    @MainActor
     private func read(id: String) async -> [String: Any] {
       var out: [String: Any] = ["at": Int(Date().timeIntervalSince1970 * 1000)]
       guard let home = await home(prompting: false) else {
@@ -217,20 +230,36 @@ final class GoogleHomeChannel {
         out["error"] = "unknown device"
         return out
       }
-      let (temperature, humidity) = await measures(of: device)
-      if let t = temperature { out["temperature"] = Self.celsius(t) }
-      if let h = humidity { out["humidity"] = Self.percent(h) }
+      var (temperature, humidity) = await measures(of: device)
+      // Rien en cache : on redemande à l'appareil, une fois, et on relit.
+      // Un capteur sur pile peut n'avoir rien publié depuis le démarrage.
+      if temperature == nil && humidity == nil {
+        await forceRead(device)
+        if let again = await self.device(id: id, in: home) {
+          (temperature, humidity) = await measures(of: again)
+        }
+      }
+      // Matter compte en centièmes de degré et de pour cent.
+      if let t = temperature { out["temperature"] = Double(t) / 100 }
+      if let h = humidity { out["humidity"] = Double(h) / 100 }
       if temperature == nil && humidity == nil { out["error"] = "no measurement" }
       return out
     }
 
-    /// Matter compte en centièmes de degré ; selon sa version, le SDK rend
-    /// déjà des degrés. Une pièce ne dépasse pas cent degrés : au-delà, la
-    /// valeur est en centièmes, et se divise par cent.
-    fileprivate static func celsius(_ raw: Double) -> Double { abs(raw) > 100 ? raw / 100 : raw }
-
-    /// Même règle pour l'humidité relative, comptée en centièmes de pour cent.
-    fileprivate static func percent(_ raw: Double) -> Double { raw > 100 ? raw / 100 : raw }
+    /// Redemande ses valeurs à l'appareil. Un échec n'est pas une panne : la
+    /// lecture suivante rendra ce qu'elle a, et l'écran dira le tiret.
+    @MainActor
+    private func forceRead(_ device: HomeDevice) async {
+      if let sensor = await device.types.get(TemperatureSensorDeviceType.self) {
+        try? await sensor.matterTraits.temperatureMeasurementTrait?.forceRead()
+      }
+      if let sensor = await device.types.get(HumiditySensorDeviceType.self) {
+        try? await sensor.matterTraits.relativeHumidityMeasurementTrait?.forceRead()
+      }
+      if let thermostat = await device.types.get(ThermostatDeviceType.self) {
+        try? await thermostat.matterTraits.thermostatTrait?.forceRead()
+      }
+    }
   }
 
 #endif
