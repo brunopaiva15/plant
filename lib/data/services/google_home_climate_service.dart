@@ -31,8 +31,13 @@ class GoogleHomeClimateService extends ChannelHomeClimateService {
   @override
   HomeSource get source => HomeSource.google;
 
-  /// iPhone, iPad et Android : Google Home existe des deux côtés. Le web,
-  /// non — et le drapeau tranche tant que le SDK n'est pas livré.
+  /// Les plateformes où Google Home existe : iPhone, iPad et Android. Le
+  /// web, non. C'est la question posée par la ligne « Bientôt » de l'écran
+  /// des capteurs, qui n'a rien à annoncer ailleurs.
+  static bool get isPossible => !kIsWeb && (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android);
+
+  /// La plateforme, et le drapeau, qui tranche tant que le SDK n'est pas
+  /// livré.
   @override
-  bool get isSupported => _enabled && !kIsWeb && (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android);
+  bool get isSupported => _enabled && isPossible;
 }

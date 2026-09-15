@@ -22,6 +22,7 @@
   "seeAll": "Tout voir",
   "optional": "facultatif",
   "none": "Aucun",
+  "soon": "Bientôt",
   "genericError": "Une erreur est survenue. Réessayez.",
   "offlineTitle": "Hors ligne",
   "offlineHint": "Cette fonction demande une connexion. Les données déjà sur l'appareil restent lisibles.",

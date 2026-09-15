@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/services/google_home_climate_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/home/home_climate.dart';
 import '../application/home_climate_providers.dart';
@@ -149,6 +151,11 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     // La plateforme ne se dit sous un capteur que si l'appareil en lit deux :
     // sur Android, « Google Home » sous chaque ligne n'apprend rien.
     final named = sources.length > 1;
+    // Google Home est écrit et lit de vrais capteurs, mais les Home APIs
+    // plafonnent à cent comptes tant que leur console n'ouvre pas ses
+    // inscriptions (voir [AppConfig.googleHomeSoon]). La ligne l'annonce,
+    // tant qu'aucun capteur Google n'est lisible ici.
+    final soon = AppConfig.googleHomeSoon && GoogleHomeClimateService.isPossible && !sources.contains(HomeSource.google);
     // Ce que le capteur de température sait mesurer, d'après la liste
     // fraîche quand on l'a, sinon d'après la préférence.
     final live = sensor == null ? null : _sensors.where((s) => s.key == sensor.key).firstOrNull ?? sensor;
@@ -261,6 +268,22 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                     onPressed: () => _search([source]),
                   ),
                 ),
+          ],
+          // Une maison qu'on ne peut pas encore brancher : son nom, une
+          // étiquette, et rien à toucher. Elle dit ce qui vient, elle ne
+          // promet pas de date.
+          if (soon) ...[
+            const SizedBox(height: Space.lg),
+            FloraGroup(
+              children: [
+                FloraListRow(
+                  leading: const Text('🏠', style: TextStyle(fontSize: 18)),
+                  title: l10n.homeClimateGoogle,
+                  trailing: FloraTag(label: l10n.soon),
+                  chevron: false,
+                ),
+              ],
+            ),
           ],
         ],
       ),

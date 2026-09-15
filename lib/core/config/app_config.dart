@@ -52,20 +52,26 @@ abstract final class AppConfig {
   /// iPhone comme sur Android.
   ///
   /// Le code est écrit et vérifié des deux côtés — le Kotlin compile contre
-  /// le SDK réel, le Swift est écrit contre son interface publique —, mais le
-  /// drapeau reste faux, parce qu'il ne suffit pas. À la différence de
-  /// HomeKit, les Home APIs ne sont pas dans le système, et leur SDK ne se
-  /// prend ni sur Maven ni sur SwiftPM : il se télécharge depuis la console
-  /// Google Home pour un projet déclaré, avec son client OAuth, puis se
-  /// donne à la construction — `-PgoogleHomeRepo=<dossier>` côté Android, un
-  /// paquet local ajouté au projet Xcode côté iOS, qui demande iOS 17 là où
-  /// l'application est à 15/16.
+  /// le SDK réel, le Swift lit de vrais capteurs sur un iPhone —, et le
+  /// drapeau est pourtant faux. Les Home APIs plafonnent à cent comptes
+  /// tant que le projet n'est pas enregistré dans la console Google Home, et
+  /// cette console n'ouvre pas encore ses inscriptions. Cent comptes, c'est
+  /// un bouton qui marche pour les premiers et échoue pour les suivants.
   ///
-  /// Le passer à vrai sans cela montre un bouton « Connecter Google Home »
-  /// qui répondra toujours « aucun capteur ». Utile pour éprouver l'écran,
-  /// jamais pour livrer. La marche à suivre est dans
+  /// Le passer à vrai demande aussi le SDK à la construction : il ne se
+  /// prend ni sur Maven ni sur SwiftPM, mais se télécharge pour un projet
+  /// déclaré, puis se donne à la construction — `-PgoogleHomeRepo=<dossier>`
+  /// côté Android, un paquet local ajouté au projet Xcode côté iOS, qui
+  /// demande iOS 17. Sans lui, le bouton « Connecter Google Home » répondra
+  /// toujours « aucun capteur ». La marche à suivre est dans
   /// `docs/05-technical-architecture.md`, section « Google Home ».
-  static const bool googleHomeEnabled = true;
+  static const bool googleHomeEnabled = false;
+
+  /// La ligne « Google Home · Bientôt » de Profil › Capteurs de la maison.
+  /// Elle dit une intégration écrite mais pas ouverte, et ne sert donc que
+  /// tant que [googleHomeEnabled] est faux : Google Home branché, Google
+  /// Home devient une maison comme une autre, avec son bouton.
+  static const bool googleHomeSoon = true;
 
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.

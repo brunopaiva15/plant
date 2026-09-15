@@ -76,6 +76,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get none => 'Aucun';
 
   @override
+  String get soon => 'Bientôt';
+
+  @override
   String get genericError => 'Une erreur est survenue. Réessayez.';
 
   @override

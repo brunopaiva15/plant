@@ -19,7 +19,7 @@
 | Complément de fiche | AI Services d'Infomaniak (`CareCompleter`) | seulement quand le catalogue n'a que des repères généraux ; nom scientifique seul, réponse gardée sur l'appareil |
 | Météo | Open-Meteo (`WeatherService`) : prévisions et jours passés en un appel, archives sur trois ans pour le climat du lieu | gratuit, sans compte |
 | Climat de la maison | HomeKit, par un canal natif (`HomeClimateService` → `ios/Runner/HomeClimateChannel.swift`) | iPhone et iPad seulement ; lecture de deux caractéristiques, rien d'écrit, rien ne sort de l'appareil |
-| Climat de la maison (Google Home) | Home APIs, par un canal natif (`GoogleHomeClimateService` → `ios/Runner/GoogleHomeChannel.swift`, `android/app/src/googleHome/kotlin/.../GoogleHomeChannel.kt`) | iPhone, iPad et Android ; SDK à télécharger et projet à déclarer, d'où `AppConfig.googleHomeEnabled` — lecture de deux traits, rien d'écrit |
+| Climat de la maison (Google Home) | Home APIs, par un canal natif (`GoogleHomeClimateService` → `ios/Runner/GoogleHomeChannel.swift`, `android/app/src/googleHome/kotlin/.../GoogleHomeChannel.kt`) | iPhone, iPad et Android ; lecture de deux traits, rien d'écrit. Vérifié sur un iPhone, pas ouvert : les Home APIs plafonnent à cent comptes (`AppConfig.googleHomeEnabled`) |
 | Widgets, raccourcis, haptiques | WidgetKit, `UIApplicationShortcutItem`, Core Haptics, par trois canaux natifs (`ios/Runner/TodayWidgetChannel.swift`, `QuickActionsChannel.swift`, `HapticsChannel.swift`) | iPhone et iPad seulement ; muets ailleurs, sans plugin |
 
 ## Couches
@@ -228,7 +228,9 @@ Maison, par HomeKit, et Google Home, par les Home APIs.
   `read(String)`, et `HomeSensor.key` (`google:N1`) pour reconnaître un
   capteur d'un écran à l'autre. Une maison muette ici — Apple Maison sur
   Android, Google Home sans son SDK — est écartée à la construction, et
-  n'apparaît ni à l'onboarding ni dans les réglages.
+  n'apparaît ni à l'onboarding ni dans les réglages. Google Home, écrite
+  mais pas ouverte, y garde pourtant sa ligne : son nom, l'étiquette
+  « Bientôt » (`FloraTag`) et rien à toucher — voir « Google Home » plus bas.
 - Le choix se fait dans une feuille (`showHomeSensorPicker`) : la plateforme
   d'abord quand l'appareil lit les deux, puis la maison quand la plateforme
   en a plusieurs, puis les accessoires de cette maison pièce par pièce, avec
@@ -285,10 +287,29 @@ Maison, par HomeKit, et Google Home, par les Home APIs.
 
 ### Google Home
 Les mêmes deux nombres, lus sur les Home APIs, sur iPhone comme sur Android.
-La partie Dart est écrite et éprouvée ; le Kotlin compile contre le SDK
-réel, le Swift est écrit contre son interface publique mais n'a pas encore
-été compilé. Le drapeau, lui, ne gouverne que l'affichage : le SDK reste à
-donner à la construction, et voici pourquoi.
+Tout est écrit et vérifié : le Kotlin compile contre le SDK réel, et le
+Swift a lu de vrais capteurs sur un iPhone, avec le client OAuth d'un projet
+déclaré.
+
+`AppConfig.googleHomeEnabled` est pourtant faux, et pour une raison qui ne
+se règle pas dans ce dépôt : les Home APIs plafonnent à **cent comptes**
+tant que le projet n'est pas enregistré dans la console développeur Google
+Home, et cette console n'accepte pas encore d'inscription. Cent comptes,
+c'est un bouton qui marche pour les premiers et échoue pour les suivants —
+pire qu'un bouton absent. Profil › Capteurs de la maison garde donc la ligne
+« Google Home · Bientôt », une étiquette sans rien à toucher
+(`AppConfig.googleHomeSoon`) : le jour où le plafond tombe,
+`googleHomeEnabled` à vrai la remplace par le bouton, et `googleHomeSoon`
+n'a plus d'effet. Publier le client OAuth en production, au passage, retire
+l'avertissement « application non vérifiée » — aucun scope n'est demandé, la
+vérification n'a rien à examiner — mais ne touche pas au plafond.
+
+Le paquet local reste référencé par `ios/Runner.xcodeproj` même le drapeau
+baissé : le SDK est donc toujours nécessaire à la construction iOS
+(`tool/ios/google_home_sdk.sh`, appelé par le *Post-clone script* de
+Codemagic), et la cible de déploiement reste à iOS 17. C'est le prix de
+pouvoir rouvrir la maison en une ligne ; retirer le paquet ramènerait iOS
+15, et l'ajouter dans Xcode serait à refaire.
 
 À la différence de HomeKit, les Home APIs ne sont pas dans le système. Leur
 SDK ne se prend ni sur Maven Central, ni sur le dépôt Google, ni sur un
@@ -364,9 +385,10 @@ Pour la livrer :
    commentaire à côté de `NSHomeKitUsageDescription`, avec le groupe déjà
    rempli) ; sans elles, le canal répond « pas de maison ici » plutôt que
    d'ouvrir une session à moitié configurée.
-4. Passer `AppConfig.googleHomeEnabled` à vrai, et en dernier : le faire
-   sans le SDK montre un bouton « Connecter Google Home » qui répondra
-   toujours « aucun capteur ».
+4. Passer `AppConfig.googleHomeEnabled` à vrai, et en dernier : sans le
+   SDK, le bouton « Connecter Google Home » répondra toujours « aucun
+   capteur » ; sans l'enregistrement de la console développeur, il lâchera
+   au cent unième compte.
 
 Ce que le canal lit : les appareils, les pièces et les maisons à plat, puis
 recollés par identifiant (`HomeDevice.roomID`, `structureID`). Trois types

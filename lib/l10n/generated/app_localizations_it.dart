@@ -76,6 +76,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get none => 'Nessuno';
 
   @override
+  String get soon => 'In arrivo';
+
+  @override
   String get genericError => 'Si è verificato un errore. Riprova.';
 
   @override

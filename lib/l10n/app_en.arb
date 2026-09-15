@@ -22,6 +22,7 @@
   "seeAll": "See all",
   "optional": "optional",
   "none": "None",
+  "soon": "Soon",
   "genericError": "An error occurred. Try again.",
   "offlineTitle": "Offline",
   "offlineHint": "This needs a connection. Data already on the device stays readable.",

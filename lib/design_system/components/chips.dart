@@ -228,3 +228,28 @@ class FloraPill extends StatelessWidget {
     );
   }
 }
+
+/// Étiquette immobile posée au bout d'une ligne : un mot sur son état, quand
+/// ce mot n'est pas une valeur — « Bientôt » sur une intégration écrite mais
+/// pas encore ouverte. Elle ne se touche pas ; le texte porte l'information,
+/// la couleur ne fait que la poser.
+class FloraTag extends StatelessWidget {
+  const FloraTag({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: c.surfaceMuted, borderRadius: Radii.fullAll),
+      child: Text(
+        label,
+        style: context.text.caption.copyWith(color: c.inkSecondary, fontWeight: FontWeight.w600),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}

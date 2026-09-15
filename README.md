@@ -51,11 +51,12 @@ gardée.
 
 Apple Maison est livré : sur iPhone et iPad, lecture sur l'appareil par
 HomeKit (`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur
-l'App ID). Google Home est codé, iOS et Android, mais pas livré
-(`AppConfig.googleHomeEnabled`) : son SDK ne se prend sur aucun dépôt
-public, il se télécharge depuis la console Google Home pour un projet
-déclaré. Sans aucune maison lisible, l'étape et le réglage n'apparaissent
-pas. Détails : docs/05.
+l'App ID). Google Home est codé des deux côtés et vérifié sur un iPhone,
+mais pas ouvert (`AppConfig.googleHomeEnabled`) : les Home APIs plafonnent à
+cent comptes tant que la console développeur Google Home n'accepte pas
+d'inscription. Profil › Capteurs de la maison garde la ligne
+« Google Home · Bientôt ». Sans aucune maison lisible, l'étape et le réglage
+n'apparaissent pas. Détails : docs/05.
 
 ## Sur l'écran d'accueil d'iOS
 Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,

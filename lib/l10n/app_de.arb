@@ -22,6 +22,7 @@
   "seeAll": "Alle anzeigen",
   "optional": "optional",
   "none": "Keine",
+  "soon": "Bald",
   "genericError": "Ein Fehler ist aufgetreten. Erneut versuchen.",
   "offlineTitle": "Offline",
   "offlineHint": "Dafür ist eine Verbindung nötig. Bereits auf dem Gerät gespeicherte Daten bleiben lesbar.",

@@ -234,6 +234,12 @@ abstract class AppLocalizations {
   /// **'Aucun'**
   String get none;
 
+  /// No description provided for @soon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bientôt'**
+  String get soon;
+
   /// No description provided for @genericError.
   ///
   /// In fr, this message translates to:

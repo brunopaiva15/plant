@@ -76,6 +76,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get none => 'Keine';
 
   @override
+  String get soon => 'Bald';
+
+  @override
   String get genericError => 'Ein Fehler ist aufgetreten. Erneut versuchen.';
 
   @override
