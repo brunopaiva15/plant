@@ -15,6 +15,9 @@ void main() {
     final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
     final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toList();
     final modelNames = modelSpecies.map((e) => e.toLowerCase()).toSet();
+    final modelAccepted = modelSpecies
+        .map((e) => acceptedSpeciesName(normalizeScientificName(e)).toLowerCase())
+        .toSet();
     final index = SpeciesIndex.parse(File('assets/species/catalog.tsv').readAsStringSync());
 
     final irisOnly = IrisDetailedCatalog.from(modelSpecies: modelSpecies, index: index);
@@ -25,18 +28,19 @@ void main() {
     );
 
     final names = encyclopedia.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    final accepted = encyclopedia.entries
+    final extras = encyclopedia.entries.where((e) => !modelNames.contains(e.scientificName.toLowerCase())).toList();
+    final extraAccepted = extras
         .map((e) => acceptedSpeciesName(normalizeScientificName(e.scientificName)).toLowerCase())
         .toList();
-    final extras = encyclopedia.entries.where((e) => !modelNames.contains(e.scientificName.toLowerCase())).toList();
 
     expect(modelJson['classes'], 1444);
     expect(irisOnly.entries, hasLength(1444));
     expect(encyclopedia.entries, hasLength(1900));
     expect(names.toSet().length, names.length, reason: 'noms scientifiques dupliqués');
-    expect(accepted.toSet().length, accepted.length, reason: 'synonymes rejoués comme espèces distinctes');
     expect(modelNames.difference(names.toSet()), isEmpty);
     expect(extras, hasLength(456));
+    expect(extraAccepted.toSet().length, extraAccepted.length, reason: 'synonymes rejoués parmi les fiches hors Iris');
+    expect(extraAccepted.where(modelAccepted.contains), isEmpty, reason: 'une fiche hors Iris rejoue une classe Iris sous un synonyme');
 
     for (final entry in extras) {
       expect(entry.family.trim(), isNotEmpty, reason: entry.scientificName);
