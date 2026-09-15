@@ -102,8 +102,20 @@ class SupabaseAuthRepository implements AuthRepository {
     } on sb.AuthException catch (e) {
       throw AuthException(e.message);
     }
+    // La session existe : la connexion a abouti. Le prénom qu'Apple ne donne
+    // qu'à la première autorisation vient en supplément, et son écriture part
+    // sur le réseau (`auth.updateUser`, puis la table `profiles`). Son échec
+    // ne dit rien de la connexion : le remonter ferait annoncer « Connexion
+    // impossible » à un appareil connecté, qui se retrouverait connecté au
+    // lancement suivant. Le nom local, lui, est déjà écrit.
     final given = credential.givenName;
-    if (given != null && given.isNotEmpty && (_prefs.displayName ?? '').isEmpty) await updateDisplayName(given);
+    if (given != null && given.isNotEmpty && (_prefs.displayName ?? '').isEmpty) {
+      try {
+        await updateDisplayName(given);
+      } catch (_) {
+        _emit();
+      }
+    }
   }
 
   @override

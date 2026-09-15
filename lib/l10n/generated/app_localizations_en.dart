@@ -1912,7 +1912,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncSyncing => 'Syncing…';
 
   @override
-  String get authError => 'Couldn\'t sign in. Check the address and try again.';
+  String get authError => 'Couldn\'t sign in. Try again in a moment.';
 
   @override
   String get appleUnavailable =>

@@ -674,7 +674,7 @@
     }
   },
   "syncSyncing": "Syncing…",
-  "authError": "Couldn't sign in. Check the address and try again.",
+  "authError": "Couldn't sign in. Try again in a moment.",
   "appleUnavailable": "Apple sign-in is available on iPhone and iPad.",
   "synchronization": "Sync",
   "@syncIdle": {

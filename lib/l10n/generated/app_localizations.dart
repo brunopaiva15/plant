@@ -3393,7 +3393,7 @@ abstract class AppLocalizations {
   /// No description provided for @authError.
   ///
   /// In fr, this message translates to:
-  /// **'Connexion impossible. Vérifiez l\'adresse et réessayez.'**
+  /// **'Connexion impossible. Réessayez dans un moment.'**
   String get authError;
 
   /// No description provided for @appleUnavailable.

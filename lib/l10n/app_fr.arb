@@ -933,7 +933,7 @@
     }
   },
   "syncSyncing": "Synchronisation…",
-  "authError": "Connexion impossible. Vérifiez l'adresse et réessayez.",
+  "authError": "Connexion impossible. Réessayez dans un moment.",
   "appleUnavailable": "Apple est disponible sur iPhone et iPad.",
   "synchronization": "Synchronisation",
   "membersTitle": "Membres",

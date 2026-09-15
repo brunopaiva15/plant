@@ -674,7 +674,7 @@
     }
   },
   "syncSyncing": "Synchronisiere…",
-  "authError": "Anmeldung nicht möglich. Prüfe die Adresse und versuche es erneut.",
+  "authError": "Anmeldung nicht möglich. Versuche es gleich noch einmal.",
   "appleUnavailable": "Apple-Anmeldung ist auf iPhone und iPad verfügbar.",
   "synchronization": "Synchronisierung",
   "@syncIdle": {

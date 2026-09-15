@@ -514,10 +514,27 @@ create policy "feedback delete" on storage.objects for delete using (bucket_id =
 
 -- ---------- Profils & invitations ----------
 -- Un profil par utilisateur, créé à l'inscription (nom d'affichage pour « Arrosée par Laura »).
+--
+-- Le déclencheur s'exécute dans la transaction qui insère la ligne
+-- `auth.users` : ce qu'il laisse échouer emporte la création du compte, et
+-- GoTrue répond « Database error saving new user ». Un nom d'affichage ne
+-- vaut pas un compte, donc rien ici ne remonte.
+--   - `display_name` est `not null` : le nom se replie jusqu'à la chaîne
+--     vide. Une connexion par Apple n'apporte pas de `display_name`, et son
+--     jeton d'identité ne porte pas toujours la revendication `email` —
+--     `split_part(null, '@', 1)` vaut null, que la colonne refusait.
+--   - Le reste est attrapé et ignoré : l'application réécrit ce profil juste
+--     après la connexion (`SupabaseAuthRepository.updateDisplayName`).
 create or replace function handle_new_user() returns trigger language plpgsql security definer as $$
 begin
-  insert into profiles(id, display_name) values (new.id, coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)))
+  insert into profiles(id, display_name) values (new.id, coalesce(
+      nullif(new.raw_user_meta_data->>'display_name', ''),
+      nullif(new.raw_user_meta_data->>'full_name', ''),
+      nullif(split_part(coalesce(new.email, ''), '@', 1), ''),
+      ''))
   on conflict (id) do nothing;
+  return new;
+exception when others then
   return new;
 end $$;
 drop trigger if exists trg_new_user on auth.users;

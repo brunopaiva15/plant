@@ -1918,7 +1918,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get authError =>
-      'Anmeldung nicht möglich. Prüfe die Adresse und versuche es erneut.';
+      'Anmeldung nicht möglich. Versuche es gleich noch einmal.';
 
   @override
   String get appleUnavailable =>

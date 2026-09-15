@@ -1916,8 +1916,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get syncSyncing => 'Sincronizzazione…';
 
   @override
-  String get authError =>
-      'Accesso non riuscito. Controlla l\'indirizzo e riprova.';
+  String get authError => 'Accesso non riuscito. Riprova tra un momento.';
 
   @override
   String get appleUnavailable =>
