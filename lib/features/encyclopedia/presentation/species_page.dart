@@ -58,14 +58,15 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
     // Le nom courant de la langue de l'application titre la page ; à défaut,
     // le nom scientifique, qui est de toute façon écrit juste dessous.
     final common = entry?.vernacularName(lang) ?? record?.vernacularName(lang);
+    final displayScientificName = capitalizeSpeciesDisplayName(scientificName);
 
     return FloraPage(
-      title: common ?? scientificName,
+      title: common ?? displayScientificName,
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
         header: _Header(
-          scientificName: scientificName,
+          scientificName: displayScientificName,
           family: family,
           category: entry?.category,
         ),
