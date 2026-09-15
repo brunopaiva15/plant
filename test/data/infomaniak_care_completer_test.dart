@@ -40,6 +40,7 @@ void main() {
         'light': 'brightIndirect',
         'humidity': 'high',
         'soil': 'draining',
+        'water': 'sensitive',
         'fertilizing_days': 45,
         'repot_every_months': 24,
         'min_temp_c': 10,
@@ -54,6 +55,7 @@ void main() {
       expect(c.wateringWinterDays, 21);
       expect(c.light, LightNeed.brightIndirect);
       expect(c.soil, SoilKind.draining);
+      expect(c.water, WaterTolerance.sensitive);
       expect(c.repotEveryMonths, 24);
       expect(c.propagation, [Propagation.stemCutting, Propagation.water]);
       expect(c.issues, [CommonIssue.overwatering]);
@@ -69,6 +71,7 @@ void main() {
       final body = _completion(jsonEncode({
         'light': 'plein cagnard',
         'soil': 'terreau',
+        'water': 'eau de source',
         'difficulty': 'moyen',
         'watering_summer_days': 0,
         'fertilizing_days': 3,
@@ -79,6 +82,7 @@ void main() {
       final c = InfomaniakCareCompleter.parseResponse(body);
       expect(c.light, isNull);
       expect(c.soil, isNull);
+      expect(c.water, isNull);
       expect(c.difficulty, isNull);
       expect(c.wateringSummerDays, isNull);
       expect(c.fertilizingDays, isNull);
@@ -115,6 +119,13 @@ void main() {
       expect(p.repotEveryMonths, 36);
     });
 
+    test('l\'eau du catalogue tient tant que l\'IA ne dit rien', () {
+      // Le profil générique suppose une plante qui boit l'eau du robinet ;
+      // c'est le trou que l'IA peut combler pour une espèce inconnue.
+      expect(const CareCompletion().applyTo(_generique).water, WaterTolerance.tolerant);
+      expect(const CareCompletion(water: WaterTolerance.strict).applyTo(_generique).water, WaterTolerance.strict);
+    });
+
     test('la toxicité ne vient jamais de l\'IA', () {
       const c = CareCompletion(light: LightNeed.fullSun);
       expect(c.applyTo(_generique).toxicity, Toxicity.unknown);
@@ -138,7 +149,7 @@ void main() {
 
   group('le cache', () {
     test('fait l\'aller-retour, y compris une réponse vide', () {
-      const c = CareCompletion(wateringSummerDays: 9, difficulty: CareDifficulty.demanding, issues: [CommonIssue.spiderMites]);
+      const c = CareCompletion(wateringSummerDays: 9, water: WaterTolerance.strict, difficulty: CareDifficulty.demanding, issues: [CommonIssue.spiderMites]);
       final entries = {
         CareCompletionStore.keyOf('Ficus lyrata', 'fr'): c,
         CareCompletionStore.keyOf('Inconnue quelconque', 'fr'): const CareCompletion(),
@@ -146,6 +157,7 @@ void main() {
       final relu = CareCompletionStore.decode(CareCompletionStore.encode(entries));
       expect(relu[CareCompletionStore.keyOf('ficus LYRATA', 'fr')]?.wateringSummerDays, 9);
       expect(relu[CareCompletionStore.keyOf('Ficus lyrata', 'fr')]?.issues, [CommonIssue.spiderMites]);
+      expect(relu[CareCompletionStore.keyOf('Ficus lyrata', 'fr')]?.water, WaterTolerance.strict);
       expect(relu[CareCompletionStore.keyOf('Inconnue quelconque', 'fr')]?.isEmpty, isTrue);
     });
 
@@ -167,6 +179,7 @@ void main() {
       final messages = body['messages'] as List;
       expect(messages.last['content'], 'Aechmea fasciata');
       expect(messages.first['content'], contains('toxicity'));
+      expect(messages.first['content'], contains('water: tolerant, sensitive, strict'), reason: 'vocabulaire fermé');
       expect(body['temperature'], 0.0);
       expect(jsonEncode(body), isNot(contains('Monstera')), reason: 'rien de la plante de l\'utilisateur');
     });
