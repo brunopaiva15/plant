@@ -40,15 +40,21 @@ iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
 (`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
 
-## Apple Maison (facultatif)
-Sur iPhone et iPad, un capteur de température ou d'humidité d'Apple Maison
-peut être branché à l'onboarding (après la ville) ou dans Profil › Apple
-Maison. Sa mesure ajuste les conseils des plantes d'intérieur (air sec,
-froid, chaleur) sur l'écran Aujourd'hui et dans les fiches d'entretien, et
-accompagne les photos d'un diagnostic. Lecture sur l'appareil par HomeKit
-(`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur l'App ID) ;
-rien n'est écrit dans la maison, rien n'est gardé. Sur Android, l'étape et le
-réglage n'apparaissent pas. Détails : docs/05.
+## Les capteurs de la maison (facultatif)
+Un capteur de température ou d'humidité de la maison peut être branché à
+l'onboarding (après la ville) ou dans Profil › Capteurs de la maison. Sa
+mesure ajuste les conseils des plantes d'intérieur (air sec, froid, chaleur)
+sur l'écran Aujourd'hui et dans les fiches d'entretien, et accompagne les
+photos d'un diagnostic. Rien n'est écrit dans la maison, aucune mesure n'est
+gardée.
+
+Apple Maison est livré : sur iPhone et iPad, lecture sur l'appareil par
+HomeKit (`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur
+l'App ID). Google Home est codé, iOS et Android, mais pas livré
+(`AppConfig.googleHomeEnabled`) : son SDK ne se prend sur aucun dépôt
+public, il se télécharge depuis la console Google Home pour un projet
+déclaré. Sans aucune maison lisible, l'étape et le réglage n'apparaissent
+pas. Détails : docs/05.
 
 ## Sur l'écran d'accueil d'iOS
 Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,

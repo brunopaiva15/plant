@@ -12,6 +12,13 @@ import '../../../domain/home/home_climate_advisor.dart';
 import '../../today/presentation/today_notice.dart';
 import '../application/home_climate_providers.dart';
 
+/// « Apple Maison », « Google Home » : la maison d'où vient un capteur, telle
+/// qu'elle s'appelle chez la personne.
+String homeSourceLabel(AppLocalizations l10n, HomeSource source) => switch (source) {
+      HomeSource.apple => l10n.homeClimateApple,
+      HomeSource.google => l10n.homeClimateGoogle,
+    };
+
 /// « 21° · 38 % » : la mesure, dans l'unité de l'utilisateur.
 String homeReadingLabel(HomeReading reading, {required bool metric}) {
   final parts = <String>[

@@ -1152,17 +1152,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Apple Home sensors give the room\'s temperature and humidity. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.';
+      'Apple Home and Google Home sensors give the room\'s temperature and humidity. Advice and diagnoses for indoor plants take them into account. The reading stays in the app.';
 
   @override
-  String get homeClimate => 'Apple Home';
+  String get homeClimate => 'Home sensors';
 
   @override
   String get homeClimateHint =>
-      'The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Read on the device, nothing is sent.';
+      'The temperature and humidity of a home sensor adjust the advice for indoor plants and complete diagnoses. The reading stays in the app.';
 
   @override
-  String get homeClimateConnect => 'Connect Apple Home';
+  String get homeClimateApple => 'Apple Home';
+
+  @override
+  String get homeClimateGoogle => 'Google Home';
+
+  @override
+  String get homeClimateConnect => 'Connect a home';
+
+  @override
+  String get homeClimateConnectApple => 'Connect Apple Home';
+
+  @override
+  String get homeClimateConnectGoogle => 'Connect Google Home';
 
   @override
   String get homeClimateSearching => 'Looking for sensors…';
@@ -1181,6 +1193,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateHome => 'Home';
+
+  @override
+  String get homeClimateSource => 'Platform';
 
   @override
   String get homeClimateNoRoom => 'No room';
@@ -1223,16 +1238,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get homeClimateNoSensors =>
-      'No temperature or humidity sensor in Apple Home.';
+  String homeClimateNoSensorsIn(String home) {
+    return 'No temperature or humidity sensor in $home.';
+  }
 
   @override
-  String get homeClimateDenied =>
+  String get homeClimateDeniedApple =>
       'Access to Apple Home refused. It can be granted again in Settings › Privacy › Home.';
 
   @override
-  String get homeClimateFailed =>
-      'Apple Home unavailable. You can connect a sensor in Profile › Apple Home.';
+  String get homeClimateDeniedGoogle =>
+      'Access to Google Home refused. It can be granted again in the Google Home app, under permissions.';
+
+  @override
+  String homeClimateFailedIn(String home) {
+    return '$home unavailable. You can connect a sensor in Profile › Home sensors.';
+  }
+
+  @override
+  String get homeClimateAppleNote =>
+      'Apple Home reads accessories on the device.';
+
+  @override
+  String get homeClimateGoogleNote =>
+      'Google Home reads devices through your Google account.';
 
   @override
   String get homeClimateAtHome => 'At home';
@@ -1277,7 +1306,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String diagnosisWithHome(String reading) {
-    return 'Apple Home reading attached: $reading.';
+    return 'Home reading attached: $reading.';
   }
 
   @override

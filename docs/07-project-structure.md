@@ -26,13 +26,13 @@ lib/
 │   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
 │   ├── cuttings/                  CuttingStep, CuttingGuideRefinement, CuttingGuideRefiner, CuttingGuideStore
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
-│   ├── home/                      HomeClimateService (capteurs Apple Maison), HomeClimateAdvisor
+│   ├── home/                      HomeClimateService (capteurs Apple Maison et Google Home), MultiHomeClimateService, HomeClimateAdvisor
 │   ├── weather/                   WeatherService, WeatherAdvisor (pluie), WeatherTrend (intervalles), OutdoorAlertAdvisor (gel, chaleur), RegionClimate (zone de rusticité)
 │   └── auth/                      AuthRepository, AppUser
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService, GoogleHomeClimateService
 │   └── auth/                      LocalAuthRepository
 ├── features/
 │   ├── onboarding/
@@ -48,7 +48,7 @@ lib/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, avertissements gel et chaleur, climat du lieu, réglages
-│   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur
+│   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur (Apple Maison, Google Home)
 │   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
 │   ├── encyclopedia/              les actifs embarqués à lire à froid : un écran à trois rayons (problèmes, espèces, vocabulaire), une page par problème, une par espèce
 │   ├── account/                   compte, membres, rôles

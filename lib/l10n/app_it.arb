@@ -342,16 +342,21 @@
   "locating": "Ricerca della tua città…",
   "locationFailed": "Posizione non disponibile. Potrai scegliere una città in Profilo › Meteo.",
   "onbHomeTitle": "La vostra casa",
-  "onbHomeBody": "I sensori di Casa di Apple danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.",
-  "homeClimate": "Casa di Apple",
-  "homeClimateHint": "Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Lettura sul dispositivo, nulla viene inviato.",
-  "homeClimateConnect": "Collega Casa di Apple",
+  "onbHomeBody": "I sensori di Casa di Apple e di Google Home danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. La misura resta nell'app.",
+  "homeClimate": "Sensori di casa",
+  "homeClimateHint": "Temperatura e umidità di un sensore di casa adattano i consigli delle piante da interno e completano le diagnosi. La misura resta nell'app.",
+  "homeClimateApple": "Casa di Apple",
+  "homeClimateGoogle": "Google Home",
+  "homeClimateConnect": "Collega una casa",
+  "homeClimateConnectApple": "Collega Casa di Apple",
+  "homeClimateConnectGoogle": "Collega Google Home",
   "homeClimateSearching": "Ricerca dei sensori…",
   "homeClimateSensor": "Sensore",
   "homeClimateSensors": "Sensori trovati",
   "homeClimateChoose": "Scegli un sensore",
   "homeClimateChange": "Cambia sensore",
   "homeClimateHome": "Casa",
+  "homeClimateSource": "Piattaforma",
   "homeClimateNoRoom": "Senza stanza",
   "homeClimateTemperatureSensor": "Sensore di temperatura",
   "homeClimateHumiditySensor": "Sensore di umidità",
@@ -369,9 +374,26 @@
       }
     }
   },
-  "homeClimateNoSensors": "Nessun sensore di temperatura o umidità in Casa di Apple.",
-  "homeClimateDenied": "Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.",
-  "homeClimateFailed": "Casa di Apple non disponibile. Potrai collegare un sensore in Profilo › Casa di Apple.",
+  "homeClimateNoSensorsIn": "Nessun sensore di temperatura o umidità in {home}.",
+  "@homeClimateNoSensorsIn": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClimateDeniedApple": "Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.",
+  "homeClimateDeniedGoogle": "Accesso a Google Home rifiutato. Si riattiva nell'app Google Home, nelle autorizzazioni.",
+  "homeClimateFailedIn": "{home} non disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.",
+  "@homeClimateFailedIn": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClimateAppleNote": "Casa di Apple legge gli accessori sul dispositivo.",
+  "homeClimateGoogleNote": "Google Home legge i dispositivi tramite il tuo account Google.",
   "homeClimateAtHome": "Da voi",
   "homeClimateFits": "Nell'intervallo della specie.",
   "homeClimateTooDry": "Aria troppo secca per questa specie.",
@@ -411,7 +433,7 @@
       }
     }
   },
-  "diagnosisWithHome": "Misura di Casa di Apple allegata: {reading}.",
+  "diagnosisWithHome": "Misura di casa allegata: {reading}.",
   "@diagnosisWithHome": {
     "placeholders": {
       "reading": {

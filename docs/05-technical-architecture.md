@@ -19,6 +19,7 @@
 | Complément de fiche | AI Services d'Infomaniak (`CareCompleter`) | seulement quand le catalogue n'a que des repères généraux ; nom scientifique seul, réponse gardée sur l'appareil |
 | Météo | Open-Meteo (`WeatherService`) : prévisions et jours passés en un appel, archives sur trois ans pour le climat du lieu | gratuit, sans compte |
 | Climat de la maison | HomeKit, par un canal natif (`HomeClimateService` → `ios/Runner/HomeClimateChannel.swift`) | iPhone et iPad seulement ; lecture de deux caractéristiques, rien d'écrit, rien ne sort de l'appareil |
+| Climat de la maison (Google Home) | Home APIs, par un canal natif (`GoogleHomeClimateService` → `ios/Runner/GoogleHomeChannel.swift`, `android/app/src/googleHome/kotlin/.../GoogleHomeChannel.kt`) | iPhone, iPad et Android ; SDK à télécharger et projet à déclarer, d'où `AppConfig.googleHomeEnabled` — lecture de deux traits, rien d'écrit |
 | Widgets, raccourcis, haptiques | WidgetKit, `UIApplicationShortcutItem`, Core Haptics, par trois canaux natifs (`ios/Runner/TodayWidgetChannel.swift`, `QuickActionsChannel.swift`, `HapticsChannel.swift`) | iPhone et iPad seulement ; muets ailleurs, sans plugin |
 
 ## Couches
@@ -203,28 +204,50 @@ Quatre pièces pures, toutes testées sans réseau :
   propositions de plantes pour l'extérieur. Ce qui part à l'IA, ce sont deux
   températures et une zone — jamais la ville, jamais les coordonnées.
 
-## Apple Maison (`domain/home/`, `features/home_climate/`)
-La météo dit ce qu'il fait dehors ; un capteur HomeKit dit ce qu'il fait
-dans le salon. L'application en lit deux caractéristiques, la température
-et l'humidité relative, et rien d'autre.
+## La maison (`domain/home/`, `features/home_climate/`)
+La météo dit ce qu'il fait dehors ; un capteur de la maison dit ce qu'il
+fait dans le salon. L'application en lit deux grandeurs, la température et
+l'humidité relative, et rien d'autre. Deux maisons les donnent : Apple
+Maison, par HomeKit, et Google Home, par les Home APIs.
 
 - `HomeClimateService` : trois questions — l'accès accordé ou non, la liste
   des accessoires qui mesurent l'une ou l'autre, la mesure de l'un d'eux.
-  Implémentation `HomeKitClimateService` sur un `MethodChannel`
-  (`ch.vergasta.plant/home_climate`), muette hors iOS ; le natif est dans
-  `ios/Runner/HomeClimateChannel.swift` (`HMHomeManager`, délai de dix
-  secondes, dernière valeur connue si l'accessoire ne répond pas).
-- Le choix se fait dans une feuille (`showHomeSensorPicker`) : la maison
-  d'abord, quand HomeKit en a plusieurs, puis les accessoires de cette
-  maison pièce par pièce, avec ce que chacun mesure. Un seul capteur dans la
-  maison, et il est retenu sans question.
+  Une implémentation par plateforme, toutes deux sur un `MethodChannel` et
+  sur le même dictionnaire (`ChannelHomeClimateService` : `id`, `name`,
+  `room`, `home`, `temperature`, `humidity`, `at`, `error`).
+  `HomeKitClimateService` (`ch.vergasta.plant/home_climate`) est muette hors
+  iOS ; le natif est dans `ios/Runner/HomeClimateChannel.swift`
+  (`HMHomeManager`, délai de dix secondes, dernière valeur connue si
+  l'accessoire ne répond pas). `GoogleHomeClimateService`
+  (`ch.vergasta.plant/google_home_climate`) vaut pour iOS et Android — voir
+  « Google Home » plus bas.
+- `MultiHomeClimateService` les rassemble : l'écran ne voit qu'un service et
+  une liste. Chaque capteur porte sa maison (`HomeSensor.source`), un
+  identifiant n'étant unique que chez elle, et c'est cette marque qui
+  renvoie une lecture à la bonne — d'où `read(HomeSensor)` plutôt que
+  `read(String)`, et `HomeSensor.key` (`google:N1`) pour reconnaître un
+  capteur d'un écran à l'autre. Une maison muette ici — Apple Maison sur
+  Android, Google Home sans son SDK — est écartée à la construction, et
+  n'apparaît ni à l'onboarding ni dans les réglages.
+- Le choix se fait dans une feuille (`showHomeSensorPicker`) : la plateforme
+  d'abord quand l'appareil lit les deux, puis la maison quand la plateforme
+  en a plusieurs, puis les accessoires de cette maison pièce par pièce, avec
+  ce que chacun mesure. Un seul capteur dans la maison, et il est retenu
+  sans question.
+- Une demande d'accès à la fois : à l'onboarding, `showHomeSourcePicker`
+  fait dire laquelle brancher avant que le système ne demande quoi que ce
+  soit — deux fenêtres coup sur coup, et personne ne sait laquelle il vient
+  de refuser. Dans les réglages, chaque maison a son bouton ; celle qui a
+  déjà donné ses capteurs n'en a plus.
 - Deux capteurs, un par grandeur : celui de la température (`home_sensor`)
   et, s'il n'est pas le même, celui de l'humidité (`home_humidity_sensor`).
   Sans second capteur, l'humidité vient du premier, s'il la mesure ; à
   l'onboarding, un capteur sans hygromètre fait demander un hygromètre.
-- Le capteur retenu est en préférences (`home_sensor`, `id|nom|pièce|maison`) ; la
-  mesure ne l'est jamais, elle se relit toutes les quinze minutes
-  (`homeReadingProvider`).
+- Le capteur retenu est en préférences (`home_sensor`,
+  `id|nom|pièce|maison|température|humidité|plateforme`) ; la plateforme
+  vient en dernier, et une préférence écrite avant Google Home se relit
+  sans elle — c'était Apple Maison. La mesure, elle, n'est jamais gardée :
+  elle se relit toutes les quinze minutes (`homeReadingProvider`).
 - `HomeClimateAdvisor` compare la mesure aux fiches des plantes d'intérieur
   (celles qui ne sont pas dans un emplacement « extérieur », et seulement
   celles de la pièce si un emplacement porte le nom de la pièce du capteur) :
@@ -250,6 +273,59 @@ et l'humidité relative, et rien d'autre.
   « Observations », dans l'unité de la personne (`ReportedClimate`, converti
   en Celsius, hors plage ignoré). Le modèle sait ce qui est mesuré et ce qui
   est donné.
-- Réglages : `NSHomeKitUsageDescription` dans `Info.plist`, entitlement
-  `com.apple.developer.homekit`, capability *HomeKit* sur l'App ID. Sans
-  capteur dans la maison, l'étape d'onboarding se passe d'un geste.
+- Réglages d'Apple Maison : `NSHomeKitUsageDescription` dans `Info.plist`,
+  entitlement `com.apple.developer.homekit`, capability *HomeKit* sur l'App
+  ID. Sans capteur dans la maison, l'étape d'onboarding se passe d'un geste.
+
+### Google Home
+Les mêmes deux nombres, lus sur les Home APIs, sur iPhone comme sur Android.
+La partie Dart est écrite et éprouvée ; le natif l'est aussi, mais
+`AppConfig.googleHomeEnabled` reste faux, et voici pourquoi.
+
+À la différence de HomeKit, les Home APIs ne sont pas dans le système. Leur
+SDK ne se prend ni sur Maven Central, ni sur le dépôt Google, ni sur un
+registre SwiftPM : il se télécharge depuis la console Google Home, pour un
+projet déclaré, et se compile dans l'application. Tant qu'il n'y est pas, le
+canal natif n'existe pas, et une maison qu'on ne peut pas lire ne se propose
+pas. Le drapeau est donc la dernière ligne à changer, pas la première.
+
+Pour la livrer :
+
+1. Déclarer un projet développeur dans la [console Google Home](https://console.home.google.com),
+   avec le client OAuth de l'application — l'empreinte SHA-1 de la clé de
+   signature côté Android, l'identifiant d'équipe et le bundle côté iOS.
+2. Télécharger le SDK depuis la console.
+   - Android : installer les deux artefacts (`play-services-home`,
+     `play-services-home-types`) dans le dépôt Maven local, puis construire
+     avec `-PgoogleHome=true` — `android/app/build.gradle.kts` ajoute alors
+     `mavenLocal()`, les dépendances, et le jeu de sources
+     `src/googleHome/kotlin` à la place de `src/noGoogleHome/kotlin`. Les
+     deux jeux donnent `GoogleHomeChannel` et `HostActivity` : l'un parle
+     aux Home APIs et fait de `MainActivity` un `FlutterFragmentActivity`
+     (la demande d'autorisation veut un `ActivityResultCaller`), l'autre ne
+     fait rien et laisse l'activité de Flutter telle quelle.
+   - iOS : ajouter les paquets `GoogleHomeSDK` et `GoogleHomeTypes` au
+     projet. `ios/Runner/GoogleHomeChannel.swift` est derrière
+     `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal
+     qui ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur
+     l'App ID ; le SDK ne se déploie pas sur le simulateur.
+3. Renseigner `GoogleHomeClientID`, `GoogleHomeTeamID` et
+   `GoogleHomeAppGroup` dans `ios/Runner/Info.plist` (les clés sont en
+   commentaire à côté de `NSHomeKitUsageDescription`) ; sans elles, le canal
+   répond « pas de maison ici » plutôt que d'ouvrir une session à moitié
+   configurée.
+4. Passer `AppConfig.googleHomeEnabled` à vrai.
+
+Ce que le canal lit : les structures, leurs pièces, et les appareils qui
+portent `TemperatureMeasurement` ou `RelativeHumidityMeasurement` — capteur
+de température, hygromètre, thermostat, qui mesure la pièce où il est posé.
+Un type de plus s'ajoute dans `measures`. Matter compte en centièmes de
+degré et de pour cent ; selon la version du SDK, les traits rendent déjà des
+degrés, et une valeur hors de la plage d'une pièce est donc divisée par
+cent.
+
+Ce qui n'est pas la même promesse qu'Apple Maison : HomeKit lit les
+accessoires sur l'appareil, les Home APIs passent par le compte Google de
+la personne. L'écran le dit, maison par maison (`homeClimateAppleNote`,
+`homeClimateGoogleNote`), et le texte commun ne promet plus qu'une chose,
+vraie des deux : la mesure ne quitte pas l'application.

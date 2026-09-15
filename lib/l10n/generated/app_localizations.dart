@@ -2115,26 +2115,50 @@ abstract class AppLocalizations {
   /// No description provided for @onbHomeBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les capteurs Apple Maison donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. Lecture sur l\'appareil, rien n\'est envoyé.'**
+  /// **'Les capteurs d\'Apple Maison et de Google Home donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. La mesure ne quitte pas l\'application.'**
   String get onbHomeBody;
 
   /// No description provided for @homeClimate.
   ///
   /// In fr, this message translates to:
-  /// **'Apple Maison'**
+  /// **'Capteurs de la maison'**
   String get homeClimate;
 
   /// No description provided for @homeClimateHint.
   ///
   /// In fr, this message translates to:
-  /// **'La température et l\'humidité d\'un capteur Apple Maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. Lecture sur l\'appareil, rien n\'est envoyé.'**
+  /// **'La température et l\'humidité d\'un capteur de la maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. La mesure ne quitte pas l\'application.'**
   String get homeClimateHint;
+
+  /// No description provided for @homeClimateApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple Maison'**
+  String get homeClimateApple;
+
+  /// No description provided for @homeClimateGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Google Home'**
+  String get homeClimateGoogle;
 
   /// No description provided for @homeClimateConnect.
   ///
   /// In fr, this message translates to:
-  /// **'Connecter Apple Maison'**
+  /// **'Connecter la maison'**
   String get homeClimateConnect;
+
+  /// No description provided for @homeClimateConnectApple.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecter Apple Maison'**
+  String get homeClimateConnectApple;
+
+  /// No description provided for @homeClimateConnectGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecter Google Home'**
+  String get homeClimateConnectGoogle;
 
   /// No description provided for @homeClimateSearching.
   ///
@@ -2171,6 +2195,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Maison'**
   String get homeClimateHome;
+
+  /// No description provided for @homeClimateSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plateforme'**
+  String get homeClimateSource;
 
   /// No description provided for @homeClimateNoRoom.
   ///
@@ -2232,23 +2262,41 @@ abstract class AppLocalizations {
   /// **'{minutes, plural, =0{À l\'instant} =1{Il y a 1 min} other{Il y a {minutes} min}}'**
   String homeClimateUpdatedAgo(int minutes);
 
-  /// No description provided for @homeClimateNoSensors.
+  /// No description provided for @homeClimateNoSensorsIn.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun capteur de température ou d\'humidité dans Apple Maison.'**
-  String get homeClimateNoSensors;
+  /// **'Aucun capteur de température ou d\'humidité dans {home}.'**
+  String homeClimateNoSensorsIn(String home);
 
-  /// No description provided for @homeClimateDenied.
+  /// No description provided for @homeClimateDeniedApple.
   ///
   /// In fr, this message translates to:
   /// **'Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.'**
-  String get homeClimateDenied;
+  String get homeClimateDeniedApple;
 
-  /// No description provided for @homeClimateFailed.
+  /// No description provided for @homeClimateDeniedGoogle.
   ///
   /// In fr, this message translates to:
-  /// **'Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.'**
-  String get homeClimateFailed;
+  /// **'Accès à Google Home refusé. Il se rouvre dans l\'application Google Home, aux autorisations.'**
+  String get homeClimateDeniedGoogle;
+
+  /// No description provided for @homeClimateFailedIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'{home} indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.'**
+  String homeClimateFailedIn(String home);
+
+  /// No description provided for @homeClimateAppleNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Apple Maison lit les accessoires sur l\'appareil.'**
+  String get homeClimateAppleNote;
+
+  /// No description provided for @homeClimateGoogleNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Google Home lit les appareils via votre compte Google.'**
+  String get homeClimateGoogleNote;
 
   /// No description provided for @homeClimateAtHome.
   ///
@@ -2319,7 +2367,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisWithHome.
   ///
   /// In fr, this message translates to:
-  /// **'Mesure Apple Maison jointe : {reading}.'**
+  /// **'Mesure de la maison jointe : {reading}.'**
   String diagnosisWithHome(String reading);
 
   /// No description provided for @placeChosen.

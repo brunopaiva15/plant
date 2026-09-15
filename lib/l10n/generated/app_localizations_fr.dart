@@ -1154,17 +1154,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Les capteurs Apple Maison donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. Lecture sur l\'appareil, rien n\'est envoyé.';
+      'Les capteurs d\'Apple Maison et de Google Home donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. La mesure ne quitte pas l\'application.';
 
   @override
-  String get homeClimate => 'Apple Maison';
+  String get homeClimate => 'Capteurs de la maison';
 
   @override
   String get homeClimateHint =>
-      'La température et l\'humidité d\'un capteur Apple Maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. Lecture sur l\'appareil, rien n\'est envoyé.';
+      'La température et l\'humidité d\'un capteur de la maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. La mesure ne quitte pas l\'application.';
 
   @override
-  String get homeClimateConnect => 'Connecter Apple Maison';
+  String get homeClimateApple => 'Apple Maison';
+
+  @override
+  String get homeClimateGoogle => 'Google Home';
+
+  @override
+  String get homeClimateConnect => 'Connecter la maison';
+
+  @override
+  String get homeClimateConnectApple => 'Connecter Apple Maison';
+
+  @override
+  String get homeClimateConnectGoogle => 'Connecter Google Home';
 
   @override
   String get homeClimateSearching => 'Recherche des capteurs…';
@@ -1183,6 +1195,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeClimateHome => 'Maison';
+
+  @override
+  String get homeClimateSource => 'Plateforme';
 
   @override
   String get homeClimateNoRoom => 'Sans pièce';
@@ -1225,16 +1240,30 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get homeClimateNoSensors =>
-      'Aucun capteur de température ou d\'humidité dans Apple Maison.';
+  String homeClimateNoSensorsIn(String home) {
+    return 'Aucun capteur de température ou d\'humidité dans $home.';
+  }
 
   @override
-  String get homeClimateDenied =>
+  String get homeClimateDeniedApple =>
       'Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.';
 
   @override
-  String get homeClimateFailed =>
-      'Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.';
+  String get homeClimateDeniedGoogle =>
+      'Accès à Google Home refusé. Il se rouvre dans l\'application Google Home, aux autorisations.';
+
+  @override
+  String homeClimateFailedIn(String home) {
+    return '$home indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.';
+  }
+
+  @override
+  String get homeClimateAppleNote =>
+      'Apple Maison lit les accessoires sur l\'appareil.';
+
+  @override
+  String get homeClimateGoogleNote =>
+      'Google Home lit les appareils via votre compte Google.';
 
   @override
   String get homeClimateAtHome => 'Chez vous';
@@ -1279,7 +1308,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String diagnosisWithHome(String reading) {
-    return 'Mesure Apple Maison jointe : $reading.';
+    return 'Mesure de la maison jointe : $reading.';
   }
 
   @override

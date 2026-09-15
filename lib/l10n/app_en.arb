@@ -342,16 +342,21 @@
   "locating": "Finding your town…",
   "locationFailed": "Location unavailable. You can pick a town in Profile › Weather.",
   "onbHomeTitle": "Your home",
-  "onbHomeBody": "Apple Home sensors give the room's temperature and humidity. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.",
-  "homeClimate": "Apple Home",
-  "homeClimateHint": "The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Read on the device, nothing is sent.",
-  "homeClimateConnect": "Connect Apple Home",
+  "onbHomeBody": "Apple Home and Google Home sensors give the room's temperature and humidity. Advice and diagnoses for indoor plants take them into account. The reading stays in the app.",
+  "homeClimate": "Home sensors",
+  "homeClimateHint": "The temperature and humidity of a home sensor adjust the advice for indoor plants and complete diagnoses. The reading stays in the app.",
+  "homeClimateApple": "Apple Home",
+  "homeClimateGoogle": "Google Home",
+  "homeClimateConnect": "Connect a home",
+  "homeClimateConnectApple": "Connect Apple Home",
+  "homeClimateConnectGoogle": "Connect Google Home",
   "homeClimateSearching": "Looking for sensors…",
   "homeClimateSensor": "Sensor",
   "homeClimateSensors": "Sensors found",
   "homeClimateChoose": "Choose a sensor",
   "homeClimateChange": "Change sensor",
   "homeClimateHome": "Home",
+  "homeClimateSource": "Platform",
   "homeClimateNoRoom": "No room",
   "homeClimateTemperatureSensor": "Temperature sensor",
   "homeClimateHumiditySensor": "Humidity sensor",
@@ -369,9 +374,26 @@
       }
     }
   },
-  "homeClimateNoSensors": "No temperature or humidity sensor in Apple Home.",
-  "homeClimateDenied": "Access to Apple Home refused. It can be granted again in Settings › Privacy › Home.",
-  "homeClimateFailed": "Apple Home unavailable. You can connect a sensor in Profile › Apple Home.",
+  "homeClimateNoSensorsIn": "No temperature or humidity sensor in {home}.",
+  "@homeClimateNoSensorsIn": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClimateDeniedApple": "Access to Apple Home refused. It can be granted again in Settings › Privacy › Home.",
+  "homeClimateDeniedGoogle": "Access to Google Home refused. It can be granted again in the Google Home app, under permissions.",
+  "homeClimateFailedIn": "{home} unavailable. You can connect a sensor in Profile › Home sensors.",
+  "@homeClimateFailedIn": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClimateAppleNote": "Apple Home reads accessories on the device.",
+  "homeClimateGoogleNote": "Google Home reads devices through your Google account.",
   "homeClimateAtHome": "At home",
   "homeClimateFits": "Within the range for this species.",
   "homeClimateTooDry": "Air too dry for this species.",
@@ -411,7 +433,7 @@
       }
     }
   },
-  "diagnosisWithHome": "Apple Home reading attached: {reading}.",
+  "diagnosisWithHome": "Home reading attached: {reading}.",
   "@diagnosisWithHome": {
     "placeholders": {
       "reading": {

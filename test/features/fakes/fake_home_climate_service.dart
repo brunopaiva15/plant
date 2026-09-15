@@ -1,11 +1,23 @@
 import 'package:flora/domain/home/home_climate.dart';
 
 /// Une maison de laboratoire : des capteurs donnés d'avance, une mesure
-/// fixe, et le compte des lectures.
-class FakeHomeClimateService implements HomeClimateService {
-  FakeHomeClimateService({this.supported = true, this.sensorList = const [], this.reading, this.readings = const {}, this.accessValue = HomeAccess.authorized});
+/// fixe, et le compte des lectures. Une seule plateforme, celle de [source]
+/// — pour en éprouver deux, [MultiHomeClimateService] en assemble deux.
+class FakeHomeClimateService extends SingleHomeClimateService {
+  FakeHomeClimateService({
+    this.supported = true,
+    this.source = HomeSource.apple,
+    this.sensorList = const [],
+    this.reading,
+    this.readings = const {},
+    this.accessValue = HomeAccess.authorized,
+  });
 
   final bool supported;
+
+  @override
+  final HomeSource source;
+
   final List<HomeSensor> sensorList;
 
   /// La mesure rendue pour tout capteur, à défaut d'une entrée dans [readings].
@@ -30,8 +42,8 @@ class FakeHomeClimateService implements HomeClimateService {
   }
 
   @override
-  Future<HomeReading?> read(String sensorId) async {
+  Future<HomeReading?> read(HomeSensor sensor) async {
     readCalls++;
-    return readings.containsKey(sensorId) ? readings[sensorId] : reading;
+    return readings.containsKey(sensor.id) ? readings[sensor.id] : reading;
   }
 }
