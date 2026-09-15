@@ -1980,8 +1980,56 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Optional: Die Bedingungen rund um die Pflanze schärfen die Analyse.';
+  String get diagnosisChecks => 'Beobachtungen';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Optional: Was das Foto nicht zeigt, schärft die Analyse.';
+
+  @override
+  String get diagnosisSoil => 'Erde';
+
+  @override
+  String get diagnosisSoilDry => 'Trocken';
+
+  @override
+  String get diagnosisSoilMoist => 'Feucht';
+
+  @override
+  String get diagnosisSoilSoggy => 'Durchnässt';
+
+  @override
+  String get diagnosisRoots => 'Wurzeln';
+
+  @override
+  String get diagnosisRootsFirm => 'Fest und hell';
+
+  @override
+  String get diagnosisRootsSoft => 'Braun oder weich';
+
+  @override
+  String get diagnosisRootsCrowded => 'Zu eng';
+
+  @override
+  String get diagnosisLightDirect => 'Direkte Sonne';
+
+  @override
+  String get diagnosisLightBright => 'Hell, ohne direkte Sonne';
+
+  @override
+  String get diagnosisLightDim => 'Wenig';
+
+  @override
+  String get diagnosisBugs => 'Insekten';
+
+  @override
+  String get diagnosisBugsNone => 'Keine gesehen';
+
+  @override
+  String get diagnosisBugsOnPlant => 'An der Pflanze';
+
+  @override
+  String get diagnosisBugsInSoil => 'In der Erde';
 
   @override
   String get analyze => 'Analysieren';
@@ -3788,6 +3836,34 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get whatsNewIrisDoubtBody =>
       'Zwei Arten, die sich ähneln: beide werden vorgeschlagen.';
+
+  @override
+  String get whatsNewSmallUpdates => 'Kleine Neuerungen';
+
+  @override
+  String get whatsNewDiagnosisIntro =>
+      'Ein Foto zeigt weder durchnässte Erde noch braune Wurzeln noch drei Blattläuse unter einem Blatt. Vier optionale Fragen holen das nach.';
+
+  @override
+  String get whatsNewDiagnosisChecksTitle => 'Erde, Wurzeln, Licht, Insekten';
+
+  @override
+  String get whatsNewDiagnosisChecksBody =>
+      'Vier Fragen unter den Symptomen, zu beantworten oder nicht. Nichts ist vorab angekreuzt.';
+
+  @override
+  String get whatsNewDiagnosisWeighTitle => 'Fließt in die Analyse ein';
+
+  @override
+  String get whatsNewDiagnosisWeighBody =>
+      'Was geprüft wurde, zählt als Feststellung, und die vorgeschlagenen Schritte fragen es nicht erneut ab.';
+
+  @override
+  String get whatsNewDiagnosisKeptTitle => 'Im Journal behalten';
+
+  @override
+  String get whatsNewDiagnosisKeptBody =>
+      'Eine Monate später wieder geöffnete Diagnose zeigt weiterhin, was an jenem Tag geprüft wurde.';
 
   @override
   String onbStepOf(int current, int total) {

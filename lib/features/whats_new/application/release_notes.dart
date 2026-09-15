@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
-import '../../../app/router.dart';
-import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/services/preferences_service.dart';
 import '../../../design_system/design_system.dart';
@@ -15,6 +13,10 @@ import '../../../design_system/design_system.dart';
 /// image à livrer, rien à charger, et la fenêtre se construit à partir de la
 /// palette du moment. Écrire une nouvelle version, c'est ajouter une entrée
 /// à [releaseNotes] et ses clés aux quatre `.arb` — rien d'autre.
+///
+/// Un gros morceau a sa fiche à lui. Les ajouts courts se rassemblent sous
+/// « Petites nouveautés », un lot par entrée, numérotée : voir le commentaire
+/// de [releaseNotes].
 
 /// Une teinte de la palette, choisie par une nouveauté pour son héros et par
 /// chacun de ses points forts pour sa pastille.
@@ -132,58 +134,54 @@ class ReleaseNote {
 /// récente jamais vue qu'elle annonce au lancement.
 List<ReleaseNote> releaseNotes(AppLocalizations l10n) {
   // ────────────────────────────────────────────────────────────────────────
-  // EXEMPLE — gabarit, pas contenu. Personne ne le voit.
+  // « Petites nouveautés » : la fiche des ajouts courts.
   //
-  // Le mécanisme est en place avant qu'il y ait quelque chose à annoncer :
-  // cette entrée sert de modèle. Ses chiffres sont inventés, et aucun chemin
-  // ne mène à elle — livrée dans la même version que le mécanisme, elle ne
-  // s'ouvre d'elle-même chez personne (voir [WhatsNew.take]), et les réglages
-  // n'ont pas de ligne « Nouveautés » tant qu'elle est la seule au catalogue.
+  // Tout ce qui arrive entre deux gros morceaux — un champ de plus, un geste
+  // raccourci — n'a pas de quoi remplir une fiche à soi. Ces ajouts se
+  // rassemblent donc sous la même ligne en capitales, le titre disant le
+  // sujet du lot, et trois points forts au plus : c'est ce que la fenêtre
+  // montre sans se tasser.
   //
-  // **Son identifiant est dépensé.** Tout appareil ayant lancé cette version
-  // porte `iris-8` dans ses nouveautés vues. D'où deux règles, en sens
-  // inverse l'une de l'autre :
+  // Le lot suivant est une **entrée de plus**, jamais une retouche de
+  // celle-ci : un identifiant déjà vu ne se rejoue pas, et éditer cette
+  // entrée n'annoncerait rien à ceux qui l'ont fermée. Ce sera donc
+  // `small-updates-2`, puis `small-updates-3`.
   //
-  // - ne pas le renommer ici : sous un identifiant neuf, l'exemple
-  //   redeviendrait inédit et s'ouvrirait pour de bon chez ces appareils-là,
-  //   chiffres inventés compris ;
-  // - ne pas le reprendre pour la vraie livraison d'Iris 8, qui a besoin d'un
-  //   identifiant jamais vu — `iris-8-modele` fera l'affaire — sans quoi sa
-  //   fenêtre serait avalée en silence.
-  //
-  // À la première vraie livraison : remplacer cette entrée (nouvel
-  // identifiant), écrire son texte dans les quatre `.arb`, et rouvrir la
-  // ligne des réglages si on veut qu'elle reste relisible — la marche à
-  // suivre est notée dans `profile_screen.dart`.
+  // `iris-8` est dépensé : l'exemple livré avec le mécanisme le portait, et
+  // tout appareil ayant lancé cette version-là l'a dans ses nouveautés vues.
+  // La vraie livraison d'Iris 8 en prendra un autre — `iris-8-modele` fera
+  // l'affaire — et retrouvera ses textes dans les quatre `.arb`, restés au
+  // chaud sous `whatsNewIris…`.
   // ────────────────────────────────────────────────────────────────────────
-  const speciesCount = '5000';
   return [
     ReleaseNote(
-      id: 'iris-8',
-      eyebrow: l10n.whatsNewModelUpdate,
-      title: AppConfig.modelDisplayName('8'),
-      body: l10n.whatsNewIrisIntro,
-      accent: ReleaseAccent.terracotta,
-      mark: ReleaseMark.iris,
-      link: ReleaseLink(label: l10n.identificationSettings, route: Routes.identification),
+      id: 'small-updates-1',
+      eyebrow: l10n.whatsNewSmallUpdates,
+      title: l10n.diagnosisTitle,
+      body: l10n.whatsNewDiagnosisIntro,
+      accent: ReleaseAccent.sage,
+      icon: CupertinoIcons.bandage,
+      // Pas de lien du bas : il mènerait au réglage « Diagnostic », déjà le
+      // titre de la fiche, et le geste se trouve sur la fiche d'une plante,
+      // là où l'on va quand elle ne va pas bien.
       highlights: [
         ReleaseHighlight(
-          icon: CupertinoIcons.leaf_arrow_circlepath,
-          accent: ReleaseAccent.sage,
-          title: l10n.whatsNewIrisSpeciesTitle(speciesCount),
-          body: l10n.whatsNewIrisSpeciesBody,
-        ),
-        ReleaseHighlight(
-          icon: CupertinoIcons.wifi_slash,
+          icon: CupertinoIcons.square_list,
           accent: ReleaseAccent.water,
-          title: l10n.whatsNewIrisOfflineTitle,
-          body: l10n.whatsNewIrisOfflineBody,
+          title: l10n.whatsNewDiagnosisChecksTitle,
+          body: l10n.whatsNewDiagnosisChecksBody,
         ),
         ReleaseHighlight(
-          icon: CupertinoIcons.question_circle,
+          icon: CupertinoIcons.sparkles,
           accent: ReleaseAccent.sun,
-          title: l10n.whatsNewIrisDoubtTitle,
-          body: l10n.whatsNewIrisDoubtBody,
+          title: l10n.whatsNewDiagnosisWeighTitle,
+          body: l10n.whatsNewDiagnosisWeighBody,
+        ),
+        ReleaseHighlight(
+          icon: CupertinoIcons.book,
+          accent: ReleaseAccent.sage,
+          title: l10n.whatsNewDiagnosisKeptTitle,
+          body: l10n.whatsNewDiagnosisKeptBody,
         ),
       ],
     ),

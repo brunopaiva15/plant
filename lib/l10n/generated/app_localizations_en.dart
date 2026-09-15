@@ -1974,8 +1974,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Optional: the conditions around the plant sharpen the analysis.';
+  String get diagnosisChecks => 'Observations';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Optional: what the photo cannot show sharpens the analysis.';
+
+  @override
+  String get diagnosisSoil => 'Soil';
+
+  @override
+  String get diagnosisSoilDry => 'Dry';
+
+  @override
+  String get diagnosisSoilMoist => 'Damp';
+
+  @override
+  String get diagnosisSoilSoggy => 'Soaked';
+
+  @override
+  String get diagnosisRoots => 'Roots';
+
+  @override
+  String get diagnosisRootsFirm => 'Firm and pale';
+
+  @override
+  String get diagnosisRootsSoft => 'Brown or soft';
+
+  @override
+  String get diagnosisRootsCrowded => 'Cramped';
+
+  @override
+  String get diagnosisLightDirect => 'Direct sun';
+
+  @override
+  String get diagnosisLightBright => 'Bright, no direct sun';
+
+  @override
+  String get diagnosisLightDim => 'Low';
+
+  @override
+  String get diagnosisBugs => 'Insects';
+
+  @override
+  String get diagnosisBugsNone => 'None seen';
+
+  @override
+  String get diagnosisBugsOnPlant => 'On the plant';
+
+  @override
+  String get diagnosisBugsInSoil => 'In the soil';
 
   @override
   String get analyze => 'Analyze';
@@ -3778,6 +3826,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get whatsNewIrisDoubtBody =>
       'Two species that look alike: both are offered.';
+
+  @override
+  String get whatsNewSmallUpdates => 'Small updates';
+
+  @override
+  String get whatsNewDiagnosisIntro =>
+      'A photo shows neither soaked soil, nor brown roots, nor three aphids under a leaf. Four optional questions do.';
+
+  @override
+  String get whatsNewDiagnosisChecksTitle => 'Soil, roots, light, insects';
+
+  @override
+  String get whatsNewDiagnosisChecksBody =>
+      'Four questions under the symptoms, to answer or not. Nothing is ticked in advance.';
+
+  @override
+  String get whatsNewDiagnosisWeighTitle => 'Weighed in the analysis';
+
+  @override
+  String get whatsNewDiagnosisWeighBody =>
+      'What was checked counts as a fact, and the suggested steps no longer ask for it again.';
+
+  @override
+  String get whatsNewDiagnosisKeptTitle => 'Kept in the journal';
+
+  @override
+  String get whatsNewDiagnosisKeptBody =>
+      'A diagnosis reopened months later still shows what had been checked that day.';
 
   @override
   String onbStepOf(int current, int total) {

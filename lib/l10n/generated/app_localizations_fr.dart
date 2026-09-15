@@ -1977,8 +1977,56 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diagnosisSymptomsHint => 'Ce que vous avez remarqué (facultatif)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Facultatif : les conditions autour de la plante affinent l\'analyse.';
+  String get diagnosisChecks => 'Observations';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Facultatif : ce que la photo ne montre pas affine l\'analyse.';
+
+  @override
+  String get diagnosisSoil => 'Terre';
+
+  @override
+  String get diagnosisSoilDry => 'Sèche';
+
+  @override
+  String get diagnosisSoilMoist => 'Humide';
+
+  @override
+  String get diagnosisSoilSoggy => 'Détrempée';
+
+  @override
+  String get diagnosisRoots => 'Racines';
+
+  @override
+  String get diagnosisRootsFirm => 'Fermes et claires';
+
+  @override
+  String get diagnosisRootsSoft => 'Brunes ou molles';
+
+  @override
+  String get diagnosisRootsCrowded => 'À l\'étroit';
+
+  @override
+  String get diagnosisLightDirect => 'Soleil direct';
+
+  @override
+  String get diagnosisLightBright => 'Vive, sans soleil';
+
+  @override
+  String get diagnosisLightDim => 'Faible';
+
+  @override
+  String get diagnosisBugs => 'Insectes';
+
+  @override
+  String get diagnosisBugsNone => 'Aucun vu';
+
+  @override
+  String get diagnosisBugsOnPlant => 'Sur la plante';
+
+  @override
+  String get diagnosisBugsInSoil => 'Dans la terre';
 
   @override
   String get analyze => 'Analyser';
@@ -3805,6 +3853,35 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get whatsNewIrisDoubtBody =>
       'Deux espèces qui se ressemblent : les deux sont proposées.';
+
+  @override
+  String get whatsNewSmallUpdates => 'Petites nouveautés';
+
+  @override
+  String get whatsNewDiagnosisIntro =>
+      'Une photo ne montre ni une terre détrempée, ni des racines brunes, ni trois pucerons sous une feuille. Quatre questions facultatives s\'en chargent.';
+
+  @override
+  String get whatsNewDiagnosisChecksTitle =>
+      'Terre, racines, lumière, insectes';
+
+  @override
+  String get whatsNewDiagnosisChecksBody =>
+      'Quatre questions sous les symptômes, à répondre ou non. Rien n\'est coché d\'avance.';
+
+  @override
+  String get whatsNewDiagnosisWeighTitle => 'Pesé dans l\'analyse';
+
+  @override
+  String get whatsNewDiagnosisWeighBody =>
+      'Ce qui a été vérifié compte comme un constat, et les gestes proposés ne le redemandent plus.';
+
+  @override
+  String get whatsNewDiagnosisKeptTitle => 'Gardé au journal';
+
+  @override
+  String get whatsNewDiagnosisKeptBody =>
+      'Un diagnostic rouvert des mois plus tard remontre ce qui avait été vérifié ce jour-là.';
 
   @override
   String onbStepOf(int current, int total) {

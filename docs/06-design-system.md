@@ -439,6 +439,10 @@ qui reste sous les yeux pendant que la page défile.
   le rose, qui ne tiennent que 3:1.
 - **Contenu = données.** Une version est une entrée de `releaseNotes()` et ses
   clés dans les quatre `.arb`. Aucune image à livrer.
+- **Les ajouts courts se rassemblent** sous la ligne « Petites nouveautés » :
+  un lot par entrée, le titre disant son sujet, trois points forts au plus —
+  la fenêtre n'en montre pas davantage sans se tasser. Un gros morceau, lui,
+  garde sa fiche à soi.
 - Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
 ## La page du soutien (`features/support/`)

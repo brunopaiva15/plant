@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flora/domain/diagnosis/diagnosis_observations.dart';
 import 'package:flora/domain/diagnosis/diagnosis_record.dart';
 import 'package:flora/domain/diagnosis/plant_diagnoser.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,6 +60,36 @@ void main() {
     expect(premiere.problemId, '002', reason: 'le numéro renomme la piste dans la langue du moment');
     expect(relu.diagnosis.causes.last.problemId, isNull);
     expect(relu.diagnosis.causes.last.actions, isEmpty);
+  });
+
+  test('ce qui avait été vérifié se relit aussi', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: diagnostic,
+      observations: const DiagnosisObservations(soil: SoilState.soggy, roots: RootState.soft, bugs: BugSighting.none),
+    ))!;
+
+    expect(relu.observations.soil, SoilState.soggy);
+    expect(relu.observations.roots, RootState.soft);
+    expect(relu.observations.bugs, BugSighting.none, reason: '« aucun vu » est une réponse, pas une case vide');
+    expect(relu.observations.light, isNull, reason: 'une question sans réponse en reste une');
+
+    // Rien de coché, rien de gardé : le compte rendu n'a pas de rubrique
+    // « Observations » à afficher.
+    final sans = DiagnosisRecord(diagnosis: diagnostic);
+    expect(sans.observations.isEmpty, isTrue);
+    expect(sans.toJson().containsKey('observations'), isFalse);
+  });
+
+  test('un mot d’observation inconnu vaut une case non répondue', () {
+    final relu = DiagnosisRecord.fromMetadata(const {
+      DiagnosisRecord.metadataKey: {
+        'summary': 'Taches brunes.',
+        'observations': {'soil': 'humide', 'light': 'direct', 'bugs': 42},
+      },
+    })!;
+    expect(relu.observations.soil, isNull, reason: 'un mot hors vocabulaire ne se devine pas');
+    expect(relu.observations.bugs, isNull);
+    expect(relu.observations.light, LightExposure.direct, reason: 'le reste de la rubrique se lit quand même');
   });
 
   test('un champ de symptômes laissé vide ne devient pas un symptôme', () {

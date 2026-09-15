@@ -2,6 +2,7 @@ import 'dart:io';
 
 import '../home/home_climate.dart';
 import '../problems/plant_problem.dart';
+import 'diagnosis_observations.dart';
 
 /// À quel point une piste tient debout, en trois crans.
 ///
@@ -141,6 +142,11 @@ abstract class PlantDiagnoser {
     /// Ce que la personne a donné elle-même, pour ce que le capteur ne
     /// mesure pas — ou tout, sans capteur.
     ReportedClimate? reportedClimate,
+
+    /// Ce qu'elle est allée vérifier de sa main : la terre, les racines, la
+    /// lumière, les insectes. Aucune photo ne les montre, et ce sont eux qui
+    /// tranchent le plus souvent.
+    DiagnosisObservations? observations,
   });
 }
 
@@ -188,6 +194,7 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
+    DiagnosisObservations? observations,
   }) =>
       throw const DiagnosisException('unconfigured');
 }
