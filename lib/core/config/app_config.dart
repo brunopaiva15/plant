@@ -51,15 +51,21 @@ abstract final class AppConfig {
   /// température et l'humidité d'une pièce — lus sur les Home APIs, sur
   /// iPhone comme sur Android.
   ///
-  /// Le code est écrit, des deux côtés, mais le drapeau reste faux tant que
-  /// le SDK n'est pas dans l'application : à la différence de HomeKit, les
-  /// Home APIs ne sont pas dans le système et leur SDK ne se prend pas sur
-  /// Maven ni sur SwiftPM — il se télécharge depuis la console Google Home
-  /// pour un projet déclaré, avec son client OAuth. Sans lui, le canal natif
-  /// n'est pas compilé, et une maison qu'on ne peut pas lire ne se propose
-  /// pas. La marche à suivre est dans `docs/05-technical-architecture.md`,
-  /// section « Google Home ».
-  static const bool googleHomeEnabled = false;
+  /// Vrai : la maison se propose. Mais elle ne répondra que si le SDK des
+  /// Home APIs est compilé dans l'application, et il ne l'est pas par
+  /// défaut — à la différence de HomeKit, les Home APIs ne sont pas dans le
+  /// système, et leur SDK ne se prend ni sur Maven ni sur SwiftPM. Il se
+  /// télécharge depuis la console Google Home pour un projet déclaré, avec
+  /// son client OAuth, puis se donne à la construction :
+  /// `-PgoogleHomeRepo=<dossier>` côté Android, un paquet local ajouté au
+  /// projet Xcode côté iOS.
+  ///
+  /// Donc : une construction **sans** le SDK et avec ce drapeau vrai montre
+  /// un bouton « Connecter Google Home » qui répondra toujours « aucun
+  /// capteur ». C'est utile pour éprouver l'écran, jamais pour livrer. La
+  /// marche à suivre est dans `docs/05-technical-architecture.md`, section
+  /// « Google Home ».
+  static const bool googleHomeEnabled = true;
 
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.
