@@ -3606,6 +3606,54 @@ Le rattachement se fait par l'identifiant de l'espèce parente : si GBIF ne
 connaît qu'*Epipremnum aureum*, c'est à elle que pointent 'Marble Queen' et
 'N'Joy', qui restent deux fiches distinctes côté application.
 
+#### 162 classes livrées que l'application ne sait pas nommer
+
+Mesuré sur les fichiers livrés — `assets/model/labels.txt` (1 444 classes),
+`assets/species/catalog.tsv` (36 362 espèces) et les 297 entrées triées à la
+main de `SpeciesCatalog`. Le chemin est celui de `catalogLookup`
+(`lib/app/providers.dart`) : nom canonique, catalogue soigné, puis catalogue
+étendu.
+
+**162 classes ne trouvent ni l'un ni l'autre.** Onze pour cent du modèle
+livré. L'application affiche alors le repli de `scientificNameOf` — le nom
+scientifique reconstruit depuis l'identifiant — et aucun nom courant.
+
+Ce sont deux défauts distincts, qui ne se réparent pas au même endroit.
+
+**1. Vingt-deux noms perdus sur un trait d'union.** L'identifiant interne
+aplatit le trait d'union de l'épithète : `hibiscus-rosa-sinensis` ne dit plus
+si le nom est *Hibiscus rosa-sinensis* ou *Hibiscus rosa sinensis*.
+`scientificNameOf` rend le second, le catalogue porte le premier, et la
+recherche échoue :
+
+| identifiant | rendu | catalogue |
+|---|---|---|
+| `hibiscus-rosa-sinensis` | Hibiscus rosa sinensis | *Hibiscus rosa-sinensis* |
+| `opuntia-ficus-indica` | Opuntia ficus indica | *Opuntia ficus-indica* |
+| `vaccinium-vitis-idaea` | Vaccinium vitis idaea | *Vaccinium vitis-idaea* |
+| `adiantum-capillus-veneris` | Adiantum capillus veneris | *Adiantum capillus-veneris* |
+
+Les vingt-deux sont dans le catalogue, avec leurs noms courants dans les
+quatre langues. Seule la clé de recherche diffère. Le correctif tient dans
+la normalisation de `find` — comparer avec les traits d'union aplatis des
+deux côtés — et ne demande ni collecte ni entraînement.
+
+**2. Cent quarante espèces réellement absentes**, dont *Aesculus
+hippocastanum*, *Acer negundo*, *Araucaria heterophylla*, *Alchemilla
+mollis* : ni le marronnier ni le pin de Norfolk ne sont des raretés. Le
+catalogue étendu vient de Wikidata et n'a retenu que les espèces portant un
+nom courant dans l'une des quatre langues ; ces cent quarante n'en avaient
+pas **là**. Mais `plants.csv` en porte pour une partie d'entre elles, dans
+les quatre langues, collectés pour le modèle : la matière existe déjà, il
+s'agit de la verser dans `catalog.tsv` plutôt que d'aller la rechercher.
+
+> **Le § 13.5 dit que les deux catalogues sont deux fichiers. Il manquait
+> que personne ne vérifie qu'ils se recouvrent.** Un modèle peut gagner des
+> classes sans que l'application sache les nommer, et rien dans la chaîne
+> ne s'en plaint : ni `train.py`, ni `retailler.py`, ni les tests. Le
+> recouvrement se mesure en une seconde sur des fichiers déjà commités ;
+> c'est un test, pas un chantier.
+
 #### Un identifiant qu'on possède déjà sans le savoir
 
 Un plan de rattachement aux référentiels veut `gbif_taxon_key` **et**
