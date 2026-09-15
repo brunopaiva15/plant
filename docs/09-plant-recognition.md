@@ -3363,6 +3363,12 @@ relancerait l'encodage. Ça prend effet à la prochaine construction du jeu.
 > **10,2 points** (§ 6.7 bis) — et il a changé le titre. Grossir n'est pas
 > le problème ; grossir *à la sortie* l'est. Les deux ne se décidaient pas
 > séparément jusqu'ici, et c'est le vrai acquis de la v8.
+>
+> **Puis révisé par la v9, qui est moins bonne que la v8.** Le § 13.8 dit
+> combien et pourquoi on ne la livre pas. Une chose y change le cadrage
+> lui-même : la perte survit au masquage des classes supplémentaires, donc
+> elle ne vient pas de l'étendue des sorties. « Exposer étroit » reste juste
+> et ne répare pas ce cas-ci.
 
 ### 13.1 Les sept faits, et ce qu'ils imposent
 
@@ -3692,6 +3698,13 @@ la fois. Deux entraînements courts sur un sous-ensemble le diraient pour
 quelques euros — et si le tuyau reste le plafond (point 1), la réponse est
 probablement « rien », ce qui vaut la peine d'être su plutôt que supposé.
 
+> **Repoussé, et la v9 en a payé le prix.** Ce point est resté ouvert, et la
+> v9 a tourné à `--batch 64` en même temps qu'elle changeait le jeu et le
+> découpage. Elle perd 1,5 point sur la v8 sans qu'on sache lequel des trois
+> le coûte (§ 13.8). La question du lot ne se tranche plus « pour quelques
+> euros » : elle se tranche pour deux heures de GPU, parce qu'on ne l'a pas
+> tranchée quand elle en coûtait vingt minutes.
+
 Le reste ne bouge pas : `--backbone large`, `--dropout 0.5`, `--unfreeze
 100`, `--input-size 320`, précision mixte, cache de traits et points de
 sauvegarde. Une recette à la fois, comme au § 12.
@@ -3811,7 +3824,127 @@ La collecte reste à faire. Un professeur auto-supervisé rend les images
 Commons, les 76 espèces faibles — garde exactement la même priorité, et il
 alimente les deux voies.
 
-### 13.8 Ce qu'il faut retenir
+### 13.8 Ce que la v9 a rendu, et pourquoi elle n'est pas livrée
+
+La v9 a été entraînée sur le jeu redécoupé et pré-découpé en carrés : 5 343
+classes utilisables contre 5 259, quatre époques de tête et douze de réglage
+fin, `--batch 64`, deux heures sur la L40.
+
+Elle est **moins bonne que la v8**, et il a fallu trois mesures pour le dire
+proprement.
+
+#### Les deux `model.json`, qui ne prouvent rien
+
+| | v8 | v9 |
+|---|---|---|
+| classes | 5 259 | 5 343 |
+| top-1 | 0,5407 | 0,5153 |
+| top-3 | 0,6921 | 0,6664 |
+| macro-F1 | 0,5246 | 0,4963 |
+| confiance moyenne | 0,5564 | 0,4802 |
+
+Ces deux colonnes ne se comparent pas — c'est le § 12.10, et le redécoupage
+a changé le jeu de test. Une seule chose s'y lit : la confiance moyenne perd
+**7,6 points** quand le top-1 en perd 2,5. Un test plus dur produit
+l'inverse — un modèle qui reste sûr de lui et se trompe davantage.
+
+#### La comparaison à armes égales, qui tranche
+
+`compare_models.py` sur 8 000 images du test courant, 5 225 classes
+communes :
+
+| | v8 | v9 |
+|---|---|---|
+| classes communes, sorties masquées | **0,528** | 0,513 |
+| classes communes, sorties entières | **0,5272** | 0,5109 |
+| plantes cultivées, sorties entières | **0,479** | 0,4685 |
+| couverture gagnée (116 espèces, 1 010 images) | — | 0,4218 |
+
+Trois choses en sortent, dont deux qu'on n'attendait pas.
+
+**1. Le biais du découpage ne fait pas le travail.** Le `splits.csv`
+d'origine a été écrasé par le redécoupage, donc une partie de ces 8 000
+images a pu servir à entraîner la v8 : le terrain la favorise. Mais elle y
+marque **0,528 contre 0,5407 sur son propre test** — un peu *moins*. Si une
+part notable de ces images lui était familière, elle serait nettement
+au-dessus : la v6 montrait dix-huit points d'écart entre entraînement et
+validation (§ 6.7). Le redécoupage n'a donc déplacé que les petites classes,
+comme il était censé le faire. **La défaite de la v9 est réelle.**
+
+**2. Ce n'est pas l'étendue qui la cause, et c'est la vraie surprise.** La
+lecture masquée neutralise les 118 classes que la v9 a en plus — elles ne
+peuvent pas voler de réponses. Elle perd quand même 1,5 point. Le § 13.2
+sépare l'ensemble entraîné de l'ensemble exposé, et `retailler.py` règle le
+second ; ici le premier est en cause. **Aucune retaille ne rattrapera ces
+1,5 point** : ce n'est pas ce que le modèle expose, c'est ce qu'il a appris.
+
+**3. La calibration va dans l'autre sens.** Au seuil de 0,70, la v9 accepte
+**31,2 %** des images à **0,921** de précision, contre **37,9 %** à **0,883**
+pour la v8. Lu tel quel, c'est un progrès. Ça n'en est pas forcément un : un
+modèle qui ne répond que lorsqu'il est sûr se trompe forcément moins, et
+comparer deux modèles au même seuil compare deux prudences, pas deux
+qualités. `a_taux_egal` coupe désormais les deux au même taux d'acceptation
+avant de lire la justesse — c'est la seule façon de savoir si la v9 sait
+mieux se taire ou seulement davantage.
+
+#### L'erreur de méthode, qui est la vraie leçon
+
+Trois choses ont bougé entre la v8 et la v9 :
+
+| | v8 | v9 |
+|---|---|---|
+| lot | 128 | 64 |
+| jeu | plein cadre | carrés pré-découpés (§ 13.6) |
+| découpage | ancien | corrigé, +84 classes |
+
+Le § 12 dit « une recette à la fois » et il a payé quatre fois. On en a
+changé trois d'un coup, et aucune mesure ne peut plus dire laquelle a coûté
+les 1,5 point. Deux heures de GPU rendent un chiffre qu'on ne sait pas
+attribuer, c'est-à-dire pas grand-chose.
+
+Le pré-découpage en carrés est le plus suspect, parce qu'il a été introduit
+pour gagner du temps de lecture, pas de la précision — et qu'il ré-encode
+chaque image en JPEG une seconde fois. Mais le lot est le moins cher à
+écarter, et le § 13.7 l'avait déjà noté comme non tranché. C'est donc lui
+qu'on teste d'abord, seul.
+
+#### Trois outils qui ne savaient pas répondre
+
+Chercher *pourquoi* a coûté plus cher que mesurer *combien*, et trois fois
+pour la même raison : ce qu'on voulait relire n'avait jamais été écrit.
+
+- **`model.json` ne notait pas sa recette.** Ni le lot, ni les époques, ni
+  le taux d'apprentissage, ni le jeu dont il sort. Le tableau ci-dessus a été
+  reconstitué en relisant ce document et les commandes tapées à la main. Un
+  résultat sans son protocole ne s'audite pas ; `recette(args)` écrit
+  désormais les douze réglages à côté des chiffres qu'ils expliquent.
+- **Le `splits.csv` était écrasable, et il a été écrasé.** Le test d'origine
+  de la v8 est perdu pour de bon, donc l'intersection des deux jeux de test —
+  la seule mesure vraiment propre entre deux versions — est hors de portée.
+  Le fichier pèse trop pour partir dans `assets/model` ; c'est son empreinte
+  sha256 qui est gardée, ce qui suffit à dire si deux runs ont vu le même
+  découpage.
+- **`compare_models.py` réservait le GPU sans l'utiliser.** Il infère sur le
+  processeur — `tf.lite.Interpreter` passe par XNNPACK — mais TensorFlow
+  prend toute la mémoire de la carte au premier accès. Un compare de vingt
+  minutes a tué un entraînement de deux heures au démarrage, avec 47 Go
+  retenus à 1 % d'utilisation. Il se rend maintenant aveugle au GPU.
+
+Aucun des trois n'a coûté de précision. Les trois ont coûté du temps, et le
+premier a failli coûter une mauvaise conclusion : sans la recette, « la v9
+est moins bonne » se serait rangé comme un fait sur l'architecture plutôt
+que comme une question sur le lot.
+
+#### Ce qui est en cours
+
+Un entraînement identique à la v9 sur un seul point — `--batch 128`, celui
+de la v8. S'il retrouve les 1,5 point, c'était le lot et la question du
+§ 13.7 est close. Sinon c'est le pré-découpage en carrés, et la régression
+vient d'une optimisation de confort.
+
+**En attendant, c'est la v8 qui reste livrée.**
+
+### 13.9 Ce qu'il faut retenir
 
 Trois des six chantiers ne demandent **aucun entraînement**, et deux ne
 demandent aucune collecte. L'Iris 9 n'est pas un modèle plus gros : c'est un
