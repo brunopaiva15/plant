@@ -163,14 +163,31 @@ def chronometrer(rows: list[tuple[Path, str]], load: int, combien: int, graine: 
           f'sur un cœur, {dt / len(choisis) * 1e3:.1f} ms/image')
 
 
-def convertir(rows: list[tuple[Path, str]], dataset: Path, out: Path, load: int) -> None:
+def convertir(rows: list[tuple[Path, str]], dataset: Path, out: Path, load: int,
+              reprendre: bool = False) -> None:
+    """Écrit le jeu pré-découpé. `reprendre` saute ce qui est déjà là.
+
+    Une conversion coûte une heure sur un million d'images, et cette VM en a
+    perdu deux à 75 % faute de pouvoir repartir d'où elle en était. Le test
+    est le bon marché qu'il faut ici : un fichier de sortie qui existe et
+    n'est pas vide a été écrit en entier — `Image.save` écrit dans un seul
+    appel, donc un fichier tronqué supposerait une coupure au milieu d'une
+    écriture de quelques dizaines de kilo-octets. Le risque existe et il est
+    borné à **une** image ; le relire pour le vérifier coûterait le prix
+    d'une conversion complète.
+    """
     out.mkdir(parents=True, exist_ok=True)
     shutil.copy2(dataset / 'splits.csv', out / 'splits.csv')
     avant = apres = 0
-    faites = ratees = 0
+    faites = ratees = sautees = 0
     for n, (src, _) in enumerate(rows, 1):
         if not src.exists():
             continue
+        if reprendre:
+            deja = out / src.relative_to(dataset)
+            if deja.exists() and deja.stat().st_size > 0:
+                sautees += 1
+                continue
         try:
             a, b = convertir_une(src, out / src.relative_to(dataset), load)
         except Exception as e:
@@ -181,6 +198,7 @@ def convertir(rows: list[tuple[Path, str]], dataset: Path, out: Path, load: int)
         if n % 20000 == 0:
             print(f'  {n}/{len(rows)}', file=sys.stderr, flush=True)
     print(f'\n{faites} images écrites dans {out}'
+          f'{f", {sautees} déjà présentes" if sautees else ""}'
           f'{f", {ratees} en échec" if ratees else ""}.')
     if faites:
         ecart = 1 - apres / avant
@@ -196,6 +214,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument('--input-size', type=int, default=320)
     ap.add_argument('--out', help='où écrire le jeu converti ; requis avec --convertir')
     ap.add_argument('--convertir', action='store_true', help='sans quoi rien n\'est écrit')
+    ap.add_argument('--reprendre', action='store_true',
+                    help='sauter les images déjà converties : une coupure ne coûte plus '
+                         'que ce qui restait')
     ap.add_argument('--echantillon', type=int, default=4000)
     ap.add_argument('--chrono', type=int, default=300, help='images chronométrées ; 0 pour sauter')
     ap.add_argument('--seed', type=int, default=20260914)
@@ -219,7 +240,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.out:
         print('--convertir demande --out.', file=sys.stderr)
         return 1
-    convertir(rows, dataset, Path(args.out), load)
+    convertir(rows, dataset, Path(args.out), load, args.reprendre)
     return 0
 
 

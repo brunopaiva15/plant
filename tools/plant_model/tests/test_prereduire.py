@@ -103,3 +103,43 @@ def test_une_image_absente_narrete_pas_la_conversion(tmp_path):
     (src / 'Espece_test/0.jpg').unlink()
     convertir(lignes(src), src, out, 366)
     assert (out / 'Espece_test/1.jpg').exists()
+
+
+# --- Une coupure ne doit plus coûter une heure ----------------------------
+
+def test_la_reprise_saute_ce_qui_est_deja_converti(tmp_path):
+    src, out = tmp_path / 'jeu', tmp_path / 'sortie'
+    _jeu(src, [(384, 288), (384, 288), (384, 288)])
+    rows = lignes(src)
+    convertir(rows[:2], src, out, 366)          # une passe interrompue
+    avant = {p: p.stat().st_mtime_ns for p in out.rglob('*.jpg')}
+    assert len(avant) == 2
+    convertir(rows, src, out, 366, reprendre=True)
+    apres = {p: p.stat().st_mtime_ns for p in out.rglob('*.jpg')}
+    assert len(apres) == 3, 'la troisième est écrite'
+    for p, t in avant.items():
+        assert apres[p] == t, f'{p.name} ne devait pas être réécrite'
+
+
+def test_sans_reprise_tout_est_reecrit(tmp_path):
+    src, out = tmp_path / 'jeu', tmp_path / 'sortie'
+    _jeu(src, [(384, 288), (384, 288)])
+    rows = lignes(src)
+    convertir(rows, src, out, 366)
+    avant = {p: p.stat().st_mtime_ns for p in out.rglob('*.jpg')}
+    convertir(rows, src, out, 366)
+    apres = {p: p.stat().st_mtime_ns for p in out.rglob('*.jpg')}
+    assert any(apres[p] != t for p, t in avant.items()), 'sans --reprendre, on réécrit'
+
+
+def test_un_fichier_vide_ne_compte_pas_comme_converti(tmp_path):
+    # Une coupure au milieu d'une écriture laisse un fichier de taille nulle :
+    # le sauter figerait le défaut dans le jeu.
+    src, out = tmp_path / 'jeu', tmp_path / 'sortie'
+    _jeu(src, [(384, 288)])
+    rows = lignes(src)
+    vide = out / rows[0][0].relative_to(src)
+    vide.parent.mkdir(parents=True, exist_ok=True)
+    vide.touch()
+    convertir(rows, src, out, 366, reprendre=True)
+    assert vide.stat().st_size > 0, 'le fichier vide est refait'
