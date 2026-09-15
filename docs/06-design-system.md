@@ -473,17 +473,19 @@ carte à image.
   demande. La page a longtemps dit ce qui est gratuit sans jamais dire ce que
   cela coûte à quelqu'un, et il n'y avait donc aucune raison de donner. Or
   les trois « aucun » du paragraphe au-dessus sont exactement ce qui prive
-  l'application de revenu : « Une seule personne la développe. Ce soutien est
-  tout ce qu'elle rapporte. » Le même fait, retourné. Deux phrases actives,
-  et le nom de l'application ne s'y répète pas — le titre vient de le dire. Rien n'y est
+  l'application de revenu : « Elle est développée par une seule personne, et
+  n'a pas d'autre revenu. » Le même fait, retourné. Une phrase, pas deux
+  courtes qui se répondent — la symétrie fait slogan —, et le nom de
+  l'application ne s'y répète pas, le titre vient de le donner. Rien n'y est
   supposé du lecteur ni promis en échange — c'est un constat, comme le reste
   des textes, et il disparaît une fois le soutien versé.
 - **Le montant est dans le bouton** (« Soutenir · CHF 5.00 »), et nulle part
   ailleurs. Écrit en grand et à la main au-dessus, il tenait la moitié du bas
   de la pièce et le bouton n'en était plus que la conclusion ; dans le
   bouton, ce qu'on lit est ce qu'on va faire et ce que cela coûte, d'un seul
-  tenant. Dessous, en encre tertiaire, ce que le bouton ne dit pas — « Une
-  seule fois ».
+  tenant. Dessous, centré et en encre tertiaire, ce que le bouton ne dit
+  pas — « Une seule fois ». Centré parce qu'il appartient au bouton, pas au
+  paragraphe rangé à gauche au-dessus.
 - **Rien d'autre ne se lit après le bouton.** Une mention y a
   traîné — « le soutien ne déverrouille rien » —, et c'était un avertissement
   juste avant le geste : la phrase du haut dit déjà que tout est ouvert, donc
@@ -521,7 +523,7 @@ ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
 
 **Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :
 seule la scène rapetisse, la page y partageant sa hauteur avec les points de
-progression. « Continuer sans » n'appartient pas à la proposition mais à
+progression. « Non merci » n'appartient pas à la proposition mais à
 l'étape, qui le dessine elle-même avec le bouton discret de l'onboarding,
 celui de « Plus tard » : sous « Restaurer mon soutien », qui est vert, deux
 fantômes de la même couleur ne disaient plus lequel était la sortie.

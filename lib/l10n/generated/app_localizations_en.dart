@@ -3821,7 +3821,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportWhy =>
-      'One person develops it. This support is its only income.';
+      'It is developed by one person, and has no other income.';
 
   @override
   String get supportOnce => 'One time only';
@@ -3860,7 +3860,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportAlready => 'Thank you for your support';
 
   @override
-  String get supportNoThanks => 'Continue without';
+  String get supportNoThanks => 'No thanks';
 
   @override
   String get emptyGardenSubtitle => 'Add your first plant.';

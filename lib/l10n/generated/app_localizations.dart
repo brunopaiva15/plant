@@ -6555,7 +6555,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportWhy.
   ///
   /// In fr, this message translates to:
-  /// **'Une seule personne la développe. Ce soutien est tout ce qu\'elle rapporte.'**
+  /// **'Elle est développée par une seule personne, et n\'a pas d\'autre revenu.'**
   String get supportWhy;
 
   /// No description provided for @supportOnce.
@@ -6627,7 +6627,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportNoThanks.
   ///
   /// In fr, this message translates to:
-  /// **'Continuer sans'**
+  /// **'Non merci'**
   String get supportNoThanks;
 
   /// No description provided for @emptyGardenSubtitle.

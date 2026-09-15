@@ -1775,7 +1775,7 @@
   },
   "supportTitle": "Auxine est gratuite",
   "supportBody": "Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.",
-  "supportWhy": "Une seule personne la développe. Ce soutien est tout ce qu'elle rapporte.",
+  "supportWhy": "Elle est développée par une seule personne, et n'a pas d'autre revenu.",
   "supportOnce": "Une seule fois",
   "supportGive": "Soutenir · {price}",
   "@supportGive": {
@@ -1794,7 +1794,7 @@
   "supportSettings": "Soutenir le développeur",
   "supportFreeForever": "Gratuite, sans limite",
   "supportAlready": "Merci pour votre soutien",
-  "supportNoThanks": "Continuer sans",
+  "supportNoThanks": "Non merci",
   "emptyGardenSubtitle": "Ajoutez votre première plante.",
   "finderTitle": "Trouver une plante",
   "finderEntryHint": "Aide au choix",

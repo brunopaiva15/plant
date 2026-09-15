@@ -3831,7 +3831,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get supportWhy =>
-      'Eine einzige Person entwickelt sie. Diese Unterstützung ist ihre einzige Einnahme.';
+      'Sie wird von einer einzigen Person entwickelt und hat keine anderen Einnahmen.';
 
   @override
   String get supportOnce => 'Nur einmal';
@@ -3871,7 +3871,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get supportAlready => 'Danke für deine Unterstützung';
 
   @override
-  String get supportNoThanks => 'Ohne fortfahren';
+  String get supportNoThanks => 'Nein danke';
 
   @override
   String get emptyGardenSubtitle => 'Fügen Sie Ihre erste Pflanze hinzu.';

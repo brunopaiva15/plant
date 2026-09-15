@@ -49,9 +49,9 @@ class SupportPitch extends ConsumerStatefulWidget {
   /// Appelé une fois le soutien versé ou retrouvé. L'onboarding s'en sert
   /// pour passer à la suite ; l'écran des réglages n'en a pas besoin.
   ///
-  /// Le geste qui passe outre, lui, n'est pas ici : « Continuer sans » est de
-  /// la navigation de l'onboarding, et c'est l'onboarding qui le dessine,
-  /// dans son propre style. Deux boutons fantômes verts empilés — celui-là et
+  /// Le geste qui passe outre, lui, n'est pas ici : « Non merci » est de la
+  /// navigation de l'onboarding, et c'est l'onboarding qui le dessine, dans
+  /// son propre style. Deux boutons fantômes verts empilés — celui-là et
   /// « Restaurer mon soutien » — ne disaient plus lequel était la sortie.
   final VoidCallback? onDone;
 
@@ -310,8 +310,14 @@ class _Offer extends StatelessWidget {
         // qu'on va faire, et ce que cela coûte, d'un seul tenant.
         FloraButton(label: l10n.supportGive(price), expand: true, loading: busy, onPressed: onGive),
         const SizedBox(height: Space.xs),
-        // Ce que le bouton ne dit pas : que cela ne se répète pas.
-        Text(l10n.supportOnce, style: context.text.caption.copyWith(color: c.inkTertiary)),
+        // Ce que le bouton ne dit pas : que cela ne se répète pas. Centré
+        // sous lui, comme une légende, plutôt que rangé à gauche avec le
+        // texte : elle appartient au bouton, pas au paragraphe.
+        Text(
+          l10n.supportOnce,
+          style: context.text.caption.copyWith(color: c.inkTertiary),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
