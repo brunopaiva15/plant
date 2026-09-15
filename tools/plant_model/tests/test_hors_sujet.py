@@ -58,3 +58,27 @@ def test_les_categories_ne_sont_pas_des_plantes():
     for c in CATEGORIES:
         assert not any(m in c.lower() for m in suspects), c
     assert len(CATEGORIES) >= 6, 'assez variées pour ne pas mesurer un seul sujet'
+
+
+# --- Une vignette PNG sous un nom en .jpg ---------------------------------
+
+from hors_sujet import est_jpeg  # noqa: E402
+
+
+def test_une_vignette_jpeg_est_gardee():
+    assert est_jpeg('https://upload.wikimedia.org/.../640px-Chat.jpg')
+
+
+def test_une_vignette_png_est_ecartee():
+    # Commons sert la vignette d'un original PNG en PNG ; enregistrée sous
+    # un nom en .jpg, elle fait tomber `decode_jpeg` et emporte la passe.
+    assert not est_jpeg('https://upload.wikimedia.org/.../640px-Schema.png')
+
+
+def test_les_parametres_durl_ne_trompent_pas():
+    assert est_jpeg('https://x/640px-Chat.jpg?width=640')
+    assert not est_jpeg('https://x/640px-Schema.png?width=640')
+
+
+def test_la_casse_ne_compte_pas():
+    assert est_jpeg('https://x/PHOTO.JPEG')

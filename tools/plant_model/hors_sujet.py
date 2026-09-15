@@ -48,6 +48,17 @@ CATEGORIES = ('Cats', 'Chairs', 'Brick walls', 'Pizza', 'Portrait photographs',
               'Bicycles', 'Coffee cups', 'Laptops', 'Staircases', 'Sneakers')
 
 
+def est_jpeg(url: str) -> bool:
+    """Une vignette JPEG, et rien d'autre.
+
+    Commons sert la vignette d'un original PNG **en PNG**. Enregistrée sous
+    un nom en `.jpg`, elle a fait tomber une passe de 160 images sur
+    `decode_jpeg` — le `mime` de l'API décrit l'original, pas la vignette,
+    donc c'est l'extension de l'URL servie qui fait foi.
+    """
+    return url.split('?')[0].lower().endswith(('.jpg', '.jpeg'))
+
+
 def recolter(dossier: Path, par_categorie: int, pause: float) -> int:
     from plant_dataset.fetchers.wikimedia import CommonsClient
     import requests
@@ -59,7 +70,7 @@ def recolter(dossier: Path, par_categorie: int, pause: float) -> int:
         for page in client._files_info([t for t in titres if t]):
             info = (page.get('imageinfo') or [{}])[0]
             url = info.get('thumburl')
-            if not url:      # sans vignette on ne demande pas l'original (§ 12.6)
+            if not url or not est_jpeg(url):   # sans vignette JPEG, on passe
                 continue
             try:
                 r = requests.get(url, timeout=60, headers={'User-Agent': client.session.headers['User-Agent']})
@@ -71,15 +82,25 @@ def recolter(dossier: Path, par_categorie: int, pause: float) -> int:
     return n
 
 
-def lire(modele, dossier: Path) -> list[tuple[str, float, float]]:
-    """(nom, meilleure confiance, écart avec le second) pour chaque image."""
+def lire(modele, dossier: Path) -> tuple[list[tuple[str, float, float]], int]:
+    """(nom, meilleure confiance, écart avec le second) pour chaque image, et
+    le nombre d'illisibles.
+
+    Un fichier que le décodeur refuse ne doit pas emporter la mesure : sur
+    160 images, en perdre une vaut infiniment mieux que de tout perdre. Le
+    compte est rendu, pas avalé.
+    """
     from compare_models import predict
-    out = []
+    out, illisibles = [], 0
     for image in sorted(dossier.glob('*.jpg')):
-        probs = predict(modele, str(image))
+        try:
+            probs = predict(modele, str(image))
+        except Exception:
+            illisibles += 1
+            continue
         ordre = np.argsort(-probs)
         out.append((image.name, float(probs[ordre[0]]), float(probs[ordre[0]] - probs[ordre[1]])))
-    return out
+    return out, illisibles
 
 
 def verdict(scores: list[float], plancher: float, seuil: float) -> None:
@@ -127,7 +148,9 @@ def main(argv: list[str] | None = None) -> int:
     from compare_models import load_model
     modele = load_model(Path(args.modele))
     print(f'modèle v{modele["version"]} — {len(modele["labels"])} classes')
-    lignes = lire(modele, dossier)
+    lignes, illisibles = lire(modele, dossier)
+    if illisibles:
+        print(f'{illisibles} image(s) illisible(s), ignorée(s)', file=sys.stderr)
     for nom, conf, marge in sorted(lignes, key=lambda x: -x[1])[:10]:
         print(f'  {nom:<10} confiance {conf:.3f}   écart {marge:.3f}')
     if len(lignes) > 10:
