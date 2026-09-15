@@ -173,6 +173,18 @@ void main() {
       expect(find.text('Marcottage'), findsOneWidget);
       expect(find.text('Ombre'), findsNothing);
     });
+
+    testWidgets('les quatre familles de problèmes y portent leur symbole', (tester) async {
+      // C'est ici qu'on vient chercher ce que l'argile d'une fiche de soin ou
+      // d'un diagnostic veut dire ; les autres termes ne se dessinent nulle
+      // part, et n'ont donc rien à montrer.
+      await pump(tester, const EncyclopediaScreen());
+      await tester.tap(find.text('Vocabulaire'));
+      await tester.pump();
+
+      expect(find.text('Ravageur'), findsOneWidget);
+      expect(find.byType(ProblemKindIcon), findsNWidgets(ProblemKind.values.length));
+    });
   });
 
   group('la page d\'un problème', () {
