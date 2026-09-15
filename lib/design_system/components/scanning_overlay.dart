@@ -2,75 +2,25 @@ import 'package:flutter/material.dart';
 
 /// Surimpression de cadrage pour les prises destinées à Iris.
 ///
-/// Elle reprend l'idée d'un balayage de scanner sans basculer dans une DA
-/// technique : une grille presque invisible, quatre repères doux et une
-/// bande sauge/crème qui traverse lentement l'image. Rien n'intercepte les
-/// gestes du viseur.
-///
-/// Avec « Réduire les animations », les repères restent en place mais le
-/// balayage disparaît complètement.
-class ScanningOverlay extends StatefulWidget {
+/// Le layout « scan » reste volontairement statique : une grille presque
+/// invisible et quatre repères doux cadrent la plante sans ajouter de
+/// balayage animé. Rien n'intercepte les gestes du viseur.
+class ScanningOverlay extends StatelessWidget {
   const ScanningOverlay({
     super.key,
     this.color = const Color(0xFFE8F2E8),
-    this.duration = const Duration(milliseconds: 3600),
   });
 
   /// Teinte posée sur la photo. Fixe plutôt que liée au thème : ce qui se
   /// trouve dessous est une image réelle, pas une surface claire ou sombre.
   final Color color;
 
-  /// Un passage complet, du dessus du cadre au-dessous.
-  final Duration duration;
-
-  @override
-  State<ScanningOverlay> createState() => _ScanningOverlayState();
-}
-
-class _ScanningOverlayState extends State<ScanningOverlay> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(vsync: this, duration: widget.duration);
-  bool _reduceMotion = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    if (_reduceMotion == reduceMotion && (_reduceMotion || _controller.isAnimating)) return;
-    _reduceMotion = reduceMotion;
-    if (_reduceMotion) {
-      _controller.stop();
-    } else {
-      _controller.repeat();
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant ScanningOverlay oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.duration != widget.duration) {
-      _controller.duration = widget.duration;
-      if (!_reduceMotion) _controller.repeat();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: RepaintBoundary(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) => CustomPaint(
-            painter: _ScanningPainter(
-              color: widget.color,
-              progress: _reduceMotion ? null : Curves.easeInOut.transform(_controller.value),
-            ),
-          ),
+        child: CustomPaint(
+          painter: _ScanningPainter(color: color),
         ),
       ),
     );
@@ -78,13 +28,9 @@ class _ScanningOverlayState extends State<ScanningOverlay> with SingleTickerProv
 }
 
 class _ScanningPainter extends CustomPainter {
-  const _ScanningPainter({required this.color, required this.progress});
+  const _ScanningPainter({required this.color});
 
   final Color color;
-
-  /// `null` signifie que l'animation est désactivée : seuls les repères fixes
-  /// sont peints.
-  final double? progress;
 
   static const double _grid = 44;
   static const double _inset = 18;
@@ -115,36 +61,6 @@ class _ScanningPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     _cornerPath(canvas, cornerPaint, size);
-
-    final p = progress;
-    if (p == null) return;
-
-    // La bande naît et disparaît hors cadre ; le retour à zéro n'est donc
-    // jamais visible. Son centre est plus lumineux que ses bords.
-    final bandHeight = (size.height * 0.15).clamp(48.0, 82.0);
-    final y = -bandHeight + (size.height + bandHeight * 2) * p;
-    final bandRect = Rect.fromLTWH(0, y - bandHeight / 2, size.width, bandHeight);
-    final bandPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          color.withValues(alpha: 0),
-          color.withValues(alpha: 0.035),
-          color.withValues(alpha: 0.15),
-          color.withValues(alpha: 0.035),
-          color.withValues(alpha: 0),
-        ],
-        stops: const [0, 0.25, 0.5, 0.75, 1],
-      ).createShader(bandRect);
-    canvas.drawRect(bandRect, bandPaint);
-
-    final linePaint = Paint()
-      ..color = color.withValues(alpha: 0.62)
-      ..strokeWidth = 1.25
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.8);
-    canvas.drawLine(Offset(_inset, y), Offset(size.width - _inset, y), linePaint);
   }
 
   void _cornerPath(Canvas canvas, Paint paint, Size size) {
@@ -174,5 +90,5 @@ class _ScanningPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ScanningPainter oldDelegate) => oldDelegate.color != color || oldDelegate.progress != progress;
+  bool shouldRepaint(_ScanningPainter oldDelegate) => oldDelegate.color != color;
 }
