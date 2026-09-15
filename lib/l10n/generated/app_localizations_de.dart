@@ -3830,6 +3830,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Alle Funktionen sind verfügbar. Kein Abo, keine Werbung, kein Pflichtkonto.';
 
   @override
+  String get supportWhy =>
+      'Auxine wird von einer einzelnen Person entwickelt, und diese Unterstützung ist ihre einzige Einnahme.';
+
+  @override
   String get supportOnce => 'Nur einmal';
 
   @override

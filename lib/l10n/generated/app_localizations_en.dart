@@ -3820,6 +3820,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Every feature is available. No subscription, no advertising, no compulsory account.';
 
   @override
+  String get supportWhy =>
+      'Auxine is developed by one person, and this support is its only revenue.';
+
+  @override
   String get supportOnce => 'One time only';
 
   @override

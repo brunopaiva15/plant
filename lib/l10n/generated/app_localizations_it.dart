@@ -3837,6 +3837,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Tutte le funzioni sono accessibili. Nessun abbonamento, nessuna pubblicità, nessun account obbligatorio.';
 
   @override
+  String get supportWhy =>
+      'Auxine è sviluppata da una sola persona, e questo sostegno è la sua unica entrata.';
+
+  @override
   String get supportOnce => 'Una sola volta';
 
   @override

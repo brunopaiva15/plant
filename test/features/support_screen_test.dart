@@ -71,13 +71,13 @@ Future<AppLocalizations> _pump(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('ce qui est ouvert est écrit avant le montant', (tester) async {
+  testWidgets('ce qui est ouvert, puis pourquoi donner, puis le montant', (tester) async {
     final l10n = await _pump(tester);
-    expect(
-      tester.getTopLeft(find.text(l10n.supportBody)).dy,
-      lessThan(tester.getTopLeft(find.text('CHF 5.00')).dy),
-      reason: 'on montre ce qui est donné avant de demander',
-    );
+    final open = tester.getTopLeft(find.text(l10n.supportBody)).dy;
+    final why = tester.getTopLeft(find.text(l10n.supportWhy)).dy;
+    final price = tester.getTopLeft(find.text('CHF 5.00')).dy;
+    expect(open, lessThan(why), reason: 'on montre ce qui est donné avant de dire pourquoi');
+    expect(why, lessThan(price), reason: "la raison vient avant le montant, sinon il n'y en a pas");
   });
 
   testWidgets('le montant est écrit en toutes lettres, une fois', (tester) async {
@@ -106,6 +106,7 @@ void main() {
   testWidgets('une fois le soutien versé, la page ne redemande rien', (tester) async {
     final l10n = await _pump(tester, supported: true);
     expect(find.text(l10n.supportThanksTitle), findsOneWidget);
+    expect(find.text(l10n.supportWhy), findsNothing, reason: 'la raison de donner ne se redemande pas');
     expect(find.text(l10n.supportGive), findsNothing);
     expect(find.text('CHF 5.00'), findsNothing);
     // La phrase du haut descend sous le trait : la page se ferme sur ce

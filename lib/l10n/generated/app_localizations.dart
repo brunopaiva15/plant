@@ -6552,6 +6552,12 @@ abstract class AppLocalizations {
   /// **'Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.'**
   String get supportBody;
 
+  /// No description provided for @supportWhy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Auxine est développée par une seule personne, et ce soutien est son seul revenu.'**
+  String get supportWhy;
+
   /// No description provided for @supportOnce.
   ///
   /// In fr, this message translates to:

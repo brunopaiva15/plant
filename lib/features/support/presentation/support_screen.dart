@@ -182,10 +182,14 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
 
 /// La pièce : tout ce que la page a à dire, dans une seule forme modelée.
 ///
-/// Terre cuite pâle et relief franc — c'est la couleur phare de
-/// l'application, et la seule pièce de l'écran a le droit de la porter. Sur
-/// ce pastel l'encre tertiaire tombe à 4,3:1 : c'est la secondaire qui tient
-/// les petits textes.
+/// De l'argile crue — `surfaceMuted`, un cran sous le papier — et un relief
+/// franc. Elle a été en terre cuite pâle, et c'était une erreur de sens
+/// autant que de goût : dans cette application la terre cuite est la couleur
+/// du retard et de l'urgence, et un grand aplat rouge derrière une demande
+/// se lit comme un avertissement. `surfaceMuted` ne dit rien d'autre que la
+/// matière, laisse le vert du bouton et la terre cuite du montant ressortir,
+/// et rentre dans le contrat de contraste — les trois encres y tiennent
+/// 4,5:1, ce que le pastel de terre cuite ne faisait pas.
 class _Piece extends StatelessWidget {
   const _Piece({required this.supported, required this.topRoom, required this.below});
 
@@ -202,7 +206,7 @@ class _Piece extends StatelessWidget {
     final c = context.colors;
     final l10n = context.l10n;
     return ClayBox(
-      color: c.terracottaSoft,
+      color: c.surfaceMuted,
       shape: const ClayShape.rounded(Radii.xl),
       depth: ClayDepth.deep,
       padding: EdgeInsets.fromLTRB(Space.xl, topRoom + Space.md, Space.xl, Space.xxl),
@@ -215,6 +219,15 @@ class _Piece extends StatelessWidget {
             supported ? l10n.supportThanksBody : l10n.supportBody,
             style: context.text.body.copyWith(color: c.inkSecondary),
           ),
+          // Pourquoi donner. La page disait ce qui est gratuit sans jamais
+          // dire ce que cela coûte à quelqu'un : les trois « aucun » du
+          // paragraphe au-dessus sont exactement ce qui prive l'application
+          // de revenu, et c'est là tout l'argument. En pleine encre, parce
+          // que c'est la phrase qui compte.
+          if (!supported) ...[
+            const SizedBox(height: Space.md),
+            Text(l10n.supportWhy, style: context.text.body),
+          ],
           const SizedBox(height: Space.xxxl),
           below,
         ],

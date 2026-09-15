@@ -449,10 +449,14 @@ elle est **posée dessus**, débordant du coin haut droit, comme on laisse une
 plante sur un coin de table. C'est ce débordement qui sépare un objet d'une
 carte à image.
 
-- **La pièce** est en terre cuite pâle, relief franc, rayon `xl`. La couleur
-  phare de l'application, que la seule pièce de l'écran a le droit de porter.
-  Sur ce pastel l'encre tertiaire tombe à 4,3:1 : c'est la secondaire qui
-  tient les petits textes.
+- **La pièce** est en argile crue — `surfaceMuted`, un cran sous le papier —,
+  relief franc, rayon `xl`. Elle a été en terre cuite pâle, et c'était une
+  erreur de sens autant que de goût : dans cette application la terre cuite
+  est la couleur du retard et de l'urgence, et un grand aplat rouge derrière
+  une demande se lit comme un avertissement. `surfaceMuted` ne dit rien que
+  la matière, laisse ressortir le vert du bouton et la terre cuite du
+  montant, et rentre dans le contrat de contraste — les trois encres y
+  tiennent 4,5:1, ce que le pastel de terre cuite ne faisait pas.
 - **La plante** est celle de l'icône, avec sa pousse et sa respiration. Le
   `Stack` ne rogne pas (`Clip.none`) : ce qui dépasse pousse la pièce vers le
   bas, ce qui y entre creuse sa marge haute, pour que le titre ne lui passe
@@ -465,6 +469,14 @@ carte à image.
   cadence d'une machine, et un deux-points qui n'annonçait pas une valeur
   mais une énumération. Les deux-points de l'application servent ailleurs à
   nommer un champ (« Dernier : {date} ») ; celui-là ne nommait rien.
+- **Pourquoi donner**, en pleine encre, entre ce qu'on a reçu et ce qu'on
+  demande. La page a longtemps dit ce qui est gratuit sans jamais dire ce que
+  cela coûte à quelqu'un, et il n'y avait donc aucune raison de donner. Or
+  les trois « aucun » du paragraphe au-dessus sont exactement ce qui prive
+  l'application de revenu : « Auxine est développée par une seule personne,
+  et ce soutien est son seul revenu. » Le même fait, retourné. Rien n'y est
+  supposé du lecteur ni promis en échange — c'est un constat, comme le reste
+  des textes, et il disparaît une fois le soutien versé.
 - **Le montant** est tracé à la main, à la taille du titre, avec « Une seule
   fois » posé à côté sur la même ligne de base, et une lueur d'un point sous
   les chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est
