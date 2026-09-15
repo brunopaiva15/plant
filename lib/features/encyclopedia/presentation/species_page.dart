@@ -61,7 +61,7 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
     final displayScientificName = capitalizeSpeciesDisplayName(scientificName);
 
     return FloraPage(
-      title: common ?? displayScientificName,
+      title: common == null ? displayScientificName : capitalizeSpeciesDisplayName(common),
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
