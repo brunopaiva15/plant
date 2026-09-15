@@ -174,6 +174,57 @@ def tally(predictions, model, restrict: set[str] | None, renormalise: bool = Fal
     }
 
 
+def confiances(predictions, model, restrict: set[str] | None = None,
+               renormalise: bool = False) -> list[tuple[float, bool]]:
+    """(confiance, justesse) pour chaque image — la matière brute des seuils.
+
+    `tally` fixe le seuil et compte ; ici on garde les couples, parce qu'une
+    fois qu'on les a, n'importe quel seuil se lit sans réinférer.
+    """
+    out = []
+    for truth, probs in predictions:
+        if restrict is not None:
+            mask = np.zeros_like(probs)
+            for c in restrict:
+                i = model['index'].get(c)
+                if i is not None:
+                    mask[i] = 1.0
+            probs = probs * mask
+            if renormalise:
+                masse = float(probs.sum())
+                if masse > 0:
+                    probs = probs / masse
+        i = int(np.argmax(probs))
+        out.append((float(probs[i]), model['labels'][i] == truth))
+    return out
+
+
+def a_taux_egal(paires: list[tuple[float, bool]], taux: float) -> dict | None:
+    """Le seuil qui fait accepter `taux` des images, et la justesse qui y règne.
+
+    Comparer deux modèles au **même seuil** compare deux prudences, pas deux
+    qualités. La v9 accepte 31 % des images à 0,70 contre 38 % à la v8 : sa
+    meilleure précision peut n'être que le prix de son silence, puisqu'un
+    modèle qui ne répond que quand il est sûr se trompe forcément moins.
+
+    La question honnête est l'inverse — **à autonomie égale**, qui se trompe
+    le moins ? On trie par confiance, on garde la même proportion pour les
+    deux, et on lit la justesse sur cette tranche-là. C'est aussi la lecture
+    qui correspond à ce que l'application peut régler : le seuil du § 3.2 est
+    un cadran, pas une constante de la nature.
+    """
+    if not paires or taux <= 0:
+        return None
+    ordonne = sorted(paires, key=lambda p: -p[0])
+    n = min(len(ordonne), max(1, round(taux * len(ordonne))))
+    retenus = ordonne[:n]
+    return {
+        'seuil': round(retenus[-1][0], 4),
+        'accepted_rate': round(n / len(ordonne), 4),
+        'precision_when_accepted': round(sum(1 for _, ok in retenus if ok) / n, 4),
+    }
+
+
 def score(rows, model, restrict: set[str] | None, renormalise: bool = False,
           seuil: float = 0.70) -> dict:
     """Inférence puis comptage, pour qui n'a qu'une lecture à faire."""
@@ -243,8 +294,19 @@ def main() -> int:
             ligne(model, tally(pred, model, shared))
         print()
         print(f'— {title} ({len(subset)} images) — sorties entières, ce que l\'application rend')
+        entieres = [(model, confiances(pred, model)) for model, pred in sorties]
         for model, pred in sorties:
             ligne(model, tally(pred, model, None))
+        # À autonomie égale : le même taux d'acceptation pour les deux, lu sur
+        # celui de A. Sans quoi on compare deux prudences, pas deux qualités.
+        cible = tally(sorties[0][1], a, None)['accepted_rate']
+        if cible:
+            print(f'   à autonomie égale ({cible:.0%} acceptées, le taux de v{a["version"]} à 0,70) :')
+            for model, paires in entieres:
+                r = a_taux_egal(paires, cible)
+                if r:
+                    print(f"     v{model['version']} : seuil {r['seuil']:.3f} → "
+                          f"précision {r['precision_when_accepted']}")
         print()
         if args.restreint:
             # Masquer retire de la masse ; sans la rendre, le seuil devient

@@ -119,3 +119,65 @@ def test_restricting_and_renormalising_is_what_a_narrowed_app_would_render():
     renorme = tally(pred, m, catalogue, renormalise=True, seuil=0.70)
     assert renorme['accepted_rate'] == 1.0          # 0,45 / 0,60 = 0,75
     assert renorme['precision_when_accepted'] == 1.0
+
+
+# — à autonomie égale —
+#
+# La v9 accepte 31 % des images au seuil de 0,70 contre 38 % à la v8, et y
+# est plus précise (0,921 contre 0,883). Lu tel quel, c'est un progrès ; mais
+# un modèle qui se tait plus se trompe forcément moins, et la comparaison à
+# seuil fixe confond la prudence avec la qualité. `a_taux_egal` remet les deux
+# au même taux d'acceptation avant de lire la justesse.
+
+from compare_models import a_taux_egal, confiances  # noqa: E402
+
+
+def test_le_silence_ne_passe_plus_pour_de_la_qualite():
+    """Deux modèles également justes, dont l'un n'ose répondre qu'une fois.
+
+    À seuil fixe le timide affiche 100 % de précision contre 50 % ; à taux
+    égal, les deux tranches valent la même chose.
+    """
+    sur_de_lui = [(0.9, True), (0.9, False), (0.9, True), (0.9, False)]
+    timide = [(0.9, True), (0.2, False), (0.2, True), (0.2, False)]
+    assert a_taux_egal(sur_de_lui, 0.25)['precision_when_accepted'] == 1.0
+    assert a_taux_egal(timide, 0.25)['precision_when_accepted'] == 1.0
+
+
+def test_le_taux_demande_est_celui_qu_on_obtient():
+    paires = [(i / 100, i % 2 == 0) for i in range(100)]
+    assert a_taux_egal(paires, 0.40)['accepted_rate'] == 0.40
+
+
+def test_le_seuil_rendu_est_celui_de_la_derniere_image_gardee():
+    paires = [(0.9, True), (0.8, True), (0.7, False), (0.6, False)]
+    assert a_taux_egal(paires, 0.5)['seuil'] == pytest.approx(0.8)
+
+
+def test_un_taux_de_cent_pour_cent_rend_le_top1():
+    """La tranche entière, c'est la justesse globale — un garde-fou contre
+    un décalage d'indice qui perdrait ou doublerait la dernière image."""
+    paires = [(0.9, True), (0.5, True), (0.3, False), (0.1, False)]
+    assert a_taux_egal(paires, 1.0)['precision_when_accepted'] == 0.5
+    assert a_taux_egal(paires, 1.0)['accepted_rate'] == 1.0
+
+
+def test_sans_image_ou_sans_taux_il_n_y_a_rien_a_dire():
+    assert a_taux_egal([], 0.5) is None
+    assert a_taux_egal([(0.9, True)], 0.0) is None
+
+
+def test_les_confiances_suivent_le_masque():
+    """Masquer déplace l'argmax : la confiance lue doit être celle de la
+    classe qui reste, pas celle qu'on vient de retirer."""
+    m = modele(['rosa-canina', 'tulipa-gesneriana'])
+    pred = [('rosa-canina', sortie(m, {'rosa-canina': 0.3, 'tulipa-gesneriana': 0.7}))]
+    assert confiances(pred, m) == [(pytest.approx(0.7), False)]
+    assert confiances(pred, m, {'rosa-canina'}) == [(pytest.approx(0.3), True)]
+
+
+def test_renormaliser_rend_la_masse_masquee():
+    m = modele(['rosa-canina', 'tulipa-gesneriana'])
+    pred = [('rosa-canina', sortie(m, {'rosa-canina': 0.3, 'tulipa-gesneriana': 0.7}))]
+    c, ok = confiances(pred, m, {'rosa-canina'}, renormalise=True)[0]
+    assert ok and c == pytest.approx(1.0)
