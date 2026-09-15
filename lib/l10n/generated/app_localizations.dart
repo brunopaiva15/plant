@@ -1044,11 +1044,11 @@ abstract class AppLocalizations {
   /// **'Informations'**
   String get info;
 
-  /// No description provided for @cuttings.
+  /// No description provided for @offspring.
   ///
   /// In fr, this message translates to:
-  /// **'Boutures'**
-  String get cuttings;
+  /// **'Plantes filles'**
+  String get offspring;
 
   /// No description provided for @editSchedule.
   ///
@@ -1056,101 +1056,707 @@ abstract class AppLocalizations {
   /// **'Modifier le planning'**
   String get editSchedule;
 
-  /// No description provided for @createCutting.
-  ///
-  /// In fr, this message translates to:
-  /// **'Créer une bouture'**
-  String get createCutting;
-
   /// No description provided for @cuttingOf.
   ///
   /// In fr, this message translates to:
   /// **'Bouture de {name}'**
   String cuttingOf(String name);
 
-  /// No description provided for @cuttingGuideIntroBody.
+  /// No description provided for @propagate.
   ///
   /// In fr, this message translates to:
-  /// **'Six étapes, de la tige au pot. Chacune est montrée en geste, puis dite en une phrase, adaptée à l\'espèce quand elle est connue.'**
-  String get cuttingGuideIntroBody;
+  /// **'Multiplier'**
+  String get propagate;
 
-  /// No description provided for @cuttingGuideStemTitle.
+  /// No description provided for @pgPickTitle.
   ///
   /// In fr, this message translates to:
-  /// **'La tige'**
-  String get cuttingGuideStemTitle;
+  /// **'Multiplier cette plante'**
+  String get pgPickTitle;
 
-  /// No description provided for @cuttingGuideStemBody.
+  /// No description provided for @pgPickBody.
   ///
   /// In fr, this message translates to:
-  /// **'Une tige saine, avec au moins un nœud : le renflement d\'où partent les feuilles. Deux ou trois feuilles au-dessus suffisent.'**
-  String get cuttingGuideStemBody;
+  /// **'Cette plante se multiplie de plusieurs façons. Le geste choisi décide des étapes.'**
+  String get pgPickBody;
 
-  /// No description provided for @cuttingGuideCutTitle.
+  /// No description provided for @pgRecommended.
   ///
   /// In fr, this message translates to:
-  /// **'La coupe'**
-  String get cuttingGuideCutTitle;
+  /// **'Conseillée'**
+  String get pgRecommended;
 
-  /// No description provided for @cuttingGuideCutBody.
+  /// No description provided for @pgIntroTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une lame propre, une coupe nette juste sous le nœud. Un centimètre de tige en dessous suffit.'**
-  String get cuttingGuideCutBody;
+  /// **'{name} de {species}'**
+  String pgIntroTitle(String name, String species);
 
-  /// No description provided for @cuttingGuideLeavesTitle.
+  /// No description provided for @pgIntroBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les feuilles'**
-  String get cuttingGuideLeavesTitle;
+  /// **'{count} étapes. Chacune est montrée en geste, puis dite en une phrase, adaptée à l’espèce quand elle est connue.'**
+  String pgIntroBody(int count);
 
-  /// No description provided for @cuttingGuideLeavesBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Les feuilles du bas sont retirées, le nœud reste nu. Deux ou trois feuilles en haut nourrissent la bouture.'**
-  String get cuttingGuideLeavesBody;
-
-  /// No description provided for @cuttingGuideWaterTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'eau'**
-  String get cuttingGuideWaterTitle;
-
-  /// No description provided for @cuttingGuideWaterBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le nœud sous l\'eau, les feuilles au-dessus. Eau à température ambiante, lumière vive sans soleil direct.'**
-  String get cuttingGuideWaterBody;
-
-  /// No description provided for @cuttingGuideRootsTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Les racines'**
-  String get cuttingGuideRootsTitle;
-
-  /// No description provided for @cuttingGuideRootsBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'eau se change chaque semaine. Les premières racines apparaissent en deux à six semaines.'**
-  String get cuttingGuideRootsBody;
-
-  /// No description provided for @cuttingGuidePotTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le pot'**
-  String get cuttingGuidePotTitle;
-
-  /// No description provided for @cuttingGuidePotBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'À quelques centimètres de racines, la bouture passe en pot, dans un terreau léger, et reçoit un premier arrosage.'**
-  String get cuttingGuidePotBody;
-
-  /// No description provided for @cuttingGuideStart.
+  /// No description provided for @pgStartCutting.
   ///
   /// In fr, this message translates to:
   /// **'Créer la bouture'**
-  String get cuttingGuideStart;
+  String get pgStartCutting;
+
+  /// No description provided for @pgStartPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer la plante'**
+  String get pgStartPlant;
+
+  /// No description provided for @pgNoteSpot.
+  ///
+  /// In fr, this message translates to:
+  /// **'À repérer'**
+  String get pgNoteSpot;
+
+  /// No description provided for @pgNoteAvoid.
+  ///
+  /// In fr, this message translates to:
+  /// **'À éviter'**
+  String get pgNoteAvoid;
+
+  /// No description provided for @pgNoteUsual.
+  ///
+  /// In fr, this message translates to:
+  /// **'En général'**
+  String get pgNoteUsual;
+
+  /// No description provided for @pgNoteMedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enracinement'**
+  String get pgNoteMedium;
+
+  /// No description provided for @pgMediumWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans l’eau'**
+  String get pgMediumWater;
+
+  /// No description provided for @pgMediumSubstrate.
+  ///
+  /// In fr, this message translates to:
+  /// **'En substrat léger'**
+  String get pgMediumSubstrate;
+
+  /// No description provided for @pgMediumEither.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau ou substrat léger'**
+  String get pgMediumEither;
+
+  /// No description provided for @pgVineName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture de tige'**
+  String get pgVineName;
+
+  /// No description provided for @pgVineHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un nœud, une coupe nette, l’eau'**
+  String get pgVineHint;
+
+  /// No description provided for @pgVineNodeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nœud'**
+  String get pgVineNodeTitle;
+
+  /// No description provided for @pgVineNodeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le renflement d’où part une feuille, souvent doublé d’une racine aérienne. La bouture en garde au moins un.'**
+  String get pgVineNodeBody;
+
+  /// No description provided for @pgVineNodeNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœud et racine aérienne'**
+  String get pgVineNodeNote;
+
+  /// No description provided for @pgVineCutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La coupe'**
+  String get pgVineCutTitle;
+
+  /// No description provided for @pgVineCutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lame propre, coupe nette à un centimètre sous le nœud. Le nœud reste du côté de la bouture.'**
+  String get pgVineCutBody;
+
+  /// No description provided for @pgVineCutNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couper au-dessus du nœud'**
+  String get pgVineCutNote;
+
+  /// No description provided for @pgVineClearTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nœud dégagé'**
+  String get pgVineClearTitle;
+
+  /// No description provided for @pgVineClearBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les feuilles qui tremperaient sont retirées. Deux ou trois feuilles en haut nourrissent la bouture.'**
+  String get pgVineClearBody;
+
+  /// No description provided for @pgVineWaterTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'L’eau'**
+  String get pgVineWaterTitle;
+
+  /// No description provided for @pgVineWaterBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nœud sous la surface, les feuilles au-dessus. Lumière vive, sans soleil direct.'**
+  String get pgVineWaterBody;
+
+  /// No description provided for @pgVineRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines'**
+  String get pgVineRootsTitle;
+
+  /// No description provided for @pgVineRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elles sortent du nœud, pas du bas de la tige. L’eau se change chaque semaine.'**
+  String get pgVineRootsBody;
+
+  /// No description provided for @pgVineRootsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Premières racines en deux à six semaines'**
+  String get pgVineRootsNote;
+
+  /// No description provided for @pgVinePotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pot'**
+  String get pgVinePotTitle;
+
+  /// No description provided for @pgVinePotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À quelques centimètres de racines, la bouture passe en terreau léger. Le nœud reste à fleur de terre.'**
+  String get pgVinePotBody;
+
+  /// No description provided for @pgSoftName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture de tige tendre'**
+  String get pgSoftName;
+
+  /// No description provided for @pgSoftHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un jeune brin, des racines rapides'**
+  String get pgSoftHint;
+
+  /// No description provided for @pgSoftStemTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le brin'**
+  String get pgSoftStemTitle;
+
+  /// No description provided for @pgSoftStemBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un jeune brin ferme, sans fleur, de dix centimètres environ. Le vieux bois s’enracine mal.'**
+  String get pgSoftStemBody;
+
+  /// No description provided for @pgSoftCutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La coupe'**
+  String get pgSoftCutTitle;
+
+  /// No description provided for @pgSoftCutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lame propre, coupe juste sous une paire de feuilles. Les racines partiront de là.'**
+  String get pgSoftCutBody;
+
+  /// No description provided for @pgSoftStripTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les feuilles du bas'**
+  String get pgSoftStripTitle;
+
+  /// No description provided for @pgSoftStripBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La paire du bas est retirée : la tige reste nue sur trois ou quatre centimètres.'**
+  String get pgSoftStripBody;
+
+  /// No description provided for @pgSoftStripNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser une feuille sous l’eau'**
+  String get pgSoftStripNote;
+
+  /// No description provided for @pgSoftRootTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'L’enracinement'**
+  String get pgSoftRootTitle;
+
+  /// No description provided for @pgSoftRootBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La tige nue trempe, les feuilles restent au sec. Lumière vive, sans soleil direct.'**
+  String get pgSoftRootBody;
+
+  /// No description provided for @pgSoftRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines'**
+  String get pgSoftRootsTitle;
+
+  /// No description provided for @pgSoftRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fines et nombreuses, elles partent de toute la partie immergée.'**
+  String get pgSoftRootsBody;
+
+  /// No description provided for @pgSoftRootsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Premières racines en une à trois semaines'**
+  String get pgSoftRootsNote;
+
+  /// No description provided for @pgSoftPotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le repiquage'**
+  String get pgSoftPotTitle;
+
+  /// No description provided for @pgSoftPotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre attend mal.'**
+  String get pgSoftPotBody;
+
+  /// No description provided for @pgLeafName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture de feuille'**
+  String get pgLeafName;
+
+  /// No description provided for @pgLeafHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus lente, une feuille suffit'**
+  String get pgLeafHint;
+
+  /// No description provided for @pgLeafChooseTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La feuille'**
+  String get pgLeafChooseTitle;
+
+  /// No description provided for @pgLeafChooseBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une feuille mature, ferme, sans marque. Les jeunes feuilles manquent de réserves.'**
+  String get pgLeafChooseBody;
+
+  /// No description provided for @pgLeafCutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La coupe'**
+  String get pgLeafCutTitle;
+
+  /// No description provided for @pgLeafCutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lame propre, coupe à la base de la feuille, au ras du substrat.'**
+  String get pgLeafCutBody;
+
+  /// No description provided for @pgLeafSplitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les segments'**
+  String get pgLeafSplitTitle;
+
+  /// No description provided for @pgLeafSplitBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La feuille se partage en morceaux de cinq à huit centimètres. Un V taillé en bas de chacun dit quel bout va en terre.'**
+  String get pgLeafSplitBody;
+
+  /// No description provided for @pgLeafSplitNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le V marque le bas'**
+  String get pgLeafSplitNote;
+
+  /// No description provided for @pgLeafCallusTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le séchage'**
+  String get pgLeafCallusTitle;
+
+  /// No description provided for @pgLeafCallusBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les coupes sèchent à l’air, à l’ombre, avant d’aller en terre.'**
+  String get pgLeafCallusBody;
+
+  /// No description provided for @pgLeafCallusNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un à deux jours de séchage'**
+  String get pgLeafCallusNote;
+
+  /// No description provided for @pgLeafPlantTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le substrat'**
+  String get pgLeafPlantTitle;
+
+  /// No description provided for @pgLeafPlantBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le V s’enfonce de deux centimètres dans un substrat drainant.'**
+  String get pgLeafPlantBody;
+
+  /// No description provided for @pgLeafPlantNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Planter un segment à l’envers'**
+  String get pgLeafPlantNote;
+
+  /// No description provided for @pgLeafGrowthTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La reprise'**
+  String get pgLeafGrowthTitle;
+
+  /// No description provided for @pgLeafGrowthBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines viennent d’abord, la jeune pousse sort du substrat à côté du segment.'**
+  String get pgLeafGrowthBody;
+
+  /// No description provided for @pgLeafGrowthNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle pousse en deux à quatre mois'**
+  String get pgLeafGrowthNote;
+
+  /// No description provided for @pgDivisionName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Division'**
+  String get pgDivisionName;
+
+  /// No description provided for @pgDivisionHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapide et sûre, la touffe se partage'**
+  String get pgDivisionHint;
+
+  /// No description provided for @pgDivPlantTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La touffe'**
+  String get pgDivPlantTitle;
+
+  /// No description provided for @pgDivPlantBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La plante se sort du pot en entier. Un substrat arrosé la veille tient mieux.'**
+  String get pgDivPlantBody;
+
+  /// No description provided for @pgDivUnpotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le dépotage'**
+  String get pgDivUnpotTitle;
+
+  /// No description provided for @pgDivUnpotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pot glisse le long de la motte, la plante est libre.'**
+  String get pgDivUnpotBody;
+
+  /// No description provided for @pgDivRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La motte'**
+  String get pgDivRootsTitle;
+
+  /// No description provided for @pgDivRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La terre s’émiette jusqu’à voir les racines et le pied des pousses.'**
+  String get pgDivRootsBody;
+
+  /// No description provided for @pgDivClustersTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les deux groupes'**
+  String get pgDivClustersTitle;
+
+  /// No description provided for @pgDivClustersBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque groupe garde ses pousses et ses racines.'**
+  String get pgDivClustersBody;
+
+  /// No description provided for @pgDivClustersNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles et racines de chaque côté'**
+  String get pgDivClustersNote;
+
+  /// No description provided for @pgDivSplitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La séparation'**
+  String get pgDivSplitTitle;
+
+  /// No description provided for @pgDivSplitBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les groupes se défont à la main. La lame ne sert que si les couronnes tiennent.'**
+  String get pgDivSplitBody;
+
+  /// No description provided for @pgDivSplitNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couper une tige au-dessus de la terre'**
+  String get pgDivSplitNote;
+
+  /// No description provided for @pgDivRepotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rempotage'**
+  String get pgDivRepotTitle;
+
+  /// No description provided for @pgDivRepotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque division part dans son pot, à la même profondeur qu’avant, et reçoit un premier arrosage.'**
+  String get pgDivRepotBody;
+
+  /// No description provided for @pgOffsetName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Séparer un rejet'**
+  String get pgOffsetName;
+
+  /// No description provided for @pgOffsetHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rejet part avec ses racines'**
+  String get pgOffsetHint;
+
+  /// No description provided for @pgOffSpotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rejet'**
+  String get pgOffSpotTitle;
+
+  /// No description provided for @pgOffSpotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un rejet du tiers de la mère, avec ses propres feuilles, est prêt à partir.'**
+  String get pgOffSpotBody;
+
+  /// No description provided for @pgOffSpotNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejet déjà formé'**
+  String get pgOffSpotNote;
+
+  /// No description provided for @pgOffClearTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le dégagement'**
+  String get pgOffClearTitle;
+
+  /// No description provided for @pgOffClearBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le substrat s’écarte autour du pied : le lien avec la plante mère paraît.'**
+  String get pgOffClearBody;
+
+  /// No description provided for @pgOffDetachTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La séparation'**
+  String get pgOffDetachTitle;
+
+  /// No description provided for @pgOffDetachBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rejet se détache du lien, avec ses racines. La lame ne sert que si le lien est ligneux.'**
+  String get pgOffDetachBody;
+
+  /// No description provided for @pgOffDetachNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arracher le rejet sans racines'**
+  String get pgOffDetachNote;
+
+  /// No description provided for @pgOffRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines'**
+  String get pgOffRootsTitle;
+
+  /// No description provided for @pgOffRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques racines propres suffisent. Sans elles, le rejet sèche avant de reprendre.'**
+  String get pgOffRootsBody;
+
+  /// No description provided for @pgOffPotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pot'**
+  String get pgOffPotTitle;
+
+  /// No description provided for @pgOffPotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un petit pot, le substrat de l’espèce, et un arrosage léger.'**
+  String get pgOffPotBody;
+
+  /// No description provided for @pgOffSettleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La reprise'**
+  String get pgOffSettleTitle;
+
+  /// No description provided for @pgOffSettleBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une feuille neuve au cœur dit que le rejet a pris.'**
+  String get pgOffSettleBody;
+
+  /// No description provided for @pgOffSettleNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprise en trois à six semaines'**
+  String get pgOffSettleNote;
+
+  /// No description provided for @pgSegmentName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouture de segment'**
+  String get pgSegmentName;
+
+  /// No description provided for @pgSegmentHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un segment détaché, séché, planté'**
+  String get pgSegmentHint;
+
+  /// No description provided for @pgSegChooseTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le segment'**
+  String get pgSegChooseTitle;
+
+  /// No description provided for @pgSegChooseBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un segment terminal ferme et sans ride, de deux ou trois articles.'**
+  String get pgSegChooseBody;
+
+  /// No description provided for @pgSegDetachTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le détachement'**
+  String get pgSegDetachTitle;
+
+  /// No description provided for @pgSegDetachBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le segment se détache à l’articulation, en le tournant. Une lame propre si l’article résiste.'**
+  String get pgSegDetachBody;
+
+  /// No description provided for @pgSegDetachNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tirer et déchirer l’article'**
+  String get pgSegDetachNote;
+
+  /// No description provided for @pgSegWoundTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La plaie'**
+  String get pgSegWoundTitle;
+
+  /// No description provided for @pgSegWoundBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La coupe est claire et humide. Mise en terre tout de suite, elle pourrit.'**
+  String get pgSegWoundBody;
+
+  /// No description provided for @pgSegCallusTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La cicatrisation'**
+  String get pgSegCallusTitle;
+
+  /// No description provided for @pgSegCallusBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La plaie sèche à l’air, à l’ombre, jusqu’à former un cal mat.'**
+  String get pgSegCallusBody;
+
+  /// No description provided for @pgSegCallusNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trois à sept jours de séchage'**
+  String get pgSegCallusNote;
+
+  /// No description provided for @pgSegPlantTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le substrat'**
+  String get pgSegPlantTitle;
+
+  /// No description provided for @pgSegPlantBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le cal se pose à peine dans un substrat très drainant, sur un centimètre.'**
+  String get pgSegPlantBody;
+
+  /// No description provided for @pgSegPlantNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enterrer le segment'**
+  String get pgSegPlantNote;
+
+  /// No description provided for @pgSegRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La reprise'**
+  String get pgSegRootsTitle;
+
+  /// No description provided for @pgSegRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines viennent d’abord, un nouvel article ensuite. L’arrosage attend que les racines tiennent.'**
+  String get pgSegRootsBody;
 
   /// No description provided for @parentPlant.
   ///

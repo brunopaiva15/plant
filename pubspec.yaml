@@ -125,9 +125,16 @@ flutter:
     # la séquence de pousse du premier écran (tool/grow_monstera.py) et la
     # maison d'Apple Maison (tool/build_home.py).
     - assets/onboarding/
-    # Le guide de bouturage : six séquences d'argile, une par étape
-    # (tool/build_cutting_guide.py), jouées par l'app quand on crée une bouture.
-    - assets/cutting/
+    # Les guides de multiplication : un dossier par archétype de geste, une
+    # séquence d'argile par étape (tool/build_cutting_guide.py), jouées par
+    # l'app quand on multiplie une plante. Flutter ne descend pas dans les
+    # sous-dossiers : chacun se déclare. Voir docs/12.
+    - assets/cutting/stem_node_vine/
+    - assets/cutting/stem_soft/
+    - assets/cutting/leaf_cutting/
+    - assets/cutting/division/
+    - assets/cutting/offset/
+    - assets/cutting/succulent_segment/
     # Le grain du papier, posé par-dessus l'écran.
     - assets/textures/
     # Iris, le modèle de reconnaissance d'espèces (TFLite) : poids, classes,

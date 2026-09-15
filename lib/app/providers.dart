@@ -23,7 +23,7 @@ import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
 import '../data/services/infomaniak_advisor.dart';
 import '../data/services/infomaniak_care_completer.dart';
-import '../data/services/infomaniak_cutting_refiner.dart';
+import '../data/services/infomaniak_propagation_refiner.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
 import '../data/services/google_home_climate_service.dart';
@@ -43,7 +43,7 @@ import '../domain/community/species_tip.dart';
 import '../domain/sharing/garden_collaboration.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
-import '../domain/cuttings/cutting_guide.dart';
+import '../domain/cuttings/propagation_guide.dart';
 import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/photo_maintenance.dart';
@@ -51,7 +51,7 @@ import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
 import '../data/services/preferences_care_store.dart';
-import '../data/services/preferences_cutting_store.dart';
+import '../data/services/preferences_propagation_store.dart';
 import '../data/services/preferences_service.dart';
 import '../data/services/store_support_service.dart';
 import '../domain/auth/auth_repository.dart';
@@ -586,41 +586,47 @@ final careCompletionProvider = FutureProvider.autoDispose.family<CareCompletion?
   }
 });
 
-/// Précision des étapes du guide de bouturage par l'IA, pour l'espèce de la
-/// plante mère. Même clé Infomaniak que le diagnostic ; sans clé, le guide
-/// s'en tient à ses textes génériques.
-final cuttingGuideRefinerProvider = Provider<CuttingGuideRefiner>((ref) {
-  if (!DiagnosisConfig.isConfigured) return const UnconfiguredCuttingGuideRefiner();
-  return InfomaniakCuttingRefiner(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+/// Précision des textes du guide de multiplication par l'IA, pour l'espèce
+/// de la plante mère. Même clé Infomaniak que le diagnostic ; sans clé, le
+/// guide s'en tient à ses textes locaux, qui sont déjà justes.
+final propagationRefinerProvider = Provider<PropagationGuideRefiner>((ref) {
+  if (!DiagnosisConfig.isConfigured) return const UnconfiguredPropagationGuideRefiner();
+  return InfomaniakPropagationRefiner(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
 });
 
 /// Les guides déjà précisés, gardés sur l'appareil.
-final cuttingGuideStoreProvider = Provider<CuttingGuideStore>((ref) => PreferencesCuttingStore(ref.watch(preferencesServiceProvider)));
+final propagationStoreProvider =
+    Provider<PropagationGuideStore>((ref) => PreferencesPropagationStore(ref.watch(preferencesServiceProvider)));
 
-/// Les étapes précisées pour une espèce, ou `null` si la question ne se pose
-/// pas : espèce inconnue, IA coupée dans les réglages, ou réponse vide.
+/// Les textes précisés pour une espèce et un geste, ou `null` si la question
+/// ne se pose pas : espèce inconnue, IA coupée dans les réglages, ou réponse
+/// vide.
 ///
-/// Même règle que le complément des fiches : la réponse déjà obtenue est
-/// rendue telle quelle, sans réseau ; sinon, et seulement si l'utilisateur
-/// laisse faire, la question part une fois et la réponse est gardée.
-final cuttingGuideRefinementProvider =
-    FutureProvider.autoDispose.family<CuttingGuideRefinement?, ({String species, String language})>((ref, q) async {
+/// La question porte sur le guide choisi : le geste change les étapes, donc
+/// les textes. Même règle que le complément des fiches — la réponse déjà
+/// obtenue est rendue telle quelle, sans réseau ; sinon, et seulement si
+/// l'utilisateur laisse faire, la question part une fois et la réponse est
+/// gardée.
+final propagationRefinementProvider = FutureProvider.autoDispose
+    .family<PropagationRefinement?, ({String species, String language, PropagationGuideKind kind})>((ref, q) async {
   final species = q.species.trim();
   if (species.isEmpty) return null;
-  final store = ref.watch(cuttingGuideStoreProvider);
-  final known = store.read(species, q.language);
+  final steps = propagationStepIds[q.kind] ?? const <String>[];
+  if (steps.isEmpty) return null;
+  final store = ref.watch(propagationStoreProvider);
+  final known = store.read(species, q.language, q.kind);
   if (known != null) return known.isEmpty ? null : known;
   if (!ref.watch(preferencesProvider.select((p) => p.careAssistEnabled))) return null;
-  final refiner = ref.watch(cuttingGuideRefinerProvider);
+  final refiner = ref.watch(propagationRefinerProvider);
   if (!refiner.isConfigured) return null;
   try {
-    final refinement = await refiner.refine(scientificName: species, language: q.language);
-    await store.write(species, q.language, refinement);
+    final refinement = await refiner.refine(scientificName: species, language: q.language, kind: q.kind, stepIds: steps);
+    await store.write(species, q.language, q.kind, refinement);
     return refinement.isEmpty ? null : refinement;
   } catch (e, st) {
-    // Un guide générique reste un guide : l'échec ne se voit pas, et ne se
-    // garde pas non plus, pour que la question puisse repartir plus tard.
-    ref.read(crashReporterProvider).report(e, st, context: 'cutting.guide');
+    // Un guide local reste un guide : l'échec ne se voit pas, et ne se garde
+    // pas non plus, pour que la question puisse repartir plus tard.
+    ref.read(crashReporterProvider).report(e, st, context: 'propagation.guide');
     return null;
   }
 });
