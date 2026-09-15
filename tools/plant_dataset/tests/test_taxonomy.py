@@ -125,3 +125,34 @@ def test_deux_noms_du_catalogue_ne_partagent_pas_un_dossier():
         par_slug[species_slug(nom)].append(nom)
     partages = {k: v for k, v in par_slug.items() if len(v) > 1}
     assert not partages, f'dossiers partagés : {partages}'
+
+
+# --- Des noms d'oiseaux dans un catalogue de plantes ----------------------
+#
+# `Chloris` et `Oenanthe` sont des genres partagés entre les plantes et les
+# oiseaux. `enrich_plants.py` résout le Wikidata par nom scientifique sans
+# vérifier le règne : sur un homonyme, il ramène le passereau, et
+# l'application appelait une graminée « verdier d'Europe » en quatre
+# langues. Deux de ces lignes étaient des classes de l'Iris 8 livré.
+
+import csv as _csv  # noqa: E402
+import re as _re  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_OISEAUX = _re.compile(
+    r"verdier|greenfinch|grünfink|grunfink|verdone|"
+    r"traquet|wheatear|schmätzer|schmatzer|monachella|sassicolo|codinero|"
+    r"rock chat|black chat", _re.I)
+
+
+def test_aucun_nom_doiseau_dans_les_noms_communs():
+    chemin = _Path(__file__).resolve().parents[1] / 'plants.csv'
+    fautives = []
+    with chemin.open(encoding='utf-8') as f:
+        for r in _csv.DictReader(f):
+            noms = ' '.join(r.get(f'common_{l}') or '' for l in ('fr', 'en', 'de', 'it'))
+            if _OISEAUX.search(noms):
+                fautives.append(f"{r['scientific_name']} → {r.get('common_fr') or r.get('common_en')}")
+    assert not fautives, (
+        'noms communs d\'oiseaux, sans doute un homonyme résolu chez Wikidata : '
+        + ', '.join(fautives))
