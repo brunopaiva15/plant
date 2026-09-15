@@ -1775,7 +1775,7 @@
   },
   "supportTitle": "Auxine est gratuite",
   "supportBody": "Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.",
-  "supportWhy": "Elle est développée par une seule personne, et n'a pas d'autre revenu.",
+  "supportOffer": "Si vous souhaitez néanmoins aider le développeur, un achat unique suffit.",
   "supportOnce": "Une seule fois",
   "supportGive": "Soutenir · {price}",
   "@supportGive": {

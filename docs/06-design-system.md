@@ -469,14 +469,12 @@ carte à image.
   cadence d'une machine, et un deux-points qui n'annonçait pas une valeur
   mais une énumération. Les deux-points de l'application servent ailleurs à
   nommer un champ (« Dernier : {date} ») ; celui-là ne nommait rien.
-- **Pourquoi donner**, en pleine encre, entre ce qu'on a reçu et ce qu'on
-  demande. La page a longtemps dit ce qui est gratuit sans jamais dire ce que
-  cela coûte à quelqu'un, et il n'y avait donc aucune raison de donner. Or
-  les trois « aucun » du paragraphe au-dessus sont exactement ce qui prive
-  l'application de revenu : « Elle est développée par une seule personne, et
-  n'a pas d'autre revenu. » Le même fait, retourné. Une phrase, pas deux
-  courtes qui se répondent — la symétrie fait slogan —, et le nom de
-  l'application ne s'y répète pas, le titre vient de le donner. Rien n'y est
+- **La porte**, en pleine encre, entre ce qu'on a reçu et ce qu'on demande :
+  « Si vous souhaitez néanmoins aider le développeur, un achat unique
+  suffit. » Tout le travail est dans « néanmoins » — le paragraphe au-dessus
+  vient de dire que rien n'est dû, celui-ci ouvre quand même une possibilité
+  sans rien exiger. Elle nomme aussi la seule chose qui puisse motiver le
+  geste : l'argent va à une personne, pas à une société. Rien n'y est
   supposé du lecteur ni promis en échange — c'est un constat, comme le reste
   des textes, et il disparaît une fois le soutien versé.
 - **Le montant est dans le bouton** (« Soutenir · CHF 5.00 »), et nulle part

@@ -3837,8 +3837,8 @@ class AppLocalizationsIt extends AppLocalizations {
       'Tutte le funzioni sono accessibili. Nessun abbonamento, nessuna pubblicità, nessun account obbligatorio.';
 
   @override
-  String get supportWhy =>
-      'È sviluppata da una sola persona e non ha altre entrate.';
+  String get supportOffer =>
+      'Se desiderate comunque aiutare lo sviluppatore, basta un acquisto unico.';
 
   @override
   String get supportOnce => 'Una sola volta';

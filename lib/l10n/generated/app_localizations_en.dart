@@ -3820,8 +3820,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Every feature is available. No subscription, no advertising, no compulsory account.';
 
   @override
-  String get supportWhy =>
-      'It is developed by one person, and has no other income.';
+  String get supportOffer =>
+      'If you would still like to help the developer, a one-off purchase is enough.';
 
   @override
   String get supportOnce => 'One time only';

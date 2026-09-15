@@ -6552,11 +6552,11 @@ abstract class AppLocalizations {
   /// **'Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.'**
   String get supportBody;
 
-  /// No description provided for @supportWhy.
+  /// No description provided for @supportOffer.
   ///
   /// In fr, this message translates to:
-  /// **'Elle est développée par une seule personne, et n\'a pas d\'autre revenu.'**
-  String get supportWhy;
+  /// **'Si vous souhaitez néanmoins aider le développeur, un achat unique suffit.'**
+  String get supportOffer;
 
   /// No description provided for @supportOnce.
   ///

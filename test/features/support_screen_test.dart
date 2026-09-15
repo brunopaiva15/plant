@@ -74,13 +74,13 @@ Future<AppLocalizations> _pump(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('ce qui est ouvert, puis pourquoi donner, puis le bouton', (tester) async {
+  testWidgets("ce qui est ouvert, puis la porte, puis le bouton", (tester) async {
     final l10n = await _pump(tester);
     final open = tester.getTopLeft(find.text(l10n.supportBody)).dy;
-    final why = tester.getTopLeft(find.text(l10n.supportWhy)).dy;
+    final offer = tester.getTopLeft(find.text(l10n.supportOffer)).dy;
     final give = tester.getTopLeft(find.text(l10n.supportGive(_price))).dy;
-    expect(open, lessThan(why), reason: 'on montre ce qui est donné avant de dire pourquoi');
-    expect(why, lessThan(give), reason: "la raison vient avant la demande, sinon il n'y en a pas");
+    expect(open, lessThan(offer), reason: 'ce qui est dû se lit avant ce qui est proposé');
+    expect(offer, lessThan(give), reason: 'la proposition mène au bouton, pas l\'inverse');
   });
 
   testWidgets('le bouton porte le montant, et une fois', (tester) async {
@@ -108,7 +108,7 @@ void main() {
   testWidgets('une fois le soutien versé, la page ne redemande rien', (tester) async {
     final l10n = await _pump(tester, supported: true);
     expect(find.text(l10n.supportThanksTitle), findsOneWidget);
-    expect(find.text(l10n.supportWhy), findsNothing, reason: 'la raison de donner ne se redemande pas');
+    expect(find.text(l10n.supportOffer), findsNothing, reason: 'ce qui est versé ne se propose plus');
     expect(find.text(l10n.supportGive(_price)), findsNothing);
     // La phrase du haut descend sous le trait : la page se ferme sur ce
     // qu'elle est venue dire plutôt que sur un blanc.

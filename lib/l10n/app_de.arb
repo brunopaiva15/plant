@@ -1246,7 +1246,7 @@
   "aboutSpeciesCount": "{count} Arten offline durchsuchbar",
   "supportTitle": "Auxine ist kostenlos",
   "supportBody": "Alle Funktionen sind verfügbar. Kein Abo, keine Werbung, kein Pflichtkonto.",
-  "supportWhy": "Sie wird von einer einzigen Person entwickelt und hat keine anderen Einnahmen.",
+  "supportOffer": "Wenn Sie den Entwickler dennoch unterstützen möchten, genügt ein einmaliger Kauf.",
   "supportOnce": "Nur einmal",
   "supportGive": "Unterstützen · {price}",
   "supportRestore": "Unterstützung wiederherstellen",

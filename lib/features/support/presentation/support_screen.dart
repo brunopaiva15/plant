@@ -219,14 +219,13 @@ class _Piece extends StatelessWidget {
             supported ? l10n.supportThanksBody : l10n.supportBody,
             style: context.text.body.copyWith(color: c.inkSecondary),
           ),
-          // Pourquoi donner. La page disait ce qui est gratuit sans jamais
-          // dire ce que cela coûte à quelqu'un : les trois « aucun » du
-          // paragraphe au-dessus sont exactement ce qui prive l'application
-          // de revenu, et c'est là tout l'argument. En pleine encre, parce
-          // que c'est la phrase qui compte.
+          // La porte, après coup. Le paragraphe au-dessus dit que rien n'est
+          // dû ; celui-ci ouvre quand même une possibilité, sans rien exiger
+          // — c'est ce que fait « néanmoins ». En pleine encre, parce que
+          // c'est la phrase qui mène au bouton.
           if (!supported) ...[
             const SizedBox(height: Space.md),
-            Text(l10n.supportWhy, style: context.text.body),
+            Text(l10n.supportOffer, style: context.text.body),
           ],
           const SizedBox(height: Space.xxxl),
           below,

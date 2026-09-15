@@ -3830,8 +3830,8 @@ class AppLocalizationsDe extends AppLocalizations {
       'Alle Funktionen sind verfügbar. Kein Abo, keine Werbung, kein Pflichtkonto.';
 
   @override
-  String get supportWhy =>
-      'Sie wird von einer einzigen Person entwickelt und hat keine anderen Einnahmen.';
+  String get supportOffer =>
+      'Wenn Sie den Entwickler dennoch unterstützen möchten, genügt ein einmaliger Kauf.';
 
   @override
   String get supportOnce => 'Nur einmal';
