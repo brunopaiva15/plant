@@ -3,6 +3,7 @@ import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/care/care_guide.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/features/problems/presentation/problem_kind_icon.dart';
 import 'package:flora/features/species/presentation/care_guide_screen.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -424,6 +425,15 @@ void main() {
         expect(find.text(attendu), findsOneWidget, reason: attendu);
       }
       expect(find.text('Tout voir'), findsNothing);
+    });
+
+    testWidgets('chaque ligne porte l’image de son souci', (tester) async {
+      // La même argile que l'encyclopédie et le diagnostic : une cochenille
+      // se reconnaît d'un écran à l'autre, ce qu'une pastille identique sur
+      // toutes les lignes ne donnait pas.
+      await pump(tester, _avec(profile, issues: beaucoup));
+      final portees = tester.widgetList<CommonIssueIcon>(find.byType(CommonIssueIcon)).map((w) => w.issue);
+      expect(portees.toSet(), beaucoup.toSet());
     });
   });
 

@@ -563,6 +563,13 @@ class _AspectCard extends StatelessWidget {
 /// lignes. Les cacher derrière un bouton reviendrait à répondre « araignées
 /// rouges » à qui ouvre la fiche d'un pothos, alors que les thrips, les
 /// cochenilles et les moucherons du terreau y sont pour autant.
+///
+/// Chaque ligne porte l'image de son souci : la plupart désignent une entrée
+/// de la base des deux cents problèmes et en reprennent l'illustration
+/// d'argile, les autres le symbole de leur famille. Une cochenille se
+/// reconnaît ainsi d'un écran à l'autre — ici, dans l'encyclopédie, dans un
+/// diagnostic —, ce qu'une pastille identique sur toutes les lignes ne
+/// donnait pas.
 class _WatchList extends StatelessWidget {
   const _WatchList({required this.issues});
 
@@ -585,7 +592,8 @@ class _WatchList extends StatelessWidget {
           children: [
             for (final i in ordered)
               FloraListRow(
-                leading: const Text('👀', style: TextStyle(fontSize: 16)),
+                leading: CommonIssueIcon(issue: i),
+                leadingWidth: 40,
                 title: l10n.issueName(i),
                 dense: true,
                 chevron: false,
