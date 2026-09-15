@@ -3126,6 +3126,53 @@ Les deux lectures répondent à la réserve n° 1 : si le réseau gelé sépare 
 que le nôtre non, c'est le réglage fin qui a effacé le signal, et l'étage
 cultivar doit partir d'ailleurs.
 
+#### ✅ Mesuré : la réserve n° 1 est démentie
+
+603 photos récoltées sur Commons, 79 cultivars nommés répartis sur trois
+genres. Les deux lectures, sur les mêmes images :
+
+| | cultivars | écart ImageNet gelé | écart **Iris 8** | prototype ImageNet | prototype **Iris 8** | hasard |
+|---|---|---|---|---|---|---|
+| *Acer palmatum* | 19 | 0,0872 | **0,1335** | 0,4157 | **0,5000** | 0,0526 |
+| *Hosta* | 56 | 0,0734 | **0,1164** | 0,3208 | **0,3836** | 0,0179 |
+| *Rosa* | 4 | 0,0939 | **0,1146** | 0,5526 | **0,6842** | 0,25 |
+
+**Le réglage fin n'a pas effacé le cultivar : il l'a affûté.** +53 %
+d'écart sur *Acer*, +59 % sur *Hosta*, +22 % sur *Rosa*, et un prototype
+qui gagne partout. La crainte était pourtant fondée en raisonnement — nos
+photos de Thai Constellation sont bien étiquetées *Monstera deliciosa*, et
+les cent couches dégelées ont bien poussé à les rapprocher. Elles ont
+manifestement appris, en même temps, des traits de feuille assez fins pour
+que la panachure survive au voyage.
+
+**Le témoin de permutation tient** : mélanger les étiquettes fait tomber
+l'écart à 0,0000-0,0016 contre 0,11-0,13 en vrai, et aucun des deux cents
+mélanges n'atteint le résultat observé (p = 0,005, le plancher de la
+mesure). Le piège des petits échantillons en grande dimension est donc
+écarté — sans ce témoin, les deux lectures auraient conclu « oui » quoi
+qu'il arrive.
+
+**Et le résultat est conservateur.** Commons range une partie de ses
+sous-catégories par *groupe* plutôt que par cultivar — `Acer palmatum
+Atropurpureum Group`, et pour *Rosa* des décennies entières, « cultivars
+of the 1880s ». Ces dossiers-là réunissent des plantes différentes sous
+une seule étiquette, ce qui ne peut qu'**affaiblir** l'écart mesuré. Il
+est positif malgré elles. *Rosa* en souffre le plus, et ses 4 cultivars ne
+valent que comme indice ; *Hosta*, avec 56 cultivars nommés et 318 photos,
+porte la conclusion.
+
+> **Un piège de plus, évité de justesse et qui vaut d'être écrit.** La
+> lecture avec nos poids appelait
+> `load_weights(..., skip_mismatch=True, by_name=True)` sur le backbone
+> seul, alors que `fine.weights.h5` vient du modèle d'entraînement complet.
+> Keras 3 a refusé net — `by_name` ne vaut que pour l'ancien format — mais
+> si l'appel était passé, `skip_mismatch` aurait laissé le réseau sur ses
+> poids ImageNet **en silence**. Les deux lectures auraient alors coïncidé
+> au dernier chiffre, et on aurait conclu « le réglage fin n'efface rien »
+> sans avoir rien mesuré. Le contrôle est gratuit et il faut le garder :
+> **si les deux lectures donnent les mêmes nombres, c'est que les poids
+> n'ont pas chargé.**
+
 ### 12.19 ✅ 112 espèces écartées pour une image de validation
 
 Le compte des classes d'Iris 8 ne tombait pas juste : la finalisation
@@ -3369,6 +3416,26 @@ différentes :
 **Ne pas construire le moissonneur avant d'avoir passé cette porte.** Deux
 heures peuvent en économiser cinquante.
 
+#### ✅ La porte est passée, et par la bonne branche
+
+**Signal présent, et plus net dans notre réseau que dans ImageNet gelé**
+(§ 12.18) : l'écart entre « même cultivar » et « cultivars différents »
+passe de 0,0734 à 0,1164 sur *Hosta*, la mesure la mieux fournie — 56
+cultivars, 318 photos —, et gagne pareillement sur *Acer* et *Rosa*. Le
+test de permutation écarte le hasard sur les trois.
+
+L'hypothèse qui tenait tout ce paragraphe était donc fausse : le réglage
+fin n'a pas appris à confondre les cultivars, il a appris des traits assez
+fins pour les distinguer. **C'est la route « récolte »**, et elle part de
+nos propres poids — aucun réentraînement, aucun retour au backbone
+ImageNet, `--feature-cache` réutilisable tel quel.
+
+Le moissonneur peut donc se construire. Sa première question n'est plus
+« est-ce que ça marchera » mais « où sont les cultivars que l'application
+sert » : Commons donne *Acer*, *Hosta* et *Rosa*, c'est-à-dire le jardin,
+quand l'application sert des plantes d'appartement (§ 12.2, § 12.18,
+réserve n° 2). Cette réserve-là, elle, tient toujours.
+
 ### 13.5 Le catalogue de l'application et celui de la collecte ne sont pas le même fichier
 
 C'est la frontière la plus facile à franchir par mégarde, et la plus chère.
@@ -3508,7 +3575,7 @@ espèce de plus coûte.
 | porte | ce qu'elle décide | coût |
 |---|---|---|
 | la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | quelques heures de GPU, jeu déjà collecté |
-| `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | deux heures |
+| ✅ `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | ~~deux heures~~ — **passée** : il les sépare, et mieux dans notre réseau que dans ImageNet |
 | la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | à mesurer sur les 3 606 images |
 
 **Ce qu'on ne fera pas, et pourquoi :**
