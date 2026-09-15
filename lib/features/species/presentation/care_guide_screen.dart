@@ -9,6 +9,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
+import '../../../domain/care/grow_light.dart';
 import '../../../domain/care/leaf_signs.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
@@ -120,6 +121,10 @@ class CareGuideBody extends ConsumerWidget {
     final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
     final tips = [for (final key in p.tipKeys) l10n.careTip(key)].whereType<String>().toList();
     final hasTemperature = (p.idealTempMinC != null && p.idealTempMaxC != null) || p.minTempC != null;
+    final lamp = GrowLight.forNeed(p.light);
+    final humidity = p.humidityRange;
+    // Une annuelle ne se rempote pas : son rapport au pot n'a rien à dire.
+    final potBadge = p.repotEveryMonths == null ? null : l10n.potBadge(p.pot);
 
     // La fiche suit maintenant le chemin réel d'entretien : d'abord où placer
     // la plante et le climat qu'elle demande, ensuite ce qu'on fait au pot,
@@ -136,14 +141,18 @@ class CareGuideBody extends ConsumerWidget {
         const SizedBox(height: Space.sm),
 
         // L'emplacement vient en premier : sans la bonne lumière, les autres
-        // fréquences de la fiche deviennent vite fausses.
+        // fréquences de la fiche deviennent vite fausses. Et faute de fenêtre,
+        // c'est le seul besoin de la fiche qui s'achète : la lampe qui le tient
+        // se dit ici, en intensité reçue puis en dose du jour.
         _AspectCard(
           emoji: '☀️',
           variant: 1,
           tint: c.sunSoft,
           title: l10n.careLight,
           value: l10n.lightName(p.light),
+          details: [l10n.careLightLamp(lamp.ppfdMin, lamp.ppfdMax, lamp.hours)],
           badge: p.outdoorFriendly ? ('🌤️', l10n.guideBadgeOutdoor) : null,
+          notes: [l10n.careLightLampDli(lamp.dliMin, lamp.dliMax)],
         ),
         const SizedBox(height: Space.md),
 
@@ -196,13 +205,16 @@ class CareGuideBody extends ConsumerWidget {
           const SizedBox(height: Space.md),
         ],
 
+        // Le pourcentage est celui de l'espèce, pas celui de sa catégorie :
+        // entre deux plantes « qui aiment l'air humide », l'une tient à 50 %
+        // et l'autre en veut 85. Un salon se juge au mot, une serre au chiffre.
         _AspectCard(
           emoji: '💨',
           variant: 2,
           tint: c.roseSoft,
           title: l10n.careHumidity,
           value: l10n.humidityName(p.humidity),
-          details: [l10n.guideHumidityDetail(p.humidity)],
+          details: [l10n.careHumidityRange(humidity.$1, humidity.$2), l10n.humidityDetail(p.humidity)],
           badge: p.mistLeaves ? ('💦', l10n.guideBadgeMist) : null,
         ),
         const SizedBox(height: Space.md),
@@ -245,13 +257,34 @@ class CareGuideBody extends ConsumerWidget {
         ),
         const SizedBox(height: Space.md),
 
+        // Le rapport au pot est ici, puisqu'il dit quand ce jour arrive : une
+        // racine qui sort par le fond est un signal chez l'une, l'état normal
+        // de l'autre.
         _AspectCard(
           emoji: '🏺',
           variant: 0,
           tint: c.terracottaSoft,
           title: l10n.careRepotting,
           value: l10n.repotLabel(p.repotEveryMonths),
+          badge: potBadge == null ? null : ('🫙', potBadge),
+          notes: [if (p.repotEveryMonths != null) l10n.potNote(p)],
         ),
+
+        // Le repos des plantes à réserves — crocus, caladium, cyclamen — :
+        // période, température et obscurité du rangement. Seule carte crème de
+        // la fiche, parce qu'elle est la seule à décrire une absence : plus de
+        // feuilles, plus d'eau, plus de lumière.
+        if (p.dormancy case final rest?) ...[
+          const SizedBox(height: Space.md),
+          _AspectCard(
+            emoji: '💤',
+            variant: 2,
+            title: l10n.careRest,
+            value: l10n.monthRangeLabel(rest.window.forHemisphere(south: south), context.localeTag),
+            details: [l10n.restStorage(rest)],
+            notes: [l10n.careRestNote],
+          ),
+        ],
 
         // Le tuteur ferme ce qu'on fait au pot : il ne paraît que pour les
         // espèces qui en demandent un, et dit du même coup quand s'en
@@ -287,16 +320,24 @@ class CareGuideBody extends ConsumerWidget {
                 if (p.humidity == HumidityNeed.low) l10n.guideGreenhouseAir,
                 if (p.repotEveryMonths == null) l10n.guideGreenhouseEarly,
               ],
+              // Sous serre, l'hygrométrie n'est plus un constat mais un
+              // réglage : c'est ici que la plage du besoin devient une
+              // consigne.
+              notes: [l10n.careGreenhouseHold],
             ),
           if (p.benefitsFromGreenhouse && p.bloom != null) const SizedBox(height: Space.md),
+          // La saison en constat, les conditions nommées d'un trait, puis
+          // chacune expliquée dessous, dans le même ordre.
           if (p.bloom case final bloom?)
             _AspectCard(
               emoji: '🌸',
               variant: 2,
               tint: c.roseSoft,
               title: l10n.careBloom,
-              value: l10n.bloomName(bloom),
-              details: [l10n.guideBloomNote(bloom)],
+              value: l10n.monthRangeLabel(bloom.window.forHemisphere(south: south), context.localeTag),
+              details: [if (bloom.triggers.isNotEmpty) bloom.triggers.map(l10n.bloomName).join(' · ')],
+              badge: bloom.indoors ? null : ('🪟', l10n.careBloomOutdoors),
+              notes: [for (final t in bloom.triggers) l10n.bloomNote(t)],
             ),
         ],
 
@@ -421,6 +462,7 @@ class _AspectCard extends StatelessWidget {
     this.details = const [],
     this.valueColor,
     this.badge,
+    this.notes = const [],
     this.prominent = false,
     this.onTap,
   });
@@ -431,9 +473,9 @@ class _AspectCard extends StatelessWidget {
   /// ressemblent pas tout à fait.
   final int variant;
 
-  /// La teinte du volet, ou `null` pour une carte crème : la tuile d'emoji
-  /// reprend alors son fond habituel, puisqu'il n'y a plus de teinte à
-  /// laquelle se détacher.
+  /// La teinte du volet, ou `null` pour une carte crème — le repos, le
+  /// tuteur : la tuile d'emoji reprend alors son fond habituel, puisqu'il n'y
+  /// a plus de teinte à laquelle se détacher.
   final Color? tint;
 
   final String title;
@@ -449,6 +491,10 @@ class _AspectCard extends StatelessWidget {
   /// Le repère qui ne vaut que pour ce volet : une phrase courte qui décrit
   /// un besoin particulier, jamais un ordre ou un mot isolé.
   final (String, String)? badge;
+
+  /// Ce qu'il faut faire du constat, une phrase par idée : la règle du
+  /// rempotage, la dose de la lampe, les conditions d'une floraison.
+  final List<String> notes;
 
   /// L'arrosage porte son chiffre plus grand : c'est la question qu'on se pose
   /// en premier.
@@ -487,6 +533,10 @@ class _AspectCard extends StatelessWidget {
                   if (badge case final b?) ...[
                     const SizedBox(height: Space.sm),
                     FloraChip(label: b.$2, emoji: b.$1),
+                  ],
+                  for (final note in notes) ...[
+                    const SizedBox(height: Space.xs),
+                    Text(note, style: context.text.caption),
                   ],
                 ],
               ),

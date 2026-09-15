@@ -38,33 +38,6 @@ extension CareGuidePresentationCopy on AppLocalizations {
         _ => 'Can be grown outdoors',
       };
 
-  String guideHumidityDetail(HumidityNeed need) => switch ((_careLanguage, need)) {
-        ('fr', HumidityNeed.low) =>
-          'Elle tolère bien l’air sec d’un logement. Évitez une humidité durablement supérieure à 70 %.',
-        ('fr', HumidityNeed.average) =>
-          'Visez environ 40 à 60 % d’humidité. Sous 30 %, les pointes des feuilles peuvent brunir.',
-        ('fr', HumidityNeed.high) =>
-          'Visez au moins 60 % d’humidité. Un humidificateur ou plusieurs plantes regroupées peuvent aider. Sous environ 45 %, les feuilles peuvent sécher ou brunir.',
-        ('de', HumidityNeed.low) =>
-          'Trockene Raumluft verträgt sie gut. Dauerhaft über 70 % Luftfeuchtigkeit sollten vermieden werden.',
-        ('de', HumidityNeed.average) =>
-          'Ideal sind etwa 40–60 % Luftfeuchtigkeit. Unter 30 % können die Blattspitzen braun werden.',
-        ('de', HumidityNeed.high) =>
-          'Ideal sind mindestens 60 % Luftfeuchtigkeit. Ein Luftbefeuchter oder mehrere Pflanzen zusammen können helfen. Unter etwa 45 % können Blätter trocken oder braun werden.',
-        ('it', HumidityNeed.low) =>
-          'Tollera bene l’aria secca di casa. Evita un’umidità superiore al 70 % per lunghi periodi.',
-        ('it', HumidityNeed.average) =>
-          'Mantieni circa il 40–60 % di umidità. Sotto il 30 %, le punte delle foglie possono diventare marroni.',
-        ('it', HumidityNeed.high) =>
-          'Mantieni almeno il 60 % di umidità. Un umidificatore o più piante raggruppate possono aiutare. Sotto circa il 45 %, le foglie possono seccarsi o brunire.',
-        (_, HumidityNeed.low) =>
-          'It handles dry indoor air well. Avoid keeping humidity above 70% for long periods.',
-        (_, HumidityNeed.average) =>
-          'Aim for about 40–60% humidity. Below 30%, leaf tips may turn brown.',
-        (_, HumidityNeed.high) =>
-          'Aim for at least 60% humidity. A humidifier or grouping several plants can help. Below about 45%, leaves may dry out or brown.',
-      };
-
   String guideSoilMix(SoilKind soil) => switch ((_careLanguage, soil)) {
         ('fr', SoilKind.standard) =>
           'Utilisez un terreau universel aéré avec environ 20 % de perlite. Le mélange doit rester léger et laisser l’excès d’eau s’écouler.',
@@ -255,56 +228,5 @@ extension CareGuidePresentationCopy on AppLocalizations {
         'it' =>
           'Una mini-serra o un cassone protetto trattiene meglio calore e umidità e permette di iniziare le semine prima.',
         _ => 'A mini greenhouse or cold frame holds heat and humidity better and lets you start seedlings earlier.',
-      };
-
-  String guideBloomNote(BloomTrigger trigger) => switch ((_careLanguage, trigger)) {
-        ('fr', BloomTrigger.coolRest) =>
-          'Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.',
-        ('fr', BloomTrigger.coolNights) =>
-          'En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.',
-        ('fr', BloomTrigger.shortDays) =>
-          'Pendant environ six semaines, offrez-lui des nuits d’au moins 12 heures dans l’obscurité pour favoriser la formation des boutons.',
-        ('fr', BloomTrigger.drySpell) =>
-          'Réduisez fortement les arrosages pendant quelques semaines, puis reprenez progressivement : ce contraste peut déclencher la floraison.',
-        ('fr', BloomTrigger.potbound) =>
-          'Elle fleurit souvent mieux lorsque ses racines occupent bien le pot. Évitez donc de rempoter trop tôt.',
-        ('fr', BloomTrigger.brightLight) =>
-          'Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.',
-        ('de', BloomTrigger.coolRest) =>
-          'Für die Blütenbildung etwa zwei Monate bei 10–12 °C halten und deutlich weniger gießen.',
-        ('de', BloomTrigger.coolNights) =>
-          'Im Herbst können etwa drei Wochen mit Nächten um 15 °C die Bildung des Blütentriebs anregen.',
-        ('de', BloomTrigger.shortDays) =>
-          'Geben Sie ihr etwa sechs Wochen lang mindestens 12 Stunden ununterbrochene Dunkelheit pro Nacht, damit sich Knospen bilden.',
-        ('de', BloomTrigger.drySpell) =>
-          'Gießen Sie einige Wochen deutlich weniger und steigern Sie danach langsam wieder. Dieser Wechsel kann die Blüte auslösen.',
-        ('de', BloomTrigger.potbound) =>
-          'Sie blüht oft besser, wenn die Wurzeln den Topf gut ausfüllen. Deshalb nicht zu früh umtopfen.',
-        ('de', BloomTrigger.brightLight) =>
-          'Zum Blühen braucht sie mehr Licht als für reines Blattwachstum. Stellen Sie sie sehr hell, aber ohne sengende Sonne.',
-        ('it', BloomTrigger.coolRest) =>
-          'Per preparare la fioritura, tienila per circa due mesi tra 10 e 12 °C e riduci molto le annaffiature.',
-        ('it', BloomTrigger.coolNights) =>
-          'In autunno, circa tre settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.',
-        ('it', BloomTrigger.shortDays) =>
-          'Per circa sei settimane, garantisci almeno 12 ore di buio continuo ogni notte per favorire la formazione dei boccioli.',
-        ('it', BloomTrigger.drySpell) =>
-          'Riduci molto le annaffiature per alcune settimane, poi riprendile gradualmente: questo contrasto può stimolare la fioritura.',
-        ('it', BloomTrigger.potbound) =>
-          'Spesso fiorisce meglio quando le radici occupano bene il vaso. Evita quindi di rinvasare troppo presto.',
-        ('it', BloomTrigger.brightLight) =>
-          'Per fiorire ha bisogno di più luce che per crescere. Sistemala in un luogo molto luminoso, evitando il sole troppo forte.',
-        (_, BloomTrigger.coolRest) =>
-          'To prepare for flowering, keep it around 10–12 °C for about two months and reduce watering sharply.',
-        (_, BloomTrigger.coolNights) =>
-          'In autumn, about three weeks with nights around 15 °C can encourage the flower spike to form.',
-        (_, BloomTrigger.shortDays) =>
-          'For about six weeks, give it at least 12 hours of uninterrupted darkness each night to encourage buds.',
-        (_, BloomTrigger.drySpell) =>
-          'Reduce watering sharply for a few weeks, then resume gradually. This change can trigger flowering.',
-        (_, BloomTrigger.potbound) =>
-          'It often flowers better when its roots fill the pot. Avoid repotting too early.',
-        (_, BloomTrigger.brightLight) =>
-          'It needs more light to flower than to simply grow leaves. Place it somewhere very bright without harsh sun.',
       };
 }

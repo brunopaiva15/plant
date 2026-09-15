@@ -567,7 +567,7 @@
   "homeClimateDenied": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
   "homeClimateFailed": "Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.",
   "homeClimateAtHome": "Chez vous",
-  "homeClimateFits": "Dans la plage de l'espèce.",
+  "homeClimateFits": "Rien qui gêne cette espèce.",
   "homeClimateTooDry": "Air trop sec pour cette espèce.",
   "homeClimateTooHumid": "Air trop humide pour cette espèce.",
   "homeClimateTooCold": "Trop froid pour cette espèce.",
@@ -1305,6 +1305,12 @@
     }
   },
   "careRepotNone": "Pas de rempotage (culture annuelle)",
+  "carePotSnug": "Aime être à l'étroit",
+  "carePotRoomy": "Aime l'espace",
+  "carePotSnugNote": "Une racine qui sort par le fond ne suffit pas : rempotez quand la motte est un bloc de racines, ou quand l'eau ne pénètre plus.",
+  "carePotSteadyNote": "Rempotez quand les racines sortent par le fond et tournent au fond du pot.",
+  "carePotRoomyNote": "Rempotez dès que les racines atteignent la paroi : à l'étroit, elle arrête de pousser.",
+  "carePotDormantNote": "Le rempotage se fait à la reprise, quand le repos s'achève, et non sur une racine qui sort.",
   "careTempIdeal": "{min} à {max} °C",
   "@careTempIdeal": {
     "placeholders": {
@@ -1330,12 +1336,48 @@
   "careLightBright": "Lumière vive indirecte",
   "careLightSome": "Quelques heures de soleil",
   "careLightFull": "Plein soleil",
+  "careLightLamp": "Sous lampe · LED à spectre complet, {min} à {max} µmol/m²/s, {hours} h par jour",
+  "@careLightLamp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "careLightLampDli": "Soit {min} à {max} mol/m²/jour reçus par le feuillage.",
+  "@careLightLampDli": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "careHumidityLow": "Air sec accepté",
   "careHumidityAverage": "Humidité ordinaire",
   "careHumidityHigh": "Aime l'air humide",
-  "careHumidityLowDetail": "L'air d'un logement chauffé lui suffit ; au-dessus de 70 %, elle s'abîme.",
-  "careHumidityAverageDetail": "40 à 60 %, l'air ordinaire d'un logement ; sous 30 %, les pointes brunissent.",
-  "careHumidityHighDetail": "60 % et plus : plateau de billes d'argile humides, plantes groupées, pièce d'eau. Sous 45 %, l'air lui manque.",
+  "careHumidityRange": "{min} à {max} % d'humidité de l'air",
+  "@careHumidityRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careHumidityLowDetail": "Elle tolère bien l'air sec d'un logement. Une humidité durablement plus haute l'abîme.",
+  "careHumidityAverageDetail": "L'air ordinaire d'un logement convient. Loin d'un radiateur en hiver, les pointes des feuilles ne brunissent pas.",
+  "careHumidityHighDetail": "Un humidificateur, un plateau de billes d'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.",
   "careDifficultyEasy": "Facile",
   "careDifficultyMedium": "Moyenne",
   "careDifficultyDemanding": "Exigeante",
@@ -1422,21 +1464,74 @@
   "careGreenhouseWarmLight": "Chaleur et lumière",
   "careGreenhouseWarmDry": "Chaleur, lumière et air sec",
   "careGreenhouseGrowth": "Tenues toute l'année, ces conditions accélèrent la pousse : l'arrosage et l'engrais se rapprochent d'autant.",
+  "careGreenhouseHold": "Tenez la plage d'humidité le jour, laissez-la descendre la nuit, et faites circuler l'air.",
   "careGreenhouseAir": "Aérer chaque jour : l'air confiné fait pourrir ce qui aime le sec.",
   "careGreenhouseEarly": "En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.",
   "careBloom": "Floraison",
+  "careSeasonRange": "De {from} à {to}",
+  "@careSeasonRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "careBloomOutdoors": "Rarement en intérieur",
+  "careBloomChillBulb": "Un froid au bulbe",
+  "careBloomChillBulbNote": "Comptez dix à quinze semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.",
+  "careBloomFertilizer": "Un engrais de floraison",
+  "careBloomFertilizerNote": "Dès que les boutons se forment, passez à un engrais de floraison, plus riche en potasse que celui du feuillage.",
+  "careBloomMaturity": "De l'âge",
+  "careBloomMaturityNote": "Elle ne fleurit qu'à partir de trois ou quatre ans : avant cet âge, aucune condition n'y changera rien.",
+  "careBloomDeadhead": "Des fleurs coupées",
+  "careBloomDeadheadNote": "Coupez les fleurs fanées au fur et à mesure : la plante remet alors son énergie dans les suivantes.",
+  "careBloomKeepSpike": "Une hampe gardée",
+  "careBloomKeepSpikeNote": "Tant que la hampe reste verte, laissez-la en place : elle peut refleurir depuis un œil situé plus bas.",
+  "careBloomNoMove": "Une place fixe",
+  "careBloomNoMoveNote": "Une fois les boutons formés, ne la déplacez plus et ne la tournez plus : le changement les fait tomber.",
+  "careBloomEvenWater": "Un arrosage régulier",
+  "careBloomEvenWaterNote": "Pendant la formation des boutons, arrosez régulièrement : un seul coup de sec suffit à les faire tomber.",
+  "careRest": "Repos",
+  "careRestStoreDarkTemp": "Au sec et à l'obscurité, entre {min} et {max} °C",
+  "@careRestStoreDarkTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careRestStoreTemp": "Au sec, entre {min} et {max} °C",
+  "@careRestStoreTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careRestStoreDark": "Au sec et à l'obscurité",
+  "careRestStorePlain": "Au sec",
+  "careRestNote": "Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l'arrosage. Remettez le pot à la lumière et reprenez l'arrosage à la fin de cette période.",
   "careBloomCoolRest": "Un hiver frais",
-  "careBloomCoolRestNote": "Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.",
+  "careBloomCoolRestNote": "Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.",
   "careBloomCoolNights": "Des nuits fraîches",
-  "careBloomCoolNightsNote": "Trois semaines à 15 °C la nuit, en automne, font monter la hampe.",
+  "careBloomCoolNightsNote": "En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.",
   "careBloomShortDays": "Des jours courts",
-  "careBloomShortDaysNote": "Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.",
+  "careBloomShortDaysNote": "Pendant environ six semaines, offrez-lui des nuits d'au moins 12 heures dans l'obscurité pour favoriser la formation des boutons.",
   "careBloomDrySpell": "Une sécheresse",
-  "careBloomDrySpellNote": "Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.",
+  "careBloomDrySpellNote": "Réduisez fortement les arrosages pendant quelques semaines, puis reprenez progressivement : ce contraste peut déclencher la floraison.",
   "careBloomPotbound": "Un pot à l'étroit",
-  "careBloomPotboundNote": "Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.",
+  "careBloomPotboundNote": "Elle fleurit souvent mieux lorsque ses racines occupent bien le pot. Évitez donc de rempoter trop tôt.",
   "careBloomBrightLight": "Plus de lumière",
-  "careBloomBrightLightNote": "Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.",
+  "careBloomBrightLightNote": "Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.",
   "carePropCutting": "Bouture de tige",
   "carePropLeaf": "Bouture de feuille",
   "carePropDivision": "Division de la touffe",

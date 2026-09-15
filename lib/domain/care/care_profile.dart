@@ -14,7 +14,19 @@ LightNeed? lightNeedFromCode(String? code) => switch (code) {
     };
 
 /// Besoin en humidité de l'air.
+///
+/// Le mot suffit pour poser un pot dans un salon ; sous serre ou en vitrine,
+/// c'est un pourcentage qui se règle, d'où [humidityPercentRange].
 enum HumidityNeed { low, average, high }
+
+/// Plage d'hygrométrie tenue par un besoin, en pourcentage. Une fiche peut la
+/// resserrer pour son espèce : entre deux plantes « qui aiment l'air humide »,
+/// l'anthurium tient à 60 % et l'adiante en demande 80.
+(int, int) humidityPercentRange(HumidityNeed need) => switch (need) {
+      HumidityNeed.low => (30, 50),
+      HumidityNeed.average => (40, 60),
+      HumidityNeed.high => (60, 80),
+    };
 
 /// Difficulté d'entretien.
 enum CareDifficulty { easy, medium, demanding }
@@ -24,6 +36,23 @@ enum Toxicity { safe, mild, toxic, unknown }
 
 /// Type de substrat conseillé.
 enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
+
+/// Rapport d'une plante à son pot.
+///
+/// Il décide de ce que veut dire une racine qui sort par le trou de drainage :
+/// signal de rempotage pour l'une, état normal pour l'autre. Le phalaenopsis
+/// et le spathiphyllum fleurissent d'être à l'étroit ; le monstera s'arrête
+/// dès que ses racines tournent au fond.
+enum PotPreference {
+  /// À l'étroit, et mieux ainsi : un pot trop grand la fait bouder.
+  snug,
+
+  /// Rempotage quand la motte est prise.
+  steady,
+
+  /// De la place, sans quoi la croissance s'arrête.
+  roomy,
+}
 
 /// Ce que l'espèce supporte des sels de l'eau d'arrosage — calcaire, fluor,
 /// sodium.
@@ -57,7 +86,25 @@ enum FertilizerKind { balanced, foliage, flowering, cactus, orchid, acidic, citr
 enum CalciumNeed { avoid, neutral, welcome, needed }
 
 /// Ce qui décide une plante à fleurir, quand c'est le but qu'on se donne.
-enum BloomTrigger { coolRest, coolNights, shortDays, drySpell, potbound, brightLight }
+///
+/// Les six premiers sont des conditions à réunir avant les boutons ; les
+/// suivants sont des gestes, pendant la formation ou après la fleur. Une
+/// espèce en demande souvent plusieurs, d'où la liste dans [Bloom].
+enum BloomTrigger {
+  coolRest,
+  coolNights,
+  shortDays,
+  drySpell,
+  potbound,
+  brightLight,
+  chillBulb,
+  fertilizer,
+  maturity,
+  deadhead,
+  keepSpike,
+  noMove,
+  evenWater,
+}
 
 /// Méthode de multiplication.
 enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, water, tuber }
@@ -133,6 +180,47 @@ class MonthWindow {
   static int _mirror(int month) => (month + 5) % 12 + 1;
 }
 
+/// Ce que l'espèce donne comme fleurs, et à quelles conditions.
+///
+/// Une fiche sans floraison ne dit rien : la plante se tient pour son
+/// feuillage, et la question ne se pose pas.
+class Bloom {
+  const Bloom({required this.window, this.triggers = const [], this.indoors = true});
+
+  /// Mois de floraison, hémisphère nord.
+  final MonthWindow window;
+
+  /// Ce qu'il faut réunir pour l'obtenir. Une seule condition pour la
+  /// plupart ; un phalaenopsis en demande trois.
+  final List<BloomTrigger> triggers;
+
+  /// Elle fleurit en pot, dans une pièce. Faux pour celles qui ne fleurissent
+  /// qu'en pleine terre, ou après des années dehors.
+  final bool indoors;
+}
+
+/// Repos à feuillage disparu.
+///
+/// Le crocus, le caladium ou le cyclamen ne meurent pas quand leurs feuilles
+/// jaunissent : ils rentrent entièrement dans leur bulbe, leur tubercule ou
+/// leur rhizome, qui attend au sec l'année suivante. Sans ce passage, rien ne
+/// repart — d'où la plage de température et l'obscurité, qui sont des gestes,
+/// pas des symptômes.
+class DormantRest {
+  const DormantRest({required this.window, this.storeMinC, this.storeMaxC, this.dark = true});
+
+  /// Mois de sommeil, hémisphère nord. La reprise vient juste après.
+  final MonthWindow window;
+
+  /// Où garder l'organe de réserve, en degrés.
+  final int? storeMinC;
+  final int? storeMaxC;
+
+  /// À l'obscurité. Faux pour celles qui passent leur repos en pleine lumière,
+  /// comme le cyclamen au frais sous un arbre.
+  final bool dark;
+}
+
 /// Fiche d'entretien d'une espèce : quand arroser, quelle lumière, quel
 /// substrat, à quelle fréquence rempoter, ce qu'il faut surveiller.
 ///
@@ -146,6 +234,8 @@ class CareProfile {
     required this.humidity,
     required this.difficulty,
     required this.soil,
+    this.humidityMinPercent,
+    this.humidityMaxPercent,
     this.water = WaterTolerance.tolerant,
     this.fertilizingDays,
     this.fertilizingWindow = const MonthWindow(3, 9),
@@ -153,8 +243,8 @@ class CareProfile {
     this.calcium,
     this.waterCulture,
     this.ponCulture,
-    this.bloom,
     this.repotEveryMonths,
+    this.pot = PotPreference.steady,
     this.minTempC,
     this.idealTempMinC,
     this.idealTempMaxC,
@@ -165,6 +255,8 @@ class CareProfile {
     this.mistLeaves = false,
     this.dormantInWinter = true,
     this.outdoorFriendly = false,
+    this.bloom,
+    this.dormancy,
     this.tipKeys = const [],
   });
 
@@ -178,6 +270,11 @@ class CareProfile {
   final HumidityNeed humidity;
   final CareDifficulty difficulty;
   final SoilKind soil;
+
+  /// Hygrométrie en pourcentage, quand l'espèce demande plus précis que sa
+  /// catégorie. `null` des deux côtés = la plage du besoin suffit.
+  final int? humidityMinPercent;
+  final int? humidityMaxPercent;
 
   /// Tolérance à l'eau du robinet. La valeur par défaut est celle du plus
   /// grand nombre : une plante ordinaire boit l'eau du robinet.
@@ -204,12 +301,11 @@ class CareProfile {
   /// Culture en pon, même règle : `null` = celle que [inPon] déduit.
   final SoilFreeFit? ponCulture;
 
-  /// Ce qui la décide à fleurir, quand c'est le but qu'on se donne.
-  /// `null` = rien de particulier à tenter.
-  final BloomTrigger? bloom;
-
   /// Mois entre deux rempotages. `null` = rempotage non pertinent (annuelles).
   final int? repotEveryMonths;
+
+  /// Ce qu'une racine qui sort du pot veut dire pour cette espèce.
+  final PotPreference pot;
 
   /// Température minimale supportée, et plage idéale.
   final int? minTempC;
@@ -232,8 +328,23 @@ class CareProfile {
   /// Peut passer l'été dehors, voire y rester.
   final bool outdoorFriendly;
 
+  /// Sa floraison : la saison, et ce qui la décide. `null` = plante de
+  /// feuillage, ou floraison qu'on ne cherche pas à provoquer.
+  final Bloom? bloom;
+
+  /// Son repos à feuillage disparu, pour les plantes à réserves. `null` = elle
+  /// garde ses feuilles toute l'année.
+  final DormantRest? dormancy;
+
   /// Clés de conseils libres, résolues par la couche i18n.
   final List<String> tipKeys;
+
+  /// Plage d'hygrométrie à viser, en pourcentage : celle de l'espèce quand
+  /// elle est renseignée, sinon celle de son besoin.
+  (int, int) get humidityRange {
+    final base = humidityPercentRange(humidity);
+    return (humidityMinPercent ?? base.$1, humidityMaxPercent ?? base.$2);
+  }
 
   /// Intervalle d'arrosage conseillé pour un mois donné, ajusté par la
   /// lumière réelle de l'emplacement (une plante en pleine lumière boit plus).

@@ -376,66 +376,78 @@ la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
 terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
-Sept volets se pratiquent — arrosage, eau, lumière, humidité, engrais,
-substrat, rempotage — et chacun a sa carte, teintée de la couleur de son
-sujet : bleu poussière pour l'arrosage et pour l'eau, ocre pour la lumière,
-rose pour l'air, sauge pour l'engrais, terre cuite pour la terre (le substrat
-et le rempotage la partagent, c'est la même). Une douzaine de lignes dans une
-seule liste ne se distinguaient qu'à la lecture ; une carte se retrouve à sa
-couleur.
+La page suit le chemin réel d'entretien, en sections titrées : **ce qu'elle
+demande** (lumière, arrosage, eau, température, humidité, puis « Chez vous »),
+**ce qu'on lui fait** (substrat, engrais, rempotage, puis le repos et le tuteur
+pour celles qui en ont un), **les conditions particulières** (serre, floraison)
+et enfin **les détails** (difficulté, toxicité). Sept volets se pratiquent —
+arrosage, eau, lumière, humidité, engrais, substrat, rempotage — et chacun a sa
+carte, teintée de la couleur de son sujet : bleu poussière pour l'arrosage et
+pour l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre
+cuite pour la terre (le substrat et le rempotage la partagent, c'est la même).
+Une douzaine de lignes dans une seule liste ne se distinguaient qu'à la
+lecture ; une carte se retrouve à sa couleur.
 
 L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
 sur toute carte teintée —, le nom du volet, le constat dessous, puis une ligne
 par précision qui ne vaut que pour lui. Ces précisions sont le fond de la
 fiche :
 
-- **Humidité** : le taux, et par quoi l'obtenir. « Humidité ordinaire » seul
-  ne se compare à rien ; « 40 à 60 %, sous 30 % les pointes brunissent » se
-  compare à la mesure de la pièce, juste au-dessous.
+- **Humidité** : le taux de l'espèce, puis par quoi l'obtenir. « Aime l'air
+  humide » seul ne se compare à rien, et ne suffit pas à régler une serre :
+  entre deux plantes du même mot, l'une tient à 50 % et l'autre en veut 85.
+  Le pourcentage vient de la fiche quand elle le précise, de la catégorie
+  sinon, et se compare à la mesure de la pièce, juste au-dessous — laquelle
+  dit « Rien qui gêne cette espèce », et non « dans la plage », parce qu'elle
+  tolère quinze points sous le minimum.
 - **Engrais** : lequel avant combien de fois — plantes vertes équilibré,
   azoté, potasse, cactées, orchidées, terre de bruyère, agrumes, tomates —,
   puis la saison, puis ce que le calcium lui fait quand il lui fait quelque
   chose (rien à dire vaut mieux qu'une ligne pour dire « rien »).
-- **Substrat** : le mélange en proportions (« 50 % de terreau, 25 % de
-  perlite, 25 % de sable grossier »), et ce qu'elle accepte hors du pot —
-  « Dans l'eau : bouture seulement · En pon : oui ». Deux « non » font
+- **Substrat** : le mélange en proportions, et ce qu'elle accepte hors du pot
+  — la culture dans l'eau, la culture en pon. Deux « déconseillée » font
   disparaître la ligne.
 
-L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau : c'est la
-question qu'on se pose en premier. La carte « Chez vous » se pose après
-l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
+L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau : c'est le
+chiffre qu'on retient. Il vient après la lumière, qui commande justement son
+intervalle. La carte « Chez vous » ferme les besoins, puisque c'est l'air de
+la pièce qu'elle mesure.
 
-L'eau suit l'arrosage et garde son bleu : c'est le même sujet, ce qu'on verse
-plutôt que le jour où on le verse. Elle dit en deux mots ce que l'espèce
-supporte du calcaire — « Eau du robinet », « Eau peu calcaire », « Eau sans
-calcaire » — et pourquoi, puis un chevron ouvre `water_types_sheet.dart` : les
-sept eaux qu'on a sous la main, chacune avec le verdict pour cette plante
-(Recommandée, Convient, Avec réserve, À éviter), ce qu'elle est et ce qu'elle
-emporte avec elle. Le verdict s'écrit, la couleur le renforce sans jamais le
-porter seule, et les quatre teintes de sa pastille sont celles qui tiennent
-4,5:1 sur leur pastel — sauge, bleu, terre cuite, et le rouge sur `surfaceMuted`
-faute de pastel. Un volet qui cache quelque chose prend un chevron et se presse
-comme une ligne de liste ; les autres n'en ont pas.
+Sous ces précisions vient ce qu'il faut en faire, une phrase par idée
+(`notes`), en `caption` : la règle du rempotage, la dose de la lampe, les
+conditions d'une floraison. La lumière annonce la lampe qui la remplace — LED
+à spectre complet, intensité reçue et durée, puis la dose du jour —, parce que
+c'est le seul volet de la fiche qui s'achète quand la fenêtre manque. Le
+rempotage dit ce qu'une racine sortie par le fond signifie pour cette
+espèce-là : signal pour celle qui veut de l'espace, état normal pour celle qui
+fleurit à l'étroit, et chez une plante à réserves rien du tout, puisque c'est
+la fin du repos qui commande.
 
-**Le tuteur** (`CareProfile.support`) suit le rempotage, et seulement pour les
-espèces qui en demandent un : un pothos, un monstera, une tomate. Il dit lequel
-— tuteur moussu, tuteur droit, treillis — et quand s'en occuper : le tuteur
-moussu s'humidifie à chaque arrosage, la tige s'attache à mesure qu'elle monte.
-Sa carte garde l'anatomie des volets mais reste crème : les teintes
-appartiennent aux volets du soin, une de plus les brouillerait.
+**Repos** est la carte des plantes à réserves dont le feuillage disparaît —
+crocus, caladium, cyclamen : la période, la température et l'obscurité du
+rangement, puis ce qu'on fait du feuillage qui jaunit. Elle suit le rempotage
+et reste crème, seule de la fiche : c'est la seule carte qui décrit une
+absence — plus de feuilles, plus d'eau, plus de lumière —, et le crème le dit
+sans un mot.
 
-Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
-`FloraGroup` à la suite. Viennent ensuite les deux projets, pour qui en a un :
+**Tuteur** ferme ce qu'on fait au pot, même registre et même crème : il ne
+paraît que pour les espèces qui en demandent un.
+
+Ce qui se lit sans rien faire — difficulté, toxicité — reste une `FloraGroup`
+en fin de page. Avant elle viennent les deux projets, pour qui en a un :
 **Sous serre** (ocre) dit les conditions à tenir pour pousser plus vite, et
-**Floraison** (rose) ce qui décide la plante à fleurir. Ils se pratiquent,
-donc ils gardent la carte des volets ; ils ne se pratiquent pas tous les
-jours, d'où leur place après la liste. Une plante qui passe l'hiver dehors
-n'a pas l'usage d'une serre et n'en voit pas la carte ; la floraison ne paraît
-que lorsque la fiche sait ce qui la déclenche. Les conseils, ce qu'il faut
-surveiller, les signes sur les feuilles, les problèmes connus et la
-multiplication ferment la page, puis la provenance de la fiche.
-`test/features/care_guide_test.dart` tient la séparation,
-`test/domain/care_profile_test.dart` ce qui se déduit.
+**Floraison** (rose) la saison, puis ce qui décide la plante à fleurir : les
+conditions nommées d'un trait (« Des nuits fraîches · Une hampe gardée »), et
+chacune expliquée dessous, dans le même ordre. Trois au plus, sans quoi la
+carte ne se lit plus. Ils se pratiquent, donc ils gardent la carte des
+volets ; ils ne se pratiquent pas tous les jours, d'où leur place à part. Une
+plante qui passe l'hiver dehors n'a pas l'usage d'une serre et n'en voit pas
+la carte — c'est là que se règle la plage d'humidité, puisqu'une
+serre se tient au chiffre ; la floraison ne paraît que lorsque la fiche sait
+ce qui la déclenche, et dit « Rarement en intérieur » quand elle ne se joue
+pas dans une pièce. Les conseils, ce qu'il faut surveiller, les problèmes
+connus et la multiplication ferment la page, puis la provenance de la fiche. `test/features/care_guide_test.dart` tient la
+séparation, `test/domain/care_profile_test.dart` ce qui se déduit.
 
 **« À surveiller »** range la liste de l'espèce dans l'ordre de la base des
 problèmes — les troubles, puis les ravageurs, puis les maladies —, parce que

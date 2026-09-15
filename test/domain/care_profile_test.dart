@@ -122,8 +122,8 @@ void main() {
       expect(CareProfiles.bySpecies['Solanum lycopersicum']!.calciumNeed, CalciumNeed.needed);
       expect(CareProfiles.byGenus['Epipremnum']!.inWater, SoilFreeFit.yes);
       expect(CareProfiles.byGenus['Tillandsia']!.inWater, SoilFreeFit.no);
-      expect(CareProfiles.byGenus['Schlumbergera']!.bloom, BloomTrigger.shortDays);
-      expect(CareProfiles.byFamily['Orchidaceae']!.bloom, BloomTrigger.coolNights);
+      expect(CareProfiles.byGenus['Schlumbergera']!.bloom!.triggers, contains(BloomTrigger.shortDays));
+      expect(CareProfiles.byFamily['Orchidaceae']!.bloom!.triggers, contains(BloomTrigger.coolNights));
     });
   });
 }
