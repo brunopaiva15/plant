@@ -130,6 +130,7 @@ journal des mois plus tard au lieu d'en relire l'aperçu
 ```json
 {"version": 1, "summary": "…", "urgent": true,
  "symptoms": "ce que l'utilisateur avait décrit",
+ "observations": {"soil": "soggy", "roots": "soft", "light": "direct", "bugs": "none"},
  "causes": [{"title": "…", "problemId": "002", "likelihood": "likely",
              "explanation": "…", "actions": ["…"]}],
  "photos": [{"file": "…jpg", "thumb": "…_thumb.jpg"}]}

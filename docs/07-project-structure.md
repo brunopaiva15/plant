@@ -23,7 +23,7 @@ lib/
 │   ├── repositories/              interfaces
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
-│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisRecord (compte rendu gardé)
+│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
 │   ├── cuttings/                  CuttingStep, CuttingGuideRefinement, CuttingGuideRefiner, CuttingGuideStore
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison), HomeClimateAdvisor

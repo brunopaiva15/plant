@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
 import '../../core/utils/search_text.dart';
+import '../../domain/diagnosis/diagnosis_observations.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
 import '../../domain/home/home_climate.dart';
 import '../../domain/problems/plant_problem.dart';
@@ -46,6 +47,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
+    DiagnosisObservations? observations,
   }) async {
     if (!isConfigured) throw const DiagnosisException('unconfigured');
     if (images.isEmpty) throw const DiagnosisException('no_images');
@@ -66,6 +68,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           frequentIds: frequentIds,
           indoorClimate: indoorClimate,
           reportedClimate: reportedClimate,
+          observations: observations,
         ),
       },
     ];
@@ -96,6 +99,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
             symptoms: symptoms,
             candidates: candidates,
             frequentIds: frequentIds,
+            observations: observations,
           );
     return _numberLeftovers(complete, candidates, language);
   }
@@ -121,6 +125,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? symptoms,
     required List<PlantProblem> candidates,
     required Set<String> frequentIds,
+    DiagnosisObservations? observations,
   }) async {
     try {
       final body = buildFallbackRequest(
@@ -131,6 +136,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         symptoms: symptoms,
         candidates: candidates,
         frequentIds: frequentIds,
+        observations: observations,
       );
       var response = await _post(body, timeout: const Duration(seconds: 60));
       if (response.statusCode == 400) {
@@ -164,6 +170,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? symptoms,
     List<PlantProblem> candidates = const [],
     Set<String> frequentIds = const {},
+    DiagnosisObservations? observations,
   }) =>
       {
         'model': model,
@@ -183,6 +190,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
                 symptoms: symptoms,
                 candidates: candidates,
                 frequentIds: frequentIds,
+                observations: observations,
               ),
               'Give the one or two most plausible causes, as "possible" or "unlikely".',
             ].join(' '),
@@ -365,6 +373,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
+    DiagnosisObservations? observations,
   }) {
     final parts = <String>[
       if (plantName != null && plantName.isNotEmpty) 'Plant: $plantName.',
@@ -383,6 +392,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // chercher une cause.
       if (symptoms != null && symptoms.trim().isNotEmpty)
         'What the owner noticed, on the plant itself, true whether or not the photos show it: ${symptoms.trim()}',
+      // Ce que la personne est allée vérifier de sa main. Une terre au doigt
+      // et des racines sorties du pot valent mieux qu'une photo : la consigne
+      // le dit, sans quoi le modèle conseillait de vérifier ce qui venait de
+      // l'être.
+      ?observationsLine(observations),
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
@@ -407,6 +421,48 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         if (temperatureC != null) '${temperatureC.toStringAsFixed(1)} °C',
         if (humidity != null) '$humidity % relative humidity',
       ].join(', ');
+
+  /// Ce que la personne a vérifié de sa main, ou `null` si elle n'a rien
+  /// coché : la terre au doigt, les racines hors du pot, la lumière reçue,
+  /// les insectes trouvés.
+  ///
+  /// Ce sont des constats, pas des impressions, et la photo n'en montre
+  /// aucun : la consigne le dit au modèle, faute de quoi il conseillait de
+  /// vérifier ce qui venait de l'être. « Aucun insecte » en est un aussi :
+  /// une case laissée vide ne dit rien, une case cochée sur « aucun vu » pèse
+  /// contre les ravageurs.
+  static String? observationsLine(DiagnosisObservations? o) {
+    if (o == null || o.isEmpty) return null;
+    final facts = [
+      switch (o.soil) {
+        SoilState.dry => 'the soil is dry a couple of centimetres down',
+        SoilState.moist => 'the soil is still damp a couple of centimetres down',
+        SoilState.soggy => 'the soil is soaked and stays that way',
+        null => null,
+      },
+      switch (o.roots) {
+        RootState.firm => 'the roots were taken out of the pot and looked at: firm and pale',
+        RootState.soft => 'the roots were taken out of the pot and looked at: brown, soft or smelling',
+        RootState.crowded => 'the roots were taken out of the pot and looked at: coiled, filling the whole pot',
+        null => null,
+      },
+      switch (o.light) {
+        LightExposure.direct => 'the plant gets direct sun for part of the day',
+        LightExposure.bright => 'the plant gets bright light, without direct sun',
+        LightExposure.dim => 'the plant gets little light',
+        null => null,
+      },
+      switch (o.bugs) {
+        BugSighting.none => 'no insect was found on a close look, undersides of the leaves included',
+        BugSighting.onPlant => 'insects are visible on the plant',
+        BugSighting.inSoil => 'insects are visible in the soil',
+        null => null,
+      },
+    ].whereType<String>().join('; ');
+    return 'Checked by the owner, by hand, on the plant itself: $facts. '
+        'These were verified, not guessed, and no photo shows them: weigh every cause for and against them, '
+        'and never give as an action something that has already been checked here.';
+  }
 
   /// Les noms des pistes soumises, normalisés, pour le filet de rattrapage.
   ///

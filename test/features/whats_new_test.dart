@@ -132,10 +132,28 @@ void main() {
   group('la fenêtre', () {
     testWidgets('montre le titre, son accroche et ses points forts', (tester) async {
       await _pumpWindow(tester);
+      expect(find.text('Diagnostic'), findsOneWidget);
+      expect(find.text('PETITES NOUVEAUTÉS'), findsOneWidget);
+      expect(find.text('Terre, racines, lumière, insectes'), findsOneWidget);
+      expect(find.text("Pesé dans l'analyse"), findsOneWidget);
+      expect(find.text('Gardé au journal'), findsOneWidget);
+    });
+
+    testWidgets("une nouveauté d'Iris pose sa marque sur la médaille", (tester) async {
+      // Le seul héros qui ne soit pas une icône : la marque du modèle
+      // embarqué, avec ses couleurs figées.
+      await tester.pumpWidget(_app(WhatsNewView(
+        note: ReleaseNote(
+          id: 'x',
+          eyebrow: 'Mise à jour du modèle',
+          title: AppConfig.modelDisplayName('8'),
+          body: 'Corps',
+          mark: ReleaseMark.iris,
+          highlights: const [],
+        ),
+      )));
+      await tester.pump();
       expect(find.text(AppConfig.modelDisplayName('8')), findsOneWidget);
-      expect(find.text('MISE À JOUR DU MODÈLE'), findsOneWidget);
-      expect(find.text('5000 espèces reconnues'), findsOneWidget);
-      expect(find.text("Toujours sur l'appareil"), findsOneWidget);
       expect(find.byType(IrisMark), findsOneWidget);
     });
 
