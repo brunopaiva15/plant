@@ -15,6 +15,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
 import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
 import '../../network/presentation/offline_notice.dart';
+import '../application/garden_deletion.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'join_garden_sheet.dart';
@@ -34,6 +35,16 @@ class GardensScreen extends ConsumerWidget {
     final signedIn = user != null && !user.isLocal;
     final current = ref.watch(gardenIdProvider);
     final gardens = ref.watch(myGardensProvider);
+
+    // Le jardin ouvert a disparu de la liste — supprimé par son propriétaire,
+    // ou accès retiré : on revient à celui de l'appareil plutôt que de montrer
+    // les plantes d'un jardin qui n'existe plus.
+    ref.listen(myGardensProvider, (_, next) {
+      final items = next.value;
+      if (items == null || items.isEmpty) return;
+      if (items.any((g) => g.id == ref.read(gardenIdProvider))) return;
+      ref.read(activeGardenProvider.notifier).reset();
+    });
 
     return FloraPage(
       title: l10n.gardensTitle,
@@ -75,7 +86,7 @@ class GardensScreen extends ConsumerWidget {
                         FloraListRow(
                           leading: Text(g.isMine ? '🏡' : '🤝', style: const TextStyle(fontSize: 18)),
                           title: gardenLabel(context, g.name, isMine: g.isMine),
-                          subtitle: _subtitle(context, g),
+                          subtitle: gardenSummary(context, g),
                           trailing: g.id == current
                               ? Icon(CupertinoIcons.checkmark_alt, size: 18, color: c.sage)
                               : FloraIconButton(
@@ -83,10 +94,10 @@ class GardensScreen extends ConsumerWidget {
                                   semanticLabel: l10n.moreOptions,
                                   size: 32,
                                   filled: false,
-                                  onPressed: () => _menu(context, ref, g),
+                                  onPressed: () => _menu(context, ref, g, items),
                                 ),
                           chevron: false,
-                          onTap: g.id == current ? () => _menu(context, ref, g) : () => _open(context, ref, g),
+                          onTap: g.id == current ? () => _menu(context, ref, g, items) : () => _open(context, ref, g),
                         ),
                     ],
                   ),
@@ -119,16 +130,6 @@ class GardensScreen extends ConsumerWidget {
     );
   }
 
-  static String _subtitle(BuildContext context, GardenAccess garden) {
-    final l10n = context.l10n;
-    return [
-      if (garden.isMine) l10n.gardenMine else l10n.gardenSharedBy(garden.ownerName.isEmpty ? l10n.someone : garden.ownerName),
-      if (!garden.isMine && garden.role == GardenRole.viewer) l10n.roleViewer,
-      l10n.plantCount(garden.plantCount),
-      if (garden.isShared) l10n.memberCount(garden.memberCount),
-    ].join(' · ');
-  }
-
   Future<void> _open(BuildContext context, WidgetRef ref, GardenAccess garden) async {
     final message = context.l10n.gardenOpened(gardenLabel(context, garden.name, isMine: garden.isMine));
     await ref.read(activeGardenProvider.notifier).select(garden.id);
@@ -136,7 +137,7 @@ class GardensScreen extends ConsumerWidget {
     ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: garden.isMine ? '🏡' : '🤝'));
   }
 
-  Future<void> _menu(BuildContext context, WidgetRef ref, GardenAccess garden) async {
+  Future<void> _menu(BuildContext context, WidgetRef ref, GardenAccess garden, List<GardenAccess> all) async {
     final l10n = context.l10n;
     final name = gardenLabel(context, garden.name, isMine: garden.isMine);
     await showAdaptiveActionSheet(
@@ -144,13 +145,22 @@ class GardensScreen extends ConsumerWidget {
       title: name,
       cancelLabel: l10n.cancel,
       actions: [
-        if (garden.isMine)
+        if (garden.isMine) ...[
           SheetAction(
             label: l10n.renameGarden,
             icon: CupertinoIcons.pencil,
             onPressed: () => _rename(context, ref, garden),
-          )
-        else
+          ),
+          // Le dernier jardin ne se supprime pas : l'application en ouvre
+          // toujours un, et il n'y aurait rien pour prendre sa place.
+          if (all.length > 1)
+            SheetAction(
+              label: l10n.deleteGarden,
+              icon: CupertinoIcons.trash,
+              destructive: true,
+              onPressed: () => _delete(context, ref, garden, all),
+            ),
+        ] else
           SheetAction(
             label: l10n.leaveGarden,
             icon: CupertinoIcons.square_arrow_left,
@@ -159,6 +169,47 @@ class GardensScreen extends ConsumerWidget {
           ),
       ],
     );
+  }
+
+  /// Supprimer son jardin : ses plantes, son journal et ses photos partent
+  /// avec lui, pour les invités comme pour soi. Un autre jardin prend sa
+  /// place — le jardin ouvert reste ouvert quand ce n'est pas lui qui part.
+  Future<void> _delete(BuildContext context, WidgetRef ref, GardenAccess garden, List<GardenAccess> all) async {
+    final l10n = context.l10n;
+    final name = gardenLabel(context, garden.name, isMine: garden.isMine);
+    final ok = await showAdaptiveConfirm(
+      context,
+      title: l10n.deleteGarden,
+      message: l10n.deleteGardenConfirm(name),
+      confirmLabel: l10n.delete,
+      cancelLabel: l10n.cancel,
+      destructive: true,
+    );
+    if (!ok) return;
+    final others = all.where((g) => g.id != garden.id).toList();
+    if (others.isEmpty) return;
+    final current = ref.read(gardenIdProvider);
+    final open = others.where((g) => g.id == current).toList();
+    // Le repère du jardin de l'appareil ne peut désigner qu'un jardin à nous.
+    final mine = others.where((g) => g.isMine).toList();
+    try {
+      await deleteGarden(
+        ref,
+        gardenId: garden.id,
+        openInstead: (open.isEmpty ? others.first : open.first).id,
+        ownInstead: mine.isEmpty ? null : mine.first.id,
+      );
+      Haptics.warning();
+      if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.gardenDeleted(name), emoji: '🌾'));
+    } on OfflineException {
+      if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineActionFailed, emoji: '📡'));
+    } on CollaborationException catch (e) {
+      final message = e.error == CollaborationError.lastGarden ? l10n.deleteGardenLast : l10n.genericError;
+      if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '!'));
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'delete-garden');
+      if (context.mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.genericError, emoji: '!'));
+    }
   }
 
   /// Renommer son jardin : c'est ce nom que verront les invités.
@@ -196,6 +247,17 @@ String gardenLabel(BuildContext context, String name, {required bool isMine}) {
   final trimmed = name.trim();
   if (trimmed.isNotEmpty && trimmed != _defaultGardenName) return trimmed;
   return isMine ? context.l10n.gardenMine : context.l10n.gardenUnnamed;
+}
+
+/// Ce qui se lit sous le nom d'un jardin : à qui il est, ce qu'il contient.
+String gardenSummary(BuildContext context, GardenAccess garden) {
+  final l10n = context.l10n;
+  return [
+    if (garden.isMine) l10n.gardenMine else l10n.gardenSharedBy(garden.ownerName.isEmpty ? l10n.someone : garden.ownerName),
+    if (!garden.isMine && garden.role == GardenRole.viewer) l10n.roleViewer,
+    l10n.plantCount(garden.plantCount),
+    if (garden.isShared) l10n.memberCount(garden.memberCount),
+  ].join(' · ');
 }
 
 /// Quitte un jardin partagé, après confirmation, et revient au sien.

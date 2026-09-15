@@ -1961,6 +1961,26 @@
       }
     }
   },
+  "deleteGarden": "Supprimer le jardin",
+  "deleteGardenConfirm": "Le jardin « {name} », ses plantes et son journal seront supprimés, pour vous comme pour les personnes invitées.",
+  "@deleteGardenConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "gardenDeleted": "Jardin « {name} » supprimé",
+  "@gardenDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGardenLast": "Un compte garde au moins un jardin.",
+  "openGardenTitle": "Vos jardins",
+  "openGardenHint": "Ce compte donne accès à ces jardins. Ouvrez celui où sont vos plantes.",
   "collaborationNeedsAccount": "Il faut un compte pour partager un jardin",
   "inviteSomeone": "Inviter quelqu'un",
   "inviteReady": "Invitation prête",

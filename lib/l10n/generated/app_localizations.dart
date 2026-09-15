@@ -7170,6 +7170,42 @@ abstract class AppLocalizations {
   /// **'Vous avez quitté « {name} »'**
   String leftGarden(String name);
 
+  /// No description provided for @deleteGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le jardin'**
+  String get deleteGarden;
+
+  /// No description provided for @deleteGardenConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le jardin « {name} », ses plantes et son journal seront supprimés, pour vous comme pour les personnes invitées.'**
+  String deleteGardenConfirm(String name);
+
+  /// No description provided for @gardenDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jardin « {name} » supprimé'**
+  String gardenDeleted(String name);
+
+  /// No description provided for @deleteGardenLast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte garde au moins un jardin.'**
+  String get deleteGardenLast;
+
+  /// No description provided for @openGardenTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos jardins'**
+  String get openGardenTitle;
+
+  /// No description provided for @openGardenHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce compte donne accès à ces jardins. Ouvrez celui où sont vos plantes.'**
+  String get openGardenHint;
+
   /// No description provided for @collaborationNeedsAccount.
   ///
   /// In fr, this message translates to:

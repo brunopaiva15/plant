@@ -15,6 +15,7 @@ import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/home/home_climate.dart';
 import '../../../domain/weather/weather.dart';
 import '../../account/application/sign_in_availability.dart';
+import '../../account/presentation/open_garden_sheet.dart';
 import '../../home_climate/application/home_climate_providers.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../home_climate/presentation/home_sensor_picker_sheet.dart';
@@ -863,6 +864,9 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
     try {
       await ref.read(authRepositoryProvider).signInWithApple();
       Haptics.success();
+      // Le compte peut déjà avoir un jardin — une réinstallation, un autre
+      // appareil : on le propose avant de passer à la suite.
+      if (context.mounted) await proposeExistingGardens(context, ref);
       if (mounted) widget.onDone();
     } on AuthException catch (e) {
       // Refermer la feuille d'Apple n'est pas une erreur : on reste là.

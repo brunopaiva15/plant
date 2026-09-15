@@ -18,6 +18,11 @@ class PreferencesService {
     await _prefs.setString('garden_id', gardenId);
   }
 
+  /// Le jardin de l'appareil change quand celui qu'il désignait est supprimé :
+  /// l'appareil adopte alors celui qui prend sa place. C'est le seul jardin
+  /// dont la ligne `gardens` puisse partir d'ici.
+  Future<void> setGardenId(String id) => _prefs.setString('garden_id', id);
+
   /// Jardin ouvert dans l'application. Celui de l'appareil par défaut ; un
   /// jardin partagé quand l'utilisateur bascule dessus, et jusqu'à ce qu'il
   /// en change ou se déconnecte.
@@ -217,6 +222,15 @@ class PreferencesService {
 
   Future<void> clearSyncCursors() async {
     for (final k in _prefs.getKeys().where((k) => k.startsWith('sync_cursor_')).toList()) {
+      await _prefs.remove(k);
+    }
+  }
+
+  /// Les curseurs d'un seul jardin (il vient d'être supprimé). Les curseurs
+  /// sont nommés `{jardin}/{table}` : les autres jardins gardent les leurs, et
+  /// ne se retirent pas en entier à la prochaine synchronisation.
+  Future<void> clearSyncCursorsOf(String gardenId) async {
+    for (final k in _prefs.getKeys().where((k) => k.startsWith('sync_cursor_$gardenId/')).toList()) {
       await _prefs.remove(k);
     }
   }

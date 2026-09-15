@@ -4196,6 +4196,29 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get deleteGarden => 'Elimina il giardino';
+
+  @override
+  String deleteGardenConfirm(String name) {
+    return 'Il giardino «$name», le sue piante e la sua cronologia saranno eliminati, per voi e per le persone invitate.';
+  }
+
+  @override
+  String gardenDeleted(String name) {
+    return 'Giardino «$name» eliminato';
+  }
+
+  @override
+  String get deleteGardenLast => 'Un account conserva almeno un giardino.';
+
+  @override
+  String get openGardenTitle => 'I vostri giardini';
+
+  @override
+  String get openGardenHint =>
+      'Questo account dà accesso a questi giardini. Aprite quello con le vostre piante.';
+
+  @override
   String get collaborationNeedsAccount =>
       'Per condividere un giardino serve un account';
 
