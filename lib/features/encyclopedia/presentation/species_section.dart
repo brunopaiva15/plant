@@ -6,14 +6,25 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/species_count_copy.dart';
+import '../../../data/species/iris_detailed_catalog.dart';
+import '../../../data/species/iris_detailed_catalog_loader.dart';
 import '../../../data/species/species_catalog.dart';
 import '../../../data/species/species_index.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
 import 'encyclopedia_screen.dart';
 
-/// Les espèces que l'application connaît : le catalogue trié à la main, qui
-/// a une fiche d'entretien, puis le catalogue étendu quand on cherche.
+/// La vue détaillée suit directement les classes du modèle embarqué. Le même
+/// [SpeciesIndex] sert à enrichir les classes Iris qui ne font pas encore
+/// partie du catalogue éditorial, sans charger deux fois le gros TSV.
+final _irisDetailedCatalogProvider = FutureProvider<IrisDetailedCatalog>((ref) async {
+  final index = await ref.watch(speciesIndexProvider.future);
+  return IrisDetailedCatalogLoader().load(index);
+});
+
+/// Les espèces que l'application connaît : les 1 444 classes Iris avec leur
+/// fiche d'entretien, puis le catalogue étendu quand une recherche dépasse
+/// le périmètre du modèle embarqué.
 class SpeciesSlivers extends ConsumerWidget {
   const SpeciesSlivers({super.key, required this.query, required this.category, required this.onCategory});
 
@@ -27,22 +38,26 @@ class SpeciesSlivers extends ConsumerWidget {
     final lang = Localizations.localeOf(context).languageCode;
     final raw = query.trim();
 
+    // Le catalogue curaté est disponible immédiatement. Dès que les deux
+    // assets hors ligne sont prêts, la liste devient exactement celle d'Iris.
+    final detailed = ref.watch(_irisDetailedCatalogProvider).value?.entries ??
+        [for (final entry in SpeciesCatalog.entries) IrisDetailedSpecies.fromCurated(entry)];
+
     final curated = [
-      for (final e in SpeciesCatalog.entries)
+      for (final e in detailed)
         if ((category == null || e.category == category) && e.matches(raw)) e,
     ]..sort((a, b) => a.commonName(lang).toLowerCase().compareTo(b.commonName(lang).toLowerCase()));
 
-    // Le catalogue étendu ne sert qu'à la recherche : il n'a pas de
-    // catégories, et quarante mille lignes ne se parcourent pas. Il n'est
-    // donc chargé qu'au premier mot tapé, comme dans le sélecteur d'espèce.
+    // Le catalogue étendu reste réservé à la recherche au-delà d'Iris.
     final index = raw.isEmpty ? null : ref.watch(speciesIndexProvider).value;
+    final detailedNames = {for (final e in detailed) e.scientificName.toLowerCase()};
     final extended = index == null
         ? const <SpeciesRecord>[]
-        : index.search(raw, limit: 30, exclude: {for (final e in curated) e.scientificName.toLowerCase()});
+        : index.search(raw, limit: 30, exclude: detailedNames);
 
     final visibleCount = curated.length + extended.length;
     final countLabel = raw.isEmpty
-        ? l10n.encyclopediaDetailedSpeciesCount(curated.length)
+        ? l10n.encyclopediaDetailedSpeciesCount(detailed.length)
         : l10n.encyclopediaSearchResultCount(visibleCount);
 
     return SliverMainAxisGroup(
@@ -63,9 +78,8 @@ class SpeciesSlivers extends ConsumerWidget {
             onChanged: onCategory,
           ),
         ),
-        // Au repos, ce nombre décrit bien le catalogue éditorial avec ses
-        // fiches détaillées. Pendant une recherche il devient le nombre de
-        // résultats visibles, car le catalogue étendu est plafonné à trente.
+        // Au repos, le nombre suit model.json : aujourd'hui 1 444 classes.
+        // Pendant une recherche il devient le nombre de résultats visibles.
         SliverToBoxAdapter(child: EncyclopediaCount(countLabel)),
         if (curated.isEmpty && extended.isEmpty)
           SliverToBoxAdapter(
@@ -81,7 +95,7 @@ class SpeciesSlivers extends ConsumerWidget {
               itemCount: curated.length,
               separatorBuilder: (_, _) => const SizedBox(height: Space.xs),
               itemBuilder: (context, i) => _SpeciesRow(
-                emoji: curated[i].category.emoji,
+                emoji: curated[i].category?.emoji ?? '🌿',
                 name: curated[i].commonName(lang),
                 scientificName: curated[i].scientificName,
                 family: curated[i].family,
