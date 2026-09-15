@@ -342,9 +342,9 @@
   "locating": "Deine Stadt wird gesucht…",
   "locationFailed": "Standort nicht verfügbar. Du kannst unter Profil › Wetter eine Stadt wählen.",
   "onbHomeTitle": "Dein Zuhause",
-  "onbHomeBody": "Sensoren von Apple Home liefern Temperatur und Luftfeuchtigkeit des Raums. Tipps und Diagnosen für Zimmerpflanzen berücksichtigen sie. Gelesen auf dem Gerät, nichts wird gesendet.",
+  "onbHomeBody": "Sensoren von Apple Home liefern Temperatur und Luftfeuchtigkeit des Raums. Jede Marke mit Matter oder HomeKit eignet sich. Tipps und Diagnosen für Zimmerpflanzen berücksichtigen sie. Gelesen auf dem Gerät, nichts wird gesendet.",
   "homeClimate": "Apple Home",
-  "homeClimateHint": "Temperatur und Luftfeuchtigkeit eines Apple-Home-Sensors passen die Tipps für Zimmerpflanzen an und ergänzen Diagnosen. Gelesen auf dem Gerät, nichts wird gesendet.",
+  "homeClimateHint": "Temperatur und Luftfeuchtigkeit eines Apple-Home-Sensors passen die Tipps für Zimmerpflanzen an und ergänzen Diagnosen. Jede Marke mit Matter oder HomeKit eignet sich, sobald der Sensor in der Home-App hinzugefügt ist. Gelesen auf dem Gerät, nichts wird gesendet.",
   "homeClimateConnect": "Apple Home verbinden",
   "homeClimateSearching": "Sensoren werden gesucht…",
   "homeClimateSensor": "Sensor",
@@ -369,7 +369,7 @@
       }
     }
   },
-  "homeClimateNoSensors": "Kein Temperatur- oder Feuchtigkeitssensor in Apple Home.",
+  "homeClimateNoSensors": "Kein Temperatur- oder Feuchtigkeitssensor in der Home-App. Matter- und HomeKit-Sensoren erscheinen dort, sobald sie hinzugefügt sind.",
   "homeClimateDenied": "Zugriff auf Apple Home abgelehnt. Er lässt sich unter Einstellungen › Datenschutz › Home wieder erteilen.",
   "homeClimateFailed": "Apple Home nicht verfügbar. Du kannst unter Profil › Apple Home einen Sensor verbinden.",
   "homeClimateAtHome": "Bei dir",

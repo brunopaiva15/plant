@@ -45,10 +45,13 @@ Sur iPhone et iPad, un capteur de température ou d'humidité d'Apple Maison
 peut être branché à l'onboarding (après la ville) ou dans Profil › Apple
 Maison. Sa mesure ajuste les conseils des plantes d'intérieur (air sec,
 froid, chaleur) sur l'écran Aujourd'hui et dans les fiches d'entretien, et
-accompagne les photos d'un diagnostic. Lecture sur l'appareil par HomeKit
-(`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur l'App ID) ;
-rien n'est écrit dans la maison, rien n'est gardé. Sur Android, l'étape et le
-réglage n'apparaissent pas. Détails : docs/05.
+accompagne les photos d'un diagnostic. Le capteur n'a pas à être de marque
+Apple : tout accessoire compatible Matter ou HomeKit (Aqara, Eve, Netatmo,
+SwitchBot par son hub…) se lit dès qu'il est ajouté dans l'app Maison.
+Lecture sur l'appareil par HomeKit (`ios/Runner/HomeClimateChannel.swift`,
+capability *HomeKit* sur l'App ID) ; rien n'est écrit dans la maison, rien
+n'est gardé. Sur Android, l'étape et le réglage n'apparaissent pas.
+Détails : docs/05.
 
 ## Sur l'écran d'accueil d'iOS
 Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,

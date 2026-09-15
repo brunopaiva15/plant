@@ -342,9 +342,9 @@
   "locating": "Finding your town…",
   "locationFailed": "Location unavailable. You can pick a town in Profile › Weather.",
   "onbHomeTitle": "Your home",
-  "onbHomeBody": "Apple Home sensors give the room's temperature and humidity. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.",
+  "onbHomeBody": "Apple Home sensors give the room's temperature and humidity. Any Matter or HomeKit brand works. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.",
   "homeClimate": "Apple Home",
-  "homeClimateHint": "The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Read on the device, nothing is sent.",
+  "homeClimateHint": "The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Any Matter or HomeKit brand works, once the sensor is added in the Home app. Read on the device, nothing is sent.",
   "homeClimateConnect": "Connect Apple Home",
   "homeClimateSearching": "Looking for sensors…",
   "homeClimateSensor": "Sensor",
@@ -369,7 +369,7 @@
       }
     }
   },
-  "homeClimateNoSensors": "No temperature or humidity sensor in Apple Home.",
+  "homeClimateNoSensors": "No temperature or humidity sensor in the Home app. Matter and HomeKit sensors appear there once added.",
   "homeClimateDenied": "Access to Apple Home refused. It can be granted again in Settings › Privacy › Home.",
   "homeClimateFailed": "Apple Home unavailable. You can connect a sensor in Profile › Apple Home.",
   "homeClimateAtHome": "At home",

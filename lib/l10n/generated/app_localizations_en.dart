@@ -1152,14 +1152,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Apple Home sensors give the room\'s temperature and humidity. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.';
+      'Apple Home sensors give the room\'s temperature and humidity. Any Matter or HomeKit brand works. Advice and diagnoses for indoor plants take them into account. Read on the device, nothing is sent.';
 
   @override
   String get homeClimate => 'Apple Home';
 
   @override
   String get homeClimateHint =>
-      'The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Read on the device, nothing is sent.';
+      'The temperature and humidity of an Apple Home sensor adjust the advice for indoor plants and complete diagnoses. Any Matter or HomeKit brand works, once the sensor is added in the Home app. Read on the device, nothing is sent.';
 
   @override
   String get homeClimateConnect => 'Connect Apple Home';
@@ -1224,7 +1224,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'No temperature or humidity sensor in Apple Home.';
+      'No temperature or humidity sensor in the Home app. Matter and HomeKit sensors appear there once added.';
 
   @override
   String get homeClimateDenied =>

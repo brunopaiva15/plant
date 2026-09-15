@@ -1155,14 +1155,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Sensoren von Apple Home liefern Temperatur und Luftfeuchtigkeit des Raums. Tipps und Diagnosen für Zimmerpflanzen berücksichtigen sie. Gelesen auf dem Gerät, nichts wird gesendet.';
+      'Sensoren von Apple Home liefern Temperatur und Luftfeuchtigkeit des Raums. Jede Marke mit Matter oder HomeKit eignet sich. Tipps und Diagnosen für Zimmerpflanzen berücksichtigen sie. Gelesen auf dem Gerät, nichts wird gesendet.';
 
   @override
   String get homeClimate => 'Apple Home';
 
   @override
   String get homeClimateHint =>
-      'Temperatur und Luftfeuchtigkeit eines Apple-Home-Sensors passen die Tipps für Zimmerpflanzen an und ergänzen Diagnosen. Gelesen auf dem Gerät, nichts wird gesendet.';
+      'Temperatur und Luftfeuchtigkeit eines Apple-Home-Sensors passen die Tipps für Zimmerpflanzen an und ergänzen Diagnosen. Jede Marke mit Matter oder HomeKit eignet sich, sobald der Sensor in der Home-App hinzugefügt ist. Gelesen auf dem Gerät, nichts wird gesendet.';
 
   @override
   String get homeClimateConnect => 'Apple Home verbinden';
@@ -1227,7 +1227,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Kein Temperatur- oder Feuchtigkeitssensor in Apple Home.';
+      'Kein Temperatur- oder Feuchtigkeitssensor in der Home-App. Matter- und HomeKit-Sensoren erscheinen dort, sobald sie hinzugefügt sind.';
 
   @override
   String get homeClimateDenied =>

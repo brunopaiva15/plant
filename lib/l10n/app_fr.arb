@@ -536,9 +536,9 @@
   "locating": "Recherche de votre ville…",
   "locationFailed": "Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.",
   "onbHomeTitle": "Votre intérieur",
-  "onbHomeBody": "Les capteurs Apple Maison donnent la température et l'humidité de la pièce. Les conseils et les diagnostics des plantes d'intérieur en tiennent compte. Lecture sur l'appareil, rien n'est envoyé.",
+  "onbHomeBody": "Les capteurs Apple Maison donnent la température et l'humidité de la pièce. Toute marque compatible Matter ou HomeKit convient. Les conseils et les diagnostics des plantes d'intérieur en tiennent compte. Lecture sur l'appareil, rien n'est envoyé.",
   "homeClimate": "Apple Maison",
-  "homeClimateHint": "La température et l'humidité d'un capteur Apple Maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. Lecture sur l'appareil, rien n'est envoyé.",
+  "homeClimateHint": "La température et l'humidité d'un capteur Apple Maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. Toute marque compatible Matter ou HomeKit convient, une fois le capteur ajouté dans l'app Maison. Lecture sur l'appareil, rien n'est envoyé.",
   "homeClimateConnect": "Connecter Apple Maison",
   "homeClimateSearching": "Recherche des capteurs…",
   "homeClimateSensor": "Capteur",
@@ -563,7 +563,7 @@
       }
     }
   },
-  "homeClimateNoSensors": "Aucun capteur de température ou d'humidité dans Apple Maison.",
+  "homeClimateNoSensors": "Aucun capteur de température ou d'humidité dans l'app Maison. Les capteurs Matter et HomeKit y apparaissent une fois ajoutés.",
   "homeClimateDenied": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
   "homeClimateFailed": "Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.",
   "homeClimateAtHome": "Chez vous",

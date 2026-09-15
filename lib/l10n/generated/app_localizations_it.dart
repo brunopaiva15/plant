@@ -1153,14 +1153,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'I sensori di Casa di Apple danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.';
+      'I sensori di Casa di Apple danno temperatura e umidità della stanza. Qualsiasi marca compatibile Matter o HomeKit funziona. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.';
 
   @override
   String get homeClimate => 'Casa di Apple';
 
   @override
   String get homeClimateHint =>
-      'Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Lettura sul dispositivo, nulla viene inviato.';
+      'Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Qualsiasi marca compatibile Matter o HomeKit funziona, una volta aggiunto il sensore nell\'app Casa. Lettura sul dispositivo, nulla viene inviato.';
 
   @override
   String get homeClimateConnect => 'Collega Casa di Apple';
@@ -1225,7 +1225,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateNoSensors =>
-      'Nessun sensore di temperatura o umidità in Casa di Apple.';
+      'Nessun sensore di temperatura o umidità nell\'app Casa. I sensori Matter e HomeKit compaiono lì una volta aggiunti.';
 
   @override
   String get homeClimateDenied =>

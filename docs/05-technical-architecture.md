@@ -240,6 +240,12 @@ et l'humidité relative, et rien d'autre.
   le temps qu'on la lise, et la croix l'enlève tout de suite. La mesure
   reste lisible sur la pilule de la maison, et l'écart à l'espèce sur la
   carte « Chez vous » de chaque fiche.
+- Le capteur n'a pas à être de marque Apple, et c'est ce que les textes de
+  l'onboarding et du réglage disent depuis le premier retour d'usage : un
+  accessoire Matter ou HomeKit d'une autre marque (Aqara, Eve, Netatmo,
+  SwitchBot par son hub) devient un `HMAccessory` ordinaire dès qu'il est
+  ajouté dans l'app Maison, et se lit comme les autres. Aucune intégration
+  tierce n'est nécessaire pour cela.
 - Les HomePod sont invisibles pour HomeKit vu d'une app tierce (Apple les
   réserve à Maison) : leurs capteurs ne se lisent pas, et l'application ne
   cherche pas à les contourner.

@@ -342,9 +342,9 @@
   "locating": "Ricerca della tua città…",
   "locationFailed": "Posizione non disponibile. Potrai scegliere una città in Profilo › Meteo.",
   "onbHomeTitle": "La vostra casa",
-  "onbHomeBody": "I sensori di Casa di Apple danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.",
+  "onbHomeBody": "I sensori di Casa di Apple danno temperatura e umidità della stanza. Qualsiasi marca compatibile Matter o HomeKit funziona. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.",
   "homeClimate": "Casa di Apple",
-  "homeClimateHint": "Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Lettura sul dispositivo, nulla viene inviato.",
+  "homeClimateHint": "Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Qualsiasi marca compatibile Matter o HomeKit funziona, una volta aggiunto il sensore nell'app Casa. Lettura sul dispositivo, nulla viene inviato.",
   "homeClimateConnect": "Collega Casa di Apple",
   "homeClimateSearching": "Ricerca dei sensori…",
   "homeClimateSensor": "Sensore",
@@ -369,7 +369,7 @@
       }
     }
   },
-  "homeClimateNoSensors": "Nessun sensore di temperatura o umidità in Casa di Apple.",
+  "homeClimateNoSensors": "Nessun sensore di temperatura o umidità nell'app Casa. I sensori Matter e HomeKit compaiono lì una volta aggiunti.",
   "homeClimateDenied": "Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.",
   "homeClimateFailed": "Casa di Apple non disponibile. Potrai collegare un sensore in Profilo › Casa di Apple.",
   "homeClimateAtHome": "Da voi",
