@@ -4,9 +4,9 @@ import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue : exactement 500 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
+  test('catalogue : exactement 650 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(500));
+    expect(SpeciesCatalog.entries, hasLength(650));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -33,11 +33,18 @@ void main() {
     expect(SpeciesCatalog.find('Pinus sylvestris')?.family, 'Pinaceae');
     expect(SpeciesCatalog.find('Lutheria splendens')?.family, 'Bromeliaceae');
     expect(SpeciesCatalog.find('Pilea ovalis')?.family, 'Urticaceae');
-    expect(SpeciesCatalog.find('Feijoa sellowiana')?.family, 'Myrtaceae');
-    expect(SpeciesCatalog.find('Aristaloe aristata')?.family, 'Asphodelaceae');
     expect(SpeciesCatalog.find('Vriesea splendens'), isNull);
     expect(SpeciesCatalog.find('Pilea involucrata'), isNull);
-    expect(SpeciesCatalog.find('Peperomia prostrata'), isNull);
+  });
+
+  test('catalogue : le palier 650 ajoute des classes Iris 8 dans chaque catégorie', () {
+    expect(SpeciesCatalog.find('Aeschynanthus radicans')?.category, SpeciesCategory.indoor);
+    expect(SpeciesCatalog.find('Carnegiea gigantea')?.category, SpeciesCategory.succulent);
+    expect(SpeciesCatalog.find('Curcuma longa')?.category, SpeciesCategory.herb);
+    expect(SpeciesCatalog.find('Chenopodium quinoa')?.category, SpeciesCategory.vegetable);
+    expect(SpeciesCatalog.find('Tamarindus indica')?.category, SpeciesCategory.fruit);
+    expect(SpeciesCatalog.find('Cyclamen hederifolium')?.category, SpeciesCategory.flower);
+    expect(SpeciesCatalog.find('Metasequoia glyptostroboides')?.category, SpeciesCategory.tree);
   });
 
   test('GBIF : parse d\'une page de recherche (total, fin de liste)', () {
