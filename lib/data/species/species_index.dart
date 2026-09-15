@@ -54,14 +54,17 @@ class SpeciesRecord {
 
   /// Nom d'affichage : le nom courant de la langue demandée, à défaut le
   /// nom scientifique.
-  String commonName(String languageCode) => vernacularName(languageCode) ?? scientificName;
+  String commonName(String languageCode) => capitalizeSpeciesDisplayName(vernacularName(languageCode) ?? scientificName);
 
-  SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(
-        key: 0,
-        scientificName: scientificName,
-        family: family.isEmpty ? null : family,
-        commonName: vernacularName(languageCode),
-      );
+  SpeciesSuggestion toSuggestion(String languageCode) {
+    final vernacular = vernacularName(languageCode);
+    return SpeciesSuggestion(
+      key: 0,
+      scientificName: scientificName,
+      family: family.isEmpty ? null : family,
+      commonName: vernacular == null ? null : capitalizeSpeciesDisplayName(vernacular),
+    );
+  }
 }
 
 /// Catalogue étendu : des dizaines de milliers d'espèces et leurs noms
