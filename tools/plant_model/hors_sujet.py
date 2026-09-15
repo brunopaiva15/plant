@@ -82,15 +82,22 @@ def recolter(dossier: Path, par_categorie: int, pause: float) -> int:
     return n
 
 
-def lire(modele, dossier: Path) -> tuple[list[tuple[str, float, float]], int]:
-    """(nom, meilleure confiance, écart avec le second) pour chaque image, et
+def lire(modele, dossier: Path) -> tuple[list[tuple[str, float, float, str]], int]:
+    """(fichier, confiance, écart, **espèce répondue**) pour chaque image, et
     le nombre d'illisibles.
+
+    L'espèce n'est pas un ornement. Une catégorie « sans plante » de Commons
+    en contient : une pizza porte du basilic, un escalier a ses pots, un
+    portrait a son feuillage. Sans le nom répondu, une confiance de 0,99 se
+    lit comme une erreur grave alors qu'elle peut être une bonne réponse —
+    et le verdict du § 12.7 bascule sur cette confusion.
 
     Un fichier que le décodeur refuse ne doit pas emporter la mesure : sur
     160 images, en perdre une vaut infiniment mieux que de tout perdre. Le
     compte est rendu, pas avalé.
     """
     from compare_models import predict
+    noms = modele.get('species', {})
     out, illisibles = [], 0
     for image in sorted(dossier.glob('*.jpg')):
         try:
@@ -99,7 +106,9 @@ def lire(modele, dossier: Path) -> tuple[list[tuple[str, float, float]], int]:
             illisibles += 1
             continue
         ordre = np.argsort(-probs)
-        out.append((image.name, float(probs[ordre[0]]), float(probs[ordre[0]] - probs[ordre[1]])))
+        interne = modele['labels'][ordre[0]]
+        out.append((image.name, float(probs[ordre[0]]),
+                    float(probs[ordre[0]] - probs[ordre[1]]), noms.get(interne, interne)))
     return out, illisibles
 
 
@@ -116,8 +125,10 @@ def verdict(scores: list[float], plancher: float, seuil: float) -> None:
     print(f'  au-dessus du seuil               : {au_dessus:>3}  {au_dessus / n:>5.0%}')
     print()
     if au_dessus:
-        print(f'  → le modèle AFFIRME une espèce sur {au_dessus} image(s) sans plante.')
-        print('    La classe « autre » se justifie (§ 12.7, troisième cas).')
+        print(f'  → le modèle AFFIRME une espèce sur {au_dessus} image(s).')
+        print('    La classe « autre » se justifierait (§ 12.7, troisième cas) — mais')
+        print('    ce verdict ne vaut qu\'après avoir regardé les images ci-dessus :')
+        print('    une plante dans le décor rend l\'affirmation juste, pas fautive.')
     elif entre > n / 2:
         print('  → pas d\'affirmation, mais une liste « plausible » sur la majorité.')
         print('    Gênant, pas grave : un message suffirait (§ 12.7, deuxième cas).')
@@ -145,17 +156,26 @@ def main(argv: list[str] | None = None) -> int:
         print(f'{dossier} est vide : rien à mesurer.', file=sys.stderr)
         return 1
 
+    import json
     from compare_models import load_model
     modele = load_model(Path(args.modele))
+    modele['species'] = json.loads((Path(args.modele) / 'model.json').read_text()).get('species', {})
     print(f'modèle v{modele["version"]} — {len(modele["labels"])} classes')
     lignes, illisibles = lire(modele, dossier)
     if illisibles:
         print(f'{illisibles} image(s) illisible(s), ignorée(s)', file=sys.stderr)
-    for nom, conf, marge in sorted(lignes, key=lambda x: -x[1])[:10]:
-        print(f'  {nom:<10} confiance {conf:.3f}   écart {marge:.3f}')
+    affirmees = [l for l in sorted(lignes, key=lambda x: -x[1]) if l[1] >= args.seuil]
+    if affirmees:
+        print(f'\nLes {len(affirmees)} images où le modèle affirme — '
+              f'**à vérifier une par une, la plante peut être dans la photo** :')
+        for fichier, conf, marge, espece in affirmees:
+            print(f'  {fichier:<10} {conf:.3f}  écart {marge:.3f}   {espece}')
+    print('\nLes plus confiantes, seuil compris :')
+    for fichier, conf, marge, espece in sorted(lignes, key=lambda x: -x[1])[:10]:
+        print(f'  {fichier:<10} {conf:.3f}  écart {marge:.3f}   {espece}')
     if len(lignes) > 10:
         print(f'  … {len(lignes) - 10} autres')
-    verdict([c for _, c, _ in lignes], args.plancher, args.seuil)
+    verdict([c for _, c, _, _ in lignes], args.plancher, args.seuil)
     return 0
 
 
