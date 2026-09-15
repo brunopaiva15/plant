@@ -54,6 +54,9 @@ from pathlib import Path
 import numpy as np
 
 
+_TF = None
+
+
 def _tf():
     """TensorFlow, chargé seulement quand on infère.
 
@@ -62,8 +65,27 @@ def _tf():
     là que se cachent les erreurs de masque. `interieur.py --couverture`
     diffère déjà son import de ce module pour la même raison.
     """
-    import tensorflow as tf
-    return tf
+    global _TF
+    if _TF is None:
+        import tensorflow as tf
+        # Ne pas prendre la carte. `tf.lite.Interpreter` infère sur le
+        # processeur (délégué XNNPACK) et `prepare` ne fait que décoder et
+        # redimensionner : il n'y a rien ici pour un GPU. Mais TensorFlow
+        # réserve toute la mémoire de la carte au premier accès, sans
+        # égard pour ce qu'il compte en faire — et un compare de vingt
+        # minutes a ainsi tué un entraînement de deux heures au démarrage,
+        # avec 47 Go retenus à 1 % d'utilisation.
+        #
+        # Se rendre aveugle au GPU rend la mesure inoffensive : elle tourne
+        # désormais à côté d'un entraînement sans le gêner. `CUDA_VISIBLE_
+        # DEVICES=""` ferait la même chose, mais depuis l'extérieur — donc
+        # en s'oubliant.
+        try:
+            tf.config.set_visible_devices([], 'GPU')
+        except RuntimeError:  # déjà initialisé : rien à faire de plus
+            pass
+        _TF = tf
+    return _TF
 
 
 def load_model(folder: Path):
