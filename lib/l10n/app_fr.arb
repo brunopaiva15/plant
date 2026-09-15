@@ -278,7 +278,7 @@
   "growth": "Croissance",
   "photos": "Photos",
   "info": "Informations",
-  "cuttings": "Boutures",
+  "offspring": "Plantes filles",
   "editSchedule": "Modifier le planning",
   "cuttingOf": "Bouture de {name}",
   "@cuttingOf": {

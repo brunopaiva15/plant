@@ -569,7 +569,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get info => 'Details';
 
   @override
-  String get cuttings => 'Ableger';
+  String get offspring => 'Tochterpflanzen';
 
   @override
   String get editSchedule => 'Pflegeplan anpassen';

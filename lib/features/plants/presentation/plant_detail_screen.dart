@@ -756,7 +756,7 @@ class _Cuttings extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: l10n.cuttings, actionLabel: l10n.propagate, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
+          SectionHeader(title: l10n.offspring, actionLabel: l10n.propagate, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.page),
             child: FloraGroup(

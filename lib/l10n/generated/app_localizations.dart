@@ -1044,11 +1044,11 @@ abstract class AppLocalizations {
   /// **'Informations'**
   String get info;
 
-  /// No description provided for @cuttings.
+  /// No description provided for @offspring.
   ///
   /// In fr, this message translates to:
-  /// **'Boutures'**
-  String get cuttings;
+  /// **'Plantes filles'**
+  String get offspring;
 
   /// No description provided for @editSchedule.
   ///

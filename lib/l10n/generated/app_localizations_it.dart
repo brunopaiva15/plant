@@ -569,7 +569,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get info => 'Informazioni';
 
   @override
-  String get cuttings => 'Talee';
+  String get offspring => 'Piante figlie';
 
   @override
   String get editSchedule => 'Modifica il programma';

@@ -570,7 +570,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get info => 'Informations';
 
   @override
-  String get cuttings => 'Boutures';
+  String get offspring => 'Plantes filles';
 
   @override
   String get editSchedule => 'Modifier le planning';
