@@ -30,7 +30,7 @@ Plantes ─[tap +]⟶ Sheet plein écran
 
 ## 1b. Multiplier une plante (le guide, puis la création)
 ```
-Fiche plante ─[Multiplier]⟶ Guide de multiplication (sheet plein écran)
+Fiche plante ─[Créer une bouture]⟶ Guide de multiplication (sheet plein écran)
   Plusieurs méthodes possibles ? un écran de choix d'abord :
     Multiplier cette plante
       Division           Rapide et sûre, la touffe se partage   [Conseillée]

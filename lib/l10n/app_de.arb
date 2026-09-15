@@ -160,7 +160,7 @@
   "offspring": "Tochterpflanzen",
   "editSchedule": "Pflegeplan anpassen",
   "cuttingOf": "Ableger von {name}",
-  "propagate": "Vermehren",
+  "propagate": "Ableger anlegen",
   "pgPickTitle": "Diese Pflanze vermehren",
   "pgPickBody": "Diese Pflanze lässt sich auf mehrere Arten vermehren. Der gewählte Handgriff bestimmt die Schritte.",
   "pgRecommended": "Empfohlen",

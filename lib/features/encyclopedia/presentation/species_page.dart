@@ -58,9 +58,10 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
     // Le nom courant de la langue de l'application titre la page ; à défaut,
     // le nom scientifique, qui est de toute façon écrit juste dessous.
     final common = entry?.vernacularName(lang) ?? record?.vernacularName(lang);
+    final displayScientificName = capitalizeSpeciesDisplayName(scientificName);
 
     return FloraPage(
-      title: common ?? scientificName,
+      title: common == null ? displayScientificName : capitalizeSpeciesDisplayName(common),
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
@@ -87,7 +88,7 @@ class _Header extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(scientificName, style: context.text.title3.copyWith(fontStyle: FontStyle.italic)),
+        Text(capitalizeSpeciesDisplayName(scientificName), style: context.text.title3.copyWith(fontStyle: FontStyle.italic)),
         if (family != null && family!.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text('${l10n.speciesFamily} · $family', style: context.text.caption),

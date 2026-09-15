@@ -1,5 +1,16 @@
 import '../../core/utils/search_text.dart';
 
+/// Met les noms d'espèces destinés à l'interface dans une casse cohérente.
+///
+/// Les sources externes n'appliquent pas toutes la même convention aux noms
+/// vernaculaires. On ne touche jamais à la donnée stockée ni à la recherche :
+/// seule la première lettre du libellé affiché est mise en majuscule.
+String capitalizeSpeciesDisplayName(String value) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return trimmed;
+  return '${trimmed.substring(0, 1).toUpperCase()}${trimmed.substring(1)}';
+}
+
 /// Une espèce candidate lors de la saisie (suggestion GBIF).
 class SpeciesSuggestion {
   const SpeciesSuggestion({required this.key, required this.scientificName, this.family, this.commonName});
@@ -161,14 +172,18 @@ class SpeciesCatalogEntry {
   final String de;
   final String it;
 
-  String commonName(String languageCode) => switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+  String commonName(String languageCode) {
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    return capitalizeSpeciesDisplayName(name);
+  }
 
   /// Le nom courant de la langue demandée, ou `null` quand l'entrée n'en a
   /// pas et retombe sur le nom scientifique. De quoi ne pas écrire deux fois
   /// le même nom, en titre et en sous-titre.
   String? vernacularName(String languageCode) {
-    final name = commonName(languageCode).trim();
-    return name.isEmpty || name == scientificName ? null : name;
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    final trimmed = name.trim();
+    return trimmed.isEmpty || trimmed == scientificName ? null : trimmed;
   }
 
   /// Recherche sans accents ni casse : « erable » doit trouver « Érable »,
@@ -179,7 +194,12 @@ class SpeciesCatalogEntry {
     return foldSpeciesName('$scientificName $fr $en $de $it $family').contains(q);
   }
 
-  SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(key: 0, scientificName: scientificName, family: family, commonName: commonName(languageCode));
+  SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(
+        key: 0,
+        scientificName: scientificName,
+        family: family,
+        commonName: commonName(languageCode),
+      );
 }
 
 abstract class SpeciesService {

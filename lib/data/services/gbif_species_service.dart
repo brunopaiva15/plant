@@ -76,7 +76,7 @@ class GbifSpeciesService implements SpeciesService {
     return key == null ? null : byKey(key);
   }
 
-  /// La clé GBIF d'un nom scientifique, ou `null` si la base ne le connaît
+  /// La clé GBIF du nom scientifique, ou `null` si la base ne le connaît
   /// pas. Passer par `match` plutôt que d'interroger directement les
   /// occurrences fait le travail que nous ne saurions pas faire : accorder
   /// un synonyme, une graphie d'auteur, une sous-espèce, au nom accepté.
@@ -159,7 +159,12 @@ class GbifSpeciesService implements SpeciesService {
       if (name == null || key == null || !seen.add(name)) continue;
       final vern = (r['vernacularNames'] as List? ?? const []).cast<Map<String, dynamic>>();
       final common = vern.where((v) => v['language'] == iso3).map((v) => v['vernacularName'] as String?).whereType<String>().firstOrNull;
-      out.add(SpeciesSuggestion(key: key, scientificName: name, family: r['family'] as String?, commonName: common));
+      out.add(SpeciesSuggestion(
+        key: key,
+        scientificName: name,
+        family: r['family'] as String?,
+        commonName: common == null ? null : capitalizeSpeciesDisplayName(common),
+      ));
     }
     return out;
   }
@@ -187,8 +192,9 @@ class GbifSpeciesService implements SpeciesService {
       final lang = v['language'] as String?;
       final name = v['vernacularName'] as String?;
       if (lang == null || name == null) continue;
+      final displayName = capitalizeSpeciesDisplayName(name);
       final list = out.putIfAbsent(lang, () => []);
-      if (!list.any((n) => n.toLowerCase() == name.toLowerCase())) list.add(name);
+      if (!list.any((n) => n.toLowerCase() == displayName.toLowerCase())) list.add(displayName);
     }
     return out;
   }

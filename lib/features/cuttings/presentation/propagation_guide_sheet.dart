@@ -190,9 +190,10 @@ class _PropagationGuideViewState extends ConsumerState<PropagationGuideView> wit
     return note == null ? null : (note.label(l10n), note.value(l10n));
   }
 
-  /// Le titre de l'introduction : le geste, et l'espèce quand on la connaît.
+  /// Le titre d'introduction reste cohérent avec le flux Boutures ; la
+  /// méthode précise est conservée dans le choix et les étapes du guide.
   String _introTitle(AppLocalizations l10n) {
-    final name = _guide.name(l10n);
+    final name = l10n.propagate;
     final species = widget.species?.trim() ?? '';
     return species.isEmpty ? name : l10n.pgIntroTitle(name, species);
   }

@@ -581,7 +581,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get propagate => 'Multiplier';
+  String get propagate => 'Créer une bouture';
 
   @override
   String get pgPickTitle => 'Multiplier cette plante';

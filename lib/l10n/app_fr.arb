@@ -288,7 +288,7 @@
       }
     }
   },
-  "propagate": "Multiplier",
+  "propagate": "Créer une bouture",
   "pgPickTitle": "Multiplier cette plante",
   "pgPickBody": "Cette plante se multiplie de plusieurs façons. Le geste choisi décide des étapes.",
   "pgRecommended": "Conseillée",

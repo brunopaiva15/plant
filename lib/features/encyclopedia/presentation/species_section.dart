@@ -140,15 +140,17 @@ class _SpeciesRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = vernacular == null
+    final displayVernacular = vernacular == null ? null : capitalizeSpeciesDisplayName(vernacular!);
+    final displayScientificName = capitalizeSpeciesDisplayName(scientificName);
+    final subtitle = displayVernacular == null
         ? (family.isEmpty ? null : family)
-        : (family.isEmpty ? scientificName : '$scientificName · $family');
+        : (family.isEmpty ? displayScientificName : '$displayScientificName · $family');
     return FloraCard(
       padding: EdgeInsets.zero,
       clip: true,
       child: FloraListRow(
         leading: Text(emoji, style: const TextStyle(fontSize: 18)),
-        title: vernacular ?? scientificName,
+        title: displayVernacular ?? displayScientificName,
         titleMaxLines: 2,
         subtitle: subtitle,
         onTap: () => context.push(Routes.encyclopediaSpecies(scientificName)),
