@@ -38,11 +38,15 @@ class IndoorPlant {
   final CareProfile profile;
 }
 
-/// Seuils, en clair. L'air d'un appartement chauffé descend sous 30 % en
-/// hiver ; au-delà de 70 %, une pièce est humide pour tout le monde.
+/// Seuils, en clair. Au-delà de 70 %, une pièce est humide pour tout le monde.
+///
+/// Pour l'air sec, le seuil se lit sur la plage de la fiche, [tolerance] points
+/// en dessous de son minimum : une plante n'est pas en peine dès le premier
+/// point manquant, mais un salon chauffé à 30 % met en peine ce qui demande
+/// 60 %. Une espèce qui précise « 50 à 70 % » est donc avertie plus tard
+/// qu'une autre qui en demande 65.
 abstract final class HomeClimateAdvisor {
-  static const int dryForHigh = 45;
-  static const int dryForAverage = 30;
+  static const int tolerance = 15;
   static const int humid = 70;
   static const int hot = 30;
   static const int maxNames = 4;
@@ -56,13 +60,13 @@ abstract final class HomeClimateAdvisor {
     if (humidity != null) {
       final dry = [
         for (final p in plants)
-          if ((p.profile.humidity == HumidityNeed.high && humidity < dryForHigh) || (p.profile.humidity == HumidityNeed.average && humidity < dryForAverage)) p.name,
+          if (humidity < p.profile.humidityRange.$1 - tolerance) p.name,
       ];
       if (dry.isNotEmpty) tips.add(HomeClimateTip(kind: HomeClimateTipKind.dryAir, value: humidity, plantNames: _cap(dry)));
       if (humidity > humid) {
         final wet = [
           for (final p in plants)
-            if (p.profile.humidity == HumidityNeed.low) p.name,
+            if (humidity > p.profile.humidityRange.$2 + tolerance) p.name,
         ];
         tips.add(HomeClimateTip(kind: HomeClimateTipKind.humidAir, value: humidity, plantNames: _cap(wet)));
       }

@@ -14,6 +14,9 @@ import UIKit
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     // Les capteurs d'Apple Maison, sans plugin : un canal, trois méthodes.
     HomeClimateChannel.register(with: engineBridge.applicationRegistrar.messenger())
+    // Ceux de Google Home, sur le même modèle. Muet tant que le SDK des
+    // Home APIs n'est pas dans le projet : le canal ne s'enregistre pas.
+    GoogleHomeChannel.register(with: engineBridge.applicationRegistrar.messenger())
     // Les motifs Core Haptics : la goutte, le roulement, le coup sourd.
     HapticsChannel.register(with: engineBridge.applicationRegistrar.messenger())
     // Les soins du jour, écrits pour le widget de l'écran d'accueil.

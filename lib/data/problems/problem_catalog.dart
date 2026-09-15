@@ -61,8 +61,9 @@ class ProblemCatalog {
   /// d'entretien, quand il y en a un sans ambiguïté.
   ///
   /// Plusieurs entrées de la fiche n'ont pas d'équivalent unique : « leafSpot »
-  /// recouvre une dizaine de champignons et deux bactéries, « blight » autant.
-  /// Elles restent sans numéro plutôt que d'en recevoir un faux.
+  /// recouvre une dizaine de champignons et deux bactéries, « blight » autant,
+  /// et « trueBugs » trois familles de punaises. Elles restent sans numéro
+  /// plutôt que d'en recevoir un faux.
   static String? idForIssue(CommonIssue issue) => switch (issue) {
         CommonIssue.underwatering => '001',
         CommonIssue.overwatering => '002',
@@ -75,10 +76,12 @@ class ProblemCatalog {
         CommonIssue.mealybugs => '054',
         CommonIssue.scale => '056',
         CommonIssue.whitefly => '058',
+        CommonIssue.thrips => '059',
         CommonIssue.spiderMites => '060',
         CommonIssue.fungusGnats => '065',
         CommonIssue.slugs => '087',
         CommonIssue.powderyMildew => '126',
+        CommonIssue.greyMould => '135',
         CommonIssue.rootRot => '173',
         _ => null,
       };

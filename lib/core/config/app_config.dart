@@ -47,6 +47,20 @@ abstract final class AppConfig {
   /// d'un autre fournisseur tiers — proposer Apple seul est permis.
   static const bool googleSignInEnabled = false;
 
+  /// Google Home, en plus d'Apple Maison : mêmes deux nombres — la
+  /// température et l'humidité d'une pièce — lus sur les Home APIs, sur
+  /// iPhone comme sur Android.
+  ///
+  /// Le code est écrit, des deux côtés, mais le drapeau reste faux tant que
+  /// le SDK n'est pas dans l'application : à la différence de HomeKit, les
+  /// Home APIs ne sont pas dans le système et leur SDK ne se prend pas sur
+  /// Maven ni sur SwiftPM — il se télécharge depuis la console Google Home
+  /// pour un projet déclaré, avec son client OAuth. Sans lui, le canal natif
+  /// n'est pas compilé, et une maison qu'on ne peut pas lire ne se propose
+  /// pas. La marche à suivre est dans `docs/05-technical-architecture.md`,
+  /// section « Google Home ».
+  static const bool googleHomeEnabled = false;
+
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.
   static const String supportProductId = 'ch.vergasta.plant.support';

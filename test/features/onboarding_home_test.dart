@@ -14,12 +14,13 @@ import 'fakes/fake_auth_repository.dart';
 import 'fakes/fake_home_climate_service.dart';
 
 /// L'étape « maison » de l'onboarding : elle vient après la ville, seulement
-/// là où Apple Maison existe. Un capteur trouvé est retenu sans autre geste ;
-/// plusieurs, on choisit ; aucun, on passe.
+/// là où il y a une maison à lire. Un capteur trouvé est retenu sans autre
+/// geste ; plusieurs, on choisit ; aucun, on passe. Deux maisons lisibles, et
+/// la première question est laquelle.
 
 late PreferencesService _prefs;
 
-Future<void> _pump(WidgetTester tester, FakeHomeClimateService home, {Map<String, Object> stored = const {}}) async {
+Future<void> _pump(WidgetTester tester, HomeClimateService home, {Map<String, Object> stored = const {}}) async {
   SharedPreferences.setMockInitialValues({'locale': 'fr', ...stored});
   _prefs = await PreferencesService.load();
   tester.view.physicalSize = const Size(1170, 2532);
@@ -91,6 +92,7 @@ Future<void> _pastCity(WidgetTester tester) async {
 const _salon = HomeSensor(id: 'A', name: 'Eve Room', roomName: 'Salon', homeName: 'Appartement');
 const _chambre = HomeSensor(id: 'B', name: 'Eve Room 2', roomName: 'Chambre', homeName: 'Appartement', hasHumidity: false);
 const _chalet = HomeSensor(id: 'C', name: 'Eve Weather', homeName: 'Chalet');
+const _nest = HomeSensor(id: 'N', name: 'Nest', roomName: 'Salon', homeName: 'Chez moi', source: HomeSource.google);
 
 void main() {
   testWidgets("la maison vient après la ville, et un seul capteur est retenu d'un geste", (tester) async {
@@ -102,7 +104,7 @@ void main() {
 
     await _tap(tester, 'Connecter Apple Maison');
     expect(home.sensorCalls, 1);
-    expect(_prefs.homeSensor, 'A|Eve Room|Salon|Appartement|1|1');
+    expect(_prefs.homeSensor, 'A|Eve Room|Salon|Appartement|1|1|apple');
     expect(find.text('Salon'), findsOneWidget);
     expect(find.textContaining('21° · 38 %'), findsOneWidget);
 
@@ -139,7 +141,7 @@ void main() {
     await _step(tester);
     await tester.tap(find.text('Eve Room 2'));
     await _step(tester);
-    expect(_prefs.homeSensor, 'B|Eve Room 2|Chambre|Appartement|1|0');
+    expect(_prefs.homeSensor, 'B|Eve Room 2|Chambre|Appartement|1|0|apple');
     expect(find.text('Chambre'), findsOneWidget);
     expect(find.text('Continuer'), findsWidgets);
   });
@@ -164,8 +166,8 @@ void main() {
     expect(find.text('Hygromètre chambre'), findsOneWidget);
     await tester.tap(find.text('Hygromètre chambre'));
     await _step(tester);
-    expect(_prefs.homeSensor, 'T|Thermostat|Salon|Appartement|1|0');
-    expect(_prefs.homeHumiditySensor, 'H2|Hygromètre chambre|Chambre|Appartement|0|1');
+    expect(_prefs.homeSensor, 'T|Thermostat|Salon|Appartement|1|0|apple');
+    expect(_prefs.homeHumiditySensor, 'H2|Hygromètre chambre|Chambre|Appartement|0|1|apple');
     expect(find.text('Salon + Chambre'), findsOneWidget);
   });
 
@@ -198,7 +200,27 @@ void main() {
     expect(tester.getRect(_onPage(tester, 'Plus tard')).bottom, lessThan(floor));
   });
 
-  testWidgets("sans Apple Maison, la ville mène droit au prénom", (tester) async {
+  testWidgets('deux maisons : laquelle, avant que le système ne demande rien', (tester) async {
+    final apple = FakeHomeClimateService(sensorList: const [_salon]);
+    final google = FakeHomeClimateService(source: HomeSource.google, sensorList: const [_nest]);
+    await _pump(tester, MultiHomeClimateService([apple, google]));
+    await _pastCity(tester);
+    // Le bouton ne promet aucune des deux : la feuille tranche d'abord, et
+    // une seule maison est réveillée.
+    await _tap(tester, 'Connecter la maison');
+    expect(apple.sensorCalls, 0);
+    expect(google.sensorCalls, 0);
+    expect(find.text('Plateforme'), findsOneWidget);
+    expect(find.text('Apple Maison'), findsOneWidget);
+
+    await tester.tap(find.text('Google Home'));
+    await _step(tester);
+    expect(google.sensorCalls, 1);
+    expect(apple.sensorCalls, 0, reason: "l'autre maison n'a rien à dire tant qu'on ne la branche pas");
+    expect(_prefs.homeSensor, 'N|Nest|Salon|Chez moi|1|1|google');
+  });
+
+  testWidgets('sans aucune maison, la ville mène droit au prénom', (tester) async {
     await _pump(tester, FakeHomeClimateService(supported: false));
     await _pastCity(tester);
     expect(find.text('Votre intérieur'), findsNothing);

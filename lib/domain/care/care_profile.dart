@@ -1,3 +1,5 @@
+import '../problems/plant_problem.dart';
+
 /// Besoin en lumière, du plus sombre au plus ensoleillé.
 enum LightNeed { shade, lowLight, indirect, brightIndirect, someSun, fullSun }
 
@@ -12,7 +14,19 @@ LightNeed? lightNeedFromCode(String? code) => switch (code) {
     };
 
 /// Besoin en humidité de l'air.
+///
+/// Le mot suffit pour poser un pot dans un salon ; sous serre ou en vitrine,
+/// c'est un pourcentage qui se règle, d'où [humidityPercentRange].
 enum HumidityNeed { low, average, high }
+
+/// Plage d'hygrométrie tenue par un besoin, en pourcentage. Une fiche peut la
+/// resserrer pour son espèce : entre deux plantes « qui aiment l'air humide »,
+/// l'anthurium tient à 60 % et l'adiante en demande 80.
+(int, int) humidityPercentRange(HumidityNeed need) => switch (need) {
+      HumidityNeed.low => (30, 50),
+      HumidityNeed.average => (40, 60),
+      HumidityNeed.high => (60, 80),
+    };
 
 /// Difficulté d'entretien.
 enum CareDifficulty { easy, medium, demanding }
@@ -22,6 +36,75 @@ enum Toxicity { safe, mild, toxic, unknown }
 
 /// Type de substrat conseillé.
 enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
+
+/// Rapport d'une plante à son pot.
+///
+/// Il décide de ce que veut dire une racine qui sort par le trou de drainage :
+/// signal de rempotage pour l'une, état normal pour l'autre. Le phalaenopsis
+/// et le spathiphyllum fleurissent d'être à l'étroit ; le monstera s'arrête
+/// dès que ses racines tournent au fond.
+enum PotPreference {
+  /// À l'étroit, et mieux ainsi : un pot trop grand la fait bouder.
+  snug,
+
+  /// Rempotage quand la motte est prise.
+  steady,
+
+  /// De la place, sans quoi la croissance s'arrête.
+  roomy,
+}
+
+/// Ce que l'espèce supporte des sels de l'eau d'arrosage — calcaire, fluor,
+/// sodium.
+///
+/// - [tolerant] : l'eau du robinet lui convient, sa dureté n'y change rien.
+/// - [sensitive] : le calcaire et le fluor s'accumulent et brunissent les
+///   pointes ; l'eau de pluie ou filtrée lui va mieux.
+/// - [strict] : le calcaire l'abîme, même en petite quantité — plantes de
+///   terre acide, carnivores, broméliacées épiphytes.
+enum WaterTolerance { tolerant, sensitive, strict }
+
+/// Ce qu'une plante accepte hors du terreau : l'eau claire d'un vase, ou le
+/// pon (billes inertes — pouzzolane, zéolithe, pierre ponce — arrosées d'une
+/// solution nutritive).
+enum SoilFreeFit {
+  /// Elle n'y tient pas.
+  no,
+
+  /// Le temps d'une bouture, pas d'une vie.
+  cuttings,
+
+  /// Elle y vit durablement.
+  yes,
+}
+
+/// Type d'engrais à privilégier.
+enum FertilizerKind { balanced, foliage, flowering, cactus, orchid, acidic, citrus, vegetable }
+
+/// Le calcium : celui que l'eau du robinet apporte déjà, celui qu'il faut
+/// ajouter, celui qu'il faut éviter.
+enum CalciumNeed { avoid, neutral, welcome, needed }
+
+/// Ce qui décide une plante à fleurir, quand c'est le but qu'on se donne.
+///
+/// Les six premiers sont des conditions à réunir avant les boutons ; les
+/// suivants sont des gestes, pendant la formation ou après la fleur. Une
+/// espèce en demande souvent plusieurs, d'où la liste dans [Bloom].
+enum BloomTrigger {
+  coolRest,
+  coolNights,
+  shortDays,
+  drySpell,
+  potbound,
+  brightLight,
+  chillBulb,
+  fertilizer,
+  maturity,
+  deadhead,
+  keepSpike,
+  noMove,
+  evenWater,
+}
 
 /// Méthode de multiplication.
 ///
@@ -38,26 +121,56 @@ enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, 
 enum RootingMedium { water, substrate, either, none }
 
 /// Problème fréquent, pour la section « À surveiller ».
+///
+/// Chaque entrée dit de quelle famille elle relève — un trouble, un ravageur,
+/// une maladie —, la même que celle de la base des deux cents problèmes. La
+/// liste d'une espèce se range alors d'elle-même : ce qui vient de l'eau et
+/// de la lumière d'abord, les bêtes ensuite, les champignons en dernier.
 enum CommonIssue {
-  overwatering,
-  underwatering,
-  rootRot,
-  spiderMites,
-  mealybugs,
-  scale,
-  aphids,
-  fungusGnats,
-  whitefly,
-  slugs,
-  powderyMildew,
-  leafSpot,
-  blight,
-  sunburn,
-  dryTips,
-  leafDrop,
-  etiolation,
-  chlorosis,
-  blossomEndRot,
+  overwatering(ProblemKind.disorder),
+  underwatering(ProblemKind.disorder),
+  rootRot(ProblemKind.disease),
+  spiderMites(ProblemKind.pest),
+  thrips(ProblemKind.pest),
+  mealybugs(ProblemKind.pest),
+  scale(ProblemKind.pest),
+  aphids(ProblemKind.pest),
+  fungusGnats(ProblemKind.pest),
+  whitefly(ProblemKind.pest),
+  trueBugs(ProblemKind.pest),
+  slugs(ProblemKind.pest),
+  powderyMildew(ProblemKind.disease),
+  greyMould(ProblemKind.disease),
+  leafSpot(ProblemKind.disease),
+  blight(ProblemKind.disease),
+  sunburn(ProblemKind.disorder),
+  dryTips(ProblemKind.disorder),
+  leafDrop(ProblemKind.disorder),
+  etiolation(ProblemKind.disorder),
+  chlorosis(ProblemKind.disorder),
+  blossomEndRot(ProblemKind.disorder);
+
+  const CommonIssue(this.kind);
+
+  final ProblemKind kind;
+}
+
+/// Ce qui tient une plante debout, quand elle ne le fait pas seule.
+///
+/// Renseigné pour les espèces où le support change quelque chose : une
+/// grimpante à racines aériennes ne fait ses grandes feuilles qu'en montant,
+/// une tomate casse sans tuteur. Ailleurs, `null` — et la fiche n'en parle
+/// pas plutôt que de dire « aucun ».
+enum PlantSupport {
+  /// Tuteur moussu, en sphaigne ou en fibre de coco : les racines aériennes
+  /// s'y accrochent, à condition qu'il reste humide.
+  mossPole,
+
+  /// Tuteur droit, auquel la tige s'attache à mesure qu'elle monte.
+  stake,
+
+  /// Treillis, fil ou grillage, le long duquel les tiges se guident.
+  trellis,
 }
 
 /// Fenêtre de mois (1–12), bornes incluses. Peut traverser l'hiver
@@ -78,6 +191,47 @@ class MonthWindow {
   static int _mirror(int month) => (month + 5) % 12 + 1;
 }
 
+/// Ce que l'espèce donne comme fleurs, et à quelles conditions.
+///
+/// Une fiche sans floraison ne dit rien : la plante se tient pour son
+/// feuillage, et la question ne se pose pas.
+class Bloom {
+  const Bloom({required this.window, this.triggers = const [], this.indoors = true});
+
+  /// Mois de floraison, hémisphère nord.
+  final MonthWindow window;
+
+  /// Ce qu'il faut réunir pour l'obtenir. Une seule condition pour la
+  /// plupart ; un phalaenopsis en demande trois.
+  final List<BloomTrigger> triggers;
+
+  /// Elle fleurit en pot, dans une pièce. Faux pour celles qui ne fleurissent
+  /// qu'en pleine terre, ou après des années dehors.
+  final bool indoors;
+}
+
+/// Repos à feuillage disparu.
+///
+/// Le crocus, le caladium ou le cyclamen ne meurent pas quand leurs feuilles
+/// jaunissent : ils rentrent entièrement dans leur bulbe, leur tubercule ou
+/// leur rhizome, qui attend au sec l'année suivante. Sans ce passage, rien ne
+/// repart — d'où la plage de température et l'obscurité, qui sont des gestes,
+/// pas des symptômes.
+class DormantRest {
+  const DormantRest({required this.window, this.storeMinC, this.storeMaxC, this.dark = true});
+
+  /// Mois de sommeil, hémisphère nord. La reprise vient juste après.
+  final MonthWindow window;
+
+  /// Où garder l'organe de réserve, en degrés.
+  final int? storeMinC;
+  final int? storeMaxC;
+
+  /// À l'obscurité. Faux pour celles qui passent leur repos en pleine lumière,
+  /// comme le cyclamen au frais sous un arbre.
+  final bool dark;
+}
+
 /// Fiche d'entretien d'une espèce : quand arroser, quelle lumière, quel
 /// substrat, à quelle fréquence rempoter, ce qu'il faut surveiller.
 ///
@@ -91,18 +245,29 @@ class CareProfile {
     required this.humidity,
     required this.difficulty,
     required this.soil,
+    this.humidityMinPercent,
+    this.humidityMaxPercent,
+    this.water = WaterTolerance.tolerant,
     this.fertilizingDays,
     this.fertilizingWindow = const MonthWindow(3, 9),
+    this.fertilizer,
+    this.calcium,
+    this.waterCulture,
+    this.ponCulture,
     this.repotEveryMonths,
+    this.pot = PotPreference.steady,
     this.minTempC,
     this.idealTempMinC,
     this.idealTempMaxC,
     this.toxicity = Toxicity.unknown,
     this.propagation = const [],
     this.issues = const [],
+    this.support,
     this.mistLeaves = false,
     this.dormantInWinter = true,
     this.outdoorFriendly = false,
+    this.bloom,
+    this.dormancy,
     this.tipKeys = const [],
   });
 
@@ -117,13 +282,41 @@ class CareProfile {
   final CareDifficulty difficulty;
   final SoilKind soil;
 
+  /// Hygrométrie en pourcentage, quand l'espèce demande plus précis que sa
+  /// catégorie. `null` des deux côtés = la plage du besoin suffit.
+  final int? humidityMinPercent;
+  final int? humidityMaxPercent;
+
+  /// Tolérance à l'eau du robinet. La valeur par défaut est celle du plus
+  /// grand nombre : une plante ordinaire boit l'eau du robinet.
+  final WaterTolerance water;
+
   /// Jours entre deux apports d'engrais pendant [fertilizingWindow].
   /// `null` = pas d'engrais utile.
   final int? fertilizingDays;
   final MonthWindow fertilizingWindow;
 
+  /// Engrais à privilégier, quand le substrat ne suffit pas à le dire : un
+  /// agrume et un ficus poussent tous deux en terreau, pas avec le même
+  /// engrais. `null` = celui que [fertilizerKind] déduit.
+  final FertilizerKind? fertilizer;
+
+  /// Rapport au calcium, quand il ne se déduit pas du substrat.
+  /// `null` = celui que [calciumNeed] déduit.
+  final CalciumNeed? calcium;
+
+  /// Culture dans l'eau claire, quand elle ne se déduit pas du reste de la
+  /// fiche. `null` = celle que [inWater] déduit.
+  final SoilFreeFit? waterCulture;
+
+  /// Culture en pon, même règle : `null` = celle que [inPon] déduit.
+  final SoilFreeFit? ponCulture;
+
   /// Mois entre deux rempotages. `null` = rempotage non pertinent (annuelles).
   final int? repotEveryMonths;
+
+  /// Ce qu'une racine qui sort du pot veut dire pour cette espèce.
+  final PotPreference pot;
 
   /// Température minimale supportée, et plage idéale.
   final int? minTempC;
@@ -134,6 +327,9 @@ class CareProfile {
   final List<Propagation> propagation;
   final List<CommonIssue> issues;
 
+  /// Le support que l'espèce demande, quand elle en demande un.
+  final PlantSupport? support;
+
   /// Brumiser le feuillage aide (plantes tropicales).
   final bool mistLeaves;
 
@@ -143,8 +339,23 @@ class CareProfile {
   /// Peut passer l'été dehors, voire y rester.
   final bool outdoorFriendly;
 
+  /// Sa floraison : la saison, et ce qui la décide. `null` = plante de
+  /// feuillage, ou floraison qu'on ne cherche pas à provoquer.
+  final Bloom? bloom;
+
+  /// Son repos à feuillage disparu, pour les plantes à réserves. `null` = elle
+  /// garde ses feuilles toute l'année.
+  final DormantRest? dormancy;
+
   /// Clés de conseils libres, résolues par la couche i18n.
   final List<String> tipKeys;
+
+  /// Plage d'hygrométrie à viser, en pourcentage : celle de l'espèce quand
+  /// elle est renseignée, sinon celle de son besoin.
+  (int, int) get humidityRange {
+    final base = humidityPercentRange(humidity);
+    return (humidityMinPercent ?? base.$1, humidityMaxPercent ?? base.$2);
+  }
 
   /// Intervalle d'arrosage conseillé pour un mois donné, ajusté par la
   /// lumière réelle de l'emplacement (une plante en pleine lumière boit plus).
@@ -190,4 +401,67 @@ class CareProfile {
     final m = south ? (month + 6 - 1) % 12 + 1 : month;
     return fertilizingWindow.contains(m);
   }
+
+  /// Elle tient le gel, donc elle vit dehors en pleine terre : ni culture
+  /// hors-sol ni serre à lui proposer.
+  bool get frostHardy => (minTempC ?? 10) <= 0;
+
+  /// Elle vit en pot toute l'année : c'est la condition du hors-sol, qu'une
+  /// culture annuelle (semée, récoltée, arrachée) ne remplit pas.
+  bool get potGrown => repotEveryMonths != null && !frostHardy;
+
+  /// Vit-elle durablement dans l'eau claire ?
+  ///
+  /// Beaucoup de plantes d'intérieur y font des racines le temps d'une
+  /// bouture sans y tenir des années : les deux cas ne se disent pas de la
+  /// même façon. Les espèces qui y vivent vraiment le déclarent.
+  SoilFreeFit get inWater =>
+      waterCulture ??
+      switch (soil) {
+        SoilKind.aquatic => SoilFreeFit.yes,
+        _ when frostHardy => SoilFreeFit.no,
+        _ when propagation.contains(Propagation.water) => SoilFreeFit.cuttings,
+        _ => SoilFreeFit.no,
+      };
+
+  /// Se mène-t-elle en pon ?
+  ///
+  /// Les billes inertes conviennent à presque toutes les plantes en pot ;
+  /// elles ne conviennent pas à la terre de bruyère, dont elles remontent le
+  /// pH, ni à ce qui vit dehors ou ne fait qu'une saison.
+  SoilFreeFit get inPon =>
+      ponCulture ??
+      switch (soil) {
+        SoilKind.acidic || SoilKind.aquatic => SoilFreeFit.no,
+        _ when potGrown => SoilFreeFit.yes,
+        _ => SoilFreeFit.no,
+      };
+
+  /// Engrais à privilégier. `null` quand la plante ne se fertilise pas.
+  FertilizerKind? get fertilizerKind {
+    if (fertilizingDays == null) return null;
+    if (fertilizer case final f?) return f;
+    if (issues.contains(CommonIssue.blossomEndRot)) return FertilizerKind.vegetable;
+    return switch (soil) {
+      SoilKind.cactus => FertilizerKind.cactus,
+      SoilKind.orchid => FertilizerKind.orchid,
+      SoilKind.acidic => FertilizerKind.acidic,
+      _ => FertilizerKind.balanced,
+    };
+  }
+
+  /// Ce que le calcium lui fait. Une plante de terre de bruyère jaunit à
+  /// l'eau calcaire ; un légume-fruit sujet à la nécrose apicale en réclame.
+  CalciumNeed get calciumNeed =>
+      calcium ??
+      switch (soil) {
+        SoilKind.acidic => CalciumNeed.avoid,
+        _ when issues.contains(CommonIssue.blossomEndRot) => CalciumNeed.needed,
+        SoilKind.cactus => CalciumNeed.welcome,
+        _ => CalciumNeed.neutral,
+      };
+
+  /// Une serre, une mini-serre ou une véranda ont-elles quelque chose à lui
+  /// apporter ? Une plante qui passe l'hiver dehors n'en a pas l'usage.
+  bool get benefitsFromGreenhouse => !frostHardy;
 }

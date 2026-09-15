@@ -168,9 +168,9 @@ python3 tool/pack_growth.py /tmp/multiplication/division/separate assets/cutting
 chaque archétype est embarquée, carrée, animée, transparente et pas trop
 lourde. L'architecture des guides côté application : `docs/12`.
 
-# La maison (« Votre intérieur », Apple Maison)
+# La maison (« Votre intérieur »)
 
-`build_home.py` rend la maison d'argile de l'étape Apple Maison de
+`build_home.py` rend la maison d'argile de l'étape de la maison de
 l'onboarding, dans le même studio et les mêmes matériaux que les autres
 objets : murs crème, toit de terre cuite, porte sauge, fenêtres rondes
 couleur d'eau, cheminée. Sans ombre au sol, comme les autres : l'application

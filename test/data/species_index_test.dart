@@ -8,13 +8,16 @@ void main() {
       'Édelweiss~Edelweiß~Pied de lion des Alpes~stella alpina dell\'Appennino\n'
       'Gentiana lutea\tGentianaceae\tgentiane jaune\tgreat yellow gentian\tGelber Enzian\tgenziana maggiore\t\n'
       'Acer japonicum\tSapindaceae\térable du Japon\tfullmoon maple\tJapanischer Ahorn\t\tThunbergs Fächer-Ahorn\n'
-      'Abelmoschus esculentus\tMalvaceae\tgombo\tokra\tOkra\tocra\tBahmia~Corne grecque\n';
+      'Abelmoschus esculentus\tMalvaceae\tgombo\tokra\tOkra\tocra\tBahmia~Corne grecque\n'
+      // Le bananier du Japon n'a de nom courant qu'en allemand : la ligne
+      // vient telle quelle du catalogue livré.
+      'Musa basjoo\tMusaceae\t\t\tJapanische Faserbanane\t\t\n';
 
   final index = SpeciesIndex.parse(tsv);
 
   group('lecture du catalogue', () {
     test('une ligne par espèce', () {
-      expect(index.records, hasLength(4));
+      expect(index.records, hasLength(5));
       expect(index.records.first.scientificName, 'Leontopodium nivale');
       expect(index.records.first.family, 'Asteraceae');
     });
@@ -109,20 +112,45 @@ void main() {
   });
 
   group('nom d\'affichage', () {
-    test('la langue demandée d\'abord', () {
+    test('la langue demandée', () {
       final acer = index.find('Acer japonicum')!;
       expect(acer.commonName('fr'), 'érable du Japon');
       expect(acer.commonName('de'), 'Japanischer Ahorn');
     });
 
-    test('à défaut, une autre langue plutôt que rien', () {
-      // L'italien manque pour cet érable : l'anglais prend le relais.
-      expect(index.find('Acer japonicum')!.commonName('it'), 'fullmoon maple');
+    test('à défaut, le nom scientifique plutôt qu\'une autre langue', () {
+      // L'italien manque pour cet érable : « fullmoon maple » n'est pas un
+      // nom italien, et une liste en italien ne doit pas le donner pour tel.
+      final acer = index.find('Acer japonicum')!;
+      expect(acer.vernacularName('it'), isNull);
+      expect(acer.commonName('it'), 'Acer japonicum');
+    });
+
+    test('un nom allemand ne titre pas une liste française', () {
+      final musa = index.find('Musa basjoo')!;
+      expect(musa.vernacularName('de'), 'Japanische Faserbanane');
+      expect(musa.vernacularName('fr'), isNull);
+      expect(musa.commonName('fr'), 'Musa basjoo');
+      expect(musa.commonName('en'), 'Musa basjoo');
+    });
+
+    test('la recherche trouve l\'espèce par n\'importe lequel de ses noms', () {
+      // Ne rien afficher d'une autre langue n'empêche pas d'y chercher :
+      // « Faserbanane » reste un chemin vers la fiche.
+      expect(index.search('Faserbanane').single.scientificName, 'Musa basjoo');
+      expect(index.search('musa').single.scientificName, 'Musa basjoo');
     });
 
     test('sans aucun nom courant, le nom scientifique', () {
       final bare = SpeciesIndex.parse('Silene acaulis\tCaryophyllaceae\t\t\t\t\t\n');
+      expect(bare.records.single.vernacularName('fr'), isNull);
       expect(bare.records.single.commonName('fr'), 'Silene acaulis');
+    });
+
+    test('la suggestion n\'annonce que la langue de l\'application', () {
+      expect(index.find('Musa basjoo')!.toSuggestion('fr').commonName, isNull);
+      expect(index.find('Musa basjoo')!.toSuggestion('de').commonName, 'Japanische Faserbanane');
+      expect(index.find('Acer japonicum')!.toSuggestion('fr').commonName, 'érable du Japon');
     });
   });
 }

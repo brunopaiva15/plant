@@ -38,26 +38,29 @@ class SpeciesRecord {
   /// classement : un nom principal doit primer sur un synonyme obscur.
   final String primary;
 
-  /// Nom d'affichage : la langue demandée, puis l'anglais, puis n'importe
-  /// quelle langue disponible — jamais une chaîne vide.
-  String commonName(String languageCode) {
-    final ordered = switch (languageCode) {
-      'fr' => [fr, en, de, it],
-      'de' => [de, en, fr, it],
-      'it' => [it, en, fr, de],
-      _ => [en, fr, de, it],
-    };
-    for (final n in ordered) {
-      if (n.isNotEmpty) return n;
-    }
-    return scientificName;
+  /// Le nom courant dans la langue demandée, ou `null` quand l'espèce n'en
+  /// a pas dans cette langue.
+  ///
+  /// Jamais le nom d'une autre langue : dans une application en français,
+  /// « Japanische Faserbanane » se lit comme une erreur, pas comme un
+  /// secours. Beaucoup d'espèces n'ont de nom courant qu'en anglais, et
+  /// les montrer sous leur nom scientifique reste juste dans les quatre
+  /// langues.
+  String? vernacularName(String languageCode) {
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    final trimmed = name.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
+
+  /// Nom d'affichage : le nom courant de la langue demandée, à défaut le
+  /// nom scientifique.
+  String commonName(String languageCode) => vernacularName(languageCode) ?? scientificName;
 
   SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(
         key: 0,
         scientificName: scientificName,
         family: family.isEmpty ? null : family,
-        commonName: commonName(languageCode),
+        commonName: vernacularName(languageCode),
       );
 }
 

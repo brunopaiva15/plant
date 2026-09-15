@@ -1366,9 +1366,9 @@ Deux options, à trancher au moment de la phase 2 :
 
 ## 9. Maladies : un service distant, pas le modèle embarqué
 
-Le diagnostic « Ma plante a un problème » (photos + symptômes → pistes
-classées par vraisemblance, avec des gestes) ne passe pas par le modèle
-embarqué, qui ne sait que nommer une espèce. Il envoie les photos aux AI
+Le diagnostic « Ma plante a un problème » (photos + symptômes + observations
+→ pistes classées par vraisemblance, avec des gestes) ne passe pas par le
+modèle embarqué, qui ne sait que nommer une espèce. Il envoie les photos aux AI
 Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
 (`lib/data/services/infomaniak_diagnoser.dart`) :
 
@@ -1399,12 +1399,23 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   décrits et la liste des problèmes connus suffisent à une piste incertaine,
   qui vaut mieux qu'un compte rendu vide. Ce repli est un bonus, jamais un
   motif d'échec.
+- **Ce que la photo ne montre pas** : quatre questions facultatives sous les
+  symptômes — la terre au doigt, les racines hors du pot, la lumière reçue,
+  les insectes trouvés (`DiagnosisObservations`). Ce sont elles qui
+  départagent l'excès d'eau du manque d'eau, la pourriture du choc de
+  rempotage, la brûlure de la carence, et aucune photo ne les donne. Ce qui
+  est coché part comme vérifié, avec la consigne de peser chaque piste pour
+  et contre — et de ne plus conseiller de vérifier ce qui vient de l'être.
+  « Aucun insecte vu » en fait partie : une case vide ne dit rien, cochée
+  elle pèse contre les ravageurs. Rien n'est coché d'avance, rien n'est
+  obligatoire, et ce qui n'est pas coché ne part pas.
 - **Ce qui est gardé** : l'analyse enregistrée l'est entière. La note du
   journal en garde le résumé et les trois premières pistes ; le compte rendu
   complet — chaque piste avec son explication et ses gestes, l'urgence, les
-  symptômes signalés, les photos regardées — l'accompagne dans
-  `plant_actions.metadata` (docs/04). La ligne du journal en montre l'aperçu
-  et le rouvre d'un doigt, des mois plus tard, dans la langue du moment.
+  symptômes signalés, les observations cochées, les photos regardées —
+  l'accompagne dans `plant_actions.metadata` (docs/04). La ligne du journal
+  en montre l'aperçu et le rouvre d'un doigt, des mois plus tard, dans la
+  langue du moment.
 - **Ce qui n'est pas mesuré** : la justesse de ces modèles sur des maladies
   de plantes. La seule façon de choisir entre Mistral Small 4, Qwen 3.5 et
   Kimi est un jeu d'essai de vingt à trente photos de plantes à problème
@@ -1430,9 +1441,21 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
   aussi (arrosage hors 1–120 jours, rempotage hors 6–120 mois, plage de
   température à l'envers, hiver plus fréquent que l'été). Un champ absent
   vaut mieux qu'un champ inventé, la consigne le dit et le lecteur s'y tient.
+  La tolérance à l'eau du robinet en fait partie, et c'est le champ où elle
+  sert le plus : le catalogue la suppose tolérante faute de mieux, alors
+  qu'une plante de terre acide ou une carnivore ne pardonne pas le calcaire.
 - **Ce qui ne revient jamais** : la toxicité. Tout le reste est un avis sur
   le confort d'une plante ; « non toxique pour le chat » est une affirmation
-  sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue.
+  sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue. Ne
+  partent pas non plus le type d'engrais, le calcium, la culture hors-sol et
+  la floraison : le catalogue les déclare ou les déduit du substrat
+  (docs/04), et un substrat corrigé par l'IA recalcule les trois premiers
+  sans qu'on ait à les demander. La floraison et le repos à feuillage
+  disparu se taisent pour une raison de plus : une date de floraison
+  inventée se vérifie six mois trop tard, et un bulbe rangé au froid sur un
+  mauvais conseil ne repart pas. Le rapport au pot, lui, revient : trois
+  mots d'un vocabulaire fermé (`snug`, `steady`, `roomy`), comme la lumière
+  ou le substrat.
 - **Une fois** : la réponse est gardée sur l'appareil, par espèce et par
   langue, réponse vide comprise, pour qu'une espèce que l'IA ne connaît pas
   ne soit pas redemandée à chaque ouverture de la fiche. Le cache est borné

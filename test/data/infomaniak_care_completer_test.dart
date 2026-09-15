@@ -40,8 +40,10 @@ void main() {
         'light': 'brightIndirect',
         'humidity': 'high',
         'soil': 'draining',
+        'water': 'sensitive',
         'fertilizing_days': 45,
         'repot_every_months': 24,
+        'pot': 'snug',
         'min_temp_c': 10,
         'ideal_temp_min_c': 18,
         'ideal_temp_max_c': 26,
@@ -54,7 +56,9 @@ void main() {
       expect(c.wateringWinterDays, 21);
       expect(c.light, LightNeed.brightIndirect);
       expect(c.soil, SoilKind.draining);
+      expect(c.water, WaterTolerance.sensitive);
       expect(c.repotEveryMonths, 24);
+      expect(c.pot, PotPreference.snug);
       expect(c.propagation, [Propagation.stemCutting, Propagation.water]);
       expect(c.issues, [CommonIssue.overwatering]);
       expect(c.isEmpty, isFalse);
@@ -69,7 +73,9 @@ void main() {
       final body = _completion(jsonEncode({
         'light': 'plein cagnard',
         'soil': 'terreau',
+        'water': 'eau de source',
         'difficulty': 'moyen',
+        'pot': 'grand',
         'watering_summer_days': 0,
         'fertilizing_days': 3,
         'repot_every_months': 600,
@@ -79,7 +85,9 @@ void main() {
       final c = InfomaniakCareCompleter.parseResponse(body);
       expect(c.light, isNull);
       expect(c.soil, isNull);
+      expect(c.water, isNull);
       expect(c.difficulty, isNull);
+      expect(c.pot, isNull);
       expect(c.wateringSummerDays, isNull);
       expect(c.fertilizingDays, isNull);
       expect(c.repotEveryMonths, isNull);
@@ -115,6 +123,13 @@ void main() {
       expect(p.repotEveryMonths, 36);
     });
 
+    test('l\'eau du catalogue tient tant que l\'IA ne dit rien', () {
+      // Le profil générique suppose une plante qui boit l'eau du robinet ;
+      // c'est le trou que l'IA peut combler pour une espèce inconnue.
+      expect(const CareCompletion().applyTo(_generique).water, WaterTolerance.tolerant);
+      expect(const CareCompletion(water: WaterTolerance.strict).applyTo(_generique).water, WaterTolerance.strict);
+    });
+
     test('la toxicité ne vient jamais de l\'IA', () {
       const c = CareCompletion(light: LightNeed.fullSun);
       expect(c.applyTo(_generique).toxicity, Toxicity.unknown);
@@ -130,6 +145,41 @@ void main() {
       expect(c.applyTo(curated).toxicity, Toxicity.toxic);
     });
 
+    test('la floraison et le repos restent au catalogue', () {
+      // Une date de floraison inventée se vérifie six mois trop tard, et un
+      // bulbe rangé au froid sur un mauvais conseil ne repart pas.
+      const curated = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        bloom: Bloom(window: MonthWindow(2, 4)),
+        dormancy: DormantRest(window: MonthWindow(6, 9)),
+      );
+      final p = const CareCompletion(light: LightNeed.fullSun).applyTo(curated);
+      expect(p.bloom, same(curated.bloom));
+      expect(p.dormancy, same(curated.dormancy));
+    });
+
+    test('un autre besoin en humidité emporte la plage en pourcentage', () {
+      // Garder « 60 à 80 % » sous « air sec accepté » afficherait deux
+      // choses contraires sur la même carte.
+      const curated = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        humidityMinPercent: 65,
+        humidityMaxPercent: 85,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+      );
+      expect(const CareCompletion(humidity: HumidityNeed.low).applyTo(curated).humidityRange, (30, 50));
+      expect(const CareCompletion(light: LightNeed.shade).applyTo(curated).humidityRange, (65, 85));
+    });
+
     test('« pas d\'engrais » n\'est pas « je ne sais pas »', () {
       expect(const CareCompletion(noFertilizer: true).applyTo(_generique).fertilizingDays, isNull);
       expect(const CareCompletion().applyTo(_generique).fertilizingDays, 30);
@@ -138,7 +188,7 @@ void main() {
 
   group('le cache', () {
     test('fait l\'aller-retour, y compris une réponse vide', () {
-      const c = CareCompletion(wateringSummerDays: 9, difficulty: CareDifficulty.demanding, issues: [CommonIssue.spiderMites]);
+      const c = CareCompletion(wateringSummerDays: 9, water: WaterTolerance.strict, difficulty: CareDifficulty.demanding, issues: [CommonIssue.spiderMites]);
       final entries = {
         CareCompletionStore.keyOf('Ficus lyrata', 'fr'): c,
         CareCompletionStore.keyOf('Inconnue quelconque', 'fr'): const CareCompletion(),
@@ -146,6 +196,7 @@ void main() {
       final relu = CareCompletionStore.decode(CareCompletionStore.encode(entries));
       expect(relu[CareCompletionStore.keyOf('ficus LYRATA', 'fr')]?.wateringSummerDays, 9);
       expect(relu[CareCompletionStore.keyOf('Ficus lyrata', 'fr')]?.issues, [CommonIssue.spiderMites]);
+      expect(relu[CareCompletionStore.keyOf('Ficus lyrata', 'fr')]?.water, WaterTolerance.strict);
       expect(relu[CareCompletionStore.keyOf('Inconnue quelconque', 'fr')]?.isEmpty, isTrue);
     });
 
@@ -167,6 +218,7 @@ void main() {
       final messages = body['messages'] as List;
       expect(messages.last['content'], 'Aechmea fasciata');
       expect(messages.first['content'], contains('toxicity'));
+      expect(messages.first['content'], contains('water: tolerant, sensitive, strict'), reason: 'vocabulaire fermé');
       expect(body['temperature'], 0.0);
       expect(jsonEncode(body), isNot(contains('Monstera')), reason: 'rien de la plante de l\'utilisateur');
     });

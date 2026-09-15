@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../../design_system/components/scanning_overlay.dart';
+
 /// Où en est le viseur intégré.
 enum InlineCameraStatus {
   /// Rien n'est ouvert : le flux a été rendu au système, ou pas encore demandé.
@@ -207,9 +209,14 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
 /// Ne dessine rien tant que le flux n'est pas prêt : le cadre de la page
 /// garde alors son invite, et rien ne clignote entre les deux.
 class InlineCameraPreview extends StatelessWidget {
-  const InlineCameraPreview({super.key, required this.controller});
+  const InlineCameraPreview({super.key, required this.controller, this.scanningOverlay = true});
 
   final InlineCameraController controller;
+
+  /// Le viseur principal porte le balayage doux d'Iris. Le paramètre reste
+  /// disponible pour les écrans qui auraient besoin d'un aperçu totalement
+  /// neutre sans dupliquer le composant caméra.
+  final bool scanningOverlay;
 
   @override
   Widget build(BuildContext context) {
@@ -248,13 +255,21 @@ class InlineCameraPreview extends StatelessWidget {
             height = width / previewRatio;
           }
         }
-        return ClipRect(
-          child: OverflowBox(
-            maxWidth: double.infinity,
-            maxHeight: double.infinity,
-            alignment: Alignment.center,
-            child: SizedBox(width: width, height: height, child: CameraPreview(camera)),
-          ),
+        // L'overlay est volontairement hors de l'OverflowBox : ses repères
+        // suivent le cadre visible, pas la taille réelle du flux recadré.
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRect(
+              child: OverflowBox(
+                maxWidth: double.infinity,
+                maxHeight: double.infinity,
+                alignment: Alignment.center,
+                child: SizedBox(width: width, height: height, child: CameraPreview(camera)),
+              ),
+            ),
+            if (scanningOverlay) const ScanningOverlay(),
+          ],
         );
       },
     );

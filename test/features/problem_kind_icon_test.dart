@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flora/data/problems/problem_catalog.dart';
+import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flora/features/problems/presentation/illustrated_problems.dart';
@@ -130,6 +131,51 @@ void main() {
       for (final issue in HealthIssue.values.where((i) => i.problemId != null)) {
         final problem = catalog[issue.problemId];
         expect(problem, isNotNull, reason: '${issue.name} désigne ${issue.problemId}, absent de la base');
+        expect(problem!.kind, issue.kind, reason: issue.name);
+      }
+    });
+  });
+
+  group('les soucis « À surveiller » d\'une fiche d\'entretien', () {
+    final catalog = ProblemCatalog.parse(File('assets/problems/catalog.txt').readAsStringSync());
+
+    test('chacun a son image, présente et non vide', () {
+      for (final issue in CommonIssue.values) {
+        final file = File(CommonIssueIcon.assetOf(issue));
+        expect(file.existsSync(), isTrue, reason: '${issue.name} → ${file.path}');
+        expect(file.lengthSync(), greaterThan(1024), reason: issue.name);
+      }
+    });
+
+    test('celui qui désigne une entrée de la base en prend le dessin', () {
+      for (final issue in CommonIssue.values) {
+        final id = ProblemCatalog.idForIssue(issue);
+        if (id == null) continue;
+        expect(CommonIssueIcon.isIllustrated(issue), isTrue, reason: issue.name);
+        expect(CommonIssueIcon.assetOf(issue), 'assets/problems/icons/$id.webp', reason: issue.name);
+      }
+    });
+
+    test('ceux qui recouvrent plusieurs entrées portent le symbole de leur famille', () {
+      // « Taches foliaires » recouvre une dizaine de champignons, « Mildiou »
+      // autant, « Punaises » trois familles, et « Chute de feuilles » se dit de
+      // tout : aucune ne désigne une entrée sans en désigner une fausse.
+      const larges = {CommonIssue.trueBugs, CommonIssue.leafSpot, CommonIssue.blight, CommonIssue.leafDrop};
+      for (final issue in larges) {
+        expect(ProblemCatalog.idForIssue(issue), isNull, reason: issue.name);
+        expect(CommonIssueIcon.isIllustrated(issue), isFalse, reason: issue.name);
+        expect(CommonIssueIcon.assetOf(issue), ProblemKindIcon.assetOf(issue.kind), reason: issue.name);
+      }
+      // Et ce sont les seules : tout le reste de la liste garde son dessin.
+      expect(CommonIssue.values.where((i) => !CommonIssueIcon.isIllustrated(i)).toSet(), larges);
+    });
+
+    test('l\'entrée désignée dit bien la même chose, et de la même famille', () {
+      for (final issue in CommonIssue.values) {
+        final id = ProblemCatalog.idForIssue(issue);
+        if (id == null) continue;
+        final problem = catalog[id];
+        expect(problem, isNotNull, reason: '${issue.name} désigne $id, absent de la base');
         expect(problem!.kind, issue.kind, reason: issue.name);
       }
     });

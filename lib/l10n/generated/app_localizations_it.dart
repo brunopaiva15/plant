@@ -1490,17 +1490,29 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'I sensori di Casa di Apple danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. Lettura sul dispositivo, nulla viene inviato.';
+      'I sensori di Casa di Apple e di Google Home danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. La misura resta nell\'app.';
 
   @override
-  String get homeClimate => 'Casa di Apple';
+  String get homeClimate => 'Sensori di casa';
 
   @override
   String get homeClimateHint =>
-      'Temperatura e umidità di un sensore di Casa di Apple adattano i consigli delle piante da interno e completano le diagnosi. Lettura sul dispositivo, nulla viene inviato.';
+      'Temperatura e umidità di un sensore di casa adattano i consigli delle piante da interno e completano le diagnosi. La misura resta nell\'app.';
 
   @override
-  String get homeClimateConnect => 'Collega Casa di Apple';
+  String get homeClimateApple => 'Casa di Apple';
+
+  @override
+  String get homeClimateGoogle => 'Google Home';
+
+  @override
+  String get homeClimateConnect => 'Collega una casa';
+
+  @override
+  String get homeClimateConnectApple => 'Collega Casa di Apple';
+
+  @override
+  String get homeClimateConnectGoogle => 'Collega Google Home';
 
   @override
   String get homeClimateSearching => 'Ricerca dei sensori…';
@@ -1519,6 +1531,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateHome => 'Casa';
+
+  @override
+  String get homeClimateSource => 'Piattaforma';
 
   @override
   String get homeClimateNoRoom => 'Senza stanza';
@@ -1561,22 +1576,36 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get homeClimateNoSensors =>
-      'Nessun sensore di temperatura o umidità in Casa di Apple.';
+  String homeClimateNoSensorsIn(String home) {
+    return 'Nessun sensore di temperatura o umidità in $home.';
+  }
 
   @override
-  String get homeClimateDenied =>
+  String get homeClimateDeniedApple =>
       'Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.';
 
   @override
-  String get homeClimateFailed =>
-      'Casa di Apple non disponibile. Potrai collegare un sensore in Profilo › Casa di Apple.';
+  String get homeClimateDeniedGoogle =>
+      'Accesso a Google Home rifiutato. Si riattiva nell\'app Google Home, nelle autorizzazioni.';
+
+  @override
+  String homeClimateFailedIn(String home) {
+    return '$home non disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.';
+  }
+
+  @override
+  String get homeClimateAppleNote =>
+      'Casa di Apple legge gli accessori sul dispositivo.';
+
+  @override
+  String get homeClimateGoogleNote =>
+      'Google Home legge i dispositivi tramite il tuo account Google.';
 
   @override
   String get homeClimateAtHome => 'Da voi';
 
   @override
-  String get homeClimateFits => 'Nell\'intervallo della specie.';
+  String get homeClimateFits => 'Niente che disturbi questa specie.';
 
   @override
   String get homeClimateTooDry => 'Aria troppo secca per questa specie.';
@@ -1615,7 +1644,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String diagnosisWithHome(String reading) {
-    return 'Misura di Casa di Apple allegata: $reading.';
+    return 'Misura di casa allegata: $reading.';
   }
 
   @override
@@ -2316,8 +2345,56 @@ class AppLocalizationsIt extends AppLocalizations {
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Facoltativo: le condizioni intorno alla pianta affinano l\'analisi.';
+  String get diagnosisChecks => 'Osservazioni';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Facoltativo: ciò che la foto non mostra affina l\'analisi.';
+
+  @override
+  String get diagnosisSoil => 'Terra';
+
+  @override
+  String get diagnosisSoilDry => 'Asciutta';
+
+  @override
+  String get diagnosisSoilMoist => 'Umida';
+
+  @override
+  String get diagnosisSoilSoggy => 'Fradicia';
+
+  @override
+  String get diagnosisRoots => 'Radici';
+
+  @override
+  String get diagnosisRootsFirm => 'Sode e chiare';
+
+  @override
+  String get diagnosisRootsSoft => 'Brune o molli';
+
+  @override
+  String get diagnosisRootsCrowded => 'Strette';
+
+  @override
+  String get diagnosisLightDirect => 'Sole diretto';
+
+  @override
+  String get diagnosisLightBright => 'Viva, senza sole diretto';
+
+  @override
+  String get diagnosisLightDim => 'Scarsa';
+
+  @override
+  String get diagnosisBugs => 'Insetti';
+
+  @override
+  String get diagnosisBugsNone => 'Nessuno visto';
+
+  @override
+  String get diagnosisBugsOnPlant => 'Sulla pianta';
+
+  @override
+  String get diagnosisBugsInSoil => 'Nella terra';
 
   @override
   String get analyze => 'Analizza';
@@ -2762,6 +2839,29 @@ class AppLocalizationsIt extends AppLocalizations {
   String get carePropagation => 'Propagazione';
 
   @override
+  String get careSupport => 'Tutore';
+
+  @override
+  String get careSupportMossPole => 'Tutore di muschio';
+
+  @override
+  String get careSupportStake => 'Tutore diritto';
+
+  @override
+  String get careSupportTrellis => 'Traliccio';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Inumidire il tutore a ogni annaffiatura: le radici aeree vi si attaccano.';
+
+  @override
+  String get careSupportStakeCare =>
+      'Legare il fusto senza stringere, man mano che sale.';
+
+  @override
+  String get careSupportTrellisCare => 'Guidare i fusti man mano che crescono.';
+
+  @override
   String get careIssues => 'Da tenere d\'occhio';
 
   @override
@@ -2770,6 +2870,97 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Segnalati su questa specie o su specie affini.';
+
+  @override
+  String get careLeafSigns => 'Segni sulle foglie';
+
+  @override
+  String get careLeafSignsNote =>
+      'Ciò che una foglia mostra, e ciò che lo spiega più spesso.';
+
+  @override
+  String get leafSignPaling => 'Foglie che schiariscono';
+
+  @override
+  String get leafSignYellowing => 'Foglie gialle';
+
+  @override
+  String get leafSignScorched => 'Foglie bruciate';
+
+  @override
+  String get leafSignSpots => 'Macchie al centro della foglia';
+
+  @override
+  String get leafSignBrownTips => 'Punte e bordi marroni';
+
+  @override
+  String get leafSignStunted => 'Foglie che non crescono più';
+
+  @override
+  String get leafSignDrooping => 'Foglie molli';
+
+  @override
+  String get leafSignFalling => 'Foglie che cadono';
+
+  @override
+  String get leafSignSticky => 'Foglie appiccicose';
+
+  @override
+  String get leafCauseTooMuchSun => 'Troppo sole diretto';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Luce insufficiente';
+
+  @override
+  String get leafCauseOverwatering => 'Annaffiature troppo ravvicinate';
+
+  @override
+  String get leafCauseUnderwatering => 'Terriccio rimasto secco troppo a lungo';
+
+  @override
+  String get leafCauseDryAir => 'Aria troppo secca';
+
+  @override
+  String get leafCauseColdDraught => 'Freddo o corrente d\'aria';
+
+  @override
+  String get leafCauseHardWater =>
+      'Acqua calcarea o concime troppo concentrato';
+
+  @override
+  String get leafCausePoorSoil => 'Terriccio esaurito';
+
+  @override
+  String get leafCausePotBound => 'Radici strette nel vaso';
+
+  @override
+  String get leafCauseDamagedRoots => 'Radici rovinate dal ristagno d\'acqua';
+
+  @override
+  String get leafCauseLeafPests => 'Punture di ragnetto rosso o tripidi';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Cocciniglie o afidi, sulla pianta o sopra di essa';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Fumaggine, il nero che cresce sulla melata';
+
+  @override
+  String get leafCauseLeafFungus => 'Fungo o batterio sulla foglia';
+
+  @override
+  String get leafCauseWetLeaves => 'Acqua rimasta sul fogliame';
+
+  @override
+  String get leafCauseRecentMove => 'Spostamento o rinvaso recente';
+
+  @override
+  String get leafCauseOldLeaves => 'Invecchiamento delle foglie basse';
+
+  @override
+  String get leafCauseWinterRest => 'Riposo invernale';
 
   @override
   String get problemKindDisorder => 'Disturbo';
@@ -2859,6 +3050,28 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careRepotNone => 'Nessun rinvaso (coltura annuale)';
 
   @override
+  String get carePotSnug => 'Ama stare stretta';
+
+  @override
+  String get carePotRoomy => 'Ama lo spazio';
+
+  @override
+  String get carePotSnugNote =>
+      'Una radice che esce dal foro non basta: rinvasa quando il pane di terra è un blocco di radici, o quando l\'acqua non penetra più.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Rinvasa quando le radici escono dal foro e girano sul fondo del vaso.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Rinvasa appena le radici toccano la parete: stretta, smette di crescere.';
+
+  @override
+  String get carePotDormantNote =>
+      'Il rinvaso si fa alla ripresa, alla fine del riposo, non per una radice che esce.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return 'Da $min a $max °C';
   }
@@ -2887,6 +3100,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careLightFull => 'Pieno sole';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Sotto lampada · LED a spettro completo, da $min a $max µmol/m²/s, $hours h al giorno';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'Ossia da $min a $max mol/m²/giorno sul fogliame.';
+  }
+
+  @override
   String get careHumidityLow => 'Aria secca va bene';
 
   @override
@@ -2894,6 +3117,23 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careHumidityHigh => 'Ama l\'aria umida';
+
+  @override
+  String careHumidityRange(int min, int max) {
+    return 'Da $min a $max % di umidità dell\'aria';
+  }
+
+  @override
+  String get careHumidityLowDetail =>
+      'Tollera bene l\'aria secca di casa. Un\'umidità stabilmente più alta la rovina.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      'L\'aria normale di casa le basta. D\'inverno lontano dal calorifero, le punte delle foglie restano verdi.';
+
+  @override
+  String get careHumidityHighDetail =>
+      'Un umidificatore, un sottovaso di argilla espansa umida o più piante raggruppate aiutano a mantenere l\'intervallo.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2939,6 +3179,358 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Senza substrato';
+
+  @override
+  String get careWater => 'Acqua';
+
+  @override
+  String get careWaterTolerant => 'Acqua del rubinetto';
+
+  @override
+  String get careWaterSensitive => 'Acqua povera di calcare';
+
+  @override
+  String get careWaterStrict => 'Acqua senza calcare';
+
+  @override
+  String get careWaterTolerantNote => 'Il calcare non la disturba.';
+
+  @override
+  String get careWaterSensitiveNote =>
+      'Calcare e fluoro fanno imbrunire le punte delle foglie.';
+
+  @override
+  String get careWaterStrictNote =>
+      'Il calcare la danneggia, anche in piccole quantità.';
+
+  @override
+  String get careWaterTypes => 'Tipi di acqua';
+
+  @override
+  String get careWaterTypesNote =>
+      'La durezza dell\'acqua del rubinetto cambia da un comune all\'altro; l\'analisi annuale del gestore la indica.';
+
+  @override
+  String get careWaterBest => 'Consigliata';
+
+  @override
+  String get careWaterOk => 'Adatta';
+
+  @override
+  String get careWaterCaution => 'Con riserva';
+
+  @override
+  String get careWaterAvoid => 'Da evitare';
+
+  @override
+  String get careWaterTap => 'Acqua del rubinetto';
+
+  @override
+  String get careWaterTapNote =>
+      'L\'acqua di rete, così come esce. La sua durezza dipende dal comune.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Il calcare si accumula nel terriccio e ne alza il pH. Lasciare riposare l\'acqua elimina il cloro, non il calcare.';
+
+  @override
+  String get careWaterRain => 'Acqua di pioggia';
+
+  @override
+  String get careWaterRainNote => 'Dolce, senza calcare, leggermente acida.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Raccolta da un tetto, porta con sé polvere ed escrementi; una riserva all\'aperto diventa verde. Lasciare scorrere i primi minuti di pioggia e coprire il bidone.';
+
+  @override
+  String get careWaterFiltered => 'Acqua filtrata';
+
+  @override
+  String get careWaterFilteredNote =>
+      'Una caraffa filtrante toglie il cloro e una parte del calcare.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'Quanto trattiene dipende dalla cartuccia, e una cartuccia esaurita non trattiene più nulla. Il calcare non se ne va mai del tutto.';
+
+  @override
+  String get careWaterOsmosis => 'Acqua osmotizzata';
+
+  @override
+  String get careWaterOsmosisNote =>
+      'Quasi priva di minerali, come l\'acqua di pioggia.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'Non porta alcun nutriente: il fertilizzante resta l\'unica fonte. Per una pianta comune, un terzo di acqua del rubinetto la riequilibra.';
+
+  @override
+  String get careWaterDemineralized => 'Acqua demineralizzata';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Venduta per i ferri da stiro, vale l\'acqua osmotizzata quando è pura.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Alcune taniche contengono un anticalcare o un profumo: leggere l\'etichetta. Come l\'acqua osmotizzata, non porta alcun nutriente.';
+
+  @override
+  String get careWaterCondensate => 'Acqua del climatizzatore';
+
+  @override
+  String get careWaterCondensateNote =>
+      'La condensa di un climatizzatore o di un deumidificatore, distillata dall\'apparecchio.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'È scorsa su uno scambiatore e in una vasca dove si accumulano polvere, biofilm e batteri, e può portare tracce di metalli. Da riservare alle piante ornamentali, da un apparecchio pulito, mai su ciò che si mangia.';
+
+  @override
+  String get careWaterSoftened => 'Acqua addolcita';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'Un addolcitore a resine sostituisce il calcare con il sodio.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Il sodio si accumula nel terriccio, danneggia le radici e chiude la struttura del suolo. Il rubinetto di acqua grezza, a monte dell\'addolcitore, resta quello giusto.';
+
+  @override
+  String get careSoilMixStandard =>
+      'Alleggerito con il 20 % di perlite, perché l\'acqua scorra.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % di terriccio, 25 % di perlite, 25 % di sabbia grossa o lapillo.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % di terriccio, 70 % di lapillo, pomice o sabbia grossa.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Bark di pino medio, 10 % di perlite, un po\' di sfagno; mai terriccio.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Alleggerita con il 25 % di corteccia di pino, senza calcare né compost.';
+
+  @override
+  String get careSoilMixRich =>
+      '40 % di terriccio, 40 % di compost, 20 % di perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Nessun substrato: le radici vivono all\'aria o nell\'acqua.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'In acqua: $water · In pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'sì';
+
+  @override
+  String get careSoilFreeNo => 'no';
+
+  @override
+  String get careSoilFreeCuttings => 'solo talee';
+
+  @override
+  String get careFertBalanced =>
+      'Concime equilibrato per piante verdi, diluito a metà.';
+
+  @override
+  String get careFertFoliage => 'Concime ricco di azoto, quello del fogliame.';
+
+  @override
+  String get careFertFlowering =>
+      'Concime ricco di potassio, quello della fioritura.';
+
+  @override
+  String get careFertCactus => 'Concime per cactus, povero di azoto.';
+
+  @override
+  String get careFertOrchid => 'Concime per orchidee, molto diluito.';
+
+  @override
+  String get careFertAcidic => 'Concime per piante acidofile, senza calcare.';
+
+  @override
+  String get careFertCitrus =>
+      'Concime per agrumi, ricco di azoto e microelementi.';
+
+  @override
+  String get careFertVegetable => 'Concime per pomodori, ricco di potassio.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcio: nessun apporto e acqua piovana; il calcare le ingiallisce le foglie.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcio: l\'acqua dura le va bene, come i gusci d\'uovo tritati al rinvaso.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcio: un apporto regolare evita il marciume apicale.';
+
+  @override
+  String get careGreenhouse => 'In serra';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Calore e aria umida';
+
+  @override
+  String get careGreenhouseWarmLight => 'Calore e luce';
+
+  @override
+  String get careGreenhouseWarmDry => 'Calore, luce e aria secca';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Mantenute tutto l\'anno, queste condizioni accelerano la crescita: irrigazione e concime si avvicinano altrettanto.';
+
+  @override
+  String get careGreenhouseHold =>
+      'Mantieni l\'intervallo di umidità di giorno, lascialo scendere di notte e fai circolare l\'aria.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Arieggiare ogni giorno: l\'aria ferma fa marcire ciò che ama l\'asciutto.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'In serra fredda o sotto cassone, le semine partono con quattro-sei settimane di anticipo.';
+
+  @override
+  String get careBloom => 'Fioritura';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'Da $from a $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Raramente in casa';
+
+  @override
+  String get careBloomChillBulb => 'Freddo al bulbo';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Conta da dieci a quindici settimane tra 5 e 9 °C al buio, prima di riportare il vaso al caldo e alla luce.';
+
+  @override
+  String get careBloomFertilizer => 'Un concime da fioritura';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Appena si formano i boccioli, passa a un concime da fioritura, più ricco di potassio di quello per il fogliame.';
+
+  @override
+  String get careBloomMaturity => 'Un po\' di età';
+
+  @override
+  String get careBloomMaturityNote =>
+      'Fiorisce solo dai tre o quattro anni: prima di quell\'età nessuna condizione cambia le cose.';
+
+  @override
+  String get careBloomDeadhead => 'Fiori appassiti tagliati';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Taglia i fiori appassiti man mano: la pianta rimette energia nei successivi.';
+
+  @override
+  String get careBloomKeepSpike => 'Uno stelo tenuto';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'Finché lo stelo resta verde, lascialo: può rifiorire da una gemma più in basso.';
+
+  @override
+  String get careBloomNoMove => 'Un posto fisso';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Una volta formati i boccioli, non spostarla e non girarla: il cambiamento li fa cadere.';
+
+  @override
+  String get careBloomEvenWater => 'Annaffiature regolari';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'Durante la formazione dei boccioli annaffia regolarmente: basta un colpo di secco per farli cadere.';
+
+  @override
+  String get careRest => 'Riposo';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'All\'asciutto e al buio, tra $min e $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'All\'asciutto, tra $min e $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'All\'asciutto e al buio';
+
+  @override
+  String get careRestStorePlain => 'All\'asciutto';
+
+  @override
+  String get careRestNote =>
+      'Lascia ingiallire e seccare il fogliame senza tagliarlo, poi sospendi le annaffiature. Alla fine di questo periodo rimetti il vaso alla luce e riprendi ad annaffiare.';
+
+  @override
+  String get careBloomCoolRest => 'Un inverno fresco';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Per preparare la fioritura, tienila per circa due mesi tra 10 e 12 °C e riduci molto le annaffiature.';
+
+  @override
+  String get careBloomCoolNights => 'Notti fresche';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'In autunno, circa tre settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.';
+
+  @override
+  String get careBloomShortDays => 'Giorni corti';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Per circa sei settimane, garantisci almeno 12 ore di buio continuo ogni notte per favorire la formazione dei boccioli.';
+
+  @override
+  String get careBloomDrySpell => 'Un periodo secco';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Riduci molto le annaffiature per alcune settimane, poi riprendile gradualmente: questo contrasto può stimolare la fioritura.';
+
+  @override
+  String get careBloomPotbound => 'Un vaso stretto';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Spesso fiorisce meglio quando le radici occupano bene il vaso. Evita quindi di rinvasare troppo presto.';
+
+  @override
+  String get careBloomBrightLight => 'Più luce';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Per fiorire ha bisogno di più luce che per crescere. Sistemala in un luogo molto luminoso, evitando il sole troppo forte.';
 
   @override
   String get carePropCutting => 'Talea di fusto';
@@ -3021,6 +3613,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careIssueSpiderMites => 'Ragnetto rosso (ragnatele sottili)';
 
   @override
+  String get careIssueThrips => 'Tripidi (foglie argentate)';
+
+  @override
   String get careIssueMealybugs => 'Cocciniglia farinosa';
 
   @override
@@ -3036,10 +3631,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careIssueWhitefly => 'Mosca bianca';
 
   @override
+  String get careIssueTrueBugs => 'Cimici';
+
+  @override
   String get careIssueSlugs => 'Lumache';
 
   @override
   String get careIssuePowderyMildew => 'Oidio';
+
+  @override
+  String get careIssueGreyMould => 'Muffa grigia (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Macchie fogliari';
@@ -3092,14 +3693,6 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get careTipBottomWatering =>
       'Annaffia dal basso, mettendo il vaso in acqua per 20 minuti.';
-
-  @override
-  String get careTipFilteredWater =>
-      'Usa acqua piovana o filtrata, perché il calcare brunisce le punte.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Annaffia con acqua piovana, perché questa pianta odia il calcare.';
 
   @override
   String get careTipThirstyPlant =>
@@ -3264,6 +3857,10 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'Richiede terra acida, non terriccio universale.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'Si nutre di insetti: niente fertilizzante e un terreno povero.';
 
   @override
   String get careTipBlueNeedsAcid =>
@@ -4908,4 +5505,335 @@ class AppLocalizationsIt extends AppLocalizations {
   String finderRegion(String zone, String low) {
     return 'Zona $zone · inverni a $low';
   }
+
+  @override
+  String get encyclopediaTitle => 'Enciclopedia';
+
+  @override
+  String get encyclopediaHint =>
+      'I problemi della base, le specie del catalogo e il vocabolario delle schede di cura.';
+
+  @override
+  String get encyclopediaProblems => 'Problemi';
+
+  @override
+  String get encyclopediaSpecies => 'Specie';
+
+  @override
+  String get encyclopediaGlossary => 'Vocabolario';
+
+  @override
+  String get encyclopediaSearchProblems => 'Nome, parassita, malattia…';
+
+  @override
+  String get encyclopediaSearchGlossary => 'Luce, substrato, talea…';
+
+  @override
+  String encyclopediaProblemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count problemi',
+      one: '1 problema',
+      zero: 'Nessun problema',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String encyclopediaSpeciesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count specie',
+      one: '1 specie',
+      zero: 'Nessuna specie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get encyclopediaNoTerm => 'Nessun termine trovato';
+
+  @override
+  String problemNumber(String id) {
+    return 'Voce $id';
+  }
+
+  @override
+  String get problemScope => 'Estensione';
+
+  @override
+  String get problemScopeGeneral => 'Tutte le piante';
+
+  @override
+  String get problemScopeWide => 'Molti ospiti';
+
+  @override
+  String get problemScopeTarget => 'Ospiti specifici';
+
+  @override
+  String get problemScopeGeneralNote =>
+      'Possibile sulle piante vascolari, secondo le condizioni e lo stadio.';
+
+  @override
+  String get problemScopeWideNote => 'Molti ospiti; i taxa citati sono esempi.';
+
+  @override
+  String get problemScopeTargetNote =>
+      'Ospiti principali di un gruppo mirato; l\'elenco non è esaustivo.';
+
+  @override
+  String get problemHosts => 'Ospiti';
+
+  @override
+  String get problemHostsAll => 'Tutte le piante vascolari';
+
+  @override
+  String get problemHostsNote =>
+      'Un genere o una famiglia non rende sensibili tutte le sue specie.';
+
+  @override
+  String get problemInGarden => 'Nel giardino';
+
+  @override
+  String get problemKindsTitle => 'Famiglie di problemi';
+
+  @override
+  String get problemKindDisorderNote =>
+      'Né parassita né malattia: l\'acqua, la luce, il freddo, il substrato, una carenza.';
+
+  @override
+  String get problemKindPestNote =>
+      'Un essere vivente che attacca la pianta: insetto, acaro, lumaca, nematode.';
+
+  @override
+  String get problemKindDiseaseNote =>
+      'Un fungo, un batterio, un virus o un fitoplasma insediato nella pianta.';
+
+  @override
+  String get problemKindConditionNote =>
+      'Né l\'uno né l\'altro: la fumaggine cresce sulla melata, senza attaccare la pianta.';
+
+  @override
+  String get careLightShadeNote =>
+      'Lontano dalle finestre, senza raggio diretto durante il giorno.';
+
+  @override
+  String get careLightLowNote =>
+      'Una stanza chiara ma lontana dalla finestra, o esposta a nord.';
+
+  @override
+  String get careLightIndirectNote =>
+      'A qualche passo da una finestra, o dietro una tenda leggera.';
+
+  @override
+  String get careLightBrightNote =>
+      'Vicino a una finestra, fuori dal raggio del sole.';
+
+  @override
+  String get careLightSomeNote =>
+      'Il sole del mattino o di fine giornata, non quello di mezzogiorno.';
+
+  @override
+  String get careLightFullNote =>
+      'Sei ore di sole diretto o più, in piena giornata.';
+
+  @override
+  String get careHumidityLowNote => 'L\'aria di una casa riscaldata le basta.';
+
+  @override
+  String get careHumidityAverageNote =>
+      'Intorno al 50%, lontano dal termosifone d\'inverno.';
+
+  @override
+  String get careHumidityHighNote =>
+      'Oltre il 60%: bagno, cucina o un vassoio di argilla espansa umida.';
+
+  @override
+  String get careDifficultyEasyNote =>
+      'Sopporta le dimenticanze e i cambi di luce.';
+
+  @override
+  String get careDifficultyMediumNote =>
+      'Richiede un ritmo di irrigazione regolare e una posizione stabile.';
+
+  @override
+  String get careDifficultyDemandingNote =>
+      'Luce, umidità e irrigazione vanno seguite da vicino.';
+
+  @override
+  String get careToxicSafeNote =>
+      'Nessuna tossicità nota per animali e bambini.';
+
+  @override
+  String get careToxicMildNote => 'La linfa irrita la pelle e la bocca.';
+
+  @override
+  String get careToxicToxicNote =>
+      'Ingerire una foglia o un frutto provoca malessere.';
+
+  @override
+  String get careToxicUnknownNote =>
+      'Per questa specie non è indicato nulla; tenerla fuori portata per precauzione.';
+
+  @override
+  String get careSoilStandardNote =>
+      'Il terriccio da piante verdi, senza aggiunte.';
+
+  @override
+  String get careSoilDrainingNote =>
+      'Terriccio alleggerito con perlite, sabbia o pomice.';
+
+  @override
+  String get careSoilCactusNote =>
+      'Molto minerale: l\'acqua passa senza ristagnare.';
+
+  @override
+  String get careSoilOrchidNote =>
+      'Corteccia grossa: le radici vivono all\'aria.';
+
+  @override
+  String get careSoilAcidicNote =>
+      'Un pH acido, per le piante che il calcare ingiallisce.';
+
+  @override
+  String get careSoilRichNote =>
+      'Terriccio arricchito di compost, per le piante esigenti.';
+
+  @override
+  String get careSoilAquaticNote =>
+      'Le radici stanno nell\'acqua, o su un supporto senza terra.';
+
+  @override
+  String get carePropCuttingNote =>
+      'Un fusto tagliato sotto un nodo, messo in substrato umido.';
+
+  @override
+  String get carePropLeafNote =>
+      'Una foglia intera, o un frammento, posata sul substrato.';
+
+  @override
+  String get carePropDivisionNote =>
+      'Il cespo si divide in due al rinvaso, radici comprese.';
+
+  @override
+  String get carePropOffsetsNote =>
+      'I germogli nati alla base si staccano una volta radicati.';
+
+  @override
+  String get carePropLayeringNote =>
+      'Un fusto radicato mentre è ancora attaccato alla pianta madre.';
+
+  @override
+  String get carePropSeedNote =>
+      'Semi seminati, più lenti di una talea e spesso meno fedeli.';
+
+  @override
+  String get carePropWaterNote =>
+      'La talea resta in un bicchiere d\'acqua finché partono le radici.';
+
+  @override
+  String get carePropTuberNote =>
+      'Il tubero si taglia in pezzi, ciascuno con una gemma.';
+
+  @override
+  String get communityTipsTitle => 'Consigli della comunità';
+
+  @override
+  String get communityTipsHint =>
+      'Ciò che altre persone hanno osservato coltivando questa specie, fuori dal catalogo.';
+
+  @override
+  String get communityTipsEmpty => 'Nessun consiglio su questa specie.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Leggere e pubblicare consigli richiede una connessione.';
+
+  @override
+  String get communityTipWrite => 'Scrivere un consiglio';
+
+  @override
+  String get communityTipYours => 'Il tuo consiglio';
+
+  @override
+  String get communityTipPlaceholder =>
+      'Ciò che ha funzionato su questa pianta, in poche frasi.';
+
+  @override
+  String get communityTipPublicNote =>
+      'Il consiglio appare con il tuo nome sulla scheda di questa specie, per tutti.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Pubblica';
+
+  @override
+  String get communityTipPublished => 'Consiglio pubblicato.';
+
+  @override
+  String get communityTipNeedsAccount =>
+      'Pubblicare un consiglio richiede un account.';
+
+  @override
+  String get communityTipAnonymous => 'Anonimo';
+
+  @override
+  String get communityTipHelpful => 'Utile';
+
+  @override
+  String get communityTipReport => 'Segnala';
+
+  @override
+  String get communityTipReported => 'Consiglio segnalato.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'Un consiglio segnalato da $count persone non appare più.';
+  }
+
+  @override
+  String get communityTipHidden => 'Segnalato: gli altri non lo vedono più.';
+
+  @override
+  String get confirmDeleteTip => 'Eliminare questo consiglio?';
+
+  @override
+  String get confirmReportTip => 'Segnalare questo consiglio?';
+
+  @override
+  String get moderationTitle => 'Moderazione';
+
+  @override
+  String get moderationHint =>
+      'I consigli segnalati, dal più segnalato al meno segnalato.';
+
+  @override
+  String get moderationEmpty => 'Nessun consiglio segnalato.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count segnalazioni',
+      one: '1 segnalazione',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Nascondi';
+
+  @override
+  String get moderationRestore => 'Ripristina';
+
+  @override
+  String get confirmRestoreTip =>
+      'Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.';
 }

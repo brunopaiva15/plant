@@ -130,6 +130,7 @@ journal des mois plus tard au lieu d'en relire l'aperçu
 ```json
 {"version": 1, "summary": "…", "urgent": true,
  "symptoms": "ce que l'utilisateur avait décrit",
+ "observations": {"soil": "soggy", "roots": "soft", "light": "direct", "bugs": "none"},
  "causes": [{"title": "…", "problemId": "002", "likelihood": "likely",
              "explanation": "…", "actions": ["…"]}],
  "photos": [{"file": "…jpg", "thumb": "…_thumb.jpg"}]}
@@ -145,17 +146,79 @@ seules les photos de `plant_photos` partent en synchronisation et en
 sauvegarde, et une photo de feuille malade n'a rien à faire dans le suivi de
 croissance. Ailleurs, le compte rendu se lit sans elles.
 
+## Conseils de la communauté (Supabase seul, hors base locale)
+Les trois seules tables distantes qui ne portent pas de `garden_id` : un
+conseil est rattaché à une **espèce**, pas à un jardin, et se lit depuis
+n'importe quel compte. Rien n'en est copié dans SQLite — ce n'est pas l'état
+du jardin, c'est ce que d'autres ont écrit, et cela se relit à chaque
+ouverture de la fiche.
+
+```
+species_tips         id, species_id (clé du catalogue, « hoya-kerrii »),
+                     species_name, user_id, body (10–300 signes), votes,
+                     reports, hidden_at?, created_at, updated_at
+                     unique (species_id, user_id) — une personne, un conseil par espèce
+species_tip_votes    tip_id, user_id            — une voix par personne et par conseil
+species_tip_reports  tip_id, user_id            — un signalement par personne et par conseil
+```
+
+- **Lire** : `species_tips_for(species_id)`, ouverte à la clé anonyme — la
+  fiche d'entretien s'ouvre sans être connecté, et ce qu'elle montre là est
+  déjà public. **Écrire** demande un compte.
+- **Écrire ne passe jamais par la table** : `publish_species_tip`,
+  `withdraw_species_tip`, `vote_species_tip` et `report_species_tip` sont
+  `security definer`, et les tables de votes et de signalements n'ont aucune
+  politique — rien d'autre ne les touche. Les bornes de longueur sont tenues
+  des deux côtés (`lib/domain/community/species_tip.dart` et une contrainte
+  `check`) : un client modifié ne fait pas passer un roman.
+- **Signalement** : au troisième, `hidden_at` est posé et le conseil cesse de
+  paraître aux autres. Son auteur le reçoit encore, avec la mention qui le
+  dit — sans quoi il le croirait toujours en ligne. Rien n'est supprimé : la
+  vérification se fait sur la table, et `hidden_at` se remet à `null` à la
+  main quand le conseil était bon. Le réécrire ne l'efface pas : les
+  signalements ne s'effacent pas d'un coup de clavier.
+- Le nom affiché vient de `profiles` : publier, c'est publier sous son nom, et
+  la feuille d'écriture le dit avant qu'on écrive.
+
+### Modération
+```
+moderators           user_id, created_at
+```
+Une table, et non une colonne sur `profiles` : la politique « profiles write »
+laisse chacun écrire sa propre ligne, et un drapeau posé là se donnerait à
+soi-même en une requête. `moderators` n'a **aucune politique** — rien ne la lit
+ni ne l'écrit hors de l'éditeur SQL et des fonctions `security definer`.
+Nommer un modérateur est une ligne dans l'éditeur SQL du projet, l'uuid se
+lisant dans *Authentication › Users* :
+
+```sql
+insert into moderators (user_id) values ('<uuid du compte>');
+```
+
+- `is_moderator()` répond au client ; l'application s'en sert pour montrer ou
+  non l'entrée *Profil › Modération*, mais l'autorité est dans les fonctions.
+- `reported_species_tips()` rend les conseils signalés au moins une fois, les
+  plus signalés d'abord. Pour quelqu'un d'autre : zéro ligne, pas une erreur.
+- `moderate_species_tip(id, hidden)` masque ou rétablit. Rétablir **efface les
+  signalements** — sans quoi le conseil repasserait le seuil à la première
+  humeur, et le même dossier reviendrait indéfiniment.
+- `remove_species_tip(id)` retire pour de bon, ce que `withdraw_species_tip`
+  ne permet qu'à l'auteur.
+
 ## Sécurité (Supabase, P2)
 - RLS : `garden_members` détermine l'accès à tout ce qui porte `garden_id` (via `plants.garden_id` pour les tables filles).
 - Storage : bucket privé `plant-photos/{garden_id}/{plant_id}/{photo_id}.jpg`, URLs signées, validation MIME + taille.
 - Aucune confiance au client : triggers `updated_at`, contraintes de rôle en base.
+- Les conseils de la communauté sont l'exception au premier point : ils ne
+  portent pas de `garden_id`, et ce sont leurs fonctions `security definer`
+  qui tiennent les règles (ci-dessus).
 
 ## Catalogue d'espèces (hors base locale)
 Deux étages, plus la recherche en ligne :
 
 | Étage | Où | Volume | Rôle |
 |---|---|---|---|
-| Trié à la main | `lib/data/species/species_catalog.dart` | ~300 espèces avec catégorie | Parcours par thème, fiches d'entretien précises |
+| Trié à la main | `lib/data/species/species_catalog.dart` | 1 187 espèces avec catégorie | Parcours par thème, fiches d'entretien précises |
 | Étendu | `assets/species/catalog.tsv` | ~40 000 espèces | Recherche hors ligne, quatre langues |
 | En ligne | API GBIF | ~450 000 espèces | Le reste, paginé |
 
@@ -165,8 +228,68 @@ noms » ne s'affichent pas, ils rendent la recherche tolérante (« Edelweiß »
 « stella alpina »). La recherche compare des chaînes normalisées sans accents
 ni casse (`core/utils/search_text.dart`).
 
+Les quatre colonnes de langue sont creuses : sur les 36 364 espèces livrées,
+5 285 ont un nom français, 32 147 un nom anglais, 7 639 un nom allemand,
+1 416 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
+ou le nom scientifique — jamais celui d'une autre langue : « Japanische
+Faserbanane » en tête d'une liste française se lit comme une erreur, et
+masquer les 31 000 espèces sans nom français viderait l'encyclopédie.
+La recherche, elle, continue de comparer tous les noms de toutes les
+langues : « Faserbanane » ouvre la fiche de *Musa basjoo*. C'est
+`vernacularName(langue)` — le nom de la langue lue, ou `null` — et
+`commonName(langue)`, qui retombe alors sur le nom scientifique.
+
 Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
 GBIF (CC BY) pour les familles.
+
+Une entrée triée à la main l'emporte sur l'actif étendu, y compris sur ses
+noms : une entrée écrite sans nom courant prend le nom scientifique dans les
+quatre langues et couvre alors ce que l'actif, lui, savait dire. Les paliers
+1 000 et 1 200 avaient été générés ainsi — famille et catégorie, aucun nom —
+et masquaient 296 noms déjà livrés ; ils rejouaient en plus 72 espèces déjà
+curatées, si bien que la même plante s'appelait « Rose du désert » dans le
+sélecteur et « Adenium obesum » dans l'encyclopédie. Les noms manquants ont
+été repris de l'actif, les doublons retirés, et
+`test/data/species_catalog_test.dart` tient les deux règles.
+
+Soixante-trois classes du modèle n'étaient dans ni l'un ni l'autre — le genre
+*Euphorbia* en entier, le chêne-liège, le robinier —, et leur fiche s'ouvrait
+sans famille ni nom. Cinquante-neuf sont écrites à la main dans
+`species_catalog_iris_only.dart` ; les quatre dernières passent par la table
+des noms acceptés (`core/utils/scientific_name.dart`), l'app les connaissant
+déjà sous leur autre nom.
+
+Les deux étages hors ligne se parcourent aussi pour eux-mêmes, dans
+l'encyclopédie : l'étage trié à la main par catégorie, l'étage étendu dès
+qu'on cherche, et chaque espèce ouvre sa fiche d'entretien sans qu'il faille
+posséder la plante. Cette fiche-là n'est pas complétée par l'IA — la question
+reste réservée aux plantes du jardin, où la réponse sert à faire quelque
+chose ; ici le catalogue répond, ou dit qu'il ne connaît que le genre.
+
+### Ce qu'une fiche d'entretien déduit (`domain/care/care_profile.dart`)
+Cent soixante-sept profils sont écrits à la main ; il aurait fallu les
+reprendre un à un pour leur ajouter un mélange, un type d'engrais, un rapport
+au calcium. La plupart de ces champs se déduisent de ce que la fiche dit
+déjà, et une espèce qui sait mieux le déclare — le champ déclaré l'emporte
+toujours sur la déduction.
+
+| Déduit | Règle | Déclaré par |
+|---|---|---|
+| `soilMix` (le mélange, i18n) | le `SoilKind` : un terreau drainant se prépare toujours pareil | — |
+| `inWater` | `aquatic` → oui ; ce qui tient le gel → non ; ce qui bouture dans l'eau → bouture seulement | `waterCulture` |
+| `inPon` | terre de bruyère et sans-substrat → non ; ce qui vit en pot (`potGrown`) → oui | `ponCulture` |
+| `fertilizerKind` | pas d'engrais → aucun ; nécrose apicale → tomates ; sinon le `SoilKind` (cactées, orchidées, terre de bruyère, équilibré) | `fertilizer` |
+| `calciumNeed` | terre de bruyère → à éviter ; nécrose apicale → nécessaire ; cactées → bienvenu ; sinon rien à en dire | `calcium` |
+| `benefitsFromGreenhouse` | tout ce qui ne tient pas le gel (`frostHardy`) | — |
+| `bloom` | rien : la floraison ne se déduit pas | `bloom` |
+
+Quatre-vingt-huit profils déclarent au moins un de ces champs : les agrumes
+(engrais agrumes, pas de calcaire, hiver frais), les marantacées (eau de
+pluie), le pothos et le spathiphyllum (culture dans l'eau), la tillandsie
+(sans substrat, mais pas dans l'eau), les tomates (potasse et calcium), les
+orchidées (nuits fraîches), le cactus de Noël (jours courts). L'IA de
+complétion ne se prononce sur aucun d'eux : ils restent ceux du catalogue
+(`domain/care/care_completion.dart`).
 
 ## Base des problèmes (hors base locale)
 `assets/problems/catalog.txt` : 200 troubles, ravageurs et maladies couvrant
@@ -197,6 +320,15 @@ lignes. Sur les 297 espèces du catalogue trié à la main, la médiane est d'un
 entrée et la moitié n'en a aucune — la section disparaît alors, plutôt que de
 meubler.
 
+L'encyclopédie (`features/encyclopedia/`, sous *Profil*) la lit enfin en
+entier : les deux cents entrées rangées par famille, cherchables par nom, par
+numéro et par hôte, et une page par entrée — sa famille, son étendue, ses
+hôtes avec leur nom courant quand un catalogue le connaît, et les plantes du
+jardin qui y figurent. Cette dernière section n'apparaît pas sur un problème
+`GENERAL` : y aligner toute la collection ne dirait rien. Rien n'est ajouté au
+passage, ni texte ni appel à l'IA — l'écran montre l'actif, et une entrée qui
+manque manque dans la base.
+
 Chaque entrée peut avoir sa propre illustration, dans
 `assets/problems/icons/<id>.webp`. Elles arrivent par lots et la base en
 compte deux cents : celles qui n'en ont pas encore retombent sur le symbole de
@@ -204,10 +336,12 @@ leur famille, ce qui est l'état normal de la plupart des entrées et non un cas
 d'erreur. `illustrated_problems.dart`, écrit par le même outil que les images,
 dit lesquelles existent sans interroger le disque.
 
-Elles servent aux cartes de diagnostic, à cinquante-deux points. En dessous de
-quarante elles se valent toutes — une plante en pot reste une plante en pot —,
-d'où les lignes sans vignette et le regroupement par famille sur la fiche de
-soin.
+Elles servent aux cartes de diagnostic, à cinquante-deux points, aux lignes de
+l'encyclopédie, à quarante, et en tête de la page d'un problème, à cent douze —
+seul objet de la page, et le seul endroit où le dessin se lit vraiment ; il y
+a droit à la respiration que les vignettes n'ont pas. En dessous de quarante
+elles se valent toutes — une plante en pot reste une plante en pot —, d'où les
+lignes sans vignette et le regroupement par famille sur la fiche de soin.
 
 Les neuf problèmes de santé d'une fiche (`HealthIssue`) y puisent aussi :
 chacun désigne l'entrée de la base qui dit la même chose (« Manque d'eau » →

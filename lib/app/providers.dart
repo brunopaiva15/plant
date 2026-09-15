@@ -26,9 +26,11 @@ import '../data/services/infomaniak_care_completer.dart';
 import '../data/services/infomaniak_propagation_refiner.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
+import '../data/services/google_home_climate_service.dart';
 import '../data/services/home_kit_climate_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
+import '../data/community/supabase_community_tips.dart';
 import '../data/sharing/supabase_collaboration_service.dart';
 import '../data/sharing/supabase_sharing_service.dart';
 import '../data/problems/problem_catalog.dart';
@@ -37,6 +39,7 @@ import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
 import '../data/species/species_index_loader.dart';
+import '../domain/community/species_tip.dart';
 import '../domain/sharing/garden_collaboration.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
@@ -437,15 +440,15 @@ CatalogMatch? catalogLookup(String scientificName, SpeciesIndex? index, String l
   // deux identifiants internes et deux profils de soin selon la photo.
   final canonical = acceptedSpeciesName(normalizeScientificName(scientificName));
   if (canonical.isEmpty) return null;
+  // Le nom courant de la langue de l'app, ou rien : mieux vaut annoncer la
+  // plante par son seul nom scientifique que par un nom qui ne se lit pas.
   final curated = SpeciesCatalog.find(canonical);
   if (curated != null) {
-    final name = curated.commonName(languageCode);
-    return CatalogMatch(internalId: internalPlantId(canonical), commonName: name.isEmpty ? null : name);
+    return CatalogMatch(internalId: internalPlantId(canonical), commonName: curated.vernacularName(languageCode));
   }
   final extended = index?.find(canonical);
   if (extended != null) {
-    final name = extended.commonName(languageCode);
-    return CatalogMatch(internalId: internalPlantId(canonical), commonName: name.isEmpty ? null : name);
+    return CatalogMatch(internalId: internalPlantId(canonical), commonName: extended.vernacularName(languageCode));
   }
   return null;
 }
@@ -485,12 +488,15 @@ WeatherTrend? _trend(Ref ref) => ref.read(weatherTrendProvider);
 /// l'onboarding. Remplacée dans les tests par un service muet.
 final locationServiceProvider = Provider<LocationService>((ref) => const DeviceLocationService());
 
-/// Les capteurs d'Apple Maison, là où HomeKit existe : iPhone et iPad.
-/// Ailleurs le service est muet, et l'étape comme le réglage n'apparaissent
-/// pas — on ne propose pas une maison qu'on ne peut pas lire.
+/// Les capteurs de la maison : Apple Maison là où HomeKit existe — iPhone
+/// et iPad —, Google Home sur iPhone comme sur Android. Chaque service
+/// écarte lui-même la plateforme qui n'est pas la sienne, et
+/// [MultiHomeClimateService] garde ceux qui restent. Sans aucune maison le
+/// service est muet, et l'étape comme le réglage n'apparaissent pas — on ne
+/// propose pas une maison qu'on ne peut pas lire.
 final homeClimateServiceProvider = Provider<HomeClimateService>((ref) {
-  if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return const UnavailableHomeClimateService();
-  return HomeKitClimateService();
+  if (kIsWeb) return const UnavailableHomeClimateService();
+  return MultiHomeClimateService([HomeKitClimateService(), GoogleHomeClimateService()]);
 });
 
 /// Soutien facultatif : le magasin de la plateforme là où il y en a un.
@@ -638,6 +644,15 @@ final collaborationServiceProvider = Provider<CollaborationService>((ref) {
 final sharingServiceProvider = Provider<SharingService>((ref) {
   if (!SupabaseConfig.isConfigured) return const UnavailableSharingService();
   return SupabaseSharingService(gardenId: ref.watch(gardenIdProvider));
+});
+
+/// Les conseils de la communauté sur une espèce. Lire n'exige qu'un backend
+/// configuré ; publier exige un compte distant, que le service lit ici plutôt
+/// que dans les écrans — comme pour les retours d'Iris.
+final communityTipsServiceProvider = Provider<CommunityTipsService>((ref) {
+  if (!SupabaseConfig.isConfigured) return const UnavailableCommunityTips();
+  final user = ref.watch(currentUserProvider).value;
+  return SupabaseCommunityTips(userId: user == null || user.isLocal ? null : user.id);
 });
 
 final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide());

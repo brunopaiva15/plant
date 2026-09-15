@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../data/problems/problem_catalog.dart';
+import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../onboarding/presentation/clay_illustration.dart';
@@ -24,6 +26,35 @@ extension ProblemKindLabels on AppLocalizations {
         ProblemKind.disease => problemKindDiseases,
         ProblemKind.condition => problemKindConditions,
       };
+
+  /// Ce qui sépare une famille de l'autre, en une phrase. Ne se lit que dans
+  /// le vocabulaire de l'encyclopédie : ailleurs, le nom suffit.
+  String problemKindNote(ProblemKind kind) => switch (kind) {
+        ProblemKind.disorder => problemKindDisorderNote,
+        ProblemKind.pest => problemKindPestNote,
+        ProblemKind.disease => problemKindDiseaseNote,
+        ProblemKind.condition => problemKindConditionNote,
+      };
+}
+
+/// L'étendue des hôtes d'un problème, telle que la base la déclare : le nom
+/// court qui tient sur une ligne, et la réserve qui va avec.
+///
+/// La réserve n'est pas de la prudence d'affichage, c'est ce que la base dit
+/// d'elle-même en en-tête : les taxons cités sont des exemples, et un genre
+/// ne rend pas toutes ses espèces sensibles.
+extension ProblemScopeLabels on AppLocalizations {
+  String problemScopeName(ProblemScope scope) => switch (scope) {
+        ProblemScope.general => problemScopeGeneral,
+        ProblemScope.wide => problemScopeWide,
+        ProblemScope.target => problemScopeTarget,
+      };
+
+  String problemScopeNote(ProblemScope scope) => switch (scope) {
+        ProblemScope.general => problemScopeGeneralNote,
+        ProblemScope.wide => problemScopeWideNote,
+        ProblemScope.target => problemScopeTargetNote,
+      };
 }
 
 /// Le symbole d'argile d'une famille de problèmes.
@@ -38,8 +69,9 @@ extension ProblemKindLabels on AppLocalizations {
 ///
 /// Les dessins sont chargés et lisibles autour de quarante points ; en
 /// dessous de trente, le soleil et la goutte du trouble abiotique se
-/// referment sur eux-mêmes. D'où le regroupement par famille sur la fiche,
-/// plutôt qu'une vignette par ligne.
+/// referment sur eux-mêmes. D'où le regroupement par famille dans
+/// « Problèmes connus » : vingt lignes y partagent quatre symboles, et le
+/// répéter à chacune n'apprendrait rien de plus.
 class ProblemKindIcon extends StatelessWidget {
   const ProblemKindIcon({super.key, required this.kind, this.side = 40});
 
@@ -149,6 +181,57 @@ class HealthIssueIcon extends StatelessWidget {
       filterQuality: FilterQuality.high,
       // Le nom est écrit juste à côté : l'image ne répète rien.
       excludeFromSemantics: true,
+    );
+  }
+}
+
+/// L'image d'un souci de la section « À surveiller » d'une fiche d'entretien.
+///
+/// Le vocabulaire des fiches d'espèce désigne la base des deux cents
+/// problèmes comme celui des fiches de plante : « Thrips » y a son numéro, et
+/// reprend donc son illustration. Quatre entrées n'en désignent aucune —
+/// « Taches foliaires » recouvre une dizaine de champignons, « Mildiou »
+/// autant, « Punaises » trois familles, et « Chute de feuilles » se dit de
+/// tout. Elles portent le symbole de leur famille, qui est ce qu'on en sait.
+///
+/// Quarante points, comme la liste des problèmes de l'encyclopédie : c'est la
+/// taille où le soleil et la goutte du trouble abiotique se lisent encore.
+class CommonIssueIcon extends StatelessWidget {
+  const CommonIssueIcon({super.key, required this.issue, this.side = 40});
+
+  final CommonIssue issue;
+  final double side;
+
+  /// L'entrée de la base dont ce souci prend le dessin, quand il en désigne
+  /// une et qu'elle est illustrée.
+  static String? _drawn(CommonIssue issue) {
+    final id = ProblemCatalog.idForIssue(issue);
+    return id != null && illustratedProblems.contains(id) ? id : null;
+  }
+
+  /// Ce souci a-t-il le dessin d'une entrée, ou le symbole de sa famille ?
+  static bool isIllustrated(CommonIssue issue) => _drawn(issue) != null;
+
+  static String assetOf(CommonIssue issue) {
+    final id = _drawn(issue);
+    return id == null ? ProblemKindIcon.assetOf(issue.kind) : 'assets/problems/icons/$id.webp';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final own = isIllustrated(issue);
+    return Image(
+      image: ClayIllustration.provider(assetOf(issue), side, MediaQuery.devicePixelRatioOf(context)),
+      width: side,
+      height: side,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      // Le nom est écrit juste à côté : le dessin du souci ne répéterait que
+      // lui. Le symbole de famille, lui, dit ce que le nom tait — de quoi
+      // relèvent « Taches foliaires » —, et la liste ne le titre pas.
+      semanticLabel: own ? null : l10n.problemKindName(issue.kind),
+      excludeFromSemantics: own,
     );
   }
 }

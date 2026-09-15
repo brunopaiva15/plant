@@ -234,7 +234,7 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
                 FloraListRow(
                   leading: Text(e.category.emoji, style: const TextStyle(fontSize: 18)),
                   title: e.commonName(lang),
-                  subtitle: '${e.scientificName} · ${e.family}',
+                  subtitle: _speciesSubtitle(e.vernacularName(lang), e.scientificName, e.family),
                   dense: true,
                   chevron: false,
                   onTap: () => _pick(e.toSuggestion(lang)),
@@ -253,7 +253,7 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
                 FloraListRow(
                   leading: const Text('🌿', style: TextStyle(fontSize: 18)),
                   title: e.commonName(lang),
-                  subtitle: '${e.scientificName}${e.family.isEmpty ? '' : ' · ${e.family}'}',
+                  subtitle: _speciesSubtitle(e.vernacularName(lang), e.scientificName, e.family),
                   dense: true,
                   chevron: false,
                   onTap: () => _pick(e.toSuggestion(lang)),
@@ -316,4 +316,14 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
       ),
     );
   }
+}
+
+/// Le sous-titre d'une ligne d'espèce : le nom scientifique et la famille.
+///
+/// Sans nom courant dans la langue de l'application, le nom scientifique
+/// titre déjà la ligne ; le sous-titre ne garde alors que la famille plutôt
+/// que d'écrire deux fois le même nom.
+String? _speciesSubtitle(String? vernacular, String scientificName, String family) {
+  if (vernacular == null) return family.isEmpty ? null : family;
+  return family.isEmpty ? scientificName : '$scientificName · $family';
 }

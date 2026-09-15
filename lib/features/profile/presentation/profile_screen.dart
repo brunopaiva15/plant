@@ -11,6 +11,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
+import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
 
 /// Profil : prénom, apparence, notifications, données, sources.
@@ -80,6 +81,11 @@ class ProfileScreen extends ConsumerWidget {
                     // compte, il n'y a rien à partager, donc rien à montrer.
                     if (signedIn)
                       FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
+                    // La modération ne s'annonce qu'à ceux qui modèrent, et
+                    // c'est le serveur qui le dit — la table `moderators` ne
+                    // s'écrit pas depuis l'application (docs/04).
+                    if (signedIn && ref.watch(tipModeratorProvider).value == true)
+                      FloraListRow(leading: const Text('🛡️', style: TextStyle(fontSize: 18)), title: l10n.moderationTitle, onTap: () => context.push(Routes.moderation)),
                   ],
                 );
               }),
@@ -133,6 +139,22 @@ class ProfileScreen extends ConsumerWidget {
                   FloraListRow(leading: const Text('🗒️', style: TextStyle(fontSize: 18)), title: l10n.fieldTemplates, onTap: () => context.push(Routes.fieldTemplates)),
                   FloraListRow(leading: const Text('🍂', style: TextStyle(fontSize: 18)), title: l10n.archives, onTap: () => context.push(Routes.archive)),
                   FloraListRow(leading: const Text('📜', style: TextStyle(fontSize: 18)), title: l10n.activityLogTitle, onTap: () => context.push(Routes.activityLog)),
+                ],
+              ),
+              const SizedBox(height: Space.lg),
+              // L'encyclopédie n'est pas un réglage : elle ne change rien à
+              // l'application, elle en montre le contenu. D'où son propre
+              // groupe, et la phrase qui dit ce qu'on y trouve — sans quoi
+              // une ligne « Encyclopédie » dans une liste de réglages ne
+              // laisse pas deviner qu'il y a deux cents fiches derrière.
+              FloraGroup(
+                footer: l10n.encyclopediaHint,
+                children: [
+                  FloraListRow(
+                    leading: const Text('📖', style: TextStyle(fontSize: 18)),
+                    title: l10n.encyclopediaTitle,
+                    onTap: () => context.push(Routes.encyclopedia),
+                  ),
                 ],
               ),
               const SizedBox(height: Space.lg),

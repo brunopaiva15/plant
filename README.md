@@ -41,15 +41,21 @@ iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
 (`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
 
-## Apple Maison (facultatif)
-Sur iPhone et iPad, un capteur de température ou d'humidité d'Apple Maison
-peut être branché à l'onboarding (après la ville) ou dans Profil › Apple
-Maison. Sa mesure ajuste les conseils des plantes d'intérieur (air sec,
-froid, chaleur) sur l'écran Aujourd'hui et dans les fiches d'entretien, et
-accompagne les photos d'un diagnostic. Lecture sur l'appareil par HomeKit
-(`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur l'App ID) ;
-rien n'est écrit dans la maison, rien n'est gardé. Sur Android, l'étape et le
-réglage n'apparaissent pas. Détails : docs/05.
+## Les capteurs de la maison (facultatif)
+Un capteur de température ou d'humidité de la maison peut être branché à
+l'onboarding (après la ville) ou dans Profil › Capteurs de la maison. Sa
+mesure ajuste les conseils des plantes d'intérieur (air sec, froid, chaleur)
+sur l'écran Aujourd'hui et dans les fiches d'entretien, et accompagne les
+photos d'un diagnostic. Rien n'est écrit dans la maison, aucune mesure n'est
+gardée.
+
+Apple Maison est livré : sur iPhone et iPad, lecture sur l'appareil par
+HomeKit (`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur
+l'App ID). Google Home est codé, iOS et Android, mais pas livré
+(`AppConfig.googleHomeEnabled`) : son SDK ne se prend sur aucun dépôt
+public, il se télécharge depuis la console Google Home pour un projet
+déclaré. Sans aucune maison lisible, l'étape et le réglage n'apparaissent
+pas. Détails : docs/05.
 
 ## Sur l'écran d'accueil d'iOS
 Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,
@@ -60,6 +66,44 @@ Haptics. Tout passe par des canaux natifs, sans plugin (`ios/Runner/*Channel.swi
 `ios/AuxineWidget/`). L'App Group `group.ch.vergasta.plant` doit exister sur
 l'App ID de l'application et sur celui du widget (`ch.vergasta.plant.widget`).
 Sur Android, rien de tout cela n'apparaît. Détails : docs/05 et docs/06.
+
+## Encyclopédie
+*Profil › Encyclopédie* ouvre ce que l'application embarque, à lire hors de
+tout écran de travail : les 200 troubles, ravageurs et maladies de la base
+(rangés par famille, cherchables par nom, par numéro ou par hôte, une page
+chacun) ; les espèces du catalogue intégré et leur fiche d'entretien, sans
+qu'il faille posséder la plante ; et le vocabulaire des fiches — lumière,
+humidité, substrat, multiplication, toxicité, difficulté —, un terme, une
+définition. Ces listes existaient déjà : elles n'apparaissaient qu'au moment
+où elles servaient. Détails : docs/04.
+
+## Conseils de la communauté
+Sous la fiche d'entretien — celle d'une plante comme celle d'une espèce de
+l'encyclopédie —, ce que d'autres ont observé en gardant la même espèce. Le
+catalogue dit ce qu'une plante demande ; il ne dit pas ce qu'on apprend en la
+gardant trois ans dans une pièce donnée.
+
+Un conseil est rattaché à l'espèce, par la clé du catalogue : un par personne
+et par espèce, qu'on reprend plutôt qu'on empile. Lire ne demande pas de
+compte, publier en demande un, et le conseil paraît alors sous le nom du
+compte. « Utile » compte les voix, « Signaler » les signalements — au
+troisième, le conseil cesse de paraître aux autres, son auteur le voit encore
+avec la mention qui le dit.
+
+Au troisième signalement, le conseil cesse de paraître ; il faut ensuite
+quelqu'un pour trancher. *Profil › Modération* montre les conseils signalés —
+masquer, rétablir, retirer — et n'apparaît qu'aux comptes inscrits dans la
+table `moderators`. On en nomme un par une ligne dans l'éditeur SQL du
+projet, jamais depuis l'application : un drapeau posé sur le profil se
+donnerait à soi-même, puisque chacun écrit sa propre ligne de `profiles`.
+
+```sql
+insert into moderators (user_id) values ('<uuid du compte>');
+```
+
+Cela demande le backend : sans `SUPABASE_URL`, la section n'existe pas, et
+`supabase/schema.sql` est à rejouer en entier pour créer les tables et leurs
+fonctions. Détails : docs/04 et docs/08.
 
 ## Gratuite, avec un soutien facultatif
 Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique

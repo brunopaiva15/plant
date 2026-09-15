@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/l10n/diagnosis_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/likelihood_labels.dart';
 import '../../../data/problems/problem_catalog.dart';
@@ -87,6 +88,20 @@ class DiagnosisReportView extends ConsumerWidget {
           Text(l10n.diagnosisSymptomsNoted, style: context.text.caption),
           const SizedBox(height: 2),
           Text(record.symptoms!, style: context.text.callout),
+        ],
+        // Ce qui avait été vérifié à la main ce jour-là. La photo ne le
+        // montre pas, et c'est pourtant la moitié de ce qui a mené aux
+        // pistes : le compte rendu ne se relit pas sans lui.
+        if (record.observations.isNotEmpty) ...[
+          const SizedBox(height: Space.sm),
+          Text(l10n.diagnosisChecks, style: context.text.caption),
+          const SizedBox(height: Space.xxs),
+          FloraGroup(
+            children: [
+              for (final (label, value) in l10n.observationRows(record.observations))
+                FloraListRow(title: label, trailing: Text(value, style: context.text.callout, textAlign: TextAlign.end), dense: true),
+            ],
+          ),
         ],
         if (diagnosis.causes.isNotEmpty) ...[
           const SizedBox(height: Space.lg),

@@ -23,17 +23,19 @@ lib/
 │   ├── repositories/              interfaces
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
-│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisRecord (compte rendu gardé)
+│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
 │   ├── cuttings/                  PropagationGuideKind et ses étapes, choix du guide (resolver), PropagationRefinement, PropagationGuideStore
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
-│   ├── home/                      HomeClimateService (capteurs Apple Maison), HomeClimateAdvisor
+│   ├── home/                      HomeClimateService (capteurs Apple Maison et Google Home), MultiHomeClimateService, HomeClimateAdvisor
 │   ├── weather/                   WeatherService, WeatherAdvisor (pluie), WeatherTrend (intervalles), OutdoorAlertAdvisor (gel, chaleur), RegionClimate (zone de rusticité)
-│   └── auth/                      AuthRepository, AppUser
+│   ├── auth/                      AuthRepository, AppUser
+│   └── community/                 SpeciesTip, CommunityTipsService (conseils rattachés à une espèce)
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService
-│   └── auth/                      LocalAuthRepository
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService, GoogleHomeClimateService
+│   ├── auth/                      LocalAuthRepository
+│   └── community/                 SupabaseCommunityTips (fonctions SQL security definer)
 ├── features/
 │   ├── onboarding/
 │   ├── today/
@@ -48,8 +50,10 @@ lib/
 │   ├── qr/                        liens, étiquettes PDF, sheet QR, scanner
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, avertissements gel et chaleur, climat du lieu, réglages
-│   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur
+│   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur (Apple Maison, Google Home)
 │   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
+│   ├── community/                 conseils de la communauté : section de la fiche d'entretien, feuille d'écriture, écran de modération
+│   ├── encyclopedia/              les actifs embarqués à lire à froid : un écran à trois rayons (problèmes, espèces, vocabulaire), une page par problème, une par espèce
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/
@@ -64,6 +68,10 @@ test/
 ├── data/infomaniak_propagation_refiner_test.dart  ce qui part à l'IA, ce qu'on garde de la réponse
 ├── features/propagation_guide_test.dart        le guide : choix du geste, étapes, sorties, texte précisé
 ├── domain/propagation_guide_resolver_test.dart quel geste pour quelle plante
+├── features/community_tips_test.dart           conseils : sans backend, sans compte, hors ligne, le sien
+├── features/moderation_test.dart               les signalés, masquer / rétablir, et qui ne modère pas
+├── domain/species_tip_test.dart                bornes d'un conseil et ordre de lecture
+├── features/encyclopedia_test.dart             les trois rayons, sur la vraie base des 200 problèmes
 ├── core/connectivity_test.dart                 état du réseau, garde des appels
 ├── core/reachability_test.dart                 la sonde, sur de vraies connexions
 ├── features/shared_links_offline_test.dart     hors ligne, l'écran le dit au lieu de tourner
