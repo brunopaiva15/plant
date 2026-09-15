@@ -4,8 +4,9 @@ import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue : noms scientifiques uniques et noms communs présents dans les 4 langues', () {
+  test('catalogue : exactement 350 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
+    expect(SpeciesCatalog.entries, hasLength(350));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -15,7 +16,6 @@ void main() {
       expect(e.family.trim(), isNotEmpty);
       expect(e.scientificName.split(' ').length, greaterThanOrEqualTo(2));
     }
-    expect(SpeciesCatalog.entries.length, greaterThan(200));
   });
 
   test('catalogue : recherche par nom commun, latin ou famille, insensible à la casse', () {
@@ -23,6 +23,7 @@ void main() {
     expect(SpeciesCatalog.search('Basilikum').single.scientificName, 'Ocimum basilicum');
     expect(SpeciesCatalog.search('lamiaceae').length, greaterThan(5));
     expect(SpeciesCatalog.find('ocimum BASILICUM')?.fr, 'Basilic');
+    expect(SpeciesCatalog.find('philodendron GLORIOSUM')?.en, 'Velvet-leaf philodendron');
     expect(SpeciesCatalog.byCategory(SpeciesCategory.succulent), everyElement(predicate<SpeciesCatalogEntry>((e) => e.category == SpeciesCategory.succulent)));
   });
 
