@@ -319,9 +319,15 @@ Pour la livrer :
      `ActivityResultCaller`), l'autre ne fait rien et laisse l'activité de
      Flutter telle quelle. `kotlinx-coroutines` vient en dépendance
      transitive du SDK, rien à déclarer. minSdk 24.
-   - iOS (`GoogleHomeSDK-1.10.1.tar.gz`) : ajouter le paquet local au projet
-     (`File › Add Package Dependencies › Add Local`), puis `GoogleHomeSDK` et
-     `GoogleHomeTypes` à la cible Runner.
+   - iOS (`GoogleHomeSDK-1.10.1.tar.gz`) : décompresser dans
+     `vendor/GoogleHomeSDK`, à la racine du dépôt — pas sous `ios/`, où
+     Xcode refuse un paquet local voisin du `.xcodeproj` avec un « Cannot
+     select this directory ». Extraire avec `--no-xattrs --no-mac-metadata`,
+     sinon la quarantaine et les fichiers `._` de l'archive voyagent avec.
+     Puis `File › Add Package Dependencies › Add Local`, et surtout choisir
+     **Runner** dans la colonne *Add to Target* des deux produits : validée
+     à *None*, la référence s'écrit sans lier quoi que ce soit, et
+     `canImport` reste faux — un build vert qui ne prouve rien.
      `ios/Runner/GoogleHomeChannel.swift` est derrière
      `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal qui
      ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur l'App
