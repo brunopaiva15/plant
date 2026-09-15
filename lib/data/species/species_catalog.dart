@@ -1,4 +1,5 @@
 import '../../domain/species/species_info.dart';
+import 'species_catalog_expansion.dart';
 
 /// Catalogue intégré des espèces courantes (intérieur, succulentes,
 /// aromatiques, potager, fruitiers, fleurs, arbres). Disponible hors ligne ;
@@ -124,13 +125,13 @@ abstract final class SpeciesCatalog {
     SpeciesCatalogEntry('Begonia masoniana', 'Begoniaceae', SpeciesCategory.indoor, fr: 'Bégonia croix de fer', en: 'Iron cross begonia', de: 'Eisenkreuz-Begonie', it: 'Begonia croce di ferro'),
     SpeciesCatalogEntry('Begonia bowerae', 'Begoniaceae', SpeciesCategory.indoor, fr: 'Bégonia tigre', en: 'Eyelash begonia', de: 'Wimpern-Begonie', it: 'Begonia tigre'),
     SpeciesCatalogEntry('Pilea cadierei', 'Urticaceae', SpeciesCategory.indoor, fr: 'Plante aluminium', en: 'Aluminium plant', de: 'Aluminium-Pflanze', it: 'Pianta alluminio'),
-    SpeciesCatalogEntry('Pilea involucrata', 'Urticaceae', SpeciesCategory.indoor, fr: 'Plante de l\'amitié', en: 'Friendship plant', de: 'Freundschaftspflanze', it: 'Pianta dell\'amicizia'),
+    SpeciesCatalogEntry('Pilea ovalis', 'Urticaceae', SpeciesCategory.indoor, fr: 'Plante de l\'amitié', en: 'Friendship plant', de: 'Freundschaftspflanze', it: 'Pianta dell\'amicizia'),
     SpeciesCatalogEntry('Goeppertia ornata', 'Marantaceae', SpeciesCategory.indoor, fr: 'Calathea ornata', en: 'Pinstripe calathea', de: 'Gestreifte Korbmarante', it: 'Calathea ornata'),
     SpeciesCatalogEntry('Goeppertia insignis', 'Marantaceae', SpeciesCategory.indoor, fr: 'Calathea lancifolia', en: 'Rattlesnake plant', de: 'Lanzen-Korbmarante', it: 'Calathea lancifolia'),
     SpeciesCatalogEntry('Ctenanthe oppenheimiana', 'Marantaceae', SpeciesCategory.indoor, fr: 'Ctenanthe oppenheimiana', en: 'Never-never plant', de: 'Korbmarante Oppenheim', it: 'Ctenanthe oppenheimiana'),
     SpeciesCatalogEntry('Tillandsia xerographica', 'Bromeliaceae', SpeciesCategory.indoor, fr: 'Tillandsia xerographica', en: 'King of air plants', de: 'Xerographica-Tillandsie', it: 'Tillandsia xerographica'),
     SpeciesCatalogEntry('Tillandsia usneoides', 'Bromeliaceae', SpeciesCategory.indoor, fr: 'Mousse espagnole', en: 'Spanish moss', de: 'Louisianamoos', it: 'Muschio spagnolo'),
-    SpeciesCatalogEntry('Vriesea splendens', 'Bromeliaceae', SpeciesCategory.indoor, fr: 'Vriesea splendens', en: 'Flaming sword', de: 'Flammendes Schwert', it: 'Spada fiammeggiante'),
+    SpeciesCatalogEntry('Lutheria splendens', 'Bromeliaceae', SpeciesCategory.indoor, fr: 'Vriesea splendens', en: 'Flaming sword', de: 'Flammendes Schwert', it: 'Spada fiammeggiante'),
     SpeciesCatalogEntry('Phalaenopsis aphrodite', 'Orchidaceae', SpeciesCategory.indoor, fr: 'Orchidée papillon blanche', en: 'Aphrodite moth orchid', de: 'Aphrodite-Schmetterlingsorchidee', it: 'Orchidea falena di Afrodite'),
     SpeciesCatalogEntry('Dendrobium kingianum', 'Orchidaceae', SpeciesCategory.indoor, fr: 'Dendrobium de King', en: 'Pink rock orchid', de: 'King-Dendrobium', it: 'Dendrobium di King'),
 
@@ -371,6 +372,8 @@ abstract final class SpeciesCatalog {
     SpeciesCatalogEntry('Fragaria vesca', 'Rosaceae', SpeciesCategory.fruit, fr: 'Fraisier des bois', en: 'Wild strawberry', de: 'Wald-Erdbeere', it: 'Fragolina di bosco'),
     SpeciesCatalogEntry('Clematis vitalba', 'Ranunculaceae', SpeciesCategory.flower, fr: 'Clématite des haies', en: 'Old man\'s beard', de: 'Gewöhnliche Waldrebe', it: 'Vitalba'),
     SpeciesCatalogEntry('Nymphaea alba', 'Nymphaeaceae', SpeciesCategory.flower, fr: 'Nénuphar blanc', en: 'White water lily', de: 'Weiße Seerose', it: 'Ninfea bianca'),
+
+    ...SpeciesCatalogExpansion.entries,
   ];
 
   static List<SpeciesCatalogEntry> byCategory(SpeciesCategory? category) =>
