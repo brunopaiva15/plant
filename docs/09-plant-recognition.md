@@ -4053,10 +4053,8 @@ Trois choses se réinterprètent d'un coup :
   un défaut de calibration : c'est la signature d'un réseau qui n'a pas
   convergé. Un modèle sous-entraîné doute de tout, y compris de ce qu'il
   sait.
-- **Les 1,5 point perdus sur la v8.** Le lot n'en est pas la cause : à 128,
-  la validation finit à 0,5129 quand la v9 à 64 rendait 0,5153 de top-1.
-  Deux mesures différentes, mais pas d'écart à cette échelle. La question du
-  § 13.7 est close, et sa réponse est « rien ».
+- **Le lot, enfin tranché.** Voir juste en dessous : il compte, et dans
+  l'autre sens.
 - **Le coût d'une époque de plus.** 6 176 pas à ~30 ms, soit **3,5 minutes**
   — quand rien d'autre ne tourne sur la machine. Douze époques de plus
   coûtent quarante minutes. On s'était arrêté douze époques trop tôt pour
@@ -4071,18 +4069,44 @@ douzième époque — `state.json` porte le compte, les poids sont sur le disque
 > pas regardée.** Celui-ci datait de la v7, qui n'avait ni le même jeu, ni
 > le même nombre de classes, ni le même dropout.
 
+#### Le lot : la seule comparaison propre de la journée, et elle dit l'inverse
+
+Le § 13.7 demandait depuis la v8 si `--batch 128` avait aidé. Deux runs
+répondent, et ils ne diffèrent que par là : même jeu, même `splits.csv`,
+mêmes 5 343 classes, même recette au lot près, même jeu de test.
+
+| | lot | top-1 | top-3 | macro-F1 | confiance | val. à l'époque 12 |
+|---|---|---|---|---|---|---|
+| v9 | **64** | **0,5153** | **0,6664** | **0,4963** | 0,4802 | **0,5166** |
+| v9b | 128 | 0,5044 | 0,6557 | 0,4863 | 0,4750 | 0,5129 |
+
+**Le lot 128 coûte 1,1 point.** Les deux mesures indépendantes — le top-1
+sur le jeu de test complet, la validation à la douzième époque — vont dans
+le même sens. La question est close, et sa réponse n'est pas celle qu'on
+attendait : `--batch 128` n'a pas aidé la v8, il l'a handicapée.
+
+Ce qui reste des 1,5 point d'écart avec la v8 n'est donc plus attribuable au
+lot — la v9 avait le meilleur réglage des deux. Restent le pré-découpage en
+carrés et le redécoupage, et l'hypothèse la plus économique n'est ni l'un ni
+l'autre : les deux versions sont sous-entraînées, et la v8 l'est peut-être
+un peu moins. C'est ce que la reprise à quarante époques dira.
+
+> **Une comparaison à une variable a coûté deux heures et rendu une
+> réponse.** Les trois variables changées d'un coup en avaient coûté deux
+> aussi, et n'avaient rien rendu. Le § 12 le disait déjà.
+
 #### Ce qui est en cours
 
-La reprise du même réglage fin avec `--fine-epochs 40`, où
+La reprise du réglage fin **de la v9** — la branche à `--batch 64`, la
+meilleure des deux — avec `--fine-epochs 40`, où
 `EarlyStopping(patience=4, restore_best_weights=True)` décide de l'arrêt au
 lieu d'un nombre écrit dans la commande. Le premier entraînement dont la
 durée sera mesurée plutôt que supposée.
 
-Ce qu'on n'a **plus** besoin de chercher : le lot. Le run à 128 rend
-0,5129 de validation quand celui à 64 rendait 0,5153 de top-1, et la
-question ouverte depuis le § 13.7 se referme sur « rien ». Restent le
-pré-découpage en carrés et le redécoupage, mais les deux pèsent au plus
-quelques dixièmes à côté des points que la courbe promet encore.
+Une époque y coûte sept minutes contre trois et demie à 128 : deux fois
+plus cher, sur la branche qui vaut 1,1 point de plus et dont la courbe
+monte encore. Le point de sauvegarde porte les douze époques déjà faites,
+donc rien n'est repayé.
 
 **En attendant, c'est la v8 qui reste livrée.** Non parce que la v9
 dégraderait l'expérience — à autonomie égale, elle ne la change pas — mais
