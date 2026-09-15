@@ -136,6 +136,22 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: Space.lg),
+              // L'encyclopédie n'est pas un réglage : elle ne change rien à
+              // l'application, elle en montre le contenu. D'où son propre
+              // groupe, et la phrase qui dit ce qu'on y trouve — sans quoi
+              // une ligne « Encyclopédie » dans une liste de réglages ne
+              // laisse pas deviner qu'il y a deux cents fiches derrière.
+              FloraGroup(
+                footer: l10n.encyclopediaHint,
+                children: [
+                  FloraListRow(
+                    leading: const Text('📖', style: TextStyle(fontSize: 18)),
+                    title: l10n.encyclopediaTitle,
+                    onTap: () => context.push(Routes.encyclopedia),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Space.lg),
               FloraGroup(
                 header: l10n.dataSection,
                 footer: l10n.exportHint,

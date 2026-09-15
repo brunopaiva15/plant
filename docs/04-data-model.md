@@ -168,6 +168,13 @@ ni casse (`core/utils/search_text.dart`).
 Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
 GBIF (CC BY) pour les familles.
 
+Les deux étages hors ligne se parcourent aussi pour eux-mêmes, dans
+l'encyclopédie : l'étage trié à la main par catégorie, l'étage étendu dès
+qu'on cherche, et chaque espèce ouvre sa fiche d'entretien sans qu'il faille
+posséder la plante. Cette fiche-là n'est pas complétée par l'IA — la question
+reste réservée aux plantes du jardin, où la réponse sert à faire quelque
+chose ; ici le catalogue répond, ou dit qu'il ne connaît que le genre.
+
 ## Base des problèmes (hors base locale)
 `assets/problems/catalog.txt` : 200 troubles, ravageurs et maladies couvrant
 l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
@@ -197,6 +204,15 @@ lignes. Sur les 297 espèces du catalogue trié à la main, la médiane est d'un
 entrée et la moitié n'en a aucune — la section disparaît alors, plutôt que de
 meubler.
 
+L'encyclopédie (`features/encyclopedia/`, sous *Profil*) la lit enfin en
+entier : les deux cents entrées rangées par famille, cherchables par nom, par
+numéro et par hôte, et une page par entrée — sa famille, son étendue, ses
+hôtes avec leur nom courant quand un catalogue le connaît, et les plantes du
+jardin qui y figurent. Cette dernière section n'apparaît pas sur un problème
+`GENERAL` : y aligner toute la collection ne dirait rien. Rien n'est ajouté au
+passage, ni texte ni appel à l'IA — l'écran montre l'actif, et une entrée qui
+manque manque dans la base.
+
 Chaque entrée peut avoir sa propre illustration, dans
 `assets/problems/icons/<id>.webp`. Elles arrivent par lots et la base en
 compte deux cents : celles qui n'en ont pas encore retombent sur le symbole de
@@ -204,10 +220,12 @@ leur famille, ce qui est l'état normal de la plupart des entrées et non un cas
 d'erreur. `illustrated_problems.dart`, écrit par le même outil que les images,
 dit lesquelles existent sans interroger le disque.
 
-Elles servent aux cartes de diagnostic, à cinquante-deux points. En dessous de
-quarante elles se valent toutes — une plante en pot reste une plante en pot —,
-d'où les lignes sans vignette et le regroupement par famille sur la fiche de
-soin.
+Elles servent aux cartes de diagnostic, à cinquante-deux points, aux lignes de
+l'encyclopédie, à quarante, et en tête de la page d'un problème, à cent douze —
+seul objet de la page, et le seul endroit où le dessin se lit vraiment ; il y
+a droit à la respiration que les vignettes n'ont pas. En dessous de quarante
+elles se valent toutes — une plante en pot reste une plante en pot —, d'où les
+lignes sans vignette et le regroupement par famille sur la fiche de soin.
 
 Les neuf problèmes de santé d'une fiche (`HealthIssue`) y puisent aussi :
 chacun désigne l'entrée de la base qui dit la même chose (« Manque d'eau » →

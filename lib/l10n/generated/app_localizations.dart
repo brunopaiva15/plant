@@ -7745,6 +7745,354 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Zone {zone} · hivers à {low}'**
   String finderRegion(String zone, String low);
+
+  /// No description provided for @encyclopediaTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encyclopédie'**
+  String get encyclopediaTitle;
+
+  /// No description provided for @encyclopediaHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les problèmes de la base, les espèces du catalogue et le vocabulaire des fiches d\'entretien.'**
+  String get encyclopediaHint;
+
+  /// No description provided for @encyclopediaProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problèmes'**
+  String get encyclopediaProblems;
+
+  /// No description provided for @encyclopediaSpecies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèces'**
+  String get encyclopediaSpecies;
+
+  /// No description provided for @encyclopediaGlossary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vocabulaire'**
+  String get encyclopediaGlossary;
+
+  /// No description provided for @encyclopediaSearchProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom, ravageur, maladie…'**
+  String get encyclopediaSearchProblems;
+
+  /// No description provided for @encyclopediaSearchGlossary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière, substrat, bouture…'**
+  String get encyclopediaSearchGlossary;
+
+  /// No description provided for @encyclopediaProblemCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucun problème} =1{1 problème} other{{count} problèmes}}'**
+  String encyclopediaProblemCount(int count);
+
+  /// No description provided for @encyclopediaSpeciesCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucune espèce} =1{1 espèce} other{{count} espèces}}'**
+  String encyclopediaSpeciesCount(int count);
+
+  /// No description provided for @encyclopediaNoTerm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun terme trouvé'**
+  String get encyclopediaNoTerm;
+
+  /// No description provided for @problemNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrée {id}'**
+  String problemNumber(String id);
+
+  /// No description provided for @problemScope.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étendue'**
+  String get problemScope;
+
+  /// No description provided for @problemScopeGeneral.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les plantes'**
+  String get problemScopeGeneral;
+
+  /// No description provided for @problemScopeWide.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombreux hôtes'**
+  String get problemScopeWide;
+
+  /// No description provided for @problemScopeTarget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hôtes ciblés'**
+  String get problemScopeTarget;
+
+  /// No description provided for @problemScopeGeneralNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Possible sur les plantes vasculaires, selon les conditions et le stade.'**
+  String get problemScopeGeneralNote;
+
+  /// No description provided for @problemScopeWideNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombreux hôtes ; les taxons cités sont des exemples.'**
+  String get problemScopeWideNote;
+
+  /// No description provided for @problemScopeTargetNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hôtes principaux d\'un groupe cible ; la liste n\'est pas exhaustive.'**
+  String get problemScopeTargetNote;
+
+  /// No description provided for @problemHosts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hôtes'**
+  String get problemHosts;
+
+  /// No description provided for @problemHostsAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les plantes vasculaires'**
+  String get problemHostsAll;
+
+  /// No description provided for @problemHostsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un genre ou une famille ne rend pas toutes ses espèces sensibles.'**
+  String get problemHostsNote;
+
+  /// No description provided for @problemInGarden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans le jardin'**
+  String get problemInGarden;
+
+  /// No description provided for @problemKindsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Familles de problèmes'**
+  String get problemKindsTitle;
+
+  /// No description provided for @problemKindDisorderNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ni ravageur ni maladie : l\'eau, la lumière, le froid, le substrat, une carence.'**
+  String get problemKindDisorderNote;
+
+  /// No description provided for @problemKindPestNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un être vivant qui s\'attaque à la plante : insecte, acarien, limace, nématode.'**
+  String get problemKindPestNote;
+
+  /// No description provided for @problemKindDiseaseNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un champignon, une bactérie, un virus ou un phytoplasme installé dans la plante.'**
+  String get problemKindDiseaseNote;
+
+  /// No description provided for @problemKindConditionNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ni l\'un ni l\'autre : la fumagine pousse sur le miellat, sans s\'attaquer à la plante.'**
+  String get problemKindConditionNote;
+
+  /// No description provided for @careLightShadeNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Loin des fenêtres, sans rayon direct de la journée.'**
+  String get careLightShadeNote;
+
+  /// No description provided for @careLightLowNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une pièce claire mais éloignée de la fenêtre, ou exposée au nord.'**
+  String get careLightLowNote;
+
+  /// No description provided for @careLightIndirectNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'À quelques pas d\'une fenêtre, ou derrière un voilage.'**
+  String get careLightIndirectNote;
+
+  /// No description provided for @careLightBrightNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Près d\'une fenêtre, hors du rayon du soleil.'**
+  String get careLightBrightNote;
+
+  /// No description provided for @careLightSomeNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le soleil du matin ou de fin de journée, pas celui de midi.'**
+  String get careLightSomeNote;
+
+  /// No description provided for @careLightFullNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Six heures de soleil direct ou plus, en pleine journée.'**
+  String get careLightFullNote;
+
+  /// No description provided for @careHumidityLowNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'air d\'un logement chauffé lui convient.'**
+  String get careHumidityLowNote;
+
+  /// No description provided for @careHumidityAverageNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autour de 50 %, loin d\'un radiateur en hiver.'**
+  String get careHumidityAverageNote;
+
+  /// No description provided for @careHumidityHighNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au-delà de 60 % : salle de bains, cuisine, ou un plateau de billes d\'argile humides.'**
+  String get careHumidityHighNote;
+
+  /// No description provided for @careDifficultyEasyNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supporte les oublis et les écarts de lumière.'**
+  String get careDifficultyEasyNote;
+
+  /// No description provided for @careDifficultyMediumNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande un rythme d\'arrosage régulier et un emplacement stable.'**
+  String get careDifficultyMediumNote;
+
+  /// No description provided for @careDifficultyDemandingNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lumière, humidité et arrosage demandent d\'être suivis de près.'**
+  String get careDifficultyDemandingNote;
+
+  /// No description provided for @careToxicSafeNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune toxicité connue pour les animaux ni les enfants.'**
+  String get careToxicSafeNote;
+
+  /// No description provided for @careToxicMildNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'La sève irrite la peau et la bouche.'**
+  String get careToxicMildNote;
+
+  /// No description provided for @careToxicToxicNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avaler une feuille ou un fruit rend malade.'**
+  String get careToxicToxicNote;
+
+  /// No description provided for @careToxicUnknownNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien n\'est renseigné pour cette espèce ; à tenir hors de portée par précaution.'**
+  String get careToxicUnknownNote;
+
+  /// No description provided for @careSoilStandardNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le terreau vendu pour les plantes vertes, sans ajout.'**
+  String get careSoilStandardNote;
+
+  /// No description provided for @careSoilDrainingNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau allégé de perlite, de sable ou de pouzzolane.'**
+  String get careSoilDrainingNote;
+
+  /// No description provided for @careSoilCactusNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Très minéral : l\'eau traverse sans stagner.'**
+  String get careSoilCactusNote;
+
+  /// No description provided for @careSoilOrchidNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des écorces grossières : les racines vivent à l\'air.'**
+  String get careSoilOrchidNote;
+
+  /// No description provided for @careSoilAcidicNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un pH acide, pour les plantes que le calcaire jaunit.'**
+  String get careSoilAcidicNote;
+
+  /// No description provided for @careSoilRichNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau enrichi de compost, pour les plantes gourmandes.'**
+  String get careSoilRichNote;
+
+  /// No description provided for @careSoilAquaticNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines tiennent dans l\'eau, ou sur un support sans terre.'**
+  String get careSoilAquaticNote;
+
+  /// No description provided for @carePropCuttingNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une tige coupée sous un nœud, plantée dans un substrat humide.'**
+  String get carePropCuttingNote;
+
+  /// No description provided for @carePropLeafNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une feuille entière, ou un fragment, posée sur le substrat.'**
+  String get carePropLeafNote;
+
+  /// No description provided for @carePropDivisionNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'La touffe se sépare en deux au rempotage, racines comprises.'**
+  String get carePropDivisionNote;
+
+  /// No description provided for @carePropOffsetsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les jeunes pousses nées au pied se détachent une fois enracinées.'**
+  String get carePropOffsetsNote;
+
+  /// No description provided for @carePropLayeringNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une tige enracinée alors qu\'elle tient encore à la plante mère.'**
+  String get carePropLayeringNote;
+
+  /// No description provided for @carePropSeedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des graines semées, plus lentes qu\'une bouture et souvent moins fidèles.'**
+  String get carePropSeedNote;
+
+  /// No description provided for @carePropWaterNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'La bouture patiente dans un verre d\'eau, le temps que les racines partent.'**
+  String get carePropWaterNote;
+
+  /// No description provided for @carePropTuberNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le tubercule se coupe en morceaux portant chacun un œil.'**
+  String get carePropTuberNote;
 }
 
 class _AppLocalizationsDelegate
