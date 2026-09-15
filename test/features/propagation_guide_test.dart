@@ -265,15 +265,28 @@ void main() {
   });
 
   group('les animations', () {
-    testWidgets('« réduire les animations » pose la dernière image de chaque étape', (tester) async {
+    testWidgets('« réduire les animations » laisse feuilleter le guide entier', (tester) async {
       await _pump(tester, species: 'Aloe vera', reponse: const PropagationRefinement());
       expect(find.bySemanticsLabel('Séparer un rejet de Aloe vera'), findsOneWidget);
-      // La grappe d'introduction montre les six séquences, posées.
-      expect(find.byType(RawImage), findsWidgets);
       await _parcourt(tester, 6);
       expect(find.bySemanticsLabel('La reprise'), findsOneWidget);
-      expect(find.byType(RawImage), findsWidgets);
       expect(find.text('Créer la plante'), findsOneWidget);
+    });
+
+    testWidgets('« réduire les animations » pose la séquence sur sa dernière image', (tester) async {
+      final etape = propagationGuideOf(PropagationGuideKind.offset).steps.first;
+      await tester.pumpWidget(MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(child: ClaySequence(asset: etape.asset, side: 200)),
+        ),
+      ));
+      // Le décodage passe par le vrai monde : sans `runAsync`, l'image
+      // n'arrive jamais et le test mesurerait le banc d'essai, pas le widget.
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 800)));
+      await tester.pump();
+      expect(find.byType(RawImage), findsOneWidget);
     });
 
     testWidgets('les points de progression comptent l\'introduction et les étapes', (tester) async {
