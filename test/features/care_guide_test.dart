@@ -31,7 +31,7 @@ void main() {
     toxicity: Toxicity.safe,
   );
 
-  Future<void> pump(WidgetTester tester, [CareProfile p = profile]) async {
+  Future<void> pump(WidgetTester tester, [CareProfile p = profile, double scale = 1.0]) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await PreferencesService.load();
     tester.view.physicalSize = const Size(1170, 2532);
@@ -50,10 +50,13 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           theme: buildFloraTheme(Brightness.light),
-          home: Scaffold(
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(Space.page),
-              child: CareGuideBody(care: ResolvedCare(profile: p, match: CareMatch.species)),
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+            child: Scaffold(
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.all(Space.page),
+                child: CareGuideBody(care: ResolvedCare(profile: p, match: CareMatch.species)),
+              ),
             ),
           ),
         ),
@@ -99,6 +102,60 @@ void main() {
     // La liste ne reprend ni la lumière ni le substrat : ils ont leur carte.
     expect(find.byType(FloraGroup), findsOneWidget);
     expect(find.descendant(of: find.byType(FloraGroup), matching: find.text('Substrat')), findsNothing);
+  });
+
+  testWidgets('la carte « Eau » dit ce qu\'on verse, et ouvre les sept eaux', (tester) async {
+    await pump(tester);
+    // L'eau suit l'arrosage et garde son bleu : c'est le même sujet.
+    expect(tintOf(tester, 'Eau'), FloraColors.light.waterSoft);
+    expect(find.text('Eau du robinet'), findsOneWidget);
+    expect(find.text('Le calcaire ne la gêne pas.'), findsOneWidget);
+
+    await tester.tap(find.text('Eau'));
+    await tester.pumpAndSettle();
+    expect(find.text("Types d'eau"), findsOneWidget);
+    // Les sept eaux, celles qu'on n'attend pas comprises.
+    expect(find.text('Eau de pluie'), findsOneWidget);
+    expect(find.text('Eau osmosée'), findsOneWidget);
+    expect(find.text('Eau déminéralisée'), findsOneWidget);
+    expect(find.text('Eau de climatiseur'), findsOneWidget);
+    expect(find.text('Eau adoucie'), findsOneWidget);
+    // Le verdict est écrit : la couleur ne le porte jamais seule.
+    expect(find.text('Recommandée'), findsNWidgets(2), reason: 'le robinet et la pluie');
+    expect(find.text('À éviter'), findsOneWidget, reason: "l'eau adoucie, pour toutes");
+  });
+
+  testWidgets('une plante qui craint le calcaire écarte le robinet', (tester) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 4,
+        wateringWinterDays: 10,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        difficulty: CareDifficulty.demanding,
+        soil: SoilKind.acidic,
+        water: WaterTolerance.strict,
+      ),
+    );
+    expect(find.text('Eau sans calcaire'), findsOneWidget);
+    expect(find.text("Le calcaire l'abîme, même en petite quantité."), findsOneWidget);
+
+    await tester.tap(find.text('Eau'));
+    await tester.pumpAndSettle();
+    expect(find.text('À éviter'), findsNWidgets(2), reason: 'le robinet et l\'eau adoucie');
+    expect(find.text('Recommandée'), findsNWidgets(3), reason: 'la pluie, l\'osmosée, la déminéralisée');
+  });
+
+  testWidgets('les sept eaux tiennent à 350 % sans rognage', (tester) async {
+    await pump(tester, profile, 3.5);
+    final eau = find.text('Eau');
+    await tester.ensureVisible(eau);
+    await tester.pump();
+    await tester.tap(eau);
+    await tester.pumpAndSettle();
+    expect(find.text("Types d'eau"), findsOneWidget);
+    expect(tester.takeException(), isNull, reason: 'un débordement signale un texte rogné');
   });
 
   testWidgets('une plante sans engrais et sans rempotage le dit', (tester) async {

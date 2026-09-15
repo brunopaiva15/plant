@@ -12,6 +12,7 @@ import '../../../domain/problems/plant_problem.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import 'water_types_sheet.dart';
 
 /// Fiche d'entretien d'une plante : quand l'arroser, quelle lumière lui
 /// donner, quel substrat, quand rempoter, ce qu'il faut surveiller.
@@ -91,8 +92,8 @@ class CareGuideBody extends ConsumerWidget {
     final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
     final tips = [for (final key in p.tipKeys) l10n.careTip(key)].whereType<String>().toList();
 
-    // Chaque volet du soin a sa carte et sa teinte : l'arrosage en bleu,
-    // la lumière en ocre, l'humidité en rose, l'engrais en sauge, le
+    // Chaque volet du soin a sa carte et sa teinte : l'arrosage et l'eau en
+    // bleu, la lumière en ocre, l'humidité en rose, l'engrais en sauge, le
     // rempotage en terre cuite. Ce qui ne se pratique pas — température,
     // difficulté, toxicité — reste une liste, à la suite.
     return Column(
@@ -112,6 +113,20 @@ class CareGuideBody extends ConsumerWidget {
           prominent: true,
           detail: l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays),
           badge: p.dormantInWinter ? ('❄️', l10n.careBadgeDormant) : null,
+        ),
+        const SizedBox(height: Space.md),
+
+        // Ce qu'on verse, pas seulement quand : le calcaire du robinet passe
+        // inaperçu sur une plante et brûle la suivante. La carte donne
+        // l'eau qui convient, et s'ouvre sur les sept eaux jugées une à une.
+        _AspectCard(
+          emoji: '🚰',
+          variant: 2,
+          tint: c.waterSoft,
+          title: l10n.careWater,
+          value: l10n.waterToleranceName(p.water),
+          detail: l10n.waterToleranceNote(p.water),
+          onTap: () => showWaterTypesSheet(context, tolerance: p.water),
         ),
         const SizedBox(height: Space.md),
 
@@ -272,6 +287,7 @@ class _AspectCard extends StatelessWidget {
     this.valueColor,
     this.badge,
     this.prominent = false,
+    this.onTap,
   });
 
   final String emoji;
@@ -296,12 +312,17 @@ class _AspectCard extends StatelessWidget {
   /// en premier.
   final bool prominent;
 
+  /// Ce que le volet cache, quand il en cache quelque chose : la carte prend
+  /// alors un chevron, et se presse comme une ligne de liste.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     return MergeSemantics(
       child: FloraCard(
         color: tint,
+        onTap: onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -325,6 +346,10 @@ class _AspectCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (onTap != null) ...[
+              const SizedBox(width: Space.xs),
+              Icon(CupertinoIcons.chevron_right, size: 15, color: c.inkTertiary),
+            ],
           ],
         ),
       ),

@@ -376,11 +376,12 @@ la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
 terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
-Cinq volets se pratiquent — arrosage, lumière, humidité, engrais, rempotage —
-et chacun a sa carte, teintée de la couleur de son sujet : bleu poussière pour
-l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre cuite
-pour le rempotage. Une douzaine de lignes dans une seule liste ne se
-distinguaient qu'à la lecture ; une carte se retrouve à sa couleur.
+Six volets se pratiquent — arrosage, eau, lumière, humidité, engrais,
+rempotage — et chacun a sa carte, teintée de la couleur de son sujet : bleu
+poussière pour l'arrosage et pour l'eau, ocre pour la lumière, rose pour
+l'air, sauge pour l'engrais, terre cuite pour le rempotage. Une douzaine de
+lignes dans une seule liste ne se distinguaient qu'à la lecture ; une carte se
+retrouve à sa couleur.
 
 L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
 sur toute carte teintée —, le nom du volet, le constat dessous, puis ce qui ne
@@ -389,6 +390,18 @@ jour où il sert), « Brumiser » sous l'humidité, « Repos hivernal » sous
 l'arrosage. L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau :
 c'est la question qu'on se pose en premier. La carte « Chez vous » se pose
 après l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
+
+L'eau suit l'arrosage et garde son bleu : c'est le même sujet, ce qu'on verse
+plutôt que le jour où on le verse. Elle dit en deux mots ce que l'espèce
+supporte du calcaire — « Eau du robinet », « Eau peu calcaire », « Eau sans
+calcaire » — et pourquoi, puis un chevron ouvre `water_types_sheet.dart` : les
+sept eaux qu'on a sous la main, chacune avec le verdict pour cette plante
+(Recommandée, Convient, Avec réserve, À éviter), ce qu'elle est et ce qu'elle
+emporte avec elle. Le verdict s'écrit, la couleur le renforce sans jamais le
+porter seule, et les quatre teintes de sa pastille sont celles qui tiennent
+4,5:1 sur leur pastel — sauge, bleu, terre cuite, et le rouge sur `surfaceMuted`
+faute de pastel. Un volet qui cache quelque chose prend un chevron et se presse
+comme une ligne de liste ; les cinq autres n'en ont pas.
 
 Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
 `FloraGroup` à la suite, avant les conseils, ce qu'il faut surveiller, les

@@ -23,6 +23,16 @@ enum Toxicity { safe, mild, toxic, unknown }
 /// Type de substrat conseillé.
 enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
 
+/// Ce que l'espèce supporte des sels de l'eau d'arrosage — calcaire, fluor,
+/// sodium.
+///
+/// - [tolerant] : l'eau du robinet lui convient, sa dureté n'y change rien.
+/// - [sensitive] : le calcaire et le fluor s'accumulent et brunissent les
+///   pointes ; l'eau de pluie ou filtrée lui va mieux.
+/// - [strict] : le calcaire l'abîme, même en petite quantité — plantes de
+///   terre acide, carnivores, broméliacées épiphytes.
+enum WaterTolerance { tolerant, sensitive, strict }
+
 /// Méthode de multiplication.
 enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, water, tuber }
 
@@ -80,6 +90,7 @@ class CareProfile {
     required this.humidity,
     required this.difficulty,
     required this.soil,
+    this.water = WaterTolerance.tolerant,
     this.fertilizingDays,
     this.fertilizingWindow = const MonthWindow(3, 9),
     this.repotEveryMonths,
@@ -105,6 +116,10 @@ class CareProfile {
   final HumidityNeed humidity;
   final CareDifficulty difficulty;
   final SoilKind soil;
+
+  /// Tolérance à l'eau du robinet. La valeur par défaut est celle du plus
+  /// grand nombre : une plante ordinaire boit l'eau du robinet.
+  final WaterTolerance water;
 
   /// Jours entre deux apports d'engrais pendant [fertilizingWindow].
   /// `null` = pas d'engrais utile.

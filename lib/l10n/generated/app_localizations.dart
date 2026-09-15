@@ -4476,6 +4476,210 @@ abstract class AppLocalizations {
   /// **'Sans substrat'**
   String get careSoilAquatic;
 
+  /// No description provided for @careWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau'**
+  String get careWater;
+
+  /// No description provided for @careWaterTolerant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau du robinet'**
+  String get careWaterTolerant;
+
+  /// No description provided for @careWaterSensitive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau peu calcaire'**
+  String get careWaterSensitive;
+
+  /// No description provided for @careWaterStrict.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau sans calcaire'**
+  String get careWaterStrict;
+
+  /// No description provided for @careWaterTolerantNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le calcaire ne la gêne pas.'**
+  String get careWaterTolerantNote;
+
+  /// No description provided for @careWaterSensitiveNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le calcaire et le fluor brunissent les pointes.'**
+  String get careWaterSensitiveNote;
+
+  /// No description provided for @careWaterStrictNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le calcaire l\'abîme, même en petite quantité.'**
+  String get careWaterStrictNote;
+
+  /// No description provided for @careWaterTypes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Types d\'eau'**
+  String get careWaterTypes;
+
+  /// No description provided for @careWaterTypesNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'La dureté de l\'eau du robinet change d\'une commune à l\'autre ; l\'analyse annuelle du distributeur la donne.'**
+  String get careWaterTypesNote;
+
+  /// No description provided for @careWaterBest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandée'**
+  String get careWaterBest;
+
+  /// No description provided for @careWaterOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convient'**
+  String get careWaterOk;
+
+  /// No description provided for @careWaterCaution.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec réserve'**
+  String get careWaterCaution;
+
+  /// No description provided for @careWaterAvoid.
+  ///
+  /// In fr, this message translates to:
+  /// **'À éviter'**
+  String get careWaterAvoid;
+
+  /// No description provided for @careWaterTap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau du robinet'**
+  String get careWaterTap;
+
+  /// No description provided for @careWaterTapNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'eau du réseau, telle qu\'elle sort. Sa dureté dépend de la commune.'**
+  String get careWaterTapNote;
+
+  /// No description provided for @careWaterTapRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le calcaire s\'accumule dans le terreau et fait monter son pH. Laisser reposer l\'eau chasse le chlore, pas le calcaire.'**
+  String get careWaterTapRisk;
+
+  /// No description provided for @careWaterRain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau de pluie'**
+  String get careWaterRain;
+
+  /// No description provided for @careWaterRainNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Douce, sans calcaire, légèrement acide.'**
+  String get careWaterRainNote;
+
+  /// No description provided for @careWaterRainRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écarter les premières minutes de pluie, couvrir le tonneau.'**
+  String get careWaterRainRisk;
+
+  /// No description provided for @careWaterFiltered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau filtrée'**
+  String get careWaterFiltered;
+
+  /// No description provided for @careWaterFilteredNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une carafe filtrante retire le chlore et une part du calcaire.'**
+  String get careWaterFilteredNote;
+
+  /// No description provided for @careWaterFilteredRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'La part retenue dépend de la cartouche, et une cartouche épuisée ne retient plus rien. Le calcaire n\'est jamais entièrement retiré.'**
+  String get careWaterFilteredRisk;
+
+  /// No description provided for @careWaterOsmosis.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau osmosée'**
+  String get careWaterOsmosis;
+
+  /// No description provided for @careWaterOsmosisNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Presque sans minéraux, comme l\'eau de pluie.'**
+  String get careWaterOsmosisNote;
+
+  /// No description provided for @careWaterOsmosisRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle n\'apporte aucun élément nutritif : l\'engrais devient la seule source. Pour une plante ordinaire, un tiers d\'eau du robinet la rééquilibre.'**
+  String get careWaterOsmosisRisk;
+
+  /// No description provided for @careWaterDemineralized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau déminéralisée'**
+  String get careWaterDemineralized;
+
+  /// No description provided for @careWaterDemineralizedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vendue pour les fers à repasser, elle vaut l\'eau osmosée quand elle est pure.'**
+  String get careWaterDemineralizedNote;
+
+  /// No description provided for @careWaterDemineralizedRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Certains bidons contiennent un antitartre ou un parfum : lire l\'étiquette. Comme l\'eau osmosée, elle n\'apporte aucun élément nutritif.'**
+  String get careWaterDemineralizedRisk;
+
+  /// No description provided for @careWaterCondensate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau de climatiseur'**
+  String get careWaterCondensate;
+
+  /// No description provided for @careWaterCondensateNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le condensat d\'un climatiseur ou d\'un déshumidificateur, une eau distillée par l\'appareil.'**
+  String get careWaterCondensateNote;
+
+  /// No description provided for @careWaterCondensateRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières, biofilm et bactéries, et peut emporter des traces de métaux. À réserver aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.'**
+  String get careWaterCondensateRisk;
+
+  /// No description provided for @careWaterSoftened.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau adoucie'**
+  String get careWaterSoftened;
+
+  /// No description provided for @careWaterSoftenedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un adoucisseur à résine remplace le calcaire par du sodium.'**
+  String get careWaterSoftenedNote;
+
+  /// No description provided for @careWaterSoftenedRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le sodium s\'accumule dans le terreau, abîme les racines et ferme la structure du sol. Le robinet d\'eau brute, en amont de l\'adoucisseur, reste le bon.'**
+  String get careWaterSoftenedRisk;
+
   /// No description provided for @carePropCutting.
   ///
   /// In fr, this message translates to:
@@ -4752,18 +4956,6 @@ abstract class AppLocalizations {
   /// **'Arrosez par le bas, en posant le pot dans une soucoupe d\'eau 20 minutes.'**
   String get careTipBottomWatering;
 
-  /// No description provided for @careTipFilteredWater.
-  ///
-  /// In fr, this message translates to:
-  /// **'Préférez l\'eau de pluie ou filtrée, car le calcaire brunit les pointes.'**
-  String get careTipFilteredWater;
-
-  /// No description provided for @careTipRainwaterOnly.
-  ///
-  /// In fr, this message translates to:
-  /// **'Arrosez à l\'eau de pluie, car cette plante déteste le calcaire.'**
-  String get careTipRainwaterOnly;
-
   /// No description provided for @careTipThirstyPlant.
   ///
   /// In fr, this message translates to:
@@ -5021,6 +5213,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Elle exige une terre acide, pas du terreau universel.'**
   String get careTipAcidSoil;
+
+  /// No description provided for @careTipFeedsOnInsects.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle se nourrit d\'insectes : pas d\'engrais, et une terre pauvre.'**
+  String get careTipFeedsOnInsects;
 
   /// No description provided for @careTipBlueNeedsAcid.
   ///
