@@ -2425,6 +2425,29 @@ class AppLocalizationsIt extends AppLocalizations {
   String get carePropagation => 'Propagazione';
 
   @override
+  String get careSupport => 'Tutore';
+
+  @override
+  String get careSupportMossPole => 'Tutore di muschio';
+
+  @override
+  String get careSupportStake => 'Tutore diritto';
+
+  @override
+  String get careSupportTrellis => 'Traliccio';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Inumidire il tutore a ogni annaffiatura: le radici aeree vi si attaccano.';
+
+  @override
+  String get careSupportStakeCare =>
+      'Legare il fusto senza stringere, man mano che sale.';
+
+  @override
+  String get careSupportTrellisCare => 'Guidare i fusti man mano che crescono.';
+
+  @override
   String get careIssues => 'Da tenere d\'occhio';
 
   @override
@@ -2433,6 +2456,97 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Segnalati su questa specie o su specie affini.';
+
+  @override
+  String get careLeafSigns => 'Segni sulle foglie';
+
+  @override
+  String get careLeafSignsNote =>
+      'Ciò che una foglia mostra, e ciò che lo spiega più spesso.';
+
+  @override
+  String get leafSignPaling => 'Foglie che schiariscono';
+
+  @override
+  String get leafSignYellowing => 'Foglie gialle';
+
+  @override
+  String get leafSignScorched => 'Foglie bruciate';
+
+  @override
+  String get leafSignSpots => 'Macchie al centro della foglia';
+
+  @override
+  String get leafSignBrownTips => 'Punte e bordi marroni';
+
+  @override
+  String get leafSignStunted => 'Foglie che non crescono più';
+
+  @override
+  String get leafSignDrooping => 'Foglie molli';
+
+  @override
+  String get leafSignFalling => 'Foglie che cadono';
+
+  @override
+  String get leafSignSticky => 'Foglie appiccicose';
+
+  @override
+  String get leafCauseTooMuchSun => 'Troppo sole diretto';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Luce insufficiente';
+
+  @override
+  String get leafCauseOverwatering => 'Annaffiature troppo ravvicinate';
+
+  @override
+  String get leafCauseUnderwatering => 'Terriccio rimasto secco troppo a lungo';
+
+  @override
+  String get leafCauseDryAir => 'Aria troppo secca';
+
+  @override
+  String get leafCauseColdDraught => 'Freddo o corrente d\'aria';
+
+  @override
+  String get leafCauseHardWater =>
+      'Acqua calcarea o concime troppo concentrato';
+
+  @override
+  String get leafCausePoorSoil => 'Terriccio esaurito';
+
+  @override
+  String get leafCausePotBound => 'Radici strette nel vaso';
+
+  @override
+  String get leafCauseDamagedRoots => 'Radici rovinate dal ristagno d\'acqua';
+
+  @override
+  String get leafCauseLeafPests => 'Punture di ragnetto rosso o tripidi';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Cocciniglie o afidi, sulla pianta o sopra di essa';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Fumaggine, il nero che cresce sulla melata';
+
+  @override
+  String get leafCauseLeafFungus => 'Fungo o batterio sulla foglia';
+
+  @override
+  String get leafCauseWetLeaves => 'Acqua rimasta sul fogliame';
+
+  @override
+  String get leafCauseRecentMove => 'Spostamento o rinvaso recente';
+
+  @override
+  String get leafCauseOldLeaves => 'Invecchiamento delle foglie basse';
+
+  @override
+  String get leafCauseWinterRest => 'Riposo invernale';
 
   @override
   String get problemKindDisorder => 'Disturbo';
@@ -2684,6 +2798,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careIssueSpiderMites => 'Ragnetto rosso (ragnatele sottili)';
 
   @override
+  String get careIssueThrips => 'Tripidi (foglie argentate)';
+
+  @override
   String get careIssueMealybugs => 'Cocciniglia farinosa';
 
   @override
@@ -2699,10 +2816,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careIssueWhitefly => 'Mosca bianca';
 
   @override
+  String get careIssueTrueBugs => 'Cimici';
+
+  @override
   String get careIssueSlugs => 'Lumache';
 
   @override
   String get careIssuePowderyMildew => 'Oidio';
+
+  @override
+  String get careIssueGreyMould => 'Muffa grigia (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Macchie fogliari';

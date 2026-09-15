@@ -4200,6 +4200,48 @@ abstract class AppLocalizations {
   /// **'Multiplication'**
   String get carePropagation;
 
+  /// No description provided for @careSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuteur'**
+  String get careSupport;
+
+  /// No description provided for @careSupportMossPole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuteur moussu'**
+  String get careSupportMossPole;
+
+  /// No description provided for @careSupportStake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tuteur droit'**
+  String get careSupportStake;
+
+  /// No description provided for @careSupportTrellis.
+  ///
+  /// In fr, this message translates to:
+  /// **'Treillis'**
+  String get careSupportTrellis;
+
+  /// No description provided for @careSupportMossPoleCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humidifier le tuteur à chaque arrosage : les racines aériennes s\'y fixent.'**
+  String get careSupportMossPoleCare;
+
+  /// No description provided for @careSupportStakeCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Attacher la tige sans serrer, à mesure qu\'elle monte.'**
+  String get careSupportStakeCare;
+
+  /// No description provided for @careSupportTrellisCare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Guider les tiges à mesure qu\'elles poussent.'**
+  String get careSupportTrellisCare;
+
   /// No description provided for @careIssues.
   ///
   /// In fr, this message translates to:
@@ -4217,6 +4259,180 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Signalés sur cette espèce ou des espèces proches.'**
   String get careKnownProblemsNote;
+
+  /// No description provided for @careLeafSigns.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signes sur les feuilles'**
+  String get careLeafSigns;
+
+  /// No description provided for @careLeafSignsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qu\'une feuille montre, et ce qui l\'explique le plus souvent.'**
+  String get careLeafSignsNote;
+
+  /// No description provided for @leafSignPaling.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles qui s\'éclaircissent'**
+  String get leafSignPaling;
+
+  /// No description provided for @leafSignYellowing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles jaunes'**
+  String get leafSignYellowing;
+
+  /// No description provided for @leafSignScorched.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles brûlées'**
+  String get leafSignScorched;
+
+  /// No description provided for @leafSignSpots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taches au milieu de la feuille'**
+  String get leafSignSpots;
+
+  /// No description provided for @leafSignBrownTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointes et bords bruns'**
+  String get leafSignBrownTips;
+
+  /// No description provided for @leafSignStunted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles qui ne grandissent plus'**
+  String get leafSignStunted;
+
+  /// No description provided for @leafSignDrooping.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles molles'**
+  String get leafSignDrooping;
+
+  /// No description provided for @leafSignFalling.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles qui tombent'**
+  String get leafSignFalling;
+
+  /// No description provided for @leafSignSticky.
+  ///
+  /// In fr, this message translates to:
+  /// **'Feuilles collantes'**
+  String get leafSignSticky;
+
+  /// No description provided for @leafCauseTooMuchSun.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop de soleil direct'**
+  String get leafCauseTooMuchSun;
+
+  /// No description provided for @leafCauseNotEnoughLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas assez de lumière'**
+  String get leafCauseNotEnoughLight;
+
+  /// No description provided for @leafCauseOverwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosages trop rapprochés'**
+  String get leafCauseOverwatering;
+
+  /// No description provided for @leafCauseUnderwatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau resté sec trop longtemps'**
+  String get leafCauseUnderwatering;
+
+  /// No description provided for @leafCauseDryAir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air trop sec'**
+  String get leafCauseDryAir;
+
+  /// No description provided for @leafCauseColdDraught.
+  ///
+  /// In fr, this message translates to:
+  /// **'Froid ou courant d\'air'**
+  String get leafCauseColdDraught;
+
+  /// No description provided for @leafCauseHardWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau calcaire, ou engrais trop concentré'**
+  String get leafCauseHardWater;
+
+  /// No description provided for @leafCausePoorSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Substrat épuisé'**
+  String get leafCausePoorSoil;
+
+  /// No description provided for @leafCausePotBound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Racines à l\'étroit dans le pot'**
+  String get leafCausePotBound;
+
+  /// No description provided for @leafCauseDamagedRoots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Racines abîmées par l\'eau stagnante'**
+  String get leafCauseDamagedRoots;
+
+  /// No description provided for @leafCauseLeafPests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Piqûres d\'araignées rouges ou de thrips'**
+  String get leafCauseLeafPests;
+
+  /// No description provided for @leafCauseHoneydewPests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cochenilles ou pucerons, sur la plante ou au-dessus'**
+  String get leafCauseHoneydewPests;
+
+  /// No description provided for @leafCauseSootyMould.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fumagine, le noir qui pousse sur le miellat'**
+  String get leafCauseSootyMould;
+
+  /// No description provided for @leafCauseLeafFungus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champignon ou bactérie sur la feuille'**
+  String get leafCauseLeafFungus;
+
+  /// No description provided for @leafCauseWetLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Eau restée sur le feuillage'**
+  String get leafCauseWetLeaves;
+
+  /// No description provided for @leafCauseRecentMove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déménagement ou rempotage récent'**
+  String get leafCauseRecentMove;
+
+  /// No description provided for @leafCauseOldLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vieillissement des feuilles du bas'**
+  String get leafCauseOldLeaves;
+
+  /// No description provided for @leafCauseWinterRest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repos hivernal'**
+  String get leafCauseWinterRest;
 
   /// No description provided for @problemKindDisorder.
   ///
@@ -4620,6 +4836,12 @@ abstract class AppLocalizations {
   /// **'Araignées rouges (fines toiles)'**
   String get careIssueSpiderMites;
 
+  /// No description provided for @careIssueThrips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Thrips (feuilles argentées)'**
+  String get careIssueThrips;
+
   /// No description provided for @careIssueMealybugs.
   ///
   /// In fr, this message translates to:
@@ -4650,6 +4872,12 @@ abstract class AppLocalizations {
   /// **'Aleurodes (mouches blanches)'**
   String get careIssueWhitefly;
 
+  /// No description provided for @careIssueTrueBugs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Punaises'**
+  String get careIssueTrueBugs;
+
   /// No description provided for @careIssueSlugs.
   ///
   /// In fr, this message translates to:
@@ -4661,6 +4889,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Oïdium (feutrage blanc)'**
   String get careIssuePowderyMildew;
+
+  /// No description provided for @careIssueGreyMould.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourriture grise (Botrytis)'**
+  String get careIssueGreyMould;
 
   /// No description provided for @careIssueLeafSpot.
   ///

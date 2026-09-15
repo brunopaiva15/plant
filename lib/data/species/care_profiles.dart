@@ -15,9 +15,37 @@ abstract final class CareProfiles {
   static const _leaf = [Propagation.leafCutting];
   static const _layering = [Propagation.layering];
 
-  static const _tropicalIssues = [CommonIssue.overwatering, CommonIssue.spiderMites, CommonIssue.dryTips];
-  static const _succulentIssues = [CommonIssue.overwatering, CommonIssue.rootRot, CommonIssue.etiolation, CommonIssue.mealybugs];
-  static const _outdoorIssues = [CommonIssue.aphids, CommonIssue.powderyMildew, CommonIssue.slugs];
+  // « À surveiller » d'un feuillage tropical en appartement. L'eau d'abord,
+  // puis les quatre suceurs de sève qu'un intérieur chauffé garde actifs
+  // toute l'année — l'hiver ne les arrête plus —, les moucherons d'un terreau
+  // qui ne sèche jamais, et les taches qui suivent un feuillage mouillé.
+  // Tenir la liste à deux entrées revenait à ne nommer que la moitié de ce
+  // qu'on trouve vraiment sur un pothos.
+  static const _tropicalIssues = [
+    CommonIssue.overwatering,
+    CommonIssue.rootRot,
+    CommonIssue.spiderMites,
+    CommonIssue.thrips,
+    CommonIssue.mealybugs,
+    CommonIssue.scale,
+    CommonIssue.fungusGnats,
+    CommonIssue.leafSpot,
+    CommonIssue.dryTips,
+  ];
+  static const _succulentIssues = [
+    CommonIssue.overwatering,
+    CommonIssue.rootRot,
+    CommonIssue.etiolation,
+    CommonIssue.mealybugs,
+    CommonIssue.fungusGnats,
+  ];
+  static const _outdoorIssues = [
+    CommonIssue.aphids,
+    CommonIssue.trueBugs,
+    CommonIssue.slugs,
+    CommonIssue.powderyMildew,
+    CommonIssue.greyMould,
+  ];
 
   /// Profil de dernier recours : une plante d'intérieur ordinaire.
   static const fallback = CareProfile(
@@ -55,6 +83,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
       issues: _tropicalIssues,
+      support: PlantSupport.mossPole,
       mistLeaves: true,
       tipKeys: ['fingerTest', 'monsteraSupport', 'wipeLeaves'],
     ),
@@ -160,6 +189,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.safe,
       propagation: [Propagation.offsets],
       issues: [CommonIssue.rootRot, CommonIssue.mealybugs],
+      support: PlantSupport.stake,
       tipKeys: ['orchidSoak', 'greenRoots', 'keepFlowerSpike'],
     ),
     'Aloe vera': CareProfile(
@@ -213,6 +243,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.mild,
       propagation: [Propagation.seed, Propagation.stemCutting],
       issues: [CommonIssue.blight, CommonIssue.blossomEndRot, CommonIssue.whitefly, CommonIssue.aphids],
+      support: PlantSupport.stake,
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'stakeAndPrune', 'evenWatering'],
@@ -292,6 +323,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
       issues: _tropicalIssues,
+      support: PlantSupport.mossPole,
       mistLeaves: true,
       tipKeys: ['fingerTest', 'wipeLeaves'],
     ),
@@ -309,7 +341,8 @@ abstract final class CareProfiles {
       idealTempMaxC: 27,
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
-      issues: [CommonIssue.overwatering, CommonIssue.spiderMites],
+      issues: _tropicalIssues,
+      support: PlantSupport.mossPole,
       tipKeys: ['toleratesNeglect', 'trimToBushOut', 'fingerTest'],
     ),
     'Scindapsus': CareProfile(
@@ -324,7 +357,8 @@ abstract final class CareProfiles {
       minTempC: 13,
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
-      issues: [CommonIssue.overwatering],
+      issues: _tropicalIssues,
+      support: PlantSupport.mossPole,
       tipKeys: ['toleratesNeglect', 'fingerTest'],
     ),
     'Monstera': CareProfile(
@@ -340,6 +374,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
       issues: _tropicalIssues,
+      support: PlantSupport.mossPole,
       mistLeaves: true,
       tipKeys: ['fingerTest', 'monsteraSupport'],
     ),
@@ -357,7 +392,7 @@ abstract final class CareProfiles {
       idealTempMaxC: 28,
       toxicity: Toxicity.toxic,
       propagation: [Propagation.division, Propagation.tuber],
-      issues: [CommonIssue.spiderMites, CommonIssue.overwatering, CommonIssue.leafDrop],
+      issues: [..._tropicalIssues, CommonIssue.leafDrop],
       mistLeaves: true,
       tipKeys: ['winterRest', 'humidityTray', 'spiderMiteWatch'],
     ),
@@ -389,7 +424,7 @@ abstract final class CareProfiles {
       minTempC: 15,
       toxicity: Toxicity.toxic,
       propagation: _division,
-      issues: [CommonIssue.overwatering],
+      issues: _tropicalIssues,
       tipKeys: ['toleratesLowLight', 'fingerTest'],
     ),
     'Dieffenbachia': CareProfile(
@@ -420,6 +455,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
       issues: _tropicalIssues,
+      support: PlantSupport.mossPole,
       tipKeys: ['trimToBushOut'],
     ),
     'Zamioculcas': CareProfile(
@@ -449,7 +485,7 @@ abstract final class CareProfiles {
       minTempC: 13,
       toxicity: Toxicity.toxic,
       propagation: _division,
-      issues: [CommonIssue.underwatering, CommonIssue.dryTips],
+      issues: [CommonIssue.underwatering, CommonIssue.dryTips, CommonIssue.rootRot, CommonIssue.spiderMites, CommonIssue.mealybugs],
       mistLeaves: true,
       tipKeys: ['droopSignal', 'noDirectSun'],
     ),
@@ -469,7 +505,7 @@ abstract final class CareProfiles {
       idealTempMaxC: 26,
       toxicity: Toxicity.safe,
       propagation: _division,
-      issues: [CommonIssue.dryTips, CommonIssue.spiderMites, CommonIssue.underwatering],
+      issues: [CommonIssue.dryTips, CommonIssue.underwatering, CommonIssue.spiderMites, CommonIssue.thrips, CommonIssue.leafSpot],
       mistLeaves: true,
       tipKeys: ['filteredWater', 'humidityTray', 'noDirectSun'],
     ),
@@ -485,7 +521,7 @@ abstract final class CareProfiles {
       minTempC: 16,
       toxicity: Toxicity.safe,
       propagation: _division,
-      issues: [CommonIssue.dryTips, CommonIssue.spiderMites],
+      issues: [CommonIssue.dryTips, CommonIssue.underwatering, CommonIssue.spiderMites, CommonIssue.thrips, CommonIssue.leafSpot],
       mistLeaves: true,
       tipKeys: ['filteredWater', 'humidityTray'],
     ),
@@ -501,7 +537,7 @@ abstract final class CareProfiles {
       minTempC: 15,
       toxicity: Toxicity.safe,
       propagation: _division,
-      issues: [CommonIssue.dryTips, CommonIssue.spiderMites],
+      issues: [CommonIssue.dryTips, CommonIssue.underwatering, CommonIssue.spiderMites, CommonIssue.thrips],
       mistLeaves: true,
       tipKeys: ['filteredWater', 'humidityTray'],
     ),
@@ -519,7 +555,7 @@ abstract final class CareProfiles {
       minTempC: 13,
       toxicity: Toxicity.mild,
       propagation: [Propagation.stemCutting, Propagation.layering],
-      issues: [CommonIssue.leafDrop, CommonIssue.spiderMites, CommonIssue.scale],
+      issues: [CommonIssue.leafDrop, CommonIssue.spiderMites, CommonIssue.thrips, CommonIssue.mealybugs, CommonIssue.scale],
       tipKeys: ['hatesMoving', 'wipeLeaves'],
     ),
 
@@ -1048,6 +1084,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.mild,
       propagation: _seed,
       issues: [CommonIssue.blight, CommonIssue.aphids, CommonIssue.whitefly],
+      support: PlantSupport.stake,
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'evenWatering'],
@@ -1065,6 +1102,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.safe,
       propagation: _seed,
       issues: [CommonIssue.aphids, CommonIssue.whitefly, CommonIssue.blossomEndRot],
+      support: PlantSupport.stake,
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'evenWatering'],
@@ -1099,6 +1137,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.safe,
       propagation: _seed,
       issues: [CommonIssue.powderyMildew, CommonIssue.spiderMites],
+      support: PlantSupport.trellis,
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'evenWatering'],
@@ -1200,6 +1239,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.safe,
       propagation: [Propagation.stemCutting, Propagation.layering],
       issues: [CommonIssue.powderyMildew, CommonIssue.leafSpot],
+      support: PlantSupport.trellis,
       outdoorFriendly: true,
       tipKeys: ['winterPruning', 'airFlow'],
     ),
@@ -1216,6 +1256,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.safe,
       propagation: [Propagation.division, Propagation.layering],
       issues: [CommonIssue.aphids, CommonIssue.powderyMildew],
+      support: PlantSupport.trellis,
       outdoorFriendly: true,
       tipKeys: ['cutSpentCanes', 'mulchIt'],
     ),
@@ -1350,6 +1391,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.toxic,
       propagation: _cuttingWater,
       issues: [CommonIssue.spiderMites, CommonIssue.scale],
+      support: PlantSupport.trellis,
       outdoorFriendly: true,
       tipKeys: ['coolerIsBetter', 'trimToBushOut'],
     ),
@@ -1366,6 +1408,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.safe,
       propagation: _cuttingWater,
       issues: [CommonIssue.overwatering, CommonIssue.mealybugs],
+      support: PlantSupport.trellis,
       tipKeys: ['keepFlowerSpike', 'likesBeingPotbound', 'drySoilFirst'],
     ),
     'Peperomia': CareProfile(
@@ -1622,6 +1665,7 @@ abstract final class CareProfiles {
       toxicity: Toxicity.mild,
       propagation: _cutting,
       issues: [CommonIssue.overwatering, CommonIssue.leafDrop],
+      support: PlantSupport.trellis,
       outdoorFriendly: true,
       tipKeys: ['dryToBloom', 'winterShelter', 'likesBeingPotbound'],
     ),

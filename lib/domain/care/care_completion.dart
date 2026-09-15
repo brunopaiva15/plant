@@ -85,6 +85,7 @@ class CareCompletion {
         toxicity: base.toxicity,
         propagation: propagation.isEmpty ? base.propagation : propagation,
         issues: issues.isEmpty ? base.issues : issues,
+        support: base.support,
         mistLeaves: base.mistLeaves,
         dormantInWinter: base.dormantInWinter,
         outdoorFriendly: base.outdoorFriendly,

@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/care/care_guide.dart';
 import '../../domain/care/care_profile.dart';
+import '../../domain/care/leaf_signs.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Libellés localisés de la fiche d'entretien.
@@ -60,13 +61,16 @@ extension CareProfileLabels on AppLocalizations {
         CommonIssue.underwatering => careIssueUnderwatering,
         CommonIssue.rootRot => careIssueRootRot,
         CommonIssue.spiderMites => careIssueSpiderMites,
+        CommonIssue.thrips => careIssueThrips,
         CommonIssue.mealybugs => careIssueMealybugs,
         CommonIssue.scale => careIssueScale,
         CommonIssue.aphids => careIssueAphids,
         CommonIssue.fungusGnats => careIssueFungusGnats,
         CommonIssue.whitefly => careIssueWhitefly,
+        CommonIssue.trueBugs => careIssueTrueBugs,
         CommonIssue.slugs => careIssueSlugs,
         CommonIssue.powderyMildew => careIssuePowderyMildew,
+        CommonIssue.greyMould => careIssueGreyMould,
         CommonIssue.leafSpot => careIssueLeafSpot,
         CommonIssue.blight => careIssueBlight,
         CommonIssue.sunburn => careIssueSunburn,
@@ -75,6 +79,56 @@ extension CareProfileLabels on AppLocalizations {
         CommonIssue.etiolation => careIssueEtiolation,
         CommonIssue.chlorosis => careIssueChlorosis,
         CommonIssue.blossomEndRot => careIssueBlossomEndRot,
+      };
+
+  /// Le support demandé par l'espèce.
+  String supportName(PlantSupport v) => switch (v) {
+        PlantSupport.mossPole => careSupportMossPole,
+        PlantSupport.stake => careSupportStake,
+        PlantSupport.trellis => careSupportTrellis,
+      };
+
+  /// Ce que ce support demande, et quand : un tuteur moussu s'humidifie à
+  /// chaque arrosage, une tige s'attache à mesure qu'elle monte.
+  String supportCare(PlantSupport v) => switch (v) {
+        PlantSupport.mossPole => careSupportMossPoleCare,
+        PlantSupport.stake => careSupportStakeCare,
+        PlantSupport.trellis => careSupportTrellisCare,
+      };
+
+  /// Ce qu'on voit sur la feuille, dit comme on le voit.
+  String leafSignName(LeafSign v) => switch (v) {
+        LeafSign.paling => leafSignPaling,
+        LeafSign.yellowing => leafSignYellowing,
+        LeafSign.scorched => leafSignScorched,
+        LeafSign.spots => leafSignSpots,
+        LeafSign.brownTips => leafSignBrownTips,
+        LeafSign.stunted => leafSignStunted,
+        LeafSign.drooping => leafSignDrooping,
+        LeafSign.falling => leafSignFalling,
+        LeafSign.sticky => leafSignSticky,
+      };
+
+  /// Ce qui peut l'expliquer.
+  String leafCauseName(LeafCause v) => switch (v) {
+        LeafCause.tooMuchSun => leafCauseTooMuchSun,
+        LeafCause.notEnoughLight => leafCauseNotEnoughLight,
+        LeafCause.overwatering => leafCauseOverwatering,
+        LeafCause.underwatering => leafCauseUnderwatering,
+        LeafCause.dryAir => leafCauseDryAir,
+        LeafCause.coldDraught => leafCauseColdDraught,
+        LeafCause.hardWater => leafCauseHardWater,
+        LeafCause.poorSoil => leafCausePoorSoil,
+        LeafCause.potBound => leafCausePotBound,
+        LeafCause.damagedRoots => leafCauseDamagedRoots,
+        LeafCause.leafPests => leafCauseLeafPests,
+        LeafCause.honeydewPests => leafCauseHoneydewPests,
+        LeafCause.sootyMould => leafCauseSootyMould,
+        LeafCause.leafFungus => leafCauseLeafFungus,
+        LeafCause.wetLeaves => leafCauseWetLeaves,
+        LeafCause.recentMove => leafCauseRecentMove,
+        LeafCause.oldLeaves => leafCauseOldLeaves,
+        LeafCause.winterRest => leafCauseWinterRest,
       };
 
   /// Conseil libre, par clé. Retourne `null` si la clé est inconnue, pour que

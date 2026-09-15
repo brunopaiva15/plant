@@ -2424,6 +2424,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get carePropagation => 'Multiplication';
 
   @override
+  String get careSupport => 'Tuteur';
+
+  @override
+  String get careSupportMossPole => 'Tuteur moussu';
+
+  @override
+  String get careSupportStake => 'Tuteur droit';
+
+  @override
+  String get careSupportTrellis => 'Treillis';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Humidifier le tuteur à chaque arrosage : les racines aériennes s\'y fixent.';
+
+  @override
+  String get careSupportStakeCare =>
+      'Attacher la tige sans serrer, à mesure qu\'elle monte.';
+
+  @override
+  String get careSupportTrellisCare =>
+      'Guider les tiges à mesure qu\'elles poussent.';
+
+  @override
   String get careIssues => 'À surveiller';
 
   @override
@@ -2432,6 +2456,96 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Signalés sur cette espèce ou des espèces proches.';
+
+  @override
+  String get careLeafSigns => 'Signes sur les feuilles';
+
+  @override
+  String get careLeafSignsNote =>
+      'Ce qu\'une feuille montre, et ce qui l\'explique le plus souvent.';
+
+  @override
+  String get leafSignPaling => 'Feuilles qui s\'éclaircissent';
+
+  @override
+  String get leafSignYellowing => 'Feuilles jaunes';
+
+  @override
+  String get leafSignScorched => 'Feuilles brûlées';
+
+  @override
+  String get leafSignSpots => 'Taches au milieu de la feuille';
+
+  @override
+  String get leafSignBrownTips => 'Pointes et bords bruns';
+
+  @override
+  String get leafSignStunted => 'Feuilles qui ne grandissent plus';
+
+  @override
+  String get leafSignDrooping => 'Feuilles molles';
+
+  @override
+  String get leafSignFalling => 'Feuilles qui tombent';
+
+  @override
+  String get leafSignSticky => 'Feuilles collantes';
+
+  @override
+  String get leafCauseTooMuchSun => 'Trop de soleil direct';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Pas assez de lumière';
+
+  @override
+  String get leafCauseOverwatering => 'Arrosages trop rapprochés';
+
+  @override
+  String get leafCauseUnderwatering => 'Terreau resté sec trop longtemps';
+
+  @override
+  String get leafCauseDryAir => 'Air trop sec';
+
+  @override
+  String get leafCauseColdDraught => 'Froid ou courant d\'air';
+
+  @override
+  String get leafCauseHardWater => 'Eau calcaire, ou engrais trop concentré';
+
+  @override
+  String get leafCausePoorSoil => 'Substrat épuisé';
+
+  @override
+  String get leafCausePotBound => 'Racines à l\'étroit dans le pot';
+
+  @override
+  String get leafCauseDamagedRoots => 'Racines abîmées par l\'eau stagnante';
+
+  @override
+  String get leafCauseLeafPests => 'Piqûres d\'araignées rouges ou de thrips';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Cochenilles ou pucerons, sur la plante ou au-dessus';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Fumagine, le noir qui pousse sur le miellat';
+
+  @override
+  String get leafCauseLeafFungus => 'Champignon ou bactérie sur la feuille';
+
+  @override
+  String get leafCauseWetLeaves => 'Eau restée sur le feuillage';
+
+  @override
+  String get leafCauseRecentMove => 'Déménagement ou rempotage récent';
+
+  @override
+  String get leafCauseOldLeaves => 'Vieillissement des feuilles du bas';
+
+  @override
+  String get leafCauseWinterRest => 'Repos hivernal';
 
   @override
   String get problemKindDisorder => 'Trouble';
@@ -2685,6 +2799,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careIssueSpiderMites => 'Araignées rouges (fines toiles)';
 
   @override
+  String get careIssueThrips => 'Thrips (feuilles argentées)';
+
+  @override
   String get careIssueMealybugs => 'Cochenilles farineuses';
 
   @override
@@ -2700,10 +2817,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careIssueWhitefly => 'Aleurodes (mouches blanches)';
 
   @override
+  String get careIssueTrueBugs => 'Punaises';
+
+  @override
   String get careIssueSlugs => 'Limaces et escargots';
 
   @override
   String get careIssuePowderyMildew => 'Oïdium (feutrage blanc)';
+
+  @override
+  String get careIssueGreyMould => 'Pourriture grise (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Taches foliaires';

@@ -2425,6 +2425,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get carePropagation => 'Vermehrung';
 
   @override
+  String get careSupport => 'Rankhilfe';
+
+  @override
+  String get careSupportMossPole => 'Moosstab';
+
+  @override
+  String get careSupportStake => 'Pflanzstab';
+
+  @override
+  String get careSupportTrellis => 'Spalier';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Den Moosstab bei jedem Gießen befeuchten: daran halten sich die Luftwurzeln.';
+
+  @override
+  String get careSupportStakeCare =>
+      'Den Trieb locker anbinden, während er nach oben wächst.';
+
+  @override
+  String get careSupportTrellisCare =>
+      'Die Triebe führen, während sie wachsen.';
+
+  @override
   String get careIssues => 'Darauf achten';
 
   @override
@@ -2433,6 +2457,96 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Bei dieser Art oder verwandten Arten gemeldet.';
+
+  @override
+  String get careLeafSigns => 'Anzeichen an den Blättern';
+
+  @override
+  String get careLeafSignsNote =>
+      'Was ein Blatt zeigt, und was es meistens erklärt.';
+
+  @override
+  String get leafSignPaling => 'Blätter werden heller';
+
+  @override
+  String get leafSignYellowing => 'Gelbe Blätter';
+
+  @override
+  String get leafSignScorched => 'Verbrannte Blätter';
+
+  @override
+  String get leafSignSpots => 'Flecken mitten auf dem Blatt';
+
+  @override
+  String get leafSignBrownTips => 'Braune Spitzen und Ränder';
+
+  @override
+  String get leafSignStunted => 'Blätter wachsen nicht mehr';
+
+  @override
+  String get leafSignDrooping => 'Schlaffe Blätter';
+
+  @override
+  String get leafSignFalling => 'Blätter fallen ab';
+
+  @override
+  String get leafSignSticky => 'Klebrige Blätter';
+
+  @override
+  String get leafCauseTooMuchSun => 'Zu viel direkte Sonne';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Zu wenig Licht';
+
+  @override
+  String get leafCauseOverwatering => 'Zu häufiges Gießen';
+
+  @override
+  String get leafCauseUnderwatering => 'Substrat zu lange trocken geblieben';
+
+  @override
+  String get leafCauseDryAir => 'Zu trockene Luft';
+
+  @override
+  String get leafCauseColdDraught => 'Kälte oder Zugluft';
+
+  @override
+  String get leafCauseHardWater => 'Kalkhaltiges Wasser oder zu viel Dünger';
+
+  @override
+  String get leafCausePoorSoil => 'Erschöpftes Substrat';
+
+  @override
+  String get leafCausePotBound => 'Wurzeln zu eng im Topf';
+
+  @override
+  String get leafCauseDamagedRoots => 'Wurzeln durch Staunässe geschädigt';
+
+  @override
+  String get leafCauseLeafPests => 'Saugschäden von Spinnmilben oder Thripsen';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Woll- oder Blattläuse, an der Pflanze oder darüber';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Rußtau, das Schwarze, das auf dem Honigtau wächst';
+
+  @override
+  String get leafCauseLeafFungus => 'Pilz oder Bakterium auf dem Blatt';
+
+  @override
+  String get leafCauseWetLeaves => 'Wasser auf dem Laub geblieben';
+
+  @override
+  String get leafCauseRecentMove => 'Kürzlicher Standortwechsel oder Umtopfen';
+
+  @override
+  String get leafCauseOldLeaves => 'Alternde untere Blätter';
+
+  @override
+  String get leafCauseWinterRest => 'Winterruhe';
 
   @override
   String get problemKindDisorder => 'Störung';
@@ -2684,6 +2798,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careIssueSpiderMites => 'Spinnmilben (feine Gespinste)';
 
   @override
+  String get careIssueThrips => 'Thripse (silbrige Blätter)';
+
+  @override
   String get careIssueMealybugs => 'Wollläuse';
 
   @override
@@ -2699,10 +2816,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careIssueWhitefly => 'Weiße Fliege';
 
   @override
+  String get careIssueTrueBugs => 'Wanzen';
+
+  @override
   String get careIssueSlugs => 'Schnecken';
 
   @override
   String get careIssuePowderyMildew => 'Echter Mehltau';
+
+  @override
+  String get careIssueGreyMould => 'Grauschimmel (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Blattflecken';
