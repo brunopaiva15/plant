@@ -234,5 +234,25 @@ void main() {
         expect(entry.value.tipKeys, isNot(contains('rainwaterOnly')), reason: entry.key);
       }
     });
+
+    test('le calcium de l\'engrais et l\'eau d\'arrosage ne se contredisent pas', () {
+      // Deux axes voisins : la carte « Eau » dit ce que la plante supporte du
+      // calcaire versé, la ligne « Calcium » de l'engrais ce qu'il faut lui
+      // apporter. Ils regardent la même molécule et doivent aller dans le même
+      // sens, sans quoi la fiche conseille l'eau de pluie d'un côté et l'eau
+      // calcaire de l'autre.
+      final profils = {...CareProfiles.bySpecies, ...CareProfiles.byGenus, ...CareProfiles.byFamily, ...CareProfiles.byCategory};
+      for (final entry in profils.entries) {
+        final p = entry.value;
+        switch (p.calcium) {
+          case CalciumNeed.avoid:
+            expect(p.water, isNot(WaterTolerance.tolerant), reason: '${entry.key} : le calcium est à éviter, l\'eau du robinet ne peut pas convenir');
+          case CalciumNeed.welcome || CalciumNeed.needed:
+            expect(p.water, WaterTolerance.tolerant, reason: '${entry.key} : le calcium est bienvenu, l\'eau du robinet en apporte');
+          case CalciumNeed.neutral || null:
+            break;
+        }
+      }
+    });
   });
 }

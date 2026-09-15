@@ -14,6 +14,7 @@ import '../../../domain/problems/plant_problem.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import 'care_guide_copy.dart';
 import 'water_types_sheet.dart';
 
 /// Fiche d'entretien d'une plante : quand l'arroser, quelle lumière lui
@@ -31,9 +32,18 @@ class CareGuideScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final summary = ref.watch(plantSummaryProvider(plantId)).value;
     final plant = summary?.plant;
-    final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
+    final location = plant?.locationId == null
+        ? null
+        : (ref.watch(locationsProvider).value ?? const <Location>[])
+            .where((l) => l.id == plant!.locationId)
+            .firstOrNull;
     final family = speciesFamilyLookup(ref)(plant?.speciesName);
-    final care = _completed(context, ref, ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family), plant?.speciesName);
+    final care = _completed(
+      context,
+      ref,
+      ref.watch(careGuideProvider).resolve(plant?.speciesName, family: family),
+      plant?.speciesName,
+    );
     return FloraPage(
       title: l10n.careGuide,
       // La fiche s'affiche tout de suite avec ce que le catalogue sait ; si
@@ -43,7 +53,13 @@ class CareGuideScreen extends ConsumerWidget {
         duration: Motion.of(context, Motion.standard),
         child: KeyedSubtree(
           key: ValueKey(care.match),
-          child: CareGuideBody(care: care, plantName: plant?.name, speciesName: plant?.speciesName, location: location, plantLight: plant?.light),
+          child: CareGuideBody(
+            care: care,
+            plantName: plant?.name,
+            speciesName: plant?.speciesName,
+            location: location,
+            plantLight: plant?.light,
+          ),
         ),
       ),
     );
@@ -68,7 +84,15 @@ class CareGuideScreen extends ConsumerWidget {
 
 /// Corps de la fiche, réutilisable en sheet (création de plante, espèce).
 class CareGuideBody extends ConsumerWidget {
-  const CareGuideBody({super.key, required this.care, this.plantName, this.speciesName, this.location, this.header, this.plantLight});
+  const CareGuideBody({
+    super.key,
+    required this.care,
+    this.plantName,
+    this.speciesName,
+    this.location,
+    this.header,
+    this.plantLight,
+  });
 
   final ResolvedCare care;
   final String? plantName;
@@ -93,18 +117,36 @@ class CareGuideBody extends ConsumerWidget {
     final actualLight = plantLight ?? _lightOf(location);
     final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
     final tips = [for (final key in p.tipKeys) l10n.careTip(key)].whereType<String>().toList();
+    final hasTemperature = (p.idealTempMinC != null && p.idealTempMaxC != null) || p.minTempC != null;
 
-    // Chaque volet du soin a sa carte et sa teinte : l'arrosage et l'eau en
-    // bleu, la lumière en ocre, l'humidité en rose, l'engrais en sauge, le
-    // rempotage en terre cuite. Ce qui ne se pratique pas — température,
-    // difficulté, toxicité — reste une liste, à la suite.
+    // La fiche suit maintenant le chemin réel d'entretien : d'abord où placer
+    // la plante et le climat qu'elle demande, ensuite ce qu'on fait au pot,
+    // puis les conditions particulières et enfin les informations de sécurité.
+    // Chaque volet garde la teinte de son sujet : l'arrosage et l'eau en bleu,
+    // la lumière en ocre, l'humidité en rose, l'engrais en sauge, le pot en
+    // terre cuite.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ?header,
 
-        // Arrosage : la question qu'on se pose en premier, et le seul chiffre
-        // de la fiche qui change avec la saison.
+        Text(l10n.needsSection, style: context.text.title3),
+        const SizedBox(height: Space.sm),
+
+        // L'emplacement vient en premier : sans la bonne lumière, les autres
+        // fréquences de la fiche deviennent vite fausses.
+        _AspectCard(
+          emoji: '☀️',
+          variant: 1,
+          tint: c.sunSoft,
+          title: l10n.careLight,
+          value: l10n.lightName(p.light),
+          badge: p.outdoorFriendly ? ('🌤️', l10n.guideBadgeOutdoor) : null,
+        ),
+        const SizedBox(height: Space.md),
+
+        // L'arrosage reste le chiffre le plus visible, mais arrive après la
+        // lumière qui influence justement son intervalle.
         _AspectCard(
           emoji: '💧',
           variant: 0,
@@ -113,34 +155,44 @@ class CareGuideBody extends ConsumerWidget {
           value: l10n.careWateringNow(currentDays),
           valueColor: c.water,
           prominent: true,
-          detail: l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays),
-          badge: p.dormantInWinter ? ('❄️', l10n.careBadgeDormant) : null,
+          details: [l10n.guideWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
+          badge: p.dormantInWinter ? ('❄️', l10n.guideBadgeDormant) : null,
         ),
         const SizedBox(height: Space.md),
 
-        // Ce qu'on verse, pas seulement quand : le calcaire du robinet passe
-        // inaperçu sur une plante et brûle la suivante. La carte donne
-        // l'eau qui convient, et s'ouvre sur les sept eaux jugées une à une.
+        // Ce qu'on verse, juste après le jour où on le verse : le calcaire du
+        // robinet passe inaperçu sur une plante et abîme la suivante. La carte
+        // donne l'eau qui convient, et s'ouvre sur les sept eaux jugées une à
+        // une.
         _AspectCard(
           emoji: '🚰',
           variant: 2,
           tint: c.waterSoft,
           title: l10n.careWater,
           value: l10n.waterToleranceName(p.water),
-          detail: l10n.waterToleranceNote(p.water),
+          details: [l10n.waterToleranceNote(p.water)],
           onTap: () => showWaterTypesSheet(context, tolerance: p.water),
         ),
         const SizedBox(height: Space.md),
 
-        _AspectCard(
-          emoji: '☀️',
-          variant: 1,
-          tint: c.sunSoft,
-          title: l10n.careLight,
-          value: l10n.lightName(p.light),
-          badge: p.outdoorFriendly ? ('🌤️', l10n.careBadgeOutdoor) : null,
-        ),
-        const SizedBox(height: Space.md),
+        // La température est un besoin de culture, pas une information
+        // secondaire à ranger avec la difficulté ou la toxicité.
+        if (hasTemperature) ...[
+          FloraGroup(
+            children: [
+              if (p.idealTempMinC != null && p.idealTempMaxC != null)
+                _row(
+                  '🌡️',
+                  l10n.careTemperature,
+                  l10n.careTempIdeal(p.idealTempMinC!, p.idealTempMaxC!),
+                  subtitle: p.minTempC == null ? null : l10n.careTempMin(p.minTempC!),
+                )
+              else if (p.minTempC != null)
+                _row('🌡️', l10n.careTemperature, l10n.careTempMin(p.minTempC!)),
+            ],
+          ),
+          const SizedBox(height: Space.md),
+        ],
 
         _AspectCard(
           emoji: '💨',
@@ -148,12 +200,30 @@ class CareGuideBody extends ConsumerWidget {
           tint: c.roseSoft,
           title: l10n.careHumidity,
           value: l10n.humidityName(p.humidity),
-          badge: p.mistLeaves ? ('💦', l10n.careBadgeMist) : null,
+          details: [l10n.guideHumidityDetail(p.humidity)],
+          badge: p.mistLeaves ? ('💦', l10n.guideBadgeMist) : null,
         ),
         const SizedBox(height: Space.md),
 
-        // La pièce, mesurée : elle répond à la lumière et à l'air d'au-dessus.
+        // Après les besoins théoriques, cette carte dit si la pièce réelle
+        // correspond à la plante lorsqu'un capteur est disponible.
         HomeClimateFitCard(profile: p),
+
+        const SizedBox(height: Space.lg),
+        Text(l10n.careHowTo, style: context.text.title3),
+        const SizedBox(height: Space.sm),
+
+        // Le pot se lit dans l'ordre où on s'en occupe : d'abord le mélange,
+        // puis ce qu'on ajoute pendant la croissance, enfin quand le changer.
+        _AspectCard(
+          emoji: '🪴',
+          variant: 1,
+          tint: c.terracottaSoft,
+          title: l10n.careSoil,
+          value: l10n.soilName(p.soil),
+          details: [l10n.guideSoilMix(p.soil), ?l10n.guideSoilFreeLine(p)],
+        ),
+        const SizedBox(height: Space.md),
 
         _AspectCard(
           emoji: '🧪',
@@ -161,27 +231,61 @@ class CareGuideBody extends ConsumerWidget {
           tint: c.sageSoft,
           title: l10n.careFertilizing,
           value: p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-          detail: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
+          details: [
+            if (p.fertilizerKind case final kind?) l10n.guideFertilizerKind(kind),
+            if (p.fertilizingDays != null)
+              l10n.fertilizeWindowLabel(
+                p.fertilizingWindow.forHemisphere(south: south),
+                context.localeTag,
+              ),
+            ?l10n.guideCalciumNote(p.calciumNeed),
+          ],
         ),
         const SizedBox(height: Space.md),
 
-        // Le substrat se lit avec le rempotage : c'est le jour où il sert.
         _AspectCard(
-          emoji: '🪴',
+          emoji: '🏺',
           variant: 0,
           tint: c.terracottaSoft,
           title: l10n.careRepotting,
           value: l10n.repotLabel(p.repotEveryMonths),
-          detail: '${l10n.careSoil} · ${l10n.soilName(p.soil)}',
         ),
-        const SizedBox(height: Space.md),
 
+        // La serre et la floraison sont des conditions particulières : utiles
+        // quand elles concernent la plante, mais pas au milieu des besoins de
+        // tous les jours.
+        if (p.benefitsFromGreenhouse || p.bloom != null) ...[
+          const SizedBox(height: Space.lg),
+          if (p.benefitsFromGreenhouse)
+            _AspectCard(
+              emoji: '🏡',
+              variant: 1,
+              tint: c.sunSoft,
+              title: l10n.careGreenhouse,
+              value: l10n.guideGreenhouseTitle(p.humidity),
+              details: [
+                l10n.guideGreenhouseGrowth,
+                if (p.humidity == HumidityNeed.low) l10n.guideGreenhouseAir,
+                if (p.repotEveryMonths == null) l10n.guideGreenhouseEarly,
+              ],
+            ),
+          if (p.benefitsFromGreenhouse && p.bloom != null) const SizedBox(height: Space.md),
+          if (p.bloom case final bloom?)
+            _AspectCard(
+              emoji: '🌸',
+              variant: 2,
+              tint: c.roseSoft,
+              title: l10n.careBloom,
+              value: l10n.bloomName(bloom),
+              details: [l10n.guideBloomNote(bloom)],
+            ),
+        ],
+
+        const SizedBox(height: Space.lg),
+        Text(l10n.detailsSection, style: context.text.title3),
+        const SizedBox(height: Space.sm),
         FloraGroup(
           children: [
-            if (p.idealTempMinC != null && p.idealTempMaxC != null)
-              _row('🌡️', l10n.careTemperature, l10n.careTempIdeal(p.idealTempMinC!, p.idealTempMaxC!), subtitle: p.minTempC == null ? null : l10n.careTempMin(p.minTempC!))
-            else if (p.minTempC != null)
-              _row('🌡️', l10n.careTemperature, l10n.careTempMin(p.minTempC!)),
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),
             _row(
               p.toxicity == Toxicity.toxic ? '☠️' : '🐾',
@@ -218,10 +322,22 @@ class CareGuideBody extends ConsumerWidget {
           const SizedBox(height: Space.lg),
           Text(l10n.careIssues, style: context.text.title3),
           const SizedBox(height: Space.sm),
-          FloraGroup(children: [for (final i in p.issues) FloraListRow(leading: const Text('👀', style: TextStyle(fontSize: 16)), title: l10n.issueName(i), dense: true, chevron: false, titleMaxLines: 2)]),
+          FloraGroup(
+            children: [
+              for (final i in p.issues)
+                FloraListRow(
+                  leading: const Text('👀', style: TextStyle(fontSize: 16)),
+                  title: l10n.issueName(i),
+                  dense: true,
+                  chevron: false,
+                  titleMaxLines: 2,
+                ),
+            ],
+          ),
         ],
 
-        if (speciesName != null && speciesName!.trim().isNotEmpty) _KnownProblems(speciesName: speciesName!, issues: p.issues),
+        if (speciesName != null && speciesName!.trim().isNotEmpty)
+          _KnownProblems(speciesName: speciesName!, issues: p.issues),
 
         if (p.propagation.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
@@ -259,7 +375,10 @@ class CareGuideBody extends ConsumerWidget {
         dense: subtitle == null,
         trailing: Text(
           value,
-          style: context.text.callout.copyWith(color: danger ? context.colors.danger : context.colors.ink, fontWeight: FontWeight.w600),
+          style: context.text.callout.copyWith(
+            color: danger ? context.colors.danger : context.colors.ink,
+            fontWeight: FontWeight.w600,
+          ),
           textAlign: TextAlign.end,
         ),
       ),
@@ -285,7 +404,7 @@ class _AspectCard extends StatelessWidget {
     required this.tint,
     required this.title,
     required this.value,
-    this.detail,
+    this.details = const [],
     this.valueColor,
     this.badge,
     this.prominent = false,
@@ -301,13 +420,16 @@ class _AspectCard extends StatelessWidget {
   final Color tint;
   final String title;
   final String value;
-  final String? detail;
+
+  /// Ce qui précise le constat, une ligne par chose : le mélange sous le
+  /// substrat, la saison et le calcium sous l'engrais.
+  final List<String> details;
 
   /// Couleur du constat, quand l'accent tient le texte (le bleu de l'eau).
   final Color? valueColor;
 
-  /// Le repère qui ne vaut que pour ce volet : « Brumiser » sous l'humidité,
-  /// « Repos hivernal » sous l'arrosage.
+  /// Le repère qui ne vaut que pour ce volet : une phrase courte qui décrit
+  /// un besoin particulier, jamais un ordre ou un mot isolé.
   final (String, String)? badge;
 
   /// L'arrosage porte son chiffre plus grand : c'est la question qu'on se pose
@@ -336,10 +458,13 @@ class _AspectCard extends StatelessWidget {
                 children: [
                   Text(title, style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
-                  Text(value, style: (prominent ? context.text.title2 : context.text.title3).copyWith(color: valueColor ?? c.ink)),
-                  if (detail != null) ...[
+                  Text(
+                    value,
+                    style: (prominent ? context.text.title2 : context.text.title3).copyWith(color: valueColor ?? c.ink),
+                  ),
+                  for (final detail in details) ...[
                     const SizedBox(height: 2),
-                    Text(detail!, style: context.text.callout),
+                    Text(detail, style: context.text.callout),
                   ],
                   if (badge case final b?) ...[
                     const SizedBox(height: Space.sm),
@@ -449,5 +574,4 @@ class _KnownProblemsState extends ConsumerState<_KnownProblems> {
       ],
     );
   }
-
 }

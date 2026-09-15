@@ -2606,6 +2606,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careHumidityHigh => 'Aime l\'air humide';
 
   @override
+  String get careHumidityLowDetail =>
+      'L\'air d\'un logement chauffé lui suffit ; au-dessus de 70 %, elle s\'abîme.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      '40 à 60 %, l\'air ordinaire d\'un logement ; sous 30 %, les pointes brunissent.';
+
+  @override
+  String get careHumidityHighDetail =>
+      '60 % et plus : plateau de billes d\'argile humides, plantes groupées, pièce d\'eau. Sous 45 %, l\'air lui manque.';
+
+  @override
   String get careDifficultyEasy => 'Facile';
 
   @override
@@ -2768,6 +2780,156 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careWaterSoftenedRisk =>
       'Le sodium s\'accumule dans le terreau, abîme les racines et ferme la structure du sol. Le robinet d\'eau brute, en amont de l\'adoucisseur, reste le bon.';
+
+  @override
+  String get careSoilMixStandard =>
+      'Allégé de 20 % de perlite, pour que l\'eau traverse.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % de terreau, 25 % de perlite, 25 % de sable grossier ou de pouzzolane.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % de terreau, 70 % de pouzzolane, de pierre ponce ou de sable grossier.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Écorces de pin moyennes, 10 % de perlite, un peu de sphaigne ; jamais de terreau.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Allégée de 25 % d\'écorce de pin, sans calcaire ni compost.';
+
+  @override
+  String get careSoilMixRich =>
+      '40 % de terreau, 40 % de compost, 20 % de perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Pas de substrat : les racines vivent à l\'air ou dans l\'eau.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'Dans l\'eau : $water · En pon : $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'oui';
+
+  @override
+  String get careSoilFreeNo => 'non';
+
+  @override
+  String get careSoilFreeCuttings => 'bouture seulement';
+
+  @override
+  String get careFertBalanced =>
+      'Engrais plantes vertes équilibré, dilué de moitié.';
+
+  @override
+  String get careFertFoliage => 'Engrais riche en azote, celui du feuillage.';
+
+  @override
+  String get careFertFlowering =>
+      'Engrais riche en potasse, celui de la floraison.';
+
+  @override
+  String get careFertCactus => 'Engrais cactées, pauvre en azote.';
+
+  @override
+  String get careFertOrchid => 'Engrais orchidées, très dilué.';
+
+  @override
+  String get careFertAcidic => 'Engrais pour terre de bruyère, sans calcaire.';
+
+  @override
+  String get careFertCitrus =>
+      'Engrais agrumes, riche en azote et en oligo-éléments.';
+
+  @override
+  String get careFertVegetable => 'Engrais tomates, riche en potasse.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcium : aucun apport, et de l\'eau de pluie ; le calcaire fait jaunir son feuillage.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcium : l\'eau calcaire lui convient, des coquilles d\'œufs broyées au rempotage aussi.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcium : un apport régulier évite la nécrose apicale des fruits.';
+
+  @override
+  String get careGreenhouse => 'Sous serre';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Chaleur et air humide';
+
+  @override
+  String get careGreenhouseWarmLight => 'Chaleur et lumière';
+
+  @override
+  String get careGreenhouseWarmDry => 'Chaleur, lumière et air sec';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Tenues toute l\'année, ces conditions accélèrent la pousse : l\'arrosage et l\'engrais se rapprochent d\'autant.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Aérer chaque jour : l\'air confiné fait pourrir ce qui aime le sec.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.';
+
+  @override
+  String get careBloom => 'Floraison';
+
+  @override
+  String get careBloomCoolRest => 'Un hiver frais';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.';
+
+  @override
+  String get careBloomCoolNights => 'Des nuits fraîches';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Trois semaines à 15 °C la nuit, en automne, font monter la hampe.';
+
+  @override
+  String get careBloomShortDays => 'Des jours courts';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.';
+
+  @override
+  String get careBloomDrySpell => 'Une sécheresse';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.';
+
+  @override
+  String get careBloomPotbound => 'Un pot à l\'étroit';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.';
+
+  @override
+  String get careBloomBrightLight => 'Plus de lumière';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.';
 
   @override
   String get carePropCutting => 'Bouture de tige';

@@ -4482,6 +4482,24 @@ abstract class AppLocalizations {
   /// **'Aime l\'air humide'**
   String get careHumidityHigh;
 
+  /// No description provided for @careHumidityLowDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'air d\'un logement chauffé lui suffit ; au-dessus de 70 %, elle s\'abîme.'**
+  String get careHumidityLowDetail;
+
+  /// No description provided for @careHumidityAverageDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'40 à 60 %, l\'air ordinaire d\'un logement ; sous 30 %, les pointes brunissent.'**
+  String get careHumidityAverageDetail;
+
+  /// No description provided for @careHumidityHighDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'60 % et plus : plateau de billes d\'argile humides, plantes groupées, pièce d\'eau. Sous 45 %, l\'air lui manque.'**
+  String get careHumidityHighDetail;
+
   /// No description provided for @careDifficultyEasy.
   ///
   /// In fr, this message translates to:
@@ -4775,6 +4793,258 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Le sodium s\'accumule dans le terreau, abîme les racines et ferme la structure du sol. Le robinet d\'eau brute, en amont de l\'adoucisseur, reste le bon.'**
   String get careWaterSoftenedRisk;
+
+  /// No description provided for @careSoilMixStandard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Allégé de 20 % de perlite, pour que l\'eau traverse.'**
+  String get careSoilMixStandard;
+
+  /// No description provided for @careSoilMixDraining.
+  ///
+  /// In fr, this message translates to:
+  /// **'50 % de terreau, 25 % de perlite, 25 % de sable grossier ou de pouzzolane.'**
+  String get careSoilMixDraining;
+
+  /// No description provided for @careSoilMixCactus.
+  ///
+  /// In fr, this message translates to:
+  /// **'30 % de terreau, 70 % de pouzzolane, de pierre ponce ou de sable grossier.'**
+  String get careSoilMixCactus;
+
+  /// No description provided for @careSoilMixOrchid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écorces de pin moyennes, 10 % de perlite, un peu de sphaigne ; jamais de terreau.'**
+  String get careSoilMixOrchid;
+
+  /// No description provided for @careSoilMixAcidic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Allégée de 25 % d\'écorce de pin, sans calcaire ni compost.'**
+  String get careSoilMixAcidic;
+
+  /// No description provided for @careSoilMixRich.
+  ///
+  /// In fr, this message translates to:
+  /// **'40 % de terreau, 40 % de compost, 20 % de perlite.'**
+  String get careSoilMixRich;
+
+  /// No description provided for @careSoilMixAquatic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de substrat : les racines vivent à l\'air ou dans l\'eau.'**
+  String get careSoilMixAquatic;
+
+  /// No description provided for @careSoilFree.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans l\'eau : {water} · En pon : {pon}'**
+  String careSoilFree(String water, String pon);
+
+  /// No description provided for @careSoilFreeYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'oui'**
+  String get careSoilFreeYes;
+
+  /// No description provided for @careSoilFreeNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'non'**
+  String get careSoilFreeNo;
+
+  /// No description provided for @careSoilFreeCuttings.
+  ///
+  /// In fr, this message translates to:
+  /// **'bouture seulement'**
+  String get careSoilFreeCuttings;
+
+  /// No description provided for @careFertBalanced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais plantes vertes équilibré, dilué de moitié.'**
+  String get careFertBalanced;
+
+  /// No description provided for @careFertFoliage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais riche en azote, celui du feuillage.'**
+  String get careFertFoliage;
+
+  /// No description provided for @careFertFlowering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais riche en potasse, celui de la floraison.'**
+  String get careFertFlowering;
+
+  /// No description provided for @careFertCactus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais cactées, pauvre en azote.'**
+  String get careFertCactus;
+
+  /// No description provided for @careFertOrchid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais orchidées, très dilué.'**
+  String get careFertOrchid;
+
+  /// No description provided for @careFertAcidic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais pour terre de bruyère, sans calcaire.'**
+  String get careFertAcidic;
+
+  /// No description provided for @careFertCitrus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais agrumes, riche en azote et en oligo-éléments.'**
+  String get careFertCitrus;
+
+  /// No description provided for @careFertVegetable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Engrais tomates, riche en potasse.'**
+  String get careFertVegetable;
+
+  /// No description provided for @careCalciumAvoid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calcium : aucun apport, et de l\'eau de pluie ; le calcaire fait jaunir son feuillage.'**
+  String get careCalciumAvoid;
+
+  /// No description provided for @careCalciumWelcome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calcium : l\'eau calcaire lui convient, des coquilles d\'œufs broyées au rempotage aussi.'**
+  String get careCalciumWelcome;
+
+  /// No description provided for @careCalciumNeeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calcium : un apport régulier évite la nécrose apicale des fruits.'**
+  String get careCalciumNeeded;
+
+  /// No description provided for @careGreenhouse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous serre'**
+  String get careGreenhouse;
+
+  /// No description provided for @careGreenhouseWarmHumid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur et air humide'**
+  String get careGreenhouseWarmHumid;
+
+  /// No description provided for @careGreenhouseWarmLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur et lumière'**
+  String get careGreenhouseWarmLight;
+
+  /// No description provided for @careGreenhouseWarmDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaleur, lumière et air sec'**
+  String get careGreenhouseWarmDry;
+
+  /// No description provided for @careGreenhouseGrowth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tenues toute l\'année, ces conditions accélèrent la pousse : l\'arrosage et l\'engrais se rapprochent d\'autant.'**
+  String get careGreenhouseGrowth;
+
+  /// No description provided for @careGreenhouseAir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aérer chaque jour : l\'air confiné fait pourrir ce qui aime le sec.'**
+  String get careGreenhouseAir;
+
+  /// No description provided for @careGreenhouseEarly.
+  ///
+  /// In fr, this message translates to:
+  /// **'En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.'**
+  String get careGreenhouseEarly;
+
+  /// No description provided for @careBloom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Floraison'**
+  String get careBloom;
+
+  /// No description provided for @careBloomCoolRest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un hiver frais'**
+  String get careBloomCoolRest;
+
+  /// No description provided for @careBloomCoolRestNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.'**
+  String get careBloomCoolRestNote;
+
+  /// No description provided for @careBloomCoolNights.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des nuits fraîches'**
+  String get careBloomCoolNights;
+
+  /// No description provided for @careBloomCoolNightsNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trois semaines à 15 °C la nuit, en automne, font monter la hampe.'**
+  String get careBloomCoolNightsNote;
+
+  /// No description provided for @careBloomShortDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des jours courts'**
+  String get careBloomShortDays;
+
+  /// No description provided for @careBloomShortDaysNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.'**
+  String get careBloomShortDaysNote;
+
+  /// No description provided for @careBloomDrySpell.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une sécheresse'**
+  String get careBloomDrySpell;
+
+  /// No description provided for @careBloomDrySpellNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.'**
+  String get careBloomDrySpellNote;
+
+  /// No description provided for @careBloomPotbound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un pot à l\'étroit'**
+  String get careBloomPotbound;
+
+  /// No description provided for @careBloomPotboundNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.'**
+  String get careBloomPotboundNote;
+
+  /// No description provided for @careBloomBrightLight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus de lumière'**
+  String get careBloomBrightLight;
+
+  /// No description provided for @careBloomBrightLightNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.'**
+  String get careBloomBrightLightNote;
 
   /// No description provided for @carePropCutting.
   ///

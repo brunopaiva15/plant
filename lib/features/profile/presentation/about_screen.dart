@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/species_count_copy.dart';
 import '../../../design_system/design_system.dart';
 
 /// D'où viennent les données de l'application.
@@ -20,13 +22,14 @@ class AboutScreen extends ConsumerWidget {
     // Le catalogue étendu ne se charge qu'à la demande : ici on affiche son
     // volume seulement s'il est déjà en mémoire, sans le charger pour ça.
     final species = ref.watch(speciesIndexProvider).value?.records.length;
+    final speciesCount = species == null ? null : NumberFormat.decimalPattern(l10n.localeName).format(species);
     return FloraPage(
       title: l10n.aboutSources,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           FloraGroup(
-            footer: species == null ? null : l10n.aboutSpeciesCount('$species'),
+            footer: speciesCount == null ? null : l10n.referencedSpeciesCount(speciesCount),
             children: [
               _SourceRow(
                 emoji: '📚',

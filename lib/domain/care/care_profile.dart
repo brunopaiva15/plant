@@ -33,6 +33,30 @@ enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
 ///   terre acide, carnivores, broméliacées épiphytes.
 enum WaterTolerance { tolerant, sensitive, strict }
 
+/// Ce qu'une plante accepte hors du terreau : l'eau claire d'un vase, ou le
+/// pon (billes inertes — pouzzolane, zéolithe, pierre ponce — arrosées d'une
+/// solution nutritive).
+enum SoilFreeFit {
+  /// Elle n'y tient pas.
+  no,
+
+  /// Le temps d'une bouture, pas d'une vie.
+  cuttings,
+
+  /// Elle y vit durablement.
+  yes,
+}
+
+/// Type d'engrais à privilégier.
+enum FertilizerKind { balanced, foliage, flowering, cactus, orchid, acidic, citrus, vegetable }
+
+/// Le calcium : celui que l'eau du robinet apporte déjà, celui qu'il faut
+/// ajouter, celui qu'il faut éviter.
+enum CalciumNeed { avoid, neutral, welcome, needed }
+
+/// Ce qui décide une plante à fleurir, quand c'est le but qu'on se donne.
+enum BloomTrigger { coolRest, coolNights, shortDays, drySpell, potbound, brightLight }
+
 /// Méthode de multiplication.
 enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, water, tuber }
 
@@ -93,6 +117,11 @@ class CareProfile {
     this.water = WaterTolerance.tolerant,
     this.fertilizingDays,
     this.fertilizingWindow = const MonthWindow(3, 9),
+    this.fertilizer,
+    this.calcium,
+    this.waterCulture,
+    this.ponCulture,
+    this.bloom,
     this.repotEveryMonths,
     this.minTempC,
     this.idealTempMinC,
@@ -125,6 +154,26 @@ class CareProfile {
   /// `null` = pas d'engrais utile.
   final int? fertilizingDays;
   final MonthWindow fertilizingWindow;
+
+  /// Engrais à privilégier, quand le substrat ne suffit pas à le dire : un
+  /// agrume et un ficus poussent tous deux en terreau, pas avec le même
+  /// engrais. `null` = celui que [fertilizerKind] déduit.
+  final FertilizerKind? fertilizer;
+
+  /// Rapport au calcium, quand il ne se déduit pas du substrat.
+  /// `null` = celui que [calciumNeed] déduit.
+  final CalciumNeed? calcium;
+
+  /// Culture dans l'eau claire, quand elle ne se déduit pas du reste de la
+  /// fiche. `null` = celle que [inWater] déduit.
+  final SoilFreeFit? waterCulture;
+
+  /// Culture en pon, même règle : `null` = celle que [inPon] déduit.
+  final SoilFreeFit? ponCulture;
+
+  /// Ce qui la décide à fleurir, quand c'est le but qu'on se donne.
+  /// `null` = rien de particulier à tenter.
+  final BloomTrigger? bloom;
 
   /// Mois entre deux rempotages. `null` = rempotage non pertinent (annuelles).
   final int? repotEveryMonths;
@@ -179,4 +228,67 @@ class CareProfile {
     final m = south ? (month + 6 - 1) % 12 + 1 : month;
     return fertilizingWindow.contains(m);
   }
+
+  /// Elle tient le gel, donc elle vit dehors en pleine terre : ni culture
+  /// hors-sol ni serre à lui proposer.
+  bool get frostHardy => (minTempC ?? 10) <= 0;
+
+  /// Elle vit en pot toute l'année : c'est la condition du hors-sol, qu'une
+  /// culture annuelle (semée, récoltée, arrachée) ne remplit pas.
+  bool get potGrown => repotEveryMonths != null && !frostHardy;
+
+  /// Vit-elle durablement dans l'eau claire ?
+  ///
+  /// Beaucoup de plantes d'intérieur y font des racines le temps d'une
+  /// bouture sans y tenir des années : les deux cas ne se disent pas de la
+  /// même façon. Les espèces qui y vivent vraiment le déclarent.
+  SoilFreeFit get inWater =>
+      waterCulture ??
+      switch (soil) {
+        SoilKind.aquatic => SoilFreeFit.yes,
+        _ when frostHardy => SoilFreeFit.no,
+        _ when propagation.contains(Propagation.water) => SoilFreeFit.cuttings,
+        _ => SoilFreeFit.no,
+      };
+
+  /// Se mène-t-elle en pon ?
+  ///
+  /// Les billes inertes conviennent à presque toutes les plantes en pot ;
+  /// elles ne conviennent pas à la terre de bruyère, dont elles remontent le
+  /// pH, ni à ce qui vit dehors ou ne fait qu'une saison.
+  SoilFreeFit get inPon =>
+      ponCulture ??
+      switch (soil) {
+        SoilKind.acidic || SoilKind.aquatic => SoilFreeFit.no,
+        _ when potGrown => SoilFreeFit.yes,
+        _ => SoilFreeFit.no,
+      };
+
+  /// Engrais à privilégier. `null` quand la plante ne se fertilise pas.
+  FertilizerKind? get fertilizerKind {
+    if (fertilizingDays == null) return null;
+    if (fertilizer case final f?) return f;
+    if (issues.contains(CommonIssue.blossomEndRot)) return FertilizerKind.vegetable;
+    return switch (soil) {
+      SoilKind.cactus => FertilizerKind.cactus,
+      SoilKind.orchid => FertilizerKind.orchid,
+      SoilKind.acidic => FertilizerKind.acidic,
+      _ => FertilizerKind.balanced,
+    };
+  }
+
+  /// Ce que le calcium lui fait. Une plante de terre de bruyère jaunit à
+  /// l'eau calcaire ; un légume-fruit sujet à la nécrose apicale en réclame.
+  CalciumNeed get calciumNeed =>
+      calcium ??
+      switch (soil) {
+        SoilKind.acidic => CalciumNeed.avoid,
+        _ when issues.contains(CommonIssue.blossomEndRot) => CalciumNeed.needed,
+        SoilKind.cactus => CalciumNeed.welcome,
+        _ => CalciumNeed.neutral,
+      };
+
+  /// Une serre, une mini-serre ou une véranda ont-elles quelque chose à lui
+  /// apporter ? Une plante qui passe l'hiver dehors n'en a pas l'usage.
+  bool get benefitsFromGreenhouse => !frostHardy;
 }

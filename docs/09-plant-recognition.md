@@ -1446,7 +1446,11 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
   qu'une plante de terre acide ou une carnivore ne pardonne pas le calcaire.
 - **Ce qui ne revient jamais** : la toxicité. Tout le reste est un avis sur
   le confort d'une plante ; « non toxique pour le chat » est une affirmation
-  sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue.
+  sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue. Ne
+  partent pas non plus le type d'engrais, le calcium, la culture hors-sol et
+  ce qui décide la floraison : le catalogue les déclare ou les déduit du
+  substrat (docs/04), et un substrat corrigé par l'IA recalcule les quatre
+  sans qu'on ait à les demander.
 - **Une fois** : la réponse est gardée sur l'appareil, par espèce et par
   langue, réponse vide comprise, pour qu'une espèce que l'IA ne connaît pas
   ne soit pas redemandée à chaque ouverture de la fiche. Le cache est borné
