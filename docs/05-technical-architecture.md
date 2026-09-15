@@ -285,8 +285,10 @@ Maison, par HomeKit, et Google Home, par les Home APIs.
 
 ### Google Home
 Les mêmes deux nombres, lus sur les Home APIs, sur iPhone comme sur Android.
-La partie Dart est écrite et éprouvée ; le natif l'est aussi, mais
-`AppConfig.googleHomeEnabled` reste faux, et voici pourquoi.
+La partie Dart est écrite et éprouvée ; le Kotlin compile contre le SDK
+réel, le Swift est écrit contre son interface publique mais n'a pas encore
+été compilé. Le drapeau, lui, ne gouverne que l'affichage : le SDK reste à
+donner à la construction, et voici pourquoi.
 
 À la différence de HomeKit, les Home APIs ne sont pas dans le système. Leur
 SDK ne se prend ni sur Maven Central, ni sur le dépôt Google, ni sur un
@@ -300,35 +302,52 @@ Pour la livrer :
 1. Déclarer un projet développeur dans la [console Google Home](https://console.home.google.com),
    avec le client OAuth de l'application — l'empreinte SHA-1 de la clé de
    signature côté Android, l'identifiant d'équipe et le bundle côté iOS.
-2. Télécharger le SDK depuis la console.
-   - Android : installer les deux artefacts (`play-services-home`,
-     `play-services-home-types`) dans le dépôt Maven local, puis construire
-     avec `-PgoogleHome=true` — `android/app/build.gradle.kts` ajoute alors
-     `mavenLocal()`, les dépendances, et le jeu de sources
-     `src/googleHome/kotlin` à la place de `src/noGoogleHome/kotlin`. Les
-     deux jeux donnent `GoogleHomeChannel` et `HostActivity` : l'un parle
-     aux Home APIs et fait de `MainActivity` un `FlutterFragmentActivity`
-     (la demande d'autorisation veut un `ActivityResultCaller`), l'autre ne
-     fait rien et laisse l'activité de Flutter telle quelle.
-   - iOS : ajouter les paquets `GoogleHomeSDK` et `GoogleHomeTypes` au
-     projet. `ios/Runner/GoogleHomeChannel.swift` est derrière
-     `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal
-     qui ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur
-     l'App ID ; le SDK ne se déploie pas sur le simulateur.
+2. Télécharger le SDK depuis la console. Les deux archives sont aussi dans
+   des seaux publics, ce qui permet de vérifier une version sans se
+   connecter : `home_sdk_android` et `home_sdk_ios` du projet
+   `home-api-public-beta`.
+   - Android (`home.android.sdk_1_10_1.zip`) : l'archive **est déjà un dépôt
+     Maven** (`com/google/android/gms/play-services-home/17.1.0/…`). La
+     dézipper et donner le chemin suffit :
+     `flutter build apk -PgoogleHomeRepo=<chemin>`.
+     `android/build.gradle.kts` ajoute alors ce dossier aux dépôts, et
+     `app/build.gradle.kts` ajoute les deux artefacts en 17.1.0 plus le jeu
+     de sources `src/googleHome/kotlin` à la place de
+     `src/noGoogleHome/kotlin`. Les deux jeux donnent `GoogleHomeChannel` et
+     `HostActivity` : l'un parle aux Home APIs et fait de `MainActivity` un
+     `FlutterFragmentActivity` (la demande d'autorisation veut un
+     `ActivityResultCaller`), l'autre ne fait rien et laisse l'activité de
+     Flutter telle quelle. `kotlinx-coroutines` vient en dépendance
+     transitive du SDK, rien à déclarer. minSdk 24.
+   - iOS (`GoogleHomeSDK-1.10.1.tar.gz`) : ajouter le paquet local au projet
+     (`File › Add Package Dependencies › Add Local`), puis `GoogleHomeSDK` et
+     `GoogleHomeTypes` à la cible Runner.
+     `ios/Runner/GoogleHomeChannel.swift` est derrière
+     `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal qui
+     ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur l'App
+     ID ; le SDK ne se déploie pas sur le simulateur. **Il demande iOS 17**,
+     là où l'application est à 15/16 : la livrer sur iPhone veut dire monter
+     le minimum, et c'est un choix produit, pas une ligne de code.
 3. Renseigner `GoogleHomeClientID`, `GoogleHomeTeamID` et
    `GoogleHomeAppGroup` dans `ios/Runner/Info.plist` (les clés sont en
    commentaire à côté de `NSHomeKitUsageDescription`) ; sans elles, le canal
    répond « pas de maison ici » plutôt que d'ouvrir une session à moitié
    configurée.
-4. Passer `AppConfig.googleHomeEnabled` à vrai.
+4. Passer `AppConfig.googleHomeEnabled` à vrai, et en dernier : le faire
+   sans le SDK montre un bouton « Connecter Google Home » qui répondra
+   toujours « aucun capteur ».
 
-Ce que le canal lit : les structures, leurs pièces, et les appareils qui
-portent `TemperatureMeasurement` ou `RelativeHumidityMeasurement` — capteur
-de température, hygromètre, thermostat, qui mesure la pièce où il est posé.
-Un type de plus s'ajoute dans `measures`. Matter compte en centièmes de
-degré et de pour cent ; selon la version du SDK, les traits rendent déjà des
-degrés, et une valeur hors de la plage d'une pièce est donc divisée par
-cent.
+Ce que le canal lit : les appareils, les pièces et les maisons à plat, puis
+recollés par identifiant (`HomeDevice.roomID`, `structureID`). Trois types
+portent l'air d'une pièce, et pas de la même façon — c'est la surprise de
+l'API : le capteur de température a `temperatureMeasurementTrait`,
+l'hygromètre a `relativeHumidityMeasurementTrait`, mais le thermostat n'a
+aucun trait de mesure : sa température de pièce est `localTemperature`, sur
+`thermostatTrait`. Un type de plus s'ajoute dans `measures`. Les trois
+valeurs sont des entiers Matter en centièmes (`Int16` pour un degré,
+`UInt16` pour un pour cent), donc divisés par cent, sans deviner. Une valeur
+absente du cache se redemande une fois par `forceRead`, que les trois traits
+savent faire.
 
 Ce qui n'est pas la même promesse qu'Apple Maison : HomeKit lit les
 accessoires sur l'appareil, les Home APIs passent par le compte Google de
