@@ -3719,6 +3719,98 @@ espèce de plus coûte.
   élargir le catalogue exposé se paie, et se paie en points. On continuera
   d'en collecter — pour l'entraînement, pas pour l'affichage.
 
+### 13.7 bis Cadrage de l'Iris 10 : distiller un gros professeur
+
+> **Écrit pendant l'entraînement de l'Iris 9**, donc avant d'en connaître le
+> résultat. Ce qui suit est un cadrage, pas une décision.
+
+```
+                 ENTRAÎNEMENT
+                      │
+                      ▼
+          DINOv3 / DINOv2 ViT-B
+               gros professeur
+                      │
+               distillation
+                      │
+                      ▼
+       ┌───────────────────────────┐
+       │ Iris mobile               │
+       │ RepViT / MobileNetV4      │
+       │ ~10-25 M paramètres       │
+       └───────────────────────────┘
+                      │
+                      ▼
+              CoreML / TFLite
+```
+
+#### L'argument fort n'est pas celui qu'on croit
+
+Ce n'est pas « un meilleur réseau ». C'est que **la distillation de traits
+n'a pas besoin d'étiquettes.**
+
+DINOv2 et DINOv3 sont des extracteurs auto-supervisés, pas des
+classifieurs : on n'en distille pas des logits mais un **embedding**. Or
+faire correspondre l'embedding de l'élève à celui du professeur sur une
+image ne demande que l'image. Pas son nom.
+
+Et c'est exactement le mur sur lequel tout bute (§ 13.3, § 12.4) : 73 % des
+erreurs franchissent la famille faute d'avoir vu la plante telle qu'on la
+cultive, et les photos étiquetées dans ce domaine n'existent nulle part.
+Des photos de plantes d'appartement **sans nom**, en revanche, il y en a
+partout — Commons, Flickr, les sites horticoles. Aujourd'hui elles ne
+servent à rien. Avec une distillation de traits, elles nourrissent l'élève.
+
+**C'est la seule proposition de ces deux jours qui desserre la contrainte
+de données au lieu de la contourner.** À ce titre elle mérite ses portes.
+
+#### Les trois portes, de la moins chère à la plus chère
+
+**Porte A — le professeur est-il meilleur que notre élève actuel ?**
+Extraire les embeddings de DINOv2 ViT-B sur notre jeu de test, entraîner
+une sonde linéaire, comparer au **0,5407 de top-1 de l'Iris 8 large** sur
+les mêmes images. Si un DINOv2 gelé plus une couche linéaire ne bat pas un
+MobileNetV3 entièrement réglé, toute la construction s'effondre — il n'y a
+pas de professeur. Deux heures, aucun entraînement, et
+`prototypes.py` fait déjà l'essentiel du travail d'extraction.
+
+**Porte B — l'élève sort-il du four ?** RepViT et MobileNetV4-Conv-M ne
+sont pas dans `tf.keras.applications` (vérifié : il n'expose que
+`MobileNet`, `V2`, `V3Small`, `V3Large`). Les importer est un **portage**,
+pas une option : poids venus de `timm` ou de KerasHub, prétraitement à
+vérifier contre ce que `model.json` annonce, et surtout export `.tflite`
+en float16 à une taille et une latence tenables. Deux heures pour le
+savoir, avant d'en dépenser vingt.
+
+**Porte C — la distillation transfère-t-elle ?** Ne se pose qu'après A et
+B, et se mesure comme le reste (§ 12.10) : à armes égales contre un élève
+entraîné directement en supervisé sur le même jeu. La distillation ne
+gagne que si elle apporte **des images que le supervisé n'a pas** ; sur les
+991 000 images étiquetées seules, rien ne dit qu'elle batte l'entraînement
+direct.
+
+#### Deux coûts à ne pas découvrir en route
+
+**La taille.** MobileNetV3-Large fait ~5 M de paramètres et le `.tflite`
+livré pèse 8,7 Mo. À 25 M de paramètres en float16, on parle de l'ordre de
+50 Mo — six fois plus, dans une application qu'on installe. Le bas de la
+fourchette (RepViT-M0.9, ~5 M) est bien plus raisonnable que le haut, et le
+§ 12.6 rappelle que l'inférence sur téléphone est déjà l'arbitrage
+principal.
+
+**Le second chemin d'export.** CoreML n'est pas TFLite : c'est une
+deuxième conversion, un deuxième format à valider, et du code natif iOS là
+où l'application n'a aujourd'hui qu'un seul chemin. Ça se défend — l'app
+est iOS d'abord — mais c'est un chantier, pas une case à cocher.
+
+#### Ce que ça ne change pas
+
+La collecte reste à faire. Un professeur auto-supervisé rend les images
+**non étiquetées** utilisables ; il ne les fait pas apparaître. Le chantier
+4 du § 13.3 — `captive=true` d'iNaturalist sous-exploité, `(potted)` de
+Commons, les 76 espèces faibles — garde exactement la même priorité, et il
+alimente les deux voies.
+
 ### 13.8 Ce qu'il faut retenir
 
 Trois des six chantiers ne demandent **aucun entraînement**, et deux ne
