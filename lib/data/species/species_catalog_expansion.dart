@@ -1,181 +1,27 @@
 import '../../domain/species/species_info.dart';
+import 'species_catalog_expansion_500.dart' as catalog500;
+import 'catalog_650/species_catalog_650_flower.dart';
+import 'catalog_650/species_catalog_650_fruit.dart';
+import 'catalog_650/species_catalog_650_herb.dart';
+import 'catalog_650/species_catalog_650_indoor.dart';
+import 'catalog_650/species_catalog_650_succulent.dart';
+import 'catalog_650/species_catalog_650_tree.dart';
+import 'catalog_650/species_catalog_650_vegetable.dart';
 
-/// Extension du catalogue curaté : 150 espèces supplémentaires
-/// réparties entre les grandes catégories de l'app.
+/// Extensions du catalogue curaté.
+///
+/// Le palier historique jusqu'à 500 espèces est conservé séparément ;
+/// les ajouts 500 → 650 sont découpés par catégorie pour garder des fichiers
+/// courts et faciles à maintenir.
 abstract final class SpeciesCatalogExpansion {
   static const List<SpeciesCatalogEntry> entries = [
-    // ── Plantes d'intérieur ───────────────────────────────────────────────
-    SpeciesCatalogEntry('Monstera obliqua', 'Araceae', SpeciesCategory.indoor, fr: 'Monstera obliqua', en: 'Window-leaf monstera', de: 'Löchriges Fensterblatt', it: 'Monstera obliqua'),
-    SpeciesCatalogEntry('Monstera standleyana', 'Araceae', SpeciesCategory.indoor, fr: 'Monstera standleyana', en: 'Monstera standleyana', de: 'Monstera standleyana', it: 'Monstera standleyana'),
-    SpeciesCatalogEntry('Rhaphidophora tetrasperma', 'Araceae', SpeciesCategory.indoor, fr: 'Mini monstera', en: 'Mini monstera', de: 'Mini-Monstera', it: 'Mini monstera'),
-    SpeciesCatalogEntry('Rhaphidophora decursiva', 'Araceae', SpeciesCategory.indoor, fr: 'Rhaphidophora decursiva', en: 'Rhaphidophora decursiva', de: 'Rhaphidophora decursiva', it: 'Rhaphidophora decursiva'),
-    SpeciesCatalogEntry('Anthurium warocqueanum', 'Araceae', SpeciesCategory.indoor, fr: 'Anthurium reine', en: 'Queen anthurium', de: 'Königin-Anthurie', it: 'Anthurium regina'),
-    SpeciesCatalogEntry('Anthurium forgetii', 'Araceae', SpeciesCategory.indoor, fr: 'Anthurium forgetii', en: 'Anthurium forgetii', de: 'Anthurium forgetii', it: 'Anthurium forgetii'),
-    SpeciesCatalogEntry('Alocasia odora', 'Araceae', SpeciesCategory.indoor, fr: 'Alocasia odorant', en: 'Asian taro', de: 'Duftende Alokasie', it: 'Alocasia odorosa'),
-    SpeciesCatalogEntry('Syngonium angustatum', 'Araceae', SpeciesCategory.indoor, fr: 'Syngonium étroit', en: 'Five-fingers plant', de: 'Fünffinger-Syngonium', it: 'Singonio a foglie strette'),
-    SpeciesCatalogEntry('Peperomia clusiifolia', 'Piperaceae', SpeciesCategory.indoor, fr: 'Pépéromia à feuilles de Clusia', en: 'Red-edge peperomia', de: 'Rotrand-Peperomie', it: 'Peperomia a margine rosso'),
-    SpeciesCatalogEntry('Peperomia graveolens', 'Piperaceae', SpeciesCategory.indoor, fr: 'Pépéromia Ruby Glow', en: 'Ruby glow peperomia', de: 'Ruby-Glow-Peperomie', it: 'Peperomia Ruby Glow'),
-    SpeciesCatalogEntry('Hoya multiflora', 'Apocynaceae', SpeciesCategory.indoor, fr: 'Hoya multiflora', en: 'Shooting star hoya', de: 'Vielblütige Wachsblume', it: 'Hoya multiflora'),
-    SpeciesCatalogEntry('Hoya curtisii', 'Apocynaceae', SpeciesCategory.indoor, fr: 'Hoya curtisii', en: 'Hoya curtisii', de: 'Hoya curtisii', it: 'Hoya curtisii'),
-    SpeciesCatalogEntry('Begonia cucullata', 'Begoniaceae', SpeciesCategory.indoor, fr: 'Bégonia cucullata', en: 'Wax begonia', de: 'Wachs-Begonie', it: 'Begonia cucullata'),
-    SpeciesCatalogEntry('Goeppertia roseopicta', 'Marantaceae', SpeciesCategory.indoor, fr: 'Calathea roseopicta', en: 'Rose-painted calathea', de: 'Roseopicta-Korbmarante', it: 'Calathea roseopicta'),
-    SpeciesCatalogEntry('Goeppertia zebrina', 'Marantaceae', SpeciesCategory.indoor, fr: 'Calathea zébrée', en: 'Zebra plant', de: 'Zebra-Korbmarante', it: 'Calathea zebrina'),
-
-    // ── Succulentes et cactus ─────────────────────────────────────────────
-    SpeciesCatalogEntry('Aloe arborescens', 'Asphodelaceae', SpeciesCategory.succulent, fr: 'Aloé arborescent', en: 'Torch aloe', de: 'Baum-Aloe', it: 'Aloe arborescente'),
-    SpeciesCatalogEntry('Haworthia cooperi', 'Asphodelaceae', SpeciesCategory.succulent, fr: 'Haworthia de Cooper', en: "Cooper's haworthia", de: 'Cooper-Haworthie', it: 'Haworthia di Cooper'),
-    SpeciesCatalogEntry('Haworthiopsis fasciata', 'Asphodelaceae', SpeciesCategory.succulent, fr: 'Haworthia fasciata', en: 'Zebra haworthia', de: 'Zebra-Haworthie', it: 'Haworthia fasciata'),
-    SpeciesCatalogEntry('Crassula perforata', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Collier de boutons', en: 'String of buttons', de: 'Knopf-Crassula', it: 'Collana di bottoni'),
-    SpeciesCatalogEntry('Kalanchoe tomentosa', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Plante panda', en: 'Panda plant', de: 'Pandapflanze', it: 'Pianta panda'),
-    SpeciesCatalogEntry('Echeveria agavoides', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Echeveria agavoides', en: 'Lipstick echeveria', de: 'Agaven-Echeverie', it: 'Echeveria agavoides'),
-    SpeciesCatalogEntry('Sedum × rubrotinctum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Orpin haricot', en: 'Jelly bean plant', de: 'Ampel-Fetthenne', it: 'Sedum fagiolini'),
-    SpeciesCatalogEntry('Pachyphytum oviferum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Plante pierre de lune', en: 'Moonstones', de: 'Mondstein-Sukkulente', it: 'Pietre di luna'),
-    SpeciesCatalogEntry('Agave attenuata', 'Asparagaceae', SpeciesCategory.succulent, fr: 'Agave à cou de cygne', en: 'Foxtail agave', de: 'Schwanenhals-Agave', it: 'Agave attenuata'),
-    SpeciesCatalogEntry('Opuntia microdasys', 'Cactaceae', SpeciesCategory.succulent, fr: 'Oreilles de lapin', en: 'Bunny ears cactus', de: 'Hasenohrenkaktus', it: 'Cactus orecchie di coniglio'),
-
-    // ── Aromatiques et potager ────────────────────────────────────────────
-    SpeciesCatalogEntry('Ocimum tenuiflorum', 'Lamiaceae', SpeciesCategory.herb, fr: 'Basilic sacré', en: 'Holy basil', de: 'Heiliges Basilikum', it: 'Basilico sacro'),
-    SpeciesCatalogEntry('Allium ursinum', 'Amaryllidaceae', SpeciesCategory.herb, fr: 'Ail des ours', en: 'Wild garlic', de: 'Bärlauch', it: 'Aglio orsino'),
-    SpeciesCatalogEntry('Borago officinalis', 'Boraginaceae', SpeciesCategory.herb, fr: 'Bourrache', en: 'Borage', de: 'Borretsch', it: 'Borragine'),
-    SpeciesCatalogEntry('Ipomoea batatas', 'Convolvulaceae', SpeciesCategory.vegetable, fr: 'Patate douce', en: 'Sweet potato', de: 'Süßkartoffel', it: 'Patata dolce'),
-    SpeciesCatalogEntry('Cucurbita moschata', 'Cucurbitaceae', SpeciesCategory.vegetable, fr: 'Courge musquée', en: 'Butternut squash', de: 'Moschus-Kürbis', it: 'Zucca moscata'),
-
-    // ── Fruitiers ─────────────────────────────────────────────────────────
-    SpeciesCatalogEntry('Psidium guajava', 'Myrtaceae', SpeciesCategory.fruit, fr: 'Goyavier', en: 'Guava', de: 'Guave', it: 'Guava'),
-    SpeciesCatalogEntry('Carica papaya', 'Caricaceae', SpeciesCategory.fruit, fr: 'Papayer', en: 'Papaya', de: 'Papaya', it: 'Papaya'),
-    SpeciesCatalogEntry('Ananas comosus', 'Bromeliaceae', SpeciesCategory.fruit, fr: 'Ananas', en: 'Pineapple', de: 'Ananas', it: 'Ananas'),
-    SpeciesCatalogEntry('Morus alba', 'Moraceae', SpeciesCategory.fruit, fr: 'Mûrier blanc', en: 'White mulberry', de: 'Weißer Maulbeerbaum', it: 'Gelso bianco'),
-    SpeciesCatalogEntry('Actinidia arguta', 'Actinidiaceae', SpeciesCategory.fruit, fr: 'Kiwi de Sibérie', en: 'Hardy kiwi', de: 'Mini-Kiwi', it: 'Kiwi siberiano'),
-
-    // ── Fleurs ────────────────────────────────────────────────────────────
-    SpeciesCatalogEntry('Hydrangea paniculata', 'Hydrangeaceae', SpeciesCategory.flower, fr: 'Hortensia paniculé', en: 'Panicle hydrangea', de: 'Rispenhortensie', it: 'Ortensia paniculata'),
-    SpeciesCatalogEntry('Rosa rugosa', 'Rosaceae', SpeciesCategory.flower, fr: 'Rosier rugueux', en: 'Rugosa rose', de: 'Kartoffel-Rose', it: 'Rosa rugosa'),
-    SpeciesCatalogEntry('Viola tricolor', 'Violaceae', SpeciesCategory.flower, fr: 'Pensée sauvage', en: 'Wild pansy', de: 'Wildes Stiefmütterchen', it: 'Viola tricolore'),
-    SpeciesCatalogEntry('Iris sibirica', 'Iridaceae', SpeciesCategory.flower, fr: 'Iris de Sibérie', en: 'Siberian iris', de: 'Sibirische Schwertlilie', it: 'Iris sibirica'),
-    SpeciesCatalogEntry('Crocus sativus', 'Iridaceae', SpeciesCategory.flower, fr: 'Crocus à safran', en: 'Saffron crocus', de: 'Safran-Krokus', it: 'Croco da zafferano'),
-    SpeciesCatalogEntry('Lilium martagon', 'Liliaceae', SpeciesCategory.flower, fr: 'Lis martagon', en: 'Martagon lily', de: 'Türkenbund-Lilie', it: 'Giglio martagone'),
-    SpeciesCatalogEntry('Muscari armeniacum', 'Asparagaceae', SpeciesCategory.flower, fr: "Muscari d'Arménie", en: 'Grape hyacinth', de: 'Armenische Traubenhyazinthe', it: 'Muscari armeno'),
-    SpeciesCatalogEntry('Cosmos sulphureus', 'Asteraceae', SpeciesCategory.flower, fr: 'Cosmos sulfureux', en: 'Sulphur cosmos', de: 'Schwefel-Kosmee', it: 'Cosmea sulfurea'),
-    SpeciesCatalogEntry('Verbena bonariensis', 'Verbenaceae', SpeciesCategory.flower, fr: 'Verveine de Buenos Aires', en: 'Purpletop vervain', de: 'Patagonisches Eisenkraut', it: 'Verbena bonariensis'),
-    SpeciesCatalogEntry('Passiflora caerulea', 'Passifloraceae', SpeciesCategory.flower, fr: 'Passiflore bleue', en: 'Blue passionflower', de: 'Blaue Passionsblume', it: 'Passiflora azzurra'),
-
-    // ── Arbres ────────────────────────────────────────────────────────────
-    SpeciesCatalogEntry('Acer pseudoplatanus', 'Sapindaceae', SpeciesCategory.tree, fr: 'Érable sycomore', en: 'Sycamore maple', de: 'Berg-Ahorn', it: 'Acero di monte'),
-    SpeciesCatalogEntry('Carpinus betulus', 'Betulaceae', SpeciesCategory.tree, fr: 'Charme commun', en: 'European hornbeam', de: 'Hainbuche', it: 'Carpino bianco'),
-    SpeciesCatalogEntry('Fraxinus excelsior', 'Oleaceae', SpeciesCategory.tree, fr: 'Frêne commun', en: 'European ash', de: 'Gemeine Esche', it: 'Frassino maggiore'),
-    SpeciesCatalogEntry('Larix decidua', 'Pinaceae', SpeciesCategory.tree, fr: "Mélèze d'Europe", en: 'European larch', de: 'Europäische Lärche', it: 'Larice europeo'),
-    SpeciesCatalogEntry('Taxus baccata', 'Taxaceae', SpeciesCategory.tree, fr: 'If commun', en: 'European yew', de: 'Europäische Eibe', it: 'Tasso comune'),
-
-    // ── Plantes d'intérieur — vague 500 ──────────────────────────────────
-    SpeciesCatalogEntry('Monstera acuminata', 'Araceae', SpeciesCategory.indoor, fr: 'Monstera acuminata', en: 'Monstera acuminata', de: 'Monstera acuminata', it: 'Monstera acuminata'),
-    SpeciesCatalogEntry('Rhaphidophora hayi', 'Araceae', SpeciesCategory.indoor, fr: 'Rhaphidophora hayi', en: 'Shingle plant', de: 'Rhaphidophora hayi', it: 'Rhaphidophora hayi'),
-    SpeciesCatalogEntry('Epipremnum amplissimum', 'Araceae', SpeciesCategory.indoor, fr: 'Pothos amplissimum', en: 'Epipremnum amplissimum', de: 'Epipremnum amplissimum', it: 'Epipremnum amplissimum'),
-    SpeciesCatalogEntry('Scindapsus officinalis', 'Araceae', SpeciesCategory.indoor, fr: 'Scindapsus officinalis', en: 'Scindapsus officinalis', de: 'Scindapsus officinalis', it: 'Scindapsus officinalis'),
-    SpeciesCatalogEntry('Philodendron camposportoanum', 'Araceae', SpeciesCategory.indoor, fr: 'Philodendron camposportoanum', en: 'Philodendron camposportoanum', de: 'Philodendron camposportoanum', it: 'Filodendro camposportoanum'),
-    SpeciesCatalogEntry('Philodendron domesticum', 'Araceae', SpeciesCategory.indoor, fr: 'Philodendron domesticum', en: 'Spade-leaf philodendron', de: 'Spatenblatt-Philodendron', it: 'Filodendro domesticum'),
-    SpeciesCatalogEntry('Philodendron giganteum', 'Araceae', SpeciesCategory.indoor, fr: 'Philodendron géant', en: 'Giant philodendron', de: 'Riesen-Philodendron', it: 'Filodendro gigante'),
-    SpeciesCatalogEntry('Philodendron mayoi', 'Araceae', SpeciesCategory.indoor, fr: 'Philodendron mayoi', en: 'Philodendron mayoi', de: 'Philodendron mayoi', it: 'Filodendro mayoi'),
-    SpeciesCatalogEntry('Philodendron tortum', 'Araceae', SpeciesCategory.indoor, fr: 'Philodendron tortum', en: 'Philodendron tortum', de: 'Philodendron tortum', it: 'Filodendro tortum'),
-    SpeciesCatalogEntry('Alocasia wentii', 'Araceae', SpeciesCategory.indoor, fr: 'Alocasia wentii', en: 'Hardy elephant ear', de: 'Alokasie Wentii', it: 'Alocasia wentii'),
-    SpeciesCatalogEntry('Alocasia longiloba', 'Araceae', SpeciesCategory.indoor, fr: 'Alocasia longiloba', en: 'Long-lobed alocasia', de: 'Langlappige Alokasie', it: 'Alocasia longiloba'),
-    SpeciesCatalogEntry('Anthurium luxurians', 'Araceae', SpeciesCategory.indoor, fr: 'Anthurium luxurians', en: 'Anthurium luxurians', de: 'Anthurium luxurians', it: 'Anthurium luxurians'),
-    SpeciesCatalogEntry('Anthurium regale', 'Araceae', SpeciesCategory.indoor, fr: 'Anthurium regale', en: 'Regal anthurium', de: 'Königs-Anthurie', it: 'Anthurium regale'),
-    SpeciesCatalogEntry('Anthurium vittarifolium', 'Araceae', SpeciesCategory.indoor, fr: 'Anthurium ruban', en: 'Strap-leaf anthurium', de: 'Bandblatt-Anthurie', it: 'Anthurium a foglie nastriformi'),
-    SpeciesCatalogEntry('Homalomena rubescens', 'Araceae', SpeciesCategory.indoor, fr: 'Homalomena rubescens', en: 'Red homalomena', de: 'Rötliche Homalomena', it: 'Homalomena rubescens'),
-    SpeciesCatalogEntry('Spathiphyllum floribundum', 'Araceae', SpeciesCategory.indoor, fr: 'Spathiphyllum florifère', en: 'Snowflower', de: 'Reichblühendes Einblatt', it: 'Spatifillo floribondo'),
-    SpeciesCatalogEntry('Peperomia scandens', 'Piperaceae', SpeciesCategory.indoor, fr: 'Pépéromia grimpante', en: 'Cupid peperomia', de: 'Kletter-Peperomie', it: 'Peperomia rampicante'),
-    SpeciesCatalogEntry('Peperomia ferreyrae', 'Piperaceae', SpeciesCategory.indoor, fr: 'Pépéromia haricot', en: 'Happy bean peperomia', de: 'Glückliche-Bohne-Peperomie', it: 'Peperomia fagiolino'),
-    SpeciesCatalogEntry('Hoya wayetii', 'Apocynaceae', SpeciesCategory.indoor, fr: 'Hoya wayetii', en: 'Hoya wayetii', de: 'Hoya wayetii', it: 'Hoya wayetii'),
-    SpeciesCatalogEntry('Hoya lacunosa', 'Apocynaceae', SpeciesCategory.indoor, fr: 'Hoya lacunosa', en: 'Cinnamon-scented wax plant', de: 'Duftende Wachsblume', it: 'Hoya lacunosa'),
-    SpeciesCatalogEntry('Hoya tsiangiana', 'Apocynaceae', SpeciesCategory.indoor, fr: 'Hoya retusa', en: 'Grass-leaf hoya', de: 'Grasblättrige Wachsblume', it: 'Hoya retusa'),
-    SpeciesCatalogEntry('Begonia amphioxus', 'Begoniaceae', SpeciesCategory.indoor, fr: 'Bégonia amphioxus', en: 'Begonia amphioxus', de: 'Begonie amphioxus', it: 'Begonia amphioxus'),
-    SpeciesCatalogEntry('Begonia pavonina', 'Begoniaceae', SpeciesCategory.indoor, fr: 'Bégonia paon', en: 'Peacock begonia', de: 'Pfauen-Begonie', it: 'Begonia pavonina'),
-    SpeciesCatalogEntry('Pilea microphylla', 'Urticaceae', SpeciesCategory.indoor, fr: 'Plante artillerie', en: 'Artillery plant', de: 'Artilleriepflanze', it: 'Pianta artiglieria'),
-    SpeciesCatalogEntry('Fittonia gigantea', 'Acanthaceae', SpeciesCategory.indoor, fr: 'Fittonia géante', en: 'Giant nerve plant', de: 'Riesen-Fittonie', it: 'Fittonia gigante'),
-    SpeciesCatalogEntry('Maranta arundinacea', 'Marantaceae', SpeciesCategory.indoor, fr: 'Maranta arundinacea', en: 'Arrowroot', de: 'Pfeilwurz', it: 'Maranta arundinacea'),
-    SpeciesCatalogEntry('Ctenanthe setosa', 'Marantaceae', SpeciesCategory.indoor, fr: 'Ctenanthe setosa', en: 'Never-never plant', de: 'Korbmarante setosa', it: 'Ctenanthe setosa'),
-    SpeciesCatalogEntry('Tillandsia bulbosa', 'Bromeliaceae', SpeciesCategory.indoor, fr: 'Tillandsia bulbosa', en: 'Bulbous air plant', de: 'Knollige Tillandsie', it: 'Tillandsia bulbosa'),
-    SpeciesCatalogEntry('Tillandsia caput-medusae', 'Bromeliaceae', SpeciesCategory.indoor, fr: 'Tillandsia tête de Méduse', en: 'Medusa\'s head air plant', de: 'Medusenhaupt-Tillandsie', it: 'Tillandsia testa di Medusa'),
-    SpeciesCatalogEntry('Phalaenopsis equestris', 'Orchidaceae', SpeciesCategory.indoor, fr: 'Phalaenopsis equestris', en: 'Horse phalaenopsis', de: 'Phalaenopsis equestris', it: 'Phalaenopsis equestris'),
-
-    // ── Succulentes et cactus — vague 500 ────────────────────────────────
-    SpeciesCatalogEntry('Aristaloe aristata', 'Asphodelaceae', SpeciesCategory.succulent, fr: 'Aloé aristé', en: 'Lace aloe', de: 'Spitzblättrige Aloe', it: 'Aloe aristata'),
-    SpeciesCatalogEntry('Aloe brevifolia', 'Asphodelaceae', SpeciesCategory.succulent, fr: 'Aloé à feuilles courtes', en: 'Short-leaved aloe', de: 'Kurzblättrige Aloe', it: 'Aloe a foglie corte'),
-    SpeciesCatalogEntry('Aloe juvenna', 'Asphodelaceae', SpeciesCategory.succulent, fr: 'Aloé dents de tigre', en: 'Tiger tooth aloe', de: 'Tigerzahn-Aloe', it: 'Aloe dente di tigre'),
-    SpeciesCatalogEntry('Crassula muscosa', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Crassula lycopode', en: 'Watch chain', de: 'Ketten-Crassula', it: 'Crassula muscosa'),
-    SpeciesCatalogEntry('Crassula capitella', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Crassula capitella', en: 'Campfire crassula', de: 'Flammen-Crassula', it: 'Crassula capitella'),
-    SpeciesCatalogEntry('Crassula rupestris', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Crassula rupestris', en: 'Rosary vine', de: 'Felsen-Crassula', it: 'Crassula rupestris'),
-    SpeciesCatalogEntry('Echeveria pulvinata', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Echeveria duveteuse', en: 'Plush plant', de: 'Samt-Echeverie', it: 'Echeveria vellutata'),
-    SpeciesCatalogEntry('Echeveria lilacina', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Echeveria lilas', en: 'Ghost echeveria', de: 'Geister-Echeverie', it: 'Echeveria lilacina'),
-    SpeciesCatalogEntry('Echeveria derenbergii', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Echeveria derenbergii', en: 'Painted lady', de: 'Derenberg-Echeverie', it: 'Echeveria derenbergii'),
-    SpeciesCatalogEntry('Kalanchoe fedtschenkoi', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Kalanchoé de Fedtschenko', en: 'Lavender scallops', de: 'Lavendel-Kalanchoe', it: 'Kalanchoe di Fedtschenko'),
-    SpeciesCatalogEntry('Kalanchoe luciae', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Kalanchoé palette', en: 'Paddle plant', de: 'Paddelpflanze', it: 'Kalanchoe a pala'),
-    SpeciesCatalogEntry('Sedum dasyphyllum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Orpin à feuilles épaisses', en: 'Corsican stonecrop', de: 'Dickblättrige Fetthenne', it: 'Sedum dasyphyllum'),
-    SpeciesCatalogEntry('Sedum pachyphyllum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Orpin à feuilles épaisses', en: 'Jelly beans', de: 'Dickblättrige Fetthenne', it: 'Sedum pachyphyllum'),
-    SpeciesCatalogEntry('Graptopetalum amethystinum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Graptopetalum améthyste', en: 'Lavender pebbles', de: 'Amethyst-Graptopetalum', it: 'Graptopetalum ametista'),
-    SpeciesCatalogEntry('Curio radicans', 'Asteraceae', SpeciesCategory.succulent, fr: 'Chaîne de bananes', en: 'String of bananas', de: 'Bananen-Senecio', it: 'Collana di banane'),
-    SpeciesCatalogEntry('Aeonium haworthii', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Aeonium de Haworth', en: 'Pinwheel aeonium', de: 'Haworth-Aeonium', it: 'Aeonium di Haworth'),
-    SpeciesCatalogEntry('Cotyledon orbiculata', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Cotylédon orbiculaire', en: 'Pig\'s ear', de: 'Schweineohr', it: 'Orecchio di maiale'),
-    SpeciesCatalogEntry('Fenestraria rhopalophylla', 'Aizoaceae', SpeciesCategory.succulent, fr: 'Fenestraria', en: 'Baby toes', de: 'Babyzehen', it: 'Dita dei bambini'),
-    SpeciesCatalogEntry('Mammillaria elongata', 'Cactaceae', SpeciesCategory.succulent, fr: 'Mammillaria allongée', en: 'Ladyfinger cactus', de: 'Goldfinger-Kaktus', it: 'Mammillaria allungata'),
-    SpeciesCatalogEntry('Astrophytum myriostigma', 'Cactaceae', SpeciesCategory.succulent, fr: 'Bonnet d\'évêque', en: 'Bishop\'s cap cactus', de: 'Bischofsmütze', it: 'Berretto del vescovo'),
-
-    // ── Aromatiques et potager — vague 500 ───────────────────────────────
-    SpeciesCatalogEntry('Mentha aquatica', 'Lamiaceae', SpeciesCategory.herb, fr: 'Menthe aquatique', en: 'Water mint', de: 'Wasserminze', it: 'Menta acquatica'),
-    SpeciesCatalogEntry('Mentha suaveolens', 'Lamiaceae', SpeciesCategory.herb, fr: 'Menthe à feuilles rondes', en: 'Apple mint', de: 'Apfelminze', it: 'Menta mela'),
-    SpeciesCatalogEntry('Thymus serpyllum', 'Lamiaceae', SpeciesCategory.herb, fr: 'Thym serpolet', en: 'Wild thyme', de: 'Sand-Thymian', it: 'Timo serpillo'),
-    SpeciesCatalogEntry('Salvia elegans', 'Lamiaceae', SpeciesCategory.herb, fr: 'Sauge ananas', en: 'Pineapple sage', de: 'Ananas-Salbei', it: 'Salvia ananas'),
-    SpeciesCatalogEntry('Levisticum officinale', 'Apiaceae', SpeciesCategory.herb, fr: 'Livèche', en: 'Lovage', de: 'Liebstöckel', it: 'Levistico'),
-    SpeciesCatalogEntry('Armoracia rusticana', 'Brassicaceae', SpeciesCategory.herb, fr: 'Raifort', en: 'Horseradish', de: 'Meerrettich', it: 'Rafano'),
-    SpeciesCatalogEntry('Nasturtium officinale', 'Brassicaceae', SpeciesCategory.vegetable, fr: 'Cresson de fontaine', en: 'Watercress', de: 'Brunnenkresse', it: 'Crescione'),
-    SpeciesCatalogEntry('Cichorium intybus', 'Asteraceae', SpeciesCategory.vegetable, fr: 'Chicorée sauvage', en: 'Chicory', de: 'Wegwarte', it: 'Cicoria'),
-    SpeciesCatalogEntry('Cichorium endivia', 'Asteraceae', SpeciesCategory.vegetable, fr: 'Endive', en: 'Endive', de: 'Endivie', it: 'Indivia'),
-    SpeciesCatalogEntry('Brassica napus', 'Brassicaceae', SpeciesCategory.vegetable, fr: 'Colza / rutabaga', en: 'Rapeseed / swede', de: 'Raps / Steckrübe', it: 'Colza / rutabaga'),
-    SpeciesCatalogEntry('Brassica juncea', 'Brassicaceae', SpeciesCategory.vegetable, fr: 'Moutarde brune', en: 'Brown mustard', de: 'Brauner Senf', it: 'Senape bruna'),
-    SpeciesCatalogEntry('Abelmoschus esculentus', 'Malvaceae', SpeciesCategory.vegetable, fr: 'Gombo', en: 'Okra', de: 'Okra', it: 'Gombo'),
-    SpeciesCatalogEntry('Phaseolus coccineus', 'Fabaceae', SpeciesCategory.vegetable, fr: 'Haricot d\'Espagne', en: 'Runner bean', de: 'Feuerbohne', it: 'Fagiolo rampicante'),
-    SpeciesCatalogEntry('Vigna unguiculata', 'Fabaceae', SpeciesCategory.vegetable, fr: 'Niébé', en: 'Cowpea', de: 'Augenbohne', it: 'Fagiolo dall\'occhio'),
-    SpeciesCatalogEntry('Cicer arietinum', 'Fabaceae', SpeciesCategory.vegetable, fr: 'Pois chiche', en: 'Chickpea', de: 'Kichererbse', it: 'Cece'),
-
-    // ── Fruitiers — vague 500 ────────────────────────────────────────────
-    SpeciesCatalogEntry('Citrus maxima', 'Rutaceae', SpeciesCategory.fruit, fr: 'Pamplemoussier', en: 'Pomelo', de: 'Pampelmuse', it: 'Pomelo'),
-    SpeciesCatalogEntry('Citrus medica', 'Rutaceae', SpeciesCategory.fruit, fr: 'Cédratier', en: 'Citron', de: 'Zitronatzitrone', it: 'Cedro'),
-    SpeciesCatalogEntry('Vitis labrusca', 'Vitaceae', SpeciesCategory.fruit, fr: 'Vigne américaine', en: 'Fox grape', de: 'Amerikanische Weinrebe', it: 'Vite americana'),
-    SpeciesCatalogEntry('Pyrus pyrifolia', 'Rosaceae', SpeciesCategory.fruit, fr: 'Poirier nashi', en: 'Asian pear', de: 'Nashi-Birne', it: 'Pero nashi'),
-    SpeciesCatalogEntry('Prunus cerasus', 'Rosaceae', SpeciesCategory.fruit, fr: 'Griottier', en: 'Sour cherry', de: 'Sauerkirsche', it: 'Amarena'),
-    SpeciesCatalogEntry('Vaccinium vitis-idaea', 'Ericaceae', SpeciesCategory.fruit, fr: 'Airelle rouge', en: 'Lingonberry', de: 'Preiselbeere', it: 'Mirtillo rosso'),
-    SpeciesCatalogEntry('Feijoa sellowiana', 'Myrtaceae', SpeciesCategory.fruit, fr: 'Feijoa', en: 'Feijoa', de: 'Feijoa', it: 'Feijoa'),
-    SpeciesCatalogEntry('Annona cherimola', 'Annonaceae', SpeciesCategory.fruit, fr: 'Chérimolier', en: 'Cherimoya', de: 'Cherimoya', it: 'Cherimoya'),
-    SpeciesCatalogEntry('Ziziphus jujuba', 'Rhamnaceae', SpeciesCategory.fruit, fr: 'Jujubier', en: 'Jujube', de: 'Jujube', it: 'Giuggiolo'),
-    SpeciesCatalogEntry('Hippophae rhamnoides', 'Elaeagnaceae', SpeciesCategory.fruit, fr: 'Argousier', en: 'Sea buckthorn', de: 'Sanddorn', it: 'Olivello spinoso'),
-
-    // ── Fleurs — vague 500 ───────────────────────────────────────────────
-    SpeciesCatalogEntry('Hydrangea arborescens', 'Hydrangeaceae', SpeciesCategory.flower, fr: 'Hortensia arborescent', en: 'Smooth hydrangea', de: 'Wald-Hortensie', it: 'Ortensia arborea'),
-    SpeciesCatalogEntry('Hydrangea quercifolia', 'Hydrangeaceae', SpeciesCategory.flower, fr: 'Hortensia à feuilles de chêne', en: 'Oakleaf hydrangea', de: 'Eichenblatt-Hortensie', it: 'Ortensia a foglia di quercia'),
-    SpeciesCatalogEntry('Rosa canina', 'Rosaceae', SpeciesCategory.flower, fr: 'Églantier', en: 'Dog rose', de: 'Hunds-Rose', it: 'Rosa canina'),
-    SpeciesCatalogEntry('Rosa gallica', 'Rosaceae', SpeciesCategory.flower, fr: 'Rose de France', en: 'French rose', de: 'Essig-Rose', it: 'Rosa gallica'),
-    SpeciesCatalogEntry('Viola cornuta', 'Violaceae', SpeciesCategory.flower, fr: 'Violette cornue', en: 'Horned violet', de: 'Hornveilchen', it: 'Viola cornuta'),
-    SpeciesCatalogEntry('Primula elatior', 'Primulaceae', SpeciesCategory.flower, fr: 'Primevère élevée', en: 'Oxlip', de: 'Hohe Schlüsselblume', it: 'Primula maggiore'),
-    SpeciesCatalogEntry('Iris pseudacorus', 'Iridaceae', SpeciesCategory.flower, fr: 'Iris des marais', en: 'Yellow flag iris', de: 'Sumpf-Schwertlilie', it: 'Giaggiolo acquatico'),
-    SpeciesCatalogEntry('Iris ensata', 'Iridaceae', SpeciesCategory.flower, fr: 'Iris du Japon', en: 'Japanese iris', de: 'Japanische Schwertlilie', it: 'Iris giapponese'),
-    SpeciesCatalogEntry('Narcissus poeticus', 'Amaryllidaceae', SpeciesCategory.flower, fr: 'Narcisse des poètes', en: 'Poet\'s daffodil', de: 'Dichter-Narzisse', it: 'Narciso dei poeti'),
-    SpeciesCatalogEntry('Tulipa sylvestris', 'Liliaceae', SpeciesCategory.flower, fr: 'Tulipe sauvage', en: 'Wild tulip', de: 'Wilde Tulpe', it: 'Tulipano selvatico'),
-    SpeciesCatalogEntry('Allium giganteum', 'Amaryllidaceae', SpeciesCategory.flower, fr: 'Ail géant', en: 'Giant allium', de: 'Riesen-Zierlauch', it: 'Aglio gigante'),
-    SpeciesCatalogEntry('Echinacea pallida', 'Asteraceae', SpeciesCategory.flower, fr: 'Échinacée pâle', en: 'Pale purple coneflower', de: 'Blasser Sonnenhut', it: 'Echinacea pallida'),
-    SpeciesCatalogEntry('Rudbeckia fulgida', 'Asteraceae', SpeciesCategory.flower, fr: 'Rudbeckia brillante', en: 'Orange coneflower', de: 'Leuchtender Sonnenhut', it: 'Rudbeckia fulgida'),
-    SpeciesCatalogEntry('Monarda didyma', 'Lamiaceae', SpeciesCategory.flower, fr: 'Monarde écarlate', en: 'Bee balm', de: 'Goldmelisse', it: 'Monarda'),
-    SpeciesCatalogEntry('Helleborus niger', 'Ranunculaceae', SpeciesCategory.flower, fr: 'Rose de Noël', en: 'Christmas rose', de: 'Christrose', it: 'Rosa di Natale'),
-
-    // ── Arbres — vague 500 ───────────────────────────────────────────────
-    SpeciesCatalogEntry('Acer campestre', 'Sapindaceae', SpeciesCategory.tree, fr: 'Érable champêtre', en: 'Field maple', de: 'Feld-Ahorn', it: 'Acero campestre'),
-    SpeciesCatalogEntry('Acer platanoides', 'Sapindaceae', SpeciesCategory.tree, fr: 'Érable plane', en: 'Norway maple', de: 'Spitz-Ahorn', it: 'Acero riccio'),
-    SpeciesCatalogEntry('Quercus petraea', 'Fagaceae', SpeciesCategory.tree, fr: 'Chêne sessile', en: 'Sessile oak', de: 'Trauben-Eiche', it: 'Rovere'),
-    SpeciesCatalogEntry('Quercus ilex', 'Fagaceae', SpeciesCategory.tree, fr: 'Chêne vert', en: 'Holm oak', de: 'Stein-Eiche', it: 'Leccio'),
-    SpeciesCatalogEntry('Betula pubescens', 'Betulaceae', SpeciesCategory.tree, fr: 'Bouleau pubescent', en: 'Downy birch', de: 'Moor-Birke', it: 'Betulla pubescente'),
-    SpeciesCatalogEntry('Alnus glutinosa', 'Betulaceae', SpeciesCategory.tree, fr: 'Aulne glutineux', en: 'Black alder', de: 'Schwarz-Erle', it: 'Ontano nero'),
-    SpeciesCatalogEntry('Populus tremula', 'Salicaceae', SpeciesCategory.tree, fr: 'Tremble', en: 'Aspen', de: 'Zitter-Pappel', it: 'Pioppo tremulo'),
-    SpeciesCatalogEntry('Salix alba', 'Salicaceae', SpeciesCategory.tree, fr: 'Saule blanc', en: 'White willow', de: 'Silber-Weide', it: 'Salice bianco'),
-    SpeciesCatalogEntry('Sorbus aucuparia', 'Rosaceae', SpeciesCategory.tree, fr: 'Sorbier des oiseleurs', en: 'Rowan', de: 'Eberesche', it: 'Sorbo degli uccellatori'),
-    SpeciesCatalogEntry('Pinus sylvestris', 'Pinaceae', SpeciesCategory.tree, fr: 'Pin sylvestre', en: 'Scots pine', de: 'Wald-Kiefer', it: 'Pino silvestre'),
+    ...catalog500.SpeciesCatalogExpansion.entries,
+    ...SpeciesCatalog650Indoor.entries,
+    ...SpeciesCatalog650Succulent.entries,
+    ...SpeciesCatalog650Herb.entries,
+    ...SpeciesCatalog650Vegetable.entries,
+    ...SpeciesCatalog650Fruit.entries,
+    ...SpeciesCatalog650Flower.entries,
+    ...SpeciesCatalog650Tree.entries,
   ];
 }
