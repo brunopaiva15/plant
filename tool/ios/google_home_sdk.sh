@@ -42,7 +42,10 @@ if [ -z "$archive" ]; then
   temp="$(mktemp -d)"
   archive="$temp/GoogleHomeSDK-${VERSION}.tar.gz"
   echo "Téléchargement du SDK ${VERSION}…"
-  curl -fL --progress-bar -o "$archive" "$URL"
+  # `-sS` plutôt qu'une barre de progression : sur une CI, la sortie n'est
+  # pas un terminal et la barre ne produit que du bruit. Trois tentatives,
+  # parce qu'un build ne doit pas échouer sur un paquet perdu.
+  curl -fsSL --retry 3 --retry-delay 2 -o "$archive" "$URL"
 fi
 
 echo "Extraction dans vendor/GoogleHomeSDK…"
