@@ -34,7 +34,7 @@ abstract final class AppConfig {
   /// annonçait 0.1.0 pour une application en 1.0.0. Un test les compare
   /// désormais au pubspec et échoue si les deux divergent.
   static const String version = '1.0.0';
-  static const int build = 3;
+  static const int build = 4;
 
   /// Schéma des liens encodés dans les QR codes (`auxine://plant/<id>`) et
   /// de la redirection déclarée côté Supabase pour la connexion Google. Le
