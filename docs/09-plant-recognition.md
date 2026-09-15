@@ -3260,6 +3260,29 @@ porte la conclusion.
 
 ### 12.19 ✅ 112 espèces écartées pour une image de validation
 
+> **✅ Redécoupage fait, et le correctif rend 84 classes, pas 112.** Passe
+> `build_dataset.py --skip-fetch` sur le jeu de la v8, sans rien
+> retélécharger :
+>
+> | | |
+> |---|---|
+> | classes avec des images | 5 591 |
+> | **utilisables** (`--min-train 25`, `--min-val 3`) | **5 343** |
+> | Iris 8 | 5 259 |
+> | **gain** | **+84** |
+>
+> L'estimation de 112 était optimiste : elle comptait les espèces que
+> l'ancienne réparation avait mal servies, sans tenir compte de ce que la
+> nouvelle répartition leur donnerait réellement. Le mécanisme est bien
+> corrigé — c'est son rendement qui était surévalué.
+>
+> **Et 134 espèces restent sans image de validation**, ce qui n'est pas le
+> défaut que ce paragraphe décrit : celles-là n'ont pas assez d'images, ou
+> pas assez de groupes distincts, pour qu'une validation soit possible à
+> quelque seuil que ce soit. Les nourrir est un travail de collecte
+> (§ 13.3, chantier 4), pas de découpage.
+
+
 Le compte des classes d'Iris 8 ne tombait pas juste : la finalisation
 annonçait 5 371 classes, `train.py` en a déclaré **5 259**. L'entonnoir, lu
 sur `splits.csv` :
