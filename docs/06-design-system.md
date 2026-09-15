@@ -478,11 +478,13 @@ carte à image.
   et le nom de l'application ne s'y répète pas — le titre vient de le dire. Rien n'y est
   supposé du lecteur ni promis en échange — c'est un constat, comme le reste
   des textes, et il disparaît une fois le soutien versé.
-- **Le montant** est tracé à la main, à la taille du titre, seul sur sa
-  ligne, avec « Une seule fois » dessous et une lueur d'un point sous les
-  chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est derrière
-  la glyphe, le contraste du chiffre ne bouge pas.
-- **Le bouton ferme la pièce.** Rien ne se lit après lui. Une mention y a
+- **Le montant est dans le bouton** (« Soutenir · CHF 5.00 »), et nulle part
+  ailleurs. Écrit en grand et à la main au-dessus, il tenait la moitié du bas
+  de la pièce et le bouton n'en était plus que la conclusion ; dans le
+  bouton, ce qu'on lit est ce qu'on va faire et ce que cela coûte, d'un seul
+  tenant. Dessous, en encre tertiaire, ce que le bouton ne dit pas — « Une
+  seule fois ».
+- **Rien d'autre ne se lit après le bouton.** Une mention y a
   traîné — « le soutien ne déverrouille rien » —, et c'était un avertissement
   juste avant le geste : la phrase du haut dit déjà que tout est ouvert, donc
   qu'il n'y a rien à déverrouiller.

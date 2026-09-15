@@ -3827,7 +3827,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportOnce => 'One time only';
 
   @override
-  String get supportGive => 'Support';
+  String supportGive(String price) {
+    return 'Support · $price';
+  }
 
   @override
   String get supportRestore => 'Restore my support';

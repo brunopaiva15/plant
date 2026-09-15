@@ -289,11 +289,7 @@ class _Seal extends StatelessWidget {
   }
 }
 
-/// La proposition, au bas de la pièce : combien, et le bouton.
-///
-/// Le montant est tracé à la main, à la taille du titre, et sa précision se
-/// pose à côté sur la même ligne de base — un prix écrit sur une étiquette de
-/// pot, pas un tarif au bas d'un bouton.
+/// La proposition, au bas de la pièce : le bouton, et ce qu'il coûte.
 class _Offer extends StatelessWidget {
   const _Offer({required this.price, required this.busy, required this.onGive});
 
@@ -308,26 +304,14 @@ class _Offer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          price,
-          style: context.text.display.copyWith(
-            color: c.terracotta,
-            // Une lueur d'un point sous les chiffres : le montant paraît
-            // pressé dans la pâte plutôt que posé dessus. L'ombre est
-            // derrière la glyphe, le contraste du chiffre ne bouge pas.
-            shadows: [Shadow(color: Colors.white.withValues(alpha: c.isDark ? 0.07 : 0.5), offset: const Offset(0, 1))],
-          ),
-        ),
-        // Sous le montant, pas à côté : à gros caractères la ligne de base
-        // partagée finissait par pousser « Une seule fois » à la ligne de
-        // toute façon, et le montant se lit mieux seul sur sa ligne.
-        Text(l10n.supportOnce, style: context.text.callout.copyWith(color: c.inkSecondary)),
-        const SizedBox(height: Space.lg),
-        // Le bouton ferme la pièce. Une mention en dessous — « le soutien ne
-        // déverrouille rien » — était la dernière chose lue avant le geste, et
-        // c'est un avertissement : la phrase du haut dit déjà que tout est
-        // ouvert, il n'y a rien à déverrouiller et rien à rappeler.
-        FloraButton(label: l10n.supportGive, expand: true, loading: busy, onPressed: onGive),
+        // Le montant est dans le bouton, pas au-dessus. Écrit en grand et à
+        // la main, il tenait la moitié du bas de la pièce et le bouton n'en
+        // était plus que la conclusion ; dans le bouton, ce qu'on lit est ce
+        // qu'on va faire, et ce que cela coûte, d'un seul tenant.
+        FloraButton(label: l10n.supportGive(price), expand: true, loading: busy, onPressed: onGive),
+        const SizedBox(height: Space.xs),
+        // Ce que le bouton ne dit pas : que cela ne se répète pas.
+        Text(l10n.supportOnce, style: context.text.caption.copyWith(color: c.inkTertiary)),
       ],
     );
   }

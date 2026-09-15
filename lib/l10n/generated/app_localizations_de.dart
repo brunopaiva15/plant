@@ -3837,7 +3837,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get supportOnce => 'Nur einmal';
 
   @override
-  String get supportGive => 'Unterstützen';
+  String supportGive(String price) {
+    return 'Unterstützen · $price';
+  }
 
   @override
   String get supportRestore => 'Unterstützung wiederherstellen';

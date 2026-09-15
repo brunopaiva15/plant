@@ -1248,7 +1248,7 @@
   "supportBody": "Tutte le funzioni sono accessibili. Nessun abbonamento, nessuna pubblicità, nessun account obbligatorio.",
   "supportWhy": "Una sola persona la sviluppa. Questo sostegno è la sua unica entrata.",
   "supportOnce": "Una sola volta",
-  "supportGive": "Sostieni",
+  "supportGive": "Sostieni · {price}",
   "supportRestore": "Ripristina il mio sostegno",
   "supportThanksTitle": "Grazie",
   "supportThanksBody": "Il vostro sostegno è stato registrato.",

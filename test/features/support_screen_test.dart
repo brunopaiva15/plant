@@ -19,9 +19,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// règle 3.1.1 de l'App Store demande un mécanisme de restauration —, et une
 /// fois le soutien versé la page ne redemande rien.
 
+/// Le prix tel que le magasin le rend, déjà mis en forme.
+const _price = 'CHF 5.00';
+
 Future<AppLocalizations> _pump(
   WidgetTester tester, {
-  SupportOffer? offer = const SupportOffer(id: 'ch.vergasta.plant.support', price: 'CHF 5.00'),
+  SupportOffer? offer = const SupportOffer(id: 'ch.vergasta.plant.support', price: _price),
   bool supported = false,
   bool online = true,
   bool compact = false,
@@ -71,28 +74,27 @@ Future<AppLocalizations> _pump(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('ce qui est ouvert, puis pourquoi donner, puis le montant', (tester) async {
+  testWidgets('ce qui est ouvert, puis pourquoi donner, puis le bouton', (tester) async {
     final l10n = await _pump(tester);
     final open = tester.getTopLeft(find.text(l10n.supportBody)).dy;
     final why = tester.getTopLeft(find.text(l10n.supportWhy)).dy;
-    final price = tester.getTopLeft(find.text('CHF 5.00')).dy;
+    final give = tester.getTopLeft(find.text(l10n.supportGive(_price))).dy;
     expect(open, lessThan(why), reason: 'on montre ce qui est donné avant de dire pourquoi');
-    expect(why, lessThan(price), reason: "la raison vient avant le montant, sinon il n'y en a pas");
+    expect(why, lessThan(give), reason: "la raison vient avant la demande, sinon il n'y en a pas");
   });
 
-  testWidgets('le montant est écrit en toutes lettres, une fois', (tester) async {
+  testWidgets('le bouton porte le montant, et une fois', (tester) async {
     final l10n = await _pump(tester);
-    expect(find.text('CHF 5.00'), findsOneWidget);
+    expect(find.text(l10n.supportGive(_price)), findsOneWidget, reason: 'le prix se lit dans le geste');
+    expect(find.text(_price), findsNothing, reason: 'et nulle part ailleurs');
     expect(find.text(l10n.supportOnce), findsOneWidget);
-    expect(find.text(l10n.supportGive), findsOneWidget);
     expect(find.text(l10n.supportRestore), findsOneWidget);
   });
 
   testWidgets("sans magasin, une phrase plutôt qu'un bouton mort", (tester) async {
     final l10n = await _pump(tester, offer: null);
     expect(find.text(l10n.supportUnavailable), findsOneWidget);
-    expect(find.text(l10n.supportGive), findsNothing);
-    expect(find.text('CHF 5.00'), findsNothing);
+    expect(find.text(l10n.supportGive(_price)), findsNothing);
     // Ce que l'application est, en revanche, reste écrit.
     expect(find.text(l10n.supportBody), findsOneWidget);
   });
@@ -100,15 +102,14 @@ void main() {
   testWidgets("hors ligne, l'achat ne se propose pas", (tester) async {
     final l10n = await _pump(tester, online: false);
     expect(find.text(l10n.offlineSupport), findsOneWidget);
-    expect(find.text(l10n.supportGive), findsNothing);
+    expect(find.text(l10n.supportGive(_price)), findsNothing);
   });
 
   testWidgets('une fois le soutien versé, la page ne redemande rien', (tester) async {
     final l10n = await _pump(tester, supported: true);
     expect(find.text(l10n.supportThanksTitle), findsOneWidget);
     expect(find.text(l10n.supportWhy), findsNothing, reason: 'la raison de donner ne se redemande pas');
-    expect(find.text(l10n.supportGive), findsNothing);
-    expect(find.text('CHF 5.00'), findsNothing);
+    expect(find.text(l10n.supportGive(_price)), findsNothing);
     // La phrase du haut descend sous le trait : la page se ferme sur ce
     // qu'elle est venue dire plutôt que sur un blanc.
     expect(find.text(l10n.supportBody), findsOneWidget);
@@ -127,8 +128,7 @@ void main() {
     final full = tester.getSize(find.byType(SupportPitch)).height;
     final l10n = await _pump(tester, compact: true);
     expect(tester.getSize(find.byType(SupportPitch)).height, lessThan(full));
-    expect(find.text('CHF 5.00'), findsOneWidget);
-    expect(find.text(l10n.supportGive), findsOneWidget);
+    expect(find.text(l10n.supportGive(_price)), findsOneWidget);
     // « Continuer sans » est de la navigation d'onboarding : c'est l'étape
     // qui le dessine, dans son propre style, et non la proposition.
     expect(find.text(l10n.supportNoThanks), findsNothing);

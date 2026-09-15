@@ -1248,7 +1248,7 @@
   "supportBody": "Every feature is available. No subscription, no advertising, no compulsory account.",
   "supportWhy": "One person develops it. This support is its only income.",
   "supportOnce": "One time only",
-  "supportGive": "Support",
+  "supportGive": "Support · {price}",
   "supportRestore": "Restore my support",
   "supportThanksTitle": "Thank you",
   "supportThanksBody": "Your support has been recorded.",

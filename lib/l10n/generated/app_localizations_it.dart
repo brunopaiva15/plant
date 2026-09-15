@@ -3844,7 +3844,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportOnce => 'Una sola volta';
 
   @override
-  String get supportGive => 'Sostieni';
+  String supportGive(String price) {
+    return 'Sostieni · $price';
+  }
 
   @override
   String get supportRestore => 'Ripristina il mio sostegno';

@@ -6567,8 +6567,8 @@ abstract class AppLocalizations {
   /// No description provided for @supportGive.
   ///
   /// In fr, this message translates to:
-  /// **'Soutenir'**
-  String get supportGive;
+  /// **'Soutenir · {price}'**
+  String supportGive(String price);
 
   /// No description provided for @supportRestore.
   ///

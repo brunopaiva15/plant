@@ -1248,7 +1248,7 @@
   "supportBody": "Alle Funktionen sind verfügbar. Kein Abo, keine Werbung, kein Pflichtkonto.",
   "supportWhy": "Eine einzige Person entwickelt sie. Diese Unterstützung ist ihre einzige Einnahme.",
   "supportOnce": "Nur einmal",
-  "supportGive": "Unterstützen",
+  "supportGive": "Unterstützen · {price}",
   "supportRestore": "Unterstützung wiederherstellen",
   "supportThanksTitle": "Danke",
   "supportThanksBody": "Ihre Unterstützung wurde gespeichert.",
