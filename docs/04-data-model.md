@@ -228,6 +228,17 @@ noms » ne s'affichent pas, ils rendent la recherche tolérante (« Edelweiß »
 « stella alpina »). La recherche compare des chaînes normalisées sans accents
 ni casse (`core/utils/search_text.dart`).
 
+Les quatre colonnes de langue sont creuses : sur les 36 364 espèces livrées,
+5 285 ont un nom français, 32 147 un nom anglais, 7 639 un nom allemand,
+1 416 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
+ou le nom scientifique — jamais celui d'une autre langue : « Japanische
+Faserbanane » en tête d'une liste française se lit comme une erreur, et
+masquer les 31 000 espèces sans nom français viderait l'encyclopédie.
+La recherche, elle, continue de comparer tous les noms de toutes les
+langues : « Faserbanane » ouvre la fiche de *Musa basjoo*. C'est
+`vernacularName(langue)` — le nom de la langue lue, ou `null` — et
+`commonName(langue)`, qui retombe alors sur le nom scientifique.
+
 Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
 GBIF (CC BY) pour les familles.
 

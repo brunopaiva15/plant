@@ -47,18 +47,17 @@ class IrisDetailedSpecies {
   final String it;
   final SpeciesCategory? category;
 
-  String commonName(String languageCode) {
-    final ordered = switch (languageCode) {
-      'fr' => [fr, en, de, it],
-      'de' => [de, en, fr, it],
-      'it' => [it, en, fr, de],
-      _ => [en, fr, de, it],
-    };
-    for (final value in ordered) {
-      if (value.trim().isNotEmpty) return value;
-    }
-    return scientificName;
+  /// Le nom courant dans la langue demandée, ou `null` à défaut — jamais
+  /// celui d'une autre langue, comme dans [SpeciesRecord].
+  String? vernacularName(String languageCode) {
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    final trimmed = name.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
+
+  /// Nom d'affichage : le nom courant de la langue demandée, à défaut le
+  /// nom scientifique.
+  String commonName(String languageCode) => vernacularName(languageCode) ?? scientificName;
 
   bool matches(String query) {
     final q = foldSpeciesName(query.trim());

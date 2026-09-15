@@ -48,12 +48,12 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
           scientificName,
           family: family == null || family.isEmpty ? null : family,
         );
-    // Le nom courant titre la page ; à défaut, le nom scientifique, qui est
-    // de toute façon écrit juste dessous.
-    final common = (entry?.commonName(lang) ?? record?.commonName(lang) ?? '').trim();
+    // Le nom courant de la langue de l'application titre la page ; à défaut,
+    // le nom scientifique, qui est de toute façon écrit juste dessous.
+    final common = entry?.vernacularName(lang) ?? record?.vernacularName(lang);
 
     return FloraPage(
-      title: common.isEmpty ? scientificName : common,
+      title: common ?? scientificName,
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,

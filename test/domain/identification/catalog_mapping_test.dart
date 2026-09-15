@@ -19,6 +19,17 @@ void main() {
     expect(catalogLookup('Plantus imaginarius', index, 'fr'), isNull);
   });
 
+  test('sans nom dans la langue de l\'app, l\'espèce est reconnue mais pas renommée', () {
+    // Le bananier du Japon n'a de nom courant qu'en allemand : annoncer
+    // « Japanische Faserbanane » à qui lit le français serait une erreur, et
+    // la reconnaissance, elle, reste acquise.
+    final index = SpeciesIndex.parse('Musa basjoo\tMusaceae\t\t\tJapanische Faserbanane\t\t\n');
+    expect(catalogLookup('Musa basjoo', index, 'de')?.commonName, 'Japanische Faserbanane');
+    expect(catalogLookup('Musa basjoo', index, 'fr'), isNotNull);
+    expect(catalogLookup('Musa basjoo', index, 'fr')?.commonName, isNull);
+    expect(catalogPlantId('Musa basjoo', index), isNotNull);
+  });
+
   test('the extended index is consulted when it is loaded', () {
     final index = SpeciesIndex.parse('Quercus petraea\tFagaceae\tChêne sessile\tSessile oak\tTraubeneiche\tRovere\n');
     expect(catalogPlantId('Quercus petraea (Matt.) Liebl.', index), 'quercus-petraea');

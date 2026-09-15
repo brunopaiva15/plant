@@ -96,7 +96,7 @@ class SpeciesSlivers extends ConsumerWidget {
               separatorBuilder: (_, _) => const SizedBox(height: Space.xs),
               itemBuilder: (context, i) => _SpeciesRow(
                 emoji: curated[i].category?.emoji ?? '🌿',
-                name: curated[i].commonName(lang),
+                vernacular: curated[i].vernacularName(lang),
                 scientificName: curated[i].scientificName,
                 family: curated[i].family,
               ),
@@ -113,7 +113,7 @@ class SpeciesSlivers extends ConsumerWidget {
               separatorBuilder: (_, _) => const SizedBox(height: Space.xs),
               itemBuilder: (context, i) => _SpeciesRow(
                 emoji: '🌿',
-                name: extended[i].commonName(lang),
+                vernacular: extended[i].vernacularName(lang),
                 scientificName: extended[i].scientificName,
                 family: extended[i].family,
               ),
@@ -126,23 +126,31 @@ class SpeciesSlivers extends ConsumerWidget {
 }
 
 class _SpeciesRow extends StatelessWidget {
-  const _SpeciesRow({required this.emoji, required this.name, required this.scientificName, required this.family});
+  const _SpeciesRow({required this.emoji, required this.vernacular, required this.scientificName, required this.family});
 
   final String emoji;
-  final String name;
+
+  /// Le nom courant dans la langue de l'application, ou `null` quand cette
+  /// espèce n'en a pas : le nom scientifique titre alors la ligne, et le
+  /// sous-titre garde la famille pour lui seul plutôt que de le répéter.
+  final String? vernacular;
+
   final String scientificName;
   final String family;
 
   @override
   Widget build(BuildContext context) {
+    final subtitle = vernacular == null
+        ? (family.isEmpty ? null : family)
+        : (family.isEmpty ? scientificName : '$scientificName · $family');
     return FloraCard(
       padding: EdgeInsets.zero,
       clip: true,
       child: FloraListRow(
         leading: Text(emoji, style: const TextStyle(fontSize: 18)),
-        title: name,
+        title: vernacular ?? scientificName,
         titleMaxLines: 2,
-        subtitle: family.isEmpty ? scientificName : '$scientificName · $family',
+        subtitle: subtitle,
         onTap: () => context.push(Routes.encyclopediaSpecies(scientificName)),
       ),
     );

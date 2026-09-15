@@ -40,6 +40,17 @@ void main() {
     expect(names.toSet(), modelSpecies.toSet());
     expect(names.toSet().length, names.length);
     expect(detailed.entries.every((e) => e.commonName('fr').trim().isNotEmpty), isTrue);
+
+    // Le nom affiché est celui de la langue lue, ou le nom scientifique —
+    // jamais celui d'une autre langue : « Japanische Faserbanane » en tête
+    // d'une liste française se lit comme une erreur.
+    for (final e in detailed.entries) {
+      for (final lang in const ['fr', 'en', 'de', 'it']) {
+        final name = switch (lang) { 'fr' => e.fr, 'de' => e.de, 'it' => e.it, _ => e.en };
+        final own = name.trim();
+        expect(e.commonName(lang), own.isEmpty ? e.scientificName : own, reason: '${e.scientificName} en $lang');
+      }
+    }
   });
 
   test('catalogue : recherche par nom commun, latin ou famille, insensible à la casse', () {

@@ -440,15 +440,15 @@ CatalogMatch? catalogLookup(String scientificName, SpeciesIndex? index, String l
   // deux identifiants internes et deux profils de soin selon la photo.
   final canonical = acceptedSpeciesName(normalizeScientificName(scientificName));
   if (canonical.isEmpty) return null;
+  // Le nom courant de la langue de l'app, ou rien : mieux vaut annoncer la
+  // plante par son seul nom scientifique que par un nom qui ne se lit pas.
   final curated = SpeciesCatalog.find(canonical);
   if (curated != null) {
-    final name = curated.commonName(languageCode);
-    return CatalogMatch(internalId: internalPlantId(canonical), commonName: name.isEmpty ? null : name);
+    return CatalogMatch(internalId: internalPlantId(canonical), commonName: curated.vernacularName(languageCode));
   }
   final extended = index?.find(canonical);
   if (extended != null) {
-    final name = extended.commonName(languageCode);
-    return CatalogMatch(internalId: internalPlantId(canonical), commonName: name.isEmpty ? null : name);
+    return CatalogMatch(internalId: internalPlantId(canonical), commonName: extended.vernacularName(languageCode));
   }
   return null;
 }
