@@ -3844,6 +3844,34 @@ class AppLocalizationsIt extends AppLocalizations {
       'Due specie che si somigliano: vengono proposte entrambe.';
 
   @override
+  String get whatsNewSmallUpdates => 'Piccole novità';
+
+  @override
+  String get whatsNewDiagnosisIntro =>
+      'Una foto non mostra né la terra fradicia, né le radici brune, né tre afidi sotto una foglia. Ci pensano quattro domande facoltative.';
+
+  @override
+  String get whatsNewDiagnosisChecksTitle => 'Terra, radici, luce, insetti';
+
+  @override
+  String get whatsNewDiagnosisChecksBody =>
+      'Quattro domande sotto i sintomi, da rispondere o no. Niente è selezionato in anticipo.';
+
+  @override
+  String get whatsNewDiagnosisWeighTitle => 'Pesato nell\'analisi';
+
+  @override
+  String get whatsNewDiagnosisWeighBody =>
+      'Ciò che è stato verificato vale come un fatto, e i gesti proposti non lo richiedono più.';
+
+  @override
+  String get whatsNewDiagnosisKeptTitle => 'Conservato nel diario';
+
+  @override
+  String get whatsNewDiagnosisKeptBody =>
+      'Una diagnosi riaperta mesi dopo mostra ancora ciò che era stato verificato quel giorno.';
+
+  @override
   String onbStepOf(int current, int total) {
     return 'Passo $current di $total';
   }
