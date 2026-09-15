@@ -148,6 +148,9 @@ enum CollaborationError {
   /// L'action demande d'être propriétaire du jardin.
   notOwner,
 
+  /// Le compte n'a que ce jardin, et il lui en faut un.
+  lastGarden,
+
   /// Un propriétaire ne quitte pas son propre jardin.
   ownerCannotLeave,
 
@@ -175,6 +178,7 @@ class CollaborationException implements Exception {
         _ when says('invalid_code') => CollaborationError.invalidCode,
         _ when says('wrong_email') => CollaborationError.wrongEmail,
         _ when says('not_owner') || says('not_yourself') || says('bad_role') => CollaborationError.notOwner,
+        _ when says('last_garden') => CollaborationError.lastGarden,
         _ when says('owner_cannot_leave') => CollaborationError.ownerCannotLeave,
         _ when says('not_signed_in') => CollaborationError.notSignedIn,
         _ => CollaborationError.unknown,
@@ -214,6 +218,10 @@ abstract class CollaborationService {
   Future<void> setRole({required String gardenId, required String userId, required GardenRole role});
   Future<void> removeMember({required String gardenId, required String userId});
   Future<void> leaveGarden(String gardenId);
+
+  /// Supprime un jardin et tout ce qu'il contient. Le propriétaire seul, et
+  /// jamais son dernier jardin : un compte en garde toujours un à ouvrir.
+  Future<void> deleteGarden(String gardenId);
 
   /// Lien à envoyer à l'invité : ouvre l'application sur l'invitation.
   String inviteLink(String code);
@@ -259,6 +267,9 @@ class UnavailableCollaborationService implements CollaborationService {
 
   @override
   Future<void> leaveGarden(String gardenId) async {}
+
+  @override
+  Future<void> deleteGarden(String gardenId) async {}
 
   @override
   String inviteLink(String code) => '';

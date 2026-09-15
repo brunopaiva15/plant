@@ -731,10 +731,29 @@ begin
   delete from garden_members where garden_id = p_garden_id and user_id = auth.uid();
 end $$;
 
+-- Supprimer un jardin : le propriétaire seulement, et jamais le dernier — un
+-- compte garde toujours un jardin à ouvrir. Tout part avec la ligne : les
+-- plantes, le journal, les membres, les invitations (cascades). Les fichiers
+-- du bucket, eux, sont retirés par l'appareil avant l'appel : le stockage ne
+-- connaît pas les cascades.
+--
+-- Un jardin déjà absent n'est pas une erreur : l'appareil qui rejoue sa
+-- demande doit pouvoir finir son ménage.
+create or replace function delete_garden(p_garden_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (select 1 from gardens where id = p_garden_id) then return; end if;
+  if not exists (select 1 from gardens where id = p_garden_id and owner_id = auth.uid()) then raise exception 'not_owner'; end if;
+  if (select count(*) from garden_members m join gardens g on g.id = m.garden_id
+       where m.user_id = auth.uid() and g.deleted_at is null) < 2 then raise exception 'last_garden'; end if;
+  delete from gardens where id = p_garden_id;
+end $$;
+
 do $$ declare f text; begin
   foreach f in array array[
     'create_invite(uuid,text,text,int)', 'preview_invite(text)', 'accept_invite(text)', 'revoke_invite(uuid)',
-    'my_gardens()', 'set_member_role(uuid,uuid,text)', 'remove_member(uuid,uuid)', 'leave_garden(uuid)'] loop
+    'my_gardens()', 'set_member_role(uuid,uuid,text)', 'remove_member(uuid,uuid)', 'leave_garden(uuid)',
+    'delete_garden(uuid)'] loop
     execute format('revoke all on function %s from public', f);
     execute format('grant execute on function %s to authenticated', f);
   end loop;

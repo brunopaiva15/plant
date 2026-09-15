@@ -121,6 +121,33 @@ class SyncService {
     await (_db.update(_db.gardens)..where((g) => g.id.equals(gardenId))).write(GardensCompanion(ownerId: Value(userId)));
   }
 
+  /// Retire du bucket les images d'un jardin qu'on s'apprête à supprimer.
+  ///
+  /// Le serveur efface ses lignes en cascade ; le stockage, lui, ne connaît
+  /// pas les cascades et garderait les fichiers, sans plus rien pour les
+  /// nommer. Les chemins se relisent donc ici, sur des lignes locales encore
+  /// vivantes, et l'appel part tant que le jardin nous est ouvert — après la
+  /// suppression, les règles du bucket le refuseraient.
+  Future<void> removeGardenFiles(String gardenId) async {
+    final plantIds = (await (_db.select(_db.plants)..where((p) => p.gardenId.equals(gardenId))).get()).map((p) => p.id).toList();
+    if (plantIds.isEmpty) return;
+    final photos = await (_db.select(_db.plantPhotos)..where((p) => p.plantId.isIn(plantIds))).get();
+    final paths = <String>[];
+    for (final photo in photos) {
+      final objects = _objectPaths('$gardenId/${photo.plantId}', photo.id);
+      paths
+        ..add(objects.file)
+        ..add(objects.thumb);
+    }
+    if (paths.isEmpty) return;
+    try {
+      await _remote.removeFiles(paths);
+    } catch (_) {
+      // Un fichier resté là-bas ne vaut pas d'arrêter la suppression : le
+      // jardin, lui, part de toute façon.
+    }
+  }
+
   /// Un cycle complet : push puis pull. Les appels concurrents sont fusionnés.
   Future<void> sync() async {
     if (_running) {

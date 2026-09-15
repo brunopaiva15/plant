@@ -160,6 +160,66 @@ class FloraDatabase extends _$FloraDatabase {
     });
   }
 
+  /// Efface tout ce qu'un jardin laisse sur l'appareil : ses lignes, et les
+  /// envois qui les attendaient.
+  ///
+  /// Sert à la suppression d'un jardin. La file de synchronisation se vide sur
+  /// le seul identifiant : les UUID sont uniques d'une table à l'autre, et une
+  /// ligne qui n'existe plus n'a rien à pousser — sans cela, la synchronisation
+  /// suivante irait supprimer là-bas, une par une, des lignes déjà parties avec
+  /// leur jardin.
+  Future<void> purgeGarden(String gardenId) async {
+    await transaction(() async {
+      final plantIds = (await (select(plants)..where((r) => r.gardenId.equals(gardenId))).get()).map((r) => r.id).toList();
+      final itemIds = (await (select(inventoryItems)..where((r) => r.gardenId.equals(gardenId))).get()).map((r) => r.id).toList();
+      final ids = <String>{
+        gardenId,
+        ...plantIds,
+        ...itemIds,
+        for (final r in await (select(locations)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(tags)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(inventoryGroups)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(tasks)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(plantAttributes)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(attributeSchemas)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(plantAttachments)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(locationLogs)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(eventCategories)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        for (final r in await (select(calendarEntries)..where((x) => x.gardenId.equals(gardenId))).get()) r.id,
+        // Les filles d'une plante ou d'un article ne portent pas le jardin :
+        // elles se relèvent sur leur parent.
+        for (final r in await (select(plantPhotos)..where((x) => x.plantId.isIn(plantIds))).get()) r.id,
+        for (final r in await (select(plantActions)..where((x) => x.plantId.isIn(plantIds))).get()) r.id,
+        for (final r in await (select(careSchedules)..where((x) => x.plantId.isIn(plantIds))).get()) r.id,
+        for (final r in await (select(measurements)..where((x) => x.plantId.isIn(plantIds))).get()) r.id,
+        // Les tables d'association s'identifient par leurs deux clés.
+        for (final r in await (select(plantTags)..where((x) => x.plantId.isIn(plantIds))).get()) '${r.plantId}/${r.tagId}',
+        for (final r in await (select(inventoryTags)..where((x) => x.itemId.isIn(itemIds))).get()) '${r.itemId}/${r.tagId}',
+      };
+      await (delete(plantTags)..where((x) => x.plantId.isIn(plantIds))).go();
+      await (delete(plantPhotos)..where((x) => x.plantId.isIn(plantIds))).go();
+      await (delete(plantActions)..where((x) => x.plantId.isIn(plantIds))).go();
+      await (delete(careSchedules)..where((x) => x.plantId.isIn(plantIds))).go();
+      await (delete(measurements)..where((x) => x.plantId.isIn(plantIds))).go();
+      await (delete(inventoryTags)..where((x) => x.itemId.isIn(itemIds))).go();
+      await (delete(plants)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(locations)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(tags)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(inventoryItems)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(inventoryGroups)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(tasks)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(plantAttributes)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(attributeSchemas)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(plantAttachments)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(locationLogs)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(eventCategories)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(calendarEntries)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(gardenMembers)..where((x) => x.gardenId.equals(gardenId))).go();
+      await (delete(gardens)..where((x) => x.id.equals(gardenId))).go();
+      await (delete(syncOutbox)..where((o) => o.entityId.isIn(ids.toList()))).go();
+    });
+  }
+
   /// Enregistre une écriture dans l'outbox de synchronisation.
   Future<void> enqueueSync(String entity, String entityId, String op, Map<String, Object?> payload) =>
       into(syncOutbox).insert(SyncOutboxCompanion.insert(

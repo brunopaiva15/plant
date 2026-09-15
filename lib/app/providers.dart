@@ -18,6 +18,7 @@ import '../data/repositories/tag_repository_impl.dart';
 import '../data/repositories/attachment_repository_impl.dart';
 import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
+import '../core/config/app_version.dart';
 import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
 import '../data/services/infomaniak_advisor.dart';
@@ -79,6 +80,10 @@ final databaseProvider = Provider<FloraDatabase>((ref) => throw UnimplementedErr
 final preferencesServiceProvider = Provider<PreferencesService>((ref) => throw UnimplementedError('override in main'));
 final notificationServiceProvider = Provider<NotificationService>((ref) => throw UnimplementedError('override in main'));
 final authRepositoryProvider = Provider<AuthRepository>((ref) => throw UnimplementedError('override in main'));
+
+/// La version du binaire, lue au lancement. Voir [AppVersion] : rien ne la
+/// recopie dans le code, elle vient du `pubspec.yaml` par la plateforme.
+final appVersionProvider = Provider<AppVersion>((ref) => throw UnimplementedError('override in main'));
 
 /// Le jardin ouvert. Celui de l'appareil tant que l'utilisateur n'en a pas
 /// choisi un autre ; un jardin partagé dès qu'il bascule dessus.
@@ -400,7 +405,7 @@ final irisFeedbackRecorderProvider = Provider<IrisFeedbackRecorder>((ref) {
   final enabled = ref.watch(preferencesProvider.select((p) => p.irisFeedbackEnabled));
   final user = ref.watch(currentUserProvider).value;
   if (!enabled || !ref.watch(irisFeedbackAvailableProvider) || user == null) return const NoFeedbackRecorder();
-  return SupabaseIrisFeedbackRecorder(Supabase.instance.client, userId: user.id);
+  return SupabaseIrisFeedbackRecorder(Supabase.instance.client, userId: user.id, appVersion: ref.watch(appVersionProvider).name);
 });
 
 /// Identification : modèle local puis Pl@ntNet en repli si une clé est

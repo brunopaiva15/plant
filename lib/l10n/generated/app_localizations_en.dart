@@ -4179,6 +4179,29 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get deleteGarden => 'Delete the garden';
+
+  @override
+  String deleteGardenConfirm(String name) {
+    return '“$name”, its plants and its history will be deleted, for you and for the people you invited.';
+  }
+
+  @override
+  String gardenDeleted(String name) {
+    return 'Garden “$name” deleted';
+  }
+
+  @override
+  String get deleteGardenLast => 'An account keeps at least one garden.';
+
+  @override
+  String get openGardenTitle => 'Your gardens';
+
+  @override
+  String get openGardenHint =>
+      'This account already has gardens. Open the one holding your plants.';
+
+  @override
   String get collaborationNeedsAccount => 'Sharing a garden needs an account';
 
   @override

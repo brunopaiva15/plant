@@ -149,6 +149,10 @@ class SyncCoordinator extends Notifier<SyncState> with WidgetsBindingObserver {
   }
 
   Future<void> syncNow() async => _service?.sync();
+
+  /// Retire du bucket les images d'un jardin, avant de le supprimer. Sans
+  /// compte connecté, il n'y a rien là-bas : l'appel ne fait rien.
+  Future<void> removeGardenFiles(String gardenId) async => _service?.removeGardenFiles(gardenId);
 }
 
 final syncCoordinatorProvider = NotifierProvider<SyncCoordinator, SyncState>(SyncCoordinator.new);

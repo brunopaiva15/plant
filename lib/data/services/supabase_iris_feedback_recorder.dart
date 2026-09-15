@@ -3,7 +3,6 @@ import 'package:image/image.dart' as img;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../core/config/app_config.dart';
 import '../../core/utils/scientific_name.dart';
 import '../../domain/identification/iris_feedback.dart';
 import '../../domain/identification/plant_identifier.dart';
@@ -20,7 +19,7 @@ import '../../domain/identification/plant_identifier.dart';
 /// Rien ici ne remonte : l'enregistrement d'une plante ne dépend pas d'un
 /// envoi, et un réseau absent ne doit pas se voir.
 class SupabaseIrisFeedbackRecorder implements IrisFeedbackRecorder {
-  SupabaseIrisFeedbackRecorder(this._client, {required this.userId, this.appVersion = AppConfig.version});
+  SupabaseIrisFeedbackRecorder(this._client, {required this.userId, required this.appVersion});
 
   static const bucket = 'iris-feedback';
   static const table = 'iris_feedback';

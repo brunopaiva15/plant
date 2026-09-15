@@ -17,6 +17,7 @@ import '../../network/presentation/offline_notice.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel;
+import 'open_garden_sheet.dart';
 
 /// Compte : connexion (Apple sur iOS ; Google derrière
 /// `AppConfig.googleSignInEnabled`), état de synchronisation.
@@ -73,7 +74,18 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
             // bouton ne rendrait qu'« impossible », sans dire pourquoi.
             OfflineBanner(message: l10n.offlineCollaboration),
             if (defaultTargetPlatform == TargetPlatform.iOS)
-              FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: () => _run(auth.signInWithApple)),
+              FloraButton(
+                label: l10n.continueWithApple,
+                icon: Icons.apple,
+                expand: true,
+                loading: _busy,
+                // La connexion faite, le compte a peut-être déjà des jardins :
+                // celui de cet appareil n'est pas forcément celui qu'on ouvre.
+                onPressed: () => _run(() async {
+                  await auth.signInWithApple();
+                  if (context.mounted) await proposeExistingGardens(context, ref);
+                }),
+              ),
             if (AppConfig.googleSignInEnabled) ...[
               if (defaultTargetPlatform == TargetPlatform.iOS) const SizedBox(height: Space.xs),
               FloraButton(label: l10n.continueWithGoogle, icon: CupertinoIcons.globe, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => _run(auth.signInWithGoogle)),

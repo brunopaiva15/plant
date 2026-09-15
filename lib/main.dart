@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
@@ -10,6 +11,7 @@ import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/sync_coordinator.dart';
 import 'core/l10n/l10n.dart';
+import 'core/config/app_version.dart';
 import 'core/config/supabase_config.dart';
 import 'core/network/connectivity.dart';
 import 'core/demo/demo_seed.dart';
@@ -50,6 +52,11 @@ Future<void> main() async {
     }
   }
 
+  // La version vient du binaire, jamais d'une constante recopiée : c'est
+  // `pubspec.yaml` qui la fixe, et les deux plateformes l'y prennent déjà.
+  final info = await PackageInfo.fromPlatform();
+  final version = AppVersion(name: info.version, build: info.buildNumber);
+
   final prefs = await PreferencesService.load();
   // Le nom du fichier de base ne suit pas celui du produit : le changer
   // laisserait les données des utilisateurs derrière lui.
@@ -82,6 +89,7 @@ Future<void> main() async {
     preferencesServiceProvider.overrideWithValue(prefs),
     notificationServiceProvider.overrideWithValue(notifications),
     authRepositoryProvider.overrideWithValue(auth),
+    appVersionProvider.overrideWithValue(version),
     // La vraie sonde de réseau se branche ici : l'application peut alors dire
     // « hors ligne » plutôt que de faire tourner un écran sans fin.
     reachabilityProvider.overrideWithValue(const SocketReachability()),
