@@ -90,15 +90,20 @@
 	<string>Auxine utilise votre position, une fois, pour trouver la ville de la météo, quand l'application est ouverte. Elle ne la suit pas en arrière-plan, ne la garde pas et ne la partage pas.</string>
 	<key>NSHomeKitUsageDescription</key>
 	<string>Auxine lit la température et l'humidité de vos capteurs Apple Maison pour adapter les conseils et les diagnostics de vos plantes d'intérieur. Rien n'est écrit dans votre maison, rien ne quitte l'appareil.</string>
-	<!-- Google Home, quand le SDK des Home APIs est dans le projet : le
-	     client OAuth et l'équipe du projet déclaré dans la console Google
-	     Home, plus le groupe d'applications partagé avec l'extension Matter.
-	     `GoogleHomeChannel.swift` les lit ici ; sans eux, la maison reste
-	     hors de l'écran. Voir docs/05-technical-architecture.md, section
-	     « Google Home ».
-	     <key>GoogleHomeClientID</key><string>…apps.googleusercontent.com</string>
-	     <key>GoogleHomeTeamID</key><string>…</string>
-	     <key>GoogleHomeAppGroup</key><string>group.ch.vergasta.plant.home</string> -->
+	<!-- Google Home : le client OAuth et l'équipe du projet déclaré dans la
+	     console Google Home, plus le groupe d'applications — celui du widget,
+	     déjà déclaré des deux côtés. Aucune des trois valeurs n'est un
+	     secret : un client OAuth natif n'a pas de client secret, et ce qui
+	     prouve l'identité de l'application est sa signature, attestée par
+	     App Attest. `GoogleHomeChannel.swift` les lit ici ; sans elles, la
+	     maison reste hors de l'écran. Voir
+	     docs/05-technical-architecture.md, section « Google Home ». -->
+	<key>GoogleHomeClientID</key>
+	<string>319993777597-31o7mtkhrlqriktca15c7r9un5crbvkh.apps.googleusercontent.com</string>
+	<key>GoogleHomeTeamID</key>
+	<string>7UMJV7PGVT</string>
+	<key>GoogleHomeAppGroup</key>
+	<string>group.ch.vergasta.plant</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Auxine utilise l'appareil photo pour photographier vos plantes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

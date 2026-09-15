@@ -319,20 +319,44 @@ Pour la livrer :
      `ActivityResultCaller`), l'autre ne fait rien et laisse l'activité de
      Flutter telle quelle. `kotlinx-coroutines` vient en dépendance
      transitive du SDK, rien à déclarer. minSdk 24.
-   - iOS (`GoogleHomeSDK-1.10.1.tar.gz`) : ajouter le paquet local au projet
-     (`File › Add Package Dependencies › Add Local`), puis `GoogleHomeSDK` et
-     `GoogleHomeTypes` à la cible Runner.
+   - iOS : `tool/ios/google_home_sdk.sh` fait le travail — il télécharge
+     l'archive, la décompresse dans `vendor/GoogleHomeSDK` et répare les
+     trois défauts qu'elle porte. Puis, dans Xcode,
+     `File › Add Package Dependencies › Add Local › vendor/GoogleHomeSDK`,
+     avec **Runner** dans la colonne *Add to Target* des deux produits :
+     laissée à *None*, la référence s'écrit sans lier quoi que ce soit, et
+     `canImport` reste faux — un build vert qui ne prouve rien.
+
+     Ce que le script répare, parce que chacun a coûté une heure : l'archive
+     porte des attributs `com.apple.quarantine` que `tar` restaure et qui
+     font refuser le dossier à Xcode ; ses fichiers sont en lecture seule,
+     jusqu'à interdire de retirer ces attributs ; et
+     `GoogleHomeTypes.framework` n'a pas d'`Info.plist`, étant une
+     bibliothèque statique dans un dossier `.framework` — Xcode l'embarque
+     quand même, et l'outillage Flutter, qui inspecte le `.app` construit,
+     échoue dessus. Le script fabrique cet `Info.plist`. Un contournement, à
+     revoir avant une soumission : une archive statique n'a rien à faire
+     dans un bundle, et la validation App Store peut la refuser.
+
+     Le dossier du paquet doit rester à la racine, pas sous `ios/` : Xcode
+     refuse un paquet local voisin du `.xcodeproj`, où vit déjà le paquet
+     généré de Flutter, avec un « Cannot select this directory ».
      `ios/Runner/GoogleHomeChannel.swift` est derrière
      `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal qui
      ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur l'App
-     ID ; le SDK ne se déploie pas sur le simulateur. **Il demande iOS 17**,
-     là où l'application est à 15/16 : la livrer sur iPhone veut dire monter
-     le minimum, et c'est un choix produit, pas une ligne de code.
+     ID — App Groups y est déjà, celui du widget (`group.ch.vergasta.plant`)
+     sert aussi à Google Home, il n'y a donc qu'App Attest à ajouter, d'un
+     clic dans l'onglet *Signing & Capabilities* de la cible Runner. Le SDK
+     ne se déploie pas sur le simulateur. Il demande **iOS 17**,
+     d'où la cible de déploiement du projet, montée de 15 (et 16 pour le
+     widget) à 17 : l'application abandonne les iPhone 8, 8 Plus et X, dont
+     iOS 16 est la dernière version. C'était le prix d'entrée des Home APIs
+     sur iPhone.
 3. Renseigner `GoogleHomeClientID`, `GoogleHomeTeamID` et
    `GoogleHomeAppGroup` dans `ios/Runner/Info.plist` (les clés sont en
-   commentaire à côté de `NSHomeKitUsageDescription`) ; sans elles, le canal
-   répond « pas de maison ici » plutôt que d'ouvrir une session à moitié
-   configurée.
+   commentaire à côté de `NSHomeKitUsageDescription`, avec le groupe déjà
+   rempli) ; sans elles, le canal répond « pas de maison ici » plutôt que
+   d'ouvrir une session à moitié configurée.
 4. Passer `AppConfig.googleHomeEnabled` à vrai, et en dernier : le faire
    sans le SDK montre un bouton « Connecter Google Home » qui répondra
    toujours « aucun capteur ».
