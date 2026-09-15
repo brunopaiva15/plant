@@ -6549,14 +6549,20 @@ abstract class AppLocalizations {
   /// No description provided for @supportBody.
   ///
   /// In fr, this message translates to:
-  /// **'Toutes les fonctions sont gratuites. Un soutien ponctuel, sans abonnement, est possible.'**
+  /// **'Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.'**
   String get supportBody;
 
-  /// No description provided for @supportNothingLocked.
+  /// No description provided for @supportOffer.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune fonction n\'est réservée aux donateurs.'**
-  String get supportNothingLocked;
+  /// **'Si vous souhaitez néanmoins aider le développeur, un achat unique suffit.'**
+  String get supportOffer;
+
+  /// No description provided for @supportOnce.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une seule fois'**
+  String get supportOnce;
 
   /// No description provided for @supportGive.
   ///
@@ -6621,7 +6627,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportNoThanks.
   ///
   /// In fr, this message translates to:
-  /// **'Continuer sans'**
+  /// **'Non merci'**
   String get supportNoThanks;
 
   /// No description provided for @emptyGardenSubtitle.

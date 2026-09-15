@@ -3817,10 +3817,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'All features are free. A one-off contribution, without subscription, is possible.';
+      'Every feature is available. No subscription, no advertising, no compulsory account.';
 
   @override
-  String get supportNothingLocked => 'No feature is reserved for contributors.';
+  String get supportOffer =>
+      'If you would still like to help the developer, a one-off purchase is enough.';
+
+  @override
+  String get supportOnce => 'One time only';
 
   @override
   String supportGive(String price) {
@@ -3856,7 +3860,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportAlready => 'Thank you for your support';
 
   @override
-  String get supportNoThanks => 'Continue without';
+  String get supportNoThanks => 'No thanks';
 
   @override
   String get emptyGardenSubtitle => 'Add your first plant.';

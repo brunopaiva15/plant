@@ -3834,11 +3834,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Tutte le funzioni sono gratuite. È possibile un sostegno una tantum, senza abbonamento.';
+      'Tutte le funzioni sono accessibili. Nessun abbonamento, nessuna pubblicità, nessun account obbligatorio.';
 
   @override
-  String get supportNothingLocked =>
-      'Nessuna funzione è riservata ai sostenitori.';
+  String get supportOffer =>
+      'Se desiderate comunque aiutare lo sviluppatore, basta un acquisto unico.';
+
+  @override
+  String get supportOnce => 'Una sola volta';
 
   @override
   String supportGive(String price) {
@@ -3874,7 +3877,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportAlready => 'Grazie per il tuo sostegno';
 
   @override
-  String get supportNoThanks => 'Continua senza';
+  String get supportNoThanks => 'No grazie';
 
   @override
   String get emptyGardenSubtitle => 'Aggiungete la prima pianta.';
