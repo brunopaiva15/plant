@@ -1972,6 +1972,15 @@ résolution ; `--dropout 0.3` ; Adam à taux constant ; entropie croisée nue.
 Aucun ne coûte de collecte, tous coûtent une passe — d'où l'importance de
 n'en changer qu'un à la fois.
 
+> **Le défaut a disparu, et le levier est resté.** `--dropout 0.5` a été
+> choisi contre les dix-huit points d'écart entraînement/validation de la
+> v6. Sur le jeu de la v9 — 793 000 images, 5 343 classes — cet écart vaut
+> **0,9 point**, et la validation monte encore à la dernière époque
+> (§ 13.8). Le sur-apprentissage n'est plus le défaut mesuré ; le
+> sous-entraînement l'est. Les cinq lignes ci-dessus restent valables, mais
+> elles ne sont plus la priorité, et `--dropout 0.5` est désormais une
+> hypothèse à retester plutôt qu'un acquis.
+
 ### 12.6 ✅ L'entrée à 320 px
 
 Le levier classique de la reconnaissance fine, et ~~le jeu est stocké en
@@ -3967,12 +3976,65 @@ premier a failli coûter une mauvaise conclusion : sans la recette, « la v9
 est moins bonne » se serait rangé comme un fait sur l'architecture plutôt
 que comme une question sur le lot.
 
+#### La courbe d'apprentissage dit l'inverse de ce qu'on croyait
+
+Le run à `--batch 128` a écrit ses seize époques, et elles se lisent mieux
+que n'importe quel chiffre final.
+
+| époque de réglage fin | 1 | 4 | 8 | 10 | 11 | **12** |
+|---|---|---|---|---|---|---|
+| val_accuracy | 0,3810 | 0,4405 | 0,4868 | 0,5025 | 0,5050 | **0,5129** |
+
+Elle **monte encore de 0,8 point à la dernière époque**. Aucun plateau,
+aucun fléchissement. `EarlyStopping(patience=4)` n'a jamais eu l'occasion de
+se déclencher.
+
+Et l'écart entraînement/validation vaut **0,9 point** — 0,5217 contre
+0,5129. La v6 en avait dix-huit (§ 6.7), et c'est ce chiffre-là qui avait
+fait passer `--dropout` de 0,3 à 0,5 au § 12.5.
+
+**Le sur-apprentissage a disparu, et personne ne l'avait remarqué.** Il
+était réel sur 290 000 images et 1 457 classes ; sur 793 000 images et
+5 343 classes, il n'y a plus rien à retenir. La recette freine un réseau qui
+n'a pas fini d'apprendre, et elle s'arrête au bout de douze époques parce
+que « douze » est écrit en dur dans la commande depuis la v7.
+
+Trois choses se réinterprètent d'un coup :
+
+- **La confiance moyenne de la v9 (0,4802 contre 0,5564).** Ce n'était pas
+  un défaut de calibration : c'est la signature d'un réseau qui n'a pas
+  convergé. Un modèle sous-entraîné doute de tout, y compris de ce qu'il
+  sait.
+- **Les 1,5 point perdus sur la v8.** Le lot n'en est pas la cause : à 128,
+  la validation finit à 0,5129 quand la v9 à 64 rendait 0,5153 de top-1.
+  Deux mesures différentes, mais pas d'écart à cette échelle. La question du
+  § 13.7 est close, et sa réponse est « rien ».
+- **Le coût d'une époque de plus.** 6 176 pas à ~30 ms, soit **3,5 minutes**
+  — quand rien d'autre ne tourne sur la machine. Douze époques de plus
+  coûtent quarante minutes. On s'était arrêté douze époques trop tôt pour
+  économiser quelque chose qui ne coûtait rien.
+
+La correction ne se devine pas, elle se délègue : `--fine-epochs 40` avec le
+même `--checkpoint`, et `EarlyStopping` tranche. Le réglage fin reprend à la
+douzième époque — `state.json` porte le compte, les poids sont sur le disque
+— donc les deux heures déjà passées ne se repaient pas.
+
+> **Un nombre d'époques écrit en dur est un pari sur une courbe qu'on n'a
+> pas regardée.** Celui-ci datait de la v7, qui n'avait ni le même jeu, ni
+> le même nombre de classes, ni le même dropout.
+
 #### Ce qui est en cours
 
-Un entraînement identique à la v9 sur un seul point — `--batch 128`, celui
-de la v8. S'il retrouve les 1,5 point, c'était le lot et la question du
-§ 13.7 est close. Sinon c'est le pré-découpage en carrés, et la régression
-vient d'une optimisation de confort.
+La reprise du même réglage fin avec `--fine-epochs 40`, où
+`EarlyStopping(patience=4, restore_best_weights=True)` décide de l'arrêt au
+lieu d'un nombre écrit dans la commande. Le premier entraînement dont la
+durée sera mesurée plutôt que supposée.
+
+Ce qu'on n'a **plus** besoin de chercher : le lot. Le run à 128 rend
+0,5129 de validation quand celui à 64 rendait 0,5153 de top-1, et la
+question ouverte depuis le § 13.7 se referme sur « rien ». Restent le
+pré-découpage en carrés et le redécoupage, mais les deux pèsent au plus
+quelques dixièmes à côté des points que la courbe promet encore.
 
 **En attendant, c'est la v8 qui reste livrée.** Non parce que la v9
 dégraderait l'expérience — à autonomie égale, elle ne la change pas — mais
