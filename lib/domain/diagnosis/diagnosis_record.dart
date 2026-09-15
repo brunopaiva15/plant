@@ -1,3 +1,4 @@
+import 'diagnosis_observations.dart';
 import 'plant_diagnoser.dart';
 
 /// Une photo soumise à l'analyse, gardée avec le compte rendu.
@@ -36,8 +37,12 @@ class DiagnosisRecord {
   /// [symptoms] est ramené à `null` quand il ne dit rien : un champ laissé
   /// vide n'est pas un symptôme signalé, et le compte rendu n'a pas à lui
   /// donner un titre.
-  DiagnosisRecord({required this.diagnosis, String? symptoms, this.photos = const []})
-      : symptoms = symptoms != null && symptoms.trim().isNotEmpty ? symptoms.trim() : null;
+  DiagnosisRecord({
+    required this.diagnosis,
+    String? symptoms,
+    this.photos = const [],
+    this.observations = DiagnosisObservations.none,
+  }) : symptoms = symptoms != null && symptoms.trim().isNotEmpty ? symptoms.trim() : null;
 
   /// Clé sous laquelle le compte rendu vit dans `PlantAction.metadata`. Les
   /// métadonnées partent en synchronisation et en sauvegarde avec la ligne :
@@ -54,11 +59,17 @@ class DiagnosisRecord {
   /// (voir `DiagnosisPhotoStrip`).
   final List<DiagnosisPhoto> photos;
 
+  /// Ce que la personne avait vérifié elle-même : la terre, les racines, la
+  /// lumière, les insectes. Gardé avec le reste — c'est la moitié de ce qui a
+  /// mené aux pistes, et la photo n'en montre rien.
+  final DiagnosisObservations observations;
+
   Map<String, Object?> toJson() => {
         'version': 1,
         ...diagnosis.toJson(),
         if (symptoms != null && symptoms!.isNotEmpty) 'symptoms': symptoms,
         if (photos.isNotEmpty) 'photos': [for (final p in photos) p.toJson()],
+        if (observations.isNotEmpty) 'observations': observations.toJson(),
       };
 
   /// Le compte rendu porté par une entrée du journal, ou `null` pour une
@@ -78,6 +89,9 @@ class DiagnosisRecord {
         for (final p in json['photos'] is List ? json['photos'] as List : const [])
           if (p is Map) ?DiagnosisPhoto.fromJson(p.cast<String, Object?>()),
       ],
+      observations: json['observations'] is Map
+          ? DiagnosisObservations.fromJson((json['observations'] as Map).cast<String, Object?>())
+          : DiagnosisObservations.none,
     );
   }
 }

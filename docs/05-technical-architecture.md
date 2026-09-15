@@ -252,9 +252,10 @@ et l'humidité relative, et rien d'autre.
 - Le diagnostic joint la mesure à la question, pour une plante qui n'est pas
   dehors, et le dit sous le champ des symptômes. Ce que le capteur ne donne
   pas — l'humidité d'un thermostat seul, tout sans capteur ou pour une plante
-  dehors — se demande là aussi, deux champs facultatifs sous les symptômes,
-  dans l'unité de la personne (`ReportedClimate`, converti en Celsius, hors
-  plage ignoré). Le modèle sait ce qui est mesuré et ce qui est donné.
+  dehors — se demande là aussi, deux champs facultatifs dans le groupe
+  « Observations », dans l'unité de la personne (`ReportedClimate`, converti
+  en Celsius, hors plage ignoré). Le modèle sait ce qui est mesuré et ce qui
+  est donné.
 - Réglages : `NSHomeKitUsageDescription` dans `Info.plist`, entitlement
   `com.apple.developer.homekit`, capability *HomeKit* sur l'App ID. Sans
   capteur dans la maison, l'étape d'onboarding se passe d'un geste.

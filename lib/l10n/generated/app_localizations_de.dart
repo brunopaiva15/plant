@@ -1980,8 +1980,56 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Optional: Die Bedingungen rund um die Pflanze schärfen die Analyse.';
+  String get diagnosisChecks => 'Beobachtungen';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Optional: Was das Foto nicht zeigt, schärft die Analyse.';
+
+  @override
+  String get diagnosisSoil => 'Erde';
+
+  @override
+  String get diagnosisSoilDry => 'Trocken';
+
+  @override
+  String get diagnosisSoilMoist => 'Feucht';
+
+  @override
+  String get diagnosisSoilSoggy => 'Durchnässt';
+
+  @override
+  String get diagnosisRoots => 'Wurzeln';
+
+  @override
+  String get diagnosisRootsFirm => 'Fest und hell';
+
+  @override
+  String get diagnosisRootsSoft => 'Braun oder weich';
+
+  @override
+  String get diagnosisRootsCrowded => 'Zu eng';
+
+  @override
+  String get diagnosisLightDirect => 'Direkte Sonne';
+
+  @override
+  String get diagnosisLightBright => 'Hell, ohne direkte Sonne';
+
+  @override
+  String get diagnosisLightDim => 'Wenig';
+
+  @override
+  String get diagnosisBugs => 'Insekten';
+
+  @override
+  String get diagnosisBugsNone => 'Keine gesehen';
+
+  @override
+  String get diagnosisBugsOnPlant => 'An der Pflanze';
+
+  @override
+  String get diagnosisBugsInSoil => 'In der Erde';
 
   @override
   String get analyze => 'Analysieren';
@@ -4694,4 +4742,236 @@ class AppLocalizationsDe extends AppLocalizations {
   String finderRegion(String zone, String low) {
     return 'Zone $zone · Winter bei $low';
   }
+
+  @override
+  String get encyclopediaTitle => 'Enzyklopädie';
+
+  @override
+  String get encyclopediaHint =>
+      'Die Probleme der Datenbank, die Arten des Katalogs und die Begriffe der Pflegeblätter.';
+
+  @override
+  String get encyclopediaProblems => 'Probleme';
+
+  @override
+  String get encyclopediaSpecies => 'Arten';
+
+  @override
+  String get encyclopediaGlossary => 'Begriffe';
+
+  @override
+  String get encyclopediaSearchProblems => 'Name, Schädling, Krankheit…';
+
+  @override
+  String get encyclopediaSearchGlossary => 'Licht, Substrat, Steckling…';
+
+  @override
+  String encyclopediaProblemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Probleme',
+      one: '1 Problem',
+      zero: 'Kein Problem',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String encyclopediaSpeciesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Arten',
+      one: '1 Art',
+      zero: 'Keine Art',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get encyclopediaNoTerm => 'Kein Begriff gefunden';
+
+  @override
+  String problemNumber(String id) {
+    return 'Eintrag $id';
+  }
+
+  @override
+  String get problemScope => 'Verbreitung';
+
+  @override
+  String get problemScopeGeneral => 'Alle Pflanzen';
+
+  @override
+  String get problemScopeWide => 'Viele Wirte';
+
+  @override
+  String get problemScopeTarget => 'Bestimmte Wirte';
+
+  @override
+  String get problemScopeGeneralNote =>
+      'Möglich bei Gefäßpflanzen, je nach Bedingungen und Entwicklungsstadium.';
+
+  @override
+  String get problemScopeWideNote =>
+      'Viele Wirte; die genannten Taxa sind Beispiele.';
+
+  @override
+  String get problemScopeTargetNote =>
+      'Hauptwirte einer Zielgruppe; die Liste ist nicht vollständig.';
+
+  @override
+  String get problemHosts => 'Wirte';
+
+  @override
+  String get problemHostsAll => 'Alle Gefäßpflanzen';
+
+  @override
+  String get problemHostsNote =>
+      'Eine Gattung oder Familie macht nicht alle ihre Arten anfällig.';
+
+  @override
+  String get problemInGarden => 'Im Garten';
+
+  @override
+  String get problemKindsTitle => 'Problemfamilien';
+
+  @override
+  String get problemKindDisorderNote =>
+      'Weder Schädling noch Krankheit: Wasser, Licht, Kälte, Substrat, ein Mangel.';
+
+  @override
+  String get problemKindPestNote =>
+      'Ein Lebewesen, das die Pflanze befällt: Insekt, Milbe, Schnecke, Nematode.';
+
+  @override
+  String get problemKindDiseaseNote =>
+      'Ein Pilz, ein Bakterium, ein Virus oder ein Phytoplasma in der Pflanze.';
+
+  @override
+  String get problemKindConditionNote =>
+      'Weder noch: Rußtau wächst auf Honigtau, ohne die Pflanze zu befallen.';
+
+  @override
+  String get careLightShadeNote =>
+      'Weit vom Fenster entfernt, ohne direkten Strahl am Tag.';
+
+  @override
+  String get careLightLowNote =>
+      'Ein heller Raum, aber weit vom Fenster oder nach Norden.';
+
+  @override
+  String get careLightIndirectNote =>
+      'Ein paar Schritte vom Fenster entfernt oder hinter einem Vorhang.';
+
+  @override
+  String get careLightBrightNote =>
+      'Nah am Fenster, außerhalb des Sonnenstrahls.';
+
+  @override
+  String get careLightSomeNote =>
+      'Morgen- oder Abendsonne, nicht die Mittagssonne.';
+
+  @override
+  String get careLightFullNote =>
+      'Sechs Stunden direkte Sonne oder mehr, mitten am Tag.';
+
+  @override
+  String get careHumidityLowNote =>
+      'Die Luft einer beheizten Wohnung genügt ihr.';
+
+  @override
+  String get careHumidityAverageNote =>
+      'Etwa 50 %, im Winter fern der Heizung.';
+
+  @override
+  String get careHumidityHighNote =>
+      'Über 60 %: Bad, Küche oder eine Schale mit feuchten Blähtonkugeln.';
+
+  @override
+  String get careDifficultyEasyNote =>
+      'Verträgt vergessene Wassergaben und wechselndes Licht.';
+
+  @override
+  String get careDifficultyMediumNote =>
+      'Braucht einen regelmäßigen Gießrhythmus und einen festen Platz.';
+
+  @override
+  String get careDifficultyDemandingNote =>
+      'Licht, Luftfeuchtigkeit und Gießen müssen genau stimmen.';
+
+  @override
+  String get careToxicSafeNote =>
+      'Keine bekannte Giftigkeit für Tiere oder Kinder.';
+
+  @override
+  String get careToxicMildNote => 'Der Saft reizt Haut und Mund.';
+
+  @override
+  String get careToxicToxicNote =>
+      'Das Verschlucken eines Blattes oder einer Frucht macht krank.';
+
+  @override
+  String get careToxicUnknownNote =>
+      'Für diese Art ist nichts hinterlegt; vorsichtshalber außer Reichweite halten.';
+
+  @override
+  String get careSoilStandardNote => 'Handelsübliche Blumenerde, ohne Zusatz.';
+
+  @override
+  String get careSoilDrainingNote =>
+      'Blumenerde, mit Perlit, Sand oder Bims aufgelockert.';
+
+  @override
+  String get careSoilCactusNote =>
+      'Stark mineralisch: Wasser läuft durch, ohne zu stehen.';
+
+  @override
+  String get careSoilOrchidNote =>
+      'Grobe Rinde: die Wurzeln leben an der Luft.';
+
+  @override
+  String get careSoilAcidicNote =>
+      'Saurer pH-Wert, für Pflanzen, die Kalk vergilben lässt.';
+
+  @override
+  String get careSoilRichNote =>
+      'Mit Kompost angereicherte Erde, für zehrende Pflanzen.';
+
+  @override
+  String get careSoilAquaticNote =>
+      'Die Wurzeln stehen im Wasser oder auf einer erdlosen Unterlage.';
+
+  @override
+  String get carePropCuttingNote =>
+      'Ein unter einem Knoten geschnittener Trieb, in feuchtes Substrat gesteckt.';
+
+  @override
+  String get carePropLeafNote =>
+      'Ein ganzes Blatt oder ein Stück davon, auf das Substrat gelegt.';
+
+  @override
+  String get carePropDivisionNote =>
+      'Der Horst wird beim Umtopfen samt Wurzeln geteilt.';
+
+  @override
+  String get carePropOffsetsNote =>
+      'Junge Triebe am Fuß werden abgetrennt, sobald sie Wurzeln haben.';
+
+  @override
+  String get carePropLayeringNote =>
+      'Ein Trieb, der bewurzelt wird, solange er noch an der Mutterpflanze hängt.';
+
+  @override
+  String get carePropSeedNote =>
+      'Aussaat, langsamer als ein Steckling und oft nicht sortenecht.';
+
+  @override
+  String get carePropWaterNote =>
+      'Der Steckling steht im Wasserglas, bis Wurzeln kommen.';
+
+  @override
+  String get carePropTuberNote =>
+      'Die Knolle wird in Stücke geteilt, jedes mit einem Auge.';
 }

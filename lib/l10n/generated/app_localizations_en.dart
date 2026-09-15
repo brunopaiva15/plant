@@ -1974,8 +1974,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Optional: the conditions around the plant sharpen the analysis.';
+  String get diagnosisChecks => 'Observations';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Optional: what the photo cannot show sharpens the analysis.';
+
+  @override
+  String get diagnosisSoil => 'Soil';
+
+  @override
+  String get diagnosisSoilDry => 'Dry';
+
+  @override
+  String get diagnosisSoilMoist => 'Damp';
+
+  @override
+  String get diagnosisSoilSoggy => 'Soaked';
+
+  @override
+  String get diagnosisRoots => 'Roots';
+
+  @override
+  String get diagnosisRootsFirm => 'Firm and pale';
+
+  @override
+  String get diagnosisRootsSoft => 'Brown or soft';
+
+  @override
+  String get diagnosisRootsCrowded => 'Cramped';
+
+  @override
+  String get diagnosisLightDirect => 'Direct sun';
+
+  @override
+  String get diagnosisLightBright => 'Bright, no direct sun';
+
+  @override
+  String get diagnosisLightDim => 'Low';
+
+  @override
+  String get diagnosisBugs => 'Insects';
+
+  @override
+  String get diagnosisBugsNone => 'None seen';
+
+  @override
+  String get diagnosisBugsOnPlant => 'On the plant';
+
+  @override
+  String get diagnosisBugsInSoil => 'In the soil';
 
   @override
   String get analyze => 'Analyze';
@@ -4677,4 +4725,232 @@ class AppLocalizationsEn extends AppLocalizations {
   String finderRegion(String zone, String low) {
     return 'Zone $zone · winters at $low';
   }
+
+  @override
+  String get encyclopediaTitle => 'Encyclopedia';
+
+  @override
+  String get encyclopediaHint =>
+      'The problems in the database, the species in the catalogue and the vocabulary of the care sheets.';
+
+  @override
+  String get encyclopediaProblems => 'Problems';
+
+  @override
+  String get encyclopediaSpecies => 'Species';
+
+  @override
+  String get encyclopediaGlossary => 'Vocabulary';
+
+  @override
+  String get encyclopediaSearchProblems => 'Name, pest, disease…';
+
+  @override
+  String get encyclopediaSearchGlossary => 'Light, soil, cutting…';
+
+  @override
+  String encyclopediaProblemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count problems',
+      one: '1 problem',
+      zero: 'No problem',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String encyclopediaSpeciesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count species',
+      one: '1 species',
+      zero: 'No species',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get encyclopediaNoTerm => 'No term found';
+
+  @override
+  String problemNumber(String id) {
+    return 'Entry $id';
+  }
+
+  @override
+  String get problemScope => 'Range';
+
+  @override
+  String get problemScopeGeneral => 'All plants';
+
+  @override
+  String get problemScopeWide => 'Many hosts';
+
+  @override
+  String get problemScopeTarget => 'Specific hosts';
+
+  @override
+  String get problemScopeGeneralNote =>
+      'Possible on vascular plants, depending on conditions and growth stage.';
+
+  @override
+  String get problemScopeWideNote =>
+      'Many hosts; the taxa listed are examples.';
+
+  @override
+  String get problemScopeTargetNote =>
+      'Main hosts within a target group; the list is not exhaustive.';
+
+  @override
+  String get problemHosts => 'Hosts';
+
+  @override
+  String get problemHostsAll => 'All vascular plants';
+
+  @override
+  String get problemHostsNote =>
+      'A genus or a family does not make all of its species susceptible.';
+
+  @override
+  String get problemInGarden => 'In the garden';
+
+  @override
+  String get problemKindsTitle => 'Problem families';
+
+  @override
+  String get problemKindDisorderNote =>
+      'Neither pest nor disease: water, light, cold, soil, a deficiency.';
+
+  @override
+  String get problemKindPestNote =>
+      'A living thing feeding on the plant: insect, mite, slug, nematode.';
+
+  @override
+  String get problemKindDiseaseNote =>
+      'A fungus, a bacterium, a virus or a phytoplasma living in the plant.';
+
+  @override
+  String get problemKindConditionNote =>
+      'Neither one: sooty mould grows on honeydew without attacking the plant.';
+
+  @override
+  String get careLightShadeNote =>
+      'Away from windows, with no direct beam at any time of day.';
+
+  @override
+  String get careLightLowNote =>
+      'A light room, but far from the window, or facing north.';
+
+  @override
+  String get careLightIndirectNote =>
+      'A few steps from a window, or behind a sheer curtain.';
+
+  @override
+  String get careLightBrightNote =>
+      'Close to a window, out of the sun\'s beam.';
+
+  @override
+  String get careLightSomeNote => 'Morning or late-day sun, not midday sun.';
+
+  @override
+  String get careLightFullNote =>
+      'Six hours of direct sun or more, through the middle of the day.';
+
+  @override
+  String get careHumidityLowNote => 'The air of a heated home suits it.';
+
+  @override
+  String get careHumidityAverageNote =>
+      'Around 50%, away from a radiator in winter.';
+
+  @override
+  String get careHumidityHighNote =>
+      'Above 60%: bathroom, kitchen, or a tray of damp clay pebbles.';
+
+  @override
+  String get careDifficultyEasyNote =>
+      'Puts up with missed waterings and changes in light.';
+
+  @override
+  String get careDifficultyMediumNote =>
+      'Needs a steady watering rhythm and a settled spot.';
+
+  @override
+  String get careDifficultyDemandingNote =>
+      'Light, humidity and watering all have to be watched closely.';
+
+  @override
+  String get careToxicSafeNote => 'No known toxicity for pets or children.';
+
+  @override
+  String get careToxicMildNote => 'The sap irritates skin and mouth.';
+
+  @override
+  String get careToxicToxicNote =>
+      'Swallowing a leaf or a fruit causes illness.';
+
+  @override
+  String get careToxicUnknownNote =>
+      'Nothing is recorded for this species; keep it out of reach as a precaution.';
+
+  @override
+  String get careSoilStandardNote =>
+      'Standard houseplant compost, with nothing added.';
+
+  @override
+  String get careSoilDrainingNote =>
+      'Potting mix lightened with perlite, sand or pumice.';
+
+  @override
+  String get careSoilCactusNote =>
+      'Largely mineral: water runs through without sitting.';
+
+  @override
+  String get careSoilOrchidNote => 'Coarse bark: the roots live in the air.';
+
+  @override
+  String get careSoilAcidicNote =>
+      'An acid pH, for plants that lime turns yellow.';
+
+  @override
+  String get careSoilRichNote => 'Compost-enriched mix, for hungry plants.';
+
+  @override
+  String get careSoilAquaticNote =>
+      'The roots sit in water, or on a support with no soil.';
+
+  @override
+  String get carePropCuttingNote =>
+      'A stem cut below a node, set in damp compost.';
+
+  @override
+  String get carePropLeafNote =>
+      'A whole leaf, or a piece of one, laid on the compost.';
+
+  @override
+  String get carePropDivisionNote =>
+      'The clump is split in two at repotting, roots included.';
+
+  @override
+  String get carePropOffsetsNote =>
+      'Young shoots at the base are detached once rooted.';
+
+  @override
+  String get carePropLayeringNote =>
+      'A stem rooted while still attached to the mother plant.';
+
+  @override
+  String get carePropSeedNote =>
+      'Sown seed, slower than a cutting and often less true to type.';
+
+  @override
+  String get carePropWaterNote =>
+      'The cutting sits in a glass of water until roots appear.';
+
+  @override
+  String get carePropTuberNote =>
+      'The tuber is cut into pieces, each with an eye.';
 }

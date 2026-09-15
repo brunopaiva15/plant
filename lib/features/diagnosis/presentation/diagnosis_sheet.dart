@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
+import '../../../core/l10n/diagnosis_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/likelihood_labels.dart';
 import '../../../core/network/connectivity.dart';
@@ -15,6 +16,7 @@ import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
+import '../../../domain/diagnosis/diagnosis_observations.dart';
 import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
 import '../../../domain/home/home_climate.dart';
@@ -49,6 +51,13 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   /// Ce que le capteur ne donne pas se demande, sans obligation.
   final _temperature = TextEditingController();
   final _humidity = TextEditingController();
+
+  /// Ce que la personne est allée vérifier : rien n'est coché au départ, et
+  /// une case laissée vide ne part pas.
+  SoilState? _soil;
+  RootState? _roots;
+  LightExposure? _light;
+  BugSighting? _bugs;
   bool _busy = false;
   Diagnosis? _result;
 
@@ -110,6 +119,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             frequentIds: frequent,
             indoorClimate: measured,
             reportedClimate: _reportedClimate(measured),
+            observations: _observations,
           ));
       Haptics.success();
       if (mounted) setState(() => _result = result);
@@ -155,6 +165,10 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     return reported.isEmpty ? null : reported;
   }
 
+  /// Ce qui a été coché, tel qu'il part à l'analyse et tel qu'il sera gardé
+  /// avec elle.
+  DiagnosisObservations get _observations => DiagnosisObservations(soil: _soil, roots: _roots, light: _light, bugs: _bugs);
+
   /// Ce dont l'espèce souffre habituellement, d'après sa fiche d'entretien.
   ///
   /// Le catalogue le sait déjà pour un bon millier d'espèces ; le taire
@@ -186,7 +200,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
       ...r.causes.take(3).map((c) => '• ${diagnosisCauseTitle(c, catalog, language)} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
     ].join('\n');
     final photos = [for (final p in _photos) DiagnosisPhoto(filePath: p.filePath, thumbPath: p.thumbPath)];
-    final record = DiagnosisRecord(diagnosis: r, symptoms: _symptoms.text.trim(), photos: photos);
+    final record = DiagnosisRecord(diagnosis: r, symptoms: _symptoms.text.trim(), photos: photos, observations: _observations);
     final kept = List<StoredPhoto>.of(_photos);
     final storage = ref.read(photoStorageProvider);
     await ref.read(careActionsProvider).log(
@@ -292,39 +306,76 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             ),
             const SizedBox(height: Space.sm),
             FloraTextField(controller: _symptoms, hint: l10n.diagnosisSymptomsHint, minLines: 1, maxLines: 3),
-            if (askTemperature || askHumidity) ...[
-              // Ce que le capteur ne mesure pas — ou tout, sans capteur, ou
-              // pour une plante dehors — se demande, sans obligation : un
-              // air à 30 % explique des pointes sèches mieux qu'une photo.
-              const SizedBox(height: Space.sm),
-              Row(
-                children: [
-                  if (askTemperature)
-                    Expanded(
-                      child: FloraTextField(
-                        controller: _temperature,
-                        hint: l10n.careTemperature,
-                        suffix: Text(metric ? '°C' : '°F', style: context.text.body.copyWith(color: c.inkTertiary)),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-                        textCapitalization: TextCapitalization.none,
-                      ),
-                    ),
-                  if (askTemperature && askHumidity) const SizedBox(width: Space.sm),
-                  if (askHumidity)
-                    Expanded(
-                      child: FloraTextField(
-                        controller: _humidity,
-                        hint: l10n.weatherHumidity,
-                        suffix: Text('%', style: context.text.body.copyWith(color: c.inkTertiary)),
-                        keyboardType: TextInputType.number,
-                        textCapitalization: TextCapitalization.none,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: Space.xs),
-              Text(l10n.diagnosisClimateHint, style: context.text.caption),
-            ],
+            const SizedBox(height: Space.md),
+            // Ce qu'une photo ne montrera jamais et que la personne, elle,
+            // peut aller voir : la terre au doigt, les racines hors du pot,
+            // la lumière reçue, les insectes sous les feuilles. Ce sont ces
+            // quatre-là qui départagent l'excès d'eau du manque d'eau et la
+            // pourriture du choc de rempotage. Rien n'est obligatoire, et ce
+            // qui n'est pas coché ne part pas.
+            FloraGroup(
+              header: l10n.diagnosisChecks,
+              footer: l10n.diagnosisChecksHint,
+              children: [
+                _field(FloraChoice<SoilState>(
+                  label: l10n.diagnosisSoil,
+                  values: SoilState.values,
+                  selected: _soil,
+                  labelOf: l10n.soilStateLabel,
+                  onChanged: (v) => setState(() => _soil = v),
+                )),
+                _field(FloraChoice<RootState>(
+                  label: l10n.diagnosisRoots,
+                  values: RootState.values,
+                  selected: _roots,
+                  labelOf: l10n.rootStateLabel,
+                  onChanged: (v) => setState(() => _roots = v),
+                )),
+                _field(FloraChoice<LightExposure>(
+                  label: l10n.light,
+                  values: LightExposure.values,
+                  selected: _light,
+                  labelOf: l10n.lightExposureLabel,
+                  onChanged: (v) => setState(() => _light = v),
+                )),
+                _field(FloraChoice<BugSighting>(
+                  label: l10n.diagnosisBugs,
+                  values: BugSighting.values,
+                  selected: _bugs,
+                  labelOf: l10n.bugSightingLabel,
+                  onChanged: (v) => setState(() => _bugs = v),
+                )),
+                // Ce que le capteur ne mesure pas — ou tout, sans capteur, ou
+                // pour une plante dehors — se demande là aussi : un air à
+                // 30 % explique des pointes sèches mieux qu'une photo.
+                if (askTemperature || askHumidity)
+                  _field(Row(
+                    children: [
+                      if (askTemperature)
+                        Expanded(
+                          child: FloraTextField(
+                            controller: _temperature,
+                            hint: l10n.careTemperature,
+                            suffix: Text(metric ? '°C' : '°F', style: context.text.body.copyWith(color: c.inkTertiary)),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                            textCapitalization: TextCapitalization.none,
+                          ),
+                        ),
+                      if (askTemperature && askHumidity) const SizedBox(width: Space.sm),
+                      if (askHumidity)
+                        Expanded(
+                          child: FloraTextField(
+                            controller: _humidity,
+                            hint: l10n.weatherHumidity,
+                            suffix: Text('%', style: context.text.body.copyWith(color: c.inkTertiary)),
+                            keyboardType: TextInputType.number,
+                            textCapitalization: TextCapitalization.none,
+                          ),
+                        ),
+                    ],
+                  )),
+              ],
+            ),
             if (measured != null) ...[
               // Dire ce qui part avec les photos : la mesure du capteur, et
               // rien d'autre.
@@ -346,6 +397,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
                 diagnosis: _result!,
                 symptoms: _symptoms.text.trim(),
                 photos: [for (final p in _photos) DiagnosisPhoto(filePath: p.filePath, thumbPath: p.thumbPath)],
+                observations: _observations,
               ),
             ),
             const SizedBox(height: Space.md),
@@ -358,6 +410,9 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     );
   }
 }
+
+/// Une ligne du groupe des observations : la marge commune, une fois.
+Widget _field(Widget child) => Padding(padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, Space.sm), child: child);
 
 /// Plafond de photos par analyse (aligné sur l'adaptateur).
 abstract final class DiagnosisLimits {

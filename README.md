@@ -60,6 +60,16 @@ Haptics. Tout passe par des canaux natifs, sans plugin (`ios/Runner/*Channel.swi
 l'App ID de l'application et sur celui du widget (`ch.vergasta.plant.widget`).
 Sur Android, rien de tout cela n'apparaît. Détails : docs/05 et docs/06.
 
+## Encyclopédie
+*Profil › Encyclopédie* ouvre ce que l'application embarque, à lire hors de
+tout écran de travail : les 200 troubles, ravageurs et maladies de la base
+(rangés par famille, cherchables par nom, par numéro ou par hôte, une page
+chacun) ; les espèces du catalogue intégré et leur fiche d'entretien, sans
+qu'il faille posséder la plante ; et le vocabulaire des fiches — lumière,
+humidité, substrat, multiplication, toxicité, difficulté —, un terme, une
+définition. Ces listes existaient déjà : elles n'apparaissaient qu'au moment
+où elles servaient. Détails : docs/04.
+
 ## Gratuite, avec un soutien facultatif
 Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique
 permet seulement de remercier le développeur — il ne déverrouille rien.

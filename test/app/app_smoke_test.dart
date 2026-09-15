@@ -345,7 +345,7 @@ void main() {
     await step(tester);
     // La dernière étape propose de soutenir le développeur, sans obliger.
     expect(find.text('Auxine est gratuite'), findsOneWidget);
-    await tester.tap(find.text('Continuer sans'));
+    await tester.tap(find.text('Non merci'));
     await settle(tester);
     // Le salut suit l'heure de la machine qui fait tourner le test, comme il
     // suit celle de l'appareil : « Bonsoir » à partir de dix-huit heures.

@@ -58,7 +58,7 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Comptes : Apple natif (iOS), et lui seul — pas d'e-mail ; compte local conservé sans connexion, et sur Android. Google OAuth codé mais pas livré (`AppConfig.googleSignInEnabled`, Android n'est pas prioritaire) | ✅ |
 | Collaboration : membres, rôles owner / member / viewer, « · par Laura » dans la timeline, lecture seule pour viewer | ✅ |
 | Partager son jardin : invitation par lien ou code à usage unique (QR compris), l'invité crée un compte s'il n'en a pas, « Mes jardins » pour basculer de l'un à l'autre, changement de rôle, retrait, départ d'un jardin | ✅ |
-| Diagnostic « Ma plante a un problème » : photos + symptômes → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, sans plafond, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |
+| Diagnostic « Ma plante a un problème » : photos + symptômes + observations (terre, racines, lumière, insectes) → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, sans plafond, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |
 | Partage par lien public révocable, page publique servie par la fonction Edge `share` | ✅ |
 | Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
 
@@ -95,6 +95,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Fiche d'entretien, second niveau : hygrométrie en pourcentage (20 à 90 %, pour qui règle une serre), lampe horticole équivalente au besoin de lumière, rapport au pot (à l'étroit ou à l'aise), floraison et ses conditions, repos à feuillage disparu des bulbes et tubercules | ✅ |
 | Sélecteur d'espèces : catalogue intégré hors ligne + recherche GBIF paginée | ✅ |
 | Catalogue étendu : ~40 000 espèces avec leurs noms courants en fr/de/it/en, cherchables hors ligne et sans accents (Wikidata CC0 + familles GBIF) | ✅ |
+| Encyclopédie (Profil) : les 200 problèmes de la base rangés par famille avec une page chacun (famille, étendue, hôtes, plantes du jardin concernées), les espèces du catalogue et leur fiche d'entretien, le vocabulaire des fiches défini terme à terme | ✅ |
 | Onboarding animé en cinq écrans : objets 3D sur un halo de couleur, boucle qui ralentit jusqu'à se poser sur l'image nette, objets en orbite au rythme du doigt, titres levés ligne à ligne, texte mesuré pour ne jamais être coupé | ✅ |
 | Application 100 % gratuite : plus aucun plafond ni fonction réservée | ✅ |
 | Soutien facultatif au développeur (achat unique, App Store / Play), à la fin de l'onboarding et dans Profil | ✅ |
