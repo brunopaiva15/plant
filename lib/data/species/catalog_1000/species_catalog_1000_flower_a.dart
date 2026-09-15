@@ -13,7 +13,7 @@ abstract final class SpeciesCatalog1000FlowerA {
     SpeciesCatalogEntry("Rhinanthus minor", "Orobanchaceae", SpeciesCategory.flower),
     SpeciesCatalogEntry("Rhododendron calendulaceum", "Ericaceae", SpeciesCategory.flower),
     SpeciesCatalogEntry("Rhododendron catawbiense", "Ericaceae", SpeciesCategory.flower),
-    SpeciesCatalogEntry("Rhododendron ferrugineum", "Ericaceae", SpeciesCategory.flower),
+    SpeciesCatalogEntry("Russelia equisetiformis", "Plantaginaceae", SpeciesCategory.flower),
     SpeciesCatalogEntry("Rhododendron indicum", "Ericaceae", SpeciesCategory.flower),
     SpeciesCatalogEntry("Rhododendron luteum", "Ericaceae", SpeciesCategory.flower),
     SpeciesCatalogEntry("Rhododendron maximum", "Ericaceae", SpeciesCategory.flower),
