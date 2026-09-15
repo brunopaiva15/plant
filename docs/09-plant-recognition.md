@@ -3364,11 +3364,11 @@ relancerait l'encodage. Ça prend effet à la prochaine construction du jeu.
 > le problème ; grossir *à la sortie* l'est. Les deux ne se décidaient pas
 > séparément jusqu'ici, et c'est le vrai acquis de la v8.
 >
-> **Puis révisé par la v9, qui est moins bonne que la v8.** Le § 13.8 dit
+> **Puis révisé par la v9, qui ne vaut pas mieux que la v8.** Le § 13.8 dit
 > combien et pourquoi on ne la livre pas. Une chose y change le cadrage
-> lui-même : la perte survit au masquage des classes supplémentaires, donc
-> elle ne vient pas de l'étendue des sorties. « Exposer étroit » reste juste
-> et ne répare pas ce cas-ci.
+> lui-même : sa perte de 1,5 point survit au masquage des classes
+> supplémentaires, donc elle ne vient pas de l'étendue des sorties.
+> « Exposer étroit » reste juste et ne répare pas ce cas-ci.
 
 ### 13.1 Les sept faits, et ce qu'ils imposent
 
@@ -3878,14 +3878,46 @@ sépare l'ensemble entraîné de l'ensemble exposé, et `retailler.py` règle le
 second ; ici le premier est en cause. **Aucune retaille ne rattrapera ces
 1,5 point** : ce n'est pas ce que le modèle expose, c'est ce qu'il a appris.
 
-**3. La calibration va dans l'autre sens.** Au seuil de 0,70, la v9 accepte
-**31,2 %** des images à **0,921** de précision, contre **37,9 %** à **0,883**
-pour la v8. Lu tel quel, c'est un progrès. Ça n'en est pas forcément un : un
-modèle qui ne répond que lorsqu'il est sûr se trompe forcément moins, et
-comparer deux modèles au même seuil compare deux prudences, pas deux
-qualités. `a_taux_egal` coupe désormais les deux au même taux d'acceptation
-avant de lire la justesse — c'est la seule façon de savoir si la v9 sait
-mieux se taire ou seulement davantage.
+**3. La calibration semble aller dans l'autre sens, et n'y va pas.** Au
+seuil de 0,70, la v9 accepte **31,2 %** des images à **0,921** de précision,
+contre **37,9 %** à **0,883** pour la v8. Lu tel quel, c'est un progrès. Ça
+n'en est pas un : un modèle qui ne répond que lorsqu'il est sûr se trompe
+forcément moins, et comparer deux modèles au même seuil compare deux
+prudences, pas deux qualités.
+
+`a_taux_egal` coupe les deux au même taux d'acceptation avant de lire la
+justesse. Le surplus disparaît entièrement :
+
+| à autonomie égale | seuil v8 | v8 | seuil v9 | v9 |
+|---|---|---|---|---|
+| classes communes, 38 % acceptées | 0,700 | 0,8828 | 0,588 | **0,8835** |
+| plantes cultivées, 37 % acceptées | 0,700 | 0,8623 | 0,574 | 0,8613 |
+
+Sept dix-millièmes d'un côté, dix de l'autre : les deux modèles sont
+**indiscernables** là où l'application décide. Le 0,921 était du silence, pas
+de la calibration.
+
+**Et c'est la nuance qui sauve la v9 d'être une régression.** Ses 1,5 point
+de top-1 perdus ne sont pas dans la zone de confiance : la tranche haute vaut
+exactement la même chose, la perte est concentrée sur les images dont elle
+n'était pas sûre — celles que la cascade n'affiche pas comme réponse. La v9
+n'est pas moins bonne pour l'utilisateur. Elle n'est pas meilleure non plus,
+et elle a coûté deux heures de GPU.
+
+#### Le seuil de la cascade ne se transporte pas, et c'est la première fois que ça coûte
+
+`FallbackPolicy.acceptThreshold` vaut 0,70 et son commentaire porte déjà la
+règle : un seuil ne se transporte pas d'un modèle à l'autre. Elle n'avait
+servi jusqu'ici qu'à des recalages favorables — Iris 7 rendait à 0,70
+l'autonomie qu'avait la v6 à 0,60, avec trois points de justesse en plus
+(§ 6.7).
+
+La v9 est le cas miroir, et le premier. Livrée telle quelle, elle ferait
+passer l'application de **38 % à 31 % de réponses tranchées** sans rien
+gagner en justesse : sept points d'autonomie perdus en silence, pour un
+modèle qui n'est pas meilleur. Un modèle de cette famille demanderait de
+rebaisser le seuil à ~0,59 — c'est-à-dire de refaire le tableau de
+`multi_photo.py` avant de remplacer le fichier livré, pas après.
 
 #### L'erreur de méthode, qui est la vraie leçon
 
@@ -3942,7 +3974,10 @@ de la v8. S'il retrouve les 1,5 point, c'était le lot et la question du
 § 13.7 est close. Sinon c'est le pré-découpage en carrés, et la régression
 vient d'une optimisation de confort.
 
-**En attendant, c'est la v8 qui reste livrée.**
+**En attendant, c'est la v8 qui reste livrée.** Non parce que la v9
+dégraderait l'expérience — à autonomie égale, elle ne la change pas — mais
+parce qu'elle ne l'améliore pas, qu'elle demanderait de recaler le seuil de
+la cascade, et qu'on ne remplace pas un modèle livré pour un résultat nul.
 
 ### 13.9 Ce qu'il faut retenir
 
