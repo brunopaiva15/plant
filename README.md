@@ -76,6 +76,34 @@ humidité, substrat, multiplication, toxicité, difficulté —, un terme, une
 définition. Ces listes existaient déjà : elles n'apparaissaient qu'au moment
 où elles servaient. Détails : docs/04.
 
+## Conseils de la communauté
+Sous la fiche d'entretien — celle d'une plante comme celle d'une espèce de
+l'encyclopédie —, ce que d'autres ont observé en gardant la même espèce. Le
+catalogue dit ce qu'une plante demande ; il ne dit pas ce qu'on apprend en la
+gardant trois ans dans une pièce donnée.
+
+Un conseil est rattaché à l'espèce, par la clé du catalogue : un par personne
+et par espèce, qu'on reprend plutôt qu'on empile. Lire ne demande pas de
+compte, publier en demande un, et le conseil paraît alors sous le nom du
+compte. « Utile » compte les voix, « Signaler » les signalements — au
+troisième, le conseil cesse de paraître aux autres, son auteur le voit encore
+avec la mention qui le dit.
+
+Au troisième signalement, le conseil cesse de paraître ; il faut ensuite
+quelqu'un pour trancher. *Profil › Modération* montre les conseils signalés —
+masquer, rétablir, retirer — et n'apparaît qu'aux comptes inscrits dans la
+table `moderators`. On en nomme un par une ligne dans l'éditeur SQL du
+projet, jamais depuis l'application : un drapeau posé sur le profil se
+donnerait à soi-même, puisque chacun écrit sa propre ligne de `profiles`.
+
+```sql
+insert into moderators (user_id) values ('<uuid du compte>');
+```
+
+Cela demande le backend : sans `SUPABASE_URL`, la section n'existe pas, et
+`supabase/schema.sql` est à rejouer en entier pour créer les tables et leurs
+fonctions. Détails : docs/04 et docs/08.
+
 ## Gratuite, avec un soutien facultatif
 Toutes les fonctions sont ouvertes, sans limite ni publicité. Un achat unique
 permet seulement de remercier le développeur — il ne déverrouille rien.

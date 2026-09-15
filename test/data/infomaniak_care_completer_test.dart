@@ -43,6 +43,7 @@ void main() {
         'water': 'sensitive',
         'fertilizing_days': 45,
         'repot_every_months': 24,
+        'pot': 'snug',
         'min_temp_c': 10,
         'ideal_temp_min_c': 18,
         'ideal_temp_max_c': 26,
@@ -57,6 +58,7 @@ void main() {
       expect(c.soil, SoilKind.draining);
       expect(c.water, WaterTolerance.sensitive);
       expect(c.repotEveryMonths, 24);
+      expect(c.pot, PotPreference.snug);
       expect(c.propagation, [Propagation.stemCutting, Propagation.water]);
       expect(c.issues, [CommonIssue.overwatering]);
       expect(c.isEmpty, isFalse);
@@ -73,6 +75,7 @@ void main() {
         'soil': 'terreau',
         'water': 'eau de source',
         'difficulty': 'moyen',
+        'pot': 'grand',
         'watering_summer_days': 0,
         'fertilizing_days': 3,
         'repot_every_months': 600,
@@ -84,6 +87,7 @@ void main() {
       expect(c.soil, isNull);
       expect(c.water, isNull);
       expect(c.difficulty, isNull);
+      expect(c.pot, isNull);
       expect(c.wateringSummerDays, isNull);
       expect(c.fertilizingDays, isNull);
       expect(c.repotEveryMonths, isNull);
@@ -139,6 +143,41 @@ void main() {
         toxicity: Toxicity.toxic,
       );
       expect(c.applyTo(curated).toxicity, Toxicity.toxic);
+    });
+
+    test('la floraison et le repos restent au catalogue', () {
+      // Une date de floraison inventée se vérifie six mois trop tard, et un
+      // bulbe rangé au froid sur un mauvais conseil ne repart pas.
+      const curated = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        bloom: Bloom(window: MonthWindow(2, 4)),
+        dormancy: DormantRest(window: MonthWindow(6, 9)),
+      );
+      final p = const CareCompletion(light: LightNeed.fullSun).applyTo(curated);
+      expect(p.bloom, same(curated.bloom));
+      expect(p.dormancy, same(curated.dormancy));
+    });
+
+    test('un autre besoin en humidité emporte la plage en pourcentage', () {
+      // Garder « 60 à 80 % » sous « air sec accepté » afficherait deux
+      // choses contraires sur la même carte.
+      const curated = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        humidityMinPercent: 65,
+        humidityMaxPercent: 85,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+      );
+      expect(const CareCompletion(humidity: HumidityNeed.low).applyTo(curated).humidityRange, (30, 50));
+      expect(const CareCompletion(light: LightNeed.shade).applyTo(curated).humidityRange, (65, 85));
     });
 
     test('« pas d\'engrais » n\'est pas « je ne sais pas »', () {

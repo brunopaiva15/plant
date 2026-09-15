@@ -251,9 +251,15 @@ Maison, par HomeKit, et Google Home, par les Home APIs.
 - `HomeClimateAdvisor` compare la mesure aux fiches des plantes d'intérieur
   (celles qui ne sont pas dans un emplacement « extérieur », et seulement
   celles de la pièce si un emplacement porte le nom de la pièce du capteur) :
-  air sec sous 45 % pour les espèces à forte humidité, sous 30 % pour les
-  autres ; air humide au-delà de 70 % ; froid sous le minimum de l'espèce ;
-  chaleur au-delà de sa plage idéale, ou de 30° sans plage.
+  air sec quinze points sous le minimum de la plage d'hygrométrie de la fiche
+  (`HomeClimateAdvisor.tolerance`), soit 45 % pour une espèce qui en demande
+  60 et 35 % pour une qui se contente de 50 ; air humide au-delà de 70 % dans
+  la pièce, et pour les espèces dont la mesure dépasse de quinze points le haut
+  de leur plage ; froid sous le minimum de l'espèce ; chaleur au-delà de sa
+  plage idéale, ou de 30° sans plage. La marge existe parce qu'une plante n'est
+  pas en peine au premier point manquant — d'où « Rien qui gêne cette espèce »
+  sur la carte, et non « dans la plage », que la fiche d'entretien imprime en
+  toutes lettres juste au-dessus.
 - La carte des conseils ne paraît qu'une fois par jour
   (`HomeTipsNoticeController`) : un salon à 25° l'est encore ce soir, et les
   plantes signalées le sont toujours — la redonner à chaque passage sur

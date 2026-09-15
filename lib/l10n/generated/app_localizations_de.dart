@@ -1269,7 +1269,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get homeClimateAtHome => 'Bei dir';
 
   @override
-  String get homeClimateFits => 'Im Bereich dieser Art.';
+  String get homeClimateFits => 'Nichts, was dieser Art zusetzt.';
 
   @override
   String get homeClimateTooDry => 'Luft zu trocken für diese Art.';
@@ -2712,6 +2712,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careRepotNone => 'Kein Umtopfen (einjährige Kultur)';
 
   @override
+  String get carePotSnug => 'Mag es eng';
+
+  @override
+  String get carePotRoomy => 'Mag Platz';
+
+  @override
+  String get carePotSnugNote =>
+      'Eine Wurzel aus dem Abzugsloch reicht nicht: umtopfen, wenn der Ballen ein Wurzelblock ist oder das Wasser nicht mehr einzieht.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Umtopfen, wenn Wurzeln aus dem Abzugsloch treten und sich am Topfboden drehen.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Umtopfen, sobald die Wurzeln die Topfwand erreichen: zu eng, und das Wachstum hört auf.';
+
+  @override
+  String get carePotDormantNote =>
+      'Umgetopft wird beim Neuaustrieb, am Ende der Ruhe, nicht wegen einer austretenden Wurzel.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return '$min bis $max °C';
   }
@@ -2740,6 +2762,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careLightFull => 'Volle Sonne';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Unter Lampe · Vollspektrum-LED, $min bis $max µmol/m²/s, $hours h am Tag';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'Das sind $min bis $max mol/m²/Tag am Blattwerk.';
+  }
+
+  @override
   String get careHumidityLow => 'Trockene Luft ist in Ordnung';
 
   @override
@@ -2749,16 +2781,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careHumidityHigh => 'Mag feuchte Luft';
 
   @override
+  String careHumidityRange(int min, int max) {
+    return '$min bis $max % Luftfeuchte';
+  }
+
+  @override
   String get careHumidityLowDetail =>
-      'Die Luft einer beheizten Wohnung genügt ihr; über 70 % nimmt sie Schaden.';
+      'Sie verträgt die trockene Zimmerluft gut. Dauerhaft höhere Feuchte schadet ihr.';
 
   @override
   String get careHumidityAverageDetail =>
-      '40 bis 60 %, die normale Luft einer Wohnung; unter 30 % werden die Spitzen braun.';
+      'Normale Zimmerluft genügt. Im Winter fern der Heizung bleiben die Blattspitzen grün.';
 
   @override
   String get careHumidityHighDetail =>
-      '60 % und mehr: eine Schale mit feuchten Blähtonkugeln, Pflanzen in Gruppen, ein Badezimmer. Unter 45 % fehlt ihr die Feuchte.';
+      'Ein Luftbefeuchter, ein Untersetzer mit feuchten Blähtonkugeln oder mehrere zusammengestellte Pflanzen halten diesen Bereich.';
 
   @override
   String get careDifficultyEasy => 'Einfach';
@@ -3019,6 +3056,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das ganze Jahr gehalten, beschleunigen diese Bedingungen den Wuchs: Gießen und Düngen rücken ebenso zusammen.';
 
   @override
+  String get careGreenhouseHold =>
+      'Den Feuchtebereich tagsüber halten, nachts absinken lassen und die Luft bewegen.';
+
+  @override
   String get careGreenhouseAir =>
       'Täglich lüften: stehende Luft lässt faulen, was es trocken mag.';
 
@@ -3030,46 +3071,126 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careBloom => 'Blüte';
 
   @override
+  String careSeasonRange(String from, String to) {
+    return 'Von $from bis $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Selten im Zimmer';
+
+  @override
+  String get careBloomChillBulb => 'Kälte für die Zwiebel';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Rechnen Sie mit zehn bis fünfzehn Wochen bei 5 bis 9 °C im Dunkeln, bevor der Topf wieder warm und hell steht.';
+
+  @override
+  String get careBloomFertilizer => 'Blühdünger';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Sobald sich Knospen bilden, auf Blühdünger wechseln, der kalireicher ist als der fürs Laub.';
+
+  @override
+  String get careBloomMaturity => 'Etwas Alter';
+
+  @override
+  String get careBloomMaturityNote =>
+      'Sie blüht erst ab drei oder vier Jahren: davor ändert keine Maßnahme etwas.';
+
+  @override
+  String get careBloomDeadhead => 'Verblühtes abschneiden';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Verblühtes laufend abschneiden: die Pflanze steckt ihre Kraft dann in die nächsten Blüten.';
+
+  @override
+  String get careBloomKeepSpike => 'Ein behaltener Blütentrieb';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'Solange der Blütentrieb grün bleibt, stehen lassen: er kann aus einem tieferen Auge erneut blühen.';
+
+  @override
+  String get careBloomNoMove => 'Ein fester Platz';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Nach der Knospenbildung nicht mehr umstellen und nicht mehr drehen: der Wechsel lässt sie abfallen.';
+
+  @override
+  String get careBloomEvenWater => 'Gleichmäßiges Gießen';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'Während der Knospenbildung gleichmäßig gießen: eine einzige Trockenphase lässt sie abfallen.';
+
+  @override
+  String get careRest => 'Ruhe';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Trocken und dunkel, zwischen $min und $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Trocken, zwischen $min und $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Trocken und dunkel';
+
+  @override
+  String get careRestStorePlain => 'Trocken';
+
+  @override
+  String get careRestNote =>
+      'Das Laub vergilben und trocknen lassen, ohne es zu schneiden, dann das Gießen einstellen. Am Ende dieser Zeit den Topf wieder ans Licht stellen und erneut gießen.';
+
+  @override
   String get careBloomCoolRest => 'Ein kühler Winter';
 
   @override
   String get careBloomCoolRestNote =>
-      'Zwei Monate bei 10 bis 12 °C, fast ohne Wasser, legen die Knospen an.';
+      'Für die Blütenbildung etwa zwei Monate bei 10–12 °C halten und deutlich weniger gießen.';
 
   @override
   String get careBloomCoolNights => 'Kühle Nächte';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Drei Wochen mit 15 °C in der Nacht, im Herbst, treiben den Blütenstiel.';
+      'Im Herbst können etwa drei Wochen mit Nächten um 15 °C die Bildung des Blütentriebs anregen.';
 
   @override
   String get careBloomShortDays => 'Kurze Tage';
 
   @override
   String get careBloomShortDaysNote =>
-      'Sechs Wochen mit zwölfstündigen Nächten, in völliger Dunkelheit, lösen die Knospen aus.';
+      'Geben Sie ihr etwa sechs Wochen lang mindestens 12 Stunden ununterbrochene Dunkelheit pro Nacht, damit sich Knospen bilden.';
 
   @override
   String get careBloomDrySpell => 'Eine Trockenzeit';
 
   @override
   String get careBloomDrySpellNote =>
-      'Einige Wochen ohne Wasser, dann wieder gießen: die Blüte folgt.';
+      'Gießen Sie einige Wochen deutlich weniger und steigern Sie danach langsam wieder. Dieser Wechsel kann die Blüte auslösen.';
 
   @override
   String get careBloomPotbound => 'Ein enger Topf';
 
   @override
   String get careBloomPotboundNote =>
-      'Sie blüht, wenn die Wurzeln den Topf füllen; Umtopfen schickt sie zurück ins Laub.';
+      'Sie blüht oft besser, wenn die Wurzeln den Topf gut ausfüllen. Deshalb nicht zu früh umtopfen.';
 
   @override
   String get careBloomBrightLight => 'Mehr Licht';
 
   @override
   String get careBloomBrightLightNote =>
-      'Blühen braucht mehr Licht als Blätter: Südfenster hinter einem leichten Vorhang.';
+      'Zum Blühen braucht sie mehr Licht als für reines Blattwachstum. Stellen Sie sie sehr hell, aber ohne sengende Sonne.';
 
   @override
   String get carePropCutting => 'Stecklinge';
@@ -5272,4 +5393,103 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'Die Knolle wird in Stücke geteilt, jedes mit einem Auge.';
+
+  @override
+  String get communityTipsTitle => 'Tipps aus der Gemeinschaft';
+
+  @override
+  String get communityTipsHint =>
+      'Was andere beim Pflegen dieser Art beobachtet haben, außerhalb des Katalogs.';
+
+  @override
+  String get communityTipsEmpty => 'Keine Tipps zu dieser Art.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Tipps lesen und veröffentlichen erfordert eine Verbindung.';
+
+  @override
+  String get communityTipWrite => 'Tipp schreiben';
+
+  @override
+  String get communityTipYours => 'Dein Tipp';
+
+  @override
+  String get communityTipPlaceholder =>
+      'Was bei dieser Pflanze funktioniert hat, in wenigen Sätzen.';
+
+  @override
+  String get communityTipPublicNote =>
+      'Der Tipp erscheint mit deinem Namen auf der Seite dieser Art, für alle.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Veröffentlichen';
+
+  @override
+  String get communityTipPublished => 'Tipp veröffentlicht.';
+
+  @override
+  String get communityTipNeedsAccount =>
+      'Einen Tipp zu veröffentlichen erfordert ein Konto.';
+
+  @override
+  String get communityTipAnonymous => 'Anonym';
+
+  @override
+  String get communityTipHelpful => 'Hilfreich';
+
+  @override
+  String get communityTipReport => 'Melden';
+
+  @override
+  String get communityTipReported => 'Tipp gemeldet.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'Ein von $count Personen gemeldeter Tipp erscheint nicht mehr.';
+  }
+
+  @override
+  String get communityTipHidden => 'Gemeldet: andere sehen ihn nicht mehr.';
+
+  @override
+  String get confirmDeleteTip => 'Diesen Tipp löschen?';
+
+  @override
+  String get confirmReportTip => 'Diesen Tipp melden?';
+
+  @override
+  String get moderationTitle => 'Moderation';
+
+  @override
+  String get moderationHint => 'Gemeldete Tipps, die meistgemeldeten zuerst.';
+
+  @override
+  String get moderationEmpty => 'Keine gemeldeten Tipps.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Meldungen',
+      one: '1 Meldung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Ausblenden';
+
+  @override
+  String get moderationRestore => 'Wiederherstellen';
+
+  @override
+  String get confirmRestoreTip =>
+      'Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht.';
 }

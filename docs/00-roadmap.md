@@ -60,6 +60,8 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Partager son jardin : invitation par lien ou code à usage unique (QR compris), l'invité crée un compte s'il n'en a pas, « Mes jardins » pour basculer de l'un à l'autre, changement de rôle, retrait, départ d'un jardin | ✅ |
 | Diagnostic « Ma plante a un problème » : photos + symptômes + observations (terre, racines, lumière, insectes) → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, sans plafond, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |
 | Partage par lien public révocable, page publique servie par la fonction Edge `share` | ✅ |
+| Conseils de la communauté : un conseil par personne et par espèce, lisible sans compte, voix « Utile », signalement qui masque au troisième ; sous la fiche d'entretien, dans l'application comme dans l'encyclopédie | ✅ (demande le backend) |
+| Modération des conseils : table `moderators` (une ligne dans l'éditeur SQL, jamais un droit que l'application s'accorde), écran Profil › Modération pour masquer, rétablir ou retirer | ✅ (demande le backend) |
 | Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
 
 ## Parité HortusFox ✅ (livrée)
@@ -94,6 +96,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 |---|---|
 | Fiche d'entretien par plante : arrosage saisonnier, lumière, humidité chiffrée, engrais (lequel, et le calcium), substrat (le mélange, l'eau, le pon), rempotage, sous serre, floraison, toxicité, bouturage, problèmes fréquents (230 espèces au catalogue) | ✅ |
 | Eau d'arrosage : ce que l'espèce supporte du calcaire, et les sept eaux jugées une à une — robinet, pluie, carafe, osmosée, déminéralisée, condensat de climatiseur, adoucie — avec ce que chacune emporte avec elle | ✅ |
+| Fiche d'entretien, second niveau : hygrométrie de l'espèce en pourcentage (20 à 90 %, pour qui règle une serre), lampe horticole équivalente au besoin de lumière, rapport au pot (à l'étroit ou à l'aise), saison de floraison et conditions à réunir, repos à feuillage disparu des bulbes et tubercules | ✅ |
 | Sélecteur d'espèces : catalogue intégré hors ligne + recherche GBIF paginée | ✅ |
 | Catalogue étendu : ~40 000 espèces avec leurs noms courants en fr/de/it/en, cherchables hors ligne et sans accents (Wikidata CC0 + familles GBIF) | ✅ |
 | Encyclopédie (Profil) : les 200 problèmes de la base rangés par famille avec une page chacun (famille, étendue, hôtes, plantes du jardin concernées), les espèces du catalogue et leur fiche d'entretien, le vocabulaire des fiches défini terme à terme | ✅ |

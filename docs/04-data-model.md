@@ -146,10 +146,72 @@ seules les photos de `plant_photos` partent en synchronisation et en
 sauvegarde, et une photo de feuille malade n'a rien à faire dans le suivi de
 croissance. Ailleurs, le compte rendu se lit sans elles.
 
+## Conseils de la communauté (Supabase seul, hors base locale)
+Les trois seules tables distantes qui ne portent pas de `garden_id` : un
+conseil est rattaché à une **espèce**, pas à un jardin, et se lit depuis
+n'importe quel compte. Rien n'en est copié dans SQLite — ce n'est pas l'état
+du jardin, c'est ce que d'autres ont écrit, et cela se relit à chaque
+ouverture de la fiche.
+
+```
+species_tips         id, species_id (clé du catalogue, « hoya-kerrii »),
+                     species_name, user_id, body (10–300 signes), votes,
+                     reports, hidden_at?, created_at, updated_at
+                     unique (species_id, user_id) — une personne, un conseil par espèce
+species_tip_votes    tip_id, user_id            — une voix par personne et par conseil
+species_tip_reports  tip_id, user_id            — un signalement par personne et par conseil
+```
+
+- **Lire** : `species_tips_for(species_id)`, ouverte à la clé anonyme — la
+  fiche d'entretien s'ouvre sans être connecté, et ce qu'elle montre là est
+  déjà public. **Écrire** demande un compte.
+- **Écrire ne passe jamais par la table** : `publish_species_tip`,
+  `withdraw_species_tip`, `vote_species_tip` et `report_species_tip` sont
+  `security definer`, et les tables de votes et de signalements n'ont aucune
+  politique — rien d'autre ne les touche. Les bornes de longueur sont tenues
+  des deux côtés (`lib/domain/community/species_tip.dart` et une contrainte
+  `check`) : un client modifié ne fait pas passer un roman.
+- **Signalement** : au troisième, `hidden_at` est posé et le conseil cesse de
+  paraître aux autres. Son auteur le reçoit encore, avec la mention qui le
+  dit — sans quoi il le croirait toujours en ligne. Rien n'est supprimé : la
+  vérification se fait sur la table, et `hidden_at` se remet à `null` à la
+  main quand le conseil était bon. Le réécrire ne l'efface pas : les
+  signalements ne s'effacent pas d'un coup de clavier.
+- Le nom affiché vient de `profiles` : publier, c'est publier sous son nom, et
+  la feuille d'écriture le dit avant qu'on écrive.
+
+### Modération
+```
+moderators           user_id, created_at
+```
+Une table, et non une colonne sur `profiles` : la politique « profiles write »
+laisse chacun écrire sa propre ligne, et un drapeau posé là se donnerait à
+soi-même en une requête. `moderators` n'a **aucune politique** — rien ne la lit
+ni ne l'écrit hors de l'éditeur SQL et des fonctions `security definer`.
+Nommer un modérateur est une ligne dans l'éditeur SQL du projet, l'uuid se
+lisant dans *Authentication › Users* :
+
+```sql
+insert into moderators (user_id) values ('<uuid du compte>');
+```
+
+- `is_moderator()` répond au client ; l'application s'en sert pour montrer ou
+  non l'entrée *Profil › Modération*, mais l'autorité est dans les fonctions.
+- `reported_species_tips()` rend les conseils signalés au moins une fois, les
+  plus signalés d'abord. Pour quelqu'un d'autre : zéro ligne, pas une erreur.
+- `moderate_species_tip(id, hidden)` masque ou rétablit. Rétablir **efface les
+  signalements** — sans quoi le conseil repasserait le seuil à la première
+  humeur, et le même dossier reviendrait indéfiniment.
+- `remove_species_tip(id)` retire pour de bon, ce que `withdraw_species_tip`
+  ne permet qu'à l'auteur.
+
 ## Sécurité (Supabase, P2)
 - RLS : `garden_members` détermine l'accès à tout ce qui porte `garden_id` (via `plants.garden_id` pour les tables filles).
 - Storage : bucket privé `plant-photos/{garden_id}/{plant_id}/{photo_id}.jpg`, URLs signées, validation MIME + taille.
 - Aucune confiance au client : triggers `updated_at`, contraintes de rôle en base.
+- Les conseils de la communauté sont l'exception au premier point : ils ne
+  portent pas de `garden_id`, et ce sont leurs fonctions `security definer`
+  qui tiennent les règles (ci-dessus).
 
 ## Catalogue d'espèces (hors base locale)
 Deux étages, plus la recherche en ligne :

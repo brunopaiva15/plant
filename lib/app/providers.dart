@@ -30,6 +30,7 @@ import '../data/services/google_home_climate_service.dart';
 import '../data/services/home_kit_climate_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
+import '../data/community/supabase_community_tips.dart';
 import '../data/sharing/supabase_collaboration_service.dart';
 import '../data/sharing/supabase_sharing_service.dart';
 import '../data/problems/problem_catalog.dart';
@@ -38,6 +39,7 @@ import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
 import '../data/species/species_index_loader.dart';
+import '../domain/community/species_tip.dart';
 import '../domain/sharing/garden_collaboration.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
@@ -636,6 +638,15 @@ final collaborationServiceProvider = Provider<CollaborationService>((ref) {
 final sharingServiceProvider = Provider<SharingService>((ref) {
   if (!SupabaseConfig.isConfigured) return const UnavailableSharingService();
   return SupabaseSharingService(gardenId: ref.watch(gardenIdProvider));
+});
+
+/// Les conseils de la communauté sur une espèce. Lire n'exige qu'un backend
+/// configuré ; publier exige un compte distant, que le service lit ici plutôt
+/// que dans les écrans — comme pour les retours d'Iris.
+final communityTipsServiceProvider = Provider<CommunityTipsService>((ref) {
+  if (!SupabaseConfig.isConfigured) return const UnavailableCommunityTips();
+  final user = ref.watch(currentUserProvider).value;
+  return SupabaseCommunityTips(userId: user == null || user.isLocal ? null : user.id);
 });
 
 final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide());

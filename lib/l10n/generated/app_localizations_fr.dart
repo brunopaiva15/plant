@@ -1269,7 +1269,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeClimateAtHome => 'Chez vous';
 
   @override
-  String get homeClimateFits => 'Dans la plage de l\'espèce.';
+  String get homeClimateFits => 'Rien qui gêne cette espèce.';
 
   @override
   String get homeClimateTooDry => 'Air trop sec pour cette espèce.';
@@ -2712,6 +2712,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careRepotNone => 'Pas de rempotage (culture annuelle)';
 
   @override
+  String get carePotSnug => 'Aime être à l\'étroit';
+
+  @override
+  String get carePotRoomy => 'Aime l\'espace';
+
+  @override
+  String get carePotSnugNote =>
+      'Une racine qui sort par le fond ne suffit pas : rempotez quand la motte est un bloc de racines, ou quand l\'eau ne pénètre plus.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Rempotez quand les racines sortent par le fond et tournent au fond du pot.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Rempotez dès que les racines atteignent la paroi : à l\'étroit, elle arrête de pousser.';
+
+  @override
+  String get carePotDormantNote =>
+      'Le rempotage se fait à la reprise, quand le repos s\'achève, et non sur une racine qui sort.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return '$min à $max °C';
   }
@@ -2740,6 +2762,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careLightFull => 'Plein soleil';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Sous lampe · LED à spectre complet, $min à $max µmol/m²/s, $hours h par jour';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'Soit $min à $max mol/m²/jour reçus par le feuillage.';
+  }
+
+  @override
   String get careHumidityLow => 'Air sec accepté';
 
   @override
@@ -2749,16 +2781,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careHumidityHigh => 'Aime l\'air humide';
 
   @override
+  String careHumidityRange(int min, int max) {
+    return '$min à $max % d\'humidité de l\'air';
+  }
+
+  @override
   String get careHumidityLowDetail =>
-      'L\'air d\'un logement chauffé lui suffit ; au-dessus de 70 %, elle s\'abîme.';
+      'Elle tolère bien l\'air sec d\'un logement. Une humidité durablement plus haute l\'abîme.';
 
   @override
   String get careHumidityAverageDetail =>
-      '40 à 60 %, l\'air ordinaire d\'un logement ; sous 30 %, les pointes brunissent.';
+      'L\'air ordinaire d\'un logement convient. Loin d\'un radiateur en hiver, les pointes des feuilles ne brunissent pas.';
 
   @override
   String get careHumidityHighDetail =>
-      '60 % et plus : plateau de billes d\'argile humides, plantes groupées, pièce d\'eau. Sous 45 %, l\'air lui manque.';
+      'Un humidificateur, un plateau de billes d\'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -3022,6 +3059,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Tenues toute l\'année, ces conditions accélèrent la pousse : l\'arrosage et l\'engrais se rapprochent d\'autant.';
 
   @override
+  String get careGreenhouseHold =>
+      'Tenez la plage d\'humidité le jour, laissez-la descendre la nuit, et faites circuler l\'air.';
+
+  @override
   String get careGreenhouseAir =>
       'Aérer chaque jour : l\'air confiné fait pourrir ce qui aime le sec.';
 
@@ -3033,46 +3074,126 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careBloom => 'Floraison';
 
   @override
+  String careSeasonRange(String from, String to) {
+    return 'De $from à $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Rarement en intérieur';
+
+  @override
+  String get careBloomChillBulb => 'Un froid au bulbe';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Comptez dix à quinze semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.';
+
+  @override
+  String get careBloomFertilizer => 'Un engrais de floraison';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Dès que les boutons se forment, passez à un engrais de floraison, plus riche en potasse que celui du feuillage.';
+
+  @override
+  String get careBloomMaturity => 'De l\'âge';
+
+  @override
+  String get careBloomMaturityNote =>
+      'Elle ne fleurit qu\'à partir de trois ou quatre ans : avant cet âge, aucune condition n\'y changera rien.';
+
+  @override
+  String get careBloomDeadhead => 'Des fleurs coupées';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Coupez les fleurs fanées au fur et à mesure : la plante remet alors son énergie dans les suivantes.';
+
+  @override
+  String get careBloomKeepSpike => 'Une hampe gardée';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'Tant que la hampe reste verte, laissez-la en place : elle peut refleurir depuis un œil situé plus bas.';
+
+  @override
+  String get careBloomNoMove => 'Une place fixe';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Une fois les boutons formés, ne la déplacez plus et ne la tournez plus : le changement les fait tomber.';
+
+  @override
+  String get careBloomEvenWater => 'Un arrosage régulier';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'Pendant la formation des boutons, arrosez régulièrement : un seul coup de sec suffit à les faire tomber.';
+
+  @override
+  String get careRest => 'Repos';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Au sec et à l\'obscurité, entre $min et $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Au sec, entre $min et $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Au sec et à l\'obscurité';
+
+  @override
+  String get careRestStorePlain => 'Au sec';
+
+  @override
+  String get careRestNote =>
+      'Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l\'arrosage. Remettez le pot à la lumière et reprenez l\'arrosage à la fin de cette période.';
+
+  @override
   String get careBloomCoolRest => 'Un hiver frais';
 
   @override
   String get careBloomCoolRestNote =>
-      'Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.';
+      'Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.';
 
   @override
   String get careBloomCoolNights => 'Des nuits fraîches';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Trois semaines à 15 °C la nuit, en automne, font monter la hampe.';
+      'En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.';
 
   @override
   String get careBloomShortDays => 'Des jours courts';
 
   @override
   String get careBloomShortDaysNote =>
-      'Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.';
+      'Pendant environ six semaines, offrez-lui des nuits d\'au moins 12 heures dans l\'obscurité pour favoriser la formation des boutons.';
 
   @override
   String get careBloomDrySpell => 'Une sécheresse';
 
   @override
   String get careBloomDrySpellNote =>
-      'Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.';
+      'Réduisez fortement les arrosages pendant quelques semaines, puis reprenez progressivement : ce contraste peut déclencher la floraison.';
 
   @override
   String get careBloomPotbound => 'Un pot à l\'étroit';
 
   @override
   String get careBloomPotboundNote =>
-      'Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.';
+      'Elle fleurit souvent mieux lorsque ses racines occupent bien le pot. Évitez donc de rempoter trop tôt.';
 
   @override
   String get careBloomBrightLight => 'Plus de lumière';
 
   @override
   String get careBloomBrightLightNote =>
-      'Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.';
+      'Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.';
 
   @override
   String get carePropCutting => 'Bouture de tige';
@@ -5291,4 +5412,104 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'Le tubercule se coupe en morceaux portant chacun un œil.';
+
+  @override
+  String get communityTipsTitle => 'Conseils de la communauté';
+
+  @override
+  String get communityTipsHint =>
+      'Ce que d\'autres personnes ont observé en gardant cette espèce, hors du catalogue.';
+
+  @override
+  String get communityTipsEmpty => 'Aucun conseil sur cette espèce.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Lire et publier des conseils demande une connexion.';
+
+  @override
+  String get communityTipWrite => 'Écrire un conseil';
+
+  @override
+  String get communityTipYours => 'Votre conseil';
+
+  @override
+  String get communityTipPlaceholder =>
+      'Ce qui a marché sur cette plante, en quelques phrases.';
+
+  @override
+  String get communityTipPublicNote =>
+      'Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Publier';
+
+  @override
+  String get communityTipPublished => 'Conseil publié.';
+
+  @override
+  String get communityTipNeedsAccount =>
+      'Publier un conseil demande un compte.';
+
+  @override
+  String get communityTipAnonymous => 'Anonyme';
+
+  @override
+  String get communityTipHelpful => 'Utile';
+
+  @override
+  String get communityTipReport => 'Signaler';
+
+  @override
+  String get communityTipReported => 'Conseil signalé.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'Un conseil signalé par $count personnes ne paraît plus.';
+  }
+
+  @override
+  String get communityTipHidden => 'Signalé : les autres ne le voient plus.';
+
+  @override
+  String get confirmDeleteTip => 'Supprimer ce conseil ?';
+
+  @override
+  String get confirmReportTip => 'Signaler ce conseil ?';
+
+  @override
+  String get moderationTitle => 'Modération';
+
+  @override
+  String get moderationHint =>
+      'Les conseils signalés, du plus signalé au moins signalé.';
+
+  @override
+  String get moderationEmpty => 'Aucun conseil signalé.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count signalements',
+      one: '1 signalement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Masquer';
+
+  @override
+  String get moderationRestore => 'Rétablir';
+
+  @override
+  String get confirmRestoreTip =>
+      'Rétablir ce conseil ? Ses signalements sont effacés.';
 }

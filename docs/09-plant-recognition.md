@@ -1448,9 +1448,14 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
   le confort d'une plante ; « non toxique pour le chat » est une affirmation
   sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue. Ne
   partent pas non plus le type d'engrais, le calcium, la culture hors-sol et
-  ce qui décide la floraison : le catalogue les déclare ou les déduit du
-  substrat (docs/04), et un substrat corrigé par l'IA recalcule les quatre
-  sans qu'on ait à les demander.
+  la floraison : le catalogue les déclare ou les déduit du substrat
+  (docs/04), et un substrat corrigé par l'IA recalcule les trois premiers
+  sans qu'on ait à les demander. La floraison et le repos à feuillage
+  disparu se taisent pour une raison de plus : une date de floraison
+  inventée se vérifie six mois trop tard, et un bulbe rangé au froid sur un
+  mauvais conseil ne repart pas. Le rapport au pot, lui, revient : trois
+  mots d'un vocabulaire fermé (`snug`, `steady`, `roomy`), comme la lumière
+  ou le substrat.
 - **Une fois** : la réponse est gardée sur l'appareil, par espèce et par
   langue, réponse vide comprise, pour qu'une espèce que l'IA ne connaît pas
   ne soit pas redemandée à chaque ouverture de la fiche. Le cache est borné

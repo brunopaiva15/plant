@@ -1267,7 +1267,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeClimateAtHome => 'At home';
 
   @override
-  String get homeClimateFits => 'Within the range for this species.';
+  String get homeClimateFits => 'Nothing that bothers this species.';
 
   @override
   String get homeClimateTooDry => 'Air too dry for this species.';
@@ -2706,6 +2706,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careRepotNone => 'No repotting (grown as an annual)';
 
   @override
+  String get carePotSnug => 'Likes it tight';
+
+  @override
+  String get carePotRoomy => 'Likes room';
+
+  @override
+  String get carePotSnugNote =>
+      'A root through the drainage hole is not enough: repot once the root ball is a solid mass, or once water no longer soaks in.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Repot once roots come through the drainage hole and circle the bottom of the pot.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Repot as soon as the roots reach the side of the pot: cramped, it stops growing.';
+
+  @override
+  String get carePotDormantNote =>
+      'Repotting happens when growth restarts, at the end of the rest, not on a root coming out.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return '$min to $max °C';
   }
@@ -2734,6 +2756,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careLightFull => 'Full sun';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Under a lamp · full-spectrum LED, $min to $max µmol/m²/s, $hours h a day';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'That is $min to $max mol/m²/day reaching the leaves.';
+  }
+
+  @override
   String get careHumidityLow => 'Dry air is fine';
 
   @override
@@ -2743,16 +2775,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careHumidityHigh => 'Likes humid air';
 
   @override
+  String careHumidityRange(int min, int max) {
+    return '$min to $max % air humidity';
+  }
+
+  @override
   String get careHumidityLowDetail =>
-      'The air of a heated home is enough; above 70 % it suffers.';
+      'It copes well with the dry air of a home. Humidity kept higher than that harms it.';
 
   @override
   String get careHumidityAverageDetail =>
-      '40 to 60 %, the ordinary air of a home; below 30 % the tips turn brown.';
+      'The ordinary air of a home suits it. Away from a radiator in winter, leaf tips stay green.';
 
   @override
   String get careHumidityHighDetail =>
-      '60 % and up: a tray of damp clay pebbles, plants grouped together, a bathroom. Below 45 % the air is too dry for it.';
+      'A humidifier, a tray of damp clay pebbles or several plants grouped together help hold this range.';
 
   @override
   String get careDifficultyEasy => 'Easy';
@@ -3012,6 +3049,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Held all year, these conditions speed up growth: watering and feeding come round just as fast.';
 
   @override
+  String get careGreenhouseHold =>
+      'Hold the humidity range by day, let it fall at night, and keep the air moving.';
+
+  @override
   String get careGreenhouseAir =>
       'Air it every day: still air rots a plant that likes things dry.';
 
@@ -3023,46 +3064,126 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careBloom => 'Flowering';
 
   @override
+  String careSeasonRange(String from, String to) {
+    return 'From $from to $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Rarely indoors';
+
+  @override
+  String get careBloomChillBulb => 'A chilled bulb';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Allow ten to fifteen weeks between 5 and 9 °C in the dark before bringing the pot back to warmth and light.';
+
+  @override
+  String get careBloomFertilizer => 'A bloom fertilizer';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'As soon as buds form, switch to a bloom fertilizer, richer in potash than the one for foliage.';
+
+  @override
+  String get careBloomMaturity => 'Some age';
+
+  @override
+  String get careBloomMaturityNote =>
+      'It only flowers from three or four years old: before that age, no condition will change anything.';
+
+  @override
+  String get careBloomDeadhead => 'Spent flowers cut';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Cut the faded flowers as they go: the plant then puts its energy into the next ones.';
+
+  @override
+  String get careBloomKeepSpike => 'A kept spike';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'While the spike stays green, leave it in place: it can flower again from a node lower down.';
+
+  @override
+  String get careBloomNoMove => 'A fixed spot';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Once the buds are formed, stop moving it and stop turning it: the change makes them drop.';
+
+  @override
+  String get careBloomEvenWater => 'Even watering';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'While the buds are forming, water regularly: a single dry spell is enough to make them drop.';
+
+  @override
+  String get careRest => 'Rest';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Dry and dark, between $min and $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Dry, between $min and $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Dry and dark';
+
+  @override
+  String get careRestStorePlain => 'Dry';
+
+  @override
+  String get careRestNote =>
+      'Let the leaves yellow and dry without cutting them, then stop watering. Bring the pot back to the light and water again at the end of this period.';
+
+  @override
   String get careBloomCoolRest => 'A cool winter';
 
   @override
   String get careBloomCoolRestNote =>
-      'Two months at 10 to 12 °C, almost without water, set the buds.';
+      'To prepare for flowering, keep it around 10–12 °C for about two months and reduce watering sharply.';
 
   @override
   String get careBloomCoolNights => 'Cool nights';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Three weeks at 15 °C at night, in autumn, bring up the flower spike.';
+      'In autumn, about three weeks with nights around 15 °C can encourage the flower spike to form.';
 
   @override
   String get careBloomShortDays => 'Short days';
 
   @override
   String get careBloomShortDaysNote =>
-      'Six weeks of twelve-hour nights, in complete darkness, trigger the buds.';
+      'For about six weeks, give it at least 12 hours of uninterrupted darkness each night to encourage buds.';
 
   @override
   String get careBloomDrySpell => 'A dry spell';
 
   @override
   String get careBloomDrySpellNote =>
-      'A few weeks without water, then watering again: flowers follow.';
+      'Reduce watering sharply for a few weeks, then resume gradually. This change can trigger flowering.';
 
   @override
   String get careBloomPotbound => 'A tight pot';
 
   @override
   String get careBloomPotboundNote =>
-      'It flowers once the roots fill the pot; repotting sends it back to leaves.';
+      'It often flowers better when its roots fill the pot. Avoid repotting too early.';
 
   @override
   String get careBloomBrightLight => 'More light';
 
   @override
   String get careBloomBrightLightNote =>
-      'Flowering takes more light than leaves do: a south window behind a sheer curtain.';
+      'It needs more light to flower than to simply grow leaves. Place it somewhere very bright without harsh sun.';
 
   @override
   String get carePropCutting => 'Stem cutting';
@@ -5249,4 +5370,101 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'The tuber is cut into pieces, each with an eye.';
+
+  @override
+  String get communityTipsTitle => 'Community tips';
+
+  @override
+  String get communityTipsHint =>
+      'What other people noticed while growing this species, outside the catalogue.';
+
+  @override
+  String get communityTipsEmpty => 'No tips on this species.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Reading and publishing tips needs a connection.';
+
+  @override
+  String get communityTipWrite => 'Write a tip';
+
+  @override
+  String get communityTipYours => 'Your tip';
+
+  @override
+  String get communityTipPlaceholder =>
+      'What worked on this plant, in a few sentences.';
+
+  @override
+  String get communityTipPublicNote =>
+      'The tip appears under your name on this species page, for everyone.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Publish';
+
+  @override
+  String get communityTipPublished => 'Tip published.';
+
+  @override
+  String get communityTipNeedsAccount => 'Publishing a tip needs an account.';
+
+  @override
+  String get communityTipAnonymous => 'Anonymous';
+
+  @override
+  String get communityTipHelpful => 'Helpful';
+
+  @override
+  String get communityTipReport => 'Report';
+
+  @override
+  String get communityTipReported => 'Tip reported.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'A tip reported by $count people stops appearing.';
+  }
+
+  @override
+  String get communityTipHidden => 'Reported: other people no longer see it.';
+
+  @override
+  String get confirmDeleteTip => 'Delete this tip?';
+
+  @override
+  String get confirmReportTip => 'Report this tip?';
+
+  @override
+  String get moderationTitle => 'Moderation';
+
+  @override
+  String get moderationHint => 'Reported tips, most reported first.';
+
+  @override
+  String get moderationEmpty => 'No reported tips.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports',
+      one: '1 report',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Hide';
+
+  @override
+  String get moderationRestore => 'Restore';
+
+  @override
+  String get confirmRestoreTip => 'Restore this tip? Its reports are cleared.';
 }
