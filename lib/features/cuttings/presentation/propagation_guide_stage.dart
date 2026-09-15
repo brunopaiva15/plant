@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 import '../../../design_system/design_system.dart';
 import '../../onboarding/presentation/onboarding_stage.dart';
-import '../application/cutting_guide_steps.dart';
+import '../application/propagation_guides.dart';
 import 'clay_sequence.dart';
-import 'cutting_intro_cluster.dart';
+import 'propagation_intro_cluster.dart';
 
-/// La scène du guide de bouturage : les six gestes réunis, puis l'objet de
+/// La scène du guide de multiplication : les gestes réunis, puis l'objet de
 /// chaque étape, qui se succèdent au centre de l'écran sur un halo de
 /// couleur.
 ///
@@ -17,9 +17,13 @@ import 'cutting_intro_cluster.dart';
 /// change de couleur, les objets changent de place au rythme du doigt. Celui
 /// de l'étape courante est au centre, net, et joue sa séquence ; les autres
 /// attendent hors champ.
-class CuttingGuideStage extends StatelessWidget {
-  const CuttingGuideStage({
+///
+/// Le nombre d'étapes vient du guide : quatre, six, huit, la scène ne le
+/// sait qu'au moment de peindre.
+class PropagationGuideStage extends StatelessWidget {
+  const PropagationGuideStage({
     super.key,
+    required this.steps,
     required this.offset,
     required this.page,
     required this.entry,
@@ -27,6 +31,9 @@ class CuttingGuideStage extends StatelessWidget {
     required this.reduceMotion,
     required this.tint,
   });
+
+  /// Les étapes du guide choisi, dans l'ordre.
+  final List<PropagationStep> steps;
 
   /// Position continue du carrousel. C'est la seule source du mouvement.
   final double offset;
@@ -48,7 +55,7 @@ class CuttingGuideStage extends StatelessWidget {
   final Color tint;
 
   /// Nombre d'objets : la page d'introduction, puis une étape par objet.
-  static int get count => cuttingGuideSteps.length + 1;
+  int get count => steps.length + 1;
 
   /// Côté de l'objet central pour une scène donnée : il prend presque toute
   /// la hauteur, sans jamais déborder des marges de la page.
@@ -93,13 +100,13 @@ class CuttingGuideStage extends StatelessWidget {
     final settle = reduceMotion ? 1.0 : 0.96 + 0.04 * rise;
     final vivant = index == page && near < 0.02;
 
-    // La première place réunit les six gestes ; les autres en montrent un.
+    // La première place réunit les gestes du guide ; les autres en montrent un.
     final object = ImageFiltered(
       enabled: blur > 0.05,
       imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
       child: index == 0
-          ? CuttingIntroCluster(side: side, animate: vivant)
-          : ClaySequence(asset: cuttingGuideSteps[index - 1].asset, side: side, animate: vivant),
+          ? PropagationIntroCluster(steps: steps, side: side, animate: vivant)
+          : ClaySequence(asset: steps[index - 1].asset, side: side, animate: vivant),
     );
     return Transform.translate(
       offset: Offset(dx, dy),

@@ -102,7 +102,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             },
           ),
         if (canEdit)
-          SheetAction(label: l10n.createCutting, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
+          SheetAction(label: l10n.propagate, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
         // Une plante déjà rangée ne s'archive pas deux fois : à sa place, le
         // geste qui a du sens depuis sa fiche, c'est de la ressortir.
         if (canEdit && plant.isArchived)
@@ -368,7 +368,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       Expanded(
                         child: FloraActionTile(
                           icon: CupertinoIcons.leaf_arrow_circlepath,
-                          label: l10n.createCutting,
+                          label: l10n.propagate,
                           tint: c.sage,
                           onTap: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId),
                         ),
@@ -756,7 +756,7 @@ class _Cuttings extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: l10n.cuttings, actionLabel: l10n.createCutting, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
+          SectionHeader(title: l10n.cuttings, actionLabel: l10n.propagate, onAction: () => startCreatePlantFlow(context, ref, parentPlantId: plantId, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Space.page),
             child: FloraGroup(

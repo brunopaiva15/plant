@@ -575,61 +575,398 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editSchedule => 'Edit the schedule';
 
   @override
-  String get createCutting => 'Create a cutting';
-
-  @override
   String cuttingOf(String name) {
     return 'Cutting of $name';
   }
 
   @override
-  String get cuttingGuideIntroBody =>
-      'Six steps, from stem to pot. Each is shown as a gesture, then said in one sentence, adapted to the species when it is known.';
+  String get propagate => 'Propagate';
 
   @override
-  String get cuttingGuideStemTitle => 'The stem';
+  String get pgPickTitle => 'Propagate this plant';
 
   @override
-  String get cuttingGuideStemBody =>
-      'A healthy stem with at least one node: the swelling where the leaves attach. Two or three leaves above it are enough.';
+  String get pgPickBody =>
+      'This plant propagates in more than one way. The gesture you pick decides the steps.';
 
   @override
-  String get cuttingGuideCutTitle => 'The cut';
+  String get pgRecommended => 'Recommended';
 
   @override
-  String get cuttingGuideCutBody =>
-      'A clean blade, a clean cut just below the node. A centimetre of stem beneath it is enough.';
+  String pgIntroTitle(String name, String species) {
+    return '$name of $species';
+  }
 
   @override
-  String get cuttingGuideLeavesTitle => 'The leaves';
+  String pgIntroBody(int count) {
+    return '$count steps. Each one is shown as a gesture, then said in one sentence, adapted to the species when it is known.';
+  }
 
   @override
-  String get cuttingGuideLeavesBody =>
-      'The lower leaves are removed and the node is left bare. Two or three leaves at the top feed the cutting.';
+  String get pgStartCutting => 'Create the cutting';
 
   @override
-  String get cuttingGuideWaterTitle => 'Water';
+  String get pgStartPlant => 'Create the plant';
 
   @override
-  String get cuttingGuideWaterBody =>
-      'The node under water, the leaves above it. Room-temperature water, bright light, no direct sun.';
+  String get pgNoteSpot => 'Look for';
 
   @override
-  String get cuttingGuideRootsTitle => 'Roots';
+  String get pgNoteAvoid => 'Avoid';
 
   @override
-  String get cuttingGuideRootsBody =>
-      'The water is changed every week. The first roots appear after two to six weeks.';
+  String get pgNoteUsual => 'Usually';
 
   @override
-  String get cuttingGuidePotTitle => 'The pot';
+  String get pgNoteMedium => 'Rooting';
 
   @override
-  String get cuttingGuidePotBody =>
-      'With a few centimetres of roots, the cutting goes into a pot with a light potting mix and gets a first watering.';
+  String get pgMediumWater => 'In water';
 
   @override
-  String get cuttingGuideStart => 'Create the cutting';
+  String get pgMediumSubstrate => 'In a light substrate';
+
+  @override
+  String get pgMediumEither => 'Water or a light substrate';
+
+  @override
+  String get pgVineName => 'Stem cutting';
+
+  @override
+  String get pgVineHint => 'A node, a clean cut, water';
+
+  @override
+  String get pgVineNodeTitle => 'The node';
+
+  @override
+  String get pgVineNodeBody =>
+      'The swelling where a leaf starts, often with an aerial root beside it. The cutting keeps at least one.';
+
+  @override
+  String get pgVineNodeNote => 'Node and aerial root';
+
+  @override
+  String get pgVineCutTitle => 'The cut';
+
+  @override
+  String get pgVineCutBody =>
+      'A clean blade, a clean cut a centimetre below the node. The node stays on the cutting.';
+
+  @override
+  String get pgVineCutNote => 'Cutting above the node';
+
+  @override
+  String get pgVineClearTitle => 'The bare node';
+
+  @override
+  String get pgVineClearBody =>
+      'The leaves that would sit under water come off. Two or three leaves on top feed the cutting.';
+
+  @override
+  String get pgVineWaterTitle => 'The water';
+
+  @override
+  String get pgVineWaterBody =>
+      'The node under the surface, the leaves above it. Bright light, no direct sun.';
+
+  @override
+  String get pgVineRootsTitle => 'The roots';
+
+  @override
+  String get pgVineRootsBody =>
+      'They come out of the node, not the bottom of the stem. The water is changed every week.';
+
+  @override
+  String get pgVineRootsNote => 'First roots in two to six weeks';
+
+  @override
+  String get pgVinePotTitle => 'The pot';
+
+  @override
+  String get pgVinePotBody =>
+      'At a few centimetres of root, the cutting goes into light potting mix. The node stays just under the surface.';
+
+  @override
+  String get pgSoftName => 'Soft stem cutting';
+
+  @override
+  String get pgSoftHint => 'A young shoot, fast roots';
+
+  @override
+  String get pgSoftStemTitle => 'The shoot';
+
+  @override
+  String get pgSoftStemBody =>
+      'A young, firm shoot without flowers, about ten centimetres. Old wood roots badly.';
+
+  @override
+  String get pgSoftCutTitle => 'The cut';
+
+  @override
+  String get pgSoftCutBody =>
+      'A clean blade, a cut just below a pair of leaves. The roots will start there.';
+
+  @override
+  String get pgSoftStripTitle => 'The lower leaves';
+
+  @override
+  String get pgSoftStripBody =>
+      'The lowest pair comes off: three or four centimetres of stem stay bare.';
+
+  @override
+  String get pgSoftStripNote => 'Leaving a leaf under water';
+
+  @override
+  String get pgSoftRootTitle => 'Rooting';
+
+  @override
+  String get pgSoftRootBody =>
+      'The bare stem sits in the water, the leaves stay dry. Bright light, no direct sun.';
+
+  @override
+  String get pgSoftRootsTitle => 'The roots';
+
+  @override
+  String get pgSoftRootsBody =>
+      'Fine and many, they come from the whole submerged part.';
+
+  @override
+  String get pgSoftRootsNote => 'First roots in one to three weeks';
+
+  @override
+  String get pgSoftPotTitle => 'Potting on';
+
+  @override
+  String get pgSoftPotBody =>
+      'Potted early, at two or three centimetres of root: a soft stem waits badly.';
+
+  @override
+  String get pgLeafName => 'Leaf cutting';
+
+  @override
+  String get pgLeafHint => 'Slower, one leaf is enough';
+
+  @override
+  String get pgLeafChooseTitle => 'The leaf';
+
+  @override
+  String get pgLeafChooseBody =>
+      'A mature, firm leaf with no marks. Young leaves have no reserves.';
+
+  @override
+  String get pgLeafCutTitle => 'The cut';
+
+  @override
+  String get pgLeafCutBody =>
+      'A clean blade, a cut at the base of the leaf, level with the substrate.';
+
+  @override
+  String get pgLeafSplitTitle => 'The segments';
+
+  @override
+  String get pgLeafSplitBody =>
+      'The leaf splits into pieces of five to eight centimetres. A V cut at the bottom of each says which end goes down.';
+
+  @override
+  String get pgLeafSplitNote => 'The V marks the bottom';
+
+  @override
+  String get pgLeafCallusTitle => 'Drying';
+
+  @override
+  String get pgLeafCallusBody =>
+      'The cuts dry in the air, in the shade, before going into substrate.';
+
+  @override
+  String get pgLeafCallusNote => 'One to two days of drying';
+
+  @override
+  String get pgLeafPlantTitle => 'The substrate';
+
+  @override
+  String get pgLeafPlantBody =>
+      'The V goes two centimetres into a free-draining substrate.';
+
+  @override
+  String get pgLeafPlantNote => 'Planting a segment upside down';
+
+  @override
+  String get pgLeafGrowthTitle => 'New growth';
+
+  @override
+  String get pgLeafGrowthBody =>
+      'Roots come first, then a young shoot rises from the substrate beside the segment.';
+
+  @override
+  String get pgLeafGrowthNote => 'New shoot in two to four months';
+
+  @override
+  String get pgDivisionName => 'Division';
+
+  @override
+  String get pgDivisionHint => 'Quick and reliable, the clump splits';
+
+  @override
+  String get pgDivPlantTitle => 'The clump';
+
+  @override
+  String get pgDivPlantBody =>
+      'The plant comes out of the pot whole. A substrate watered the day before holds together better.';
+
+  @override
+  String get pgDivUnpotTitle => 'Out of the pot';
+
+  @override
+  String get pgDivUnpotBody =>
+      'The pot slides off the root ball and the plant is free.';
+
+  @override
+  String get pgDivRootsTitle => 'The root ball';
+
+  @override
+  String get pgDivRootsBody =>
+      'The soil crumbles away until the roots and the base of the shoots show.';
+
+  @override
+  String get pgDivClustersTitle => 'The two groups';
+
+  @override
+  String get pgDivClustersBody =>
+      'Each group keeps its own shoots and its own roots.';
+
+  @override
+  String get pgDivClustersNote => 'Leaves and roots on each side';
+
+  @override
+  String get pgDivSplitTitle => 'The split';
+
+  @override
+  String get pgDivSplitBody =>
+      'The groups come apart by hand. The blade is only for crowns that hold.';
+
+  @override
+  String get pgDivSplitNote => 'Cutting a stem above the soil';
+
+  @override
+  String get pgDivRepotTitle => 'Repotting';
+
+  @override
+  String get pgDivRepotBody =>
+      'Each division goes into its own pot, at the depth it had before, and gets a first watering.';
+
+  @override
+  String get pgOffsetName => 'Offset';
+
+  @override
+  String get pgOffsetHint => 'The offset leaves with its own roots';
+
+  @override
+  String get pgOffSpotTitle => 'The offset';
+
+  @override
+  String get pgOffSpotBody =>
+      'An offset a third the size of the mother, with leaves of its own, is ready to leave.';
+
+  @override
+  String get pgOffSpotNote => 'An offset already formed';
+
+  @override
+  String get pgOffClearTitle => 'Clearing';
+
+  @override
+  String get pgOffClearBody =>
+      'The substrate is cleared around its base and the link to the mother plant shows.';
+
+  @override
+  String get pgOffDetachTitle => 'The split';
+
+  @override
+  String get pgOffDetachBody =>
+      'The offset comes away from the link, with its roots. The blade is only for a woody link.';
+
+  @override
+  String get pgOffDetachNote => 'Pulling the offset off without roots';
+
+  @override
+  String get pgOffRootsTitle => 'The roots';
+
+  @override
+  String get pgOffRootsBody =>
+      'A few clean roots are enough. Without them the offset dries before it takes.';
+
+  @override
+  String get pgOffPotTitle => 'The pot';
+
+  @override
+  String get pgOffPotBody =>
+      'A small pot, the substrate the species wants, and a light watering.';
+
+  @override
+  String get pgOffSettleTitle => 'Settling in';
+
+  @override
+  String get pgOffSettleBody =>
+      'A new leaf at the centre says the offset has taken.';
+
+  @override
+  String get pgOffSettleNote => 'Takes in three to six weeks';
+
+  @override
+  String get pgSegmentName => 'Segment cutting';
+
+  @override
+  String get pgSegmentHint => 'A segment detached, dried, planted';
+
+  @override
+  String get pgSegChooseTitle => 'The segment';
+
+  @override
+  String get pgSegChooseBody =>
+      'A firm terminal segment with no wrinkles, two or three joints long.';
+
+  @override
+  String get pgSegDetachTitle => 'Detaching';
+
+  @override
+  String get pgSegDetachBody =>
+      'The segment comes off at the joint, with a twist. A clean blade if the joint holds.';
+
+  @override
+  String get pgSegDetachNote => 'Pulling and tearing the joint';
+
+  @override
+  String get pgSegWoundTitle => 'The wound';
+
+  @override
+  String get pgSegWoundBody =>
+      'The cut is pale and damp. Planted straight away, it rots.';
+
+  @override
+  String get pgSegCallusTitle => 'The callus';
+
+  @override
+  String get pgSegCallusBody =>
+      'The wound dries in the air, in the shade, until it forms a matt callus.';
+
+  @override
+  String get pgSegCallusNote => 'Three to seven days of drying';
+
+  @override
+  String get pgSegPlantTitle => 'The substrate';
+
+  @override
+  String get pgSegPlantBody =>
+      'The callused end sits barely a centimetre into a very free-draining substrate.';
+
+  @override
+  String get pgSegPlantNote => 'Burying the segment';
+
+  @override
+  String get pgSegRootsTitle => 'New growth';
+
+  @override
+  String get pgSegRootsBody =>
+      'Roots come first, then a new joint. Watering waits until the roots hold.';
 
   @override
   String get parentPlant => 'Parent plant';

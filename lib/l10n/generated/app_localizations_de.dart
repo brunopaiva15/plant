@@ -575,61 +575,398 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editSchedule => 'Pflegeplan anpassen';
 
   @override
-  String get createCutting => 'Ableger anlegen';
-
-  @override
   String cuttingOf(String name) {
     return 'Ableger von $name';
   }
 
   @override
-  String get cuttingGuideIntroBody =>
-      'Sechs Schritte, vom Trieb bis zum Topf. Jeder wird als Geste gezeigt und dann in einem Satz gesagt, an die Art angepasst, wenn sie bekannt ist.';
+  String get propagate => 'Vermehren';
 
   @override
-  String get cuttingGuideStemTitle => 'Der Trieb';
+  String get pgPickTitle => 'Diese Pflanze vermehren';
 
   @override
-  String get cuttingGuideStemBody =>
-      'Ein gesunder Trieb mit mindestens einem Knoten: der Verdickung, an der die Blätter ansetzen. Zwei oder drei Blätter darüber reichen.';
+  String get pgPickBody =>
+      'Diese Pflanze lässt sich auf mehrere Arten vermehren. Der gewählte Handgriff bestimmt die Schritte.';
 
   @override
-  String get cuttingGuideCutTitle => 'Der Schnitt';
+  String get pgRecommended => 'Empfohlen';
 
   @override
-  String get cuttingGuideCutBody =>
-      'Eine saubere Klinge, ein glatter Schnitt knapp unter dem Knoten. Ein Zentimeter Stiel darunter reicht.';
+  String pgIntroTitle(String name, String species) {
+    return '$name von $species';
+  }
 
   @override
-  String get cuttingGuideLeavesTitle => 'Die Blätter';
+  String pgIntroBody(int count) {
+    return '$count Schritte. Jeder wird als Handgriff gezeigt und in einem Satz gesagt, auf die Art abgestimmt, wenn sie bekannt ist.';
+  }
 
   @override
-  String get cuttingGuideLeavesBody =>
-      'Die unteren Blätter werden entfernt, der Knoten bleibt frei. Zwei oder drei Blätter oben versorgen den Ableger.';
+  String get pgStartCutting => 'Steckling anlegen';
 
   @override
-  String get cuttingGuideWaterTitle => 'Das Wasser';
+  String get pgStartPlant => 'Pflanze anlegen';
 
   @override
-  String get cuttingGuideWaterBody =>
-      'Der Knoten unter Wasser, die Blätter darüber. Zimmerwarmes Wasser, helles Licht ohne direkte Sonne.';
+  String get pgNoteSpot => 'Zu erkennen';
 
   @override
-  String get cuttingGuideRootsTitle => 'Die Wurzeln';
+  String get pgNoteAvoid => 'Zu vermeiden';
 
   @override
-  String get cuttingGuideRootsBody =>
-      'Das Wasser wird jede Woche gewechselt. Die ersten Wurzeln zeigen sich nach zwei bis sechs Wochen.';
+  String get pgNoteUsual => 'Meist';
 
   @override
-  String get cuttingGuidePotTitle => 'Der Topf';
+  String get pgNoteMedium => 'Bewurzelung';
 
   @override
-  String get cuttingGuidePotBody =>
-      'Bei einigen Zentimetern Wurzeln kommt der Ableger in einen Topf mit leichter Erde und wird einmal angegossen.';
+  String get pgMediumWater => 'Im Wasser';
 
   @override
-  String get cuttingGuideStart => 'Ableger anlegen';
+  String get pgMediumSubstrate => 'In lockerem Substrat';
+
+  @override
+  String get pgMediumEither => 'Wasser oder lockeres Substrat';
+
+  @override
+  String get pgVineName => 'Triebsteckling';
+
+  @override
+  String get pgVineHint => 'Ein Nodium, ein sauberer Schnitt, Wasser';
+
+  @override
+  String get pgVineNodeTitle => 'Das Nodium';
+
+  @override
+  String get pgVineNodeBody =>
+      'Die Verdickung, aus der ein Blatt kommt, oft mit einer Luftwurzel daneben. Der Steckling behält mindestens eine.';
+
+  @override
+  String get pgVineNodeNote => 'Nodium und Luftwurzel';
+
+  @override
+  String get pgVineCutTitle => 'Der Schnitt';
+
+  @override
+  String get pgVineCutBody =>
+      'Saubere Klinge, glatter Schnitt einen Zentimeter unter dem Nodium. Das Nodium bleibt am Steckling.';
+
+  @override
+  String get pgVineCutNote => 'Über dem Nodium schneiden';
+
+  @override
+  String get pgVineClearTitle => 'Das freie Nodium';
+
+  @override
+  String get pgVineClearBody =>
+      'Die Blätter, die im Wasser stünden, kommen ab. Zwei oder drei Blätter oben versorgen den Steckling.';
+
+  @override
+  String get pgVineWaterTitle => 'Das Wasser';
+
+  @override
+  String get pgVineWaterBody =>
+      'Das Nodium unter der Oberfläche, die Blätter darüber. Helles Licht, keine direkte Sonne.';
+
+  @override
+  String get pgVineRootsTitle => 'Die Wurzeln';
+
+  @override
+  String get pgVineRootsBody =>
+      'Sie kommen aus dem Nodium, nicht aus dem Stielende. Das Wasser wird wöchentlich gewechselt.';
+
+  @override
+  String get pgVineRootsNote => 'Erste Wurzeln in zwei bis sechs Wochen';
+
+  @override
+  String get pgVinePotTitle => 'Der Topf';
+
+  @override
+  String get pgVinePotBody =>
+      'Bei einigen Zentimetern Wurzel kommt der Steckling in lockere Erde. Das Nodium bleibt dicht unter der Oberfläche.';
+
+  @override
+  String get pgSoftName => 'Kopfsteckling';
+
+  @override
+  String get pgSoftHint => 'Ein junger Trieb, schnelle Wurzeln';
+
+  @override
+  String get pgSoftStemTitle => 'Der Trieb';
+
+  @override
+  String get pgSoftStemBody =>
+      'Ein junger, fester Trieb ohne Blüte, etwa zehn Zentimeter. Altes Holz bewurzelt schlecht.';
+
+  @override
+  String get pgSoftCutTitle => 'Der Schnitt';
+
+  @override
+  String get pgSoftCutBody =>
+      'Saubere Klinge, Schnitt dicht unter einem Blattpaar. Von dort kommen die Wurzeln.';
+
+  @override
+  String get pgSoftStripTitle => 'Die unteren Blätter';
+
+  @override
+  String get pgSoftStripBody =>
+      'Das unterste Paar kommt ab: drei bis vier Zentimeter Stiel bleiben kahl.';
+
+  @override
+  String get pgSoftStripNote => 'Ein Blatt im Wasser lassen';
+
+  @override
+  String get pgSoftRootTitle => 'Die Bewurzelung';
+
+  @override
+  String get pgSoftRootBody =>
+      'Der kahle Stiel steht im Wasser, die Blätter bleiben trocken. Helles Licht, keine direkte Sonne.';
+
+  @override
+  String get pgSoftRootsTitle => 'Die Wurzeln';
+
+  @override
+  String get pgSoftRootsBody =>
+      'Fein und zahlreich kommen sie aus dem ganzen eingetauchten Teil.';
+
+  @override
+  String get pgSoftRootsNote => 'Erste Wurzeln in einer bis drei Wochen';
+
+  @override
+  String get pgSoftPotTitle => 'Das Umsetzen';
+
+  @override
+  String get pgSoftPotBody =>
+      'Früh umgesetzt, bei zwei bis drei Zentimetern Wurzel: ein weicher Trieb wartet schlecht.';
+
+  @override
+  String get pgLeafName => 'Blattsteckling';
+
+  @override
+  String get pgLeafHint => 'Langsamer, ein Blatt genügt';
+
+  @override
+  String get pgLeafChooseTitle => 'Das Blatt';
+
+  @override
+  String get pgLeafChooseBody =>
+      'Ein ausgereiftes, festes Blatt ohne Flecken. Junge Blätter haben keine Reserven.';
+
+  @override
+  String get pgLeafCutTitle => 'Der Schnitt';
+
+  @override
+  String get pgLeafCutBody =>
+      'Saubere Klinge, Schnitt am Blattgrund, dicht über dem Substrat.';
+
+  @override
+  String get pgLeafSplitTitle => 'Die Stücke';
+
+  @override
+  String get pgLeafSplitBody =>
+      'Das Blatt wird in Stücke von fünf bis acht Zentimetern geteilt. Ein V am unteren Ende zeigt, welche Seite nach unten gehört.';
+
+  @override
+  String get pgLeafSplitNote => 'Das V markiert unten';
+
+  @override
+  String get pgLeafCallusTitle => 'Das Trocknen';
+
+  @override
+  String get pgLeafCallusBody =>
+      'Die Schnittflächen trocknen an der Luft im Schatten, bevor sie ins Substrat kommen.';
+
+  @override
+  String get pgLeafCallusNote => 'Ein bis zwei Tage trocknen';
+
+  @override
+  String get pgLeafPlantTitle => 'Das Substrat';
+
+  @override
+  String get pgLeafPlantBody =>
+      'Das V steckt zwei Zentimeter tief in durchlässigem Substrat.';
+
+  @override
+  String get pgLeafPlantNote => 'Ein Stück verkehrt herum setzen';
+
+  @override
+  String get pgLeafGrowthTitle => 'Der Austrieb';
+
+  @override
+  String get pgLeafGrowthBody =>
+      'Zuerst kommen die Wurzeln, dann ein junger Trieb neben dem Blattstück.';
+
+  @override
+  String get pgLeafGrowthNote => 'Neuer Trieb in zwei bis vier Monaten';
+
+  @override
+  String get pgDivisionName => 'Teilung';
+
+  @override
+  String get pgDivisionHint => 'Schnell und sicher, der Horst wird geteilt';
+
+  @override
+  String get pgDivPlantTitle => 'Der Horst';
+
+  @override
+  String get pgDivPlantBody =>
+      'Die Pflanze kommt am Stück aus dem Topf. Ein tags zuvor gegossenes Substrat hält besser zusammen.';
+
+  @override
+  String get pgDivUnpotTitle => 'Aus dem Topf';
+
+  @override
+  String get pgDivUnpotBody =>
+      'Der Topf gleitet vom Ballen, die Pflanze ist frei.';
+
+  @override
+  String get pgDivRootsTitle => 'Der Ballen';
+
+  @override
+  String get pgDivRootsBody =>
+      'Die Erde bröckelt ab, bis Wurzeln und Triebbasis zu sehen sind.';
+
+  @override
+  String get pgDivClustersTitle => 'Die zwei Gruppen';
+
+  @override
+  String get pgDivClustersBody =>
+      'Jede Gruppe behält ihre Triebe und ihre Wurzeln.';
+
+  @override
+  String get pgDivClustersNote => 'Blätter und Wurzeln auf beiden Seiten';
+
+  @override
+  String get pgDivSplitTitle => 'Das Trennen';
+
+  @override
+  String get pgDivSplitBody =>
+      'Die Gruppen lassen sich von Hand lösen. Die Klinge kommt nur bei festen Herzen zum Einsatz.';
+
+  @override
+  String get pgDivSplitNote => 'Einen Trieb über der Erde abschneiden';
+
+  @override
+  String get pgDivRepotTitle => 'Das Eintopfen';
+
+  @override
+  String get pgDivRepotBody =>
+      'Jede Teilung kommt in einen eigenen Topf, so tief wie zuvor, und wird angegossen.';
+
+  @override
+  String get pgOffsetName => 'Kindel abtrennen';
+
+  @override
+  String get pgOffsetHint => 'Das Kindel geht mit eigenen Wurzeln';
+
+  @override
+  String get pgOffSpotTitle => 'Das Kindel';
+
+  @override
+  String get pgOffSpotBody =>
+      'Ein Kindel von einem Drittel der Mutterpflanze, mit eigenen Blättern, ist bereit.';
+
+  @override
+  String get pgOffSpotNote => 'Bereits gebildetes Kindel';
+
+  @override
+  String get pgOffClearTitle => 'Das Freilegen';
+
+  @override
+  String get pgOffClearBody =>
+      'Das Substrat wird am Fuß beiseite geräumt, die Verbindung zur Mutterpflanze wird sichtbar.';
+
+  @override
+  String get pgOffDetachTitle => 'Das Trennen';
+
+  @override
+  String get pgOffDetachBody =>
+      'Das Kindel löst sich von der Verbindung, mit seinen Wurzeln. Die Klinge kommt nur bei verholzter Verbindung zum Einsatz.';
+
+  @override
+  String get pgOffDetachNote => 'Das Kindel ohne Wurzeln abreißen';
+
+  @override
+  String get pgOffRootsTitle => 'Die Wurzeln';
+
+  @override
+  String get pgOffRootsBody =>
+      'Ein paar saubere Wurzeln genügen. Ohne sie trocknet das Kindel, bevor es anwächst.';
+
+  @override
+  String get pgOffPotTitle => 'Der Topf';
+
+  @override
+  String get pgOffPotBody =>
+      'Ein kleiner Topf, das Substrat der Art, und ein leichter Guss.';
+
+  @override
+  String get pgOffSettleTitle => 'Das Anwachsen';
+
+  @override
+  String get pgOffSettleBody =>
+      'Ein neues Blatt in der Mitte zeigt, dass das Kindel angewachsen ist.';
+
+  @override
+  String get pgOffSettleNote => 'Anwachsen in drei bis sechs Wochen';
+
+  @override
+  String get pgSegmentName => 'Gliedsteckling';
+
+  @override
+  String get pgSegmentHint => 'Ein Glied gelöst, getrocknet, gesetzt';
+
+  @override
+  String get pgSegChooseTitle => 'Das Glied';
+
+  @override
+  String get pgSegChooseBody =>
+      'Ein festes Endglied ohne Falten, zwei oder drei Glieder lang.';
+
+  @override
+  String get pgSegDetachTitle => 'Das Lösen';
+
+  @override
+  String get pgSegDetachBody =>
+      'Das Glied löst sich am Gelenk, mit einer Drehung. Eine saubere Klinge, wenn es hält.';
+
+  @override
+  String get pgSegDetachNote => 'Am Glied reißen';
+
+  @override
+  String get pgSegWoundTitle => 'Die Wunde';
+
+  @override
+  String get pgSegWoundBody =>
+      'Die Schnittfläche ist hell und feucht. Sofort gesetzt, fault sie.';
+
+  @override
+  String get pgSegCallusTitle => 'Die Wundheilung';
+
+  @override
+  String get pgSegCallusBody =>
+      'Die Wunde trocknet an der Luft im Schatten, bis sich ein matter Kallus bildet.';
+
+  @override
+  String get pgSegCallusNote => 'Drei bis sieben Tage trocknen';
+
+  @override
+  String get pgSegPlantTitle => 'Das Substrat';
+
+  @override
+  String get pgSegPlantBody =>
+      'Das verheilte Ende steckt kaum einen Zentimeter tief in sehr durchlässigem Substrat.';
+
+  @override
+  String get pgSegPlantNote => 'Das Glied vergraben';
+
+  @override
+  String get pgSegRootsTitle => 'Der Austrieb';
+
+  @override
+  String get pgSegRootsBody =>
+      'Zuerst kommen die Wurzeln, dann ein neues Glied. Gegossen wird erst, wenn die Wurzeln halten.';
 
   @override
   String get parentPlant => 'Mutterpflanze';

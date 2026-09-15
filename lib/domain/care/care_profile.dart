@@ -24,7 +24,18 @@ enum Toxicity { safe, mild, toxic, unknown }
 enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
 
 /// Méthode de multiplication.
+///
+/// `water` n'en est pas une : c'est un milieu d'enracinement, écrit dans la
+/// même liste depuis les premières fiches. Les fiches déjà enregistrées le
+/// gardent ; [CareProfile.propagationMethods] et [CareProfile.rootingMedium]
+/// séparent les deux notions sans toucher aux données.
 enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, water, tuber }
+
+/// Où une bouture prend racine.
+///
+/// `none` vaut pour les plantes qu'on divise ou dont on sépare un rejet :
+/// le fragment a déjà ses racines, il n'y a rien à enraciner.
+enum RootingMedium { water, substrate, either, none }
 
 /// Problème fréquent, pour la section « À surveiller ».
 enum CommonIssue {
@@ -156,6 +167,21 @@ class CareProfile {
       _ => base,
     };
     return adjusted.round().clamp(1, 120);
+  }
+
+  /// Les méthodes de multiplication, le milieu d'enracinement mis à part.
+  List<Propagation> get propagationMethods => [
+        for (final p in propagation)
+          if (p != Propagation.water) p,
+      ];
+
+  /// Où la bouture prend racine. Une succulente pourrit dans l'eau ; une
+  /// liane y va aussi bien qu'en terre ; une division n'a rien à enraciner.
+  RootingMedium get rootingMedium {
+    final bouture = propagationMethods.any((m) => m == Propagation.stemCutting || m == Propagation.leafCutting);
+    if (!bouture) return RootingMedium.none;
+    if (soil == SoilKind.cactus) return RootingMedium.substrate;
+    return propagation.contains(Propagation.water) ? RootingMedium.water : RootingMedium.either;
   }
 
   /// L'engrais est-il utile ce mois-ci ?
