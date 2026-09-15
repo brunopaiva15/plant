@@ -376,32 +376,53 @@ la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
 terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
-Cinq volets se pratiquent — arrosage, lumière, humidité, engrais, rempotage —
-et chacun a sa carte, teintée de la couleur de son sujet : bleu poussière pour
-l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre cuite
-pour le rempotage. Une douzaine de lignes dans une seule liste ne se
+Six volets se pratiquent — arrosage, lumière, humidité, engrais, substrat,
+rempotage — et chacun a sa carte, teintée de la couleur de son sujet : bleu
+poussière pour l'eau, ocre pour la lumière, rose pour l'air, sauge pour
+l'engrais, terre cuite pour la terre (le substrat et le rempotage la
+partagent, c'est la même). Une douzaine de lignes dans une seule liste ne se
 distinguaient qu'à la lecture ; une carte se retrouve à sa couleur.
 
 L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
-sur toute carte teintée —, le nom du volet, le constat dessous, puis ce qui ne
-vaut que pour lui : la saison de l'engrais, le substrat avec le rempotage (le
-jour où il sert), « Brumiser » sous l'humidité, « Repos hivernal » sous
-l'arrosage. L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau :
-c'est la question qu'on se pose en premier. La carte « Chez vous » se pose
-après l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
+sur toute carte teintée —, le nom du volet, le constat dessous, puis une ligne
+par précision qui ne vaut que pour lui. Ces précisions sont le fond de la
+fiche :
+
+- **Humidité** : le taux, et par quoi l'obtenir. « Humidité ordinaire » seul
+  ne se compare à rien ; « 40 à 60 %, sous 30 % les pointes brunissent » se
+  compare à la mesure de la pièce, juste au-dessous.
+- **Engrais** : lequel avant combien de fois — plantes vertes équilibré,
+  azoté, potasse, cactées, orchidées, terre de bruyère, agrumes, tomates —,
+  puis la saison, puis ce que le calcium lui fait quand il lui fait quelque
+  chose (rien à dire vaut mieux qu'une ligne pour dire « rien »).
+- **Substrat** : le mélange en proportions (« 50 % de terreau, 25 % de
+  perlite, 25 % de sable grossier »), et ce qu'elle accepte hors du pot —
+  « Dans l'eau : bouture seulement · En pon : oui ». Deux « non » font
+  disparaître la ligne.
+
+L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau : c'est la
+question qu'on se pose en premier. La carte « Chez vous » se pose après
+l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
 
 **Le tuteur** (`CareProfile.support`) suit le rempotage, et seulement pour les
 espèces qui en demandent un : un pothos, un monstera, une tomate. Il dit lequel
 — tuteur moussu, tuteur droit, treillis — et quand s'en occuper : le tuteur
 moussu s'humidifie à chaque arrosage, la tige s'attache à mesure qu'elle monte.
-Sa carte garde l'anatomie des volets mais reste crème : les cinq teintes
-appartiennent aux volets du soin, une sixième les brouillerait.
+Sa carte garde l'anatomie des volets mais reste crème : les teintes
+appartiennent aux volets du soin, une de plus les brouillerait.
 
 Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
-`FloraGroup` à la suite, avant les conseils, ce qu'il faut surveiller, les
-signes sur les feuilles, les problèmes connus et la multiplication ; la
-provenance de la fiche ferme la page. `test/features/care_guide_test.dart`
-tient la séparation.
+`FloraGroup` à la suite. Viennent ensuite les deux projets, pour qui en a un :
+**Sous serre** (ocre) dit les conditions à tenir pour pousser plus vite, et
+**Floraison** (rose) ce qui décide la plante à fleurir. Ils se pratiquent,
+donc ils gardent la carte des volets ; ils ne se pratiquent pas tous les
+jours, d'où leur place après la liste. Une plante qui passe l'hiver dehors
+n'a pas l'usage d'une serre et n'en voit pas la carte ; la floraison ne paraît
+que lorsque la fiche sait ce qui la déclenche. Les conseils, ce qu'il faut
+surveiller, les signes sur les feuilles, les problèmes connus et la
+multiplication ferment la page, puis la provenance de la fiche.
+`test/features/care_guide_test.dart` tient la séparation,
+`test/domain/care_profile_test.dart` ce qui se déduit.
 
 **« À surveiller »** range la liste de l'espèce dans l'ordre de la base des
 problèmes — les troubles, puis les ravageurs, puis les maladies —, parce que
