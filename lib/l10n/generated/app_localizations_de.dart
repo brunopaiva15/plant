@@ -2644,8 +2644,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get careHumidityGreenhouse =>
-      'Im Gewächshaus oder in der Vitrine diesen Bereich tagsüber halten, nachts absinken lassen und die Luft bewegen.';
+  String get careHumidityLowDetail =>
+      'Die Luft einer beheizten Wohnung reicht ihr; zu feucht nimmt sie Schaden.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      'Die normale Zimmerluft, im Winter fern der Heizung.';
+
+  @override
+  String get careHumidityHighDetail =>
+      'Untersetzer mit feuchten Blähtonkugeln, Pflanzen zusammenstellen, ein Raum mit Wasser.';
 
   @override
   String get careDifficultyEasy => 'Einfach';
@@ -2691,6 +2699,239 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Ganz ohne Substrat';
+
+  @override
+  String get careSoilMixStandard =>
+      'Mit 20 % Perlit aufgelockert, damit das Wasser durchläuft.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % Erde, 25 % Perlit, 25 % grober Sand oder Lavagranulat.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % Erde, 70 % Lavagranulat, Bims oder grober Sand.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Mittlere Pinienrinde, 10 % Perlit, etwas Sphagnum; niemals Blumenerde.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Mit 25 % Pinienrinde aufgelockert, ohne Kalk und ohne Kompost.';
+
+  @override
+  String get careSoilMixRich => '40 % Erde, 40 % Kompost, 20 % Perlit.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Kein Substrat: die Wurzeln leben in der Luft oder im Wasser.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'Im Wasser: $water · In Pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'ja';
+
+  @override
+  String get careSoilFreeNo => 'nein';
+
+  @override
+  String get careSoilFreeCuttings => 'nur Stecklinge';
+
+  @override
+  String get careFertBalanced =>
+      'Ausgewogener Grünpflanzendünger, halb dosiert.';
+
+  @override
+  String get careFertFoliage =>
+      'Stickstoffbetonter Dünger, der fürs Blattwerk.';
+
+  @override
+  String get careFertFlowering => 'Kalibetonter Dünger, der für die Blüte.';
+
+  @override
+  String get careFertCactus => 'Kakteendünger, stickstoffarm.';
+
+  @override
+  String get careFertOrchid => 'Orchideendünger, stark verdünnt.';
+
+  @override
+  String get careFertAcidic => 'Rhododendrondünger, kalkfrei.';
+
+  @override
+  String get careFertCitrus =>
+      'Zitrusdünger, stickstoffreich und mit Spurenelementen.';
+
+  @override
+  String get careFertVegetable => 'Tomatendünger, kalireich.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Kalzium: keine Gabe, dazu Regenwasser; Kalk lässt ihr Laub vergilben.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Kalzium: hartes Wasser bekommt ihr, zerstoßene Eierschalen beim Umtopfen ebenso.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Kalzium: eine stetige Versorgung verhindert Blütenendfäule.';
+
+  @override
+  String get careGreenhouse => 'Im Gewächshaus';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Wärme und feuchte Luft';
+
+  @override
+  String get careGreenhouseWarmLight => 'Wärme und Licht';
+
+  @override
+  String get careGreenhouseWarmDry => 'Wärme, Licht und trockene Luft';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Das ganze Jahr gehalten, beschleunigen diese Bedingungen den Wuchs: Gießen und Düngen rücken ebenso zusammen.';
+
+  @override
+  String get careGreenhouseHold =>
+      'Den Feuchtebereich tagsüber halten, nachts absinken lassen und die Luft bewegen.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Täglich lüften: stehende Luft lässt faulen, was es trocken mag.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'Im Frühbeet oder Mini-Gewächshaus starten Aussaaten vier bis sechs Wochen früher.';
+
+  @override
+  String get careBloom => 'Blüte';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'Von $from bis $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Selten im Zimmer';
+
+  @override
+  String get careBloomChillBulb => 'Kälte für die Zwiebel';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Zehn bis fünfzehn Wochen bei 5 bis 9 °C, bevor sie wieder warm steht.';
+
+  @override
+  String get careBloomFertilizer => 'Blühdünger';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Kalireicher als der fürs Laub, sobald sich die Knospen bilden.';
+
+  @override
+  String get careBloomMaturity => 'Etwas Alter';
+
+  @override
+  String get careBloomMaturityNote =>
+      'Sie blüht ab drei oder vier Jahren, nicht früher.';
+
+  @override
+  String get careBloomDeadhead => 'Verblühtes abschneiden';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Das Verblühte abschneiden, die nächste Blüte folgt.';
+
+  @override
+  String get careBloomKeepSpike => 'Ein behaltener Blütentrieb';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'Solange er grün bleibt, treibt er aus einem tieferen Auge neu aus.';
+
+  @override
+  String get careBloomNoMove => 'Ein fester Platz';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Nach der Knospenbildung kein Umstellen und kein Drehen: sonst fallen sie ab.';
+
+  @override
+  String get careBloomEvenWater => 'Gleichmäßiges Gießen';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'Während der Knospen lässt eine Trockenphase sie fallen.';
+
+  @override
+  String get careRest => 'Ruhe';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Trocken und dunkel, zwischen $min und $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Trocken, zwischen $min und $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Trocken und dunkel';
+
+  @override
+  String get careRestStorePlain => 'Trocken';
+
+  @override
+  String get careRestNote =>
+      'Das Laub vergilben und trocknen lassen, ohne es zu schneiden, dann das Gießen einstellen. Am Ende dieser Zeit den Topf wieder ans Licht stellen und erneut gießen.';
+
+  @override
+  String get careBloomCoolRest => 'Ein kühler Winter';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Zwei Monate bei 10 bis 12 °C, fast ohne Wasser, legen die Knospen an.';
+
+  @override
+  String get careBloomCoolNights => 'Kühle Nächte';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Drei Wochen mit 15 °C in der Nacht, im Herbst, treiben den Blütenstiel.';
+
+  @override
+  String get careBloomShortDays => 'Kurze Tage';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Sechs Wochen mit zwölfstündigen Nächten, in völliger Dunkelheit, lösen die Knospen aus.';
+
+  @override
+  String get careBloomDrySpell => 'Eine Trockenzeit';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Einige Wochen ohne Wasser, dann wieder gießen: die Blüte folgt.';
+
+  @override
+  String get careBloomPotbound => 'Ein enger Topf';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Sie blüht, wenn die Wurzeln den Topf füllen; Umtopfen schickt sie zurück ins Laub.';
+
+  @override
+  String get careBloomBrightLight => 'Mehr Licht';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Blühen braucht mehr Licht als Blätter: Südfenster hinter einem leichten Vorhang.';
 
   @override
   String get carePropCutting => 'Stecklinge';
@@ -2759,92 +3000,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Verträgt Freiland';
-
-  @override
-  String get careBloom => 'Blüte';
-
-  @override
-  String careSeasonRange(String from, String to) {
-    return 'Von $from bis $to';
-  }
-
-  @override
-  String get careBloomOutdoors => 'Selten im Zimmer';
-
-  @override
-  String get careBloomCoolRest =>
-      'Ein kühler Winter, 12 bis 15 °C und fast trocken über sechs Wochen, legt die Knospen an.';
-
-  @override
-  String get careBloomNightDrop =>
-      'Ein Unterschied von 8 bis 10 °C zwischen Tag und Nacht treibt den Blütentrieb.';
-
-  @override
-  String get careBloomLongNights =>
-      'Vierzehn Stunden völlige Dunkelheit pro Nacht, sechs Wochen lang, lösen die Knospen aus.';
-
-  @override
-  String get careBloomDryRest =>
-      'Eine trockene Ruhe nach dem Wachstum: ohne sie kommen Blätter und keine Blüten.';
-
-  @override
-  String get careBloomPotbound =>
-      'Sie blüht, wenn die Wurzeln den Topf füllen; ein zu großer Topf verzögert alles.';
-
-  @override
-  String get careBloomFertilizer =>
-      'Blühdünger mit mehr Kali, sobald sich die Knospen bilden.';
-
-  @override
-  String get careBloomDirectSun =>
-      'Vier bis sechs Stunden direkte Sonne: im Schatten fallen die Knospen ab.';
-
-  @override
-  String get careBloomMaturity =>
-      'Sie blüht ab drei oder vier Jahren, nicht früher.';
-
-  @override
-  String get careBloomDeadhead =>
-      'Verblühtes abschneiden, die nächste Blüte folgt.';
-
-  @override
-  String get careBloomKeepSpike =>
-      'Den Blütentrieb behalten, solange er grün bleibt: er treibt aus einem tieferen Auge neu aus.';
-
-  @override
-  String get careBloomNoMove =>
-      'Nach der Knospenbildung nicht mehr umstellen und nicht mehr drehen, sonst fallen sie ab.';
-
-  @override
-  String get careBloomEvenWater =>
-      'Während der Knospen gleichmäßig gießen; eine Trockenphase lässt sie fallen.';
-
-  @override
-  String get careBloomChillBulb =>
-      'Die Zwiebel steht zehn bis fünfzehn Wochen bei 5 bis 9 °C, bevor sie wieder warm gestellt wird.';
-
-  @override
-  String get careRest => 'Ruhe';
-
-  @override
-  String careRestStoreDarkTemp(int min, int max) {
-    return 'Trocken und dunkel, zwischen $min und $max °C';
-  }
-
-  @override
-  String careRestStoreTemp(int min, int max) {
-    return 'Trocken, zwischen $min und $max °C';
-  }
-
-  @override
-  String get careRestStoreDark => 'Trocken und dunkel';
-
-  @override
-  String get careRestStorePlain => 'Trocken';
-
-  @override
-  String get careRestNote =>
-      'Das Laub vergilben und trocknen lassen, ohne es zu schneiden, dann das Gießen einstellen. Am Ende dieser Zeit den Topf wieder ans Licht stellen und erneut gießen.';
 
   @override
   String get careIssueOverwatering => 'Zu viel Wasser (weiche, gelbe Blätter)';

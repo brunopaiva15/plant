@@ -64,6 +64,86 @@ extension CareProfileLabels on AppLocalizations {
         SoilKind.aquatic => careSoilAquatic,
       };
 
+  /// Le mélange, en proportions : ce qu'on prépare le jour du rempotage.
+  String soilMix(SoilKind v) => switch (v) {
+        SoilKind.standard => careSoilMixStandard,
+        SoilKind.draining => careSoilMixDraining,
+        SoilKind.cactus => careSoilMixCactus,
+        SoilKind.orchid => careSoilMixOrchid,
+        SoilKind.acidic => careSoilMixAcidic,
+        SoilKind.rich => careSoilMixRich,
+        SoilKind.aquatic => careSoilMixAquatic,
+      };
+
+  String soilFreeFitName(SoilFreeFit v) => switch (v) {
+        SoilFreeFit.no => careSoilFreeNo,
+        SoilFreeFit.cuttings => careSoilFreeCuttings,
+        SoilFreeFit.yes => careSoilFreeYes,
+      };
+
+  /// « Dans l'eau : bouture seulement · En pon : oui ». `null` quand la
+  /// culture hors-sol ne la concerne pas : deux « non » n'apprennent rien.
+  String? soilFreeLine(CareProfile p) =>
+      p.inWater == SoilFreeFit.no && p.inPon == SoilFreeFit.no ? null : careSoilFree(soilFreeFitName(p.inWater), soilFreeFitName(p.inPon));
+
+  String fertilizerKindName(FertilizerKind v) => switch (v) {
+        FertilizerKind.balanced => careFertBalanced,
+        FertilizerKind.foliage => careFertFoliage,
+        FertilizerKind.flowering => careFertFlowering,
+        FertilizerKind.cactus => careFertCactus,
+        FertilizerKind.orchid => careFertOrchid,
+        FertilizerKind.acidic => careFertAcidic,
+        FertilizerKind.citrus => careFertCitrus,
+        FertilizerKind.vegetable => careFertVegetable,
+      };
+
+  /// Ce qu'il faut faire du calcium. `null` quand il n'y a rien à en dire :
+  /// l'eau du robinet en apporte alors assez.
+  String? calciumNote(CalciumNeed v) => switch (v) {
+        CalciumNeed.avoid => careCalciumAvoid,
+        CalciumNeed.welcome => careCalciumWelcome,
+        CalciumNeed.needed => careCalciumNeeded,
+        CalciumNeed.neutral => null,
+      };
+
+  String bloomName(BloomTrigger v) => switch (v) {
+        BloomTrigger.coolRest => careBloomCoolRest,
+        BloomTrigger.coolNights => careBloomCoolNights,
+        BloomTrigger.shortDays => careBloomShortDays,
+        BloomTrigger.drySpell => careBloomDrySpell,
+        BloomTrigger.potbound => careBloomPotbound,
+        BloomTrigger.brightLight => careBloomBrightLight,
+        BloomTrigger.chillBulb => careBloomChillBulb,
+        BloomTrigger.fertilizer => careBloomFertilizer,
+        BloomTrigger.maturity => careBloomMaturity,
+        BloomTrigger.deadhead => careBloomDeadhead,
+        BloomTrigger.keepSpike => careBloomKeepSpike,
+        BloomTrigger.noMove => careBloomNoMove,
+        BloomTrigger.evenWater => careBloomEvenWater,
+      };
+
+  String bloomNote(BloomTrigger v) => switch (v) {
+        BloomTrigger.coolRest => careBloomCoolRestNote,
+        BloomTrigger.coolNights => careBloomCoolNightsNote,
+        BloomTrigger.shortDays => careBloomShortDaysNote,
+        BloomTrigger.drySpell => careBloomDrySpellNote,
+        BloomTrigger.potbound => careBloomPotboundNote,
+        BloomTrigger.brightLight => careBloomBrightLightNote,
+        BloomTrigger.chillBulb => careBloomChillBulbNote,
+        BloomTrigger.fertilizer => careBloomFertilizerNote,
+        BloomTrigger.maturity => careBloomMaturityNote,
+        BloomTrigger.deadhead => careBloomDeadheadNote,
+        BloomTrigger.keepSpike => careBloomKeepSpikeNote,
+        BloomTrigger.noMove => careBloomNoMoveNote,
+        BloomTrigger.evenWater => careBloomEvenWaterNote,
+      };
+
+  String humidityDetail(HumidityNeed v) => switch (v) {
+        HumidityNeed.low => careHumidityLowDetail,
+        HumidityNeed.average => careHumidityAverageDetail,
+        HumidityNeed.high => careHumidityHighDetail,
+      };
+
   String propagationName(Propagation v) => switch (v) {
         Propagation.stemCutting => carePropCutting,
         Propagation.leafCutting => carePropLeaf,
@@ -229,25 +309,6 @@ extension CareProfileLabels on AppLocalizations {
         'sharpSpines' => careTipSharpSpines,
         'splitsAreNormal' => careTipSplitsAreNormal,
         'dryToBloom' => careTipDryToBloom,
-        _ => null,
-      };
-
-  /// Condition de floraison, par clé, sur le modèle des conseils : une clé
-  /// inconnue ne s'affiche pas.
-  String? bloomTrigger(String key) => switch (key) {
-        'coolRest' => careBloomCoolRest,
-        'nightDrop' => careBloomNightDrop,
-        'longNights' => careBloomLongNights,
-        'dryRest' => careBloomDryRest,
-        'potbound' => careBloomPotbound,
-        'bloomFertilizer' => careBloomFertilizer,
-        'directSun' => careBloomDirectSun,
-        'maturity' => careBloomMaturity,
-        'deadhead' => careBloomDeadhead,
-        'keepSpike' => careBloomKeepSpike,
-        'noMove' => careBloomNoMove,
-        'evenWater' => careBloomEvenWater,
-        'chillBulb' => careBloomChillBulb,
         _ => null,
       };
 

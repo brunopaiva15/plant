@@ -1339,7 +1339,9 @@
       }
     }
   },
-  "careHumidityGreenhouse": "Sous serre ou en vitrine, tenez cette plage le jour, laissez-la descendre la nuit et faites circuler l'air.",
+  "careHumidityLowDetail": "L'air d'un logement chauffé lui suffit ; trop humide, elle s'abîme.",
+  "careHumidityAverageDetail": "L'air ordinaire d'un logement, loin d'un radiateur en hiver.",
+  "careHumidityHighDetail": "Plateau de billes d'argile humides, plantes groupées, pièce d'eau.",
   "careDifficultyEasy": "Facile",
   "careDifficultyMedium": "Moyenne",
   "careDifficultyDemanding": "Exigeante",
@@ -1355,6 +1357,111 @@
   "careSoilAcidic": "Terre de bruyère",
   "careSoilRich": "Terreau riche en compost",
   "careSoilAquatic": "Sans substrat",
+  "careSoilMixStandard": "Allégé de 20 % de perlite, pour que l'eau traverse.",
+  "careSoilMixDraining": "50 % de terreau, 25 % de perlite, 25 % de sable grossier ou de pouzzolane.",
+  "careSoilMixCactus": "30 % de terreau, 70 % de pouzzolane, de pierre ponce ou de sable grossier.",
+  "careSoilMixOrchid": "Écorces de pin moyennes, 10 % de perlite, un peu de sphaigne ; jamais de terreau.",
+  "careSoilMixAcidic": "Allégée de 25 % d'écorce de pin, sans calcaire ni compost.",
+  "careSoilMixRich": "40 % de terreau, 40 % de compost, 20 % de perlite.",
+  "careSoilMixAquatic": "Pas de substrat : les racines vivent à l'air ou dans l'eau.",
+  "careSoilFree": "Dans l'eau : {water} · En pon : {pon}",
+  "@careSoilFree": {
+    "placeholders": {
+      "water": {
+        "type": "String"
+      },
+      "pon": {
+        "type": "String"
+      }
+    }
+  },
+  "careSoilFreeYes": "oui",
+  "careSoilFreeNo": "non",
+  "careSoilFreeCuttings": "bouture seulement",
+  "careFertBalanced": "Engrais plantes vertes équilibré, dilué de moitié.",
+  "careFertFoliage": "Engrais riche en azote, celui du feuillage.",
+  "careFertFlowering": "Engrais riche en potasse, celui de la floraison.",
+  "careFertCactus": "Engrais cactées, pauvre en azote.",
+  "careFertOrchid": "Engrais orchidées, très dilué.",
+  "careFertAcidic": "Engrais pour terre de bruyère, sans calcaire.",
+  "careFertCitrus": "Engrais agrumes, riche en azote et en oligo-éléments.",
+  "careFertVegetable": "Engrais tomates, riche en potasse.",
+  "careCalciumAvoid": "Calcium : aucun apport, et de l'eau de pluie ; le calcaire fait jaunir son feuillage.",
+  "careCalciumWelcome": "Calcium : l'eau calcaire lui convient, des coquilles d'œufs broyées au rempotage aussi.",
+  "careCalciumNeeded": "Calcium : un apport régulier évite la nécrose apicale des fruits.",
+  "careGreenhouse": "Sous serre",
+  "careGreenhouseWarmHumid": "Chaleur et air humide",
+  "careGreenhouseWarmLight": "Chaleur et lumière",
+  "careGreenhouseWarmDry": "Chaleur, lumière et air sec",
+  "careGreenhouseGrowth": "Tenues toute l'année, ces conditions accélèrent la pousse : l'arrosage et l'engrais se rapprochent d'autant.",
+  "careGreenhouseHold": "Tenez la plage d'humidité le jour, laissez-la descendre la nuit, et faites circuler l'air.",
+  "careGreenhouseAir": "Aérer chaque jour : l'air confiné fait pourrir ce qui aime le sec.",
+  "careGreenhouseEarly": "En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.",
+  "careBloom": "Floraison",
+  "careSeasonRange": "De {from} à {to}",
+  "@careSeasonRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "careBloomOutdoors": "Rarement en intérieur",
+  "careBloomChillBulb": "Un froid au bulbe",
+  "careBloomChillBulbNote": "Dix à quinze semaines entre 5 et 9 °C, avant de le remettre à la chaleur.",
+  "careBloomFertilizer": "Un engrais de floraison",
+  "careBloomFertilizerNote": "Plus riche en potasse que celui du feuillage, dès que les boutons se forment.",
+  "careBloomMaturity": "De l'âge",
+  "careBloomMaturityNote": "Elle fleurit à partir de trois ou quatre ans, pas avant.",
+  "careBloomDeadhead": "Des fleurs coupées",
+  "careBloomDeadheadNote": "Coupez les fleurs fanées, la suivante suit.",
+  "careBloomKeepSpike": "Une hampe gardée",
+  "careBloomKeepSpikeNote": "Tant qu'elle reste verte, elle repart d'un œil plus bas.",
+  "careBloomNoMove": "Une place fixe",
+  "careBloomNoMoveNote": "Une fois les boutons formés, ni déplacement ni quart de tour : ils tombent.",
+  "careBloomEvenWater": "Un arrosage régulier",
+  "careBloomEvenWaterNote": "Pendant les boutons, un coup de sec les fait tomber.",
+  "careRest": "Repos",
+  "careRestStoreDarkTemp": "Au sec et à l'obscurité, entre {min} et {max} °C",
+  "@careRestStoreDarkTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careRestStoreTemp": "Au sec, entre {min} et {max} °C",
+  "@careRestStoreTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careRestStoreDark": "Au sec et à l'obscurité",
+  "careRestStorePlain": "Au sec",
+  "careRestNote": "Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l'arrosage. Remettez le pot à la lumière et reprenez l'arrosage à la fin de cette période.",
+  "careBloomCoolRest": "Un hiver frais",
+  "careBloomCoolRestNote": "Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.",
+  "careBloomCoolNights": "Des nuits fraîches",
+  "careBloomCoolNightsNote": "Trois semaines à 15 °C la nuit, en automne, font monter la hampe.",
+  "careBloomShortDays": "Des jours courts",
+  "careBloomShortDaysNote": "Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.",
+  "careBloomDrySpell": "Une sécheresse",
+  "careBloomDrySpellNote": "Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.",
+  "careBloomPotbound": "Un pot à l'étroit",
+  "careBloomPotboundNote": "Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.",
+  "careBloomBrightLight": "Plus de lumière",
+  "careBloomBrightLightNote": "Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.",
   "carePropCutting": "Bouture de tige",
   "carePropLeaf": "Bouture de feuille",
   "carePropDivision": "Division de la touffe",
@@ -1399,58 +1506,6 @@
   "careBadgeMist": "Brumiser",
   "careBadgeDormant": "Repos hivernal",
   "careBadgeOutdoor": "Supporte l'extérieur",
-  "careBloom": "Floraison",
-  "careSeasonRange": "De {from} à {to}",
-  "@careSeasonRange": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
-  "careBloomOutdoors": "Rarement en intérieur",
-  "careBloomCoolRest": "Un hiver frais, 12 à 15 °C et presque sec pendant six semaines, forme les boutons.",
-  "careBloomNightDrop": "Un écart de 8 à 10 °C entre le jour et la nuit lance la hampe florale.",
-  "careBloomLongNights": "Quatorze heures d'obscurité complète par nuit, six semaines de suite, déclenchent les boutons.",
-  "careBloomDryRest": "Un repos sec après la croissance : sans lui, la plante fait des feuilles et pas de fleurs.",
-  "careBloomPotbound": "Elle fleurit quand ses racines remplissent le pot ; un pot trop grand retarde tout.",
-  "careBloomFertilizer": "Un engrais à floraison, plus riche en potasse, dès que les boutons se forment.",
-  "careBloomDirectSun": "Quatre à six heures de soleil direct : à l'ombre, les boutons avortent.",
-  "careBloomMaturity": "Elle fleurit à partir de trois ou quatre ans, pas avant.",
-  "careBloomDeadhead": "Coupez les fleurs fanées, la suivante suit.",
-  "careBloomKeepSpike": "Gardez la hampe tant qu'elle reste verte : elle repart d'un œil plus bas.",
-  "careBloomNoMove": "Ne la déplacez plus et ne la tournez plus une fois les boutons formés, ils tombent.",
-  "careBloomEvenWater": "Un arrosage régulier pendant les boutons ; un coup de sec les fait tomber.",
-  "careBloomChillBulb": "Le bulbe passe dix à quinze semaines entre 5 et 9 °C avant d'être remis à la chaleur.",
-  "careRest": "Repos",
-  "careRestStoreDarkTemp": "Au sec et à l'obscurité, entre {min} et {max} °C",
-  "@careRestStoreDarkTemp": {
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "careRestStoreTemp": "Au sec, entre {min} et {max} °C",
-  "@careRestStoreTemp": {
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "careRestStoreDark": "Au sec et à l'obscurité",
-  "careRestStorePlain": "Au sec",
-  "careRestNote": "Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l'arrosage. Remettez le pot à la lumière et reprenez l'arrosage à la fin de cette période.",
   "careIssueOverwatering": "Excès d'eau (feuilles molles et jaunes)",
   "careIssueUnderwatering": "Manque d'eau (feuilles qui retombent)",
   "careIssueRootRot": "Pourriture des racines",

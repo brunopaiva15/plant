@@ -117,7 +117,7 @@ class CareGuideBody extends ConsumerWidget {
           value: l10n.careWateringNow(currentDays),
           valueColor: c.water,
           prominent: true,
-          detail: l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays),
+          details: [l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
           badge: p.dormantInWinter ? ('❄️', l10n.careBadgeDormant) : null,
         ),
         const SizedBox(height: Space.md),
@@ -130,76 +130,84 @@ class CareGuideBody extends ConsumerWidget {
           tint: c.sunSoft,
           title: l10n.careLight,
           value: l10n.lightName(p.light),
-          detail: l10n.careLightLamp(lamp.ppfdMin, lamp.ppfdMax, lamp.hours),
+          details: [l10n.careLightLamp(lamp.ppfdMin, lamp.ppfdMax, lamp.hours)],
           badge: p.outdoorFriendly ? ('🌤️', l10n.careBadgeOutdoor) : null,
           notes: [l10n.careLightLampDli(lamp.dliMin, lamp.dliMax)],
         ),
         const SizedBox(height: Space.md),
 
-        // L'humidité en pourcentage : un salon se juge au mot, une serre se
-        // règle au chiffre.
+        // L'humidité dit un taux, et par quoi l'obtenir : « Humidité
+        // ordinaire » seul ne se compare à rien. Le pourcentage est celui de
+        // l'espèce, pas celui de sa catégorie : entre deux plantes « qui
+        // aiment l'air humide », l'une tient à 50 % et l'autre en veut 85.
         _AspectCard(
           emoji: '💨',
           variant: 2,
           tint: c.roseSoft,
           title: l10n.careHumidity,
           value: l10n.humidityName(p.humidity),
-          detail: l10n.careHumidityRange(humidity.$1, humidity.$2),
+          details: [l10n.careHumidityRange(humidity.$1, humidity.$2), l10n.humidityDetail(p.humidity)],
           badge: p.mistLeaves ? ('💦', l10n.careBadgeMist) : null,
-          notes: [if (p.humidity == HumidityNeed.high) l10n.careHumidityGreenhouse],
         ),
         const SizedBox(height: Space.md),
 
         // La pièce, mesurée : elle répond à la lumière et à l'air d'au-dessus.
         HomeClimateFitCard(profile: p),
 
+        // L'engrais : à quelle fréquence, mais surtout lequel — et ce que le
+        // calcium lui fait, quand il lui fait quelque chose.
         _AspectCard(
           emoji: '🧪',
           variant: 3,
           tint: c.sageSoft,
           title: l10n.careFertilizing,
           value: p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-          detail: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
+          details: [
+            if (p.fertilizerKind case final kind?) l10n.fertilizerKindName(kind),
+            if (p.fertilizingDays != null) l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
+            ?l10n.calciumNote(p.calciumNeed),
+          ],
         ),
         const SizedBox(height: Space.md),
 
-        // Le substrat se lit avec le rempotage : c'est le jour où il sert. Le
-        // rapport au pot aussi : il dit si la racine qui sort par le fond est
-        // un signal ou l'état normal de l'espèce.
+        // Le substrat a sa carte : le nom d'un terreau ne dit pas de quoi il
+        // est fait, ni ce que la plante accepte hors du pot.
         _AspectCard(
           emoji: '🪴',
+          variant: 1,
+          tint: c.terracottaSoft,
+          title: l10n.careSoil,
+          value: l10n.soilName(p.soil),
+          details: [l10n.soilMix(p.soil), ?l10n.soilFreeLine(p)],
+        ),
+        const SizedBox(height: Space.md),
+
+        // Le rempotage suit le substrat : c'est le jour où il sert. Le rapport
+        // au pot est là aussi, puisqu'il dit quand ce jour arrive — une racine
+        // qui sort par le fond est un signal chez l'une, l'état normal de
+        // l'autre.
+        _AspectCard(
+          emoji: '🏺',
           variant: 0,
           tint: c.terracottaSoft,
           title: l10n.careRepotting,
           value: l10n.repotLabel(p.repotEveryMonths),
-          detail: '${l10n.careSoil} · ${l10n.soilName(p.soil)}',
           badge: potBadge == null ? null : ('🫙', potBadge),
           notes: [if (p.repotEveryMonths != null) l10n.potNote(p)],
         ),
         const SizedBox(height: Space.md),
 
-        // Floraison et repos ne concernent pas toutes les plantes : leurs
-        // cartes paraissent quand l'espèce les a, et restent crème plutôt que
-        // de prendre une sixième teinte aux cinq volets qui se pratiquent.
-        if (p.bloom case final bloom?) ...[
-          _AspectCard(
-            emoji: '🌸',
-            variant: 1,
-            title: l10n.careBloom,
-            value: l10n.monthRangeLabel(bloom.window.forHemisphere(south: south), context.localeTag),
-            badge: bloom.indoors ? null : ('🪟', l10n.careBloomOutdoors),
-            notes: [for (final key in bloom.triggerKeys) ?l10n.bloomTrigger(key)],
-          ),
-          const SizedBox(height: Space.md),
-        ],
-
+        // Le repos des plantes à réserves : il ne concerne qu'elles, et reste
+        // crème plutôt que de prendre une teinte aux volets qui reviennent.
+        // C'est la seule carte qui décrit une absence — plus de feuilles, plus
+        // d'eau, plus de lumière —, et le crème le dit sans un mot.
         if (p.dormancy case final rest?) ...[
           _AspectCard(
             emoji: '💤',
             variant: 2,
             title: l10n.careRest,
             value: l10n.monthRangeLabel(rest.window.forHemisphere(south: south), context.localeTag),
-            detail: l10n.restStorage(rest),
+            details: [l10n.restStorage(rest)],
             notes: [l10n.careRestNote],
           ),
           const SizedBox(height: Space.md),
@@ -221,6 +229,50 @@ class CareGuideBody extends ConsumerWidget {
             ),
           ],
         ),
+
+        // Deux projets, pour qui en a un : la pousser plus vite, ou la faire
+        // fleurir. Ils se pratiquent, donc ils gardent la carte des volets ;
+        // ils ne se pratiquent pas tous les jours, d'où leur place après la
+        // liste. Une plante qui passe l'hiver dehors n'a pas l'usage d'une
+        // serre, et la floraison ne paraît que lorsqu'on sait ce qui la
+        // décide.
+        if (p.benefitsFromGreenhouse || p.bloom != null) ...[
+          const SizedBox(height: Space.lg),
+          if (p.benefitsFromGreenhouse)
+            _AspectCard(
+              emoji: '🏡',
+              variant: 1,
+              tint: c.sunSoft,
+              title: l10n.careGreenhouse,
+              value: switch (p.humidity) {
+                HumidityNeed.low => l10n.careGreenhouseWarmDry,
+                HumidityNeed.average => l10n.careGreenhouseWarmLight,
+                HumidityNeed.high => l10n.careGreenhouseWarmHumid,
+              },
+              details: [
+                l10n.careGreenhouseGrowth,
+                if (p.humidity == HumidityNeed.low) l10n.careGreenhouseAir,
+                if (p.repotEveryMonths == null) l10n.careGreenhouseEarly,
+              ],
+              // Une serre se règle au chiffre : c'est ici que la plage de
+              // l'humidité devient une consigne.
+              notes: [l10n.careGreenhouseHold],
+            ),
+          if (p.benefitsFromGreenhouse && p.bloom != null) const SizedBox(height: Space.md),
+          // La floraison dit sa saison, puis ce qu'il faut réunir : une seule
+          // condition chez la plupart, trois chez un phalaenopsis.
+          if (p.bloom case final bloom?)
+            _AspectCard(
+              emoji: '🌸',
+              variant: 2,
+              tint: c.roseSoft,
+              title: l10n.careBloom,
+              value: l10n.monthRangeLabel(bloom.window.forHemisphere(south: south), context.localeTag),
+              details: [if (bloom.triggers.isNotEmpty) bloom.triggers.map(l10n.bloomName).join(' · ')],
+              badge: bloom.indoors ? null : ('🪟', l10n.careBloomOutdoors),
+              notes: [for (final t in bloom.triggers) l10n.bloomNote(t)],
+            ),
+        ],
 
         if (tips.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
@@ -314,7 +366,7 @@ class _AspectCard extends StatelessWidget {
     required this.title,
     required this.value,
     this.tint,
-    this.detail,
+    this.details = const [],
     this.valueColor,
     this.badge,
     this.notes = const [],
@@ -334,7 +386,10 @@ class _AspectCard extends StatelessWidget {
 
   final String title;
   final String value;
-  final String? detail;
+
+  /// Ce qui précise le constat, une ligne par chose : le mélange sous le
+  /// substrat, la saison et le calcium sous l'engrais.
+  final List<String> details;
 
   /// Couleur du constat, quand l'accent tient le texte (le bleu de l'eau).
   final Color? valueColor;
@@ -369,9 +424,9 @@ class _AspectCard extends StatelessWidget {
                   Text(title, style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
                   Text(value, style: (prominent ? context.text.title2 : context.text.title3).copyWith(color: valueColor ?? c.ink)),
-                  if (detail != null) ...[
+                  for (final detail in details) ...[
                     const SizedBox(height: 2),
-                    Text(detail!, style: context.text.callout),
+                    Text(detail, style: context.text.callout),
                   ],
                   if (badge case final b?) ...[
                     const SizedBox(height: Space.sm),

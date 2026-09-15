@@ -2643,8 +2643,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get careHumidityGreenhouse =>
-      'Sous serre ou en vitrine, tenez cette plage le jour, laissez-la descendre la nuit et faites circuler l\'air.';
+  String get careHumidityLowDetail =>
+      'L\'air d\'un logement chauffé lui suffit ; trop humide, elle s\'abîme.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      'L\'air ordinaire d\'un logement, loin d\'un radiateur en hiver.';
+
+  @override
+  String get careHumidityHighDetail =>
+      'Plateau de billes d\'argile humides, plantes groupées, pièce d\'eau.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2691,6 +2699,240 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Sans substrat';
+
+  @override
+  String get careSoilMixStandard =>
+      'Allégé de 20 % de perlite, pour que l\'eau traverse.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % de terreau, 25 % de perlite, 25 % de sable grossier ou de pouzzolane.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % de terreau, 70 % de pouzzolane, de pierre ponce ou de sable grossier.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Écorces de pin moyennes, 10 % de perlite, un peu de sphaigne ; jamais de terreau.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Allégée de 25 % d\'écorce de pin, sans calcaire ni compost.';
+
+  @override
+  String get careSoilMixRich =>
+      '40 % de terreau, 40 % de compost, 20 % de perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Pas de substrat : les racines vivent à l\'air ou dans l\'eau.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'Dans l\'eau : $water · En pon : $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'oui';
+
+  @override
+  String get careSoilFreeNo => 'non';
+
+  @override
+  String get careSoilFreeCuttings => 'bouture seulement';
+
+  @override
+  String get careFertBalanced =>
+      'Engrais plantes vertes équilibré, dilué de moitié.';
+
+  @override
+  String get careFertFoliage => 'Engrais riche en azote, celui du feuillage.';
+
+  @override
+  String get careFertFlowering =>
+      'Engrais riche en potasse, celui de la floraison.';
+
+  @override
+  String get careFertCactus => 'Engrais cactées, pauvre en azote.';
+
+  @override
+  String get careFertOrchid => 'Engrais orchidées, très dilué.';
+
+  @override
+  String get careFertAcidic => 'Engrais pour terre de bruyère, sans calcaire.';
+
+  @override
+  String get careFertCitrus =>
+      'Engrais agrumes, riche en azote et en oligo-éléments.';
+
+  @override
+  String get careFertVegetable => 'Engrais tomates, riche en potasse.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcium : aucun apport, et de l\'eau de pluie ; le calcaire fait jaunir son feuillage.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcium : l\'eau calcaire lui convient, des coquilles d\'œufs broyées au rempotage aussi.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcium : un apport régulier évite la nécrose apicale des fruits.';
+
+  @override
+  String get careGreenhouse => 'Sous serre';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Chaleur et air humide';
+
+  @override
+  String get careGreenhouseWarmLight => 'Chaleur et lumière';
+
+  @override
+  String get careGreenhouseWarmDry => 'Chaleur, lumière et air sec';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Tenues toute l\'année, ces conditions accélèrent la pousse : l\'arrosage et l\'engrais se rapprochent d\'autant.';
+
+  @override
+  String get careGreenhouseHold =>
+      'Tenez la plage d\'humidité le jour, laissez-la descendre la nuit, et faites circuler l\'air.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Aérer chaque jour : l\'air confiné fait pourrir ce qui aime le sec.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.';
+
+  @override
+  String get careBloom => 'Floraison';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'De $from à $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Rarement en intérieur';
+
+  @override
+  String get careBloomChillBulb => 'Un froid au bulbe';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Dix à quinze semaines entre 5 et 9 °C, avant de le remettre à la chaleur.';
+
+  @override
+  String get careBloomFertilizer => 'Un engrais de floraison';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Plus riche en potasse que celui du feuillage, dès que les boutons se forment.';
+
+  @override
+  String get careBloomMaturity => 'De l\'âge';
+
+  @override
+  String get careBloomMaturityNote =>
+      'Elle fleurit à partir de trois ou quatre ans, pas avant.';
+
+  @override
+  String get careBloomDeadhead => 'Des fleurs coupées';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Coupez les fleurs fanées, la suivante suit.';
+
+  @override
+  String get careBloomKeepSpike => 'Une hampe gardée';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'Tant qu\'elle reste verte, elle repart d\'un œil plus bas.';
+
+  @override
+  String get careBloomNoMove => 'Une place fixe';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Une fois les boutons formés, ni déplacement ni quart de tour : ils tombent.';
+
+  @override
+  String get careBloomEvenWater => 'Un arrosage régulier';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'Pendant les boutons, un coup de sec les fait tomber.';
+
+  @override
+  String get careRest => 'Repos';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Au sec et à l\'obscurité, entre $min et $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Au sec, entre $min et $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Au sec et à l\'obscurité';
+
+  @override
+  String get careRestStorePlain => 'Au sec';
+
+  @override
+  String get careRestNote =>
+      'Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l\'arrosage. Remettez le pot à la lumière et reprenez l\'arrosage à la fin de cette période.';
+
+  @override
+  String get careBloomCoolRest => 'Un hiver frais';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.';
+
+  @override
+  String get careBloomCoolNights => 'Des nuits fraîches';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Trois semaines à 15 °C la nuit, en automne, font monter la hampe.';
+
+  @override
+  String get careBloomShortDays => 'Des jours courts';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.';
+
+  @override
+  String get careBloomDrySpell => 'Une sécheresse';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.';
+
+  @override
+  String get careBloomPotbound => 'Un pot à l\'étroit';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.';
+
+  @override
+  String get careBloomBrightLight => 'Plus de lumière';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.';
 
   @override
   String get carePropCutting => 'Bouture de tige';
@@ -2759,91 +3001,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Supporte l\'extérieur';
-
-  @override
-  String get careBloom => 'Floraison';
-
-  @override
-  String careSeasonRange(String from, String to) {
-    return 'De $from à $to';
-  }
-
-  @override
-  String get careBloomOutdoors => 'Rarement en intérieur';
-
-  @override
-  String get careBloomCoolRest =>
-      'Un hiver frais, 12 à 15 °C et presque sec pendant six semaines, forme les boutons.';
-
-  @override
-  String get careBloomNightDrop =>
-      'Un écart de 8 à 10 °C entre le jour et la nuit lance la hampe florale.';
-
-  @override
-  String get careBloomLongNights =>
-      'Quatorze heures d\'obscurité complète par nuit, six semaines de suite, déclenchent les boutons.';
-
-  @override
-  String get careBloomDryRest =>
-      'Un repos sec après la croissance : sans lui, la plante fait des feuilles et pas de fleurs.';
-
-  @override
-  String get careBloomPotbound =>
-      'Elle fleurit quand ses racines remplissent le pot ; un pot trop grand retarde tout.';
-
-  @override
-  String get careBloomFertilizer =>
-      'Un engrais à floraison, plus riche en potasse, dès que les boutons se forment.';
-
-  @override
-  String get careBloomDirectSun =>
-      'Quatre à six heures de soleil direct : à l\'ombre, les boutons avortent.';
-
-  @override
-  String get careBloomMaturity =>
-      'Elle fleurit à partir de trois ou quatre ans, pas avant.';
-
-  @override
-  String get careBloomDeadhead => 'Coupez les fleurs fanées, la suivante suit.';
-
-  @override
-  String get careBloomKeepSpike =>
-      'Gardez la hampe tant qu\'elle reste verte : elle repart d\'un œil plus bas.';
-
-  @override
-  String get careBloomNoMove =>
-      'Ne la déplacez plus et ne la tournez plus une fois les boutons formés, ils tombent.';
-
-  @override
-  String get careBloomEvenWater =>
-      'Un arrosage régulier pendant les boutons ; un coup de sec les fait tomber.';
-
-  @override
-  String get careBloomChillBulb =>
-      'Le bulbe passe dix à quinze semaines entre 5 et 9 °C avant d\'être remis à la chaleur.';
-
-  @override
-  String get careRest => 'Repos';
-
-  @override
-  String careRestStoreDarkTemp(int min, int max) {
-    return 'Au sec et à l\'obscurité, entre $min et $max °C';
-  }
-
-  @override
-  String careRestStoreTemp(int min, int max) {
-    return 'Au sec, entre $min et $max °C';
-  }
-
-  @override
-  String get careRestStoreDark => 'Au sec et à l\'obscurité';
-
-  @override
-  String get careRestStorePlain => 'Au sec';
-
-  @override
-  String get careRestNote =>
-      'Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l\'arrosage. Remettez le pot à la lumière et reprenez l\'arrosage à la fin de cette période.';
 
   @override
   String get careIssueOverwatering =>

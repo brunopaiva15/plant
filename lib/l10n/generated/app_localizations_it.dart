@@ -2644,8 +2644,16 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get careHumidityGreenhouse =>
-      'In serra o in vetrina mantieni questo intervallo di giorno, lascialo scendere di notte e fai circolare l\'aria.';
+  String get careHumidityLowDetail =>
+      'L\'aria di una casa riscaldata le basta; troppo umida, si rovina.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      'L\'aria normale di casa, d\'inverno lontano dal calorifero.';
+
+  @override
+  String get careHumidityHighDetail =>
+      'Sottovaso di argilla espansa umida, piante raggruppate, una stanza con acqua.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2691,6 +2699,240 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Senza substrato';
+
+  @override
+  String get careSoilMixStandard =>
+      'Alleggerito con il 20 % di perlite, perché l\'acqua scorra.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % di terriccio, 25 % di perlite, 25 % di sabbia grossa o lapillo.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % di terriccio, 70 % di lapillo, pomice o sabbia grossa.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Bark di pino medio, 10 % di perlite, un po\' di sfagno; mai terriccio.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Alleggerita con il 25 % di corteccia di pino, senza calcare né compost.';
+
+  @override
+  String get careSoilMixRich =>
+      '40 % di terriccio, 40 % di compost, 20 % di perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Nessun substrato: le radici vivono all\'aria o nell\'acqua.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'In acqua: $water · In pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'sì';
+
+  @override
+  String get careSoilFreeNo => 'no';
+
+  @override
+  String get careSoilFreeCuttings => 'solo talee';
+
+  @override
+  String get careFertBalanced =>
+      'Concime equilibrato per piante verdi, diluito a metà.';
+
+  @override
+  String get careFertFoliage => 'Concime ricco di azoto, quello del fogliame.';
+
+  @override
+  String get careFertFlowering =>
+      'Concime ricco di potassio, quello della fioritura.';
+
+  @override
+  String get careFertCactus => 'Concime per cactus, povero di azoto.';
+
+  @override
+  String get careFertOrchid => 'Concime per orchidee, molto diluito.';
+
+  @override
+  String get careFertAcidic => 'Concime per piante acidofile, senza calcare.';
+
+  @override
+  String get careFertCitrus =>
+      'Concime per agrumi, ricco di azoto e microelementi.';
+
+  @override
+  String get careFertVegetable => 'Concime per pomodori, ricco di potassio.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcio: nessun apporto e acqua piovana; il calcare le ingiallisce le foglie.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcio: l\'acqua dura le va bene, come i gusci d\'uovo tritati al rinvaso.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcio: un apporto regolare evita il marciume apicale.';
+
+  @override
+  String get careGreenhouse => 'In serra';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Calore e aria umida';
+
+  @override
+  String get careGreenhouseWarmLight => 'Calore e luce';
+
+  @override
+  String get careGreenhouseWarmDry => 'Calore, luce e aria secca';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Mantenute tutto l\'anno, queste condizioni accelerano la crescita: irrigazione e concime si avvicinano altrettanto.';
+
+  @override
+  String get careGreenhouseHold =>
+      'Mantieni l\'intervallo di umidità di giorno, lascialo scendere di notte e fai circolare l\'aria.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Arieggiare ogni giorno: l\'aria ferma fa marcire ciò che ama l\'asciutto.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'In serra fredda o sotto cassone, le semine partono con quattro-sei settimane di anticipo.';
+
+  @override
+  String get careBloom => 'Fioritura';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'Da $from a $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Raramente in casa';
+
+  @override
+  String get careBloomChillBulb => 'Freddo al bulbo';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Da dieci a quindici settimane tra 5 e 9 °C, prima di riportarlo al caldo.';
+
+  @override
+  String get careBloomFertilizer => 'Un concime da fioritura';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Più ricco di potassio di quello per il fogliame, appena si formano i boccioli.';
+
+  @override
+  String get careBloomMaturity => 'Un po\' di età';
+
+  @override
+  String get careBloomMaturityNote =>
+      'Fiorisce dai tre o quattro anni, non prima.';
+
+  @override
+  String get careBloomDeadhead => 'Fiori appassiti tagliati';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Taglia i fiori appassiti, il successivo arriva.';
+
+  @override
+  String get careBloomKeepSpike => 'Uno stelo tenuto';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'Finché resta verde, riparte da una gemma più in basso.';
+
+  @override
+  String get careBloomNoMove => 'Un posto fisso';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Formati i boccioli, niente spostamenti né mezzi giri: cadono.';
+
+  @override
+  String get careBloomEvenWater => 'Annaffiature regolari';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'Durante i boccioli, un colpo di secco li fa cadere.';
+
+  @override
+  String get careRest => 'Riposo';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'All\'asciutto e al buio, tra $min e $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'All\'asciutto, tra $min e $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'All\'asciutto e al buio';
+
+  @override
+  String get careRestStorePlain => 'All\'asciutto';
+
+  @override
+  String get careRestNote =>
+      'Lascia ingiallire e seccare il fogliame senza tagliarlo, poi sospendi le annaffiature. Alla fine di questo periodo rimetti il vaso alla luce e riprendi ad annaffiare.';
+
+  @override
+  String get careBloomCoolRest => 'Un inverno fresco';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Due mesi tra 10 e 12 °C, quasi senza acqua, preparano i boccioli.';
+
+  @override
+  String get careBloomCoolNights => 'Notti fresche';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Tre settimane a 15 °C di notte, in autunno, fanno salire lo stelo florale.';
+
+  @override
+  String get careBloomShortDays => 'Giorni corti';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Sei settimane con notti di dodici ore, al buio completo, avviano i boccioli.';
+
+  @override
+  String get careBloomDrySpell => 'Un periodo secco';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Qualche settimana senza acqua, poi si riprende a bagnare: la fioritura segue.';
+
+  @override
+  String get careBloomPotbound => 'Un vaso stretto';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Fiorisce quando le radici riempiono il vaso; il rinvaso la riporta alle foglie.';
+
+  @override
+  String get careBloomBrightLight => 'Più luce';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Fiorire richiede più luce delle foglie: una finestra a sud con una tenda leggera.';
 
   @override
   String get carePropCutting => 'Talea di fusto';
@@ -2759,91 +3001,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Sta bene all\'aperto';
-
-  @override
-  String get careBloom => 'Fioritura';
-
-  @override
-  String careSeasonRange(String from, String to) {
-    return 'Da $from a $to';
-  }
-
-  @override
-  String get careBloomOutdoors => 'Raramente in casa';
-
-  @override
-  String get careBloomCoolRest =>
-      'Un inverno fresco, da 12 a 15 °C e quasi asciutto per sei settimane, forma i boccioli.';
-
-  @override
-  String get careBloomNightDrop =>
-      'Uno scarto da 8 a 10 °C tra giorno e notte fa partire lo stelo florale.';
-
-  @override
-  String get careBloomLongNights =>
-      'Quattordici ore di buio completo a notte, per sei settimane, avviano i boccioli.';
-
-  @override
-  String get careBloomDryRest =>
-      'Un riposo asciutto dopo la crescita: senza, la pianta fa foglie e non fiori.';
-
-  @override
-  String get careBloomPotbound =>
-      'Fiorisce quando le radici riempiono il vaso; un vaso troppo grande rimanda tutto.';
-
-  @override
-  String get careBloomFertilizer =>
-      'Un concime da fioritura, più ricco di potassio, appena si formano i boccioli.';
-
-  @override
-  String get careBloomDirectSun =>
-      'Da quattro a sei ore di sole diretto: all\'ombra i boccioli cadono.';
-
-  @override
-  String get careBloomMaturity => 'Fiorisce dai tre o quattro anni, non prima.';
-
-  @override
-  String get careBloomDeadhead =>
-      'Taglia i fiori appassiti, il successivo arriva.';
-
-  @override
-  String get careBloomKeepSpike =>
-      'Tieni lo stelo finché resta verde: riparte da una gemma più in basso.';
-
-  @override
-  String get careBloomNoMove =>
-      'Non spostarla e non girarla una volta formati i boccioli, cadono.';
-
-  @override
-  String get careBloomEvenWater =>
-      'Annaffiature regolari durante i boccioli; un colpo di secco li fa cadere.';
-
-  @override
-  String get careBloomChillBulb =>
-      'Il bulbo passa da dieci a quindici settimane tra 5 e 9 °C prima di tornare al caldo.';
-
-  @override
-  String get careRest => 'Riposo';
-
-  @override
-  String careRestStoreDarkTemp(int min, int max) {
-    return 'All\'asciutto e al buio, tra $min e $max °C';
-  }
-
-  @override
-  String careRestStoreTemp(int min, int max) {
-    return 'All\'asciutto, tra $min e $max °C';
-  }
-
-  @override
-  String get careRestStoreDark => 'All\'asciutto e al buio';
-
-  @override
-  String get careRestStorePlain => 'All\'asciutto';
-
-  @override
-  String get careRestNote =>
-      'Lascia ingiallire e seccare il fogliame senza tagliarlo, poi sospendi le annaffiature. Alla fine di questo periodo rimetti il vaso alla luce e riprendi ad annaffiare.';
 
   @override
   String get careIssueOverwatering => 'Troppa acqua (foglie molli e gialle)';

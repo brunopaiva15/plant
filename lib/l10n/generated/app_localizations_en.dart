@@ -2639,8 +2639,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get careHumidityGreenhouse =>
-      'In a greenhouse or a cabinet, hold this range by day, let it fall at night, and keep the air moving.';
+  String get careHumidityLowDetail =>
+      'The air of a heated home is enough; too damp, and it suffers.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      'The ordinary air of a home, away from a radiator in winter.';
+
+  @override
+  String get careHumidityHighDetail =>
+      'A tray of damp clay pebbles, plants grouped together, a room with water.';
 
   @override
   String get careDifficultyEasy => 'Easy';
@@ -2686,6 +2694,240 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'No soil at all';
+
+  @override
+  String get careSoilMixStandard =>
+      'Lightened with 20 % perlite, so water runs through.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % potting mix, 25 % perlite, 25 % coarse sand or lava rock.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % potting mix, 70 % lava rock, pumice or coarse sand.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Medium pine bark, 10 % perlite, a little sphagnum; never potting soil.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Lightened with 25 % pine bark, no lime, no compost.';
+
+  @override
+  String get careSoilMixRich => '40 % potting mix, 40 % compost, 20 % perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'No growing medium: the roots live in air or in water.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'In water: $water · In pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'yes';
+
+  @override
+  String get careSoilFreeNo => 'no';
+
+  @override
+  String get careSoilFreeCuttings => 'cuttings only';
+
+  @override
+  String get careFertBalanced =>
+      'Balanced houseplant fertilizer, at half strength.';
+
+  @override
+  String get careFertFoliage =>
+      'High-nitrogen fertilizer, the one for foliage.';
+
+  @override
+  String get careFertFlowering =>
+      'High-potash fertilizer, the one for flowers.';
+
+  @override
+  String get careFertCactus => 'Cactus fertilizer, low in nitrogen.';
+
+  @override
+  String get careFertOrchid => 'Orchid fertilizer, well diluted.';
+
+  @override
+  String get careFertAcidic => 'Ericaceous fertilizer, lime-free.';
+
+  @override
+  String get careFertCitrus =>
+      'Citrus fertilizer, high in nitrogen and trace elements.';
+
+  @override
+  String get careFertVegetable => 'Tomato fertilizer, high in potash.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcium: none at all, and rainwater; lime turns its leaves yellow.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcium: hard water suits it, as do crushed eggshells at repotting.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcium: a steady supply keeps blossom end rot away.';
+
+  @override
+  String get careGreenhouse => 'Under glass';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Warmth and humid air';
+
+  @override
+  String get careGreenhouseWarmLight => 'Warmth and light';
+
+  @override
+  String get careGreenhouseWarmDry => 'Warmth, light and dry air';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Held all year, these conditions speed up growth: watering and feeding come round just as fast.';
+
+  @override
+  String get careGreenhouseHold =>
+      'Hold the humidity range by day, let it fall at night, and keep the air moving.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Air it every day: still air rots a plant that likes things dry.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'In a cold frame or a small greenhouse, sowings start four to six weeks earlier.';
+
+  @override
+  String get careBloom => 'Flowering';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'From $from to $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Rarely indoors';
+
+  @override
+  String get careBloomChillBulb => 'A chilled bulb';
+
+  @override
+  String get careBloomChillBulbNote =>
+      'Ten to fifteen weeks between 5 and 9 °C, before it goes back to the warmth.';
+
+  @override
+  String get careBloomFertilizer => 'A bloom fertilizer';
+
+  @override
+  String get careBloomFertilizerNote =>
+      'Richer in potash than the foliage one, as soon as the buds form.';
+
+  @override
+  String get careBloomMaturity => 'Some age';
+
+  @override
+  String get careBloomMaturityNote =>
+      'It flowers from three or four years old, not before.';
+
+  @override
+  String get careBloomDeadhead => 'Spent flowers cut';
+
+  @override
+  String get careBloomDeadheadNote =>
+      'Cut the faded flowers and the next one follows.';
+
+  @override
+  String get careBloomKeepSpike => 'A kept spike';
+
+  @override
+  String get careBloomKeepSpikeNote =>
+      'While it stays green, it starts again from a lower node.';
+
+  @override
+  String get careBloomNoMove => 'A fixed spot';
+
+  @override
+  String get careBloomNoMoveNote =>
+      'Once the buds are formed, no moving and no quarter turn: they drop.';
+
+  @override
+  String get careBloomEvenWater => 'Even watering';
+
+  @override
+  String get careBloomEvenWaterNote =>
+      'While it is in bud, one dry spell and they fall.';
+
+  @override
+  String get careRest => 'Rest';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Dry and dark, between $min and $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Dry, between $min and $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Dry and dark';
+
+  @override
+  String get careRestStorePlain => 'Dry';
+
+  @override
+  String get careRestNote =>
+      'Let the leaves yellow and dry without cutting them, then stop watering. Bring the pot back to the light and water again at the end of this period.';
+
+  @override
+  String get careBloomCoolRest => 'A cool winter';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Two months at 10 to 12 °C, almost without water, set the buds.';
+
+  @override
+  String get careBloomCoolNights => 'Cool nights';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Three weeks at 15 °C at night, in autumn, bring up the flower spike.';
+
+  @override
+  String get careBloomShortDays => 'Short days';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Six weeks of twelve-hour nights, in complete darkness, trigger the buds.';
+
+  @override
+  String get careBloomDrySpell => 'A dry spell';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'A few weeks without water, then watering again: flowers follow.';
+
+  @override
+  String get careBloomPotbound => 'A tight pot';
+
+  @override
+  String get careBloomPotboundNote =>
+      'It flowers once the roots fill the pot; repotting sends it back to leaves.';
+
+  @override
+  String get careBloomBrightLight => 'More light';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Flowering takes more light than leaves do: a south window behind a sheer curtain.';
 
   @override
   String get carePropCutting => 'Stem cutting';
@@ -2754,92 +2996,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Happy outdoors';
-
-  @override
-  String get careBloom => 'Flowering';
-
-  @override
-  String careSeasonRange(String from, String to) {
-    return 'From $from to $to';
-  }
-
-  @override
-  String get careBloomOutdoors => 'Rarely indoors';
-
-  @override
-  String get careBloomCoolRest =>
-      'A cool winter, 12 to 15 °C and nearly dry for six weeks, sets the buds.';
-
-  @override
-  String get careBloomNightDrop =>
-      'A gap of 8 to 10 °C between day and night starts the flower spike.';
-
-  @override
-  String get careBloomLongNights =>
-      'Fourteen hours of complete darkness a night, six weeks running, trigger the buds.';
-
-  @override
-  String get careBloomDryRest =>
-      'A dry rest after growth: without it, the plant makes leaves and no flowers.';
-
-  @override
-  String get careBloomPotbound =>
-      'It flowers once its roots fill the pot; too large a pot delays everything.';
-
-  @override
-  String get careBloomFertilizer =>
-      'A bloom fertiliser, richer in potash, as soon as the buds form.';
-
-  @override
-  String get careBloomDirectSun =>
-      'Four to six hours of direct sun: in the shade, the buds drop.';
-
-  @override
-  String get careBloomMaturity =>
-      'It flowers from three or four years old, not before.';
-
-  @override
-  String get careBloomDeadhead =>
-      'Cut the spent flowers and the next one follows.';
-
-  @override
-  String get careBloomKeepSpike =>
-      'Keep the spike while it stays green: it starts again from a lower node.';
-
-  @override
-  String get careBloomNoMove =>
-      'Stop moving it and stop turning it once the buds are formed, they drop.';
-
-  @override
-  String get careBloomEvenWater =>
-      'Even watering while it is in bud; one dry spell and they fall.';
-
-  @override
-  String get careBloomChillBulb =>
-      'The bulb spends ten to fifteen weeks between 5 and 9 °C before going back to the warmth.';
-
-  @override
-  String get careRest => 'Rest';
-
-  @override
-  String careRestStoreDarkTemp(int min, int max) {
-    return 'Dry and dark, between $min and $max °C';
-  }
-
-  @override
-  String careRestStoreTemp(int min, int max) {
-    return 'Dry, between $min and $max °C';
-  }
-
-  @override
-  String get careRestStoreDark => 'Dry and dark';
-
-  @override
-  String get careRestStorePlain => 'Dry';
-
-  @override
-  String get careRestNote =>
-      'Let the leaves yellow and dry without cutting them, then stop watering. Bring the pot back to the light and water again at the end of this period.';
 
   @override
   String get careIssueOverwatering => 'Overwatering (soft, yellow leaves)';

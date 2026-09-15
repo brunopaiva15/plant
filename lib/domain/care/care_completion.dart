@@ -94,6 +94,13 @@ class CareCompletion {
         humidityMaxPercent: humidity == null ? base.humidityMaxPercent : null,
         fertilizingDays: noFertilizer ? null : (fertilizingDays ?? base.fertilizingDays),
         fertilizingWindow: base.fertilizingWindow,
+        // L'IA ne se prononce ni sur le type d'engrais, ni sur le calcium, ni
+        // sur le hors-sol, ni sur la floraison : ce que la fiche de repli en
+        // dit vient de son substrat, et le substrat, lui, peut changer.
+        fertilizer: base.fertilizer,
+        calcium: base.calcium,
+        waterCulture: base.waterCulture,
+        ponCulture: base.ponCulture,
         repotEveryMonths: repotEveryMonths ?? base.repotEveryMonths,
         pot: pot ?? base.pot,
         minTempC: minTempC ?? base.minTempC,

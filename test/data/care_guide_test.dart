@@ -185,16 +185,17 @@ void main() {
       expect(unknown, isEmpty, reason: 'clés de conseils non traduites : $unknown');
     });
 
-    test('toutes les conditions de floraison sont traduisibles', () {
-      const known = {
-        'coolRest', 'nightDrop', 'longNights', 'dryRest', 'potbound', 'bloomFertilizer', 'directSun',
-        'maturity', 'deadhead', 'keepSpike', 'noMove', 'evenWater', 'chillBulb',
-      };
-      final unknown = <String>{};
-      for (final p in _allProfiles.values) {
-        if (p.bloom case final bloom?) unknown.addAll(bloom.triggerKeys.where((k) => !known.contains(k)));
+    test('une floraison dit sa saison et ce qui la décide', () {
+      // Sans condition, la carte n'apprend rien de plus que le calendrier ;
+      // au-delà de trois, elle ne se lit plus.
+      final bad = <String>[];
+      for (final entry in _allProfiles.entries) {
+        final bloom = entry.value.bloom;
+        if (bloom == null) continue;
+        if (bloom.triggers.isEmpty || bloom.triggers.length > 3) bad.add(entry.key);
+        if (bloom.triggers.toSet().length != bloom.triggers.length) bad.add(entry.key);
       }
-      expect(unknown, isEmpty, reason: 'conditions de floraison non traduites : $unknown');
+      expect(bad, isEmpty, reason: 'floraisons sans condition, en double, ou trop bavardes : $bad');
     });
 
     test('les plages en pourcentage vont du plus sec au plus humide', () {
@@ -244,7 +245,7 @@ void main() {
       expect(caladium.profile.minTempC, greaterThanOrEqualTo(15));
       // Le froid du crocus n'est pas dans son rangement d'été : c'est ce qui
       // déclenche sa floraison, et la fiche le dit là.
-      expect(crocus.profile.bloom!.triggerKeys, contains('chillBulb'));
+      expect(crocus.profile.bloom!.triggers, contains(BloomTrigger.chillBulb));
       expect(caladium.profile.bloom, isNull);
     });
 
