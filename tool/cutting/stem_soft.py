@@ -172,7 +172,7 @@ def etape_choose_stem(mats, f):
     # Le brin choisi est designe dans la touffe : jeune, droit, sain.
     objets = touffe(mats)
     centre = _point(BRIN_HERO, 0.70) + VUE * 0.30
-    objets += marque("Marque_Brin", centre, 0.30, mats["anneau"], taille=rebond((f - 0.24) / 0.38))
+    objets += marque("Marque_Brin", centre, 0.30, mats["anneau"], taille=rebond((f - 0.06) / 0.54))
     return objets
 
 

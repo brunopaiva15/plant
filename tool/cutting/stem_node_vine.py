@@ -224,8 +224,10 @@ def bouture(mats, M, feuilles=None, racines=0.0, garde_basse=True, longueur_raci
     objets = liane("Bouture", LIANE_BOUTURE, mats, M=M, feuilles=feuilles)
     if racines > 0.0:
         # Les racines partent du noeud, jamais du bas de la tige.
+        # Epaisses : vues a travers le voile de l'eau, des racines fines ne
+        # se distinguent plus du verre, et leur croissance ne se voit pas.
         objets += faisceau_racines("Racine", noeud_bouture(M), -UP, mats, racines, brins=5,
-                                   longueur=longueur_racines, epaisseur=0.030, graine=2, ecart=1.5, dans=dans)
+                                   longueur=longueur_racines, epaisseur=0.044, graine=2, ecart=1.5, dans=dans)
     return objets
 
 

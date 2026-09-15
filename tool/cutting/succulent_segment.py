@@ -108,7 +108,7 @@ def etape_choose_segment(mats, f):
     objets, points = plante(mats)
     p, d, _, L = points[CHOISI]
     objets += marque("Marque_Segment", p + d * (L * 0.5) + VUE * 0.30, 0.26, mats["anneau"],
-                     taille=rebond((f - 0.24) / 0.38))
+                     taille=rebond((f - 0.06) / 0.54))
     return objets
 
 

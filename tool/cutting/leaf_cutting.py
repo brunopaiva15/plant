@@ -102,7 +102,7 @@ def etape_choose_leaf(mats, f):
     objets = pot_et_terre(mats, ECH_TOUFFE) + touffe(mats)
     az, tilt, L, W, roulis = TOUFFE[CHOISIE]
     centre = _pied(CHOISIE) + UP * (L * 0.52) + VUE * 0.34
-    objets += marque("Marque_Lame", centre, 0.30, mats["anneau"], taille=rebond((f - 0.22) / 0.38))
+    objets += marque("Marque_Lame", centre, 0.30, mats["anneau"], taille=rebond((f - 0.06) / 0.54))
     return objets
 
 
