@@ -136,9 +136,22 @@ enum SpeciesCategory {
 }
 
 /// Entrée du catalogue intégré : disponible hors ligne, noms communs dans
-/// les quatre langues de l'app.
+/// les quatre langues de l'app. Quand aucun nom vernaculaire fiable n'est
+/// fourni, le nom scientifique sert de libellé de repli.
 class SpeciesCatalogEntry {
-  const SpeciesCatalogEntry(this.scientificName, this.family, this.category, {required this.fr, required this.en, required this.de, required this.it});
+  const SpeciesCatalogEntry(
+    String scientificName,
+    this.family,
+    this.category, {
+    String? fr,
+    String? en,
+    String? de,
+    String? it,
+  })  : scientificName = scientificName,
+        fr = fr ?? scientificName,
+        en = en ?? scientificName,
+        de = de ?? scientificName,
+        it = it ?? scientificName;
 
   final String scientificName;
   final String family;
