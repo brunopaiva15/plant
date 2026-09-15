@@ -49,8 +49,11 @@ void main() {
         final codec = await ui.instantiateImageCodec(bytes);
         // L'emballage fond les images identiques qui se suivent (la pose
         // tenue au début, à la fin) en une seule, plus longue : le nombre
-        // d'images varie, la durée du geste ne bouge pas.
-        expect(codec.frameCount, greaterThanOrEqualTo(12), reason: '${file.path} : trop peu d\'images');
+        // d'images varie, la durée du geste ne bouge pas. Une étape où seul
+        // un anneau se pose sur une plante immobile en garde moins qu'une
+        // où tout bouge — le plancher est là pour repérer une image fixe
+        // livrée comme une animation, pas pour compter les images.
+        expect(codec.frameCount, greaterThanOrEqualTo(8), reason: '${file.path} : trop peu d\'images');
         var total = Duration.zero;
         for (var i = 0; i < codec.frameCount; i++) {
           final frame = await codec.getNextFrame();
