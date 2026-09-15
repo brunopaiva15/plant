@@ -14,6 +14,25 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
 import 'encyclopedia_screen.dart';
 
+/// Produit une clé de tri adaptée au français afin que les lettres accentuées
+/// restent avec leur lettre de base et que la ligature œ soit triée comme oe.
+String _alphabeticalSortKey(String value, String languageCode) {
+  final lower = value.toLowerCase();
+  if (languageCode != 'fr') return lower;
+
+  return lower
+      .replaceAll('œ', 'oe')
+      .replaceAll('æ', 'ae')
+      .replaceAll(RegExp(r'[àáâãäå]'), 'a')
+      .replaceAll('ç', 'c')
+      .replaceAll(RegExp(r'[èéêë]'), 'e')
+      .replaceAll(RegExp(r'[ìíîï]'), 'i')
+      .replaceAll(RegExp(r'[ñ]'), 'n')
+      .replaceAll(RegExp(r'[òóôõö]'), 'o')
+      .replaceAll(RegExp(r'[ùúûü]'), 'u')
+      .replaceAll(RegExp(r'[ýÿ]'), 'y');
+}
+
 /// La vue détaillée suit directement les classes du modèle embarqué. Le même
 /// [SpeciesIndex] sert à enrichir les classes Iris qui ne font pas encore
 /// partie du catalogue éditorial, sans charger deux fois le gros TSV.
@@ -46,7 +65,12 @@ class SpeciesSlivers extends ConsumerWidget {
     final curated = [
       for (final e in detailed)
         if ((category == null || e.category == category) && e.matches(raw)) e,
-    ]..sort((a, b) => a.commonName(lang).toLowerCase().compareTo(b.commonName(lang).toLowerCase()));
+    ]..sort((a, b) {
+        final aName = a.commonName(lang);
+        final bName = b.commonName(lang);
+        final byAlphabet = _alphabeticalSortKey(aName, lang).compareTo(_alphabeticalSortKey(bName, lang));
+        return byAlphabet != 0 ? byAlphabet : aName.toLowerCase().compareTo(bName.toLowerCase());
+      });
 
     // Le catalogue étendu reste réservé à la recherche au-delà d'Iris.
     final index = raw.isEmpty ? null : ref.watch(speciesIndexProvider).value;
