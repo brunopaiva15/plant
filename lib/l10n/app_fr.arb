@@ -2334,5 +2334,56 @@
   "carePropLayeringNote": "Une tige enracinée alors qu'elle tient encore à la plante mère.",
   "carePropSeedNote": "Des graines semées, plus lentes qu'une bouture et souvent moins fidèles.",
   "carePropWaterNote": "La bouture patiente dans un verre d'eau, le temps que les racines partent.",
-  "carePropTuberNote": "Le tubercule se coupe en morceaux portant chacun un œil."
+  "carePropTuberNote": "Le tubercule se coupe en morceaux portant chacun un œil.",
+  "communityTipsTitle": "Conseils de la communauté",
+  "communityTipsHint": "Ce que d'autres personnes ont observé en gardant cette espèce, hors du catalogue.",
+  "communityTipsEmpty": "Aucun conseil sur cette espèce.",
+  "offlineCommunityTips": "Lire et publier des conseils demande une connexion.",
+  "communityTipWrite": "Écrire un conseil",
+  "communityTipYours": "Votre conseil",
+  "communityTipPlaceholder": "Ce qui a marché sur cette plante, en quelques phrases.",
+  "communityTipPublicNote": "Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde.",
+  "communityTipLength": "{used} / {max}",
+  "@communityTipLength": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "communityTipPublish": "Publier",
+  "communityTipPublished": "Conseil publié.",
+  "communityTipNeedsAccount": "Publier un conseil demande un compte.",
+  "communityTipAnonymous": "Anonyme",
+  "communityTipHelpful": "Utile",
+  "communityTipReport": "Signaler",
+  "communityTipReported": "Conseil signalé.",
+  "communityTipReportNote": "Un conseil signalé par {count} personnes ne paraît plus.",
+  "@communityTipReportNote": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "communityTipHidden": "Signalé : les autres ne le voient plus.",
+  "confirmDeleteTip": "Supprimer ce conseil ?",
+  "confirmReportTip": "Signaler ce conseil ?",
+  "moderationTitle": "Modération",
+  "moderationHint": "Les conseils signalés, du plus signalé au moins signalé.",
+  "moderationEmpty": "Aucun conseil signalé.",
+  "moderationReports": "{count, plural, =1{1 signalement} other{{count} signalements}}",
+  "@moderationReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moderationHide": "Masquer",
+  "moderationRestore": "Rétablir",
+  "confirmRestoreTip": "Rétablir ce conseil ? Ses signalements sont effacés."
 }

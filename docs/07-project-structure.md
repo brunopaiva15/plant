@@ -28,12 +28,14 @@ lib/
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison), HomeClimateAdvisor
 │   ├── weather/                   WeatherService, WeatherAdvisor (pluie), WeatherTrend (intervalles), OutdoorAlertAdvisor (gel, chaleur), RegionClimate (zone de rusticité)
-│   └── auth/                      AuthRepository, AppUser
+│   ├── auth/                      AuthRepository, AppUser
+│   └── community/                 SpeciesTip, CommunityTipsService (conseils rattachés à une espèce)
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
 │   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService
-│   └── auth/                      LocalAuthRepository
+│   ├── auth/                      LocalAuthRepository
+│   └── community/                 SupabaseCommunityTips (fonctions SQL security definer)
 ├── features/
 │   ├── onboarding/
 │   ├── today/
@@ -50,6 +52,7 @@ lib/
 │   ├── weather/                   ligne météo, conseil pluie, avertissements gel et chaleur, climat du lieu, réglages
 │   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur
 │   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
+│   ├── community/                 conseils de la communauté : section de la fiche d'entretien, feuille d'écriture, écran de modération
 │   ├── encyclopedia/              les actifs embarqués à lire à froid : un écran à trois rayons (problèmes, espèces, vocabulaire), une page par problème, une par espèce
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
@@ -64,6 +67,9 @@ test/
 ├── data/plant_repository_test.dart
 ├── data/infomaniak_cutting_refiner_test.dart   ce qui part à l'IA, ce qu'on garde de la réponse
 ├── features/cutting_guide_test.dart            le guide : six étapes, trois sorties, texte précisé
+├── features/community_tips_test.dart           conseils : sans backend, sans compte, hors ligne, le sien
+├── features/moderation_test.dart               les signalés, masquer / rétablir, et qui ne modère pas
+├── domain/species_tip_test.dart                bornes d'un conseil et ordre de lecture
 ├── features/encyclopedia_test.dart             les trois rayons, sur la vraie base des 200 problèmes
 ├── core/connectivity_test.dart                 état du réseau, garde des appels
 ├── core/reachability_test.dart                 la sonde, sur de vraies connexions

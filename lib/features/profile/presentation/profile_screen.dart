@@ -11,6 +11,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
+import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
 
 /// Profil : prénom, apparence, notifications, données, sources.
@@ -80,6 +81,11 @@ class ProfileScreen extends ConsumerWidget {
                     // compte, il n'y a rien à partager, donc rien à montrer.
                     if (signedIn)
                       FloraListRow(leading: const Text('🔗', style: TextStyle(fontSize: 18)), title: l10n.sharedLinks, onTap: () => context.push(Routes.sharedLinks)),
+                    // La modération ne s'annonce qu'à ceux qui modèrent, et
+                    // c'est le serveur qui le dit — la table `moderators` ne
+                    // s'écrit pas depuis l'application (docs/04).
+                    if (signedIn && ref.watch(tipModeratorProvider).value == true)
+                      FloraListRow(leading: const Text('🛡️', style: TextStyle(fontSize: 18)), title: l10n.moderationTitle, onTap: () => context.push(Routes.moderation)),
                   ],
                 );
               }),

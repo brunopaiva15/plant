@@ -5249,4 +5249,104 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'Il tubero si taglia in pezzi, ciascuno con una gemma.';
+
+  @override
+  String get communityTipsTitle => 'Consigli della comunità';
+
+  @override
+  String get communityTipsHint =>
+      'Ciò che altre persone hanno osservato coltivando questa specie, fuori dal catalogo.';
+
+  @override
+  String get communityTipsEmpty => 'Nessun consiglio su questa specie.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Leggere e pubblicare consigli richiede una connessione.';
+
+  @override
+  String get communityTipWrite => 'Scrivere un consiglio';
+
+  @override
+  String get communityTipYours => 'Il tuo consiglio';
+
+  @override
+  String get communityTipPlaceholder =>
+      'Ciò che ha funzionato su questa pianta, in poche frasi.';
+
+  @override
+  String get communityTipPublicNote =>
+      'Il consiglio appare con il tuo nome sulla scheda di questa specie, per tutti.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Pubblica';
+
+  @override
+  String get communityTipPublished => 'Consiglio pubblicato.';
+
+  @override
+  String get communityTipNeedsAccount =>
+      'Pubblicare un consiglio richiede un account.';
+
+  @override
+  String get communityTipAnonymous => 'Anonimo';
+
+  @override
+  String get communityTipHelpful => 'Utile';
+
+  @override
+  String get communityTipReport => 'Segnala';
+
+  @override
+  String get communityTipReported => 'Consiglio segnalato.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'Un consiglio segnalato da $count persone non appare più.';
+  }
+
+  @override
+  String get communityTipHidden => 'Segnalato: gli altri non lo vedono più.';
+
+  @override
+  String get confirmDeleteTip => 'Eliminare questo consiglio?';
+
+  @override
+  String get confirmReportTip => 'Segnalare questo consiglio?';
+
+  @override
+  String get moderationTitle => 'Moderazione';
+
+  @override
+  String get moderationHint =>
+      'I consigli segnalati, dal più segnalato al meno segnalato.';
+
+  @override
+  String get moderationEmpty => 'Nessun consiglio segnalato.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count segnalazioni',
+      one: '1 segnalazione',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Nascondi';
+
+  @override
+  String get moderationRestore => 'Ripristina';
+
+  @override
+  String get confirmRestoreTip =>
+      'Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.';
 }

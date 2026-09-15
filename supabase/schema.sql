@@ -777,6 +777,245 @@ $$;
 revoke all on function public_invite(text) from public;
 grant execute on function public_invite(text) to anon, authenticated;
 
+-- ---------- Conseils de la communauté ----------
+-- La seule table de l'application que `garden_members` ne gouverne pas : un
+-- conseil est rattaché à une espèce, pas à un jardin, et se lit depuis
+-- n'importe quel compte. La lecture est ouverte à la clé anonyme — la fiche
+-- d'entretien s'ouvre sans être connecté —, l'écriture demande un compte.
+--
+-- Une personne, un conseil par espèce (`unique (species_id, user_id)`) : on
+-- revient sur ce qu'on a écrit plutôt que d'en empiler un second. Les bornes
+-- de longueur sont celles du client
+-- (`lib/domain/community/species_tip.dart`), tenues ici aussi : un client
+-- modifié ne fait pas passer un roman.
+create table if not exists species_tips (
+  id uuid primary key default gen_random_uuid(),
+  species_id text not null,             -- clé interne du catalogue, ex. hoya-kerrii
+  species_name text not null,           -- nom scientifique tel qu'il a été saisi
+  user_id uuid not null references auth.users(id) on delete cascade,
+  body text not null check (char_length(body) between 10 and 300),
+  votes int not null default 0,
+  reports int not null default 0,
+  hidden_at timestamptz,                -- assez signalé pour ne plus paraître aux autres
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (species_id, user_id)
+);
+create index if not exists idx_species_tips_species on species_tips(species_id, votes desc, created_at desc);
+
+-- Une voix par personne et par conseil, un signalement par personne et par
+-- conseil : la clé primaire suffit à le dire. Ces deux tables ne sont touchées
+-- que par les fonctions plus bas — RLS activée, aucune politique, rien n'y
+-- accède directement.
+create table if not exists species_tip_votes (
+  tip_id uuid not null references species_tips(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (tip_id, user_id)
+);
+
+create table if not exists species_tip_reports (
+  tip_id uuid not null references species_tips(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (tip_id, user_id)
+);
+
+alter table species_tips enable row level security;
+alter table species_tip_votes enable row level security;
+alter table species_tip_reports enable row level security;
+
+-- Lire : ce qui n'est pas masqué, et son propre conseil même masqué — sans
+-- quoi son auteur le croirait encore en ligne. Écrire ne passe jamais par la
+-- table : les fonctions s'en chargent, et elles seules.
+drop policy if exists "tips read" on species_tips;
+create policy "tips read" on species_tips for select using (hidden_at is null or user_id = auth.uid());
+
+-- Combien de signalements masquent un conseil. Le client annonce le même
+-- nombre (`speciesTipReportsToHide`) : les deux doivent rester d'accord.
+create or replace function species_tip_reports_to_hide() returns int language sql immutable as $$ select 3 $$;
+
+-- Un conseil tel que l'application le lit : l'auteur, le compte des voix, et
+-- ce que le compte courant en a déjà fait. En jsonb pour que PostgREST rende
+-- un objet — une fonction `returns table` rendrait un tableau d'une ligne.
+create or replace function species_tip_row(p_id uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'id', t.id,
+    'species_id', t.species_id,
+    'author_name', coalesce(p.display_name, ''),
+    'body', t.body,
+    'votes', t.votes,
+    'created_at', t.created_at,
+    'mine', coalesce(t.user_id = auth.uid(), false),
+    'voted', (exists (select 1 from species_tip_votes v where v.tip_id = t.id and v.user_id = auth.uid())),
+    'hidden', t.hidden_at is not null)
+  from species_tips t
+  left join profiles p on p.id = t.user_id
+  where t.id = p_id;
+$$;
+
+-- Les conseils d'une espèce : le sien d'abord — c'est celui qu'on vient
+-- reprendre —, puis les plus utiles, puis les plus récents. Le nom de la
+-- fonction ne reprend pas celui de la table : deux objets homonymes se
+-- lisent mal dans les journaux, et `/rpc/` seul les distinguerait.
+create or replace function species_tips_for(p_species_id text)
+returns table (id uuid, species_id text, author_name text, body text, votes int, created_at timestamptz,
+               mine boolean, voted boolean, hidden boolean)
+language sql stable security definer set search_path = public as $$
+  select t.id, t.species_id, coalesce(p.display_name, ''), t.body, t.votes, t.created_at,
+         coalesce(t.user_id = auth.uid(), false),
+         exists (select 1 from species_tip_votes v where v.tip_id = t.id and v.user_id = auth.uid()),
+         t.hidden_at is not null
+  from species_tips t
+  left join profiles p on p.id = t.user_id
+  where t.species_id = btrim(coalesce(p_species_id, ''))
+    and (t.hidden_at is null or t.user_id = auth.uid())
+  order by coalesce(t.user_id = auth.uid(), false) desc, t.votes desc, t.created_at desc
+  limit 50;
+$$;
+
+-- Publier, ou remplacer le conseil qu'on avait déjà écrit sur cette espèce.
+-- Un conseil masqué reste masqué quand on le réécrit : les signalements ne
+-- s'effacent pas d'un coup de clavier.
+create or replace function publish_species_tip(p_species_id text, p_species_name text, p_body text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_body text; v_species text;
+begin
+  if auth.uid() is null then raise exception 'not_signed_in'; end if;
+  v_species := btrim(coalesce(p_species_id, ''));
+  v_body := btrim(coalesce(p_body, ''));
+  if v_species = '' then raise exception 'bad_species'; end if;
+  if char_length(v_body) < 10 or char_length(v_body) > 300 then raise exception 'bad_length'; end if;
+  insert into species_tips (species_id, species_name, user_id, body)
+  values (v_species, btrim(coalesce(p_species_name, '')), auth.uid(), v_body)
+  on conflict (species_id, user_id) do update
+    set body = excluded.body, species_name = excluded.species_name, updated_at = now()
+  returning id into v_id;
+  return species_tip_row(v_id);
+end $$;
+
+create or replace function withdraw_species_tip(p_id uuid)
+returns void language sql security definer set search_path = public as $$
+  delete from species_tips where id = p_id and user_id = auth.uid();
+$$;
+
+-- Donner sa voix, ou la reprendre. Le compte est recalculé plutôt
+-- qu'incrémenté : deux appuis rapides ne le laissent pas de travers.
+create or replace function vote_species_tip(p_id uuid, p_helpful boolean default true)
+returns jsonb language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not_signed_in'; end if;
+  if exists (select 1 from species_tips where id = p_id and user_id = auth.uid()) then raise exception 'own_tip'; end if;
+  if coalesce(p_helpful, true) then
+    insert into species_tip_votes (tip_id, user_id) values (p_id, auth.uid()) on conflict do nothing;
+  else
+    delete from species_tip_votes where tip_id = p_id and user_id = auth.uid();
+  end if;
+  update species_tips set votes = (select count(*) from species_tip_votes v where v.tip_id = p_id) where id = p_id;
+  return species_tip_row(p_id);
+end $$;
+
+-- Signaler. Au seuil, le conseil cesse de paraître aux autres ; son auteur le
+-- voit encore, avec la mention qui le dit. Rien n'est supprimé : la
+-- vérification se fait sur la table, et `hidden_at` se remet à null à la main
+-- quand le conseil était bon.
+create or replace function report_species_tip(p_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_count int;
+begin
+  if auth.uid() is null then raise exception 'not_signed_in'; end if;
+  insert into species_tip_reports (tip_id, user_id) values (p_id, auth.uid()) on conflict do nothing;
+  select count(*) into v_count from species_tip_reports where tip_id = p_id;
+  update species_tips
+     set reports = v_count,
+         hidden_at = case when v_count >= species_tip_reports_to_hide() then coalesce(hidden_at, now()) else hidden_at end
+   where id = p_id;
+end $$;
+
+-- ---------- Modération ----------
+-- Le signalement masque tout seul au troisième ; il faut ensuite quelqu'un
+-- pour trancher. D'où une table de modérateurs, et non une colonne sur le
+-- profil : `profiles` est écrit par son propriétaire (politique « profiles
+-- write »), et un drapeau posé là se donnerait à soi-même en une requête.
+-- Ici, aucune politique n'est déclarée : rien ne lit ni n'écrit la table hors
+-- de l'éditeur SQL et des fonctions `security definer` ci-dessous.
+--
+-- Nommer un modérateur, c'est une ligne dans l'éditeur SQL du projet :
+--   insert into moderators (user_id) values ('<uuid du compte>');
+-- L'uuid se lit dans Authentication › Users.
+create table if not exists moderators (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+alter table moderators enable row level security;
+
+create or replace function is_moderator() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from moderators where user_id = auth.uid());
+$$;
+
+-- Ce qu'un modérateur a à regarder : les conseils signalés au moins une fois,
+-- les plus signalés d'abord, masqués ou non. Pour quelqu'un d'autre, zéro
+-- ligne — pas une erreur : l'application ne montre pas l'écran, et qui le
+-- sollicite quand même n'en tire rien.
+create or replace function reported_species_tips()
+returns table (id uuid, species_id text, species_name text, author_name text, body text,
+               votes int, reports int, created_at timestamptz, hidden boolean)
+language sql stable security definer set search_path = public as $$
+  select t.id, t.species_id, t.species_name, coalesce(p.display_name, ''), t.body,
+         t.votes, t.reports, t.created_at, t.hidden_at is not null
+  from species_tips t
+  left join profiles p on p.id = t.user_id
+  where is_moderator() and t.reports > 0
+  order by t.reports desc, t.created_at desc
+  limit 100;
+$$;
+
+-- Masquer, ou rétablir. Rétablir efface les signalements : sans cela le
+-- conseil repasserait le seuil à la première humeur, et le même dossier
+-- reviendrait indéfiniment.
+create or replace function moderate_species_tip(p_id uuid, p_hidden boolean)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not is_moderator() then raise exception 'not_moderator'; end if;
+  if p_hidden then
+    update species_tips set hidden_at = coalesce(hidden_at, now()) where id = p_id;
+  else
+    delete from species_tip_reports where tip_id = p_id;
+    update species_tips set reports = 0, hidden_at = null where id = p_id;
+  end if;
+end $$;
+
+-- Retirer pour de bon : ce qu'aucun rétablissement ne rattrape, et que
+-- `withdraw_species_tip` ne permet qu'à l'auteur.
+create or replace function remove_species_tip(p_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not is_moderator() then raise exception 'not_moderator'; end if;
+  delete from species_tips where id = p_id;
+end $$;
+
+do $$ declare f text; begin
+  foreach f in array array[
+    'publish_species_tip(text,text,text)', 'withdraw_species_tip(uuid)',
+    'vote_species_tip(uuid,boolean)', 'report_species_tip(uuid)',
+    'is_moderator()', 'reported_species_tips()', 'moderate_species_tip(uuid,boolean)',
+    'remove_species_tip(uuid)'] loop
+    execute format('revoke all on function %s from public', f);
+    execute format('grant execute on function %s to authenticated', f);
+  end loop;
+end $$;
+
+-- Lire ne demande pas de compte : la fiche d'entretien s'ouvre sans être
+-- connecté, et ce qu'elle montre là est déjà public.
+revoke all on function species_tips_for(text) from public;
+grant execute on function species_tips_for(text) to anon, authenticated;
+
+-- Appelée seulement depuis les fonctions ci-dessus, qui s'exécutent sous le
+-- propriétaire : personne d'autre n'a besoin d'y toucher.
+revoke all on function species_tip_row(uuid) from public;
+
 -- PostgREST sert les colonnes qu'il a en cache, pas celles de la base : après
 -- un `alter table`, tant que le cache n'est pas relu, l'API répond encore
 -- « Could not find the '…' column of '…' in the schema cache » (PGRST204).

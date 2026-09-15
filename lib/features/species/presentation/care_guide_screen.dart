@@ -12,6 +12,7 @@ import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/leaf_signs.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
+import '../../community/presentation/community_tips_section.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
@@ -335,6 +336,11 @@ class CareGuideBody extends ConsumerWidget {
               ),
             ),
         ],
+
+        // Ce que le catalogue sait finit ici ; ce qui suit vient de gens qui
+        // gardent la même espèce. Deux sections, deux titres : un conseil
+        // écrit par quelqu'un ne se donne pas pour une donnée de la fiche.
+        CommunityTipsSection(speciesName: speciesName),
 
         _WatchList(issues: p.issues),
 

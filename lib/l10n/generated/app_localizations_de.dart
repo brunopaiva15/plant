@@ -5244,4 +5244,103 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'Die Knolle wird in Stücke geteilt, jedes mit einem Auge.';
+
+  @override
+  String get communityTipsTitle => 'Tipps aus der Gemeinschaft';
+
+  @override
+  String get communityTipsHint =>
+      'Was andere beim Pflegen dieser Art beobachtet haben, außerhalb des Katalogs.';
+
+  @override
+  String get communityTipsEmpty => 'Keine Tipps zu dieser Art.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Tipps lesen und veröffentlichen erfordert eine Verbindung.';
+
+  @override
+  String get communityTipWrite => 'Tipp schreiben';
+
+  @override
+  String get communityTipYours => 'Dein Tipp';
+
+  @override
+  String get communityTipPlaceholder =>
+      'Was bei dieser Pflanze funktioniert hat, in wenigen Sätzen.';
+
+  @override
+  String get communityTipPublicNote =>
+      'Der Tipp erscheint mit deinem Namen auf der Seite dieser Art, für alle.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Veröffentlichen';
+
+  @override
+  String get communityTipPublished => 'Tipp veröffentlicht.';
+
+  @override
+  String get communityTipNeedsAccount =>
+      'Einen Tipp zu veröffentlichen erfordert ein Konto.';
+
+  @override
+  String get communityTipAnonymous => 'Anonym';
+
+  @override
+  String get communityTipHelpful => 'Hilfreich';
+
+  @override
+  String get communityTipReport => 'Melden';
+
+  @override
+  String get communityTipReported => 'Tipp gemeldet.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'Ein von $count Personen gemeldeter Tipp erscheint nicht mehr.';
+  }
+
+  @override
+  String get communityTipHidden => 'Gemeldet: andere sehen ihn nicht mehr.';
+
+  @override
+  String get confirmDeleteTip => 'Diesen Tipp löschen?';
+
+  @override
+  String get confirmReportTip => 'Diesen Tipp melden?';
+
+  @override
+  String get moderationTitle => 'Moderation';
+
+  @override
+  String get moderationHint => 'Gemeldete Tipps, die meistgemeldeten zuerst.';
+
+  @override
+  String get moderationEmpty => 'Keine gemeldeten Tipps.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Meldungen',
+      one: '1 Meldung',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Ausblenden';
+
+  @override
+  String get moderationRestore => 'Wiederherstellen';
+
+  @override
+  String get confirmRestoreTip =>
+      'Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht.';
 }

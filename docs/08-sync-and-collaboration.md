@@ -114,6 +114,43 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 - Chaque action et photo porte `user_id` ; la timeline affiche « · Laura » quand l'auteur n'est pas l'utilisateur courant (cache local `profiles`).
 - Un `viewer` voit tout et ne peut rien écrire (RLS) ; l'UI masque les boutons d'ajout et les entrées d'édition, et les actions de soin refusent avec un message.
 
+## Conseils de la communauté
+Le partage d'un jardin met plusieurs personnes autour des mêmes plantes ;
+celui-ci met tout le monde autour de la même **espèce**. Un conseil est
+attaché à la clé du catalogue (`hoya-kerrii`), pas au nom tel qu'il est
+écrit : deux personnes qui saisissent « Hoya kerrii » et « hoya kerrii »
+lisent la même page. Le schéma est dans docs/04 ; ce qui suit est ce qui
+change par rapport au reste de la synchronisation.
+
+- **Rien ne descend dans SQLite.** Tout le reste de l'application est local
+  d'abord ; ceci ne l'est pas, et ne peut pas l'être : ce n'est pas l'état du
+  jardin, c'est ce que d'autres écrivent, et la liste se relit à chaque
+  ouverture de la fiche. Hors ligne, la section le dit et propose de
+  réessayer — le reste de la fiche d'entretien, lui, se lit sans réseau.
+- **Lire sans compte, écrire avec.** `species_tips_for` est ouverte à la clé
+  anonyme, les quatre autres fonctions à `authenticated`. Sans compte, la
+  section se lit et la ligne « Publier un conseil demande un compte. » prend
+  la place du bouton — avec « Se connecter » là où la connexion existe, le
+  texte seul ailleurs (`signInAvailable`, comme Mes jardins et Membres).
+- **Une personne, un conseil par espèce.** Publier une seconde fois remplace
+  le premier : on revient sur ce qu'on a écrit plutôt que d'empiler. Sa carte
+  est teintée, s'ouvre en modification, et porte la suppression.
+- **Modération** : « Utile » compte les voix (une par personne, jamais sur son
+  propre conseil), « Signaler » les signalements ; au troisième, le conseil
+  cesse de paraître aux autres. Le seuil est écrit une fois côté serveur
+  (`species_tip_reports_to_hide()`) et une fois côté client
+  (`speciesTipReportsToHide`, qui sert au texte qui l'annonce).
+- **Qui tranche ensuite** : *Profil › Modération* (`/settings/moderation`),
+  visible des seuls comptes inscrits dans `moderators`. La liste des conseils
+  signalés, et pour chacun : masquer, rétablir — ce qui efface ses
+  signalements — ou retirer. Nommer un modérateur se fait dans l'éditeur SQL
+  (docs/04) ; rien dans l'application ne peut s'accorder ce droit, et c'est
+  pour cela que le drapeau n'est pas une colonne de `profiles`.
+- **Où ça se voit** : au bas de `CareGuideBody`, donc sur la fiche
+  d'entretien d'une plante, sur la page d'espèce de l'encyclopédie et dans
+  l'aperçu du dénicheur — partout où la fiche se lit, sans qu'il faille
+  posséder la plante.
+
 ## Écrans
 | Écran | Rôle |
 |---|---|
@@ -122,6 +159,8 @@ Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a 
 | Réglages › Membres (`/settings/members`) | qui est dans le jardin ouvert, changement de rôle, retrait, invitations en attente |
 | Feuille « Inviter quelqu'un » | rôle, e-mail facultatif, puis le code, le QR et le lien à partager |
 | Feuille « Rejoindre un jardin » | code saisi ou reçu par lien, aperçu de l'invitation, acceptation |
+| Feuille « Votre conseil » | écrire, remplacer ou retirer son conseil sur une espèce ; le compte des signes, et ce que la publication rend public |
+| Réglages › Modération (`/settings/moderation`) | les conseils signalés ; masquer, rétablir, retirer — l'entrée ne paraît qu'aux modérateurs |
 
 ## Mise en place
 1. Créer un projet Supabase, exécuter `supabase/schema.sql` dans l'éditeur SQL. Le fichier se rejoue tel quel à chaque mise à jour du schéma — le rejouer en entier est la façon de migrer. Symptôme d'un schéma en retard : « Colonnes inconnues du serveur » sur l'écran Compte, sous l'état de la synchronisation, qui les nomme en « table.colonne ». Le reste passe quand même — la colonne en trop est retirée de la ligne, et reprend sa place d'elle-même une fois le fichier rejoué —, mais ces champs-là ne quittent pas l'appareil. Les autres refus du serveur arrêtent la synchronisation et s'affichent au mot près sous « Erreur de synchronisation » (« new row violates row-level security » : une règle refuse ; « Bucket not found » : le stockage `plant-photos` n'existe pas).

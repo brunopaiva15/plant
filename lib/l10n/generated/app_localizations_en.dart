@@ -5220,4 +5220,101 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'The tuber is cut into pieces, each with an eye.';
+
+  @override
+  String get communityTipsTitle => 'Community tips';
+
+  @override
+  String get communityTipsHint =>
+      'What other people noticed while growing this species, outside the catalogue.';
+
+  @override
+  String get communityTipsEmpty => 'No tips on this species.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Reading and publishing tips needs a connection.';
+
+  @override
+  String get communityTipWrite => 'Write a tip';
+
+  @override
+  String get communityTipYours => 'Your tip';
+
+  @override
+  String get communityTipPlaceholder =>
+      'What worked on this plant, in a few sentences.';
+
+  @override
+  String get communityTipPublicNote =>
+      'The tip appears under your name on this species page, for everyone.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Publish';
+
+  @override
+  String get communityTipPublished => 'Tip published.';
+
+  @override
+  String get communityTipNeedsAccount => 'Publishing a tip needs an account.';
+
+  @override
+  String get communityTipAnonymous => 'Anonymous';
+
+  @override
+  String get communityTipHelpful => 'Helpful';
+
+  @override
+  String get communityTipReport => 'Report';
+
+  @override
+  String get communityTipReported => 'Tip reported.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'A tip reported by $count people stops appearing.';
+  }
+
+  @override
+  String get communityTipHidden => 'Reported: other people no longer see it.';
+
+  @override
+  String get confirmDeleteTip => 'Delete this tip?';
+
+  @override
+  String get confirmReportTip => 'Report this tip?';
+
+  @override
+  String get moderationTitle => 'Moderation';
+
+  @override
+  String get moderationHint => 'Reported tips, most reported first.';
+
+  @override
+  String get moderationEmpty => 'No reported tips.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports',
+      one: '1 report',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Hide';
+
+  @override
+  String get moderationRestore => 'Restore';
+
+  @override
+  String get confirmRestoreTip => 'Restore this tip? Its reports are cleared.';
 }

@@ -5262,4 +5262,104 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get carePropTuberNote =>
       'Le tubercule se coupe en morceaux portant chacun un œil.';
+
+  @override
+  String get communityTipsTitle => 'Conseils de la communauté';
+
+  @override
+  String get communityTipsHint =>
+      'Ce que d\'autres personnes ont observé en gardant cette espèce, hors du catalogue.';
+
+  @override
+  String get communityTipsEmpty => 'Aucun conseil sur cette espèce.';
+
+  @override
+  String get offlineCommunityTips =>
+      'Lire et publier des conseils demande une connexion.';
+
+  @override
+  String get communityTipWrite => 'Écrire un conseil';
+
+  @override
+  String get communityTipYours => 'Votre conseil';
+
+  @override
+  String get communityTipPlaceholder =>
+      'Ce qui a marché sur cette plante, en quelques phrases.';
+
+  @override
+  String get communityTipPublicNote =>
+      'Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde.';
+
+  @override
+  String communityTipLength(int used, int max) {
+    return '$used / $max';
+  }
+
+  @override
+  String get communityTipPublish => 'Publier';
+
+  @override
+  String get communityTipPublished => 'Conseil publié.';
+
+  @override
+  String get communityTipNeedsAccount =>
+      'Publier un conseil demande un compte.';
+
+  @override
+  String get communityTipAnonymous => 'Anonyme';
+
+  @override
+  String get communityTipHelpful => 'Utile';
+
+  @override
+  String get communityTipReport => 'Signaler';
+
+  @override
+  String get communityTipReported => 'Conseil signalé.';
+
+  @override
+  String communityTipReportNote(int count) {
+    return 'Un conseil signalé par $count personnes ne paraît plus.';
+  }
+
+  @override
+  String get communityTipHidden => 'Signalé : les autres ne le voient plus.';
+
+  @override
+  String get confirmDeleteTip => 'Supprimer ce conseil ?';
+
+  @override
+  String get confirmReportTip => 'Signaler ce conseil ?';
+
+  @override
+  String get moderationTitle => 'Modération';
+
+  @override
+  String get moderationHint =>
+      'Les conseils signalés, du plus signalé au moins signalé.';
+
+  @override
+  String get moderationEmpty => 'Aucun conseil signalé.';
+
+  @override
+  String moderationReports(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count signalements',
+      one: '1 signalement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get moderationHide => 'Masquer';
+
+  @override
+  String get moderationRestore => 'Rétablir';
+
+  @override
+  String get confirmRestoreTip =>
+      'Rétablir ce conseil ? Ses signalements sont effacés.';
 }

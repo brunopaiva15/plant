@@ -8891,6 +8891,168 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Le tubercule se coupe en morceaux portant chacun un œil.'**
   String get carePropTuberNote;
+
+  /// No description provided for @communityTipsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conseils de la communauté'**
+  String get communityTipsTitle;
+
+  /// No description provided for @communityTipsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que d\'autres personnes ont observé en gardant cette espèce, hors du catalogue.'**
+  String get communityTipsHint;
+
+  /// No description provided for @communityTipsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun conseil sur cette espèce.'**
+  String get communityTipsEmpty;
+
+  /// No description provided for @offlineCommunityTips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire et publier des conseils demande une connexion.'**
+  String get offlineCommunityTips;
+
+  /// No description provided for @communityTipWrite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écrire un conseil'**
+  String get communityTipWrite;
+
+  /// No description provided for @communityTipYours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre conseil'**
+  String get communityTipYours;
+
+  /// No description provided for @communityTipPlaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qui a marché sur cette plante, en quelques phrases.'**
+  String get communityTipPlaceholder;
+
+  /// No description provided for @communityTipPublicNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde.'**
+  String get communityTipPublicNote;
+
+  /// No description provided for @communityTipLength.
+  ///
+  /// In fr, this message translates to:
+  /// **'{used} / {max}'**
+  String communityTipLength(int used, int max);
+
+  /// No description provided for @communityTipPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get communityTipPublish;
+
+  /// No description provided for @communityTipPublished.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conseil publié.'**
+  String get communityTipPublished;
+
+  /// No description provided for @communityTipNeedsAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier un conseil demande un compte.'**
+  String get communityTipNeedsAccount;
+
+  /// No description provided for @communityTipAnonymous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Anonyme'**
+  String get communityTipAnonymous;
+
+  /// No description provided for @communityTipHelpful.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utile'**
+  String get communityTipHelpful;
+
+  /// No description provided for @communityTipReport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signaler'**
+  String get communityTipReport;
+
+  /// No description provided for @communityTipReported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conseil signalé.'**
+  String get communityTipReported;
+
+  /// No description provided for @communityTipReportNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un conseil signalé par {count} personnes ne paraît plus.'**
+  String communityTipReportNote(int count);
+
+  /// No description provided for @communityTipHidden.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signalé : les autres ne le voient plus.'**
+  String get communityTipHidden;
+
+  /// No description provided for @confirmDeleteTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce conseil ?'**
+  String get confirmDeleteTip;
+
+  /// No description provided for @confirmReportTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signaler ce conseil ?'**
+  String get confirmReportTip;
+
+  /// No description provided for @moderationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modération'**
+  String get moderationTitle;
+
+  /// No description provided for @moderationHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les conseils signalés, du plus signalé au moins signalé.'**
+  String get moderationHint;
+
+  /// No description provided for @moderationEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun conseil signalé.'**
+  String get moderationEmpty;
+
+  /// No description provided for @moderationReports.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 signalement} other{{count} signalements}}'**
+  String moderationReports(int count);
+
+  /// No description provided for @moderationHide.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer'**
+  String get moderationHide;
+
+  /// No description provided for @moderationRestore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rétablir'**
+  String get moderationRestore;
+
+  /// No description provided for @confirmRestoreTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rétablir ce conseil ? Ses signalements sont effacés.'**
+  String get confirmRestoreTip;
 }
 
 class _AppLocalizationsDelegate
