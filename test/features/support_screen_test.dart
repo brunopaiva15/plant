@@ -13,9 +13,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// « Auxine est gratuite » : la page qui demande sans rien vendre.
 ///
-/// Trois invariants : ce qui est ouvert est écrit avant le montant, le
-/// montant ne paraît que là où le magasin le propose, et une fois le soutien
-/// versé la page ne redemande rien.
+/// Quatre invariants : ce qui est ouvert est écrit avant le montant, le
+/// montant ne paraît que là où le magasin le propose, la restauration est
+/// offerte partout où l'achat l'est — l'achat est un non consommable, et la
+/// règle 3.1.1 de l'App Store demande un mécanisme de restauration —, et une
+/// fois le soutien versé la page ne redemande rien.
 
 Future<AppLocalizations> _pump(
   WidgetTester tester, {
@@ -112,14 +114,23 @@ void main() {
     expect(find.text(l10n.supportBody), findsOneWidget);
   });
 
-  testWidgets("dans l'onboarding, la version courte tient moins de place", (tester) async {
+  testWidgets("la restauration est offerte partout où l'achat l'est", (tester) async {
+    // Non consommable, donc restaurable : règle 3.1.1. Et c'est à
+    // l'onboarding qu'elle sert le plus — quelqu'un qui change de téléphone y
+    // repasse avant de voir les réglages.
+    final l10n = await _pump(tester, compact: true);
+    expect(find.text(l10n.supportRestore), findsOneWidget);
+  });
+
+  testWidgets("la version courte tient moins de place, sans rien retirer à l'offre", (tester) async {
     await _pump(tester);
     final full = tester.getSize(find.byType(SupportPitch)).height;
     final l10n = await _pump(tester, compact: true);
     expect(tester.getSize(find.byType(SupportPitch)).height, lessThan(full));
-    expect(find.text(l10n.supportNoThanks), findsOneWidget);
-    expect(find.text(l10n.supportRestore), findsNothing,
-        reason: 'deux boutons fantômes verts empilés, on ne sait plus lequel est la sortie');
-    expect(find.text('CHF 5.00'), findsOneWidget, reason: 'la proposition, elle, reste entière');
+    expect(find.text('CHF 5.00'), findsOneWidget);
+    expect(find.text(l10n.supportGive), findsOneWidget);
+    // « Continuer sans » est de la navigation d'onboarding : c'est l'étape
+    // qui le dessine, dans son propre style, et non la proposition.
+    expect(find.text(l10n.supportNoThanks), findsNothing);
   });
 }

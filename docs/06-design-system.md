@@ -473,12 +473,26 @@ touche — ici, le seul bouton ; le reste est écrit. C'est la question de la
 revue de design ci-dessous, « ressemble-t-il à un template ? », et elle se
 repose à chaque ajout.
 
+**Ce que l'App Store demande** (règles 3.1.1 et 3.2.2(iv)) :
+
+- l'achat est un **non consommable**, donc restaurable : « Restaurer mon
+  soutien » est offert **partout où l'achat l'est**, onboarding compris.
+  C'est là qu'il sert le plus — quelqu'un qui change de téléphone repasse par
+  l'onboarding avant de voir les réglages ;
+- le prix vient du magasin, déjà mis en forme dans la monnaie de la personne
+  (`SupportOffer.price`), et se lit en entier avant le bouton ;
+- rien ne laisse croire à une contrepartie : « Le soutien ne déverrouille
+  rien. » Le mot *don* est évité — un pourboire au développeur passe par
+  l'achat intégré (3.1.1), une collecte pour une cause est interdite dans
+  l'app (3.2.2(iv)), et les deux ne doivent pas se confondre ;
+- là où le magasin n'existe pas, une phrase remplace le bouton.
+
 **Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :
-scène plus petite, et pas de « Restaurer mon soutien » — deux boutons
-fantômes verts l'un au-dessus de l'autre, et l'œil ne sait plus lequel est la
-sortie ; la restauration attend dans *Profil › Soutenir le développeur*. La
-page y partage la hauteur avec les points de progression, et « Continuer
-sans » doit rester sous les yeux de qui vient d'installer l'application.
+seule la scène rapetisse, la page y partageant sa hauteur avec les points de
+progression. « Continuer sans » n'appartient pas à la proposition mais à
+l'étape, qui le dessine elle-même avec le bouton discret de l'onboarding,
+celui de « Plus tard » : sous « Restaurer mon soutien », qui est vert, deux
+fantômes de la même couleur ne disaient plus lequel était la sortie.
 
 Les pièces se posent l'une après l'autre (`Appear`).
 `test/features/support_screen_test.dart` tient l'ordre — ce qui est ouvert

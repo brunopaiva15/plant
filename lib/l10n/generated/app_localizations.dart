@@ -6555,7 +6555,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportNothingLocked.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune fonction n\'est réservée aux donateurs.'**
+  /// **'Le soutien ne déverrouille rien.'**
   String get supportNothingLocked;
 
   /// No description provided for @supportOnce.

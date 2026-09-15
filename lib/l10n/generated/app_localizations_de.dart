@@ -3830,8 +3830,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Alles ist offen: alle Funktionen, ohne Werbung, ohne Abo, ohne Kontopflicht.';
 
   @override
-  String get supportNothingLocked =>
-      'Keine Funktion ist Unterstützern vorbehalten.';
+  String get supportNothingLocked => 'Die Unterstützung schaltet nichts frei.';
 
   @override
   String get supportOnce => 'Nur einmal';

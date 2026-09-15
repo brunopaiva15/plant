@@ -3820,7 +3820,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everything is open: every feature, no ads, no subscription, no account required.';
 
   @override
-  String get supportNothingLocked => 'No feature is reserved for contributors.';
+  String get supportNothingLocked => 'Support unlocks nothing.';
 
   @override
   String get supportOnce => 'One time only';

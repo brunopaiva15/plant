@@ -40,17 +40,17 @@ class SupportScreen extends ConsumerWidget {
 class SupportPitch extends ConsumerStatefulWidget {
   const SupportPitch({super.key, this.onDone, this.compact = false});
 
-  /// Appelé une fois l'affaire réglée — soutien versé ou non. L'onboarding s'en
-  /// sert pour passer à la suite ; l'écran des réglages n'en a pas besoin.
+  /// Appelé une fois le soutien versé ou retrouvé. L'onboarding s'en sert
+  /// pour passer à la suite ; l'écran des réglages n'en a pas besoin.
+  ///
+  /// Le geste qui passe outre, lui, n'est pas ici : « Continuer sans » est de
+  /// la navigation de l'onboarding, et c'est l'onboarding qui le dessine,
+  /// dans son propre style. Deux boutons fantômes verts empilés — celui-là et
+  /// « Restaurer mon soutien » — ne disaient plus lequel était la sortie.
   final VoidCallback? onDone;
 
-  /// La version de l'onboarding : la scène rapetisse et la restauration se
-  /// retire.
-  ///
-  /// La page y partage la hauteur avec les points de progression, et le geste
-  /// qui passe outre doit rester sous les yeux : quelqu'un qui vient
-  /// d'installer l'application ne doit pas avoir à faire défiler pour trouver
-  /// « Continuer sans ».
+  /// La version de l'onboarding : la scène rapetisse, la page y partageant sa
+  /// hauteur avec les points de progression et le bouton du pied.
   final bool compact;
 
   @override
@@ -112,7 +112,7 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
       error: (_, _) => _Unavailable(message: l10n.supportUnavailable),
       data: (offer) => offer == null
           ? _Unavailable(message: l10n.supportUnavailable)
-          : _Offer(price: offer.price, busy: _busy, onGive: _give, onRestore: _restore, showRestore: !widget.compact),
+          : _Offer(price: offer.price, busy: _busy, onGive: _give, onRestore: _restore),
     );
   }
 
@@ -155,19 +155,6 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
         Appear(key: const ValueKey('rule'), rank: 3, child: Divider(height: 1, thickness: 1, color: c.line)),
         const SizedBox(height: Space.xl),
         Appear(key: const ValueKey('below'), rank: 4, child: _below(supported)),
-        if (widget.onDone != null) ...[
-          const SizedBox(height: Space.md),
-          Appear(
-            key: const ValueKey('done'),
-            rank: 5,
-            child: FloraButton(
-              label: supported ? l10n.continueLabel : l10n.supportNoThanks,
-              style: FloraButtonStyle.ghost,
-              expand: true,
-              onPressed: widget.onDone,
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -269,18 +256,20 @@ class _Seal extends StatelessWidget {
 /// pot, pas un tarif au bas d'un bouton. Il n'y a pas de carte autour : rien
 /// à encadrer, la page entière est déjà la proposition.
 class _Offer extends StatelessWidget {
-  const _Offer({required this.price, required this.busy, required this.onGive, required this.onRestore, required this.showRestore});
+  const _Offer({required this.price, required this.busy, required this.onGive, required this.onRestore});
 
   final String price;
   final bool busy;
   final VoidCallback onGive;
-  final VoidCallback onRestore;
 
-  /// La restauration est-elle proposée ici ? Dans l'onboarding, non : elle
-  /// ferait un second bouton fantôme vert juste au-dessus de « Continuer
-  /// sans », et l'œil ne saurait plus lequel est la sortie. Elle attend dans
-  /// *Profil › Soutenir le développeur*, à un geste de là.
-  final bool showRestore;
+  /// Retrouver un soutien déjà versé : nouvel appareil, réinstallation.
+  ///
+  /// Proposé partout où l'achat l'est, y compris à l'onboarding : l'achat est
+  /// un non consommable, donc restaurable, et la règle 3.1.1 de l'App Store
+  /// demande un mécanisme de restauration. C'est aussi là qu'il sert le plus
+  /// — quelqu'un qui change de téléphone repasse par l'onboarding avant de
+  /// voir les réglages.
+  final VoidCallback onRestore;
 
   @override
   Widget build(BuildContext context) {
@@ -302,16 +291,14 @@ class _Offer extends StatelessWidget {
         FloraButton(label: l10n.supportGive, expand: true, loading: busy, onPressed: onGive),
         const SizedBox(height: Space.xs),
         Text(l10n.supportNothingLocked, style: context.text.caption.copyWith(color: c.inkTertiary)),
-        if (showRestore) ...[
-          const SizedBox(height: Space.xs),
-          FloraButton(
-            label: l10n.supportRestore,
-            style: FloraButtonStyle.ghost,
-            size: FloraButtonSize.small,
-            expand: true,
-            onPressed: busy ? null : onRestore,
-          ),
-        ],
+        const SizedBox(height: Space.xs),
+        FloraButton(
+          label: l10n.supportRestore,
+          style: FloraButtonStyle.ghost,
+          size: FloraButtonSize.small,
+          expand: true,
+          onPressed: busy ? null : onRestore,
+        ),
       ],
     );
   }

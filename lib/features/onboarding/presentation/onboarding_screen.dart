@@ -929,19 +929,37 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
 
 /// La toute fin : l'app est gratuite, et on peut soutenir son développeur.
 /// Rien n'y oblige — le bouton du bas passe outre en un geste.
-class _SupportPage extends StatelessWidget {
+class _SupportPage extends ConsumerWidget {
   const _SupportPage({required this.onDone});
 
   final VoidCallback onDone;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final supported = ref.watch(preferencesProvider.select((p) => p.hasSupported));
     return SingleChildScrollView(
       physics: floraScrollPhysics,
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
-      // La version courte : ici la page partage la hauteur avec les points de
-      // progression, et « Continuer sans » doit rester sous les yeux.
-      child: SupportPitch(onDone: onDone, compact: true),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SupportPitch(onDone: onDone, compact: true),
+          const SizedBox(height: Space.lg),
+          // Le geste qui passe outre appartient à l'étape, pas à la
+          // proposition : il prend donc le bouton discret de l'onboarding,
+          // celui de « Plus tard », et non le vert du design system. Sous
+          // « Restaurer mon soutien », qui est vert, deux fantômes de la même
+          // couleur ne disaient plus lequel était la sortie.
+          Center(
+            child: OnboardingButton(
+              label: supported ? l10n.continueLabel : l10n.supportNoThanks,
+              filled: false,
+              onPressed: onDone,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
