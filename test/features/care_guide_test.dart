@@ -88,8 +88,97 @@ void main() {
     // « Brumiser » ne flotte plus au-dessus de la fiche : il est sous l'humidité.
     expect(tintOf(tester, 'Brumiser'), FloraColors.light.roseSoft);
     expect(tintOf(tester, 'Repos hivernal'), FloraColors.light.waterSoft);
-    // Le substrat se lit avec le rempotage : c'est le jour où il sert.
-    expect(tintOf(tester, 'Substrat · Terreau très drainant'), FloraColors.light.terracottaSoft);
+    // Le substrat a sa carte, de la couleur du rempotage : même terre.
+    expect(tintOf(tester, 'Substrat'), FloraColors.light.terracottaSoft);
+    expect(find.text('Terreau très drainant'), findsOneWidget);
+  });
+
+  testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (tester) async {
+    await pump(tester);
+    expect(find.text('50 % de terreau, 25 % de perlite, 25 % de sable grossier ou de pouzzolane.'), findsOneWidget);
+    // Une plante en pot se mène en pon ; celle-ci ne vit pas dans l'eau.
+    expect(tintOf(tester, "Dans l'eau : non · En pon : oui"), FloraColors.light.terracottaSoft);
+  });
+
+  testWidgets('l’engrais dit lequel, et ce que le calcium lui fait', (tester) async {
+    await pump(tester);
+    expect(tintOf(tester, 'Engrais plantes vertes équilibré, dilué de moitié.'), FloraColors.light.sageSoft);
+    expect(find.text('de mars à septembre'), findsOneWidget);
+    // Terreau drainant : le calcium ne pose pas de question, rien n'en est dit.
+    expect(find.textContaining('Calcium'), findsNothing);
+
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 5,
+        wateringWinterDays: 12,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.medium,
+        soil: SoilKind.acidic,
+        fertilizingDays: 30,
+        repotEveryMonths: 24,
+        minTempC: 12,
+        bloom: BloomTrigger.coolNights,
+      ),
+    );
+    expect(find.text('Engrais pour terre de bruyère, sans calcaire.'), findsOneWidget);
+    // Humidité ordinaire : la serre promet de la chaleur et de la lumière,
+    // pas de l'air humide.
+    expect(find.text('Chaleur et lumière'), findsOneWidget);
+    expect(find.textContaining('le calcaire fait jaunir son feuillage'), findsOneWidget);
+    // Ni eau ni pon pour une plante de terre de bruyère : la ligne disparaît.
+    expect(find.textContaining('En pon'), findsNothing);
+  });
+
+  testWidgets('l’humidité dit un taux, pas seulement un mot', (tester) async {
+    await pump(tester);
+    expect(tintOf(tester, '60 % et plus : plateau de billes d\'argile humides, plantes groupées, pièce d\'eau. Sous 45 %, l\'air lui manque.'), FloraColors.light.roseSoft);
+  });
+
+  testWidgets('la serre et la floraison sont deux projets, après la liste', (tester) async {
+    await pump(tester);
+    expect(tintOf(tester, 'Sous serre'), FloraColors.light.sunSoft);
+    expect(find.text('Chaleur et air humide'), findsOneWidget);
+    // Rien à tenter pour la faire fleurir : la carte ne paraît pas.
+    expect(find.text('Floraison'), findsNothing);
+
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        difficulty: CareDifficulty.medium,
+        soil: SoilKind.orchid,
+        fertilizingDays: 21,
+        repotEveryMonths: 24,
+        minTempC: 15,
+        bloom: BloomTrigger.coolNights,
+      ),
+    );
+    expect(tintOf(tester, 'Floraison'), FloraColors.light.roseSoft);
+    expect(find.text('Des nuits fraîches'), findsOneWidget);
+  });
+
+  testWidgets('une plante qui passe l’hiver dehors n’a pas de serre à proposer', (tester) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 6,
+        wateringWinterDays: 20,
+        light: LightNeed.fullSun,
+        humidity: HumidityNeed.low,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.draining,
+        fertilizingDays: 45,
+        repotEveryMonths: 36,
+        minTempC: -8,
+      ),
+    );
+    expect(find.text('Sous serre'), findsNothing);
+    expect(find.textContaining('En pon'), findsNothing);
   });
 
   testWidgets('ce qui ne se pratique pas reste une liste', (tester) async {

@@ -110,7 +110,7 @@ class CareGuideBody extends ConsumerWidget {
           value: l10n.careWateringNow(currentDays),
           valueColor: c.water,
           prominent: true,
-          detail: l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays),
+          details: [l10n.careWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
           badge: p.dormantInWinter ? ('❄️', l10n.careBadgeDormant) : null,
         ),
         const SizedBox(height: Space.md),
@@ -125,12 +125,15 @@ class CareGuideBody extends ConsumerWidget {
         ),
         const SizedBox(height: Space.md),
 
+        // L'humidité dit un taux, et par quoi l'obtenir : « Humidité
+        // ordinaire » seul ne se compare à rien.
         _AspectCard(
           emoji: '💨',
           variant: 2,
           tint: c.roseSoft,
           title: l10n.careHumidity,
           value: l10n.humidityName(p.humidity),
+          details: [l10n.humidityDetail(p.humidity)],
           badge: p.mistLeaves ? ('💦', l10n.careBadgeMist) : null,
         ),
         const SizedBox(height: Space.md),
@@ -138,24 +141,41 @@ class CareGuideBody extends ConsumerWidget {
         // La pièce, mesurée : elle répond à la lumière et à l'air d'au-dessus.
         HomeClimateFitCard(profile: p),
 
+        // L'engrais : à quelle fréquence, mais surtout lequel — et ce que le
+        // calcium lui fait, quand il lui fait quelque chose.
         _AspectCard(
           emoji: '🧪',
           variant: 3,
           tint: c.sageSoft,
           title: l10n.careFertilizing,
           value: p.fertilizingDays == null ? l10n.careNoFertilizer : l10n.careEveryDays(p.fertilizingDays!),
-          detail: p.fertilizingDays == null ? null : l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
+          details: [
+            if (p.fertilizerKind case final kind?) l10n.fertilizerKindName(kind),
+            if (p.fertilizingDays != null) l10n.fertilizeWindowLabel(p.fertilizingWindow.forHemisphere(south: south), context.localeTag),
+            ?l10n.calciumNote(p.calciumNeed),
+          ],
         ),
         const SizedBox(height: Space.md),
 
-        // Le substrat se lit avec le rempotage : c'est le jour où il sert.
+        // Le substrat a sa carte : le nom d'un terreau ne dit pas de quoi il
+        // est fait, ni ce que la plante accepte hors du pot.
         _AspectCard(
           emoji: '🪴',
+          variant: 1,
+          tint: c.terracottaSoft,
+          title: l10n.careSoil,
+          value: l10n.soilName(p.soil),
+          details: [l10n.soilMix(p.soil), ?l10n.soilFreeLine(p)],
+        ),
+        const SizedBox(height: Space.md),
+
+        // Le rempotage suit le substrat : c'est le jour où il sert.
+        _AspectCard(
+          emoji: '🏺',
           variant: 0,
           tint: c.terracottaSoft,
           title: l10n.careRepotting,
           value: l10n.repotLabel(p.repotEveryMonths),
-          detail: '${l10n.careSoil} · ${l10n.soilName(p.soil)}',
         ),
         const SizedBox(height: Space.md),
 
@@ -175,6 +195,43 @@ class CareGuideBody extends ConsumerWidget {
             ),
           ],
         ),
+
+        // Deux projets, pour qui en a un : la pousser plus vite, ou la faire
+        // fleurir. Ils se pratiquent, donc ils gardent la carte des volets ;
+        // ils ne se pratiquent pas tous les jours, d'où leur place après la
+        // liste. Une plante qui passe l'hiver dehors n'a pas l'usage d'une
+        // serre, et la floraison ne paraît que lorsqu'on sait ce qui la
+        // décide.
+        if (p.benefitsFromGreenhouse || p.bloom != null) ...[
+          const SizedBox(height: Space.lg),
+          if (p.benefitsFromGreenhouse)
+            _AspectCard(
+              emoji: '🏡',
+              variant: 1,
+              tint: c.sunSoft,
+              title: l10n.careGreenhouse,
+              value: switch (p.humidity) {
+                HumidityNeed.low => l10n.careGreenhouseWarmDry,
+                HumidityNeed.average => l10n.careGreenhouseWarmLight,
+                HumidityNeed.high => l10n.careGreenhouseWarmHumid,
+              },
+              details: [
+                l10n.careGreenhouseGrowth,
+                if (p.humidity == HumidityNeed.low) l10n.careGreenhouseAir,
+                if (p.repotEveryMonths == null) l10n.careGreenhouseEarly,
+              ],
+            ),
+          if (p.benefitsFromGreenhouse && p.bloom != null) const SizedBox(height: Space.md),
+          if (p.bloom case final bloom?)
+            _AspectCard(
+              emoji: '🌸',
+              variant: 2,
+              tint: c.roseSoft,
+              title: l10n.careBloom,
+              value: l10n.bloomName(bloom),
+              details: [l10n.bloomNote(bloom)],
+            ),
+        ],
 
         if (tips.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
@@ -268,7 +325,7 @@ class _AspectCard extends StatelessWidget {
     required this.tint,
     required this.title,
     required this.value,
-    this.detail,
+    this.details = const [],
     this.valueColor,
     this.badge,
     this.prominent = false,
@@ -283,7 +340,10 @@ class _AspectCard extends StatelessWidget {
   final Color tint;
   final String title;
   final String value;
-  final String? detail;
+
+  /// Ce qui précise le constat, une ligne par chose : le mélange sous le
+  /// substrat, la saison et le calcium sous l'engrais.
+  final List<String> details;
 
   /// Couleur du constat, quand l'accent tient le texte (le bleu de l'eau).
   final Color? valueColor;
@@ -314,9 +374,9 @@ class _AspectCard extends StatelessWidget {
                   Text(title, style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
                   Text(value, style: (prominent ? context.text.title2 : context.text.title3).copyWith(color: valueColor ?? c.ink)),
-                  if (detail != null) ...[
+                  for (final detail in details) ...[
                     const SizedBox(height: 2),
-                    Text(detail!, style: context.text.callout),
+                    Text(detail, style: context.text.callout),
                   ],
                   if (badge case final b?) ...[
                     const SizedBox(height: Space.sm),
