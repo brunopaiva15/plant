@@ -143,3 +143,42 @@ def test_un_fichier_vide_ne_compte_pas_comme_converti(tmp_path):
     vide.touch()
     convertir(rows, src, out, 366, reprendre=True)
     assert vide.stat().st_size > 0, 'le fichier vide est refait'
+
+
+# --- Un jeu converti doit être un jeu complet -----------------------------
+
+from prereduire import copier_metadonnees  # noqa: E402
+
+
+def test_tous_les_fichiers_de_la_racine_suivent(tmp_path):
+    # train.py lit splits.csv **et** manifest.jsonl : sans le second il
+    # s'arrête net, et le dossier ressemble à un jeu sans en être un.
+    src, out = tmp_path / 'jeu', tmp_path / 'sortie'
+    (src / 'Esp').mkdir(parents=True)
+    for nom in ('splits.csv', 'manifest.jsonl', 'species.json', 'stats.json'):
+        (src / nom).write_text(f'contenu de {nom}', encoding='utf-8')
+    out.mkdir()
+    faits = copier_metadonnees(src, out)
+    assert set(faits) == {'splits.csv', 'manifest.jsonl', 'species.json', 'stats.json'}
+    for nom in faits:
+        assert (out / nom).read_text(encoding='utf-8') == f'contenu de {nom}'
+
+
+def test_les_sous_dossiers_ne_sont_pas_recopies(tmp_path):
+    src, out = tmp_path / 'jeu', tmp_path / 'sortie'
+    (src / 'Esp').mkdir(parents=True)
+    (src / 'splits.csv').write_text('x', encoding='utf-8')
+    out.mkdir()
+    assert copier_metadonnees(src, out) == ['splits.csv']
+
+
+def test_une_metadonnee_perimee_est_remplacee(tmp_path):
+    # Le cas réel : le jeu a été redécoupé après la conversion, donc le
+    # splits.csv converti est celui d'avant.
+    src, out = tmp_path / 'jeu', tmp_path / 'sortie'
+    src.mkdir(); out.mkdir()
+    (src / 'splits.csv').write_text('ancien', encoding='utf-8')
+    copier_metadonnees(src, out)
+    (src / 'splits.csv').write_text('nouveau', encoding='utf-8')
+    copier_metadonnees(src, out)
+    assert (out / 'splits.csv').read_text(encoding='utf-8') == 'nouveau'

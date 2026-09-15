@@ -163,6 +163,35 @@ def chronometrer(rows: list[tuple[Path, str]], load: int, combien: int, graine: 
           f'sur un cœur, {dt / len(choisis) * 1e3:.1f} ms/image')
 
 
+def copier_metadonnees(dataset: Path, out: Path) -> list[str]:
+    """Tous les fichiers de la racine du jeu, pas seulement `splits.csv`.
+
+    Un jeu converti doit être un jeu **complet** : `train.py` lit
+    `splits.csv` pour la répartition mais aussi `manifest.jsonl` pour les
+    noms d'espèces, et il s'arrête net sans lui. Ne recopier que la
+    répartition produisait un dossier qui ressemble à un jeu et n'en est
+    pas un.
+
+    Recopiés à **chaque** passe, y compris avec `--reprendre` : c'est ce qui
+    rattrape un redécoupage fait après la conversion. Sinon le jeu converti
+    garderait la répartition du jour où il a été écrit.
+
+    Par lien physique quand c'est possible — même système de fichiers, donc
+    gratuit — et par copie sinon.
+    """
+    faits = []
+    for src in sorted(p for p in dataset.iterdir() if p.is_file()):
+        dst = out / src.name
+        if dst.exists():
+            dst.unlink()
+        try:
+            dst.hardlink_to(src)
+        except OSError:          # systèmes de fichiers différents
+            shutil.copy2(src, dst)
+        faits.append(src.name)
+    return faits
+
+
 def convertir(rows: list[tuple[Path, str]], dataset: Path, out: Path, load: int,
               reprendre: bool = False) -> None:
     """Écrit le jeu pré-découpé. `reprendre` saute ce qui est déjà là.
@@ -177,7 +206,7 @@ def convertir(rows: list[tuple[Path, str]], dataset: Path, out: Path, load: int,
     d'une conversion complète.
     """
     out.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(dataset / 'splits.csv', out / 'splits.csv')
+    copier_metadonnees(dataset, out)
     avant = apres = 0
     faites = ratees = sautees = 0
     for n, (src, _) in enumerate(rows, 1):
