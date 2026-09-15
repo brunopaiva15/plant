@@ -2036,13 +2036,35 @@ La conséquence pour l'Iris 9 est directe, et elle va dans les deux sens :
   `MAX_SIDE = 384`, le carré médian ne dépassera pas 288 px, quoi qu'on
   demande. Il faudrait recollecter plus grand — et le § 12.11 rappelle ce
   que la place sur disque décide : le nombre d'espèces, qui compte plus ;
-- **et la question inverse n'a jamais été posée.** À `--input-size 252`,
-  `LOAD_SIZE` vaut 288 : exactement le carré médian, pas un pixel inventé,
-  et 38 % de pixels en moins à traverser le réseau — donc une inférence
-  plus rapide sur le téléphone, ce que tout le § ci-dessus présentait comme
-  le seul coût. Deux entraînements courts sur un sous-ensemble diraient si
-  le gain du § 6.7 survit à la baisse. **Rien ne le garantit** : le gain
-  vient du calcul, et le retirer pourrait le reprendre.
+- **✅ et la question inverse a été posée, et tranchée.** À `--input-size
+  252`, `LOAD_SIZE` vaut 288 : exactement le carré médian, pas un pixel
+  inventé, et 38 % de pixels en moins à traverser le réseau. Deux
+  entraînements courts, identiques à cette option près — jeu pré-découpé,
+  `--batch 64`, 3 000 pas, 5 343 classes :
+
+  | | top-1 | top-3 | macro-F1 |
+  |---|---|---|---|
+  | **320 px** | **0,0849** | **0,1504** | **0,0562** |
+  | 252 px | 0,0552 | 0,1016 | 0,0344 |
+
+  **320 gagne de 2,97 points, soit 54 % en relatif.** Sur 98 727 images de
+  test l'erreur type est de 0,09 point : l'écart est à une trentaine de
+  sigmas, et aucun entraînement plus long ne le renversera.
+
+  Ce résultat **confirme la lecture ci-dessus et supprime l'espoir qu'elle
+  faisait naître**. Le raisonnement tentant était : puisque le réseau ne
+  voit que ~252 px de détail réel, descendre à 252 devrait être gratuit.
+  Il ne l'est pas. Le gain de 320 est réel, il ne vient pas du détail —
+  et un gain de calcul ne se récupère pas en retirant du calcul. Les 38 %
+  d'inférence économisés sur le téléphone n'existent pas.
+
+  > **Une réserve sur le protocole, pas sur la conclusion.** Les deux runs
+  > ont le même nombre de **pas**, donc pas le même calcul : à 252 le
+  > réseau traverse moins de pixels par pas. À calcul égal, 252 aurait eu
+  > plus de pas et aurait repris une part de l'écart. Mais c'est bien la
+  > comparaison à budget d'époques égal qui décide ici, puisque c'est
+  > ainsi qu'on entraîne — et 54 % en relatif ne se comble pas par un
+  > rééquilibrage de cette taille.
 
 #### La conséquence côté application, mesurée et écartée
 
