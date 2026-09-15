@@ -46,9 +46,17 @@ Root
         ├── Anciennes plantes (archives) → restaurer
         ├── Unités (métrique / impérial)
         ├── Langue
+        ├── Encyclopédie (push) : problèmes · espèces · vocabulaire
+        │   ├── Problème (push) : famille, étendue, hôtes, plantes du jardin concernées
+        │   └── Espèce (push) : la fiche d'entretien, hors de toute plante
         ├── Compte
         └── À propos
 ```
+
+L'encyclopédie est sous *Profil* et non dans un onglet : c'est un contenu
+qu'on consulte, pas un lieu où l'on passe. Les mêmes fiches se rejoignent
+aussi par le chemin naturel — un problème listé sur la fiche d'entretien
+d'une plante ouvre sa page.
 
 ## Conventions de présentation
 | Contenu | Présentation |

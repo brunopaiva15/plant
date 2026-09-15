@@ -131,6 +131,61 @@ extension CareProfileLabels on AppLocalizations {
         CommonIssue.blossomEndRot => careIssueBlossomEndRot,
       };
 
+  /// Ce que le mot veut dire, en une phrase.
+  ///
+  /// La fiche d'entretien pose le terme sans l'expliquer — « Substrat ·
+  /// Écorces pour orchidées » —, ce qui suffit à qui le connaît déjà. Ces
+  /// définitions ne se lisent donc pas sur la fiche mais dans le vocabulaire
+  /// de l'encyclopédie, où l'on vient exprès.
+  String lightNote(LightNeed v) => switch (v) {
+        LightNeed.shade => careLightShadeNote,
+        LightNeed.lowLight => careLightLowNote,
+        LightNeed.indirect => careLightIndirectNote,
+        LightNeed.brightIndirect => careLightBrightNote,
+        LightNeed.someSun => careLightSomeNote,
+        LightNeed.fullSun => careLightFullNote,
+      };
+
+  String humidityNote(HumidityNeed v) => switch (v) {
+        HumidityNeed.low => careHumidityLowNote,
+        HumidityNeed.average => careHumidityAverageNote,
+        HumidityNeed.high => careHumidityHighNote,
+      };
+
+  String difficultyNote(CareDifficulty v) => switch (v) {
+        CareDifficulty.easy => careDifficultyEasyNote,
+        CareDifficulty.medium => careDifficultyMediumNote,
+        CareDifficulty.demanding => careDifficultyDemandingNote,
+      };
+
+  String toxicityNote(Toxicity v) => switch (v) {
+        Toxicity.safe => careToxicSafeNote,
+        Toxicity.mild => careToxicMildNote,
+        Toxicity.toxic => careToxicToxicNote,
+        Toxicity.unknown => careToxicUnknownNote,
+      };
+
+  String soilNote(SoilKind v) => switch (v) {
+        SoilKind.standard => careSoilStandardNote,
+        SoilKind.draining => careSoilDrainingNote,
+        SoilKind.cactus => careSoilCactusNote,
+        SoilKind.orchid => careSoilOrchidNote,
+        SoilKind.acidic => careSoilAcidicNote,
+        SoilKind.rich => careSoilRichNote,
+        SoilKind.aquatic => careSoilAquaticNote,
+      };
+
+  String propagationNote(Propagation v) => switch (v) {
+        Propagation.stemCutting => carePropCuttingNote,
+        Propagation.leafCutting => carePropLeafNote,
+        Propagation.division => carePropDivisionNote,
+        Propagation.offsets => carePropOffsetsNote,
+        Propagation.layering => carePropLayeringNote,
+        Propagation.seed => carePropSeedNote,
+        Propagation.water => carePropWaterNote,
+        Propagation.tuber => carePropTuberNote,
+      };
+
   /// Conseil libre, par clé. Retourne `null` si la clé est inconnue, pour que
   /// l'UI n'affiche jamais un identifiant technique.
   String? careTip(String key) => switch (key) {

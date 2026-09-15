@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
@@ -424,7 +426,14 @@ class _KnownProblemsState extends ConsumerState<_KnownProblems> {
           FloraGroup(
             children: [
               for (final p in entry.value)
-                FloraListRow(title: p.nameIn(language), dense: true, chevron: false, titleMaxLines: 2),
+                // La fiche nomme le problème ; l'encyclopédie dit ce que la
+                // base en sait — sa famille, son étendue, ses hôtes.
+                FloraListRow(
+                  title: p.nameIn(language),
+                  dense: true,
+                  titleMaxLines: 2,
+                  onTap: () => context.push(Routes.encyclopediaProblem(p.id)),
+                ),
             ],
           ),
         ],
