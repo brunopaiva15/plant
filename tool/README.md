@@ -141,7 +141,8 @@ de bruit à ces réglages et assombrit les racines.
 
 Chaque étape est cadrée une fois pour toutes sur l'union de ses images
 clefs ; sans cela le cadre suivrait le sujet et c'est le monde qui semblerait
-bouger.
+bouger. Et une racine ne traverse pas la paroi de son pot : `Creux` décrit le
+volume intérieur d'un contenant, `faisceau_racines(dans=…)` y ramène le tracé.
 
 ```bash
 # tout, de Blender au WebP livré, avec le récapitulatif des poids (~1 h 45)

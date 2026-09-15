@@ -93,6 +93,13 @@ Chaque étape est cadrée une fois pour toutes sur l'union de ses images clefs
 (`rendre()` dans `common.py`) : sans cela le cadre suivrait le sujet et c'est
 le monde qui semblerait bouger.
 
+Une racine ne traverse pas la paroi de son pot ni le fond de son verre.
+`Creux` décrit le volume intérieur d'un contenant — le rayon disponible à
+chaque hauteur, le fond, une marge pour l'épaisseur des racines — et
+`faisceau_racines(dans=…)` y ramène chaque point du tracé. Toute étape qui
+montre des racines dans un contenant passe ce `dans` ; sans lui, une racine
+sort par le flanc du pot, et cela se voit.
+
 ### Régénérer
 
 Blender est cherché dans le `PATH` puis aux endroits usuels ; rien n'est
