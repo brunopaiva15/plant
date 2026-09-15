@@ -2118,7 +2118,7 @@ produit, et le garde-fou a laissé passer, pour deux raisons :
    qu'on n'agrandit pas — c'est écrit dans le code et dans un test, et
    `prereduire.py` est l'outil qui répond pour un jeu donné.
 
-### 12.7 La classe « autre » — et d'abord savoir si elle manque
+### 12.7 ✅ La classe « autre » — mesuré, elle manque
 
 Prévue au § 3.2, jamais faite. Le seul garde-fou contre une photo de chat est
 le plancher à 0,10, la marge étant inactive au seuil de 0,70.
@@ -2153,7 +2153,49 @@ des meilleurs scores :
 Trente photos et dix minutes tranchent entre trois chantiers de tailles très
 différentes. Aucun n'a de raison d'être entrepris avant.
 
-#### Si la mesure la réclame
+#### ✅ Mesuré : le modèle affirme, et le plancher ne sert à rien
+
+`tools/plant_model/hors_sujet.py`, 160 images de Commons sans plante —
+chats, chaises, murs de brique, portraits, vélos, tasses, ordinateurs,
+escaliers, baskets — passées dans le modèle livré.
+
+| | | |
+|---|---|---|
+| sous le plancher (0,10) | 14 | 9 % |
+| entre plancher et seuil | 131 | 82 % |
+| **au-dessus du seuil (0,70)** | **15** | **9 %** |
+
+Confiance médiane 0,275, maximum **0,989** avec 0,982 d'écart au second.
+C'est le **troisième cas** : le modèle affirme une espèce devant ce qui
+n'en est pas une, et la classe « autre » se justifie.
+
+**Deux garde-fous sur trois sont inertes.** Le plancher à 0,10 n'attrape
+rien d'utile — la médiane est à 0,275 et la moitié basse de l'échantillon
+reste au-dessus. Et la **marge** ne protège pas davantage : les photos
+hors sujet ont de *gros* écarts avec le second candidat — 0,982, 0,923,
+0,920 — parce que le modèle est très sûr de son premier choix devant un
+chat. Seul le seuil à 0,70 tient la porte, et il laisse passer 9 %.
+
+> **Une réserve sur le chiffre, pas sur le verdict.** Une catégorie « sans
+> plante » de Commons en contient : *Parthenocissus tricuspidata* à 0,853
+> sur un mur de brique est probablement une vigne vierge réellement là,
+> *Allium cepa* à 0,921 de l'oignon sur une pizza. En ne comptant que les
+> affirmations impossibles — un lotus sacré, un *Araucaria bidwillii* de
+> quarante mètres sur une photo de basket —, le taux tombe vers 5 %. Le
+> troisième cas se déclenche sur une seule affirmation fautive, donc le
+> verdict tient ; c'est son ampleur exacte qui demanderait des catégories
+> mieux choisies, ou trente photos prises chez soi.
+
+**Et la mesure a payé un bug livré avant de rendre son verdict.** Le
+modèle répondait *Chloris chloris* à 0,742 ; la classe est juste — GBIF
+confirme une Poaceae — mais la ligne du catalogue portait les noms
+communs du **verdier d'Europe**, dans les quatre langues. `Chloris` et
+`Oenanthe` sont des genres partagés entre plantes et oiseaux, et
+`enrich_plants.py` résout le Wikidata par nom scientifique sans vérifier
+le règne. Quatre lignes touchées, deux livrées ; noms vidés, test de
+garde ajouté.
+
+#### ✅ Elle la réclame — ce que ça demande
 
 Une classe de plus, entraînée sur des négatifs de deux natures : des
 non-plantes (scènes d'intérieur, animaux, objets — CC0 abondant) et des
@@ -3598,7 +3640,7 @@ espèce de plus coûte.
 |---|---|---|
 | la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | quelques heures de GPU, jeu déjà collecté |
 | ✅ `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | ~~deux heures~~ — **passée** : il les sépare, et mieux dans notre réseau que dans ImageNet |
-| la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | à mesurer sur les 3 606 images |
+| ✅ la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | ~~à mesurer~~ — **passée** : le modèle affirme sur 9 % des images sans plante, et ni le plancher ni la marge ne l'arrêtent (§ 12.7) |
 
 **Ce qu'on ne fera pas, et pourquoi :**
 
