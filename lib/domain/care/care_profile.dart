@@ -1,3 +1,5 @@
+import '../problems/plant_problem.dart';
+
 /// Besoin en lumière, du plus sombre au plus ensoleillé.
 enum LightNeed { shade, lowLight, indirect, brightIndirect, someSun, fullSun }
 
@@ -27,26 +29,56 @@ enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
 enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, water, tuber }
 
 /// Problème fréquent, pour la section « À surveiller ».
+///
+/// Chaque entrée dit de quelle famille elle relève — un trouble, un ravageur,
+/// une maladie —, la même que celle de la base des deux cents problèmes. La
+/// liste d'une espèce se range alors d'elle-même : ce qui vient de l'eau et
+/// de la lumière d'abord, les bêtes ensuite, les champignons en dernier.
 enum CommonIssue {
-  overwatering,
-  underwatering,
-  rootRot,
-  spiderMites,
-  mealybugs,
-  scale,
-  aphids,
-  fungusGnats,
-  whitefly,
-  slugs,
-  powderyMildew,
-  leafSpot,
-  blight,
-  sunburn,
-  dryTips,
-  leafDrop,
-  etiolation,
-  chlorosis,
-  blossomEndRot,
+  overwatering(ProblemKind.disorder),
+  underwatering(ProblemKind.disorder),
+  rootRot(ProblemKind.disease),
+  spiderMites(ProblemKind.pest),
+  thrips(ProblemKind.pest),
+  mealybugs(ProblemKind.pest),
+  scale(ProblemKind.pest),
+  aphids(ProblemKind.pest),
+  fungusGnats(ProblemKind.pest),
+  whitefly(ProblemKind.pest),
+  trueBugs(ProblemKind.pest),
+  slugs(ProblemKind.pest),
+  powderyMildew(ProblemKind.disease),
+  greyMould(ProblemKind.disease),
+  leafSpot(ProblemKind.disease),
+  blight(ProblemKind.disease),
+  sunburn(ProblemKind.disorder),
+  dryTips(ProblemKind.disorder),
+  leafDrop(ProblemKind.disorder),
+  etiolation(ProblemKind.disorder),
+  chlorosis(ProblemKind.disorder),
+  blossomEndRot(ProblemKind.disorder);
+
+  const CommonIssue(this.kind);
+
+  final ProblemKind kind;
+}
+
+/// Ce qui tient une plante debout, quand elle ne le fait pas seule.
+///
+/// Renseigné pour les espèces où le support change quelque chose : une
+/// grimpante à racines aériennes ne fait ses grandes feuilles qu'en montant,
+/// une tomate casse sans tuteur. Ailleurs, `null` — et la fiche n'en parle
+/// pas plutôt que de dire « aucun ».
+enum PlantSupport {
+  /// Tuteur moussu, en sphaigne ou en fibre de coco : les racines aériennes
+  /// s'y accrochent, à condition qu'il reste humide.
+  mossPole,
+
+  /// Tuteur droit, auquel la tige s'attache à mesure qu'elle monte.
+  stake,
+
+  /// Treillis, fil ou grillage, le long duquel les tiges se guident.
+  trellis,
 }
 
 /// Fenêtre de mois (1–12), bornes incluses. Peut traverser l'hiver
@@ -89,6 +121,7 @@ class CareProfile {
     this.toxicity = Toxicity.unknown,
     this.propagation = const [],
     this.issues = const [],
+    this.support,
     this.mistLeaves = false,
     this.dormantInWinter = true,
     this.outdoorFriendly = false,
@@ -122,6 +155,9 @@ class CareProfile {
   final Toxicity toxicity;
   final List<Propagation> propagation;
   final List<CommonIssue> issues;
+
+  /// Le support que l'espèce demande, quand elle en demande un.
+  final PlantSupport? support;
 
   /// Brumiser le feuillage aide (plantes tropicales).
   final bool mistLeaves;

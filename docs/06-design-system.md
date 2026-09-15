@@ -390,10 +390,38 @@ l'arrosage. L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau :
 c'est la question qu'on se pose en premier. La carte « Chez vous » se pose
 après l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
 
+**Le tuteur** (`CareProfile.support`) suit le rempotage, et seulement pour les
+espèces qui en demandent un : un pothos, un monstera, une tomate. Il dit lequel
+— tuteur moussu, tuteur droit, treillis — et quand s'en occuper : le tuteur
+moussu s'humidifie à chaque arrosage, la tige s'attache à mesure qu'elle monte.
+Sa carte garde l'anatomie des volets mais reste crème : les cinq teintes
+appartiennent aux volets du soin, une sixième les brouillerait.
+
 Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
 `FloraGroup` à la suite, avant les conseils, ce qu'il faut surveiller, les
-problèmes connus et la multiplication ; la provenance de la fiche ferme la
-page. `test/features/care_guide_test.dart` tient la séparation.
+signes sur les feuilles, les problèmes connus et la multiplication ; la
+provenance de la fiche ferme la page. `test/features/care_guide_test.dart`
+tient la séparation.
+
+**« À surveiller »** range la liste de l'espèce dans l'ordre de la base des
+problèmes — les troubles, puis les ravageurs, puis les maladies —, parce que
+c'est l'ordre dans lequel on vérifie. Elle ne se replie pas, à la différence de
+« Problèmes connus » juste en dessous : celle-ci est écrite à la main, espèce
+par espèce, et la plus longue tient en dix lignes. Un feuillage tropical en
+appartement en compte neuf — l'eau, les quatre suceurs de sève qu'un intérieur
+chauffé garde actifs toute l'année, les moucherons du terreau, les taches — et
+les cacher derrière un bouton reviendrait à répondre « araignées rouges » à qui
+ouvre la fiche d'un pothos.
+
+**« Signes sur les feuilles »** est l'autre entrée de la fiche. On y arrive
+avec la plante sous les yeux — elle s'éclaircit, elle brûle, elle se tache au
+milieu, elle ne grandit plus — et pas avec un nom de champignon. Chaque signe
+s'ouvre sur ce qui l'explique le plus souvent, un seul à la fois, pour que la
+liste garde sa hauteur de liste. Les causes sont filtrées par la fiche
+(`LeafSigns.forProfile`) : une espèce de plein soleil ne brûle pas au soleil,
+une espèce qui aime l'air sec ne brunit pas des pointes pour cela, et ces
+causes-là ne sont pas proposées. Rien ne part sur le réseau, à la différence du
+diagnostic par photo, qui répond à la même question autrement.
 
 ## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)
 Un seul chemin pour en ajouter une, `showPhotoCaptureFlow` : le viseur dans

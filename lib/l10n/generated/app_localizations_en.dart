@@ -2468,6 +2468,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get carePropagation => 'Propagation';
 
   @override
+  String get careSupport => 'Support';
+
+  @override
+  String get careSupportMossPole => 'Moss pole';
+
+  @override
+  String get careSupportStake => 'Stake';
+
+  @override
+  String get careSupportTrellis => 'Trellis';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Dampen the pole at every watering: the aerial roots take hold in it.';
+
+  @override
+  String get careSupportStakeCare => 'Tie the stem loosely as it climbs.';
+
+  @override
+  String get careSupportTrellisCare => 'Guide the stems as they grow.';
+
+  @override
   String get careIssues => 'Watch out for';
 
   @override
@@ -2476,6 +2498,96 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Reported on this species or related ones.';
+
+  @override
+  String get careLeafSigns => 'Leaf signs';
+
+  @override
+  String get careLeafSignsNote =>
+      'What a leaf shows, and what usually explains it.';
+
+  @override
+  String get leafSignPaling => 'Leaves turning pale';
+
+  @override
+  String get leafSignYellowing => 'Yellow leaves';
+
+  @override
+  String get leafSignScorched => 'Scorched leaves';
+
+  @override
+  String get leafSignSpots => 'Spots in the middle of the leaf';
+
+  @override
+  String get leafSignBrownTips => 'Brown tips and edges';
+
+  @override
+  String get leafSignStunted => 'Leaves that stop growing';
+
+  @override
+  String get leafSignDrooping => 'Limp leaves';
+
+  @override
+  String get leafSignFalling => 'Leaves dropping';
+
+  @override
+  String get leafSignSticky => 'Sticky leaves';
+
+  @override
+  String get leafCauseTooMuchSun => 'Too much direct sun';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Not enough light';
+
+  @override
+  String get leafCauseOverwatering => 'Watering too often';
+
+  @override
+  String get leafCauseUnderwatering => 'Soil left dry for too long';
+
+  @override
+  String get leafCauseDryAir => 'Air too dry';
+
+  @override
+  String get leafCauseColdDraught => 'Cold or a draught';
+
+  @override
+  String get leafCauseHardWater => 'Hard water, or fertilizer too strong';
+
+  @override
+  String get leafCausePoorSoil => 'Exhausted potting mix';
+
+  @override
+  String get leafCausePotBound => 'Roots cramped in the pot';
+
+  @override
+  String get leafCauseDamagedRoots => 'Roots damaged by standing water';
+
+  @override
+  String get leafCauseLeafPests => 'Feeding marks from spider mites or thrips';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Mealybugs or aphids, on the plant or above it';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Sooty mould, the black that grows on honeydew';
+
+  @override
+  String get leafCauseLeafFungus => 'A fungus or a bacterium on the leaf';
+
+  @override
+  String get leafCauseWetLeaves => 'Water left on the foliage';
+
+  @override
+  String get leafCauseRecentMove => 'A recent move or repotting';
+
+  @override
+  String get leafCauseOldLeaves => 'Lower leaves ageing';
+
+  @override
+  String get leafCauseWinterRest => 'Winter rest';
 
   @override
   String get problemKindDisorder => 'Disorder';
@@ -2727,6 +2839,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careIssueSpiderMites => 'Spider mites (fine webbing)';
 
   @override
+  String get careIssueThrips => 'Thrips (silvery leaves)';
+
+  @override
   String get careIssueMealybugs => 'Mealybugs';
 
   @override
@@ -2742,10 +2857,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careIssueWhitefly => 'Whitefly';
 
   @override
+  String get careIssueTrueBugs => 'True bugs';
+
+  @override
   String get careIssueSlugs => 'Slugs and snails';
 
   @override
   String get careIssuePowderyMildew => 'Powdery mildew';
+
+  @override
+  String get careIssueGreyMould => 'Grey mould (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Leaf spot';
