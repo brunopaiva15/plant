@@ -580,7 +580,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get propagate => 'Steckling anlegen';
+  String get propagate => 'Ableger anlegen';
 
   @override
   String get pgPickTitle => 'Diese Pflanze vermehren';
