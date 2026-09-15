@@ -216,6 +216,40 @@ def _recolter(especes: list[str], dossier: Path, par_cultivar: int, pause: float
             print(f'   {nom:28s} {gardees} photos{suffixe}', flush=True)
 
 
+def _backbone_finetune(poids: str, backbone: str, classes: int, dropout: float):
+    """Le backbone portant **nos** poids, et non ceux d'ImageNet.
+
+    `frozen_backbone()` ne peut pas relire `fine.weights.h5` directement :
+    le fichier a été écrit par `model.save_weights()` sur le **modèle
+    d'entraînement complet** — backbone, dropout, tête de classification —
+    alors que `frozen_backbone` n'en construit que les deux premiers
+    étages. Keras 3 refuse d'ailleurs de mélanger les deux :
+    « `by_name` only supports loading legacy '.h5' or '.hdf5' files ».
+
+    L'appel précédent — `load_weights(..., skip_mismatch=True,
+    by_name=True)` — était donc doublement mauvais : il ne pouvait pas
+    fonctionner sur ce format, et s'il avait fonctionné, `skip_mismatch`
+    aurait **silencieusement** laissé le réseau à ses poids ImageNet. La
+    mesure aurait alors comparé ImageNet à lui-même et conclu que le
+    réglage fin n'efface rien — la pire des réponses, puisqu'elle est
+    rassurante et fausse.
+
+    On reconstruit donc le modèle d'entraînement à l'identique, on y charge
+    les poids sans indulgence, et on en ressort le backbone suivi de sa
+    moyenne globale — exactement la sortie de `frozen_backbone`.
+    """
+    import tensorflow as tf
+    from train import build_model
+    modele = build_model(classes, dropout, backbone)
+    modele.load_weights(poids)        # ni skip_mismatch ni by_name : ça doit coller
+    base = modele.base
+    base.trainable = False
+    entree = tf.keras.Input(shape=base.input_shape[1:], name='image')
+    sortie = tf.keras.layers.GlobalAveragePooling2D()(base(entree, training=False))
+    print(f'poids chargés depuis {poids} — {classes} classes, backbone {backbone}')
+    return tf.keras.Model(entree, sortie)
+
+
 def _lire(dossier: Path) -> list[tuple[Path, str, str]]:
     """(chemin, espèce, cultivar) pour tout ce qui a été récolté."""
     out = []
@@ -237,6 +271,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument('--pause', type=float, default=1.0)
     ap.add_argument('--backbone', default='large')
     ap.add_argument('--poids', help='poids fine-tunés à comparer au réseau ImageNet gelé')
+    ap.add_argument('--classes', type=int, default=5259,
+                    help='classes du modèle qui a produit --poids ; le fichier ne les porte '
+                         'pas, et une valeur fausse fait échouer le chargement plutôt que '
+                         'de le fausser (l\'Iris 8 large en avait 5 259)')
+    ap.add_argument('--taille', type=int, default=320,
+                    help='taille d\'entrée de l\'entraînement qui a produit --poids')
+    ap.add_argument('--dropout', type=float, default=0.5)
     ap.add_argument('--melanges', type=int, default=200,
                     help='permutations du témoin ; sans lui, dix photos en 960 dimensions\n'
                          'se séparent toujours')
@@ -257,12 +298,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # Importés ici : les fonctions pures ci-dessus se testent sans TensorFlow.
     import tensorflow as tf
-    from train import IMAGE_SIZE, frozen_backbone
+    import train
+    from train import frozen_backbone
 
-    modele = frozen_backbone(args.backbone)
     if args.poids:
-        modele.load_weights(args.poids, skip_mismatch=True, by_name=True)
-        print(f'poids chargés depuis {args.poids}')
+        train.set_input_size(args.taille)
+        modele = _backbone_finetune(args.poids, args.backbone, args.classes, args.dropout)
+    else:
+        modele = frozen_backbone(args.backbone)
+    IMAGE_SIZE = train.IMAGE_SIZE
 
     vecteurs = []
     for chemin, _, _ in lignes:
