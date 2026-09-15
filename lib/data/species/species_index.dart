@@ -49,12 +49,12 @@ class SpeciesRecord {
   String? vernacularName(String languageCode) {
     final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
     final trimmed = name.trim();
-    return trimmed.isEmpty ? null : capitalizeSpeciesDisplayName(trimmed);
+    return trimmed.isEmpty ? null : trimmed;
   }
 
   /// Nom d'affichage : le nom courant de la langue demandée, à défaut le
   /// nom scientifique.
-  String commonName(String languageCode) => vernacularName(languageCode) ?? capitalizeSpeciesDisplayName(scientificName);
+  String commonName(String languageCode) => vernacularName(languageCode) ?? scientificName;
 
   SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(
         key: 0,
