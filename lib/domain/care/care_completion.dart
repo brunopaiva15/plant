@@ -25,6 +25,7 @@ class CareCompletion {
     this.light,
     this.humidity,
     this.soil,
+    this.water,
     this.fertilizingDays,
     this.noFertilizer = false,
     this.repotEveryMonths,
@@ -42,6 +43,10 @@ class CareCompletion {
   final LightNeed? light;
   final HumidityNeed? humidity;
   final SoilKind? soil;
+
+  /// Ce que l'espèce supporte de l'eau du robinet. Le catalogue le suppose
+  /// tolérant faute de mieux ; l'IA, elle, peut le dire.
+  final WaterTolerance? water;
   final int? fertilizingDays;
 
   /// L'espèce ne se fertilise pas, ce qui n'est pas la même chose que
@@ -67,6 +72,7 @@ class CareCompletion {
       light == null &&
       humidity == null &&
       soil == null &&
+      water == null &&
       fertilizingDays == null &&
       !noFertilizer &&
       repotEveryMonths == null &&
@@ -92,6 +98,7 @@ class CareCompletion {
         // accepté, 60 à 80 % ».
         humidityMinPercent: humidity == null ? base.humidityMinPercent : null,
         humidityMaxPercent: humidity == null ? base.humidityMaxPercent : null,
+        water: water ?? base.water,
         fertilizingDays: noFertilizer ? null : (fertilizingDays ?? base.fertilizingDays),
         fertilizingWindow: base.fertilizingWindow,
         // L'IA ne se prononce ni sur le type d'engrais, ni sur le calcium, ni
@@ -109,6 +116,7 @@ class CareCompletion {
         toxicity: base.toxicity,
         propagation: propagation.isEmpty ? base.propagation : propagation,
         issues: issues.isEmpty ? base.issues : issues,
+        support: base.support,
         mistLeaves: base.mistLeaves,
         dormantInWinter: base.dormantInWinter,
         outdoorFriendly: base.outdoorFriendly,
@@ -123,6 +131,7 @@ class CareCompletion {
         if (light != null) 'li': light!.name,
         if (humidity != null) 'hu': humidity!.name,
         if (soil != null) 'so': soil!.name,
+        if (water != null) 'wa': water!.name,
         if (fertilizingDays != null) 'fe': fertilizingDays,
         if (noFertilizer) 'nf': true,
         if (repotEveryMonths != null) 're': repotEveryMonths,
@@ -153,6 +162,7 @@ class CareCompletion {
       light: enumOf(LightNeed.values, json['li']),
       humidity: enumOf(HumidityNeed.values, json['hu']),
       soil: enumOf(SoilKind.values, json['so']),
+      water: enumOf(WaterTolerance.values, json['wa']),
       fertilizingDays: json['fe'] as int?,
       noFertilizer: json['nf'] == true,
       repotEveryMonths: json['re'] as int?,

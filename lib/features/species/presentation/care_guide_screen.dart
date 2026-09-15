@@ -10,12 +10,14 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/grow_light.dart';
+import '../../../domain/care/leaf_signs.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
 import 'care_guide_copy.dart';
+import 'water_types_sheet.dart';
 
 /// Fiche d'entretien d'une plante : quand l'arroser, quelle lumière lui
 /// donner, quel substrat, quand rempoter, ce qu'il faut surveiller.
@@ -126,6 +128,9 @@ class CareGuideBody extends ConsumerWidget {
     // La fiche suit maintenant le chemin réel d'entretien : d'abord où placer
     // la plante et le climat qu'elle demande, ensuite ce qu'on fait au pot,
     // puis les conditions particulières et enfin les informations de sécurité.
+    // Chaque volet garde la teinte de son sujet : l'arrosage et l'eau en bleu,
+    // la lumière en ocre, l'humidité en rose, l'engrais en sauge, le pot en
+    // terre cuite.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -162,6 +167,21 @@ class CareGuideBody extends ConsumerWidget {
           prominent: true,
           details: [l10n.guideWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
           badge: p.dormantInWinter ? ('❄️', l10n.guideBadgeDormant) : null,
+        ),
+        const SizedBox(height: Space.md),
+
+        // Ce qu'on verse, juste après le jour où on le verse : le calcaire du
+        // robinet passe inaperçu sur une plante et abîme la suivante. La carte
+        // donne l'eau qui convient, et s'ouvre sur les sept eaux jugées une à
+        // une.
+        _AspectCard(
+          emoji: '🚰',
+          variant: 2,
+          tint: c.waterSoft,
+          title: l10n.careWater,
+          value: l10n.waterToleranceName(p.water),
+          details: [l10n.waterToleranceNote(p.water)],
+          onTap: () => showWaterTypesSheet(context, tolerance: p.water),
         ),
         const SizedBox(height: Space.md),
 
@@ -265,6 +285,23 @@ class CareGuideBody extends ConsumerWidget {
           ),
         ],
 
+        // Le tuteur ferme ce qu'on fait au pot : il ne paraît que pour les
+        // espèces qui en demandent un, et dit du même coup quand s'en
+        // occuper — un tuteur moussu s'humidifie à chaque arrosage, une tige
+        // s'attache à mesure qu'elle monte. Sa carte reste crème : les
+        // teintes appartiennent aux volets du soin, une de plus les
+        // brouillerait.
+        if (p.support case final support?) ...[
+          const SizedBox(height: Space.md),
+          _AspectCard(
+            emoji: '🪵',
+            variant: 2,
+            title: l10n.careSupport,
+            value: l10n.supportName(support),
+            details: [l10n.supportCare(support)],
+          ),
+        ],
+
         // La serre et la floraison sont des conditions particulières : utiles
         // quand elles concernent la plante, mais pas au milieu des besoins de
         // tous les jours.
@@ -340,23 +377,9 @@ class CareGuideBody extends ConsumerWidget {
             ),
         ],
 
-        if (p.issues.isNotEmpty) ...[
-          const SizedBox(height: Space.lg),
-          Text(l10n.careIssues, style: context.text.title3),
-          const SizedBox(height: Space.sm),
-          FloraGroup(
-            children: [
-              for (final i in p.issues)
-                FloraListRow(
-                  leading: const Text('👀', style: TextStyle(fontSize: 16)),
-                  title: l10n.issueName(i),
-                  dense: true,
-                  chevron: false,
-                  titleMaxLines: 2,
-                ),
-            ],
-          ),
-        ],
+        _WatchList(issues: p.issues),
+
+        _LeafSignList(profile: p),
 
         if (speciesName != null && speciesName!.trim().isNotEmpty)
           _KnownProblems(speciesName: speciesName!, issues: p.issues),
@@ -419,6 +442,10 @@ class CareGuideBody extends ConsumerWidget {
 /// et le détail d'un volet reste avec lui. L'anatomie est celle des cartes du
 /// matin — une tuile d'emoji, un titre qui est un nom, un constat — et sur une
 /// carte teintée la tuile reste crème.
+///
+/// Les teintes sont prises. Ce qui se pratique aussi mais n'en a pas — le
+/// tuteur — garde la même anatomie sur une carte crème, plutôt que
+/// d'emprunter la couleur d'un autre volet.
 class _AspectCard extends StatelessWidget {
   const _AspectCard({
     required this.emoji,
@@ -431,6 +458,7 @@ class _AspectCard extends StatelessWidget {
     this.badge,
     this.notes = const [],
     this.prominent = false,
+    this.onTap,
   });
 
   final String emoji;
@@ -439,9 +467,9 @@ class _AspectCard extends StatelessWidget {
   /// ressemblent pas tout à fait.
   final int variant;
 
-  /// Teinte du sujet. `null` pour le repos, qui ne concerne pas toutes les
-  /// plantes : la carte reste crème et sa tuile prend le gris de fond, sans
-  /// quoi elle disparaîtrait.
+  /// La teinte du volet, ou `null` pour une carte crème — le repos, le
+  /// tuteur : la tuile d'emoji reprend alors son fond habituel, puisqu'il n'y
+  /// a plus de teinte à laquelle se détacher.
   final Color? tint;
 
   final String title;
@@ -466,12 +494,17 @@ class _AspectCard extends StatelessWidget {
   /// en premier.
   final bool prominent;
 
+  /// Ce que le volet cache, quand il en cache quelque chose : la carte prend
+  /// alors un chevron, et se presse comme une ligne de liste.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     return MergeSemantics(
       child: FloraCard(
         color: tint,
+        onTap: onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -502,9 +535,172 @@ class _AspectCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (onTap != null) ...[
+              const SizedBox(width: Space.xs),
+              Icon(CupertinoIcons.chevron_right, size: 15, color: c.inkTertiary),
+            ],
           ],
         ),
       ),
+    );
+  }
+}
+
+/// « À surveiller » : ce qui arrive à cette espèce, dit en clair.
+///
+/// La liste est rangée dans l'ordre de la base des problèmes — ce qui vient
+/// de l'eau et de la lumière, les bêtes, puis les champignons —, parce que
+/// c'est l'ordre dans lequel on vérifie.
+///
+/// Elle ne se replie pas, à la différence de « Problèmes connus » : celle-ci
+/// est écrite à la main, espèce par espèce, et la plus longue tient en dix
+/// lignes. Les cacher derrière un bouton reviendrait à répondre « araignées
+/// rouges » à qui ouvre la fiche d'un pothos, alors que les thrips, les
+/// cochenilles et les moucherons du terreau y sont pour autant.
+class _WatchList extends StatelessWidget {
+  const _WatchList({required this.issues});
+
+  final List<CommonIssue> issues;
+
+  @override
+  Widget build(BuildContext context) {
+    if (issues.isEmpty) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    // Tri stable : à famille égale, l'ordre de la fiche est conservé, et
+    // c'est celui dans lequel il a été écrit.
+    final ordered = [...issues]..sort((a, b) => a.kind.index.compareTo(b.kind.index));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: Space.lg),
+        Text(l10n.careIssues, style: context.text.title3),
+        const SizedBox(height: Space.sm),
+        FloraGroup(
+          children: [
+            for (final i in ordered)
+              FloraListRow(
+                leading: const Text('👀', style: TextStyle(fontSize: 16)),
+                title: l10n.issueName(i),
+                dense: true,
+                chevron: false,
+                titleMaxLines: 2,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// « Signes sur les feuilles » : l'autre entrée de la fiche.
+///
+/// On arrive ici avec la plante sous les yeux — elle s'éclaircit, elle brûle,
+/// elle se tache au milieu, elle ne grandit plus — et pas avec un nom de
+/// champignon. Chaque signe s'ouvre sur ce qui l'explique le plus souvent,
+/// un seul à la fois : la liste garde sa hauteur de liste, et ce qu'on vient
+/// de lire ne s'éloigne pas de ce qu'on lit.
+///
+/// Les causes viennent de la fiche de l'espèce, pas d'un mémento général :
+/// un cactus ne brûle pas au soleil, une plante qui aime l'air sec ne brunit
+/// pas des pointes pour cela, et ces causes-là ne sont pas proposées.
+class _LeafSignList extends StatefulWidget {
+  const _LeafSignList({required this.profile});
+
+  final CareProfile profile;
+
+  @override
+  State<_LeafSignList> createState() => _LeafSignListState();
+}
+
+class _LeafSignListState extends State<_LeafSignList> {
+  LeafSign? _open;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final readings = LeafSigns.forProfile(widget.profile);
+    if (readings.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: Space.lg),
+        Text(l10n.careLeafSigns, style: context.text.title3),
+        const SizedBox(height: Space.xxs),
+        Text(l10n.careLeafSignsNote, style: context.text.caption),
+        const SizedBox(height: Space.sm),
+        FloraGroup(
+          children: [
+            for (final reading in readings)
+              _LeafSignRow(
+                reading: reading,
+                open: _open == reading.sign,
+                onTap: () => setState(() => _open = _open == reading.sign ? null : reading.sign),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Un signe, et ses causes quand il est ouvert.
+class _LeafSignRow extends StatelessWidget {
+  const _LeafSignRow({required this.reading, required this.open, required this.onTap});
+
+  final LeafReading reading;
+  final bool open;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FloraListRow(
+          title: l10n.leafSignName(reading.sign),
+          dense: true,
+          chevron: false,
+          titleMaxLines: 2,
+          onTap: onTap,
+          // Le chevron pivote vers le bas : c'est le même geste que dans une
+          // liste de réglages, et il dit où va le contenu.
+          trailing: AnimatedRotation(
+            turns: open ? 0.25 : 0,
+            duration: Motion.of(context, Motion.micro),
+            curve: Motion.easeOut,
+            child: Icon(CupertinoIcons.chevron_right, size: 16, color: c.inkTertiary),
+          ),
+        ),
+        AnimatedSize(
+          duration: Motion.of(context, Motion.standard),
+          curve: Motion.easeOut,
+          alignment: Alignment.topCenter,
+          child: !open
+              ? const SizedBox(width: double.infinity)
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.sm),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final cause in reading.causes)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: Space.xxs),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('·', style: context.text.callout.copyWith(color: c.inkTertiary)),
+                              const SizedBox(width: Space.xs),
+                              Expanded(child: Text(l10n.leafCauseName(cause), style: context.text.callout)),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }

@@ -2473,6 +2473,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get carePropagation => 'Vermehrung';
 
   @override
+  String get careSupport => 'Rankhilfe';
+
+  @override
+  String get careSupportMossPole => 'Moosstab';
+
+  @override
+  String get careSupportStake => 'Pflanzstab';
+
+  @override
+  String get careSupportTrellis => 'Spalier';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Den Moosstab bei jedem Gießen befeuchten: daran halten sich die Luftwurzeln.';
+
+  @override
+  String get careSupportStakeCare =>
+      'Den Trieb locker anbinden, während er nach oben wächst.';
+
+  @override
+  String get careSupportTrellisCare =>
+      'Die Triebe führen, während sie wachsen.';
+
+  @override
   String get careIssues => 'Darauf achten';
 
   @override
@@ -2481,6 +2505,96 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Bei dieser Art oder verwandten Arten gemeldet.';
+
+  @override
+  String get careLeafSigns => 'Anzeichen an den Blättern';
+
+  @override
+  String get careLeafSignsNote =>
+      'Was ein Blatt zeigt, und was es meistens erklärt.';
+
+  @override
+  String get leafSignPaling => 'Blätter werden heller';
+
+  @override
+  String get leafSignYellowing => 'Gelbe Blätter';
+
+  @override
+  String get leafSignScorched => 'Verbrannte Blätter';
+
+  @override
+  String get leafSignSpots => 'Flecken mitten auf dem Blatt';
+
+  @override
+  String get leafSignBrownTips => 'Braune Spitzen und Ränder';
+
+  @override
+  String get leafSignStunted => 'Blätter wachsen nicht mehr';
+
+  @override
+  String get leafSignDrooping => 'Schlaffe Blätter';
+
+  @override
+  String get leafSignFalling => 'Blätter fallen ab';
+
+  @override
+  String get leafSignSticky => 'Klebrige Blätter';
+
+  @override
+  String get leafCauseTooMuchSun => 'Zu viel direkte Sonne';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Zu wenig Licht';
+
+  @override
+  String get leafCauseOverwatering => 'Zu häufiges Gießen';
+
+  @override
+  String get leafCauseUnderwatering => 'Substrat zu lange trocken geblieben';
+
+  @override
+  String get leafCauseDryAir => 'Zu trockene Luft';
+
+  @override
+  String get leafCauseColdDraught => 'Kälte oder Zugluft';
+
+  @override
+  String get leafCauseHardWater => 'Kalkhaltiges Wasser oder zu viel Dünger';
+
+  @override
+  String get leafCausePoorSoil => 'Erschöpftes Substrat';
+
+  @override
+  String get leafCausePotBound => 'Wurzeln zu eng im Topf';
+
+  @override
+  String get leafCauseDamagedRoots => 'Wurzeln durch Staunässe geschädigt';
+
+  @override
+  String get leafCauseLeafPests => 'Saugschäden von Spinnmilben oder Thripsen';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Woll- oder Blattläuse, an der Pflanze oder darüber';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Rußtau, das Schwarze, das auf dem Honigtau wächst';
+
+  @override
+  String get leafCauseLeafFungus => 'Pilz oder Bakterium auf dem Blatt';
+
+  @override
+  String get leafCauseWetLeaves => 'Wasser auf dem Laub geblieben';
+
+  @override
+  String get leafCauseRecentMove => 'Kürzlicher Standortwechsel oder Umtopfen';
+
+  @override
+  String get leafCauseOldLeaves => 'Alternde untere Blätter';
+
+  @override
+  String get leafCauseWinterRest => 'Winterruhe';
 
   @override
   String get problemKindDisorder => 'Störung';
@@ -2699,6 +2813,123 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Ganz ohne Substrat';
+
+  @override
+  String get careWater => 'Wasser';
+
+  @override
+  String get careWaterTolerant => 'Leitungswasser';
+
+  @override
+  String get careWaterSensitive => 'Kalkarmes Wasser';
+
+  @override
+  String get careWaterStrict => 'Kalkfreies Wasser';
+
+  @override
+  String get careWaterTolerantNote => 'Kalk stört sie nicht.';
+
+  @override
+  String get careWaterSensitiveNote =>
+      'Kalk und Fluorid färben die Blattspitzen braun.';
+
+  @override
+  String get careWaterStrictNote =>
+      'Kalk schadet ihr, schon in kleinen Mengen.';
+
+  @override
+  String get careWaterTypes => 'Wasserarten';
+
+  @override
+  String get careWaterTypesNote =>
+      'Die Härte des Leitungswassers ändert sich von Gemeinde zu Gemeinde; die jährliche Analyse des Versorgers nennt sie.';
+
+  @override
+  String get careWaterBest => 'Empfohlen';
+
+  @override
+  String get careWaterOk => 'Geeignet';
+
+  @override
+  String get careWaterCaution => 'Mit Vorbehalt';
+
+  @override
+  String get careWaterAvoid => 'Zu vermeiden';
+
+  @override
+  String get careWaterTap => 'Leitungswasser';
+
+  @override
+  String get careWaterTapNote =>
+      'Wasser aus dem Netz, so wie es kommt. Seine Härte hängt von der Gemeinde ab.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Kalk sammelt sich in der Erde und hebt ihren pH-Wert. Abgestandenes Wasser verliert das Chlor, nicht den Kalk.';
+
+  @override
+  String get careWaterRain => 'Regenwasser';
+
+  @override
+  String get careWaterRainNote => 'Weich, kalkfrei, leicht sauer.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Vom Dach gesammelt, trägt es Staub und Vogelkot mit; ein offenes Fass wird grün. Die ersten Minuten Regen ablaufen lassen und die Tonne abdecken.';
+
+  @override
+  String get careWaterFiltered => 'Gefiltertes Wasser';
+
+  @override
+  String get careWaterFilteredNote =>
+      'Ein Filterkrug entfernt das Chlor und einen Teil des Kalks.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'Wie viel zurückgehalten wird, hängt von der Kartusche ab, und eine erschöpfte Kartusche hält nichts mehr zurück. Der Kalk verschwindet nie vollständig.';
+
+  @override
+  String get careWaterOsmosis => 'Osmosewasser';
+
+  @override
+  String get careWaterOsmosisNote => 'Nahezu mineralfrei, wie Regenwasser.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'Es bringt keine Nährstoffe mit: der Dünger bleibt die einzige Quelle. Bei einer gewöhnlichen Pflanze gleicht ein Drittel Leitungswasser das aus.';
+
+  @override
+  String get careWaterDemineralized => 'Entmineralisiertes Wasser';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Für Bügeleisen verkauft, entspricht es Osmosewasser, solange es rein ist.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Manche Kanister enthalten einen Entkalkerzusatz oder einen Duftstoff: das Etikett lesen. Wie Osmosewasser bringt es keine Nährstoffe mit.';
+
+  @override
+  String get careWaterCondensate => 'Klimaanlagenwasser';
+
+  @override
+  String get careWaterCondensateNote =>
+      'Das Kondensat einer Klimaanlage oder eines Luftentfeuchters, vom Gerät destilliert.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'Es ist über einen Wärmetauscher und durch eine Wanne gelaufen, in der sich Staub, Biofilm und Bakterien sammeln, und kann Metallspuren mitführen. Nur für Zierpflanzen, aus einem sauberen Gerät, nie auf Essbares.';
+
+  @override
+  String get careWaterSoftened => 'Enthärtetes Wasser';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'Ein Enthärter mit Harz tauscht den Kalk gegen Natrium.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Natrium sammelt sich in der Erde, schädigt die Wurzeln und verdichtet das Bodengefüge. Der unbehandelte Hahn vor dem Enthärter bleibt der richtige.';
 
   @override
   String get careSoilMixStandard =>
@@ -3014,6 +3245,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careIssueSpiderMites => 'Spinnmilben (feine Gespinste)';
 
   @override
+  String get careIssueThrips => 'Thripse (silbrige Blätter)';
+
+  @override
   String get careIssueMealybugs => 'Wollläuse';
 
   @override
@@ -3029,10 +3263,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careIssueWhitefly => 'Weiße Fliege';
 
   @override
+  String get careIssueTrueBugs => 'Wanzen';
+
+  @override
   String get careIssueSlugs => 'Schnecken';
 
   @override
   String get careIssuePowderyMildew => 'Echter Mehltau';
+
+  @override
+  String get careIssueGreyMould => 'Grauschimmel (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Blattflecken';
@@ -3083,14 +3323,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get careTipBottomWatering =>
       'Von unten gießen, den Topf 20 Minuten in Wasser stellen.';
-
-  @override
-  String get careTipFilteredWater =>
-      'Regen- oder gefiltertes Wasser nehmen, denn Kalk bräunt die Spitzen.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Mit Regenwasser gießen, denn die Pflanze verträgt keinen Kalk.';
 
   @override
   String get careTipThirstyPlant => 'Trinkt viel, im Sommer täglich prüfen.';
@@ -3253,6 +3485,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'Sie braucht sauren Boden, keine Universalerde.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'Sie ernährt sich von Insekten: kein Dünger und ein armer Boden.';
 
   @override
   String get careTipBlueNeedsAcid =>

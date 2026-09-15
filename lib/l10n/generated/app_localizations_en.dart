@@ -2468,6 +2468,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get carePropagation => 'Propagation';
 
   @override
+  String get careSupport => 'Support';
+
+  @override
+  String get careSupportMossPole => 'Moss pole';
+
+  @override
+  String get careSupportStake => 'Stake';
+
+  @override
+  String get careSupportTrellis => 'Trellis';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Dampen the pole at every watering: the aerial roots take hold in it.';
+
+  @override
+  String get careSupportStakeCare => 'Tie the stem loosely as it climbs.';
+
+  @override
+  String get careSupportTrellisCare => 'Guide the stems as they grow.';
+
+  @override
   String get careIssues => 'Watch out for';
 
   @override
@@ -2476,6 +2498,96 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Reported on this species or related ones.';
+
+  @override
+  String get careLeafSigns => 'Leaf signs';
+
+  @override
+  String get careLeafSignsNote =>
+      'What a leaf shows, and what usually explains it.';
+
+  @override
+  String get leafSignPaling => 'Leaves turning pale';
+
+  @override
+  String get leafSignYellowing => 'Yellow leaves';
+
+  @override
+  String get leafSignScorched => 'Scorched leaves';
+
+  @override
+  String get leafSignSpots => 'Spots in the middle of the leaf';
+
+  @override
+  String get leafSignBrownTips => 'Brown tips and edges';
+
+  @override
+  String get leafSignStunted => 'Leaves that stop growing';
+
+  @override
+  String get leafSignDrooping => 'Limp leaves';
+
+  @override
+  String get leafSignFalling => 'Leaves dropping';
+
+  @override
+  String get leafSignSticky => 'Sticky leaves';
+
+  @override
+  String get leafCauseTooMuchSun => 'Too much direct sun';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Not enough light';
+
+  @override
+  String get leafCauseOverwatering => 'Watering too often';
+
+  @override
+  String get leafCauseUnderwatering => 'Soil left dry for too long';
+
+  @override
+  String get leafCauseDryAir => 'Air too dry';
+
+  @override
+  String get leafCauseColdDraught => 'Cold or a draught';
+
+  @override
+  String get leafCauseHardWater => 'Hard water, or fertilizer too strong';
+
+  @override
+  String get leafCausePoorSoil => 'Exhausted potting mix';
+
+  @override
+  String get leafCausePotBound => 'Roots cramped in the pot';
+
+  @override
+  String get leafCauseDamagedRoots => 'Roots damaged by standing water';
+
+  @override
+  String get leafCauseLeafPests => 'Feeding marks from spider mites or thrips';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Mealybugs or aphids, on the plant or above it';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Sooty mould, the black that grows on honeydew';
+
+  @override
+  String get leafCauseLeafFungus => 'A fungus or a bacterium on the leaf';
+
+  @override
+  String get leafCauseWetLeaves => 'Water left on the foliage';
+
+  @override
+  String get leafCauseRecentMove => 'A recent move or repotting';
+
+  @override
+  String get leafCauseOldLeaves => 'Lower leaves ageing';
+
+  @override
+  String get leafCauseWinterRest => 'Winter rest';
 
   @override
   String get problemKindDisorder => 'Disorder';
@@ -2694,6 +2806,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'No soil at all';
+
+  @override
+  String get careWater => 'Water';
+
+  @override
+  String get careWaterTolerant => 'Tap water';
+
+  @override
+  String get careWaterSensitive => 'Low-lime water';
+
+  @override
+  String get careWaterStrict => 'Lime-free water';
+
+  @override
+  String get careWaterTolerantNote => 'Lime does not bother it.';
+
+  @override
+  String get careWaterSensitiveNote => 'Lime and fluoride brown the leaf tips.';
+
+  @override
+  String get careWaterStrictNote => 'Lime harms it, even in small amounts.';
+
+  @override
+  String get careWaterTypes => 'Water types';
+
+  @override
+  String get careWaterTypesNote =>
+      'Tap water hardness changes from one town to the next; the supplier\'s annual analysis gives it.';
+
+  @override
+  String get careWaterBest => 'Recommended';
+
+  @override
+  String get careWaterOk => 'Suitable';
+
+  @override
+  String get careWaterCaution => 'With caution';
+
+  @override
+  String get careWaterAvoid => 'To avoid';
+
+  @override
+  String get careWaterTap => 'Tap water';
+
+  @override
+  String get careWaterTapNote =>
+      'Mains water as it comes. Its hardness depends on the town.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Lime builds up in the potting mix and raises its pH. Letting the water stand drives off the chlorine, not the lime.';
+
+  @override
+  String get careWaterRain => 'Rainwater';
+
+  @override
+  String get careWaterRainNote => 'Soft, lime-free, slightly acidic.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Collected off a roof, it carries dust and droppings; an uncovered barrel turns green. Let the first minutes of rain run off, and keep the barrel covered.';
+
+  @override
+  String get careWaterFiltered => 'Filtered water';
+
+  @override
+  String get careWaterFilteredNote =>
+      'A filter jug removes the chlorine and part of the lime.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'How much it holds back depends on the cartridge, and a spent cartridge holds back nothing. The lime is never removed entirely.';
+
+  @override
+  String get careWaterOsmosis => 'Reverse osmosis water';
+
+  @override
+  String get careWaterOsmosisNote => 'Almost free of minerals, like rainwater.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'It brings no nutrients at all: fertilizer becomes the only source. For an ordinary plant, a third of tap water balances it out.';
+
+  @override
+  String get careWaterDemineralized => 'Demineralized water';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Sold for irons, it matches osmosis water as long as it is pure.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Some bottles hold an anti-scale additive or a fragrance: read the label. Like osmosis water, it brings no nutrients.';
+
+  @override
+  String get careWaterCondensate => 'Air conditioner water';
+
+  @override
+  String get careWaterCondensateNote =>
+      'The condensate from an air conditioner or a dehumidifier, distilled by the machine.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'It has run over a heat exchanger and through a tray where dust, biofilm and bacteria gather, and it can carry traces of metal. Keep it for ornamental plants, from a clean unit, never on anything edible.';
+
+  @override
+  String get careWaterSoftened => 'Softened water';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'A resin softener swaps the lime for sodium.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Sodium builds up in the potting mix, damages the roots and closes up the structure of the soil. The untreated tap, upstream of the softener, stays the right one.';
 
   @override
   String get careSoilMixStandard =>
@@ -3010,6 +3237,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careIssueSpiderMites => 'Spider mites (fine webbing)';
 
   @override
+  String get careIssueThrips => 'Thrips (silvery leaves)';
+
+  @override
   String get careIssueMealybugs => 'Mealybugs';
 
   @override
@@ -3025,10 +3255,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careIssueWhitefly => 'Whitefly';
 
   @override
+  String get careIssueTrueBugs => 'True bugs';
+
+  @override
   String get careIssueSlugs => 'Slugs and snails';
 
   @override
   String get careIssuePowderyMildew => 'Powdery mildew';
+
+  @override
+  String get careIssueGreyMould => 'Grey mould (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Leaf spot';
@@ -3079,14 +3315,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careTipBottomWatering =>
       'Water from below by standing the pot in water for 20 minutes.';
-
-  @override
-  String get careTipFilteredWater =>
-      'Use rain or filtered water, as hard water browns the tips.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Water with rainwater, as this plant hates lime.';
 
   @override
   String get careTipThirstyPlant => 'A thirsty one, check it daily in summer.';
@@ -3250,6 +3478,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'It needs acidic soil, not all-purpose compost.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'It feeds on insects: no fertilizer, and a poor soil.';
 
   @override
   String get careTipBlueNeedsAcid =>

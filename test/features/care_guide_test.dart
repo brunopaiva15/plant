@@ -31,7 +31,7 @@ void main() {
     toxicity: Toxicity.safe,
   );
 
-  Future<void> pump(WidgetTester tester, [CareProfile p = profile]) async {
+  Future<void> pump(WidgetTester tester, [CareProfile p = profile, double scale = 1.0]) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await PreferencesService.load();
     tester.view.physicalSize = const Size(1170, 2532);
@@ -50,10 +50,18 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           theme: buildFloraTheme(Brightness.light),
-          home: Scaffold(
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(Space.page),
-              child: CareGuideBody(care: ResolvedCare(profile: p, match: CareMatch.species)),
+          // L'échelle du texte s'écrase seule : une `MediaQueryData` neuve
+          // emporterait la taille de la vue avec elle, et la page se
+          // disposerait dans le vide.
+          home: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  padding: const EdgeInsets.all(Space.page),
+                  child: CareGuideBody(care: ResolvedCare(profile: p, match: CareMatch.species)),
+                ),
+              ),
             ),
           ),
         ),
@@ -66,6 +74,16 @@ void main() {
   Color? tintOf(WidgetTester tester, String title) {
     final card = find.ancestor(of: find.text(title), matching: find.byType(FloraCard));
     return tester.widget<FloraCard>(card.first).color;
+  }
+
+  /// Amène le texte sous les yeux avant d'y toucher : la fiche est plus
+  /// longue que l'écran, et une cible hors cadre ne reçoit pas le doigt.
+  Future<void> toucher(WidgetTester tester, String texte) async {
+    final cible = find.text(texte);
+    await tester.ensureVisible(cible);
+    await tester.pumpAndSettle();
+    await tester.tap(cible);
+    await tester.pumpAndSettle();
   }
 
   testWidgets('chaque volet du soin a sa carte et sa teinte', (tester) async {
@@ -190,8 +208,64 @@ void main() {
     expect(find.text('Difficulté'), findsOneWidget);
     expect(find.text('Toxicité'), findsOneWidget);
     // La liste ne reprend ni la lumière ni le substrat : ils ont leur carte.
-    expect(find.byType(FloraGroup), findsOneWidget);
-    expect(find.descendant(of: find.byType(FloraGroup), matching: find.text('Substrat')), findsNothing);
+    final liste = find.ancestor(of: find.text('Difficulté'), matching: find.byType(FloraGroup));
+    expect(liste, findsOneWidget);
+    expect(find.descendant(of: liste, matching: find.text('Substrat')), findsNothing);
+    expect(find.descendant(of: liste, matching: find.text('Lumière')), findsNothing);
+  });
+
+  testWidgets('la carte « Eau » dit ce qu\'on verse, et ouvre les sept eaux', (tester) async {
+    await pump(tester);
+    // L'eau suit l'arrosage et garde son bleu : c'est le même sujet.
+    expect(tintOf(tester, 'Eau'), FloraColors.light.waterSoft);
+    expect(find.text('Eau du robinet'), findsOneWidget);
+    expect(find.text('Le calcaire ne la gêne pas.'), findsOneWidget);
+
+    await tester.tap(find.text('Eau'));
+    await tester.pumpAndSettle();
+    expect(find.text("Types d'eau"), findsOneWidget);
+    // Les sept eaux, celles qu'on n'attend pas comprises.
+    expect(find.text('Eau de pluie'), findsOneWidget);
+    expect(find.text('Eau osmosée'), findsOneWidget);
+    expect(find.text('Eau déminéralisée'), findsOneWidget);
+    expect(find.text('Eau de climatiseur'), findsOneWidget);
+    expect(find.text('Eau adoucie'), findsOneWidget);
+    // Le verdict est écrit : la couleur ne le porte jamais seule.
+    expect(find.text('Recommandée'), findsNWidgets(2), reason: 'le robinet et la pluie');
+    expect(find.text('À éviter'), findsOneWidget, reason: "l'eau adoucie, pour toutes");
+  });
+
+  testWidgets('une plante qui craint le calcaire écarte le robinet', (tester) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 4,
+        wateringWinterDays: 10,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        difficulty: CareDifficulty.demanding,
+        soil: SoilKind.acidic,
+        water: WaterTolerance.strict,
+      ),
+    );
+    expect(find.text('Eau sans calcaire'), findsOneWidget);
+    expect(find.text("Le calcaire l'abîme, même en petite quantité."), findsOneWidget);
+
+    await tester.tap(find.text('Eau'));
+    await tester.pumpAndSettle();
+    expect(find.text('À éviter'), findsNWidgets(2), reason: 'le robinet et l\'eau adoucie');
+    expect(find.text('Recommandée'), findsNWidgets(3), reason: 'la pluie, l\'osmosée, la déminéralisée');
+  });
+
+  testWidgets('les sept eaux tiennent à 350 % sans rognage', (tester) async {
+    await pump(tester, profile, 3.5);
+    final eau = find.text('Eau');
+    await tester.ensureVisible(eau);
+    await tester.pump();
+    await tester.tap(eau);
+    await tester.pumpAndSettle();
+    expect(find.text("Types d'eau"), findsOneWidget);
+    expect(tester.takeException(), isNull, reason: 'un débordement signale un texte rogné');
   });
 
   testWidgets('une plante sans engrais et sans rempotage le dit', (tester) async {
@@ -297,7 +371,139 @@ void main() {
     // La floraison, elle, se pratique : elle garde la teinte des volets.
     expect(tintOf(tester, 'Floraison'), FloraColors.light.roseSoft);
   });
+
+  group('le tuteur', () {
+    testWidgets('ne paraît que pour les espèces qui en demandent un', (tester) async {
+      await pump(tester);
+      expect(find.text('Tuteur'), findsNothing);
+    });
+
+    testWidgets('dit lequel, et quand s’en occuper', (tester) async {
+      await pump(tester, _avec(profile, support: PlantSupport.mossPole));
+      expect(find.text('Tuteur'), findsOneWidget);
+      expect(find.text('Tuteur moussu'), findsOneWidget);
+      expect(find.text("Humidifier le tuteur à chaque arrosage : les racines aériennes s'y fixent."), findsOneWidget);
+    });
+
+    testWidgets('garde sa carte crème : les cinq teintes sont aux volets du soin', (tester) async {
+      await pump(tester, _avec(profile, support: PlantSupport.trellis));
+      expect(tintOf(tester, 'Treillis'), isNull);
+    });
+  });
+
+  group('« À surveiller »', () {
+    const beaucoup = [
+      CommonIssue.leafSpot,
+      CommonIssue.spiderMites,
+      CommonIssue.overwatering,
+      CommonIssue.thrips,
+      CommonIssue.mealybugs,
+      CommonIssue.fungusGnats,
+      CommonIssue.dryTips,
+      CommonIssue.rootRot,
+    ];
+
+    testWidgets('range les troubles avant les bêtes, et les bêtes avant les maladies', (tester) async {
+      await pump(tester, _avec(profile, issues: beaucoup));
+      double y(String texte) => tester.getTopLeft(find.text(texte)).dy;
+      expect(y("Excès d'eau (feuilles molles et jaunes)"), lessThan(y('Araignées rouges (fines toiles)')));
+      expect(y('Pointes sèches et brunes'), lessThan(y('Araignées rouges (fines toiles)')));
+      expect(y('Araignées rouges (fines toiles)'), lessThan(y('Thrips (feuilles argentées)')));
+    });
+
+    testWidgets('ne se replie pas : la liste de l’espèce tient en entier', (tester) async {
+      // La section est écrite à la main, espèce par espèce ; cacher la moitié
+      // derrière un bouton reviendrait à ne nommer que les araignées rouges.
+      await pump(tester, _avec(profile, issues: beaucoup));
+      for (final attendu in [
+        'Taches foliaires',
+        'Pourriture des racines',
+        'Moucherons du terreau',
+        'Cochenilles farineuses',
+      ]) {
+        expect(find.text(attendu), findsOneWidget, reason: attendu);
+      }
+      expect(find.text('Tout voir'), findsNothing);
+    });
+  });
+
+  group('« Signes sur les feuilles »', () {
+    testWidgets('les signes se lisent, les causes attendent le doigt', (tester) async {
+      await pump(tester);
+      expect(find.text('Feuilles brûlées'), findsOneWidget);
+      expect(find.text('Feuilles qui ne grandissent plus'), findsOneWidget);
+      expect(find.text('Trop de soleil direct'), findsNothing);
+    });
+
+    testWidgets('un signe ouvert montre ses causes, et referme le précédent', (tester) async {
+      await pump(tester);
+      await toucher(tester, 'Feuilles brûlées');
+      expect(find.text('Trop de soleil direct'), findsOneWidget);
+      expect(find.text('Terreau resté sec trop longtemps'), findsOneWidget);
+
+      await toucher(tester, 'Feuilles molles');
+      expect(find.text('Trop de soleil direct'), findsNothing);
+      expect(find.text("Racines abîmées par l'eau stagnante"), findsOneWidget);
+    });
+
+    testWidgets('une cause que l’espèce ne connaît pas n’est pas proposée', (tester) async {
+      // Plein soleil et air sec : ni brûlure de soleil, ni pointes brunies par
+      // l'air de la pièce, et pas de repos hivernal à invoquer.
+      await pump(
+        tester,
+        const CareProfile(
+          wateringSummerDays: 4,
+          wateringWinterDays: 8,
+          light: LightNeed.fullSun,
+          humidity: HumidityNeed.low,
+          difficulty: CareDifficulty.easy,
+          soil: SoilKind.cactus,
+          dormantInWinter: false,
+        ),
+      );
+      // Le signe reste — il a d'autres causes —, mais pas celle-là.
+      await toucher(tester, 'Feuilles brûlées');
+      expect(find.text('Trop de soleil direct'), findsNothing);
+      expect(find.text('Terreau resté sec trop longtemps'), findsOneWidget);
+
+      await toucher(tester, 'Feuilles qui ne grandissent plus');
+      expect(find.text('Repos hivernal'), findsNothing);
+      expect(find.text('Pas assez de lumière'), findsOneWidget);
+    });
+  });
 }
+
+/// [base] avec un champ de plus. Les fiches du catalogue sont des constantes ;
+/// un test qui en veut une variante la recopie plutôt que d'en écrire une
+/// entière à chaque fois.
+CareProfile _avec(CareProfile base, {PlantSupport? support, List<CommonIssue>? issues}) => CareProfile(
+      wateringSummerDays: base.wateringSummerDays,
+      wateringWinterDays: base.wateringWinterDays,
+      light: base.light,
+      humidity: base.humidity,
+      difficulty: base.difficulty,
+      soil: base.soil,
+      humidityMinPercent: base.humidityMinPercent,
+      humidityMaxPercent: base.humidityMaxPercent,
+      water: base.water,
+      fertilizingDays: base.fertilizingDays,
+      fertilizingWindow: base.fertilizingWindow,
+      repotEveryMonths: base.repotEveryMonths,
+      pot: base.pot,
+      minTempC: base.minTempC,
+      idealTempMinC: base.idealTempMinC,
+      idealTempMaxC: base.idealTempMaxC,
+      toxicity: base.toxicity,
+      propagation: base.propagation,
+      issues: issues ?? base.issues,
+      support: support ?? base.support,
+      mistLeaves: base.mistLeaves,
+      dormantInWinter: base.dormantInWinter,
+      outdoorFriendly: base.outdoorFriendly,
+      bloom: base.bloom,
+      dormancy: base.dormancy,
+      tipKeys: base.tipKeys,
+    );
 
 /// Une plante à bulbe : elle veut de la place, fleurit à la sortie de l'hiver
 /// et disparaît tout l'été.

@@ -71,16 +71,20 @@ class InfomaniakCareCompleter implements CareCompleter {
       'Never return anything about toxicity, safety for pets or children, or edibility. '
       'Use only these words. light: shade, lowLight, indirect, brightIndirect, someSun, fullSun. '
       'humidity: low, average, high. soil: standard, draining, cactus, orchid, acidic, rich, aquatic. '
+      'water: tolerant, sensitive, strict — what the species takes of the salts dissolved in tap water: '
+      'tolerant, sensitive (lime and fluoride brown the leaf tips), strict (lime harms it, as in acid-soil, '
+      'epiphytic and carnivorous plants). '
       'difficulty: easy, medium, demanding. '
       'pot: snug (flowers and grows best root-bound), steady (repot once the root ball is full), '
       'roomy (stops growing as soon as the roots circle the pot). '
       'propagation: stemCutting, leafCutting, division, offsets, layering, seed, water, tuber. '
-      'issues: overwatering, underwatering, rootRot, spiderMites, mealybugs, scale, aphids, fungusGnats, whitefly, slugs, '
-      'powderyMildew, leafSpot, blight, sunburn, dryTips, leafDrop, etiolation, chlorosis, blossomEndRot. '
+      'issues: overwatering, underwatering, rootRot, spiderMites, thrips, mealybugs, scale, aphids, fungusGnats, whitefly, '
+      'trueBugs, slugs, powderyMildew, greyMould, leafSpot, blight, sunburn, dryTips, leafDrop, etiolation, chlorosis, '
+      'blossomEndRot. '
       'Watering days are the usual number of days between two waterings, in full growth and in winter rest. '
       'Set "no_fertilizer" to true only for species that are not fertilized at all. '
       'Answer with one JSON object only, no markdown, no text around it, with any of these keys: '
-      '"known" (boolean), "watering_summer_days", "watering_winter_days", "light", "humidity", "soil", '
+      '"known" (boolean), "watering_summer_days", "watering_winter_days", "light", "humidity", "soil", "water", '
       '"fertilizing_days", "no_fertilizer", "repot_every_months", "pot", "min_temp_c", "ideal_temp_min_c", '
       '"ideal_temp_max_c", "difficulty", "propagation" (array), "issues" (array). '
       'The language "$language" is irrelevant here, every value is a number or one of the words above.';
@@ -141,6 +145,7 @@ class InfomaniakCareCompleter implements CareCompleter {
       light: mot(LightNeed.values, data['light']),
       humidity: mot(HumidityNeed.values, data['humidity']),
       soil: mot(SoilKind.values, data['soil']),
+      water: mot(WaterTolerance.values, data['water']),
       fertilizingDays: borne(data['fertilizing_days'], 7, 180),
       noFertilizer: data['no_fertilizer'] == true,
       repotEveryMonths: borne(data['repot_every_months'], 6, 120),

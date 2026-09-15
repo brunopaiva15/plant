@@ -1,3 +1,5 @@
+import '../problems/plant_problem.dart';
+
 /// Besoin en lumière, du plus sombre au plus ensoleillé.
 enum LightNeed { shade, lowLight, indirect, brightIndirect, someSun, fullSun }
 
@@ -52,6 +54,16 @@ enum PotPreference {
   roomy,
 }
 
+/// Ce que l'espèce supporte des sels de l'eau d'arrosage — calcaire, fluor,
+/// sodium.
+///
+/// - [tolerant] : l'eau du robinet lui convient, sa dureté n'y change rien.
+/// - [sensitive] : le calcaire et le fluor s'accumulent et brunissent les
+///   pointes ; l'eau de pluie ou filtrée lui va mieux.
+/// - [strict] : le calcaire l'abîme, même en petite quantité — plantes de
+///   terre acide, carnivores, broméliacées épiphytes.
+enum WaterTolerance { tolerant, sensitive, strict }
+
 /// Ce qu'une plante accepte hors du terreau : l'eau claire d'un vase, ou le
 /// pon (billes inertes — pouzzolane, zéolithe, pierre ponce — arrosées d'une
 /// solution nutritive).
@@ -98,26 +110,56 @@ enum BloomTrigger {
 enum Propagation { stemCutting, leafCutting, division, offsets, layering, seed, water, tuber }
 
 /// Problème fréquent, pour la section « À surveiller ».
+///
+/// Chaque entrée dit de quelle famille elle relève — un trouble, un ravageur,
+/// une maladie —, la même que celle de la base des deux cents problèmes. La
+/// liste d'une espèce se range alors d'elle-même : ce qui vient de l'eau et
+/// de la lumière d'abord, les bêtes ensuite, les champignons en dernier.
 enum CommonIssue {
-  overwatering,
-  underwatering,
-  rootRot,
-  spiderMites,
-  mealybugs,
-  scale,
-  aphids,
-  fungusGnats,
-  whitefly,
-  slugs,
-  powderyMildew,
-  leafSpot,
-  blight,
-  sunburn,
-  dryTips,
-  leafDrop,
-  etiolation,
-  chlorosis,
-  blossomEndRot,
+  overwatering(ProblemKind.disorder),
+  underwatering(ProblemKind.disorder),
+  rootRot(ProblemKind.disease),
+  spiderMites(ProblemKind.pest),
+  thrips(ProblemKind.pest),
+  mealybugs(ProblemKind.pest),
+  scale(ProblemKind.pest),
+  aphids(ProblemKind.pest),
+  fungusGnats(ProblemKind.pest),
+  whitefly(ProblemKind.pest),
+  trueBugs(ProblemKind.pest),
+  slugs(ProblemKind.pest),
+  powderyMildew(ProblemKind.disease),
+  greyMould(ProblemKind.disease),
+  leafSpot(ProblemKind.disease),
+  blight(ProblemKind.disease),
+  sunburn(ProblemKind.disorder),
+  dryTips(ProblemKind.disorder),
+  leafDrop(ProblemKind.disorder),
+  etiolation(ProblemKind.disorder),
+  chlorosis(ProblemKind.disorder),
+  blossomEndRot(ProblemKind.disorder);
+
+  const CommonIssue(this.kind);
+
+  final ProblemKind kind;
+}
+
+/// Ce qui tient une plante debout, quand elle ne le fait pas seule.
+///
+/// Renseigné pour les espèces où le support change quelque chose : une
+/// grimpante à racines aériennes ne fait ses grandes feuilles qu'en montant,
+/// une tomate casse sans tuteur. Ailleurs, `null` — et la fiche n'en parle
+/// pas plutôt que de dire « aucun ».
+enum PlantSupport {
+  /// Tuteur moussu, en sphaigne ou en fibre de coco : les racines aériennes
+  /// s'y accrochent, à condition qu'il reste humide.
+  mossPole,
+
+  /// Tuteur droit, auquel la tige s'attache à mesure qu'elle monte.
+  stake,
+
+  /// Treillis, fil ou grillage, le long duquel les tiges se guident.
+  trellis,
 }
 
 /// Fenêtre de mois (1–12), bornes incluses. Peut traverser l'hiver
@@ -194,6 +236,7 @@ class CareProfile {
     required this.soil,
     this.humidityMinPercent,
     this.humidityMaxPercent,
+    this.water = WaterTolerance.tolerant,
     this.fertilizingDays,
     this.fertilizingWindow = const MonthWindow(3, 9),
     this.fertilizer,
@@ -208,6 +251,7 @@ class CareProfile {
     this.toxicity = Toxicity.unknown,
     this.propagation = const [],
     this.issues = const [],
+    this.support,
     this.mistLeaves = false,
     this.dormantInWinter = true,
     this.outdoorFriendly = false,
@@ -231,6 +275,10 @@ class CareProfile {
   /// catégorie. `null` des deux côtés = la plage du besoin suffit.
   final int? humidityMinPercent;
   final int? humidityMaxPercent;
+
+  /// Tolérance à l'eau du robinet. La valeur par défaut est celle du plus
+  /// grand nombre : une plante ordinaire boit l'eau du robinet.
+  final WaterTolerance water;
 
   /// Jours entre deux apports d'engrais pendant [fertilizingWindow].
   /// `null` = pas d'engrais utile.
@@ -267,6 +315,9 @@ class CareProfile {
   final Toxicity toxicity;
   final List<Propagation> propagation;
   final List<CommonIssue> issues;
+
+  /// Le support que l'espèce demande, quand elle en demande un.
+  final PlantSupport? support;
 
   /// Brumiser le feuillage aide (plantes tropicales).
   final bool mistLeaves;

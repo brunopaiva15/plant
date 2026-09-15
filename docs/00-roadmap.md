@@ -92,6 +92,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Fonction | État |
 |---|---|
 | Fiche d'entretien par plante : arrosage saisonnier, lumière, humidité chiffrée, engrais (lequel, et le calcium), substrat (le mélange, l'eau, le pon), rempotage, sous serre, floraison, toxicité, bouturage, problèmes fréquents (230 espèces au catalogue) | ✅ |
+| Eau d'arrosage : ce que l'espèce supporte du calcaire, et les sept eaux jugées une à une — robinet, pluie, carafe, osmosée, déminéralisée, condensat de climatiseur, adoucie — avec ce que chacune emporte avec elle | ✅ |
 | Fiche d'entretien, second niveau : hygrométrie de l'espèce en pourcentage (20 à 90 %, pour qui règle une serre), lampe horticole équivalente au besoin de lumière, rapport au pot (à l'étroit ou à l'aise), saison de floraison et conditions à réunir, repos à feuillage disparu des bulbes et tubercules | ✅ |
 | Sélecteur d'espèces : catalogue intégré hors ligne + recherche GBIF paginée | ✅ |
 | Catalogue étendu : ~40 000 espèces avec leurs noms courants en fr/de/it/en, cherchables hors ligne et sans accents (Wikidata CC0 + familles GBIF) | ✅ |

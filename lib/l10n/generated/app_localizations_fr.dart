@@ -2472,6 +2472,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get carePropagation => 'Multiplication';
 
   @override
+  String get careSupport => 'Tuteur';
+
+  @override
+  String get careSupportMossPole => 'Tuteur moussu';
+
+  @override
+  String get careSupportStake => 'Tuteur droit';
+
+  @override
+  String get careSupportTrellis => 'Treillis';
+
+  @override
+  String get careSupportMossPoleCare =>
+      'Humidifier le tuteur à chaque arrosage : les racines aériennes s\'y fixent.';
+
+  @override
+  String get careSupportStakeCare =>
+      'Attacher la tige sans serrer, à mesure qu\'elle monte.';
+
+  @override
+  String get careSupportTrellisCare =>
+      'Guider les tiges à mesure qu\'elles poussent.';
+
+  @override
   String get careIssues => 'À surveiller';
 
   @override
@@ -2480,6 +2504,96 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careKnownProblemsNote =>
       'Signalés sur cette espèce ou des espèces proches.';
+
+  @override
+  String get careLeafSigns => 'Signes sur les feuilles';
+
+  @override
+  String get careLeafSignsNote =>
+      'Ce qu\'une feuille montre, et ce qui l\'explique le plus souvent.';
+
+  @override
+  String get leafSignPaling => 'Feuilles qui s\'éclaircissent';
+
+  @override
+  String get leafSignYellowing => 'Feuilles jaunes';
+
+  @override
+  String get leafSignScorched => 'Feuilles brûlées';
+
+  @override
+  String get leafSignSpots => 'Taches au milieu de la feuille';
+
+  @override
+  String get leafSignBrownTips => 'Pointes et bords bruns';
+
+  @override
+  String get leafSignStunted => 'Feuilles qui ne grandissent plus';
+
+  @override
+  String get leafSignDrooping => 'Feuilles molles';
+
+  @override
+  String get leafSignFalling => 'Feuilles qui tombent';
+
+  @override
+  String get leafSignSticky => 'Feuilles collantes';
+
+  @override
+  String get leafCauseTooMuchSun => 'Trop de soleil direct';
+
+  @override
+  String get leafCauseNotEnoughLight => 'Pas assez de lumière';
+
+  @override
+  String get leafCauseOverwatering => 'Arrosages trop rapprochés';
+
+  @override
+  String get leafCauseUnderwatering => 'Terreau resté sec trop longtemps';
+
+  @override
+  String get leafCauseDryAir => 'Air trop sec';
+
+  @override
+  String get leafCauseColdDraught => 'Froid ou courant d\'air';
+
+  @override
+  String get leafCauseHardWater => 'Eau calcaire, ou engrais trop concentré';
+
+  @override
+  String get leafCausePoorSoil => 'Substrat épuisé';
+
+  @override
+  String get leafCausePotBound => 'Racines à l\'étroit dans le pot';
+
+  @override
+  String get leafCauseDamagedRoots => 'Racines abîmées par l\'eau stagnante';
+
+  @override
+  String get leafCauseLeafPests => 'Piqûres d\'araignées rouges ou de thrips';
+
+  @override
+  String get leafCauseHoneydewPests =>
+      'Cochenilles ou pucerons, sur la plante ou au-dessus';
+
+  @override
+  String get leafCauseSootyMould =>
+      'Fumagine, le noir qui pousse sur le miellat';
+
+  @override
+  String get leafCauseLeafFungus => 'Champignon ou bactérie sur la feuille';
+
+  @override
+  String get leafCauseWetLeaves => 'Eau restée sur le feuillage';
+
+  @override
+  String get leafCauseRecentMove => 'Déménagement ou rempotage récent';
+
+  @override
+  String get leafCauseOldLeaves => 'Vieillissement des feuilles du bas';
+
+  @override
+  String get leafCauseWinterRest => 'Repos hivernal';
 
   @override
   String get problemKindDisorder => 'Trouble';
@@ -2699,6 +2813,124 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Sans substrat';
+
+  @override
+  String get careWater => 'Eau';
+
+  @override
+  String get careWaterTolerant => 'Eau du robinet';
+
+  @override
+  String get careWaterSensitive => 'Eau peu calcaire';
+
+  @override
+  String get careWaterStrict => 'Eau sans calcaire';
+
+  @override
+  String get careWaterTolerantNote => 'Le calcaire ne la gêne pas.';
+
+  @override
+  String get careWaterSensitiveNote =>
+      'Le calcaire et le fluor brunissent les pointes.';
+
+  @override
+  String get careWaterStrictNote =>
+      'Le calcaire l\'abîme, même en petite quantité.';
+
+  @override
+  String get careWaterTypes => 'Types d\'eau';
+
+  @override
+  String get careWaterTypesNote =>
+      'La dureté de l\'eau du robinet change d\'une commune à l\'autre ; l\'analyse annuelle du distributeur la donne.';
+
+  @override
+  String get careWaterBest => 'Recommandée';
+
+  @override
+  String get careWaterOk => 'Convient';
+
+  @override
+  String get careWaterCaution => 'Avec réserve';
+
+  @override
+  String get careWaterAvoid => 'À éviter';
+
+  @override
+  String get careWaterTap => 'Eau du robinet';
+
+  @override
+  String get careWaterTapNote =>
+      'L\'eau du réseau, telle qu\'elle sort. Sa dureté dépend de la commune.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Le calcaire s\'accumule dans le terreau et fait monter son pH. Laisser reposer l\'eau chasse le chlore, pas le calcaire.';
+
+  @override
+  String get careWaterRain => 'Eau de pluie';
+
+  @override
+  String get careWaterRainNote => 'Douce, sans calcaire, légèrement acide.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écarter les premières minutes de pluie, couvrir le tonneau.';
+
+  @override
+  String get careWaterFiltered => 'Eau filtrée';
+
+  @override
+  String get careWaterFilteredNote =>
+      'Une carafe filtrante retire le chlore et une part du calcaire.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'La part retenue dépend de la cartouche, et une cartouche épuisée ne retient plus rien. Le calcaire n\'est jamais entièrement retiré.';
+
+  @override
+  String get careWaterOsmosis => 'Eau osmosée';
+
+  @override
+  String get careWaterOsmosisNote =>
+      'Presque sans minéraux, comme l\'eau de pluie.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'Elle n\'apporte aucun élément nutritif : l\'engrais devient la seule source. Pour une plante ordinaire, un tiers d\'eau du robinet la rééquilibre.';
+
+  @override
+  String get careWaterDemineralized => 'Eau déminéralisée';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Vendue pour les fers à repasser, elle vaut l\'eau osmosée quand elle est pure.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Certains bidons contiennent un antitartre ou un parfum : lire l\'étiquette. Comme l\'eau osmosée, elle n\'apporte aucun élément nutritif.';
+
+  @override
+  String get careWaterCondensate => 'Eau de climatiseur';
+
+  @override
+  String get careWaterCondensateNote =>
+      'Le condensat d\'un climatiseur ou d\'un déshumidificateur, une eau distillée par l\'appareil.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières, biofilm et bactéries, et peut emporter des traces de métaux. À réserver aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.';
+
+  @override
+  String get careWaterSoftened => 'Eau adoucie';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'Un adoucisseur à résine remplace le calcaire par du sodium.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Le sodium s\'accumule dans le terreau, abîme les racines et ferme la structure du sol. Le robinet d\'eau brute, en amont de l\'adoucisseur, reste le bon.';
 
   @override
   String get careSoilMixStandard =>
@@ -3016,6 +3248,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careIssueSpiderMites => 'Araignées rouges (fines toiles)';
 
   @override
+  String get careIssueThrips => 'Thrips (feuilles argentées)';
+
+  @override
   String get careIssueMealybugs => 'Cochenilles farineuses';
 
   @override
@@ -3031,10 +3266,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careIssueWhitefly => 'Aleurodes (mouches blanches)';
 
   @override
+  String get careIssueTrueBugs => 'Punaises';
+
+  @override
   String get careIssueSlugs => 'Limaces et escargots';
 
   @override
   String get careIssuePowderyMildew => 'Oïdium (feutrage blanc)';
+
+  @override
+  String get careIssueGreyMould => 'Pourriture grise (Botrytis)';
 
   @override
   String get careIssueLeafSpot => 'Taches foliaires';
@@ -3087,14 +3328,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careTipBottomWatering =>
       'Arrosez par le bas, en posant le pot dans une soucoupe d\'eau 20 minutes.';
-
-  @override
-  String get careTipFilteredWater =>
-      'Préférez l\'eau de pluie ou filtrée, car le calcaire brunit les pointes.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Arrosez à l\'eau de pluie, car cette plante déteste le calcaire.';
 
   @override
   String get careTipThirstyPlant =>
@@ -3266,6 +3499,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'Elle exige une terre acide, pas du terreau universel.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'Elle se nourrit d\'insectes : pas d\'engrais, et une terre pauvre.';
 
   @override
   String get careTipBlueNeedsAcid =>

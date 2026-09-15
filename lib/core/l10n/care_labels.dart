@@ -2,6 +2,8 @@ import 'package:intl/intl.dart';
 
 import '../../domain/care/care_guide.dart';
 import '../../domain/care/care_profile.dart';
+import '../../domain/care/leaf_signs.dart';
+import '../../domain/care/water_quality.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Libellés localisés de la fiche d'entretien.
@@ -62,6 +64,59 @@ extension CareProfileLabels on AppLocalizations {
         SoilKind.acidic => careSoilAcidic,
         SoilKind.rich => careSoilRich,
         SoilKind.aquatic => careSoilAquatic,
+      };
+
+  /// Ce que l'espèce demande comme eau, en deux mots.
+  String waterToleranceName(WaterTolerance v) => switch (v) {
+        WaterTolerance.tolerant => careWaterTolerant,
+        WaterTolerance.sensitive => careWaterSensitive,
+        WaterTolerance.strict => careWaterStrict,
+      };
+
+  /// Pourquoi : ce que le calcaire lui fait, ou ne lui fait pas.
+  String waterToleranceNote(WaterTolerance v) => switch (v) {
+        WaterTolerance.tolerant => careWaterTolerantNote,
+        WaterTolerance.sensitive => careWaterSensitiveNote,
+        WaterTolerance.strict => careWaterStrictNote,
+      };
+
+  String waterKindName(WaterKind v) => switch (v) {
+        WaterKind.tap => careWaterTap,
+        WaterKind.rain => careWaterRain,
+        WaterKind.filtered => careWaterFiltered,
+        WaterKind.osmosis => careWaterOsmosis,
+        WaterKind.demineralized => careWaterDemineralized,
+        WaterKind.condensate => careWaterCondensate,
+        WaterKind.softened => careWaterSoftened,
+      };
+
+  /// Ce que cette eau est.
+  String waterKindNote(WaterKind v) => switch (v) {
+        WaterKind.tap => careWaterTapNote,
+        WaterKind.rain => careWaterRainNote,
+        WaterKind.filtered => careWaterFilteredNote,
+        WaterKind.osmosis => careWaterOsmosisNote,
+        WaterKind.demineralized => careWaterDemineralizedNote,
+        WaterKind.condensate => careWaterCondensateNote,
+        WaterKind.softened => careWaterSoftenedNote,
+      };
+
+  /// Ce qu'elle emporte avec elle, et ce qu'il faut en faire.
+  String waterKindRisk(WaterKind v) => switch (v) {
+        WaterKind.tap => careWaterTapRisk,
+        WaterKind.rain => careWaterRainRisk,
+        WaterKind.filtered => careWaterFilteredRisk,
+        WaterKind.osmosis => careWaterOsmosisRisk,
+        WaterKind.demineralized => careWaterDemineralizedRisk,
+        WaterKind.condensate => careWaterCondensateRisk,
+        WaterKind.softened => careWaterSoftenedRisk,
+      };
+
+  String waterVerdictName(WaterVerdict v) => switch (v) {
+        WaterVerdict.recommended => careWaterBest,
+        WaterVerdict.suitable => careWaterOk,
+        WaterVerdict.caution => careWaterCaution,
+        WaterVerdict.avoid => careWaterAvoid,
       };
 
   /// Le mélange, en proportions : ce qu'on prépare le jour du rempotage.
@@ -160,13 +215,16 @@ extension CareProfileLabels on AppLocalizations {
         CommonIssue.underwatering => careIssueUnderwatering,
         CommonIssue.rootRot => careIssueRootRot,
         CommonIssue.spiderMites => careIssueSpiderMites,
+        CommonIssue.thrips => careIssueThrips,
         CommonIssue.mealybugs => careIssueMealybugs,
         CommonIssue.scale => careIssueScale,
         CommonIssue.aphids => careIssueAphids,
         CommonIssue.fungusGnats => careIssueFungusGnats,
         CommonIssue.whitefly => careIssueWhitefly,
+        CommonIssue.trueBugs => careIssueTrueBugs,
         CommonIssue.slugs => careIssueSlugs,
         CommonIssue.powderyMildew => careIssuePowderyMildew,
+        CommonIssue.greyMould => careIssueGreyMould,
         CommonIssue.leafSpot => careIssueLeafSpot,
         CommonIssue.blight => careIssueBlight,
         CommonIssue.sunburn => careIssueSunburn,
@@ -175,6 +233,56 @@ extension CareProfileLabels on AppLocalizations {
         CommonIssue.etiolation => careIssueEtiolation,
         CommonIssue.chlorosis => careIssueChlorosis,
         CommonIssue.blossomEndRot => careIssueBlossomEndRot,
+      };
+
+  /// Le support demandé par l'espèce.
+  String supportName(PlantSupport v) => switch (v) {
+        PlantSupport.mossPole => careSupportMossPole,
+        PlantSupport.stake => careSupportStake,
+        PlantSupport.trellis => careSupportTrellis,
+      };
+
+  /// Ce que ce support demande, et quand : un tuteur moussu s'humidifie à
+  /// chaque arrosage, une tige s'attache à mesure qu'elle monte.
+  String supportCare(PlantSupport v) => switch (v) {
+        PlantSupport.mossPole => careSupportMossPoleCare,
+        PlantSupport.stake => careSupportStakeCare,
+        PlantSupport.trellis => careSupportTrellisCare,
+      };
+
+  /// Ce qu'on voit sur la feuille, dit comme on le voit.
+  String leafSignName(LeafSign v) => switch (v) {
+        LeafSign.paling => leafSignPaling,
+        LeafSign.yellowing => leafSignYellowing,
+        LeafSign.scorched => leafSignScorched,
+        LeafSign.spots => leafSignSpots,
+        LeafSign.brownTips => leafSignBrownTips,
+        LeafSign.stunted => leafSignStunted,
+        LeafSign.drooping => leafSignDrooping,
+        LeafSign.falling => leafSignFalling,
+        LeafSign.sticky => leafSignSticky,
+      };
+
+  /// Ce qui peut l'expliquer.
+  String leafCauseName(LeafCause v) => switch (v) {
+        LeafCause.tooMuchSun => leafCauseTooMuchSun,
+        LeafCause.notEnoughLight => leafCauseNotEnoughLight,
+        LeafCause.overwatering => leafCauseOverwatering,
+        LeafCause.underwatering => leafCauseUnderwatering,
+        LeafCause.dryAir => leafCauseDryAir,
+        LeafCause.coldDraught => leafCauseColdDraught,
+        LeafCause.hardWater => leafCauseHardWater,
+        LeafCause.poorSoil => leafCausePoorSoil,
+        LeafCause.potBound => leafCausePotBound,
+        LeafCause.damagedRoots => leafCauseDamagedRoots,
+        LeafCause.leafPests => leafCauseLeafPests,
+        LeafCause.honeydewPests => leafCauseHoneydewPests,
+        LeafCause.sootyMould => leafCauseSootyMould,
+        LeafCause.leafFungus => leafCauseLeafFungus,
+        LeafCause.wetLeaves => leafCauseWetLeaves,
+        LeafCause.recentMove => leafCauseRecentMove,
+        LeafCause.oldLeaves => leafCauseOldLeaves,
+        LeafCause.winterRest => leafCauseWinterRest,
       };
 
   /// Ce que le mot veut dire, en une phrase.
@@ -242,8 +350,6 @@ extension CareProfileLabels on AppLocalizations {
         'waterAtBase' => careTipWaterAtBase,
         'noWaterOnLeaves' => careTipNoWaterOnLeaves,
         'bottomWatering' => careTipBottomWatering,
-        'filteredWater' => careTipFilteredWater,
-        'rainwaterOnly' => careTipRainwaterOnly,
         'thirstyPlant' => careTipThirstyPlant,
         'droopSignal' => careTipDroopSignal,
         'winterDry' => careTipWinterDry,
@@ -287,6 +393,7 @@ extension CareProfileLabels on AppLocalizations {
         'containItsRoots' => careTipContainItsRoots,
         'mulchIt' => careTipMulchIt,
         'acidSoil' => careTipAcidSoil,
+        'feedsOnInsects' => careTipFeedsOnInsects,
         'blueNeedsAcid' => careTipBlueNeedsAcid,
         'citrusFertilizer' => careTipCitrusFertilizer,
         'noFertilizer' => careTipNoFertilizer,

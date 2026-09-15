@@ -3,6 +3,7 @@ import 'package:flora/data/species/catalog_care_guide.dart';
 import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/care/care_guide.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/domain/care/water_quality.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -166,14 +167,14 @@ void main() {
       // La couche i18n mappe les clés ; une clé absente afficherait du vide.
       const known = {
         'fingerTest', 'drySoilFirst', 'neverDryOut', 'evenWatering', 'waterAtBase', 'noWaterOnLeaves', 'bottomWatering',
-        'filteredWater', 'rainwaterOnly', 'thirstyPlant', 'droopSignal', 'winterDry', 'winterRest', 'summerDormant',
+        'thirstyPlant', 'droopSignal', 'winterDry', 'winterRest', 'summerDormant',
         'noWaterWhileSplitting', 'orchidSoak', 'soakMount', 'dryUpsideDown', 'waterInTheCup', 'noSoil', 'greenRoots',
         'humidityTray', 'noDirectSun', 'toleratesLowLight', 'toleratesNeglect', 'brightForColor', 'rotatePot',
         'hatesMoving', 'wipeLeaves', 'trimToBushOut', 'monsteraSupport', 'shallowPot', 'likesBeingPotbound',
         'trunkStoresWater', 'pupsToShare', 'keepFlowerSpike', 'darkForRebloom', 'notADesertCactus', 'deadheadFlowers',
         'pinchFlowers', 'harvestTop', 'harvestOutside', 'stakeAndPrune', 'prunesInSpring', 'prunesAfterFlowering',
         'winterPruning', 'pruneAfterHarvest', 'cutSpentCanes', 'trimTwiceAYear', 'containItsRoots', 'mulchIt',
-        'acidSoil', 'blueNeedsAcid', 'citrusFertilizer', 'noFertilizer', 'noNitrogen', 'letFoliageDieBack',
+        'acidSoil', 'feedsOnInsects', 'blueNeedsAcid', 'citrusFertilizer', 'noFertilizer', 'noNitrogen', 'letFoliageDieBack',
         'diesBackInWinter', 'summerOutdoors', 'winterIndoors', 'winterShelter', 'winterCool', 'coolerIsBetter',
         'hardyOutdoors', 'shelterFromWind', 'airFlow', 'spiderMiteWatch', 'slugWatch', 'boxMothWatch', 'sapIrritant',
         'veryToxic', 'sharpSpines', 'splitsAreNormal', 'dryToBloom',
@@ -257,6 +258,75 @@ void main() {
           if (e.value.repotEveryMonths == null && e.value.pot != PotPreference.steady) e.key,
       ];
       expect(bad, isEmpty, reason: 'avis sur le pot sans rempotage : $bad');
+    });
+  });
+
+  group('l\'eau qui convient', () {
+    test('une plante ordinaire boit l\'eau du robinet', () {
+      expect(guide.resolve('Monstera deliciosa').profile.water, WaterTolerance.tolerant);
+      expect(CareProfiles.fallback.water, WaterTolerance.tolerant);
+    });
+
+    test('les pointes qui brunissent : marantacées, dracaenas, palmiers, fougères', () {
+      // Une fille de l'air se nourrit par ses feuilles : le calcaire la marque,
+      // mais une eau sans minéraux ne lui apporte rien non plus.
+      const sensibles = ['Calathea orbifolia', 'Dracaena marginata', 'Chamaedorea elegans', 'Nephrolepis exaltata', 'Spathiphyllum wallisii', 'Citrus × limon', 'Tillandsia ionantha'];
+      for (final name in sensibles) {
+        expect(guide.resolve(name).profile.water, WaterTolerance.sensitive, reason: name);
+      }
+    });
+
+    test('la terre acide et les épiphytes ne supportent pas le calcaire', () {
+      const stricts = ['Rhododendron simsii', 'Camellia japonica', 'Vaccinium corymbosum', 'Hydrangea macrophylla', 'Gardenia jasminoides'];
+      for (final name in stricts) {
+        expect(guide.resolve(name).profile.water, WaterTolerance.strict, reason: name);
+      }
+    });
+
+    test('une carnivore tient de sa famille, et le robinet la tue', () {
+      // Le piège à mouches n'a pas de fiche d'espèce : c'est Droseraceae qui
+      // répond. Une fiche générique aurait conseillé l'eau du robinet.
+      final dionaea = guide.resolve('Dionaea muscipula', family: 'Droseraceae');
+      expect(dionaea.match, CareMatch.family);
+      expect(dionaea.profile.water, WaterTolerance.strict);
+      expect(waterVerdictFor(WaterKind.tap, dionaea.profile.water), WaterVerdict.avoid);
+      // Elles se nourrissent de ce qu'elles attrapent : pas d'engrais.
+      expect(dionaea.profile.fertilizingDays, isNull);
+      expect(guide.resolve('Sarracenia purpurea', family: 'Sarraceniaceae').profile.water, WaterTolerance.strict);
+      expect(guide.resolve('Nepenthes alata', family: 'Nepenthaceae').profile.water, WaterTolerance.strict);
+    });
+
+    test('le sansevieria échappe à la sensibilité de son genre', () {
+      expect(guide.resolve('Dracaena trifasciata').profile.water, WaterTolerance.tolerant);
+      expect(guide.resolve('Dracaena marginata').profile.water, WaterTolerance.sensitive);
+    });
+
+    test('aucun conseil ne redit ce que la carte « Eau » porte', () {
+      final profils = {...CareProfiles.bySpecies, ...CareProfiles.byGenus, ...CareProfiles.byFamily, ...CareProfiles.byCategory};
+      for (final entry in profils.entries) {
+        expect(entry.value.tipKeys, isNot(contains('filteredWater')), reason: entry.key);
+        expect(entry.value.tipKeys, isNot(contains('rainwaterOnly')), reason: entry.key);
+      }
+    });
+
+    test('le calcium de l\'engrais et l\'eau d\'arrosage ne se contredisent pas', () {
+      // Deux axes voisins : la carte « Eau » dit ce que la plante supporte du
+      // calcaire versé, la ligne « Calcium » de l'engrais ce qu'il faut lui
+      // apporter. Ils regardent la même molécule et doivent aller dans le même
+      // sens, sans quoi la fiche conseille l'eau de pluie d'un côté et l'eau
+      // calcaire de l'autre.
+      final profils = {...CareProfiles.bySpecies, ...CareProfiles.byGenus, ...CareProfiles.byFamily, ...CareProfiles.byCategory};
+      for (final entry in profils.entries) {
+        final p = entry.value;
+        switch (p.calcium) {
+          case CalciumNeed.avoid:
+            expect(p.water, isNot(WaterTolerance.tolerant), reason: '${entry.key} : le calcium est à éviter, l\'eau du robinet ne peut pas convenir');
+          case CalciumNeed.welcome || CalciumNeed.needed:
+            expect(p.water, WaterTolerance.tolerant, reason: '${entry.key} : le calcium est bienvenu, l\'eau du robinet en apporte');
+          case CalciumNeed.neutral || null:
+            break;
+        }
+      }
     });
   });
 }

@@ -377,15 +377,16 @@ terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
 La page suit le chemin réel d'entretien, en sections titrées : **ce qu'elle
-demande** (lumière, arrosage, température, humidité, puis « Chez vous »), **ce
-qu'on lui fait** (substrat, engrais, rempotage, et le repos pour celles qui
-disparaissent), **les conditions particulières** (serre, floraison) et enfin
-**les détails** (difficulté, toxicité). Six volets se pratiquent et chacun a sa
-carte, teintée de la couleur de son sujet : bleu poussière pour l'eau, ocre
-pour la lumière, rose pour l'air, sauge pour l'engrais, terre cuite pour la
-terre (le substrat et le rempotage la partagent, c'est la même). Une douzaine
-de lignes dans une seule liste ne se distinguaient qu'à la lecture ; une carte
-se retrouve à sa couleur.
+demande** (lumière, arrosage, eau, température, humidité, puis « Chez vous »),
+**ce qu'on lui fait** (substrat, engrais, rempotage, puis le repos et le tuteur
+pour celles qui en ont un), **les conditions particulières** (serre, floraison)
+et enfin **les détails** (difficulté, toxicité). Sept volets se pratiquent —
+arrosage, eau, lumière, humidité, engrais, substrat, rempotage — et chacun a sa
+carte, teintée de la couleur de son sujet : bleu poussière pour l'arrosage et
+pour l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre
+cuite pour la terre (le substrat et le rempotage la partagent, c'est la même).
+Une douzaine de lignes dans une seule liste ne se distinguaient qu'à la
+lecture ; une carte se retrouve à sa couleur.
 
 L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
 sur toute carte teintée —, le nom du volet, le constat dessous, puis une ligne
@@ -429,6 +430,9 @@ et reste crème, seule de la fiche : c'est la seule carte qui décrit une
 absence — plus de feuilles, plus d'eau, plus de lumière —, et le crème le dit
 sans un mot.
 
+**Tuteur** ferme ce qu'on fait au pot, même registre et même crème : il ne
+paraît que pour les espèces qui en demandent un.
+
 Ce qui se lit sans rien faire — difficulté, toxicité — reste une `FloraGroup`
 en fin de page. Avant elle viennent les deux projets, pour qui en a un :
 **Sous serre** (ocre) dit les conditions à tenir pour pousser plus vite, et
@@ -444,6 +448,26 @@ ce qui la déclenche, et dit « Rarement en intérieur » quand elle ne se joue
 pas dans une pièce. Les conseils, ce qu'il faut surveiller, les problèmes
 connus et la multiplication ferment la page, puis la provenance de la fiche. `test/features/care_guide_test.dart` tient la
 séparation, `test/domain/care_profile_test.dart` ce qui se déduit.
+
+**« À surveiller »** range la liste de l'espèce dans l'ordre de la base des
+problèmes — les troubles, puis les ravageurs, puis les maladies —, parce que
+c'est l'ordre dans lequel on vérifie. Elle ne se replie pas, à la différence de
+« Problèmes connus » juste en dessous : celle-ci est écrite à la main, espèce
+par espèce, et la plus longue tient en dix lignes. Un feuillage tropical en
+appartement en compte neuf — l'eau, les quatre suceurs de sève qu'un intérieur
+chauffé garde actifs toute l'année, les moucherons du terreau, les taches — et
+les cacher derrière un bouton reviendrait à répondre « araignées rouges » à qui
+ouvre la fiche d'un pothos.
+
+**« Signes sur les feuilles »** est l'autre entrée de la fiche. On y arrive
+avec la plante sous les yeux — elle s'éclaircit, elle brûle, elle se tache au
+milieu, elle ne grandit plus — et pas avec un nom de champignon. Chaque signe
+s'ouvre sur ce qui l'explique le plus souvent, un seul à la fois, pour que la
+liste garde sa hauteur de liste. Les causes sont filtrées par la fiche
+(`LeafSigns.forProfile`) : une espèce de plein soleil ne brûle pas au soleil,
+une espèce qui aime l'air sec ne brunit pas des pointes pour cela, et ces
+causes-là ne sont pas proposées. Rien ne part sur le réseau, à la différence du
+diagnostic par photo, qui répond à la même question autrement.
 
 ## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)
 Un seul chemin pour en ajouter une, `showPhotoCaptureFlow` : le viseur dans

@@ -1441,6 +1441,9 @@ repères généraux. Cette dernière ligne, la fiche l'affiche honnêtement
   aussi (arrosage hors 1–120 jours, rempotage hors 6–120 mois, plage de
   température à l'envers, hiver plus fréquent que l'été). Un champ absent
   vaut mieux qu'un champ inventé, la consigne le dit et le lecteur s'y tient.
+  La tolérance à l'eau du robinet en fait partie, et c'est le champ où elle
+  sert le plus : le catalogue la suppose tolérante faute de mieux, alors
+  qu'une plante de terre acide ou une carnivore ne pardonne pas le calcaire.
 - **Ce qui ne revient jamais** : la toxicité. Tout le reste est un avis sur
   le confort d'une plante ; « non toxique pour le chat » est une affirmation
   sur laquelle quelqu'un agit. Elle reste au catalogue, ou inconnue. Ne
