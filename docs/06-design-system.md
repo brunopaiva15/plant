@@ -442,36 +442,43 @@ qui reste sous les yeux pendant que la page défile.
 - Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
 ## La page du soutien (`features/support/`)
-« Auxine est gratuite » demande sans rien vendre. Cinq pièces, pas une de
-plus, dans cet ordre : on montre ce qui est donné avant de demander.
+« Auxine est gratuite » demande sans rien vendre, et elle n'est pas une page :
+c'est **un objet qu'on tend**. Une seule pièce d'argile porte tout — le titre,
+ce qui est ouvert, le montant, le bouton — et la plante n'y est pas rangée :
+elle est **posée dessus**, débordant du coin haut droit, comme on laisse une
+plante sur un coin de table. C'est ce débordement qui sépare un objet d'une
+carte à image.
 
-- **La scène**, en haut : la plante de l'icône — la même que sur le premier
-  écran de l'onboarding, avec sa pousse et sa respiration — posée sur une
-  lueur qui s'éteint dans le papier. C'était un disque plein de `sageSoft` ;
-  un bord franc coupait net l'ombre au sol de la plante, et l'application n'en
-  a nulle part ailleurs.
-- **Le titre et la phrase**, rangés à gauche sous la scène, comme le texte des
-  écrans de l'onboarding : un titre d'affiche, pas une légende. La phrase dit
-  ce qui est ouvert — toutes les fonctions, sans publicité, sans abonnement,
-  sans compte obligatoire : le modèle économique de docs/01, mot pour mot.
-- **Un trait**, le seul de la page, là où elle change de sujet.
-- **Le montant** tracé à la main, à la taille du titre, avec « Une seule
-  fois » posé à côté sur la même ligne de base : un prix écrit sur une
-  étiquette de pot, pas un tarif au bas d'un bouton. Puis le bouton, et la
-  phrase qui ferme la porte à toute contrepartie.
-- **Une fois versé**, la lueur passe au rose, un sceau d'argile se pose au
-  ressort au pied de la plante, et c'est la phrase du haut qui descend sous
-  le trait, en plus petit : la page se ferme sur ce qu'elle est venue dire.
-  Le sceau est le seul endroit où elle récompense quelque chose, puisqu'aucune
-  fonction ne le fait.
+- **La pièce** est en terre cuite pâle, relief franc, rayon `xl`. La couleur
+  phare de l'application, que la seule pièce de l'écran a le droit de porter.
+  Sur ce pastel l'encre tertiaire tombe à 4,3:1 : c'est la secondaire qui
+  tient les petits textes.
+- **La plante** est celle de l'icône, avec sa pousse et sa respiration. Le
+  `Stack` ne rogne pas (`Clip.none`) : ce qui dépasse pousse la pièce vers le
+  bas, ce qui y entre creuse sa marge haute, pour que le titre ne lui passe
+  pas dessous.
+- **Le texte** est rangé à gauche dans la pièce, comme celui des écrans de
+  l'onboarding : un titre d'affiche, pas une légende. La phrase dit ce qui est
+  ouvert — toutes les fonctions, sans publicité, sans abonnement, sans compte
+  obligatoire : le modèle économique de docs/01, mot pour mot.
+- **Le montant** est tracé à la main, à la taille du titre, avec « Une seule
+  fois » posé à côté sur la même ligne de base, et une lueur d'un point sous
+  les chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est
+  derrière la glyphe : le contraste du chiffre ne bouge pas.
+- **Sur le papier, sous la pièce**, ne reste que ce qui ne lui appartient
+  pas : retrouver un soutien déjà versé n'est pas l'accepter.
+- **Une fois versé**, un sceau d'argile se pose au ressort contre le pot, et
+  c'est la phrase du haut qui revient au bas de la pièce en plus petit : elle
+  se ferme sur ce qu'elle est venue dire plutôt que sur un blanc.
 
-**Ce qu'elle ne fait pas.** Une version intermédiaire ajoutait une pastille en
-capitales, une grille de quatre tuiles à icônes et une carte de prix en terre
-cuite : la page d'accueil de n'importe quel service, et le contraire d'une
-application qui est du papier et de l'argile. Le relief se garde pour ce qu'on
-touche — ici, le seul bouton ; le reste est écrit. C'est la question de la
-revue de design ci-dessous, « ressemble-t-il à un template ? », et elle se
-repose à chaque ajout.
+**Deux versions ont échoué avant celle-ci**, et pour la même raison. La
+première empilait une pastille en capitales, une grille de quatre tuiles à
+icônes et une carte de prix : la page d'accueil de n'importe quel service. La
+seconde a tout dégraissé — illustration, titre, phrase, trait, bouton — et
+restait le squelette de tous les écrans du monde, simplement plus propre. Ce
+n'était pas la densité qui clochait, c'était la structure. La revue de design
+ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
+à chaque ajout, et enlever n'y répond pas à soi seul.
 
 **Ce que l'App Store demande** (règles 3.1.1 et 3.2.2(iv)) :
 

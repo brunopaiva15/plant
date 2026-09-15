@@ -8,7 +8,6 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/network/connectivity.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/support/support_service.dart';
-import '../../network/presentation/offline_notice.dart';
 import '../../onboarding/presentation/growing_plant.dart';
 
 /// Le soutien facultatif au développeur.
@@ -31,12 +30,19 @@ class SupportScreen extends ConsumerWidget {
 
 /// Le corps de la proposition, réutilisé par l'écran et par l'onboarding.
 ///
-/// Cinq pièces, pas une de plus : la plante sur sa lueur, une phrase à la
-/// main, ce qui est ouvert, un trait, le montant et son bouton. Une version
-/// intermédiaire alignait une pastille en capitales, une grille de quatre
-/// tuiles à icônes et une carte de prix — la page d'accueil de n'importe quel
-/// service, et le contraire de cette application, qui est du papier et de
-/// l'argile. Le relief se garde pour ce qu'on touche ; le reste est écrit.
+/// **Une seule pièce d'argile**, et rien d'empilé autour. Deux versions ont
+/// échoué avant celle-ci, et pour la même raison : une illustration, un titre,
+/// une phrase, un bouton — le squelette de tous les écrans du monde, qu'on
+/// l'habille de tuiles à icônes ou qu'on le dégraisse jusqu'à l'os. Ce n'est
+/// pas la densité qui clochait, c'est la structure.
+///
+/// Ici la page n'est pas une page : c'est un objet qu'on tend. Une pièce
+/// modelée porte tout — le titre, ce qui est ouvert, le montant, le bouton —
+/// et la plante n'y est pas rangée : elle est **posée dessus**, débordant du
+/// coin, comme on laisse une plante sur un coin de table. C'est ce
+/// débordement qui fait la différence entre un objet et une carte à image.
+/// Ne reste sur le papier, sous la pièce, que ce qui ne lui appartient pas :
+/// retrouver un soutien déjà versé.
 class SupportPitch extends ConsumerStatefulWidget {
   const SupportPitch({super.key, this.onDone, this.compact = false});
 
@@ -96,127 +102,148 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
     if (found) widget.onDone?.call();
   }
 
-  /// Ce qui vient sous le trait : la proposition, ou ce qui l'empêche. Une
-  /// fois le soutien versé il n'y a plus rien à demander, et c'est la phrase
-  /// du haut qui descend là, en plus petit — la page se ferme sur ce qu'elle
-  /// est venue dire.
-  Widget _below(bool supported) {
+  /// Le bas de la pièce : la proposition, ou ce qui l'empêche — et si la
+  /// restauration a lieu d'être en dessous.
+  ///
+  /// Une fois le soutien versé il n'y a plus rien à demander, et c'est la
+  /// phrase du haut qui revient là en plus petit : la pièce se ferme sur ce
+  /// qu'elle est venue dire plutôt que sur un blanc.
+  (Widget, bool) _below(bool supported) {
     final l10n = context.l10n;
     final c = context.colors;
-    if (supported) return Text(l10n.supportBody, style: context.text.callout.copyWith(color: c.inkSecondary));
+    final quiet = context.text.callout.copyWith(color: c.inkSecondary);
+    if (supported) return (Text(l10n.supportBody, style: quiet), false);
     // L'achat passe par le magasin, et le magasin par le réseau : hors ligne
     // le bouton échouerait au moment de payer.
-    if (!ref.watch(isOnlineProvider)) return OfflineBanner(message: l10n.offlineSupport, padding: EdgeInsets.zero);
+    if (!ref.watch(isOnlineProvider)) return (Text(l10n.offlineSupport, style: quiet), false);
     return ref.watch(supportOfferProvider).when(
-      loading: () => const Center(child: AdaptiveProgress()),
-      error: (_, _) => _Unavailable(message: l10n.supportUnavailable),
+      loading: () => (const Center(child: AdaptiveProgress()), false),
+      error: (_, _) => (Text(l10n.supportUnavailable, style: quiet), false),
       data: (offer) => offer == null
-          ? _Unavailable(message: l10n.supportUnavailable)
-          : _Offer(price: offer.price, busy: _busy, onGive: _give, onRestore: _restore),
+          ? (Text(l10n.supportUnavailable, style: quiet), false)
+          : (_Offer(price: offer.price, busy: _busy, onGive: _give), true),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final c = context.colors;
     final supported = ref.watch(preferencesProvider.select((p) => p.hasSupported));
     final compact = widget.compact;
+    final (below, restorable) = _below(supported);
+    // La plante déborde du haut de la pièce : ce qui en dépasse pousse la
+    // pièce vers le bas, ce qui y entre creuse sa marge haute.
+    final plant = compact ? 104.0 : 124.0;
+    final over = plant * 0.56;
 
     return Column(
-      // Le texte est rangé à gauche, sous la scène, comme sur les écrans de
-      // l'onboarding : un titre d'affiche, pas une légende. Tout centrer
-      // donnait une affiche symétrique que rien ne tenait.
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(height: compact ? Space.xs : Space.md),
         Appear(
-          key: const ValueKey('hero'),
-          child: _SupportHero(supported: supported, side: compact ? 108.0 : 140.0),
-        ),
-        const SizedBox(height: Space.xxl),
-        Appear(
-          key: const ValueKey('title'),
-          rank: 1,
-          child: Text(supported ? l10n.supportThanksTitle : l10n.supportTitle, style: context.text.display),
-        ),
-        const SizedBox(height: Space.sm),
-        Appear(
-          key: const ValueKey('body'),
-          rank: 2,
-          child: Text(
-            supported ? l10n.supportThanksBody : l10n.supportBody,
-            style: context.text.body.copyWith(color: c.inkSecondary),
+          key: const ValueKey('piece'),
+          child: Stack(
+            // La plante sort du cadre par le haut et par la droite : sans
+            // cela le Stack la rognerait au ras de la pièce.
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: over),
+                child: _Piece(supported: supported, topRoom: plant - over, below: below),
+              ),
+              Positioned(
+                top: 0,
+                right: Space.xxs,
+                child: ExcludeSemantics(child: _Plant(supported: supported, side: plant)),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: Space.xxl),
-        // Le seul trait de toute la page, là où elle change de sujet : ce qui
-        // est donné au-dessus, ce qu'on peut donner en dessous.
-        Appear(key: const ValueKey('rule'), rank: 3, child: Divider(height: 1, thickness: 1, color: c.line)),
-        const SizedBox(height: Space.xl),
-        Appear(key: const ValueKey('below'), rank: 4, child: _below(supported)),
+        // Sur le papier, sous la pièce : ce qui n'appartient pas à la
+        // proposition. Retrouver un soutien déjà versé n'est pas l'accepter.
+        if (restorable) ...[
+          const SizedBox(height: Space.xs),
+          Appear(
+            key: const ValueKey('restore'),
+            rank: 1,
+            child: FloraButton(
+              label: l10n.supportRestore,
+              style: FloraButtonStyle.ghost,
+              size: FloraButtonSize.small,
+              expand: true,
+              onPressed: _busy ? null : _restore,
+            ),
+          ),
+        ],
       ],
     );
   }
 }
 
-/// La scène du haut : la plante de l'icône, posée sur une lueur.
+/// La pièce : tout ce que la page a à dire, dans une seule forme modelée.
 ///
-/// C'était un disque plein de `sageSoft`, et le disque coupait net l'ombre au
-/// sol de la plante : un bord franc, le seul de l'application. Une lueur qui
-/// s'éteint dans le papier laisse l'objet flotter, comme sur la scène de
-/// l'onboarding. Elle vire au rose une fois le soutien versé, et la plante
-/// reçoit son sceau — le seul endroit où la page récompense quelque chose,
-/// puisqu'aucune fonction ne le fait.
-class _SupportHero extends StatelessWidget {
-  const _SupportHero({required this.supported, required this.side});
+/// Terre cuite pâle et relief franc — c'est la couleur phare de
+/// l'application, et la seule pièce de l'écran a le droit de la porter. Sur
+/// ce pastel l'encre tertiaire tombe à 4,3:1 : c'est la secondaire qui tient
+/// les petits textes.
+class _Piece extends StatelessWidget {
+  const _Piece({required this.supported, required this.topRoom, required this.below});
 
   final bool supported;
 
-  /// Côté de la plante, en points. La lueur s'en déduit.
-  final double side;
+  /// Ce que la plante occupe à l'intérieur, en haut : la marge haute la
+  /// dégage, sans quoi le titre lui passerait dessous.
+  final double topRoom;
+
+  final Widget below;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final tint = supported ? c.rose : c.sage;
-    final glow = c.isDark ? 0.30 : 0.22;
-    final halo = side * 1.5;
-    return ExcludeSemantics(
-      child: SizedBox(
-        height: halo,
-        child: Center(
-          child: SizedBox(
-            width: halo,
-            height: halo,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned.fill(
-                  child: AnimatedContainer(
-                    duration: Motion.of(context, Motion.emphasis),
-                    curve: Motion.easeOut,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      // Trois arrêts plutôt que deux : une lueur qui décroît
-                      // linéairement se voit comme un cône.
-                      gradient: RadialGradient(
-                        colors: [tint.withValues(alpha: glow), tint.withValues(alpha: glow * 0.42), tint.withValues(alpha: 0)],
-                        stops: const [0.0, 0.56, 1.0],
-                      ),
-                    ),
-                  ),
-                ),
-                // La plante de l'icône : celle qui a poussé sur le premier
-                // écran de l'onboarding, et qui est déjà debout quand on
-                // arrive ici. Depuis les réglages, sur un lancement neuf, elle
-                // pousse une fois.
-                GrowingPlant(side: side),
-                if (supported) Positioned(right: halo * 0.08, bottom: halo * 0.12, child: const _Seal()),
-              ],
-            ),
+    final l10n = context.l10n;
+    return ClayBox(
+      color: c.terracottaSoft,
+      shape: const ClayShape.rounded(Radii.xl),
+      depth: ClayDepth.deep,
+      padding: EdgeInsets.fromLTRB(Space.xl, topRoom + Space.md, Space.xl, Space.xxl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(supported ? l10n.supportThanksTitle : l10n.supportTitle, style: context.text.display),
+          const SizedBox(height: Space.sm),
+          Text(
+            supported ? l10n.supportThanksBody : l10n.supportBody,
+            style: context.text.body.copyWith(color: c.inkSecondary),
           ),
-        ),
+          const SizedBox(height: Space.xxxl),
+          below,
+        ],
+      ),
+    );
+  }
+}
+
+/// La plante posée sur le coin de la pièce, et le sceau de qui a soutenu.
+class _Plant extends StatelessWidget {
+  const _Plant({required this.supported, required this.side});
+
+  final bool supported;
+  final double side;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: side,
+      height: side,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // La plante de l'icône : celle qui a poussé sur le premier écran de
+          // l'onboarding, et qui est déjà debout quand on arrive ici. Depuis
+          // les réglages, sur un lancement neuf, elle pousse une fois.
+          GrowingPlant(side: side),
+          if (supported) Positioned(right: 0, bottom: side * 0.06, child: const _Seal()),
+        ],
       ),
     );
   }
@@ -249,27 +276,17 @@ class _Seal extends StatelessWidget {
   }
 }
 
-/// La proposition : combien, et le bouton.
+/// La proposition, au bas de la pièce : combien, et le bouton.
 ///
 /// Le montant est tracé à la main, à la taille du titre, et sa précision se
 /// pose à côté sur la même ligne de base — un prix écrit sur une étiquette de
-/// pot, pas un tarif au bas d'un bouton. Il n'y a pas de carte autour : rien
-/// à encadrer, la page entière est déjà la proposition.
+/// pot, pas un tarif au bas d'un bouton.
 class _Offer extends StatelessWidget {
-  const _Offer({required this.price, required this.busy, required this.onGive, required this.onRestore});
+  const _Offer({required this.price, required this.busy, required this.onGive});
 
   final String price;
   final bool busy;
   final VoidCallback onGive;
-
-  /// Retrouver un soutien déjà versé : nouvel appareil, réinstallation.
-  ///
-  /// Proposé partout où l'achat l'est, y compris à l'onboarding : l'achat est
-  /// un non consommable, donc restaurable, et la règle 3.1.1 de l'App Store
-  /// demande un mécanisme de restauration. C'est aussi là qu'il sert le plus
-  /// — quelqu'un qui change de téléphone repasse par l'onboarding avant de
-  /// voir les réglages.
-  final VoidCallback onRestore;
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +299,16 @@ class _Offer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Text(price, style: context.text.display.copyWith(color: c.terracotta)),
+            Text(
+              price,
+              style: context.text.display.copyWith(
+                color: c.terracotta,
+                // Une lueur d'un point sous les chiffres : le montant paraît
+                // pressé dans la pâte plutôt que posé dessus. L'ombre est
+                // derrière la glyphe, le contraste du chiffre ne bouge pas.
+                shadows: [Shadow(color: Colors.white.withValues(alpha: c.isDark ? 0.07 : 0.5), offset: const Offset(0, 1))],
+              ),
+            ),
             const SizedBox(width: Space.sm),
             Expanded(child: Text(l10n.supportOnce, style: context.text.callout.copyWith(color: c.inkSecondary))),
           ],
@@ -290,29 +316,8 @@ class _Offer extends StatelessWidget {
         const SizedBox(height: Space.lg),
         FloraButton(label: l10n.supportGive, expand: true, loading: busy, onPressed: onGive),
         const SizedBox(height: Space.xs),
-        Text(l10n.supportNothingLocked, style: context.text.caption.copyWith(color: c.inkTertiary)),
-        const SizedBox(height: Space.xs),
-        FloraButton(
-          label: l10n.supportRestore,
-          style: FloraButtonStyle.ghost,
-          size: FloraButtonSize.small,
-          expand: true,
-          onPressed: busy ? null : onRestore,
-        ),
+        Text(l10n.supportNothingLocked, style: context.text.caption.copyWith(color: c.inkSecondary)),
       ],
     );
-  }
-}
-
-/// Pas de magasin ici : on le dit, plutôt que d'afficher un bouton inerte.
-class _Unavailable extends StatelessWidget {
-  const _Unavailable({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Text(message, style: context.text.callout.copyWith(color: c.inkSecondary));
   }
 }
