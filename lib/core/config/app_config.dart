@@ -28,13 +28,9 @@ abstract final class AppConfig {
   static const String publisher = 'Vergasta Digital';
   static const String privacyUrl = 'https://vergasta.ch/privacy';
 
-  /// Version et numéro de compilation, recopiés de `pubspec.yaml`.
-  ///
-  /// Recopiés, donc susceptibles de dériver — c'était déjà arrivé, l'écran
-  /// annonçait 0.1.0 pour une application en 1.0.0. Un test les compare
-  /// désormais au pubspec et échoue si les deux divergent.
-  static const String version = '1.0.0';
-  static const int build = 4;
+  // Le numéro de version ne s'écrit pas ici : il vit dans `pubspec.yaml`,
+  // seul endroit à changer pour une livraison, et `AppVersion` le lit sur le
+  // binaire au lancement.
 
   /// Schéma des liens encodés dans les QR codes (`auxine://plant/<id>`) et
   /// de la redirection déclarée côté Supabase pour la connexion Google. Le

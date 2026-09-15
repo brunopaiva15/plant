@@ -65,21 +65,26 @@ Future<void> _pumpWindow(WidgetTester tester, {double scale = 1}) async {
   await tester.pumpAndSettle();
 }
 
+/// La version que porterait le binaire. Elle n'est plus une constante du
+/// code — `AppVersion` la lit sur l'application installée — donc le test
+/// donne la sienne.
+const _version = '1.0.0';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('la règle', () {
     test('une installation neuve ne raconte rien, et note son point de départ', () async {
       final prefs = await _prefs({'onboarding_done': true});
-      expect(await WhatsNew(prefs).take(_notes), isNull);
+      expect(await WhatsNew(prefs, _version).take(_notes), isNull);
       // Le point de départ est posé : c'est la mise à jour suivante qui parlera.
-      expect(prefs.lastRunVersion, AppConfig.version);
+      expect(prefs.lastRunVersion, _version);
       expect(prefs.seenReleaseNotes, {'a', 'b', 'c'});
     });
 
     test("rien non plus tant que l'onboarding n'est pas fait", () async {
       final prefs = await _prefs({});
-      expect(await WhatsNew(prefs).take(_notes), isNull);
+      expect(await WhatsNew(prefs, _version).take(_notes), isNull);
       // Et surtout : rien d'écrit. Le premier vrai lancement fera le point.
       expect(prefs.lastRunVersion, isNull);
       expect(prefs.seenReleaseNotes, isEmpty);
@@ -91,7 +96,7 @@ void main() {
         'last_run_version': '0.9.0',
         'seen_release_notes': <String>['a'],
       });
-      final whatsNew = WhatsNew(prefs);
+      final whatsNew = WhatsNew(prefs, _version);
       expect((await whatsNew.take(_notes))?.id, 'c');
       // Relancée, l'application se tait : la fenêtre a été consommée.
       expect(await whatsNew.take(_notes), isNull);
@@ -100,7 +105,7 @@ void main() {
     test("deux versions sautées n'empilent pas deux fenêtres", () async {
       final prefs = await _prefs({'onboarding_done': true, 'last_run_version': '0.9.0'});
       // 'b' et 'c' sont tous deux inédits : c'est le plus récent qui s'ouvre.
-      expect((await WhatsNew(prefs).take(_notes))?.id, 'c');
+      expect((await WhatsNew(prefs, _version).take(_notes))?.id, 'c');
       expect(prefs.seenReleaseNotes, {'a', 'b', 'c'});
     });
 
@@ -110,13 +115,13 @@ void main() {
         'last_run_version': '0.9.0',
         'seen_release_notes': <String>['a', 'b', 'c'],
       });
-      await WhatsNew(prefs).take([_note('d')]);
+      await WhatsNew(prefs, _version).take([_note('d')]);
       expect(prefs.seenReleaseNotes, {'a', 'b', 'c', 'd'});
     });
 
     test('la dernière nouveauté reste ouvrable depuis les réglages', () async {
       final prefs = await _prefs({'onboarding_done': true});
-      final whatsNew = WhatsNew(prefs);
+      final whatsNew = WhatsNew(prefs, _version);
       await whatsNew.take(_notes);
       // `take` a tout marqué comme vu ; `latest` ne s'en soucie pas.
       expect(whatsNew.latest(_notes)?.id, 'c');
