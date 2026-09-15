@@ -163,6 +163,14 @@ class SpeciesCatalogEntry {
 
   String commonName(String languageCode) => switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
 
+  /// Le nom courant de la langue demandée, ou `null` quand l'entrée n'en a
+  /// pas et retombe sur le nom scientifique. De quoi ne pas écrire deux fois
+  /// le même nom, en titre et en sous-titre.
+  String? vernacularName(String languageCode) {
+    final name = commonName(languageCode).trim();
+    return name.isEmpty || name == scientificName ? null : name;
+  }
+
   /// Recherche sans accents ni casse : « erable » doit trouver « Érable »,
   /// et « edelweiss » l'« Edelweiß ».
   bool matches(String query) {

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/l10n/finder_labels.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/utils/scientific_name.dart';
 import '../../../data/species/species_catalog.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
@@ -39,8 +40,14 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
         ),
       );
     }
-    final entry = SpeciesCatalog.find(scientificName);
-    final record = ref.watch(speciesIndexProvider).value?.find(scientificName);
+    // La liste de l'encyclopédie résout de la même façon : le nom de la
+    // classe d'abord, puis le nom sous lequel l'app connaît le mieux la
+    // plante. Sans quoi la fiche ouverte depuis la liste serait plus pauvre
+    // que la ligne qui y menait.
+    final accepted = acceptedSpeciesName(normalizeScientificName(scientificName));
+    final index = ref.watch(speciesIndexProvider).value;
+    final entry = SpeciesCatalog.find(scientificName) ?? SpeciesCatalog.find(accepted);
+    final record = index?.find(scientificName) ?? index?.find(accepted);
     final family = entry?.family ?? record?.family;
     // La catégorie n'est pas passée : le catalogue trouve lui-même celle de
     // ses propres entrées, et une espèce du catalogue étendu n'en a pas.
@@ -48,12 +55,12 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
           scientificName,
           family: family == null || family.isEmpty ? null : family,
         );
-    // Le nom courant titre la page ; à défaut, le nom scientifique, qui est
-    // de toute façon écrit juste dessous.
-    final common = (entry?.commonName(lang) ?? record?.commonName(lang) ?? '').trim();
+    // Le nom courant de la langue de l'application titre la page ; à défaut,
+    // le nom scientifique, qui est de toute façon écrit juste dessous.
+    final common = entry?.vernacularName(lang) ?? record?.vernacularName(lang);
 
     return FloraPage(
-      title: common.isEmpty ? scientificName : common,
+      title: common ?? scientificName,
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
