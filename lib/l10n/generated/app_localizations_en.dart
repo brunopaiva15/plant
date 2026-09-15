@@ -3817,7 +3817,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Everything is open: every feature, no ads, no subscription, no account required.';
+      'Every feature is available. No subscription, no advertising, no compulsory account.';
 
   @override
   String get supportOnce => 'One time only';

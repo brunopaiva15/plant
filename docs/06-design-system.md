@@ -458,9 +458,13 @@ carte à image.
   bas, ce qui y entre creuse sa marge haute, pour que le titre ne lui passe
   pas dessous.
 - **Le texte** est rangé à gauche dans la pièce, comme celui des écrans de
-  l'onboarding : un titre d'affiche, pas une légende. La phrase dit ce qui est
-  ouvert — toutes les fonctions, sans publicité, sans abonnement, sans compte
-  obligatoire : le modèle économique de docs/01, mot pour mot.
+  l'onboarding — un titre d'affiche, pas une légende. Sous le titre, deux
+  phrases reprises mot pour mot de `store/listing.md` : ce que l'auteur écrit
+  déjà de l'application, plutôt qu'une reformulation. Une première version
+  tenait en une seule phrase, un deux-points et quatre compléments — la
+  cadence d'une machine, et un deux-points qui n'annonçait pas une valeur
+  mais une énumération. Les deux-points de l'application servent ailleurs à
+  nommer un champ (« Dernier : {date} ») ; celui-là ne nommait rien.
 - **Le montant** est tracé à la main, à la taille du titre, avec « Une seule
   fois » posé à côté sur la même ligne de base, et une lueur d'un point sous
   les chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est
@@ -492,8 +496,9 @@ ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
   l'onboarding avant de voir les réglages ;
 - le prix vient du magasin, déjà mis en forme dans la monnaie de la personne
   (`SupportOffer.price`), et se lit en entier avant le bouton ;
-- rien ne laisse croire à une contrepartie, et c'est la phrase du haut qui
-  s'en charge : tout est déjà ouvert, il n'y a rien à vendre. Le mot *don* est
+- rien ne laisse croire à une contrepartie, et ce sont les phrases du haut
+  qui s'en chargent — tout est déjà accessible, il n'y a rien à vendre. Le
+  mot *don* est
   évité — un pourboire au développeur passe par l'achat intégré (3.1.1), une
   collecte pour une cause est interdite dans l'app (3.2.2(iv)), et les deux ne
   doivent pas se confondre ;

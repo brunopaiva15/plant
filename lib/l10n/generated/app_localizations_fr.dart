@@ -3844,7 +3844,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Tout est ouvert : toutes les fonctions, sans publicité, sans abonnement, sans compte obligatoire.';
+      'Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.';
 
   @override
   String get supportOnce => 'Une seule fois';

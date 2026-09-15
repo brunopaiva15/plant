@@ -3827,7 +3827,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get supportBody =>
-      'Alles ist offen: alle Funktionen, ohne Werbung, ohne Abo, ohne Kontopflicht.';
+      'Alle Funktionen sind verfügbar. Kein Abo, keine Werbung, kein Pflichtkonto.';
 
   @override
   String get supportOnce => 'Nur einmal';

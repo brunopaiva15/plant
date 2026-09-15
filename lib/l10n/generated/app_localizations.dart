@@ -6549,7 +6549,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tout est ouvert : toutes les fonctions, sans publicité, sans abonnement, sans compte obligatoire.'**
+  /// **'Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.'**
   String get supportBody;
 
   /// No description provided for @supportOnce.
