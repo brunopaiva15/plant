@@ -319,20 +319,28 @@ Pour la livrer :
      `ActivityResultCaller`), l'autre ne fait rien et laisse l'activité de
      Flutter telle quelle. `kotlinx-coroutines` vient en dépendance
      transitive du SDK, rien à déclarer. minSdk 24.
-   - iOS (`GoogleHomeSDK-1.10.1.tar.gz`) : décompresser dans
-     `vendor/GoogleHomeSDK`, à la racine du dépôt — pas sous `ios/`, où
-     Xcode refuse un paquet local voisin du `.xcodeproj` avec un « Cannot
-     select this directory ». Extraire avec `--no-xattrs --no-mac-metadata`,
-     sinon la quarantaine et les fichiers `._` de l'archive voyagent avec.
-     Puis `File › Add Package Dependencies › Add Local`, et surtout choisir
-     **Runner** dans la colonne *Add to Target* des deux produits : validée
-     à *None*, la référence s'écrit sans lier quoi que ce soit, et
-     `canImport` reste faux — un build vert qui ne prouve rien. Enfin, mettre
-     `GoogleHomeTypes` sur **Do Not Embed** : c'est une bibliothèque statique
-     dans un dossier `.framework`, sans `Info.plist` puisqu'elle n'est pas
-     faite pour être copiée, et l'embarquer fait échouer l'étape d'empaquetage
-     de Flutter sur « did not contain an Info.plist ». Seul `GoogleHomeSDK`,
-     dynamique, s'embarque.
+   - iOS : `tool/ios/google_home_sdk.sh` fait le travail — il télécharge
+     l'archive, la décompresse dans `vendor/GoogleHomeSDK` et répare les
+     trois défauts qu'elle porte. Puis, dans Xcode,
+     `File › Add Package Dependencies › Add Local › vendor/GoogleHomeSDK`,
+     avec **Runner** dans la colonne *Add to Target* des deux produits :
+     laissée à *None*, la référence s'écrit sans lier quoi que ce soit, et
+     `canImport` reste faux — un build vert qui ne prouve rien.
+
+     Ce que le script répare, parce que chacun a coûté une heure : l'archive
+     porte des attributs `com.apple.quarantine` que `tar` restaure et qui
+     font refuser le dossier à Xcode ; ses fichiers sont en lecture seule,
+     jusqu'à interdire de retirer ces attributs ; et
+     `GoogleHomeTypes.framework` n'a pas d'`Info.plist`, étant une
+     bibliothèque statique dans un dossier `.framework` — Xcode l'embarque
+     quand même, et l'outillage Flutter, qui inspecte le `.app` construit,
+     échoue dessus. Le script fabrique cet `Info.plist`. Un contournement, à
+     revoir avant une soumission : une archive statique n'a rien à faire
+     dans un bundle, et la validation App Store peut la refuser.
+
+     Le dossier du paquet doit rester à la racine, pas sous `ios/` : Xcode
+     refuse un paquet local voisin du `.xcodeproj`, où vit déjà le paquet
+     généré de Flutter, avec un « Cannot select this directory ».
      `ios/Runner/GoogleHomeChannel.swift` est derrière
      `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal qui
      ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur l'App
