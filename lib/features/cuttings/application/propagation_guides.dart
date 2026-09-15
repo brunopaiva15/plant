@@ -95,12 +95,8 @@ class PropagationGuide {
 
   List<String> get stepIds => [for (final s in steps) s.id];
 
-  /// Le bouton qui clôt le guide : on crée une bouture, mais on sépare une
-  /// division ou un rejet — appeler ça une bouture serait faux.
-  String startLabel(AppLocalizations l) => switch (kind) {
-        PropagationGuideKind.division || PropagationGuideKind.offset => l.pgStartPlant,
-        _ => l.pgStartCutting,
-      };
+  /// Le bouton qui clôt le guide reste cohérent avec le flux Boutures.
+  String startLabel(AppLocalizations l) => l.pgStartCutting;
 }
 
 String _dossier(PropagationGuideKind kind) => switch (kind) {
