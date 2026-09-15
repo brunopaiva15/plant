@@ -1916,8 +1916,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get syncSyncing => 'Synchronisation…';
 
   @override
-  String get authError =>
-      'Connexion impossible. Vérifiez l\'adresse et réessayez.';
+  String get authError => 'Connexion impossible. Réessayez dans un moment.';
 
   @override
   String get appleUnavailable => 'Apple est disponible sur iPhone et iPad.';

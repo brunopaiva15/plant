@@ -674,7 +674,7 @@
     }
   },
   "syncSyncing": "Sincronizzazione…",
-  "authError": "Accesso non riuscito. Controlla l'indirizzo e riprova.",
+  "authError": "Accesso non riuscito. Riprova tra un momento.",
   "appleUnavailable": "L'accesso con Apple è disponibile su iPhone e iPad.",
   "synchronization": "Sincronizzazione",
   "@syncIdle": {

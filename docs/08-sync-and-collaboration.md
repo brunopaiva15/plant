@@ -65,6 +65,33 @@ La ligne et l'image voyagent séparément, et l'image coûte mille fois plus che
 ## Auth
 `AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple, et sur Android le compte reste local tant que Google n'est pas livré (`signInAvailable`). La connexion se propose à deux endroits : une étape de l'onboarding, après le prénom, qui dit en deux phrases à quoi sert un compte et se passe d'un « Plus tard » ; et Profil › Se connecter, la ligne juste sous le nom, à tout moment. L'étape de l'onboarding n'est pas dessinée là où la connexion n'existe pas. À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation.
 
+### La première connexion
+C'est le seul moment où le compte n'existe pas encore, et le seul que le
+propriétaire du projet ne repasse jamais : ses comptes sont créés. Deux
+choses s'y jouent, qui ne se voient pas ailleurs.
+
+- **Le déclencheur `trg_new_user` s'exécute dans la transaction qui insère la
+  ligne `auth.users`.** Ce qu'il laisse échouer emporte la création du compte,
+  et GoTrue répond « Database error saving new user » — que l'application
+  n'affiche que comme « Connexion impossible ». Le profil qu'il écrit n'en
+  vaut pas le prix : `handle_new_user` replie le nom jusqu'à la chaîne vide et
+  ignore le reste. Une connexion par Apple n'apporte pas de `display_name`, et
+  son jeton d'identité ne porte pas toujours la revendication `email` : le
+  `split_part(new.email, '@', 1)` d'avant donnait null à une colonne `not
+  null`, et personne ne pouvait ouvrir de compte.
+- **Ce qui suit l'échange du jeton n'est plus la connexion.** Apple ne donne
+  le prénom qu'à la première autorisation, et l'onboarding n'a pas encore
+  écrit celui qu'on tape (`_finish` vient après l'étape du compte) :
+  `signInWithApple` écrit donc ce prénom, sur le réseau. La session, elle,
+  existe déjà — l'échec de cette écriture est avalé, faute de quoi un appareil
+  connecté s'entendrait dire que sa connexion a échoué, et se retrouverait
+  connecté au lancement suivant.
+
+Ces deux corrections vivent à des endroits différents : la seconde part avec
+le binaire, la première demande de **rejouer `supabase/schema.sql`** dans
+l'éditeur SQL du projet. Tant qu'il ne l'est pas, le projet garde l'ancien
+déclencheur, et aucune version de l'application n'y changera rien.
+
 ## Le jardin ouvert
 Un compte peut avoir accès à plusieurs jardins : le sien, et ceux qu'on lui a partagés. Un seul est **ouvert** à la fois — c'est lui que montrent toutes les listes.
 
