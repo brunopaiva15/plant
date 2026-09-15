@@ -3504,11 +3504,107 @@ abstract class AppLocalizations {
   /// **'Ce que vous avez remarqué (facultatif)…'**
   String get diagnosisSymptomsHint;
 
-  /// No description provided for @diagnosisClimateHint.
+  /// No description provided for @diagnosisChecks.
   ///
   /// In fr, this message translates to:
-  /// **'Facultatif : les conditions autour de la plante affinent l\'analyse.'**
-  String get diagnosisClimateHint;
+  /// **'Observations'**
+  String get diagnosisChecks;
+
+  /// No description provided for @diagnosisChecksHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif : ce que la photo ne montre pas affine l\'analyse.'**
+  String get diagnosisChecksHint;
+
+  /// No description provided for @diagnosisSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terre'**
+  String get diagnosisSoil;
+
+  /// No description provided for @diagnosisSoilDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sèche'**
+  String get diagnosisSoilDry;
+
+  /// No description provided for @diagnosisSoilMoist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Humide'**
+  String get diagnosisSoilMoist;
+
+  /// No description provided for @diagnosisSoilSoggy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détrempée'**
+  String get diagnosisSoilSoggy;
+
+  /// No description provided for @diagnosisRoots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Racines'**
+  String get diagnosisRoots;
+
+  /// No description provided for @diagnosisRootsFirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermes et claires'**
+  String get diagnosisRootsFirm;
+
+  /// No description provided for @diagnosisRootsSoft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brunes ou molles'**
+  String get diagnosisRootsSoft;
+
+  /// No description provided for @diagnosisRootsCrowded.
+  ///
+  /// In fr, this message translates to:
+  /// **'À l\'étroit'**
+  String get diagnosisRootsCrowded;
+
+  /// No description provided for @diagnosisLightDirect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soleil direct'**
+  String get diagnosisLightDirect;
+
+  /// No description provided for @diagnosisLightBright.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vive, sans soleil'**
+  String get diagnosisLightBright;
+
+  /// No description provided for @diagnosisLightDim.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faible'**
+  String get diagnosisLightDim;
+
+  /// No description provided for @diagnosisBugs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Insectes'**
+  String get diagnosisBugs;
+
+  /// No description provided for @diagnosisBugsNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun vu'**
+  String get diagnosisBugsNone;
+
+  /// No description provided for @diagnosisBugsOnPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sur la plante'**
+  String get diagnosisBugsOnPlant;
+
+  /// No description provided for @diagnosisBugsInSoil.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dans la terre'**
+  String get diagnosisBugsInSoil;
 
   /// No description provided for @analyze.
   ///
@@ -6683,6 +6779,54 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Deux espèces qui se ressemblent : les deux sont proposées.'**
   String get whatsNewIrisDoubtBody;
+
+  /// No description provided for @whatsNewSmallUpdates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Petites nouveautés'**
+  String get whatsNewSmallUpdates;
+
+  /// No description provided for @whatsNewDiagnosisIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une photo ne montre ni une terre détrempée, ni des racines brunes, ni trois pucerons sous une feuille. Quatre questions facultatives s\'en chargent.'**
+  String get whatsNewDiagnosisIntro;
+
+  /// No description provided for @whatsNewDiagnosisChecksTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terre, racines, lumière, insectes'**
+  String get whatsNewDiagnosisChecksTitle;
+
+  /// No description provided for @whatsNewDiagnosisChecksBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quatre questions sous les symptômes, à répondre ou non. Rien n\'est coché d\'avance.'**
+  String get whatsNewDiagnosisChecksBody;
+
+  /// No description provided for @whatsNewDiagnosisWeighTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pesé dans l\'analyse'**
+  String get whatsNewDiagnosisWeighTitle;
+
+  /// No description provided for @whatsNewDiagnosisWeighBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qui a été vérifié compte comme un constat, et les gestes proposés ne le redemandent plus.'**
+  String get whatsNewDiagnosisWeighBody;
+
+  /// No description provided for @whatsNewDiagnosisKeptTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gardé au journal'**
+  String get whatsNewDiagnosisKeptTitle;
+
+  /// No description provided for @whatsNewDiagnosisKeptBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un diagnostic rouvert des mois plus tard remontre ce qui avait été vérifié ce jour-là.'**
+  String get whatsNewDiagnosisKeptBody;
 
   /// No description provided for @onbStepOf.
   ///

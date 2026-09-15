@@ -58,7 +58,7 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Comptes : Apple natif (iOS), et lui seul — pas d'e-mail ; compte local conservé sans connexion, et sur Android. Google OAuth codé mais pas livré (`AppConfig.googleSignInEnabled`, Android n'est pas prioritaire) | ✅ |
 | Collaboration : membres, rôles owner / member / viewer, « · par Laura » dans la timeline, lecture seule pour viewer | ✅ |
 | Partager son jardin : invitation par lien ou code à usage unique (QR compris), l'invité crée un compte s'il n'en a pas, « Mes jardins » pour basculer de l'un à l'autre, changement de rôle, retrait, départ d'un jardin | ✅ |
-| Diagnostic « Ma plante a un problème » : photos + symptômes → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, sans plafond, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |
+| Diagnostic « Ma plante a un problème » : photos + symptômes + observations (terre, racines, lumière, insectes) → pistes classées par vraisemblance avec gestes concrets (AI Services d'Infomaniak, modèle Mistral Small 4, clé de l'éditeur au build, sans plafond, jamais présenté comme certain) ; enregistrement dans le journal | ✅ AI Services d'Infomaniak (Mistral Small 4, clé au build, 30/jour) |
 | Partage par lien public révocable, page publique servie par la fonction Edge `share` | ✅ |
 | Widgets iOS / Android, Live Activity « session de soin » | ⏳ code natif (WidgetKit / AppWidget) |
 
