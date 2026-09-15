@@ -160,7 +160,7 @@
   "offspring": "Offspring",
   "editSchedule": "Edit the schedule",
   "cuttingOf": "Cutting of {name}",
-  "propagate": "Propagate",
+  "propagate": "Create a cutting",
   "pgPickTitle": "Propagate this plant",
   "pgPickBody": "This plant propagates in more than one way. The gesture you pick decides the steps.",
   "pgRecommended": "Recommended",
