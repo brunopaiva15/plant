@@ -10,8 +10,10 @@ import '../application/home_climate_providers.dart';
 import 'home_climate_widgets.dart';
 import 'home_sensor_picker_sheet.dart';
 
-/// Profil › Apple Maison : le capteur de température, celui de l'humidité,
-/// leur mesure, et de quoi en changer.
+/// Profil › Capteurs de la maison : le capteur de température, celui de
+/// l'humidité, leur mesure, et de quoi en changer. Les capteurs viennent
+/// d'Apple Maison, de Google Home, ou des deux — chaque maison se branche
+/// par son propre bouton, et une demande d'accès à la fois.
 class HomeClimateSettingsScreen extends ConsumerStatefulWidget {
   const HomeClimateSettingsScreen({super.key});
 
@@ -21,62 +23,94 @@ class HomeClimateSettingsScreen extends ConsumerStatefulWidget {
 
 class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsScreen> {
   bool _busy = false;
-  bool _searched = false;
+
+  /// Les maisons déjà interrogées : sans capteur trouvé, leur bouton reste,
+  /// mais il n'est plus le bouton principal de l'écran.
+  final Set<HomeSource> _searched = {};
+
+  /// Les capteurs trouvés, toutes maisons confondues.
   List<HomeSensor> _sensors = const [];
 
   @override
   void initState() {
     super.initState();
-    // Un capteur déjà branché : la liste se charge d'elle-même, l'accès est
+    // Un capteur déjà branché : sa maison se relit d'elle-même, l'accès est
     // déjà accordé. Sans capteur, rien ne part avant le bouton — c'est lui
-    // qui ouvre la demande du système.
-    if (ref.read(preferencesProvider).homeSensor != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _connect(silent: true));
+    // qui ouvre la demande du système, pour une maison à la fois.
+    final prefs = ref.read(preferencesProvider);
+    final known = {?prefs.homeSensor?.source, ?prefs.homeHumiditySensor?.source};
+    if (known.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _search(known, silent: true));
     }
   }
 
-  Future<void> _connect({bool silent = false}) async {
+  bool _hasFrom(HomeSource source) => _sensors.any((s) => s.source == source);
+
+  /// Interroge des maisons, l'une après l'autre : deux demandes d'accès du
+  /// système en même temps se marcheraient dessus.
+  Future<void> _search(Iterable<HomeSource> sources, {bool silent = false}) async {
     if (_busy || !mounted) return;
     final l10n = context.l10n;
     setState(() => _busy = true);
     final service = ref.read(homeClimateServiceProvider);
-    List<HomeSensor> sensors = const [];
-    var access = HomeAccess.unavailable;
-    try {
-      sensors = await service.sensors();
-      access = await service.access();
-    } catch (e, st) {
-      ref.read(crashReporterProvider).report(e, st, context: 'home_climate.sensors');
+    final found = <HomeSource, List<HomeSensor>>{};
+    final access = <HomeSource, HomeAccess>{};
+    for (final source in sources) {
+      final one = service.of(source);
+      if (one == null) continue;
+      try {
+        found[source] = await one.sensors();
+        access[source] = await one.access();
+      } catch (e, st) {
+        ref.read(crashReporterProvider).report(e, st, context: 'home_climate.sensors');
+      }
     }
     if (!mounted) return;
     setState(() {
       _busy = false;
-      _searched = true;
-      _sensors = sensors;
+      _searched.addAll(found.keys);
+      // Chaque maison remplace ses propres capteurs, et laisse ceux de l'autre.
+      _sensors = [
+        for (final s in _sensors)
+          if (!found.containsKey(s.source)) s,
+        for (final list in found.values) ...list,
+      ];
     });
     if (silent) return;
-    if (sensors.isEmpty) {
-      ref.read(toastProvider.notifier).show(ToastData(message: access == HomeAccess.denied ? l10n.homeClimateDenied : l10n.homeClimateNoSensors, emoji: '🏠'));
+    // Rien trouvé dans les maisons qu'on vient d'interroger : le message est
+    // pour elles, même si l'autre maison a déjà donné ses capteurs.
+    if (found.values.every((list) => list.isEmpty)) {
+      final source = found.keys.firstOrNull ?? sources.firstOrNull;
+      ref.read(toastProvider.notifier).show(ToastData(message: _emptyMessage(l10n, source, access[source]), emoji: '🏠'));
       return;
     }
     // Un seul capteur : c'est lui. Plusieurs : la maison, puis le capteur.
     if (ref.read(preferencesProvider).homeSensor != null) return;
-    if (sensors.length == 1) {
-      await _select(sensors.single);
+    if (_sensors.length == 1) {
+      await _select(_sensors.single);
     } else {
       await _pick();
     }
   }
 
+  /// Rien trouvé : l'accès refusé se dit avec l'endroit où il se rouvre, et
+  /// il n'est pas le même selon la maison.
+  String _emptyMessage(AppLocalizations l10n, HomeSource? source, HomeAccess? access) {
+    if (access == HomeAccess.denied) {
+      return source == HomeSource.google ? l10n.homeClimateDeniedGoogle : l10n.homeClimateDeniedApple;
+    }
+    return l10n.homeClimateNoSensorsIn(homeSourceLabel(l10n, source ?? HomeSource.apple));
+  }
+
   Future<void> _pick([HomeQuantity quantity = HomeQuantity.temperature]) async {
     final prefs = ref.read(preferencesProvider);
     final current = quantity == HomeQuantity.temperature ? prefs.homeSensor : (prefs.homeHumiditySensor ?? prefs.homeSensor);
-    final chosen = await showHomeSensorPicker(context, sensors: _sensors, quantity: quantity, selectedId: current?.id);
+    final chosen = await showHomeSensorPicker(context, sensors: _sensors, quantity: quantity, selectedKey: current?.key);
     if (chosen == null) return;
     if (quantity == HomeQuantity.temperature) {
       await _select(chosen);
     } else {
-      await ref.read(preferencesProvider.notifier).setHomeHumiditySensor(chosen.id == prefs.homeSensor?.id ? null : chosen);
+      await ref.read(preferencesProvider.notifier).setHomeHumiditySensor(chosen.key == prefs.homeSensor?.key ? null : chosen);
       ref.invalidate(homeReadingProvider);
       Haptics.success();
     }
@@ -89,9 +123,10 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
   }
 
   /// Ce que dit un capteur sous son nom : l'accessoire quand la pièce fait
-  /// titre, et la maison.
-  static String? _detail(HomeSensor s) {
-    final parts = [if (s.roomName != null) s.name, ?s.homeName];
+  /// titre, la maison, et la plateforme quand l'appareil en lit deux.
+  String? _detail(HomeSensor s, {required bool named}) {
+    final l10n = context.l10n;
+    final parts = [if (s.roomName != null) s.name, ?s.homeName, if (named) homeSourceLabel(l10n, s.source)];
     return parts.isEmpty ? null : parts.join(' · ');
   }
 
@@ -109,11 +144,16 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final humiditySensor = ref.watch(preferencesProvider.select((p) => p.homeHumiditySensor));
     final reading = ref.watch(homeReadingProvider);
     final canPick = _sensors.isNotEmpty && !_busy;
+    // Les maisons lisibles ici, dans l'ordre où on les propose.
+    final sources = ref.watch(homeClimateServiceProvider).sources;
+    // La plateforme ne se dit sous un capteur que si l'appareil en lit deux :
+    // sur Android, « Google Home » sous chaque ligne n'apprend rien.
+    final named = sources.length > 1;
     // Ce que le capteur de température sait mesurer, d'après la liste
     // fraîche quand on l'a, sinon d'après la préférence.
-    final live = sensor == null ? null : _sensors.where((s) => s.id == sensor.id).firstOrNull ?? sensor;
+    final live = sensor == null ? null : _sensors.where((s) => s.key == sensor.key).firstOrNull ?? sensor;
     final humidityExpected = humiditySensor != null || (live?.hasHumidity ?? false);
-    final hygrometers = _sensors.any((s) => s.hasHumidity && s.id != sensor?.id);
+    final hygrometers = _sensors.any((s) => s.hasHumidity && s.key != sensor?.key);
     final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return FloraPage(
       title: l10n.homeClimate,
@@ -121,6 +161,12 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l10n.homeClimateHint, style: context.text.callout),
+          // D'où vient la mesure, maison par maison : HomeKit la lit sur
+          // l'appareil, Google Home passe par le compte de la personne. Ce
+          // n'est pas la même promesse, et chacune se dit.
+          const SizedBox(height: Space.xs),
+          if (sources.contains(HomeSource.apple)) Text(l10n.homeClimateAppleNote, style: context.text.caption),
+          if (sources.contains(HomeSource.google)) Text(l10n.homeClimateGoogleNote, style: context.text.caption),
           const SizedBox(height: Space.lg),
           FloraGroup(
             header: l10n.homeClimateSensors,
@@ -130,9 +176,11 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
               FloraListRow(
                 leading: const Text('🌡️', style: TextStyle(fontSize: 18)),
                 title: l10n.careTemperature,
-                // Sous le nom, ce que HomeKit dit que l'accessoire mesure :
+                // Sous le nom, ce que la maison dit que l'accessoire mesure :
                 // si « Humidité » n'y est pas, on sait d'où vient le tiret.
-                subtitle: sensor == null ? l10n.homeClimateNone : [sensor.label, ?_detail(sensor), measuresLabel(l10n, live ?? sensor)].join(' · '),
+                subtitle: sensor == null
+                    ? l10n.homeClimateNone
+                    : [sensor.label, ?_detail(sensor, named: named), measuresLabel(l10n, live ?? sensor)].join(' · '),
                 trailing: sensor == null
                     ? null
                     : FloraIconButton(
@@ -153,7 +201,7 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                   // l'humidité ; sinon il n'y a pas d'hygromètre, et la
                   // ligne le dit, et mène à en choisir un s'il en existe.
                   subtitle: humiditySensor != null
-                      ? [humiditySensor.label, ?_detail(humiditySensor)].join(' · ')
+                      ? [humiditySensor.label, ?_detail(humiditySensor, named: named)].join(' · ')
                       : (live?.hasHumidity ?? false)
                           ? l10n.homeClimateSameSensor
                           : l10n.homeClimateNone,
@@ -193,12 +241,27 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
           const SizedBox(height: Space.lg),
           if (_busy)
             const Padding(padding: EdgeInsets.all(Space.md), child: Center(child: AdaptiveProgress()))
-          else if (_sensors.isNotEmpty && sensor == null)
-            // La maison, la pièce, l'accessoire : le choix se fait dans une
-            // feuille, la même qu'à l'onboarding.
-            FloraButton(label: l10n.homeClimateChoose, icon: CupertinoIcons.house_fill, expand: true, onPressed: _pick)
-          else if (_sensors.isEmpty && (sensor == null || _searched))
-            FloraButton(label: l10n.homeClimateConnect, icon: CupertinoIcons.house_fill, style: sensor == null ? FloraButtonStyle.primary : FloraButtonStyle.ghost, expand: true, onPressed: _connect),
+          else ...[
+            if (_sensors.isNotEmpty && sensor == null)
+              // La plateforme, la maison, la pièce, l'accessoire : le choix
+              // se fait dans une feuille, la même qu'à l'onboarding.
+              FloraButton(label: l10n.homeClimateChoose, icon: CupertinoIcons.house_fill, expand: true, onPressed: _pick),
+            // Une maison qui n'a encore rien donné garde son bouton : c'est
+            // par là qu'on la branche, ou qu'on la rebranche. Celle qui a
+            // donné ses capteurs n'a plus rien à demander.
+            for (final source in sources)
+              if (!_hasFrom(source))
+                Padding(
+                  padding: const EdgeInsets.only(top: Space.xs),
+                  child: FloraButton(
+                    label: source == HomeSource.google ? l10n.homeClimateConnectGoogle : l10n.homeClimateConnectApple,
+                    icon: CupertinoIcons.house_fill,
+                    style: sensor == null && _sensors.isEmpty && !_searched.contains(source) ? FloraButtonStyle.primary : FloraButtonStyle.ghost,
+                    expand: true,
+                    onPressed: () => _search([source]),
+                  ),
+                ),
+          ],
         ],
       ),
     );

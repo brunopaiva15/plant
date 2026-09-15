@@ -158,9 +158,9 @@ done
 `test/assets/cutting_sequences_test.dart` vérifie que les six séquences sont
 embarquées, carrées, animées et pas trop lourdes.
 
-# La maison (« Votre intérieur », Apple Maison)
+# La maison (« Votre intérieur »)
 
-`build_home.py` rend la maison d'argile de l'étape Apple Maison de
+`build_home.py` rend la maison d'argile de l'étape de la maison de
 l'onboarding, dans le même studio et les mêmes matériaux que les autres
 objets : murs crème, toit de terre cuite, porte sauge, fenêtres rondes
 couleur d'eau, cheminée. Sans ombre au sol, comme les autres : l'application

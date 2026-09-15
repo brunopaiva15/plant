@@ -73,7 +73,7 @@ void main() {
     expect(find.text('°C'), findsOneWidget);
     expect(find.text('%'), findsOneWidget);
     expect(find.text("Facultatif : ce que la photo ne montre pas affine l'analyse."), findsOneWidget);
-    expect(find.textContaining('Mesure Apple Maison'), findsNothing);
+    expect(find.textContaining('Mesure de la maison'), findsNothing);
   });
 
   testWidgets('la terre, les racines, la lumière et les insectes se demandent, rien n’est coché', (tester) async {
@@ -116,7 +116,7 @@ void main() {
   testWidgets('un thermostat seul : la mesure est jointe, l’humidité seule se demande', (tester) async {
     final home = FakeHomeClimateService(reading: HomeReading(at: DateTime(2026, 9, 12), temperatureC: 21.4));
     await _open(tester, home, stored: {'home_sensor': _thermostat.encode()});
-    expect(find.text('Mesure Apple Maison jointe : 21°.'), findsOneWidget);
+    expect(find.text('Mesure de la maison jointe : 21°.'), findsOneWidget);
     expect(find.text('Température'), findsNothing);
     expect(find.text('Humidité'), findsOneWidget);
   });
@@ -124,7 +124,7 @@ void main() {
   testWidgets('la maison donne les deux : rien à demander', (tester) async {
     final home = FakeHomeClimateService(reading: HomeReading(at: DateTime(2026, 9, 12), temperatureC: 21.4, humidity: 38));
     await _open(tester, home, stored: {'home_sensor': _station.encode()});
-    expect(find.text('Mesure Apple Maison jointe : 21° · 38 %.'), findsOneWidget);
+    expect(find.text('Mesure de la maison jointe : 21° · 38 %.'), findsOneWidget);
     expect(find.text('Température'), findsNothing);
     expect(find.text('Humidité'), findsNothing);
   });
@@ -132,7 +132,7 @@ void main() {
   testWidgets('une plante dehors : le thermomètre du salon ne compte pas, les deux se demandent', (tester) async {
     final home = FakeHomeClimateService(reading: HomeReading(at: DateTime(2026, 9, 12), temperatureC: 21.4, humidity: 38));
     await _open(tester, home, stored: {'home_sensor': _station.encode()}, outdoor: {'salon'});
-    expect(find.textContaining('Mesure Apple Maison'), findsNothing);
+    expect(find.textContaining('Mesure de la maison'), findsNothing);
     expect(find.text('Température'), findsOneWidget);
     expect(find.text('Humidité'), findsOneWidget);
   });

@@ -26,6 +26,7 @@ import '../data/services/infomaniak_care_completer.dart';
 import '../data/services/infomaniak_cutting_refiner.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
+import '../data/services/google_home_climate_service.dart';
 import '../data/services/home_kit_climate_service.dart';
 import '../core/config/identification_config.dart';
 import '../core/config/supabase_config.dart';
@@ -487,12 +488,15 @@ WeatherTrend? _trend(Ref ref) => ref.read(weatherTrendProvider);
 /// l'onboarding. Remplacée dans les tests par un service muet.
 final locationServiceProvider = Provider<LocationService>((ref) => const DeviceLocationService());
 
-/// Les capteurs d'Apple Maison, là où HomeKit existe : iPhone et iPad.
-/// Ailleurs le service est muet, et l'étape comme le réglage n'apparaissent
-/// pas — on ne propose pas une maison qu'on ne peut pas lire.
+/// Les capteurs de la maison : Apple Maison là où HomeKit existe — iPhone
+/// et iPad —, Google Home sur iPhone comme sur Android. Chaque service
+/// écarte lui-même la plateforme qui n'est pas la sienne, et
+/// [MultiHomeClimateService] garde ceux qui restent. Sans aucune maison le
+/// service est muet, et l'étape comme le réglage n'apparaissent pas — on ne
+/// propose pas une maison qu'on ne peut pas lire.
 final homeClimateServiceProvider = Provider<HomeClimateService>((ref) {
-  if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return const UnavailableHomeClimateService();
-  return HomeKitClimateService();
+  if (kIsWeb) return const UnavailableHomeClimateService();
+  return MultiHomeClimateService([HomeKitClimateService(), GoogleHomeClimateService()]);
 });
 
 /// Soutien facultatif : le magasin de la plateforme là où il y en a un.
