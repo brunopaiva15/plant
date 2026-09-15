@@ -6780,54 +6780,6 @@ abstract class AppLocalizations {
   /// **'Deux espèces qui se ressemblent : les deux sont proposées.'**
   String get whatsNewIrisDoubtBody;
 
-  /// No description provided for @whatsNewSmallUpdates.
-  ///
-  /// In fr, this message translates to:
-  /// **'Petites nouveautés'**
-  String get whatsNewSmallUpdates;
-
-  /// No description provided for @whatsNewDiagnosisIntro.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une photo ne montre ni une terre détrempée, ni des racines brunes, ni trois pucerons sous une feuille. Quatre questions facultatives s\'en chargent.'**
-  String get whatsNewDiagnosisIntro;
-
-  /// No description provided for @whatsNewDiagnosisChecksTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Terre, racines, lumière, insectes'**
-  String get whatsNewDiagnosisChecksTitle;
-
-  /// No description provided for @whatsNewDiagnosisChecksBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Quatre questions sous les symptômes, à répondre ou non. Rien n\'est coché d\'avance.'**
-  String get whatsNewDiagnosisChecksBody;
-
-  /// No description provided for @whatsNewDiagnosisWeighTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pesé dans l\'analyse'**
-  String get whatsNewDiagnosisWeighTitle;
-
-  /// No description provided for @whatsNewDiagnosisWeighBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ce qui a été vérifié compte comme un constat, et les gestes proposés ne le redemandent plus.'**
-  String get whatsNewDiagnosisWeighBody;
-
-  /// No description provided for @whatsNewDiagnosisKeptTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Gardé au journal'**
-  String get whatsNewDiagnosisKeptTitle;
-
-  /// No description provided for @whatsNewDiagnosisKeptBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Un diagnostic rouvert des mois plus tard remontre ce qui avait été vérifié ce jour-là.'**
-  String get whatsNewDiagnosisKeptBody;
-
   /// No description provided for @onbStepOf.
   ///
   /// In fr, this message translates to:
