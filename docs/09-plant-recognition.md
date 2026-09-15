@@ -2872,12 +2872,33 @@ réseau :
 | groupes dont deux membres sont des classes de l'Iris 8 livré | 6 — les mêmes qu'ici |
 
 L'Iris 8 livré n'est donc pas plus atteint qu'avant, et
-`acceptedSpeciesName()` continue de le couvrir. Mais le modèle **à 5 259
-classes**, lui, portait les 46 : *Calathea* et *Goeppertia orbifolia*,
-*Dypsis* et *Chrysalidocarpus lutescens*, cinq agrumes sur une seule clé.
-Autant de plantes dont les images se partageaient entre deux classes qui se
-disputaient ensuite la réponse — une part, petite mais réelle, des dix
-points du § 6.7 bis.
+`acceptedSpeciesName()` continue de le couvrir. Le modèle **à 5 259
+classes**, lui, portait les 46 au catalogue : *Calathea* et *Goeppertia
+orbifolia*, *Dypsis* et *Chrysalidocarpus lutescens*, cinq agrumes sur une
+seule clé.
+
+> **✅ Mais elles ne se partageaient pas les images, contrairement à ce que
+> ce paragraphe affirmait.** Il concluait « autant de plantes dont les
+> images se partageaient entre deux classes qui se disputaient ensuite la
+> réponse — une part, petite mais réelle, des dix points du § 6.7 bis ».
+> Vérifié sur le manifeste du jeu de la v8, un million d'enregistrements :
+> **les 51 lignes retirées portent zéro image.** Pour chaque couple, le
+> survivant a tout, le retiré n'a rien — *Dracaena trifasciata* 519 contre
+> 0, *Citrus × limon* 489 contre 0, *Calathea orbifolia* 5 contre 0.
+>
+> La raison est structurelle et non fortuite. `build_dataset.py` saute un
+> candidat déjà vu (`manifest.has_source`), donc la **seconde** ligne d'un
+> couple voit exactement les mêmes occurrences et n'ajoute rien. Et
+> `plants.csv` range les espèces à fiche soignée en premier, puisque
+> `export_plants.py` part du catalogue de l'application — or c'est
+> précisément celles-là que la fusion garde (§ 12.14, règle de décision).
+> Les deux règles désignent le même gagnant par construction.
+>
+> Les doublons ont donc coûté des **tentatives de collecte**, pas de la
+> qualité de modèle. La fusion reste utile — elle épargne ces tentatives à
+> la prochaine collecte et rend le décompte de classes juste — mais elle
+> perd la justification qu'on lui prêtait ici, et les dix points du
+> § 6.7 bis restent entiers à expliquer.
 
 #### ✅ Mesuré sur les 5 778 lignes : 46 n'est pas une borne basse
 
