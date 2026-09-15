@@ -4006,34 +4006,6 @@ class AppLocalizationsIt extends AppLocalizations {
       'Due specie che si somigliano: vengono proposte entrambe.';
 
   @override
-  String get whatsNewSmallUpdates => 'Piccole novità';
-
-  @override
-  String get whatsNewDiagnosisIntro =>
-      'Una foto non mostra né la terra fradicia, né le radici brune, né tre afidi sotto una foglia. Ci pensano quattro domande facoltative.';
-
-  @override
-  String get whatsNewDiagnosisChecksTitle => 'Terra, radici, luce, insetti';
-
-  @override
-  String get whatsNewDiagnosisChecksBody =>
-      'Quattro domande sotto i sintomi, da rispondere o no. Niente è selezionato in anticipo.';
-
-  @override
-  String get whatsNewDiagnosisWeighTitle => 'Pesato nell\'analisi';
-
-  @override
-  String get whatsNewDiagnosisWeighBody =>
-      'Ciò che è stato verificato vale come un fatto, e i gesti proposti non lo richiedono più.';
-
-  @override
-  String get whatsNewDiagnosisKeptTitle => 'Conservato nel diario';
-
-  @override
-  String get whatsNewDiagnosisKeptBody =>
-      'Una diagnosi riaperta mesi dopo mostra ancora ciò che era stato verificato quel giorno.';
-
-  @override
   String onbStepOf(int current, int total) {
     return 'Passo $current di $total';
   }
@@ -4809,4 +4781,235 @@ class AppLocalizationsIt extends AppLocalizations {
   String finderRegion(String zone, String low) {
     return 'Zona $zone · inverni a $low';
   }
+
+  @override
+  String get encyclopediaTitle => 'Enciclopedia';
+
+  @override
+  String get encyclopediaHint =>
+      'I problemi della base, le specie del catalogo e il vocabolario delle schede di cura.';
+
+  @override
+  String get encyclopediaProblems => 'Problemi';
+
+  @override
+  String get encyclopediaSpecies => 'Specie';
+
+  @override
+  String get encyclopediaGlossary => 'Vocabolario';
+
+  @override
+  String get encyclopediaSearchProblems => 'Nome, parassita, malattia…';
+
+  @override
+  String get encyclopediaSearchGlossary => 'Luce, substrato, talea…';
+
+  @override
+  String encyclopediaProblemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count problemi',
+      one: '1 problema',
+      zero: 'Nessun problema',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String encyclopediaSpeciesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count specie',
+      one: '1 specie',
+      zero: 'Nessuna specie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get encyclopediaNoTerm => 'Nessun termine trovato';
+
+  @override
+  String problemNumber(String id) {
+    return 'Voce $id';
+  }
+
+  @override
+  String get problemScope => 'Estensione';
+
+  @override
+  String get problemScopeGeneral => 'Tutte le piante';
+
+  @override
+  String get problemScopeWide => 'Molti ospiti';
+
+  @override
+  String get problemScopeTarget => 'Ospiti specifici';
+
+  @override
+  String get problemScopeGeneralNote =>
+      'Possibile sulle piante vascolari, secondo le condizioni e lo stadio.';
+
+  @override
+  String get problemScopeWideNote => 'Molti ospiti; i taxa citati sono esempi.';
+
+  @override
+  String get problemScopeTargetNote =>
+      'Ospiti principali di un gruppo mirato; l\'elenco non è esaustivo.';
+
+  @override
+  String get problemHosts => 'Ospiti';
+
+  @override
+  String get problemHostsAll => 'Tutte le piante vascolari';
+
+  @override
+  String get problemHostsNote =>
+      'Un genere o una famiglia non rende sensibili tutte le sue specie.';
+
+  @override
+  String get problemInGarden => 'Nel giardino';
+
+  @override
+  String get problemKindsTitle => 'Famiglie di problemi';
+
+  @override
+  String get problemKindDisorderNote =>
+      'Né parassita né malattia: l\'acqua, la luce, il freddo, il substrato, una carenza.';
+
+  @override
+  String get problemKindPestNote =>
+      'Un essere vivente che attacca la pianta: insetto, acaro, lumaca, nematode.';
+
+  @override
+  String get problemKindDiseaseNote =>
+      'Un fungo, un batterio, un virus o un fitoplasma insediato nella pianta.';
+
+  @override
+  String get problemKindConditionNote =>
+      'Né l\'uno né l\'altro: la fumaggine cresce sulla melata, senza attaccare la pianta.';
+
+  @override
+  String get careLightShadeNote =>
+      'Lontano dalle finestre, senza raggio diretto durante il giorno.';
+
+  @override
+  String get careLightLowNote =>
+      'Una stanza chiara ma lontana dalla finestra, o esposta a nord.';
+
+  @override
+  String get careLightIndirectNote =>
+      'A qualche passo da una finestra, o dietro una tenda leggera.';
+
+  @override
+  String get careLightBrightNote =>
+      'Vicino a una finestra, fuori dal raggio del sole.';
+
+  @override
+  String get careLightSomeNote =>
+      'Il sole del mattino o di fine giornata, non quello di mezzogiorno.';
+
+  @override
+  String get careLightFullNote =>
+      'Sei ore di sole diretto o più, in piena giornata.';
+
+  @override
+  String get careHumidityLowNote => 'L\'aria di una casa riscaldata le basta.';
+
+  @override
+  String get careHumidityAverageNote =>
+      'Intorno al 50%, lontano dal termosifone d\'inverno.';
+
+  @override
+  String get careHumidityHighNote =>
+      'Oltre il 60%: bagno, cucina o un vassoio di argilla espansa umida.';
+
+  @override
+  String get careDifficultyEasyNote =>
+      'Sopporta le dimenticanze e i cambi di luce.';
+
+  @override
+  String get careDifficultyMediumNote =>
+      'Richiede un ritmo di irrigazione regolare e una posizione stabile.';
+
+  @override
+  String get careDifficultyDemandingNote =>
+      'Luce, umidità e irrigazione vanno seguite da vicino.';
+
+  @override
+  String get careToxicSafeNote =>
+      'Nessuna tossicità nota per animali e bambini.';
+
+  @override
+  String get careToxicMildNote => 'La linfa irrita la pelle e la bocca.';
+
+  @override
+  String get careToxicToxicNote =>
+      'Ingerire una foglia o un frutto provoca malessere.';
+
+  @override
+  String get careToxicUnknownNote =>
+      'Per questa specie non è indicato nulla; tenerla fuori portata per precauzione.';
+
+  @override
+  String get careSoilStandardNote =>
+      'Il terriccio da piante verdi, senza aggiunte.';
+
+  @override
+  String get careSoilDrainingNote =>
+      'Terriccio alleggerito con perlite, sabbia o pomice.';
+
+  @override
+  String get careSoilCactusNote =>
+      'Molto minerale: l\'acqua passa senza ristagnare.';
+
+  @override
+  String get careSoilOrchidNote =>
+      'Corteccia grossa: le radici vivono all\'aria.';
+
+  @override
+  String get careSoilAcidicNote =>
+      'Un pH acido, per le piante che il calcare ingiallisce.';
+
+  @override
+  String get careSoilRichNote =>
+      'Terriccio arricchito di compost, per le piante esigenti.';
+
+  @override
+  String get careSoilAquaticNote =>
+      'Le radici stanno nell\'acqua, o su un supporto senza terra.';
+
+  @override
+  String get carePropCuttingNote =>
+      'Un fusto tagliato sotto un nodo, messo in substrato umido.';
+
+  @override
+  String get carePropLeafNote =>
+      'Una foglia intera, o un frammento, posata sul substrato.';
+
+  @override
+  String get carePropDivisionNote =>
+      'Il cespo si divide in due al rinvaso, radici comprese.';
+
+  @override
+  String get carePropOffsetsNote =>
+      'I germogli nati alla base si staccano una volta radicati.';
+
+  @override
+  String get carePropLayeringNote =>
+      'Un fusto radicato mentre è ancora attaccato alla pianta madre.';
+
+  @override
+  String get carePropSeedNote =>
+      'Semi seminati, più lenti di una talea e spesso meno fedeli.';
+
+  @override
+  String get carePropWaterNote =>
+      'La talea resta in un bicchiere d\'acqua finché partono le radici.';
+
+  @override
+  String get carePropTuberNote =>
+      'Il tubero si taglia in pezzi, ciascuno con una gemma.';
 }

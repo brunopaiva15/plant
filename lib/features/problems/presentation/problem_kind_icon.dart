@@ -24,6 +24,35 @@ extension ProblemKindLabels on AppLocalizations {
         ProblemKind.disease => problemKindDiseases,
         ProblemKind.condition => problemKindConditions,
       };
+
+  /// Ce qui sépare une famille de l'autre, en une phrase. Ne se lit que dans
+  /// le vocabulaire de l'encyclopédie : ailleurs, le nom suffit.
+  String problemKindNote(ProblemKind kind) => switch (kind) {
+        ProblemKind.disorder => problemKindDisorderNote,
+        ProblemKind.pest => problemKindPestNote,
+        ProblemKind.disease => problemKindDiseaseNote,
+        ProblemKind.condition => problemKindConditionNote,
+      };
+}
+
+/// L'étendue des hôtes d'un problème, telle que la base la déclare : le nom
+/// court qui tient sur une ligne, et la réserve qui va avec.
+///
+/// La réserve n'est pas de la prudence d'affichage, c'est ce que la base dit
+/// d'elle-même en en-tête : les taxons cités sont des exemples, et un genre
+/// ne rend pas toutes ses espèces sensibles.
+extension ProblemScopeLabels on AppLocalizations {
+  String problemScopeName(ProblemScope scope) => switch (scope) {
+        ProblemScope.general => problemScopeGeneral,
+        ProblemScope.wide => problemScopeWide,
+        ProblemScope.target => problemScopeTarget,
+      };
+
+  String problemScopeNote(ProblemScope scope) => switch (scope) {
+        ProblemScope.general => problemScopeGeneralNote,
+        ProblemScope.wide => problemScopeWideNote,
+        ProblemScope.target => problemScopeTargetNote,
+      };
 }
 
 /// Le symbole d'argile d'une famille de problèmes.
