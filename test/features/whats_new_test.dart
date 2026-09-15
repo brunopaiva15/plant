@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flora/core/config/app_config.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/whats_new/application/release_notes.dart';
@@ -130,13 +129,16 @@ void main() {
   });
 
   group('la fenêtre', () {
-    testWidgets('montre le titre, son accroche et ses points forts', (tester) async {
+    testWidgets('montre les cinq nouveautés de la bêta', (tester) async {
       await _pumpWindow(tester);
-      expect(find.text(AppConfig.modelDisplayName('8')), findsOneWidget);
-      expect(find.text('MISE À JOUR DU MODÈLE'), findsOneWidget);
-      expect(find.text('5000 espèces reconnues'), findsOneWidget);
-      expect(find.text("Toujours sur l'appareil"), findsOneWidget);
-      expect(find.byType(IrisMark), findsOneWidget);
+      expect(find.text('AUXINE'), findsOneWidget);
+      expect(find.text('Nouveautés'), findsOneWidget);
+      expect(find.text("Fiche d'entretien"), findsOneWidget);
+      expect(find.text('Multiplication'), findsOneWidget);
+      expect(find.text('Diagnostic'), findsOneWidget);
+      expect(find.text('Encyclopédie'), findsOneWidget);
+      expect(find.text('Conseils de la communauté'), findsOneWidget);
+      expect(find.byType(IrisMark), findsNothing);
     });
 
     testWidgets('le bouton la referme', (tester) async {
