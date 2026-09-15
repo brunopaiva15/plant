@@ -3833,17 +3833,32 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportTitle => 'Auxine è gratuita';
 
   @override
-  String get supportBody =>
-      'Tutte le funzioni sono gratuite. È possibile un sostegno una tantum, senza abbonamento.';
+  String get supportOptional => 'Sostegno facoltativo';
+
+  @override
+  String get supportBody => 'Tutto è aperto, senza limiti né pubblicità.';
+
+  @override
+  String get supportPerkFeatures => 'Tutte le funzioni';
+
+  @override
+  String get supportPerkNoAds => 'Senza pubblicità';
+
+  @override
+  String get supportPerkNoSubscription => 'Senza abbonamento';
+
+  @override
+  String get supportPerkNoAccount => 'Account non obbligatorio';
 
   @override
   String get supportNothingLocked =>
       'Nessuna funzione è riservata ai sostenitori.';
 
   @override
-  String supportGive(String price) {
-    return 'Sostieni · $price';
-  }
+  String get supportOnce => 'Una sola volta';
+
+  @override
+  String get supportGive => 'Sostieni';
 
   @override
   String get supportRestore => 'Ripristina il mio sostegno';

@@ -441,6 +441,43 @@ qui reste sous les yeux pendant que la page défile.
   clés dans les quatre `.arb`. Aucune image à livrer.
 - Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
+## La page du soutien (`features/support/`)
+« Auxine est gratuite » demande sans rien vendre, et cela se joue dans
+l'ordre des blocs : on montre ce qui est donné avant de demander.
+
+- **La scène**, en haut : la plante de l'icône — la même que sur le premier
+  écran de l'onboarding, avec sa pousse et sa respiration — posée sur une
+  lueur qui s'éteint dans le papier. C'était un disque plein de `sageSoft` ;
+  un bord franc coupait net l'ombre au sol de la plante, et l'application n'en
+  a nulle part ailleurs.
+- **L'étiquette** avant le titre, une pilule d'argile en petites capitales :
+  « Soutien facultatif ». Elle dit ce qu'on attend de la page avant que la
+  page ne le demande.
+- **Le relevé** : quatre pièces — toutes les fonctions, sans publicité, sans
+  abonnement, sans compte obligatoire, soit le modèle économique de docs/01
+  mot pour mot —, chacune un galet de pâte de couleur (quatre variantes de
+  `ClayShape.blob`, deux voisines ne sont jamais la même pièce) et un fait.
+  Une phrase se survole ; quatre pièces se lisent d'un regard, et ce sont
+  elles qui donnent son sens au geste d'après.
+- **La proposition**, en terre cuite et en relief franc : le montant écrit en
+  grand et à la main, comme sur l'étiquette d'un pot, « Une seule fois »
+  dessous, puis le bouton — vert, celui de l'action — et la phrase qui ferme
+  la porte à toute contrepartie. Sur ce pastel l'encre tertiaire tombe à
+  4,3:1 : c'est la secondaire qui porte les petits textes.
+- **Une fois versé**, la lueur passe au rose, un sceau d'argile se pose au
+  ressort au pied de la plante, et la carte du montant laisse place à un mot.
+  C'est le seul endroit où la page récompense quelque chose, puisqu'aucune
+  fonction ne le fait.
+- **Dans l'onboarding**, `SupportPitch` se rend en version courte
+  (`compact`) : scène plus petite, pas de relevé. La page y partage la
+  hauteur avec les points de progression, et « Continuer sans » doit rester
+  sous les yeux de qui vient d'installer l'application.
+- Les blocs se posent l'un après l'autre (`Appear`), et à partir de 150 % de
+  Dynamic Type le relevé repasse sur une colonne.
+  `test/features/support_screen_test.dart` tient l'ordre des blocs, le
+  montant qui ne paraît que là où le magasin le propose, et la page qui ne
+  redemande rien une fois le soutien versé.
+
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
 

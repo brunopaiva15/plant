@@ -937,8 +937,11 @@ class _SupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: floraScrollPhysics,
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
-      child: SupportPitch(onDone: onDone),
+      // La version courte : ici la page partage la hauteur avec les points de
+      // progression, et « Continuer sans » doit rester sous les yeux.
+      child: SupportPitch(onDone: onDone, compact: true),
     );
   }
 }

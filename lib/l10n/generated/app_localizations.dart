@@ -6546,11 +6546,41 @@ abstract class AppLocalizations {
   /// **'Auxine est gratuite'**
   String get supportTitle;
 
+  /// No description provided for @supportOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soutien facultatif'**
+  String get supportOptional;
+
   /// No description provided for @supportBody.
   ///
   /// In fr, this message translates to:
-  /// **'Toutes les fonctions sont gratuites. Un soutien ponctuel, sans abonnement, est possible.'**
+  /// **'Tout est ouvert, sans limite ni publicité.'**
   String get supportBody;
+
+  /// No description provided for @supportPerkFeatures.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les fonctions'**
+  String get supportPerkFeatures;
+
+  /// No description provided for @supportPerkNoAds.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans publicité'**
+  String get supportPerkNoAds;
+
+  /// No description provided for @supportPerkNoSubscription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans abonnement'**
+  String get supportPerkNoSubscription;
+
+  /// No description provided for @supportPerkNoAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans compte obligatoire'**
+  String get supportPerkNoAccount;
 
   /// No description provided for @supportNothingLocked.
   ///
@@ -6558,11 +6588,17 @@ abstract class AppLocalizations {
   /// **'Aucune fonction n\'est réservée aux donateurs.'**
   String get supportNothingLocked;
 
+  /// No description provided for @supportOnce.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une seule fois'**
+  String get supportOnce;
+
   /// No description provided for @supportGive.
   ///
   /// In fr, this message translates to:
-  /// **'Soutenir · {price}'**
-  String supportGive(String price);
+  /// **'Soutenir'**
+  String get supportGive;
 
   /// No description provided for @supportRestore.
   ///

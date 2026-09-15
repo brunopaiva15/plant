@@ -1774,16 +1774,15 @@
     }
   },
   "supportTitle": "Auxine est gratuite",
-  "supportBody": "Toutes les fonctions sont gratuites. Un soutien ponctuel, sans abonnement, est possible.",
+  "supportOptional": "Soutien facultatif",
+  "supportBody": "Tout est ouvert, sans limite ni publicité.",
+  "supportPerkFeatures": "Toutes les fonctions",
+  "supportPerkNoAds": "Sans publicité",
+  "supportPerkNoSubscription": "Sans abonnement",
+  "supportPerkNoAccount": "Sans compte obligatoire",
   "supportNothingLocked": "Aucune fonction n'est réservée aux donateurs.",
-  "supportGive": "Soutenir · {price}",
-  "@supportGive": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
+  "supportOnce": "Une seule fois",
+  "supportGive": "Soutenir",
   "supportRestore": "Restaurer mon soutien",
   "supportThanksTitle": "Merci",
   "supportThanksBody": "Votre soutien est enregistré.",
