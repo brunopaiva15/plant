@@ -2607,6 +2607,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careHumidityHigh => 'Mag feuchte Luft';
 
   @override
+  String get careHumidityLowDetail =>
+      'Die Luft einer beheizten Wohnung genügt ihr; über 70 % nimmt sie Schaden.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      '40 bis 60 %, die normale Luft einer Wohnung; unter 30 % werden die Spitzen braun.';
+
+  @override
+  String get careHumidityHighDetail =>
+      '60 % und mehr: eine Schale mit feuchten Blähtonkugeln, Pflanzen in Gruppen, ein Badezimmer. Unter 45 % fehlt ihr die Feuchte.';
+
+  @override
   String get careDifficultyEasy => 'Einfach';
 
   @override
@@ -2650,6 +2662,155 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Ganz ohne Substrat';
+
+  @override
+  String get careSoilMixStandard =>
+      'Mit 20 % Perlit aufgelockert, damit das Wasser durchläuft.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % Erde, 25 % Perlit, 25 % grober Sand oder Lavagranulat.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % Erde, 70 % Lavagranulat, Bims oder grober Sand.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Mittlere Pinienrinde, 10 % Perlit, etwas Sphagnum; niemals Blumenerde.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Mit 25 % Pinienrinde aufgelockert, ohne Kalk und ohne Kompost.';
+
+  @override
+  String get careSoilMixRich => '40 % Erde, 40 % Kompost, 20 % Perlit.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Kein Substrat: die Wurzeln leben in der Luft oder im Wasser.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'Im Wasser: $water · In Pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'ja';
+
+  @override
+  String get careSoilFreeNo => 'nein';
+
+  @override
+  String get careSoilFreeCuttings => 'nur Stecklinge';
+
+  @override
+  String get careFertBalanced =>
+      'Ausgewogener Grünpflanzendünger, halb dosiert.';
+
+  @override
+  String get careFertFoliage =>
+      'Stickstoffbetonter Dünger, der fürs Blattwerk.';
+
+  @override
+  String get careFertFlowering => 'Kalibetonter Dünger, der für die Blüte.';
+
+  @override
+  String get careFertCactus => 'Kakteendünger, stickstoffarm.';
+
+  @override
+  String get careFertOrchid => 'Orchideendünger, stark verdünnt.';
+
+  @override
+  String get careFertAcidic => 'Rhododendrondünger, kalkfrei.';
+
+  @override
+  String get careFertCitrus =>
+      'Zitrusdünger, stickstoffreich und mit Spurenelementen.';
+
+  @override
+  String get careFertVegetable => 'Tomatendünger, kalireich.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Kalzium: keine Gabe, dazu Regenwasser; Kalk lässt ihr Laub vergilben.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Kalzium: hartes Wasser bekommt ihr, zerstoßene Eierschalen beim Umtopfen ebenso.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Kalzium: eine stetige Versorgung verhindert Blütenendfäule.';
+
+  @override
+  String get careGreenhouse => 'Im Gewächshaus';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Wärme und feuchte Luft';
+
+  @override
+  String get careGreenhouseWarmLight => 'Wärme und Licht';
+
+  @override
+  String get careGreenhouseWarmDry => 'Wärme, Licht und trockene Luft';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Das ganze Jahr gehalten, beschleunigen diese Bedingungen den Wuchs: Gießen und Düngen rücken ebenso zusammen.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Täglich lüften: stehende Luft lässt faulen, was es trocken mag.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'Im Frühbeet oder Mini-Gewächshaus starten Aussaaten vier bis sechs Wochen früher.';
+
+  @override
+  String get careBloom => 'Blüte';
+
+  @override
+  String get careBloomCoolRest => 'Ein kühler Winter';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Zwei Monate bei 10 bis 12 °C, fast ohne Wasser, legen die Knospen an.';
+
+  @override
+  String get careBloomCoolNights => 'Kühle Nächte';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Drei Wochen mit 15 °C in der Nacht, im Herbst, treiben den Blütenstiel.';
+
+  @override
+  String get careBloomShortDays => 'Kurze Tage';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Sechs Wochen mit zwölfstündigen Nächten, in völliger Dunkelheit, lösen die Knospen aus.';
+
+  @override
+  String get careBloomDrySpell => 'Eine Trockenzeit';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Einige Wochen ohne Wasser, dann wieder gießen: die Blüte folgt.';
+
+  @override
+  String get careBloomPotbound => 'Ein enger Topf';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Sie blüht, wenn die Wurzeln den Topf füllen; Umtopfen schickt sie zurück ins Laub.';
+
+  @override
+  String get careBloomBrightLight => 'Mehr Licht';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Blühen braucht mehr Licht als Blätter: Südfenster hinter einem leichten Vorhang.';
 
   @override
   String get carePropCutting => 'Stecklinge';

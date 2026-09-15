@@ -2602,6 +2602,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careHumidityHigh => 'Likes humid air';
 
   @override
+  String get careHumidityLowDetail =>
+      'The air of a heated home is enough; above 70 % it suffers.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      '40 to 60 %, the ordinary air of a home; below 30 % the tips turn brown.';
+
+  @override
+  String get careHumidityHighDetail =>
+      '60 % and up: a tray of damp clay pebbles, plants grouped together, a bathroom. Below 45 % the air is too dry for it.';
+
+  @override
   String get careDifficultyEasy => 'Easy';
 
   @override
@@ -2645,6 +2657,156 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'No soil at all';
+
+  @override
+  String get careSoilMixStandard =>
+      'Lightened with 20 % perlite, so water runs through.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % potting mix, 25 % perlite, 25 % coarse sand or lava rock.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % potting mix, 70 % lava rock, pumice or coarse sand.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Medium pine bark, 10 % perlite, a little sphagnum; never potting soil.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Lightened with 25 % pine bark, no lime, no compost.';
+
+  @override
+  String get careSoilMixRich => '40 % potting mix, 40 % compost, 20 % perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'No growing medium: the roots live in air or in water.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'In water: $water · In pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'yes';
+
+  @override
+  String get careSoilFreeNo => 'no';
+
+  @override
+  String get careSoilFreeCuttings => 'cuttings only';
+
+  @override
+  String get careFertBalanced =>
+      'Balanced houseplant fertilizer, at half strength.';
+
+  @override
+  String get careFertFoliage =>
+      'High-nitrogen fertilizer, the one for foliage.';
+
+  @override
+  String get careFertFlowering =>
+      'High-potash fertilizer, the one for flowers.';
+
+  @override
+  String get careFertCactus => 'Cactus fertilizer, low in nitrogen.';
+
+  @override
+  String get careFertOrchid => 'Orchid fertilizer, well diluted.';
+
+  @override
+  String get careFertAcidic => 'Ericaceous fertilizer, lime-free.';
+
+  @override
+  String get careFertCitrus =>
+      'Citrus fertilizer, high in nitrogen and trace elements.';
+
+  @override
+  String get careFertVegetable => 'Tomato fertilizer, high in potash.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcium: none at all, and rainwater; lime turns its leaves yellow.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcium: hard water suits it, as do crushed eggshells at repotting.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcium: a steady supply keeps blossom end rot away.';
+
+  @override
+  String get careGreenhouse => 'Under glass';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Warmth and humid air';
+
+  @override
+  String get careGreenhouseWarmLight => 'Warmth and light';
+
+  @override
+  String get careGreenhouseWarmDry => 'Warmth, light and dry air';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Held all year, these conditions speed up growth: watering and feeding come round just as fast.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Air it every day: still air rots a plant that likes things dry.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'In a cold frame or a small greenhouse, sowings start four to six weeks earlier.';
+
+  @override
+  String get careBloom => 'Flowering';
+
+  @override
+  String get careBloomCoolRest => 'A cool winter';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Two months at 10 to 12 °C, almost without water, set the buds.';
+
+  @override
+  String get careBloomCoolNights => 'Cool nights';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Three weeks at 15 °C at night, in autumn, bring up the flower spike.';
+
+  @override
+  String get careBloomShortDays => 'Short days';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Six weeks of twelve-hour nights, in complete darkness, trigger the buds.';
+
+  @override
+  String get careBloomDrySpell => 'A dry spell';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'A few weeks without water, then watering again: flowers follow.';
+
+  @override
+  String get careBloomPotbound => 'A tight pot';
+
+  @override
+  String get careBloomPotboundNote =>
+      'It flowers once the roots fill the pot; repotting sends it back to leaves.';
+
+  @override
+  String get careBloomBrightLight => 'More light';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Flowering takes more light than leaves do: a south window behind a sheer curtain.';
 
   @override
   String get carePropCutting => 'Stem cutting';

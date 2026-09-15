@@ -91,7 +91,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 ## Au-delà de HortusFox
 | Fonction | État |
 |---|---|
-| Fiche d'entretien par plante : arrosage saisonnier, lumière, humidité, substrat, rempotage, toxicité, bouturage, problèmes fréquents (230 espèces au catalogue) | ✅ |
+| Fiche d'entretien par plante : arrosage saisonnier, lumière, humidité chiffrée, engrais (lequel, et le calcium), substrat (le mélange, l'eau, le pon), rempotage, sous serre, floraison, toxicité, bouturage, problèmes fréquents (230 espèces au catalogue) | ✅ |
 | Sélecteur d'espèces : catalogue intégré hors ligne + recherche GBIF paginée | ✅ |
 | Catalogue étendu : ~40 000 espèces avec leurs noms courants en fr/de/it/en, cherchables hors ligne et sans accents (Wikidata CC0 + familles GBIF) | ✅ |
 | Onboarding animé en cinq écrans : objets 3D sur un halo de couleur, boucle qui ralentit jusqu'à se poser sur l'image nette, objets en orbite au rythme du doigt, titres levés ligne à ligne, texte mesuré pour ne jamais être coupé | ✅ |

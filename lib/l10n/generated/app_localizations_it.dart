@@ -2607,6 +2607,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careHumidityHigh => 'Ama l\'aria umida';
 
   @override
+  String get careHumidityLowDetail =>
+      'L\'aria di una casa riscaldata le basta; oltre il 70 % si rovina.';
+
+  @override
+  String get careHumidityAverageDetail =>
+      '40-60 %, l\'aria normale di una casa; sotto il 30 % le punte si seccano.';
+
+  @override
+  String get careHumidityHighDetail =>
+      '60 % e più: un sottovaso di argilla espansa bagnata, piante raggruppate, un bagno. Sotto il 45 % l\'aria è troppo secca.';
+
+  @override
   String get careDifficultyEasy => 'Facile';
 
   @override
@@ -2650,6 +2662,156 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careSoilAquatic => 'Senza substrato';
+
+  @override
+  String get careSoilMixStandard =>
+      'Alleggerito con il 20 % di perlite, perché l\'acqua scorra.';
+
+  @override
+  String get careSoilMixDraining =>
+      '50 % di terriccio, 25 % di perlite, 25 % di sabbia grossa o lapillo.';
+
+  @override
+  String get careSoilMixCactus =>
+      '30 % di terriccio, 70 % di lapillo, pomice o sabbia grossa.';
+
+  @override
+  String get careSoilMixOrchid =>
+      'Bark di pino medio, 10 % di perlite, un po\' di sfagno; mai terriccio.';
+
+  @override
+  String get careSoilMixAcidic =>
+      'Alleggerita con il 25 % di corteccia di pino, senza calcare né compost.';
+
+  @override
+  String get careSoilMixRich =>
+      '40 % di terriccio, 40 % di compost, 20 % di perlite.';
+
+  @override
+  String get careSoilMixAquatic =>
+      'Nessun substrato: le radici vivono all\'aria o nell\'acqua.';
+
+  @override
+  String careSoilFree(String water, String pon) {
+    return 'In acqua: $water · In pon: $pon';
+  }
+
+  @override
+  String get careSoilFreeYes => 'sì';
+
+  @override
+  String get careSoilFreeNo => 'no';
+
+  @override
+  String get careSoilFreeCuttings => 'solo talee';
+
+  @override
+  String get careFertBalanced =>
+      'Concime equilibrato per piante verdi, diluito a metà.';
+
+  @override
+  String get careFertFoliage => 'Concime ricco di azoto, quello del fogliame.';
+
+  @override
+  String get careFertFlowering =>
+      'Concime ricco di potassio, quello della fioritura.';
+
+  @override
+  String get careFertCactus => 'Concime per cactus, povero di azoto.';
+
+  @override
+  String get careFertOrchid => 'Concime per orchidee, molto diluito.';
+
+  @override
+  String get careFertAcidic => 'Concime per piante acidofile, senza calcare.';
+
+  @override
+  String get careFertCitrus =>
+      'Concime per agrumi, ricco di azoto e microelementi.';
+
+  @override
+  String get careFertVegetable => 'Concime per pomodori, ricco di potassio.';
+
+  @override
+  String get careCalciumAvoid =>
+      'Calcio: nessun apporto e acqua piovana; il calcare le ingiallisce le foglie.';
+
+  @override
+  String get careCalciumWelcome =>
+      'Calcio: l\'acqua dura le va bene, come i gusci d\'uovo tritati al rinvaso.';
+
+  @override
+  String get careCalciumNeeded =>
+      'Calcio: un apporto regolare evita il marciume apicale.';
+
+  @override
+  String get careGreenhouse => 'In serra';
+
+  @override
+  String get careGreenhouseWarmHumid => 'Calore e aria umida';
+
+  @override
+  String get careGreenhouseWarmLight => 'Calore e luce';
+
+  @override
+  String get careGreenhouseWarmDry => 'Calore, luce e aria secca';
+
+  @override
+  String get careGreenhouseGrowth =>
+      'Mantenute tutto l\'anno, queste condizioni accelerano la crescita: irrigazione e concime si avvicinano altrettanto.';
+
+  @override
+  String get careGreenhouseAir =>
+      'Arieggiare ogni giorno: l\'aria ferma fa marcire ciò che ama l\'asciutto.';
+
+  @override
+  String get careGreenhouseEarly =>
+      'In serra fredda o sotto cassone, le semine partono con quattro-sei settimane di anticipo.';
+
+  @override
+  String get careBloom => 'Fioritura';
+
+  @override
+  String get careBloomCoolRest => 'Un inverno fresco';
+
+  @override
+  String get careBloomCoolRestNote =>
+      'Due mesi tra 10 e 12 °C, quasi senza acqua, preparano i boccioli.';
+
+  @override
+  String get careBloomCoolNights => 'Notti fresche';
+
+  @override
+  String get careBloomCoolNightsNote =>
+      'Tre settimane a 15 °C di notte, in autunno, fanno salire lo stelo florale.';
+
+  @override
+  String get careBloomShortDays => 'Giorni corti';
+
+  @override
+  String get careBloomShortDaysNote =>
+      'Sei settimane con notti di dodici ore, al buio completo, avviano i boccioli.';
+
+  @override
+  String get careBloomDrySpell => 'Un periodo secco';
+
+  @override
+  String get careBloomDrySpellNote =>
+      'Qualche settimana senza acqua, poi si riprende a bagnare: la fioritura segue.';
+
+  @override
+  String get careBloomPotbound => 'Un vaso stretto';
+
+  @override
+  String get careBloomPotboundNote =>
+      'Fiorisce quando le radici riempiono il vaso; il rinvaso la riporta alle foglie.';
+
+  @override
+  String get careBloomBrightLight => 'Più luce';
+
+  @override
+  String get careBloomBrightLightNote =>
+      'Fiorire richiede più luce delle foglie: una finestra a sud con una tenda leggera.';
 
   @override
   String get carePropCutting => 'Talea di fusto';

@@ -169,6 +169,31 @@ ni casse (`core/utils/search_text.dart`).
 Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
 GBIF (CC BY) pour les familles.
 
+### Ce qu'une fiche d'entretien déduit (`domain/care/care_profile.dart`)
+Cent soixante-sept profils sont écrits à la main ; il aurait fallu les
+reprendre un à un pour leur ajouter un mélange, un type d'engrais, un rapport
+au calcium. La plupart de ces champs se déduisent de ce que la fiche dit
+déjà, et une espèce qui sait mieux le déclare — le champ déclaré l'emporte
+toujours sur la déduction.
+
+| Déduit | Règle | Déclaré par |
+|---|---|---|
+| `soilMix` (le mélange, i18n) | le `SoilKind` : un terreau drainant se prépare toujours pareil | — |
+| `inWater` | `aquatic` → oui ; ce qui tient le gel → non ; ce qui bouture dans l'eau → bouture seulement | `waterCulture` |
+| `inPon` | terre de bruyère et sans-substrat → non ; ce qui vit en pot (`potGrown`) → oui | `ponCulture` |
+| `fertilizerKind` | pas d'engrais → aucun ; nécrose apicale → tomates ; sinon le `SoilKind` (cactées, orchidées, terre de bruyère, équilibré) | `fertilizer` |
+| `calciumNeed` | terre de bruyère → à éviter ; nécrose apicale → nécessaire ; cactées → bienvenu ; sinon rien à en dire | `calcium` |
+| `benefitsFromGreenhouse` | tout ce qui ne tient pas le gel (`frostHardy`) | — |
+| `bloom` | rien : la floraison ne se déduit pas | `bloom` |
+
+Quatre-vingt-huit profils déclarent au moins un de ces champs : les agrumes
+(engrais agrumes, pas de calcaire, hiver frais), les marantacées (eau de
+pluie), le pothos et le spathiphyllum (culture dans l'eau), la tillandsie
+(sans substrat, mais pas dans l'eau), les tomates (potasse et calcium), les
+orchidées (nuits fraîches), le cactus de Noël (jours courts). L'IA de
+complétion ne se prononce sur aucun d'eux : ils restent ceux du catalogue
+(`domain/care/care_completion.dart`).
+
 ## Base des problèmes (hors base locale)
 `assets/problems/catalog.txt` : 200 troubles, ravageurs et maladies couvrant
 l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
