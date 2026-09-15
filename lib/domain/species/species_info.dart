@@ -172,14 +172,18 @@ class SpeciesCatalogEntry {
   final String de;
   final String it;
 
-  String commonName(String languageCode) => switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+  String commonName(String languageCode) {
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    return capitalizeSpeciesDisplayName(name);
+  }
 
   /// Le nom courant de la langue demandée, ou `null` quand l'entrée n'en a
   /// pas et retombe sur le nom scientifique. De quoi ne pas écrire deux fois
   /// le même nom, en titre et en sous-titre.
   String? vernacularName(String languageCode) {
-    final name = commonName(languageCode).trim();
-    return name.isEmpty || name == scientificName ? null : name;
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    final trimmed = name.trim();
+    return trimmed.isEmpty || trimmed == scientificName ? null : trimmed;
   }
 
   /// Recherche sans accents ni casse : « erable » doit trouver « Érable »,
@@ -190,7 +194,12 @@ class SpeciesCatalogEntry {
     return foldSpeciesName('$scientificName $fr $en $de $it $family').contains(q);
   }
 
-  SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(key: 0, scientificName: scientificName, family: family, commonName: commonName(languageCode));
+  SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(
+        key: 0,
+        scientificName: scientificName,
+        family: family,
+        commonName: commonName(languageCode),
+      );
 }
 
 abstract class SpeciesService {
