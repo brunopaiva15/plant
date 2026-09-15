@@ -12,6 +12,9 @@ import '../features/archive/presentation/archive_screen.dart';
 import '../features/dashboard/presentation/activity_log_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
+import '../features/encyclopedia/presentation/encyclopedia_screen.dart';
+import '../features/encyclopedia/presentation/problem_page.dart';
+import '../features/encyclopedia/presentation/species_page.dart';
 import '../features/export/presentation/backup_screen.dart';
 import '../features/finder/presentation/plant_finder_screen.dart';
 import '../features/garden/presentation/garden_screen.dart';
@@ -87,6 +90,13 @@ abstract final class Routes {
   static const diagnosis = '/settings/diagnosis';
   static const dashboard = '/dashboard';
   static const activityLog = '/activity';
+  static const encyclopedia = '/encyclopedia';
+  static String encyclopediaProblem(String id) => '/encyclopedia/problems/$id';
+
+  /// Le nom scientifique passe en paramètre de requête, pas de chemin : il
+  /// porte une espace, parfois un « × » d'hybride, et un chemin n'en veut pas.
+  static String encyclopediaSpecies(String scientificName) =>
+      Uri(path: '/encyclopedia/species', queryParameters: {'name': scientificName}).toString();
   static const forecast = '/weather/forecast';
   static const backup = '/settings/backup';
 }
@@ -157,6 +167,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.activityLog,
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => platformPage(c, s, const ActivityLogScreen()),
+      ),
+      GoRoute(
+        path: Routes.encyclopedia,
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, const EncyclopediaScreen()),
+      ),
+      GoRoute(
+        path: '/encyclopedia/problems/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, ProblemPage(problemId: s.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/encyclopedia/species',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, EncyclopediaSpeciesPage(scientificName: s.uri.queryParameters['name'] ?? '')),
       ),
       GoRoute(
         path: '/plants/:id',

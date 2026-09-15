@@ -4582,4 +4582,237 @@ class AppLocalizationsFr extends AppLocalizations {
   String finderRegion(String zone, String low) {
     return 'Zone $zone · hivers à $low';
   }
+
+  @override
+  String get encyclopediaTitle => 'Encyclopédie';
+
+  @override
+  String get encyclopediaHint =>
+      'Les problèmes de la base, les espèces du catalogue et le vocabulaire des fiches d\'entretien.';
+
+  @override
+  String get encyclopediaProblems => 'Problèmes';
+
+  @override
+  String get encyclopediaSpecies => 'Espèces';
+
+  @override
+  String get encyclopediaGlossary => 'Vocabulaire';
+
+  @override
+  String get encyclopediaSearchProblems => 'Nom, ravageur, maladie…';
+
+  @override
+  String get encyclopediaSearchGlossary => 'Lumière, substrat, bouture…';
+
+  @override
+  String encyclopediaProblemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count problèmes',
+      one: '1 problème',
+      zero: 'Aucun problème',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String encyclopediaSpeciesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count espèces',
+      one: '1 espèce',
+      zero: 'Aucune espèce',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get encyclopediaNoTerm => 'Aucun terme trouvé';
+
+  @override
+  String problemNumber(String id) {
+    return 'Entrée $id';
+  }
+
+  @override
+  String get problemScope => 'Étendue';
+
+  @override
+  String get problemScopeGeneral => 'Toutes les plantes';
+
+  @override
+  String get problemScopeWide => 'Nombreux hôtes';
+
+  @override
+  String get problemScopeTarget => 'Hôtes ciblés';
+
+  @override
+  String get problemScopeGeneralNote =>
+      'Possible sur les plantes vasculaires, selon les conditions et le stade.';
+
+  @override
+  String get problemScopeWideNote =>
+      'Nombreux hôtes ; les taxons cités sont des exemples.';
+
+  @override
+  String get problemScopeTargetNote =>
+      'Hôtes principaux d\'un groupe cible ; la liste n\'est pas exhaustive.';
+
+  @override
+  String get problemHosts => 'Hôtes';
+
+  @override
+  String get problemHostsAll => 'Toutes les plantes vasculaires';
+
+  @override
+  String get problemHostsNote =>
+      'Un genre ou une famille ne rend pas toutes ses espèces sensibles.';
+
+  @override
+  String get problemInGarden => 'Dans le jardin';
+
+  @override
+  String get problemKindsTitle => 'Familles de problèmes';
+
+  @override
+  String get problemKindDisorderNote =>
+      'Ni ravageur ni maladie : l\'eau, la lumière, le froid, le substrat, une carence.';
+
+  @override
+  String get problemKindPestNote =>
+      'Un être vivant qui s\'attaque à la plante : insecte, acarien, limace, nématode.';
+
+  @override
+  String get problemKindDiseaseNote =>
+      'Un champignon, une bactérie, un virus ou un phytoplasme installé dans la plante.';
+
+  @override
+  String get problemKindConditionNote =>
+      'Ni l\'un ni l\'autre : la fumagine pousse sur le miellat, sans s\'attaquer à la plante.';
+
+  @override
+  String get careLightShadeNote =>
+      'Loin des fenêtres, sans rayon direct de la journée.';
+
+  @override
+  String get careLightLowNote =>
+      'Une pièce claire mais éloignée de la fenêtre, ou exposée au nord.';
+
+  @override
+  String get careLightIndirectNote =>
+      'À quelques pas d\'une fenêtre, ou derrière un voilage.';
+
+  @override
+  String get careLightBrightNote =>
+      'Près d\'une fenêtre, hors du rayon du soleil.';
+
+  @override
+  String get careLightSomeNote =>
+      'Le soleil du matin ou de fin de journée, pas celui de midi.';
+
+  @override
+  String get careLightFullNote =>
+      'Six heures de soleil direct ou plus, en pleine journée.';
+
+  @override
+  String get careHumidityLowNote =>
+      'L\'air d\'un logement chauffé lui convient.';
+
+  @override
+  String get careHumidityAverageNote =>
+      'Autour de 50 %, loin d\'un radiateur en hiver.';
+
+  @override
+  String get careHumidityHighNote =>
+      'Au-delà de 60 % : salle de bains, cuisine, ou un plateau de billes d\'argile humides.';
+
+  @override
+  String get careDifficultyEasyNote =>
+      'Supporte les oublis et les écarts de lumière.';
+
+  @override
+  String get careDifficultyMediumNote =>
+      'Demande un rythme d\'arrosage régulier et un emplacement stable.';
+
+  @override
+  String get careDifficultyDemandingNote =>
+      'Lumière, humidité et arrosage demandent d\'être suivis de près.';
+
+  @override
+  String get careToxicSafeNote =>
+      'Aucune toxicité connue pour les animaux ni les enfants.';
+
+  @override
+  String get careToxicMildNote => 'La sève irrite la peau et la bouche.';
+
+  @override
+  String get careToxicToxicNote =>
+      'Avaler une feuille ou un fruit rend malade.';
+
+  @override
+  String get careToxicUnknownNote =>
+      'Rien n\'est renseigné pour cette espèce ; à tenir hors de portée par précaution.';
+
+  @override
+  String get careSoilStandardNote =>
+      'Le terreau vendu pour les plantes vertes, sans ajout.';
+
+  @override
+  String get careSoilDrainingNote =>
+      'Terreau allégé de perlite, de sable ou de pouzzolane.';
+
+  @override
+  String get careSoilCactusNote =>
+      'Très minéral : l\'eau traverse sans stagner.';
+
+  @override
+  String get careSoilOrchidNote =>
+      'Des écorces grossières : les racines vivent à l\'air.';
+
+  @override
+  String get careSoilAcidicNote =>
+      'Un pH acide, pour les plantes que le calcaire jaunit.';
+
+  @override
+  String get careSoilRichNote =>
+      'Terreau enrichi de compost, pour les plantes gourmandes.';
+
+  @override
+  String get careSoilAquaticNote =>
+      'Les racines tiennent dans l\'eau, ou sur un support sans terre.';
+
+  @override
+  String get carePropCuttingNote =>
+      'Une tige coupée sous un nœud, plantée dans un substrat humide.';
+
+  @override
+  String get carePropLeafNote =>
+      'Une feuille entière, ou un fragment, posée sur le substrat.';
+
+  @override
+  String get carePropDivisionNote =>
+      'La touffe se sépare en deux au rempotage, racines comprises.';
+
+  @override
+  String get carePropOffsetsNote =>
+      'Les jeunes pousses nées au pied se détachent une fois enracinées.';
+
+  @override
+  String get carePropLayeringNote =>
+      'Une tige enracinée alors qu\'elle tient encore à la plante mère.';
+
+  @override
+  String get carePropSeedNote =>
+      'Des graines semées, plus lentes qu\'une bouture et souvent moins fidèles.';
+
+  @override
+  String get carePropWaterNote =>
+      'La bouture patiente dans un verre d\'eau, le temps que les racines partent.';
+
+  @override
+  String get carePropTuberNote =>
+      'Le tubercule se coupe en morceaux portant chacun un œil.';
 }

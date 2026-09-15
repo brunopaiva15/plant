@@ -50,6 +50,7 @@ lib/
 │   ├── weather/                   ligne météo, conseil pluie, avertissements gel et chaleur, climat du lieu, réglages
 │   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur
 │   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
+│   ├── encyclopedia/              les actifs embarqués à lire à froid : un écran à trois rayons (problèmes, espèces, vocabulaire), une page par problème, une par espèce
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/
@@ -63,6 +64,7 @@ test/
 ├── data/plant_repository_test.dart
 ├── data/infomaniak_cutting_refiner_test.dart   ce qui part à l'IA, ce qu'on garde de la réponse
 ├── features/cutting_guide_test.dart            le guide : six étapes, trois sorties, texte précisé
+├── features/encyclopedia_test.dart             les trois rayons, sur la vraie base des 200 problèmes
 ├── core/connectivity_test.dart                 état du réseau, garde des appels
 ├── core/reachability_test.dart                 la sonde, sur de vraies connexions
 ├── features/shared_links_offline_test.dart     hors ligne, l'écran le dit au lieu de tourner
