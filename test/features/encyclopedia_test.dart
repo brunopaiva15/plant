@@ -159,6 +159,16 @@ void main() {
       await tester.tap(find.text('Vocabulaire'));
       await tester.pump();
 
+      // La lumière vient après les familles de problèmes, et le premier groupe
+      // remplit l'écran à lui seul : la liste étant paresseuse, « Ombre » n'est
+      // pas encore construit. On l'amène sous les yeux avant de le lire.
+      await tester.scrollUntilVisible(
+        find.text('Ombre'),
+        150,
+        scrollable: find.descendant(of: find.byType(CustomScrollView), matching: find.byType(Scrollable)).first,
+      );
+      await tester.pumpAndSettle();
+
       expect(find.text('Ombre'), findsOneWidget);
       expect(find.text('Loin des fenêtres, sans rayon direct de la journée.'), findsOneWidget);
     });
