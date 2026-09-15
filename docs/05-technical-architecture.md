@@ -325,16 +325,19 @@ Pour la livrer :
      `ios/Runner/GoogleHomeChannel.swift` est derrière
      `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal qui
      ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur l'App
-     ID ; le SDK ne se déploie pas sur le simulateur. Il demande **iOS 17**,
+     ID — App Groups y est déjà, celui du widget (`group.ch.vergasta.plant`)
+     sert aussi à Google Home, il n'y a donc qu'App Attest à ajouter, d'un
+     clic dans l'onglet *Signing & Capabilities* de la cible Runner. Le SDK
+     ne se déploie pas sur le simulateur. Il demande **iOS 17**,
      d'où la cible de déploiement du projet, montée de 15 (et 16 pour le
      widget) à 17 : l'application abandonne les iPhone 8, 8 Plus et X, dont
      iOS 16 est la dernière version. C'était le prix d'entrée des Home APIs
      sur iPhone.
 3. Renseigner `GoogleHomeClientID`, `GoogleHomeTeamID` et
    `GoogleHomeAppGroup` dans `ios/Runner/Info.plist` (les clés sont en
-   commentaire à côté de `NSHomeKitUsageDescription`) ; sans elles, le canal
-   répond « pas de maison ici » plutôt que d'ouvrir une session à moitié
-   configurée.
+   commentaire à côté de `NSHomeKitUsageDescription`, avec le groupe déjà
+   rempli) ; sans elles, le canal répond « pas de maison ici » plutôt que
+   d'ouvrir une session à moitié configurée.
 4. Passer `AppConfig.googleHomeEnabled` à vrai, et en dernier : le faire
    sans le SDK montre un bouton « Connecter Google Home » qui répondra
    toujours « aucun capteur ».
