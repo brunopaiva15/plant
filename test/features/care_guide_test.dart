@@ -119,5 +119,102 @@ void main() {
     expect(find.text('Pas de rempotage (culture annuelle)'), findsOneWidget);
     expect(find.text('Brumiser'), findsNothing);
     expect(find.text('Repos hivernal'), findsNothing);
+    // Sans rempotage, le rapport au pot n'a rien à dire.
+    expect(find.textContaining('Rempotez'), findsNothing);
+  });
+
+  testWidgets('la lumière porte la lampe qui la remplace', (tester) async {
+    await pump(tester);
+    expect(find.text('Sous lampe · LED à spectre complet, 150 à 250 µmol/m²/s, 12 h par jour'), findsOneWidget);
+    expect(find.text('Soit 6 à 11 mol/m²/jour reçus par le feuillage.'), findsOneWidget);
+  });
+
+  testWidgets("l'humidité se lit aussi en pourcentage, et la serre a sa consigne", (tester) async {
+    await pump(tester);
+    expect(tintOf(tester, "60 à 80 % d'humidité de l'air"), FloraColors.light.roseSoft);
+    expect(find.textContaining('Sous serre'), findsOneWidget);
+  });
+
+  testWidgets("l'humidité ordinaire n'a rien à dire d'une serre", (tester) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        repotEveryMonths: 24,
+      ),
+    );
+    expect(find.text("40 à 60 % d'humidité de l'air"), findsOneWidget);
+    expect(find.textContaining('Sous serre'), findsNothing);
+  });
+
+  testWidgets('le rempotage dit ce qu\'une racine qui sort veut dire', (tester) async {
+    await pump(tester);
+    // Sans avis particulier, la règle ordinaire, et pas de puce.
+    expect(tintOf(tester, 'Rempotez quand les racines sortent par le fond et tournent au fond du pot.'), FloraColors.light.terracottaSoft);
+    expect(find.text("Aime être à l'étroit"), findsNothing);
+
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.rich,
+        repotEveryMonths: 24,
+        pot: PotPreference.roomy,
+      ),
+    );
+    expect(find.text("Aime l'espace"), findsOneWidget);
+    expect(find.textContaining('dès que les racines atteignent la paroi'), findsOneWidget);
+
+    // Une plante à réserves ne se rempote pas sur une racine : elle se
+    // rempote à la reprise, la fin de son repos.
+    await pump(tester, _bulb);
+    expect(find.textContaining('à la reprise'), findsOneWidget);
+    expect(find.textContaining('dès que les racines atteignent la paroi'), findsNothing);
+  });
+
+  testWidgets('la floraison et le repos paraissent quand l\'espèce les a', (tester) async {
+    await pump(tester);
+    expect(find.text('Floraison'), findsNothing);
+    expect(find.text('Repos'), findsNothing);
+
+    await pump(tester, _bulb);
+    expect(find.text('Floraison'), findsOneWidget);
+    expect(find.text('De février à avril'), findsOneWidget);
+    expect(find.textContaining('dix à quinze semaines entre 5 et 9 °C'), findsOneWidget);
+    expect(find.text('Repos'), findsOneWidget);
+    expect(find.text('De juin à septembre'), findsOneWidget);
+    expect(find.text("Au sec et à l'obscurité, entre 10 et 18 °C"), findsOneWidget);
+    expect(find.textContaining('Laissez le feuillage jaunir'), findsOneWidget);
+  });
+
+  testWidgets('les deux cartes qui ne concernent pas tout le monde restent crème', (tester) async {
+    await pump(tester, _bulb);
+    expect(tintOf(tester, 'Floraison'), isNull);
+    expect(tintOf(tester, 'Repos'), isNull);
   });
 }
+
+/// Une plante à bulbe : elle veut de la place, fleurit à la sortie de l'hiver
+/// et disparaît tout l'été.
+const _bulb = CareProfile(
+  wateringSummerDays: 30,
+  wateringWinterDays: 10,
+  light: LightNeed.fullSun,
+  humidity: HumidityNeed.low,
+  difficulty: CareDifficulty.easy,
+  soil: SoilKind.draining,
+  repotEveryMonths: 12,
+  pot: PotPreference.roomy,
+  dormantInWinter: false,
+  bloom: Bloom(window: MonthWindow(2, 4), triggerKeys: ['chillBulb', 'directSun']),
+  dormancy: DormantRest(window: MonthWindow(6, 9), storeMinC: 10, storeMaxC: 18),
+);

@@ -567,7 +567,7 @@
   "homeClimateDenied": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
   "homeClimateFailed": "Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.",
   "homeClimateAtHome": "Chez vous",
-  "homeClimateFits": "Dans la plage de l'espèce.",
+  "homeClimateFits": "Rien qui gêne cette espèce.",
   "homeClimateTooDry": "Air trop sec pour cette espèce.",
   "homeClimateTooHumid": "Air trop humide pour cette espèce.",
   "homeClimateTooCold": "Trop froid pour cette espèce.",
@@ -1253,6 +1253,12 @@
     }
   },
   "careRepotNone": "Pas de rempotage (culture annuelle)",
+  "carePotSnug": "Aime être à l'étroit",
+  "carePotRoomy": "Aime l'espace",
+  "carePotSnugNote": "Une racine qui sort par le fond ne suffit pas : rempotez quand la motte est un bloc de racines, ou quand l'eau ne pénètre plus.",
+  "carePotSteadyNote": "Rempotez quand les racines sortent par le fond et tournent au fond du pot.",
+  "carePotRoomyNote": "Rempotez dès que les racines atteignent la paroi : à l'étroit, elle arrête de pousser.",
+  "carePotDormantNote": "Le rempotage se fait à la reprise, quand le repos s'achève, et non sur une racine qui sort.",
   "careTempIdeal": "{min} à {max} °C",
   "@careTempIdeal": {
     "placeholders": {
@@ -1278,9 +1284,46 @@
   "careLightBright": "Lumière vive indirecte",
   "careLightSome": "Quelques heures de soleil",
   "careLightFull": "Plein soleil",
+  "careLightLamp": "Sous lampe · LED à spectre complet, {min} à {max} µmol/m²/s, {hours} h par jour",
+  "@careLightLamp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "careLightLampDli": "Soit {min} à {max} mol/m²/jour reçus par le feuillage.",
+  "@careLightLampDli": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "careHumidityLow": "Air sec accepté",
   "careHumidityAverage": "Humidité ordinaire",
   "careHumidityHigh": "Aime l'air humide",
+  "careHumidityRange": "{min} à {max} % d'humidité de l'air",
+  "@careHumidityRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careHumidityGreenhouse": "Sous serre ou en vitrine, tenez cette plage le jour, laissez-la descendre la nuit et faites circuler l'air.",
   "careDifficultyEasy": "Facile",
   "careDifficultyMedium": "Moyenne",
   "careDifficultyDemanding": "Exigeante",
@@ -1340,6 +1383,58 @@
   "careBadgeMist": "Brumiser",
   "careBadgeDormant": "Repos hivernal",
   "careBadgeOutdoor": "Supporte l'extérieur",
+  "careBloom": "Floraison",
+  "careSeasonRange": "De {from} à {to}",
+  "@careSeasonRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "careBloomOutdoors": "Rarement en intérieur",
+  "careBloomCoolRest": "Un hiver frais, 12 à 15 °C et presque sec pendant six semaines, forme les boutons.",
+  "careBloomNightDrop": "Un écart de 8 à 10 °C entre le jour et la nuit lance la hampe florale.",
+  "careBloomLongNights": "Quatorze heures d'obscurité complète par nuit, six semaines de suite, déclenchent les boutons.",
+  "careBloomDryRest": "Un repos sec après la croissance : sans lui, la plante fait des feuilles et pas de fleurs.",
+  "careBloomPotbound": "Elle fleurit quand ses racines remplissent le pot ; un pot trop grand retarde tout.",
+  "careBloomFertilizer": "Un engrais à floraison, plus riche en potasse, dès que les boutons se forment.",
+  "careBloomDirectSun": "Quatre à six heures de soleil direct : à l'ombre, les boutons avortent.",
+  "careBloomMaturity": "Elle fleurit à partir de trois ou quatre ans, pas avant.",
+  "careBloomDeadhead": "Coupez les fleurs fanées, la suivante suit.",
+  "careBloomKeepSpike": "Gardez la hampe tant qu'elle reste verte : elle repart d'un œil plus bas.",
+  "careBloomNoMove": "Ne la déplacez plus et ne la tournez plus une fois les boutons formés, ils tombent.",
+  "careBloomEvenWater": "Un arrosage régulier pendant les boutons ; un coup de sec les fait tomber.",
+  "careBloomChillBulb": "Le bulbe passe dix à quinze semaines entre 5 et 9 °C avant d'être remis à la chaleur.",
+  "careRest": "Repos",
+  "careRestStoreDarkTemp": "Au sec et à l'obscurité, entre {min} et {max} °C",
+  "@careRestStoreDarkTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careRestStoreTemp": "Au sec, entre {min} et {max} °C",
+  "@careRestStoreTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careRestStoreDark": "Au sec et à l'obscurité",
+  "careRestStorePlain": "Au sec",
+  "careRestNote": "Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l'arrosage. Remettez le pot à la lumière et reprenez l'arrosage à la fin de cette période.",
   "careIssueOverwatering": "Excès d'eau (feuilles molles et jaunes)",
   "careIssueUnderwatering": "Manque d'eau (feuilles qui retombent)",
   "careIssueRootRot": "Pourriture des racines",

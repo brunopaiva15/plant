@@ -1239,7 +1239,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeClimateAtHome => 'Da voi';
 
   @override
-  String get homeClimateFits => 'Nell\'intervallo della specie.';
+  String get homeClimateFits => 'Niente che disturbi questa specie.';
 
   @override
   String get homeClimateTooDry => 'Aria troppo secca per questa specie.';
@@ -2522,6 +2522,28 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careRepotNone => 'Nessun rinvaso (coltura annuale)';
 
   @override
+  String get carePotSnug => 'Ama stare stretta';
+
+  @override
+  String get carePotRoomy => 'Ama lo spazio';
+
+  @override
+  String get carePotSnugNote =>
+      'Una radice che esce dal foro non basta: rinvasa quando il pane di terra è un blocco di radici, o quando l\'acqua non penetra più.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Rinvasa quando le radici escono dal foro e girano sul fondo del vaso.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Rinvasa appena le radici toccano la parete: stretta, smette di crescere.';
+
+  @override
+  String get carePotDormantNote =>
+      'Il rinvaso si fa alla ripresa, alla fine del riposo, non per una radice che esce.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return 'Da $min a $max °C';
   }
@@ -2550,6 +2572,16 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careLightFull => 'Pieno sole';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Sotto lampada · LED a spettro completo, da $min a $max µmol/m²/s, $hours h al giorno';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'Ossia da $min a $max mol/m²/giorno sul fogliame.';
+  }
+
+  @override
   String get careHumidityLow => 'Aria secca va bene';
 
   @override
@@ -2557,6 +2589,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careHumidityHigh => 'Ama l\'aria umida';
+
+  @override
+  String careHumidityRange(int min, int max) {
+    return 'Da $min a $max % di umidità dell\'aria';
+  }
+
+  @override
+  String get careHumidityGreenhouse =>
+      'In serra o in vetrina mantieni questo intervallo di giorno, lascialo scendere di notte e fai circolare l\'aria.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2670,6 +2711,91 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Sta bene all\'aperto';
+
+  @override
+  String get careBloom => 'Fioritura';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'Da $from a $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Raramente in casa';
+
+  @override
+  String get careBloomCoolRest =>
+      'Un inverno fresco, da 12 a 15 °C e quasi asciutto per sei settimane, forma i boccioli.';
+
+  @override
+  String get careBloomNightDrop =>
+      'Uno scarto da 8 a 10 °C tra giorno e notte fa partire lo stelo florale.';
+
+  @override
+  String get careBloomLongNights =>
+      'Quattordici ore di buio completo a notte, per sei settimane, avviano i boccioli.';
+
+  @override
+  String get careBloomDryRest =>
+      'Un riposo asciutto dopo la crescita: senza, la pianta fa foglie e non fiori.';
+
+  @override
+  String get careBloomPotbound =>
+      'Fiorisce quando le radici riempiono il vaso; un vaso troppo grande rimanda tutto.';
+
+  @override
+  String get careBloomFertilizer =>
+      'Un concime da fioritura, più ricco di potassio, appena si formano i boccioli.';
+
+  @override
+  String get careBloomDirectSun =>
+      'Da quattro a sei ore di sole diretto: all\'ombra i boccioli cadono.';
+
+  @override
+  String get careBloomMaturity => 'Fiorisce dai tre o quattro anni, non prima.';
+
+  @override
+  String get careBloomDeadhead =>
+      'Taglia i fiori appassiti, il successivo arriva.';
+
+  @override
+  String get careBloomKeepSpike =>
+      'Tieni lo stelo finché resta verde: riparte da una gemma più in basso.';
+
+  @override
+  String get careBloomNoMove =>
+      'Non spostarla e non girarla una volta formati i boccioli, cadono.';
+
+  @override
+  String get careBloomEvenWater =>
+      'Annaffiature regolari durante i boccioli; un colpo di secco li fa cadere.';
+
+  @override
+  String get careBloomChillBulb =>
+      'Il bulbo passa da dieci a quindici settimane tra 5 e 9 °C prima di tornare al caldo.';
+
+  @override
+  String get careRest => 'Riposo';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'All\'asciutto e al buio, tra $min e $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'All\'asciutto, tra $min e $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'All\'asciutto e al buio';
+
+  @override
+  String get careRestStorePlain => 'All\'asciutto';
+
+  @override
+  String get careRestNote =>
+      'Lascia ingiallire e seccare il fogliame senza tagliarlo, poi sospendi le annaffiature. Alla fine di questo periodo rimetti il vaso alla luce e riprendi ad annaffiare.';
 
   @override
   String get careIssueOverwatering => 'Troppa acqua (foglie molli e gialle)';

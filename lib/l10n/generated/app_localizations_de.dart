@@ -1241,7 +1241,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get homeClimateAtHome => 'Bei dir';
 
   @override
-  String get homeClimateFits => 'Im Bereich dieser Art.';
+  String get homeClimateFits => 'Nichts, was dieser Art zusetzt.';
 
   @override
   String get homeClimateTooDry => 'Luft zu trocken für diese Art.';
@@ -2522,6 +2522,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careRepotNone => 'Kein Umtopfen (einjährige Kultur)';
 
   @override
+  String get carePotSnug => 'Mag es eng';
+
+  @override
+  String get carePotRoomy => 'Mag Platz';
+
+  @override
+  String get carePotSnugNote =>
+      'Eine Wurzel aus dem Abzugsloch reicht nicht: umtopfen, wenn der Ballen ein Wurzelblock ist oder das Wasser nicht mehr einzieht.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Umtopfen, wenn Wurzeln aus dem Abzugsloch treten und sich am Topfboden drehen.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Umtopfen, sobald die Wurzeln die Topfwand erreichen: zu eng, und das Wachstum hört auf.';
+
+  @override
+  String get carePotDormantNote =>
+      'Umgetopft wird beim Neuaustrieb, am Ende der Ruhe, nicht wegen einer austretenden Wurzel.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return '$min bis $max °C';
   }
@@ -2550,6 +2572,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careLightFull => 'Volle Sonne';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Unter Lampe · Vollspektrum-LED, $min bis $max µmol/m²/s, $hours h am Tag';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'Das sind $min bis $max mol/m²/Tag am Blattwerk.';
+  }
+
+  @override
   String get careHumidityLow => 'Trockene Luft ist in Ordnung';
 
   @override
@@ -2557,6 +2589,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careHumidityHigh => 'Mag feuchte Luft';
+
+  @override
+  String careHumidityRange(int min, int max) {
+    return '$min bis $max % Luftfeuchte';
+  }
+
+  @override
+  String get careHumidityGreenhouse =>
+      'Im Gewächshaus oder in der Vitrine diesen Bereich tagsüber halten, nachts absinken lassen und die Luft bewegen.';
 
   @override
   String get careDifficultyEasy => 'Einfach';
@@ -2670,6 +2711,92 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Verträgt Freiland';
+
+  @override
+  String get careBloom => 'Blüte';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'Von $from bis $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Selten im Zimmer';
+
+  @override
+  String get careBloomCoolRest =>
+      'Ein kühler Winter, 12 bis 15 °C und fast trocken über sechs Wochen, legt die Knospen an.';
+
+  @override
+  String get careBloomNightDrop =>
+      'Ein Unterschied von 8 bis 10 °C zwischen Tag und Nacht treibt den Blütentrieb.';
+
+  @override
+  String get careBloomLongNights =>
+      'Vierzehn Stunden völlige Dunkelheit pro Nacht, sechs Wochen lang, lösen die Knospen aus.';
+
+  @override
+  String get careBloomDryRest =>
+      'Eine trockene Ruhe nach dem Wachstum: ohne sie kommen Blätter und keine Blüten.';
+
+  @override
+  String get careBloomPotbound =>
+      'Sie blüht, wenn die Wurzeln den Topf füllen; ein zu großer Topf verzögert alles.';
+
+  @override
+  String get careBloomFertilizer =>
+      'Blühdünger mit mehr Kali, sobald sich die Knospen bilden.';
+
+  @override
+  String get careBloomDirectSun =>
+      'Vier bis sechs Stunden direkte Sonne: im Schatten fallen die Knospen ab.';
+
+  @override
+  String get careBloomMaturity =>
+      'Sie blüht ab drei oder vier Jahren, nicht früher.';
+
+  @override
+  String get careBloomDeadhead =>
+      'Verblühtes abschneiden, die nächste Blüte folgt.';
+
+  @override
+  String get careBloomKeepSpike =>
+      'Den Blütentrieb behalten, solange er grün bleibt: er treibt aus einem tieferen Auge neu aus.';
+
+  @override
+  String get careBloomNoMove =>
+      'Nach der Knospenbildung nicht mehr umstellen und nicht mehr drehen, sonst fallen sie ab.';
+
+  @override
+  String get careBloomEvenWater =>
+      'Während der Knospen gleichmäßig gießen; eine Trockenphase lässt sie fallen.';
+
+  @override
+  String get careBloomChillBulb =>
+      'Die Zwiebel steht zehn bis fünfzehn Wochen bei 5 bis 9 °C, bevor sie wieder warm gestellt wird.';
+
+  @override
+  String get careRest => 'Ruhe';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Trocken und dunkel, zwischen $min und $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Trocken, zwischen $min und $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Trocken und dunkel';
+
+  @override
+  String get careRestStorePlain => 'Trocken';
+
+  @override
+  String get careRestNote =>
+      'Das Laub vergilben und trocknen lassen, ohne es zu schneiden, dann das Gießen einstellen. Am Ende dieser Zeit den Topf wieder ans Licht stellen und erneut gießen.';
 
   @override
   String get careIssueOverwatering => 'Zu viel Wasser (weiche, gelbe Blätter)';

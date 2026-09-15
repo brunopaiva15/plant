@@ -184,5 +184,81 @@ void main() {
       }
       expect(unknown, isEmpty, reason: 'clés de conseils non traduites : $unknown');
     });
+
+    test('toutes les conditions de floraison sont traduisibles', () {
+      const known = {
+        'coolRest', 'nightDrop', 'longNights', 'dryRest', 'potbound', 'bloomFertilizer', 'directSun',
+        'maturity', 'deadhead', 'keepSpike', 'noMove', 'evenWater', 'chillBulb',
+      };
+      final unknown = <String>{};
+      for (final p in _allProfiles.values) {
+        if (p.bloom case final bloom?) unknown.addAll(bloom.triggerKeys.where((k) => !known.contains(k)));
+      }
+      expect(unknown, isEmpty, reason: 'conditions de floraison non traduites : $unknown');
+    });
+
+    test('les plages en pourcentage vont du plus sec au plus humide', () {
+      final bad = <String>[];
+      for (final entry in _allProfiles.entries) {
+        final (min, max) = entry.value.humidityRange;
+        if (min >= max || min < 10 || max > 95) bad.add(entry.key);
+      }
+      expect(bad, isEmpty, reason: 'plages d\'hygrométrie incohérentes : $bad');
+    });
+
+    test('une plage resserrée reste dans l\'esprit de son besoin', () {
+      // Une fiche peut préciser « 50 à 70 % » là où « aime l'air humide »
+      // dit 60 à 80 ; elle ne peut pas dire le contraire de son besoin.
+      final bad = <String>[];
+      for (final entry in _allProfiles.entries) {
+        final p = entry.value;
+        final (min, max) = p.humidityRange;
+        final (low, high) = humidityPercentRange(p.humidity);
+        if (max <= low - 10 || min >= high + 10) bad.add(entry.key);
+      }
+      expect(bad, isEmpty, reason: 'pourcentage en désaccord avec le besoin : $bad');
+    });
+
+    test('un repos a une plage de rangement qui tient debout', () {
+      final bad = <String>[];
+      for (final entry in _allProfiles.entries) {
+        final rest = entry.value.dormancy;
+        if (rest == null) continue;
+        final min = rest.storeMinC;
+        final max = rest.storeMaxC;
+        if (min != null && max != null && min >= max) bad.add(entry.key);
+        if (min != null && (min < -5 || min > 25)) bad.add(entry.key);
+      }
+      expect(bad, isEmpty, reason: 'rangements incohérents : $bad');
+    });
+
+    test('les plantes à réserves que le catalogue cite ont leur repos', () {
+      // Le crocus et le caladium sont les deux cas que la fiche doit savoir
+      // expliquer : le premier veut le froid, le second pourrit en dessous
+      // de 15 °C. Une même carte, deux consignes opposées.
+      final crocus = guide.resolve('Crocus vernus');
+      final caladium = guide.resolve('Caladium bicolor');
+      expect(crocus.match, CareMatch.genus);
+      expect(caladium.match, CareMatch.genus);
+      expect(crocus.profile.dormancy!.storeMinC, lessThan(caladium.profile.dormancy!.storeMinC!));
+      expect(caladium.profile.minTempC, greaterThanOrEqualTo(15));
+      // Le froid du crocus n'est pas dans son rangement d'été : c'est ce qui
+      // déclenche sa floraison, et la fiche le dit là.
+      expect(crocus.profile.bloom!.triggerKeys, contains('chillBulb'));
+      expect(caladium.profile.bloom, isNull);
+    });
+
+    test('le rapport au pot ne contredit pas le rempotage', () {
+      // Une annuelle ne se rempote pas : lui prêter un avis sur son pot
+      // n'aurait rien à dire.
+      final bad = [
+        for (final e in _allProfiles.entries)
+          if (e.value.repotEveryMonths == null && e.value.pot != PotPreference.steady) e.key,
+      ];
+      expect(bad, isEmpty, reason: 'avis sur le pot sans rempotage : $bad');
+    });
   });
 }
+
+Map<String, CareProfile> get _allProfiles =>
+    {...CareProfiles.bySpecies, ...CareProfiles.byGenus, ...CareProfiles.byFamily, ...CareProfiles.byCategory};

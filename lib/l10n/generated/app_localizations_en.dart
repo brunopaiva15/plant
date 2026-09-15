@@ -1238,7 +1238,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeClimateAtHome => 'At home';
 
   @override
-  String get homeClimateFits => 'Within the range for this species.';
+  String get homeClimateFits => 'Nothing that bothers this species.';
 
   @override
   String get homeClimateTooDry => 'Air too dry for this species.';
@@ -2517,6 +2517,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careRepotNone => 'No repotting (grown as an annual)';
 
   @override
+  String get carePotSnug => 'Likes it tight';
+
+  @override
+  String get carePotRoomy => 'Likes room';
+
+  @override
+  String get carePotSnugNote =>
+      'A root through the drainage hole is not enough: repot once the root ball is a solid mass, or once water no longer soaks in.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Repot once roots come through the drainage hole and circle the bottom of the pot.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Repot as soon as the roots reach the side of the pot: cramped, it stops growing.';
+
+  @override
+  String get carePotDormantNote =>
+      'Repotting happens when growth restarts, at the end of the rest, not on a root coming out.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return '$min to $max °C';
   }
@@ -2545,6 +2567,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careLightFull => 'Full sun';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Under a lamp · full-spectrum LED, $min to $max µmol/m²/s, $hours h a day';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'That is $min to $max mol/m²/day reaching the leaves.';
+  }
+
+  @override
   String get careHumidityLow => 'Dry air is fine';
 
   @override
@@ -2552,6 +2584,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careHumidityHigh => 'Likes humid air';
+
+  @override
+  String careHumidityRange(int min, int max) {
+    return '$min to $max % air humidity';
+  }
+
+  @override
+  String get careHumidityGreenhouse =>
+      'In a greenhouse or a cabinet, hold this range by day, let it fall at night, and keep the air moving.';
 
   @override
   String get careDifficultyEasy => 'Easy';
@@ -2665,6 +2706,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Happy outdoors';
+
+  @override
+  String get careBloom => 'Flowering';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'From $from to $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Rarely indoors';
+
+  @override
+  String get careBloomCoolRest =>
+      'A cool winter, 12 to 15 °C and nearly dry for six weeks, sets the buds.';
+
+  @override
+  String get careBloomNightDrop =>
+      'A gap of 8 to 10 °C between day and night starts the flower spike.';
+
+  @override
+  String get careBloomLongNights =>
+      'Fourteen hours of complete darkness a night, six weeks running, trigger the buds.';
+
+  @override
+  String get careBloomDryRest =>
+      'A dry rest after growth: without it, the plant makes leaves and no flowers.';
+
+  @override
+  String get careBloomPotbound =>
+      'It flowers once its roots fill the pot; too large a pot delays everything.';
+
+  @override
+  String get careBloomFertilizer =>
+      'A bloom fertiliser, richer in potash, as soon as the buds form.';
+
+  @override
+  String get careBloomDirectSun =>
+      'Four to six hours of direct sun: in the shade, the buds drop.';
+
+  @override
+  String get careBloomMaturity =>
+      'It flowers from three or four years old, not before.';
+
+  @override
+  String get careBloomDeadhead =>
+      'Cut the spent flowers and the next one follows.';
+
+  @override
+  String get careBloomKeepSpike =>
+      'Keep the spike while it stays green: it starts again from a lower node.';
+
+  @override
+  String get careBloomNoMove =>
+      'Stop moving it and stop turning it once the buds are formed, they drop.';
+
+  @override
+  String get careBloomEvenWater =>
+      'Even watering while it is in bud; one dry spell and they fall.';
+
+  @override
+  String get careBloomChillBulb =>
+      'The bulb spends ten to fifteen weeks between 5 and 9 °C before going back to the warmth.';
+
+  @override
+  String get careRest => 'Rest';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Dry and dark, between $min and $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Dry, between $min and $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Dry and dark';
+
+  @override
+  String get careRestStorePlain => 'Dry';
+
+  @override
+  String get careRestNote =>
+      'Let the leaves yellow and dry without cutting them, then stop watering. Bring the pot back to the light and water again at the end of this period.';
 
   @override
   String get careIssueOverwatering => 'Overwatering (soft, yellow leaves)';

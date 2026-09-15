@@ -13,6 +13,11 @@ import 'care_profile.dart';
 /// d'une plante ; « non toxique pour le chat » est une affirmation sur
 /// laquelle quelqu'un agit. Elle reste au catalogue, renseignée à la main, ou
 /// inconnue.
+///
+/// La floraison et le repos à feuillage disparu n'en font pas partie non plus,
+/// pour une autre raison : une date de floraison inventée se vérifie six mois
+/// trop tard, et un bulbe rangé au froid sur un mauvais conseil ne repart pas.
+/// Le catalogue les renseigne ou se tait.
 class CareCompletion {
   const CareCompletion({
     this.wateringSummerDays,
@@ -23,6 +28,7 @@ class CareCompletion {
     this.fertilizingDays,
     this.noFertilizer = false,
     this.repotEveryMonths,
+    this.pot,
     this.minTempC,
     this.idealTempMinC,
     this.idealTempMaxC,
@@ -42,6 +48,10 @@ class CareCompletion {
   /// « je ne sais pas à quelle fréquence ».
   final bool noFertilizer;
   final int? repotEveryMonths;
+
+  /// Ce qu'une racine sortie du pot veut dire chez cette espèce : trois mots
+  /// d'un vocabulaire fermé, comme la lumière ou le substrat.
+  final PotPreference? pot;
   final int? minTempC;
   final int? idealTempMinC;
   final int? idealTempMaxC;
@@ -60,6 +70,7 @@ class CareCompletion {
       fertilizingDays == null &&
       !noFertilizer &&
       repotEveryMonths == null &&
+      pot == null &&
       minTempC == null &&
       idealTempMinC == null &&
       idealTempMaxC == null &&
@@ -76,9 +87,15 @@ class CareCompletion {
         humidity: humidity ?? base.humidity,
         difficulty: difficulty ?? base.difficulty,
         soil: soil ?? base.soil,
+        // La plage en pourcentage suit le besoin que l'IA a donné : garder
+        // celle du repère générique sous un autre mot afficherait « air sec
+        // accepté, 60 à 80 % ».
+        humidityMinPercent: humidity == null ? base.humidityMinPercent : null,
+        humidityMaxPercent: humidity == null ? base.humidityMaxPercent : null,
         fertilizingDays: noFertilizer ? null : (fertilizingDays ?? base.fertilizingDays),
         fertilizingWindow: base.fertilizingWindow,
         repotEveryMonths: repotEveryMonths ?? base.repotEveryMonths,
+        pot: pot ?? base.pot,
         minTempC: minTempC ?? base.minTempC,
         idealTempMinC: idealTempMinC ?? base.idealTempMinC,
         idealTempMaxC: idealTempMaxC ?? base.idealTempMaxC,
@@ -88,6 +105,8 @@ class CareCompletion {
         mistLeaves: base.mistLeaves,
         dormantInWinter: base.dormantInWinter,
         outdoorFriendly: base.outdoorFriendly,
+        bloom: base.bloom,
+        dormancy: base.dormancy,
         tipKeys: base.tipKeys,
       );
 
@@ -100,6 +119,7 @@ class CareCompletion {
         if (fertilizingDays != null) 'fe': fertilizingDays,
         if (noFertilizer) 'nf': true,
         if (repotEveryMonths != null) 're': repotEveryMonths,
+        if (pot != null) 'po': pot!.name,
         if (minTempC != null) 'tm': minTempC,
         if (idealTempMinC != null) 'ti': idealTempMinC,
         if (idealTempMaxC != null) 'ta': idealTempMaxC,
@@ -129,6 +149,7 @@ class CareCompletion {
       fertilizingDays: json['fe'] as int?,
       noFertilizer: json['nf'] == true,
       repotEveryMonths: json['re'] as int?,
+      pot: enumOf(PotPreference.values, json['po']),
       minTempC: json['tm'] as int?,
       idealTempMinC: json['ti'] as int?,
       idealTempMaxC: json['ta'] as int?,

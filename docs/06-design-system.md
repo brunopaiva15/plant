@@ -390,6 +390,24 @@ l'arrosage. L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau :
 c'est la question qu'on se pose en premier. La carte « Chez vous » se pose
 après l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
 
+Sous le constat, les cartes portent ce qu'il faut en faire, une phrase par
+idée (`notes`), en `caption` : la règle du rempotage, la dose de la lampe, les
+conditions d'une floraison. La lumière annonce la lampe qui la remplace —
+LED à spectre complet, intensité reçue et durée, puis la dose du jour —, parce
+que c'est le seul volet de la fiche qui s'achète quand la fenêtre manque.
+L'humidité double son mot d'un pourcentage : « Aime l'air humide » suffit pour
+poser un pot dans un salon, pas pour régler une serre, et deux plantes du même
+mot ne veulent pas le même chiffre. Le rempotage dit ce qu'une racine sortie
+par le fond signifie pour cette espèce-là — signal pour celle qui veut de
+l'espace, état normal pour celle qui fleurit à l'étroit.
+
+Deux cartes ne concernent pas tout le monde et ne paraissent que pour les
+espèces qui les ont : **Floraison**, avec la saison et les conditions à réunir,
+et **Repos**, pour les plantes à réserves dont le feuillage disparaît (crocus,
+caladium, cyclamen) — la période, la température et l'obscurité du rangement.
+Elles restent crème plutôt que de prendre une sixième teinte : les cinq volets
+teintés sont ceux qui reviennent, celles-ci paraissent.
+
 Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
 `FloraGroup` à la suite, avant les conseils, ce qu'il faut surveiller, les
 problèmes connus et la multiplication ; la provenance de la fiche ferme la
