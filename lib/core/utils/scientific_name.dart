@@ -124,6 +124,13 @@ const _acceptedNames = {
   'Kroenleinia grusonii': 'Echinocactus grusonii',
   'Hesperocyparis macrocarpa': 'Cupressus macrocarpa',
   'Citrus myrtifolia': 'Citrus × aurantium',
+  // Quatre classes du modèle que l'app ne nomme que sous leur autre nom :
+  // sans elles, leur fiche s'ouvrait sans famille et sans nom courant.
+  'Anemonoides nemorosa': 'Anemone nemorosa',
+  'Heptapleurum arboricola': 'Schefflera arboricola',
+  'Vriesea splendens': 'Lutheria splendens',
+  // Le modèle a perdu le signe d'hybride en route ; le catalogue le garde.
+  'Sedum rubrotinctum': 'Sedum × rubrotinctum',
 };
 
 /// Le nom sous lequel l'app connaît le mieux cette plante, quand elle en
