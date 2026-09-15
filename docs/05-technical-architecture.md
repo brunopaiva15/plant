@@ -327,7 +327,12 @@ Pour la livrer :
      Puis `File › Add Package Dependencies › Add Local`, et surtout choisir
      **Runner** dans la colonne *Add to Target* des deux produits : validée
      à *None*, la référence s'écrit sans lier quoi que ce soit, et
-     `canImport` reste faux — un build vert qui ne prouve rien.
+     `canImport` reste faux — un build vert qui ne prouve rien. Enfin, mettre
+     `GoogleHomeTypes` sur **Do Not Embed** : c'est une bibliothèque statique
+     dans un dossier `.framework`, sans `Info.plist` puisqu'elle n'est pas
+     faite pour être copiée, et l'embarquer fait échouer l'étape d'empaquetage
+     de Flutter sur « did not contain an Info.plist ». Seul `GoogleHomeSDK`,
+     dynamique, s'embarque.
      `ios/Runner/GoogleHomeChannel.swift` est derrière
      `#if canImport(GoogleHomeSDK)` : sans eux, il se compile en un canal qui
      ne s'enregistre pas. Capabilities *App Attest* et *App Groups* sur l'App
