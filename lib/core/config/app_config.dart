@@ -65,7 +65,7 @@ abstract final class AppConfig {
   /// qui répondra toujours « aucun capteur ». Utile pour éprouver l'écran,
   /// jamais pour livrer. La marche à suivre est dans
   /// `docs/05-technical-architecture.md`, section « Google Home ».
-  static const bool googleHomeEnabled = false;
+  static const bool googleHomeEnabled = true;
 
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.
