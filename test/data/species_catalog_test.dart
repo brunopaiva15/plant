@@ -6,11 +6,13 @@ import 'package:flora/data/services/gbif_species_service.dart';
 import 'package:flora/data/species/catalog_800/species_catalog_800.dart';
 import 'package:flora/data/species/catalog_1000/species_catalog_1000.dart';
 import 'package:flora/data/species/catalog_1200/species_catalog_1200.dart';
+import 'package:flora/data/species/iris_detailed_catalog.dart';
 import 'package:flora/data/species/species_catalog.dart';
+import 'package:flora/data/species/species_index.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue : exactement 1200 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
+  test('catalogue éditorial : exactement 1200 fiches curatées, uniques et complètes', () {
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
     expect(SpeciesCatalog.entries, hasLength(1200));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
@@ -22,6 +24,22 @@ void main() {
       expect(e.family.trim(), isNotEmpty);
       expect(e.scientificName.split(' ').length, greaterThanOrEqualTo(2));
     }
+  });
+
+  test('encyclopédie Iris : exactement les 1444 classes du modèle', () {
+    final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
+    final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toList();
+    final index = SpeciesIndex.parse(File('assets/species/catalog.tsv').readAsStringSync());
+    final detailed = IrisDetailedCatalog.from(modelSpecies: modelSpecies, index: index);
+    final names = detailed.entries.map((e) => e.scientificName).toList();
+
+    expect(modelJson['classes'], 1444);
+    expect(modelSpecies, hasLength(1444));
+    expect(modelSpecies.toSet(), hasLength(1444));
+    expect(detailed.entries, hasLength(1444));
+    expect(names.toSet(), modelSpecies.toSet());
+    expect(names.toSet().length, names.length);
+    expect(detailed.entries.every((e) => e.commonName('fr').trim().isNotEmpty), isTrue);
   });
 
   test('catalogue : recherche par nom commun, latin ou famille, insensible à la casse', () {
