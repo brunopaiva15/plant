@@ -4,9 +4,9 @@ import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue : exactement 400 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
+  test('catalogue : exactement 500 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(400));
+    expect(SpeciesCatalog.entries, hasLength(500));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -28,11 +28,16 @@ void main() {
 
   test('catalogue : les extensions et corrections taxonomiques sont exposées', () {
     expect(SpeciesCatalog.find('Monstera obliqua')?.family, 'Araceae');
+    expect(SpeciesCatalog.find('Monstera acuminata')?.family, 'Araceae');
     expect(SpeciesCatalog.find('Taxus baccata')?.family, 'Taxaceae');
+    expect(SpeciesCatalog.find('Pinus sylvestris')?.family, 'Pinaceae');
     expect(SpeciesCatalog.find('Lutheria splendens')?.family, 'Bromeliaceae');
     expect(SpeciesCatalog.find('Pilea ovalis')?.family, 'Urticaceae');
+    expect(SpeciesCatalog.find('Feijoa sellowiana')?.family, 'Myrtaceae');
+    expect(SpeciesCatalog.find('Aristaloe aristata')?.family, 'Asphodelaceae');
     expect(SpeciesCatalog.find('Vriesea splendens'), isNull);
     expect(SpeciesCatalog.find('Pilea involucrata'), isNull);
+    expect(SpeciesCatalog.find('Peperomia prostrata'), isNull);
   });
 
   test('GBIF : parse d\'une page de recherche (total, fin de liste)', () {
