@@ -28,34 +28,52 @@ Plantes ─[tap +]⟶ Sheet plein écran
 - Quand l'application passe derrière (multitâche, appel), le système reprend la caméra : le viseur est *suspendu*, pas absent. Le cadre garde ses commandes et la page sa mise en page, et l'aperçu revient au retour. La carte du multitâche montre donc la même étape.
 - Reprendre efface la photo et les vues prises avec elle : elles montraient le même sujet. Les vues ne sont proposées que si un moteur d'identification est configuré, et ne sont jamais gardées.
 
-## 1b. Créer une bouture (le guide, puis la création)
+## 1b. Multiplier une plante (le guide, puis la création)
 ```
-Fiche plante ─[Créer une bouture]⟶ Guide de bouturage (sheet plein écran)
-  Créer une bouture   les six gestes réunis, qui jouent et dérivent ; une
-                      phrase d'introduction · [Suivant]
-  Six étapes, une par écran : un objet d'argile rendu sous Blender joue le
-  geste sur un halo, puis respire ; un titre, une phrase.
-    La tige      la plante mère pousse, un anneau se pose sur le point de coupe
-    La coupe     les ciseaux viennent d'en haut, se ferment sur l'anneau, le brin
-                 se détache, les ciseaux repartent par où ils sont venus
-    Les feuilles la feuille du bas se décroche, le nœud reste nu
-    L'eau        la bouture descend dans le verre, le nœud sous la surface
-    Les racines  elles sortent du nœud et s'allongent
-    Le pot       la bouture racinée descend dans la terre
-  [Continuer] × 5 · [Créer la bouture] ⟶ flow de création, nom « Bouture de … »
+Fiche plante ─[Multiplier]⟶ Guide de multiplication (sheet plein écran)
+  Plusieurs méthodes possibles ? un écran de choix d'abord :
+    Multiplier cette plante
+      Division           Rapide et sûre, la touffe se partage   [Conseillée]
+      Bouture de feuille Plus lente, une feuille suffit
+  Puis le guide du geste retenu :
+  Bouture de tige de Monstera deliciosa   les gestes du guide réunis, qui
+                      jouent et dérivent · « 6 étapes » · [Suivant]
+  Une étape par écran : un objet d'argile rendu sous Blender joue le geste
+  sur un halo, puis respire ; un titre, une phrase, parfois une ligne de plus.
+    Le nœud          la plante mère se pose, un anneau entoure le nœud choisi
+                     — « À repérer · Nœud et racine aérienne »
+    La coupe         les ciseaux se ferment SOUS le nœud, qui part avec la
+                     bouture — « À éviter · Couper au-dessus du nœud »
+    Le nœud dégagé   la feuille du bas se décroche, le nœud reste nu
+    L'eau            la bouture descend dans le verre, le nœud sous la surface
+                     — « Enracinement · Dans l'eau », dit par la fiche d'espèce
+    Les racines      elles sortent du nœud et s'allongent
+    Le pot           la bouture racinée descend dans la terre
+  [Continuer] × n · [Créer la bouture] ⟶ flow de création, nom « Bouture de … »
   Passer ⟶ flow de création tout de suite · × ⟶ rien n'est créé
 ```
-- Les phrases sont celles d'une bouture de tige dans l'eau. Quand la plante
+- Le geste montré est celui que la plante demande, choisi par
+  `resolvePropagationGuide` sur l'espèce, la famille et la fiche d'entretien :
+  bouture de tige à nœud, de tige tendre, de feuille, division, rejet, ou
+  segment de succulente. Un spathiphyllum ne voit jamais une bouture de liane.
+  Les six archétypes et leurs règles : docs/12.
+- Le nombre d'étapes appartient au guide : quatre, six, ou davantage. Les
+  points de progression, la grappe d'introduction et le bouton final suivent.
+  Une division crée une plante, pas une bouture, et le bouton le dit.
+- Les phrases sont celles de l'archétype, déjà justes sans IA. Quand la plante
   mère a une espèce et que « Compléter les fiches avec l'IA » est laissé
-  allumé, le nom scientifique part une fois et les six phrases sont réécrites
-  pour l'espèce : où est le nœud, eau ou substrat, délai, saison. Le texte
-  générique s'affiche d'abord, le texte précis le remplace en fondu. Les
-  titres ne changent pas. Le texte reçu est mis au ton de l'application :
-  ni point d'exclamation ni point-virgule, une majuscule par phrase.
-- La réponse est gardée sur l'appareil, par espèce et par langue : la
-  bouture suivante de la même plante ne redemande rien. Une réponse vide
-  (espèce inconnue) se garde aussi. Sans clé, IA coupée, ou en cas d'erreur,
-  le guide reste générique et rien ne se voit.
+  allumé, l'espèce, la méthode et la liste des étapes partent une fois, et les
+  phrases sont réécrites pour l'espèce : où est le nœud, eau ou substrat,
+  délai, saison. Le modèle ne choisit ni la méthode, ni le nombre d'étapes, ni
+  les animations. Le texte local s'affiche d'abord, le texte précis le remplace
+  en fondu. Les titres ne changent pas. Le texte reçu est mis au ton de
+  l'application : ni point d'exclamation ni point-virgule, une majuscule par
+  phrase.
+- La réponse est gardée sur l'appareil, par espèce, par langue et par geste :
+  la multiplication suivante de la même plante ne redemande rien, et le texte
+  d'une division ne ressort pas pour une bouture de feuille. Une réponse vide
+  (espèce inconnue) se garde aussi. Sans clé, IA coupée, ou en cas d'erreur, le
+  guide garde ses textes locaux et rien ne se voit.
 - Chaque séquence se rejoue quand on revient sur son écran ; avec « réduire
   les animations », c'est la dernière image qui est montrée, posée.
 

@@ -1,3 +1,4 @@
+import '../../core/utils/scientific_name.dart';
 import '../../core/utils/search_text.dart';
 import '../../domain/species/species_info.dart';
 import 'species_catalog.dart';
@@ -20,8 +21,10 @@ class IrisDetailedSpecies {
     this.category,
   });
 
-  factory IrisDetailedSpecies.fromCurated(SpeciesCatalogEntry entry) => IrisDetailedSpecies(
-        scientificName: entry.scientificName,
+  /// [scientificName] permet de garder le nom de la classe du modèle quand
+  /// la fiche est celle de l'autre nom de la même plante.
+  factory IrisDetailedSpecies.fromCurated(SpeciesCatalogEntry entry, {String? scientificName}) => IrisDetailedSpecies(
+        scientificName: scientificName ?? entry.scientificName,
         family: entry.family,
         fr: entry.fr,
         en: entry.en,
@@ -47,18 +50,17 @@ class IrisDetailedSpecies {
   final String it;
   final SpeciesCategory? category;
 
-  String commonName(String languageCode) {
-    final ordered = switch (languageCode) {
-      'fr' => [fr, en, de, it],
-      'de' => [de, en, fr, it],
-      'it' => [it, en, fr, de],
-      _ => [en, fr, de, it],
-    };
-    for (final value in ordered) {
-      if (value.trim().isNotEmpty) return value;
-    }
-    return scientificName;
+  /// Le nom courant dans la langue demandée, ou `null` à défaut — jamais
+  /// celui d'une autre langue, comme dans [SpeciesRecord].
+  String? vernacularName(String languageCode) {
+    final name = switch (languageCode) { 'fr' => fr, 'de' => de, 'it' => it, _ => en };
+    final trimmed = name.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
+
+  /// Nom d'affichage : le nom courant de la langue demandée, à défaut le
+  /// nom scientifique.
+  String commonName(String languageCode) => vernacularName(languageCode) ?? scientificName;
 
   bool matches(String query) {
     final q = foldSpeciesName(query.trim());
@@ -94,12 +96,17 @@ class IrisDetailedCatalog {
       final key = scientificName.toLowerCase();
       if (!seen.add(key)) continue;
 
-      final entry = curated[key];
+      // La même résolution qu'ailleurs dans l'app : le nom accepté d'abord.
+      // Sans lui, « Vriesea splendens » ou « Heptapleurum arboricola »
+      // ouvraient une fiche sans famille alors que l'app connaît la plante
+      // sous son autre nom (§ 12.14 de docs/09).
+      final accepted = acceptedSpeciesName(normalizeScientificName(scientificName)).toLowerCase();
+      final entry = curated[key] ?? curated[accepted];
       if (entry != null) {
-        entries.add(IrisDetailedSpecies.fromCurated(entry));
+        entries.add(IrisDetailedSpecies.fromCurated(entry, scientificName: scientificName));
         continue;
       }
-      entries.add(IrisDetailedSpecies.fromIndex(scientificName, indexed[key]));
+      entries.add(IrisDetailedSpecies.fromIndex(scientificName, indexed[key] ?? indexed[accepted]));
     }
 
     return IrisDetailedCatalog(List<IrisDetailedSpecies>.unmodifiable(entries));

@@ -218,7 +218,7 @@ Deux étages, plus la recherche en ligne :
 
 | Étage | Où | Volume | Rôle |
 |---|---|---|---|
-| Trié à la main | `lib/data/species/species_catalog.dart` | ~300 espèces avec catégorie | Parcours par thème, fiches d'entretien précises |
+| Trié à la main | `lib/data/species/species_catalog.dart` | 1 187 espèces avec catégorie | Parcours par thème, fiches d'entretien précises |
 | Étendu | `assets/species/catalog.tsv` | ~40 000 espèces | Recherche hors ligne, quatre langues |
 | En ligne | API GBIF | ~450 000 espèces | Le reste, paginé |
 
@@ -228,8 +228,36 @@ noms » ne s'affichent pas, ils rendent la recherche tolérante (« Edelweiß »
 « stella alpina »). La recherche compare des chaînes normalisées sans accents
 ni casse (`core/utils/search_text.dart`).
 
+Les quatre colonnes de langue sont creuses : sur les 36 364 espèces livrées,
+5 285 ont un nom français, 32 147 un nom anglais, 7 639 un nom allemand,
+1 416 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
+ou le nom scientifique — jamais celui d'une autre langue : « Japanische
+Faserbanane » en tête d'une liste française se lit comme une erreur, et
+masquer les 31 000 espèces sans nom français viderait l'encyclopédie.
+La recherche, elle, continue de comparer tous les noms de toutes les
+langues : « Faserbanane » ouvre la fiche de *Musa basjoo*. C'est
+`vernacularName(langue)` — le nom de la langue lue, ou `null` — et
+`commonName(langue)`, qui retombe alors sur le nom scientifique.
+
 Provenance et régénération : `tool/README.md`. Wikidata (CC0) pour les noms,
 GBIF (CC BY) pour les familles.
+
+Une entrée triée à la main l'emporte sur l'actif étendu, y compris sur ses
+noms : une entrée écrite sans nom courant prend le nom scientifique dans les
+quatre langues et couvre alors ce que l'actif, lui, savait dire. Les paliers
+1 000 et 1 200 avaient été générés ainsi — famille et catégorie, aucun nom —
+et masquaient 296 noms déjà livrés ; ils rejouaient en plus 72 espèces déjà
+curatées, si bien que la même plante s'appelait « Rose du désert » dans le
+sélecteur et « Adenium obesum » dans l'encyclopédie. Les noms manquants ont
+été repris de l'actif, les doublons retirés, et
+`test/data/species_catalog_test.dart` tient les deux règles.
+
+Soixante-trois classes du modèle n'étaient dans ni l'un ni l'autre — le genre
+*Euphorbia* en entier, le chêne-liège, le robinier —, et leur fiche s'ouvrait
+sans famille ni nom. Cinquante-neuf sont écrites à la main dans
+`species_catalog_iris_only.dart` ; les quatre dernières passent par la table
+des noms acceptés (`core/utils/scientific_name.dart`), l'app les connaissant
+déjà sous leur autre nom.
 
 Les deux étages hors ligne se parcourent aussi pour eux-mêmes, dans
 l'encyclopédie : l'étage trié à la main par catégorie, l'étage étendu dès

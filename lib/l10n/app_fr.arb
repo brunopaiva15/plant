@@ -278,9 +278,8 @@
   "growth": "Croissance",
   "photos": "Photos",
   "info": "Informations",
-  "cuttings": "Boutures",
+  "offspring": "Plantes filles",
   "editSchedule": "Modifier le planning",
-  "createCutting": "Créer une bouture",
   "cuttingOf": "Bouture de {name}",
   "@cuttingOf": {
     "placeholders": {
@@ -289,20 +288,139 @@
       }
     }
   },
-  "cuttingGuideIntroBody": "Six étapes, de la tige au pot. Chacune est montrée en geste, puis dite en une phrase, adaptée à l'espèce quand elle est connue.",
-  "cuttingGuideStemTitle": "La tige",
-  "cuttingGuideStemBody": "Une tige saine, avec au moins un nœud : le renflement d'où partent les feuilles. Deux ou trois feuilles au-dessus suffisent.",
-  "cuttingGuideCutTitle": "La coupe",
-  "cuttingGuideCutBody": "Une lame propre, une coupe nette juste sous le nœud. Un centimètre de tige en dessous suffit.",
-  "cuttingGuideLeavesTitle": "Les feuilles",
-  "cuttingGuideLeavesBody": "Les feuilles du bas sont retirées, le nœud reste nu. Deux ou trois feuilles en haut nourrissent la bouture.",
-  "cuttingGuideWaterTitle": "L'eau",
-  "cuttingGuideWaterBody": "Le nœud sous l'eau, les feuilles au-dessus. Eau à température ambiante, lumière vive sans soleil direct.",
-  "cuttingGuideRootsTitle": "Les racines",
-  "cuttingGuideRootsBody": "L'eau se change chaque semaine. Les premières racines apparaissent en deux à six semaines.",
-  "cuttingGuidePotTitle": "Le pot",
-  "cuttingGuidePotBody": "À quelques centimètres de racines, la bouture passe en pot, dans un terreau léger, et reçoit un premier arrosage.",
-  "cuttingGuideStart": "Créer la bouture",
+  "propagate": "Multiplier",
+  "pgPickTitle": "Multiplier cette plante",
+  "pgPickBody": "Cette plante se multiplie de plusieurs façons. Le geste choisi décide des étapes.",
+  "pgRecommended": "Conseillée",
+  "pgIntroTitle": "{name} de {species}",
+  "@pgIntroTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "species": {
+        "type": "String"
+      }
+    }
+  },
+  "pgIntroBody": "{count} étapes. Chacune est montrée en geste, puis dite en une phrase, adaptée à l’espèce quand elle est connue.",
+  "@pgIntroBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pgStartCutting": "Créer la bouture",
+  "pgStartPlant": "Créer la plante",
+  "pgNoteSpot": "À repérer",
+  "pgNoteAvoid": "À éviter",
+  "pgNoteUsual": "En général",
+  "pgNoteMedium": "Enracinement",
+  "pgMediumWater": "Dans l’eau",
+  "pgMediumSubstrate": "En substrat léger",
+  "pgMediumEither": "Eau ou substrat léger",
+  "pgVineName": "Bouture de tige",
+  "pgVineHint": "Un nœud, une coupe nette, l’eau",
+  "pgVineNodeTitle": "Le nœud",
+  "pgVineNodeBody": "Le renflement d’où part une feuille, souvent doublé d’une racine aérienne. La bouture en garde au moins un.",
+  "pgVineNodeNote": "Nœud et racine aérienne",
+  "pgVineCutTitle": "La coupe",
+  "pgVineCutBody": "Lame propre, coupe nette à un centimètre sous le nœud. Le nœud reste du côté de la bouture.",
+  "pgVineCutNote": "Couper au-dessus du nœud",
+  "pgVineClearTitle": "Le nœud dégagé",
+  "pgVineClearBody": "Les feuilles qui tremperaient sont retirées. Deux ou trois feuilles en haut nourrissent la bouture.",
+  "pgVineWaterTitle": "L’eau",
+  "pgVineWaterBody": "Le nœud sous la surface, les feuilles au-dessus. Lumière vive, sans soleil direct.",
+  "pgVineRootsTitle": "Les racines",
+  "pgVineRootsBody": "Elles sortent du nœud, pas du bas de la tige. L’eau se change chaque semaine.",
+  "pgVineRootsNote": "Premières racines en deux à six semaines",
+  "pgVinePotTitle": "Le pot",
+  "pgVinePotBody": "À quelques centimètres de racines, la bouture passe en terreau léger. Le nœud reste à fleur de terre.",
+  "pgSoftName": "Bouture de tige tendre",
+  "pgSoftHint": "Un jeune brin, des racines rapides",
+  "pgSoftStemTitle": "Le brin",
+  "pgSoftStemBody": "Un jeune brin ferme, sans fleur, de dix centimètres environ. Le vieux bois s’enracine mal.",
+  "pgSoftCutTitle": "La coupe",
+  "pgSoftCutBody": "Lame propre, coupe juste sous une paire de feuilles. Les racines partiront de là.",
+  "pgSoftStripTitle": "Les feuilles du bas",
+  "pgSoftStripBody": "La paire du bas est retirée : la tige reste nue sur trois ou quatre centimètres.",
+  "pgSoftStripNote": "Laisser une feuille sous l’eau",
+  "pgSoftRootTitle": "L’enracinement",
+  "pgSoftRootBody": "La tige nue trempe, les feuilles restent au sec. Lumière vive, sans soleil direct.",
+  "pgSoftRootsTitle": "Les racines",
+  "pgSoftRootsBody": "Fines et nombreuses, elles partent de toute la partie immergée.",
+  "pgSoftRootsNote": "Premières racines en une à trois semaines",
+  "pgSoftPotTitle": "Le repiquage",
+  "pgSoftPotBody": "Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre attend mal.",
+  "pgLeafName": "Bouture de feuille",
+  "pgLeafHint": "Plus lente, une feuille suffit",
+  "pgLeafChooseTitle": "La feuille",
+  "pgLeafChooseBody": "Une feuille mature, ferme, sans marque. Les jeunes feuilles manquent de réserves.",
+  "pgLeafCutTitle": "La coupe",
+  "pgLeafCutBody": "Lame propre, coupe à la base de la feuille, au ras du substrat.",
+  "pgLeafSplitTitle": "Les segments",
+  "pgLeafSplitBody": "La feuille se partage en morceaux de cinq à huit centimètres. Un V taillé en bas de chacun dit quel bout va en terre.",
+  "pgLeafSplitNote": "Le V marque le bas",
+  "pgLeafCallusTitle": "Le séchage",
+  "pgLeafCallusBody": "Les coupes sèchent à l’air, à l’ombre, avant d’aller en terre.",
+  "pgLeafCallusNote": "Un à deux jours de séchage",
+  "pgLeafPlantTitle": "Le substrat",
+  "pgLeafPlantBody": "Le V s’enfonce de deux centimètres dans un substrat drainant.",
+  "pgLeafPlantNote": "Planter un segment à l’envers",
+  "pgLeafGrowthTitle": "La reprise",
+  "pgLeafGrowthBody": "Les racines viennent d’abord, la jeune pousse sort du substrat à côté du segment.",
+  "pgLeafGrowthNote": "Nouvelle pousse en deux à quatre mois",
+  "pgDivisionName": "Division",
+  "pgDivisionHint": "Rapide et sûre, la touffe se partage",
+  "pgDivPlantTitle": "La touffe",
+  "pgDivPlantBody": "La plante se sort du pot en entier. Un substrat arrosé la veille tient mieux.",
+  "pgDivUnpotTitle": "Le dépotage",
+  "pgDivUnpotBody": "Le pot glisse le long de la motte, la plante est libre.",
+  "pgDivRootsTitle": "La motte",
+  "pgDivRootsBody": "La terre s’émiette jusqu’à voir les racines et le pied des pousses.",
+  "pgDivClustersTitle": "Les deux groupes",
+  "pgDivClustersBody": "Chaque groupe garde ses pousses et ses racines.",
+  "pgDivClustersNote": "Feuilles et racines de chaque côté",
+  "pgDivSplitTitle": "La séparation",
+  "pgDivSplitBody": "Les groupes se défont à la main. La lame ne sert que si les couronnes tiennent.",
+  "pgDivSplitNote": "Couper une tige au-dessus de la terre",
+  "pgDivRepotTitle": "Le rempotage",
+  "pgDivRepotBody": "Chaque division part dans son pot, à la même profondeur qu’avant, et reçoit un premier arrosage.",
+  "pgOffsetName": "Séparer un rejet",
+  "pgOffsetHint": "Le rejet part avec ses racines",
+  "pgOffSpotTitle": "Le rejet",
+  "pgOffSpotBody": "Un rejet du tiers de la mère, avec ses propres feuilles, est prêt à partir.",
+  "pgOffSpotNote": "Rejet déjà formé",
+  "pgOffClearTitle": "Le dégagement",
+  "pgOffClearBody": "Le substrat s’écarte autour du pied : le lien avec la plante mère paraît.",
+  "pgOffDetachTitle": "La séparation",
+  "pgOffDetachBody": "Le rejet se détache du lien, avec ses racines. La lame ne sert que si le lien est ligneux.",
+  "pgOffDetachNote": "Arracher le rejet sans racines",
+  "pgOffRootsTitle": "Les racines",
+  "pgOffRootsBody": "Quelques racines propres suffisent. Sans elles, le rejet sèche avant de reprendre.",
+  "pgOffPotTitle": "Le pot",
+  "pgOffPotBody": "Un petit pot, le substrat de l’espèce, et un arrosage léger.",
+  "pgOffSettleTitle": "La reprise",
+  "pgOffSettleBody": "Une feuille neuve au cœur dit que le rejet a pris.",
+  "pgOffSettleNote": "Reprise en trois à six semaines",
+  "pgSegmentName": "Bouture de segment",
+  "pgSegmentHint": "Un segment détaché, séché, planté",
+  "pgSegChooseTitle": "Le segment",
+  "pgSegChooseBody": "Un segment terminal ferme et sans ride, de deux ou trois articles.",
+  "pgSegDetachTitle": "Le détachement",
+  "pgSegDetachBody": "Le segment se détache à l’articulation, en le tournant. Une lame propre si l’article résiste.",
+  "pgSegDetachNote": "Tirer et déchirer l’article",
+  "pgSegWoundTitle": "La plaie",
+  "pgSegWoundBody": "La coupe est claire et humide. Mise en terre tout de suite, elle pourrit.",
+  "pgSegCallusTitle": "La cicatrisation",
+  "pgSegCallusBody": "La plaie sèche à l’air, à l’ombre, jusqu’à former un cal mat.",
+  "pgSegCallusNote": "Trois à sept jours de séchage",
+  "pgSegPlantTitle": "Le substrat",
+  "pgSegPlantBody": "Le cal se pose à peine dans un substrat très drainant, sur un centimètre.",
+  "pgSegPlantNote": "Enterrer le segment",
+  "pgSegRootsTitle": "La reprise",
+  "pgSegRootsBody": "Les racines viennent d’abord, un nouvel article ensuite. L’arrosage attend que les racines tiennent.",
   "parentPlant": "Plante mère",
   "schedule": "Planning",
   "editPlant": "Modifier la plante",
@@ -636,7 +754,13 @@
     }
   },
   "placeChosen": "Météo réglée sur {place}.",
-  "@placeChosen": {"placeholders": {"place": {"type": "String"}}},
+  "@placeChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
   "askNameTitle": "Votre prénom",
   "askNameSubtitle": "Modifiable plus tard dans le profil.",
   "onbAccountTitle": "Sauvegarde et partage",
@@ -800,7 +924,13 @@
   "suggestionsLocal": "Trouvé sur votre appareil, sans réseau",
   "suggestionsRemote": "Proposé en ligne par Pl@ntNet",
   "identifyOnDevice": "Reconnu par {name} sur l'appareil. Choisissez l'espèce",
-  "@identifyOnDevice": {"placeholders": {"name": {"type": "String"}}},
+  "@identifyOnDevice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "identifyViaPlantNet": "Reconnu en ligne par Pl@ntNet. Choisissez l'espèce",
   "identifyPhotoSource": "Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l'espèce.",
   "identifyNone": "Aucune correspondance fiable.",
@@ -808,27 +938,78 @@
   "useThis": "Utiliser",
   "identificationSettings": "Identification",
   "identificationHint": "Reconnaissance des espèces sur l'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.",
-  "@identificationHint": {"placeholders": {"name": {"type": "String"}}},
+  "@identificationHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "identificationEnabled": "Identification activée",
   "identificationDisabled": "Non configurée",
   "identificationFallback": "Repli en ligne",
   "identificationFallbackHint": "En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil.",
-  "@identificationFallbackHint": {"placeholders": {"name": {"type": "String"}}},
+  "@identificationFallbackHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "irisFeedback": "Envoi des photos identifiées",
   "irisFeedbackHint": "Les photos prises pour identifier et le nom retenu sont envoyés dès qu'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l'appareil.",
-  "@irisFeedbackHint": {"placeholders": {"name": {"type": "String"}}},
+  "@irisFeedbackHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "irisFeedbackNeedsAccount": "Il faut un compte pour envoyer des photos.",
   "irisFeedbackAskTitle": "Envoi des photos identifiées",
   "irisFeedbackAskBody": "Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d'identification.",
-  "@irisFeedbackAskBody": {"placeholders": {"name": {"type": "String"}}},
+  "@irisFeedbackAskBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "genusUncertainSpecies": "Espèce incertaine",
   "modelMissing": "{name} indisponible sur cet appareil",
-  "@modelMissing": {"placeholders": {"name": {"type": "String"}}},
+  "@modelMissing": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "modelLoading": "Chargement du modèle…",
   "identificationStats": "{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne",
-  "@identificationStats": {"placeholders": {"local": {"type": "int"}, "accepted": {"type": "int"}, "remote": {"type": "int"}}},
+  "@identificationStats": {
+    "placeholders": {
+      "local": {
+        "type": "int"
+      },
+      "accepted": {
+        "type": "int"
+      },
+      "remote": {
+        "type": "int"
+      }
+    }
+  },
   "onlineSearchesMonth": "{used} recherches en ligne sur {limit} ce mois-ci.",
-  "@onlineSearchesMonth": {"placeholders": {"used": {"type": "int"}, "limit": {"type": "int"}}},
+  "@onlineSearchesMonth": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
   "irisSection": "Le modèle embarqué",
   "irisTagline": "Reconnaissance des espèces sur le téléphone, sans réseau ni compte.",
   "irisSpeciesLabel": "espèces",
@@ -836,7 +1017,13 @@
   "irisOfflineLabel": "même en avion",
   "irisTwoPhotosTitle": "Deux photos valent mieux qu’une",
   "irisTwoPhotosBody": "La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux.",
-  "@irisTwoPhotosBody": {"placeholders": {"name": {"type": "String"}}},
+  "@irisTwoPhotosBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "confidence": "{percent} %",
   "@confidence": {
     "placeholders": {
@@ -1985,7 +2172,13 @@
   "onbGardenTitle": "Emplacements, photos, calendrier",
   "onbGardenBody": "Chaque arrosage, chaque rempotage est daté et rangé avec la plante.",
   "onbIrisTitle": "{name} reconnaît vos plantes hors ligne",
-  "@onbIrisTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@onbIrisTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "onbIrisBody": "Plante inconnue d'Iris : la recherche continue en ligne.",
   "onbPrivacyTitle": "Tout reste sur votre téléphone",
   "onbPrivacyBody": "Pas de compte obligatoire, pas de publicité.",
@@ -2321,13 +2514,37 @@
   "retake": "Reprendre",
   "growthEmptySubtitle": "Ajoutez des photos régulièrement pour suivre la croissance.",
   "growthSummary": "{count, plural, =1{1 photo · depuis {since}} other{{count} photos · depuis {since}}}",
-  "@growthSummary": {"placeholders": {"count": {"type": "int"}, "since": {"type": "String"}}},
+  "@growthSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "since": {
+        "type": "String"
+      }
+    }
+  },
   "growthNudge": "Dernière photo le {date}.",
-  "@growthNudge": {"placeholders": {"date": {"type": "String"}}},
+  "@growthNudge": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "timelapse": "Timelapse",
   "beforeAfter": "Avant / après",
   "photoCounter": "{index} / {total}",
-  "@photoCounter": {"placeholders": {"index": {"type": "int"}, "total": {"type": "int"}}},
+  "@photoCounter": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "photoTitleShort": "Titre",
   "mainPhotoShort": "Principale",
   "share": "Partager",
@@ -2336,56 +2553,179 @@
   "pause": "Pause",
   "stepPhotoDoneTitle": "Aperçu",
   "stepPhotoDoneSubtitle": "Une feuille de près aide {name} à reconnaître l'espèce.",
-  "@stepPhotoDoneSubtitle": {"placeholders": {"name": {"type": "String"}}},
+  "@stepPhotoDoneSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "stepPhotoDonePlain": "Vous pourrez en ajouter d'autres depuis sa fiche.",
   "viewPlant": "La plante",
   "viewLeafClose": "Une feuille de près",
   "viewAnother": "Autre vue",
   "viewForModel": "Utilisée par {name} pour reconnaître l'espèce, non conservée.",
-  "@viewForModel": {"placeholders": {"name": {"type": "String"}}},
+  "@viewForModel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "strategyWeather": "Météo",
   "strategyWeatherHint": "L'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid.",
   "strategyWeatherNow": "Avec le temps de la semaine : {interval}",
-  "@strategyWeatherNow": {"placeholders": {"interval": {"type": "String"}}},
+  "@strategyWeatherNow": {
+    "placeholders": {
+      "interval": {
+        "type": "String"
+      }
+    }
+  },
   "strategyWeatherNoPlace": "Sans lieu météo, l'intervalle reste celui de la saison.",
   "weatherWhenTonight": "cette nuit",
   "weatherWhenToday": "aujourd'hui",
   "weatherWhenTomorrow": "demain",
   "weatherWhenInDays": "dans {count} jours",
-  "@weatherWhenInDays": {"placeholders": {"count": {"type": "int"}}},
+  "@weatherWhenInDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "weatherFrostTitle": "Gel {when} · {temp}",
-  "@weatherFrostTitle": {"placeholders": {"when": {"type": "String"}, "temp": {"type": "String"}}},
+  "@weatherFrostTitle": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
   "weatherHeatTitle": "Chaleur {when} · {temp}",
-  "@weatherHeatTitle": {"placeholders": {"when": {"type": "String"}, "temp": {"type": "String"}}},
+  "@weatherHeatTitle": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "temp": {
+        "type": "String"
+      }
+    }
+  },
   "weatherFrostBody": "À rentrer ou à couvrir : {names}.",
-  "@weatherFrostBody": {"placeholders": {"names": {"type": "String"}}},
+  "@weatherFrostBody": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "weatherHeatBody": "À mettre à l'ombre, et à arroser tôt : {names}.",
-  "@weatherHeatBody": {"placeholders": {"names": {"type": "String"}}},
+  "@weatherHeatBody": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "weatherAlertMore": "{count, plural, =1{et 1 autre} other{et {count} autres}}",
-  "@weatherAlertMore": {"placeholders": {"count": {"type": "int"}}},
+  "@weatherAlertMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "notifFrost": "Gel {when} · à rentrer ou à couvrir : {names}.",
-  "@notifFrost": {"placeholders": {"when": {"type": "String"}, "names": {"type": "String"}}},
+  "@notifFrost": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "notifHeat": "Chaleur {when} · à mettre à l'ombre : {names}.",
-  "@notifHeat": {"placeholders": {"when": {"type": "String"}, "names": {"type": "String"}}},
+  "@notifHeat": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "weatherRainFallenTitle": "Pluie · {mm} mm",
-  "@weatherRainFallenTitle": {"placeholders": {"mm": {"type": "String"}}},
+  "@weatherRainFallenTitle": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      }
+    }
+  },
   "weatherRainWatered": "Arrosage noté fait pour {names}.",
-  "@weatherRainWatered": {"placeholders": {"names": {"type": "String"}}},
+  "@weatherRainWatered": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "weatherRainWaterable": "La pluie vaut l'arrosage de {names}.",
-  "@weatherRainWaterable": {"placeholders": {"names": {"type": "String"}}},
+  "@weatherRainWaterable": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "weatherRainMarkWatered": "Noter arrosé",
   "weatherRainWateredToast": "{count, plural, =1{1 arrosage noté} other{{count} arrosages notés}}",
-  "@weatherRainWateredToast": {"placeholders": {"count": {"type": "int"}}},
+  "@weatherRainWateredToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "weatherRainNote": "Arrosée par la pluie ({mm} mm).",
-  "@weatherRainNote": {"placeholders": {"mm": {"type": "String"}}},
+  "@weatherRainNote": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      }
+    }
+  },
   "weatherRainCounts": "La pluie compte comme un arrosage",
   "weatherRainCountsHint": "Au-delà de 5 mm sur trois jours, l'arrosage des emplacements extérieurs est noté fait. Coupé, l'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie.",
   "weatherClimate": "Climat",
   "weatherClimateHint": "Les propositions de plantes pour l'extérieur suivent les hivers et les étés du lieu.",
   "weatherClimateZone": "Zone {zone}",
-  "@weatherClimateZone": {"placeholders": {"zone": {"type": "String"}}},
+  "@weatherClimateZone": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
   "weatherClimateRange": "Hivers à {low}, étés à {high}",
-  "@weatherClimateRange": {"placeholders": {"low": {"type": "String"}, "high": {"type": "String"}}},
+  "@weatherClimateRange": {
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      }
+    }
+  },
   "weatherClimateNone": "Inconnu",
   "finderReasonHardy": "Passe l'hiver dehors ici",
   "finderReasonSheltered": "Hiverne dehors, protégée",

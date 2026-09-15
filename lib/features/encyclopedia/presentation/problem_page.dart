@@ -186,17 +186,21 @@ class _HostRow extends ConsumerWidget {
     }
     final lang = Localizations.localeOf(context).languageCode;
     final species = host.contains(' ');
-    final common = !species
-        ? null
-        : (SpeciesCatalog.find(host)?.commonName(lang) ?? ref.watch(speciesIndexProvider).value?.find(host)?.commonName(lang));
+    final curated = species ? SpeciesCatalog.find(host) : null;
+    final record = species && curated == null ? ref.watch(speciesIndexProvider).value?.find(host) : null;
+    // La fiche s'ouvre dès que l'un des deux catalogues connaît l'espèce. Le
+    // nom courant, lui, ne paraît que dans la langue de l'application : le
+    // titre porte déjà le nom scientifique.
+    final known = curated != null || record != null;
+    final common = curated?.vernacularName(lang) ?? record?.vernacularName(lang);
     return FloraListRow(
       leading: Text(species ? '🌿' : '🗂️', style: const TextStyle(fontSize: 18)),
       title: host,
       titleMaxLines: 2,
       subtitle: species ? common : (host.endsWith('aceae') ? l10n.speciesFamily : l10n.speciesGenus),
       dense: true,
-      chevron: common != null,
-      onTap: common == null ? null : () => context.push(Routes.encyclopediaSpecies(host)),
+      chevron: known,
+      onTap: known ? () => context.push(Routes.encyclopediaSpecies(host)) : null,
     );
   }
 }

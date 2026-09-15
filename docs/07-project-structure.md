@@ -24,7 +24,7 @@ lib/
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
 │   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
-│   ├── cuttings/                  CuttingStep, CuttingGuideRefinement, CuttingGuideRefiner, CuttingGuideStore
+│   ├── cuttings/                  PropagationGuideKind et ses étapes, choix du guide (resolver), PropagationRefinement, PropagationGuideStore
 │   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison et Google Home), MultiHomeClimateService, HomeClimateAdvisor
 │   ├── weather/                   WeatherService, WeatherAdvisor (pluie), WeatherTrend (intervalles), OutdoorAlertAdvisor (gel, chaleur), RegionClimate (zone de rusticité)
@@ -40,7 +40,7 @@ lib/
 │   ├── onboarding/
 │   ├── today/
 │   ├── plants/                    list, detail, create, edit, timeline, gallery, schedule
-│   ├── cuttings/                  guide de bouturage : introduction, séquences d'argile, scène, sheet ; étapes précisées par l'IA
+│   ├── cuttings/                  guides de multiplication : choix de la méthode, grappe d'introduction, séquences d'argile, scène, sheet ; textes précisés par l'IA (docs/12)
 │   ├── actions/                   add action sheet, quick actions
 │   ├── locations/
 │   ├── network/                   ce qui s'affiche hors ligne (état vide, bandeau)
@@ -65,8 +65,9 @@ test/
 ├── domain/care_engine_test.dart
 ├── domain/reminder_planner_test.dart
 ├── data/plant_repository_test.dart
-├── data/infomaniak_cutting_refiner_test.dart   ce qui part à l'IA, ce qu'on garde de la réponse
-├── features/cutting_guide_test.dart            le guide : six étapes, trois sorties, texte précisé
+├── data/infomaniak_propagation_refiner_test.dart  ce qui part à l'IA, ce qu'on garde de la réponse
+├── features/propagation_guide_test.dart        le guide : choix du geste, étapes, sorties, texte précisé
+├── domain/propagation_guide_resolver_test.dart quel geste pour quelle plante
 ├── features/community_tips_test.dart           conseils : sans backend, sans compte, hors ligne, le sien
 ├── features/moderation_test.dart               les signalés, masquer / rétablir, et qui ne modère pas
 ├── domain/species_tip_test.dart                bornes d'un conseil et ordre de lecture
@@ -74,7 +75,7 @@ test/
 ├── core/connectivity_test.dart                 état du réseau, garde des appels
 ├── core/reachability_test.dart                 la sonde, sur de vraies connexions
 ├── features/shared_links_offline_test.dart     hors ligne, l'écran le dit au lieu de tourner
-├── assets/cutting_sequences_test.dart          les six séquences sont là et s'animent
+├── assets/propagation_sequences_test.dart      chaque étape de chaque archétype est là, et s'anime
 └── l10n/arb_tone_test.dart       ton des textes, sur les quatre ARB
 docs/                              cette documentation
 ```
