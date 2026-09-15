@@ -72,6 +72,8 @@ class InfomaniakCareCompleter implements CareCompleter {
       'Use only these words. light: shade, lowLight, indirect, brightIndirect, someSun, fullSun. '
       'humidity: low, average, high. soil: standard, draining, cactus, orchid, acidic, rich, aquatic. '
       'difficulty: easy, medium, demanding. '
+      'pot: snug (flowers and grows best root-bound), steady (repot once the root ball is full), '
+      'roomy (stops growing as soon as the roots circle the pot). '
       'propagation: stemCutting, leafCutting, division, offsets, layering, seed, water, tuber. '
       'issues: overwatering, underwatering, rootRot, spiderMites, mealybugs, scale, aphids, fungusGnats, whitefly, slugs, '
       'powderyMildew, leafSpot, blight, sunburn, dryTips, leafDrop, etiolation, chlorosis, blossomEndRot. '
@@ -79,7 +81,7 @@ class InfomaniakCareCompleter implements CareCompleter {
       'Set "no_fertilizer" to true only for species that are not fertilized at all. '
       'Answer with one JSON object only, no markdown, no text around it, with any of these keys: '
       '"known" (boolean), "watering_summer_days", "watering_winter_days", "light", "humidity", "soil", '
-      '"fertilizing_days", "no_fertilizer", "repot_every_months", "min_temp_c", "ideal_temp_min_c", '
+      '"fertilizing_days", "no_fertilizer", "repot_every_months", "pot", "min_temp_c", "ideal_temp_min_c", '
       '"ideal_temp_max_c", "difficulty", "propagation" (array), "issues" (array). '
       'The language "$language" is irrelevant here, every value is a number or one of the words above.';
 
@@ -142,6 +144,7 @@ class InfomaniakCareCompleter implements CareCompleter {
       fertilizingDays: borne(data['fertilizing_days'], 7, 180),
       noFertilizer: data['no_fertilizer'] == true,
       repotEveryMonths: borne(data['repot_every_months'], 6, 120),
+      pot: mot(PotPreference.values, data['pot']),
       minTempC: borne(data['min_temp_c'], -30, 25),
       idealTempMinC: ideMin,
       idealTempMaxC: ideMax,

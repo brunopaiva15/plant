@@ -4,11 +4,21 @@ import 'package:flora/domain/home/home_climate_advisor.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-CareProfile _profile({HumidityNeed humidity = HumidityNeed.average, int? minTempC, int? idealMin, int? idealMax}) => CareProfile(
+CareProfile _profile({
+  HumidityNeed humidity = HumidityNeed.average,
+  int? humidityMin,
+  int? humidityMax,
+  int? minTempC,
+  int? idealMin,
+  int? idealMax,
+}) =>
+    CareProfile(
       wateringSummerDays: 7,
       wateringWinterDays: 14,
       light: LightNeed.brightIndirect,
       humidity: humidity,
+      humidityMinPercent: humidityMin,
+      humidityMaxPercent: humidityMax,
       difficulty: CareDifficulty.easy,
       soil: SoilKind.standard,
       minTempC: minTempC,
@@ -61,6 +71,20 @@ void main() {
       expect(hot.single.kind, HomeClimateTipKind.hot);
       // Le cactus tolère 35°, le ficus n'a pas de plage : le seuil général de 30° s'applique.
       expect(hot.single.plantNames, ['Calathea', 'Ficus']);
+    });
+
+    test("une fiche qui donne sa plage en pourcentage décale le seuil", () {
+      // Deux plantes du même mot — « aime l'air humide » —, deux exigences :
+      // l'orchidée se contente de 50 %, la calathéa en demande 65. À 40 %,
+      // seule la seconde est en peine (65 − 15 > 40 ≥ 50 − 15).
+      final orchidee = IndoorPlant(name: 'Orchidée', profile: _profile(humidity: HumidityNeed.high, humidityMin: 50, humidityMax: 70));
+      final calathea = IndoorPlant(name: 'Calathéa', profile: _profile(humidity: HumidityNeed.high, humidityMin: 65, humidityMax: 85));
+      final tips = HomeClimateAdvisor.advise(reading: _reading(humidity: 40), plants: [orchidee, calathea]);
+      expect(tips.single.kind, HomeClimateTipKind.dryAir);
+      expect(tips.single.plantNames, ['Calathéa']);
+      // Plus bas, les deux y passent.
+      final sec = HomeClimateAdvisor.advise(reading: _reading(humidity: 30), plants: [orchidee, calathea]);
+      expect(sec.single.plantNames, ['Orchidée', 'Calathéa']);
     });
 
     test('une mesure dans les clous ne dit rien, et une maison sans plante non plus', () {

@@ -2259,7 +2259,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateFits.
   ///
   /// In fr, this message translates to:
-  /// **'Dans la plage de l\'espèce.'**
+  /// **'Rien qui gêne cette espèce.'**
   String get homeClimateFits;
 
   /// No description provided for @homeClimateTooDry.
@@ -4416,6 +4416,42 @@ abstract class AppLocalizations {
   /// **'Pas de rempotage (culture annuelle)'**
   String get careRepotNone;
 
+  /// No description provided for @carePotSnug.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aime être à l\'étroit'**
+  String get carePotSnug;
+
+  /// No description provided for @carePotRoomy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aime l\'espace'**
+  String get carePotRoomy;
+
+  /// No description provided for @carePotSnugNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une racine qui sort par le fond ne suffit pas : rempotez quand la motte est un bloc de racines, ou quand l\'eau ne pénètre plus.'**
+  String get carePotSnugNote;
+
+  /// No description provided for @carePotSteadyNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rempotez quand les racines sortent par le fond et tournent au fond du pot.'**
+  String get carePotSteadyNote;
+
+  /// No description provided for @carePotRoomyNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rempotez dès que les racines atteignent la paroi : à l\'étroit, elle arrête de pousser.'**
+  String get carePotRoomyNote;
+
+  /// No description provided for @carePotDormantNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rempotage se fait à la reprise, quand le repos s\'achève, et non sur une racine qui sort.'**
+  String get carePotDormantNote;
+
   /// No description provided for @careTempIdeal.
   ///
   /// In fr, this message translates to:
@@ -4464,6 +4500,18 @@ abstract class AppLocalizations {
   /// **'Plein soleil'**
   String get careLightFull;
 
+  /// No description provided for @careLightLamp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous lampe · LED à spectre complet, {min} à {max} µmol/m²/s, {hours} h par jour'**
+  String careLightLamp(int min, int max, int hours);
+
+  /// No description provided for @careLightLampDli.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soit {min} à {max} mol/m²/jour reçus par le feuillage.'**
+  String careLightLampDli(int min, int max);
+
   /// No description provided for @careHumidityLow.
   ///
   /// In fr, this message translates to:
@@ -4481,6 +4529,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aime l\'air humide'**
   String get careHumidityHigh;
+
+  /// No description provided for @careHumidityRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'{min} à {max} % d\'humidité de l\'air'**
+  String careHumidityRange(int min, int max);
+
+  /// No description provided for @careHumidityGreenhouse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous serre ou en vitrine, tenez cette plage le jour, laissez-la descendre la nuit et faites circuler l\'air.'**
+  String get careHumidityGreenhouse;
 
   /// No description provided for @careDifficultyEasy.
   ///
@@ -4691,6 +4751,138 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Supporte l\'extérieur'**
   String get careBadgeOutdoor;
+
+  /// No description provided for @careBloom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Floraison'**
+  String get careBloom;
+
+  /// No description provided for @careSeasonRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'De {from} à {to}'**
+  String careSeasonRange(String from, String to);
+
+  /// No description provided for @careBloomOutdoors.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rarement en intérieur'**
+  String get careBloomOutdoors;
+
+  /// No description provided for @careBloomCoolRest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un hiver frais, 12 à 15 °C et presque sec pendant six semaines, forme les boutons.'**
+  String get careBloomCoolRest;
+
+  /// No description provided for @careBloomNightDrop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un écart de 8 à 10 °C entre le jour et la nuit lance la hampe florale.'**
+  String get careBloomNightDrop;
+
+  /// No description provided for @careBloomLongNights.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quatorze heures d\'obscurité complète par nuit, six semaines de suite, déclenchent les boutons.'**
+  String get careBloomLongNights;
+
+  /// No description provided for @careBloomDryRest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un repos sec après la croissance : sans lui, la plante fait des feuilles et pas de fleurs.'**
+  String get careBloomDryRest;
+
+  /// No description provided for @careBloomPotbound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle fleurit quand ses racines remplissent le pot ; un pot trop grand retarde tout.'**
+  String get careBloomPotbound;
+
+  /// No description provided for @careBloomFertilizer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un engrais à floraison, plus riche en potasse, dès que les boutons se forment.'**
+  String get careBloomFertilizer;
+
+  /// No description provided for @careBloomDirectSun.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quatre à six heures de soleil direct : à l\'ombre, les boutons avortent.'**
+  String get careBloomDirectSun;
+
+  /// No description provided for @careBloomMaturity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle fleurit à partir de trois ou quatre ans, pas avant.'**
+  String get careBloomMaturity;
+
+  /// No description provided for @careBloomDeadhead.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coupez les fleurs fanées, la suivante suit.'**
+  String get careBloomDeadhead;
+
+  /// No description provided for @careBloomKeepSpike.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gardez la hampe tant qu\'elle reste verte : elle repart d\'un œil plus bas.'**
+  String get careBloomKeepSpike;
+
+  /// No description provided for @careBloomNoMove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne la déplacez plus et ne la tournez plus une fois les boutons formés, ils tombent.'**
+  String get careBloomNoMove;
+
+  /// No description provided for @careBloomEvenWater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un arrosage régulier pendant les boutons ; un coup de sec les fait tomber.'**
+  String get careBloomEvenWater;
+
+  /// No description provided for @careBloomChillBulb.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le bulbe passe dix à quinze semaines entre 5 et 9 °C avant d\'être remis à la chaleur.'**
+  String get careBloomChillBulb;
+
+  /// No description provided for @careRest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repos'**
+  String get careRest;
+
+  /// No description provided for @careRestStoreDarkTemp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au sec et à l\'obscurité, entre {min} et {max} °C'**
+  String careRestStoreDarkTemp(int min, int max);
+
+  /// No description provided for @careRestStoreTemp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au sec, entre {min} et {max} °C'**
+  String careRestStoreTemp(int min, int max);
+
+  /// No description provided for @careRestStoreDark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au sec et à l\'obscurité'**
+  String get careRestStoreDark;
+
+  /// No description provided for @careRestStorePlain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au sec'**
+  String get careRestStorePlain;
+
+  /// No description provided for @careRestNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l\'arrosage. Remettez le pot à la lumière et reprenez l\'arrosage à la fin de cette période.'**
+  String get careRestNote;
 
   /// No description provided for @careIssueOverwatering.
   ///

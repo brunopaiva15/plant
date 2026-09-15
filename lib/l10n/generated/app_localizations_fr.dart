@@ -1240,7 +1240,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeClimateAtHome => 'Chez vous';
 
   @override
-  String get homeClimateFits => 'Dans la plage de l\'espèce.';
+  String get homeClimateFits => 'Rien qui gêne cette espèce.';
 
   @override
   String get homeClimateTooDry => 'Air trop sec pour cette espèce.';
@@ -2569,6 +2569,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careRepotNone => 'Pas de rempotage (culture annuelle)';
 
   @override
+  String get carePotSnug => 'Aime être à l\'étroit';
+
+  @override
+  String get carePotRoomy => 'Aime l\'espace';
+
+  @override
+  String get carePotSnugNote =>
+      'Une racine qui sort par le fond ne suffit pas : rempotez quand la motte est un bloc de racines, ou quand l\'eau ne pénètre plus.';
+
+  @override
+  String get carePotSteadyNote =>
+      'Rempotez quand les racines sortent par le fond et tournent au fond du pot.';
+
+  @override
+  String get carePotRoomyNote =>
+      'Rempotez dès que les racines atteignent la paroi : à l\'étroit, elle arrête de pousser.';
+
+  @override
+  String get carePotDormantNote =>
+      'Le rempotage se fait à la reprise, quand le repos s\'achève, et non sur une racine qui sort.';
+
+  @override
   String careTempIdeal(int min, int max) {
     return '$min à $max °C';
   }
@@ -2597,6 +2619,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careLightFull => 'Plein soleil';
 
   @override
+  String careLightLamp(int min, int max, int hours) {
+    return 'Sous lampe · LED à spectre complet, $min à $max µmol/m²/s, $hours h par jour';
+  }
+
+  @override
+  String careLightLampDli(int min, int max) {
+    return 'Soit $min à $max mol/m²/jour reçus par le feuillage.';
+  }
+
+  @override
   String get careHumidityLow => 'Air sec accepté';
 
   @override
@@ -2604,6 +2636,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careHumidityHigh => 'Aime l\'air humide';
+
+  @override
+  String careHumidityRange(int min, int max) {
+    return '$min à $max % d\'humidité de l\'air';
+  }
+
+  @override
+  String get careHumidityGreenhouse =>
+      'Sous serre ou en vitrine, tenez cette plage le jour, laissez-la descendre la nuit et faites circuler l\'air.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2718,6 +2759,91 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBadgeOutdoor => 'Supporte l\'extérieur';
+
+  @override
+  String get careBloom => 'Floraison';
+
+  @override
+  String careSeasonRange(String from, String to) {
+    return 'De $from à $to';
+  }
+
+  @override
+  String get careBloomOutdoors => 'Rarement en intérieur';
+
+  @override
+  String get careBloomCoolRest =>
+      'Un hiver frais, 12 à 15 °C et presque sec pendant six semaines, forme les boutons.';
+
+  @override
+  String get careBloomNightDrop =>
+      'Un écart de 8 à 10 °C entre le jour et la nuit lance la hampe florale.';
+
+  @override
+  String get careBloomLongNights =>
+      'Quatorze heures d\'obscurité complète par nuit, six semaines de suite, déclenchent les boutons.';
+
+  @override
+  String get careBloomDryRest =>
+      'Un repos sec après la croissance : sans lui, la plante fait des feuilles et pas de fleurs.';
+
+  @override
+  String get careBloomPotbound =>
+      'Elle fleurit quand ses racines remplissent le pot ; un pot trop grand retarde tout.';
+
+  @override
+  String get careBloomFertilizer =>
+      'Un engrais à floraison, plus riche en potasse, dès que les boutons se forment.';
+
+  @override
+  String get careBloomDirectSun =>
+      'Quatre à six heures de soleil direct : à l\'ombre, les boutons avortent.';
+
+  @override
+  String get careBloomMaturity =>
+      'Elle fleurit à partir de trois ou quatre ans, pas avant.';
+
+  @override
+  String get careBloomDeadhead => 'Coupez les fleurs fanées, la suivante suit.';
+
+  @override
+  String get careBloomKeepSpike =>
+      'Gardez la hampe tant qu\'elle reste verte : elle repart d\'un œil plus bas.';
+
+  @override
+  String get careBloomNoMove =>
+      'Ne la déplacez plus et ne la tournez plus une fois les boutons formés, ils tombent.';
+
+  @override
+  String get careBloomEvenWater =>
+      'Un arrosage régulier pendant les boutons ; un coup de sec les fait tomber.';
+
+  @override
+  String get careBloomChillBulb =>
+      'Le bulbe passe dix à quinze semaines entre 5 et 9 °C avant d\'être remis à la chaleur.';
+
+  @override
+  String get careRest => 'Repos';
+
+  @override
+  String careRestStoreDarkTemp(int min, int max) {
+    return 'Au sec et à l\'obscurité, entre $min et $max °C';
+  }
+
+  @override
+  String careRestStoreTemp(int min, int max) {
+    return 'Au sec, entre $min et $max °C';
+  }
+
+  @override
+  String get careRestStoreDark => 'Au sec et à l\'obscurité';
+
+  @override
+  String get careRestStorePlain => 'Au sec';
+
+  @override
+  String get careRestNote =>
+      'Laissez le feuillage jaunir et sécher sans le couper, puis arrêtez l\'arrosage. Remettez le pot à la lumière et reprenez l\'arrosage à la fin de cette période.';
 
   @override
   String get careIssueOverwatering =>

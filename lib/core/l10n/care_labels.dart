@@ -34,6 +34,26 @@ extension CareProfileLabels on AppLocalizations {
         Toxicity.unknown => careToxicUnknown,
       };
 
+  /// Le mot qui tient sur une puce, quand l'espèce a un avis sur son pot.
+  /// `null` pour celles qui n'en ont pas : la règle en dessous suffit.
+  String? potBadge(PotPreference v) => switch (v) {
+        PotPreference.snug => carePotSnug,
+        PotPreference.steady => null,
+        PotPreference.roomy => carePotRoomy,
+      };
+
+  /// Ce qu'une racine sortie par le fond veut dire pour cette espèce. Chez une
+  /// plante à réserves, elle ne veut rien dire : c'est la fin du repos qui
+  /// commande le rempotage.
+  String potNote(CareProfile p) {
+    if (p.dormancy != null) return carePotDormantNote;
+    return switch (p.pot) {
+      PotPreference.snug => carePotSnugNote,
+      PotPreference.steady => carePotSteadyNote,
+      PotPreference.roomy => carePotRoomyNote,
+    };
+  }
+
   String soilName(SoilKind v) => switch (v) {
         SoilKind.standard => careSoilStandard,
         SoilKind.draining => careSoilDraining,
@@ -211,6 +231,39 @@ extension CareProfileLabels on AppLocalizations {
         'dryToBloom' => careTipDryToBloom,
         _ => null,
       };
+
+  /// Condition de floraison, par clé, sur le modèle des conseils : une clé
+  /// inconnue ne s'affiche pas.
+  String? bloomTrigger(String key) => switch (key) {
+        'coolRest' => careBloomCoolRest,
+        'nightDrop' => careBloomNightDrop,
+        'longNights' => careBloomLongNights,
+        'dryRest' => careBloomDryRest,
+        'potbound' => careBloomPotbound,
+        'bloomFertilizer' => careBloomFertilizer,
+        'directSun' => careBloomDirectSun,
+        'maturity' => careBloomMaturity,
+        'deadhead' => careBloomDeadhead,
+        'keepSpike' => careBloomKeepSpike,
+        'noMove' => careBloomNoMove,
+        'evenWater' => careBloomEvenWater,
+        'chillBulb' => careBloomChillBulb,
+        _ => null,
+      };
+
+  /// Où garder l'organe de réserve pendant son sommeil.
+  String restStorage(DormantRest rest) {
+    final min = rest.storeMinC;
+    final max = rest.storeMaxC;
+    if (min == null || max == null) return rest.dark ? careRestStoreDark : careRestStorePlain;
+    return rest.dark ? careRestStoreDarkTemp(min, max) : careRestStoreTemp(min, max);
+  }
+
+  /// « De mars à mai », dans la langue et le calendrier de l'utilisateur.
+  String monthRangeLabel(MonthWindow w, String localeTag) {
+    final fmt = DateFormat.MMMM(localeTag);
+    return careSeasonRange(fmt.format(DateTime(2026, w.from)), fmt.format(DateTime(2026, w.to)));
+  }
 
   /// Provenance de la fiche, dite honnêtement.
   String careMatchLabel(ResolvedCare care) => switch (care.match) {
