@@ -473,14 +473,15 @@ carte à image.
   demande. La page a longtemps dit ce qui est gratuit sans jamais dire ce que
   cela coûte à quelqu'un, et il n'y avait donc aucune raison de donner. Or
   les trois « aucun » du paragraphe au-dessus sont exactement ce qui prive
-  l'application de revenu : « Auxine est développée par une seule personne,
-  et ce soutien est son seul revenu. » Le même fait, retourné. Rien n'y est
+  l'application de revenu : « Une seule personne la développe. Ce soutien est
+  tout ce qu'elle rapporte. » Le même fait, retourné. Deux phrases actives,
+  et le nom de l'application ne s'y répète pas — le titre vient de le dire. Rien n'y est
   supposé du lecteur ni promis en échange — c'est un constat, comme le reste
   des textes, et il disparaît une fois le soutien versé.
-- **Le montant** est tracé à la main, à la taille du titre, avec « Une seule
-  fois » posé à côté sur la même ligne de base, et une lueur d'un point sous
-  les chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est
-  derrière la glyphe : le contraste du chiffre ne bouge pas.
+- **Le montant** est tracé à la main, à la taille du titre, seul sur sa
+  ligne, avec « Une seule fois » dessous et une lueur d'un point sous les
+  chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est derrière
+  la glyphe, le contraste du chiffre ne bouge pas.
 - **Le bouton ferme la pièce.** Rien ne se lit après lui. Une mention y a
   traîné — « le soutien ne déverrouille rien » —, et c'était un avertissement
   juste avant le geste : la phrase du haut dit déjà que tout est ouvert, donc

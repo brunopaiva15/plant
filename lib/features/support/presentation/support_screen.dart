@@ -308,24 +308,20 @@ class _Offer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(
-              price,
-              style: context.text.display.copyWith(
-                color: c.terracotta,
-                // Une lueur d'un point sous les chiffres : le montant paraît
-                // pressé dans la pâte plutôt que posé dessus. L'ombre est
-                // derrière la glyphe, le contraste du chiffre ne bouge pas.
-                shadows: [Shadow(color: Colors.white.withValues(alpha: c.isDark ? 0.07 : 0.5), offset: const Offset(0, 1))],
-              ),
-            ),
-            const SizedBox(width: Space.sm),
-            Expanded(child: Text(l10n.supportOnce, style: context.text.callout.copyWith(color: c.inkSecondary))),
-          ],
+        Text(
+          price,
+          style: context.text.display.copyWith(
+            color: c.terracotta,
+            // Une lueur d'un point sous les chiffres : le montant paraît
+            // pressé dans la pâte plutôt que posé dessus. L'ombre est
+            // derrière la glyphe, le contraste du chiffre ne bouge pas.
+            shadows: [Shadow(color: Colors.white.withValues(alpha: c.isDark ? 0.07 : 0.5), offset: const Offset(0, 1))],
+          ),
         ),
+        // Sous le montant, pas à côté : à gros caractères la ligne de base
+        // partagée finissait par pousser « Une seule fois » à la ligne de
+        // toute façon, et le montant se lit mieux seul sur sa ligne.
+        Text(l10n.supportOnce, style: context.text.callout.copyWith(color: c.inkSecondary)),
         const SizedBox(height: Space.lg),
         // Le bouton ferme la pièce. Une mention en dessous — « le soutien ne
         // déverrouille rien » — était la dernière chose lue avant le geste, et

@@ -6555,7 +6555,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportWhy.
   ///
   /// In fr, this message translates to:
-  /// **'Auxine est développée par une seule personne, et ce soutien est son seul revenu.'**
+  /// **'Une seule personne la développe. Ce soutien est tout ce qu\'elle rapporte.'**
   String get supportWhy;
 
   /// No description provided for @supportOnce.

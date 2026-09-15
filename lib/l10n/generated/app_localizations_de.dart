@@ -3831,7 +3831,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get supportWhy =>
-      'Auxine wird von einer einzelnen Person entwickelt, und diese Unterstützung ist ihre einzige Einnahme.';
+      'Eine einzige Person entwickelt sie. Diese Unterstützung ist ihre einzige Einnahme.';
 
   @override
   String get supportOnce => 'Nur einmal';
