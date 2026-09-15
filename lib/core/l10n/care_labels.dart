@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/care/care_guide.dart';
 import '../../domain/care/care_profile.dart';
+import '../../domain/care/water_quality.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Libellés localisés de la fiche d'entretien.
@@ -42,6 +43,59 @@ extension CareProfileLabels on AppLocalizations {
         SoilKind.acidic => careSoilAcidic,
         SoilKind.rich => careSoilRich,
         SoilKind.aquatic => careSoilAquatic,
+      };
+
+  /// Ce que l'espèce demande comme eau, en deux mots.
+  String waterToleranceName(WaterTolerance v) => switch (v) {
+        WaterTolerance.tolerant => careWaterTolerant,
+        WaterTolerance.sensitive => careWaterSensitive,
+        WaterTolerance.strict => careWaterStrict,
+      };
+
+  /// Pourquoi : ce que le calcaire lui fait, ou ne lui fait pas.
+  String waterToleranceNote(WaterTolerance v) => switch (v) {
+        WaterTolerance.tolerant => careWaterTolerantNote,
+        WaterTolerance.sensitive => careWaterSensitiveNote,
+        WaterTolerance.strict => careWaterStrictNote,
+      };
+
+  String waterKindName(WaterKind v) => switch (v) {
+        WaterKind.tap => careWaterTap,
+        WaterKind.rain => careWaterRain,
+        WaterKind.filtered => careWaterFiltered,
+        WaterKind.osmosis => careWaterOsmosis,
+        WaterKind.demineralized => careWaterDemineralized,
+        WaterKind.condensate => careWaterCondensate,
+        WaterKind.softened => careWaterSoftened,
+      };
+
+  /// Ce que cette eau est.
+  String waterKindNote(WaterKind v) => switch (v) {
+        WaterKind.tap => careWaterTapNote,
+        WaterKind.rain => careWaterRainNote,
+        WaterKind.filtered => careWaterFilteredNote,
+        WaterKind.osmosis => careWaterOsmosisNote,
+        WaterKind.demineralized => careWaterDemineralizedNote,
+        WaterKind.condensate => careWaterCondensateNote,
+        WaterKind.softened => careWaterSoftenedNote,
+      };
+
+  /// Ce qu'elle emporte avec elle, et ce qu'il faut en faire.
+  String waterKindRisk(WaterKind v) => switch (v) {
+        WaterKind.tap => careWaterTapRisk,
+        WaterKind.rain => careWaterRainRisk,
+        WaterKind.filtered => careWaterFilteredRisk,
+        WaterKind.osmosis => careWaterOsmosisRisk,
+        WaterKind.demineralized => careWaterDemineralizedRisk,
+        WaterKind.condensate => careWaterCondensateRisk,
+        WaterKind.softened => careWaterSoftenedRisk,
+      };
+
+  String waterVerdictName(WaterVerdict v) => switch (v) {
+        WaterVerdict.recommended => careWaterBest,
+        WaterVerdict.suitable => careWaterOk,
+        WaterVerdict.caution => careWaterCaution,
+        WaterVerdict.avoid => careWaterAvoid,
       };
 
   /// Le mélange, en proportions : ce qu'on prépare le jour du rempotage.
@@ -208,8 +262,6 @@ extension CareProfileLabels on AppLocalizations {
         'waterAtBase' => careTipWaterAtBase,
         'noWaterOnLeaves' => careTipNoWaterOnLeaves,
         'bottomWatering' => careTipBottomWatering,
-        'filteredWater' => careTipFilteredWater,
-        'rainwaterOnly' => careTipRainwaterOnly,
         'thirstyPlant' => careTipThirstyPlant,
         'droopSignal' => careTipDroopSignal,
         'winterDry' => careTipWinterDry,
@@ -253,6 +305,7 @@ extension CareProfileLabels on AppLocalizations {
         'containItsRoots' => careTipContainItsRoots,
         'mulchIt' => careTipMulchIt,
         'acidSoil' => careTipAcidSoil,
+        'feedsOnInsects' => careTipFeedsOnInsects,
         'blueNeedsAcid' => careTipBlueNeedsAcid,
         'citrusFertilizer' => careTipCitrusFertilizer,
         'noFertilizer' => careTipNoFertilizer,

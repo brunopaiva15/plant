@@ -2659,6 +2659,121 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSoilAquatic => 'No soil at all';
 
   @override
+  String get careWater => 'Water';
+
+  @override
+  String get careWaterTolerant => 'Tap water';
+
+  @override
+  String get careWaterSensitive => 'Low-lime water';
+
+  @override
+  String get careWaterStrict => 'Lime-free water';
+
+  @override
+  String get careWaterTolerantNote => 'Lime does not bother it.';
+
+  @override
+  String get careWaterSensitiveNote => 'Lime and fluoride brown the leaf tips.';
+
+  @override
+  String get careWaterStrictNote => 'Lime harms it, even in small amounts.';
+
+  @override
+  String get careWaterTypes => 'Water types';
+
+  @override
+  String get careWaterTypesNote =>
+      'Tap water hardness changes from one town to the next; the supplier\'s annual analysis gives it.';
+
+  @override
+  String get careWaterBest => 'Recommended';
+
+  @override
+  String get careWaterOk => 'Suitable';
+
+  @override
+  String get careWaterCaution => 'With caution';
+
+  @override
+  String get careWaterAvoid => 'To avoid';
+
+  @override
+  String get careWaterTap => 'Tap water';
+
+  @override
+  String get careWaterTapNote =>
+      'Mains water as it comes. Its hardness depends on the town.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Lime builds up in the potting mix and raises its pH. Letting the water stand drives off the chlorine, not the lime.';
+
+  @override
+  String get careWaterRain => 'Rainwater';
+
+  @override
+  String get careWaterRainNote => 'Soft, lime-free, slightly acidic.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Collected off a roof, it carries dust and droppings; an uncovered barrel turns green. Let the first minutes of rain run off, and keep the barrel covered.';
+
+  @override
+  String get careWaterFiltered => 'Filtered water';
+
+  @override
+  String get careWaterFilteredNote =>
+      'A filter jug removes the chlorine and part of the lime.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'How much it holds back depends on the cartridge, and a spent cartridge holds back nothing. The lime is never removed entirely.';
+
+  @override
+  String get careWaterOsmosis => 'Reverse osmosis water';
+
+  @override
+  String get careWaterOsmosisNote => 'Almost free of minerals, like rainwater.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'It brings no nutrients at all: fertilizer becomes the only source. For an ordinary plant, a third of tap water balances it out.';
+
+  @override
+  String get careWaterDemineralized => 'Demineralized water';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Sold for irons, it matches osmosis water as long as it is pure.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Some bottles hold an anti-scale additive or a fragrance: read the label. Like osmosis water, it brings no nutrients.';
+
+  @override
+  String get careWaterCondensate => 'Air conditioner water';
+
+  @override
+  String get careWaterCondensateNote =>
+      'The condensate from an air conditioner or a dehumidifier, distilled by the machine.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'It has run over a heat exchanger and through a tray where dust, biofilm and bacteria gather, and it can carry traces of metal. Keep it for ornamental plants, from a clean unit, never on anything edible.';
+
+  @override
+  String get careWaterSoftened => 'Softened water';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'A resin softener swaps the lime for sodium.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Sodium builds up in the potting mix, damages the roots and closes up the structure of the soil. The untreated tap, upstream of the softener, stays the right one.';
+
+  @override
   String get careSoilMixStandard =>
       'Lightened with 20 % perlite, so water runs through.';
 
@@ -2960,14 +3075,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Water from below by standing the pot in water for 20 minutes.';
 
   @override
-  String get careTipFilteredWater =>
-      'Use rain or filtered water, as hard water browns the tips.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Water with rainwater, as this plant hates lime.';
-
-  @override
   String get careTipThirstyPlant => 'A thirsty one, check it daily in summer.';
 
   @override
@@ -3129,6 +3236,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'It needs acidic soil, not all-purpose compost.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'It feeds on insects: no fertilizer, and a poor soil.';
 
   @override
   String get careTipBlueNeedsAcid =>

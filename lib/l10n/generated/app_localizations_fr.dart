@@ -2664,6 +2664,124 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careSoilAquatic => 'Sans substrat';
 
   @override
+  String get careWater => 'Eau';
+
+  @override
+  String get careWaterTolerant => 'Eau du robinet';
+
+  @override
+  String get careWaterSensitive => 'Eau peu calcaire';
+
+  @override
+  String get careWaterStrict => 'Eau sans calcaire';
+
+  @override
+  String get careWaterTolerantNote => 'Le calcaire ne la gêne pas.';
+
+  @override
+  String get careWaterSensitiveNote =>
+      'Le calcaire et le fluor brunissent les pointes.';
+
+  @override
+  String get careWaterStrictNote =>
+      'Le calcaire l\'abîme, même en petite quantité.';
+
+  @override
+  String get careWaterTypes => 'Types d\'eau';
+
+  @override
+  String get careWaterTypesNote =>
+      'La dureté de l\'eau du robinet change d\'une commune à l\'autre ; l\'analyse annuelle du distributeur la donne.';
+
+  @override
+  String get careWaterBest => 'Recommandée';
+
+  @override
+  String get careWaterOk => 'Convient';
+
+  @override
+  String get careWaterCaution => 'Avec réserve';
+
+  @override
+  String get careWaterAvoid => 'À éviter';
+
+  @override
+  String get careWaterTap => 'Eau du robinet';
+
+  @override
+  String get careWaterTapNote =>
+      'L\'eau du réseau, telle qu\'elle sort. Sa dureté dépend de la commune.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Le calcaire s\'accumule dans le terreau et fait monter son pH. Laisser reposer l\'eau chasse le chlore, pas le calcaire.';
+
+  @override
+  String get careWaterRain => 'Eau de pluie';
+
+  @override
+  String get careWaterRainNote => 'Douce, sans calcaire, légèrement acide.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écarter les premières minutes de pluie, couvrir le tonneau.';
+
+  @override
+  String get careWaterFiltered => 'Eau filtrée';
+
+  @override
+  String get careWaterFilteredNote =>
+      'Une carafe filtrante retire le chlore et une part du calcaire.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'La part retenue dépend de la cartouche, et une cartouche épuisée ne retient plus rien. Le calcaire n\'est jamais entièrement retiré.';
+
+  @override
+  String get careWaterOsmosis => 'Eau osmosée';
+
+  @override
+  String get careWaterOsmosisNote =>
+      'Presque sans minéraux, comme l\'eau de pluie.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'Elle n\'apporte aucun élément nutritif : l\'engrais devient la seule source. Pour une plante ordinaire, un tiers d\'eau du robinet la rééquilibre.';
+
+  @override
+  String get careWaterDemineralized => 'Eau déminéralisée';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Vendue pour les fers à repasser, elle vaut l\'eau osmosée quand elle est pure.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Certains bidons contiennent un antitartre ou un parfum : lire l\'étiquette. Comme l\'eau osmosée, elle n\'apporte aucun élément nutritif.';
+
+  @override
+  String get careWaterCondensate => 'Eau de climatiseur';
+
+  @override
+  String get careWaterCondensateNote =>
+      'Le condensat d\'un climatiseur ou d\'un déshumidificateur, une eau distillée par l\'appareil.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières, biofilm et bactéries, et peut emporter des traces de métaux. À réserver aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.';
+
+  @override
+  String get careWaterSoftened => 'Eau adoucie';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'Un adoucisseur à résine remplace le calcaire par du sodium.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Le sodium s\'accumule dans le terreau, abîme les racines et ferme la structure du sol. Le robinet d\'eau brute, en amont de l\'adoucisseur, reste le bon.';
+
+  @override
   String get careSoilMixStandard =>
       'Allégé de 20 % de perlite, pour que l\'eau traverse.';
 
@@ -2968,14 +3086,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Arrosez par le bas, en posant le pot dans une soucoupe d\'eau 20 minutes.';
 
   @override
-  String get careTipFilteredWater =>
-      'Préférez l\'eau de pluie ou filtrée, car le calcaire brunit les pointes.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Arrosez à l\'eau de pluie, car cette plante déteste le calcaire.';
-
-  @override
   String get careTipThirstyPlant =>
       'Grosse buveuse, vérifiez-la tous les jours en été.';
 
@@ -3145,6 +3255,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'Elle exige une terre acide, pas du terreau universel.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'Elle se nourrit d\'insectes : pas d\'engrais, et une terre pauvre.';
 
   @override
   String get careTipBlueNeedsAcid =>

@@ -2664,6 +2664,123 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careSoilAquatic => 'Ganz ohne Substrat';
 
   @override
+  String get careWater => 'Wasser';
+
+  @override
+  String get careWaterTolerant => 'Leitungswasser';
+
+  @override
+  String get careWaterSensitive => 'Kalkarmes Wasser';
+
+  @override
+  String get careWaterStrict => 'Kalkfreies Wasser';
+
+  @override
+  String get careWaterTolerantNote => 'Kalk stört sie nicht.';
+
+  @override
+  String get careWaterSensitiveNote =>
+      'Kalk und Fluorid färben die Blattspitzen braun.';
+
+  @override
+  String get careWaterStrictNote =>
+      'Kalk schadet ihr, schon in kleinen Mengen.';
+
+  @override
+  String get careWaterTypes => 'Wasserarten';
+
+  @override
+  String get careWaterTypesNote =>
+      'Die Härte des Leitungswassers ändert sich von Gemeinde zu Gemeinde; die jährliche Analyse des Versorgers nennt sie.';
+
+  @override
+  String get careWaterBest => 'Empfohlen';
+
+  @override
+  String get careWaterOk => 'Geeignet';
+
+  @override
+  String get careWaterCaution => 'Mit Vorbehalt';
+
+  @override
+  String get careWaterAvoid => 'Zu vermeiden';
+
+  @override
+  String get careWaterTap => 'Leitungswasser';
+
+  @override
+  String get careWaterTapNote =>
+      'Wasser aus dem Netz, so wie es kommt. Seine Härte hängt von der Gemeinde ab.';
+
+  @override
+  String get careWaterTapRisk =>
+      'Kalk sammelt sich in der Erde und hebt ihren pH-Wert. Abgestandenes Wasser verliert das Chlor, nicht den Kalk.';
+
+  @override
+  String get careWaterRain => 'Regenwasser';
+
+  @override
+  String get careWaterRainNote => 'Weich, kalkfrei, leicht sauer.';
+
+  @override
+  String get careWaterRainRisk =>
+      'Vom Dach gesammelt, trägt es Staub und Vogelkot mit; ein offenes Fass wird grün. Die ersten Minuten Regen ablaufen lassen und die Tonne abdecken.';
+
+  @override
+  String get careWaterFiltered => 'Gefiltertes Wasser';
+
+  @override
+  String get careWaterFilteredNote =>
+      'Ein Filterkrug entfernt das Chlor und einen Teil des Kalks.';
+
+  @override
+  String get careWaterFilteredRisk =>
+      'Wie viel zurückgehalten wird, hängt von der Kartusche ab, und eine erschöpfte Kartusche hält nichts mehr zurück. Der Kalk verschwindet nie vollständig.';
+
+  @override
+  String get careWaterOsmosis => 'Osmosewasser';
+
+  @override
+  String get careWaterOsmosisNote => 'Nahezu mineralfrei, wie Regenwasser.';
+
+  @override
+  String get careWaterOsmosisRisk =>
+      'Es bringt keine Nährstoffe mit: der Dünger bleibt die einzige Quelle. Bei einer gewöhnlichen Pflanze gleicht ein Drittel Leitungswasser das aus.';
+
+  @override
+  String get careWaterDemineralized => 'Entmineralisiertes Wasser';
+
+  @override
+  String get careWaterDemineralizedNote =>
+      'Für Bügeleisen verkauft, entspricht es Osmosewasser, solange es rein ist.';
+
+  @override
+  String get careWaterDemineralizedRisk =>
+      'Manche Kanister enthalten einen Entkalkerzusatz oder einen Duftstoff: das Etikett lesen. Wie Osmosewasser bringt es keine Nährstoffe mit.';
+
+  @override
+  String get careWaterCondensate => 'Klimaanlagenwasser';
+
+  @override
+  String get careWaterCondensateNote =>
+      'Das Kondensat einer Klimaanlage oder eines Luftentfeuchters, vom Gerät destilliert.';
+
+  @override
+  String get careWaterCondensateRisk =>
+      'Es ist über einen Wärmetauscher und durch eine Wanne gelaufen, in der sich Staub, Biofilm und Bakterien sammeln, und kann Metallspuren mitführen. Nur für Zierpflanzen, aus einem sauberen Gerät, nie auf Essbares.';
+
+  @override
+  String get careWaterSoftened => 'Enthärtetes Wasser';
+
+  @override
+  String get careWaterSoftenedNote =>
+      'Ein Enthärter mit Harz tauscht den Kalk gegen Natrium.';
+
+  @override
+  String get careWaterSoftenedRisk =>
+      'Natrium sammelt sich in der Erde, schädigt die Wurzeln und verdichtet das Bodengefüge. Der unbehandelte Hahn vor dem Enthärter bleibt der richtige.';
+
+  @override
   String get careSoilMixStandard =>
       'Mit 20 % Perlit aufgelockert, damit das Wasser durchläuft.';
 
@@ -2964,14 +3081,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Von unten gießen, den Topf 20 Minuten in Wasser stellen.';
 
   @override
-  String get careTipFilteredWater =>
-      'Regen- oder gefiltertes Wasser nehmen, denn Kalk bräunt die Spitzen.';
-
-  @override
-  String get careTipRainwaterOnly =>
-      'Mit Regenwasser gießen, denn die Pflanze verträgt keinen Kalk.';
-
-  @override
   String get careTipThirstyPlant => 'Trinkt viel, im Sommer täglich prüfen.';
 
   @override
@@ -3132,6 +3241,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get careTipAcidSoil =>
       'Sie braucht sauren Boden, keine Universalerde.';
+
+  @override
+  String get careTipFeedsOnInsects =>
+      'Sie ernährt sich von Insekten: kein Dünger und ein armer Boden.';
 
   @override
   String get careTipBlueNeedsAcid =>
