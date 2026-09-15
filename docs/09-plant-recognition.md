@@ -2044,7 +2044,7 @@ La conséquence pour l'Iris 9 est directe, et elle va dans les deux sens :
   le gain du § 6.7 survit à la baisse. **Rien ne le garantit** : le gain
   vient du calcul, et le retirer pourrait le reprendre.
 
-#### La conséquence la plus lourde est côté application, et elle reste à mesurer
+#### La conséquence côté application, mesurée et écartée
 
 `source_size` n'est pas qu'une métadonnée : `tflite_plant_model.dart` le lit
 dans `model.json` et s'en sert. Le § 6.7 explique pourquoi — les images
@@ -2065,22 +2065,44 @@ construction — et reçoit à l'inférence des carrés de 448 px réduits à 36
 c'est-à-dire **nets**. C'est exactement la classe de défaut qui a coûté
 4,4 points à la v1 (§ 6.7) : le réseau voit autre chose que ce qu'il a vu.
 
-**Ce n'est pas encore un chiffre, et il ne faut pas le traiter comme tel.**
-Trois choses restent ouvertes : l'ampleur réelle de l'écart, son signe — une
-image plus nette que l'entraînement n'est pas forcément moins bien
-reconnue —, et le fait qu'aucun des deux bouts n'a été mesuré contre
-l'autre. La mesure est pourtant simple et ne demande pas de réentraînement :
-passer le jeu de test dans les **deux** recettes et comparer, à armes
-égales (§ 12.10). Si l'écart est réel, la correction l'est aussi — réduire
-le cadre entier à 384 avant le carré, au lieu du carré à 448 — et elle ne
-coûte qu'un export.
+#### ✅ Mesuré : l'écart ne coûte pas de points
 
-> Et s'il y a un écart, il touche une conclusion du § 13.3 : les quatre
-> scans terrain y sont lus comme un écart de **domaine** entre le jeu de
-> test et les photos de salon. Une partie pourrait n'être qu'un écart de
-> **prétraitement**, qui se corrige sans collecter une seule image. Les
-> deux hypothèses ne s'excluent pas ; elles ne se distinguent que par la
-> mesure ci-dessus.
+`tools/plant_model/recettes.py`, 2 468 images du jeu de test
+**re-téléchargées en pleine résolution** — sur le jeu tel qu'il est stocké,
+le carré vaut 288 px, la condition `carré > 448` de l'application est
+fausse, la moyenne de zone est sautée et les deux recettes coïncident au
+pixel près. Mesurer sur le jeu aurait rendu zéro et conclu à tort qu'il n'y
+a rien.
+
+| recette | top-1 | top-3 | confiance |
+|---|---|---|---|
+| entraînement | 0,5446 | 0,6945 | 0,5660 |
+| **application** | **0,5490** | 0,7006 | 0,5731 |
+| corrigée | 0,5474 | 0,6998 | 0,5642 |
+
+**Aucun écart détectable, et la correction proposée n'apporte rien.** Sur
+les 352 photos où les deux recettes divergent — 14,3 %, donc le
+prétraitement change bel et bien ce que le réseau voit —, l'application en
+gagne environ 182 et l'entraînement 170. Un tirage à pile ou face en donne
+176/176 avec un écart-type de 9 : onze images d'écart, c'est z ≈ 0,6.
+
+**Et la taille de l'échantillon était le tout.** Une première passe sur 213
+images donnait l'application à **−1,4 point** ; à 2 468, elle est à +0,4.
+Le signe s'est inversé, ce qui est la signature du bruit et non d'un effet.
+Les 213 images venaient d'un échantillon de 800 jugé contre le modèle
+livré, qui n'expose que 1 444 des 5 259 classes du test — 73 % des
+téléchargements jetés. Passer au modèle large a rendu 2 468 images pour
+2 500 tirées.
+
+**Rien à corriger côté application.** L'ordre des opérations reste
+inhabituel — carré d'abord, réduction ensuite — mais il est sans
+conséquence mesurable, et le changer coûterait un export pour rien.
+
+> **Et cela renforce la lecture du § 13.3** au lieu de la nuancer : l'écart
+> entre les 0,6543 de top-1 du jeu de test et les scans terrain décevants
+> est bien un écart de **domaine**, pas de prétraitement. Il n'y a donc pas
+> de part réparable sans collecter d'images — c'est le chantier des photos
+> d'utilisateurs, et rien d'autre, qui le comblera.
 
 #### Et le garde-fou ne pouvait pas le voir
 
