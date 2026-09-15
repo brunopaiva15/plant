@@ -333,10 +333,9 @@ Pour la livrer :
    commentaire à côté de `NSHomeKitUsageDescription`) ; sans elles, le canal
    répond « pas de maison ici » plutôt que d'ouvrir une session à moitié
    configurée.
-4. `AppConfig.googleHomeEnabled` est déjà à vrai. Attention au corollaire :
-   une construction sans le SDK montre un bouton « Connecter Google Home »
-   qui répondra toujours « aucun capteur ». Tant que les deux plateformes ne
-   sont pas livrées avec leur SDK, ce drapeau ne doit pas atteindre `main`.
+4. Passer `AppConfig.googleHomeEnabled` à vrai, et en dernier : le faire
+   sans le SDK montre un bouton « Connecter Google Home » qui répondra
+   toujours « aucun capteur ».
 
 Ce que le canal lit : les appareils, les pièces et les maisons à plat, puis
 recollés par identifiant (`HomeDevice.roomID`, `structureID`). Trois types
