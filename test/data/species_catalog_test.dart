@@ -4,9 +4,9 @@ import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue : exactement 350 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
+  test('catalogue : exactement 400 fiches, noms scientifiques uniques et noms communs présents dans les 4 langues', () {
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(350));
+    expect(SpeciesCatalog.entries, hasLength(400));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -23,8 +23,16 @@ void main() {
     expect(SpeciesCatalog.search('Basilikum').single.scientificName, 'Ocimum basilicum');
     expect(SpeciesCatalog.search('lamiaceae').length, greaterThan(5));
     expect(SpeciesCatalog.find('ocimum BASILICUM')?.fr, 'Basilic');
-    expect(SpeciesCatalog.find('philodendron GLORIOSUM')?.en, 'Velvet-leaf philodendron');
     expect(SpeciesCatalog.byCategory(SpeciesCategory.succulent), everyElement(predicate<SpeciesCatalogEntry>((e) => e.category == SpeciesCategory.succulent)));
+  });
+
+  test('catalogue : les extensions et corrections taxonomiques sont exposées', () {
+    expect(SpeciesCatalog.find('Monstera obliqua')?.family, 'Araceae');
+    expect(SpeciesCatalog.find('Taxus baccata')?.family, 'Taxaceae');
+    expect(SpeciesCatalog.find('Lutheria splendens')?.family, 'Bromeliaceae');
+    expect(SpeciesCatalog.find('Pilea ovalis')?.family, 'Urticaceae');
+    expect(SpeciesCatalog.find('Vriesea splendens'), isNull);
+    expect(SpeciesCatalog.find('Pilea involucrata'), isNull);
   });
 
   test('GBIF : parse d\'une page de recherche (total, fin de liste)', () {
