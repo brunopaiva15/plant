@@ -42,10 +42,29 @@ DEFAULT_UA = 'FloraPlantDataset/0.1 (github.com/brunopaiva15/plant; dataset buil
 RETRIES = 5
 PAGE = 100
 
-#: Largeur demandée à Commons. Les originaux montent à plusieurs dizaines de
-#: mégaoctets ; le pipeline réduit de toute façon à 448 px. Demander une
-#: vignette large épargne la bande passante des deux côtés.
-THUMB_WIDTH = 1280
+#: Largeur demandée à Commons pour la vignette.
+#:
+#: Elle valait 1280, pour un jeu stocké à 384 px (`images.py`, MAX_SIDE) :
+#: onze fois trop de pixels tirés d'un service gratuit. Et surtout,
+#: **MediaWiki ne génère aucune vignette quand la largeur demandée dépasse
+#: celle du fichier** — pour toute photo de Commons plus étroite que
+#: 1280 px, c'est-à-dire la majorité, `thumburl` était absent et
+#: `image_candidates` retombait sur l'URL du fichier **pleine résolution**.
+#:
+#: C'est la classe d'URL que Wikimedia refuse le plus volontiers depuis
+#: qu'elle se défend des aspirateurs : 429 y compris sur des requêtes
+#: isolées, là où la même image en vignette passe. Demander la taille dont
+#: on a besoin est donc à la fois plus correct et plus robuste — et c'est
+#: la seule réponse qu'on se permette. Le contournement qui circule,
+#: emprunter le User-Agent d'un navigateur, viderait de son sens un projet
+#: qui redistribue les photos de Commons avec leurs licences.
+#:
+#: 640 plutôt que 512 à cause de `MIN_SIDE = 320` : une vignette de 512 px
+#: de large sur une photo en 16:9 donne 288 px de petit côté, et
+#: `prepare()` la rejetterait après téléchargement, sans le dire. À 640, le
+#: 16:9 rend 360 px et le 4:3 480 — au-dessus du plancher, et au-dessus des
+#: 384 du stockage.
+THUMB_WIDTH = 640
 
 #: Formats acceptés. Commons héberge aussi des SVG, des PDF et des TIFF, que
 #: le pipeline ne saurait pas lire.

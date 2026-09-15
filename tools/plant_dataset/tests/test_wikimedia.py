@@ -300,3 +300,13 @@ def test_une_url_vide_ne_fait_pas_echouer():
 
 def test_le_point_dinterrogation_ne_reste_pas_seul():
     assert sans_traqueurs('https://x/b.jpg?utm_source=commons') == 'https://x/b.jpg'
+
+
+def test_la_vignette_demandee_reste_au_dessus_du_plancher():
+    """`prepare()` rejette une image dont le petit côté est sous MIN_SIDE.
+    Une vignette trop étroite se ferait donc jeter après téléchargement —
+    silencieusement, puisque c'est une image de moins et pas une erreur."""
+    from plant_dataset.fetchers.wikimedia import THUMB_WIDTH
+    from plant_dataset.images import MAX_SIDE, MIN_SIDE
+    assert THUMB_WIDTH * 9 // 16 >= MIN_SIDE, 'une photo en 16:9 doit passer'
+    assert THUMB_WIDTH > MAX_SIDE, 'et rester au-dessus de la taille de stockage'
