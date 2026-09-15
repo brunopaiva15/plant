@@ -1,6 +1,8 @@
 import '../../core/utils/scientific_name.dart';
 import '../../core/utils/search_text.dart';
+import '../../domain/care/care_guide.dart';
 import '../../domain/species/species_info.dart';
+import 'catalog_care_guide.dart';
 import 'species_catalog.dart';
 import 'species_index.dart';
 
@@ -79,13 +81,14 @@ class IrisDetailedCatalog {
 
   /// Nombre de fiches affichées dans l'encyclopédie. Cela ne change pas le
   /// nombre de classes qu'Iris sait reconnaître : Iris 8 reste à 1 444.
-  static const int encyclopediaTargetCount = 1600;
+  static const int encyclopediaTargetCount = 1900;
 
   factory IrisDetailedCatalog.from({
     required Iterable<String> modelSpecies,
     required SpeciesIndex index,
     int? targetCount,
   }) {
+    const careGuide = CatalogCareGuide();
     final curated = <String, SpeciesCatalogEntry>{
       for (final entry in SpeciesCatalog.entries) entry.scientificName.toLowerCase(): entry,
     };
@@ -98,6 +101,14 @@ class IrisDetailedCatalog {
 
     String acceptedKey(String scientificName) =>
         acceptedSpeciesName(normalizeScientificName(scientificName)).trim().toLowerCase();
+
+    bool hasDetailedCare(String scientificName, String family) {
+      final care = careGuide.resolve(
+        scientificName,
+        family: family.trim().isEmpty ? null : family,
+      );
+      return care.match == CareMatch.species || care.match == CareMatch.genus || care.match == CareMatch.family;
+    }
 
     for (final rawName in modelSpecies) {
       final scientificName = rawName.trim();
@@ -123,23 +134,30 @@ class IrisDetailedCatalog {
     if (wanted != null && wanted > entries.length) {
       // 1. Les fiches déjà écrites à la main mais hors Iris : on garde leur
       // catégorie et leurs noms éditoriaux avant d'aller chercher plus loin.
+      // Même ici, une fiche supplémentaire doit être adossée à un profil
+      // espèce, genre ou famille : une simple catégorie ne suffit plus.
       for (final entry in SpeciesCatalog.entries) {
         if (entries.length >= wanted) break;
         final key = entry.scientificName.toLowerCase();
         final accepted = acceptedKey(entry.scientificName);
         if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
+        if (!hasDetailedCare(entry.scientificName, entry.family)) continue;
         seenNames.add(key);
         seenAccepted.add(accepted);
         entries.add(IrisDetailedSpecies.fromCurated(entry));
       }
 
-      // 2. Puis le catalogue étendu. Pour qu'une entrée compte comme fiche
-      // détaillée, elle doit au minimum avoir une famille et un nom courant
-      // dans l'une des quatre langues. L'ordre du TSV rend le choix stable.
+      // 2. Puis le catalogue étendu. Ses noms viennent de Wikidata mais son
+      // ossature genre → famille est celle du GBIF Backbone ; le pipeline
+      // écarte notamment les homonymes d'autres règnes. Pour être promue de
+      // simple résultat de recherche à fiche d'encyclopédie, une espèce doit
+      // aussi avoir une famille, au moins un nom courant, et un vrai profil
+      // d'entretien espèce/genre/famille — jamais le profil générique.
       for (final record in index.records) {
         if (entries.length >= wanted) break;
         if (record.family.trim().isEmpty) continue;
         if ([record.fr, record.en, record.de, record.it].every((name) => name.trim().isEmpty)) continue;
+        if (!hasDetailedCare(record.scientificName, record.family)) continue;
 
         final key = record.scientificName.toLowerCase();
         final accepted = acceptedKey(record.scientificName);
