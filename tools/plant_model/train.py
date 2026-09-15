@@ -520,7 +520,33 @@ def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     }
 
 
-def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: dict, quantize_ds=None) -> dict:
+def recette(args) -> dict:
+    """La recette d'entraînement, telle qu'elle sera écrite dans `model.json`.
+
+    Deux `model.json` ne se comparent pas (§ 12.10), mais quand ils divergent
+    il faut pouvoir dire *de quoi*. La v9 est sortie sous la v8 sur son propre
+    test, et rien dans les deux fichiers ne disait que l'un avait tourné à
+    `--batch 128` et l'autre à 64 : la recette n'était nulle part. Elle l'est
+    maintenant, à côté des chiffres qu'elle explique.
+    """
+    return {
+        'dataset': str(args.dataset),
+        'backbone': args.backbone,
+        'batch': args.batch,
+        'head_epochs': args.head_epochs,
+        'fine_epochs': args.fine_epochs,
+        'fine_lr': args.fine_lr,
+        'dropout': args.dropout,
+        'unfreeze': args.unfreeze,
+        'input_size': args.input_size,
+        'min_train': args.min_train,
+        'min_val': args.min_val,
+        'mixed_precision': bool(args.mixed_precision),
+    }
+
+
+def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: dict, quantize_ds=None,
+                  recette_args: dict | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
@@ -547,6 +573,7 @@ def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: di
         'preprocessing': 'included_in_graph_uint8_0_255',
         'sha256': hashlib.sha256(blob).hexdigest(),
         'bytes': len(blob),
+        'recette': recette_args or {},
         'metrics': {k: v for k, v in metrics.items() if k != 'threshold_curve'},
         'threshold_curve': metrics.get('threshold_curve', []),
         'species': {c: names.get(c, c) for c in classes},
@@ -751,7 +778,7 @@ def main() -> int:
         c = metrics['captive']
         print(f"plantes cultivées ({c['images']} images de test) : top1 {c['top1']}, top3 {c['top3']}")
 
-    meta = export_tflite(model, Path(args.out), classes, names, metrics)
+    meta = export_tflite(model, Path(args.out), classes, names, metrics, recette_args=recette(args))
     print(f'modèle écrit : {args.out}/plants.tflite — {meta["bytes"] / 1e6:.1f} Mo, {meta["classes"]} classes')
     for row in metrics.get('threshold_curve', []):
         if row['min_margin'] == 0.25 and row['threshold'] in (0.8, 0.9):
