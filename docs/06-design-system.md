@@ -465,6 +465,10 @@ carte à image.
   fois » posé à côté sur la même ligne de base, et une lueur d'un point sous
   les chiffres — pressé dans la pâte plutôt que posé dessus. L'ombre est
   derrière la glyphe : le contraste du chiffre ne bouge pas.
+- **Le bouton ferme la pièce.** Rien ne se lit après lui. Une mention y a
+  traîné — « le soutien ne déverrouille rien » —, et c'était un avertissement
+  juste avant le geste : la phrase du haut dit déjà que tout est ouvert, donc
+  qu'il n'y a rien à déverrouiller.
 - **Sur le papier, sous la pièce**, ne reste que ce qui ne lui appartient
   pas : retrouver un soutien déjà versé n'est pas l'accepter.
 - **Une fois versé**, un sceau d'argile se pose au ressort contre le pot, et
@@ -488,10 +492,11 @@ ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
   l'onboarding avant de voir les réglages ;
 - le prix vient du magasin, déjà mis en forme dans la monnaie de la personne
   (`SupportOffer.price`), et se lit en entier avant le bouton ;
-- rien ne laisse croire à une contrepartie : « Le soutien ne déverrouille
-  rien. » Le mot *don* est évité — un pourboire au développeur passe par
-  l'achat intégré (3.1.1), une collecte pour une cause est interdite dans
-  l'app (3.2.2(iv)), et les deux ne doivent pas se confondre ;
+- rien ne laisse croire à une contrepartie, et c'est la phrase du haut qui
+  s'en charge : tout est déjà ouvert, il n'y a rien à vendre. Le mot *don* est
+  évité — un pourboire au développeur passe par l'achat intégré (3.1.1), une
+  collecte pour une cause est interdite dans l'app (3.2.2(iv)), et les deux ne
+  doivent pas se confondre ;
 - là où le magasin n'existe pas, une phrase remplace le bouton.
 
 **Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :

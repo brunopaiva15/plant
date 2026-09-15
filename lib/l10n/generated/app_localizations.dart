@@ -6552,12 +6552,6 @@ abstract class AppLocalizations {
   /// **'Tout est ouvert : toutes les fonctions, sans publicité, sans abonnement, sans compte obligatoire.'**
   String get supportBody;
 
-  /// No description provided for @supportNothingLocked.
-  ///
-  /// In fr, this message translates to:
-  /// **'Le soutien ne déverrouille rien.'**
-  String get supportNothingLocked;
-
   /// No description provided for @supportOnce.
   ///
   /// In fr, this message translates to:

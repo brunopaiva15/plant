@@ -314,9 +314,11 @@ class _Offer extends StatelessWidget {
           ],
         ),
         const SizedBox(height: Space.lg),
+        // Le bouton ferme la pièce. Une mention en dessous — « le soutien ne
+        // déverrouille rien » — était la dernière chose lue avant le geste, et
+        // c'est un avertissement : la phrase du haut dit déjà que tout est
+        // ouvert, il n'y a rien à déverrouiller et rien à rappeler.
         FloraButton(label: l10n.supportGive, expand: true, loading: busy, onPressed: onGive),
-        const SizedBox(height: Space.xs),
-        Text(l10n.supportNothingLocked, style: context.text.caption.copyWith(color: c.inkSecondary)),
       ],
     );
   }

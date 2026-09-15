@@ -85,7 +85,6 @@ void main() {
     expect(find.text('CHF 5.00'), findsOneWidget);
     expect(find.text(l10n.supportOnce), findsOneWidget);
     expect(find.text(l10n.supportGive), findsOneWidget);
-    expect(find.text(l10n.supportNothingLocked), findsOneWidget);
     expect(find.text(l10n.supportRestore), findsOneWidget);
   });
 
