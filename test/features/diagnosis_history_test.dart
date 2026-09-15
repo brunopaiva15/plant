@@ -2,6 +2,7 @@ import 'package:flora/app/providers.dart';
 import 'package:flora/data/problems/problem_catalog.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/auth/auth_repository.dart';
+import 'package:flora/domain/diagnosis/diagnosis_observations.dart';
 import 'package:flora/domain/diagnosis/diagnosis_record.dart';
 import 'package:flora/domain/diagnosis/plant_diagnoser.dart';
 import 'package:flora/domain/models/models.dart';
@@ -97,7 +98,11 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
-    final record = DiagnosisRecord(diagnosis: diagnostic, symptoms: 'Les feuilles tombent depuis une semaine.');
+    final record = DiagnosisRecord(
+      diagnosis: diagnostic,
+      symptoms: 'Les feuilles tombent depuis une semaine.',
+      observations: const DiagnosisObservations(soil: SoilState.soggy, bugs: BugSighting.none),
+    );
     await pumpJournal(tester, entry(metadata: {DiagnosisRecord.metadataKey: record.toJson()}, notes: 'Feuilles jaunes en bas, terre encore humide.'));
 
     // L'aperçu : la ligne se nomme, montre l'urgence, le résumé et les
@@ -123,6 +128,15 @@ void main() {
     expect(find.text('Vieillissement normal'), findsOneWidget);
     expect(find.text('Symptômes signalés'), findsOneWidget);
     expect(find.text('Les feuilles tombent depuis une semaine.'), findsOneWidget);
+
+    // Ce qui avait été vérifié à la main ce jour-là se relit avec le reste ;
+    // ce qui n'avait pas été coché n'a pas de ligne.
+    expect(find.text('Observations'), findsOneWidget);
+    expect(find.text('Terre'), findsOneWidget);
+    expect(find.text('Détrempée'), findsOneWidget);
+    expect(find.text('Insectes'), findsOneWidget);
+    expect(find.text('Aucun vu'), findsOneWidget);
+    expect(find.text('Racines'), findsNothing);
   });
 
   testWidgets('une note ordinaire reste une note', (tester) async {

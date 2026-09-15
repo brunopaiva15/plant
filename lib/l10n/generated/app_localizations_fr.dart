@@ -1977,8 +1977,56 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diagnosisSymptomsHint => 'Ce que vous avez remarqué (facultatif)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Facultatif : les conditions autour de la plante affinent l\'analyse.';
+  String get diagnosisChecks => 'Observations';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Facultatif : ce que la photo ne montre pas affine l\'analyse.';
+
+  @override
+  String get diagnosisSoil => 'Terre';
+
+  @override
+  String get diagnosisSoilDry => 'Sèche';
+
+  @override
+  String get diagnosisSoilMoist => 'Humide';
+
+  @override
+  String get diagnosisSoilSoggy => 'Détrempée';
+
+  @override
+  String get diagnosisRoots => 'Racines';
+
+  @override
+  String get diagnosisRootsFirm => 'Fermes et claires';
+
+  @override
+  String get diagnosisRootsSoft => 'Brunes ou molles';
+
+  @override
+  String get diagnosisRootsCrowded => 'À l\'étroit';
+
+  @override
+  String get diagnosisLightDirect => 'Soleil direct';
+
+  @override
+  String get diagnosisLightBright => 'Vive, sans soleil';
+
+  @override
+  String get diagnosisLightDim => 'Faible';
+
+  @override
+  String get diagnosisBugs => 'Insectes';
+
+  @override
+  String get diagnosisBugsNone => 'Aucun vu';
+
+  @override
+  String get diagnosisBugsOnPlant => 'Sur la plante';
+
+  @override
+  String get diagnosisBugsInSoil => 'Dans la terre';
 
   @override
   String get analyze => 'Analyser';

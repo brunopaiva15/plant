@@ -1974,8 +1974,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
 
   @override
-  String get diagnosisClimateHint =>
-      'Optional: the conditions around the plant sharpen the analysis.';
+  String get diagnosisChecks => 'Observations';
+
+  @override
+  String get diagnosisChecksHint =>
+      'Optional: what the photo cannot show sharpens the analysis.';
+
+  @override
+  String get diagnosisSoil => 'Soil';
+
+  @override
+  String get diagnosisSoilDry => 'Dry';
+
+  @override
+  String get diagnosisSoilMoist => 'Damp';
+
+  @override
+  String get diagnosisSoilSoggy => 'Soaked';
+
+  @override
+  String get diagnosisRoots => 'Roots';
+
+  @override
+  String get diagnosisRootsFirm => 'Firm and pale';
+
+  @override
+  String get diagnosisRootsSoft => 'Brown or soft';
+
+  @override
+  String get diagnosisRootsCrowded => 'Cramped';
+
+  @override
+  String get diagnosisLightDirect => 'Direct sun';
+
+  @override
+  String get diagnosisLightBright => 'Bright, no direct sun';
+
+  @override
+  String get diagnosisLightDim => 'Low';
+
+  @override
+  String get diagnosisBugs => 'Insects';
+
+  @override
+  String get diagnosisBugsNone => 'None seen';
+
+  @override
+  String get diagnosisBugsOnPlant => 'On the plant';
+
+  @override
+  String get diagnosisBugsInSoil => 'In the soil';
 
   @override
   String get analyze => 'Analyze';
