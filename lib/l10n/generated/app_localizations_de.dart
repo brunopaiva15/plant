@@ -3838,34 +3838,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Zwei Arten, die sich ähneln: beide werden vorgeschlagen.';
 
   @override
-  String get whatsNewSmallUpdates => 'Kleine Neuerungen';
-
-  @override
-  String get whatsNewDiagnosisIntro =>
-      'Ein Foto zeigt weder durchnässte Erde noch braune Wurzeln noch drei Blattläuse unter einem Blatt. Vier optionale Fragen holen das nach.';
-
-  @override
-  String get whatsNewDiagnosisChecksTitle => 'Erde, Wurzeln, Licht, Insekten';
-
-  @override
-  String get whatsNewDiagnosisChecksBody =>
-      'Vier Fragen unter den Symptomen, zu beantworten oder nicht. Nichts ist vorab angekreuzt.';
-
-  @override
-  String get whatsNewDiagnosisWeighTitle => 'Fließt in die Analyse ein';
-
-  @override
-  String get whatsNewDiagnosisWeighBody =>
-      'Was geprüft wurde, zählt als Feststellung, und die vorgeschlagenen Schritte fragen es nicht erneut ab.';
-
-  @override
-  String get whatsNewDiagnosisKeptTitle => 'Im Journal behalten';
-
-  @override
-  String get whatsNewDiagnosisKeptBody =>
-      'Eine Monate später wieder geöffnete Diagnose zeigt weiterhin, was an jenem Tag geprüft wurde.';
-
-  @override
   String onbStepOf(int current, int total) {
     return 'Schritt $current von $total';
   }

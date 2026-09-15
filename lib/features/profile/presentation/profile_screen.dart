@@ -12,8 +12,6 @@ import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
-import '../../whats_new/application/release_notes.dart';
-import '../../whats_new/presentation/whats_new_sheet.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -156,17 +154,15 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: prefs.hasSupported ? l10n.supportAlready : l10n.supportFreeForever,
                     onTap: () => context.push(Routes.support),
                   ),
-                  // La dernière nouveauté se relit quand on veut : la fenêtre
-                  // du lancement ne passe qu'une fois, et on referme souvent
-                  // avant d'avoir lu. Rien à montrer tant que le catalogue est
-                  // vide — la ligne n'est alors pas là, plutôt qu'une ligne
-                  // qui ne mène nulle part.
-                  if (ref.watch(whatsNewProvider).latest(releaseNotes(l10n)) case final note?)
-                    FloraListRow(
-                      leading: Icon(CupertinoIcons.sparkles, size: 20, color: c.sun),
-                      title: l10n.whatsNewTitle,
-                      onTap: () => showWhatsNew(context, note),
-                    ),
+                  // Pas de ligne « Nouveautés » ici : le catalogue ne contient
+                  // encore que l'exemple de `releaseNotes()`, dont les chiffres
+                  // sont inventés, et il n'a rien à faire sous les yeux de
+                  // quiconque. La fenêtre, elle, est en place et s'ouvrira
+                  // d'elle-même à la première vraie livraison. Pour rendre la
+                  // relecture possible ce jour-là : une FloraListRow sur
+                  // `showWhatsNew(context, note)`, avec
+                  // `ref.watch(whatsNewProvider).latest(releaseNotes(l10n))`
+                  // et la clé `whatsNewTitle`, gardée au chaud dans les `.arb`.
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],
