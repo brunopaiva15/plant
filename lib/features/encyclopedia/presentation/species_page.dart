@@ -66,7 +66,7 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
         care: care,
         speciesName: scientificName,
         header: _Header(
-          scientificName: displayScientificName,
+          scientificName: scientificName,
           family: family,
           category: entry?.category,
         ),
@@ -88,7 +88,7 @@ class _Header extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(scientificName, style: context.text.title3.copyWith(fontStyle: FontStyle.italic)),
+        Text(capitalizeSpeciesDisplayName(scientificName), style: context.text.title3.copyWith(fontStyle: FontStyle.italic)),
         if (family != null && family!.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text('${l10n.speciesFamily} · $family', style: context.text.caption),
