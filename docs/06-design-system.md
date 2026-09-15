@@ -376,12 +376,16 @@ la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
 terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
-Six volets se pratiquent — arrosage, lumière, humidité, engrais, substrat,
-rempotage — et chacun a sa carte, teintée de la couleur de son sujet : bleu
-poussière pour l'eau, ocre pour la lumière, rose pour l'air, sauge pour
-l'engrais, terre cuite pour la terre (le substrat et le rempotage la
-partagent, c'est la même). Une douzaine de lignes dans une seule liste ne se
-distinguaient qu'à la lecture ; une carte se retrouve à sa couleur.
+La page suit le chemin réel d'entretien, en sections titrées : **ce qu'elle
+demande** (lumière, arrosage, température, humidité, puis « Chez vous »), **ce
+qu'on lui fait** (substrat, engrais, rempotage, et le repos pour celles qui
+disparaissent), **les conditions particulières** (serre, floraison) et enfin
+**les détails** (difficulté, toxicité). Six volets se pratiquent et chacun a sa
+carte, teintée de la couleur de son sujet : bleu poussière pour l'eau, ocre
+pour la lumière, rose pour l'air, sauge pour l'engrais, terre cuite pour la
+terre (le substrat et le rempotage la partagent, c'est la même). Une douzaine
+de lignes dans une seule liste ne se distinguaient qu'à la lecture ; une carte
+se retrouve à sa couleur.
 
 L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
 sur toute carte teintée —, le nom du volet, le constat dessous, puis une ligne
@@ -399,14 +403,14 @@ fiche :
   azoté, potasse, cactées, orchidées, terre de bruyère, agrumes, tomates —,
   puis la saison, puis ce que le calcium lui fait quand il lui fait quelque
   chose (rien à dire vaut mieux qu'une ligne pour dire « rien »).
-- **Substrat** : le mélange en proportions (« 50 % de terreau, 25 % de
-  perlite, 25 % de sable grossier »), et ce qu'elle accepte hors du pot —
-  « Dans l'eau : bouture seulement · En pon : oui ». Deux « non » font
+- **Substrat** : le mélange en proportions, et ce qu'elle accepte hors du pot
+  — la culture dans l'eau, la culture en pon. Deux « déconseillée » font
   disparaître la ligne.
 
-L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau : c'est la
-question qu'on se pose en premier. La carte « Chez vous » se pose après
-l'humidité, puisque c'est l'air de la pièce qu'elle mesure.
+L'arrosage porte son chiffre en `title2`, dans le bleu de l'eau : c'est le
+chiffre qu'on retient. Il vient après la lumière, qui commande justement son
+intervalle. La carte « Chez vous » ferme les besoins, puisque c'est l'air de
+la pièce qu'elle mesure.
 
 Sous ces précisions vient ce qu'il faut en faire, une phrase par idée
 (`notes`), en `caption` : la règle du rempotage, la dose de la lampe, les
@@ -425,21 +429,20 @@ et reste crème, seule de la fiche : c'est la seule carte qui décrit une
 absence — plus de feuilles, plus d'eau, plus de lumière —, et le crème le dit
 sans un mot.
 
-Ce qui se lit sans rien faire — température, difficulté, toxicité — reste une
-`FloraGroup` à la suite. Viennent ensuite les deux projets, pour qui en a un :
+Ce qui se lit sans rien faire — difficulté, toxicité — reste une `FloraGroup`
+en fin de page. Avant elle viennent les deux projets, pour qui en a un :
 **Sous serre** (ocre) dit les conditions à tenir pour pousser plus vite, et
 **Floraison** (rose) la saison, puis ce qui décide la plante à fleurir : les
 conditions nommées d'un trait (« Des nuits fraîches · Une hampe gardée »), et
 chacune expliquée dessous, dans le même ordre. Trois au plus, sans quoi la
 carte ne se lit plus. Ils se pratiquent, donc ils gardent la carte des
-volets ; ils ne se pratiquent pas tous les jours, d'où leur place après la
-liste. Une plante qui passe l'hiver dehors n'a pas l'usage d'une serre et n'en
-voit pas la carte — c'est là que se règle la plage d'humidité, puisqu'une
+volets ; ils ne se pratiquent pas tous les jours, d'où leur place à part. Une
+plante qui passe l'hiver dehors n'a pas l'usage d'une serre et n'en voit pas
+la carte — c'est là que se règle la plage d'humidité, puisqu'une
 serre se tient au chiffre ; la floraison ne paraît que lorsque la fiche sait
 ce qui la déclenche, et dit « Rarement en intérieur » quand elle ne se joue
-pas dans une pièce. Les conseils, ce qu'il faut
-surveiller, les problèmes connus et la multiplication ferment la page, puis la
-provenance de la fiche. `test/features/care_guide_test.dart` tient la
+pas dans une pièce. Les conseils, ce qu'il faut surveiller, les problèmes
+connus et la multiplication ferment la page, puis la provenance de la fiche. `test/features/care_guide_test.dart` tient la
 séparation, `test/domain/care_profile_test.dart` ce qui se déduit.
 
 ## Les photos (`features/plants/presentation/photo_*.dart`, `growth_section.dart`)

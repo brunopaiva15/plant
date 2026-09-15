@@ -2645,15 +2645,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careHumidityLowDetail =>
-      'Die Luft einer beheizten Wohnung reicht ihr; zu feucht nimmt sie Schaden.';
+      'Sie verträgt die trockene Zimmerluft gut. Dauerhaft höhere Feuchte schadet ihr.';
 
   @override
   String get careHumidityAverageDetail =>
-      'Die normale Zimmerluft, im Winter fern der Heizung.';
+      'Normale Zimmerluft genügt. Im Winter fern der Heizung bleiben die Blattspitzen grün.';
 
   @override
   String get careHumidityHighDetail =>
-      'Untersetzer mit feuchten Blähtonkugeln, Pflanzen zusammenstellen, ein Raum mit Wasser.';
+      'Ein Luftbefeuchter, ein Untersetzer mit feuchten Blähtonkugeln oder mehrere zusammengestellte Pflanzen halten diesen Bereich.';
 
   @override
   String get careDifficultyEasy => 'Einfach';
@@ -2824,49 +2824,49 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Zehn bis fünfzehn Wochen bei 5 bis 9 °C, bevor sie wieder warm steht.';
+      'Rechnen Sie mit zehn bis fünfzehn Wochen bei 5 bis 9 °C im Dunkeln, bevor der Topf wieder warm und hell steht.';
 
   @override
   String get careBloomFertilizer => 'Blühdünger';
 
   @override
   String get careBloomFertilizerNote =>
-      'Kalireicher als der fürs Laub, sobald sich die Knospen bilden.';
+      'Sobald sich Knospen bilden, auf Blühdünger wechseln, der kalireicher ist als der fürs Laub.';
 
   @override
   String get careBloomMaturity => 'Etwas Alter';
 
   @override
   String get careBloomMaturityNote =>
-      'Sie blüht ab drei oder vier Jahren, nicht früher.';
+      'Sie blüht erst ab drei oder vier Jahren: davor ändert keine Maßnahme etwas.';
 
   @override
   String get careBloomDeadhead => 'Verblühtes abschneiden';
 
   @override
   String get careBloomDeadheadNote =>
-      'Das Verblühte abschneiden, die nächste Blüte folgt.';
+      'Verblühtes laufend abschneiden: die Pflanze steckt ihre Kraft dann in die nächsten Blüten.';
 
   @override
   String get careBloomKeepSpike => 'Ein behaltener Blütentrieb';
 
   @override
   String get careBloomKeepSpikeNote =>
-      'Solange er grün bleibt, treibt er aus einem tieferen Auge neu aus.';
+      'Solange der Blütentrieb grün bleibt, stehen lassen: er kann aus einem tieferen Auge erneut blühen.';
 
   @override
   String get careBloomNoMove => 'Ein fester Platz';
 
   @override
   String get careBloomNoMoveNote =>
-      'Nach der Knospenbildung kein Umstellen und kein Drehen: sonst fallen sie ab.';
+      'Nach der Knospenbildung nicht mehr umstellen und nicht mehr drehen: der Wechsel lässt sie abfallen.';
 
   @override
   String get careBloomEvenWater => 'Gleichmäßiges Gießen';
 
   @override
   String get careBloomEvenWaterNote =>
-      'Während der Knospen lässt eine Trockenphase sie fallen.';
+      'Während der Knospenbildung gleichmäßig gießen: eine einzige Trockenphase lässt sie abfallen.';
 
   @override
   String get careRest => 'Ruhe';
@@ -2896,42 +2896,42 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Zwei Monate bei 10 bis 12 °C, fast ohne Wasser, legen die Knospen an.';
+      'Für die Blütenbildung etwa zwei Monate bei 10–12 °C halten und deutlich weniger gießen.';
 
   @override
   String get careBloomCoolNights => 'Kühle Nächte';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Drei Wochen mit 15 °C in der Nacht, im Herbst, treiben den Blütenstiel.';
+      'Im Herbst können etwa drei Wochen mit Nächten um 15 °C die Bildung des Blütentriebs anregen.';
 
   @override
   String get careBloomShortDays => 'Kurze Tage';
 
   @override
   String get careBloomShortDaysNote =>
-      'Sechs Wochen mit zwölfstündigen Nächten, in völliger Dunkelheit, lösen die Knospen aus.';
+      'Geben Sie ihr etwa sechs Wochen lang mindestens 12 Stunden ununterbrochene Dunkelheit pro Nacht, damit sich Knospen bilden.';
 
   @override
   String get careBloomDrySpell => 'Eine Trockenzeit';
 
   @override
   String get careBloomDrySpellNote =>
-      'Einige Wochen ohne Wasser, dann wieder gießen: die Blüte folgt.';
+      'Gießen Sie einige Wochen deutlich weniger und steigern Sie danach langsam wieder. Dieser Wechsel kann die Blüte auslösen.';
 
   @override
   String get careBloomPotbound => 'Ein enger Topf';
 
   @override
   String get careBloomPotboundNote =>
-      'Sie blüht, wenn die Wurzeln den Topf füllen; Umtopfen schickt sie zurück ins Laub.';
+      'Sie blüht oft besser, wenn die Wurzeln den Topf gut ausfüllen. Deshalb nicht zu früh umtopfen.';
 
   @override
   String get careBloomBrightLight => 'Mehr Licht';
 
   @override
   String get careBloomBrightLightNote =>
-      'Blühen braucht mehr Licht als Blätter: Südfenster hinter einem leichten Vorhang.';
+      'Zum Blühen braucht sie mehr Licht als für reines Blattwachstum. Stellen Sie sie sehr hell, aber ohne sengende Sonne.';
 
   @override
   String get carePropCutting => 'Stecklinge';

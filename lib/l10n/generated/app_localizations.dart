@@ -4539,19 +4539,19 @@ abstract class AppLocalizations {
   /// No description provided for @careHumidityLowDetail.
   ///
   /// In fr, this message translates to:
-  /// **'L\'air d\'un logement chauffé lui suffit ; trop humide, elle s\'abîme.'**
+  /// **'Elle tolère bien l\'air sec d\'un logement. Une humidité durablement plus haute l\'abîme.'**
   String get careHumidityLowDetail;
 
   /// No description provided for @careHumidityAverageDetail.
   ///
   /// In fr, this message translates to:
-  /// **'L\'air ordinaire d\'un logement, loin d\'un radiateur en hiver.'**
+  /// **'L\'air ordinaire d\'un logement convient. Loin d\'un radiateur en hiver, les pointes des feuilles ne brunissent pas.'**
   String get careHumidityAverageDetail;
 
   /// No description provided for @careHumidityHighDetail.
   ///
   /// In fr, this message translates to:
-  /// **'Plateau de billes d\'argile humides, plantes groupées, pièce d\'eau.'**
+  /// **'Un humidificateur, un plateau de billes d\'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.'**
   String get careHumidityHighDetail;
 
   /// No description provided for @careDifficultyEasy.
@@ -4851,7 +4851,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomChillBulbNote.
   ///
   /// In fr, this message translates to:
-  /// **'Dix à quinze semaines entre 5 et 9 °C, avant de le remettre à la chaleur.'**
+  /// **'Comptez dix à quinze semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.'**
   String get careBloomChillBulbNote;
 
   /// No description provided for @careBloomFertilizer.
@@ -4863,7 +4863,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomFertilizerNote.
   ///
   /// In fr, this message translates to:
-  /// **'Plus riche en potasse que celui du feuillage, dès que les boutons se forment.'**
+  /// **'Dès que les boutons se forment, passez à un engrais de floraison, plus riche en potasse que celui du feuillage.'**
   String get careBloomFertilizerNote;
 
   /// No description provided for @careBloomMaturity.
@@ -4875,7 +4875,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomMaturityNote.
   ///
   /// In fr, this message translates to:
-  /// **'Elle fleurit à partir de trois ou quatre ans, pas avant.'**
+  /// **'Elle ne fleurit qu\'à partir de trois ou quatre ans : avant cet âge, aucune condition n\'y changera rien.'**
   String get careBloomMaturityNote;
 
   /// No description provided for @careBloomDeadhead.
@@ -4887,7 +4887,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomDeadheadNote.
   ///
   /// In fr, this message translates to:
-  /// **'Coupez les fleurs fanées, la suivante suit.'**
+  /// **'Coupez les fleurs fanées au fur et à mesure : la plante remet alors son énergie dans les suivantes.'**
   String get careBloomDeadheadNote;
 
   /// No description provided for @careBloomKeepSpike.
@@ -4899,7 +4899,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomKeepSpikeNote.
   ///
   /// In fr, this message translates to:
-  /// **'Tant qu\'elle reste verte, elle repart d\'un œil plus bas.'**
+  /// **'Tant que la hampe reste verte, laissez-la en place : elle peut refleurir depuis un œil situé plus bas.'**
   String get careBloomKeepSpikeNote;
 
   /// No description provided for @careBloomNoMove.
@@ -4911,7 +4911,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomNoMoveNote.
   ///
   /// In fr, this message translates to:
-  /// **'Une fois les boutons formés, ni déplacement ni quart de tour : ils tombent.'**
+  /// **'Une fois les boutons formés, ne la déplacez plus et ne la tournez plus : le changement les fait tomber.'**
   String get careBloomNoMoveNote;
 
   /// No description provided for @careBloomEvenWater.
@@ -4923,7 +4923,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomEvenWaterNote.
   ///
   /// In fr, this message translates to:
-  /// **'Pendant les boutons, un coup de sec les fait tomber.'**
+  /// **'Pendant la formation des boutons, arrosez régulièrement : un seul coup de sec suffit à les faire tomber.'**
   String get careBloomEvenWaterNote;
 
   /// No description provided for @careRest.
@@ -4971,7 +4971,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomCoolRestNote.
   ///
   /// In fr, this message translates to:
-  /// **'Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.'**
+  /// **'Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.'**
   String get careBloomCoolRestNote;
 
   /// No description provided for @careBloomCoolNights.
@@ -4983,7 +4983,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomCoolNightsNote.
   ///
   /// In fr, this message translates to:
-  /// **'Trois semaines à 15 °C la nuit, en automne, font monter la hampe.'**
+  /// **'En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.'**
   String get careBloomCoolNightsNote;
 
   /// No description provided for @careBloomShortDays.
@@ -4995,7 +4995,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomShortDaysNote.
   ///
   /// In fr, this message translates to:
-  /// **'Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.'**
+  /// **'Pendant environ six semaines, offrez-lui des nuits d\'au moins 12 heures dans l\'obscurité pour favoriser la formation des boutons.'**
   String get careBloomShortDaysNote;
 
   /// No description provided for @careBloomDrySpell.
@@ -5007,7 +5007,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomDrySpellNote.
   ///
   /// In fr, this message translates to:
-  /// **'Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.'**
+  /// **'Réduisez fortement les arrosages pendant quelques semaines, puis reprenez progressivement : ce contraste peut déclencher la floraison.'**
   String get careBloomDrySpellNote;
 
   /// No description provided for @careBloomPotbound.
@@ -5019,7 +5019,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomPotboundNote.
   ///
   /// In fr, this message translates to:
-  /// **'Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.'**
+  /// **'Elle fleurit souvent mieux lorsque ses racines occupent bien le pot. Évitez donc de rempoter trop tôt.'**
   String get careBloomPotboundNote;
 
   /// No description provided for @careBloomBrightLight.
@@ -5031,7 +5031,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomBrightLightNote.
   ///
   /// In fr, this message translates to:
-  /// **'Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.'**
+  /// **'Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.'**
   String get careBloomBrightLightNote;
 
   /// No description provided for @carePropCutting.

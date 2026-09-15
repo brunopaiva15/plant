@@ -2645,15 +2645,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careHumidityLowDetail =>
-      'L\'aria di una casa riscaldata le basta; troppo umida, si rovina.';
+      'Tollera bene l\'aria secca di casa. Un\'umidità stabilmente più alta la rovina.';
 
   @override
   String get careHumidityAverageDetail =>
-      'L\'aria normale di casa, d\'inverno lontano dal calorifero.';
+      'L\'aria normale di casa le basta. D\'inverno lontano dal calorifero, le punte delle foglie restano verdi.';
 
   @override
   String get careHumidityHighDetail =>
-      'Sottovaso di argilla espansa umida, piante raggruppate, una stanza con acqua.';
+      'Un umidificatore, un sottovaso di argilla espansa umida o più piante raggruppate aiutano a mantenere l\'intervallo.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2825,49 +2825,49 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Da dieci a quindici settimane tra 5 e 9 °C, prima di riportarlo al caldo.';
+      'Conta da dieci a quindici settimane tra 5 e 9 °C al buio, prima di riportare il vaso al caldo e alla luce.';
 
   @override
   String get careBloomFertilizer => 'Un concime da fioritura';
 
   @override
   String get careBloomFertilizerNote =>
-      'Più ricco di potassio di quello per il fogliame, appena si formano i boccioli.';
+      'Appena si formano i boccioli, passa a un concime da fioritura, più ricco di potassio di quello per il fogliame.';
 
   @override
   String get careBloomMaturity => 'Un po\' di età';
 
   @override
   String get careBloomMaturityNote =>
-      'Fiorisce dai tre o quattro anni, non prima.';
+      'Fiorisce solo dai tre o quattro anni: prima di quell\'età nessuna condizione cambia le cose.';
 
   @override
   String get careBloomDeadhead => 'Fiori appassiti tagliati';
 
   @override
   String get careBloomDeadheadNote =>
-      'Taglia i fiori appassiti, il successivo arriva.';
+      'Taglia i fiori appassiti man mano: la pianta rimette energia nei successivi.';
 
   @override
   String get careBloomKeepSpike => 'Uno stelo tenuto';
 
   @override
   String get careBloomKeepSpikeNote =>
-      'Finché resta verde, riparte da una gemma più in basso.';
+      'Finché lo stelo resta verde, lascialo: può rifiorire da una gemma più in basso.';
 
   @override
   String get careBloomNoMove => 'Un posto fisso';
 
   @override
   String get careBloomNoMoveNote =>
-      'Formati i boccioli, niente spostamenti né mezzi giri: cadono.';
+      'Una volta formati i boccioli, non spostarla e non girarla: il cambiamento li fa cadere.';
 
   @override
   String get careBloomEvenWater => 'Annaffiature regolari';
 
   @override
   String get careBloomEvenWaterNote =>
-      'Durante i boccioli, un colpo di secco li fa cadere.';
+      'Durante la formazione dei boccioli annaffia regolarmente: basta un colpo di secco per farli cadere.';
 
   @override
   String get careRest => 'Riposo';
@@ -2897,42 +2897,42 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Due mesi tra 10 e 12 °C, quasi senza acqua, preparano i boccioli.';
+      'Per preparare la fioritura, tienila per circa due mesi tra 10 e 12 °C e riduci molto le annaffiature.';
 
   @override
   String get careBloomCoolNights => 'Notti fresche';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Tre settimane a 15 °C di notte, in autunno, fanno salire lo stelo florale.';
+      'In autunno, circa tre settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.';
 
   @override
   String get careBloomShortDays => 'Giorni corti';
 
   @override
   String get careBloomShortDaysNote =>
-      'Sei settimane con notti di dodici ore, al buio completo, avviano i boccioli.';
+      'Per circa sei settimane, garantisci almeno 12 ore di buio continuo ogni notte per favorire la formazione dei boccioli.';
 
   @override
   String get careBloomDrySpell => 'Un periodo secco';
 
   @override
   String get careBloomDrySpellNote =>
-      'Qualche settimana senza acqua, poi si riprende a bagnare: la fioritura segue.';
+      'Riduci molto le annaffiature per alcune settimane, poi riprendile gradualmente: questo contrasto può stimolare la fioritura.';
 
   @override
   String get careBloomPotbound => 'Un vaso stretto';
 
   @override
   String get careBloomPotboundNote =>
-      'Fiorisce quando le radici riempiono il vaso; il rinvaso la riporta alle foglie.';
+      'Spesso fiorisce meglio quando le radici occupano bene il vaso. Evita quindi di rinvasare troppo presto.';
 
   @override
   String get careBloomBrightLight => 'Più luce';
 
   @override
   String get careBloomBrightLightNote =>
-      'Fiorire richiede più luce delle foglie: una finestra a sud con una tenda leggera.';
+      'Per fiorire ha bisogno di più luce che per crescere. Sistemala in un luogo molto luminoso, evitando il sole troppo forte.';
 
   @override
   String get carePropCutting => 'Talea di fusto';

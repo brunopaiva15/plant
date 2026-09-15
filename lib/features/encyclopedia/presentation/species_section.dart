@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/species_count_copy.dart';
 import '../../../data/species/species_catalog.dart';
 import '../../../data/species/species_index.dart';
 import '../../../design_system/design_system.dart';
@@ -39,6 +40,11 @@ class SpeciesSlivers extends ConsumerWidget {
         ? const <SpeciesRecord>[]
         : index.search(raw, limit: 30, exclude: {for (final e in curated) e.scientificName.toLowerCase()});
 
+    final visibleCount = curated.length + extended.length;
+    final countLabel = raw.isEmpty
+        ? l10n.encyclopediaDetailedSpeciesCount(curated.length)
+        : l10n.encyclopediaSearchResultCount(visibleCount);
+
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
@@ -57,11 +63,10 @@ class SpeciesSlivers extends ConsumerWidget {
             onChanged: onCategory,
           ),
         ),
-        // En parcours, le compte est celui du catalogue trié à la main ; en
-        // recherche, celui de ce qui est réellement posé dessous — le
-        // catalogue étendu s'arrête à trente résultats, et annoncer un total
-        // qu'on ne montre pas serait un mensonge poli.
-        SliverToBoxAdapter(child: EncyclopediaCount(l10n.encyclopediaSpeciesCount(curated.length + extended.length))),
+        // Au repos, ce nombre décrit bien le catalogue éditorial avec ses
+        // fiches détaillées. Pendant une recherche il devient le nombre de
+        // résultats visibles, car le catalogue étendu est plafonné à trente.
+        SliverToBoxAdapter(child: EncyclopediaCount(countLabel)),
         if (curated.isEmpty && extended.isEmpty)
           SliverToBoxAdapter(
             child: Padding(

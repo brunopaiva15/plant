@@ -2640,15 +2640,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careHumidityLowDetail =>
-      'The air of a heated home is enough; too damp, and it suffers.';
+      'It copes well with the dry air of a home. Humidity kept higher than that harms it.';
 
   @override
   String get careHumidityAverageDetail =>
-      'The ordinary air of a home, away from a radiator in winter.';
+      'The ordinary air of a home suits it. Away from a radiator in winter, leaf tips stay green.';
 
   @override
   String get careHumidityHighDetail =>
-      'A tray of damp clay pebbles, plants grouped together, a room with water.';
+      'A humidifier, a tray of damp clay pebbles or several plants grouped together help hold this range.';
 
   @override
   String get careDifficultyEasy => 'Easy';
@@ -2820,49 +2820,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Ten to fifteen weeks between 5 and 9 °C, before it goes back to the warmth.';
+      'Allow ten to fifteen weeks between 5 and 9 °C in the dark before bringing the pot back to warmth and light.';
 
   @override
   String get careBloomFertilizer => 'A bloom fertilizer';
 
   @override
   String get careBloomFertilizerNote =>
-      'Richer in potash than the foliage one, as soon as the buds form.';
+      'As soon as buds form, switch to a bloom fertilizer, richer in potash than the one for foliage.';
 
   @override
   String get careBloomMaturity => 'Some age';
 
   @override
   String get careBloomMaturityNote =>
-      'It flowers from three or four years old, not before.';
+      'It only flowers from three or four years old: before that age, no condition will change anything.';
 
   @override
   String get careBloomDeadhead => 'Spent flowers cut';
 
   @override
   String get careBloomDeadheadNote =>
-      'Cut the faded flowers and the next one follows.';
+      'Cut the faded flowers as they go: the plant then puts its energy into the next ones.';
 
   @override
   String get careBloomKeepSpike => 'A kept spike';
 
   @override
   String get careBloomKeepSpikeNote =>
-      'While it stays green, it starts again from a lower node.';
+      'While the spike stays green, leave it in place: it can flower again from a node lower down.';
 
   @override
   String get careBloomNoMove => 'A fixed spot';
 
   @override
   String get careBloomNoMoveNote =>
-      'Once the buds are formed, no moving and no quarter turn: they drop.';
+      'Once the buds are formed, stop moving it and stop turning it: the change makes them drop.';
 
   @override
   String get careBloomEvenWater => 'Even watering';
 
   @override
   String get careBloomEvenWaterNote =>
-      'While it is in bud, one dry spell and they fall.';
+      'While the buds are forming, water regularly: a single dry spell is enough to make them drop.';
 
   @override
   String get careRest => 'Rest';
@@ -2892,42 +2892,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Two months at 10 to 12 °C, almost without water, set the buds.';
+      'To prepare for flowering, keep it around 10–12 °C for about two months and reduce watering sharply.';
 
   @override
   String get careBloomCoolNights => 'Cool nights';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Three weeks at 15 °C at night, in autumn, bring up the flower spike.';
+      'In autumn, about three weeks with nights around 15 °C can encourage the flower spike to form.';
 
   @override
   String get careBloomShortDays => 'Short days';
 
   @override
   String get careBloomShortDaysNote =>
-      'Six weeks of twelve-hour nights, in complete darkness, trigger the buds.';
+      'For about six weeks, give it at least 12 hours of uninterrupted darkness each night to encourage buds.';
 
   @override
   String get careBloomDrySpell => 'A dry spell';
 
   @override
   String get careBloomDrySpellNote =>
-      'A few weeks without water, then watering again: flowers follow.';
+      'Reduce watering sharply for a few weeks, then resume gradually. This change can trigger flowering.';
 
   @override
   String get careBloomPotbound => 'A tight pot';
 
   @override
   String get careBloomPotboundNote =>
-      'It flowers once the roots fill the pot; repotting sends it back to leaves.';
+      'It often flowers better when its roots fill the pot. Avoid repotting too early.';
 
   @override
   String get careBloomBrightLight => 'More light';
 
   @override
   String get careBloomBrightLightNote =>
-      'Flowering takes more light than leaves do: a south window behind a sheer curtain.';
+      'It needs more light to flower than to simply grow leaves. Place it somewhere very bright without harsh sun.';
 
   @override
   String get carePropCutting => 'Stem cutting';

@@ -2644,15 +2644,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careHumidityLowDetail =>
-      'L\'air d\'un logement chauffé lui suffit ; trop humide, elle s\'abîme.';
+      'Elle tolère bien l\'air sec d\'un logement. Une humidité durablement plus haute l\'abîme.';
 
   @override
   String get careHumidityAverageDetail =>
-      'L\'air ordinaire d\'un logement, loin d\'un radiateur en hiver.';
+      'L\'air ordinaire d\'un logement convient. Loin d\'un radiateur en hiver, les pointes des feuilles ne brunissent pas.';
 
   @override
   String get careHumidityHighDetail =>
-      'Plateau de billes d\'argile humides, plantes groupées, pièce d\'eau.';
+      'Un humidificateur, un plateau de billes d\'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -2825,49 +2825,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Dix à quinze semaines entre 5 et 9 °C, avant de le remettre à la chaleur.';
+      'Comptez dix à quinze semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.';
 
   @override
   String get careBloomFertilizer => 'Un engrais de floraison';
 
   @override
   String get careBloomFertilizerNote =>
-      'Plus riche en potasse que celui du feuillage, dès que les boutons se forment.';
+      'Dès que les boutons se forment, passez à un engrais de floraison, plus riche en potasse que celui du feuillage.';
 
   @override
   String get careBloomMaturity => 'De l\'âge';
 
   @override
   String get careBloomMaturityNote =>
-      'Elle fleurit à partir de trois ou quatre ans, pas avant.';
+      'Elle ne fleurit qu\'à partir de trois ou quatre ans : avant cet âge, aucune condition n\'y changera rien.';
 
   @override
   String get careBloomDeadhead => 'Des fleurs coupées';
 
   @override
   String get careBloomDeadheadNote =>
-      'Coupez les fleurs fanées, la suivante suit.';
+      'Coupez les fleurs fanées au fur et à mesure : la plante remet alors son énergie dans les suivantes.';
 
   @override
   String get careBloomKeepSpike => 'Une hampe gardée';
 
   @override
   String get careBloomKeepSpikeNote =>
-      'Tant qu\'elle reste verte, elle repart d\'un œil plus bas.';
+      'Tant que la hampe reste verte, laissez-la en place : elle peut refleurir depuis un œil situé plus bas.';
 
   @override
   String get careBloomNoMove => 'Une place fixe';
 
   @override
   String get careBloomNoMoveNote =>
-      'Une fois les boutons formés, ni déplacement ni quart de tour : ils tombent.';
+      'Une fois les boutons formés, ne la déplacez plus et ne la tournez plus : le changement les fait tomber.';
 
   @override
   String get careBloomEvenWater => 'Un arrosage régulier';
 
   @override
   String get careBloomEvenWaterNote =>
-      'Pendant les boutons, un coup de sec les fait tomber.';
+      'Pendant la formation des boutons, arrosez régulièrement : un seul coup de sec suffit à les faire tomber.';
 
   @override
   String get careRest => 'Repos';
@@ -2897,42 +2897,42 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Deux mois entre 10 et 12 °C, presque sans eau, préparent les boutons.';
+      'Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.';
 
   @override
   String get careBloomCoolNights => 'Des nuits fraîches';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Trois semaines à 15 °C la nuit, en automne, font monter la hampe.';
+      'En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.';
 
   @override
   String get careBloomShortDays => 'Des jours courts';
 
   @override
   String get careBloomShortDaysNote =>
-      'Six semaines de nuits de douze heures, dans le noir complet, déclenchent les boutons.';
+      'Pendant environ six semaines, offrez-lui des nuits d\'au moins 12 heures dans l\'obscurité pour favoriser la formation des boutons.';
 
   @override
   String get careBloomDrySpell => 'Une sécheresse';
 
   @override
   String get careBloomDrySpellNote =>
-      'Quelques semaines sans eau, puis la reprise des arrosages : la floraison suit.';
+      'Réduisez fortement les arrosages pendant quelques semaines, puis reprenez progressivement : ce contraste peut déclencher la floraison.';
 
   @override
   String get careBloomPotbound => 'Un pot à l\'étroit';
 
   @override
   String get careBloomPotboundNote =>
-      'Elle fleurit quand les racines remplissent le pot ; un rempotage la renvoie aux feuilles.';
+      'Elle fleurit souvent mieux lorsque ses racines occupent bien le pot. Évitez donc de rempoter trop tôt.';
 
   @override
   String get careBloomBrightLight => 'Plus de lumière';
 
   @override
   String get careBloomBrightLightNote =>
-      'Il lui faut plus de lumière pour fleurir que pour faire des feuilles : plein sud voilé.';
+      'Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.';
 
   @override
   String get carePropCutting => 'Bouture de tige';

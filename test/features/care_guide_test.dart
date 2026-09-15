@@ -86,8 +86,8 @@ void main() {
   testWidgets('le repère d’un volet reste sur sa carte', (tester) async {
     await pump(tester);
     // « Brumiser » ne flotte plus au-dessus de la fiche : il est sous l'humidité.
-    expect(tintOf(tester, 'Brumiser'), FloraColors.light.roseSoft);
-    expect(tintOf(tester, 'Repos hivernal'), FloraColors.light.waterSoft);
+    expect(tintOf(tester, 'Apprécie une brumisation régulière'), FloraColors.light.roseSoft);
+    expect(tintOf(tester, 'Nécessite un repos hivernal'), FloraColors.light.waterSoft);
     // Le substrat a sa carte, de la couleur du rempotage : même terre.
     expect(tintOf(tester, 'Substrat'), FloraColors.light.terracottaSoft);
     expect(find.text('Terreau très drainant'), findsOneWidget);
@@ -95,14 +95,14 @@ void main() {
 
   testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (tester) async {
     await pump(tester);
-    expect(find.text('50 % de terreau, 25 % de perlite, 25 % de sable grossier ou de pouzzolane.'), findsOneWidget);
+    expect(find.textContaining('50 % de terreau, 25 % de perlite et 25 % de sable grossier'), findsOneWidget);
     // Une plante en pot se mène en pon ; celle-ci ne vit pas dans l'eau.
-    expect(tintOf(tester, "Dans l'eau : non · En pon : oui"), FloraColors.light.terracottaSoft);
+    expect(tintOf(tester, 'Culture dans l’eau : déconseillée. Culture en pon : possible.'), FloraColors.light.terracottaSoft);
   });
 
   testWidgets('l’engrais dit lequel, et ce que le calcium lui fait', (tester) async {
     await pump(tester);
-    expect(tintOf(tester, 'Engrais plantes vertes équilibré, dilué de moitié.'), FloraColors.light.sageSoft);
+    expect(tintOf(tester, 'Utilisez un engrais équilibré pour plantes vertes, dilué de moitié.'), FloraColors.light.sageSoft);
     expect(find.text('de mars à septembre'), findsOneWidget);
     // Terreau drainant : le calcium ne pose pas de question, rien n'en est dit.
     expect(find.textContaining('Calcium'), findsNothing);
@@ -122,11 +122,11 @@ void main() {
         bloom: Bloom(window: MonthWindow(4, 6), triggers: [BloomTrigger.coolNights]),
       ),
     );
-    expect(find.text('Engrais pour terre de bruyère, sans calcaire.'), findsOneWidget);
+    expect(find.text('Utilisez un engrais pour plantes de terre de bruyère, sans calcaire.'), findsOneWidget);
     // Humidité ordinaire : la serre promet de la chaleur et de la lumière,
     // pas de l'air humide.
-    expect(find.text('Chaleur et lumière'), findsOneWidget);
-    expect(find.textContaining('le calcaire fait jaunir son feuillage'), findsOneWidget);
+    expect(find.text('Serre chaude et lumineuse'), findsOneWidget);
+    expect(find.textContaining('le calcaire peut faire jaunir le feuillage'), findsOneWidget);
     // Ni eau ni pon pour une plante de terre de bruyère : la ligne disparaît.
     expect(find.textContaining('En pon'), findsNothing);
   });
@@ -134,13 +134,13 @@ void main() {
   testWidgets('l’humidité dit un taux, pas seulement un mot', (tester) async {
     await pump(tester);
     expect(tintOf(tester, "60 à 80 % d'humidité de l'air"), FloraColors.light.roseSoft);
-    expect(find.text("Plateau de billes d'argile humides, plantes groupées, pièce d'eau."), findsOneWidget);
+    expect(find.textContaining('plusieurs plantes regroupées aident à tenir cette plage'), findsOneWidget);
   });
 
   testWidgets('la serre et la floraison sont deux projets, après la liste', (tester) async {
     await pump(tester);
     expect(tintOf(tester, 'Sous serre'), FloraColors.light.sunSoft);
-    expect(find.text('Chaleur et air humide'), findsOneWidget);
+    expect(find.text('Serre chaude et humide'), findsOneWidget);
     // Rien à tenter pour la faire fleurir : la carte ne paraît pas.
     expect(find.text('Floraison'), findsNothing);
 
@@ -163,7 +163,7 @@ void main() {
     // La saison en constat, les conditions nommées puis expliquées.
     expect(find.text('De décembre à mai'), findsOneWidget);
     expect(find.text('Des nuits fraîches · Une hampe gardée'), findsOneWidget);
-    expect(find.textContaining('Trois semaines à 15 °C la nuit'), findsOneWidget);
+    expect(find.textContaining('trois semaines avec des nuits autour de 15 °C'), findsOneWidget);
   });
 
   testWidgets('une plante qui passe l’hiver dehors n’a pas de serre à proposer', (tester) async {
@@ -210,8 +210,8 @@ void main() {
     );
     expect(find.text('Aucun engrais nécessaire'), findsOneWidget);
     expect(find.text('Pas de rempotage (culture annuelle)'), findsOneWidget);
-    expect(find.text('Brumiser'), findsNothing);
-    expect(find.text('Repos hivernal'), findsNothing);
+    expect(find.textContaining('brumisation'), findsNothing);
+    expect(find.textContaining('repos hivernal'), findsNothing);
     // Sans rempotage, le rapport au pot n'a rien à dire.
     expect(find.textContaining('Rempotez'), findsNothing);
   });
@@ -284,7 +284,7 @@ void main() {
     await pump(tester, _bulb);
     expect(find.text('Floraison'), findsOneWidget);
     expect(find.text('De février à avril'), findsOneWidget);
-    expect(find.textContaining('Dix à quinze semaines entre 5 et 9 °C'), findsOneWidget);
+    expect(find.textContaining('dix à quinze semaines entre 5 et 9 °C'), findsOneWidget);
     expect(find.text('Repos'), findsOneWidget);
     expect(find.text('De juin à septembre'), findsOneWidget);
     expect(find.text("Au sec et à l'obscurité, entre 10 et 18 °C"), findsOneWidget);

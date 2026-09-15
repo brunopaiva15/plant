@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../app/providers.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/species_count_copy.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 
@@ -170,7 +171,10 @@ class _IrisSection extends StatelessWidget {
                 spacing: Space.xl,
                 runSpacing: Space.md,
                 children: [
-                  _IrisFact(value: NumberFormat.decimalPattern(locale).format(status.speciesCount), label: l10n.irisSpeciesLabel),
+                  _IrisFact(
+                    value: NumberFormat.decimalPattern(locale).format(status.speciesCount),
+                    label: l10n.irisRecognizableSpeciesLabel,
+                  ),
                   _IrisFact(value: l10n.irisOfflineValue, label: l10n.irisOfflineLabel),
                 ],
               ),
