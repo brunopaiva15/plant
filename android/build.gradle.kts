@@ -2,6 +2,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Le SDK des Home APIs de Google, installé à la main : il n'est sur
+        // aucun dépôt public. Ajouté seulement quand la construction le
+        // demande — voir `app/build.gradle.kts`.
+        if ((project.findProperty("googleHome") as String?).toBoolean()) mavenLocal()
     }
 }
 

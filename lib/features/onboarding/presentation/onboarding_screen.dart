@@ -130,10 +130,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// son objet, mais a ses propres boutons.
   int get _placeIndex => _slides.length;
 
-  /// Après le lieu, la maison : les capteurs d'Apple Maison, là où HomeKit
-  /// existe — iPhone et iPad. Ailleurs l'étape n'est pas dessinée, comme le
-  /// compte. Le service est fixé au démarrage : le lire ici, hors de
-  /// `build`, ne rate aucun changement.
+  /// Après le lieu, la maison : les capteurs d'Apple Maison — iPhone et iPad
+  /// — et ceux de Google Home. Sans aucune des deux, l'étape n'est pas
+  /// dessinée, comme le compte. Le service est fixé au démarrage : le lire
+  /// ici, hors de `build`, ne rate aucun changement.
   bool get _hasHome => ref.read(homeClimateServiceProvider).isSupported;
   int get _homeIndex => _slides.length + 1;
   int get _nameIndex => _slides.length + (_hasHome ? 2 : 1);
@@ -149,7 +149,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   int get _pageCount => _nameIndex + (_hasAccount ? 3 : 2);
 
   /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu,
-  /// plus la maison là où Apple Maison existe.
+  /// plus la maison là où il y en a une à lire.
   int get _objectCount => _slides.length + (_hasHome ? 2 : 1);
 
   /// En-tête (« Passer ») et pied, avec leurs marges. Le pied porte les
@@ -648,9 +648,12 @@ class _PlacePageState extends ConsumerState<_PlacePage> {
   }
 }
 
-/// « Votre intérieur » : un bouton, et le capteur d'Apple Maison est
-/// trouvé. Sa mesure ajuste les conseils des plantes d'intérieur ; sans lui,
-/// rien ne manque, on le branchera plus tard.
+/// « Votre intérieur » : un bouton, et le capteur de la maison est trouvé.
+/// Sa mesure ajuste les conseils des plantes d'intérieur ; sans lui, rien ne
+/// manque, on le branchera plus tard.
+///
+/// Apple Maison, Google Home, ou les deux : quand l'appareil lit les deux,
+/// la personne dit laquelle brancher avant que le système ne demande l'accès.
 class _HomePage extends ConsumerStatefulWidget {
   const _HomePage({required this.onDone});
 
@@ -668,21 +671,33 @@ class _HomePageState extends ConsumerState<_HomePage> {
 
   Future<void> _connect() async {
     if (_busy) return;
+    final service = ref.read(homeClimateServiceProvider);
+    final sources = service.sources;
+    // Deux maisons lisibles : laquelle, d'abord. Une seule : celle-là, sans
+    // question. L'autre se branchera dans Profil, plus tard.
+    final source = sources.length > 1 ? await showHomeSourcePicker(context, sources: sources) : sources.firstOrNull;
+    if (source == null || !mounted) return;
     final l10n = context.l10n;
     setState(() => _busy = true);
-    final service = ref.read(homeClimateServiceProvider);
     List<HomeSensor> sensors = const [];
     var access = HomeAccess.unavailable;
     try {
-      sensors = await service.sensors();
-      access = await service.access();
+      final one = service.of(source);
+      sensors = await one?.sensors() ?? const [];
+      access = await one?.access() ?? HomeAccess.unavailable;
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'onboarding_home');
     }
     if (!mounted) return;
     if (sensors.isEmpty) {
       setState(() => _busy = false);
-      ref.read(toastProvider.notifier).show(ToastData(message: access == HomeAccess.denied ? l10n.homeClimateDenied : l10n.homeClimateFailed, emoji: '🏠'));
+      final name = homeSourceLabel(l10n, source);
+      final message = switch (access) {
+        HomeAccess.denied when source == HomeSource.google => l10n.homeClimateDeniedGoogle,
+        HomeAccess.denied => l10n.homeClimateDeniedApple,
+        _ => l10n.homeClimateFailedIn(name),
+      };
+      ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '🏠'));
       return;
     }
     setState(() {
@@ -699,8 +714,17 @@ class _HomePageState extends ConsumerState<_HomePage> {
   }
 
   Future<void> _pick() async {
-    final chosen = await showHomeSensorPicker(context, sensors: _sensors, quantity: HomeQuantity.temperature, selectedId: ref.read(preferencesProvider).homeSensor?.id);
+    final chosen = await showHomeSensorPicker(context, sensors: _sensors, quantity: HomeQuantity.temperature, selectedKey: ref.read(preferencesProvider).homeSensor?.key);
     if (chosen != null) await _select(chosen);
+  }
+
+  /// « Connecter Apple Maison », « Connecter Google Home », ou « Connecter
+  /// la maison » quand l'appareil lit les deux : le bouton ne promet pas une
+  /// maison avant que la personne ait dit laquelle.
+  String _connectLabel(AppLocalizations l10n) {
+    final sources = ref.read(homeClimateServiceProvider).sources;
+    if (sources.length != 1) return l10n.homeClimateConnect;
+    return sources.single == HomeSource.google ? l10n.homeClimateConnectGoogle : l10n.homeClimateConnectApple;
   }
 
   Future<void> _select(HomeSensor sensor) async {
@@ -709,7 +733,7 @@ class _HomePageState extends ConsumerState<_HomePage> {
     await prefs.setHomeHumiditySensor(null);
     // Un capteur qui ne mesure pas l'humidité, et d'autres qui la mesurent :
     // on la demande aussi, dans la même feuille.
-    final hygrometers = [for (final s in _sensors) if (s.hasHumidity && s.id != sensor.id) s];
+    final hygrometers = [for (final s in _sensors) if (s.hasHumidity && s.key != sensor.key) s];
     if (!sensor.hasHumidity && hygrometers.isNotEmpty && mounted) {
       final chosen = hygrometers.length == 1 ? hygrometers.single : await showHomeSensorPicker(context, sensors: _sensors, quantity: HomeQuantity.humidity);
       if (chosen != null) await prefs.setHomeHumiditySensor(chosen);
@@ -773,7 +797,7 @@ class _HomePageState extends ConsumerState<_HomePage> {
                   OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
                 else
                   OnboardingButton(
-                    label: _busy ? l10n.homeClimateSearching : (_sensors.length > 1 ? l10n.homeClimateChoose : l10n.homeClimateConnect),
+                    label: _busy ? l10n.homeClimateSearching : (_sensors.length > 1 ? l10n.homeClimateChoose : _connectLabel(l10n)),
                     trailingIcon: _busy ? null : CupertinoIcons.house_fill,
                     onPressed: _sensors.length > 1 ? _pick : _connect,
                   ),

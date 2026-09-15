@@ -85,6 +85,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 | Archives : nom personnalisable, recherche, quatre tris, navigation par année, vue liste ou cartes, préférences mémorisées | ✅ |
 | Prévisions météo sur cinq jours : min / max, précipitations, risque de pluie, vent, humidité | ✅ |
 | Apple Maison (iOS) : température et humidité d'un capteur HomeKit, étape d'onboarding après la ville, ligne et conseils du jour pour les plantes d'intérieur, carte « Chez vous » dans la fiche d'entretien, mesure jointe au diagnostic | ✅ |
+| Google Home (iOS et Android) : mêmes deux grandeurs sur les Home APIs, plateforme choisie avant la demande d'accès, capteurs des deux maisons dans la même liste. Codé des deux côtés, pas livré (`AppConfig.googleHomeEnabled`) : le SDK se télécharge depuis la console Google Home pour un projet déclaré | ⏳ (codé) |
 | Sauvegarde : export par sections, restauration avec aperçu, rapport d'import | ✅ |
 | Champs de plante : lumière, humidité, cycle de vie, rusticité, mois de bouturage — des puces facultatives sous « Plus d'options », lus dans Informations ; la lumière de la plante prime sur celle de l'emplacement dans les conseils d'arrosage | ✅ |
 | États de santé : les trois états restent (en forme, à surveiller, malade) et se précisent d'un problème parmi neuf (excès d'eau, manque d'eau, ravageurs, maladie, pourriture des racines, choc de rempotage, carence, brûlure, gel) ; le diagnostic le renseigne quand sa piste la plus vraisemblable est un ravageur ou une maladie | ✅ |

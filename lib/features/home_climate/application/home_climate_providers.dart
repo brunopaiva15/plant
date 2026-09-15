@@ -13,7 +13,7 @@ import '../../weather/application/weather_providers.dart';
 
 /// La mesure des capteurs retenus ; `null` sans capteur, ou s'ils ne
 /// répondent pas. Relue toutes les quinze minutes : l'air d'une pièce ne
-/// change pas plus vite, et HomeKit n'aime pas qu'on le harcèle.
+/// change pas plus vite, et une maison n'aime pas qu'on la harcèle.
 ///
 /// La température vient du capteur de température ; l'humidité du capteur
 /// d'humidité s'il y en a un, sinon du même capteur, s'il la mesure.
@@ -25,8 +25,8 @@ final homeReadingProvider = FutureProvider<HomeReading?>((ref) async {
   ref.onDispose(timer.cancel);
   final service = ref.watch(homeClimateServiceProvider);
   try {
-    final main = await service.read(sensor.id);
-    final other = humiditySensor == null || humiditySensor.id == sensor.id ? null : await service.read(humiditySensor.id);
+    final main = await service.read(sensor);
+    final other = humiditySensor == null || humiditySensor.key == sensor.key ? null : await service.read(humiditySensor);
     final humidity = other != null ? other.humidity : (humiditySensor == null ? main?.humidity : null);
     // La raison d'une valeur manquante, celle du capteur qui devait la donner.
     final humidityError = other?.error ?? (humiditySensor == null ? main?.error : null);

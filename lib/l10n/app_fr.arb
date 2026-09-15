@@ -536,16 +536,21 @@
   "locating": "Recherche de votre ville…",
   "locationFailed": "Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.",
   "onbHomeTitle": "Votre intérieur",
-  "onbHomeBody": "Les capteurs Apple Maison donnent la température et l'humidité de la pièce. Les conseils et les diagnostics des plantes d'intérieur en tiennent compte. Lecture sur l'appareil, rien n'est envoyé.",
-  "homeClimate": "Apple Maison",
-  "homeClimateHint": "La température et l'humidité d'un capteur Apple Maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. Lecture sur l'appareil, rien n'est envoyé.",
-  "homeClimateConnect": "Connecter Apple Maison",
+  "onbHomeBody": "Les capteurs d'Apple Maison et de Google Home donnent la température et l'humidité de la pièce. Les conseils et les diagnostics des plantes d'intérieur en tiennent compte. La mesure ne quitte pas l'application.",
+  "homeClimate": "Capteurs de la maison",
+  "homeClimateHint": "La température et l'humidité d'un capteur de la maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. La mesure ne quitte pas l'application.",
+  "homeClimateApple": "Apple Maison",
+  "homeClimateGoogle": "Google Home",
+  "homeClimateConnect": "Connecter la maison",
+  "homeClimateConnectApple": "Connecter Apple Maison",
+  "homeClimateConnectGoogle": "Connecter Google Home",
   "homeClimateSearching": "Recherche des capteurs…",
   "homeClimateSensor": "Capteur",
   "homeClimateSensors": "Capteurs trouvés",
   "homeClimateChoose": "Choisir un capteur",
   "homeClimateChange": "Changer de capteur",
   "homeClimateHome": "Maison",
+  "homeClimateSource": "Plateforme",
   "homeClimateNoRoom": "Sans pièce",
   "homeClimateTemperatureSensor": "Capteur de température",
   "homeClimateHumiditySensor": "Capteur d'humidité",
@@ -563,9 +568,26 @@
       }
     }
   },
-  "homeClimateNoSensors": "Aucun capteur de température ou d'humidité dans Apple Maison.",
-  "homeClimateDenied": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
-  "homeClimateFailed": "Apple Maison indisponible. Vous pourrez connecter un capteur dans Profil › Apple Maison.",
+  "homeClimateNoSensorsIn": "Aucun capteur de température ou d'humidité dans {home}.",
+  "@homeClimateNoSensorsIn": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClimateDeniedApple": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
+  "homeClimateDeniedGoogle": "Accès à Google Home refusé. Il se rouvre dans l'application Google Home, aux autorisations.",
+  "homeClimateFailedIn": "{home} indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.",
+  "@homeClimateFailedIn": {
+    "placeholders": {
+      "home": {
+        "type": "String"
+      }
+    }
+  },
+  "homeClimateAppleNote": "Apple Maison lit les accessoires sur l'appareil.",
+  "homeClimateGoogleNote": "Google Home lit les appareils via votre compte Google.",
   "homeClimateAtHome": "Chez vous",
   "homeClimateFits": "Rien qui gêne cette espèce.",
   "homeClimateTooDry": "Air trop sec pour cette espèce.",
@@ -605,7 +627,7 @@
       }
     }
   },
-  "diagnosisWithHome": "Mesure Apple Maison jointe : {reading}.",
+  "diagnosisWithHome": "Mesure de la maison jointe : {reading}.",
   "@diagnosisWithHome": {
     "placeholders": {
       "reading": {
