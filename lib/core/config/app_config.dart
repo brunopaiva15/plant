@@ -51,26 +51,28 @@ abstract final class AppConfig {
   /// température et l'humidité d'une pièce — lus sur les Home APIs, sur
   /// iPhone comme sur Android.
   ///
-  /// Le code est écrit et vérifié des deux côtés — le Kotlin compile contre
-  /// le SDK réel, le Swift lit de vrais capteurs sur un iPhone —, et le
-  /// drapeau est pourtant faux. Les Home APIs plafonnent à cent comptes
-  /// tant que le projet n'est pas enregistré dans la console Google Home, et
-  /// cette console n'ouvre pas encore ses inscriptions. Cent comptes, c'est
-  /// un bouton qui marche pour les premiers et échoue pour les suivants.
+  /// Livré : le Kotlin compile contre le SDK réel, et le Swift lit de vrais
+  /// capteurs sur un iPhone. Deux choses que ce drapeau ne règle pas :
   ///
-  /// Le passer à vrai demande aussi le SDK à la construction : il ne se
-  /// prend ni sur Maven ni sur SwiftPM, mais se télécharge pour un projet
-  /// déclaré, puis se donne à la construction — `-PgoogleHomeRepo=<dossier>`
-  /// côté Android, un paquet local ajouté au projet Xcode côté iOS, qui
-  /// demande iOS 17. Sans lui, le bouton « Connecter Google Home » répondra
-  /// toujours « aucun capteur ». La marche à suivre est dans
-  /// `docs/05-technical-architecture.md`, section « Google Home ».
-  static const bool googleHomeEnabled = false;
+  /// - Les Home APIs plafonnent à cent comptes tant que le projet n'est pas
+  ///   enregistré dans la console développeur Google Home, et cette console
+  ///   n'accepte pas encore d'inscription. C'est le plafond de leur beta
+  ///   publique ; au cent unième compte, la demande d'accès est refusée.
+  /// - Le SDK ne se prend ni sur Maven ni sur SwiftPM : il se donne à la
+  ///   construction — un paquet local dans le projet Xcode côté iOS, qui
+  ///   demande iOS 17, `-PgoogleHomeRepo=<dossier>` côté Android. Un build
+  ///   Android sans cette option montre un bouton « Connecter Google Home »
+  ///   qui répondra toujours « aucun capteur ».
+  ///
+  /// La marche à suivre est dans `docs/05-technical-architecture.md`,
+  /// section « Google Home ».
+  static const bool googleHomeEnabled = true;
 
   /// La ligne « Google Home · Bientôt » de Profil › Capteurs de la maison.
-  /// Elle dit une intégration écrite mais pas ouverte, et ne sert donc que
-  /// tant que [googleHomeEnabled] est faux : Google Home branché, Google
-  /// Home devient une maison comme une autre, avec son bouton.
+  /// Elle dit une intégration écrite mais pas ouverte, et n'a donc d'effet
+  /// que tant que [googleHomeEnabled] est faux — aujourd'hui, aucun : la
+  /// maison est ouverte, et sa ligne est un bouton. La refermer la fait
+  /// reparaître, sans autre geste.
   static const bool googleHomeSoon = true;
 
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est

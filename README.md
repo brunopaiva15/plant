@@ -51,11 +51,11 @@ gardée.
 
 Apple Maison est livré : sur iPhone et iPad, lecture sur l'appareil par
 HomeKit (`ios/Runner/HomeClimateChannel.swift`, capability *HomeKit* sur
-l'App ID). Google Home est codé des deux côtés et vérifié sur un iPhone,
-mais pas ouvert (`AppConfig.googleHomeEnabled`) : les Home APIs plafonnent à
-cent comptes tant que la console développeur Google Home n'accepte pas
-d'inscription. Profil › Capteurs de la maison garde la ligne
-« Google Home · Bientôt ». Sans aucune maison lisible, l'étape et le réglage
+l'App ID). Google Home est livré aussi (`AppConfig.googleHomeEnabled`) :
+lecture des appareils par les Home APIs, sur iPhone et sur Android, dont le
+SDK se donne à la construction. Ces API plafonnent à cent comptes tant que
+leur console développeur n'accepte pas d'inscription — c'est la limite de
+leur beta publique. Sans aucune maison lisible, l'étape et le réglage
 n'apparaissent pas. Détails : docs/05.
 
 ## Sur l'écran d'accueil d'iOS
