@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
-import '../../../app/router.dart';
-import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/services/preferences_service.dart';
 import '../../../design_system/design_system.dart';
@@ -11,8 +9,8 @@ import '../../../design_system/design_system.dart';
 /// Ce que l'application annonce quand elle vient d'être mise à jour, et la
 /// règle qui décide de l'annoncer ou non.
 ///
-/// Une nouveauté est du texte, trois points forts et une teinte : aucune
-/// image à livrer, rien à charger, et la fenêtre se construit à partir de la
+/// Une nouveauté est du texte, des points forts et une teinte : aucune image
+/// à livrer, rien à charger, et la fenêtre se construit à partir de la
 /// palette du moment. Écrire une nouvelle version, c'est ajouter une entrée
 /// à [releaseNotes] et ses clés aux quatre `.arb` — rien d'autre.
 
@@ -78,7 +76,7 @@ class ReleaseLink {
 
   final String label;
 
-  /// Une route du [Routes] de l'app, ouverte après la fermeture de la fenêtre.
+  /// Une route de l'application, ouverte après la fermeture de la fenêtre.
   final String route;
 }
 
@@ -130,65 +128,52 @@ class ReleaseNote {
 ///
 /// L'ordre compte : c'est la dernière que l'application propose, et la plus
 /// récente jamais vue qu'elle annonce au lancement.
-List<ReleaseNote> releaseNotes(AppLocalizations l10n) {
-  // ────────────────────────────────────────────────────────────────────────
-  // EXEMPLE — gabarit, pas contenu. Personne ne le voit.
-  //
-  // Le mécanisme est en place avant qu'il y ait quelque chose à annoncer :
-  // cette entrée sert de modèle. Ses chiffres sont inventés, et aucun chemin
-  // ne mène à elle — livrée dans la même version que le mécanisme, elle ne
-  // s'ouvre d'elle-même chez personne (voir [WhatsNew.take]), et les réglages
-  // n'ont pas de ligne « Nouveautés » tant qu'elle est la seule au catalogue.
-  //
-  // **Son identifiant est dépensé.** Tout appareil ayant lancé cette version
-  // porte `iris-8` dans ses nouveautés vues. D'où deux règles, en sens
-  // inverse l'une de l'autre :
-  //
-  // - ne pas le renommer ici : sous un identifiant neuf, l'exemple
-  //   redeviendrait inédit et s'ouvrirait pour de bon chez ces appareils-là,
-  //   chiffres inventés compris ;
-  // - ne pas le reprendre pour la vraie livraison d'Iris 8, qui a besoin d'un
-  //   identifiant jamais vu — `iris-8-modele` fera l'affaire — sans quoi sa
-  //   fenêtre serait avalée en silence.
-  //
-  // À la première vraie livraison : remplacer cette entrée (nouvel
-  // identifiant), écrire son texte dans les quatre `.arb`, et rouvrir la
-  // ligne des réglages si on veut qu'elle reste relisible — la marche à
-  // suivre est notée dans `profile_screen.dart`.
-  // ────────────────────────────────────────────────────────────────────────
-  const speciesCount = '5000';
-  return [
-    ReleaseNote(
-      id: 'iris-8',
-      eyebrow: l10n.whatsNewModelUpdate,
-      title: AppConfig.modelDisplayName('8'),
-      body: l10n.whatsNewIrisIntro,
-      accent: ReleaseAccent.terracotta,
-      mark: ReleaseMark.iris,
-      link: ReleaseLink(label: l10n.identificationSettings, route: Routes.identification),
-      highlights: [
-        ReleaseHighlight(
-          icon: CupertinoIcons.leaf_arrow_circlepath,
-          accent: ReleaseAccent.sage,
-          title: l10n.whatsNewIrisSpeciesTitle(speciesCount),
-          body: l10n.whatsNewIrisSpeciesBody,
-        ),
-        ReleaseHighlight(
-          icon: CupertinoIcons.wifi_slash,
-          accent: ReleaseAccent.water,
-          title: l10n.whatsNewIrisOfflineTitle,
-          body: l10n.whatsNewIrisOfflineBody,
-        ),
-        ReleaseHighlight(
-          icon: CupertinoIcons.question_circle,
-          accent: ReleaseAccent.sun,
-          title: l10n.whatsNewIrisDoubtTitle,
-          body: l10n.whatsNewIrisDoubtBody,
-        ),
-      ],
-    ),
-  ];
-}
+List<ReleaseNote> releaseNotes(AppLocalizations l10n) => [
+      ReleaseNote(
+        // `iris-8` appartenait au gabarit livré avec le mécanisme : il reste
+        // dépensé dans les préférences des appareils qui l'ont vu. Cette
+        // première vraie annonce prend donc un identifiant neuf.
+        id: 'beta-feedback-1',
+        eyebrow: l10n.appName,
+        title: l10n.whatsNewTitle,
+        body: l10n.careGuideSubtitle,
+        accent: ReleaseAccent.sage,
+        mark: ReleaseMark.icon,
+        icon: CupertinoIcons.sparkles,
+        highlights: [
+          ReleaseHighlight(
+            icon: CupertinoIcons.heart_fill,
+            accent: ReleaseAccent.sage,
+            title: l10n.careGuide,
+            body: '${l10n.careSoil} · ${l10n.careWater} · ${l10n.careFertilizing} · ${l10n.careHumidity} · ${l10n.careRepotting}',
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.leaf_arrow_circlepath,
+            accent: ReleaseAccent.terracotta,
+            title: l10n.carePropagation,
+            body: l10n.pgPickBody,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.question_circle,
+            accent: ReleaseAccent.rose,
+            title: l10n.diagnosisTitle,
+            body: l10n.diagnosisChecksHint,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.info,
+            accent: ReleaseAccent.sun,
+            title: l10n.encyclopediaTitle,
+            body: l10n.encyclopediaHint,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.person_crop_circle_fill,
+            accent: ReleaseAccent.water,
+            title: l10n.communityTipsTitle,
+            body: l10n.communityTipsHint,
+          ),
+        ],
+      ),
+    ];
 
 /// Décide s'il y a quelque chose à annoncer, et s'en souvient.
 class WhatsNew {
