@@ -57,7 +57,7 @@ class SpeciesSlivers extends ConsumerWidget {
 
     final visibleCount = curated.length + extended.length;
     final countLabel = raw.isEmpty
-        ? l10n.encyclopediaDetailedSpeciesCount(detailed.length)
+        ? l10n.encyclopediaDetailedSpeciesCount(curated.length)
         : l10n.encyclopediaSearchResultCount(visibleCount);
 
     return SliverMainAxisGroup(
@@ -78,8 +78,8 @@ class SpeciesSlivers extends ConsumerWidget {
             onChanged: onCategory,
           ),
         ),
-        // Au repos, le nombre suit model.json : aujourd'hui 1 444 classes.
-        // Pendant une recherche il devient le nombre de résultats visibles.
+        // Sans filtre, le nombre suit model.json : aujourd'hui 1 444 classes.
+        // Avec un filtre ou une recherche, il décrit ce qui est réellement vu.
         SliverToBoxAdapter(child: EncyclopediaCount(countLabel)),
         if (curated.isEmpty && extended.isEmpty)
           SliverToBoxAdapter(
