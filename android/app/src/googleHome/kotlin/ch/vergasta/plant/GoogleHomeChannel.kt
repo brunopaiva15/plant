@@ -74,6 +74,14 @@ object GoogleHomeChannel {
   private fun handle(call: MethodCall, result: MethodChannel.Result) {
     when (call.method) {
       "access" -> reply(result, "unavailable") { accessName() }
+      // Il n'y a pas de session à fermer de ce côté : les Home APIs Android
+      // n'exposent que l'autorisation du compte, et elle se retire depuis ce
+      // compte — l'écran y mène. Reste le refus à oublier, pour que la
+      // question puisse se reposer.
+      "disconnect" -> {
+        refused = false
+        result.success(null)
+      }
       "sensors" -> reply(result, emptyList<Map<String, Any>>()) { sensors() }
       "read" -> {
         val id = call.argument<String>("id")

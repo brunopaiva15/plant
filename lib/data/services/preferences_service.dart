@@ -186,7 +186,8 @@ class PreferencesService {
 
   Future<void> clearRegionClimate() => _prefs.remove('region_climate');
 
-  /// Le capteur d'Apple Maison retenu (`id|nom|pièce`), ou `null` si le
+  /// Le capteur retenu, d'Apple Maison ou de Google Home
+  /// (`id|nom|pièce|maison|température|humidité|plateforme`), ou `null` si le
   /// climat de la maison n'est pas branché. Les mesures, elles, ne sont
   /// jamais gardées : elles se relisent.
   String? get homeSensor => _prefs.getString('home_sensor');

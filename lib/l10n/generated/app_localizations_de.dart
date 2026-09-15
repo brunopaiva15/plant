@@ -1606,6 +1606,22 @@ class AppLocalizationsDe extends AppLocalizations {
       'Google Home liest Geräte über dein Google-Konto.';
 
   @override
+  String get homeClimateDisconnect => 'Trennen';
+
+  @override
+  String get homeClimateDisconnectGoogle => 'Google Home trennen';
+
+  @override
+  String get homeClimateDisconnectGoogleHint =>
+      'Die Sensoren von Google Home werden auf diesem Gerät vergessen. Die erteilte Berechtigung bleibt im Google-Konto und wird dort entzogen.';
+
+  @override
+  String get homeClimateDisconnectedGoogle => 'Google Home getrennt.';
+
+  @override
+  String get homeClimateGoogleAccess => 'Berechtigungen im Google-Konto';
+
+  @override
   String get homeClimateAtHome => 'Bei dir';
 
   @override

@@ -2910,6 +2910,36 @@ abstract class AppLocalizations {
   /// **'Google Home lit les appareils via votre compte Google.'**
   String get homeClimateGoogleNote;
 
+  /// No description provided for @homeClimateDisconnect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déconnecter'**
+  String get homeClimateDisconnect;
+
+  /// No description provided for @homeClimateDisconnectGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déconnecter Google Home'**
+  String get homeClimateDisconnectGoogle;
+
+  /// No description provided for @homeClimateDisconnectGoogleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les capteurs de Google Home sont oubliés sur cet appareil. L\'autorisation accordée reste dans le compte Google, et se retire depuis ce compte.'**
+  String get homeClimateDisconnectGoogleHint;
+
+  /// No description provided for @homeClimateDisconnectedGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Google Home déconnecté.'**
+  String get homeClimateDisconnectedGoogle;
+
+  /// No description provided for @homeClimateGoogleAccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisations du compte Google'**
+  String get homeClimateGoogleAccess;
+
   /// No description provided for @homeClimateAtHome.
   ///
   /// In fr, this message translates to:

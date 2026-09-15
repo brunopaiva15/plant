@@ -184,6 +184,18 @@ abstract class HomeClimateService {
   /// La mesure d'un capteur, ou `null` s'il ne répond pas. Le capteur entier,
   /// pas son identifiant : c'est lui qui dit à quelle maison la demander.
   Future<HomeReading?> read(HomeSensor sensor);
+
+  /// Une maison dont la session se ferme depuis l'application.
+  ///
+  /// Apple Maison n'en ouvre pas : son accès est une permission du système,
+  /// qui se retire dans les Réglages. Google Home, si — la session s'ouvre
+  /// sur un compte Google, et ce qui s'ouvre doit pouvoir se fermer.
+  bool get canDisconnect;
+
+  /// Ferme la session. Ce que le compte a accordé, lui, ne se retire que
+  /// depuis ce compte : cette méthode déconnecte, elle ne révoque pas.
+  /// L'écran le dit avant de la déclencher, et mène au compte après.
+  Future<void> disconnect();
 }
 
 /// Un service qui ne lit qu'une maison, celle de [source].
@@ -195,6 +207,14 @@ abstract class SingleHomeClimateService implements HomeClimateService {
 
   @override
   HomeClimateService? of(HomeSource source) => source == this.source && isSupported ? this : null;
+
+  /// Une maison lue par une permission du système n'ouvre pas de session :
+  /// il n'y a rien à fermer, et l'écran ne propose rien.
+  @override
+  bool get canDisconnect => false;
+
+  @override
+  Future<void> disconnect() async {}
 }
 
 class UnavailableHomeClimateService implements HomeClimateService {
@@ -217,6 +237,12 @@ class UnavailableHomeClimateService implements HomeClimateService {
 
   @override
   Future<HomeReading?> read(HomeSensor sensor) async => null;
+
+  @override
+  bool get canDisconnect => false;
+
+  @override
+  Future<void> disconnect() async {}
 }
 
 /// Les maisons de l'appareil, ensemble.
@@ -274,4 +300,17 @@ class MultiHomeClimateService implements HomeClimateService {
 
   @override
   Future<HomeReading?> read(HomeSensor sensor) async => await of(sensor.source)?.read(sensor);
+
+  @override
+  bool get canDisconnect => services.any((s) => s.canDisconnect);
+
+  /// Ferme les sessions de celles qui en ont une, et laisse les autres :
+  /// une permission du système ne se rend pas d'ici. Un écran qui ne veut
+  /// déconnecter qu'une maison passe par [of].
+  @override
+  Future<void> disconnect() async {
+    for (final s in services) {
+      if (s.canDisconnect) await s.disconnect();
+    }
+  }
 }

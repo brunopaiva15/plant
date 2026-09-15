@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/config/app_config.dart';
@@ -138,6 +139,50 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     if (mounted) setState(() => _sensors = const []);
   }
 
+  /// Déconnecter une maison qui tient une session.
+  ///
+  /// Trois choses partent ensemble : la session côté natif, les capteurs de
+  /// cette maison en préférences, et sa liste à l'écran. Ce que le compte a
+  /// accordé ne part pas avec : le message le dit avant, et la ligne du
+  /// compte Google y mène après.
+  ///
+  /// Google Home est la seule maison à session, et les textes sont les
+  /// siens ; une autre en demanderait d'autres.
+  Future<void> _disconnect(HomeSource source) async {
+    final l10n = context.l10n;
+    final ok = await showAdaptiveConfirm(
+      context,
+      title: l10n.homeClimateDisconnectGoogle,
+      message: l10n.homeClimateDisconnectGoogleHint,
+      confirmLabel: l10n.homeClimateDisconnect,
+      cancelLabel: l10n.cancel,
+      destructive: true,
+    );
+    if (!ok || !mounted) return;
+    await ref.read(homeClimateServiceProvider).of(source)?.disconnect();
+    final prefs = ref.read(preferencesProvider);
+    final notifier = ref.read(preferencesProvider.notifier);
+    // Le capteur de température entraîne celui de l'humidité : sans lui, la
+    // ligne de l'humidité n'existe plus.
+    if (prefs.homeSensor?.source == source) {
+      await notifier.setHomeSensor(null);
+    } else if (prefs.homeHumiditySensor?.source == source) {
+      await notifier.setHomeHumiditySensor(null);
+    }
+    ref.invalidate(homeReadingProvider);
+    if (!mounted) return;
+    setState(() {
+      // La maison n'a plus été interrogée : son bouton redevient celui d'une
+      // maison qu'on n'a pas encore branchée.
+      _searched.remove(source);
+      _sensors = [
+        for (final sensor in _sensors)
+          if (sensor.source != source) sensor,
+      ];
+    });
+    ref.read(toastProvider.notifier).show(ToastData(message: l10n.homeClimateDisconnectedGoogle, emoji: '🏠'));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -147,7 +192,8 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     final reading = ref.watch(homeReadingProvider);
     final canPick = _sensors.isNotEmpty && !_busy;
     // Les maisons lisibles ici, dans l'ordre où on les propose.
-    final sources = ref.watch(homeClimateServiceProvider).sources;
+    final home = ref.watch(homeClimateServiceProvider);
+    final sources = home.sources;
     // La plateforme ne se dit sous un capteur que si l'appareil en lit deux :
     // sur Android, « Google Home » sous chaque ligne n'apprend rien.
     final named = sources.length > 1;
@@ -156,6 +202,9 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
     // inscriptions (voir [AppConfig.googleHomeSoon]). La ligne l'annonce,
     // tant qu'aucun capteur Google n'est lisible ici.
     final soon = AppConfig.googleHomeSoon && GoogleHomeClimateService.isPossible && !sources.contains(HomeSource.google);
+    // La maison qui tient une session sur un compte : elle se déconnecte, et
+    // son groupe le dit. Aujourd'hui c'est Google Home, et elle seule.
+    final session = home.of(HomeSource.google);
     // Ce que le capteur de température sait mesurer, d'après la liste
     // fraîche quand on l'a, sinon d'après la préférence.
     final live = sensor == null ? null : _sensors.where((s) => s.key == sensor.key).firstOrNull ?? sensor;
@@ -268,6 +317,31 @@ class _HomeClimateSettingsScreenState extends ConsumerState<HomeClimateSettingsS
                     onPressed: () => _search([source]),
                   ),
                 ),
+          ],
+          // Une session ouverte sur un compte se ferme depuis l'écran qui
+          // l'a ouverte. La déconnexion oublie les capteurs et ferme la
+          // session ; l'autorisation donnée au compte se retire dans le
+          // compte, et la seconde ligne y mène — elle reste après la
+          // déconnexion, c'est là que tout se termine.
+          if (session?.canDisconnect ?? false) ...[
+            const SizedBox(height: Space.lg),
+            FloraGroup(
+              header: l10n.homeClimateGoogle,
+              children: [
+                if (_hasFrom(HomeSource.google) || sensor?.source == HomeSource.google || humiditySensor?.source == HomeSource.google)
+                  FloraListRow(
+                    title: l10n.homeClimateDisconnectGoogle,
+                    destructive: true,
+                    chevron: false,
+                    onTap: _busy ? null : () => _disconnect(HomeSource.google),
+                  ),
+                FloraListRow(
+                  title: l10n.homeClimateGoogleAccess,
+                  chevron: true,
+                  onTap: () => launchUrl(Uri.parse(AppConfig.googleAccountUrl), mode: LaunchMode.externalApplication),
+                ),
+              ],
+            ),
           ],
           // Une maison qu'on ne peut pas encore brancher : son nom, une
           // étiquette, et rien à toucher. Elle dit ce qui vient, elle ne

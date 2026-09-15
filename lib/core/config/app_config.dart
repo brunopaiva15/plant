@@ -28,6 +28,12 @@ abstract final class AppConfig {
   static const String publisher = 'Vergasta Digital';
   static const String privacyUrl = 'https://vergasta.ch/privacy';
 
+  /// Les applications connectées au compte Google, là où l'autorisation
+  /// donnée à Auxine se retire. Déconnecter Google Home depuis l'écran des
+  /// capteurs ferme la session et oublie les capteurs ; le jeton, lui, ne se
+  /// révoque que d'ici — les Home APIs sont explicites là-dessus.
+  static const String googleAccountUrl = 'https://myaccount.google.com/connections';
+
   // Le numéro de version ne s'écrit pas ici : il vit dans `pubspec.yaml`,
   // seul endroit à changer pour une livraison, et `AppVersion` le lit sur le
   // binaire au lancement.

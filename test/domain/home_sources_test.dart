@@ -39,6 +39,7 @@ void main() {
           accessValue: access,
           sensorList: const [nest],
           reading: HomeReading(at: _at, temperatureC: 19),
+          disconnectable: true,
         );
 
     test('écartent celle qui est muette ici', () {
@@ -69,6 +70,20 @@ void main() {
     test('un capteur dont la maison a disparu ne se lit pas', () async {
       final both = MultiHomeClimateService([apple()]);
       expect(await both.read(nest), isNull);
+    });
+
+    test('ne déconnectent que celle qui tient une session', () async {
+      final a = apple();
+      final g = google();
+      final both = MultiHomeClimateService([a, g]);
+      expect(both.canDisconnect, isTrue);
+      await both.disconnect();
+      // Apple Maison n'a pas de session : son accès est une permission du
+      // système, qui ne se rend pas d'ici.
+      expect(a.disconnectCalls, 0);
+      expect(g.disconnectCalls, 1);
+      expect(MultiHomeClimateService([apple()]).canDisconnect, isFalse);
+      expect(MultiHomeClimateService([google(supported: false)]).canDisconnect, isFalse);
     });
 
     test("l'accès accordé quelque part vaut mieux qu'un refus ailleurs", () async {

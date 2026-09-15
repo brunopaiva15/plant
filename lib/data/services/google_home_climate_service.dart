@@ -40,4 +40,10 @@ class GoogleHomeClimateService extends ChannelHomeClimateService {
   /// livré.
   @override
   bool get isSupported => _enabled && isPossible;
+
+  /// La session s'ouvre sur un compte Google : elle se ferme depuis
+  /// l'application. Ce que le compte a accordé se retire, lui, depuis le
+  /// compte — `AppConfig.googleAccountUrl` y mène.
+  @override
+  bool get canDisconnect => isSupported;
 }

@@ -22,9 +22,9 @@ import Flutter
 /// `docs/05-technical-architecture.md`, section « Google Home ».
 ///
 /// Les appels au SDK sont écrits contre l'interface publique du SDK 1.10.1
-/// (`GoogleHomeSDK.xcframework`, `GoogleHomeTypes.xcframework`) ; ils n'ont
-/// pas encore été compilés, faute de Mac. Le SDK demande iOS 17, d'où la
-/// disponibilité posée sur toute l'extension.
+/// (`GoogleHomeSDK.xcframework`, `GoogleHomeTypes.xcframework`), et lisent de
+/// vrais capteurs sur un iPhone. Le SDK demande iOS 17, d'où la disponibilité
+/// posée sur toute l'extension.
 final class GoogleHomeChannel {
   static let name = "ch.vergasta.plant/google_home_climate"
 
@@ -94,6 +94,11 @@ final class GoogleHomeChannel {
         Task { @MainActor in result(await self.accessName()) }
       case "sensors":
         Task { @MainActor in result(await self.sensors()) }
+      case "disconnect":
+        Task { @MainActor in
+          await self.disconnect()
+          result(nil)
+        }
       case "read":
         guard let args = call.arguments as? [String: Any], let id = args["id"] as? String, !id.isEmpty else {
           result(FlutterError(code: "bad_args", message: "sensor id missing", details: nil))
@@ -138,6 +143,19 @@ final class GoogleHomeChannel {
         Self.refused = true
         return nil
       }
+    }
+
+    /// Ferme la session, et rien de plus.
+    ///
+    /// Le SDK est explicite : `disconnect` ne révoque pas ce que le compte a
+    /// accordé. Cela se retire depuis le compte Google, et l'écran des
+    /// capteurs y mène. Le refus mémorisé part avec la session : la question
+    /// pourra se reposer.
+    @MainActor
+    private func disconnect() async {
+      await Self.session?.disconnect()
+      Self.session = nil
+      Self.refused = false
     }
 
     @MainActor

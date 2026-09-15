@@ -28,6 +28,14 @@ abstract class ChannelHomeClimateService extends SingleHomeClimateService {
     return parseReading(await _ask(() => _channel.invokeMapMethod<String, Object?>('read', {'id': sensor.id})));
   }
 
+  /// Ferme la session côté natif. Le canal d'une maison qui n'en ouvre pas
+  /// répond « pas implémenté », et [_ask] en fait un silence — mais
+  /// [canDisconnect] aura déjà retenu l'écran.
+  @override
+  Future<void> disconnect() async {
+    await _ask(() => _channel.invokeMethod<Object?>('disconnect'));
+  }
+
   /// Une question au canal, et rien qui remonte quand elle échoue : un canal
   /// absent — plateforme sans cette maison, SDK non compilé — ou une erreur
   /// native valent la réponse vide, que l'écran sait déjà montrer.

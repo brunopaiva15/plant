@@ -251,6 +251,15 @@ Maison, par HomeKit, et Google Home, par les Home APIs.
   vient en dernier, et une préférence écrite avant Google Home se relit
   sans elle — c'était Apple Maison. La mesure, elle, n'est jamais gardée :
   elle se relit toutes les quinze minutes (`homeReadingProvider`).
+- Google Home tient une session sur un compte Google, et ce qui s'ouvre doit
+  pouvoir se fermer : la déconnexion (`HomeClimateService.canDisconnect`,
+  `disconnect`) emporte ensemble la session côté natif, les capteurs de
+  cette maison en préférences et sa liste à l'écran. Ce que le compte a
+  accordé ne part pas avec — le SDK est explicite, `disconnect` ne révoque
+  pas le jeton —, alors l'écran le dit avant de déconnecter et mène au compte
+  après (`AppConfig.googleAccountUrl`, la page des applications connectées),
+  par une ligne qui reste. Apple Maison n'a rien de tel : son accès est une
+  permission du système, qui se retire dans les Réglages.
 - `HomeClimateAdvisor` compare la mesure aux fiches des plantes d'intérieur
   (celles qui ne sont pas dans un emplacement « extérieur », et seulement
   celles de la pièce si un emplacement porte le nom de la pièce du capteur) :
@@ -305,6 +314,12 @@ available for registration » sur la page OAuth iOS de Google. Publier le
 client OAuth en production, au passage, retire l'avertissement
 « application non vérifiée » — aucun scope n'est demandé, la vérification
 n'a rien à examiner — mais ne touche pas au plafond.
+
+Côté Android, il n'y a pas de session à fermer : les Home APIs n'y exposent
+que l'autorisation du compte, sans méthode pour la rendre. La déconnexion y
+vaut donc l'oubli des capteurs, et le canal n'a qu'un refus à oublier pour
+que la question puisse se reposer ; le retrait, lui, se fait dans le compte,
+comme sur iPhone.
 
 Refermer la maison ne demande qu'une ligne : `googleHomeEnabled` à faux, et
 `AppConfig.googleHomeSoon` laisse à sa place, dans les réglages, la ligne

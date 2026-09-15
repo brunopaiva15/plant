@@ -11,6 +11,7 @@ class FakeHomeClimateService extends SingleHomeClimateService {
     this.reading,
     this.readings = const {},
     this.accessValue = HomeAccess.authorized,
+    this.disconnectable = false,
   });
 
   final bool supported;
@@ -26,8 +27,12 @@ class FakeHomeClimateService extends SingleHomeClimateService {
   /// Une mesure par identifiant de capteur.
   final Map<String, HomeReading?> readings;
   final HomeAccess accessValue;
+
+  /// Une maison qui tient une session, comme Google Home.
+  final bool disconnectable;
   int sensorCalls = 0;
   int readCalls = 0;
+  int disconnectCalls = 0;
 
   @override
   bool get isSupported => supported;
@@ -46,4 +51,10 @@ class FakeHomeClimateService extends SingleHomeClimateService {
     readCalls++;
     return readings.containsKey(sensor.id) ? readings[sensor.id] : reading;
   }
+
+  @override
+  bool get canDisconnect => disconnectable && isSupported;
+
+  @override
+  Future<void> disconnect() async => disconnectCalls++;
 }
