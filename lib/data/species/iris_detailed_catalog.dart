@@ -82,6 +82,9 @@ class IrisDetailedCatalog {
     final curated = <String, SpeciesCatalogEntry>{
       for (final entry in SpeciesCatalog.entries) entry.scientificName.toLowerCase(): entry,
     };
+    final indexed = <String, SpeciesRecord>{
+      for (final record in index.records) record.scientificName.toLowerCase(): record,
+    };
     final seen = <String>{};
     final entries = <IrisDetailedSpecies>[];
 
@@ -96,7 +99,7 @@ class IrisDetailedCatalog {
         entries.add(IrisDetailedSpecies.fromCurated(entry));
         continue;
       }
-      entries.add(IrisDetailedSpecies.fromIndex(scientificName, index.find(scientificName)));
+      entries.add(IrisDetailedSpecies.fromIndex(scientificName, indexed[key]));
     }
 
     return IrisDetailedCatalog(List<IrisDetailedSpecies>.unmodifiable(entries));
