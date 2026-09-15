@@ -442,44 +442,48 @@ qui reste sous les yeux pendant que la page défile.
 - Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
 ## La page du soutien (`features/support/`)
-« Auxine est gratuite » demande sans rien vendre, et cela se joue dans
-l'ordre des blocs : on montre ce qui est donné avant de demander.
+« Auxine est gratuite » demande sans rien vendre. Cinq pièces, pas une de
+plus, dans cet ordre : on montre ce qui est donné avant de demander.
 
 - **La scène**, en haut : la plante de l'icône — la même que sur le premier
   écran de l'onboarding, avec sa pousse et sa respiration — posée sur une
   lueur qui s'éteint dans le papier. C'était un disque plein de `sageSoft` ;
   un bord franc coupait net l'ombre au sol de la plante, et l'application n'en
   a nulle part ailleurs.
-- **L'étiquette** avant le titre, une pilule d'argile en petites capitales :
-  « Soutien facultatif ». Elle dit ce qu'on attend de la page avant que la
-  page ne le demande.
-- **Le relevé** : quatre pièces — toutes les fonctions, sans publicité, sans
-  abonnement, sans compte obligatoire, soit le modèle économique de docs/01
-  mot pour mot —, chacune un galet de pâte de couleur (quatre variantes de
-  `ClayShape.blob`, deux voisines ne sont jamais la même pièce) et un fait.
-  Une phrase se survole ; quatre pièces se lisent d'un regard, et ce sont
-  elles qui donnent son sens au geste d'après.
-- **La proposition**, en terre cuite et en relief franc : le montant écrit en
-  grand et à la main, comme sur l'étiquette d'un pot, « Une seule fois »
-  dessous, puis le bouton — vert, celui de l'action — et la phrase qui ferme
-  la porte à toute contrepartie. Sur ce pastel l'encre tertiaire tombe à
-  4,3:1 : c'est la secondaire qui porte les petits textes.
+- **Le titre et la phrase**, rangés à gauche sous la scène, comme le texte des
+  écrans de l'onboarding : un titre d'affiche, pas une légende. La phrase dit
+  ce qui est ouvert — toutes les fonctions, sans publicité, sans abonnement,
+  sans compte obligatoire : le modèle économique de docs/01, mot pour mot.
+- **Un trait**, le seul de la page, là où elle change de sujet.
+- **Le montant** tracé à la main, à la taille du titre, avec « Une seule
+  fois » posé à côté sur la même ligne de base : un prix écrit sur une
+  étiquette de pot, pas un tarif au bas d'un bouton. Puis le bouton, et la
+  phrase qui ferme la porte à toute contrepartie.
 - **Une fois versé**, la lueur passe au rose, un sceau d'argile se pose au
-  ressort au pied de la plante, et la carte du montant laisse place à un mot.
-  C'est le seul endroit où la page récompense quelque chose, puisqu'aucune
+  ressort au pied de la plante, et c'est la phrase du haut qui descend sous
+  le trait, en plus petit : la page se ferme sur ce qu'elle est venue dire.
+  Le sceau est le seul endroit où elle récompense quelque chose, puisqu'aucune
   fonction ne le fait.
-- **Dans l'onboarding**, `SupportPitch` se rend en version courte
-  (`compact`) : scène plus petite, pas de relevé, et pas de « Restaurer mon
-  soutien » — deux boutons fantômes verts l'un au-dessus de l'autre, et
-  l'œil ne sait plus lequel est la sortie ; la restauration attend dans
-  *Profil › Soutenir le développeur*. La page y partage la hauteur avec les
-  points de progression, et « Continuer sans » doit rester sous les yeux de
-  qui vient d'installer l'application.
-- Les blocs se posent l'un après l'autre (`Appear`), et à partir de 150 % de
-  Dynamic Type le relevé repasse sur une colonne.
-  `test/features/support_screen_test.dart` tient l'ordre des blocs, le
-  montant qui ne paraît que là où le magasin le propose, et la page qui ne
-  redemande rien une fois le soutien versé.
+
+**Ce qu'elle ne fait pas.** Une version intermédiaire ajoutait une pastille en
+capitales, une grille de quatre tuiles à icônes et une carte de prix en terre
+cuite : la page d'accueil de n'importe quel service, et le contraire d'une
+application qui est du papier et de l'argile. Le relief se garde pour ce qu'on
+touche — ici, le seul bouton ; le reste est écrit. C'est la question de la
+revue de design ci-dessous, « ressemble-t-il à un template ? », et elle se
+repose à chaque ajout.
+
+**Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :
+scène plus petite, et pas de « Restaurer mon soutien » — deux boutons
+fantômes verts l'un au-dessus de l'autre, et l'œil ne sait plus lequel est la
+sortie ; la restauration attend dans *Profil › Soutenir le développeur*. La
+page y partage la hauteur avec les points de progression, et « Continuer
+sans » doit rester sous les yeux de qui vient d'installer l'application.
+
+Les pièces se posent l'une après l'autre (`Appear`).
+`test/features/support_screen_test.dart` tient l'ordre — ce qui est ouvert
+avant le montant —, le montant qui ne paraît que là où le magasin le propose,
+et la page qui ne redemande rien une fois le soutien versé.
 
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.

@@ -1774,12 +1774,7 @@
     }
   },
   "supportTitle": "Auxine est gratuite",
-  "supportOptional": "Soutien facultatif",
-  "supportBody": "Tout est ouvert, sans limite ni publicité.",
-  "supportPerkFeatures": "Toutes les fonctions",
-  "supportPerkNoAds": "Sans publicité",
-  "supportPerkNoSubscription": "Sans abonnement",
-  "supportPerkNoAccount": "Sans compte obligatoire",
+  "supportBody": "Tout est ouvert : toutes les fonctions, sans publicité, sans abonnement, sans compte obligatoire.",
   "supportNothingLocked": "Aucune fonction n'est réservée aux donateurs.",
   "supportOnce": "Une seule fois",
   "supportGive": "Soutenir",

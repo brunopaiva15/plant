@@ -3826,22 +3826,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get supportTitle => 'Auxine ist kostenlos';
 
   @override
-  String get supportOptional => 'Freiwillige Unterstützung';
-
-  @override
-  String get supportBody => 'Alles ist offen, ohne Limit und ohne Werbung.';
-
-  @override
-  String get supportPerkFeatures => 'Alle Funktionen';
-
-  @override
-  String get supportPerkNoAds => 'Ohne Werbung';
-
-  @override
-  String get supportPerkNoSubscription => 'Ohne Abo';
-
-  @override
-  String get supportPerkNoAccount => 'Kein Konto nötig';
+  String get supportBody =>
+      'Alles ist offen: alle Funktionen, ohne Werbung, ohne Abo, ohne Kontopflicht.';
 
   @override
   String get supportNothingLocked =>

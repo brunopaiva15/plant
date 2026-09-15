@@ -3816,22 +3816,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportTitle => 'Auxine is free';
 
   @override
-  String get supportOptional => 'Optional support';
-
-  @override
-  String get supportBody => 'Everything is open, no limits and no ads.';
-
-  @override
-  String get supportPerkFeatures => 'Every feature';
-
-  @override
-  String get supportPerkNoAds => 'No ads';
-
-  @override
-  String get supportPerkNoSubscription => 'No subscription';
-
-  @override
-  String get supportPerkNoAccount => 'No account required';
+  String get supportBody =>
+      'Everything is open: every feature, no ads, no subscription, no account required.';
 
   @override
   String get supportNothingLocked => 'No feature is reserved for contributors.';

@@ -13,10 +13,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// « Auxine est gratuite » : la page qui demande sans rien vendre.
 ///
-/// Ce qu'elle promet tient en trois invariants, et ce sont eux qu'on tient
-/// ici : le relevé des gratuités est écrit avant le montant, le montant ne
-/// paraît que là où le magasin le propose, et une fois le soutien versé la
-/// page ne redemande rien.
+/// Trois invariants : ce qui est ouvert est écrit avant le montant, le
+/// montant ne paraît que là où le magasin le propose, et une fois le soutien
+/// versé la page ne redemande rien.
 
 Future<AppLocalizations> _pump(
   WidgetTester tester, {
@@ -70,14 +69,10 @@ Future<AppLocalizations> _pump(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('le relevé des gratuités est écrit avant le montant', (tester) async {
+  testWidgets('ce qui est ouvert est écrit avant le montant', (tester) async {
     final l10n = await _pump(tester);
-    for (final perk in [l10n.supportPerkFeatures, l10n.supportPerkNoAds, l10n.supportPerkNoSubscription, l10n.supportPerkNoAccount]) {
-      expect(find.text(perk), findsOneWidget, reason: 'le relevé a perdu « $perk »');
-    }
-    expect(find.text(l10n.supportOptional.toUpperCase()), findsOneWidget, reason: "l'étiquette dit que rien n'est exigé");
     expect(
-      tester.getTopLeft(find.text(l10n.supportPerkFeatures)).dy,
+      tester.getTopLeft(find.text(l10n.supportBody)).dy,
       lessThan(tester.getTopLeft(find.text('CHF 5.00')).dy),
       reason: 'on montre ce qui est donné avant de demander',
     );
@@ -97,8 +92,8 @@ void main() {
     expect(find.text(l10n.supportUnavailable), findsOneWidget);
     expect(find.text(l10n.supportGive), findsNothing);
     expect(find.text('CHF 5.00'), findsNothing);
-    // Le relevé, lui, reste vrai : c'est l'application qu'il décrit.
-    expect(find.text(l10n.supportPerkFeatures), findsOneWidget);
+    // Ce que l'application est, en revanche, reste écrit.
+    expect(find.text(l10n.supportBody), findsOneWidget);
   });
 
   testWidgets("hors ligne, l'achat ne se propose pas", (tester) async {
@@ -110,23 +105,21 @@ void main() {
   testWidgets('une fois le soutien versé, la page ne redemande rien', (tester) async {
     final l10n = await _pump(tester, supported: true);
     expect(find.text(l10n.supportThanksTitle), findsOneWidget);
-    expect(find.text(l10n.supportAlready), findsOneWidget);
     expect(find.text(l10n.supportGive), findsNothing);
     expect(find.text('CHF 5.00'), findsNothing);
-    expect(find.text(l10n.supportOptional.toUpperCase()), findsNothing, reason: "l'étiquette a laissé la place au sceau");
+    // La phrase du haut descend sous le trait : la page se ferme sur ce
+    // qu'elle est venue dire plutôt que sur un blanc.
+    expect(find.text(l10n.supportBody), findsOneWidget);
   });
 
   testWidgets("dans l'onboarding, la version courte tient moins de place", (tester) async {
-    // Là, la page partage la hauteur avec les points de progression : elle
-    // laisse le relevé aux réglages pour que « Continuer sans » reste sous
-    // les yeux de qui vient d'installer l'application.
     await _pump(tester);
     final full = tester.getSize(find.byType(SupportPitch)).height;
     final l10n = await _pump(tester, compact: true);
     expect(tester.getSize(find.byType(SupportPitch)).height, lessThan(full));
-    expect(find.text(l10n.supportPerkFeatures), findsNothing);
     expect(find.text(l10n.supportNoThanks), findsOneWidget);
-    expect(find.text(l10n.supportRestore), findsNothing, reason: 'deux boutons fantômes verts empilés, on ne sait plus lequel est la sortie');
+    expect(find.text(l10n.supportRestore), findsNothing,
+        reason: 'deux boutons fantômes verts empilés, on ne sait plus lequel est la sortie');
     expect(find.text('CHF 5.00'), findsOneWidget, reason: 'la proposition, elle, reste entière');
   });
 }

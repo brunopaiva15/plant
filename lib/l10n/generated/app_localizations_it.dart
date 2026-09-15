@@ -3833,22 +3833,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportTitle => 'Auxine è gratuita';
 
   @override
-  String get supportOptional => 'Sostegno facoltativo';
-
-  @override
-  String get supportBody => 'Tutto è aperto, senza limiti né pubblicità.';
-
-  @override
-  String get supportPerkFeatures => 'Tutte le funzioni';
-
-  @override
-  String get supportPerkNoAds => 'Senza pubblicità';
-
-  @override
-  String get supportPerkNoSubscription => 'Senza abbonamento';
-
-  @override
-  String get supportPerkNoAccount => 'Account non obbligatorio';
+  String get supportBody =>
+      'Tutto è aperto: tutte le funzioni, senza pubblicità, senza abbonamento, senza account obbligatorio.';
 
   @override
   String get supportNothingLocked =>

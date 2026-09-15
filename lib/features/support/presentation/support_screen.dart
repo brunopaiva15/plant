@@ -31,12 +31,12 @@ class SupportScreen extends ConsumerWidget {
 
 /// Le corps de la proposition, réutilisé par l'écran et par l'onboarding.
 ///
-/// Il se lit de haut en bas comme une démonstration en quatre temps : la
-/// plante sur sa lueur, l'étiquette qui dit d'emblée que rien n'est exigé, le
-/// relevé de ce qui est gratuit — quatre faits, pas une phrase de plus —, et
-/// seulement ensuite le montant. Demander avant d'avoir montré ce qui est
-/// donné, c'est ce que faisait la version précédente : un titre, deux lignes,
-/// un bouton.
+/// Cinq pièces, pas une de plus : la plante sur sa lueur, une phrase à la
+/// main, ce qui est ouvert, un trait, le montant et son bouton. Une version
+/// intermédiaire alignait une pastille en capitales, une grille de quatre
+/// tuiles à icônes et une carte de prix — la page d'accueil de n'importe quel
+/// service, et le contraire de cette application, qui est du papier et de
+/// l'argile. Le relief se garde pour ce qu'on touche ; le reste est écrit.
 class SupportPitch extends ConsumerStatefulWidget {
   const SupportPitch({super.key, this.onDone, this.compact = false});
 
@@ -44,14 +44,13 @@ class SupportPitch extends ConsumerStatefulWidget {
   /// sert pour passer à la suite ; l'écran des réglages n'en a pas besoin.
   final VoidCallback? onDone;
 
-  /// La version courte, celle de l'onboarding : la scène rapetisse et le
-  /// relevé s'efface.
+  /// La version de l'onboarding : la scène rapetisse et la restauration se
+  /// retire.
   ///
   /// La page y partage la hauteur avec les points de progression, et le geste
   /// qui passe outre doit rester sous les yeux : quelqu'un qui vient
   /// d'installer l'application ne doit pas avoir à faire défiler pour trouver
-  /// « Continuer sans ». Aux réglages, la page est venue pour elle-même et
-  /// peut tout montrer.
+  /// « Continuer sans ».
   final bool compact;
 
   @override
@@ -97,11 +96,14 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
     if (found) widget.onDone?.call();
   }
 
-  /// Ce qu'on propose, ou ce qui l'empêche : c'est le seul bloc de la page qui
-  /// change d'un appareil à l'autre.
-  Widget _ask(bool supported) {
+  /// Ce qui vient sous le trait : la proposition, ou ce qui l'empêche. Une
+  /// fois le soutien versé il n'y a plus rien à demander, et c'est la phrase
+  /// du haut qui descend là, en plus petit — la page se ferme sur ce qu'elle
+  /// est venue dire.
+  Widget _below(bool supported) {
     final l10n = context.l10n;
-    if (supported) return const _Thanks();
+    final c = context.colors;
+    if (supported) return Text(l10n.supportBody, style: context.text.callout.copyWith(color: c.inkSecondary));
     // L'achat passe par le magasin, et le magasin par le réseau : hors ligne
     // le bouton échouerait au moment de payer.
     if (!ref.watch(isOnlineProvider)) return OfflineBanner(message: l10n.offlineSupport, padding: EdgeInsets.zero);
@@ -110,7 +112,7 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
       error: (_, _) => _Unavailable(message: l10n.supportUnavailable),
       data: (offer) => offer == null
           ? _Unavailable(message: l10n.supportUnavailable)
-          : _GiveCard(price: offer.price, busy: _busy, onGive: _give, onRestore: _restore, showRestore: !widget.compact),
+          : _Offer(price: offer.price, busy: _busy, onGive: _give, onRestore: _restore, showRestore: !widget.compact),
     );
   }
 
@@ -122,51 +124,42 @@ class _SupportPitchState extends ConsumerState<SupportPitch> {
     final compact = widget.compact;
 
     return Column(
+      // Le texte est rangé à gauche, sous la scène, comme sur les écrans de
+      // l'onboarding : un titre d'affiche, pas une légende. Tout centrer
+      // donnait une affiche symétrique que rien ne tenait.
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(height: compact ? Space.xxs : Space.sm),
+        SizedBox(height: compact ? Space.xs : Space.md),
         Appear(
           key: const ValueKey('hero'),
-          child: _SupportHero(supported: supported, side: compact ? 104.0 : 128.0),
+          child: _SupportHero(supported: supported, side: compact ? 108.0 : 140.0),
         ),
-        SizedBox(height: compact ? Space.xs : Space.md),
-        // L'étiquette dit l'essentiel avant le titre : rien n'est exigé. Une
-        // fois le soutien versé, elle n'a plus de raison d'être — c'est le
-        // sceau posé sur la scène qui prend sa place.
-        if (!supported) ...[
-          Appear(key: const ValueKey('badge'), rank: 1, child: _OptionalBadge(label: l10n.supportOptional)),
-          const SizedBox(height: Space.sm),
-        ],
+        const SizedBox(height: Space.xxl),
         Appear(
           key: const ValueKey('title'),
-          rank: 2,
-          child: Text(
-            supported ? l10n.supportThanksTitle : l10n.supportTitle,
-            style: context.text.display,
-            textAlign: TextAlign.center,
-          ),
+          rank: 1,
+          child: Text(supported ? l10n.supportThanksTitle : l10n.supportTitle, style: context.text.display),
         ),
-        const SizedBox(height: Space.xs),
+        const SizedBox(height: Space.sm),
         Appear(
           key: const ValueKey('body'),
-          rank: 3,
+          rank: 2,
           child: Text(
             supported ? l10n.supportThanksBody : l10n.supportBody,
             style: context.text.body.copyWith(color: c.inkSecondary),
-            textAlign: TextAlign.center,
           ),
         ),
-        if (!compact) ...[
-          const SizedBox(height: Space.xl),
-          const Appear(key: ValueKey('ledger'), rank: 4, child: _FreeLedger()),
-        ],
+        const SizedBox(height: Space.xxl),
+        // Le seul trait de toute la page, là où elle change de sujet : ce qui
+        // est donné au-dessus, ce qu'on peut donner en dessous.
+        Appear(key: const ValueKey('rule'), rank: 3, child: Divider(height: 1, thickness: 1, color: c.line)),
         const SizedBox(height: Space.xl),
-        Appear(key: const ValueKey('ask'), rank: 5, child: _ask(supported)),
+        Appear(key: const ValueKey('below'), rank: 4, child: _below(supported)),
         if (widget.onDone != null) ...[
-          const SizedBox(height: Space.xs),
+          const SizedBox(height: Space.md),
           Appear(
             key: const ValueKey('done'),
-            rank: 6,
+            rank: 5,
             child: FloraButton(
               label: supported ? l10n.continueLabel : l10n.supportNoThanks,
               style: FloraButtonStyle.ghost,
@@ -269,134 +262,14 @@ class _Seal extends StatelessWidget {
   }
 }
 
-/// L'étiquette au-dessus du titre : une pilule d'argile, le mot en petites
-/// capitales. Elle dit ce qu'on attend de la page avant que la page ne le
-/// demande.
-class _OptionalBadge extends StatelessWidget {
-  const _OptionalBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Center(
-      child: ClayBox(
-        color: c.sageSoft,
-        shape: const ClayShape.pill(),
-        padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: 6),
-        child: Text(
-          label.toUpperCase(),
-          style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w700, letterSpacing: 0.8),
-        ),
-      ),
-    );
-  }
-}
-
-/// Le relevé de ce qui est gratuit : quatre faits, quatre pièces.
+/// La proposition : combien, et le bouton.
 ///
-/// « Toutes les fonctions sont gratuites » est une phrase, et une phrase se
-/// survole. Quatre pièces qu'on lit d'un regard disent ce que l'application
-/// ne fait pas payer, et c'est cela — pas le bouton — qui donne son sens au
-/// geste d'après.
-class _FreeLedger extends StatelessWidget {
-  const _FreeLedger();
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    final l10n = context.l10n;
-    final perks = <Widget>[
-      _Perk(icon: CupertinoIcons.square_grid_2x2_fill, tint: c.sage, soft: c.sageSoft, label: l10n.supportPerkFeatures, variant: 0),
-      _Perk(icon: CupertinoIcons.eye_slash, tint: c.terracotta, soft: c.terracottaSoft, label: l10n.supportPerkNoAds, variant: 1),
-      _Perk(icon: CupertinoIcons.repeat, tint: c.water, soft: c.waterSoft, label: l10n.supportPerkNoSubscription, variant: 2),
-      _Perk(icon: CupertinoIcons.person, tint: c.sun, soft: c.sunSoft, label: l10n.supportPerkNoAccount, variant: 3),
-    ];
-    // À gros caractères, deux colonnes ne laissent plus de quoi écrire « Sans
-    // abonnement » : les pièces se remettent en file.
-    if (MediaQuery.textScalerOf(context).scale(13) > 19) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final (i, perk) in perks.indexed) ...[
-            if (i > 0) const SizedBox(height: Space.xs),
-            perk,
-          ],
-        ],
-      );
-    }
-    // Deux pièces d'une même rangée font la même hauteur, quelle que soit la
-    // longueur de leur libellé : une carte plus courte que sa voisine se
-    // verrait comme une erreur.
-    Widget row(Widget left, Widget right) => IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [Expanded(child: left), const SizedBox(width: Space.xs), Expanded(child: right)],
-      ),
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        row(perks[0], perks[1]),
-        const SizedBox(height: Space.xs),
-        row(perks[2], perks[3]),
-      ],
-    );
-  }
-}
-
-/// Une pièce du relevé : le galet de couleur, et ce qui est gratuit.
-class _Perk extends StatelessWidget {
-  const _Perk({required this.icon, required this.tint, required this.soft, required this.label, required this.variant});
-
-  final IconData icon;
-  final Color tint;
-  final Color soft;
-  final String label;
-
-  /// Le gabarit du galet. Quatre formes, une par pièce : deux voisines ne
-  /// sont jamais la même pâte.
-  final int variant;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    // Le galet suit le texte : à 300 %, un rond de 34 points à côté d'un
-    // libellé de 40 aurait l'air d'une miette.
-    final pebble = MediaQuery.textScalerOf(context).scale(34).clamp(34.0, 48.0);
-    return MergeSemantics(
-      child: FloraCard(
-        padding: const EdgeInsets.all(Space.sm),
-        child: Row(
-          children: [
-            ClayBox(
-              color: soft,
-              shape: ClayShape.blob(variant),
-              width: pebble,
-              height: pebble,
-              alignment: Alignment.center,
-              child: Icon(icon, size: pebble * 0.46, color: tint),
-            ),
-            const SizedBox(width: Space.xs),
-            Expanded(
-              child: Text(label, style: context.text.caption.copyWith(color: c.ink, fontWeight: FontWeight.w600), maxLines: 2),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// La proposition : combien, une fois, et le bouton.
-///
-/// Le montant est écrit en grand et à la main, comme sur l'étiquette d'un
-/// pot : un prix qu'on lit d'un coup d'œil, pas un tarif au bas d'un bouton.
-/// La carte est en terre cuite, la couleur de ce qui compte dans
-/// l'application, et le bouton reste vert, celui de l'action.
-class _GiveCard extends StatelessWidget {
-  const _GiveCard({required this.price, required this.busy, required this.onGive, required this.onRestore, required this.showRestore});
+/// Le montant est tracé à la main, à la taille du titre, et sa précision se
+/// pose à côté sur la même ligne de base — un prix écrit sur une étiquette de
+/// pot, pas un tarif au bas d'un bouton. Il n'y a pas de carte autour : rien
+/// à encadrer, la page entière est déjà la proposition.
+class _Offer extends StatelessWidget {
+  const _Offer({required this.price, required this.busy, required this.onGive, required this.onRestore, required this.showRestore});
 
   final String price;
   final bool busy;
@@ -416,37 +289,21 @@ class _GiveCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        FloraCard(
-          color: c.terracottaSoft,
-          depth: ClayDepth.deep,
-          radius: Radii.xl,
-          padding: const EdgeInsets.fromLTRB(Space.md, Space.lg, Space.md, Space.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(l10n.supportSettings, style: context.text.title3, textAlign: TextAlign.center),
-              const SizedBox(height: Space.xs),
-              Text(price, style: context.text.display.copyWith(color: c.terracotta), textAlign: TextAlign.center),
-              Text(
-                l10n.supportOnce,
-                style: context.text.caption.copyWith(color: c.inkSecondary),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Space.md),
-              FloraButton(label: l10n.supportGive, expand: true, loading: busy, onPressed: onGive),
-              const SizedBox(height: Space.sm),
-              // Sur une carte teintée, l'encre tertiaire tombe sous 4,5:1 :
-              // c'est la secondaire qui porte la phrase.
-              Text(
-                l10n.supportNothingLocked,
-                style: context.text.caption.copyWith(color: c.inkSecondary),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(price, style: context.text.display.copyWith(color: c.terracotta)),
+            const SizedBox(width: Space.sm),
+            Expanded(child: Text(l10n.supportOnce, style: context.text.callout.copyWith(color: c.inkSecondary))),
+          ],
         ),
+        const SizedBox(height: Space.lg),
+        FloraButton(label: l10n.supportGive, expand: true, loading: busy, onPressed: onGive),
+        const SizedBox(height: Space.xs),
+        Text(l10n.supportNothingLocked, style: context.text.caption.copyWith(color: c.inkTertiary)),
         if (showRestore) ...[
-          const SizedBox(height: Space.xxs),
+          const SizedBox(height: Space.xs),
           FloraButton(
             label: l10n.supportRestore,
             style: FloraButtonStyle.ghost,
@@ -460,36 +317,6 @@ class _GiveCard extends StatelessWidget {
   }
 }
 
-/// Une fois le soutien versé, la carte du montant n'a plus lieu d'être : il
-/// reste un mot, et le cœur qui le porte.
-class _Thanks extends StatelessWidget {
-  const _Thanks();
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return FloraCard(
-      color: c.roseSoft,
-      radius: Radii.xl,
-      padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.sm),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(CupertinoIcons.heart_fill, size: 16, color: c.rose),
-          const SizedBox(width: Space.xs),
-          Flexible(
-            child: Text(
-              context.l10n.supportAlready,
-              style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Pas de magasin ici : on le dit, plutôt que d'afficher un bouton inerte.
 class _Unavailable extends StatelessWidget {
   const _Unavailable({required this.message});
@@ -499,13 +326,6 @@ class _Unavailable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.md),
-      child: Text(
-        message,
-        style: context.text.callout.copyWith(color: c.inkSecondary),
-        textAlign: TextAlign.center,
-      ),
-    );
+    return Text(message, style: context.text.callout.copyWith(color: c.inkSecondary));
   }
 }

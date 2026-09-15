@@ -6546,41 +6546,11 @@ abstract class AppLocalizations {
   /// **'Auxine est gratuite'**
   String get supportTitle;
 
-  /// No description provided for @supportOptional.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soutien facultatif'**
-  String get supportOptional;
-
   /// No description provided for @supportBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tout est ouvert, sans limite ni publicité.'**
+  /// **'Tout est ouvert : toutes les fonctions, sans publicité, sans abonnement, sans compte obligatoire.'**
   String get supportBody;
-
-  /// No description provided for @supportPerkFeatures.
-  ///
-  /// In fr, this message translates to:
-  /// **'Toutes les fonctions'**
-  String get supportPerkFeatures;
-
-  /// No description provided for @supportPerkNoAds.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sans publicité'**
-  String get supportPerkNoAds;
-
-  /// No description provided for @supportPerkNoSubscription.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sans abonnement'**
-  String get supportPerkNoSubscription;
-
-  /// No description provided for @supportPerkNoAccount.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sans compte obligatoire'**
-  String get supportPerkNoAccount;
 
   /// No description provided for @supportNothingLocked.
   ///
