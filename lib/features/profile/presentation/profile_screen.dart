@@ -224,11 +224,11 @@ class ProfileScreen extends ConsumerWidget {
 /// Tout en bas et sans le nom de l'application : on ne vient pas ici pour
 /// apprendre comment elle s'appelle, mais pour retrouver un numéro de version
 /// avant d'écrire au support.
-class _AppFooter extends StatelessWidget {
+class _AppFooter extends ConsumerWidget {
   const _AppFooter();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
     final style = context.text.caption.copyWith(color: c.inkTertiary);
@@ -250,7 +250,7 @@ class _AppFooter extends StatelessWidget {
           ),
         ),
         const SizedBox(height: Space.xs),
-        Text(l10n.version('${AppConfig.version} (${AppConfig.build})'), style: style),
+        Text(l10n.version(ref.watch(appVersionProvider).label), style: style),
       ],
     );
   }

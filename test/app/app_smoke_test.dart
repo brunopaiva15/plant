@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flora/app/app.dart';
 import 'package:flora/app/providers.dart';
+import 'package:flora/core/config/app_version.dart';
 import 'package:flora/app/router.dart';
 import 'package:flora/data/auth/local_auth_repository.dart';
 import 'package:flora/data/db/database.dart';
@@ -47,6 +48,9 @@ Future<ProviderContainer> boot(WidgetTester tester, {bool onboardingDone = true,
     notificationServiceProvider.overrideWithValue(FakeNotifications()),
     authRepositoryProvider.overrideWithValue(auth),
     gardenIdProvider.overrideWithValue(auth.gardenId),
+    // Hors binaire installé, il n'y a pas de version à lire : le banc
+    // d'essai donne la sienne, comme `main()` donne celle du binaire.
+    appVersionProvider.overrideWithValue(const AppVersion(name: '1.0.0', build: '1')),
   ]);
   if (seed != null) await seed(container);
   addTearDown(container.dispose);

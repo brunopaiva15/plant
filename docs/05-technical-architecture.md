@@ -10,6 +10,7 @@
 | Photos | `camera` + `image_picker` + `image` (isolate) | viseur intégré à l'étape photo, pickers natifs en repli, compression + miniatures hors UI thread |
 | Notifications | `flutter_local_notifications` + `timezone` | planification locale fiable, actions inline |
 | Prefs | `shared_preferences` | réglages simples |
+| Version affichée | `package_info_plus` (`AppVersion`, `appVersionProvider`) | la ligne `version:` du `pubspec.yaml` est le seul numéro à changer : Xcode, Gradle et l'écran des réglages la lisent tous là |
 | i18n | `flutter_localizations` + ARB (`gen-l10n`) | fr / en / de / it, pluriels, dates locales |
 | Backend (P3) | Supabase derrière `RemoteDataSource` | Postgres + Auth + Storage + Realtime, mais remplaçable |
 | Espèces | GBIF (`SpeciesService`) | gratuit, sans clé, taxonomie de référence, images d'observations avec attribution |

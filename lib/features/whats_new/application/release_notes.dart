@@ -192,9 +192,12 @@ List<ReleaseNote> releaseNotes(AppLocalizations l10n) {
 
 /// Décide s'il y a quelque chose à annoncer, et s'en souvient.
 class WhatsNew {
-  const WhatsNew(this._prefs);
+  const WhatsNew(this._prefs, this._version);
 
   final PreferencesService _prefs;
+
+  /// La version qui tourne, telle que [AppVersion] la lit sur le binaire.
+  final String _version;
 
   /// La nouveauté à ouvrir au lancement, ou `null` s'il n'y a rien à dire.
   ///
@@ -218,7 +221,7 @@ class WhatsNew {
     if (!_prefs.onboardingDone) return null;
     final firstRun = _prefs.lastRunVersion == null;
     final seen = _prefs.seenReleaseNotes;
-    await _prefs.setLastRunVersion(AppConfig.version);
+    await _prefs.setLastRunVersion(_version);
     // L'union, et non la liste du catalogue : une nouveauté retirée du
     // catalogue reste vue, et son identifiant ne peut pas resservir par
     // accident.
@@ -235,4 +238,4 @@ class WhatsNew {
   ReleaseNote? latest(List<ReleaseNote> notes) => notes.isEmpty ? null : notes.last;
 }
 
-final whatsNewProvider = Provider<WhatsNew>((ref) => WhatsNew(ref.watch(preferencesServiceProvider)));
+final whatsNewProvider = Provider<WhatsNew>((ref) => WhatsNew(ref.watch(preferencesServiceProvider), ref.watch(appVersionProvider).name));
