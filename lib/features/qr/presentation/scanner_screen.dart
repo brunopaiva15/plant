@@ -15,7 +15,7 @@ import '../../account/presentation/join_garden_sheet.dart';
 import '../../inventory/presentation/inventory_item_sheet.dart';
 import '../application/plant_links.dart';
 
-/// Scanner de QR codes : ouvre directement la fiche de la plante reconnue.
+/// Scanner de QR codes : ouvre directement la cible reconnue dans Auxine.
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
 
@@ -56,11 +56,24 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       if (root != null && root.mounted) await showJoinGardenSheet(root, code: link.id);
       return;
     }
-    // Une étiquette peut viser une plante ou un article d'inventaire : on
-    // vérifie que la cible existe encore avant de quitter le scanner.
+    // Une espèce vient du catalogue de l'application : son nom scientifique
+    // suffit pour ouvrir la même fiche d'entretien que dans l'encyclopédie.
+    if (link.kind == FloraLinkKind.species) {
+      _handling = true;
+      Haptics.success();
+      await _controller.stop();
+      if (!mounted) return;
+      final router = GoRouter.of(context);
+      context.pop();
+      router.push(Routes.encyclopediaSpecies(link.id));
+      return;
+    }
+    // Une étiquette de plante ou d'article d'inventaire vise une donnée locale :
+    // on vérifie que la cible existe encore avant de quitter le scanner.
     final target = switch (link.kind) {
       FloraLinkKind.plant => await ref.read(plantRepositoryProvider).getPlant(link.id),
       FloraLinkKind.item => await ref.read(inventoryRepositoryProvider).get(link.id),
+      FloraLinkKind.species => null, // traité juste au-dessus
       FloraLinkKind.join => null, // traité juste au-dessus
     };
     if (!mounted) return;

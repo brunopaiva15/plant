@@ -15,8 +15,8 @@ import 'router.dart';
 ///
 /// La cible s'ouvre par-dessus l'accueil plutôt qu'à sa place — sinon le
 /// bouton retour de la fiche n'aurait nulle part où revenir au démarrage à
-/// froid. Et comme le scanner de l'application, on vérifie que la cible
-/// existe encore : une étiquette survit à la plante qu'elle désignait.
+/// froid. Les données locales sont vérifiées avant ouverture ; une espèce,
+/// elle, est adressée directement par son nom scientifique dans le catalogue.
 Future<void> openFloraLink(Ref ref, GoRouter router, FloraLink link) async {
   switch (link.kind) {
     case FloraLinkKind.plant:
@@ -31,6 +31,9 @@ Future<void> openFloraLink(Ref ref, GoRouter router, FloraLink link) async {
       if (context == null || !context.mounted) return;
       Haptics.success();
       await showInventoryItemSheet(context, existing: item);
+    case FloraLinkKind.species:
+      Haptics.success();
+      router.push(Routes.encyclopediaSpecies(link.id));
     case FloraLinkKind.join:
       // Invitation reçue par lien : la feuille dit qui invite et dans quel
       // jardin avant que l'utilisateur accepte quoi que ce soit.
