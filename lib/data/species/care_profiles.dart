@@ -2986,6 +2986,7 @@ abstract final class CareProfiles {
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'waterAtBase'],
+      source: 'RHS',
     ),
     'Magnolia': CareProfile(
       wateringSummerDays: 7,
@@ -3088,6 +3089,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['hardyOutdoors', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Echinops': CareProfile(
       wateringSummerDays: 4,
@@ -3118,6 +3120,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     // Les séneçons du catalogue sont les herbacées sauvages (jacobaea, ovatus,
     // vulgaris), pas les succulentes du genre Curio : prairie rustique, pas
@@ -3176,11 +3179,12 @@ abstract final class CareProfiles {
       soil: SoilKind.draining,
       fertilizingDays: 30,
       fertilizingWindow: MonthWindow(4, 8),
-      damageBelowC: -25,
+      damageBelowC: -18,
       propagation: [Propagation.seed, Propagation.division],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['drySoilFirst', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Leucanthemum': CareProfile(
       wateringSummerDays: 4,
@@ -3191,11 +3195,12 @@ abstract final class CareProfiles {
       soil: SoilKind.standard,
       fertilizingDays: 30,
       fertilizingWindow: MonthWindow(4, 8),
-      damageBelowC: -20,
+      damageBelowC: -22,
       propagation: [Propagation.seed, Propagation.division],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Coreopsis': CareProfile(
       wateringSummerDays: 4,
@@ -3206,11 +3211,12 @@ abstract final class CareProfiles {
       soil: SoilKind.draining,
       fertilizingDays: 30,
       fertilizingWindow: MonthWindow(4, 8),
-      damageBelowC: -20,
+      damageBelowC: -12,
       propagation: [Propagation.seed, Propagation.division],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Cosmos': CareProfile(
       wateringSummerDays: 2,
@@ -3236,11 +3242,12 @@ abstract final class CareProfiles {
       soil: SoilKind.rich,
       fertilizingDays: 30,
       fertilizingWindow: MonthWindow(4, 8),
-      damageBelowC: -25,
+      damageBelowC: -12,
       propagation: [Propagation.seed, Propagation.division],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Aloe': CareProfile(
       wateringSummerDays: 14,
@@ -3287,6 +3294,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.stemCutting],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['deadheadFlowers', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Gymnadenia': CareProfile(
       wateringSummerDays: 7,
@@ -3474,6 +3482,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.offsets],
       issues: [CommonIssue.overwatering, CommonIssue.dryTips],
       tipKeys: ['letFoliageDieBack', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Scilla': CareProfile(
       wateringSummerDays: 12,
@@ -3485,10 +3494,11 @@ abstract final class CareProfiles {
       water: WaterTolerance.sensitive,
       fertilizingDays: 45,
       repotEveryMonths: 30,
-      damageBelowC: -15,
+      damageBelowC: -18,
       propagation: [Propagation.offsets],
       issues: [CommonIssue.overwatering, CommonIssue.dryTips],
       tipKeys: ['letFoliageDieBack', 'drySoilFirst'],
+      source: 'RHS',
     ),
     // Le genre couvre deux plantes opposées : le cordyline du jardin, rustique
     // (australis, fiche d'espèce) et l'arbre de Noël tropical, d'intérieur.
@@ -3536,6 +3546,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['thirstyPlant', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Coleus': CareProfile(
       wateringSummerDays: 5,
@@ -3581,6 +3592,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Origanum': CareProfile(
       wateringSummerDays: 5,
@@ -3642,6 +3654,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.stemCutting, Propagation.water],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['thirstyPlant', 'containItsRoots'],
+      source: 'RHS',
     ),
     'Oenanthe': CareProfile(
       wateringSummerDays: 3,
