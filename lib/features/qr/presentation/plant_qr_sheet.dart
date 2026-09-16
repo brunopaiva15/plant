@@ -10,6 +10,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
 import '../application/label_pdf.dart';
 import '../application/plant_links.dart';
+import 'label_designer_sheet.dart';
 
 /// QR code d'une plante, à coller sur le pot.
 Future<void> showPlantQrSheet(BuildContext context, {required Plant plant}) => showFloraSheet<void>(context, builder: (_) => _QrBody(plant: plant));
@@ -51,9 +52,13 @@ class _QrBody extends StatelessWidget {
   }
 }
 
-/// Génère la planche PDF et ouvre la feuille de partage / impression native.
+/// Configure la planche, génère le PDF puis ouvre la feuille de partage /
+/// impression native. Le même configurateur sert aux plantes, espèces et lots.
 Future<void> shareLabels(BuildContext context, List<LabelData> labels) async {
+  if (labels.isEmpty) return;
+  final settings = await showLabelDesignerSheet(context, labels: labels);
+  if (settings == null || !context.mounted) return;
   Haptics.light();
-  final bytes = await LabelPdf.build(labels, appName: AppConfig.appName);
+  final bytes = await LabelPdf.build(labels, appName: AppConfig.appName, settings: settings);
   await Printing.sharePdf(bytes: bytes, filename: '${AppConfig.appName.toLowerCase()}-labels.pdf');
 }
