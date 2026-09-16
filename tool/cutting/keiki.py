@@ -44,7 +44,10 @@ T_LO, T_HI = T_KEIKI - 0.075, T_KEIKI + 0.075
 # Dehors de la hampe, cote camera : le keiki ne passe jamais derriere.
 SENS = (VUE * 0.66 + DROITE * 0.75).normalized()
 AZ_SENS = degrees(atan2(SENS.y, SENS.x))
-SENS_RACINE = (SENS * 0.55 - UP * 0.84).normalized()
+# Les racines aériennes pendent : elles quittent la base vers l'extérieur,
+# mais la gravité l'emporte. Trop couchées, elles traversaient les feuilles
+# et ressortaient par le côté du pot.
+SENS_RACINE = (SENS * 0.30 - UP * 0.95).normalized()
 
 
 def _pt(t):
@@ -196,9 +199,11 @@ def keiki_rosette(mats, base, echelle=1.0, racines=0.0, dans=None, coeur=0.0, M=
         objets += feuille_orchidee("Keiki_Coeur", base, AZ_SENS + 4.0, 66.0,
                                    0.120 * echelle * coeur, 0.80, mats, matiere="pousse", ep=0.020)
     if racines > 0.0:
-        objets += faisceau_racines("RacineKeiki", base - UP * 0.012, SENS_RACINE, mats,
+        # Les racines naissent sous la rosette, pas dans son coeur : sinon
+        # elles jaillissent entre les feuilles et les transpercent.
+        objets += faisceau_racines("RacineKeiki", base - UP * 0.045, SENS_RACINE, mats,
                                    racines, brins=4, longueur=0.30, epaisseur=0.019,
-                                   matiere="racine_fine", graine=3, ecart=1.2, aplati=0.45,
+                                   matiere="racine_fine", graine=3, ecart=0.9, aplati=0.95,
                                    dans=dans)
     return _pose(objets, M)
 
@@ -311,14 +316,16 @@ ECH_SEUL = 1.15
 
 def etape_roots(mats, f):
     # Le keiki tourne d'un quart et ses racines s'etalent : sans elles, il
-    # ne reprend pas.
+    # ne reprend pas. Les plaies sont deja seches : on est apres la coupe.
     M = pivote(SEUL, UP, 24.0 * adouci(f / 0.70))
-    return morceau_keiki(mats, SEUL, echelle=ECH_SEUL, racines=1.0, sechage=0.0, M=M)
+    return morceau_keiki(mats, SEUL, echelle=ECH_SEUL, racines=1.0, sechage=1.0, M=M)
 
 
 def etape_pot(mats, f):
-    # Dans un petit pot d'ecorces : la base affleure, les racines pendent
-    # dans le creux, jamais a travers la paroi.
+    # Dans un petit pot d'ecorces : la base affleure, les racines descendent
+    # dans le creux, jamais a travers la paroi. Le creux se lit dans le
+    # repere du keiki, que [M] emporte : son decalage vaut donc
+    # SEUL - cible - haut, comme pour le rejet de l'aloe.
     echelle = 0.60
     descente = adouci(f / 0.72)
     cible = Vector((0.0, 0.0, z_terre(echelle) - 0.05))
@@ -326,7 +333,7 @@ def etape_pot(mats, f):
     M = Matrix.Translation(cible - SEUL + haut)
     objets = pot_et_terre(mats, echelle)
     objets += morceau_keiki(mats, SEUL, echelle=1.0, racines=1.0, sechage=1.0,
-                            dans=creux_pot(echelle, decalage=SEUL - haut), M=M)
+                            dans=creux_pot(echelle, decalage=SEUL - cible - haut), M=M)
     return objets
 
 
