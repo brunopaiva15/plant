@@ -94,7 +94,10 @@ def touffe(mats, M=None, dz=0.0, pousse=1.0, groupes=None):
     objets = []
     for i, c in enumerate(COURONNES):
         Mi = M @ groupes.get(i, Matrix.Identity(4))
-        objets += couronne("Couronne%d" % i, mats, c["pos"] + UP * dz, c["az"], c["feuilles"],
+        # Les petioles partent du collet, juste sous la terre, pas du fond
+        # du pot : sinon les limbes traversent sa paroi et la motte.
+        base = c["pos"] + UP * (Z_SOL - 0.06 + dz)
+        objets += couronne("Couronne%d" % i, mats, base, c["az"], c["feuilles"],
                            echelle=c["ech"], M=Mi, pousse=pousse)
     return objets
 
@@ -225,8 +228,9 @@ def etape_separate(mats, f):
                                  brins=6, longueur=0.44, etale=part, graine=i)
         # Un peu de terre reste prise dans chaque chevelu : chaque moitie
         # part avec sa motte, pas avec une coupe nette.
+        # La motte rejoint le collet releve et le depart des racines.
         objets.append(sphere("Terre%d" % i, Mi @ (c["pos"] + UP * (Z_SOL - 0.24)), 0.21 * c["ech"],
-                             mats["motte"], seg=20, echelle=(1.05, 0.95, 0.62)))
+                             mats["motte"], seg=20, echelle=(1.05, 0.95, 1.05)))
     objets += touffe(mats, groupes={i: _ecartement(i, part) for i in range(len(COURONNES))})
     return objets
 
