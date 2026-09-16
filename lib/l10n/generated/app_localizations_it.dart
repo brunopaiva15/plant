@@ -915,6 +915,66 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pgOffSettleNote => 'Ripresa in tre-sei settimane';
 
   @override
+  String get pgKeikiName => 'Separare un keiki';
+
+  @override
+  String get pgKeikiHint => 'Il pollone dell’orchidea parte con le sue radici';
+
+  @override
+  String get pgKeikiSpotTitle => 'Il keiki';
+
+  @override
+  String get pgKeikiSpotBody =>
+      'Una giovane pianta nasce su un nodo dello stelo: due foglie e radici aeree la rendono riconoscibile.';
+
+  @override
+  String get pgKeikiSpotNote => 'Pollone già formato';
+
+  @override
+  String get pgKeikiWaitTitle => 'Le radici';
+
+  @override
+  String get pgKeikiWaitBody =>
+      'Le radici si allungano lungo lo stelo. Tre o cinque, lunghe qualche centimetro, e il keiki vivrà da solo.';
+
+  @override
+  String get pgKeikiWaitNote => 'Radici pronte in due o tre mesi';
+
+  @override
+  String get pgKeikiDetachTitle => 'La separazione';
+
+  @override
+  String get pgKeikiDetachBody =>
+      'Lo stelo si taglia ai due lati del keiki, a uno o due centimetri. Strappare rovinerebbe la base.';
+
+  @override
+  String get pgKeikiDetachNote => 'Strappare il keiki';
+
+  @override
+  String get pgKeikiRootsTitle => 'Le radici del keiki';
+
+  @override
+  String get pgKeikiRootsBody =>
+      'Il keiki conserva le radici aeree: saranno loro a riprendere nel vaso.';
+
+  @override
+  String get pgKeikiPotTitle => 'Il vaso';
+
+  @override
+  String get pgKeikiPotBody =>
+      'Un vaso piccolo con corteccia, la base del keiki a filo del substrato, senza interrarla.';
+
+  @override
+  String get pgKeikiSettleTitle => 'La ripresa';
+
+  @override
+  String get pgKeikiSettleBody =>
+      'Una foglia nuova al centro dice che il keiki ha attecchito.';
+
+  @override
+  String get pgKeikiSettleNote => 'Ripresa in uno o due mesi';
+
+  @override
   String get pgSegmentName => 'Talea di segmento';
 
   @override

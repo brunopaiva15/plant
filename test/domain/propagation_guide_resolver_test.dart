@@ -44,7 +44,24 @@ void main() {
       expect(_kind('Pilea peperomioides'), PropagationGuideKind.offset);
       expect(_kind('Aloe vera'), PropagationGuideKind.offset);
       expect(_kind('Chlorophytum comosum'), PropagationGuideKind.offset);
-      expect(_kind('Phalaenopsis amabilis'), PropagationGuideKind.offset);
+    });
+
+    test('un keiki pour les orchidées à hampe', () {
+      expect(_kind('Phalaenopsis amabilis'), PropagationGuideKind.keiki);
+      expect(_kind('Phalaenopsis equestris'), PropagationGuideKind.keiki,
+          reason: 'une orchidée d\'un seul pied n\'a rien à diviser');
+      // Le dendrobium, lui, se divise aussi : le choix reste ouvert.
+      expect(_options('Dendrobium nobile').map((o) => o.kind),
+          contains(PropagationGuideKind.keiki));
+      // Le keiki s'installe dans le substrat de l'espèce, pas dans rien.
+      expect(_options('Phalaenopsis amabilis').single.medium, RootingMedium.substrate);
+    });
+
+    test('une orchidée de pleine terre se divise, pas de rejet au pied', () {
+      // Le genre n'est pas dans la liste des keikis : le geste du rejet au
+      // pied ne se montre pas pour une orchidée.
+      final options = _options('Ophrys sphegodes', family: 'Orchidaceae');
+      expect(options.map((o) => o.kind), [PropagationGuideKind.division]);
     });
 
     test('un segment pour les cactus et les succulentes à cicatriser', () {

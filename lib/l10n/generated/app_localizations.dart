@@ -1662,6 +1662,114 @@ abstract class AppLocalizations {
   /// **'Reprise en trois à six semaines'**
   String get pgOffSettleNote;
 
+  /// No description provided for @pgKeikiName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Séparer un keiki'**
+  String get pgKeikiName;
+
+  /// No description provided for @pgKeikiHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rejet d’orchidée part avec ses racines'**
+  String get pgKeikiHint;
+
+  /// No description provided for @pgKeikiSpotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le keiki'**
+  String get pgKeikiSpotTitle;
+
+  /// No description provided for @pgKeikiSpotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un jeune plant naît sur un nœud de la hampe : deux feuilles et des racines aériennes le rendent identifiable.'**
+  String get pgKeikiSpotBody;
+
+  /// No description provided for @pgKeikiSpotNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejet déjà formé'**
+  String get pgKeikiSpotNote;
+
+  /// No description provided for @pgKeikiWaitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines'**
+  String get pgKeikiWaitTitle;
+
+  /// No description provided for @pgKeikiWaitBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines s’allongent sur la hampe. Trois à cinq, longues de quelques centimètres, et le keiki vivra seul.'**
+  String get pgKeikiWaitBody;
+
+  /// No description provided for @pgKeikiWaitNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Racines prêtes en deux à trois mois'**
+  String get pgKeikiWaitNote;
+
+  /// No description provided for @pgKeikiDetachTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La séparation'**
+  String get pgKeikiDetachTitle;
+
+  /// No description provided for @pgKeikiDetachBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La hampe se coupe de part et d’autre du keiki, à un ou deux centimètres. Tirer meurtrissait la base.'**
+  String get pgKeikiDetachBody;
+
+  /// No description provided for @pgKeikiDetachNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arracher le keiki'**
+  String get pgKeikiDetachNote;
+
+  /// No description provided for @pgKeikiRootsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les racines du keiki'**
+  String get pgKeikiRootsTitle;
+
+  /// No description provided for @pgKeikiRootsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le keiki garde ses racines aériennes : ce sont elles qui reprennent dans le pot.'**
+  String get pgKeikiRootsBody;
+
+  /// No description provided for @pgKeikiPotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pot'**
+  String get pgKeikiPotTitle;
+
+  /// No description provided for @pgKeikiPotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un petit pot d’écorces, la base du keiki affleurant le substrat, sans l’enterrer.'**
+  String get pgKeikiPotBody;
+
+  /// No description provided for @pgKeikiSettleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La reprise'**
+  String get pgKeikiSettleTitle;
+
+  /// No description provided for @pgKeikiSettleBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une feuille neuve au cœur dit que le keiki a pris.'**
+  String get pgKeikiSettleBody;
+
+  /// No description provided for @pgKeikiSettleNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprise en un à deux mois'**
+  String get pgKeikiSettleNote;
+
   /// No description provided for @pgSegmentName.
   ///
   /// In fr, this message translates to:

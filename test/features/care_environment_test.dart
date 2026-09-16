@@ -309,6 +309,22 @@ void main() {
       );
     });
 
+    test('une orchidée d\'appartement a sa hampe fleurie', () {
+      for (final nom in [
+        'Phalaenopsis amabilis',
+        'Dendrobium nobile',
+        'Cymbidium hybridum',
+      ]) {
+        expect(resolvePlantVisual(speciesName: nom), PlantVisualKind.orchid, reason: nom);
+      }
+      // Une orchidée terrestre du catalogue étendu garde la feuille large :
+      // la silhouette en pot ne lui va pas.
+      expect(
+        resolvePlantVisual(speciesName: 'Ophrys sphegodes', family: 'Orchidaceae'),
+        PlantVisualKind.broadLeaf,
+      );
+    });
+
     test('les plantes qui retombent sont des lianes', () {
       for (final nom in [
         'Epipremnum aureum',

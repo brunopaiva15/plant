@@ -105,6 +105,7 @@ String _dossier(PropagationGuideKind kind) => switch (kind) {
       PropagationGuideKind.leafCutting => 'leaf_cutting',
       PropagationGuideKind.division => 'division',
       PropagationGuideKind.offset => 'offset',
+      PropagationGuideKind.keiki => 'keiki',
       PropagationGuideKind.succulentSegment => 'succulent_segment',
     };
 
@@ -229,6 +230,21 @@ final _offset = _guide(
   ],
 );
 
+/// Séparation d'un keiki — le rejet d'une orchidée, né sur sa hampe.
+final _keiki = _guide(
+  PropagationGuideKind.keiki,
+  (l) => l.pgKeikiName,
+  (l) => l.pgKeikiHint,
+  [
+    ((l) => l.pgKeikiSpotTitle, (l) => l.pgKeikiSpotBody, (c) => c.sage, PropagationNote(PropagationNoteKind.spot, (l) => l.pgKeikiSpotNote), false),
+    ((l) => l.pgKeikiWaitTitle, (l) => l.pgKeikiWaitBody, (c) => c.sage, PropagationNote(PropagationNoteKind.usual, (l) => l.pgKeikiWaitNote), false),
+    ((l) => l.pgKeikiDetachTitle, (l) => l.pgKeikiDetachBody, (c) => c.sun, PropagationNote(PropagationNoteKind.avoid, (l) => l.pgKeikiDetachNote), false),
+    ((l) => l.pgKeikiRootsTitle, (l) => l.pgKeikiRootsBody, (c) => c.sage, null, false),
+    ((l) => l.pgKeikiPotTitle, (l) => l.pgKeikiPotBody, (c) => c.terracotta, null, true),
+    ((l) => l.pgKeikiSettleTitle, (l) => l.pgKeikiSettleBody, (c) => c.sage, PropagationNote(PropagationNoteKind.usual, (l) => l.pgKeikiSettleNote), false),
+  ],
+);
+
 /// Bouture de segment — cactus et succulentes à segments.
 final _succulentSegment = _guide(
   PropagationGuideKind.succulentSegment,
@@ -251,6 +267,7 @@ final propagationGuides = <PropagationGuideKind, PropagationGuide>{
   PropagationGuideKind.leafCutting: _leafCutting,
   PropagationGuideKind.division: _division,
   PropagationGuideKind.offset: _offset,
+  PropagationGuideKind.keiki: _keiki,
   PropagationGuideKind.succulentSegment: _succulentSegment,
 };
 

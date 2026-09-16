@@ -105,6 +105,7 @@ class InfomaniakPropagationRefiner implements PropagationGuideRefiner {
         PropagationGuideKind.leafCutting => 'leafCutting',
         PropagationGuideKind.division => 'division',
         PropagationGuideKind.offset => 'offsets',
+        PropagationGuideKind.keiki => 'offsets',
         PropagationGuideKind.succulentSegment => 'stemCutting',
       };
 
@@ -150,6 +151,14 @@ class InfomaniakPropagationRefiner implements PropagationGuideRefiner {
       'roots: check that the offset carries roots of its own',
       'pot: pot it in a small pot, in the substrate the species wants',
       'establish: how the offset shows it has taken',
+    ],
+    PropagationGuideKind.keiki: [
+      'identify_keiki: find a young plant growing on a node of the flower spike, with leaves of its own',
+      'wait_roots: let its aerial roots lengthen along the spike before thinking of taking it',
+      'separate: cut the spike on either side of the keiki, never pull it off the spike',
+      'roots: check that the keiki carries its aerial roots, which are what will take in the pot',
+      'pot: pot it in a small pot of orchid substrate, the base level with the surface',
+      'establish: how the keiki shows it has taken',
     ],
     PropagationGuideKind.succulentSegment: [
       'choose_segment: pick a firm, healthy terminal segment',

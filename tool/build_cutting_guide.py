@@ -36,7 +36,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-PACKS = ["stem_node_vine", "stem_soft", "leaf_cutting", "division", "offset", "succulent_segment"]
+PACKS = ["stem_node_vine", "stem_soft", "leaf_cutting", "division", "offset", "keiki", "succulent_segment"]
 
 
 def _options(argv):

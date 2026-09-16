@@ -25,7 +25,7 @@ RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPT = os.path.join(RACINE, "tool", "build_cutting_guide.py")
 SORTIE = os.path.join(RACINE, "assets", "cutting")
 
-PACKS = ["stem_node_vine", "stem_soft", "leaf_cutting", "division", "offset", "succulent_segment"]
+PACKS = ["stem_node_vine", "stem_soft", "leaf_cutting", "division", "offset", "keiki", "succulent_segment"]
 
 # Les images sortent de Blender en PNG ; le WebP animé les fond, garde la
 # transparence et se décode image par image dans l'application.

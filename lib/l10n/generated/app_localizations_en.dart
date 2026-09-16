@@ -915,6 +915,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pgOffSettleNote => 'Takes in three to six weeks';
 
   @override
+  String get pgKeikiName => 'Separate a keiki';
+
+  @override
+  String get pgKeikiHint => 'The orchid\'s offshoot leaves with its roots';
+
+  @override
+  String get pgKeikiSpotTitle => 'The keiki';
+
+  @override
+  String get pgKeikiSpotBody =>
+      'A young plant grows on a node of the flower spike: two leaves and aerial roots make it recognisable.';
+
+  @override
+  String get pgKeikiSpotNote => 'An offshoot already formed';
+
+  @override
+  String get pgKeikiWaitTitle => 'The roots';
+
+  @override
+  String get pgKeikiWaitBody =>
+      'Roots lengthen along the spike. Three to five, a few centimetres long, and the keiki can live on its own.';
+
+  @override
+  String get pgKeikiWaitNote => 'Roots ready in two to three months';
+
+  @override
+  String get pgKeikiDetachTitle => 'The split';
+
+  @override
+  String get pgKeikiDetachBody =>
+      'The spike is cut on either side of the keiki, one or two centimetres away. Pulling would bruise the base.';
+
+  @override
+  String get pgKeikiDetachNote => 'Pulling the keiki off';
+
+  @override
+  String get pgKeikiRootsTitle => 'The keiki\'s roots';
+
+  @override
+  String get pgKeikiRootsBody =>
+      'The keiki keeps its aerial roots: they are the ones that take in the pot.';
+
+  @override
+  String get pgKeikiPotTitle => 'The pot';
+
+  @override
+  String get pgKeikiPotBody =>
+      'A small pot of bark, the base of the keiki level with the substrate, not buried.';
+
+  @override
+  String get pgKeikiSettleTitle => 'Settling in';
+
+  @override
+  String get pgKeikiSettleBody =>
+      'A new leaf at the centre says the keiki has taken.';
+
+  @override
+  String get pgKeikiSettleNote => 'Takes in one to two months';
+
+  @override
   String get pgSegmentName => 'Segment cutting';
 
   @override

@@ -30,7 +30,7 @@ assets/care_scene/
     indoor/light/    shade … full_sun      la pièce, six lumières
     outdoor/light/   shade … full_sun      le jardin, six lumières
     plants/          monstera, broad_leaf, upright_leaf, vine,
-                     fern, rosette, cactus, conifer
+                     fern, rosette, cactus, conifer, orchid
     props/           humidifier, vent
 ```
 
@@ -116,7 +116,7 @@ ré-éclairage de la plante (ce qui aurait multiplié les rendus par six).
 
 ## Les silhouettes
 
-Huit archétypes, pas 1 900 modèles. Le résolveur (`resolvePlantVisual`)
+Neuf archétypes, pas 1 900 modèles. Le résolveur (`resolvePlantVisual`)
 décide dans l'ordre : l'espèce nommée, le genre, la famille, la catégorie
 d'usage, et enfin le repli `broadLeaf` — une feuille large vaut mieux
 qu'une mauvaise fougère.
@@ -130,11 +130,14 @@ qu'une mauvaise fougère.
 | `rosette` | succulentes non cactées (catégorie) |
 | `cactus` | Cactaceae |
 | `conifer` | Pinaceae |
+| `orchid` | phalaenopsis, dendrobium, cymbidium, oncidium |
 | `broadLeaf` | tout le reste |
 
 Un genre ne se range dans la table que si la forme tient pour tout le
 genre : le philodendron est mixte (le grimpant retombe, le selloum pousse
-comme un arbre), sa règle reste donc à l'espèce.
+comme un arbre), sa règle reste donc à l'espèce. Les orchidées terrestres du
+catalogue étendu (ophrys, céphalanthère) gardent elles aussi la feuille
+large : la silhouette en pot ne leur va pas.
 
 ### Ajouter une silhouette
 

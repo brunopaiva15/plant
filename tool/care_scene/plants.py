@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from clay_scene import (  # noqa: E402  — le chemin doit etre pose avant
     POT_PROFIL, TERRE_PROFIL, Z_TERRE, make_leaf, make_mat, revolve, tube_along,
 )
-from cutting.common import limbe, ruban_along  # noqa: E402  — primitives partagees des guides
+from cutting.common import bezier, borne, limbe, repere_face, ruban_along, sphere  # noqa: E402  — primitives partagees des guides
 from care_scene.common import VUE  # noqa: E402
 
 UP = Vector((0, 0, 1))
@@ -62,6 +62,7 @@ COULEURS = {
     "rosette": ("C87A57", "5D9A6B"),
     "cactus": ("B87050", "3E8C5A"),
     "conifer": ("91452E", "235A38"),
+    "orchid": ("B87050", "2F7348"),
 }
 
 
@@ -77,6 +78,10 @@ def _materiaux(nom):
         "charnu": make_mat("MAT_Charnu_" + nom, "5D9A6B", 0.50, 0.30, grain=52.0, relief=0.009, sss=0.24),
         "pousse": make_mat("MAT_Pousse_" + nom, "5FAE63", 0.50, 0.34, grain=62.0, relief=0.007, sss=0.20),
         "tronc": make_mat("MAT_Tronc_" + nom, "8A6B4F", 0.72, 0.16, grain=40.0, relief=0.018, sss=0.05),
+        # La fleur d'orchidee : un blanc rose mat, et un coeur qui tire sur
+        # l'ocre — assez loin des verts pour que la hampe se lise.
+        "fleur": make_mat("MAT_Fleur_" + nom, "EFDAD6", 0.56, 0.22, grain=58.0, relief=0.007, sss=0.30),
+        "fleur_coeur": make_mat("MAT_FleurCoeur_" + nom, "D9A85C", 0.60, 0.20, grain=50.0, relief=0.010, sss=0.18),
     }
 
 
@@ -431,6 +436,109 @@ def _conifere(nom, mats, D, echelle_pot):
 
 
 # ------------------------------------------------------------
+# orchid : des feuilles larges, une hampe arquee et ses fleurs
+# ------------------------------------------------------------
+def _limbe_orchidee(name, base, az, tilt, L, W, mats, roulis=0.0, matiere="feuille",
+                    retombee=0.34, ep=0.030):
+    """Une feuille d'orchidee : large au milieu, creusee en gouttiere, la
+    pointe qui retombe."""
+    a = radians(az)
+    horiz = Vector((cos(a), sin(a), 0.0))
+    ti = radians(tilt)
+    fil = (horiz * cos(ti) + UP * sin(ti)).normalized()
+    repere = repere_face(base, fil, roulis=roulis, appoint=horiz, vers_camera=0.55)
+
+    def demi(t):
+        t = borne(t)
+        return 0.30 * W * (t ** 0.30) * ((1.0 - t) ** 0.45)
+
+    return limbe(name, repere, demi, mats[matiere], L=L, nu=40, M=10, ep=ep,
+                 releve=lambda t: 0.16 * t - retombee * t * t, creux=0.24, bevel=0.016)
+
+
+def _fleur_orchidee(nom, mats, centre, axe, taille=1.0):
+    """Une fleur simple : cinq petales clairs autour d'un coeur ocre, la
+    face tournee vers la camera comme le reste du decor."""
+    A = Vector(axe).normalized()
+    X = A.cross(VUE)
+    if X.length < 1e-3:
+        X = A.cross(UP)
+    X.normalize()
+    Y = A.cross(X).normalized()
+    C = Vector(centre)
+    objets = []
+    for i in range(5):
+        a = 2.0 * pi * i / 5.0 + 0.35
+        sens = (X * cos(a) + Y * sin(a)).normalized()
+        direction = (sens * 0.86 + A * 0.50).normalized()
+        L = 0.150 * taille
+
+        def demi(t):
+            t = borne(t)
+            return 0.62 * (t * (1.0 - t)) ** 0.25
+
+        objets += limbe("%s_P%d" % (nom, i + 1),
+                        repere_face(C + direction * (0.02 * taille), direction, vers_camera=0.92),
+                        demi, mats["fleur"], L=L, nu=24, M=8, ep=0.012,
+                        creux=0.10, bevel=0.006)
+    objets.append(sphere(nom + "_Coeur", C + A * (0.024 * taille), 0.028 * taille,
+                         mats["fleur_coeur"], seg=18, echelle=(1.0, 1.0, 0.55)))
+    return objets
+
+
+def _hampe_orchidee(mats, base, hauteur=1.02, port=0.28):
+    """La hampe : une tige fine qui monte du coeur et s'arque vers la
+    lumiere, portant trois fleurs ouvertes et un bouton."""
+    a = radians(28.0)
+    horiz = Vector((cos(a), sin(a), 0.0))
+    droite = UP.cross(VUE).normalized()
+    P0 = Vector(base) + UP * 0.05
+    P1 = P0 + UP * (hauteur * 0.68)
+    P2 = P0 + UP * hauteur + horiz * port
+    n = 22
+    pts, rayons = [], []
+    for k in range(n + 1):
+        t = k / float(n)
+        pts.append(bezier(P0, P1, P2, t))
+        rayons.append(0.024 * (1.0 - 0.58 * t) + 0.005)
+    objets = [tube_along("Hampe", pts, rayons, mat=mats["tige"], seg=10, cap=3)]
+    # Trois fleurs en quinconce sur le dernier tiers : chacune part d'un
+    # court pedicelle vers la camera, ce qui les detache de la hampe.
+    for i, (t, cote) in enumerate(((0.55, -1.0), (0.80, 1.0), (1.0, -0.55))):
+        k = int(t * n)
+        direction = (VUE * 0.78 + droite * (0.34 * cote) + UP * 0.22).normalized()
+        C = pts[k] + direction * 0.130
+        objets.append(tube_along("Pedicelle_%d" % (i + 1), [pts[k], C],
+                                 [0.014, 0.010], mat=mats["tige"], seg=8, cap=3))
+        axe = (VUE * 0.90 + UP * (0.20 * cote)).normalized()
+        objets += _fleur_orchidee("Fleur_%d" % (i + 1), mats, C, axe, taille=1.30)
+    bouton = pts[int(0.40 * n)]
+    ax = (VUE * 0.74 + UP * 0.44).normalized()
+    objets.append(sphere("Bouton", bouton + ax * 0.070, 0.045, mats["fleur"], seg=16,
+                         echelle=(0.78, 0.78, 1.30)))
+    return objets
+
+
+def _orchid(nom, mats, D, echelle_pot):
+    objets = []
+    sol = Z_TERRE * echelle_pot
+    base = D + Vector((0, 0, sol - 0.03))
+    # Quatre feuilles etalees, deux de chaque cote de la hampe — une fleur
+    # d'orchidee ne monte pas d'une rosette, elle pousse entre ses feuilles.
+    feuilles = [
+        (16.0, 30.0, 0.72, 1.24, -10.0),
+        (112.0, 24.0, 0.66, 1.16, 8.0),
+        (202.0, 34.0, 0.76, 1.22, -7.0),
+        (292.0, 26.0, 0.62, 1.12, 10.0),
+    ]
+    for idx, (az, tilt, L, W, roulis) in enumerate(feuilles):
+        objets += _limbe_orchidee("Feuille_%02d" % (idx + 1), base, az, tilt, L, W, mats, roulis=roulis)
+    objets += _limbe_orchidee("Feuille_Coeur", base, 252.0, 58.0, 0.30, 0.56, mats, matiere="pousse")
+    objets += _hampe_orchidee(mats, base)
+    return objets
+
+
+# ------------------------------------------------------------
 # la table de lancement
 # ------------------------------------------------------------
 PLANTES = {
@@ -442,6 +550,7 @@ PLANTES = {
     "rosette": (_rosette, 0.55),
     "cactus": (_cactus, 0.75),
     "conifer": (_conifere, 0.80),
+    "orchid": (_orchid, 0.80),
 }
 
 

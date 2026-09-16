@@ -28,6 +28,9 @@ enum PropagationGuideKind {
   /// Séparation d'un rejet : pilea, aloe, chlorophytum.
   offset,
 
+  /// Séparation d'un keiki : le rejet d'une orchidée, né sur sa hampe.
+  keiki,
+
   /// Bouture de segment : cactus et succulentes à segments.
   succulentSegment,
 }
@@ -74,6 +77,14 @@ const propagationStepIds = <PropagationGuideKind, List<String>>{
   PropagationGuideKind.offset: [
     'identify_offset',
     'expose',
+    'separate',
+    'roots',
+    'pot',
+    'establish',
+  ],
+  PropagationGuideKind.keiki: [
+    'identify_keiki',
+    'wait_roots',
     'separate',
     'roots',
     'pot',

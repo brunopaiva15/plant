@@ -29,6 +29,7 @@ enum PlantVisualKind {
   rosette,
   cactus,
   conifer,
+  orchid,
 }
 
 /// Ce que la scène d'environnement idéal doit montrer, déduit de la fiche.
@@ -96,6 +97,7 @@ class CareEnvironmentVisualSpec {
     PlantVisualKind.rosette => 'assets/care_scene/plants/rosette.webp',
     PlantVisualKind.cactus => 'assets/care_scene/plants/cactus.webp',
     PlantVisualKind.conifer => 'assets/care_scene/plants/conifer.webp',
+    PlantVisualKind.orchid => 'assets/care_scene/plants/orchid.webp',
   };
 
   /// L'emplacement dans le cadre, en coordonnées fractionnaires.
@@ -228,6 +230,13 @@ const _silhouettesParGenre = <String, PlantVisualKind>{
   'hedera': PlantVisualKind.vine,
   'cissus': PlantVisualKind.vine,
   'ceropegia': PlantVisualKind.vine,
+  // Les orchidées d'appartement : la hampe arquée et ses fleurs plates.
+  // Les orchidées terrestres du catalogue étendu gardent la feuille large,
+  // la silhouette en pot ne leur allant pas.
+  'phalaenopsis': PlantVisualKind.orchid,
+  'dendrobium': PlantVisualKind.orchid,
+  'cymbidium': PlantVisualKind.orchid,
+  'oncidium': PlantVisualKind.orchid,
 };
 
 /// Les familles dont la forme est un trait de famille : un cactus est un

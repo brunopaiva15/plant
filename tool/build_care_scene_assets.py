@@ -33,7 +33,7 @@ GROUPES = ["indoor", "outdoor", "plants", "props"]
 # Miroirs de room.VARIANTES, plants.PLANTES et props.PROPS, pour valider
 # --only sans lancer Blender.
 LUMIERES = ["shade", "low_light", "indirect", "bright_indirect", "some_sun", "full_sun"]
-PLANTES = ["monstera", "broad_leaf", "upright_leaf", "vine", "fern", "rosette", "cactus", "conifer"]
+PLANTES = ["monstera", "broad_leaf", "upright_leaf", "vine", "fern", "rosette", "cactus", "conifer", "orchid"]
 PROPS = ["humidifier", "vent"]
 
 # Le grain d'argile reste net à ce niveau ; en dessous, il se lisse.

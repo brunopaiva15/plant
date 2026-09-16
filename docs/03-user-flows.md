@@ -54,9 +54,9 @@ Fiche plante ─[Créer une bouture]⟶ Guide de multiplication (sheet plein éc
 ```
 - Le geste montré est celui que la plante demande, choisi par
   `resolvePropagationGuide` sur l'espèce, la famille et la fiche d'entretien :
-  bouture de tige à nœud, de tige tendre, de feuille, division, rejet, ou
-  segment de succulente. Un spathiphyllum ne voit jamais une bouture de liane.
-  Les six archétypes et leurs règles : docs/12.
+  bouture de tige à nœud, de tige tendre, de feuille, division, rejet, keiki,
+  ou segment de succulente. Un spathiphyllum ne voit jamais une bouture de
+  liane. Les sept archétypes et leurs règles : docs/12.
 - Le nombre d'étapes appartient au guide : quatre, six, ou davantage. Les
   points de progression, la grappe d'introduction et le bouton final suivent.
   Une division crée une plante, pas une bouture, et le bouton le dit.

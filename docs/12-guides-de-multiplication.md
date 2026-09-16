@@ -8,7 +8,7 @@ plante demande — jamais un geste par défaut habillé d'un autre texte.
 ## L'architecture
 
 Un **archétype** (`PropagationGuideKind`) est un geste, pas une famille
-botanique. Six sont livrés :
+botanique. Sept sont livrés :
 
 | Archétype | Geste | Plantes |
 |---|---|---|
@@ -17,6 +17,7 @@ botanique. Six sont livrés :
 | `leafCutting` | bouture de feuille | sansevieria, ZZ, bégonia |
 | `division` | partage d'une touffe | spathiphyllum, graminées |
 | `offset` | séparation d'un rejet | pilea, aloe, chlorophytum |
+| `keiki` | séparation du rejet d'une orchidée | phalaenopsis, dendrobium |
 | `succulentSegment` | bouture de segment | cactus de Noël, crassula |
 
 Trois fichiers portent l'essentiel :
@@ -84,6 +85,7 @@ tool/cutting/
     leaf_cutting.py
     division.py
     offset.py
+    keiki.py
     succulent_segment.py
 tool/build_cutting_guide.py    le script lancé sous Blender
 tool/build_cutting_assets.py   l'orchestrateur : rendu, emballage, poids

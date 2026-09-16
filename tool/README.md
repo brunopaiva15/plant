@@ -116,24 +116,27 @@ for f in glob.glob('/tmp/collection/*.png'):
     Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
 ```
 
-# Les guides de multiplication (six archétypes)
+# Les guides de multiplication (sept archétypes)
 
 `build_cutting_guide.py` rend les séquences des guides qui s'ouvrent avant la
 création d'une plante fille. Un guide par **geste**, pas par famille
 botanique : bouture de tige à nœud (`stem_node_vine`), de tige tendre
 (`stem_soft`), de feuille (`leaf_cutting`), division d'une touffe
-(`division`), séparation d'un rejet (`offset`), bouture de segment
-(`succulent_segment`). Même argile, même studio, même caméra que l'icône ;
-l'ombre et le flottement sont dessinés par l'application.
+(`division`), séparation d'un rejet (`offset`), séparation du rejet d'une
+orchidée (`keiki`), bouture de segment (`succulent_segment`). Même argile,
+même studio, même caméra que l'icône ; l'ombre et le flottement sont dessinés
+par l'application.
 
 Chaque archétype a son module sous `tool/cutting/`, et sa plante. Le pothos
 de la liane a ses feuilles en cœur et ses nœuds renflés ; la touffe de la
 division a des feuilles lancéolées sur de longs pétioles et une motte ; la
-rosette du rejet a des feuilles charnues ; le sansevieria de la feuille a des
-lames en glaive, taillées en V pour que le bas se reconnaisse ; le cactus a
-des raquettes articulées et une plaie qui pâlit en séchant. Tout ce qui se
-répète — amortis, limbes, rubans charnus, anneaux, ciseaux, pot, verre,
-motte, racines, palette, boucle de rendu — est dans `tool/cutting/common.py`.
+rosette du rejet a des feuilles charnues ; le phalaenopsis du keiki a des
+feuilles larges, une hampe arquée et des fleurs, et son rejet naît en l'air
+sur un nœud de la hampe ; le sansevieria de la feuille a des lames en glaive,
+taillées en V pour que le bas se reconnaisse ; le cactus a des raquettes
+articulées et une plaie qui pâlit en séchant. Tout ce qui se répète — amortis,
+limbes, rubans charnus, anneaux, ciseaux, pot, verre, motte, racines, palette,
+boucle de rendu — est dans `tool/cutting/common.py`.
 
 Le verre et l'eau sont des « voiles » : une surface claire mêlée de
 transparence pure, sans réfraction — un vrai verre en transmission grouille
@@ -180,9 +183,9 @@ rustiques) ont leur propre décor : un coin de jardin avec pelouse, muret et
 haie — même caméra, même direction de soleil, la table des emplacements
 vaut d'une scène à l'autre. Les plantes sont rendues seules : `monstera`,
 `broad_leaf` (le repli), `upright_leaf`, `vine`, `fern`, `rosette`,
-`cactus`, `conifer` — huit archétypes que le résolveur attache par espèce,
-genre, famille et catégorie. L'application les pose sur l'emplacement qui
-correspond au `LightNeed` de la fiche. Deux props disent le climat sans un
+`cactus`, `conifer`, `orchid` — neuf archétypes que le résolveur attache par
+espèce, genre, famille et catégorie. L'application les pose sur l'emplacement
+qui correspond au `LightNeed` de la fiche. Deux props disent le climat sans un
 mot : l'humidificateur (air humide), posé à côté de la plante, et la grille
 d'aération (air à abriter), fixe sur le mur du fond. La vapeur et les lignes
 de flux ne sont pas rendues : l'application les dessine (reduced motion, et

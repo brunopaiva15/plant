@@ -915,6 +915,66 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pgOffSettleNote => 'Anwachsen in drei bis sechs Wochen';
 
   @override
+  String get pgKeikiName => 'Ein Keiki abtrennen';
+
+  @override
+  String get pgKeikiHint => 'Der Orchideen-Ableger geht mit seinen Wurzeln';
+
+  @override
+  String get pgKeikiSpotTitle => 'Das Keiki';
+
+  @override
+  String get pgKeikiSpotBody =>
+      'An einem Knoten des Blütentriebs wächst eine Jungpflanze: zwei Blätter und Luftwurzeln machen sie erkennbar.';
+
+  @override
+  String get pgKeikiSpotNote => 'Bereits gebildetes Kindel';
+
+  @override
+  String get pgKeikiWaitTitle => 'Die Wurzeln';
+
+  @override
+  String get pgKeikiWaitBody =>
+      'Die Wurzeln wachsen am Trieb entlang. Drei bis fünf von einigen Zentimetern Länge, und das Keiki lebt allein.';
+
+  @override
+  String get pgKeikiWaitNote => 'Wurzeln bereit in zwei bis drei Monaten';
+
+  @override
+  String get pgKeikiDetachTitle => 'Das Trennen';
+
+  @override
+  String get pgKeikiDetachBody =>
+      'Der Trieb wird beidseits des Keikis ein bis zwei Zentimeter entfernt durchtrennt. Ziehen würde die Basis verletzen.';
+
+  @override
+  String get pgKeikiDetachNote => 'Das Keiki abreißen';
+
+  @override
+  String get pgKeikiRootsTitle => 'Die Wurzeln des Keikis';
+
+  @override
+  String get pgKeikiRootsBody =>
+      'Das Keiki behält seine Luftwurzeln: sie wachsen im Topf an.';
+
+  @override
+  String get pgKeikiPotTitle => 'Der Topf';
+
+  @override
+  String get pgKeikiPotBody =>
+      'Ein kleiner Topf mit Rinde, die Basis des Keikis auf Substrathöhe, nicht eingegraben.';
+
+  @override
+  String get pgKeikiSettleTitle => 'Das Anwachsen';
+
+  @override
+  String get pgKeikiSettleBody =>
+      'Ein neues Blatt in der Mitte zeigt, dass das Keiki angewachsen ist.';
+
+  @override
+  String get pgKeikiSettleNote => 'Anwachsen in ein bis zwei Monaten';
+
+  @override
   String get pgSegmentName => 'Gliedsteckling';
 
   @override

@@ -362,6 +362,10 @@ def materiaux():
         "terre_drainante": make_mat("MAT_TerreDrainante", "7A6B5A", 0.92, 0.08, grain=16.0, relief=0.046, sss=0.0),
         "racine": make_mat("MAT_Racine", "C9A472", 0.60, 0.20, grain=50.0, relief=0.010, sss=0.15),
         "racine_fine": make_mat("MAT_RacineFine", "DCC59A", 0.58, 0.22, grain=64.0, relief=0.008, sss=0.18),
+        # La fleur d'orchidee du guide « keiki » : un blanc rose mat, et un
+        # coeur ocre — assez loin des verts pour que la hampe se lise.
+        "fleur": make_mat("MAT_Fleur", "EFDAD6", 0.56, 0.22, grain=58.0, relief=0.007, sss=0.30),
+        "fleur_coeur": make_mat("MAT_FleurCoeur", "D9A85C", 0.60, 0.20, grain=50.0, relief=0.010, sss=0.18),
         "anneau": make_mat("MAT_Anneau", "F2B84B", 0.48, 0.30, grain=40.0, relief=0.006, sss=0.10),
         "acier": make_mat("MAT_Acier", "D6DBDF", 0.30, 0.60, grain=80.0, relief=0.003, sss=0.0),
         "poignee": make_mat("MAT_Poignee", "D9694B", 0.58, 0.22, grain=40.0, relief=0.012, sss=0.10),

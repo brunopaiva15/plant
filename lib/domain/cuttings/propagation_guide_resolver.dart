@@ -59,8 +59,22 @@ const _succulentGenera = {
 /// Plantes à rosette ou à rejet franc : on sépare, on ne coupe pas.
 const _offsetGenera = {
   'aloe', 'pilea', 'haworthia', 'haworthiopsis', 'gasteria', 'agave', 'chlorophytum',
-  'phalaenopsis', 'guzmania', 'vriesea', 'aechmea', 'neoregelia', 'ananas', 'musa',
+  'guzmania', 'vriesea', 'aechmea', 'neoregelia', 'ananas', 'musa',
 };
+
+/// Orchidées dont le rejet naît sur la hampe : le keiki. L'orchidée se
+/// sépare en l'air, pas au pied comme un aloe.
+const _keikiGenera = {
+  'phalaenopsis', 'dendrobium', 'epidendrum', 'oncidium',
+};
+
+/// La famille des orchidées : elle tranche quand le genre manque, et
+/// écarte le geste du rejet pour une orchidée de pleine terre, qui se
+/// divise.
+const _orchidFamily = 'orchidaceae';
+
+bool _isKeiki(String? genus, String? family) =>
+    (genus != null && _keikiGenera.contains(genus)) || (genus == null && family == _orchidFamily);
 
 /// Plantes en touffe : on partage la motte.
 const _divisionFamilies = {'poaceae', 'cyperaceae', 'juncaceae'};
@@ -104,10 +118,22 @@ PropagationGuideKind? _kindOf(Propagation method, String? genus, String? family,
     // geste du segment, pas celui de la lame de sansevieria.
     Propagation.leafCutting =>
       _isSucculent(genus, profile) ? PropagationGuideKind.succulentSegment : PropagationGuideKind.leafCutting,
+    // Le phalaenopsis pousse d'un seul pied : il n'y a rien à diviser. La
+    // fiche de famille le propose pour toutes les orchidées, elle vise les
+    // dendrobiums et les cymbidiums.
+    Propagation.division when genus == 'phalaenopsis' => null,
     Propagation.division => PropagationGuideKind.division,
     // Un rejet de cactus se traite comme un segment : on le détache et on le
-    // laisse sécher. Pour tout le reste, c'est le geste du rejet.
-    Propagation.offsets => cactus ? PropagationGuideKind.succulentSegment : PropagationGuideKind.offset,
+    // laisse sécher. Pour une orchidée, le rejet pousse sur la hampe : c'est
+    // le keiki. Une orchidée de pleine terre, elle, se divise et ne fait pas
+    // de rejet au pied — le geste ne se montre pas.
+    Propagation.offsets => cactus
+        ? PropagationGuideKind.succulentSegment
+        : _isKeiki(genus, family)
+            ? PropagationGuideKind.keiki
+            : family == _orchidFamily
+                ? null
+                : PropagationGuideKind.offset,
     // Un tubercule se sépare comme une touffe.
     Propagation.tuber => PropagationGuideKind.division,
     // Le marcottage n'a pas son guide : le geste le plus proche est la
@@ -148,6 +174,8 @@ List<PropagationOption> resolvePropagationOptions({
         PropagationGuideKind.division || PropagationGuideKind.offset => RootingMedium.none,
         PropagationGuideKind.succulentSegment => RootingMedium.substrate,
         PropagationGuideKind.leafCutting => RootingMedium.substrate,
+        // Un keiki s'installe dans le substrat de son espèce : écorces.
+        PropagationGuideKind.keiki => RootingMedium.substrate,
         _ => medium == RootingMedium.none ? RootingMedium.either : medium,
       },
     ));
@@ -165,7 +193,9 @@ List<PropagationOption> resolvePropagationOptions({
   if (options.isEmpty) {
     // Aucune méthode montrable — une fiche qui ne connaît que le semis. On
     // retombe sur le geste que le port de la plante appelle.
-    if (genus != null && _offsetGenera.contains(genus)) {
+    if (_isKeiki(genus, fam)) {
+      ajoute(Propagation.offsets, PropagationGuideKind.keiki);
+    } else if (genus != null && _offsetGenera.contains(genus)) {
       ajoute(Propagation.offsets, PropagationGuideKind.offset);
     } else if (fam != null && _divisionFamilies.contains(fam)) {
       ajoute(Propagation.division, PropagationGuideKind.division);

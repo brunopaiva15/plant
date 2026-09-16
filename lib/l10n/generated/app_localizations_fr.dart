@@ -916,6 +916,66 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pgOffSettleNote => 'Reprise en trois à six semaines';
 
   @override
+  String get pgKeikiName => 'Séparer un keiki';
+
+  @override
+  String get pgKeikiHint => 'Le rejet d’orchidée part avec ses racines';
+
+  @override
+  String get pgKeikiSpotTitle => 'Le keiki';
+
+  @override
+  String get pgKeikiSpotBody =>
+      'Un jeune plant naît sur un nœud de la hampe : deux feuilles et des racines aériennes le rendent identifiable.';
+
+  @override
+  String get pgKeikiSpotNote => 'Rejet déjà formé';
+
+  @override
+  String get pgKeikiWaitTitle => 'Les racines';
+
+  @override
+  String get pgKeikiWaitBody =>
+      'Les racines s’allongent sur la hampe. Trois à cinq, longues de quelques centimètres, et le keiki vivra seul.';
+
+  @override
+  String get pgKeikiWaitNote => 'Racines prêtes en deux à trois mois';
+
+  @override
+  String get pgKeikiDetachTitle => 'La séparation';
+
+  @override
+  String get pgKeikiDetachBody =>
+      'La hampe se coupe de part et d’autre du keiki, à un ou deux centimètres. Tirer meurtrissait la base.';
+
+  @override
+  String get pgKeikiDetachNote => 'Arracher le keiki';
+
+  @override
+  String get pgKeikiRootsTitle => 'Les racines du keiki';
+
+  @override
+  String get pgKeikiRootsBody =>
+      'Le keiki garde ses racines aériennes : ce sont elles qui reprennent dans le pot.';
+
+  @override
+  String get pgKeikiPotTitle => 'Le pot';
+
+  @override
+  String get pgKeikiPotBody =>
+      'Un petit pot d’écorces, la base du keiki affleurant le substrat, sans l’enterrer.';
+
+  @override
+  String get pgKeikiSettleTitle => 'La reprise';
+
+  @override
+  String get pgKeikiSettleBody =>
+      'Une feuille neuve au cœur dit que le keiki a pris.';
+
+  @override
+  String get pgKeikiSettleNote => 'Reprise en un à deux mois';
+
+  @override
   String get pgSegmentName => 'Bouture de segment';
 
   @override
