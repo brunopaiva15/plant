@@ -208,8 +208,10 @@ abstract final class LabelLayout {
     final availableHeight = sheet.heightMm - settings.marginMm * 2;
     final pitchX = settings.labelWidthMm + settings.gapXmm;
     final pitchY = settings.labelHeightMm + settings.gapYmm;
-    final columns = ((availableWidth + settings.gapXmm) / pitchX).floor().clamp(1, 1000);
-    final rows = ((availableHeight + settings.gapYmm) / pitchY).floor().clamp(1, 1000);
+    final calculatedColumns = ((availableWidth + settings.gapXmm) / pitchX).floor();
+    final calculatedRows = ((availableHeight + settings.gapYmm) / pitchY).floor();
+    final columns = calculatedColumns < 1 ? 1 : calculatedColumns;
+    final rows = calculatedRows < 1 ? 1 : calculatedRows;
     return LabelGridGeometry(columns: columns, rows: rows, leftMm: settings.marginMm, topMm: settings.marginMm, pitchXmm: pitchX, pitchYmm: pitchY);
   }
 
