@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/species/species_info.dart';
@@ -11,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// jamais rendue ne se verrait qu'à l'exécution, sur l'appareil — et une
 /// valeur d'enum ajoutée sans son image casserait ici.
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   void expectWebp(File file, {int plancher = 2048}) {
     expect(file.existsSync(), isTrue, reason: file.path);
     expect(
@@ -55,15 +59,58 @@ void main() {
 
   test('chaque silhouette a son image', () {
     for (final v in PlantVisualKind.values) {
-      final spec = CareEnvironmentVisualSpec(
-        environment: CareEnvironmentKind.indoorRoom,
-        light: LightNeed.indirect,
-        slot: CarePlantSlot.middle,
-        plant: v,
-        humidity: HumidityNeed.average,
-        humidityRange: (40, 60),
-      );
-      expectWebp(File(spec.plantAsset));
+      expectWebp(File(_spec(v).plantAsset));
+    }
+  });
+
+  test('aucune silhouette ne sort du diorama, où qu\'elle se pose', () async {
+    // Le décor et les plantes sortent de la même caméra à cadre fixe : à
+    // taille d'image égale, un pixel de plante tombe sur le pixel de décor
+    // qu'il couvrira dans l'application. Une plante trop grande pour la
+    // pièce traverse donc le mur et flotte sur le fond — c'est ce qui se
+    // voyait avant `plants.ECHELLE_PIECE`. La pièce est le cas serré : le
+    // jardin couvre tout le cadre.
+    final decor = await _pixels(
+      File('assets/care_scene/indoor/light/indirect.webp'),
+    );
+    const ancre = CareEnvironmentSlots.anchor;
+    for (final v in PlantVisualKind.values) {
+      final plante = await _pixels(File(_spec(v).plantAsset));
+      // Les pixels franchement opaques de la silhouette, relevés une fois.
+      final points = <int>[];
+      for (var y = 0; y < plante.hauteur; y++) {
+        for (var x = 0; x < plante.largeur; x++) {
+          if (plante.octets.getUint8((y * plante.largeur + x) * 4 + 3) > 64) {
+            points.add(x);
+            points.add(y);
+          }
+        }
+      }
+      expect(points, isNotEmpty, reason: '${v.name} : silhouette vide');
+      for (final emplacement in CarePlantSlot.values) {
+        final f = CareEnvironmentSlots.slots[emplacement.name]!;
+        final dx = ((f.$1 - ancre.$1) * plante.largeur).round();
+        final dy = ((f.$2 - ancre.$2) * plante.hauteur).round();
+        var dehors = 0;
+        for (var i = 0; i < points.length; i += 2) {
+          final x = points[i] + dx;
+          final y = points[i + 1] + dy;
+          final dedans =
+              x >= 0 &&
+              y >= 0 &&
+              x < decor.largeur &&
+              y < decor.hauteur &&
+              decor.octets.getUint8((y * decor.largeur + x) * 4 + 3) > 8;
+          if (!dedans) dehors += 1;
+        }
+        expect(
+          dehors,
+          0,
+          reason:
+              '${v.name} sur ${emplacement.name} : $dehors pixels hors du '
+              'diorama — la silhouette est trop grande pour la pièce',
+        );
+      }
     }
   });
 
@@ -135,4 +182,32 @@ void main() {
     expect(pubspec, contains('- assets/care_scene/plants/'));
     expect(pubspec, contains('- assets/care_scene/props/'));
   });
+}
+
+/// Une silhouette dans son cadre, pour atteindre son chemin d'asset.
+CareEnvironmentVisualSpec _spec(PlantVisualKind plante) =>
+    CareEnvironmentVisualSpec(
+      environment: CareEnvironmentKind.indoorRoom,
+      light: LightNeed.indirect,
+      slot: CarePlantSlot.middle,
+      plant: plante,
+      humidity: HumidityNeed.average,
+      humidityRange: (40, 60),
+    );
+
+/// Les pixels bruts d'une image livrée, avec ses dimensions.
+Future<({int largeur, int hauteur, ByteData octets})> _pixels(File f) async {
+  final codec = await ui.instantiateImageCodec(await f.readAsBytes());
+  final frame = await codec.getNextFrame();
+  final octets = await frame.image.toByteData(
+    format: ui.ImageByteFormat.rawRgba,
+  );
+  final lu = (
+    largeur: frame.image.width,
+    hauteur: frame.image.height,
+    octets: octets!,
+  );
+  frame.image.dispose();
+  codec.dispose();
+  return lu;
 }

@@ -179,16 +179,19 @@ class _PlantShadowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final c = Offset(center.dx * size.width, center.dy * size.height);
+    // Taillée sur le pot rendu par le pipeline (~0,64 m de large à
+    // l'échelle de la pièce), et non sur le cadre : une ombre plus large
+    // que la plante la ferait flotter au lieu de la poser.
     final rect = Rect.fromCenter(
       center: c,
-      width: size.width * 0.17,
-      height: size.width * 0.045,
+      width: size.width * 0.105,
+      height: size.width * 0.028,
     );
     canvas.drawOval(
       rect,
       Paint()
         ..color = color
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10),
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * 0.014),
     );
   }
 

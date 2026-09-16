@@ -143,11 +143,24 @@ comme un arbre), sa règle reste donc à l'espèce. Les orchidées terrestres du
 catalogue étendu (ophrys, céphalanthère) gardent elles aussi la feuille
 large : la silhouette en pot ne leur va pas.
 
+### L'échelle
+
+Les recettes de silhouette viennent de la collection de l'onboarding, où la
+plante est rendue seule : sa taille absolue n'y veut rien dire. Dans le
+diorama, elle partage le cadre avec une pièce de 4,2 m sur 3,6 m, un
+guéridon et un humidificateur modelés à l'échelle réelle.
+`plants.ECHELLE_PIECE` réduit donc tout l'assemblage autour de l'ancre
+avant le rendu : le monstera fait 1,5 m, pot compris, et tient dans la
+pièce aux six emplacements. À l'échelle des recettes, il faisait 3,3 m de
+large dans un pot de 1,3 m — ses feuilles traversaient les murs et
+sortaient du diorama, à côté d'un humidificateur haut de 47 cm.
+
 ### Ajouter une silhouette
 
 1. la construire dans `tool/care_scene/plants.py` (une entrée `PLANTES`,
    un constructeur) — les primitives sont dans `tool/clay_scene.py` et
-   `tool/cutting/common.py` ;
+   `tool/cutting/common.py` ; la bâtir à la taille des recettes,
+   `ECHELLE_PIECE` la met à l'échelle de la pièce au rendu ;
 2. la rendre : `python3 tool/build_care_scene_assets.py --only <nom>` ;
 3. une valeur dans `PlantVisualKind` et son chemin dans
    `CareEnvironmentVisualSpec.plantAsset` ;
