@@ -1600,6 +1600,8 @@
   "aboutSourceWikidata": "Species names in four languages, public domain",
   "aboutSourceGbif": "Taxonomy, families and photographed occurrences",
   "aboutSourceOpenMeteo": "Weather and forecast, no account or key",
+  "aboutSourceRhs": "Hardiness, soils and growing advice",
+  "aboutSourceAspca": "Plant toxicity for domestic animals",
   "aboutSpeciesCount": "{count} species searchable offline",
   "supportTitle": "Auxine is free",
   "supportBody": "Every feature is available. No subscription, no advertising, no compulsory account.",

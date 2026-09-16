@@ -2271,6 +2271,8 @@
   "aboutSourceWikidata": "Noms d'espèces en quatre langues, domaine public",
   "aboutSourceGbif": "Taxonomie, familles et observations photographiées",
   "aboutSourceOpenMeteo": "Météo et prévisions, sans compte ni clé",
+  "aboutSourceRhs": "Rusticité, sols et conseils de culture",
+  "aboutSourceAspca": "Toxicité des plantes pour les animaux domestiques",
   "aboutSpeciesCount": "{count} espèces consultables hors ligne",
   "@aboutSpeciesCount": {
     "placeholders": {

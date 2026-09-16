@@ -8370,6 +8370,18 @@ abstract class AppLocalizations {
   /// **'Météo et prévisions, sans compte ni clé'**
   String get aboutSourceOpenMeteo;
 
+  /// No description provided for @aboutSourceRhs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rusticité, sols et conseils de culture'**
+  String get aboutSourceRhs;
+
+  /// No description provided for @aboutSourceAspca.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toxicité des plantes pour les animaux domestiques'**
+  String get aboutSourceAspca;
+
   /// No description provided for @aboutSpeciesCount.
   ///
   /// In fr, this message translates to:

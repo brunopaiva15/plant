@@ -4846,6 +4846,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutSourceOpenMeteo => 'Weather and forecast, no account or key';
 
   @override
+  String get aboutSourceRhs => 'Hardiness, soils and growing advice';
+
+  @override
+  String get aboutSourceAspca => 'Plant toxicity for domestic animals';
+
+  @override
   String aboutSpeciesCount(String count) {
     return '$count species searchable offline';
   }

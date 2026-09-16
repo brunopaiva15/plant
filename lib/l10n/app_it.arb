@@ -1600,6 +1600,8 @@
   "aboutSourceWikidata": "Nomi delle specie in quattro lingue, dominio pubblico",
   "aboutSourceGbif": "Tassonomia, famiglie e osservazioni fotografate",
   "aboutSourceOpenMeteo": "Meteo e previsioni, senza account né chiave",
+  "aboutSourceRhs": "Rusticità, terricci e consigli di coltivazione",
+  "aboutSourceAspca": "Tossicità delle piante per gli animali domestici",
   "aboutSpeciesCount": "{count} specie consultabili offline",
   "supportTitle": "Auxine è gratuita",
   "supportBody": "Tutte le funzioni sono accessibili. Nessun abbonamento, nessuna pubblicità, nessun account obbligatorio.",

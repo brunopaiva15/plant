@@ -4877,6 +4877,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aboutSourceOpenMeteo => 'Météo et prévisions, sans compte ni clé';
 
   @override
+  String get aboutSourceRhs => 'Rusticité, sols et conseils de culture';
+
+  @override
+  String get aboutSourceAspca =>
+      'Toxicité des plantes pour les animaux domestiques';
+
+  @override
   String aboutSpeciesCount(String count) {
     return '$count espèces consultables hors ligne';
   }

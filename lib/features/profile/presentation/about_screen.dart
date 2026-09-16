@@ -49,6 +49,20 @@ class AboutScreen extends ConsumerWidget {
                 subtitle: l10n.aboutSourceOpenMeteo,
                 url: 'https://open-meteo.com',
               ),
+              // Les deux sources des fiches d'entretien : la rusticité et le
+              // sol d'un côté, la toxicité de l'autre.
+              _SourceRow(
+                emoji: '🌱',
+                title: 'RHS',
+                subtitle: l10n.aboutSourceRhs,
+                url: 'https://www.rhs.org.uk',
+              ),
+              _SourceRow(
+                emoji: '🐾',
+                title: 'ASPCA',
+                subtitle: l10n.aboutSourceAspca,
+                url: 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants',
+              ),
             ],
           ),
         ],

@@ -4857,6 +4857,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wetter und Vorhersage, ohne Konto oder Schlüssel';
 
   @override
+  String get aboutSourceRhs => 'Winterhärte, Böden und Kulturhinweise';
+
+  @override
+  String get aboutSourceAspca => 'Pflanzengiftigkeit für Haustiere';
+
+  @override
   String aboutSpeciesCount(String count) {
     return '$count Arten offline durchsuchbar';
   }

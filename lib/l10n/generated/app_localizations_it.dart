@@ -4868,6 +4868,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Meteo e previsioni, senza account né chiave';
 
   @override
+  String get aboutSourceRhs => 'Rusticità, terricci e consigli di coltivazione';
+
+  @override
+  String get aboutSourceAspca =>
+      'Tossicità delle piante per gli animali domestici';
+
+  @override
   String aboutSpeciesCount(String count) {
     return '$count specie consultabili offline';
   }
