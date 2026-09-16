@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/scientific_name.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/species/species_info.dart';
 import '../application/label_pdf.dart';
 import '../application/plant_links.dart';
 import 'plant_qr_sheet.dart';
