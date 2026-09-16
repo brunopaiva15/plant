@@ -228,8 +228,9 @@ def etape_separate(mats, f):
                                  brins=6, longueur=0.44, etale=part, graine=i)
         # Un peu de terre reste prise dans chaque chevelu : chaque moitie
         # part avec sa motte, pas avec une coupe nette.
+        # La motte rejoint le collet releve et le depart des racines.
         objets.append(sphere("Terre%d" % i, Mi @ (c["pos"] + UP * (Z_SOL - 0.24)), 0.21 * c["ech"],
-                             mats["motte"], seg=20, echelle=(1.05, 0.95, 0.62)))
+                             mats["motte"], seg=20, echelle=(1.05, 0.95, 1.05)))
     objets += touffe(mats, groupes={i: _ecartement(i, part) for i in range(len(COURONNES))})
     return objets
 
