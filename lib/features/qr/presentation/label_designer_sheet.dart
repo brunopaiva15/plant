@@ -56,6 +56,12 @@ class _LabelDesignerBodyState extends State<_LabelDesignerBody> {
 
   double? _number(String value) => double.tryParse(value.trim().replaceAll(',', '.'));
 
+  int _boundedCopies(int value) {
+    if (value < 1) return 1;
+    if (value > 999) return 999;
+    return value;
+  }
+
   void _selectPreset(LabelPreset preset) {
     setState(() {
       _settings = _settings.applyPreset(preset);
@@ -76,6 +82,7 @@ class _LabelDesignerBodyState extends State<_LabelDesignerBody> {
   }
 
   void _setSheet(LabelSheetKind kind) {
+    if (kind == _settings.sheetKind) return;
     setState(() {
       _settings = _settings.copyWith(
         presetId: _settings.preset?.hasExactSheetGeometry == true ? () => null : null,
@@ -101,7 +108,7 @@ class _LabelDesignerBodyState extends State<_LabelDesignerBody> {
         marginMm: margin != null && margin >= 0 ? margin : _settings.marginMm,
         gapXmm: gap != null && gap >= 0 ? gap : _settings.gapXmm,
         gapYmm: gap != null && gap >= 0 ? gap : _settings.gapYmm,
-        copiesPerItem: copies != null && copies > 0 ? copies.clamp(1, 999) : _settings.copiesPerItem,
+        copiesPerItem: copies != null ? _boundedCopies(copies) : _settings.copiesPerItem,
         customText: _customText.text,
       );
     });
@@ -358,7 +365,7 @@ class _LabelPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final ratio = (settings.labelWidthMm / settings.labelHeightMm).clamp(1.0, 4.5);
+    final ratio = (settings.labelWidthMm / settings.labelHeightMm).clamp(1.0, 4.5).toDouble();
     final hasSpecies = settings.showSpecies && (data.species?.isNotEmpty ?? false);
     final hasNumber = settings.showNumber && data.number > 0;
     final custom = settings.customText.trim();
@@ -381,9 +388,13 @@ class _LabelPreview extends StatelessWidget {
                 Flexible(
                   flex: hasText ? 4 : 1,
                   child: Center(
-                    child: QrImageView(
-                      data: data.link ?? PlantLinks.encode(data.plantId),
-                      padding: EdgeInsets.zero,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: QrImageView(
+                        data: data.link ?? PlantLinks.encode(data.plantId),
+                        size: 180,
+                        padding: EdgeInsets.zero,
+                      ),
                     ),
                   ),
                 ),
