@@ -5,19 +5,21 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
+import '../../../app/sync_coordinator.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_engine.dart';
+import '../../../domain/models/models.dart';
+import '../../../domain/sync/sync_state.dart';
 import '../../account/application/membership_providers.dart';
 import '../../dashboard/application/dashboard_providers.dart';
 import '../../dashboard/presentation/activity_log_screen.dart';
-import '../../../domain/care/care_engine.dart';
-import '../../../domain/models/models.dart';
+import '../../home_climate/application/home_climate_providers.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/create_plant_flow.dart';
 import '../../tasks/application/task_providers.dart';
 import '../../tasks/presentation/task_row.dart';
-import '../../home_climate/application/home_climate_providers.dart';
-import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../weather/application/weather_providers.dart';
 import '../../weather/presentation/weather_widgets.dart';
 import '../application/completed_tasks.dart';
@@ -48,8 +50,19 @@ class TodayScreen extends ConsumerWidget {
     final prefs = ref.watch(preferencesProvider);
     final tasks = ref.watch(careTasksProvider);
     final plantCount = ref.watch(activePlantCountProvider).value ?? 0;
+    final sync = ref.watch(syncCoordinatorProvider);
+    final user = ref.watch(currentUserProvider).value;
     final now = DateTime.now();
     final greeting = _greeting(l10n, prefs.displayName, now);
+
+    // À la première synchronisation d'un compte ou juste après avoir basculé
+    // sur un jardin partagé, la base locale peut être vide quelques instants.
+    // Ne pas faire passer cet état transitoire pour un jardin réellement vide.
+    final isInitialSync = user != null &&
+        !user.isLocal &&
+        plantCount == 0 &&
+        sync.lastSyncedAt == null &&
+        (sync.status == SyncStatus.idle || sync.status == SyncStatus.syncing);
 
     final live = tasks.value ?? const <CareTask>[];
     final lingering = ref.watch(completedTasksProvider);
@@ -121,7 +134,21 @@ class TodayScreen extends ConsumerWidget {
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
         const SliverToBoxAdapter(child: HomeClimateAdviceCard()),
         const SliverToBoxAdapter(child: NotificationPrompt()),
-        if (plantCount == 0 && tasks.hasValue)
+        if (isInitialSync)
+          SliverCentered(
+            child: Semantics(
+              label: l10n.syncSyncing,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CupertinoActivityIndicator(radius: 14),
+                  const SizedBox(height: Space.sm),
+                  Text(l10n.syncSyncing, style: context.text.title3),
+                ],
+              ),
+            ),
+          )
+        else if (plantCount == 0 && tasks.hasValue)
           SliverCentered(
             child: EmptyState(
               emoji: '🌱',
