@@ -9,6 +9,7 @@ import '../../../data/species/species_catalog.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
 import '../../plants/presentation/create_plant_flow.dart';
+import '../../qr/presentation/species_qr_sheet.dart';
 import '../../species/presentation/care_guide_screen.dart';
 import '../../species/presentation/species_sheet.dart';
 
@@ -59,14 +60,16 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
     // le nom scientifique, qui est de toute façon écrit juste dessous.
     final common = entry?.vernacularName(lang) ?? record?.vernacularName(lang);
     final displayScientificName = capitalizeSpeciesDisplayName(scientificName);
+    final displayName = common == null ? displayScientificName : capitalizeSpeciesDisplayName(common);
 
     return FloraPage(
-      title: common == null ? displayScientificName : capitalizeSpeciesDisplayName(common),
+      title: displayName,
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
         header: _Header(
           scientificName: scientificName,
+          displayName: displayName,
           family: family,
           category: entry?.category,
         ),
@@ -76,9 +79,15 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
 }
 
 class _Header extends ConsumerWidget {
-  const _Header({required this.scientificName, required this.family, required this.category});
+  const _Header({
+    required this.scientificName,
+    required this.displayName,
+    required this.family,
+    required this.category,
+  });
 
   final String scientificName;
+  final String displayName;
   final String? family;
   final SpeciesCategory? category;
 
@@ -127,6 +136,19 @@ class _Header extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: Space.xs),
+        FloraButton(
+          label: l10n.qrCode,
+          icon: CupertinoIcons.qrcode,
+          style: FloraButtonStyle.tonal,
+          size: FloraButtonSize.small,
+          expand: true,
+          onPressed: () => showSpeciesQrSheet(
+            context,
+            scientificName: scientificName,
+            displayName: displayName,
+          ),
         ),
         const SizedBox(height: Space.lg),
       ],
