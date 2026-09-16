@@ -5110,6 +5110,48 @@ class AppLocalizationsDe extends AppLocalizations {
       'Art nicht im Katalog: diese Richtwerte stammen von der KI. Nur der wissenschaftliche Name wurde gesendet. Giftigkeit ist nicht enthalten.';
 
   @override
+  String get careMatchEdited => 'Bearbeitetes Profil';
+
+  @override
+  String get careEditedNote =>
+      'Von Hand korrigiertes Profil; der Rest stammt aus dem Katalog.';
+
+  @override
+  String get careStudio => 'Care Studio';
+
+  @override
+  String get careStudioHint =>
+      'Korrigieren Sie ein Pflegeprofil. Die Änderung gilt auf diesem Gerät.';
+
+  @override
+  String get careStudioSearch => 'Art suchen';
+
+  @override
+  String get careStudioPrompt =>
+      'Suchen Sie eine Art, um ihr Profil zu korrigieren.';
+
+  @override
+  String get careStudioEmpty => 'Keine Art passt.';
+
+  @override
+  String get careStudioWateringSummer => 'Gießen, Wachstumszeit';
+
+  @override
+  String get careStudioWateringWinter => 'Gießen, Winter';
+
+  @override
+  String get careStudioDamageBelow => 'Nicht unter';
+
+  @override
+  String get careStudioSave => 'Speichern';
+
+  @override
+  String get careStudioSaved => 'Änderung gespeichert';
+
+  @override
+  String get careStudioReset => 'Zum Katalog zurück';
+
+  @override
   String get careAssistSetting => 'Pflegeinfos mit der KI ergänzen';
 
   @override

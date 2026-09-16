@@ -5097,6 +5097,47 @@ class AppLocalizationsEn extends AppLocalizations {
       'Species not in the catalogue: these guidelines come from the AI. Only the scientific name was sent. Toxicity is not covered.';
 
   @override
+  String get careMatchEdited => 'Edited profile';
+
+  @override
+  String get careEditedNote =>
+      'Profile corrected by hand; the rest comes from the catalogue.';
+
+  @override
+  String get careStudio => 'Care Studio';
+
+  @override
+  String get careStudioHint =>
+      'Fix a care profile. The edit applies on this device.';
+
+  @override
+  String get careStudioSearch => 'Search for a species';
+
+  @override
+  String get careStudioPrompt => 'Search for a species to fix its profile.';
+
+  @override
+  String get careStudioEmpty => 'No species matches.';
+
+  @override
+  String get careStudioWateringSummer => 'Watering, growing season';
+
+  @override
+  String get careStudioWateringWinter => 'Watering, winter';
+
+  @override
+  String get careStudioDamageBelow => 'Keep above';
+
+  @override
+  String get careStudioSave => 'Save';
+
+  @override
+  String get careStudioSaved => 'Edit saved';
+
+  @override
+  String get careStudioReset => 'Revert to catalogue';
+
+  @override
   String get careAssistSetting => 'Complete care sheets with AI';
 
   @override

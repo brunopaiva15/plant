@@ -501,6 +501,7 @@ extension CareProfileLabels on AppLocalizations {
         CareMatch.family => careMatchFamily(care.matchedOn ?? ''),
         CareMatch.category || CareMatch.generic => careMatchGeneric,
         CareMatch.assisted => careMatchAssisted,
+        CareMatch.edited => careMatchEdited,
       };
 
   /// « de mars à septembre », dans la langue et le calendrier de l'utilisateur.

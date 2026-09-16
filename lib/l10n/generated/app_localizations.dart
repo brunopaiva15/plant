@@ -8826,6 +8826,84 @@ abstract class AppLocalizations {
   /// **'Espèce absente du catalogue : ces repères viennent de l\'IA. Seul le nom scientifique a été envoyé. La toxicité n\'est pas renseignée.'**
   String get careAssistedNote;
 
+  /// No description provided for @careMatchEdited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche retouchée'**
+  String get careMatchEdited;
+
+  /// No description provided for @careEditedNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fiche corrigée à la main ; le reste vient du catalogue.'**
+  String get careEditedNote;
+
+  /// No description provided for @careStudio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Care Studio'**
+  String get careStudio;
+
+  /// No description provided for @careStudioHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corrigez une fiche d\'entretien. La retouche s\'applique sur cet appareil.'**
+  String get careStudioHint;
+
+  /// No description provided for @careStudioSearch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chercher une espèce'**
+  String get careStudioSearch;
+
+  /// No description provided for @careStudioPrompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cherchez une espèce pour corriger sa fiche.'**
+  String get careStudioPrompt;
+
+  /// No description provided for @careStudioEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune espèce ne correspond.'**
+  String get careStudioEmpty;
+
+  /// No description provided for @careStudioWateringSummer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosage, pleine saison'**
+  String get careStudioWateringSummer;
+
+  /// No description provided for @careStudioWateringWinter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrosage, hiver'**
+  String get careStudioWateringWinter;
+
+  /// No description provided for @careStudioDamageBelow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Éviter sous'**
+  String get careStudioDamageBelow;
+
+  /// No description provided for @careStudioSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get careStudioSave;
+
+  /// No description provided for @careStudioSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retouche enregistrée'**
+  String get careStudioSaved;
+
+  /// No description provided for @careStudioReset.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenir au catalogue'**
+  String get careStudioReset;
+
   /// No description provided for @careAssistSetting.
   ///
   /// In fr, this message translates to:

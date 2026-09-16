@@ -1,4 +1,5 @@
 import 'package:flora/app/providers.dart';
+import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/species/species_info.dart';
 import 'package:flora/features/finder/presentation/finder_cards.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// GBIF n'est pas joignable depuis un test : aucune vignette, et la tuile
 /// d'emoji tient la place.
@@ -33,9 +35,16 @@ Future<void> _pump(WidgetTester tester) async {
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await PreferencesService.load();
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [speciesServiceProvider.overrideWithValue(_OfflineSpecies())],
+      overrides: [
+        speciesServiceProvider.overrideWithValue(_OfflineSpecies()),
+        // Le chercheur résout les fiches, et la résolution passe par les
+        // retouches de Care Studio, donc par les préférences.
+        preferencesServiceProvider.overrideWithValue(prefs),
+      ],
       child: MaterialApp(
         locale: const Locale('fr'),
         localizationsDelegates: const [

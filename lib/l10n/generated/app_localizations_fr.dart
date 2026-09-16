@@ -5130,6 +5130,47 @@ class AppLocalizationsFr extends AppLocalizations {
       'Espèce absente du catalogue : ces repères viennent de l\'IA. Seul le nom scientifique a été envoyé. La toxicité n\'est pas renseignée.';
 
   @override
+  String get careMatchEdited => 'Fiche retouchée';
+
+  @override
+  String get careEditedNote =>
+      'Fiche corrigée à la main ; le reste vient du catalogue.';
+
+  @override
+  String get careStudio => 'Care Studio';
+
+  @override
+  String get careStudioHint =>
+      'Corrigez une fiche d\'entretien. La retouche s\'applique sur cet appareil.';
+
+  @override
+  String get careStudioSearch => 'Chercher une espèce';
+
+  @override
+  String get careStudioPrompt => 'Cherchez une espèce pour corriger sa fiche.';
+
+  @override
+  String get careStudioEmpty => 'Aucune espèce ne correspond.';
+
+  @override
+  String get careStudioWateringSummer => 'Arrosage, pleine saison';
+
+  @override
+  String get careStudioWateringWinter => 'Arrosage, hiver';
+
+  @override
+  String get careStudioDamageBelow => 'Éviter sous';
+
+  @override
+  String get careStudioSave => 'Enregistrer';
+
+  @override
+  String get careStudioSaved => 'Retouche enregistrée';
+
+  @override
+  String get careStudioReset => 'Revenir au catalogue';
+
+  @override
   String get careAssistSetting => 'Compléter les fiches avec l\'IA';
 
   @override

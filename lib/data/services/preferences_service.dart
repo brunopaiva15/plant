@@ -71,6 +71,10 @@ class PreferencesService {
   String? get careCompletions => _prefs.getString('care_completions');
   Future<void> setCareCompletions(String json) => _prefs.setString('care_completions', json);
 
+  /// Retouches des fiches d'entretien par Care Studio, par espèce, en JSON.
+  String? get careOverrides => _prefs.getString('care_overrides');
+  Future<void> setCareOverrides(String json) => _prefs.setString('care_overrides', json);
+
   /// Guides de bouturage précisés par l'IA, par espèce et par langue, en JSON.
   String? get cuttingGuides => _prefs.getString('cutting_guides');
   Future<void> setCuttingGuides(String json) => _prefs.setString('cutting_guides', json);

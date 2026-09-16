@@ -4,7 +4,7 @@ import 'toxicity.dart';
 /// Précision avec laquelle une fiche a été trouvée. Sert à être honnête dans
 /// l'UI, où « Fiche de l'espèce » n'a pas la même valeur que « Fiche du
 /// genre », ni qu'une fiche complétée par l'IA faute de mieux.
-enum CareMatch { species, genus, family, category, generic, assisted }
+enum CareMatch { species, genus, family, category, generic, assisted, edited }
 
 /// Fiche d'entretien retenue pour une plante, avec sa provenance.
 class ResolvedCare {

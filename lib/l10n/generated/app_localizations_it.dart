@@ -5122,6 +5122,48 @@ class AppLocalizationsIt extends AppLocalizations {
       'Specie assente dal catalogo: questi riferimenti vengono dall\'IA. È stato inviato solo il nome scientifico. La tossicità non è indicata.';
 
   @override
+  String get careMatchEdited => 'Scheda modificata';
+
+  @override
+  String get careEditedNote =>
+      'Scheda corretta a mano; il resto viene dal catalogo.';
+
+  @override
+  String get careStudio => 'Care Studio';
+
+  @override
+  String get careStudioHint =>
+      'Correggi una scheda di cura. La modifica vale su questo dispositivo.';
+
+  @override
+  String get careStudioSearch => 'Cerca una specie';
+
+  @override
+  String get careStudioPrompt =>
+      'Cerca una specie per correggere la sua scheda.';
+
+  @override
+  String get careStudioEmpty => 'Nessuna specie corrisponde.';
+
+  @override
+  String get careStudioWateringSummer => 'Annaffiatura, stagione piena';
+
+  @override
+  String get careStudioWateringWinter => 'Annaffiatura, inverno';
+
+  @override
+  String get careStudioDamageBelow => 'Non sotto';
+
+  @override
+  String get careStudioSave => 'Salva';
+
+  @override
+  String get careStudioSaved => 'Modifica salvata';
+
+  @override
+  String get careStudioReset => 'Torna al catalogo';
+
+  @override
   String get careAssistSetting => 'Completa le schede con l\'IA';
 
   @override

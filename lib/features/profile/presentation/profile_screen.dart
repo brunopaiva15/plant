@@ -86,6 +86,11 @@ class ProfileScreen extends ConsumerWidget {
                     // s'écrit pas depuis l'application (docs/04).
                     if (signedIn && ref.watch(tipModeratorProvider).value == true)
                       FloraListRow(leading: const Text('🛡️', style: TextStyle(fontSize: 18)), title: l10n.moderationTitle, onTap: () => context.push(Routes.moderation)),
+                    // Care Studio corrige les fiches d'entretien du catalogue :
+                    // même porte que la modération, le serveur seul sait qui
+                    // modère (docs/04).
+                    if (signedIn && ref.watch(tipModeratorProvider).value == true)
+                      FloraListRow(leading: const Text('🌿', style: TextStyle(fontSize: 18)), title: l10n.careStudio, onTap: () => context.push(Routes.careStudio)),
                   ],
                 );
               }),

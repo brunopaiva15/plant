@@ -39,10 +39,13 @@ import '../data/species/catalog_care_guide.dart';
 import '../data/species/species_catalog.dart';
 import '../data/species/species_index.dart';
 import '../data/species/species_index_loader.dart';
+import '../data/species/care_override_store.dart';
+import '../data/species/overridden_care_guide.dart';
 import '../domain/community/species_tip.dart';
 import '../domain/sharing/garden_collaboration.dart';
 import '../domain/sharing/shared_link.dart';
 import '../domain/care/care_completion.dart';
+import '../domain/care/care_override.dart';
 import '../domain/cuttings/propagation_guide.dart';
 import '../domain/care/care_guide.dart';
 import '../data/services/notification_service.dart';
@@ -655,7 +658,39 @@ final communityTipsServiceProvider = Provider<CommunityTipsService>((ref) {
   return SupabaseCommunityTips(userId: user == null || user.isLocal ? null : user.id);
 });
 
-final careGuideProvider = Provider<CareGuide>((ref) => const CatalogCareGuide());
+/// Les retouches de Care Studio, par espèce, relues sur l'appareil.
+///
+/// Une retouche s'écrit ici et se relit au lancement suivant : la résolution
+/// passe alors par [OverriddenCareGuide], et la fiche annonce qu'elle a été
+/// retouchée.
+class CareOverrides extends Notifier<Map<String, CareOverride>> {
+  @override
+  Map<String, CareOverride> build() => CareOverrideStore.decode(ref.watch(preferencesServiceProvider).careOverrides);
+
+  /// Pose la retouche d'une espèce, ou l'efface si elle est vide.
+  Future<void> save(String scientificName, CareOverride override) async {
+    final key = CareOverrideStore.keyOf(scientificName);
+    final next = {...state};
+    if (override.isEmpty) {
+      next.remove(key);
+    } else {
+      next[key] = override;
+    }
+    state = next;
+    await ref.read(preferencesServiceProvider).setCareOverrides(CareOverrideStore.encode(next));
+  }
+}
+
+/// Les retouches posées, par nom d'espèce normalisé.
+final careOverridesProvider = NotifierProvider<CareOverrides, Map<String, CareOverride>>(CareOverrides.new);
+
+/// Fiches d'entretien : le catalogue, avec les retouches de Care Studio
+/// appliquées par-dessus quand il y en a.
+final careGuideProvider = Provider<CareGuide>((ref) {
+  final overrides = ref.watch(careOverridesProvider);
+  if (overrides.isEmpty) return const CatalogCareGuide();
+  return OverriddenCareGuide(base: const CatalogCareGuide(), overrides: overrides);
+});
 
 /// Famille d'une espèce : le catalogue trié à la main d'abord, puis le
 /// catalogue étendu s'il est déjà chargé. Sans lui, la fiche d'entretien
