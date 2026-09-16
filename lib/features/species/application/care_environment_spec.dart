@@ -8,12 +8,18 @@ enum CareEnvironmentKind { indoorRoom, outdoorPatch }
 /// Les emplacements de plante dans le cadre, nommés comme les clés de
 /// [CareEnvironmentSlots.slots] — la distance à la fenêtre encode le besoin
 /// de lumière.
+///
+/// Les six tiennent sur une droite, à pas constant, du fond de la pièce
+/// jusque dans la tache de soleil : d'une fiche à l'autre la plante avance
+/// d'un cran vers la lumière, elle ne saute pas d'un coin à l'autre. Les
+/// trois derniers crans se lisent sur la tache : à côté, sur son bord,
+/// dedans.
 enum CarePlantSlot {
   backCorner,
   back,
   middle,
-  nearWindowOutsideBeam,
-  nearWindowEdgeOfBeam,
+  besideBeam,
+  beamEdge,
   sunZone,
 }
 
@@ -173,13 +179,13 @@ CareEnvironmentVisualSpec careEnvironmentSpec({
 }
 
 /// L'emplacement qui dit le besoin de lumière : du fond de la pièce, loin
-/// de la fenêtre, jusqu'au cœur de la tache de soleil.
+/// de la fenêtre, jusqu'au cœur de la tache de soleil, un cran à la fois.
 CarePlantSlot slotFor(LightNeed light) => switch (light) {
   LightNeed.shade => CarePlantSlot.backCorner,
   LightNeed.lowLight => CarePlantSlot.back,
   LightNeed.indirect => CarePlantSlot.middle,
-  LightNeed.brightIndirect => CarePlantSlot.nearWindowOutsideBeam,
-  LightNeed.someSun => CarePlantSlot.nearWindowEdgeOfBeam,
+  LightNeed.brightIndirect => CarePlantSlot.besideBeam,
+  LightNeed.someSun => CarePlantSlot.beamEdge,
   LightNeed.fullSun => CarePlantSlot.sunZone,
 };
 

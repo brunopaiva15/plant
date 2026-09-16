@@ -110,9 +110,23 @@ comme pour l'autre.
 | `shade` | `backCorner` | le plus sombre, loin de la fenêtre |
 | `lowLight` | `back` | arrière de pièce |
 | `indirect` | `middle` | lumière diffuse |
-| `brightIndirect` | `nearWindowOutsideBeam` | pièce lumineuse, tache de soleil **à côté** de la plante |
-| `someSun` | `nearWindowEdgeOfBeam` | au bord de la tache |
+| `brightIndirect` | `besideBeam` | pièce lumineuse, tache de soleil **à côté** de la plante |
+| `someSun` | `beamEdge` | au bord de la tache |
 | `fullSun` | `sunZone` | dans le soleil |
+
+Les six emplacements tiennent sur **une droite, à pas constant** : du fond
+de la pièce jusque dans la tache de soleil, la plante avance d'un cran par
+cran de lumière, toujours du même pas et dans le même sens. La distance à
+la fenêtre décroît donc strictement, et les trois derniers crans se lisent
+sur la tache — à côté, sur son bord, dedans. Six positions choisies une par
+une se liraient comme un hasard : d'une fiche à l'autre, la plante
+sauterait d'un coin de la pièce à l'autre. `tool/care_scene/common.py` pose
+le départ et le pas, le reste en découle ; `test/features/care_environment_test.dart`
+vérifie l'ordre et la régularité du pas.
+
+L'humidificateur suit la plante d'un décalage d'écran constant, toujours du
+même côté — entre elle et la fenêtre : lui aussi doit se retrouver au même
+endroit d'une fiche à l'autre.
 
 La plante garde le même éclat d'une variante à l'autre : c'est le décor —
 luminosité, fenêtre, faisceau — qui porte l'information, pas un

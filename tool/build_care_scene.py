@@ -83,8 +83,11 @@ def exporte_slots(dossier, res):
     bpy.context.scene.render.resolution_y = res
     cam, _, _, _ = common.camera_fixe()
     # L'humidificateur est pose a cote de la plante par un decalage d'ecran
-    # (la projection orthographique est lineaire) : du cote interieur du
-    # cadre, pour qu'il ne passe jamais derriere le pot ni dans un mur.
+    # (la projection orthographique est lineaire) : toujours du meme cote,
+    # entre la plante et la fenetre, pour qu'il ne change pas de place d'une
+    # fiche a l'autre. Les six emplacements tiennent du centre du cadre vers
+    # la droite : a 0,115 de large, l'humidificateur reste dans la piece,
+    # jamais dans un mur ni derriere le pot.
     haut = common.projette(cam, (0.0, 0.0, 0.55))
     base = common.projette(cam, (0.0, 0.0, 0.0))
     dz = haut[1] - base[1]
@@ -92,8 +95,7 @@ def exporte_slots(dossier, res):
     humidifier_top = {}
     for nom, (x, y) in common.SLOTS.items():
         sx, sy = common.projette(cam, (x, y, 0.0))
-        cote = 1.0 if sx < 0.5 else -1.0
-        hx, hy = sx + cote * 0.115, sy + 0.025
+        hx, hy = sx - 0.115, sy + 0.025
         humidifier[nom] = [hx, hy]
         humidifier_top[nom] = [hx, hy + dz]
     donnees = {
