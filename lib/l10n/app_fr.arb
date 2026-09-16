@@ -2382,6 +2382,14 @@
   "careAssistedNote": "Espèce absente du catalogue : ces repères viennent de l'IA. Seul le nom scientifique a été envoyé. La toxicité n'est pas renseignée.",
   "careMatchEdited": "Fiche retouchée",
   "careEditedNote": "Fiche corrigée à la main ; le reste vient du catalogue.",
+  "careReviewedFrom": "Revue d'après {name}",
+  "@careReviewedFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "careStudio": "Care Studio",
   "careStudioHint": "Corrigez une fiche d'entretien. La retouche s'applique sur cet appareil.",
   "careStudioSearch": "Chercher une espèce",

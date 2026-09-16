@@ -332,6 +332,7 @@ class CareProfile {
     this.bloom,
     this.dormancy,
     this.tipKeys = const [],
+    this.source,
   });
 
   /// Jours entre deux arrosages en pleine croissance.
@@ -441,6 +442,11 @@ class CareProfile {
 
   /// Clés de conseils libres, résolues par la couche i18n.
   final List<String> tipKeys;
+
+  /// La référence consultée quand la fiche a été revue (« RHS », « ASPCA »…).
+  /// `null` = fiche estimée, pas encore confrontée à une source : c'est le cas
+  /// de la plupart des profils de genre, déduits de leur famille.
+  final String? source;
 
   /// Plage d'hygrométrie idéale à viser, en pourcentage : celle de l'espèce
   /// quand elle est renseignée, sinon celle de son besoin.

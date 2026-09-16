@@ -1680,6 +1680,7 @@
   "careAssistedNote": "Art nicht im Katalog: diese Richtwerte stammen von der KI. Nur der wissenschaftliche Name wurde gesendet. Giftigkeit ist nicht enthalten.",
   "careMatchEdited": "Bearbeitetes Profil",
   "careEditedNote": "Von Hand korrigiertes Profil; der Rest stammt aus dem Katalog.",
+  "careReviewedFrom": "Nach {name} überarbeitet",
   "careStudio": "Care Studio",
   "careStudioHint": "Korrigieren Sie ein Pflegeprofil. Die Änderung gilt auf diesem Gerät.",
   "careStudioSearch": "Art suchen",

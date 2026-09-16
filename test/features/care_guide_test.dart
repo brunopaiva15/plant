@@ -133,6 +133,25 @@ void main() {
     expect(find.text("Rien n'est renseigné pour cette espèce ; à tenir hors de portée par précaution."), findsOneWidget);
   });
 
+  testWidgets('une fiche revue dit sa source, une estimation se tait', (tester) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        source: 'RHS',
+      ),
+    );
+    expect(find.text("Revue d'après RHS"), findsOneWidget);
+
+    await pump(tester);
+    expect(find.textContaining("Revue d'après"), findsNothing);
+  });
+
   testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (tester) async {
     await pump(tester);
     expect(find.textContaining('50 % de terreau, 25 % de perlite et 25 % de sable grossier'), findsOneWidget);

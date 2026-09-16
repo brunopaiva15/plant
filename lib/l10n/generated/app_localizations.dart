@@ -8850,6 +8850,12 @@ abstract class AppLocalizations {
   /// **'Fiche corrigée à la main ; le reste vient du catalogue.'**
   String get careEditedNote;
 
+  /// No description provided for @careReviewedFrom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revue d\'après {name}'**
+  String careReviewedFrom(String name);
+
   /// No description provided for @careStudio.
   ///
   /// In fr, this message translates to:

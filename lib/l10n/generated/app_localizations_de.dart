@@ -5123,6 +5123,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Von Hand korrigiertes Profil; der Rest stammt aus dem Katalog.';
 
   @override
+  String careReviewedFrom(String name) {
+    return 'Nach $name überarbeitet';
+  }
+
+  @override
   String get careStudio => 'Care Studio';
 
   @override

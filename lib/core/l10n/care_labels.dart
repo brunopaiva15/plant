@@ -504,6 +504,10 @@ extension CareProfileLabels on AppLocalizations {
         CareMatch.edited => careMatchEdited,
       };
 
+  /// La source de la fiche, quand elle a été revue : « Revue d'après RHS ».
+  /// `null` pour une fiche estimée, qui ne dit rien de plus que son niveau.
+  String? careSourceNote(CareProfile p) => p.source == null ? null : careReviewedFrom(p.source!);
+
   /// « de mars à septembre », dans la langue et le calendrier de l'utilisateur.
   String fertilizeWindowLabel(MonthWindow w, String localeTag) {
     final fmt = DateFormat.MMMM(localeTag);

@@ -5136,6 +5136,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Scheda corretta a mano; il resto viene dal catalogo.';
 
   @override
+  String careReviewedFrom(String name) {
+    return 'Rivista secondo $name';
+  }
+
+  @override
   String get careStudio => 'Care Studio';
 
   @override

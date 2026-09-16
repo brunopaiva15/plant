@@ -1680,6 +1680,7 @@
   "careAssistedNote": "Species not in the catalogue: these guidelines come from the AI. Only the scientific name was sent. Toxicity is not covered.",
   "careMatchEdited": "Edited profile",
   "careEditedNote": "Profile corrected by hand; the rest comes from the catalogue.",
+  "careReviewedFrom": "Reviewed from {name}",
   "careStudio": "Care Studio",
   "careStudioHint": "Fix a care profile. The edit applies on this device.",
   "careStudioSearch": "Search for a species",

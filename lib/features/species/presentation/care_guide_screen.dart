@@ -415,6 +415,12 @@ class CareGuideBody extends ConsumerWidget {
 
         const SizedBox(height: Space.lg),
         Text(l10n.careMatchLabel(care), style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
+        // La source, quand la fiche a été revue : une estimation ne la porte
+        // pas, et le lecteur le voit.
+        if (l10n.careSourceNote(p) case final source?) ...[
+          const SizedBox(height: 2),
+          Text(source, style: context.text.caption),
+        ],
         const SizedBox(height: 2),
         Text(
           switch (care.match) {

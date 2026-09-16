@@ -346,6 +346,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['prunesAfterFlowering', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Jasminum polyanthum': CareProfile(
       wateringSummerDays: 8,
@@ -376,6 +377,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.spiderMites, CommonIssue.dryTips],
       outdoorFriendly: true,
       tipKeys: ['winterShelter', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Convolvulus tricolor': CareProfile(
       wateringSummerDays: 3,
@@ -2206,6 +2208,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.spiderMites],
       outdoorFriendly: true,
       tipKeys: ['drySoilFirst', 'noNitrogen'],
+      source: 'RHS',
     ),
     'Abies': CareProfile(
       wateringSummerDays: 8,
@@ -2271,6 +2274,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['sapIrritant', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Pinus': CareProfile(
       wateringSummerDays: 10,
@@ -2809,6 +2813,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['prunesAfterFlowering', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Amelanchier': CareProfile(
       wateringSummerDays: 5,
@@ -2868,6 +2873,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.layering],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['prunesAfterFlowering', 'stakeAndPrune'],
+      source: 'RHS',
     ),
     'Syringa': CareProfile(
       wateringSummerDays: 8,
@@ -3031,10 +3037,11 @@ abstract final class CareProfiles {
       soil: SoilKind.draining,
       fertilizingDays: 60,
       repotEveryMonths: 36,
-      damageBelowC: -20,
+      damageBelowC: -15,
       propagation: [Propagation.tuber, Propagation.division],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['hardyOutdoors', 'letFoliageDieBack'],
+      source: 'RHS',
     ),
     'Chenopodium': CareProfile(
       wateringSummerDays: 2,
@@ -3668,11 +3675,12 @@ abstract final class CareProfiles {
       fertilizingDays: 90,
       fertilizingWindow: MonthWindow(4, 7),
       repotEveryMonths: 48,
-      damageBelowC: -12,
+      damageBelowC: -10,
       propagation: [Propagation.stemCutting],
       issues: [CommonIssue.dryTips, CommonIssue.spiderMites],
       outdoorFriendly: true,
       tipKeys: ['hardyOutdoors', 'trimTwiceAYear'],
+      source: 'RHS',
     ),
     'Cupressus': CareProfile(
       wateringSummerDays: 6,
@@ -3815,6 +3823,7 @@ abstract final class CareProfiles {
       outdoorFriendly: true,
       dormancy: DormantRest(window: MonthWindow(7, 9), storeMinC: 10, storeMaxC: 20),
       tipKeys: ['letFoliageDieBack', 'sapIrritant'],
+      source: 'RHS',
     ),
     'Pilea': CareProfile(
       wateringSummerDays: 5,
@@ -3966,10 +3975,11 @@ abstract final class CareProfiles {
       soil: SoilKind.standard,
       fertilizingDays: 60,
       repotEveryMonths: 48,
-      damageBelowC: -15,
+      damageBelowC: -18,
       propagation: [Propagation.stemCutting],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['sharpSpines', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Artocarpus': CareProfile(
       wateringSummerDays: 8,
