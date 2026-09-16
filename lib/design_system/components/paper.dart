@@ -15,14 +15,12 @@ import '../tokens/spacing.dart';
 ///
 /// Le papier n'est pas parfaitement plat : une lumière très légère accroche
 /// son bord supérieur et quelques fibres presque invisibles cassent l'aplat.
-/// Trois perforations en haut renforcent l'idée d'une vraie fiche cartonnée.
 class PaperSheet extends StatelessWidget {
   const PaperSheet({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.fromLTRB(Space.lg, Space.huge, Space.lg, Space.xxl),
     this.corner = true,
-    this.holes = true,
   });
 
   final Widget child;
@@ -30,9 +28,6 @@ class PaperSheet extends StatelessWidget {
 
   /// Le coin replié : la page a été tournée, puis laissée ouverte.
   final bool corner;
-
-  /// Trois trous de classeur, percés dans le haut de la fiche.
-  final bool holes;
 
   /// Taille du coin replié.
   static const double _fold = 22;
@@ -94,20 +89,6 @@ class PaperSheet extends StatelessWidget {
                 ),
               ),
               Padding(padding: padding, child: child),
-              if (holes)
-                Positioned(
-                  top: Space.sm,
-                  left: 0,
-                  right: 0,
-                  child: IgnorePointer(
-                    child: _PaperHoles(
-                      canvasColor: c.canvas,
-                      line: c.line,
-                      shadow: c.shadow,
-                      dark: c.isDark,
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -251,121 +232,6 @@ class _PaperSheetPainter extends CustomPainter {
       old.shadowFar != shadowFar ||
       old.shadowNear != shadowNear ||
       old.topHighlight != topHighlight;
-}
-
-/// Trois perforations discrètes. Le centre reprend vraiment la couleur du
-/// canvas : la fiche paraît percée plutôt que décorée de trois pastilles.
-class _PaperHoles extends StatelessWidget {
-  const _PaperHoles({
-    required this.canvasColor,
-    required this.line,
-    required this.shadow,
-    required this.dark,
-  });
-
-  final Color canvasColor;
-  final Color line;
-  final Color shadow;
-  final bool dark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _PaperHole(canvasColor: canvasColor, line: line, shadow: shadow, dark: dark),
-        const SizedBox(width: Space.xxl),
-        _PaperHole(canvasColor: canvasColor, line: line, shadow: shadow, dark: dark),
-        const SizedBox(width: Space.xxl),
-        _PaperHole(canvasColor: canvasColor, line: line, shadow: shadow, dark: dark),
-      ],
-    );
-  }
-}
-
-class _PaperHole extends StatelessWidget {
-  const _PaperHole({
-    required this.canvasColor,
-    required this.line,
-    required this.shadow,
-    required this.dark,
-  });
-
-  final Color canvasColor;
-  final Color line;
-  final Color shadow;
-  final bool dark;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: const Size.square(11),
-      painter: _PaperHolePainter(
-        canvasColor: canvasColor,
-        line: line,
-        shadow: shadow,
-        dark: dark,
-      ),
-    );
-  }
-}
-
-class _PaperHolePainter extends CustomPainter {
-  const _PaperHolePainter({
-    required this.canvasColor,
-    required this.line,
-    required this.shadow,
-    required this.dark,
-  });
-
-  final Color canvasColor;
-  final Color line;
-  final Color shadow;
-  final bool dark;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final radius = size.shortestSide / 2 - 1;
-
-    // Petite lèvre sombre en haut-gauche, comme sur du carton perforé.
-    canvas.drawCircle(
-      center.translate(-0.35, -0.45),
-      radius + 0.7,
-      Paint()..color = shadow.withValues(alpha: dark ? 0.34 : 0.16),
-    );
-
-    canvas.drawCircle(center, radius, Paint()..color = canvasColor);
-
-    canvas.drawCircle(
-      center,
-      radius,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.75
-        ..color = line.withValues(alpha: dark ? 0.46 : 0.70),
-    );
-
-    // Reflet inférieur très fin sur la tranche du papier.
-    final rect = Rect.fromCircle(center: center, radius: radius - 0.45);
-    canvas.drawArc(
-      rect,
-      0.20,
-      2.70,
-      false,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.65
-        ..color = Colors.white.withValues(alpha: dark ? 0.05 : 0.42),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_PaperHolePainter old) =>
-      old.canvasColor != canvasColor ||
-      old.line != line ||
-      old.shadow != shadow ||
-      old.dark != dark;
 }
 
 /// Texture sèche et très légère du papier.

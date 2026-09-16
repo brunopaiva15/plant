@@ -56,6 +56,7 @@ class CareGuideScreen extends ConsumerWidget {
       // La fiche s'affiche tout de suite avec ce que le catalogue sait ; si
       // l'IA la complète, elle se repose en fondu plutôt que de changer
       // sèchement sous les yeux.
+      bleed: true,
       child: AnimatedSwitcher(
         duration: Motion.of(context, Motion.standard),
         child: KeyedSubtree(
@@ -66,7 +67,7 @@ class CareGuideScreen extends ConsumerWidget {
             speciesName: plant?.speciesName,
             location: location,
             plantLight: plant?.light,
-            category: plant?.speciesName == null ? null : SpeciesCatalog.find(plant!.speciesName!)?.category,
+            category: plant?.speciesName == null ? null : SpeciesCatalog.findAccepted(plant!.speciesName!)?.category,
           ),
         ),
       ),

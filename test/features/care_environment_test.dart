@@ -146,6 +146,18 @@ void main() {
       );
       expect(careEnvironmentSpec(profile: base).hasAirflowEffect, isFalse);
     });
+
+    test('l\'air à abriter entre par l\'ouverture, pas par une machine', () {
+      final dedans = careEnvironmentSpec(
+        profile: avec(airflow: AirflowPreference.sheltered),
+      );
+      expect(dedans.airflowOriginFraction, CareEnvironmentSlots.airflow['indoor']);
+      final dehors = careEnvironmentSpec(
+        profile: avec(airflow: AirflowPreference.sheltered),
+        category: SpeciesCategory.tree,
+      );
+      expect(dehors.airflowOriginFraction, CareEnvironmentSlots.airflow['outdoor']);
+    });
   });
 
   group('les props du climat', () {
@@ -177,8 +189,10 @@ void main() {
           reason: 'la vapeur part du haut (${slot.name})',
         );
       }
-      expect(CareEnvironmentSlots.vent.$1, inInclusiveRange(0.0, 1.0));
-      expect(CareEnvironmentSlots.vent.$2, inInclusiveRange(0.0, 1.0));
+      expect(CareEnvironmentSlots.airflow['indoor']!.$1, inInclusiveRange(0.0, 1.0));
+      expect(CareEnvironmentSlots.airflow['indoor']!.$2, inInclusiveRange(0.0, 1.0));
+      expect(CareEnvironmentSlots.airflow['outdoor']!.$1, inInclusiveRange(0.0, 1.0));
+      expect(CareEnvironmentSlots.airflow['outdoor']!.$2, inInclusiveRange(0.0, 1.0));
     });
   });
 

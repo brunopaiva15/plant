@@ -63,9 +63,6 @@ class _CareEnvironmentHeroState extends State<CareEnvironmentHero> {
         context,
       );
     }
-    if (spec.airflow == AirflowPreference.sheltered) {
-      precacheImage(AssetImage('assets/care_scene/props/vent.webp'), context);
-    }
   }
 
   CareEnvironmentVisualSpec get _spec => careEnvironmentSpec(
@@ -111,10 +108,8 @@ class _CareEnvironmentHeroState extends State<CareEnvironmentHero> {
         l10n.careAirflowVentilated,
     ];
 
-    // À forte échelle de texte, les puces passent sous la scène : superposées,
-    // elles finiraient par couvrir le diorama ou par rogner.
-    final superpose = MediaQuery.textScalerOf(context).scale(16) <= 26;
-
+    // Les puces vivent sous la scène : superposées, elles couvriraient le
+    // diorama et poseraient la plante sur du texte.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -125,24 +120,19 @@ class _CareEnvironmentHeroState extends State<CareEnvironmentHero> {
         Semantics(
           container: true,
           label: '${l10n.careEnvTitle} : ${details.join(', ')}.',
-          child: CareEnvironmentScene(
-            spec: spec,
-            callouts: superpose ? callouts : const [],
+          child: CareEnvironmentScene(spec: spec),
+        ),
+        const SizedBox(height: Space.sm),
+        ExcludeSemantics(
+          child: Wrap(
+            spacing: Space.xs,
+            runSpacing: Space.xs,
+            children: [
+              for (final (emoji, label) in callouts)
+                FloraChip(emoji: emoji, label: label),
+            ],
           ),
         ),
-        if (!superpose) ...[
-          const SizedBox(height: Space.sm),
-          ExcludeSemantics(
-            child: Wrap(
-              spacing: Space.xs,
-              runSpacing: Space.xs,
-              children: [
-                for (final (emoji, label) in callouts)
-                  FloraChip(emoji: emoji, label: label),
-              ],
-            ),
-          ),
-        ],
         const SizedBox(height: Space.lg),
       ],
     );

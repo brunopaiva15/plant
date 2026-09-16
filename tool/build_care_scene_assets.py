@@ -34,7 +34,7 @@ GROUPES = ["indoor", "outdoor", "plants", "props"]
 # --only sans lancer Blender.
 LUMIERES = ["shade", "low_light", "indirect", "bright_indirect", "some_sun", "full_sun"]
 PLANTES = ["monstera", "broad_leaf", "upright_leaf", "vine", "fern", "rosette", "cactus", "conifer", "orchid"]
-PROPS = ["humidifier", "vent"]
+PROPS = ["humidifier"]
 
 # Le grain d'argile reste net à ce niveau ; en dessous, il se lisse.
 QUALITE = 80
@@ -154,10 +154,13 @@ def genere_dart(dossier):
         "Le haut de l'humidificateur, d'où part la vapeur, par emplacement.",
         ("humidifierTop", donnees["humidifierTop"]),
     )
+    lignes.append("")
+    lignes += carte(
+        "D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture "
+        "au-dessus de la haie dehors.",
+        ("airflow", donnees["airflow"]),
+    )
     lignes += [
-        "",
-        "  /// La grille d'aération, sur le mur du fond.",
-        "  static const (double, double) vent = %s;" % paire(donnees["vent"]),
         "}",
         "",
     ]

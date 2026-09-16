@@ -31,13 +31,17 @@ assets/care_scene/
     outdoor/light/   shade … full_sun      le jardin, six lumières
     plants/          monstera, broad_leaf, upright_leaf, vine,
                      fern, rosette, cactus, conifer, orchid
-    props/           humidifier, vent
+    props/           humidifier
 ```
 
-Dans l'application, `CareEnvironmentScene` empile : le décor lumineux, la
-grille d'aération si l'air est à abriter, l'humidificateur si l'air est
-humide, l'ombre, la plante translatée sur son emplacement, la vapeur et les
-lignes de flux dessinées en `CustomPainter`, puis les puces d'information.
+Dans l'application, `CareEnvironmentScene` empile : le décor lumineux,
+l'humidificateur si l'air est humide, l'ombre, la plante translatée sur son
+emplacement, la vapeur et les lignes de flux dessinées en `CustomPainter`,
+puis les puces d'information.
+
+L'air qui bouge n'a pas de prop : un courant d'air entre par une ouverture —
+la fenêtre dans la pièce, le côté ouvert du jardin dehors —, il ne sort pas
+d'une machine. Seules ses lignes de flux sont dessinées.
 
 ### La caméra à cadre fixe
 
@@ -57,8 +61,8 @@ images ne se mélangent pas avec celles de la scène.
 La plante est rendue seule, au centre du monde ; l'application la translate
 jusqu'à l'emplacement qui dit son besoin. Les positions — six
 **emplacements** (`CarePlantSlot`), l'ancre de la plante, la place de
-l'humidificateur et son haut, la grille d'aération — sont **projetées par
-le build Blender** et livrées en constante Dart
+l'humidificateur et son haut, l'ouverture d'où souffle l'air — sont
+**projetées par le build Blender** et livrées en constante Dart
 (`lib/features/species/application/care_environment_slots.dart`, généré,
 commité). La géométrie de la scène est la source de vérité : rien n'est
 accordé à la main côté application, et le faisceau baké dans le décor

@@ -179,17 +179,18 @@ distance à la fenêtre dit le besoin de lumière, la tache de soleil au sol
 dit direct ou indirect. Six variantes de lumière (`shade` à `full_sun`),
 même pièce, seuls la lumière, la vitre et le faisceau changent. Les espèces
 de plein air (arbres, fruitiers, légumes, et les aromatiques ou fleurs
-rustiques) ont leur propre décor : un coin de jardin avec pelouse, muret et
-haie — même caméra, même direction de soleil, la table des emplacements
-vaut d'une scène à l'autre. Les plantes sont rendues seules : `monstera`,
+rustiques) ont leur propre décor : un coin de jardin avec pelouse, palissade
+de bois, haie et boisement — même caméra, même direction de soleil, la table
+des emplacements vaut d'une scène à l'autre. Les plantes sont rendues seules : `monstera`,
 `broad_leaf` (le repli), `upright_leaf`, `vine`, `fern`, `rosette`,
 `cactus`, `conifer`, `orchid` — neuf archétypes que le résolveur attache par
 espèce, genre, famille et catégorie. L'application les pose sur l'emplacement
-qui correspond au `LightNeed` de la fiche. Deux props disent le climat sans un
-mot : l'humidificateur (air humide), posé à côté de la plante, et la grille
-d'aération (air à abriter), fixe sur le mur du fond. La vapeur et les lignes
-de flux ne sont pas rendues : l'application les dessine (reduced motion, et
-le flux doit passer à distance de la plante, qui bouge).
+qui correspond au `LightNeed` de la fiche. Un prop dit le climat sans un
+mot : l'humidificateur (air humide), posé à côté de la plante. L'air à
+abriter n'a pas de prop — il entre par une ouverture, la fenêtre dedans ou
+le côté ouvert du jardin dehors. La vapeur et les lignes de flux ne sont pas
+rendues : l'application les dessine (reduced motion, et le flux doit passer à
+distance de la plante, qui bouge).
 
 Contrairement aux autres objets clay, toutes les couches partagent une
 **caméra à cadre fixe** (`tool/care_scene/common.py`), calculée sur les

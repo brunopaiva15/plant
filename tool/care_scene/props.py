@@ -3,13 +3,12 @@
 # disent le climat sans un mot.
 #
 #   humidificateur  l'air humide — rendu seul au centre du monde, pose par
-#                   l'application a cote de la plante (comme elle) ;
-#   aeration        la grille qui souffle l'air a abriter — fixe, sur le mur
-#                   du fond, rendue a sa place definitive dans le cadre.
+#                   l'application a cote de la plante (comme elle).
 #
-# La vapeur de l'humidificateur et les lignes de flux ne sont PAS rendues :
-# elles sont dessinees par l'application (reduced motion, contraste, et le
-# flux doit passer a distance de la plante, qui bouge).
+# L'air qui bouge n'a pas de prop : un courant d'air entre par la fenetre, il
+# ne sort pas d'une machine. Ses lignes de flux, comme la vapeur de
+# l'humidificateur, sont dessinees par l'application (reduced motion,
+# contraste, et le flux doit passer a distance de la plante, qui bouge).
 #
 # Rien ne s'execute a l'import.
 # ============================================================
@@ -18,11 +17,7 @@ import os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from clay_scene import revolve  # noqa: E402  — le chemin doit etre pose avant
-from care_scene.common import PIECE_Y, boite, materiau  # noqa: E402
-
-# La grille d'aération, sur le mur du fond : assez haute pour que le flux
-# passe au-dessus de la plante, a droite pour ne pas concurrencer la fenetre.
-AERATION = (1.20, PIECE_Y, 2.05)
+from care_scene.common import materiau  # noqa: E402
 
 
 def humidificateur():
@@ -49,26 +44,6 @@ def humidificateur():
     return objets
 
 
-def aeration():
-    """La grille d'aération sur le mur du fond : un cadre creme et trois
-    lamelles sombres. Fixe — rendue a sa place definitive."""
-    mats = {
-        "cadre": materiau("MAT_Aeration_Cadre", "FDFBF4", rough=0.55, relief=0.006),
-        "lamelle": materiau("MAT_Aeration_Lamelle", "8A6B4F", rough=0.60, relief=0.006),
-    }
-    x, y, z = AERATION
-    objets = [
-        boite("Aeration_Cadre", (x, y - 0.03, z), (0.42, 0.07, 0.30), mats["cadre"], 0.03),
-    ]
-    for i in range(3):
-        objets.append(
-            boite("Aeration_Lamelle_%d" % (i + 1), (x, y - 0.065, z - 0.075 + i * 0.075),
-                  (0.32, 0.025, 0.035), mats["lamelle"], 0.01),
-        )
-    return objets
-
-
 PROPS = {
     "humidifier": humidificateur,
-    "vent": aeration,
 }

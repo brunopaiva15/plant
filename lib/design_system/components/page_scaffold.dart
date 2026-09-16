@@ -298,7 +298,7 @@ class _SwappedTitleState extends State<_SwappedTitle> {
 
 /// Page secondaire (push) à titre centré, avec retour natif.
 class FloraPage extends StatelessWidget {
-  const FloraPage({super.key, required this.title, required this.child, this.trailing, this.scrollable = true, this.bottom});
+  const FloraPage({super.key, required this.title, required this.child, this.trailing, this.scrollable = true, this.bottom, this.bleed = false});
 
   final String title;
   final Widget child;
@@ -306,10 +306,15 @@ class FloraPage extends StatelessWidget {
   final bool scrollable;
   final Widget? bottom;
 
+  /// Sans marge latérale : le contenu touche les deux bords de l'écran. Pour
+  /// les pages qui posent un objet pleine largeur — la fiche d'entretien et
+  /// sa feuille — et non du texte courant, qui a besoin d'air.
+  final bool bleed;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final side = Space.page + readableInset(context);
+    final side = bleed ? 0.0 : Space.page + readableInset(context);
     Widget body(double topInset) => scrollable
         ? SingleChildScrollView(
             physics: floraScrollPhysics,

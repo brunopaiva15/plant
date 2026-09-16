@@ -128,12 +128,14 @@ def _rideau(m):
 
 def _gueridon(m):
     # Un petit gueridon rond, a l'avant droit : le seul meuble, il donne
-    # l'echelle sans raconter d'histoire.
+    # l'echelle sans raconter d'histoire. Il se tient loin des six
+    # emplacements : une plante posee dessus, avec son ombre au sol, ne se
+    # lirait plus.
     profil = [(0.0, 0.0), (0.30, 0.0), (0.325, 0.035), (0.11, 0.07),
               (0.085, 0.11), (0.085, 0.50), (0.29, 0.54), (0.315, 0.575),
               (0.30, 0.60), (0.0, 0.605)]
     ob = revolve("Gueridon", profil, 64, [m["bois"]], 30.0)
-    ob.location = (1.35, -0.95, 0.0)
+    ob.location = (2.00, -1.70, 0.0)
 
 
 def _faisceau(force):

@@ -111,7 +111,7 @@ void main() {
   );
 
   test('les props du climat ont leur image', () {
-    for (final nom in ['humidifier', 'vent']) {
+    for (final nom in ['humidifier']) {
       expectWebp(File('assets/care_scene/props/$nom.webp'));
     }
   });

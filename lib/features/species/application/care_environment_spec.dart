@@ -115,8 +115,13 @@ class CareEnvironmentVisualSpec {
   (double, double) get steamOriginFraction =>
       CareEnvironmentSlots.humidifierTop[slot.name]!;
 
-  /// La grille d'aération, sur le mur du fond — l'air à abriter vient d'elle.
-  (double, double) get ventFraction => CareEnvironmentSlots.vent;
+  /// D'où souffle l'air à abriter : la fenêtre dans la pièce, l'ouverture
+  /// au-dessus de la haie dehors. Un courant d'air vient d'une ouverture,
+  /// jamais d'une machine.
+  (double, double) get airflowOriginFraction =>
+      CareEnvironmentSlots.airflow[environment == CareEnvironmentKind.indoorRoom
+          ? 'indoor'
+          : 'outdoor']!;
 
   /// L'air qui bouge ne se dessine que quand il dit quelque chose : à
   /// abriter ou bien ventilé. `normal` n'a pas d'emphase, `null` n'a rien.

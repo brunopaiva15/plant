@@ -949,7 +949,7 @@ void main() {
       },
     );
 
-    testWidgets('l\'air à abriter montre la grille et le flux à distance', (
+    testWidgets('l\'air à abriter entre par la fenêtre, à distance', (
       tester,
     ) async {
       await pump(
@@ -964,14 +964,15 @@ void main() {
           airflow: AirflowPreference.sheltered,
         ),
       );
-      expect(image('vent.webp'), findsOneWidget);
       expect(image('humidifier.webp'), findsOneWidget);
       // Ombre, vapeur, flux : trois couches dessinées.
       expect(couchesDessinees(), findsNWidgets(3));
       expect(find.text('À l\'abri des courants d\'air'), findsOneWidget);
     });
 
-    testWidgets('l\'air bien ventilé a son flux, sans grille', (tester) async {
+    testWidgets('l\'air bien ventilé a son flux autour de la plante', (
+      tester,
+    ) async {
       await pump(
         tester,
         const CareProfile(
@@ -984,7 +985,6 @@ void main() {
           airflow: AirflowPreference.ventilated,
         ),
       );
-      expect(image('vent.webp'), findsNothing);
       // Ombre et flux : deux couches dessinées.
       expect(couchesDessinees(), findsNWidgets(2));
       expect(find.text('Air bien ventilé'), findsOneWidget);
@@ -1003,7 +1003,6 @@ void main() {
           airflow: AirflowPreference.normal,
         ),
       );
-      expect(image('vent.webp'), findsNothing);
       expect(couchesDessinees(), findsOneWidget, reason: 'l\'ombre seule');
       expect(find.text('Air ordinaire'), findsNothing);
     });
@@ -1053,7 +1052,6 @@ void main() {
       );
       expect(find.byType(CareEnvironmentScene), findsOneWidget);
       expect(image('humidifier.webp'), findsOneWidget);
-      expect(image('vent.webp'), findsOneWidget);
       // La respiration bornée se termine : le settle finit toujours.
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);

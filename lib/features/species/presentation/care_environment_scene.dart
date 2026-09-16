@@ -20,17 +20,9 @@ import '../application/care_environment_spec.dart';
 /// Aucune sémantique ici : c'est le héros ([CareEnvironmentHero]) qui porte
 /// la description, les images sont décoratives.
 class CareEnvironmentScene extends StatefulWidget {
-  const CareEnvironmentScene({
-    super.key,
-    required this.spec,
-    this.callouts = const [],
-  });
+  const CareEnvironmentScene({super.key, required this.spec});
 
   final CareEnvironmentVisualSpec spec;
-
-  /// Les puces superposées au bas du diorama (emoji, libellé). Vide : rien
-  /// n'est superposé — à forte échelle de texte, elles vivent sous la scène.
-  final List<(String, String)> callouts;
 
   @override
   State<CareEnvironmentScene> createState() => _CareEnvironmentSceneState();
@@ -102,14 +94,6 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
               fit: BoxFit.cover,
               excludeFromSemantics: true,
             ),
-            // La grille d'aération, sur le mur du fond : l'air à abriter
-            // vient d'elle.
-            if (spec.airflow == AirflowPreference.sheltered)
-              Image.asset(
-                'assets/care_scene/props/vent.webp',
-                fit: BoxFit.cover,
-                excludeFromSemantics: true,
-              ),
             // L'humidificateur, posé à côté de la plante comme elle.
             if (spec.hasHumidifier)
               FractionalTranslation(
@@ -167,25 +151,12 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
                   painter: _AirflowPainter(
                     kind: spec.airflow!,
                     slot: Offset(slot.$1, slot.$2),
-                    vent: Offset(spec.ventFraction.$1, spec.ventFraction.$2),
+                    origin: Offset(
+                      spec.airflowOriginFraction.$1,
+                      spec.airflowOriginFraction.$2,
+                    ),
                     t: anime ? _souffle.value : 0.45,
                     color: c.inkSecondary,
-                  ),
-                ),
-              ),
-            if (widget.callouts.isNotEmpty)
-              Positioned(
-                left: Space.sm,
-                right: Space.sm,
-                bottom: Space.sm,
-                child: ExcludeSemantics(
-                  child: Wrap(
-                    spacing: Space.xs,
-                    runSpacing: Space.xs,
-                    children: [
-                      for (final (emoji, label) in widget.callouts)
-                        FloraChip(emoji: emoji, label: label),
-                    ],
                   ),
                 ),
               ),
@@ -284,14 +255,15 @@ class _SteamPainter extends CustomPainter {
       old.origin != origin || old.t != t || old.color != color;
 }
 
-/// Les lignes de flux de l'air. À abriter : elles partent de la grille et
-/// traversent le haut du cadre, à distance de la plante. Bien ventilé :
-/// elles respirent doucement autour d'elle. Jamais de tempête.
+/// Les lignes de flux de l'air. À abriter : elles entrent par l'ouverture —
+/// la fenêtre dedans, le côté ouvert dehors — et traversent le haut du cadre,
+/// à distance de la plante. Bien ventilé : elles respirent doucement autour
+/// d'elle. Jamais de tempête.
 class _AirflowPainter extends CustomPainter {
   const _AirflowPainter({
     required this.kind,
     required this.slot,
-    required this.vent,
+    required this.origin,
     required this.t,
     required this.color,
   });
@@ -301,8 +273,8 @@ class _AirflowPainter extends CustomPainter {
   /// L'emplacement de la plante, en coordonnées fractionnaires.
   final Offset slot;
 
-  /// La grille d'aération, en coordonnées fractionnaires.
-  final Offset vent;
+  /// L'ouverture d'où vient l'air, en coordonnées fractionnaires.
+  final Offset origin;
   final double t;
   final Color color;
 
@@ -319,24 +291,26 @@ class _AirflowPainter extends CustomPainter {
     }
   }
 
-  /// De la grille vers la gauche, en haut du cadre, loin de la plante.
+  /// De l'ouverture vers la droite, en haut du cadre, loin de la plante : le
+  /// courant traverse la piece sans l'atteindre.
   void _fluxAbris(Canvas canvas, Size size, Paint paint) {
     final w = size.width;
-    final depart = Offset(vent.dx * w, vent.dy * size.height);
+    final h = size.height;
+    final depart = Offset(origin.dx * w, origin.dy * h);
     for (var i = 0; i < 3; i++) {
       final phase = (t + i / 3) % 1.0;
-      final alpha = 0.40 * math.sin(math.pi * phase);
-      final y0 = depart.dy + (i - 1) * w * 0.035;
-      final derive = math.sin(t * 2 * math.pi + i) * w * 0.006;
+      final alpha = 0.38 * math.sin(math.pi * phase);
+      final dy = (i - 1) * h * 0.045;
+      final derive = math.sin(t * 2 * math.pi + i) * h * 0.012;
       final path = Path()
-        ..moveTo(depart.dx, y0)
+        ..moveTo(depart.dx - w * 0.05, depart.dy + dy + derive)
         ..cubicTo(
-          depart.dx - w * 0.16,
-          y0 + derive,
-          w * 0.46,
-          y0 + w * 0.02 + derive,
-          w * 0.30,
-          y0 + w * 0.03,
+          w * 0.50,
+          depart.dy + dy - h * 0.02 + derive,
+          w * 0.74,
+          depart.dy + dy + h * 0.03,
+          w * 1.06,
+          depart.dy + dy + h * 0.05,
         );
       canvas.drawPath(path, paint..color = color.withValues(alpha: alpha));
     }
@@ -365,7 +339,7 @@ class _AirflowPainter extends CustomPainter {
   bool shouldRepaint(_AirflowPainter old) =>
       old.kind != kind ||
       old.slot != slot ||
-      old.vent != vent ||
+      old.origin != origin ||
       old.t != t ||
       old.color != color;
 }

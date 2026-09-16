@@ -67,12 +67,20 @@ def _rend(chemin, res, samples):
     grain(chemin)
 
 
-def exporte_slots(dossier):
+def exporte_slots(dossier, res):
     """La table des emplacements : chaque slot, projete dans l'image par la
     camera fixe, en coordonnees fractionnaires lues par Flutter. C'est la
     geometrie de la piece qui fait foi — jamais une table accordee a la main
-    cote application."""
+    cote application.
+
+    La projection depend du format de l'image : `world_to_camera_view` lit le
+    rapport largeur/hauteur de la scene. On fixe donc le rendu au carre AVANT
+    de projeter, comme les couches le seront : sans quoi les y sortiraient
+    compresses par le 16:9 par defaut de Blender, et la plante ne tomberait
+    plus sur son ombre."""
     purge()
+    bpy.context.scene.render.resolution_x = res
+    bpy.context.scene.render.resolution_y = res
     cam, _, _, _ = common.camera_fixe()
     # L'humidificateur est pose a cote de la plante par un decalage d'ecran
     # (la projection orthographique est lineaire) : du cote interieur du
@@ -95,7 +103,13 @@ def exporte_slots(dossier):
                   for nom, (x, y) in common.SLOTS.items()},
         "humidifier": humidifier,
         "humidifierTop": humidifier_top,
-        "vent": list(common.projette(cam, props.AERATION)),
+        # D'ou souffle l'air a abriter : de la fenetre, dans la piece ; du
+        # cote ouvert, au-dessus de la haie, dans le jardin. Jamais d'une
+        # machine — l'application n'y dessine que les lignes de flux.
+        "airflow": {
+            "indoor": list(common.projette(cam, (-common.PIECE_X, 0.30, 1.50))),
+            "outdoor": list(common.projette(cam, (-2.00, 0.00, 1.55))),
+        },
     }
     chemin = os.path.join(dossier, "slots.json")
     os.makedirs(dossier, exist_ok=True)
@@ -168,7 +182,7 @@ MODE, GROUPE, FILTRE, RES, SAMPLES, DOSSIER = _options(argv)
 if GROUPE not in GROUPES + ["all"]:
     sys.exit("groupe inconnu : %s (parmi %s)" % (GROUPE, ", ".join(GROUPES + ["all"])))
 
-exporte_slots(DOSSIER)
+exporte_slots(DOSSIER, RES)
 if GROUPE in ("indoor", "all"):
     rendre_indoor(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("outdoor", "all"):
