@@ -536,7 +536,7 @@ class _SpeciesSheet extends ConsumerWidget {
           if (reasons.isNotEmpty) ...[const SizedBox(height: Space.sm), FinderReasons(reasons: reasons)],
           if (credit != null) ...[const SizedBox(height: Space.xs), Text(credit, style: context.text.caption)],
           const SizedBox(height: Space.lg),
-          CareGuideBody(care: care, speciesName: scientificName),
+          CareGuideBody(care: care, speciesName: scientificName, paper: false),
           const SizedBox(height: Space.lg),
           FloraButton(label: actionLabel, icon: actionIcon, expand: true, onPressed: () => Navigator.of(context).pop(true)),
           const SizedBox(height: Space.xs),

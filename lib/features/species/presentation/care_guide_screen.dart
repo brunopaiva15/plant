@@ -96,6 +96,7 @@ class CareGuideBody extends ConsumerWidget {
     this.location,
     this.header,
     this.plantLight,
+    this.paper = true,
   });
 
   final ResolvedCare care;
@@ -110,6 +111,11 @@ class CareGuideBody extends ConsumerWidget {
   /// Lumière renseignée sur la plante elle-même ; elle prime sur celle de
   /// l'emplacement.
   final LightNeed? plantLight;
+
+  /// La fiche comme objet : une feuille posée sur le fond de la page. Le
+  /// dénicheur, qui l'affiche déjà dans une sheet, s'en passe — une feuille
+  /// sur une feuille ne se lit pas.
+  final bool paper;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -134,13 +140,12 @@ class CareGuideBody extends ConsumerWidget {
     // Chaque volet garde la teinte de son sujet : l'arrosage et l'eau en bleu,
     // la lumière en ocre, l'humidité en rose, l'engrais en sauge, le pot en
     // terre cuite.
-    return Column(
+    final fiche = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ?header,
 
-        Text(l10n.needsSection, style: context.text.title3),
-        const SizedBox(height: Space.sm),
+        SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 
         // L'emplacement vient en premier : sans la bonne lumière, les autres
         // fréquences de la fiche deviennent vite fausses. Et faute de fenêtre,
@@ -230,8 +235,7 @@ class CareGuideBody extends ConsumerWidget {
         HomeClimateFitCard(profile: p),
 
         const SizedBox(height: Space.lg),
-        Text(l10n.careHowTo, style: context.text.title3),
-        const SizedBox(height: Space.sm),
+        SectionHeader(title: l10n.careHowTo, padding: const EdgeInsets.only(bottom: Space.sm)),
 
         // Le pot se lit dans l'ordre où on s'en occupe : d'abord le mélange,
         // puis ce qu'on ajoute pendant la croissance, enfin quand le changer.
@@ -351,8 +355,7 @@ class CareGuideBody extends ConsumerWidget {
         ],
 
         const SizedBox(height: Space.lg),
-        Text(l10n.detailsSection, style: context.text.title3),
-        const SizedBox(height: Space.sm),
+        SectionHeader(title: l10n.detailsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
         FloraGroup(
           children: [
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),
@@ -371,8 +374,7 @@ class CareGuideBody extends ConsumerWidget {
 
         if (tips.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
-          Text(l10n.careTips, style: context.text.title3),
-          const SizedBox(height: Space.sm),
+          SectionHeader(title: l10n.careTips, padding: const EdgeInsets.only(bottom: Space.sm)),
           for (final tip in tips)
             Padding(
               padding: const EdgeInsets.only(bottom: Space.xs),
@@ -404,8 +406,7 @@ class CareGuideBody extends ConsumerWidget {
 
         if (p.propagation.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
-          Text(l10n.carePropagation, style: context.text.title3),
-          const SizedBox(height: Space.sm),
+          SectionHeader(title: l10n.carePropagation, padding: const EdgeInsets.only(bottom: Space.sm)),
           Wrap(
             spacing: Space.xs,
             runSpacing: Space.xs,
@@ -414,7 +415,9 @@ class CareGuideBody extends ConsumerWidget {
         ],
 
         const SizedBox(height: Space.lg),
-        Text(l10n.careMatchLabel(care), style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
+        // La provenance se tamponne en bas de la feuille : c'est ce que la
+        // fiche avoue d'elle-même, et un tampon le dit mieux qu'une ligne.
+        Align(alignment: Alignment.centerLeft, child: _ProvenanceStamp(label: l10n.careMatchLabel(care))),
         // La source, quand la fiche a été revue : une estimation ne la porte
         // pas, et le lecteur le voit.
         if (l10n.careSourceNote(p) case final source?) ...[
@@ -432,6 +435,7 @@ class CareGuideBody extends ConsumerWidget {
         ),
       ],
     );
+    return paper ? PaperSheet(child: fiche) : fiche;
   }
 
   static Widget _row(String emoji, String title, String value, {String? subtitle, bool danger = false}) {
@@ -570,6 +574,41 @@ class _AspectCard extends StatelessWidget {
   }
 }
 
+/// La provenance de la fiche, tamponnée au bas de la feuille.
+///
+/// Le catalogue dit d'où viennent les repères — l'espèce, le genre, la
+/// famille, ou des repères généraux ; l'IA, quand elle a complété ; une
+/// relecture, quand elle a eu lieu. C'est la seule phrase de la fiche qui
+/// parle d'elle-même, alors elle porte un cachet : un cadre d'encre, un peu
+/// de travers, tel qu'on le poserait à la main.
+class _ProvenanceStamp extends StatelessWidget {
+  const _ProvenanceStamp({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Transform.rotate(
+      angle: -0.024,
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.xxs),
+        decoration: BoxDecoration(
+          border: Border.all(color: c.inkSecondary.withValues(alpha: 0.85), width: 1.5),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        // La casse reste celle des ARB : des majuscules feraient épeler le
+        // tampon aux lecteurs d'écran.
+        child: Text(
+          label,
+          style: context.text.caption.copyWith(color: c.inkSecondary, fontWeight: FontWeight.w700, letterSpacing: 0.8),
+        ),
+      ),
+    );
+  }
+}
+
 /// « À surveiller » : ce qui arrive à cette espèce, dit en clair.
 ///
 /// La liste est rangée dans l'ordre de la base des problèmes — ce qui vient
@@ -604,8 +643,7 @@ class _WatchList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: Space.lg),
-        Text(l10n.careIssues, style: context.text.title3),
-        const SizedBox(height: Space.sm),
+        SectionHeader(title: l10n.careIssues, padding: const EdgeInsets.only(bottom: Space.sm)),
         FloraGroup(
           children: [
             for (final i in ordered)
@@ -656,8 +694,7 @@ class _LeafSignListState extends State<_LeafSignList> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: Space.lg),
-        Text(l10n.careLeafSigns, style: context.text.title3),
-        const SizedBox(height: Space.xxs),
+        SectionHeader(title: l10n.careLeafSigns, padding: const EdgeInsets.only(bottom: Space.xxs)),
         Text(l10n.careLeafSignsNote, style: context.text.caption),
         const SizedBox(height: Space.sm),
         FloraGroup(
@@ -786,8 +823,7 @@ class _KnownProblemsState extends ConsumerState<_KnownProblems> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: Space.lg),
-        Text(l10n.careKnownProblems, style: context.text.title3),
-        const SizedBox(height: Space.xxs),
+        SectionHeader(title: l10n.careKnownProblems, padding: const EdgeInsets.only(bottom: Space.xxs)),
         // La base le dit elle-même : les hôtes cités sont des exemples, et un
         // genre ne rend pas toutes ses espèces sensibles.
         Text(l10n.careKnownProblemsNote, style: context.text.caption),

@@ -344,7 +344,7 @@ d'exclamation, pas de titre en forme de question, et une liste de tournures
 interdites par langue. Une tournure à bannir de plus s'ajoute là.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
 Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
@@ -387,6 +387,19 @@ pour l'eau, ocre pour la lumière, rose pour l'air, sauge pour l'engrais, terre
 cuite pour la terre (le substrat et le rempotage la partagent, c'est la même).
 Une douzaine de lignes dans une seule liste ne se distinguaient qu'à la
 lecture ; une carte se retrouve à sa couleur.
+
+**La fiche est une feuille posée sur le fond** (`PaperSheet`,
+`design_system/components/paper.dart`) : un cran plus claire que le canvas,
+une ombre droite — la lumière vient du dessus, pas d'un coin —, un filet, et
+un coin corné en bas à droite qui emporte l'ombre du coin avec lui. Les
+cartes d'argile restent des pièces posées sur la feuille : deux matières, et
+c'est leur écart qui dit que la fiche est un objet. Les titres de sections
+passent à la main (`SectionHeader`, Shantell 22), comme écrits sur la
+feuille, et la provenance se tamponne au pied : le libellé de
+`careMatchLabel` — « Fiche de l'espèce », « Repères généraux », « Complétée
+par l'IA » — dans un cadre d'encre posé de travers. L'aperçu du dénicheur
+garde la surface de sa sheet (`CareGuideBody(paper: false)`) : une feuille
+sur une feuille ne se lit pas.
 
 L'anatomie est celle des cartes du matin : une tuile d'emoji — crème, comme
 sur toute carte teintée —, le nom du volet, le constat dessous, puis une ligne

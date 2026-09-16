@@ -13,6 +13,7 @@ export 'header_fade.dart';
 export 'iris_mark.dart';
 export 'list_row.dart';
 export 'page_scaffold.dart';
+export 'paper.dart';
 export 'plant_image.dart';
 export 'pressable.dart';
 export 'scanning_overlay.dart';

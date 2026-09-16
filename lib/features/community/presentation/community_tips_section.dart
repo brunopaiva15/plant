@@ -54,7 +54,7 @@ class CommunityTipsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: Space.lg),
-        Text(l10n.communityTipsTitle, style: context.text.title3),
+        SectionHeader(title: l10n.communityTipsTitle, padding: EdgeInsets.zero),
         const SizedBox(height: 2),
         Text(l10n.communityTipsHint, style: context.text.caption),
         const SizedBox(height: Space.sm),
