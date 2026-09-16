@@ -340,8 +340,8 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
-				15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "../vendor/GoogleHomeSDK" */,
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
+				15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "GoogleHomeSDK" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -422,6 +422,21 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
 		};
+		7A1C0C012F0100AA00C63901 /* Retirer GoogleHomeTypes du bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Retirer GoogleHomeTypes du bundle";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# GoogleHomeTypes est une bibliotheque statique dans un dossier .framework :\n# liee a la compilation, sa copie dans le bundle ne sert a rien et casse la\n# signature, son binaire etant une archive ar et non un Mach-O.\n# Voir docs/05-technical-architecture.md, section Google Home.\nrm -rf \"${CODESIGNING_FOLDER_PATH}/Frameworks/GoogleHomeTypes.framework\"\n";
+		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -445,13 +460,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -479,21 +490,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		7A1C0C012F0100AA00C63901 /* Retirer GoogleHomeTypes du bundle */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Retirer GoogleHomeTypes du bundle";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# GoogleHomeTypes est une bibliotheque statique dans un dossier .framework :\n# liee a la compilation, sa copie dans le bundle ne sert a rien et casse la\n# signature, son binaire etant une archive ar et non un Mach-O.\n# Voir docs/05-technical-architecture.md, section Google Home.\nrm -rf \"${CODESIGNING_FOLDER_PATH}/Frameworks/GoogleHomeTypes.framework\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -977,11 +973,11 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "../vendor/GoogleHomeSDK" */ = {
+		15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "GoogleHomeSDK" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../vendor/GoogleHomeSDK;
 		};
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};
@@ -990,12 +986,12 @@
 /* Begin XCSwiftPackageProductDependency section */
 		15C9B9C03059A07000F0FC65 /* GoogleHomeSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "../vendor/GoogleHomeSDK" */;
+			package = 15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "GoogleHomeSDK" */;
 			productName = GoogleHomeSDK;
 		};
 		15C9B9C23059A07000F0FC65 /* GoogleHomeTypes */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "../vendor/GoogleHomeSDK" */;
+			package = 15C9B9BE30599FEC00F0FC65 /* XCLocalSwiftPackageReference "GoogleHomeSDK" */;
 			productName = GoogleHomeTypes;
 		};
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
