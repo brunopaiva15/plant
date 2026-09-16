@@ -94,7 +94,10 @@ def touffe(mats, M=None, dz=0.0, pousse=1.0, groupes=None):
     objets = []
     for i, c in enumerate(COURONNES):
         Mi = M @ groupes.get(i, Matrix.Identity(4))
-        objets += couronne("Couronne%d" % i, mats, c["pos"] + UP * dz, c["az"], c["feuilles"],
+        # Les petioles partent du collet, juste sous la terre, pas du fond
+        # du pot : sinon les limbes traversent sa paroi et la motte.
+        base = c["pos"] + UP * (Z_SOL - 0.06 + dz)
+        objets += couronne("Couronne%d" % i, mats, base, c["az"], c["feuilles"],
                            echelle=c["ech"], M=Mi, pousse=pousse)
     return objets
 
