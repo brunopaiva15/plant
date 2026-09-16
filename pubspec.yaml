@@ -135,6 +135,11 @@ flutter:
     - assets/cutting/division/
     - assets/cutting/offset/
     - assets/cutting/succulent_segment/
+    # Dioramas isométriques des fiches d'entretien : décors lumineux indoor /
+    # outdoor et silhouettes clay, générés par tool/build_care_scene_assets.py.
+    - assets/care_scene/indoor/
+    - assets/care_scene/outdoor/
+    - assets/care_scene/plants/
     # Le grain du papier, posé par-dessus l'écran.
     - assets/textures/
     # Iris, le modèle de reconnaissance d'espèces (TFLite) : poids, classes,

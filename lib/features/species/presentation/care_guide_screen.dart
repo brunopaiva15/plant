@@ -18,6 +18,7 @@ import '../../community/presentation/community_tips_section.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import 'care_environment_hero.dart';
 import 'care_guide_copy.dart';
 import 'water_types_sheet.dart';
 
@@ -144,6 +145,12 @@ class CareGuideBody extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ?header,
+
+        // Le diorama encode l'emplacement conseillé avant que la fiche ne
+        // détaille chacun de ses besoins. Il ne reflète jamais les mesures
+        // réelles de l'emplacement ou de la maison.
+        CareEnvironmentHero(profile: p, speciesName: speciesName),
+        const SizedBox(height: Space.lg),
 
         SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 
