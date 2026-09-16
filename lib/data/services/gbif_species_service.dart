@@ -22,6 +22,12 @@ class GbifSpeciesService implements SpeciesService {
   /// précisée », que l'application ne montre pas (docs/09 § 4.1).
   static const _displayableLicenses = ['CC0_1_0', 'CC_BY_4_0'];
 
+  /// Une observation de terrain — la plante vivante. Sans ce filtre,
+  /// `mediaType=StillImage` ramène aussi les planches d'herbier
+  /// (`PRESERVED_SPECIMEN`), du bruit pour qui veut reconnaître une plante
+  /// (docs/09 § 4.2, § 4.5). On ne demande que les observations humaines.
+  static const _fieldObservation = 'HUMAN_OBSERVATION';
+
   final _cache = <int, SpeciesInfo>{};
 
   /// Vignettes déjà cherchées, par nom scientifique. Une entrée `null` dit
@@ -114,6 +120,7 @@ class GbifSpeciesService implements SpeciesService {
           .get(Uri.https(_base, '/v1/occurrence/search', {
             'taxonKey': '$key',
             'mediaType': 'StillImage',
+            'basisOfRecord': _fieldObservation,
             'license': _displayableLicenses,
             'limit': '5',
           }))
@@ -140,9 +147,17 @@ class GbifSpeciesService implements SpeciesService {
     } catch (_) {}
     try {
       final occ = await _client
-          .get(Uri.https(_base, '/v1/occurrence/search', {'taxonKey': '$key', 'mediaType': 'StillImage', 'limit': '6'}))
+          .get(Uri.https(_base, '/v1/occurrence/search', {
+            'taxonKey': '$key',
+            'mediaType': 'StillImage',
+            'basisOfRecord': _fieldObservation,
+            'license': _displayableLicenses,
+            'limit': '6',
+          }))
           .timeout(const Duration(seconds: 12));
-      if (occ.statusCode == 200) info = info.copyWith(images: parseOccurrenceImages(occ.body));
+      if (occ.statusCode == 200) {
+        info = info.copyWith(images: parseOccurrenceImages(occ.body).where((i) => i.isFreelyDisplayable).toList());
+      }
     } catch (_) {}
     return _cache[key] = info;
   }
@@ -204,9 +219,15 @@ class GbifSpeciesService implements SpeciesService {
     final out = <SpeciesImage>[];
     for (final o in (j['results'] as List? ?? const []).cast<Map<String, dynamic>>()) {
       for (final m in (o['media'] as List? ?? const []).cast<Map<String, dynamic>>()) {
+        // Le filtre serveur porte sur l'occurrence : on revérifie le type du
+        // média, comme le fait le connecteur du jeu de données (docs/09 § 4.1).
+        final type = m['type'] as String?;
+        if (type != null && type != 'StillImage') continue;
         final url = m['identifier'] as String?;
         if (url == null || !url.startsWith('http')) continue;
-        out.add(SpeciesImage(url: url, license: m['license'] as String?, rightsHolder: m['rightsHolder'] as String?, country: o['country'] as String?));
+        // Sans licence sur le média, celle de l'occurrence fait foi.
+        final license = (m['license'] as String?) ?? (o['license'] as String?);
+        out.add(SpeciesImage(url: url, license: license, rightsHolder: m['rightsHolder'] as String?, country: o['country'] as String?));
         break;
       }
     }

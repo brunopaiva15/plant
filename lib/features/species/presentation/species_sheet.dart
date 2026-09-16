@@ -8,9 +8,17 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
 
-/// Fiche espèce GBIF pour un nom scientifique (taxonomie, noms communs,
-/// observations photographiées avec attribution).
-final speciesInfoProvider = FutureProvider.family<SpeciesInfo?, String>((ref, name) => ref.watch(speciesServiceProvider).lookup(name));
+/// Fiche espèce GBIF pour un nom scientifique (taxonomie, noms communs),
+/// complétée des photos Wikimedia Commons : GBIF fournit le nom et les
+/// observations de terrain, Commons la plante telle qu'on la cultive.
+final speciesInfoProvider = FutureProvider.family<SpeciesInfo?, String>((ref, name) async {
+  final info = await ref.watch(speciesServiceProvider).lookup(name);
+  if (info == null) return null;
+  final commons = await ref.watch(speciesImageSourceProvider).photos(info.canonicalName);
+  if (commons.isEmpty) return info;
+  final seen = info.images.map((i) => i.url).toSet();
+  return info.copyWith(images: [...info.images, ...commons.where((i) => seen.add(i.url))]);
+});
 
 Future<void> showSpeciesSheet(BuildContext context, {required String scientificName}) =>
     showFloraSheet<void>(context, scrollable: true, builder: (_) => SpeciesSheetBody(scientificName: scientificName));

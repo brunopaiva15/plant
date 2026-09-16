@@ -70,6 +70,17 @@ void main() {
     expect(const SpeciesImage(url: 'u').isFreelyDisplayable, isFalse);
   });
 
+  test('parseOccurrenceImages écarte ce qui n\'est pas une image et reprend la licence de l\'occurrence', () {
+    const body = '''{"results":[
+      {"license":"http://creativecommons.org/licenses/by/4.0/","media":[{"type":"Sound","identifier":"https://x/son.mp3"},{"identifier":"https://x/photo.jpg"}]},
+      {"media":[{"type":"StillImage","identifier":"https://x/autre.jpg","license":"http://creativecommons.org/licenses/by-nc/4.0/"}]}
+    ]}''';
+    final images = GbifSpeciesService.parseOccurrenceImages(body);
+    expect(images.map((i) => i.url), ['https://x/photo.jpg', 'https://x/autre.jpg']);
+    // Le média sans licence hérite de celle de l'occurrence.
+    expect(images.first.license, 'http://creativecommons.org/licenses/by/4.0/');
+  });
+
   group('la vignette d\'un candidat', () {
     const match = '{"usageKey":2868241,"matchType":"EXACT"}';
     const occurrence =
@@ -132,11 +143,46 @@ void main() {
       await service.thumbnail('Monstera deliciosa');
       expect(occurrence.queryParametersAll['license'], ['CC0_1_0', 'CC_BY_4_0']);
       expect(occurrence.queryParameters['mediaType'], 'StillImage');
+      expect(occurrence.queryParameters['basisOfRecord'], 'HUMAN_OBSERVATION');
     });
 
     test('un nom vide ne part pas sur le réseau', () async {
       final service = GbifSpeciesService(client: MockClient((_) async => fail('aucune requête attendue')));
       expect(await service.thumbnail('   '), isNull);
+    });
+  });
+
+  group('la fiche espèce', () {
+    const taxon = '{"key":2868241,"scientificName":"Monstera deliciosa Liebm.","canonicalName":"Monstera deliciosa","rank":"SPECIES","taxonomicStatus":"ACCEPTED","kingdom":"Plantae","family":"Araceae","genus":"Monstera"}';
+
+    test('ne demande à GBIF que des observations de terrain sous licence affichable', () async {
+      late Uri occurrence;
+      final service = GbifSpeciesService(client: MockClient((req) async {
+        if (req.url.path.contains('vernacular')) return http.Response('{"results":[]}', 200);
+        if (req.url.path.contains('occurrence')) {
+          occurrence = req.url;
+          return http.Response('{"results":[]}', 200);
+        }
+        return http.Response(taxon, 200);
+      }));
+      await service.byKey(2868241);
+      expect(occurrence.queryParameters['mediaType'], 'StillImage');
+      expect(occurrence.queryParameters['basisOfRecord'], 'HUMAN_OBSERVATION');
+      expect(occurrence.queryParametersAll['license'], ['CC0_1_0', 'CC_BY_4_0']);
+    });
+
+    test('écarte une photo qu\'on n\'a pas le droit de montrer', () async {
+      const occurrence = '''{"results":[
+        {"media":[{"identifier":"https://x/nc.jpg","license":"http://creativecommons.org/licenses/by-nc/4.0/"}]},
+        {"media":[{"identifier":"https://x/libre.jpg","license":"http://creativecommons.org/licenses/by/4.0/"}]}
+      ]}''';
+      final service = GbifSpeciesService(client: MockClient((req) async {
+        if (req.url.path.contains('vernacular')) return http.Response('{"results":[]}', 200);
+        if (req.url.path.contains('occurrence')) return http.Response(occurrence, 200);
+        return http.Response(taxon, 200);
+      }));
+      final info = await service.byKey(2868241);
+      expect(info?.images.map((i) => i.url), ['https://x/libre.jpg']);
     });
   });
 }

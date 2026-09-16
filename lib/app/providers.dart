@@ -26,6 +26,7 @@ import '../data/services/infomaniak_care_completer.dart';
 import '../data/services/infomaniak_propagation_refiner.dart';
 import '../data/services/infomaniak_diagnoser.dart';
 import '../data/services/gbif_species_service.dart';
+import '../data/services/wikimedia_species_service.dart';
 import '../data/services/google_home_climate_service.dart';
 import '../data/services/home_kit_climate_service.dart';
 import '../core/config/identification_config.dart';
@@ -636,6 +637,10 @@ final propagationRefinementProvider = FutureProvider.autoDispose
 
 /// Informations sur les espèces : GBIF, sans clé, avec cache en mémoire.
 final speciesServiceProvider = Provider<SpeciesService>((ref) => GbifSpeciesService());
+
+/// Photos complémentaires : Wikimedia Commons, sans clé. Commons montre la
+/// plante cultivée là où GBIF ne relaie que des observations de terrain.
+final speciesImageSourceProvider = Provider<SpeciesImageSource>((ref) => WikimediaSpeciesService());
 
 /// Partage d'un jardin entre comptes : invitations, membres, rôles.
 final collaborationServiceProvider = Provider<CollaborationService>((ref) {

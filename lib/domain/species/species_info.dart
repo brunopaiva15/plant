@@ -216,3 +216,13 @@ abstract class SpeciesService {
   /// plutôt que d'échouer : une vignette absente n'empêche pas de choisir.
   Future<SpeciesImage?> thumbnail(String scientificName);
 }
+
+/// Une source d'images complémentaire pour une espèce (Wikimedia Commons).
+///
+/// La provenance des images est séparée de l'identité taxonomique : GBIF
+/// reste la référence des noms, une source ne fait qu'apporter des photos
+/// (docs/09 § 4.5). Rend une liste vide plutôt que d'échouer — un complément
+/// n'empêche pas d'afficher la fiche.
+abstract class SpeciesImageSource {
+  Future<List<SpeciesImage>> photos(String scientificName);
+}

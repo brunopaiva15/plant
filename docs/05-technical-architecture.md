@@ -13,7 +13,7 @@
 | Version affichée | `package_info_plus` (`AppVersion`, `appVersionProvider`) | la ligne `version:` du `pubspec.yaml` est le seul numéro à changer : Xcode, Gradle et l'écran des réglages la lisent tous là |
 | i18n | `flutter_localizations` + ARB (`gen-l10n`) | fr / en / de / it, pluriels, dates locales |
 | Backend (P3) | Supabase derrière `RemoteDataSource` | Postgres + Auth + Storage + Realtime, mais remplaçable |
-| Espèces | GBIF (`SpeciesService`) | gratuit, sans clé, taxonomie de référence, images d'observations avec attribution |
+| Espèces | GBIF (`SpeciesService`), photos Wikimedia Commons en complément (`SpeciesImageSource`) | gratuit, sans clé, taxonomie de référence, images d'observations avec attribution ; Commons ajoute la plante cultivée sur la fiche espèce |
 | Identification | cascade `CascadeIdentifier` : modèle local (à venir) puis Pl@ntNet (`PlantIdentifier`) | clé de l'utilisateur, repli coupable, voir [09](09-plant-recognition.md) |
 | Diagnostic | AI Services d'Infomaniak, route compatible OpenAI (`PlantDiagnoser`) | clé de l'éditeur au build, modèle choisi au build, sans plafond |
 | Complément de fiche | AI Services d'Infomaniak (`CareCompleter`) | seulement quand le catalogue n'a que des repères généraux ; nom scientifique seul, réponse gardée sur l'appareil |

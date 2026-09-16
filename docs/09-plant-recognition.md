@@ -464,6 +464,12 @@ Trois choix que le connecteur assume :
   Une source qui tombe doit se voir — `build_dataset` l'écrit `ÉCHEC`, et
   `failed_species.py` la rattrape.
 
+Dans l'application, la même source illustre la fiche espèce :
+`WikimediaSpeciesService` cherche les fichiers par nom scientifique
+(`intitle:`, espace « Fichier »), écarte les non-photographies sur le titre et
+ne garde que les licences affichables (CC0, CC BY, CC BY-SA), puis les ajoute
+aux observations GBIF.
+
 ### 4.5 Les autres banques d'images — ce qui a été mesuré, et refusé
 
 Le principe, énoncé par le projet : **la provenance des images est séparée de
