@@ -1,5 +1,6 @@
 import '../care/care_guide.dart';
 import '../care/care_profile.dart';
+import '../care/toxicity.dart';
 import '../weather/region_climate.dart';
 import 'species_info.dart';
 
@@ -138,11 +139,10 @@ class PlantFinder {
       final entry = entries[i];
       if (criteria.categories.isNotEmpty && !criteria.categories.contains(entry.category)) continue;
       final care = guide.resolve(entry.scientificName, family: entry.family);
-      final profile = care.profile;
-      if (!_admissible(criteria, profile)) continue;
-      final score = _score(criteria, profile);
+      if (!_admissible(criteria, care)) continue;
+      final score = _score(criteria, care.profile);
       if (score < minScore) continue;
-      ranked.add((FinderMatch(entry: entry, care: care, score: score, reasons: _reasons(criteria, profile)), i));
+      ranked.add((FinderMatch(entry: entry, care: care, score: score, reasons: _reasons(criteria, care)), i));
     }
     int better((FinderMatch, int) a, (FinderMatch, int) b) {
       final byScore = b.$1.score.compareTo(a.$1.score);
@@ -163,8 +163,13 @@ class PlantFinder {
   /// qu'on oublie, des animaux — ne la sauvent pas. Avec deux crans admis,
   /// « j'oublie d'arroser » suffisait à faire remonter un Gasteria dans un
   /// coin sombre, et sa fiche disait le contraire juste en dessous.
-  bool _admissible(FinderCriteria c, CareProfile p) {
-    if (c.safeOnly && p.toxicity != Toxicity.safe) return false;
+  ///
+  /// Le « sans risque » ne se délègue pas à un profil hérité : une toxicité
+  /// lue seulement sur la famille ou la catégorie ne vaut pas une promesse,
+  /// même quand elle dit `safe`. Il faut un fait d'espèce ou de genre.
+  bool _admissible(FinderCriteria c, ResolvedCare care) {
+    final p = care.profile;
+    if (c.safeOnly && (care.toxicity.status != Toxicity.safe || !care.toxicity.isSpecific)) return false;
     if (c.spot == FinderSpot.outdoor && !p.outdoorFriendly) return false;
     if (c.spot != null && (p.light.index - _targetLight(c.spot!).index).abs() > 1) return false;
     if (c.effort == FinderEffort.forgiving && (p.difficulty == CareDifficulty.demanding || p.humidity == HumidityNeed.high)) return false;
@@ -193,7 +198,7 @@ class PlantFinder {
   /// ce qui passe l'hiver sous un voile, puis ce qui rentre tous les ans.
   /// Un été trop chaud pour sa plage idéale coûte un quart de sa note.
   static double _regionScore(RegionClimate region, CareProfile p) {
-    final base = switch (region.hardinessOf(p.minTempC)) {
+    final base = switch (region.hardinessOf(p.winterMinC)) {
       RegionHardiness.hardy => 1.0,
       RegionHardiness.sheltered => 0.7,
       RegionHardiness.indoors => 0.35,
@@ -238,7 +243,8 @@ class PlantFinder {
         CareDifficulty.demanding => 0.2,
       };
 
-  static List<FinderReason> _reasons(FinderCriteria c, CareProfile p) {
+  static List<FinderReason> _reasons(FinderCriteria c, ResolvedCare care) {
+    final p = care.profile;
     final reasons = <FinderReason>[
       if (c.spot == FinderSpot.darkRoom && p.light.index <= LightNeed.indirect.index)
         FinderReason.lowLight
@@ -247,7 +253,7 @@ class PlantFinder {
       // Dehors, la rusticité dit mieux que « tient dehors » : elle dit si la
       // plante y reste l'hiver. Elle la remplace donc quand on la connaît.
       if (c.outdoorRegion case final r? when p.outdoorFriendly)
-        switch (r.hardinessOf(p.minTempC)) {
+        switch (r.hardinessOf(p.winterMinC)) {
           RegionHardiness.hardy => FinderReason.hardy,
           RegionHardiness.sheltered => FinderReason.sheltered,
           _ => FinderReason.outdoor,
@@ -256,7 +262,7 @@ class PlantFinder {
         FinderReason.outdoor,
       if (c.effort == FinderEffort.forgiving && p.wateringSummerDays >= 10) FinderReason.forgiving,
       if (p.difficulty == CareDifficulty.easy) FinderReason.easy,
-      if (c.safeOnly && p.toxicity == Toxicity.safe) FinderReason.safe,
+      if (c.safeOnly && care.toxicity.status == Toxicity.safe && care.toxicity.isSpecific) FinderReason.safe,
     ];
     return reasons.take(3).toList();
   }

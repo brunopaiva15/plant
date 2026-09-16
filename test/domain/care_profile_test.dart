@@ -8,9 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   CareProfile profile({
     SoilKind soil = SoilKind.standard,
+    GrowthMedium growthMedium = GrowthMedium.terrestrial,
     int? fertilizingDays = 30,
     int? repotEveryMonths = 24,
-    int? minTempC = 12,
+    int? damageBelowC = 12,
     List<Propagation> propagation = const [],
     List<CommonIssue> issues = const [],
     FertilizerKind? fertilizer,
@@ -25,13 +26,14 @@ void main() {
         humidity: HumidityNeed.average,
         difficulty: CareDifficulty.easy,
         soil: soil,
+        growthMedium: growthMedium,
         fertilizingDays: fertilizingDays,
         fertilizer: fertilizer,
         calcium: calcium,
         waterCulture: waterCulture,
         ponCulture: ponCulture,
         repotEveryMonths: repotEveryMonths,
-        minTempC: minTempC,
+        damageBelowC: damageBelowC,
         propagation: propagation,
         issues: issues,
       );
@@ -44,9 +46,12 @@ void main() {
 
     test('celles qui y vivent le déclarent', () {
       expect(profile(waterCulture: SoilFreeFit.yes).inWater, SoilFreeFit.yes);
-      // Sans substrat ne veut pas dire dans l'eau : la plante aérienne le dit.
-      expect(profile(soil: SoilKind.aquatic).inWater, SoilFreeFit.yes);
-      expect(profile(soil: SoilKind.aquatic, waterCulture: SoilFreeFit.no).inWater, SoilFreeFit.no);
+      // Sans substrat ne veut pas dire dans l'eau : c'est le milieu de vie qui
+      // le dit, pas l'absence de terreau. Une tillandsie épiphyte n'y vit pas,
+      // un nymphéa aquatique si.
+      expect(profile(soil: SoilKind.none).inWater, SoilFreeFit.no);
+      expect(profile(soil: SoilKind.none, growthMedium: GrowthMedium.aquatic).inWater, SoilFreeFit.yes);
+      expect(profile(growthMedium: GrowthMedium.aquatic, waterCulture: SoilFreeFit.no).inWater, SoilFreeFit.no);
     });
 
     test('le pon va à ce qui vit en pot, pas à la terre de bruyère', () {
@@ -58,7 +63,7 @@ void main() {
     });
 
     test('ce qui tient le gel vit dehors : ni eau ni pon ni serre', () {
-      final hardy = profile(minTempC: -10, propagation: [Propagation.water]);
+      final hardy = profile(damageBelowC: -10, propagation: [Propagation.water]);
       expect(hardy.inWater, SoilFreeFit.no);
       expect(hardy.inPon, SoilFreeFit.no);
       expect(hardy.benefitsFromGreenhouse, isFalse);

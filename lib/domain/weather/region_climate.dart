@@ -41,14 +41,14 @@ class RegionClimate {
     return ((fahrenheit + 60) / 5).floor().clamp(0, 25);
   }
 
-  /// Ce qu'une espèce risque à passer l'hiver ici, d'après le minimum que
-  /// supporte sa fiche. Sans minimum connu, on ne tranche pas.
-  RegionHardiness hardinessOf(int? minTempC) {
-    if (minTempC == null) return RegionHardiness.unknown;
-    if (minTempC <= winterLowC) return RegionHardiness.hardy;
+  /// Ce qu'une espèce risque à passer l'hiver ici, d'après le minimum de
+  /// survie de sa fiche (`winterMinC`). Sans minimum connu, on ne tranche pas.
+  RegionHardiness hardinessOf(int? winterMinC) {
+    if (winterMinC == null) return RegionHardiness.unknown;
+    if (winterMinC <= winterLowC) return RegionHardiness.hardy;
     // Six degrés, c'est ce qu'un voile d'hivernage ou un mur exposé au sud
     // rattrapent ; au-delà, la plante passe l'hiver à l'intérieur.
-    if (minTempC <= winterLowC + 6) return RegionHardiness.sheltered;
+    if (winterMinC <= winterLowC + 6) return RegionHardiness.sheltered;
     return RegionHardiness.indoors;
   }
 

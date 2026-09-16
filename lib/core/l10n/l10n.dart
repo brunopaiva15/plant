@@ -203,6 +203,18 @@ extension ActionTypeLabels on AppLocalizations {
     return rest <= 0 ? joined : '$joined ${weatherAlertMore(rest)}';
   }
 
+  /// « Olivier, Citronnier et la famille des Araceae » : les plantes dont la
+  /// fiche nomme le seuil, puis les familles dont le seuil n'est qu'un repère
+  /// de groupe. Une famille n'est jamais nommée comme une plante.
+  String alertPlantList(OutdoorAlert alert) {
+    if (alert.familyNames.isEmpty) return namesWithMore(alert.plantNames, alert.plantCount);
+    final parts = <String>[
+      if (alert.plantNames.isNotEmpty) joinNames(alert.plantNames),
+      for (final family in alert.familyNames) weatherAlertFamily(family),
+    ];
+    return joinNames(parts);
+  }
+
   /// « 42 cm », « 9 » (sans unité), « 1,5 L ».
   String formatQuantity(double value, String unit) {
     final text = value == value.roundToDouble() ? value.toInt().toString() : value.toStringAsFixed(1);

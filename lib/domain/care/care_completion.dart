@@ -30,7 +30,7 @@ class CareCompletion {
     this.noFertilizer = false,
     this.repotEveryMonths,
     this.pot,
-    this.minTempC,
+    this.damageBelowC,
     this.idealTempMinC,
     this.idealTempMaxC,
     this.difficulty,
@@ -57,7 +57,8 @@ class CareCompletion {
   /// Ce qu'une racine sortie du pot veut dire chez cette espèce : trois mots
   /// d'un vocabulaire fermé, comme la lumière ou le substrat.
   final PotPreference? pot;
-  final int? minTempC;
+  /// Le seuil sous lequel le froid abîme l'espèce, quand l'IA le connaît.
+  final int? damageBelowC;
   final int? idealTempMinC;
   final int? idealTempMaxC;
   final CareDifficulty? difficulty;
@@ -77,7 +78,7 @@ class CareCompletion {
       !noFertilizer &&
       repotEveryMonths == null &&
       pot == null &&
-      minTempC == null &&
+      damageBelowC == null &&
       idealTempMinC == null &&
       idealTempMaxC == null &&
       difficulty == null &&
@@ -85,7 +86,8 @@ class CareCompletion {
       issues.isEmpty;
 
   /// Repose [base] avec ce dont l'IA est sûre. Ce qu'elle n'a pas dit reste
-  /// tel quel, toxicité comprise.
+  /// tel quel. La toxicité ne passe pas par ici : elle vit sur la fiche
+  /// résolue, que ce profil ne touche pas.
   CareProfile applyTo(CareProfile base) => CareProfile(
         wateringSummerDays: wateringSummerDays ?? base.wateringSummerDays,
         wateringWinterDays: wateringWinterDays ?? base.wateringWinterDays,
@@ -93,6 +95,7 @@ class CareCompletion {
         humidity: humidity ?? base.humidity,
         difficulty: difficulty ?? base.difficulty,
         soil: soil ?? base.soil,
+        growthMedium: base.growthMedium,
         // La plage en pourcentage suit le besoin que l'IA a donné : garder
         // celle du repère générique sous un autre mot afficherait « air sec
         // accepté, 60 à 80 % ».
@@ -110,10 +113,10 @@ class CareCompletion {
         ponCulture: base.ponCulture,
         repotEveryMonths: repotEveryMonths ?? base.repotEveryMonths,
         pot: pot ?? base.pot,
-        minTempC: minTempC ?? base.minTempC,
+        damageBelowC: damageBelowC ?? base.damageBelowC,
+        survivalMinC: base.survivalMinC,
         idealTempMinC: idealTempMinC ?? base.idealTempMinC,
         idealTempMaxC: idealTempMaxC ?? base.idealTempMaxC,
-        toxicity: base.toxicity,
         propagation: propagation.isEmpty ? base.propagation : propagation,
         issues: issues.isEmpty ? base.issues : issues,
         support: base.support,
@@ -136,7 +139,7 @@ class CareCompletion {
         if (noFertilizer) 'nf': true,
         if (repotEveryMonths != null) 're': repotEveryMonths,
         if (pot != null) 'po': pot!.name,
-        if (minTempC != null) 'tm': minTempC,
+        if (damageBelowC != null) 'tm': damageBelowC,
         if (idealTempMinC != null) 'ti': idealTempMinC,
         if (idealTempMaxC != null) 'ta': idealTempMaxC,
         if (difficulty != null) 'di': difficulty!.name,
@@ -167,7 +170,7 @@ class CareCompletion {
       noFertilizer: json['nf'] == true,
       repotEveryMonths: json['re'] as int?,
       pot: enumOf(PotPreference.values, json['po']),
-      minTempC: json['tm'] as int?,
+      damageBelowC: json['tm'] as int?,
       idealTempMinC: json['ti'] as int?,
       idealTempMaxC: json['ta'] as int?,
       difficulty: enumOf(CareDifficulty.values, json['di']),

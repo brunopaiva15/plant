@@ -1,3 +1,4 @@
+import 'package:flora/domain/care/care_guide.dart';
 import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/weather/outdoor_alert.dart';
 import 'package:flora/domain/weather/weather.dart';
@@ -22,7 +23,7 @@ CareProfile profile({int? minTemp, int? idealMax}) => CareProfile(
       humidity: HumidityNeed.average,
       difficulty: CareDifficulty.easy,
       soil: SoilKind.standard,
-      minTempC: minTemp,
+      damageBelowC: minTemp,
       idealTempMaxC: idealMax,
     );
 
@@ -60,6 +61,36 @@ void main() {
     test('sans minimum connu, seul le gel franc concerne la plante', () {
       expect(alerts([day(0, min: 1.5)], [plant('Inconnue')]), isEmpty);
       expect(alerts([day(0, min: -1)], [plant('Inconnue')]), hasLength(1));
+    });
+
+    test('un seuil hérité de la famille n\'est pas nommé comme la plante', () {
+      final found = alerts([day(0, min: -2)], [
+        OutdoorPlant(name: 'Monstera', profile: profile(minTemp: 5), match: CareMatch.family, matchedOn: 'Araceae'),
+      ]);
+      expect(found.single.plantNames, isEmpty);
+      expect(found.single.familyNames, ['Araceae']);
+      expect(found.single.plantCount, 1);
+    });
+
+    test('les seuils d\'espèce et les familles se mêlent sans se confondre', () {
+      final found = alerts([day(0, min: -2)], [
+        plant('Citronnier', minTemp: 5),
+        OutdoorPlant(name: 'Monstera', profile: profile(minTemp: 5), match: CareMatch.family, matchedOn: 'Araceae'),
+        OutdoorPlant(name: 'Ficus', profile: profile(minTemp: 5), match: CareMatch.family, matchedOn: 'Moraceae'),
+        OutdoorPlant(name: 'Aloe', profile: profile(minTemp: 5), match: CareMatch.family, matchedOn: 'Araceae'),
+      ]);
+      expect(found.single.plantNames, ['Citronnier']);
+      expect(found.single.familyNames, ['Araceae', 'Moraceae'], reason: 'une famille ne se répète pas');
+      expect(found.single.plantCount, 4);
+    });
+
+    test('un seuil de catégorie ne nomme personne', () {
+      // Une catégorie n'est pas une famille : faute de nom de groupe, l'alerte
+      // se tait plutôt que d'inventer un fait d'espèce.
+      final found = alerts([day(0, min: -2)], [
+        OutdoorPlant(name: 'Inconnue', profile: profile(minTemp: 5), match: CareMatch.category, matchedOn: 'tree'),
+      ]);
+      expect(found, isEmpty);
     });
   });
 

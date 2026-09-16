@@ -70,7 +70,7 @@ class InfomaniakCareCompleter implements CareCompleter {
       'If you do not know the species, return {"known": false} and nothing else. '
       'Never return anything about toxicity, safety for pets or children, or edibility. '
       'Use only these words. light: shade, lowLight, indirect, brightIndirect, someSun, fullSun. '
-      'humidity: low, average, high. soil: standard, draining, cactus, orchid, acidic, rich, aquatic. '
+      'humidity: low, average, high. soil: standard, draining, cactus, orchid, acidic, rich, none. '
       'water: tolerant, sensitive, strict — what the species takes of the salts dissolved in tap water: '
       'tolerant, sensitive (lime and fluoride brown the leaf tips), strict (lime harms it, as in acid-soil, '
       'epiphytic and carnivorous plants). '
@@ -150,7 +150,7 @@ class InfomaniakCareCompleter implements CareCompleter {
       noFertilizer: data['no_fertilizer'] == true,
       repotEveryMonths: borne(data['repot_every_months'], 6, 120),
       pot: mot(PotPreference.values, data['pot']),
-      minTempC: borne(data['min_temp_c'], -30, 25),
+      damageBelowC: borne(data['min_temp_c'], -30, 25),
       idealTempMinC: ideMin,
       idealTempMaxC: ideMax,
       difficulty: mot(CareDifficulty.values, data['difficulty']),

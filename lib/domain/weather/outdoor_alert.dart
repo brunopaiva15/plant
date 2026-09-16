@@ -1,3 +1,4 @@
+import '../care/care_guide.dart';
 import '../care/care_profile.dart';
 import 'weather.dart';
 
@@ -7,10 +8,28 @@ enum OutdoorAlertKind { frost, heat }
 
 /// Une plante du jardin qui vit dehors, et ce que sa fiche supporte.
 class OutdoorPlant {
-  const OutdoorPlant({required this.name, required this.profile});
+  const OutdoorPlant({
+    required this.name,
+    required this.profile,
+    this.match = CareMatch.species,
+    this.matchedOn,
+  });
 
   final String name;
   final CareProfile profile;
+
+  /// Précision de la fiche d'où vient le seuil de température. Un seuil lu
+  /// sur la famille n'est pas un fait de l'espèce : l'alerte le nomme par la
+  /// famille plutôt que par la plante. La valeur par défaut vaut pour les
+  /// appels qui n'ont qu'un profil sous la main.
+  final CareMatch match;
+
+  /// La famille trouvée, quand [match] vaut [CareMatch.family].
+  final String? matchedOn;
+
+  /// Le seuil vient-il de l'espèce ou de son genre ? Lui seul permet de
+  /// nommer la plante dans un avertissement.
+  bool get thresholdIsSpecific => match == CareMatch.species || match == CareMatch.genus;
 }
 
 /// L'avertissement : ce qui vient, quel jour, et pour qui.
@@ -20,6 +39,7 @@ class OutdoorAlert {
     required this.temperatureC,
     required this.day,
     required this.plantNames,
+    required this.familyNames,
     required this.plantCount,
   });
 
@@ -31,10 +51,15 @@ class OutdoorAlert {
   /// Le jour où il tombe.
   final DateTime day;
 
-  /// Les plantes menacées, dans l'ordre du jardin, quatre au plus.
+  /// Les plantes menacées dont la fiche nomme le seuil (espèce ou genre),
+  /// dans l'ordre du jardin, quatre au plus.
   final List<String> plantNames;
 
-  /// Combien elles sont en tout, [plantNames] pouvant être tronquée.
+  /// Les familles dont le seuil n'est qu'un repère de groupe : la plante n'y
+  /// est pas nommée, parce que sa fiche ne dit pas qu'elle craint ce froid.
+  final List<String> familyNames;
+
+  /// Combien de plantes sont menacées en tout, noms et familles confondus.
   final int plantCount;
 
   /// Nombre de jours qui séparent [day] de [from], zéro pour aujourd'hui.
@@ -83,36 +108,50 @@ abstract final class OutdoorAlertAdvisor {
     if (coldest.temperatureMin <= frostC) {
       final threatened = [
         for (final p in plants)
-          if (coldest.temperatureMin < (p.profile.minTempC ?? p.profile.idealTempMinC ?? genericFrostC)) p.name,
+          if (coldest.temperatureMin < (p.profile.coldLimitC ?? genericFrostC)) p,
       ];
-      if (threatened.isNotEmpty) {
-        alerts.add(OutdoorAlert(
-          kind: OutdoorAlertKind.frost,
-          temperatureC: coldest.temperatureMin,
-          day: coldest.date,
-          plantNames: threatened.take(maxNames).toList(),
-          plantCount: threatened.length,
-        ));
-      }
+      final alert = _build(OutdoorAlertKind.frost, coldest.temperatureMin, coldest.date, threatened);
+      if (alert != null) alerts.add(alert);
     }
 
     final hottest = window.reduce((a, b) => a.temperatureMax >= b.temperatureMax ? a : b);
     if (hottest.temperatureMax >= heatC) {
       final threatened = [
         for (final p in plants)
-          if (hottest.temperatureMax > (p.profile.idealTempMaxC ?? genericHeatC)) p.name,
+          if (hottest.temperatureMax > (p.profile.idealTempMaxC ?? genericHeatC)) p,
       ];
-      if (threatened.isNotEmpty) {
-        alerts.add(OutdoorAlert(
-          kind: OutdoorAlertKind.heat,
-          temperatureC: hottest.temperatureMax,
-          day: hottest.date,
-          plantNames: threatened.take(maxNames).toList(),
-          plantCount: threatened.length,
-        ));
-      }
+      final alert = _build(OutdoorAlertKind.heat, hottest.temperatureMax, hottest.date, threatened);
+      if (alert != null) alerts.add(alert);
     }
     return alerts;
+  }
+
+  /// Compose l'avertissement. Une plante dont la fiche nomme le seuil est
+  /// nommée ; une plante dont le seuil vient de sa famille est dite par sa
+  /// famille, sans être nommée elle-même. Une plante sans famille connue
+  /// n'est pas nommée : mieux vaut le silence qu'un fait inventé.
+  static OutdoorAlert? _build(OutdoorAlertKind kind, double temperatureC, DateTime day, List<OutdoorPlant> threatened) {
+    if (threatened.isEmpty) return null;
+    final named = <String>[];
+    final families = <String>[];
+    for (final p in threatened) {
+      if (p.thresholdIsSpecific) {
+        if (named.length < maxNames) named.add(p.name);
+        continue;
+      }
+      if (p.match != CareMatch.family) continue;
+      final family = p.matchedOn;
+      if (family != null && family.isNotEmpty && !families.contains(family)) families.add(family);
+    }
+    if (named.isEmpty && families.isEmpty) return null;
+    return OutdoorAlert(
+      kind: kind,
+      temperatureC: temperatureC,
+      day: day,
+      plantNames: named,
+      familyNames: families,
+      plantCount: threatened.length,
+    );
   }
 
   static int _offset(DateTime day, DateTime now) =>

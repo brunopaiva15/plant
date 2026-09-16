@@ -11,6 +11,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/grow_light.dart';
 import '../../../domain/care/leaf_signs.dart';
+import '../../../domain/care/toxicity.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../community/presentation/community_tips_section.dart';
@@ -81,7 +82,7 @@ class CareGuideScreen extends ConsumerWidget {
     final language = Localizations.localeOf(context).languageCode;
     final completion = ref.watch(careCompletionProvider((species: name, language: language))).value;
     if (completion == null) return care;
-    return ResolvedCare(profile: completion.applyTo(care.profile), match: CareMatch.assisted);
+    return ResolvedCare(profile: completion.applyTo(care.profile), match: CareMatch.assisted, toxicity: care.toxicity);
   }
 }
 
@@ -115,12 +116,13 @@ class CareGuideBody extends ConsumerWidget {
     final l10n = context.l10n;
     final c = context.colors;
     final p = care.profile;
+    final toxicity = care.toxicity;
     final now = DateTime.now();
     final south = ref.watch(southernHemisphereProvider);
     final actualLight = plantLight ?? _lightOf(location);
     final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
     final tips = [for (final key in p.tipKeys) l10n.careTip(key)].whereType<String>().toList();
-    final hasTemperature = (p.idealTempMinC != null && p.idealTempMaxC != null) || p.minTempC != null;
+    final hasTemperature = (p.idealTempMinC != null && p.idealTempMaxC != null) || p.damageBelowC != null;
     final lamp = GrowLight.forNeed(p.light);
     final humidity = p.humidityRange;
     // Une annuelle ne se rempote pas : son rapport au pot n'a rien à dire.
@@ -196,10 +198,10 @@ class CareGuideBody extends ConsumerWidget {
                   '🌡️',
                   l10n.careTemperature,
                   l10n.careTempIdeal(p.idealTempMinC!, p.idealTempMaxC!),
-                  subtitle: p.minTempC == null ? null : l10n.careTempMin(p.minTempC!),
+                  subtitle: p.damageBelowC == null ? null : l10n.careTempMin(p.damageBelowC!),
                 )
-              else if (p.minTempC != null)
-                _row('🌡️', l10n.careTemperature, l10n.careTempMin(p.minTempC!)),
+              else if (p.damageBelowC != null)
+                _row('🌡️', l10n.careTemperature, l10n.careTempMin(p.damageBelowC!)),
             ],
           ),
           const SizedBox(height: Space.md),
@@ -236,6 +238,9 @@ class CareGuideBody extends ConsumerWidget {
           title: l10n.careSoil,
           value: l10n.soilName(p.soil),
           details: [l10n.guideSoilMix(p.soil), ?l10n.guideSoilFreeLine(p)],
+          // « Sans substrat » ne dit pas la même chose pour une tillandsie
+          // épiphyte et un nymphéa aquatique : le milieu de vie le dit.
+          badge: p.growthMedium == GrowthMedium.terrestrial ? null : ('🌿', l10n.growthMediumName(p.growthMedium)),
         ),
         const SizedBox(height: Space.md),
 
@@ -348,11 +353,14 @@ class CareGuideBody extends ConsumerWidget {
           children: [
             _row('📈', l10n.careDifficulty, l10n.difficultyName(p.difficulty)),
             _row(
-              p.toxicity == Toxicity.toxic ? '☠️' : '🐾',
+              toxicity.status == Toxicity.toxic ? '☠️' : '🐾',
               l10n.careToxicity,
-              l10n.toxicityName(p.toxicity),
-              subtitle: p.toxicity == Toxicity.toxic || p.toxicity == Toxicity.mild ? l10n.careToxicPets : null,
-              danger: p.toxicity == Toxicity.toxic,
+              l10n.toxicityName(toxicity.status),
+              // La provenance porte sur la ligne elle-même : « famille des
+              // Araceae · non vérifié pour cette espèce » ne se lit pas comme
+              // un fait de l'espèce.
+              subtitle: l10n.toxicityProvenance(toxicity) ?? l10n.toxicityNote(toxicity.status),
+              danger: toxicity.status == Toxicity.toxic,
             ),
           ],
         ),

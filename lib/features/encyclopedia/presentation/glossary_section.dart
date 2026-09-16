@@ -5,6 +5,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/search_text.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
+import '../../../domain/care/toxicity.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
 
@@ -36,6 +37,7 @@ class GlossarySlivers extends StatelessWidget {
       (l10n.careLight, [for (final v in LightNeed.values) (l10n.lightName(v), l10n.lightNote(v), null)]),
       (l10n.careHumidity, [for (final v in HumidityNeed.values) (l10n.humidityName(v), l10n.humidityNote(v), null)]),
       (l10n.careSoil, [for (final v in SoilKind.values) (l10n.soilName(v), l10n.soilNote(v), null)]),
+      (l10n.careGrowthMedium, [for (final v in GrowthMedium.values) (l10n.growthMediumName(v), l10n.growthMediumNote(v), null)]),
       (l10n.carePropagation, [for (final v in Propagation.values) (l10n.propagationName(v), l10n.propagationNote(v), null)]),
       (l10n.careToxicity, [for (final v in Toxicity.values) (l10n.toxicityName(v), l10n.toxicityNote(v), null)]),
       (l10n.careDifficulty, [for (final v in CareDifficulty.values) (l10n.difficultyName(v), l10n.difficultyNote(v), null)]),

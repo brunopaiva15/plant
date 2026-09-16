@@ -51,7 +51,7 @@ extension CareGuidePresentationCopy on AppLocalizations {
           'Utilisez un substrat acide et aéré, avec environ 25 % d’écorces de pin. Évitez les mélanges calcaires.',
         ('fr', SoilKind.rich) =>
           'Utilisez un mélange riche mais aéré : environ 40 % de terreau, 40 % de compost et 20 % de perlite.',
-        ('fr', SoilKind.aquatic) =>
+        ('fr', SoilKind.none) =>
           'Aucun terreau n’est nécessaire. Les racines peuvent vivre dans l’eau ou sur un support adapté à la culture hors-sol.',
         ('de', SoilKind.standard) =>
           'Verwenden Sie lockere Universalblumenerde mit etwa 20 % Perlit. Die Mischung soll leicht bleiben und überschüssiges Wasser gut ablaufen lassen.',
@@ -65,7 +65,7 @@ extension CareGuidePresentationCopy on AppLocalizations {
           'Verwenden Sie ein saures, lockeres Substrat mit etwa 25 % Pinienrinde. Kalkhaltige Mischungen sind ungeeignet.',
         ('de', SoilKind.rich) =>
           'Verwenden Sie eine nährstoffreiche, aber lockere Mischung: etwa 40 % Blumenerde, 40 % Kompost und 20 % Perlit.',
-        ('de', SoilKind.aquatic) =>
+        ('de', SoilKind.none) =>
           'Blumenerde ist nicht nötig. Die Wurzeln können im Wasser oder auf einem geeigneten erdlosen Träger wachsen.',
         ('it', SoilKind.standard) =>
           'Usa un terriccio universale arioso con circa il 20 % di perlite. Il composto deve restare leggero e far defluire bene l’acqua in eccesso.',
@@ -79,7 +79,7 @@ extension CareGuidePresentationCopy on AppLocalizations {
           'Usa un substrato acido e arioso, con circa il 25 % di corteccia di pino. Evita i composti calcarei.',
         ('it', SoilKind.rich) =>
           'Usa un composto ricco ma arioso: circa 40 % di terriccio, 40 % di compost e 20 % di perlite.',
-        ('it', SoilKind.aquatic) =>
+        ('it', SoilKind.none) =>
           'Non serve terriccio. Le radici possono vivere in acqua o su un supporto adatto alla coltivazione fuori suolo.',
         (_, SoilKind.standard) =>
           'Use an airy all-purpose potting mix with about 20% perlite. It should stay light and let excess water drain freely.',
@@ -93,7 +93,7 @@ extension CareGuidePresentationCopy on AppLocalizations {
           'Use an acidic, airy mix with about 25% pine bark. Avoid lime-rich mixes.',
         (_, SoilKind.rich) =>
           'Use a rich but airy mix: about 40% potting mix, 40% compost and 20% perlite.',
-        (_, SoilKind.aquatic) =>
+        (_, SoilKind.none) =>
           'No potting soil is needed. The roots can grow in water or on a suitable soilless support.',
       };
 

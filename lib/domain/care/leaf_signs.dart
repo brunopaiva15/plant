@@ -90,7 +90,7 @@ abstract final class LeafSigns {
         LeafCause.winterRest => profile.dormantInWinter,
         // Une plante qui pousse sans substrat — un tillandsia sur son support —
         // n'a ni terreau épuisé ni racines à l'étroit dans un pot.
-        LeafCause.poorSoil || LeafCause.potBound => profile.soil != SoilKind.aquatic,
+        LeafCause.poorSoil || LeafCause.potBound => profile.soil != SoilKind.none,
         _ => true,
       };
 }

@@ -3090,7 +3090,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String careTempMin(int min) {
-    return 'Handles down to $min °C';
+    return 'Avoid below $min °C';
   }
 
   @override
@@ -3172,6 +3172,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careToxicPets => 'Keep away from pets and children.';
 
   @override
+  String get careToxicityFromSpecies => 'Verified for this species';
+
+  @override
+  String careToxicityFromGenus(String name) {
+    return 'Genus $name · not verified for this species';
+  }
+
+  @override
+  String careToxicityFromFamily(String name) {
+    return 'Family $name · not verified for this species';
+  }
+
+  @override
+  String careToxicitySource(String name) {
+    return 'Source: $name';
+  }
+
+  @override
   String get careSoilStandard => 'All-purpose potting mix';
 
   @override
@@ -3190,7 +3208,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSoilRich => 'Rich compost-based mix';
 
   @override
-  String get careSoilAquatic => 'No soil at all';
+  String get careSoilNone => 'No soil at all';
+
+  @override
+  String get careGrowthMedium => 'Growing medium';
+
+  @override
+  String get careMediumTerrestrial => 'Terrestrial';
+
+  @override
+  String get careMediumEpiphytic => 'Epiphytic';
+
+  @override
+  String get careMediumLithophytic => 'Lithophytic';
+
+  @override
+  String get careMediumAquatic => 'Aquatic';
+
+  @override
+  String get careMediumSemiAquatic => 'Semi-aquatic';
+
+  @override
+  String get careMediumTerrestrialNote => 'It grows in soil.';
+
+  @override
+  String get careMediumEpiphyticNote =>
+      'It grows on a support, without soil: bark, moss, or nothing.';
+
+  @override
+  String get careMediumLithophyticNote =>
+      'It grows on stone, its roots in the cracks.';
+
+  @override
+  String get careMediumAquaticNote => 'Its roots live in water.';
+
+  @override
+  String get careMediumSemiAquaticNote =>
+      'It lives in waterlogged ground, at the water\'s edge.';
 
   @override
   String get careWater => 'Water';
@@ -3331,7 +3385,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSoilMixRich => '40 % potting mix, 40 % compost, 20 % perlite.';
 
   @override
-  String get careSoilMixAquatic =>
+  String get careSoilMixNone =>
       'No growing medium: the roots live in air or in water.';
 
   @override
@@ -5418,6 +5472,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String weatherAlertFamily(String name) {
+    return 'the $name family';
+  }
+
+  @override
   String notifFrost(String when, String names) {
     return 'Frost $when · to bring in or cover: $names.';
   }
@@ -5692,7 +5751,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careSoilRichNote => 'Compost-enriched mix, for hungry plants.';
 
   @override
-  String get careSoilAquaticNote =>
+  String get careSoilNoneNote =>
       'The roots sit in water, or on a support with no soil.';
 
   @override

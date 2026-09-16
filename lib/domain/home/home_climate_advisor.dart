@@ -87,9 +87,9 @@ abstract final class HomeClimateAdvisor {
     return tips;
   }
 
-  /// Le seuil en dessous duquel l'espèce souffre : son minimum supporté, à
+  /// Le seuil en dessous duquel l'espèce souffre : son seuil de dégâts, à
   /// défaut le bas de sa plage idéale.
-  static int? _floor(CareProfile p) => p.minTempC ?? p.idealTempMinC;
+  static int? _floor(CareProfile p) => p.coldLimitC;
 
   static List<String> _cap(List<String> names) {
     final unique = <String>[];

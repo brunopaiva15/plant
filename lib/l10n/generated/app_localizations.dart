@@ -1071,7 +1071,7 @@ abstract class AppLocalizations {
   /// No description provided for @propagate.
   ///
   /// In fr, this message translates to:
-  /// **'Multiplier'**
+  /// **'Créer une bouture'**
   String get propagate;
 
   /// No description provided for @pgPickTitle.
@@ -5367,7 +5367,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTempMin.
   ///
   /// In fr, this message translates to:
-  /// **'Supporte jusqu\'à {min} °C'**
+  /// **'Éviter sous {min} °C'**
   String careTempMin(int min);
 
   /// No description provided for @careLightShade.
@@ -5508,6 +5508,30 @@ abstract class AppLocalizations {
   /// **'Tenir hors de portée des animaux et des enfants.'**
   String get careToxicPets;
 
+  /// No description provided for @careToxicityFromSpecies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifié pour cette espèce'**
+  String get careToxicityFromSpecies;
+
+  /// No description provided for @careToxicityFromGenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Genre {name} · non vérifié pour cette espèce'**
+  String careToxicityFromGenus(String name);
+
+  /// No description provided for @careToxicityFromFamily.
+  ///
+  /// In fr, this message translates to:
+  /// **'Famille des {name} · non vérifié pour cette espèce'**
+  String careToxicityFromFamily(String name);
+
+  /// No description provided for @careToxicitySource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source : {name}'**
+  String careToxicitySource(String name);
+
   /// No description provided for @careSoilStandard.
   ///
   /// In fr, this message translates to:
@@ -5544,11 +5568,77 @@ abstract class AppLocalizations {
   /// **'Terreau riche en compost'**
   String get careSoilRich;
 
-  /// No description provided for @careSoilAquatic.
+  /// No description provided for @careSoilNone.
   ///
   /// In fr, this message translates to:
   /// **'Sans substrat'**
-  String get careSoilAquatic;
+  String get careSoilNone;
+
+  /// No description provided for @careGrowthMedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Milieu de vie'**
+  String get careGrowthMedium;
+
+  /// No description provided for @careMediumTerrestrial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terrestre'**
+  String get careMediumTerrestrial;
+
+  /// No description provided for @careMediumEpiphytic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Épiphyte'**
+  String get careMediumEpiphytic;
+
+  /// No description provided for @careMediumLithophytic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lithophyte'**
+  String get careMediumLithophytic;
+
+  /// No description provided for @careMediumAquatic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aquatique'**
+  String get careMediumAquatic;
+
+  /// No description provided for @careMediumSemiAquatic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semi-aquatique'**
+  String get careMediumSemiAquatic;
+
+  /// No description provided for @careMediumTerrestrialNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle pousse en terre.'**
+  String get careMediumTerrestrialNote;
+
+  /// No description provided for @careMediumEpiphyticNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle pousse sur un support, sans terreau : écorces, sphaigne, ou rien.'**
+  String get careMediumEpiphyticNote;
+
+  /// No description provided for @careMediumLithophyticNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle pousse sur la pierre, ses racines dans les fissures.'**
+  String get careMediumLithophyticNote;
+
+  /// No description provided for @careMediumAquaticNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ses racines vivent dans l\'eau.'**
+  String get careMediumAquaticNote;
+
+  /// No description provided for @careMediumSemiAquaticNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle vit en sol détrempé, au bord de l\'eau.'**
+  String get careMediumSemiAquaticNote;
 
   /// No description provided for @careWater.
   ///
@@ -5790,11 +5880,11 @@ abstract class AppLocalizations {
   /// **'40 % de terreau, 40 % de compost, 20 % de perlite.'**
   String get careSoilMixRich;
 
-  /// No description provided for @careSoilMixAquatic.
+  /// No description provided for @careSoilMixNone.
   ///
   /// In fr, this message translates to:
   /// **'Pas de substrat : les racines vivent à l\'air ou dans l\'eau.'**
-  String get careSoilMixAquatic;
+  String get careSoilMixNone;
 
   /// No description provided for @careSoilFree.
   ///
@@ -9318,6 +9408,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{et 1 autre} other{et {count} autres}}'**
   String weatherAlertMore(int count);
 
+  /// No description provided for @weatherAlertFamily.
+  ///
+  /// In fr, this message translates to:
+  /// **'la famille des {name}'**
+  String weatherAlertFamily(String name);
+
   /// No description provided for @notifFrost.
   ///
   /// In fr, this message translates to:
@@ -9720,11 +9816,11 @@ abstract class AppLocalizations {
   /// **'Terreau enrichi de compost, pour les plantes gourmandes.'**
   String get careSoilRichNote;
 
-  /// No description provided for @careSoilAquaticNote.
+  /// No description provided for @careSoilNoneNote.
   ///
   /// In fr, this message translates to:
   /// **'Les racines tiennent dans l\'eau, ou sur un support sans terre.'**
-  String get careSoilAquaticNote;
+  String get careSoilNoneNote;
 
   /// No description provided for @carePropCuttingNote.
   ///

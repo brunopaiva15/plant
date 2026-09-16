@@ -1,12 +1,17 @@
 import '../../domain/care/care_guide.dart';
 import 'care_profiles.dart';
 import 'species_catalog.dart';
+import 'toxicity_catalog.dart';
 
 /// Fiches d'entretien issues du catalogue intégré.
 ///
 /// Résolution du plus précis au plus général : espèce exacte, genre, famille,
 /// catégorie d'usage, puis profil générique. Une plante inconnue du catalogue
 /// hérite donc quand même d'une fiche crédible via son genre ou sa famille.
+///
+/// La toxicité suit sa propre cascade ([ToxicityCatalog]), à part du profil :
+/// une espèce peut avoir une fiche d'entretien de famille et un fait de
+/// toxicité de genre, sans que l'un mente sur l'autre.
 class CatalogCareGuide implements CareGuide {
   const CatalogCareGuide();
 
@@ -14,32 +19,42 @@ class CatalogCareGuide implements CareGuide {
   ResolvedCare resolve(String? scientificName, {String? family, String? categoryKey}) {
     final name = _normalize(scientificName);
 
+    // Famille : celle fournie (GBIF), sinon celle du catalogue intégré.
+    final entry = name == null ? null : SpeciesCatalog.find(name);
+    final fam = _capitalize(family) ?? entry?.family;
+    final toxicity = ToxicityCatalog.resolve(name, family: fam);
+
     if (name != null) {
       final exact = CareProfiles.bySpecies[name];
-      if (exact != null) return ResolvedCare(profile: exact, match: CareMatch.species, matchedOn: name);
+      if (exact != null) {
+        return ResolvedCare(profile: exact, match: CareMatch.species, matchedOn: name, toxicity: toxicity);
+      }
 
       final genus = genusOf(name);
       if (genus != null) {
         final byGenus = CareProfiles.byGenus[genus];
-        if (byGenus != null) return ResolvedCare(profile: byGenus, match: CareMatch.genus, matchedOn: genus);
+        if (byGenus != null) {
+          return ResolvedCare(profile: byGenus, match: CareMatch.genus, matchedOn: genus, toxicity: toxicity);
+        }
       }
     }
 
-    // Famille : celle fournie (GBIF), sinon celle du catalogue intégré.
-    final entry = name == null ? null : SpeciesCatalog.find(name);
-    final fam = _capitalize(family) ?? entry?.family;
     if (fam != null) {
       final byFamily = CareProfiles.byFamily[fam];
-      if (byFamily != null) return ResolvedCare(profile: byFamily, match: CareMatch.family, matchedOn: fam);
+      if (byFamily != null) {
+        return ResolvedCare(profile: byFamily, match: CareMatch.family, matchedOn: fam, toxicity: toxicity);
+      }
     }
 
     final cat = categoryKey ?? entry?.category.name;
     if (cat != null) {
       final byCategory = CareProfiles.byCategory[cat];
-      if (byCategory != null) return ResolvedCare(profile: byCategory, match: CareMatch.category, matchedOn: cat);
+      if (byCategory != null) {
+        return ResolvedCare(profile: byCategory, match: CareMatch.category, matchedOn: cat, toxicity: toxicity);
+      }
     }
 
-    return const ResolvedCare(profile: CareProfiles.fallback, match: CareMatch.generic);
+    return ResolvedCare(profile: CareProfiles.fallback, match: CareMatch.generic, toxicity: toxicity);
   }
 
   /// Genre d'un nom scientifique : « Ficus lyrata » → « Ficus ».

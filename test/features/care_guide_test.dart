@@ -3,6 +3,7 @@ import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/care/care_guide.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/domain/care/toxicity.dart';
 import 'package:flora/features/problems/presentation/problem_kind_icon.dart';
 import 'package:flora/features/species/presentation/care_guide_screen.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
@@ -29,10 +30,9 @@ void main() {
     repotEveryMonths: 24,
     mistLeaves: true,
     dormantInWinter: true,
-    toxicity: Toxicity.safe,
   );
 
-  Future<void> pump(WidgetTester tester, [CareProfile p = profile, double scale = 1.0]) async {
+  Future<void> pump(WidgetTester tester, [CareProfile p = profile, double scale = 1.0, ToxicityFact toxicity = const ToxicityFact.unknown()]) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await PreferencesService.load();
     tester.view.physicalSize = const Size(1170, 2532);
@@ -60,7 +60,7 @@ void main() {
               child: Scaffold(
                 body: SingleChildScrollView(
                   padding: const EdgeInsets.all(Space.page),
-                  child: CareGuideBody(care: ResolvedCare(profile: p, match: CareMatch.species)),
+                  child: CareGuideBody(care: ResolvedCare(profile: p, match: CareMatch.species, toxicity: toxicity)),
                 ),
               ),
             ),
@@ -112,6 +112,24 @@ void main() {
     expect(find.text('Terreau très drainant'), findsOneWidget);
   });
 
+  testWidgets('la toxicité porte sa provenance, à part du pied de fiche', (tester) async {
+    // Un fait hérité de la famille ne se lit pas comme un fait de l'espèce.
+    await pump(
+      tester,
+      profile,
+      1.0,
+      const ToxicityFact(status: Toxicity.toxic, level: ToxicitySource.family, matchedOn: 'Araceae'),
+    );
+    expect(find.text('Toxique si ingérée'), findsOneWidget);
+    expect(find.text('Famille des Araceae · non vérifié pour cette espèce'), findsOneWidget);
+  });
+
+  testWidgets('une toxicité sans provenance dit son silence', (tester) async {
+    await pump(tester);
+    expect(find.text('Toxicité non renseignée'), findsOneWidget);
+    expect(find.text("Rien n'est renseigné pour cette espèce ; à tenir hors de portée par précaution."), findsOneWidget);
+  });
+
   testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (tester) async {
     await pump(tester);
     expect(find.textContaining('50 % de terreau, 25 % de perlite et 25 % de sable grossier'), findsOneWidget);
@@ -137,7 +155,7 @@ void main() {
         soil: SoilKind.acidic,
         fertilizingDays: 30,
         repotEveryMonths: 24,
-        minTempC: 12,
+        damageBelowC: 12,
         bloom: Bloom(window: MonthWindow(4, 6), triggers: [BloomTrigger.coolNights]),
       ),
     );
@@ -174,7 +192,7 @@ void main() {
         soil: SoilKind.orchid,
         fertilizingDays: 21,
         repotEveryMonths: 24,
-        minTempC: 15,
+        damageBelowC: 15,
         bloom: Bloom(window: MonthWindow(12, 5), triggers: [BloomTrigger.coolNights, BloomTrigger.keepSpike]),
       ),
     );
@@ -197,7 +215,7 @@ void main() {
         soil: SoilKind.draining,
         fertilizingDays: 45,
         repotEveryMonths: 36,
-        minTempC: -8,
+        damageBelowC: -8,
       ),
     );
     expect(find.text('Sous serre'), findsNothing);
@@ -500,10 +518,9 @@ CareProfile _avec(CareProfile base, {PlantSupport? support, List<CommonIssue>? i
       fertilizingWindow: base.fertilizingWindow,
       repotEveryMonths: base.repotEveryMonths,
       pot: base.pot,
-      minTempC: base.minTempC,
+      damageBelowC: base.damageBelowC,
       idealTempMinC: base.idealTempMinC,
       idealTempMaxC: base.idealTempMaxC,
-      toxicity: base.toxicity,
       propagation: base.propagation,
       issues: issues ?? base.issues,
       support: support ?? base.support,

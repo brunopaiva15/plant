@@ -3097,7 +3097,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String careTempMin(int min) {
-    return 'Resiste fino a $min °C';
+    return 'Non sotto $min °C';
   }
 
   @override
@@ -3179,6 +3179,24 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careToxicPets => 'Tenere lontano da animali e bambini.';
 
   @override
+  String get careToxicityFromSpecies => 'Verificata per questa specie';
+
+  @override
+  String careToxicityFromGenus(String name) {
+    return 'Genere $name · non verificata per questa specie';
+  }
+
+  @override
+  String careToxicityFromFamily(String name) {
+    return 'Famiglia $name · non verificata per questa specie';
+  }
+
+  @override
+  String careToxicitySource(String name) {
+    return 'Fonte: $name';
+  }
+
+  @override
   String get careSoilStandard => 'Terriccio universale';
 
   @override
@@ -3197,7 +3215,43 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careSoilRich => 'Terriccio ricco di compost';
 
   @override
-  String get careSoilAquatic => 'Senza substrato';
+  String get careSoilNone => 'Senza substrato';
+
+  @override
+  String get careGrowthMedium => 'Ambiente di crescita';
+
+  @override
+  String get careMediumTerrestrial => 'Terrestre';
+
+  @override
+  String get careMediumEpiphytic => 'Epifita';
+
+  @override
+  String get careMediumLithophytic => 'Litofita';
+
+  @override
+  String get careMediumAquatic => 'Acquatica';
+
+  @override
+  String get careMediumSemiAquatic => 'Semi-acquatica';
+
+  @override
+  String get careMediumTerrestrialNote => 'Cresce in terra.';
+
+  @override
+  String get careMediumEpiphyticNote =>
+      'Cresce su un supporto, senza terriccio: corteccia, sfagno o niente.';
+
+  @override
+  String get careMediumLithophyticNote =>
+      'Cresce sulla pietra, con le radici nelle fessure.';
+
+  @override
+  String get careMediumAquaticNote => 'Le sue radici vivono nell\'acqua.';
+
+  @override
+  String get careMediumSemiAquaticNote =>
+      'Vive in terreno intriso, a bordo dell\'acqua.';
 
   @override
   String get careWater => 'Acqua';
@@ -3342,7 +3396,7 @@ class AppLocalizationsIt extends AppLocalizations {
       '40 % di terriccio, 40 % di compost, 20 % di perlite.';
 
   @override
-  String get careSoilMixAquatic =>
+  String get careSoilMixNone =>
       'Nessun substrato: le radici vivono all\'aria o nell\'acqua.';
 
   @override
@@ -5444,6 +5498,11 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String weatherAlertFamily(String name) {
+    return 'la famiglia $name';
+  }
+
+  @override
   String notifFrost(String when, String names) {
     return 'Gelo $when · da riparare o coprire: $names.';
   }
@@ -5721,7 +5780,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Terriccio arricchito di compost, per le piante esigenti.';
 
   @override
-  String get careSoilAquaticNote =>
+  String get careSoilNoneNote =>
       'Le radici stanno nell\'acqua, o su un supporto senza terra.';
 
   @override

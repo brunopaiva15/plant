@@ -31,11 +31,15 @@ enum HumidityNeed { low, average, high }
 /// Difficulté d'entretien.
 enum CareDifficulty { easy, medium, demanding }
 
-/// Toxicité pour les animaux et les enfants.
-enum Toxicity { safe, mild, toxic, unknown }
-
 /// Type de substrat conseillé.
-enum SoilKind { standard, draining, cactus, orchid, acidic, rich, aquatic }
+enum SoilKind { standard, draining, cactus, orchid, acidic, rich, none }
+
+/// Milieu de vie de la plante : où poussent ses racines, ou d'où elle tire son
+/// eau quand elle n'en a pas en terre. Séparé du substrat, qui lui dit ce
+/// qu'on met dans le pot : une tillandsie est épiphyte et sans substrat, un
+/// nymphéa aquatique et sans substrat — « sans substrat » ne dit pas la même
+/// chose pour l'une et pour l'autre.
+enum GrowthMedium { terrestrial, epiphytic, lithophytic, aquatic, semiAquatic }
 
 /// Rapport d'une plante à son pot.
 ///
@@ -245,6 +249,7 @@ class CareProfile {
     required this.humidity,
     required this.difficulty,
     required this.soil,
+    this.growthMedium = GrowthMedium.terrestrial,
     this.humidityMinPercent,
     this.humidityMaxPercent,
     this.water = WaterTolerance.tolerant,
@@ -256,10 +261,10 @@ class CareProfile {
     this.ponCulture,
     this.repotEveryMonths,
     this.pot = PotPreference.steady,
-    this.minTempC,
+    this.damageBelowC,
+    this.survivalMinC,
     this.idealTempMinC,
     this.idealTempMaxC,
-    this.toxicity = Toxicity.unknown,
     this.propagation = const [],
     this.issues = const [],
     this.support,
@@ -281,6 +286,11 @@ class CareProfile {
   final HumidityNeed humidity;
   final CareDifficulty difficulty;
   final SoilKind soil;
+
+  /// Où vit la plante : en terre pour la plupart, sur un support ou dans l'eau
+  /// pour les autres. Le substrat dit quoi mettre dans le pot ; ceci dit si
+  /// elle y pousse.
+  final GrowthMedium growthMedium;
 
   /// Hygrométrie en pourcentage, quand l'espèce demande plus précis que sa
   /// catégorie. `null` des deux côtés = la plage du besoin suffit.
@@ -318,12 +328,16 @@ class CareProfile {
   /// Ce qu'une racine qui sort du pot veut dire pour cette espèce.
   final PotPreference pot;
 
-  /// Température minimale supportée, et plage idéale.
-  final int? minTempC;
+  /// Seuil sous lequel le froid abîme la plante (« éviter sous »), minimum de
+  /// survie absolue quand il est connu, et plage idéale.
+  ///
+  /// Deux seuils et non un : une plante abîmée à 5 °C ne meurt pas pour
+  /// autant, et l'ancien champ unique `minTempC` mélangeait les deux.
+  final int? damageBelowC;
+  final int? survivalMinC;
   final int? idealTempMinC;
   final int? idealTempMaxC;
 
-  final Toxicity toxicity;
   final List<Propagation> propagation;
   final List<CommonIssue> issues;
 
@@ -402,9 +416,20 @@ class CareProfile {
     return fertilizingWindow.contains(m);
   }
 
+  /// Le seuil sous lequel le froid abîme la plante : son seuil de dégâts, à
+  /// défaut le bas de sa plage idéale. C'est lui qu'une alerte météo regarde.
+  int? get coldLimitC => damageBelowC ?? idealTempMinC;
+
+  /// Le froid qui décide de l'hiver : la survie quand elle est connue, sinon
+  /// le seuil de dégâts. Une plante abîmée à 5 °C peut survivre plus bas ;
+  /// sans donnée de survie, on ne le suppose pas.
+  int? get winterMinC => survivalMinC ?? damageBelowC;
+
   /// Elle tient le gel, donc elle vit dehors en pleine terre : ni culture
-  /// hors-sol ni serre à lui proposer.
-  bool get frostHardy => (minTempC ?? 10) <= 0;
+  /// hors-sol ni serre à lui proposer. La rusticité se lit sur [winterMinC],
+  /// pas sur le seuil de dégâts — une plante abîmée par le gel n'en meurt pas
+  /// forcément.
+  bool get frostHardy => (winterMinC ?? 10) <= 0;
 
   /// Elle vit en pot toute l'année : c'est la condition du hors-sol, qu'une
   /// culture annuelle (semée, récoltée, arrachée) ne remplit pas.
@@ -417,8 +442,8 @@ class CareProfile {
   /// même façon. Les espèces qui y vivent vraiment le déclarent.
   SoilFreeFit get inWater =>
       waterCulture ??
-      switch (soil) {
-        SoilKind.aquatic => SoilFreeFit.yes,
+      switch (growthMedium) {
+        GrowthMedium.aquatic => SoilFreeFit.yes,
         _ when frostHardy => SoilFreeFit.no,
         _ when propagation.contains(Propagation.water) => SoilFreeFit.cuttings,
         _ => SoilFreeFit.no,
@@ -429,13 +454,11 @@ class CareProfile {
   /// Les billes inertes conviennent à presque toutes les plantes en pot ;
   /// elles ne conviennent pas à la terre de bruyère, dont elles remontent le
   /// pH, ni à ce qui vit dehors ou ne fait qu'une saison.
-  SoilFreeFit get inPon =>
-      ponCulture ??
-      switch (soil) {
-        SoilKind.acidic || SoilKind.aquatic => SoilFreeFit.no,
-        _ when potGrown => SoilFreeFit.yes,
-        _ => SoilFreeFit.no,
-      };
+  SoilFreeFit get inPon {
+    if (ponCulture case final fit?) return fit;
+    if (soil == SoilKind.acidic || growthMedium == GrowthMedium.aquatic) return SoilFreeFit.no;
+    return potGrown ? SoilFreeFit.yes : SoilFreeFit.no;
+  }
 
   /// Engrais à privilégier. `null` quand la plante ne se fertilise pas.
   FertilizerKind? get fertilizerKind {

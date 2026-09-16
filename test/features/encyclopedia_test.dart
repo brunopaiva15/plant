@@ -8,6 +8,7 @@ import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/data/species/species_index.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/domain/care/toxicity.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flora/features/encyclopedia/presentation/encyclopedia_screen.dart';

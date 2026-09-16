@@ -1537,7 +1537,7 @@
       }
     }
   },
-  "careTempMin": "Supporte jusqu'à {min} °C",
+  "careTempMin": "Éviter sous {min} °C",
   "@careTempMin": {
     "placeholders": {
       "min": {
@@ -1601,13 +1601,49 @@
   "careToxicToxic": "Toxique si ingérée",
   "careToxicUnknown": "Toxicité non renseignée",
   "careToxicPets": "Tenir hors de portée des animaux et des enfants.",
+  "careToxicityFromSpecies": "Vérifié pour cette espèce",
+  "careToxicityFromGenus": "Genre {name} · non vérifié pour cette espèce",
+  "@careToxicityFromGenus": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careToxicityFromFamily": "Famille des {name} · non vérifié pour cette espèce",
+  "@careToxicityFromFamily": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "careToxicitySource": "Source : {name}",
+  "@careToxicitySource": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "careSoilStandard": "Terreau universel",
   "careSoilDraining": "Terreau très drainant",
   "careSoilCactus": "Terreau cactus et succulentes",
   "careSoilOrchid": "Écorces pour orchidées",
   "careSoilAcidic": "Terre de bruyère",
   "careSoilRich": "Terreau riche en compost",
-  "careSoilAquatic": "Sans substrat",
+  "careSoilNone": "Sans substrat",
+  "careGrowthMedium": "Milieu de vie",
+  "careMediumTerrestrial": "Terrestre",
+  "careMediumEpiphytic": "Épiphyte",
+  "careMediumLithophytic": "Lithophyte",
+  "careMediumAquatic": "Aquatique",
+  "careMediumSemiAquatic": "Semi-aquatique",
+  "careMediumTerrestrialNote": "Elle pousse en terre.",
+  "careMediumEpiphyticNote": "Elle pousse sur un support, sans terreau : écorces, sphaigne, ou rien.",
+  "careMediumLithophyticNote": "Elle pousse sur la pierre, ses racines dans les fissures.",
+  "careMediumAquaticNote": "Ses racines vivent dans l'eau.",
+  "careMediumSemiAquaticNote": "Elle vit en sol détrempé, au bord de l'eau.",
   "careWater": "Eau",
   "careWaterTolerant": "Eau du robinet",
   "careWaterSensitive": "Eau peu calcaire",
@@ -1648,7 +1684,7 @@
   "careSoilMixOrchid": "Écorces de pin moyennes, 10 % de perlite, un peu de sphaigne ; jamais de terreau.",
   "careSoilMixAcidic": "Allégée de 25 % d'écorce de pin, sans calcaire ni compost.",
   "careSoilMixRich": "40 % de terreau, 40 % de compost, 20 % de perlite.",
-  "careSoilMixAquatic": "Pas de substrat : les racines vivent à l'air ou dans l'eau.",
+  "careSoilMixNone": "Pas de substrat : les racines vivent à l'air ou dans l'eau.",
   "careSoilFree": "Dans l'eau : {water} · En pon : {pon}",
   "@careSoilFree": {
     "placeholders": {
@@ -2646,6 +2682,14 @@
       }
     }
   },
+  "weatherAlertFamily": "la famille des {name}",
+  "@weatherAlertFamily": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "notifFrost": "Gel {when} · à rentrer ou à couvrir : {names}.",
   "@notifFrost": {
     "placeholders": {
@@ -2789,7 +2833,7 @@
   "careSoilOrchidNote": "Des écorces grossières : les racines vivent à l'air.",
   "careSoilAcidicNote": "Un pH acide, pour les plantes que le calcaire jaunit.",
   "careSoilRichNote": "Terreau enrichi de compost, pour les plantes gourmandes.",
-  "careSoilAquaticNote": "Les racines tiennent dans l'eau, ou sur un support sans terre.",
+  "careSoilNoneNote": "Les racines tiennent dans l'eau, ou sur un support sans terre.",
   "carePropCuttingNote": "Une tige coupée sous un nœud, plantée dans un substrat humide.",
   "carePropLeafNote": "Une feuille entière, ou un fragment, posée sur le substrat.",
   "carePropDivisionNote": "La touffe se sépare en deux au rempotage, racines comprises.",

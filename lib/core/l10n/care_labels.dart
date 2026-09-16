@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../domain/care/care_guide.dart';
 import '../../domain/care/care_profile.dart';
 import '../../domain/care/leaf_signs.dart';
+import '../../domain/care/toxicity.dart';
 import '../../domain/care/water_quality.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -63,7 +64,26 @@ extension CareProfileLabels on AppLocalizations {
         SoilKind.orchid => careSoilOrchid,
         SoilKind.acidic => careSoilAcidic,
         SoilKind.rich => careSoilRich,
-        SoilKind.aquatic => careSoilAquatic,
+        SoilKind.none => careSoilNone,
+      };
+
+  /// Où vit la plante : en terre pour la plupart, sur un support ou dans
+  /// l'eau pour les autres.
+  String growthMediumName(GrowthMedium v) => switch (v) {
+        GrowthMedium.terrestrial => careMediumTerrestrial,
+        GrowthMedium.epiphytic => careMediumEpiphytic,
+        GrowthMedium.lithophytic => careMediumLithophytic,
+        GrowthMedium.aquatic => careMediumAquatic,
+        GrowthMedium.semiAquatic => careMediumSemiAquatic,
+      };
+
+  /// La même chose, en une phrase, pour le vocabulaire.
+  String growthMediumNote(GrowthMedium v) => switch (v) {
+        GrowthMedium.terrestrial => careMediumTerrestrialNote,
+        GrowthMedium.epiphytic => careMediumEpiphyticNote,
+        GrowthMedium.lithophytic => careMediumLithophyticNote,
+        GrowthMedium.aquatic => careMediumAquaticNote,
+        GrowthMedium.semiAquatic => careMediumSemiAquaticNote,
       };
 
   /// Ce que l'espèce demande comme eau, en deux mots.
@@ -127,7 +147,7 @@ extension CareProfileLabels on AppLocalizations {
         SoilKind.orchid => careSoilMixOrchid,
         SoilKind.acidic => careSoilMixAcidic,
         SoilKind.rich => careSoilMixRich,
-        SoilKind.aquatic => careSoilMixAquatic,
+        SoilKind.none => careSoilMixNone,
       };
 
   String soilFreeFitName(SoilFreeFit v) => switch (v) {
@@ -319,6 +339,21 @@ extension CareProfileLabels on AppLocalizations {
         Toxicity.unknown => careToxicUnknownNote,
       };
 
+  /// D'où vient un fait de toxicité, et à quel niveau il a été trouvé.
+  /// `null` quand rien n'est renseigné : il n'y a alors pas de provenance à
+  /// montrer, seulement le silence.
+  String? toxicityProvenance(ToxicityFact fact) {
+    final level = switch (fact.level) {
+      ToxicitySource.species => careToxicityFromSpecies,
+      ToxicitySource.genus => careToxicityFromGenus(fact.matchedOn ?? ''),
+      ToxicitySource.family => careToxicityFromFamily(fact.matchedOn ?? ''),
+      ToxicitySource.none => null,
+    };
+    if (level == null) return null;
+    final source = fact.source;
+    return source == null ? level : '$level · ${careToxicitySource(source)}';
+  }
+
   String soilNote(SoilKind v) => switch (v) {
         SoilKind.standard => careSoilStandardNote,
         SoilKind.draining => careSoilDrainingNote,
@@ -326,7 +361,7 @@ extension CareProfileLabels on AppLocalizations {
         SoilKind.orchid => careSoilOrchidNote,
         SoilKind.acidic => careSoilAcidicNote,
         SoilKind.rich => careSoilRichNote,
-        SoilKind.aquatic => careSoilAquaticNote,
+        SoilKind.none => careSoilNoneNote,
       };
 
   String propagationNote(Propagation v) => switch (v) {

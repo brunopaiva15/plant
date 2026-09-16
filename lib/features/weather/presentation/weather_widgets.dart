@@ -209,8 +209,8 @@ class OutdoorAlertCard extends ConsumerWidget {
                         OutdoorAlertKind.heat => l10n.weatherHeatTitle(l10n.alertWhen(alert, now), weatherTemp(alert.temperatureC, metric: metric)),
                       },
                       body: switch (alert.kind) {
-                        OutdoorAlertKind.frost => l10n.weatherFrostBody(l10n.namesWithMore(alert.plantNames, alert.plantCount)),
-                        OutdoorAlertKind.heat => l10n.weatherHeatBody(l10n.namesWithMore(alert.plantNames, alert.plantCount)),
+                        OutdoorAlertKind.frost => l10n.weatherFrostBody(l10n.alertPlantList(alert)),
+                        OutdoorAlertKind.heat => l10n.weatherHeatBody(l10n.alertPlantList(alert)),
                       },
                       // Une croix sur la première suffit : les deux
                       // avertissements parlent du même bulletin.

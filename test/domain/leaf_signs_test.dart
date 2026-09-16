@@ -66,7 +66,8 @@ void main() {
         light: LightNeed.brightIndirect,
         humidity: HumidityNeed.high,
         difficulty: CareDifficulty.medium,
-        soil: SoilKind.aquatic,
+        soil: SoilKind.none,
+        growthMedium: GrowthMedium.epiphytic,
       );
       expect(causes(tillandsia, LeafSign.yellowing), isNot(contains(LeafCause.poorSoil)));
       expect(causes(tillandsia, LeafSign.stunted), isNot(contains(LeafCause.potBound)));

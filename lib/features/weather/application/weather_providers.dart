@@ -60,12 +60,15 @@ final outdoorPlantsProvider = Provider<List<OutdoorPlant>>((ref) {
   final plants = ref.watch(plantSummariesProvider(const PlantFilter())).value ?? const [];
   final guide = ref.watch(careGuideProvider);
   final family = speciesFamilyLookupIn(ref);
-  return [
-    for (final p in plants)
-      if (outdoor.contains(p.plant.locationId))
-        if (p.plant.speciesName case final species? when species.isNotEmpty)
-          OutdoorPlant(name: p.plant.name, profile: guide.resolve(species, family: family(species)).profile),
-  ];
+  final result = <OutdoorPlant>[];
+  for (final p in plants) {
+    if (!outdoor.contains(p.plant.locationId)) continue;
+    final species = p.plant.speciesName;
+    if (species == null || species.isEmpty) continue;
+    final care = guide.resolve(species, family: family(species));
+    result.add(OutdoorPlant(name: p.plant.name, profile: care.profile, match: care.match, matchedOn: care.matchedOn));
+  }
+  return result;
 });
 
 /// Gel et chaleur des trois prochains jours, pour les plantes du dehors.

@@ -3,6 +3,7 @@ import 'package:flora/data/species/catalog_care_guide.dart';
 import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/care/care_guide.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/domain/care/toxicity.dart';
 import 'package:flora/domain/care/water_quality.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +14,7 @@ void main() {
     test('espèce exacte', () {
       final r = guide.resolve('Monstera deliciosa');
       expect(r.match, CareMatch.species);
-      expect(r.profile.toxicity, Toxicity.toxic);
+      expect(r.toxicity.status, Toxicity.toxic);
     });
 
     test('genre quand l\'espèce est inconnue', () {
@@ -243,7 +244,7 @@ void main() {
       expect(crocus.match, CareMatch.genus);
       expect(caladium.match, CareMatch.genus);
       expect(crocus.profile.dormancy!.storeMinC, lessThan(caladium.profile.dormancy!.storeMinC!));
-      expect(caladium.profile.minTempC, greaterThanOrEqualTo(15));
+      expect(caladium.profile.damageBelowC, greaterThanOrEqualTo(15));
       // Le froid du crocus n'est pas dans son rangement d'été : c'est ce qui
       // déclenche sa floraison, et la fiche le dit là.
       expect(crocus.profile.bloom!.triggers, contains(BloomTrigger.chillBulb));

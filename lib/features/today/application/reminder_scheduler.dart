@@ -85,12 +85,14 @@ class ReminderScheduler {
     final plants = await _ref.read(plantRepositoryProvider).watchSummaries(const PlantFilter()).first;
     final guide = _ref.read(careGuideProvider);
     final family = speciesFamilyLookupIn(_ref);
-    final outdoorPlants = [
-      for (final p in plants)
-        if (outdoor.contains(p.plant.locationId))
-          if (p.plant.speciesName case final species? when species.isNotEmpty)
-            OutdoorPlant(name: p.plant.name, profile: guide.resolve(species, family: family(species)).profile),
-    ];
+    final outdoorPlants = <OutdoorPlant>[];
+    for (final p in plants) {
+      if (!outdoor.contains(p.plant.locationId)) continue;
+      final species = p.plant.speciesName;
+      if (species == null || species.isEmpty) continue;
+      final care = guide.resolve(species, family: family(species));
+      outdoorPlants.add(OutdoorPlant(name: p.plant.name, profile: care.profile, match: care.match, matchedOn: care.matchedOn));
+    }
     return OutdoorAlertAdvisor.alerts(forecast: forecast, plants: outdoorPlants, now: at);
   }
 
@@ -132,7 +134,7 @@ class ReminderScheduler {
     // seule chose qui ne peut pas attendre le lendemain.
     for (final alert in alerts) {
       final when = l10n.alertWhen(alert, at ?? DateTime.now());
-      final names = l10n.namesWithMore(alert.plantNames, alert.plantCount);
+      final names = l10n.alertPlantList(alert);
       parts.add(switch (alert.kind) {
         OutdoorAlertKind.frost => l10n.notifFrost(when, names),
         OutdoorAlertKind.heat => l10n.notifHeat(when, names),

@@ -1,4 +1,5 @@
 import 'care_profile.dart';
+import 'toxicity.dart';
 
 /// Précision avec laquelle une fiche a été trouvée. Sert à être honnête dans
 /// l'UI, où « Fiche de l'espèce » n'a pas la même valeur que « Fiche du
@@ -7,13 +8,22 @@ enum CareMatch { species, genus, family, category, generic, assisted }
 
 /// Fiche d'entretien retenue pour une plante, avec sa provenance.
 class ResolvedCare {
-  const ResolvedCare({required this.profile, required this.match, this.matchedOn});
+  const ResolvedCare({
+    required this.profile,
+    required this.match,
+    this.matchedOn,
+    this.toxicity = const ToxicityFact.unknown(),
+  });
 
   final CareProfile profile;
   final CareMatch match;
 
   /// Ce sur quoi la correspondance a été faite (« Ficus », « Araceae »…).
   final String? matchedOn;
+
+  /// Le fait de toxicité, résolu à part des profils d'entretien : il porte son
+  /// propre niveau et sa propre source, indépendamment de [match].
+  final ToxicityFact toxicity;
 
   bool get isSpecific => match == CareMatch.species || match == CareMatch.genus;
 }

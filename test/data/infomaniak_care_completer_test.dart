@@ -24,7 +24,6 @@ const _generique = CareProfile(
   difficulty: CareDifficulty.medium,
   soil: SoilKind.standard,
   fertilizingDays: 30,
-  toxicity: Toxicity.unknown,
 );
 
 InfomaniakCareCompleter _completer(http.Client client) =>
@@ -91,7 +90,7 @@ void main() {
       expect(c.wateringSummerDays, isNull);
       expect(c.fertilizingDays, isNull);
       expect(c.repotEveryMonths, isNull);
-      expect(c.minTempC, isNull);
+      expect(c.damageBelowC, isNull);
       expect(c.propagation, [Propagation.stemCutting]);
     });
 
@@ -128,21 +127,6 @@ void main() {
       // c'est le trou que l'IA peut combler pour une espèce inconnue.
       expect(const CareCompletion().applyTo(_generique).water, WaterTolerance.tolerant);
       expect(const CareCompletion(water: WaterTolerance.strict).applyTo(_generique).water, WaterTolerance.strict);
-    });
-
-    test('la toxicité ne vient jamais de l\'IA', () {
-      const c = CareCompletion(light: LightNeed.fullSun);
-      expect(c.applyTo(_generique).toxicity, Toxicity.unknown);
-      const curated = CareProfile(
-        wateringSummerDays: 7,
-        wateringWinterDays: 14,
-        light: LightNeed.indirect,
-        humidity: HumidityNeed.average,
-        difficulty: CareDifficulty.easy,
-        soil: SoilKind.standard,
-        toxicity: Toxicity.toxic,
-      );
-      expect(c.applyTo(curated).toxicity, Toxicity.toxic);
     });
 
     test('la floraison et le repos restent au catalogue', () {

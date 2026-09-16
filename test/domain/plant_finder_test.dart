@@ -1,6 +1,7 @@
 import 'package:flora/data/species/catalog_care_guide.dart';
 import 'package:flora/data/species/species_catalog.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/domain/care/toxicity.dart';
 import 'package:flora/domain/species/plant_finder.dart';
 import 'package:flora/domain/species/species_info.dart';
 import 'package:flora/domain/weather/region_climate.dart';
@@ -49,8 +50,12 @@ void main() {
     test('animaux ou enfants : uniquement des espèces non toxiques', () {
       final results = finder.search(const FinderCriteria(safeOnly: true), limit: 20);
       expect(results, isNotEmpty);
-      expect(results.every((m) => profileOf(m).toxicity == Toxicity.safe), isTrue);
+      expect(results.every((m) => m.care.toxicity.status == Toxicity.safe), isTrue);
       expect(results.every((m) => m.reasons.contains(FinderReason.safe)), isTrue);
+      // Une promesse « sans risque » ne se lit pas sur une fiche de famille :
+      // il faut un fait d'espèce ou de genre.
+      expect(results.every((m) => m.care.toxicity.isSpecific), isTrue,
+          reason: 'un fait hérité de la famille ou de la catégorie n\'est pas une preuve');
     });
 
     test('un coin sombre ne reçoit pas de plante de lumière vive', () {
@@ -86,6 +91,30 @@ void main() {
       final results = finder.search(const FinderCriteria(spot: FinderSpot.darkRoom, categories: {SpeciesCategory.succulent}));
       expect(results, isEmpty);
     });
+  });
+
+  group('le resserrement ne vide pas l\'écran', () {
+    // Le lot 0 a retiré la toxicité « sans danger » des profils de famille et
+    // de catégorie. Le chercheur doit encore proposer, par des fiches espèce
+    // ou genre : un trou se comble en écrivant les fiches qui manquent, jamais
+    // en rouvrant l'héritage.
+    for (final spot in FinderSpot.values) {
+      for (final effort in FinderEffort.values) {
+        test('$spot avec « $effort » propose encore', () {
+          for (final safeOnly in [false, true]) {
+            final results = finder.search(FinderCriteria(spot: spot, effort: effort, safeOnly: safeOnly), limit: 5);
+            expect(results, isNotEmpty, reason: '$spot / $effort / safeOnly=$safeOnly');
+          }
+        });
+      }
+    }
+
+    for (final category in SpeciesCategory.values) {
+      test('la catégorie ${category.name} garde des propositions sans risque', () {
+        final results = finder.search(FinderCriteria(categories: {category}, safeOnly: true), limit: 5);
+        expect(results, isNotEmpty);
+      });
+    }
   });
 
   group('sans réponse', () {
@@ -140,7 +169,7 @@ void main() {
           reason: 'un hiver à −12° et un hiver à 6° ne proposent pas les mêmes plantes');
     });
 
-    bool isHardy(FinderMatch m) => (profileOf(m).minTempC ?? 99) <= cold.winterLowC;
+    bool isHardy(FinderMatch m) => (profileOf(m).winterMinC ?? 99) <= cold.winterLowC;
 
     test('remonte ce qui passe l\'hiver sur place', () {
       final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 8);
@@ -158,7 +187,7 @@ void main() {
 
     test('dit dans la raison si la plante reste dehors l\'hiver', () {
       final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 8);
-      final hardy = results.firstWhere((m) => (profileOf(m).minTempC ?? 99) <= cold.winterLowC);
+      final hardy = results.firstWhere((m) => (profileOf(m).winterMinC ?? 99) <= cold.winterLowC);
       expect(hardy.reasons, contains(FinderReason.hardy));
       expect(hardy.reasons, isNot(contains(FinderReason.outdoor)), reason: 'la rusticité dit mieux que « tient dehors »');
     });

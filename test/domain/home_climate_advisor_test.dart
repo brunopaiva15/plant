@@ -8,7 +8,7 @@ CareProfile _profile({
   HumidityNeed humidity = HumidityNeed.average,
   int? humidityMin,
   int? humidityMax,
-  int? minTempC,
+  int? damageBelowC,
   int? idealMin,
   int? idealMax,
 }) =>
@@ -21,7 +21,7 @@ CareProfile _profile({
       humidityMaxPercent: humidityMax,
       difficulty: CareDifficulty.easy,
       soil: SoilKind.standard,
-      minTempC: minTempC,
+      damageBelowC: damageBelowC,
       idealTempMinC: idealMin,
       idealTempMaxC: idealMax,
     );
@@ -38,9 +38,9 @@ PlantSummary _plant(String name, {String? locationId, String? locationName}) {
 
 void main() {
   group('le conseil du climat de la maison', () {
-    final calathea = IndoorPlant(name: 'Calathea', profile: _profile(humidity: HumidityNeed.high, minTempC: 15, idealMin: 18, idealMax: 27));
-    final cactus = IndoorPlant(name: 'Cactus', profile: _profile(humidity: HumidityNeed.low, minTempC: 5, idealMax: 35));
-    final ficus = IndoorPlant(name: 'Ficus', profile: _profile(humidity: HumidityNeed.average, minTempC: 12));
+    final calathea = IndoorPlant(name: 'Calathea', profile: _profile(humidity: HumidityNeed.high, damageBelowC: 15, idealMin: 18, idealMax: 27));
+    final cactus = IndoorPlant(name: 'Cactus', profile: _profile(humidity: HumidityNeed.low, damageBelowC: 5, idealMax: 35));
+    final ficus = IndoorPlant(name: 'Ficus', profile: _profile(humidity: HumidityNeed.average, damageBelowC: 12));
 
     test("l'air sec ne vise que les plantes qui en veulent", () {
       final tips = HomeClimateAdvisor.advise(reading: _reading(temperature: 21, humidity: 38), plants: [calathea, cactus, ficus]);
