@@ -119,7 +119,9 @@ void main() {
     testWidgets('une liane ouvre sur la bouture de tige, sans écran de choix', (tester) async {
       final t = await _pump(tester, species: 'Epipremnum aureum');
       expect(find.bySemanticsLabel('Multiplier cette plante'), findsNothing);
-      expect(find.bySemanticsLabel('Bouture de tige de Epipremnum aureum'), findsOneWidget);
+      // Le titre d'introduction est celui du flux Boutures, pas le nom de la
+      // méthode : celui-ci vit dans le choix et les étapes.
+      expect(find.bySemanticsLabel('Créer une bouture de Epipremnum aureum'), findsOneWidget);
       expect(find.byType(PropagationIntroCluster), findsOneWidget);
       expect(find.textContaining('6 étapes'), findsOneWidget);
       expect(find.text('Continuer'), findsNothing);
@@ -139,16 +141,17 @@ void main() {
 
     testWidgets('un spathiphyllum montre une division, jamais une liane', (tester) async {
       await _pump(tester, species: 'Spathiphyllum wallisii');
-      expect(find.bySemanticsLabel('Division de Spathiphyllum wallisii'), findsOneWidget);
+      expect(find.bySemanticsLabel('Créer une bouture de Spathiphyllum wallisii'), findsOneWidget);
       await _parcourt(tester, 6);
-      // Une division ne crée pas une bouture : elle crée une plante.
-      expect(find.text('Créer la plante'), findsOneWidget);
+      // Le flux Boutures reste générique : le titre et le bouton disent
+      // « bouture », la méthode vit dans les étapes.
+      expect(find.text('Créer la bouture'), findsOneWidget);
       expect(find.bySemanticsLabel('Le rempotage'), findsOneWidget);
     });
 
     testWidgets('sans espèce, le guide reste celui de la bouture de tige', (tester) async {
       final t = await _pump(tester);
-      expect(find.bySemanticsLabel('Bouture de tige'), findsOneWidget);
+      expect(find.bySemanticsLabel('Créer une bouture'), findsOneWidget);
       await tester.tap(find.text('Suivant'));
       await tester.pumpAndSettle();
       expect(t.refiner.demandes, isEmpty);
@@ -186,7 +189,7 @@ void main() {
       final t = await _pump(tester, species: 'Dracaena trifasciata');
       await tester.tap(find.text('Bouture de feuille'));
       await tester.pumpAndSettle();
-      expect(find.bySemanticsLabel('Bouture de feuille de Dracaena trifasciata'), findsOneWidget);
+      expect(find.bySemanticsLabel('Créer une bouture de Dracaena trifasciata'), findsOneWidget);
       await tester.tap(find.text('Suivant'));
       await tester.pumpAndSettle();
       // C'est bien le guide de la feuille que l'IA a précisé, pas un autre.
@@ -267,10 +270,10 @@ void main() {
   group('les animations', () {
     testWidgets('« réduire les animations » laisse feuilleter le guide entier', (tester) async {
       await _pump(tester, species: 'Aloe vera', reponse: const PropagationRefinement());
-      expect(find.bySemanticsLabel('Séparer un rejet de Aloe vera'), findsOneWidget);
+      expect(find.bySemanticsLabel('Créer une bouture de Aloe vera'), findsOneWidget);
       await _parcourt(tester, 6);
       expect(find.bySemanticsLabel('La reprise'), findsOneWidget);
-      expect(find.text('Créer la plante'), findsOneWidget);
+      expect(find.text('Créer la bouture'), findsOneWidget);
     });
 
     testWidgets('« réduire les animations » pose la séquence sur sa dernière image', (tester) async {

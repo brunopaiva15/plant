@@ -3036,6 +3036,25 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get careDryDownAlwaysMoist => 'Terriccio sempre umido';
+
+  @override
+  String get careDryDownSurfaceDry => 'Lasciare asciugare la superficie';
+
+  @override
+  String get careDryDownTopQuarterDry =>
+      'Lasciare asciugare il quarto superiore';
+
+  @override
+  String get careDryDownHalfDry => 'Lasciare asciugare a metà';
+
+  @override
+  String get careDryDownMostlyDry => 'Lasciare asciugare quasi del tutto';
+
+  @override
+  String get careDryDownFullyDry => 'Lasciare asciugare completamente';
+
+  @override
   String careFertilizeSeason(String from, String to) {
     return 'da $from a $to';
   }
@@ -3152,7 +3171,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careHumidityHighDetail =>
-      'Un umidificatore, un sottovaso di argilla espansa umida o più piante raggruppate aiutano a mantenere l\'intervallo.';
+      'L\'aria secca di una casa riscaldata la danneggia: l\'aria va mantenuta umida.';
+
+  @override
+  String get careHumidityMethodMist => 'Nebulizzare le foglie le fa bene.';
+
+  @override
+  String get careHumidityMethodHumidifier => 'Un umidificatore d\'aria.';
+
+  @override
+  String get careHumidityMethodTray =>
+      'Un sottovaso di argilla espansa umida, o più piante raggruppate.';
+
+  @override
+  String get careHumidityMethodTerrarium =>
+      'Sotto vetro: terrario, campana o barattolo.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -3269,8 +3302,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careWaterTolerantNote => 'Il calcare non la disturba.';
 
   @override
-  String get careWaterSensitiveNote =>
-      'Calcare e fluoro fanno imbrunire le punte delle foglie.';
+  String get careWaterSensitiveNote => 'Il calcare fa imbrunire le punte.';
+
+  @override
+  String get careWaterFluorideSensitive =>
+      'Il fluoro dell\'acqua di rete fa imbrunire le punte: acqua piovana o osmosi.';
 
   @override
   String get careWaterStrictNote =>

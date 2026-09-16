@@ -91,6 +91,7 @@ class CareCompletion {
   CareProfile applyTo(CareProfile base) => CareProfile(
         wateringSummerDays: wateringSummerDays ?? base.wateringSummerDays,
         wateringWinterDays: wateringWinterDays ?? base.wateringWinterDays,
+        dryDown: base.dryDown,
         light: light ?? base.light,
         humidity: humidity ?? base.humidity,
         difficulty: difficulty ?? base.difficulty,
@@ -99,9 +100,11 @@ class CareCompletion {
         // La plage en pourcentage suit le besoin que l'IA a donné : garder
         // celle du repère générique sous un autre mot afficherait « air sec
         // accepté, 60 à 80 % ».
-        humidityMinPercent: humidity == null ? base.humidityMinPercent : null,
-        humidityMaxPercent: humidity == null ? base.humidityMaxPercent : null,
+        humidityIdealMin: humidity == null ? base.humidityIdealMin : null,
+        humidityIdealMax: humidity == null ? base.humidityIdealMax : null,
+        humidityToleratedMin: humidity == null ? base.humidityToleratedMin : null,
         water: water ?? base.water,
+        fluorideSensitive: base.fluorideSensitive,
         fertilizingDays: noFertilizer ? null : (fertilizingDays ?? base.fertilizingDays),
         fertilizingWindow: base.fertilizingWindow,
         // L'IA ne se prononce ni sur le type d'engrais, ni sur le calcium, ni
@@ -120,7 +123,7 @@ class CareCompletion {
         propagation: propagation.isEmpty ? base.propagation : propagation,
         issues: issues.isEmpty ? base.issues : issues,
         support: base.support,
-        mistLeaves: base.mistLeaves,
+        humidityMethods: base.humidityMethods,
         dormantInWinter: base.dormantInWinter,
         outdoorFriendly: base.outdoorFriendly,
         bloom: base.bloom,

@@ -181,7 +181,9 @@ void main() {
     });
 
     test('n\'écarte personne : un géranium se rentre, il reste une plante de balcon', () {
-      final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 40);
+      // Le rang, pas l'exclusion : une plante frileuse passe après les
+      // rustiques, mais reste proposée. On regarde donc toute la liste.
+      final results = finder.search(const FinderCriteria(spot: FinderSpot.outdoor, region: cold), limit: 1000);
       expect(results.where((m) => !isHardy(m)), isNotEmpty, reason: 'le rang, pas l\'exclusion');
     });
 

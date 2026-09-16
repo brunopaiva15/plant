@@ -3035,6 +3035,24 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get careDryDownAlwaysMoist => 'Terreau toujours humide';
+
+  @override
+  String get careDryDownSurfaceDry => 'Laisser sécher la surface';
+
+  @override
+  String get careDryDownTopQuarterDry => 'Laisser sécher le quart supérieur';
+
+  @override
+  String get careDryDownHalfDry => 'Laisser sécher à moitié';
+
+  @override
+  String get careDryDownMostlyDry => 'Laisser sécher presque à fond';
+
+  @override
+  String get careDryDownFullyDry => 'Laisser sécher complètement';
+
+  @override
   String careFertilizeSeason(String from, String to) {
     return 'de $from à $to';
   }
@@ -3151,7 +3169,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careHumidityHighDetail =>
-      'Un humidificateur, un plateau de billes d\'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.';
+      'L\'air sec d\'un logement chauffé l\'abîme : il faut le maintenir humide.';
+
+  @override
+  String get careHumidityMethodMist => 'Brumiser le feuillage lui profite.';
+
+  @override
+  String get careHumidityMethodHumidifier => 'Un humidificateur d\'air.';
+
+  @override
+  String get careHumidityMethodTray =>
+      'Un plateau de billes d\'argile humides, ou des plantes regroupées.';
+
+  @override
+  String get careHumidityMethodTerrarium =>
+      'Sous verre : terrarium, cloche ou bocal.';
 
   @override
   String get careDifficultyEasy => 'Facile';
@@ -3269,8 +3301,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careWaterTolerantNote => 'Le calcaire ne la gêne pas.';
 
   @override
-  String get careWaterSensitiveNote =>
-      'Le calcaire et le fluor brunissent les pointes.';
+  String get careWaterSensitiveNote => 'Le calcaire lui brunit les pointes.';
+
+  @override
+  String get careWaterFluorideSensitive =>
+      'Le fluor du robinet lui brunit les pointes : eau de pluie ou osmosée.';
 
   @override
   String get careWaterStrictNote =>

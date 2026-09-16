@@ -19,30 +19,36 @@ enum WaterVerdict { recommended, suitable, caution, avoid }
 /// terre acide. La propreté de l'eau, elle, ne dépend d'aucune plante : le
 /// condensat d'un climatiseur reste une eau de bac quelle que soit l'espèce,
 /// et le sodium d'un adoucisseur abîme tous les terreaux.
-WaterVerdict waterVerdictFor(WaterKind kind, WaterTolerance tolerance) => switch (kind) {
+///
+/// Le fluor est le troisième axe : il brunit les pointes d'un dracæna qui boit
+/// pourtant l'eau du robinet sans broncher. Un filtre de carafe ne le retire
+/// pas — [fluorideSensitive] abaisse donc aussi le verdict de l'eau filtrée.
+WaterVerdict waterVerdictFor(WaterKind kind, WaterTolerance tolerance, {bool fluorideSensitive = false}) => switch (kind) {
       // L'eau de pluie est douce, sans calcaire, légèrement acide : elle
       // convient à tout le monde.
       WaterKind.rain => WaterVerdict.recommended,
 
-      // Le robinet est le cas ordinaire, et le calcaire décide.
+      // Le robinet est le cas ordinaire, et le calcaire décide. Le fluor le
+      // retient même chez une plante qui tolère le calcaire.
       WaterKind.tap => switch (tolerance) {
-          WaterTolerance.tolerant => WaterVerdict.recommended,
+          WaterTolerance.tolerant => fluorideSensitive ? WaterVerdict.caution : WaterVerdict.recommended,
           WaterTolerance.sensitive => WaterVerdict.caution,
           WaterTolerance.strict => WaterVerdict.avoid,
         },
 
-      // Une carafe retire le chlore et une part du calcaire, jamais tout :
-      // assez pour une plante sensible, trop peu pour une plante de terre
-      // acide.
+      // Une carafe retire le chlore et une part du calcaire, jamais tout, et
+      // pas le fluor : assez pour une plante sensible, trop peu pour une
+      // plante de terre acide ou sensible au fluor.
       WaterKind.filtered => switch (tolerance) {
           WaterTolerance.strict => WaterVerdict.caution,
+          _ when fluorideSensitive => WaterVerdict.caution,
           _ => WaterVerdict.suitable,
         },
 
       // Presque sans minéraux : ce qu'il faut aux plantes qui craignent le
-      // calcaire, et une dépense sans objet pour les autres.
+      // calcaire comme au fluor, et une dépense sans objet pour les autres.
       WaterKind.osmosis || WaterKind.demineralized => switch (tolerance) {
-          WaterTolerance.tolerant => WaterVerdict.suitable,
+          WaterTolerance.tolerant => fluorideSensitive ? WaterVerdict.recommended : WaterVerdict.suitable,
           _ => WaterVerdict.recommended,
         },
 

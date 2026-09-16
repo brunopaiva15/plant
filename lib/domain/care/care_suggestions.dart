@@ -19,7 +19,7 @@ extension CareProfileSuggestions on CareProfile {
       // qu'elle dit de la plante : un feuillage qu'on brumise est un feuillage
       // large, qui prend la poussière plus vite ; une espèce à ravageurs
       // connus mérite un contrôle plus rapproché.
-      CareKind.cleaning => mistLeaves ? 21 : 30,
+      CareKind.cleaning => humidityMethods.contains(HumidityMethod.mist) ? 21 : 30,
       CareKind.treatment => issues.any(_isPest) ? 60 : 90,
       // La taille dépend de la forme voulue et de la saison, pas d'un
       // intervalle : un trimestre pour cadrer, à ajuster.

@@ -155,8 +155,8 @@ void main() {
         wateringWinterDays: 14,
         light: LightNeed.indirect,
         humidity: HumidityNeed.high,
-        humidityMinPercent: 65,
-        humidityMaxPercent: 85,
+        humidityIdealMin: 65,
+        humidityIdealMax: 85,
         difficulty: CareDifficulty.easy,
         soil: SoilKind.standard,
       );

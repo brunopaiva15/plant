@@ -3029,6 +3029,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careDryDownAlwaysMoist => 'Keep the soil moist';
+
+  @override
+  String get careDryDownSurfaceDry => 'Let the surface dry';
+
+  @override
+  String get careDryDownTopQuarterDry => 'Let the top quarter dry';
+
+  @override
+  String get careDryDownHalfDry => 'Let it dry halfway';
+
+  @override
+  String get careDryDownMostlyDry => 'Let it dry almost through';
+
+  @override
+  String get careDryDownFullyDry => 'Let it dry out completely';
+
+  @override
   String careFertilizeSeason(String from, String to) {
     return 'from $from to $to';
   }
@@ -3145,7 +3163,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careHumidityHighDetail =>
-      'A humidifier, a tray of damp clay pebbles or several plants grouped together help hold this range.';
+      'The dry air of a heated home harms it: the air has to be kept humid.';
+
+  @override
+  String get careHumidityMethodMist => 'Misting the leaves helps it.';
+
+  @override
+  String get careHumidityMethodHumidifier => 'An air humidifier.';
+
+  @override
+  String get careHumidityMethodTray =>
+      'A tray of damp clay pebbles, or plants grouped together.';
+
+  @override
+  String get careHumidityMethodTerrarium =>
+      'Under glass: terrarium, cloche or jar.';
 
   @override
   String get careDifficultyEasy => 'Easy';
@@ -3262,7 +3294,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careWaterTolerantNote => 'Lime does not bother it.';
 
   @override
-  String get careWaterSensitiveNote => 'Lime and fluoride brown the leaf tips.';
+  String get careWaterSensitiveNote => 'Lime browns its leaf tips.';
+
+  @override
+  String get careWaterFluorideSensitive =>
+      'Tap-water fluoride browns its leaf tips: rainwater or osmosis.';
 
   @override
   String get careWaterStrictNote => 'Lime harms it, even in small amounts.';

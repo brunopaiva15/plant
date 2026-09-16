@@ -55,6 +55,18 @@ class _Tips implements CommunityTipsService {
 
   @override
   Future<void> report(String tipId) async {}
+
+  @override
+  Future<bool> isModerator() async => false;
+
+  @override
+  Future<List<SpeciesTip>> reported() async => const [];
+
+  @override
+  Future<void> moderate(String tipId, {required bool hidden}) async {}
+
+  @override
+  Future<void> remove(String tipId) async {}
 }
 
 class _Probe implements Reachability {
@@ -195,5 +207,10 @@ void main() {
     // doit empêcher la page de se dessiner.
     expect(find.text('Conseils de la communauté'), findsOneWidget);
     expect(tester.takeException(), isNull);
+
+    // La requête a pu partir avant que la sonde ne conclue « hors ligne » :
+    // son délai finit par s'écouler, on le laisse passer pour ne pas laisser
+    // un minuteur en suspens après le test.
+    await tester.pump(networkTimeout);
   });
 }

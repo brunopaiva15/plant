@@ -24,13 +24,6 @@ extension CareGuidePresentationCopy on AppLocalizations {
         _ => 'Needs a winter rest',
       };
 
-  String get guideBadgeMist => switch (_careLanguage) {
-        'fr' => 'Apprécie une brumisation régulière',
-        'de' => 'Mag regelmäßiges Besprühen',
-        'it' => 'Apprezza nebulizzazioni regolari',
-        _ => 'Enjoys regular misting',
-      };
-
   String get guideBadgeOutdoor => switch (_careLanguage) {
         'fr' => 'Peut être cultivée à l’extérieur',
         'de' => 'Kann draußen kultiviert werden',
@@ -159,30 +152,32 @@ extension CareGuidePresentationCopy on AppLocalizations {
         (_, FertilizerKind.vegetable) => 'Use a potassium-rich tomato or fruiting-vegetable fertilizer.',
       };
 
+  /// Le calcium est une question de nutrition, pas d'eau : la qualité de
+  /// l'eau d'arrosage se lit sur la carte « Eau », pas ici.
   String? guideCalciumNote(CalciumNeed need) => switch ((_careLanguage, need)) {
         (_, CalciumNeed.neutral) => null,
         ('fr', CalciumNeed.avoid) =>
-          'Évitez les apports de calcium et, si possible, utilisez de l’eau de pluie : le calcaire peut faire jaunir le feuillage.',
+          'Pas d’apport calcique : le calcium gêne une plante de terre acide.',
         ('fr', CalciumNeed.welcome) =>
-          'Elle tolère bien le calcium. L’eau calcaire convient généralement ; des coquilles d’œufs broyées peuvent aussi être ajoutées au rempotage.',
+          'Elle tolère le calcium ; un engrais qui en apporte ne lui nuit pas.',
         ('fr', CalciumNeed.needed) =>
           'Un apport régulier en calcium aide à prévenir la nécrose apicale des fruits.',
         ('de', CalciumNeed.avoid) =>
-          'Vermeiden Sie zusätzliche Calciumgaben und verwenden Sie möglichst Regenwasser: Kalk kann die Blätter vergilben lassen.',
+          'Keine zusätzliche Calciumgabe: Sie schadet einer Pflanze, die sauren Boden braucht.',
         ('de', CalciumNeed.welcome) =>
-          'Calcium wird gut vertragen. Kalkhaltiges Leitungswasser ist meist geeignet; beim Umtopfen können auch fein zerstoßene Eierschalen beigemischt werden.',
+          'Calcium wird gut vertragen; ein calciumhaltiger Dünger schadet nicht.',
         ('de', CalciumNeed.needed) =>
           'Eine regelmäßige Calciumversorgung hilft, Blütenendfäule an den Früchten zu verhindern.',
         ('it', CalciumNeed.avoid) =>
-          'Evita apporti di calcio e, se possibile, usa acqua piovana: il calcare può far ingiallire le foglie.',
+          'Nessun apporto di calcio: danneggia una pianta che vuole terreno acido.',
         ('it', CalciumNeed.welcome) =>
-          'Tollera bene il calcio. In genere va bene anche l’acqua calcarea; al rinvaso si possono aggiungere gusci d’uovo finemente tritati.',
+          'Tollera il calcio; un concime che lo contiene non le nuoce.',
         ('it', CalciumNeed.needed) =>
           'Un apporto regolare di calcio aiuta a prevenire il marciume apicale dei frutti.',
         (_, CalciumNeed.avoid) =>
-          'Avoid extra calcium and use rainwater when possible: hard water can make the foliage turn yellow.',
+          'No calcium supplement: it upsets an acid-loving plant.',
         (_, CalciumNeed.welcome) =>
-          'It tolerates calcium well. Hard tap water is usually suitable; finely crushed eggshells can also be added when repotting.',
+          'It tolerates calcium; a calcium-containing fertilizer does no harm.',
         (_, CalciumNeed.needed) =>
           'A regular calcium supply helps prevent blossom-end rot on fruit.',
       };

@@ -165,10 +165,11 @@ class CareGuideBody extends ConsumerWidget {
           variant: 0,
           tint: c.waterSoft,
           title: l10n.careWatering,
-          value: l10n.careWateringNow(currentDays),
+          // La règle de séchage d'abord : c'est elle qui dit quand arroser.
+          // L'intervalle en jours suit, comme une estimation.
+          value: l10n.dryDownName(p.dryDownRule),
           valueColor: c.water,
-          prominent: true,
-          details: [l10n.guideWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
+          details: [l10n.careWateringNow(currentDays), l10n.guideWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
           badge: p.dormantInWinter ? ('❄️', l10n.guideBadgeDormant) : null,
         ),
         const SizedBox(height: Space.md),
@@ -184,7 +185,7 @@ class CareGuideBody extends ConsumerWidget {
           title: l10n.careWater,
           value: l10n.waterToleranceName(p.water),
           details: [l10n.waterToleranceNote(p.water)],
-          onTap: () => showWaterTypesSheet(context, tolerance: p.water),
+          onTap: () => showWaterTypesSheet(context, tolerance: p.water, fluorideSensitive: p.fluorideSensitive),
         ),
         const SizedBox(height: Space.md),
 
@@ -216,8 +217,11 @@ class CareGuideBody extends ConsumerWidget {
           tint: c.roseSoft,
           title: l10n.careHumidity,
           value: l10n.humidityName(p.humidity),
-          details: [l10n.careHumidityRange(humidity.$1, humidity.$2), l10n.humidityDetail(p.humidity)],
-          badge: p.mistLeaves ? ('💦', l10n.guideBadgeMist) : null,
+          details: [
+            l10n.careHumidityRange(humidity.$1, humidity.$2),
+            l10n.humidityDetail(p.humidity),
+            ?l10n.humidityMethodNote(p.humidityMethods),
+          ],
         ),
         const SizedBox(height: Space.md),
 

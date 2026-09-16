@@ -65,7 +65,7 @@ void main() {
       humidity: HumidityNeed.high,
       difficulty: CareDifficulty.easy,
       soil: SoilKind.standard,
-      mistLeaves: true,
+      humidityMethods: {HumidityMethod.mist},
       issues: [CommonIssue.spiderMites],
     );
 

@@ -28,6 +28,61 @@ enum HumidityNeed { low, average, high }
       HumidityNeed.high => (60, 80),
     };
 
+/// Comment on tient l'humidité de l'air, quand le mot ne suffit pas.
+///
+/// La brumisation n'est pas la réponse à tout : elle mouille la feuille
+/// quelques minutes et, sur un feuillage qui reste humide, ouvre la porte aux
+/// taches. Le plateau et l'humidificateur tiennent l'air dans la durée ; le
+/// terrarium est pour ce qu'on cultive sous verre.
+enum HumidityMethod {
+  /// Brumiser le feuillage : les plantes qui boivent par leurs feuilles.
+  mist,
+
+  /// Un humidificateur d'air, pour une pièce sèche.
+  humidifier,
+
+  /// Un plateau de billes d'argile humides, ou des plantes regroupées.
+  tray,
+
+  /// Sous verre : terrarium, cloche, bocal.
+  terrarium,
+}
+
+/// Jusqu'où laisser sécher le substrat avant d'arroser.
+///
+/// C'est la règle botanique ; l'intervalle en jours n'en est qu'une
+/// estimation, qui dépend aussi du pot, de la pièce et de la saison.
+enum DryDown {
+  /// Il ne doit jamais sécher : tourbières, plantes d'eau, fougères.
+  alwaysMoist,
+
+  /// On attend que la surface sèche.
+  surfaceDry,
+
+  /// On attend que le quart supérieur sèche.
+  topQuarterDry,
+
+  /// On attend que la moitié du pot sèche.
+  halfDry,
+
+  /// On attend que le substrat soit presque sec.
+  mostlyDry,
+
+  /// On attend qu'il soit entièrement sec : cactus, succulentes.
+  fullyDry,
+}
+
+/// Une première lecture d'un intervalle d'arrosage, en attendant une règle
+/// écrite à la main : plus on arrose souvent, moins le substrat doit sécher.
+DryDown dryDownFromDays(int days) => switch (days) {
+      <= 2 => DryDown.alwaysMoist,
+      <= 4 => DryDown.surfaceDry,
+      <= 7 => DryDown.topQuarterDry,
+      <= 13 => DryDown.halfDry,
+      <= 24 => DryDown.mostlyDry,
+      _ => DryDown.fullyDry,
+    };
+
 /// Difficulté d'entretien.
 enum CareDifficulty { easy, medium, demanding }
 
@@ -245,14 +300,17 @@ class CareProfile {
   const CareProfile({
     required this.wateringSummerDays,
     required this.wateringWinterDays,
+    this.dryDown,
     required this.light,
     required this.humidity,
     required this.difficulty,
     required this.soil,
     this.growthMedium = GrowthMedium.terrestrial,
-    this.humidityMinPercent,
-    this.humidityMaxPercent,
+    this.humidityIdealMin,
+    this.humidityIdealMax,
+    this.humidityToleratedMin,
     this.water = WaterTolerance.tolerant,
+    this.fluorideSensitive = false,
     this.fertilizingDays,
     this.fertilizingWindow = const MonthWindow(3, 9),
     this.fertilizer,
@@ -268,7 +326,7 @@ class CareProfile {
     this.propagation = const [],
     this.issues = const [],
     this.support,
-    this.mistLeaves = false,
+    this.humidityMethods = const {},
     this.dormantInWinter = true,
     this.outdoorFriendly = false,
     this.bloom,
@@ -282,6 +340,10 @@ class CareProfile {
   /// Jours entre deux arrosages au repos (hiver).
   final int wateringWinterDays;
 
+  /// La règle de séchage, quand elle est écrite à la main. `null` = on la lit
+  /// dans l'intervalle d'arrosage (voir [dryDownRule]).
+  final DryDown? dryDown;
+
   final LightNeed light;
   final HumidityNeed humidity;
   final CareDifficulty difficulty;
@@ -292,14 +354,28 @@ class CareProfile {
   /// elle y pousse.
   final GrowthMedium growthMedium;
 
-  /// Hygrométrie en pourcentage, quand l'espèce demande plus précis que sa
-  /// catégorie. `null` des deux côtés = la plage du besoin suffit.
-  final int? humidityMinPercent;
-  final int? humidityMaxPercent;
+  /// La plage d'hygrométrie que l'espèce préfère, quand elle demande plus
+  /// précis que sa catégorie. `null` des deux côtés = la plage du besoin suffit.
+  final int? humidityIdealMin;
+  final int? humidityIdealMax;
 
-  /// Tolérance à l'eau du robinet. La valeur par défaut est celle du plus
+  /// Le plancher sous lequel elle souffre du sec : son minimum toléré, quand
+  /// on le connaît. `null` = on lit une marge sous le bas de sa plage idéale,
+  /// car préférer 60 % n'est pas souffrir sous 60 %.
+  final int? humidityToleratedMin;
+
+  /// La marge, en points, entre le bas de la plage idéale et le plancher
+  /// toléré quand celui-ci n'est pas renseigné.
+  static const int humidityTolerance = 15;
+
+  /// Tolérance au calcaire. La valeur par défaut est celle du plus
   /// grand nombre : une plante ordinaire boit l'eau du robinet.
   final WaterTolerance water;
+
+  /// Le fluor du réseau lui brunit les pointes. C'est un axe à part du
+  /// calcaire : un dracæna boit volontiers l'eau du robinet et brunit pourtant
+  /// au fluor, qu'une carafe ne retire pas.
+  final bool fluorideSensitive;
 
   /// Jours entre deux apports d'engrais pendant [fertilizingWindow].
   /// `null` = pas d'engrais utile.
@@ -344,8 +420,10 @@ class CareProfile {
   /// Le support que l'espèce demande, quand elle en demande un.
   final PlantSupport? support;
 
-  /// Brumiser le feuillage aide (plantes tropicales).
-  final bool mistLeaves;
+  /// Les moyens de tenir l'humidité de l'air, quand un mot ne suffit pas :
+  /// brumiser le feuillage, poser un humidificateur ou un plateau, cultiver
+  /// sous verre. Vide pour la plupart des plantes — l'air ordinaire convient.
+  final Set<HumidityMethod> humidityMethods;
 
   /// Ralentit nettement en hiver (repos végétatif).
   final bool dormantInWinter;
@@ -364,11 +442,27 @@ class CareProfile {
   /// Clés de conseils libres, résolues par la couche i18n.
   final List<String> tipKeys;
 
-  /// Plage d'hygrométrie à viser, en pourcentage : celle de l'espèce quand
-  /// elle est renseignée, sinon celle de son besoin.
+  /// Plage d'hygrométrie idéale à viser, en pourcentage : celle de l'espèce
+  /// quand elle est renseignée, sinon celle de son besoin.
   (int, int) get humidityRange {
     final base = humidityPercentRange(humidity);
-    return (humidityMinPercent ?? base.$1, humidityMaxPercent ?? base.$2);
+    return (humidityIdealMin ?? base.$1, humidityIdealMax ?? base.$2);
+  }
+
+  /// Le plancher sous lequel elle souffre du sec, en pourcentage : son minimum
+  /// toléré, à défaut [humidityTolerance] points sous le bas de l'idéal.
+  int get humidityFloor => humidityToleratedMin ?? (humidityRange.$1 - humidityTolerance);
+
+  /// Le plafond au-dessus duquel une pièce est trop humide pour elle : le haut
+  /// de sa plage idéale, plus la même marge que le plancher.
+  int get humidityCeiling => humidityRange.$2 + humidityTolerance;
+
+  /// La règle de séchage du substrat. La règle écrite l'emporte ; à défaut,
+  /// on lit une estimation dans l'intervalle d'arrosage.
+  DryDown get dryDownRule {
+    if (dryDown case final rule?) return rule;
+    final active = wateringSummerDays <= wateringWinterDays ? wateringSummerDays : wateringWinterDays;
+    return dryDownFromDays(active);
   }
 
   /// Intervalle d'arrosage conseillé pour un mois donné, ajusté par la

@@ -120,7 +120,10 @@ void main() {
   });
 
   group('le rayon des espèces', () {
-    final toutes = '${SpeciesCatalog.entries.length} espèces';
+    // Sous ce test, le catalogue détaillé n'a pas fini de charger : l'écran
+    // montre le repli, le catalogue trié à la main, sous le libellé
+    // « fiches détaillées ».
+    final toutes = '${SpeciesCatalog.entries.length} fiches détaillées';
 
     testWidgets('compte les espèces du catalogue intégré', (tester) async {
       await pump(tester, const EncyclopediaScreen());

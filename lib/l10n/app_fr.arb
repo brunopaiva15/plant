@@ -1481,6 +1481,12 @@
     }
   },
   "careWateringSeasons": "{summer} j en pleine saison · {winter} j en hiver",
+  "careDryDownAlwaysMoist": "Terreau toujours humide",
+  "careDryDownSurfaceDry": "Laisser sécher la surface",
+  "careDryDownTopQuarterDry": "Laisser sécher le quart supérieur",
+  "careDryDownHalfDry": "Laisser sécher à moitié",
+  "careDryDownMostlyDry": "Laisser sécher presque à fond",
+  "careDryDownFullyDry": "Laisser sécher complètement",
   "@careWateringSeasons": {
     "placeholders": {
       "summer": {
@@ -1592,7 +1598,11 @@
   },
   "careHumidityLowDetail": "Elle tolère bien l'air sec d'un logement. Une humidité durablement plus haute l'abîme.",
   "careHumidityAverageDetail": "L'air ordinaire d'un logement convient. Loin d'un radiateur en hiver, les pointes des feuilles ne brunissent pas.",
-  "careHumidityHighDetail": "Un humidificateur, un plateau de billes d'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.",
+  "careHumidityHighDetail": "L'air sec d'un logement chauffé l'abîme : il faut le maintenir humide.",
+  "careHumidityMethodMist": "Brumiser le feuillage lui profite.",
+  "careHumidityMethodHumidifier": "Un humidificateur d'air.",
+  "careHumidityMethodTray": "Un plateau de billes d'argile humides, ou des plantes regroupées.",
+  "careHumidityMethodTerrarium": "Sous verre : terrarium, cloche ou bocal.",
   "careDifficultyEasy": "Facile",
   "careDifficultyMedium": "Moyenne",
   "careDifficultyDemanding": "Exigeante",
@@ -1649,7 +1659,8 @@
   "careWaterSensitive": "Eau peu calcaire",
   "careWaterStrict": "Eau sans calcaire",
   "careWaterTolerantNote": "Le calcaire ne la gêne pas.",
-  "careWaterSensitiveNote": "Le calcaire et le fluor brunissent les pointes.",
+  "careWaterSensitiveNote": "Le calcaire lui brunit les pointes.",
+  "careWaterFluorideSensitive": "Le fluor du robinet lui brunit les pointes : eau de pluie ou osmosée.",
   "careWaterStrictNote": "Le calcaire l'abîme, même en petite quantité.",
   "careWaterTypes": "Types d'eau",
   "careWaterTypesNote": "La dureté de l'eau du robinet change d'une commune à l'autre ; l'analyse annuelle du distributeur la donne.",

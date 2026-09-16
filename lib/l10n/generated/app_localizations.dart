@@ -5292,6 +5292,42 @@ abstract class AppLocalizations {
   /// **'{summer} j en pleine saison · {winter} j en hiver'**
   String careWateringSeasons(int summer, int winter);
 
+  /// No description provided for @careDryDownAlwaysMoist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terreau toujours humide'**
+  String get careDryDownAlwaysMoist;
+
+  /// No description provided for @careDryDownSurfaceDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser sécher la surface'**
+  String get careDryDownSurfaceDry;
+
+  /// No description provided for @careDryDownTopQuarterDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser sécher le quart supérieur'**
+  String get careDryDownTopQuarterDry;
+
+  /// No description provided for @careDryDownHalfDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser sécher à moitié'**
+  String get careDryDownHalfDry;
+
+  /// No description provided for @careDryDownMostlyDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser sécher presque à fond'**
+  String get careDryDownMostlyDry;
+
+  /// No description provided for @careDryDownFullyDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser sécher complètement'**
+  String get careDryDownFullyDry;
+
   /// No description provided for @careFertilizeSeason.
   ///
   /// In fr, this message translates to:
@@ -5457,8 +5493,32 @@ abstract class AppLocalizations {
   /// No description provided for @careHumidityHighDetail.
   ///
   /// In fr, this message translates to:
-  /// **'Un humidificateur, un plateau de billes d\'argile humides ou plusieurs plantes regroupées aident à tenir cette plage.'**
+  /// **'L\'air sec d\'un logement chauffé l\'abîme : il faut le maintenir humide.'**
   String get careHumidityHighDetail;
+
+  /// No description provided for @careHumidityMethodMist.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brumiser le feuillage lui profite.'**
+  String get careHumidityMethodMist;
+
+  /// No description provided for @careHumidityMethodHumidifier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un humidificateur d\'air.'**
+  String get careHumidityMethodHumidifier;
+
+  /// No description provided for @careHumidityMethodTray.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un plateau de billes d\'argile humides, ou des plantes regroupées.'**
+  String get careHumidityMethodTray;
+
+  /// No description provided for @careHumidityMethodTerrarium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous verre : terrarium, cloche ou bocal.'**
+  String get careHumidityMethodTerrarium;
 
   /// No description provided for @careDifficultyEasy.
   ///
@@ -5673,8 +5733,14 @@ abstract class AppLocalizations {
   /// No description provided for @careWaterSensitiveNote.
   ///
   /// In fr, this message translates to:
-  /// **'Le calcaire et le fluor brunissent les pointes.'**
+  /// **'Le calcaire lui brunit les pointes.'**
   String get careWaterSensitiveNote;
+
+  /// No description provided for @careWaterFluorideSensitive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le fluor du robinet lui brunit les pointes : eau de pluie ou osmosée.'**
+  String get careWaterFluorideSensitive;
 
   /// No description provided for @careWaterStrictNote.
   ///

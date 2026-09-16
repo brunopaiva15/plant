@@ -9,6 +9,13 @@ void main() {
   CareProfile profile({
     SoilKind soil = SoilKind.standard,
     GrowthMedium growthMedium = GrowthMedium.terrestrial,
+    HumidityNeed humidity = HumidityNeed.average,
+    int? humidityIdealMin,
+    int? humidityIdealMax,
+    int? humidityToleratedMin,
+    int wateringSummerDays = 7,
+    int wateringWinterDays = 14,
+    DryDown? dryDown,
     int? fertilizingDays = 30,
     int? repotEveryMonths = 24,
     int? damageBelowC = 12,
@@ -20,10 +27,14 @@ void main() {
     SoilFreeFit? ponCulture,
   }) =>
       CareProfile(
-        wateringSummerDays: 7,
-        wateringWinterDays: 14,
+        wateringSummerDays: wateringSummerDays,
+        wateringWinterDays: wateringWinterDays,
+        dryDown: dryDown,
         light: LightNeed.brightIndirect,
-        humidity: HumidityNeed.average,
+        humidity: humidity,
+        humidityIdealMin: humidityIdealMin,
+        humidityIdealMax: humidityIdealMax,
+        humidityToleratedMin: humidityToleratedMin,
         difficulty: CareDifficulty.easy,
         soil: soil,
         growthMedium: growthMedium,
@@ -94,6 +105,34 @@ void main() {
       expect(profile(soil: SoilKind.cactus).calciumNeed, CalciumNeed.welcome);
       expect(profile(issues: [CommonIssue.blossomEndRot]).calciumNeed, CalciumNeed.needed);
       expect(profile(issues: [CommonIssue.blossomEndRot]).fertilizerKind, FertilizerKind.vegetable);
+    });
+  });
+
+  group('humidité', () {
+    test('la plage idéale et le plancher toléré sont deux choses', () {
+      final p = profile(humidity: HumidityNeed.high);
+      expect(p.humidityRange, (60, 80), reason: 'ce qu\'elle préfère');
+      expect(p.humidityFloor, 45, reason: 'sous quoi elle souffre : l\'idéal moins la marge');
+      expect(p.humidityCeiling, 95);
+      // « Préfère 65–85 » ne veut pas dire « souffre sous 65 ».
+      final stricte = profile(humidity: HumidityNeed.high, humidityIdealMin: 65, humidityIdealMax: 85);
+      expect(stricte.humidityRange, (65, 85));
+      expect(stricte.humidityFloor, 50);
+      // Un minimum toléré explicite l'emporte sur la marge.
+      final franche = profile(humidity: HumidityNeed.high, humidityToleratedMin: 35);
+      expect(franche.humidityFloor, 35);
+    });
+  });
+
+  group('séchage', () {
+    test('la règle se lit dans l\'intervalle, ou s\'écrit à la main', () {
+      expect(profile(wateringSummerDays: 2, wateringWinterDays: 2).dryDownRule, DryDown.alwaysMoist);
+      expect(profile(wateringSummerDays: 7, wateringWinterDays: 14).dryDownRule, DryDown.topQuarterDry,
+          reason: 'la saison active est l\'été, 7 jours');
+      // Une plante active en hiver : c'est l'hiver qui compte, 5 jours.
+      expect(profile(wateringSummerDays: 30, wateringWinterDays: 5).dryDownRule, DryDown.topQuarterDry);
+      // La règle écrite l'emporte sur la lecture.
+      expect(profile(dryDown: DryDown.fullyDry).dryDownRule, DryDown.fullyDry);
     });
   });
 

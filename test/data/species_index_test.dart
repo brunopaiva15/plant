@@ -114,7 +114,7 @@ void main() {
   group('nom d\'affichage', () {
     test('la langue demandée', () {
       final acer = index.find('Acer japonicum')!;
-      expect(acer.commonName('fr'), 'érable du Japon');
+      expect(acer.commonName('fr'), 'Érable du Japon');
       expect(acer.commonName('de'), 'Japanischer Ahorn');
     });
 
@@ -150,7 +150,7 @@ void main() {
     test('la suggestion n\'annonce que la langue de l\'application', () {
       expect(index.find('Musa basjoo')!.toSuggestion('fr').commonName, isNull);
       expect(index.find('Musa basjoo')!.toSuggestion('de').commonName, 'Japanische Faserbanane');
-      expect(index.find('Acer japonicum')!.toSuggestion('fr').commonName, 'érable du Japon');
+      expect(index.find('Acer japonicum')!.toSuggestion('fr').commonName, 'Érable du Japon');
     });
   });
 }

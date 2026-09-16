@@ -80,6 +80,17 @@ Future<void> step(WidgetTester tester) async {
   }
 }
 
+/// Passe l'étape courante de l'onboarding. Avec la police des tests, plus
+/// large que la vraie, le bouton peut passer sous le pli : on l'amène sous le
+/// doigt avant de toucher.
+Future<void> skipLater(WidgetTester tester) async {
+  final later = find.text('Plus tard');
+  await tester.ensureVisible(later);
+  await tester.pump();
+  await tester.tap(later);
+  await step(tester);
+}
+
 void main() {
   testWidgets('empty garden shows the first-plant call to action', (tester) async {
     final container = await boot(tester);
@@ -324,25 +335,17 @@ void main() {
     // tenant : c'est elle qui dit que l'écran de bienvenue est bien là.
     expect(find.text('Le carnet d\'entretien de vos plantes.'), findsOneWidget);
     // « Passer » saute les diapositives et mène à l'étape du lieu, qu'on
-    // peut remettre à plus tard ; puis vient le prénom.
+    // peut remettre à plus tard. Suivent les capteurs de la maison, puis le
+    // prénom : chaque étape se passe de la même façon.
     await tester.tap(find.text('Passer'));
     await step(tester);
     expect(find.text('Votre ville'), findsOneWidget);
-    // Avec la police des tests, plus large que la vraie, le bas de la page
-    // passe sous le pli : on l'amène à l'écran avant de toucher. La page
-    // suivante est déjà construite hors champ, d'où le premier des deux.
-    final laterOnPlace = find.text('Plus tard').first;
-    await tester.ensureVisible(laterOnPlace);
-    await tester.pump();
-    await tester.tap(laterOnPlace);
-    await step(tester);
+    await skipLater(tester);
+    expect(find.text('Votre intérieur'), findsOneWidget);
+    await skipLater(tester);
     expect(find.text('Votre prénom'), findsOneWidget);
     await tester.enterText(find.byType(EditableText), 'Bruno');
-    final laterOnName = find.text('Plus tard').last;
-    await tester.ensureVisible(laterOnName);
-    await tester.pump();
-    await tester.tap(laterOnName);
-    await step(tester);
+    await skipLater(tester);
     // La dernière étape propose de soutenir le développeur, sans obliger.
     expect(find.text('Auxine est gratuite'), findsOneWidget);
     await tester.tap(find.text('Non merci'));

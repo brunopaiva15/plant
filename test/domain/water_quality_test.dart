@@ -51,6 +51,18 @@ void main() {
       }
     });
 
+    test('le fluor est un axe à part du calcaire', () {
+      // Une plante qui tolère le calcaire peut craindre le fluor : l'eau du
+      // robinet passe de recommandée à « avec réserve », et la carafe, qui ne
+      // retire pas le fluor, aussi. Seule l'eau osmosée lui convient vraiment.
+      expect(waterVerdictFor(WaterKind.tap, WaterTolerance.tolerant), WaterVerdict.recommended);
+      expect(waterVerdictFor(WaterKind.tap, WaterTolerance.tolerant, fluorideSensitive: true), WaterVerdict.caution);
+      expect(waterVerdictFor(WaterKind.filtered, WaterTolerance.tolerant), WaterVerdict.suitable);
+      expect(waterVerdictFor(WaterKind.filtered, WaterTolerance.tolerant, fluorideSensitive: true), WaterVerdict.caution);
+      expect(waterVerdictFor(WaterKind.osmosis, WaterTolerance.tolerant, fluorideSensitive: true), WaterVerdict.recommended);
+      expect(waterVerdictFor(WaterKind.rain, WaterTolerance.tolerant, fluorideSensitive: true), WaterVerdict.recommended);
+    });
+
     test('chaque eau est jugée, quelle que soit la plante', () {
       for (final k in WaterKind.values) {
         for (final t in WaterTolerance.values) {

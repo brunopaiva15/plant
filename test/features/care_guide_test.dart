@@ -28,7 +28,7 @@ void main() {
     fertilizingDays: 15,
     fertilizingWindow: MonthWindow(3, 9),
     repotEveryMonths: 24,
-    mistLeaves: true,
+    humidityMethods: {HumidityMethod.mist},
     dormantInWinter: true,
   );
 
@@ -100,12 +100,15 @@ void main() {
     expect(find.text("Aime l'air humide"), findsOneWidget);
     expect(find.text('Tous les 15 jours'), findsOneWidget);
     expect(find.text('Tous les 2 ans'), findsOneWidget);
+    // L'arrosage dit d'abord la règle de séchage, puis l'estimation en jours.
+    expect(find.text('Laisser sécher le quart supérieur'), findsOneWidget);
   });
 
   testWidgets('le repère d’un volet reste sur sa carte', (tester) async {
     await pump(tester);
-    // « Brumiser » ne flotte plus au-dessus de la fiche : il est sous l'humidité.
-    expect(tintOf(tester, 'Apprécie une brumisation régulière'), FloraColors.light.roseSoft);
+    // La méthode d'humidité ne flotte plus au-dessus de la fiche : elle est
+    // sous l'humidité, sur sa carte.
+    expect(tintOf(tester, 'Brumiser le feuillage lui profite.'), FloraColors.light.roseSoft);
     expect(tintOf(tester, 'Nécessite un repos hivernal'), FloraColors.light.waterSoft);
     // Le substrat a sa carte, de la couleur du rempotage : même terre.
     expect(tintOf(tester, 'Substrat'), FloraColors.light.terracottaSoft);
@@ -163,7 +166,9 @@ void main() {
     // Humidité ordinaire : la serre promet de la chaleur et de la lumière,
     // pas de l'air humide.
     expect(find.text('Serre chaude et lumineuse'), findsOneWidget);
-    expect(find.textContaining('le calcaire peut faire jaunir le feuillage'), findsOneWidget);
+    // Le calcium se dit en nutrition : c'est la carte « Eau » qui parle calcaire.
+    expect(find.textContaining('apport calcique'), findsOneWidget);
+    expect(find.textContaining('eau de pluie'), findsNothing);
     // Ni eau ni pon pour une plante de terre de bruyère : la ligne disparaît.
     expect(find.textContaining('En pon'), findsNothing);
   });
@@ -171,7 +176,9 @@ void main() {
   testWidgets('l’humidité dit un taux, pas seulement un mot', (tester) async {
     await pump(tester);
     expect(tintOf(tester, "60 à 80 % d'humidité de l'air"), FloraColors.light.roseSoft);
-    expect(find.textContaining('plusieurs plantes regroupées aident à tenir cette plage'), findsOneWidget);
+    expect(find.textContaining('il faut le maintenir humide'), findsOneWidget);
+    // La méthode propre à l'espèce suit : brumiser, ici.
+    expect(find.text('Brumiser le feuillage lui profite.'), findsOneWidget);
   });
 
   testWidgets('la serre et la floraison sont deux projets, après la liste', (tester) async {
@@ -297,7 +304,6 @@ void main() {
         humidity: HumidityNeed.low,
         difficulty: CareDifficulty.easy,
         soil: SoilKind.standard,
-        mistLeaves: false,
         dormantInWinter: false,
       ),
     );
@@ -329,8 +335,8 @@ void main() {
         wateringWinterDays: 14,
         light: LightNeed.brightIndirect,
         humidity: HumidityNeed.high,
-        humidityMinPercent: 50,
-        humidityMaxPercent: 70,
+        humidityIdealMin: 50,
+        humidityIdealMax: 70,
         difficulty: CareDifficulty.easy,
         soil: SoilKind.standard,
         repotEveryMonths: 24,
@@ -511,8 +517,8 @@ CareProfile _avec(CareProfile base, {PlantSupport? support, List<CommonIssue>? i
       humidity: base.humidity,
       difficulty: base.difficulty,
       soil: base.soil,
-      humidityMinPercent: base.humidityMinPercent,
-      humidityMaxPercent: base.humidityMaxPercent,
+      humidityIdealMin: base.humidityIdealMin,
+      humidityIdealMax: base.humidityIdealMax,
       water: base.water,
       fertilizingDays: base.fertilizingDays,
       fertilizingWindow: base.fertilizingWindow,
@@ -524,7 +530,7 @@ CareProfile _avec(CareProfile base, {PlantSupport? support, List<CommonIssue>? i
       propagation: base.propagation,
       issues: issues ?? base.issues,
       support: support ?? base.support,
-      mistLeaves: base.mistLeaves,
+      humidityMethods: base.humidityMethods,
       dormantInWinter: base.dormantInWinter,
       outdoorFriendly: base.outdoorFriendly,
       bloom: base.bloom,

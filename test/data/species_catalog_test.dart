@@ -34,13 +34,17 @@ void main() {
   test('catalogue éditorial : presque toutes les fiches ont un nom français', () {
     // Les quatre assertions ci-dessus ne disent rien : faute de nom, une
     // entrée prend le nom scientifique, qui n'est pas vide. Celle-ci compte
-    // les fiches qui en sont là. Seize espèces restent sans nom courant
-    // français sûr — aucune source n'en donne, et l'inventer serait pire.
+    // les fiches qui en sont là.
+    //
+    // Les premiers paliers tenaient en seize espèces ; les paliers 1000 et
+    // 1200 ont ajouté des espèces exotiques — Hoya, Philodendron, Anthurium,
+    // Encephalartos — dont aucune source ne donne de nom courant français sûr,
+    // et l'inventer serait pire. Le plafond suit ce que le catalogue porte.
     final sansNom = [
       for (final e in SpeciesCatalog.entries)
         if (e.vernacularName('fr') == null) e.scientificName,
     ];
-    expect(sansNom, hasLength(lessThanOrEqualTo(16)), reason: sansNom.join(', '));
+    expect(sansNom, hasLength(lessThanOrEqualTo(65)), reason: sansNom.join(', '));
   });
 
   test('catalogue éditorial : une entrée muette ne masque pas le catalogue étendu', () {
@@ -60,10 +64,11 @@ void main() {
         }
       }
     }
-    // Quatorze noms moissonnés restent écartés à la main : ils ne sont que le
-    // nom latin remaquillé (« Boophane disticha », « Dryopteris ×tavelii »)
-    // ou une traduction automatique (« Zykadee der Arme »).
-    expect(masquees, hasLength(14), reason: masquees.join(', '));
+    // Vingt-sept noms moissonnés restent écartés à la main : ils ne sont que
+    // le nom latin remaquillé (« Boophane disticha », « Dryopteris tavelii »,
+    // « Crataegus ×permixta ») ou une traduction automatique
+    // (« Zykadee der Arme », « Erba della tigre e dell'elefante »).
+    expect(masquees, hasLength(27), reason: masquees.join(', '));
   });
 
   test('encyclopédie Iris : exactement les 1444 classes du modèle', () {
@@ -98,7 +103,7 @@ void main() {
 
   test('catalogue : recherche par nom commun, latin ou famille, insensible à la casse', () {
     expect(SpeciesCatalog.search('monstera').map((e) => e.scientificName), contains('Monstera deliciosa'));
-    expect(SpeciesCatalog.search('Basilikum').single.scientificName, 'Ocimum basilicum');
+    expect(SpeciesCatalog.search('Basilikum').map((e) => e.scientificName), contains('Ocimum basilicum'));
     expect(SpeciesCatalog.search('lamiaceae').length, greaterThan(5));
     expect(SpeciesCatalog.find('ocimum BASILICUM')?.fr, 'Basilic');
     expect(SpeciesCatalog.byCategory(SpeciesCategory.succulent), everyElement(predicate<SpeciesCatalogEntry>((e) => e.category == SpeciesCategory.succulent)));

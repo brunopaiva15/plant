@@ -13,13 +13,14 @@ import '../../../domain/care/water_quality.dart';
 /// La fiche d'entretien dit en deux mots l'eau qui convient ; cette liste dit
 /// pourquoi, et ce que chaque eau emporte avec elle. Le verdict change avec
 /// la plante, le risque non : un condensat reste une eau de bac.
-Future<void> showWaterTypesSheet(BuildContext context, {required WaterTolerance tolerance}) =>
-    showFloraSheet<void>(context, scrollable: true, builder: (_) => _WaterTypesBody(tolerance: tolerance));
+Future<void> showWaterTypesSheet(BuildContext context, {required WaterTolerance tolerance, bool fluorideSensitive = false}) =>
+    showFloraSheet<void>(context, scrollable: true, builder: (_) => _WaterTypesBody(tolerance: tolerance, fluorideSensitive: fluorideSensitive));
 
 class _WaterTypesBody extends StatelessWidget {
-  const _WaterTypesBody({required this.tolerance});
+  const _WaterTypesBody({required this.tolerance, required this.fluorideSensitive});
 
   final WaterTolerance tolerance;
+  final bool fluorideSensitive;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +51,10 @@ class _WaterTypesBody extends StatelessWidget {
                         Text(l10n.waterToleranceName(tolerance), style: context.text.title3),
                         const SizedBox(height: 2),
                         Text(l10n.waterToleranceNote(tolerance), style: context.text.callout),
+                        if (fluorideSensitive) ...[
+                          const SizedBox(height: Space.xs),
+                          Text(l10n.careWaterFluorideSensitive, style: context.text.caption),
+                        ],
                       ],
                     ),
                   ),
@@ -60,7 +65,7 @@ class _WaterTypesBody extends StatelessWidget {
           const SizedBox(height: Space.md),
 
           for (final kind in WaterKind.values) ...[
-            _WaterKindCard(kind: kind, verdict: waterVerdictFor(kind, tolerance)),
+            _WaterKindCard(kind: kind, verdict: waterVerdictFor(kind, tolerance, fluorideSensitive: fluorideSensitive)),
             const SizedBox(height: Space.xs),
           ],
 

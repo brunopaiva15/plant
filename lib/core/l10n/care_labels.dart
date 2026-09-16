@@ -30,6 +30,16 @@ extension CareProfileLabels on AppLocalizations {
         CareDifficulty.demanding => careDifficultyDemanding,
       };
 
+  /// La règle d'arrosage, dite en clair : jusqu'où laisser sécher le substrat.
+  String dryDownName(DryDown v) => switch (v) {
+        DryDown.alwaysMoist => careDryDownAlwaysMoist,
+        DryDown.surfaceDry => careDryDownSurfaceDry,
+        DryDown.topQuarterDry => careDryDownTopQuarterDry,
+        DryDown.halfDry => careDryDownHalfDry,
+        DryDown.mostlyDry => careDryDownMostlyDry,
+        DryDown.fullyDry => careDryDownFullyDry,
+      };
+
   String toxicityName(Toxicity v) => switch (v) {
         Toxicity.safe => careToxicSafe,
         Toxicity.mild => careToxicMild,
@@ -325,6 +335,22 @@ extension CareProfileLabels on AppLocalizations {
         HumidityNeed.average => careHumidityAverageNote,
         HumidityNeed.high => careHumidityHighNote,
       };
+
+  /// Les moyens de tenir l'humidité, quand la fiche en nomme : une phrase par
+  /// méthode, dans l'ordre de l'énumération. `null` quand elle se tait.
+  String? humidityMethodNote(Set<HumidityMethod> methods) {
+    if (methods.isEmpty) return null;
+    return [
+      for (final method in HumidityMethod.values)
+        if (methods.contains(method))
+          switch (method) {
+            HumidityMethod.mist => careHumidityMethodMist,
+            HumidityMethod.humidifier => careHumidityMethodHumidifier,
+            HumidityMethod.tray => careHumidityMethodTray,
+            HumidityMethod.terrarium => careHumidityMethodTerrarium,
+          },
+    ].join(' ');
+  }
 
   String difficultyNote(CareDifficulty v) => switch (v) {
         CareDifficulty.easy => careDifficultyEasyNote,
