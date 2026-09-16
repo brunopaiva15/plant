@@ -5406,6 +5406,66 @@ abstract class AppLocalizations {
   /// **'Éviter sous {min} °C'**
   String careTempMin(int min);
 
+  /// No description provided for @careEnvTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement idéal'**
+  String get careEnvTitle;
+
+  /// No description provided for @careEnvHumidity.
+  ///
+  /// In fr, this message translates to:
+  /// **'{min}–{max} %'**
+  String careEnvHumidity(int min, int max);
+
+  /// No description provided for @careEnvTempRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'{min}–{max} °C'**
+  String careEnvTempRange(int min, int max);
+
+  /// No description provided for @careEnvTempMin.
+  ///
+  /// In fr, this message translates to:
+  /// **'≥ {min} °C'**
+  String careEnvTempMin(int min);
+
+  /// No description provided for @careEnvSemanticTemp.
+  ///
+  /// In fr, this message translates to:
+  /// **'température de {min} à {max} degrés'**
+  String careEnvSemanticTemp(int min, int max);
+
+  /// No description provided for @careEnvSemanticTempMin.
+  ///
+  /// In fr, this message translates to:
+  /// **'température au-dessus de {min} degrés'**
+  String careEnvSemanticTempMin(int min);
+
+  /// No description provided for @careAirflow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Courants d\'air'**
+  String get careAirflow;
+
+  /// No description provided for @careAirflowSheltered.
+  ///
+  /// In fr, this message translates to:
+  /// **'À l\'abri des courants d\'air'**
+  String get careAirflowSheltered;
+
+  /// No description provided for @careAirflowNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air ordinaire'**
+  String get careAirflowNormal;
+
+  /// No description provided for @careAirflowVentilated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Air bien ventilé'**
+  String get careAirflowVentilated;
+
   /// No description provided for @careLightShade.
   ///
   /// In fr, this message translates to:

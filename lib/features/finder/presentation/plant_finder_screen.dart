@@ -8,6 +8,7 @@ import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/finder_labels.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/species/species_catalog.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/plant_advisor.dart';
 import '../../../domain/species/plant_finder.dart';
@@ -536,7 +537,12 @@ class _SpeciesSheet extends ConsumerWidget {
           if (reasons.isNotEmpty) ...[const SizedBox(height: Space.sm), FinderReasons(reasons: reasons)],
           if (credit != null) ...[const SizedBox(height: Space.xs), Text(credit, style: context.text.caption)],
           const SizedBox(height: Space.lg),
-          CareGuideBody(care: care, speciesName: scientificName, paper: false),
+          CareGuideBody(
+            care: care,
+            speciesName: scientificName,
+            category: SpeciesCatalog.find(scientificName)?.category,
+            paper: false,
+          ),
           const SizedBox(height: Space.lg),
           FloraButton(label: actionLabel, icon: actionIcon, expand: true, onPressed: () => Navigator.of(context).pop(true)),
           const SizedBox(height: Space.xs),

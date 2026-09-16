@@ -3118,6 +3118,46 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get careEnvTitle => 'Idealer Standort';
+
+  @override
+  String careEnvHumidity(int min, int max) {
+    return '$min–$max %';
+  }
+
+  @override
+  String careEnvTempRange(int min, int max) {
+    return '$min–$max °C';
+  }
+
+  @override
+  String careEnvTempMin(int min) {
+    return '≥ $min °C';
+  }
+
+  @override
+  String careEnvSemanticTemp(int min, int max) {
+    return 'Temperatur von $min bis $max Grad';
+  }
+
+  @override
+  String careEnvSemanticTempMin(int min) {
+    return 'Temperatur über $min Grad';
+  }
+
+  @override
+  String get careAirflow => 'Zugluft';
+
+  @override
+  String get careAirflowSheltered => 'Vor Zugluft geschützt';
+
+  @override
+  String get careAirflowNormal => 'Gewöhnliche Luft';
+
+  @override
+  String get careAirflowVentilated => 'Gut belüftete Luft';
+
+  @override
   String get careLightShade => 'Schatten';
 
   @override

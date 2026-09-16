@@ -112,6 +112,7 @@ class _EditorState extends ConsumerState<_Editor> {
   late int _summer;
   late int _winter;
   late int? _damage;
+  late AirflowPreference? _airflow;
 
   @override
   void initState() {
@@ -126,6 +127,7 @@ class _EditorState extends ConsumerState<_Editor> {
     _summer = override?.wateringSummerDays ?? _base.profile.wateringSummerDays;
     _winter = override?.wateringWinterDays ?? _base.profile.wateringWinterDays;
     _damage = override?.damageBelowC ?? _base.profile.damageBelowC;
+    _airflow = override?.airflow ?? _base.profile.airflow;
   }
 
   /// La retouche à garder : seuls les champs qui s'écartent du catalogue.
@@ -138,6 +140,7 @@ class _EditorState extends ConsumerState<_Editor> {
       wateringSummerDays: _summer == base.wateringSummerDays ? null : _summer,
       wateringWinterDays: _winter == base.wateringWinterDays ? null : _winter,
       damageBelowC: _damage == base.damageBelowC ? null : _damage,
+      airflow: _airflow == base.airflow ? null : _airflow,
     );
   }
 
@@ -159,6 +162,7 @@ class _EditorState extends ConsumerState<_Editor> {
       _summer = _base.profile.wateringSummerDays;
       _winter = _base.profile.wateringWinterDays;
       _damage = _base.profile.damageBelowC;
+      _airflow = _base.profile.airflow;
     });
     ref.read(toastProvider.notifier).show(ToastData(message: l10n.careStudioReset, emoji: '↩️'));
   }
@@ -206,6 +210,17 @@ class _EditorState extends ConsumerState<_Editor> {
                 selected: _difficulty,
                 labelOf: l10n.difficultyName,
                 onChanged: (v) => v == null ? null : setState(() => _difficulty = v),
+              ),
+            ),
+            // L'air qui bouge, seulement quand on le sait : la puce s'éteint
+            // plutôt que de supposer.
+            _Field(
+              child: FloraChoice<AirflowPreference>(
+                label: l10n.careAirflow,
+                values: AirflowPreference.values,
+                selected: _airflow,
+                labelOf: l10n.airflowName,
+                onChanged: (v) => setState(() => _airflow = v),
               ),
             ),
             _Field(

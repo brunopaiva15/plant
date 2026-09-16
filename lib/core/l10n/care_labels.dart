@@ -24,6 +24,13 @@ extension CareProfileLabels on AppLocalizations {
         HumidityNeed.high => careHumidityHigh,
       };
 
+  /// Le rapport de l'espèce à l'air qui bouge.
+  String airflowName(AirflowPreference v) => switch (v) {
+        AirflowPreference.sheltered => careAirflowSheltered,
+        AirflowPreference.normal => careAirflowNormal,
+        AirflowPreference.ventilated => careAirflowVentilated,
+      };
+
   String difficultyName(CareDifficulty v) => switch (v) {
         CareDifficulty.easy => careDifficultyEasy,
         CareDifficulty.medium => careDifficultyMedium,

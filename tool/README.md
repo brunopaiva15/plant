@@ -168,6 +168,55 @@ python3 tool/pack_growth.py /tmp/multiplication/division/separate assets/cutting
 chaque archétype est embarquée, carrée, animée, transparente et pas trop
 lourde. L'architecture des guides côté application : `docs/12`.
 
+# La scène d'environnement idéal (fiches d'entretien)
+
+`build_care_scene.py` rend le diorama qui ouvre une fiche d'entretien : une
+petite pièce clay dont la géométrie encode les besoins de la plante — la
+distance à la fenêtre dit le besoin de lumière, la tache de soleil au sol
+dit direct ou indirect. Six variantes de lumière (`shade` à `full_sun`),
+même pièce, seuls la lumière, la vitre et le faisceau changent. Les espèces
+de plein air (arbres, fruitiers, légumes, et les aromatiques ou fleurs
+rustiques) ont leur propre décor : un coin de jardin avec pelouse, muret et
+haie — même caméra, même direction de soleil, la table des emplacements
+vaut d'une scène à l'autre. Les plantes sont rendues seules : `monstera`,
+`broad_leaf` (le repli), `upright_leaf`, `vine`, `fern`, `rosette`,
+`cactus`, `conifer` — huit archétypes que le résolveur attache par espèce,
+genre, famille et catégorie. L'application les pose sur l'emplacement qui
+correspond au `LightNeed` de la fiche. Deux props disent le climat sans un
+mot : l'humidificateur (air humide), posé à côté de la plante, et la grille
+d'aération (air à abriter), fixe sur le mur du fond. La vapeur et les lignes
+de flux ne sont pas rendues : l'application les dessine (reduced motion, et
+le flux doit passer à distance de la plante, qui bouge).
+
+Contrairement aux autres objets clay, toutes les couches partagent une
+**caméra à cadre fixe** (`tool/care_scene/common.py`), calculée sur les
+bornes de la pièce et non sur le contenu de chaque couche : `studio()` ne
+convient pas ici, il recadrerait chaque couche sur son contenu et la
+composition Flutter se décalerait. La table des emplacements de plante est
+projetée par cette caméra et livrée en constante Dart
+(`lib/features/species/application/care_environment_slots.dart`) — la
+géométrie de la scène fait foi, rien n'est accordé à la main côté
+application. La structure côté application : `docs/13` (à venir).
+
+```bash
+# tout, de Blender au WebP livré, avec le récapitulatif des poids (~15 min)
+python3 tool/build_care_scene_assets.py
+# aperçu rapide + planche contact dans /tmp/care_scene
+python3 tool/build_care_scene_assets.py --preview
+# un groupe, une seule lumière ou plante
+python3 tool/build_care_scene_assets.py indoor
+python3 tool/build_care_scene_assets.py --only monstera
+# juste le poids de ce qui est livré
+python3 tool/build_care_scene_assets.py --poids
+```
+
+Sans l'orchestrateur, Blender se lance directement :
+
+```bash
+blender -b -noaudio -P tool/build_care_scene.py -- complet all --res 1024 --samples 56
+blender -b -noaudio -P tool/build_care_scene.py -- apercu indoor bright_indirect
+```
+
 # La maison (« Votre intérieur »)
 
 `build_home.py` rend la maison d'argile de l'étape de la maison de

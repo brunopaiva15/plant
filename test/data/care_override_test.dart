@@ -31,6 +31,26 @@ void main() {
       expect(back.damageBelowC, 5);
       expect(back.humidity, isNull, reason: 'les champs non retouchés restent absents');
     });
+
+    test('fait circuler l\'air qui bouge', () {
+      const profil = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        difficulty: CareDifficulty.demanding,
+        soil: SoilKind.standard,
+        airflow: AirflowPreference.sheltered,
+      );
+      // Sans retouche, la valeur de la fiche passe telle quelle.
+      expect(const CareOverride().applyTo(profil).airflow, AirflowPreference.sheltered);
+      // La retouche l'emporte.
+      expect(const CareOverride(airflow: AirflowPreference.ventilated).applyTo(profil).airflow, AirflowPreference.ventilated);
+      // Et elle survit au rangement.
+      final back = CareOverride.fromJson(const CareOverride(airflow: AirflowPreference.sheltered).toJson())!;
+      expect(back.airflow, AirflowPreference.sheltered);
+      expect(back.isEmpty, isFalse);
+    });
   });
 
   group('le guide retouché', () {

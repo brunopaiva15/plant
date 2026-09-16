@@ -1,0 +1,244 @@
+# ============================================================
+# La boite a outils de la scene « environnement ideal » des fiches
+# d'entretien : la camera fixe, la palette de la piece, les materiaux qui ne
+# sont pas dans clay_scene (vitre lumineuse, tache de soleil), et la
+# projection des emplacements de plante vers l'image.
+#
+# A la difference des objets clay habituels, TOUTES les couches partagent le
+# meme cadre : la camera est calculee une fois pour toutes sur les bornes de
+# la piece, pas sur le contenu de chaque couche. C'est ce qui permet a
+# l'application de superposer decor, plante et props sans decallage — et la
+# raison pour laquelle `studio()` de clay_scene, qui cadre sur le contenu,
+# n'est pas utilise ici.
+#
+# Rien ne s'execute a l'import : les scripts qui s'en servent construisent
+# leur propre scene.
+# ============================================================
+import bpy, bmesh
+from mathutils import Vector
+from math import sin, cos, radians
+import os, sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from clay_scene import make_mat, revolve, tube_along, hexcol  # noqa: E402  — le chemin doit etre pose avant
+
+# ------------------------------------------------------------
+# la camera fixe : une vue orthographique 3/4, plus haute que celle des
+# objets clay (14°) pour lire le sol de la piece
+# ------------------------------------------------------------
+AZ = radians(-52.0)
+EL = radians(32.0)
+VUE = Vector((cos(AZ) * cos(EL), sin(AZ) * cos(EL), sin(EL)))
+CIBLE = Vector((0.0, 0.05, 0.80))
+DIST = 30.0
+MARGE = 1.05
+
+# Les bornes du diorama, dalle comprise : c'est sur elles — constantes — que
+# le cadre est calcule.
+PIECE_X, PIECE_Y, PIECE_Z = 2.1, 1.8, 2.7
+EPAIS_MUR = 0.12
+X_MAX, Y_MAX, Z_MAX = 2.5, 2.25, 2.78
+
+# La fenetre, sur le mur de gauche (-x) : elle apparait a gauche de l'image,
+# la lumiere decline vers la droite.
+FENETRE = {"y0": -0.45, "y1": 1.05, "z0": 0.75, "z1": 2.25}
+
+# La direction du soleil a travers la fenetre : vers +x, en descendant.
+SOLEIL = Vector((1.0, 0.18, -1.05))
+
+# Les emplacements de la plante (x, y au sol), nommes comme les valeurs de
+# `CarePlantSlot` cote application. La distance a la fenetre encode le besoin
+# lumineux : plus la plante est loin de la fenetre, moins elle demande de
+# lumiere.
+SLOTS = {
+    "backCorner": (1.40, 1.05),
+    "back": (0.75, 1.05),
+    "middle": (0.55, -0.15),
+    "nearWindowOutsideBeam": (-1.45, -0.30),
+    "nearWindowEdgeOfBeam": (-1.20, 0.30),
+    "sunZone": (-0.55, 0.30),
+}
+
+# La plante est rendue seule, au centre du monde ; l'application la translate
+# ensuite de (slot - ancre) en coordonnees fractionnaires.
+ANCRE_MONDE = Vector((0.0, 0.0, 0.0))
+
+
+def camera_fixe():
+    """La camera orthographique commune a toutes les couches.
+
+    Le cadre (position, `ortho_scale`, visee) ne depend que des bornes de la
+    piece definies plus haut : deux couches au contenu different obtiennent
+    exactement le meme cadrage, condition de la composition cote application.
+    """
+    sc = bpy.context.scene
+    donnees = bpy.data.cameras.new("CAM")
+    donnees.type = "ORTHO"
+    donnees.clip_start = 0.1
+    donnees.clip_end = 200.0
+    cam = bpy.data.objects.new("CAM", donnees)
+    sc.collection.objects.link(cam)
+    sc.camera = cam
+    cam.rotation_euler = (radians(90.0) - EL, 0.0, AZ + radians(90.0))
+    cam.location = CIBLE + VUE * DIST
+    bpy.context.view_layer.update()
+    M = cam.matrix_world.to_3x3()
+    Rv = (M @ Vector((1, 0, 0))).normalized()
+    Uv = (M @ Vector((0, 1, 0))).normalized()
+    Cv = (M @ Vector((0, 0, 1))).normalized()
+    coins = [Vector((x, y, z))
+             for x in (-X_MAX, X_MAX)
+             for y in (-Y_MAX, Y_MAX)
+             for z in (0.0, Z_MAX)]
+    a = [(p - cam.location).dot(Rv) for p in coins]
+    b = [(p - cam.location).dot(Uv) for p in coins]
+    demi = max(max(abs(v) for v in a), max(abs(v) for v in b))
+    donnees.ortho_scale = 2.0 * demi * MARGE
+    bpy.context.view_layer.update()
+    return cam, Rv, Uv, Cv
+
+
+def projette(cam, p):
+    """Le point du monde vu dans l'image, en coordonnees fractionnaires
+    (x depuis la gauche, y depuis le haut) — le repere de Flutter."""
+    from bpy_extras.object_utils import world_to_camera_view
+    co = world_to_camera_view(bpy.context.scene, cam, Vector(p))
+    return (round(co.x, 5), round(1.0 - co.y, 5))
+
+
+# ------------------------------------------------------------
+# petites primitives de la piece (boites, plaques)
+# ------------------------------------------------------------
+def maille(nom, verts, faces, mat=None, biseau=0.0, lisse=False, segments=3):
+    me = bpy.data.meshes.new(nom)
+    me.from_pydata([tuple(v) for v in verts], [], faces)
+    me.update()
+    ob = bpy.data.objects.new(nom, me)
+    bpy.context.scene.collection.objects.link(ob)
+    if mat:
+        me.materials.append(mat)
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(me)
+    bm.free()
+    if lisse:
+        for p in me.polygons:
+            p.use_smooth = True
+    if biseau > 0:
+        md = ob.modifiers.new("Adoucissement", "BEVEL")
+        md.width = biseau
+        md.segments = segments
+        md.limit_method = "ANGLE"
+        md.angle_limit = radians(30)
+        md.use_clamp_overlap = True
+    return ob
+
+
+def boite(nom, centre, taille, mat, biseau=0.02):
+    cx, cy, cz = centre
+    sx, sy, sz = taille
+    x0, x1 = cx - sx / 2, cx + sx / 2
+    y0, y1 = cy - sy / 2, cy + sy / 2
+    z0, z1 = cz - sz / 2, cz + sz / 2
+    verts = [(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0),
+             (x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)]
+    faces = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4),
+             (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    return maille(nom, verts, faces, mat, biseau=biseau)
+
+
+# ------------------------------------------------------------
+# materiaux propres a la piece
+# ------------------------------------------------------------
+def materiau(nom, hexa, rough=0.62, relief=0.009):
+    """La matiere clay des murs et des meubles : la meme recette que la
+    maison de l'onboarding."""
+    return make_mat(nom, hexa, rough=rough, spec=0.20, grain=48.0, relief=relief, sss=0.08)
+
+
+def teinte(a, b, t):
+    """Entre deux teintes 8 bits, en sRGB : la vitre passe du gris-bleu de
+    l'ombre au dore du soleil sans changer de materiau."""
+    t = min(max(t, 0.0), 1.0)
+    return "".join("%02X" % round(int(a[i:i + 2], 16) * (1.0 - t) + int(b[i:i + 2], 16) * t)
+                   for i in (0, 2, 4))
+
+
+def materiau_vitre(chaleur, force):
+    """La vitre : une plaque lumineuse, du gris-bleu de l'ombre au dore du
+    soleil selon la variante. Elle eclaire un peu la piece, en plus."""
+    mat = bpy.data.materials.new("MAT_Vitre")
+    mat.use_nodes = True
+    b = mat.node_tree.nodes["Principled BSDF"]
+    couleur = teinte("C9DCE4", "FFD9A0", chaleur)
+    b.inputs["Base Color"].default_value = hexcol(couleur)
+    b.inputs["Roughness"].default_value = 0.35
+    for nom in ("Emission Color", "Emission"):
+        if nom in b.inputs:
+            b.inputs[nom].default_value = hexcol(couleur)
+            break
+    if "Emission Strength" in b.inputs:
+        b.inputs["Emission Strength"].default_value = force
+    mat.diffuse_color = hexcol(couleur)
+    return mat
+
+
+def materiau_faisceau(nom, intensite):
+    """La tache de soleil au sol : une emission chaude melee de transparence
+    pure, comme les voiles des guides de multiplication. [intensite] suit la
+    variante de lumiere ; 0 la fait disparaitre."""
+    mat = bpy.data.materials.new(nom)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = hexcol("FFD88F")
+    em.inputs["Strength"].default_value = 1.4
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    mix.inputs["Fac"].default_value = min(max(intensite, 0.0), 1.0)
+    nt.links.new(tr.outputs["BSDF"], mix.inputs[1])
+    nt.links.new(em.outputs["Emission"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], nt.nodes["Material Output"].inputs["Surface"])
+    return mat
+
+
+# ------------------------------------------------------------
+# lumieres
+# ------------------------------------------------------------
+def aire(nom, position, visee, taille, energie, couleur=(1.0, 1.0, 1.0),
+         forme="SQUARE", taille_y=None):
+    ld = bpy.data.lights.new(nom, type="AREA")
+    ld.shape = forme
+    ld.size = taille
+    if forme == "RECTANGLE" and taille_y is not None:
+        ld.size_y = taille_y
+    ld.energy = energie
+    ld.color = couleur
+    ob = bpy.data.objects.new(nom, ld)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = Vector(position)
+    ob.rotation_euler = (Vector(visee) - ob.location).to_track_quat("-Z", "Y").to_euler()
+    return ob
+
+
+def monde(force, couleur=(0.85, 0.87, 0.86)):
+    w = bpy.data.worlds.new("World")
+    bpy.context.scene.world = w
+    w.use_nodes = True
+    bg = w.node_tree.nodes["Background"]
+    bg.inputs[0].default_value = (couleur[0], couleur[1], couleur[2], 1.0)
+    bg.inputs[1].default_value = force
+    return w
+
+
+def eclairage_plante(centre, Rv, Uv, Cv):
+    """Les trois lumieres du studio clay, posees autour de la plante : elle
+    garde le meme eclat quelle que soit la variante de la piece — c'est le
+    decor qui porte l'information de lumiere."""
+    O = Vector(centre)
+    aire("LGT_Key", O - 3.4 * Rv + 4.4 * Uv + 3.0 * Cv, O, 11.0, 2600.0, (1.0, 0.985, 0.960))
+    aire("LGT_Fill", O + 4.2 * Rv - 1.0 * Uv + 3.0 * Cv, O, 10.0, 520.0, (0.955, 0.975, 1.0))
+    aire("LGT_Rim", O - 1.5 * Rv + 2.4 * Uv - 1.6 * Cv, O, 6.0, 900.0)
+    monde(0.35)

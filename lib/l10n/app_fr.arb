@@ -1551,6 +1551,60 @@
       }
     }
   },
+  "careEnvTitle": "Emplacement idéal",
+  "careEnvHumidity": "{min}–{max} %",
+  "@careEnvHumidity": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careEnvTempRange": "{min}–{max} °C",
+  "@careEnvTempRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careEnvTempMin": "≥ {min} °C",
+  "@careEnvTempMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "careEnvSemanticTemp": "température de {min} à {max} degrés",
+  "@careEnvSemanticTemp": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "careEnvSemanticTempMin": "température au-dessus de {min} degrés",
+  "@careEnvSemanticTempMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "careAirflow": "Courants d'air",
+  "careAirflowSheltered": "À l'abri des courants d'air",
+  "careAirflowNormal": "Air ordinaire",
+  "careAirflowVentilated": "Air bien ventilé",
   "careLightShade": "Ombre",
   "careLightLow": "Faible lumière",
   "careLightIndirect": "Lumière indirecte",

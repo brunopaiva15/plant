@@ -22,6 +22,7 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/10-entrainer-sur-son-poste.md](docs/10-entrainer-sur-son-poste.md) | Entraîner le modèle chez soi, de Windows nu au `.tflite` livré |
 | [docs/11-entrainer-sur-une-vm.md](docs/11-entrainer-sur-une-vm.md) | Entraîner sur une VM Debian louée : pilote, disques, ce qui change d'une machine personnelle |
 | [docs/12-guides-de-multiplication.md](docs/12-guides-de-multiplication.md) | Guides de multiplication : archétypes de gestes, choix du guide, rendus Blender |
+| [docs/13-care-environment-scenes.md](docs/13-care-environment-scenes.md) | Scène d'environnement idéal : diorama clay, projection des besoins, pipeline Blender |
 
 ## Démarrer
 ```bash

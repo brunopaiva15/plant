@@ -3112,6 +3112,46 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get careEnvTitle => 'Ideal spot';
+
+  @override
+  String careEnvHumidity(int min, int max) {
+    return '$min–$max %';
+  }
+
+  @override
+  String careEnvTempRange(int min, int max) {
+    return '$min–$max °C';
+  }
+
+  @override
+  String careEnvTempMin(int min) {
+    return '≥ $min °C';
+  }
+
+  @override
+  String careEnvSemanticTemp(int min, int max) {
+    return 'temperature from $min to $max degrees';
+  }
+
+  @override
+  String careEnvSemanticTempMin(int min) {
+    return 'temperature above $min degrees';
+  }
+
+  @override
+  String get careAirflow => 'Draughts';
+
+  @override
+  String get careAirflowSheltered => 'Sheltered from draughts';
+
+  @override
+  String get careAirflowNormal => 'Ordinary air';
+
+  @override
+  String get careAirflowVentilated => 'Well-ventilated air';
+
+  @override
   String get careLightShade => 'Shade';
 
   @override

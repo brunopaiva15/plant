@@ -18,6 +18,7 @@ class CareOverride {
     this.wateringSummerDays,
     this.wateringWinterDays,
     this.damageBelowC,
+    this.airflow,
   });
 
   final LightNeed? light;
@@ -31,13 +32,17 @@ class CareOverride {
   /// Seuil de dégâts du froid.
   final int? damageBelowC;
 
+  /// Son rapport à l'air qui bouge.
+  final AirflowPreference? airflow;
+
   bool get isEmpty =>
       light == null &&
       humidity == null &&
       difficulty == null &&
       wateringSummerDays == null &&
       wateringWinterDays == null &&
-      damageBelowC == null;
+      damageBelowC == null &&
+      airflow == null;
 
   /// La fiche du catalogue, les champs retouchés à la place des siens.
   CareProfile applyTo(CareProfile base) => CareProfile(
@@ -72,6 +77,7 @@ class CareOverride {
         humidityMethods: base.humidityMethods,
         dormantInWinter: base.dormantInWinter,
         outdoorFriendly: base.outdoorFriendly,
+        airflow: airflow ?? base.airflow,
         bloom: base.bloom,
         dormancy: base.dormancy,
         tipKeys: base.tipKeys,
@@ -84,6 +90,7 @@ class CareOverride {
         if (wateringSummerDays != null) 'ws': wateringSummerDays,
         if (wateringWinterDays != null) 'ww': wateringWinterDays,
         if (damageBelowC != null) 'tb': damageBelowC,
+        if (airflow != null) 'af': airflow!.name,
       };
 
   /// `null` quand la carte ne dit rien : une retouche vide n'est pas rangée.
@@ -102,6 +109,7 @@ class CareOverride {
       wateringSummerDays: json['ws'] as int?,
       wateringWinterDays: json['ww'] as int?,
       damageBelowC: json['tb'] as int?,
+      airflow: enumOf(AirflowPreference.values, json['af']),
     );
     return override.isEmpty ? null : override;
   }

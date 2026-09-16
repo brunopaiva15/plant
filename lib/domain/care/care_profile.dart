@@ -28,6 +28,22 @@ enum HumidityNeed { low, average, high }
       HumidityNeed.high => (60, 80),
     };
 
+/// Le rapport de l'espèce à l'air qui bouge.
+///
+/// Renseigné seulement quand la fiche le sait : `null` dans [CareProfile.airflow]
+/// signifie « non renseigné », et rien ne se dit alors sur l'air — un silence
+/// n'est pas un avis, il ne devient jamais « éviter les courants d'air ».
+enum AirflowPreference {
+  /// Elle craint les courants d'air froids : fougères, calathéas, croton.
+  sheltered,
+
+  /// L'air ordinaire d'une pièce lui convient.
+  normal,
+
+  /// Elle aime l'air brassé : agrumes, plantes de plein vent.
+  ventilated,
+}
+
 /// Comment on tient l'humidité de l'air, quand le mot ne suffit pas.
 ///
 /// La brumisation n'est pas la réponse à tout : elle mouille la feuille
@@ -329,6 +345,7 @@ class CareProfile {
     this.humidityMethods = const {},
     this.dormantInWinter = true,
     this.outdoorFriendly = false,
+    this.airflow,
     this.bloom,
     this.dormancy,
     this.tipKeys = const [],
@@ -431,6 +448,11 @@ class CareProfile {
 
   /// Peut passer l'été dehors, voire y rester.
   final bool outdoorFriendly;
+
+  /// Son rapport à l'air qui bouge, quand la fiche le sait. `null` = non
+  /// renseigné : la scène d'environnement ne montre alors rien qui touche à
+  /// l'air, plutôt qu'un conseil inventé.
+  final AirflowPreference? airflow;
 
   /// Sa floraison : la saison, et ce qui la décide. `null` = plante de
   /// feuillage, ou floraison qu'on ne cherche pas à provoquer.

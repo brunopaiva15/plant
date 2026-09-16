@@ -135,6 +135,14 @@ flutter:
     - assets/cutting/division/
     - assets/cutting/offset/
     - assets/cutting/succulent_segment/
+    # La scène d'environnement idéal des fiches d'entretien : les six
+    # variantes de lumière du diorama et les silhouettes de plante, rendues
+    # dans le studio d'argile (tool/build_care_scene_assets.py). Chaque
+    # dossier se déclare : Flutter ne descend pas dans les sous-dossiers.
+    - assets/care_scene/indoor/light/
+    - assets/care_scene/outdoor/light/
+    - assets/care_scene/plants/
+    - assets/care_scene/props/
     # Le grain du papier, posé par-dessus l'écran.
     - assets/textures/
     # Iris, le modèle de reconnaissance d'espèces (TFLite) : poids, classes,

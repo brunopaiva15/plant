@@ -6,6 +6,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/species/species_catalog.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
@@ -14,10 +15,12 @@ import '../../../domain/care/leaf_signs.dart';
 import '../../../domain/care/toxicity.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
+import '../../../domain/species/species_info.dart';
 import '../../community/presentation/community_tips_section.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import 'care_environment_hero.dart';
 import 'care_guide_copy.dart';
 import 'water_types_sheet.dart';
 
@@ -63,6 +66,7 @@ class CareGuideScreen extends ConsumerWidget {
             speciesName: plant?.speciesName,
             location: location,
             plantLight: plant?.light,
+            category: plant?.speciesName == null ? null : SpeciesCatalog.find(plant!.speciesName!)?.category,
           ),
         ),
       ),
@@ -96,6 +100,8 @@ class CareGuideBody extends ConsumerWidget {
     this.location,
     this.header,
     this.plantLight,
+    this.category,
+    this.showEnvironmentHero = true,
     this.paper = true,
   });
 
@@ -111,6 +117,14 @@ class CareGuideBody extends ConsumerWidget {
   /// Lumière renseignée sur la plante elle-même ; elle prime sur celle de
   /// l'emplacement.
   final LightNeed? plantLight;
+
+  /// La catégorie d'usage de l'espèce, quand le catalogue la connaît : elle
+  /// départage la scène d'environnement entre la pièce et dehors.
+  final SpeciesCategory? category;
+
+  /// Le diorama « emplacement idéal » en tête de fiche. Les contextes qui
+  /// intègrent la fiche autrement peuvent s'en passer.
+  final bool showEnvironmentHero;
 
   /// La fiche comme objet : une feuille posée sur le fond de la page. Le
   /// dénicheur, qui l'affiche déjà dans une sheet, s'en passe — une feuille
@@ -144,6 +158,12 @@ class CareGuideBody extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ?header,
+
+        // Le résumé spatial d'abord : où la plante serait bien, avant le
+        // détail des besoins. La scène montre l'idéal de la fiche, jamais
+        // l'état réel de la pièce — c'est HomeClimateFitCard qui compare.
+        if (showEnvironmentHero)
+          CareEnvironmentHero(profile: p, speciesName: speciesName, category: category),
 
         SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 
@@ -485,7 +505,6 @@ class _AspectCard extends StatelessWidget {
     this.valueColor,
     this.badge,
     this.notes = const [],
-    this.prominent = false,
     this.onTap,
   });
 
@@ -518,10 +537,6 @@ class _AspectCard extends StatelessWidget {
   /// rempotage, la dose de la lampe, les conditions d'une floraison.
   final List<String> notes;
 
-  /// L'arrosage porte son chiffre plus grand : c'est la question qu'on se pose
-  /// en premier.
-  final bool prominent;
-
   /// Ce que le volet cache, quand il en cache quelque chose : la carte prend
   /// alors un chevron, et se presse comme une ligne de liste.
   final VoidCallback? onTap;
@@ -546,7 +561,7 @@ class _AspectCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     value,
-                    style: (prominent ? context.text.title2 : context.text.title3).copyWith(color: valueColor ?? c.ink),
+                    style: context.text.title3.copyWith(color: valueColor ?? c.ink),
                   ),
                   for (final detail in details) ...[
                     const SizedBox(height: 2),

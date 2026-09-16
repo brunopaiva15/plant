@@ -37,7 +37,11 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
         title: l10n.encyclopediaTitle,
         child: Padding(
           padding: const EdgeInsets.only(top: Space.huge),
-          child: EmptyState(emoji: '🌱', title: l10n.speciesNoResults, compact: true),
+          child: EmptyState(
+            emoji: '🌱',
+            title: l10n.speciesNoResults,
+            compact: true,
+          ),
         ),
       );
     }
@@ -45,14 +49,19 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
     // classe d'abord, puis le nom sous lequel l'app connaît le mieux la
     // plante. Sans quoi la fiche ouverte depuis la liste serait plus pauvre
     // que la ligne qui y menait.
-    final accepted = acceptedSpeciesName(normalizeScientificName(scientificName));
+    final accepted = acceptedSpeciesName(
+      normalizeScientificName(scientificName),
+    );
     final index = ref.watch(speciesIndexProvider).value;
-    final entry = SpeciesCatalog.find(scientificName) ?? SpeciesCatalog.find(accepted);
+    final entry =
+        SpeciesCatalog.find(scientificName) ?? SpeciesCatalog.find(accepted);
     final record = index?.find(scientificName) ?? index?.find(accepted);
     final family = entry?.family ?? record?.family;
     // La catégorie n'est pas passée : le catalogue trouve lui-même celle de
     // ses propres entrées, et une espèce du catalogue étendu n'en a pas.
-    final care = ref.watch(careGuideProvider).resolve(
+    final care = ref
+        .watch(careGuideProvider)
+        .resolve(
           scientificName,
           family: family == null || family.isEmpty ? null : family,
         );
@@ -60,13 +69,16 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
     // le nom scientifique, qui est de toute façon écrit juste dessous.
     final common = entry?.vernacularName(lang) ?? record?.vernacularName(lang);
     final displayScientificName = capitalizeSpeciesDisplayName(scientificName);
-    final displayName = common == null ? displayScientificName : capitalizeSpeciesDisplayName(common);
+    final displayName = common == null
+        ? displayScientificName
+        : capitalizeSpeciesDisplayName(common);
 
     return FloraPage(
       title: displayName,
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
+        category: entry?.category,
         header: _Header(
           scientificName: scientificName,
           displayName: displayName,
@@ -97,7 +109,10 @@ class _Header extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(capitalizeSpeciesDisplayName(scientificName), style: context.text.title3.copyWith(fontStyle: FontStyle.italic)),
+        Text(
+          capitalizeSpeciesDisplayName(scientificName),
+          style: context.text.title3.copyWith(fontStyle: FontStyle.italic),
+        ),
         if (family != null && family!.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text('${l10n.speciesFamily} · $family', style: context.text.caption),
@@ -108,7 +123,10 @@ class _Header extends ConsumerWidget {
           const SizedBox(height: Space.sm),
           Align(
             alignment: Alignment.centerLeft,
-            child: FloraChip(label: l10n.speciesCategoryName(cat), emoji: cat.emoji),
+            child: FloraChip(
+              label: l10n.speciesCategoryName(cat),
+              emoji: cat.emoji,
+            ),
           ),
         ],
         const SizedBox(height: Space.sm),
@@ -121,7 +139,8 @@ class _Header extends ConsumerWidget {
                 style: FloraButtonStyle.tonal,
                 size: FloraButtonSize.small,
                 expand: true,
-                onPressed: () => showSpeciesSheet(context, scientificName: scientificName),
+                onPressed: () =>
+                    showSpeciesSheet(context, scientificName: scientificName),
               ),
             ),
             const SizedBox(width: Space.xs),
@@ -132,7 +151,11 @@ class _Header extends ConsumerWidget {
                 style: FloraButtonStyle.tonal,
                 size: FloraButtonSize.small,
                 expand: true,
-                onPressed: () => startCreatePlantFlow(context, ref, speciesName: scientificName),
+                onPressed: () => startCreatePlantFlow(
+                  context,
+                  ref,
+                  speciesName: scientificName,
+                ),
               ),
             ),
           ],

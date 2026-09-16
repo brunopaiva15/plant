@@ -168,6 +168,21 @@ void main() {
       expect(const CareCompletion(noFertilizer: true).applyTo(_generique).fertilizingDays, isNull);
       expect(const CareCompletion().applyTo(_generique).fertilizingDays, 30);
     });
+
+    test('l\'air qui bouge reste à la fiche : l\'IA ne se prononce pas', () {
+      const curated = CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.indirect,
+        humidity: HumidityNeed.high,
+        difficulty: CareDifficulty.demanding,
+        soil: SoilKind.standard,
+        airflow: AirflowPreference.sheltered,
+      );
+      expect(const CareCompletion(light: LightNeed.fullSun).applyTo(curated).airflow, AirflowPreference.sheltered);
+      expect(const CareCompletion().applyTo(_generique).airflow, isNull,
+          reason: 'non renseigné ne devient jamais un avis');
+    });
   });
 
   group('le cache', () {

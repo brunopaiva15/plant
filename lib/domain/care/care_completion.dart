@@ -126,6 +126,9 @@ class CareCompletion {
         humidityMethods: base.humidityMethods,
         dormantInWinter: base.dormantInWinter,
         outdoorFriendly: base.outdoorFriendly,
+        // L'IA ne se prononce pas sur l'air qui bouge : ce que la fiche sait
+        // — ou ne sait pas — reste tel quel.
+        airflow: base.airflow,
         bloom: base.bloom,
         dormancy: base.dormancy,
         tipKeys: base.tipKeys,
