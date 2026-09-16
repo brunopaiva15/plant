@@ -188,11 +188,9 @@ class _PaperTexturePainter extends CustomPainter {
       final y = nextUnit() * size.height;
       final length = 4 + nextUnit() * 11;
       final drift = (nextUnit() - 0.5) * 0.8;
-      canvas.drawLine(
-        Offset(x, y),
-        Offset((x + length).clamp(0, size.width), (y + drift).clamp(0, size.height)),
-        paint,
-      );
+      final x2 = (x + length).clamp(0, size.width).toDouble();
+      final y2 = (y + drift).clamp(0, size.height).toDouble();
+      canvas.drawLine(Offset(x, y), Offset(x2, y2), paint);
     }
   }
 
