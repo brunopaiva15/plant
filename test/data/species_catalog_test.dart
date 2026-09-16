@@ -213,6 +213,17 @@ void main() {
     expect(acceptedSpeciesName('Sedum rubrotinctum'), 'Sedum × rubrotinctum');
   });
 
+  test('résolution : un synonyme retrouve la fiche de son nom accepté', () {
+    // Le modèle et GBIF rendent « Hesperocyparis macrocarpa » ; le catalogue
+    // ne porte que « Cupressus macrocarpa ». Sans ce détour, la catégorie
+    // reste introuvable et la plante est classée d'intérieur.
+    expect(SpeciesCatalog.find('Hesperocyparis macrocarpa'), isNull);
+    expect(SpeciesCatalog.findAccepted('Hesperocyparis macrocarpa')?.category, SpeciesCategory.tree);
+    expect(SpeciesCatalog.findAccepted('Heptapleurum arboricola')?.scientificName, 'Schefflera arboricola');
+    // Le nom déjà accepté et la casse passent sans s'abîmer.
+    expect(SpeciesCatalog.findAccepted('cupressus macrocarpa')?.scientificName, 'Cupressus macrocarpa');
+  });
+
   test('GBIF : parse d\'une page de recherche (total, fin de liste)', () {
     const body = '{"offset":0,"limit":2,"endOfRecords":false,"count":143,"results":['
         '{"key":1,"canonicalName":"Ficus lyrata","family":"Moraceae","vernacularNames":[{"vernacularName":"Figuier lyre","language":"fra"}]},'

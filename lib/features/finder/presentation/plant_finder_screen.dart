@@ -540,7 +540,7 @@ class _SpeciesSheet extends ConsumerWidget {
           CareGuideBody(
             care: care,
             speciesName: scientificName,
-            category: SpeciesCatalog.find(scientificName)?.category,
+            category: SpeciesCatalog.findAccepted(scientificName)?.category,
             paper: false,
           ),
           const SizedBox(height: Space.lg),

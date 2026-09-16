@@ -1,3 +1,4 @@
+import '../../core/utils/scientific_name.dart';
 import '../../domain/species/species_info.dart';
 import 'species_catalog_expansion.dart';
 
@@ -386,6 +387,10 @@ abstract final class SpeciesCatalog {
   }
 
   /// Entrée exacte pour un nom scientifique (insensible à la casse).
+  ///
+  /// Recherche brute : un synonyme n'y répond pas, comme le verrouillent les
+  /// tests. Pour résoudre une espèce telle que GBIF ou le modèle la nomme,
+  /// passer par [findAccepted].
   static SpeciesCatalogEntry? find(String scientificName) {
     final n = scientificName.trim().toLowerCase();
     for (final e in entries) {
@@ -393,4 +398,13 @@ abstract final class SpeciesCatalog {
     }
     return null;
   }
+
+  /// Entrée d'une espèce, en passant d'abord par son nom accepté.
+  ///
+  /// Sept plantes sont dans nos données sous deux noms (§ 12.14) : le modèle
+  /// et GBIF peuvent rendre le synonyme — « Hesperocyparis macrocarpa » pour
+  /// le cyprès de Monterey — et l'entrée triée à la main ne porte que l'autre.
+  /// Sans ce détour, la catégorie reste introuvable et la plante retombe sur
+  /// la pièce, faute de mieux.
+  static SpeciesCatalogEntry? findAccepted(String scientificName) => find(scientificName) ?? find(acceptedSpeciesName(normalizeScientificName(scientificName)));
 }

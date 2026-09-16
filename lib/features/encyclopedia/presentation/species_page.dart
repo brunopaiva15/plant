@@ -53,8 +53,7 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
       normalizeScientificName(scientificName),
     );
     final index = ref.watch(speciesIndexProvider).value;
-    final entry =
-        SpeciesCatalog.find(scientificName) ?? SpeciesCatalog.find(accepted);
+    final entry = SpeciesCatalog.findAccepted(scientificName);
     final record = index?.find(scientificName) ?? index?.find(accepted);
     final family = entry?.family ?? record?.family;
     // La catégorie n'est pas passée : le catalogue trouve lui-même celle de

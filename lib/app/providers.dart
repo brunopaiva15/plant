@@ -712,7 +712,7 @@ String? speciesFamilyOf(WidgetRef ref, String? name) => _familyIn(ref.read(speci
 String? Function(String?) _familyIn(SpeciesIndex? index) {
   return (name) {
     if (name == null || name.trim().isEmpty) return null;
-    final curated = SpeciesCatalog.find(name)?.family;
+    final curated = SpeciesCatalog.findAccepted(name)?.family;
     if (curated != null) return curated;
     final found = index?.find(name)?.family;
     return found == null || found.isEmpty ? null : found;
