@@ -1,8 +1,8 @@
 import '../../../core/config/app_config.dart';
 
-/// Ce qu'un lien `auxine://` désigne : une plante, un article, une
-/// invitation.
-enum FloraLinkKind { plant, item, join }
+/// Ce qu'un lien `auxine://` désigne : une plante, un article, une espèce ou
+/// une invitation.
+enum FloraLinkKind { plant, item, species, join }
 
 /// Cible décodée d'un QR code.
 class FloraLink {
@@ -18,8 +18,9 @@ class FloraLink {
   int get hashCode => Object.hash(kind, id);
 }
 
-/// Liens encodés dans les QR codes : `auxine://plant/<id>` et
-/// `auxine://item/<id>`. Le même format servira aux tags NFC (Phase 4).
+/// Liens encodés dans les QR codes : `auxine://plant/<id>`,
+/// `auxine://item/<id>` et `auxine://species/<nom-scientifique>`. Le même
+/// format servira aux tags NFC (Phase 4).
 ///
 /// `auxine://join/<code>` s'y ajoute pour les invitations : c'est le bouton
 /// « Ouvrir dans Auxine » de la page d'atterrissage qui l'appelle.
@@ -27,6 +28,12 @@ abstract final class PlantLinks {
   static String encode(String plantId) => '${AppConfig.linkScheme}://plant/$plantId';
 
   static String encodeItem(String itemId) => '${AppConfig.linkScheme}://item/$itemId';
+
+  static String encodeSpecies(String scientificName) => Uri(
+        scheme: AppConfig.linkScheme,
+        host: 'species',
+        pathSegments: [scientificName.trim()],
+      ).toString();
 
   static String encodeJoin(String code) => '${AppConfig.linkScheme}://join/$code';
 
@@ -36,8 +43,8 @@ abstract final class PlantLinks {
     return link?.kind == FloraLinkKind.plant ? link!.id : null;
   }
 
-  /// Décode n'importe quel lien Flora : plante, article d'inventaire, ou
-  /// invitation à rejoindre un jardin.
+  /// Décode n'importe quel lien Flora : plante, article d'inventaire, espèce
+  /// ou invitation à rejoindre un jardin.
   static FloraLink? decodeLink(String raw) {
     final uri = Uri.tryParse(raw.trim());
     if (uri == null) return null;
@@ -53,6 +60,7 @@ abstract final class PlantLinks {
     final kind = switch (uri.host) {
       'plant' => FloraLinkKind.plant,
       'item' => FloraLinkKind.item,
+      'species' => FloraLinkKind.species,
       'join' => FloraLinkKind.join,
       _ => null,
     };
