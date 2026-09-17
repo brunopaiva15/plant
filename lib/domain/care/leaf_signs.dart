@@ -83,7 +83,7 @@ abstract final class LeafSigns {
   /// Cette cause a-t-elle un sens pour cette espèce ?
   static bool _applies(LeafCause cause, CareProfile profile) => switch (cause) {
         // Une espèce de plein soleil ne brûle pas au soleil.
-        LeafCause.tooMuchSun => profile.light != LightNeed.fullSun,
+        LeafCause.tooMuchSun => profile.lightFloor != LightNeed.fullSun,
         // Ni une espèce qui préfère l'air sec ne brunit des pointes.
         LeafCause.dryAir => profile.humidity != HumidityNeed.low,
         // Le repos hivernal n'explique un arrêt que chez celles qui l'ont.

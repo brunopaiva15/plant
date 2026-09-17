@@ -357,6 +357,7 @@ class CareProfile {
     required this.wateringWinterDays,
     this.dryDown,
     required this.light,
+    this.lightTolerance,
     required this.humidity,
     required this.difficulty,
     required this.soil,
@@ -401,7 +402,25 @@ class CareProfile {
   /// dans l'intervalle d'arrosage (voir [dryDownRule]).
   final DryDown? dryDown;
 
+  /// Ce que la fiche porte à l'écran : la lumière RHS, l'idéal de la plante.
+  ///
+  /// Elle ne dit pas jusqu'où la plante tient — c'est [lightTolerance]. Une
+  /// sansevière veut du soleil pour fleurir ; elle vit derrière une fenêtre
+  /// nord. Les deux questions ont deux réponses, et une seule case ne peut pas
+  /// les porter.
   final LightNeed light;
+
+  /// Jusqu'où la plante tient, quand c'est plus bas que [light].
+  ///
+  /// `null` pour la plupart des plantes : elles ne tiennent pas plus bas que
+  /// ce qu'elles demandent. Renseigné pour celles qu'on peut poser plus loin
+  /// de la fenêtre — la sansevière, la scille du Cap, le zamioculcas.
+  final LightNeed? lightTolerance;
+
+  /// La lumière à comparer à un emplacement : la plus basse que la plante
+  /// accepte. C'est elle qui décide si une pièce sombre lui va, jamais
+  /// [light], qui décrit le meilleur.
+  LightNeed get lightFloor => lightTolerance ?? light;
   final HumidityNeed humidity;
   final CareDifficulty difficulty;
   final SoilKind soil;

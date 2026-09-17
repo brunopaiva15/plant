@@ -171,7 +171,7 @@ class PlantFinder {
     final p = care.profile;
     if (c.safeOnly && (care.toxicity.status != Toxicity.safe || !care.toxicity.isSpecific)) return false;
     if (c.spot == FinderSpot.outdoor && !p.outdoorFriendly) return false;
-    if (c.spot != null && (p.light.index - _targetLight(c.spot!).index).abs() > 1) return false;
+    if (c.spot != null && (p.lightFloor.index - _targetLight(c.spot!).index).abs() > 1) return false;
     if (c.effort == FinderEffort.forgiving && (p.difficulty == CareDifficulty.demanding || p.humidity == HumidityNeed.high)) return false;
     return true;
   }
@@ -180,7 +180,7 @@ class PlantFinder {
     // Chaque critère répondu apporte son poids et sa note (0 à 1).
     final region = c.outdoorRegion;
     final parts = <(double, double)>[
-      if (c.spot != null) (0.55, _lightScore(p.light, _targetLight(c.spot!))),
+      if (c.spot != null) (0.55, _lightScore(p.lightFloor, _targetLight(c.spot!))),
       if (c.effort != null) (0.45, _effortScore(c.effort!, p)),
       // La région, quand on la connaît et qu'on cherche pour dehors : pas
       // une exclusion — un géranium se rentre, et personne ne dira qu'il
@@ -246,9 +246,9 @@ class PlantFinder {
   static List<FinderReason> _reasons(FinderCriteria c, ResolvedCare care) {
     final p = care.profile;
     final reasons = <FinderReason>[
-      if (c.spot == FinderSpot.darkRoom && p.light.index <= LightNeed.indirect.index)
+      if (c.spot == FinderSpot.darkRoom && p.lightFloor.index <= LightNeed.indirect.index)
         FinderReason.lowLight
-      else if (c.spot != null && (p.light.index - _targetLight(c.spot!).index).abs() <= 1)
+      else if (c.spot != null && (p.lightFloor.index - _targetLight(c.spot!).index).abs() <= 1)
         FinderReason.light,
       // Dehors, la rusticité dit mieux que « tient dehors » : elle dit si la
       // plante y reste l'hiver. Elle la remplace donc quand on la connaît.
