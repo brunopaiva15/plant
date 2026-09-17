@@ -5,9 +5,16 @@ import 'care_environment_slots.dart';
 /// Le décor de la scène d'environnement idéal : une pièce, ou un coin dehors.
 enum CareEnvironmentKind { indoorRoom, outdoorPatch }
 
+/// Le support visuel de la plante dans le diorama.
+///
+/// Dans la pièce, une plante de petit ou moyen gabarit est posée sur le
+/// guéridon déjà présent dans le décor. Les plantes manifestement trop grandes
+/// restent au sol. Dehors, le sol est toujours le support naturel.
+enum CarePlantSupport { pedestal, floor }
+
 /// Les emplacements de plante dans le cadre, nommés comme les clés de
 /// [CareEnvironmentSlots.slots] — la distance à la fenêtre encode le besoin
-/// de lumière.
+/// de lumière pour les plantes qui restent au sol.
 ///
 /// Les six tiennent sur une droite, à pas constant, du fond de la pièce
 /// jusque dans la tache de soleil : d'une fiche à l'autre la plante avance
@@ -51,6 +58,7 @@ class CareEnvironmentVisualSpec {
     required this.plant,
     required this.humidity,
     required this.humidityRange,
+    this.support = CarePlantSupport.floor,
     this.airflow,
     this.tempRange,
     this.tempFloorC,
@@ -63,11 +71,14 @@ class CareEnvironmentVisualSpec {
   /// lumière réelle de l'emplacement — la scène montre l'idéal, pas l'état.
   final LightNeed light;
 
-  /// Où la plante se pose dans le cadre.
+  /// Où une grande plante se pose au sol dans le cadre.
   final CarePlantSlot slot;
 
   /// Sa silhouette.
   final PlantVisualKind plant;
+
+  /// Guéridon pour les petits/moyens gabarits, sol pour les grands.
+  final CarePlantSupport support;
 
   final HumidityNeed humidity;
 
@@ -106,20 +117,39 @@ class CareEnvironmentVisualSpec {
     PlantVisualKind.orchid => 'assets/care_scene/plants/orchid.webp',
   };
 
-  /// L'emplacement dans le cadre, en coordonnées fractionnaires.
+  /// L'emplacement au sol qui correspond au besoin lumineux.
   (double, double) get slotFraction => CareEnvironmentSlots.slots[slot.name]!;
+
+  /// Le guéridon n'existe que dans la pièce et uniquement pour les plantes
+  /// dont le gabarit permet réellement de les y poser.
+  bool get hasPedestal =>
+      environment == CareEnvironmentKind.indoorRoom &&
+      support == CarePlantSupport.pedestal;
+
+  /// Les décors intérieurs actuels ont le guéridon baké dans leur couche.
+  /// Une grande plante doit donc le masquer avant d'être posée au sol.
+  bool get hidesBackdropPedestal =>
+      environment == CareEnvironmentKind.indoorRoom &&
+      support == CarePlantSupport.floor;
+
+  /// La base du pot : sur le plateau du guéridon, ou au slot lumineux au sol.
+  (double, double) get plantFraction =>
+      hasPedestal ? CareEnvironmentSlots.pedestalTop : slotFraction;
 
   /// L'humidificateur ne paraît que si l'air humide est un besoin : c'est
   /// lui qui rend l'humidité élevée perceptible dans la scène.
   bool get hasHumidifier => humidity == HumidityNeed.high;
 
-  /// Où il se pose : à côté de la plante, quelle que soit sa place.
-  (double, double) get humidifierFraction =>
-      CareEnvironmentSlots.humidifier[slot.name]!;
+  /// Où il se pose : à côté du guéridon quand la plante est dessus, sinon à
+  /// côté du slot au sol.
+  (double, double) get humidifierFraction => hasPedestal
+      ? CareEnvironmentSlots.pedestalHumidifier
+      : CareEnvironmentSlots.humidifier[slot.name]!;
 
   /// D'où part la vapeur.
-  (double, double) get steamOriginFraction =>
-      CareEnvironmentSlots.humidifierTop[slot.name]!;
+  (double, double) get steamOriginFraction => hasPedestal
+      ? CareEnvironmentSlots.pedestalHumidifierTop
+      : CareEnvironmentSlots.humidifierTop[slot.name]!;
 
   /// D'où souffle l'air à abriter : la fenêtre dans la pièce, l'ouverture
   /// au-dessus de la haie dehors. Un courant d'air vient d'une ouverture,
@@ -157,16 +187,25 @@ CareEnvironmentVisualSpec careEnvironmentSpec({
   final plage = idealMin != null && idealMax != null
       ? (idealMin, idealMax)
       : null;
+  final environment = environmentFor(profile, category);
+  final plant = resolvePlantVisual(
+    speciesName: speciesName,
+    family: family,
+    category: category,
+  );
   return CareEnvironmentVisualSpec(
-    environment: environmentFor(profile, category),
+    environment: environment,
     light: profile.light,
     // Même caméra, même direction de soleil dans les deux décors : la table
     // des emplacements vaut pour la pièce comme pour le jardin.
     slot: slotFor(profile.light),
-    plant: resolvePlantVisual(
+    plant: plant,
+    support: resolvePlantSupport(
+      environment: environment,
       speciesName: speciesName,
       family: family,
       category: category,
+      plant: plant,
     ),
     humidity: profile.humidity,
     humidityRange: profile.humidityRange,
@@ -211,6 +250,68 @@ CareEnvironmentKind environmentFor(
   SpeciesCategory.succulent ||
   null => CareEnvironmentKind.indoorRoom,
 };
+
+/// Espèces d'intérieur dont le gabarit adulte est sans ambiguïté celui d'une
+/// plante de sol. La règle reste volontairement conservatrice : sans donnée
+/// de taille fiable dans la fiche, mieux vaut garder un petit sujet sur le
+/// guéridon que bannir à tort tout un genre qui contient aussi des formes
+/// compactes.
+const _floorSpecies = <String>{
+  'monstera deliciosa',
+  'dracaena marginata',
+  'ficus elastica',
+  'strelitzia nicolai',
+  'strelitzia reginae',
+  'yucca elephantipes',
+  'yucca gigantea',
+  'pachira aquatica',
+  'beaucarnea recurvata',
+  'philodendron bipinnatifidum',
+  'thaumatophyllum bipinnatifidum',
+  'alocasia macrorrhizos',
+};
+
+/// Genres dont le port vendu comme plante d'intérieur est presque toujours
+/// celui d'un sujet posé au sol. Les genres très variables (Ficus, Monstera,
+/// Philodendron…) restent traités à l'espèce ci-dessus.
+const _floorGenera = <String>{
+  'strelitzia',
+  'pachira',
+  'beaucarnea',
+};
+
+/// Choisit le support sans inventer une taille précise absente des données.
+///
+/// Dehors : toujours au sol. Dedans : guéridon par défaut, sauf signaux
+/// suffisamment forts qu'il s'agit d'une grande plante (espèce connue,
+/// palmier, conifère). Cette fonction pourra être remplacée directement par
+/// une hauteur adulte lorsque le catalogue la portera.
+CarePlantSupport resolvePlantSupport({
+  required CareEnvironmentKind environment,
+  String? speciesName,
+  String? family,
+  SpeciesCategory? category,
+  required PlantVisualKind plant,
+}) {
+  if (environment == CareEnvironmentKind.outdoorPatch) {
+    return CarePlantSupport.floor;
+  }
+
+  final nom = speciesName?.trim().toLowerCase();
+  if (nom != null && nom.isNotEmpty) {
+    if (_floorSpecies.contains(nom)) return CarePlantSupport.floor;
+    if (_floorGenera.contains(nom.split(' ').first)) {
+      return CarePlantSupport.floor;
+    }
+  }
+
+  if (family?.trim().toLowerCase() == 'arecaceae') {
+    return CarePlantSupport.floor;
+  }
+  if (plant == PlantVisualKind.conifer) return CarePlantSupport.floor;
+
+  return CarePlantSupport.pedestal;
+}
 
 /// Les espèces dont la silhouette est connue, nom pour nom — y compris les
 /// synonymes que le catalogue peut encore porter.
