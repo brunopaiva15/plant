@@ -109,6 +109,19 @@ void main() {
     expect(SpeciesCatalog.byCategory(SpeciesCategory.succulent), everyElement(predicate<SpeciesCatalogEntry>((e) => e.category == SpeciesCategory.succulent)));
   });
 
+  test('catalogue : la recherche classe par pertinence, pas par alphabet', () {
+    // « Orchidée » doit remonter Phalaenopsis avant les orchidées obscures,
+    // et non se contenter de l'ordre alphabétique.
+    final orchid = SpeciesCatalog.search('Orchidée', languageCode: 'fr');
+    expect(orchid.first.scientificName, 'Phalaenopsis amabilis');
+    expect(orchid.first.commonName('fr'), 'Orchidée papillon');
+
+    // Le nom courant exact (« Monstera ») passe avant les noms qui
+    // commencent par la requête.
+    final monstera = SpeciesCatalog.search('monstera', languageCode: 'fr');
+    expect(monstera.first.scientificName, 'Monstera deliciosa');
+  });
+
   test('catalogue : les extensions et corrections taxonomiques sont exposées', () {
     expect(SpeciesCatalog.find('Monstera obliqua')?.family, 'Araceae');
     expect(SpeciesCatalog.find('Monstera acuminata')?.family, 'Araceae');

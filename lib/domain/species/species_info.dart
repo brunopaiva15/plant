@@ -1,4 +1,5 @@
 import '../../core/utils/search_text.dart';
+import 'species_ranking.dart';
 
 /// Met les noms d'espèces destinés à l'interface dans une casse cohérente.
 ///
@@ -193,6 +194,18 @@ class SpeciesCatalogEntry {
     if (q.isEmpty) return true;
     return foldSpeciesName('$scientificName $fr $en $de $it $family').contains(q);
   }
+
+  /// Rang de pertinence pour la requête, dans la langue de l'application.
+  ///
+  /// Sert à ordonner les résultats : le nom courant de la langue lue d'abord,
+  /// puis le nom scientifique, la famille, et enfin les autres langues.
+  int relevance(String query, String languageCode) => speciesRelevance(
+        query,
+        commonName: vernacularName(languageCode),
+        scientificName: scientificName,
+        family: family,
+        otherNames: [fr, en, de, it],
+      );
 
   SpeciesSuggestion toSuggestion(String languageCode) => SpeciesSuggestion(
         key: 0,

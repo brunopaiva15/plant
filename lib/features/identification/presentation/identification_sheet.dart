@@ -24,14 +24,6 @@ import 'identification_photos.dart';
 import 'identification_source_note.dart';
 import 'genus_row.dart';
 
-/// La photo d'illustration d'un candidat, cherchée chez GBIF après coup.
-/// Séparée de l'identification elle-même : la liste s'affiche dès que les
-/// noms sont là, les vignettes arrivent quand elles arrivent, et l'absence
-/// de réseau ne coûte qu'une vignette. Seul le nom de l'espèce sort de
-/// l'appareil — la photo de l'utilisateur, jamais.
-final candidateThumbnailProvider = FutureProvider.autoDispose.family<SpeciesImage?, String>(
-    (ref, scientificName) => ref.watch(speciesServiceProvider).thumbnail(scientificName));
-
 /// Lance l'identification et laisse l'utilisateur choisir. Retourne le
 /// candidat retenu, ou `null`.
 ///
@@ -379,7 +371,7 @@ class _PhotoSourceNote extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final illustrated = candidates
-        .any((c) => c.image != null || ref.watch(candidateThumbnailProvider(c.scientificName)).asData?.value != null);
+        .any((c) => c.image != null || ref.watch(speciesThumbnailProvider(c.scientificName)).asData?.value != null);
     if (!illustrated) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: Space.xs),
@@ -406,7 +398,7 @@ class CandidateRow extends ConsumerWidget {
     final commun = candidate.commonName ?? '';
     // Pl@ntNet livre sa photo de référence avec le résultat ; le modèle
     // embarqué ne connaît que des noms, et c'est GBIF qui illustre alors.
-    final image = candidate.image ?? ref.watch(candidateThumbnailProvider(candidate.scientificName)).asData?.value;
+    final image = candidate.image ?? ref.watch(speciesThumbnailProvider(candidate.scientificName)).asData?.value;
     return FloraListRow(
       // Le nom courant en titre : « Pied d'éléphant » se reconnaît d'un coup
       // d'œil, « Beaucarnea recurvata » demande de lire. Le nom scientifique

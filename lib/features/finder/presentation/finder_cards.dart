@@ -10,18 +10,14 @@ import '../../../domain/species/plant_advisor.dart';
 import '../../../domain/species/plant_finder.dart';
 import '../../../domain/species/species_info.dart';
 
-/// La photo d'une espèce proposée, cherchée chez GBIF après coup.
-///
-/// Les propositions viennent du catalogue et s'affichent sans réseau ; la
-/// photo arrive quand elle arrive, et son absence ne coûte qu'une tuile
-/// d'emoji à la place. Seul le nom de l'espèce sort de l'appareil.
-final finderThumbnailProvider = FutureProvider.autoDispose.family<SpeciesImage?, String>(
-    (ref, scientificName) => ref.watch(speciesServiceProvider).thumbnail(scientificName));
-
 /// La tuile d'une espèce : sa photo d'observation quand GBIF en a une libre
 /// de droits, sinon l'emoji de sa catégorie sur une pâte d'argile. Même
 /// forme dans les deux cas, pour que la liste ne saute pas quand la photo
 /// arrive.
+///
+/// La proposition s'affiche sans réseau ; la photo arrive quand elle arrive,
+/// et son absence ne coûte qu'une tuile d'emoji à la place. Seul le nom de
+/// l'espèce sort de l'appareil.
 class SpeciesTile extends ConsumerWidget {
   const SpeciesTile({super.key, required this.scientificName, required this.emoji, this.size = 56, this.variant = 0, this.background});
 
@@ -34,7 +30,7 @@ class SpeciesTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
-    final image = ref.watch(finderThumbnailProvider(scientificName)).asData?.value;
+    final image = ref.watch(speciesThumbnailProvider(scientificName)).asData?.value;
     if (image == null) return EmojiTile(emoji: emoji, size: size, variant: variant, background: background);
     return ClayBox(
       width: size,
@@ -68,7 +64,7 @@ class FinderPhotoSource extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final any = scientificNames.any((n) => ref.watch(finderThumbnailProvider(n)).asData?.value != null);
+    final any = scientificNames.any((n) => ref.watch(speciesThumbnailProvider(n)).asData?.value != null);
     if (!any) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: Space.md),

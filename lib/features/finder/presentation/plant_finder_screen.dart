@@ -509,7 +509,7 @@ class _SpeciesSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final care = ref.watch(careGuideProvider).resolve(scientificName, family: family ?? speciesFamilyLookup(ref)(scientificName));
-    final credit = speciesPhotoCredit(context, ref.watch(finderThumbnailProvider(scientificName)).asData?.value);
+    final credit = speciesPhotoCredit(context, ref.watch(speciesThumbnailProvider(scientificName)).asData?.value);
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, Space.xs, Space.md, Space.md),
       child: Column(

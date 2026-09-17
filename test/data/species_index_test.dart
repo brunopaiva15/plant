@@ -1,5 +1,6 @@
 import 'package:flora/core/utils/search_text.dart';
 import 'package:flora/data/species/species_index.dart';
+import 'package:flora/domain/species/species_ranking.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -108,6 +109,19 @@ void main() {
 
     test('la limite est respectée', () {
       expect(index.search('a', limit: 2), hasLength(2));
+    });
+  });
+
+  group('pertinence', () {
+    test('le nom courant de la langue passe avant le synonyme', () {
+      final edelweiss = index.find('Leontopodium nivale')!;
+      expect(edelweiss.relevance('edelweiss', 'fr'), SpeciesRank.exact);
+      expect(edelweiss.relevance('pied de lion', 'fr'), SpeciesRank.other);
+    });
+
+    test('la famille se cherche comme le reste', () {
+      expect(index.find('Gentiana lutea')!.relevance('gentianaceae', 'fr'), SpeciesRank.family);
+      expect(index.search('gentianaceae').map((r) => r.scientificName), contains('Gentiana lutea'));
     });
   });
 

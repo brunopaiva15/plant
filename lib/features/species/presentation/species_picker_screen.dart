@@ -15,6 +15,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../../domain/species/species_info.dart';
 import '../../plants/application/plant_providers.dart';
+import 'species_thumbnail.dart';
 
 /// Sélecteur d'espèce : espèces déjà dans le jardin, catalogue intégré par
 /// catégorie (hors ligne), puis la base GBIF complète en défilement infini.
@@ -33,6 +34,11 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
   final _scroll = ScrollController();
   Timer? _debounce;
   SpeciesCategory? _category;
+
+  /// Nombre de fiches montrées par section en recherche. Au-delà, la liste
+  /// n'aide plus guère et chaque ligne réclamerait sa photo ; les trois
+  /// sections en montrent donc chacune autant.
+  static const int _searchLimit = 30;
 
   // Résultats GBIF pour la requête courante.
   String _query = '';
@@ -149,9 +155,15 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
     final gardenList = inGarden.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     final gardenFiltered = searching ? gardenList.where((s) => s.toLowerCase().contains(raw.toLowerCase())).toList() : gardenList;
 
-    final catalog = (searching ? SpeciesCatalog.search(raw) : SpeciesCatalog.byCategory(_category)).toList()
-      ..sort((a, b) => a.commonName(lang).toLowerCase().compareTo(b.commonName(lang).toLowerCase()));
-    final catalogNames = catalog.map((e) => e.scientificName.toLowerCase()).toSet();
+    // Hors recherche, le parcours par catégorie reste alphabétique ; en
+    // recherche, `SpeciesCatalog.search` classe déjà par pertinence. La
+    // section est bornée comme les autres : au-delà, la liste noierait le
+    // reste et chaque ligne demanderait sa photo.
+    final catalogHits = searching ? SpeciesCatalog.search(raw, languageCode: lang) : const <SpeciesCatalogEntry>[];
+    final catalog = searching
+        ? catalogHits.take(_searchLimit).toList()
+        : (SpeciesCatalog.byCategory(_category).toList()..sort((a, b) => a.commonName(lang).toLowerCase().compareTo(b.commonName(lang).toLowerCase())));
+    final catalogNames = (searching ? catalogHits : catalog).map((e) => e.scientificName.toLowerCase()).toSet();
 
     // Catalogue étendu : ~30 000 espèces hors ligne, sans catégorie, qui
     // prennent le relais dès que la liste triée à la main ne suffit plus.
@@ -213,7 +225,8 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
             children: [
               for (final name in gardenFiltered)
                 FloraListRow(
-                  leading: const Text('🪴', style: TextStyle(fontSize: 18)),
+                  leading: SpeciesThumbnail(scientificName: name, emoji: '🪴'),
+                  leadingWidth: SpeciesThumbnail.leadingWidth,
                   title: SpeciesCatalog.find(name)?.commonName(lang) ?? name,
                   subtitle: name,
                   dense: true,
@@ -232,7 +245,8 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
             children: [
               for (final e in catalog)
                 FloraListRow(
-                  leading: Text(e.category.emoji, style: const TextStyle(fontSize: 18)),
+                  leading: SpeciesThumbnail(scientificName: e.scientificName, emoji: e.category.emoji, photo: searching),
+                  leadingWidth: searching ? SpeciesThumbnail.leadingWidth : 32,
                   title: e.commonName(lang),
                   subtitle: _speciesSubtitle(e.vernacularName(lang), e.scientificName, e.family),
                   dense: true,
@@ -251,7 +265,8 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
             children: [
               for (final e in extended)
                 FloraListRow(
-                  leading: const Text('🌿', style: TextStyle(fontSize: 18)),
+                  leading: SpeciesThumbnail(scientificName: e.scientificName, emoji: '🌿'),
+                  leadingWidth: SpeciesThumbnail.leadingWidth,
                   title: e.commonName(lang),
                   subtitle: _speciesSubtitle(e.vernacularName(lang), e.scientificName, e.family),
                   dense: true,
@@ -279,7 +294,8 @@ class _SpeciesPickerScreenState extends ConsumerState<SpeciesPickerScreen> {
               children: [
                 for (final s in remote)
                   FloraListRow(
-                    leading: const Text('🌿', style: TextStyle(fontSize: 18)),
+                    leading: SpeciesThumbnail(scientificName: s.scientificName, emoji: '🌿'),
+                    leadingWidth: SpeciesThumbnail.leadingWidth,
                     title: s.commonName ?? s.scientificName,
                     subtitle: s.commonName == null ? (s.family ?? '') : '${s.scientificName}${s.family == null ? '' : ' · ${s.family}'}',
                     dense: true,

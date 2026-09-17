@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../../core/utils/search_text.dart';
 import '../../domain/species/species_info.dart';
+import '../../domain/species/species_ranking.dart';
 
 /// Une espèce du catalogue étendu, moissonnée dans Wikidata.
 ///
@@ -65,6 +66,19 @@ class SpeciesRecord {
       commonName: vernacular == null ? null : capitalizeSpeciesDisplayName(vernacular),
     );
   }
+
+  /// Rang de pertinence pour la requête, dans la langue de l'application.
+  ///
+  /// Même barème que le catalogue trié à la main : nom courant de la langue
+  /// lue, puis nom scientifique, famille, et enfin les autres langues et
+  /// synonymes. Permet de mêler les deux catalogues sans perdre l'ordre.
+  int relevance(String query, String languageCode) => speciesRelevance(
+        query,
+        commonName: vernacularName(languageCode),
+        scientificName: scientificName,
+        family: family,
+        otherNames: [fr, en, de, it, ...alternates],
+      );
 }
 
 /// Catalogue étendu : des dizaines de milliers d'espèces et leurs noms
@@ -93,7 +107,7 @@ class SpeciesIndex {
         de: cells[4],
         it: cells[5],
         alternates: alternates,
-        haystack: foldSpeciesName([cells[0], ...shown, ...alternates].join(' ')),
+        haystack: foldSpeciesName([cells[0], cells[1], ...shown, ...alternates].join(' ')),
         // Encadré de barres : « |coquelicot| » ne se confond pas avec
         // « coquelicot bleu de l'Himalaya ».
         primary: '|${shown.map(foldSpeciesName).join('|')}|',

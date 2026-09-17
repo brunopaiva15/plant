@@ -642,6 +642,14 @@ final speciesServiceProvider = Provider<SpeciesService>((ref) => GbifSpeciesServ
 /// plante cultivée là où GBIF ne relaie que des observations de terrain.
 final speciesImageSourceProvider = Provider<SpeciesImageSource>((ref) => WikimediaSpeciesService());
 
+/// La vignette d'une espèce, cherchée chez GBIF après coup : une seule photo
+/// libre de droits pour reconnaître une ligne de liste. `null` dit « pas de
+/// photo », et évite de le redemander. Une espèce déjà vue par le chercheur
+/// ou l'identification ne repart pas sur le réseau — le cache est dans le
+/// service.
+final speciesThumbnailProvider = FutureProvider.autoDispose.family<SpeciesImage?, String>(
+    (ref, scientificName) => ref.watch(speciesServiceProvider).thumbnail(scientificName));
+
 /// Partage d'un jardin entre comptes : invitations, membres, rôles.
 final collaborationServiceProvider = Provider<CollaborationService>((ref) {
   if (!SupabaseConfig.isConfigured) return const UnavailableCollaborationService();

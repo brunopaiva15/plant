@@ -380,10 +380,21 @@ abstract final class SpeciesCatalog {
   static List<SpeciesCatalogEntry> byCategory(SpeciesCategory? category) =>
       category == null ? entries : entries.where((e) => e.category == category).toList();
 
-  static List<SpeciesCatalogEntry> search(String query) {
+  /// Recherche classée par pertinence : le nom courant de la langue de
+  /// l'application d'abord, puis le nom scientifique, la famille, et les
+  /// autres langues. À pertinence égale, l'ordre alphabétique tranche.
+  static List<SpeciesCatalogEntry> search(String query, {String languageCode = 'fr'}) {
     final q = query.trim();
     if (q.isEmpty) return entries;
-    return entries.where((e) => e.matches(q)).toList();
+    final hits = entries.where((e) => e.matches(q)).toList();
+    hits.sort((a, b) {
+      final byRank = a.relevance(q, languageCode).compareTo(b.relevance(q, languageCode));
+      if (byRank != 0) return byRank;
+      final byName = a.commonName(languageCode).toLowerCase().compareTo(b.commonName(languageCode).toLowerCase());
+      if (byName != 0) return byName;
+      return a.scientificName.toLowerCase().compareTo(b.scientificName.toLowerCase());
+    });
+    return hits;
   }
 
   /// Entrée exacte pour un nom scientifique (insensible à la casse).

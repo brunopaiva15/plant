@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
@@ -82,6 +84,21 @@ class SpeciesSheetBody extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: Space.md),
+                  // La fiche d'entretien vit dans l'encyclopédie : on ferme
+                  // la fiche GBIF avant de l'ouvrir, sinon la page s'ouvrirait
+                  // sous la sheet restée là.
+                  FloraButton(
+                    label: l10n.careGuide,
+                    icon: CupertinoIcons.book,
+                    style: FloraButtonStyle.tonal,
+                    expand: true,
+                    onPressed: () {
+                      final router = GoRouter.of(context);
+                      Navigator.of(context).pop();
+                      router.push(Routes.encyclopediaSpecies(scientificName));
+                    },
+                  ),
+                  const SizedBox(height: Space.xs),
                   FloraButton(
                     label: l10n.speciesOpenGbif,
                     icon: CupertinoIcons.arrow_up_right_square,

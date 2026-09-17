@@ -8,6 +8,7 @@ import '../../../app/router.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../data/species/species_catalog.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/species/species_info.dart';
 
@@ -47,13 +48,58 @@ class _SpeciesFieldState extends ConsumerState<SpeciesField> {
   Future<void> _search(String query) async {
     _lastQuery = query;
     final lang = Localizations.localeOf(context).languageCode;
-    List<SpeciesSuggestion> results = const [];
+
+    // Le catalogue Auxine répond tout de suite ; GBIF vient en complément.
+    final local = await _localSuggestions(query, lang);
+    if (!mounted || _lastQuery != query) return;
+    setState(() => _suggestions = _merge(local, const [], query));
+
+    List<SpeciesSuggestion> remote = const [];
     try {
-      results = await ref.read(speciesServiceProvider).suggest(query, languageCode: lang);
+      remote = await ref.read(speciesServiceProvider).suggest(query, languageCode: lang);
     } catch (_) {}
     if (!mounted || _lastQuery != query) return;
-    // Pas de suggestion si l'utilisateur a déjà tapé exactement ce nom.
-    setState(() => _suggestions = results.where((s) => s.scientificName.toLowerCase() != query.trim().toLowerCase()).toList());
+    setState(() => _suggestions = _merge(local, remote, query));
+  }
+
+  /// Le catalogue intégré d'abord — trié à la main, puis étendu — classé par
+  /// pertinence (nom courant de la langue, puis nom scientifique, famille).
+  Future<List<SpeciesSuggestion>> _localSuggestions(String query, String lang) async {
+    final seen = <String>{};
+    final ranked = <({int rank, int source, String label, SpeciesSuggestion suggestion})>[];
+    for (final e in SpeciesCatalog.search(query, languageCode: lang)) {
+      if (seen.add(e.scientificName.toLowerCase())) {
+        ranked.add((rank: e.relevance(query, lang), source: 0, label: e.commonName(lang).toLowerCase(), suggestion: e.toSuggestion(lang)));
+      }
+    }
+    final index = await ref.read(speciesIndexProvider.future);
+    for (final r in index.search(query, limit: 60, exclude: seen)) {
+      if (seen.add(r.scientificName.toLowerCase())) {
+        ranked.add((rank: r.relevance(query, lang), source: 1, label: r.commonName(lang).toLowerCase(), suggestion: r.toSuggestion(lang)));
+      }
+    }
+    ranked.sort((a, b) {
+      final byRank = a.rank.compareTo(b.rank);
+      if (byRank != 0) return byRank;
+      final bySource = a.source.compareTo(b.source);
+      if (bySource != 0) return bySource;
+      return a.label.compareTo(b.label);
+    });
+    return [for (final r in ranked) r.suggestion];
+  }
+
+  /// Le catalogue d'abord, GBIF ensuite, sans doublon, et sans proposer le
+  /// nom déjà tapé en entier.
+  List<SpeciesSuggestion> _merge(List<SpeciesSuggestion> local, List<SpeciesSuggestion> remote, String query) {
+    final typed = query.trim().toLowerCase();
+    final seen = <String>{};
+    final out = <SpeciesSuggestion>[];
+    for (final s in [...local, ...remote]) {
+      final key = s.scientificName.toLowerCase();
+      if (key == typed) continue;
+      if (seen.add(key)) out.add(s);
+    }
+    return out;
   }
 
   void _pick(SpeciesSuggestion s) {
