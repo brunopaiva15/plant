@@ -13,6 +13,18 @@ abstract final class CareEnvironmentSlots {
   /// rendue au centre du monde.
   static const (double, double) anchor = (0.49571, 0.59756);
 
+  /// Base du guéridon tel qu'il est rendu dans le décor intérieur.
+  static const (double, double) pedestalBase = (0.56956, 0.78762);
+
+  /// Centre du plateau du guéridon : la base du pot vient se poser ici.
+  static const (double, double) pedestalTop = (0.56956, 0.71604);
+
+  /// Position de l'humidificateur quand la plante est sur le guéridon.
+  static const (double, double) pedestalHumidifier = (0.45456, 0.81262);
+
+  /// Haut de l'humidificateur quand la plante est sur le guéridon.
+  static const (double, double) pedestalHumidifierTop = (0.45456, 0.74755);
+
   /// Les emplacements, nommés comme les valeurs de `CarePlantSlot`.
   static const Map<String, (double, double)> slots = <String, (double, double)>{
     'back': (0.70399, 0.58717),
@@ -45,7 +57,8 @@ abstract final class CareEnvironmentSlots {
         'sunZone': (0.37188, 0.50224),
       };
 
-  /// D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture au-dessus de la haie dehors.
+  /// D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture
+  /// au-dessus de la haie dehors.
   static const Map<String, (double, double)> airflow =
       <String, (double, double)>{
         'indoor': (0.29062, 0.30704),
