@@ -640,6 +640,7 @@ abstract final class CareProfiles {
       propagation: _division,
       issues: _tropicalIssues,
       tipKeys: ['toleratesLowLight', 'fingerTest'],
+      source: 'RHS',
     ),
     'Dieffenbachia': CareProfile(
       wateringSummerDays: 7,
@@ -1510,6 +1511,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(3, 6), triggers: [BloomTrigger.coolRest, BloomTrigger.brightLight, BloomTrigger.fertilizer]),
       tipKeys: ['citrusFertilizer', 'winterCool', 'summerOutdoors'],
+      source: 'RHS',
     ),
     'Prunus': CareProfile(
       wateringSummerDays: 5,
@@ -1649,12 +1651,13 @@ abstract final class CareProfiles {
       fertilizingWindow: MonthWindow(4, 9),
       fertilizer: FertilizerKind.flowering,
       repotEveryMonths: 18,
-      damageBelowC: 2,
+      damageBelowC: 8,
       propagation: _cutting,
       issues: [CommonIssue.overwatering, CommonIssue.whitefly],
       outdoorFriendly: true,
       bloom: Bloom(window: MonthWindow(4, 10), triggers: [BloomTrigger.brightLight, BloomTrigger.deadhead, BloomTrigger.fertilizer]),
       tipKeys: ['deadheadFlowers', 'winterIndoors', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Hosta': CareProfile(
       wateringSummerDays: 3,
@@ -1780,6 +1783,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.powderyMildew, CommonIssue.overwatering],
       bloom: Bloom(window: MonthWindow(5, 10), triggers: [BloomTrigger.fertilizer, BloomTrigger.deadhead]),
       tipKeys: ['noWaterOnLeaves', 'humidityTray', 'airFlow'],
+      source: 'RHS',
     ),
     'Tradescantia': CareProfile(
       wateringSummerDays: 6,
@@ -1814,6 +1818,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.underwatering],
       humidityMethods: {HumidityMethod.terrarium},
       tipKeys: ['neverDryOut', 'humidityTray', 'droopSignal'],
+      source: 'RHS',
     ),
     'Saintpaulia': CareProfile(
       wateringSummerDays: 6,
@@ -2244,7 +2249,7 @@ abstract final class CareProfiles {
       fertilizingWindow: MonthWindow(4, 9),
       fertilizer: FertilizerKind.flowering,
       repotEveryMonths: 36,
-      damageBelowC: 3,
+      damageBelowC: 8,
       propagation: _cutting,
       issues: [CommonIssue.overwatering, CommonIssue.leafDrop],
       support: PlantSupport.trellis,
@@ -2252,6 +2257,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(5, 10), triggers: [BloomTrigger.drySpell, BloomTrigger.brightLight, BloomTrigger.potbound]),
       tipKeys: ['dryToBloom', 'winterShelter', 'likesBeingPotbound'],
+      source: 'RHS',
     ),
     'Phyllostachys': CareProfile(
       wateringSummerDays: 3,
