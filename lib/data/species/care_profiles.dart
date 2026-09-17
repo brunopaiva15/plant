@@ -1431,6 +1431,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.slugs, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['mulchIt', 'waterAtBase'],
+      source: 'RHS',
     ),
     'Lactuca': CareProfile(
       wateringSummerDays: 2,
@@ -2119,6 +2120,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(6, 9), triggers: [BloomTrigger.brightLight, BloomTrigger.coolRest, BloomTrigger.deadhead]),
       tipKeys: ['veryToxic', 'winterShelter', 'summerOutdoors'],
+      source: 'RHS',
     ),
     'Camellia': CareProfile(
       wateringSummerDays: 4,
@@ -2352,6 +2354,7 @@ abstract final class CareProfiles {
       issues: _outdoorIssues,
       outdoorFriendly: true,
       tipKeys: ['prunesAfterFlowering', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Spiraea': CareProfile(
       wateringSummerDays: 6,
@@ -2437,6 +2440,7 @@ abstract final class CareProfiles {
       bloom: Bloom(window: MonthWindow(5, 7), triggers: [BloomTrigger.brightLight, BloomTrigger.fertilizer]),
       dormancy: DormantRest(window: MonthWindow(7, 9), storeMinC: 10, storeMaxC: 20),
       tipKeys: ['letFoliageDieBack', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Geranium': CareProfile(
       wateringSummerDays: 5,
@@ -2734,10 +2738,11 @@ abstract final class CareProfiles {
       soil: SoilKind.rich,
       fertilizingDays: 45,
       repotEveryMonths: 36,
-      damageBelowC: -20,
+      damageBelowC: -15,
       propagation: [Propagation.division],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['hardyOutdoors', 'letFoliageDieBack'],
+      source: 'RHS',
     ),
     'Delphinium': CareProfile(
       wateringSummerDays: 5,
@@ -3074,10 +3079,11 @@ abstract final class CareProfiles {
       fertilizingDays: 30,
       fertilizer: FertilizerKind.flowering,
       repotEveryMonths: 24,
-      damageBelowC: -20,
+      damageBelowC: -15,
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['deadheadFlowers', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Hypericum': CareProfile(
       wateringSummerDays: 8,
@@ -3168,6 +3174,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['drySoilFirst', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Rudbeckia': CareProfile(
       wateringSummerDays: 4,
@@ -3642,11 +3649,12 @@ abstract final class CareProfiles {
       soil: SoilKind.draining,
       fertilizingDays: 45,
       calcium: CalciumNeed.welcome,
-      damageBelowC: -15,
+      damageBelowC: -5,
       propagation: [Propagation.stemCutting],
       issues: [CommonIssue.overwatering, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['drySoilFirst', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Nepeta': CareProfile(
       wateringSummerDays: 5,
@@ -3773,6 +3781,7 @@ abstract final class CareProfiles {
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['hardyOutdoors', 'sapIrritant'],
+      source: 'RHS',
     ),
     'Hesperocyparis': CareProfile(
       wateringSummerDays: 6,
@@ -3970,6 +3979,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       bloom: Bloom(window: MonthWindow(10, 4), triggers: [BloomTrigger.coolRest, BloomTrigger.deadhead]),
       tipKeys: ['thirstyPlant', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Primula': CareProfile(
       wateringSummerDays: 4,
@@ -3986,6 +3996,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       bloom: Bloom(window: MonthWindow(10, 4), triggers: [BloomTrigger.coolRest, BloomTrigger.deadhead]),
       tipKeys: ['hardyOutdoors', 'waterAtBase'],
+      source: 'RHS',
     ),
     'Aesculus': CareProfile(
       wateringSummerDays: 8,
