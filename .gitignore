@@ -77,3 +77,7 @@ __pycache__/
 # et que Google veut qu'on télécharge soi-même depuis sa console. Voir
 # docs/05-technical-architecture.md, section « Google Home ».
 /vendor/
+
+# Caches locaux des outils (wrangler, supabase cli)
+share-proxy/.wrangler/
+supabase/.temp/
