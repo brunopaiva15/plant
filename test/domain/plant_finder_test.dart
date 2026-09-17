@@ -86,10 +86,13 @@ void main() {
       expect(results.every((m) => profileOf(m).humidity != HumidityNeed.high), isTrue);
     });
 
-    test('des critères contradictoires ne rendent rien plutôt que n\'importe quoi', () {
-      // Un cactus dans un coin sombre : le catalogue n'a rien d'honnête à dire.
+    test('des critères contradictoires ne rendent presque rien', () {
+      // Un cactus dans un coin sombre : la seule réponse honnête du catalogue
+      // est la scille du Cap, une succulente qui tolère l'ombre. Les autres
+      // succulentes du catalogue veulent du soleil, et le moteur ne les
+      // propose pas — c'est le sens de ce test.
       final results = finder.search(const FinderCriteria(spot: FinderSpot.darkRoom, categories: {SpeciesCategory.succulent}));
-      expect(results, isEmpty);
+      expect(results.map((r) => r.entry.scientificName), ['Ledebouria socialis']);
     });
   });
 

@@ -14,12 +14,16 @@ import 'package:flora/data/species/species_index.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue éditorial : 1187 fiches curatées, uniques, avec famille et catégorie', () {
-    // 1 187 et non 1 200 : les paliers 1 000 et 1 200 rejouaient 72 espèces
+  test('catalogue éditorial : 1453 fiches curatées, uniques, avec famille et catégorie', () {
+    // 1 453 et non 1 200 : les paliers 1 000 et 1 200 rejouaient 72 espèces
     // déjà curatées, et 59 classes d'Iris que personne ne nommait ont été
-    // écrites à la main (`species_catalog_iris_only.dart`).
+    // écrites à la main (`species_catalog_iris_only.dart`). Le lot des plantes
+    // d'intérieur en a ajouté 266 : aracées de collection, orchidées,
+    // broméliacées, carnivores, caudex, palmiers et fougères d'appartement,
+    // dont les noms anglais, allemands et italiens ont été repris du catalogue
+    // étendu quand il les connaissait.
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(1187));
+    expect(SpeciesCatalog.entries, hasLength(1453));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
