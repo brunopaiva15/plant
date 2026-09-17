@@ -8,6 +8,12 @@ multiplication, problèmes — sont des estimations d'auteur.
 Ce document découpe le travail qui reste. Il se lit avec le `CareProfile` et
 `care_profiles.dart` sous les yeux.
 
+Pour savoir **quels profils créer en priorité** avant la première version
+publique, voir [`15-care-profile-coverage.md`](15-care-profile-coverage.md).
+Cette roadmap sépare la couverture produit de la qualité des données : ici on
+définit comment sourcer un champ ; là-bas, quels taxons méritent ce travail en
+premier.
+
 ## Ce que la RHS donne déjà
 
 La page d'une espèce à la RHS porte, en plus de la rusticité :
