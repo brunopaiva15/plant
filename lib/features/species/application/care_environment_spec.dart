@@ -22,14 +22,7 @@ enum CarePlantSupport { pedestal, floor }
 /// d'un cran vers la lumière, elle ne saute pas d'un coin à l'autre. Les
 /// trois derniers crans se lisent sur la tache : à côté, sur son bord,
 /// dedans.
-enum CarePlantSlot {
-  backCorner,
-  back,
-  middle,
-  besideBeam,
-  beamEdge,
-  sunZone,
-}
+enum CarePlantSlot { backCorner, back, middle, besideBeam, beamEdge, sunZone }
 
 /// Les silhouettes de plante livrées en assets (vague 1, cf.
 /// `tool/care_scene/plants.py`). Chaque valeur doit avoir son image ;
@@ -127,49 +120,31 @@ class CareEnvironmentVisualSpec {
       environment == CareEnvironmentKind.indoorRoom &&
       support == CarePlantSupport.pedestal;
 
-  /// Les décors intérieurs livrés actuellement ont le guéridon baké à sa
-  /// position d'origine. On le masque systématiquement : soit il disparaît
-  /// pour une grande plante, soit il est redessiné au slot lumineux.
-  bool get hidesBackdropPedestal =>
-      environment == CareEnvironmentKind.indoorRoom;
+  /// Le guéridon est un prop rendu seul, posé sur le slot lumineux.
+  String get pedestalAsset => 'assets/care_scene/props/pedestal.webp';
 
-  /// Translation écran du guéridon depuis sa position bakée jusqu'au slot qui
-  /// représente le besoin lumineux. Le slot est le point au sol sous le pied.
-  (double, double) get pedestalTranslationFraction {
-    final slot = slotFraction;
-    final base = CareEnvironmentSlots.pedestalBase;
-    return (slot.$1 - base.$1, slot.$2 - base.$2);
-  }
-
-  /// La base du pot : sur le plateau du guéridon déplacé, ou directement au
-  /// slot lumineux pour un grand gabarit.
+  /// La base du pot : sur le plateau du guéridon posé au slot, ou directement
+  /// au slot lumineux pour un grand gabarit. Le plateau est au-dessus de la
+  /// base du meuble dans son image : le décalage est lu dans la table.
   (double, double) get plantFraction {
     if (!hasPedestal) return slotFraction;
-    final d = pedestalTranslationFraction;
-    final top = CareEnvironmentSlots.pedestalTop;
-    return (top.$1 + d.$1, top.$2 + d.$2);
+    final s = slotFraction;
+    const p = CareEnvironmentSlots.pedestalPot;
+    const a = CareEnvironmentSlots.anchor;
+    return (s.$1 + p.$1 - a.$1, s.$2 + p.$2 - a.$2);
   }
 
   /// L'humidificateur ne paraît que si l'air humide est un besoin : c'est
   /// lui qui rend l'humidité élevée perceptible dans la scène.
   bool get hasHumidifier => humidity == HumidityNeed.high;
 
-  /// Où il se pose : à côté du guéridon quand la plante est dessus, sinon à
-  /// côté du slot au sol.
-  (double, double) get humidifierFraction {
-    if (!hasPedestal) return CareEnvironmentSlots.humidifier[slot.name]!;
-    final d = pedestalTranslationFraction;
-    final p = CareEnvironmentSlots.pedestalHumidifier;
-    return (p.$1 + d.$1, p.$2 + d.$2);
-  }
+  /// Où il se pose : à côté de la plante, quel que soit son support.
+  (double, double) get humidifierFraction =>
+      CareEnvironmentSlots.humidifier[slot.name]!;
 
   /// D'où part la vapeur.
-  (double, double) get steamOriginFraction {
-    if (!hasPedestal) return CareEnvironmentSlots.humidifierTop[slot.name]!;
-    final d = pedestalTranslationFraction;
-    final p = CareEnvironmentSlots.pedestalHumidifierTop;
-    return (p.$1 + d.$1, p.$2 + d.$2);
-  }
+  (double, double) get steamOriginFraction =>
+      CareEnvironmentSlots.humidifierTop[slot.name]!;
 
   /// D'où souffle l'air à abriter : la fenêtre dans la pièce, l'ouverture
   /// au-dessus de la haie dehors. Un courant d'air vient d'une ouverture,
@@ -293,11 +268,7 @@ const _floorSpecies = <String>{
 /// Genres dont le port vendu comme plante d'intérieur est presque toujours
 /// celui d'un sujet posé au sol. Les genres très variables (Ficus, Monstera,
 /// Philodendron…) restent traités à l'espèce ci-dessus.
-const _floorGenera = <String>{
-  'strelitzia',
-  'pachira',
-  'beaucarnea',
-};
+const _floorGenera = <String>{'strelitzia', 'pachira', 'beaucarnea'};
 
 /// Choisit le support sans inventer une taille précise absente des données.
 ///

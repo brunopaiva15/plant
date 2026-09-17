@@ -1,9 +1,14 @@
 # ============================================================
 # Les props de la scene « environnement ideal » : les petits objets qui
-# disent le climat sans un mot.
+# disent le climat sans un mot, et le gueridon.
 #
 #   humidificateur  l'air humide — rendu seul au centre du monde, pose par
 #                   l'application a cote de la plante (comme elle).
+#   pedestal        le gueridon — rendu seul au centre du monde, pose par
+#                   l'application sur l'emplacement lumineux ; la plante
+#                   vient se poser sur son plateau. Comme la plante, il
+#                   garde le meme eclat d'une variante a l'autre : c'est le
+#                   decor qui porte la lumiere.
 #
 # L'air qui bouge n'a pas de prop : un courant d'air entre par la fenetre, il
 # ne sort pas d'une machine. Ses lignes de flux, comme la vapeur de
@@ -44,6 +49,18 @@ def humidificateur():
     return objets
 
 
+def gueridon():
+    """Le guéridon rond de la pièce : un plateau en bois clair sur un pied
+    central. Rendu seul au centre du monde ; l'application pose sa base sur
+    l'emplacement lumineux et la plante sur son plateau."""
+    bois = materiau("MAT_Gueridon_Bois", "C99A6B", rough=0.60, relief=0.010)
+    profil = [(0.0, 0.0), (0.30, 0.0), (0.325, 0.035), (0.11, 0.07),
+              (0.085, 0.11), (0.085, 0.50), (0.29, 0.54), (0.315, 0.575),
+              (0.30, 0.60), (0.0, 0.605)]
+    return [revolve("Gueridon", profil, 64, [bois], 30.0)]
+
+
 PROPS = {
     "humidifier": humidificateur,
+    "pedestal": gueridon,
 }

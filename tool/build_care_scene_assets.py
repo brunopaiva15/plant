@@ -34,7 +34,7 @@ GROUPES = ["indoor", "outdoor", "plants", "props"]
 # --only sans lancer Blender.
 LUMIERES = ["shade", "low_light", "indirect", "bright_indirect", "some_sun", "full_sun"]
 PLANTES = ["monstera", "broad_leaf", "upright_leaf", "vine", "fern", "rosette", "cactus", "conifer", "orchid"]
-PROPS = ["humidifier"]
+PROPS = ["humidifier", "pedestal"]
 
 # Le grain d'argile reste net à ce niveau ; en dessous, il se lisse.
 QUALITE = 80
@@ -127,17 +127,9 @@ def genere_dart(dossier):
         "  /// rendue au centre du monde.",
         "  static const (double, double) anchor = %s;" % paire(donnees["ancre"]),
         "",
-        "  /// Base du guéridon tel qu'il est rendu dans le décor intérieur.",
-        "  static const (double, double) pedestalBase = %s;" % paire(donnees["pedestalBase"]),
-        "",
-        "  /// Centre du plateau du guéridon : la base du pot vient se poser ici.",
-        "  static const (double, double) pedestalTop = %s;" % paire(donnees["pedestalTop"]),
-        "",
-        "  /// Position de l'humidificateur quand la plante est sur le guéridon.",
-        "  static const (double, double) pedestalHumidifier = %s;" % paire(donnees["pedestalHumidifier"]),
-        "",
-        "  /// Haut de l'humidificateur quand la plante est sur le guéridon.",
-        "  static const (double, double) pedestalHumidifierTop = %s;" % paire(donnees["pedestalHumidifierTop"]),
+        "  /// Centre du plateau du guéridon dans son image : la base du pot",
+        "  /// vient s'y poser.",
+        "  static const (double, double) pedestalPot = %s;" % paire(donnees["pedestalPot"]),
         "",
         "  /// Les emplacements, nommés comme les valeurs de `CarePlantSlot`.",
         "  static const Map<String, (double, double)> slots = <String, (double, double)>{",
@@ -177,7 +169,7 @@ def genere_dart(dossier):
         "",
     ]
     os.makedirs(os.path.dirname(DART), exist_ok=True)
-    with open(DART, "w") as f:
+    with open(DART, "w", encoding="utf-8") as f:
         f.write("\n".join(lignes))
     # Le fichier sort brut ; `dart format` le met au format du dépôt quand le
     # SDK est là — sinon il reste lisible tel quel.

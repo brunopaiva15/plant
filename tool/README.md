@@ -179,8 +179,9 @@ distance à la fenêtre dit le besoin de lumière, la tache de soleil au sol
 dit direct ou indirect. Six variantes de lumière (`shade` à `full_sun`),
 même pièce, seuls la lumière, la vitre et le faisceau changent. Les espèces
 de plein air (arbres, fruitiers, légumes, et les aromatiques ou fleurs
-rustiques) ont leur propre décor : un coin de jardin avec pelouse, palissade
-de bois, haie et boisement — même caméra, même direction de soleil, la table
+rustiques) ont leur propre décor : un coin de jardin sobre — pelouse sauge,
+massif minéral là où la plante se pose, palissade de bois, haie basse et
+deux volumes lointains — même caméra, même direction de soleil, la table
 des emplacements vaut d'une scène à l'autre. Les plantes sont rendues seules : `monstera`,
 `broad_leaf` (le repli), `upright_leaf`, `vine`, `fern`, `rosette`,
 `cactus`, `conifer`, `orchid` — neuf archétypes que le résolveur attache par

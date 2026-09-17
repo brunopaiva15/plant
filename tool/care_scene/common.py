@@ -59,9 +59,16 @@ SOLEIL = Vector((1.0, 0.18, -1.05))
 #
 # La tache de soleil (room._faisceau, bakee dans le decor) va de x = -1.386
 # (bord cote fenetre) a x = 0.043 (bord cote piece) : c'est elle qui decide
-# des trois derniers crans — a cote, sur le bord, dedans.
-PAS = (-0.40, -0.12)
-_DEPART = (1.49, 1.15)
+# des trois derniers crans — a cote (x = 0.16), sur le bord (-0.17), dedans
+# (-0.50).
+#
+# Marge de securite autour de l'interieur de la piece : le depart reste
+# assez loin des murs du fond et de droite pour que la silhouette la plus
+# large (le monstera, 1,65 m) n'y touche jamais — il reste environ 0,10 m
+# d'air entre son feuillage et le mur, a quelque cran que ce soit.
+MARGE_PIECE = 0.95
+PAS = (-0.33, -0.06)
+_DEPART = (round(PIECE_X - MARGE_PIECE, 2), round(PIECE_Y - MARGE_PIECE, 2))
 SLOTS = {
     nom: (round(_DEPART[0] + i * PAS[0], 2), round(_DEPART[1] + i * PAS[1], 2))
     for i, nom in enumerate(

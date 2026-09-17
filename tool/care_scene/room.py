@@ -1,7 +1,8 @@
 # ============================================================
 # La piece du diorama : une dalle, deux murs, une fenetre a gauche, un
-# voilage, un gueridon — assez pour lire « une piece », assez sobre pour que
-# la plante reste le sujet.
+# voilage, un coin salon — assez pour lire « une piece », assez sobre pour
+# que la plante reste le sujet. Le gueridon n'est pas bake ici : c'est un
+# prop (props.py), pose par l'application sur l'emplacement lumineux.
 #
 # Les six variantes de lumiere partagent la meme geometrie ; seuls la
 # lumiere, la vitre et la tache de soleil au sol changent. La plante n'est
@@ -46,6 +47,8 @@ def _materiaux(v):
         "sol": materiau("MAT_Sol", "DCC7A4", rough=0.66, relief=0.016),
         "cadre": materiau("MAT_Cadre", "FDFBF4", rough=0.55, relief=0.006),
         "rideau": materiau("MAT_Rideau", "D8E0CC", rough=0.72, relief=0.010),
+        "tissu": materiau("MAT_Tissu", "A9BE99", rough=0.80, relief=0.014),
+        "tissu_clair": materiau("MAT_TissuClair", "C4D3B5", rough=0.80, relief=0.012),
         "bois": materiau("MAT_Bois", "C99A6B", rough=0.60, relief=0.010),
         "tringle": materiau("MAT_Tringle", "8A6B4F", rough=0.55, relief=0.006),
         "vitre": materiau_vitre(v["chaleur"], v["vitre"]),
@@ -126,16 +129,30 @@ def _rideau(m):
                [0.022, 0.022], mat=m["tringle"], seg=10, cap=3)
 
 
-def _gueridon(m):
-    # Un petit gueridon rond, a l'avant droit : le seul meuble, il donne
-    # l'echelle sans raconter d'histoire. Il se tient loin des six
-    # emplacements : une plante posee dessus, avec son ombre au sol, ne se
-    # lirait plus.
-    profil = [(0.0, 0.0), (0.30, 0.0), (0.325, 0.035), (0.11, 0.07),
-              (0.085, 0.11), (0.085, 0.50), (0.29, 0.54), (0.315, 0.575),
-              (0.30, 0.60), (0.0, 0.605)]
-    ob = revolve("Gueridon", profil, 64, [m["bois"]], 30.0)
-    ob.location = (2.00, -1.70, 0.0)
+def _salon(m):
+    # Un petit canape et sa table basse, contre le mur de gauche, face a la
+    # piece : la piece dit « salon », pas seulement « coin de fenetre ». Ils
+    # restent hors de tout ce qui bouge : les six emplacements, leur
+    # humidificateur et le guéridon posé par l'application sont plus loin
+    # dans la piece ou plus a droite. Le canape s'arrete avant le voilage.
+    for i, (x, y) in enumerate([(-2.02, -1.66), (-1.58, -1.66),
+                                (-2.02, -1.04), (-1.58, -1.04)]):
+        boite("Pied_%d" % i, (x, y, 0.05), (0.06, 0.06, 0.10), m["bois"], 0.015)
+    boite("Canape_Assise", (-1.80, -1.35, 0.21), (0.52, 0.70, 0.30), m["tissu"], 0.05)
+    boite("Canape_Dossier", (-1.985, -1.35, 0.44), (0.15, 0.70, 0.54), m["tissu"], 0.05)
+    boite("Canape_Bras_A", (-1.80, -1.665, 0.38), (0.55, 0.13, 0.46), m["tissu"], 0.045)
+    boite("Canape_Bras_B", (-1.80, -1.035, 0.38), (0.55, 0.13, 0.46), m["tissu"], 0.045)
+    boite("Coussin_A", (-1.87, -1.53, 0.43), (0.26, 0.32, 0.16), m["tissu_clair"], 0.06)
+    boite("Coussin_B", (-1.87, -1.17, 0.43), (0.26, 0.32, 0.16), m["tissu_clair"], 0.06)
+    # La table basse reprend le profil du gueridon, en plus bas et plus
+    # petite : un meuble de la meme famille, pas un second sujet. Devant le
+    # canape, visible depuis la camera, avec de l'air entre les deux — et
+    # sans toucher la zone de sol que le masque du gueridon echantillonne.
+    profil = [(0.0, 0.0), (0.208, 0.0), (0.228, 0.027), (0.072, 0.050),
+              (0.052, 0.081), (0.052, 0.216), (0.20, 0.243), (0.224, 0.270),
+              (0.212, 0.284), (0.0, 0.288)]
+    ob = revolve("TableBasse", profil, 48, [m["bois"]], 26.0)
+    ob.location = (-1.05, -1.55, 0.0)
 
 
 def _faisceau(force):
@@ -177,6 +194,6 @@ def construire(nom_variante, Rv, Uv, Cv):
     _murs(m)
     _fenetre(m)
     _rideau(m)
-    _gueridon(m)
+    _salon(m)
     _faisceau(v["faisceau"])
     _lumieres(v, Rv, Uv, Cv)

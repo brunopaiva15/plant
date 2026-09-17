@@ -51,12 +51,15 @@ class _CareEnvironmentHeroState extends State<CareEnvironmentHero> {
     _precache();
   }
 
-  /// Les deux images de la scène sont locales et petites ; les précharger
+  /// Les images de la scène sont locales et petites ; les précharger
   /// évite que le diorama se pose en deux temps au premier affichage.
   void _precache() {
     final spec = _spec;
     precacheImage(AssetImage(spec.backdropAsset), context);
     precacheImage(AssetImage(spec.plantAsset), context);
+    if (spec.hasPedestal) {
+      precacheImage(AssetImage(spec.pedestalAsset), context);
+    }
     if (spec.hasHumidifier) {
       precacheImage(
         AssetImage('assets/care_scene/props/humidifier.webp'),

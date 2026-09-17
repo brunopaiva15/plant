@@ -13,52 +13,43 @@ abstract final class CareEnvironmentSlots {
   /// rendue au centre du monde.
   static const (double, double) anchor = (0.49571, 0.59756);
 
-  /// Base du guéridon tel qu'il est rendu dans le décor intérieur.
-  static const (double, double) pedestalBase = (0.56956, 0.78762);
-
-  /// Centre du plateau du guéridon : la base du pot vient se poser ici.
-  static const (double, double) pedestalTop = (0.56956, 0.71604);
-
-  /// Position de l'humidificateur quand la plante est sur le guéridon.
-  static const (double, double) pedestalHumidifier = (0.45456, 0.81262);
-
-  /// Haut de l'humidificateur quand la plante est sur le guéridon.
-  static const (double, double) pedestalHumidifierTop = (0.45456, 0.74755);
+  /// Centre du plateau du guéridon dans son image : la base du pot
+  /// vient s'y poser.
+  static const (double, double) pedestalPot = (0.49571, 0.52598);
 
   /// Les emplacements, nommés comme les valeurs de `CarePlantSlot`.
   static const Map<String, (double, double)> slots = <String, (double, double)>{
-    'back': (0.70399, 0.58717),
-    'backCorner': (0.75827, 0.59838),
-    'beamEdge': (0.54116, 0.55352),
-    'besideBeam': (0.59544, 0.56474),
-    'middle': (0.64972, 0.57595),
-    'sunZone': (0.48688, 0.54231),
+    'back': (0.65370, 0.58886),
+    'backCorner': (0.69513, 0.60038),
+    'beamEdge': (0.52941, 0.55429),
+    'besideBeam': (0.57084, 0.56581),
+    'middle': (0.61227, 0.57733),
+    'sunZone': (0.48798, 0.54276),
   };
 
   /// L'humidificateur, posé à côté de la plante, par emplacement.
   static const Map<String, (double, double)> humidifier =
       <String, (double, double)>{
-        'back': (0.58899, 0.61217),
-        'backCorner': (0.64327, 0.62338),
-        'beamEdge': (0.42616, 0.57852),
-        'besideBeam': (0.48044, 0.58974),
-        'middle': (0.53472, 0.60095),
-        'sunZone': (0.37188, 0.56731),
+        'back': (0.53870, 0.61386),
+        'backCorner': (0.58013, 0.62538),
+        'beamEdge': (0.41441, 0.57929),
+        'besideBeam': (0.45584, 0.59081),
+        'middle': (0.49727, 0.60233),
+        'sunZone': (0.37298, 0.56776),
       };
 
   /// Le haut de l'humidificateur, d'où part la vapeur, par emplacement.
   static const Map<String, (double, double)> humidifierTop =
       <String, (double, double)>{
-        'back': (0.58899, 0.54710),
-        'backCorner': (0.64327, 0.55831),
-        'beamEdge': (0.42616, 0.51345),
-        'besideBeam': (0.48044, 0.52467),
-        'middle': (0.53472, 0.53588),
-        'sunZone': (0.37188, 0.50224),
+        'back': (0.53870, 0.54879),
+        'backCorner': (0.58013, 0.56031),
+        'beamEdge': (0.41441, 0.51422),
+        'besideBeam': (0.45584, 0.52574),
+        'middle': (0.49727, 0.53726),
+        'sunZone': (0.37298, 0.50269),
       };
 
-  /// D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture
-  /// au-dessus de la haie dehors.
+  /// D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture au-dessus de la haie dehors.
   static const Map<String, (double, double)> airflow =
       <String, (double, double)>{
         'indoor': (0.29062, 0.30704),

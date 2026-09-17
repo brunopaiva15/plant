@@ -31,13 +31,16 @@ assets/care_scene/
     outdoor/light/   shade … full_sun      le jardin, six lumières
     plants/          monstera, broad_leaf, upright_leaf, vine,
                      fern, rosette, cactus, conifer, orchid
-    props/           humidifier
+    props/           humidifier, pedestal
 ```
 
-Dans l'application, `CareEnvironmentScene` empile : le décor lumineux,
-l'humidificateur si l'air est humide, l'ombre, la plante translatée sur son
-emplacement, la vapeur et les lignes de flux dessinées en `CustomPainter`,
-puis les puces d'information.
+Dans l'application, `CareEnvironmentScene` empile : le décor lumineux, le
+guéridon posé sur l'emplacement lumineux quand la plante s'y pose (un prop
+rendu seul, comme l'humidificateur), l'humidificateur si l'air
+est humide, l'ombre, la plante translatée sur son support, la vapeur et les
+lignes de flux dessinées en `CustomPainter`, puis les puces d'information.
+Le diorama est une maquette posée dans la fiche : son cadre s'arrondit au
+rayon des cartes (`Radii.large`).
 
 L'air qui bouge n'a pas de prop : un courant d'air entre par une ouverture —
 la fenêtre dans la pièce, le côté ouvert du jardin dehors —, il ne sort pas
@@ -60,7 +63,8 @@ images ne se mélangent pas avec celles de la scène.
 
 La plante est rendue seule, au centre du monde ; l'application la translate
 jusqu'à l'emplacement qui dit son besoin. Les positions — six
-**emplacements** (`CarePlantSlot`), l'ancre de la plante, la place de
+**emplacements** (`CarePlantSlot`), l'ancre de la plante, le plateau du
+guéridon dans son image, la place de
 l'humidificateur et son haut, l'ouverture d'où souffle l'air — sont
 **projetées par le build Blender** et livrées en constante Dart
 (`lib/features/species/application/care_environment_slots.dart`, généré,
@@ -101,7 +105,11 @@ La règle est centralisée dans `environmentFor`, nulle part ailleurs :
 
 Un arbre ne finit jamais dans un salon. Les deux décors partagent caméra,
 bornes et direction de soleil : la table des emplacements vaut pour l'un
-comme pour l'autre.
+comme pour l'autre. Tous deux restent en retrait — la plante est le sujet :
+la pièce meublée d'un guéridon et d'un petit coin salon qui ne croisent
+jamais son chemin, le jardin sobre (pelouse sauge, massif minéral là où
+elle se pose, palissade, haie basse, deux volumes lointains) plutôt qu'un
+jardin botanique qui lui disputerait l'œil.
 
 ### Les six lumières
 
@@ -122,7 +130,9 @@ sur la tache — à côté, sur son bord, dedans. Six positions choisies une par
 une se liraient comme un hasard : d'une fiche à l'autre, la plante
 sauterait d'un coin de la pièce à l'autre. `tool/care_scene/common.py` pose
 le départ et le pas, le reste en découle ; `test/features/care_environment_test.dart`
-vérifie l'ordre et la régularité du pas.
+vérifie l'ordre et la régularité du pas. Le départ garde une marge de
+sécurité avec les murs du fond et de droite (`MARGE_PIECE`) : la silhouette
+la plus large ne frôle aucun mur, à quelque cran que ce soit.
 
 L'humidificateur suit la plante d'un décalage d'écran constant, toujours du
 même côté — entre elle et la fenêtre : lui aussi doit se retrouver au même
@@ -162,7 +172,7 @@ large : la silhouette en pot ne leur va pas.
 Les recettes de silhouette viennent de la collection de l'onboarding, où la
 plante est rendue seule : sa taille absolue n'y veut rien dire. Dans le
 diorama, elle partage le cadre avec une pièce de 4,2 m sur 3,6 m, un
-guéridon et un humidificateur modelés à l'échelle réelle.
+guéridon, un coin salon et un humidificateur modelés à l'échelle réelle.
 `plants.ECHELLE_PIECE` réduit donc tout l'assemblage autour de l'ancre
 avant le rendu : le monstera fait 1,5 m, pot compris, et tient dans la
 pièce aux six emplacements. À l'échelle des recettes, il faisait 3,3 m de

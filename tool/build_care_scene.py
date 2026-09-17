@@ -99,21 +99,14 @@ def exporte_slots(dossier, res):
         humidifier[nom] = [hx, hy]
         humidifier_top[nom] = [hx, hy + dz]
 
-    # Le guéridon est bake dans room.py a (2.00, -1.70). Son profil culmine a
-    # z=0.605 : la base du pot se pose exactement sur ce point projeté. On
-    # exporte aussi une place d'humidificateur au sol, a cote du meuble, afin
-    # que les effets restent coherents lorsque la plante est sur le plateau.
-    pedestal_base = common.projette(cam, (2.00, -1.70, 0.0))
-    pedestal_top = common.projette(cam, (2.00, -1.70, 0.605))
-    phx, phy = pedestal_base[0] - 0.115, pedestal_base[1] + 0.025
-
+    # Le gueridon est un prop, rendu seul au centre du monde (props.py) :
+    # sa base y est au point d'ancrage, comme la plante. Son profil culmine
+    # a z=0.605 : on exporte le point du plateau, la ou la base du pot se
+    # pose, dans le repere de l'image du prop.
     donnees = {
         "aspect": 1.0,
         "ancre": list(base),
-        "pedestalBase": list(pedestal_base),
-        "pedestalTop": list(pedestal_top),
-        "pedestalHumidifier": [phx, phy],
-        "pedestalHumidifierTop": [phx, phy + dz],
+        "pedestalPot": list(common.projette(cam, (0.0, 0.0, 0.605))),
         "slots": {nom: list(common.projette(cam, (x, y, 0.0)))
                   for nom, (x, y) in common.SLOTS.items()},
         "humidifier": humidifier,

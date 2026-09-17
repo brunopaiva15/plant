@@ -25,11 +25,34 @@ void main() {
 
       expect(spec.support, CarePlantSupport.pedestal);
       expect(spec.hasPedestal, isTrue);
-      expect(spec.hidesBackdropPedestal, isFalse);
-      expect(spec.plantFraction, CareEnvironmentSlots.pedestalTop);
+      // Le pot se pose sur le plateau du guéridon, dont la base est au slot
+      // lumineux : à l'aplomb du slot, à hauteur du plateau.
+      expect(
+        spec.plantFraction.$1,
+        closeTo(
+          spec.slotFraction.$1 +
+              CareEnvironmentSlots.pedestalPot.$1 -
+              CareEnvironmentSlots.anchor.$1,
+          1e-9,
+        ),
+      );
+      expect(
+        spec.plantFraction.$2,
+        closeTo(
+          spec.slotFraction.$2 +
+              CareEnvironmentSlots.pedestalPot.$2 -
+              CareEnvironmentSlots.anchor.$2,
+          1e-9,
+        ),
+      );
+      // Le plateau est au-dessus de la base dans l'image du prop.
+      expect(
+        CareEnvironmentSlots.pedestalPot.$2,
+        lessThan(CareEnvironmentSlots.anchor.$2),
+      );
     });
 
-    test('Monstera deliciosa reste au sol et masque le guéridon', () {
+    test('Monstera deliciosa reste au sol', () {
       final spec = careEnvironmentSpec(
         profile: profile,
         speciesName: 'Monstera deliciosa',
@@ -39,7 +62,6 @@ void main() {
 
       expect(spec.support, CarePlantSupport.floor);
       expect(spec.hasPedestal, isFalse);
-      expect(spec.hidesBackdropPedestal, isTrue);
       expect(spec.plantFraction, spec.slotFraction);
     });
 
@@ -52,7 +74,7 @@ void main() {
       );
 
       expect(spec.support, CarePlantSupport.floor);
-      expect(spec.hidesBackdropPedestal, isTrue);
+      expect(spec.hasPedestal, isFalse);
     });
 
     test('dehors il n\'y a jamais de guéridon', () {
@@ -66,10 +88,9 @@ void main() {
       expect(spec.environment, CareEnvironmentKind.outdoorPatch);
       expect(spec.support, CarePlantSupport.floor);
       expect(spec.hasPedestal, isFalse);
-      expect(spec.hidesBackdropPedestal, isFalse);
     });
 
-    test('l\'humidificateur suit le guéridon', () {
+    test('l\'humidificateur suit le support', () {
       final humid = CareProfile(
         wateringSummerDays: profile.wateringSummerDays,
         wateringWinterDays: profile.wateringWinterDays,
@@ -86,13 +107,15 @@ void main() {
       );
 
       expect(spec.hasPedestal, isTrue);
+      // L'humidificateur se pose à côté du support, à la place prévue pour
+      // le slot.
       expect(
         spec.humidifierFraction,
-        CareEnvironmentSlots.pedestalHumidifier,
+        CareEnvironmentSlots.humidifier[spec.slot.name],
       );
       expect(
         spec.steamOriginFraction,
-        CareEnvironmentSlots.pedestalHumidifierTop,
+        CareEnvironmentSlots.humidifierTop[spec.slot.name],
       );
     });
   });
