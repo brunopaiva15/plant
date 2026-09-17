@@ -1836,6 +1836,7 @@ abstract final class CareProfiles {
       bloom: Bloom(window: MonthWindow(2, 4), triggers: [BloomTrigger.chillBulb, BloomTrigger.brightLight]),
       dormancy: DormantRest(window: MonthWindow(6, 9), storeMinC: 10, storeMaxC: 18),
       tipKeys: ['letFoliageDieBack', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Tulipa': CareProfile(
       wateringSummerDays: 30,
@@ -1855,6 +1856,7 @@ abstract final class CareProfiles {
       bloom: Bloom(window: MonthWindow(4, 5), triggers: [BloomTrigger.chillBulb, BloomTrigger.brightLight, BloomTrigger.fertilizer]),
       dormancy: DormantRest(window: MonthWindow(6, 9), storeMinC: 15, storeMaxC: 20),
       tipKeys: ['letFoliageDieBack', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Narcissus': CareProfile(
       wateringSummerDays: 30,
@@ -1885,7 +1887,7 @@ abstract final class CareProfiles {
       fertilizingDays: 30,
       fertilizingWindow: MonthWindow(2, 5),
       repotEveryMonths: 12,
-      damageBelowC: -15,
+      damageBelowC: -8,
       propagation: _offsets,
       issues: [CommonIssue.rootRot],
       dormantInWinter: false,
@@ -1893,6 +1895,7 @@ abstract final class CareProfiles {
       bloom: Bloom(window: MonthWindow(3, 4), triggers: [BloomTrigger.chillBulb, BloomTrigger.brightLight]),
       dormancy: DormantRest(window: MonthWindow(6, 9), storeMinC: 15, storeMaxC: 20),
       tipKeys: ['letFoliageDieBack', 'sapIrritant'],
+      source: 'RHS',
     ),
     'Hippeastrum': CareProfile(
       wateringSummerDays: 7,
