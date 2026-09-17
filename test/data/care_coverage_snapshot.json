@@ -1,9 +1,9 @@
 {
   "totalSpecies": 1900,
   "resolution": {
-    "family": 782,
+    "family": 779,
     "genus": 1086,
-    "species": 32
+    "species": 35
   },
   "toxicityByLevel": {
     "family": 348,
@@ -23,7 +23,7 @@
     "family:Caprifoliaceae": 11,
     "family:Fabaceae": 42,
     "family:Lamiaceae": 20,
-    "family:Myrtaceae": 12,
+    "family:Myrtaceae": 11,
     "family:Nyctaginaceae": 25,
     "family:Orchidaceae": 18,
     "family:Plantaginaceae": 11,
