@@ -543,6 +543,7 @@ abstract final class CareProfiles {
       issues: _tropicalIssues,
       support: PlantSupport.mossPole,
       tipKeys: ['toleratesNeglect', 'trimToBushOut', 'fingerTest'],
+      source: 'RHS',
     ),
     'Scindapsus': CareProfile(
       wateringSummerDays: 9,
@@ -560,6 +561,7 @@ abstract final class CareProfiles {
       issues: _tropicalIssues,
       support: PlantSupport.mossPole,
       tipKeys: ['toleratesNeglect', 'fingerTest'],
+      source: 'RHS',
     ),
     'Monstera': CareProfile(
       wateringSummerDays: 8,
@@ -580,6 +582,7 @@ abstract final class CareProfiles {
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       pot: PotPreference.roomy,
       tipKeys: ['fingerTest', 'monsteraSupport'],
+      source: 'RHS',
     ),
     'Alocasia': CareProfile(
       wateringSummerDays: 5,
@@ -602,6 +605,7 @@ abstract final class CareProfiles {
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       pot: PotPreference.roomy,
       tipKeys: ['winterRest', 'humidityTray', 'spiderMiteWatch'],
+      source: 'RHS',
     ),
     'Anthurium': CareProfile(
       wateringSummerDays: 6,
@@ -620,6 +624,7 @@ abstract final class CareProfiles {
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       bloom: Bloom(window: MonthWindow(3, 10), triggers: [BloomTrigger.brightLight, BloomTrigger.potbound, BloomTrigger.fertilizer]),
       tipKeys: ['humidityTray', 'noDirectSun'],
+      source: 'RHS',
     ),
     'Aglaonema': CareProfile(
       wateringSummerDays: 9,
@@ -650,6 +655,7 @@ abstract final class CareProfiles {
       propagation: _cutting,
       issues: _tropicalIssues,
       tipKeys: ['sapIrritant', 'fingerTest'],
+      source: 'RHS',
     ),
     'Syngonium': CareProfile(
       wateringSummerDays: 7,
@@ -664,11 +670,12 @@ abstract final class CareProfiles {
       fertilizer: FertilizerKind.foliage,
       waterCulture: SoilFreeFit.yes,
       repotEveryMonths: 18,
-      damageBelowC: 13,
+      damageBelowC: 15,
       propagation: _cuttingWater,
       issues: _tropicalIssues,
       support: PlantSupport.mossPole,
       tipKeys: ['trimToBushOut'],
+      source: 'RHS',
     ),
     'Zamioculcas': CareProfile(
       wateringSummerDays: 18,
@@ -683,6 +690,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.division, Propagation.leafCutting],
       issues: [CommonIssue.overwatering, CommonIssue.rootRot],
       tipKeys: ['drySoilFirst', 'toleratesNeglect'],
+      source: 'RHS',
     ),
     'Spathiphyllum': CareProfile(
       wateringSummerDays: 5,
@@ -704,6 +712,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(4, 9), triggers: [BloomTrigger.brightLight, BloomTrigger.potbound, BloomTrigger.fertilizer]),
       tipKeys: ['droopSignal', 'noDirectSun'],
+      source: 'RHS',
     ),
 
     // Marantacées : les capricieuses de l'humidité.
@@ -729,6 +738,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.dryTips, CommonIssue.underwatering, CommonIssue.spiderMites, CommonIssue.thrips, CommonIssue.leafSpot],
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       tipKeys: ['humidityTray', 'noDirectSun'],
+      source: 'RHS',
     ),
     'Goeppertia': CareProfile(
       wateringSummerDays: 5,
@@ -750,6 +760,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.dryTips, CommonIssue.underwatering, CommonIssue.spiderMites, CommonIssue.thrips, CommonIssue.leafSpot],
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       tipKeys: ['humidityTray'],
+      source: 'RHS',
     ),
     'Maranta': CareProfile(
       wateringSummerDays: 5,
@@ -771,6 +782,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.dryTips, CommonIssue.underwatering, CommonIssue.spiderMites, CommonIssue.thrips],
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       tipKeys: ['humidityTray'],
+      source: 'RHS',
     ),
 
     // Ficus et cousins.
@@ -789,6 +801,7 @@ abstract final class CareProfiles {
       pot: PotPreference.roomy,
       issues: [CommonIssue.leafDrop, CommonIssue.spiderMites, CommonIssue.thrips, CommonIssue.mealybugs, CommonIssue.scale],
       tipKeys: ['hatesMoving', 'wipeLeaves'],
+      source: 'RHS',
     ),
 
     // Dracaenas, yuccas, aspidistras : les résistantes.
@@ -804,10 +817,11 @@ abstract final class CareProfiles {
       fertilizingDays: 45,
       fertilizer: FertilizerKind.foliage,
       repotEveryMonths: 30,
-      damageBelowC: 12,
+      damageBelowC: 8,
       propagation: _cutting,
       issues: [CommonIssue.dryTips, CommonIssue.overwatering],
       tipKeys: ['fingerTest'],
+      source: 'RHS',
     ),
     'Sansevieria': CareProfile(
       wateringSummerDays: 18,
@@ -823,6 +837,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.rootRot],
       pot: PotPreference.snug,
       tipKeys: ['drySoilFirst', 'toleratesNeglect'],
+      source: 'RHS',
     ),
     'Yucca': CareProfile(
       wateringSummerDays: 14,
@@ -853,6 +868,7 @@ abstract final class CareProfiles {
       propagation: _offsets,
       issues: [CommonIssue.overwatering, CommonIssue.rootRot],
       tipKeys: ['drySoilFirst', 'trunkStoresWater'],
+      source: 'RHS',
     ),
     'Aspidistra': CareProfile(
       wateringSummerDays: 12,
@@ -864,11 +880,12 @@ abstract final class CareProfiles {
       fluorideSensitive: true,
       fertilizingDays: 60,
       repotEveryMonths: 36,
-      damageBelowC: 5,
+      damageBelowC: -2,
       propagation: _division,
       issues: [CommonIssue.overwatering],
       pot: PotPreference.snug,
       tipKeys: ['toleratesLowLight', 'toleratesNeglect'],
+      source: 'RHS',
     ),
     'Chlorophytum': CareProfile(
       wateringSummerDays: 7,
@@ -882,11 +899,12 @@ abstract final class CareProfiles {
       fertilizingDays: 30,
       waterCulture: SoilFreeFit.yes,
       repotEveryMonths: 18,
-      damageBelowC: 8,
+      damageBelowC: 3,
       propagation: [Propagation.offsets, Propagation.division],
       issues: [CommonIssue.dryTips],
       pot: PotPreference.roomy,
       tipKeys: ['pupsToShare'],
+      source: 'RHS',
     ),
 
     // Palmiers.
@@ -904,11 +922,12 @@ abstract final class CareProfiles {
       fertilizingDays: 45,
       fertilizer: FertilizerKind.foliage,
       repotEveryMonths: 30,
-      damageBelowC: 13,
+      damageBelowC: 15,
       propagation: _seed,
       issues: [CommonIssue.spiderMites, CommonIssue.dryTips],
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       tipKeys: ['humidityTray', 'noDirectSun'],
+      source: 'RHS',
     ),
     'Dypsis': CareProfile(
       wateringSummerDays: 6,
@@ -930,6 +949,7 @@ abstract final class CareProfiles {
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       pot: PotPreference.roomy,
       tipKeys: ['humidityTray'],
+      source: 'RHS',
     ),
     'Howea': CareProfile(
       wateringSummerDays: 9,
@@ -943,10 +963,11 @@ abstract final class CareProfiles {
       fertilizingDays: 45,
       fertilizer: FertilizerKind.foliage,
       repotEveryMonths: 36,
-      damageBelowC: 12,
+      damageBelowC: 15,
       propagation: _seed,
       issues: [CommonIssue.spiderMites, CommonIssue.overwatering],
       tipKeys: ['toleratesLowLight', 'wipeLeaves'],
+      source: 'RHS',
     ),
     'Trachycarpus': CareProfile(
       wateringSummerDays: 7,
@@ -983,6 +1004,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.underwatering, CommonIssue.dryTips],
       humidityMethods: {HumidityMethod.mist},
       tipKeys: ['neverDryOut', 'humidityTray', 'noDirectSun'],
+      source: 'RHS',
     ),
     'Asplenium': CareProfile(
       wateringSummerDays: 4,
@@ -1000,6 +1022,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.underwatering, CommonIssue.dryTips],
       humidityMethods: {HumidityMethod.mist},
       tipKeys: ['neverDryOut', 'waterAtBase'],
+      source: 'RHS',
     ),
     'Adiantum': CareProfile(
       wateringSummerDays: 3,
@@ -1015,11 +1038,12 @@ abstract final class CareProfiles {
       fertilizer: FertilizerKind.foliage,
       calcium: CalciumNeed.avoid,
       repotEveryMonths: 18,
-      damageBelowC: 13,
+      damageBelowC: 8,
       propagation: _division,
       issues: [CommonIssue.underwatering, CommonIssue.dryTips],
       humidityMethods: {HumidityMethod.mist},
       tipKeys: ['neverDryOut', 'humidityTray'],
+      source: 'RHS',
     ),
     'Platycerium': CareProfile(
       wateringSummerDays: 7,
@@ -1040,6 +1064,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.rootRot],
       humidityMethods: {HumidityMethod.mist},
       tipKeys: ['soakMount', 'humidityTray'],
+      source: 'RHS',
     ),
 
     // Succulentes et cactus.
@@ -1059,6 +1084,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(4, 8), triggers: [BloomTrigger.coolRest, BloomTrigger.brightLight]),
       tipKeys: ['drySoilFirst', 'noWaterOnLeaves', 'summerOutdoors'],
+      source: 'RHS',
     ),
     'Crassula': CareProfile(
       wateringSummerDays: 14,
@@ -1069,12 +1095,13 @@ abstract final class CareProfiles {
       soil: SoilKind.cactus,
       fertilizingDays: 60,
       repotEveryMonths: 30,
-      damageBelowC: 7,
+      damageBelowC: 3,
       propagation: [Propagation.leafCutting, Propagation.stemCutting],
       issues: _succulentIssues,
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(11, 2), triggers: [BloomTrigger.coolRest, BloomTrigger.drySpell, BloomTrigger.brightLight]),
       tipKeys: ['drySoilFirst', 'noWaterOnLeaves'],
+      source: 'RHS',
     ),
     'Sedum': CareProfile(
       wateringSummerDays: 12,
@@ -1100,11 +1127,12 @@ abstract final class CareProfiles {
       soil: SoilKind.cactus,
       fertilizingDays: 90,
       repotEveryMonths: 30,
-      damageBelowC: 7,
+      damageBelowC: 3,
       propagation: _offsets,
       issues: _succulentIssues,
       pot: PotPreference.snug,
       tipKeys: ['drySoilFirst', 'noDirectSun'],
+      source: 'RHS',
     ),
     'Kalanchoe': CareProfile(
       wateringSummerDays: 12,
@@ -1116,11 +1144,12 @@ abstract final class CareProfiles {
       fertilizingDays: 45,
       fertilizer: FertilizerKind.flowering,
       repotEveryMonths: 24,
-      damageBelowC: 8,
+      damageBelowC: 13,
       propagation: [Propagation.leafCutting, Propagation.stemCutting],
       issues: _succulentIssues,
       bloom: Bloom(window: MonthWindow(12, 4), triggers: [BloomTrigger.shortDays, BloomTrigger.deadhead]),
       tipKeys: ['drySoilFirst', 'darkForRebloom'],
+      source: 'RHS',
     ),
     'Sempervivum': CareProfile(
       wateringSummerDays: 14,
@@ -1153,6 +1182,7 @@ abstract final class CareProfiles {
       issues: _succulentIssues,
       pot: PotPreference.snug,
       tipKeys: ['drySoilFirst', 'shallowPot'],
+      source: 'RHS',
     ),
     'Gasteria': CareProfile(
       wateringSummerDays: 16,
@@ -1203,6 +1233,7 @@ abstract final class CareProfiles {
       outdoorFriendly: true,
       pot: PotPreference.snug,
       tipKeys: ['summerDormant', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Lithops': CareProfile(
       wateringSummerDays: 30,
@@ -1220,6 +1251,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.rootRot],
       pot: PotPreference.snug,
       tipKeys: ['noWaterWhileSplitting', 'noFertilizer', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Schlumbergera': CareProfile(
       wateringSummerDays: 10,
@@ -1240,6 +1272,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(11, 1), triggers: [BloomTrigger.shortDays, BloomTrigger.coolRest, BloomTrigger.noMove]),
       tipKeys: ['darkForRebloom', 'noDirectSun', 'notADesertCactus'],
+      source: 'RHS',
     ),
     'Rhipsalis': CareProfile(
       wateringSummerDays: 9,
@@ -1257,6 +1290,7 @@ abstract final class CareProfiles {
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       pot: PotPreference.snug,
       tipKeys: ['notADesertCactus', 'noDirectSun'],
+      source: 'RHS',
     ),
 
     // Aromatiques et potager (les plus consommateurs d'eau).
@@ -1342,6 +1376,7 @@ abstract final class CareProfiles {
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['pinchFlowers', 'harvestTop', 'waterAtBase'],
+      source: 'RHS',
     ),
     'Solanum': CareProfile(
       wateringSummerDays: 2,
@@ -1361,6 +1396,7 @@ abstract final class CareProfiles {
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'evenWatering'],
+      source: 'RHS',
     ),
     'Capsicum': CareProfile(
       wateringSummerDays: 3,
@@ -1380,6 +1416,7 @@ abstract final class CareProfiles {
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'evenWatering'],
+      source: 'RHS',
     ),
     'Cucurbita': CareProfile(
       wateringSummerDays: 2,
@@ -1391,12 +1428,13 @@ abstract final class CareProfiles {
       fertilizingDays: 14,
       fertilizingWindow: MonthWindow(5, 9),
       fertilizer: FertilizerKind.vegetable,
-      damageBelowC: 8,
+      damageBelowC: 3,
       propagation: _seed,
       issues: [CommonIssue.powderyMildew, CommonIssue.slugs],
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'mulchIt'],
+      source: 'RHS',
     ),
     'Cucumis': CareProfile(
       wateringSummerDays: 2,
@@ -1415,6 +1453,7 @@ abstract final class CareProfiles {
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'evenWatering'],
+      source: 'RHS',
     ),
     'Fragaria': CareProfile(
       wateringSummerDays: 2,
@@ -1722,6 +1761,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.rootRot],
       pot: PotPreference.snug,
       tipKeys: ['drySoilFirst', 'shallowPot'],
+      source: 'RHS',
     ),
     'Begonia': CareProfile(
       wateringSummerDays: 5,
@@ -1755,6 +1795,7 @@ abstract final class CareProfiles {
       propagation: _cuttingWater,
       issues: [CommonIssue.etiolation, CommonIssue.spiderMites],
       tipKeys: ['trimToBushOut', 'brightForColor'],
+      source: 'RHS',
     ),
     'Fittonia': CareProfile(
       wateringSummerDays: 3,
@@ -1791,6 +1832,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(3, 11), triggers: [BloomTrigger.brightLight, BloomTrigger.potbound, BloomTrigger.evenWater]),
       tipKeys: ['bottomWatering', 'noWaterOnLeaves'],
+      source: 'RHS',
     ),
     'Cyclamen': CareProfile(
       wateringSummerDays: 20,
@@ -1949,7 +1991,7 @@ abstract final class CareProfiles {
       fertilizingDays: 14,
       fertilizingWindow: MonthWindow(5, 9),
       repotEveryMonths: 12,
-      damageBelowC: 8,
+      damageBelowC: 13,
       idealTempMinC: 20,
       idealTempMaxC: 30,
       propagation: _tubers,
@@ -1958,6 +2000,7 @@ abstract final class CareProfiles {
       pot: PotPreference.roomy,
       dormancy: DormantRest(window: MonthWindow(11, 3), storeMinC: 10, storeMaxC: 16),
       tipKeys: ['diesBackInWinter', 'thirstyPlant'],
+      source: 'RHS',
     ),
     'Zantedeschia': CareProfile(
       wateringSummerDays: 3,
@@ -1969,12 +2012,13 @@ abstract final class CareProfiles {
       fertilizingDays: 21,
       fertilizingWindow: MonthWindow(4, 8),
       repotEveryMonths: 12,
-      damageBelowC: 8,
+      damageBelowC: -8,
       propagation: _tubers,
       issues: [CommonIssue.rootRot, CommonIssue.aphids],
       bloom: Bloom(window: MonthWindow(5, 8), triggers: [BloomTrigger.brightLight, BloomTrigger.fertilizer]),
       dormancy: DormantRest(window: MonthWindow(11, 2), storeMinC: 10, storeMaxC: 16),
       tipKeys: ['letFoliageDieBack', 'thirstyPlant'],
+      source: 'RHS',
     ),
     'Dahlia': CareProfile(
       wateringSummerDays: 3,
@@ -2005,7 +2049,7 @@ abstract final class CareProfiles {
       fertilizingDays: 14,
       fertilizingWindow: MonthWindow(5, 9),
       repotEveryMonths: 12,
-      damageBelowC: 5,
+      damageBelowC: -2,
       propagation: _tubers,
       issues: [CommonIssue.slugs, CommonIssue.leafSpot],
       outdoorFriendly: true,
@@ -2013,6 +2057,7 @@ abstract final class CareProfiles {
       bloom: Bloom(window: MonthWindow(7, 10), triggers: [BloomTrigger.brightLight, BloomTrigger.deadhead, BloomTrigger.fertilizer]),
       dormancy: DormantRest(window: MonthWindow(11, 3), storeMinC: 8, storeMaxC: 14),
       tipKeys: ['letFoliageDieBack', 'thirstyPlant', 'winterShelter'],
+      source: 'RHS',
     ),
     'Tillandsia': CareProfile(
       wateringSummerDays: 5,
@@ -2033,6 +2078,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.rootRot],
       humidityMethods: {HumidityMethod.mist},
       tipKeys: ['soakMount', 'dryUpsideDown', 'noSoil'],
+      source: 'RHS',
     ),
     'Strelitzia': CareProfile(
       wateringSummerDays: 6,
@@ -2050,6 +2096,7 @@ abstract final class CareProfiles {
       pot: PotPreference.snug,
       bloom: Bloom(window: MonthWindow(2, 6), triggers: [BloomTrigger.maturity, BloomTrigger.potbound, BloomTrigger.brightLight]),
       tipKeys: ['wipeLeaves', 'summerOutdoors', 'splitsAreNormal'],
+      source: 'RHS',
     ),
     'Musa': CareProfile(
       wateringSummerDays: 3,
@@ -2089,6 +2136,7 @@ abstract final class CareProfiles {
       pot: PotPreference.roomy,
       bloom: Bloom(window: MonthWindow(3, 5), triggers: [BloomTrigger.drySpell, BloomTrigger.maturity]),
       tipKeys: ['humidityTray', 'noDirectSun', 'acidSoil'],
+      source: 'RHS',
     ),
     'Ceropegia': CareProfile(
       wateringSummerDays: 14,
@@ -2104,6 +2152,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.overwatering, CommonIssue.rootRot],
       pot: PotPreference.snug,
       tipKeys: ['drySoilFirst', 'shallowPot'],
+      source: 'RHS',
     ),
     'Nerium': CareProfile(
       wateringSummerDays: 4,
@@ -2176,12 +2225,13 @@ abstract final class CareProfiles {
       fertilizingDays: 21,
       fertilizingWindow: MonthWindow(3, 9),
       repotEveryMonths: 24,
-      damageBelowC: 12,
+      damageBelowC: 8,
       propagation: _cutting,
       issues: [CommonIssue.chlorosis, CommonIssue.leafDrop, CommonIssue.mealybugs],
       humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
       bloom: Bloom(window: MonthWindow(5, 9), triggers: [BloomTrigger.coolNights, BloomTrigger.evenWater, BloomTrigger.noMove]),
       tipKeys: ['acidSoil', 'humidityTray'],
+      source: 'RHS',
     ),
     'Bougainvillea': CareProfile(
       wateringSummerDays: 5,
@@ -2603,10 +2653,11 @@ abstract final class CareProfiles {
       fertilizingDays: 30,
       fertilizer: FertilizerKind.vegetable,
       repotEveryMonths: 24,
-      damageBelowC: 8,
+      damageBelowC: 3,
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['waterAtBase', 'harvestOutside'],
+      source: 'RHS',
     ),
     // Le genre couvre surtout des hibiscus tropicaux ou annuels (rosa-sinensis,
     // sabdariffa, cannabinus) : tendre. L'hibiscus de Syrie, rustique, a sa
@@ -2637,10 +2688,11 @@ abstract final class CareProfiles {
       fertilizingDays: 30,
       fertilizer: FertilizerKind.flowering,
       repotEveryMonths: 24,
-      damageBelowC: 3,
+      damageBelowC: 8,
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['drySoilFirst', 'hardyOutdoors'],
+      source: 'RHS',
     ),
     'Alnus': CareProfile(
       wateringSummerDays: 4,
@@ -3016,12 +3068,13 @@ abstract final class CareProfiles {
       fertilizingDays: 45,
       fertilizingWindow: MonthWindow(4, 8),
       fertilizer: FertilizerKind.vegetable,
-      damageBelowC: 8,
+      damageBelowC: 3,
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.powderyMildew],
       dormantInWinter: false,
       outdoorFriendly: true,
       tipKeys: ['waterAtBase', 'harvestOutside'],
+      source: 'RHS',
     ),
     'Trifolium': CareProfile(
       wateringSummerDays: 3,
@@ -3142,10 +3195,11 @@ abstract final class CareProfiles {
       soil: SoilKind.rich,
       fertilizingDays: 21,
       repotEveryMonths: 12,
-      damageBelowC: 5,
+      damageBelowC: -8,
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['waterAtBase', 'harvestOutside'],
+      source: 'RHS',
     ),
     'Achillea': CareProfile(
       wateringSummerDays: 4,
@@ -3302,11 +3356,12 @@ abstract final class CareProfiles {
       soil: SoilKind.standard,
       fertilizingDays: 30,
       fertilizingWindow: MonthWindow(4, 8),
-      damageBelowC: 5,
+      damageBelowC: -2,
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       outdoorFriendly: true,
       tipKeys: ['deadheadFlowers', 'waterAtBase'],
+      source: 'RHS',
     ),
     'Echinacea': CareProfile(
       wateringSummerDays: 4,
@@ -3591,10 +3646,11 @@ abstract final class CareProfiles {
       water: WaterTolerance.sensitive,
       fertilizingDays: 45,
       repotEveryMonths: 30,
-      damageBelowC: 5,
+      damageBelowC: -2,
       propagation: [Propagation.stemCutting],
       issues: [CommonIssue.overwatering, CommonIssue.dryTips],
       tipKeys: ['winterShelter', 'drySoilFirst'],
+      source: 'RHS',
     ),
     'Ornithogalum': CareProfile(
       wateringSummerDays: 12,
@@ -3637,11 +3693,12 @@ abstract final class CareProfiles {
       soil: SoilKind.rich,
       fertilizingDays: 45,
       calcium: CalciumNeed.welcome,
-      damageBelowC: 12,
+      damageBelowC: 8,
       propagation: [Propagation.stemCutting],
       issues: [CommonIssue.overwatering, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['pinchFlowers', 'thirstyPlant'],
+      source: 'RHS',
     ),
     'Teucrium': CareProfile(
       wateringSummerDays: 5,
@@ -3850,6 +3907,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.seed],
       issues: [CommonIssue.aphids, CommonIssue.trueBugs, CommonIssue.slugs, CommonIssue.powderyMildew, CommonIssue.greyMould],
       tipKeys: ['waterAtBase', 'stakeAndPrune'],
+      source: 'RHS',
     ),
     'Convolvulus': CareProfile(
       wateringSummerDays: 5,
@@ -4034,6 +4092,7 @@ abstract final class CareProfiles {
       propagation: [Propagation.division],
       issues: [CommonIssue.dryTips, CommonIssue.spiderMites],
       tipKeys: ['humidityTray'],
+      source: 'RHS',
     ),
     'Parthenocissus': CareProfile(
       wateringSummerDays: 7,
