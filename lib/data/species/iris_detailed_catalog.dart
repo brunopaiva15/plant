@@ -73,20 +73,20 @@ class IrisDetailedSpecies {
 }
 
 /// Catalogue détaillé dont la base est toujours l'ensemble exact des classes
-/// Iris. Quand [targetCount] est supérieur au nombre de classes, les fiches
-/// curatées hors Iris sont ajoutées en premier, puis les meilleures entrées
-/// du catalogue étendu jusqu'au seuil demandé.
+/// Iris. S'y ajoutent toutes les fiches curatées hors Iris qui ont un vrai
+/// profil d'entretien, puis les entrées du catalogue étendu qui remplissent
+/// les mêmes conditions.
+///
+/// Sans plafond : une fiche existe parce qu'elle a une famille, un nom et un
+/// profil espèce, genre ou famille — pas parce qu'une place restait. Plafonner
+/// revenait à faire payer l'ajout d'une plante d'intérieur par le retrait
+/// d'une autre.
 class IrisDetailedCatalog {
   const IrisDetailedCatalog(this.entries);
-
-  /// Nombre de fiches affichées dans l'encyclopédie. Cela ne change pas le
-  /// nombre de classes qu'Iris sait reconnaître : Iris 8 reste à 1 444.
-  static const int encyclopediaTargetCount = 1900;
 
   factory IrisDetailedCatalog.from({
     required Iterable<String> modelSpecies,
     required SpeciesIndex index,
-    int? targetCount,
   }) {
     const careGuide = CatalogCareGuide();
     final curated = <String, SpeciesCatalogEntry>{
@@ -130,42 +130,37 @@ class IrisDetailedCatalog {
       entries.add(IrisDetailedSpecies.fromIndex(scientificName, indexed[key] ?? indexed[accepted]));
     }
 
-    final wanted = targetCount;
-    if (wanted != null && wanted > entries.length) {
-      // 1. Les fiches déjà écrites à la main mais hors Iris : on garde leur
-      // catégorie et leurs noms éditoriaux avant d'aller chercher plus loin.
-      // Même ici, une fiche supplémentaire doit être adossée à un profil
-      // espèce, genre ou famille : une simple catégorie ne suffit plus.
-      for (final entry in SpeciesCatalog.entries) {
-        if (entries.length >= wanted) break;
-        final key = entry.scientificName.toLowerCase();
-        final accepted = acceptedKey(entry.scientificName);
-        if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
-        if (!hasDetailedCare(entry.scientificName, entry.family)) continue;
-        seenNames.add(key);
-        seenAccepted.add(accepted);
-        entries.add(IrisDetailedSpecies.fromCurated(entry));
-      }
+    // 1. Les fiches déjà écrites à la main mais hors Iris : on garde leur
+    // catégorie et leurs noms éditoriaux avant d'aller chercher plus loin.
+    // Même ici, une fiche supplémentaire doit être adossée à un profil
+    // espèce, genre ou famille : une simple catégorie ne suffit plus.
+    for (final entry in SpeciesCatalog.entries) {
+      final key = entry.scientificName.toLowerCase();
+      final accepted = acceptedKey(entry.scientificName);
+      if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
+      if (!hasDetailedCare(entry.scientificName, entry.family)) continue;
+      seenNames.add(key);
+      seenAccepted.add(accepted);
+      entries.add(IrisDetailedSpecies.fromCurated(entry));
+    }
 
-      // 2. Puis le catalogue étendu. Ses noms viennent de Wikidata mais son
-      // ossature genre → famille est celle du GBIF Backbone ; le pipeline
-      // écarte notamment les homonymes d'autres règnes. Pour être promue de
-      // simple résultat de recherche à fiche d'encyclopédie, une espèce doit
-      // aussi avoir une famille, au moins un nom courant, et un vrai profil
-      // d'entretien espèce/genre/famille — jamais le profil générique.
-      for (final record in index.records) {
-        if (entries.length >= wanted) break;
-        if (record.family.trim().isEmpty) continue;
-        if ([record.fr, record.en, record.de, record.it].every((name) => name.trim().isEmpty)) continue;
-        if (!hasDetailedCare(record.scientificName, record.family)) continue;
+    // 2. Puis le catalogue étendu. Ses noms viennent de Wikidata mais son
+    // ossature genre → famille est celle du GBIF Backbone ; le pipeline
+    // écarte notamment les homonymes d'autres règnes. Pour être promue de
+    // simple résultat de recherche à fiche d'encyclopédie, une espèce doit
+    // aussi avoir une famille, au moins un nom courant, et un vrai profil
+    // d'entretien espèce/genre/famille — jamais le profil générique.
+    for (final record in index.records) {
+      if (record.family.trim().isEmpty) continue;
+      if ([record.fr, record.en, record.de, record.it].every((name) => name.trim().isEmpty)) continue;
+      if (!hasDetailedCare(record.scientificName, record.family)) continue;
 
-        final key = record.scientificName.toLowerCase();
-        final accepted = acceptedKey(record.scientificName);
-        if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
-        seenNames.add(key);
-        seenAccepted.add(accepted);
-        entries.add(IrisDetailedSpecies.fromIndex(record.scientificName, record));
-      }
+      final key = record.scientificName.toLowerCase();
+      final accepted = acceptedKey(record.scientificName);
+      if (seenNames.contains(key) || seenAccepted.contains(accepted)) continue;
+      seenNames.add(key);
+      seenAccepted.add(accepted);
+      entries.add(IrisDetailedSpecies.fromIndex(record.scientificName, record));
     }
 
     return IrisDetailedCatalog(List<IrisDetailedSpecies>.unmodifiable(entries));

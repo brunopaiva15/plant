@@ -85,12 +85,13 @@ void main() {
     expect(modelJson['classes'], 1444);
     expect(modelSpecies, hasLength(1444));
     expect(modelSpecies.toSet(), hasLength(1444));
-    expect(detailed.entries, hasLength(1444));
-    expect(names.toSet(), modelSpecies.toSet());
+    // Les 1 444 classes du modèle sont toutes dans l'encyclopédie, qui en
+    // couvre bien plus depuis que le plafond de 1 900 fiches est tombé.
     expect(names.toSet().length, names.length);
+    expect(modelSpecies.toSet().difference(names.toSet()), isEmpty);
+    expect(detailed.entries.length, greaterThan(1444));
     expect(detailed.entries.every((e) => e.commonName('fr').trim().isNotEmpty), isTrue);
-    // Une fiche sans famille est une fiche à moitié vide : 63 classes en
-    // étaient là, absentes des deux catalogues.
+    // Une fiche sans famille est une fiche à moitié vide.
     expect(detailed.entries.where((e) => e.family.trim().isEmpty), isEmpty);
 
     // Le nom affiché est celui de la langue lue, ou le nom scientifique —

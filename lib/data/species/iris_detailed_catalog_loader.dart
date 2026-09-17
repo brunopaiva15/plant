@@ -6,8 +6,9 @@ import 'iris_detailed_catalog.dart';
 import 'species_index.dart';
 
 /// Construit l'encyclopédie détaillée à partir des classes réellement
-/// embarquées avec Iris, puis la complète hors modèle jusqu'au seuil éditorial.
-/// `model.json` reste l'unique source du nombre d'espèces reconnaissables.
+/// embarquées avec Iris, puis la complète hors modèle avec tout ce qui a un
+/// vrai profil d'entretien. `model.json` reste l'unique source du nombre
+/// d'espèces reconnaissables.
 class IrisDetailedCatalogLoader {
   IrisDetailedCatalogLoader({AssetBundle? bundle}) : _bundle = bundle ?? rootBundle;
 
@@ -22,7 +23,6 @@ class IrisDetailedCatalogLoader {
     return IrisDetailedCatalog.from(
       modelSpecies: species,
       index: index,
-      targetCount: IrisDetailedCatalog.encyclopediaTargetCount,
     );
   }
 }

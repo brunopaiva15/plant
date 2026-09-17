@@ -26,7 +26,6 @@ void main() {
     final encyclopedia = IrisDetailedCatalog.from(
       modelSpecies: modelSpecies,
       index: index,
-      targetCount: IrisDetailedCatalog.encyclopediaTargetCount,
     );
 
     final resolution = <String, int>{};
@@ -48,12 +47,13 @@ void main() {
       'totalSpecies': encyclopedia.entries.length,
       'resolution': sorted(resolution),
       'toxicityByLevel': sorted(toxicity),
-      // Les profils qui portent plus de dix espèces. Les seuils de cinquante
-      // et de cent se lisent dedans : sept profils, puis trois, au
-      // 16 septembre 2026.
+      // Les profils qui portent plus de cent espèces. Depuis que
+      // l'encyclopédie n'est plus plafonnée, elle couvre tout le catalogue
+      // étendu qui a un vrai profil : les seuils de dix ne disent plus rien,
+      // tous les profils ou presque les passent.
       'heavyProfiles': sorted({
         for (final entry in profiles.entries)
-          if (entry.value > 10) entry.key: entry.value,
+          if (entry.value > 100) entry.key: entry.value,
       }),
     };
   }
@@ -85,4 +85,10 @@ void main() {
 
 /// La part famille acceptée le jour où ce test a été écrit : 1 277 fiches sur
 /// 1 900. Le cliquet empêche de la relever, même en régénérant l'instantané.
-const double _familyShareCeiling = 1277 / 1900;
+///
+/// Recalée quand le plafond de 1 900 fiches est tombé : l'encyclopédie couvre
+/// alors tout le catalogue étendu qui a un vrai profil, et comme celui-ci ne
+/// descend le plus souvent qu'à la famille, la part monte à 78 %. La suite est
+/// écrite dans l'autre sens : chaque fiche de genre ou d'espèce qu'on ajoute
+/// fait baisser cette part.
+const double _familyShareCeiling = 26182 / 33344;
