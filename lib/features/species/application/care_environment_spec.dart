@@ -8,13 +8,14 @@ enum CareEnvironmentKind { indoorRoom, outdoorPatch }
 /// Le support visuel de la plante dans le diorama.
 ///
 /// Dans la pièce, une plante de petit ou moyen gabarit est posée sur le
-/// guéridon déjà présent dans le décor. Les plantes manifestement trop grandes
-/// restent au sol. Dehors, le sol est toujours le support naturel.
+/// guéridon. Les plantes manifestement trop grandes restent au sol. Dehors,
+/// le sol est toujours le support naturel.
 enum CarePlantSupport { pedestal, floor }
 
 /// Les emplacements de plante dans le cadre, nommés comme les clés de
 /// [CareEnvironmentSlots.slots] — la distance à la fenêtre encode le besoin
-/// de lumière pour les plantes qui restent au sol.
+/// de lumière. Pour une plante compacte, le guéridon se déplace jusqu'à ce
+/// slot ; pour une grande plante, c'est directement le pot qui s'y pose.
 ///
 /// Les six tiennent sur une droite, à pas constant, du fond de la pièce
 /// jusque dans la tache de soleil : d'une fiche à l'autre la plante avance
@@ -71,7 +72,7 @@ class CareEnvironmentVisualSpec {
   /// lumière réelle de l'emplacement — la scène montre l'idéal, pas l'état.
   final LightNeed light;
 
-  /// Où une grande plante se pose au sol dans le cadre.
+  /// Où le support de la plante se pose dans le cadre.
   final CarePlantSlot slot;
 
   /// Sa silhouette.
@@ -126,15 +127,28 @@ class CareEnvironmentVisualSpec {
       environment == CareEnvironmentKind.indoorRoom &&
       support == CarePlantSupport.pedestal;
 
-  /// Les décors intérieurs actuels ont le guéridon baké dans leur couche.
-  /// Une grande plante doit donc le masquer avant d'être posée au sol.
+  /// Les décors intérieurs livrés actuellement ont le guéridon baké à sa
+  /// position d'origine. On le masque systématiquement : soit il disparaît
+  /// pour une grande plante, soit il est redessiné au slot lumineux.
   bool get hidesBackdropPedestal =>
-      environment == CareEnvironmentKind.indoorRoom &&
-      support == CarePlantSupport.floor;
+      environment == CareEnvironmentKind.indoorRoom;
 
-  /// La base du pot : sur le plateau du guéridon, ou au slot lumineux au sol.
-  (double, double) get plantFraction =>
-      hasPedestal ? CareEnvironmentSlots.pedestalTop : slotFraction;
+  /// Translation écran du guéridon depuis sa position bakée jusqu'au slot qui
+  /// représente le besoin lumineux. Le slot est le point au sol sous le pied.
+  (double, double) get pedestalTranslationFraction {
+    final slot = slotFraction;
+    final base = CareEnvironmentSlots.pedestalBase;
+    return (slot.$1 - base.$1, slot.$2 - base.$2);
+  }
+
+  /// La base du pot : sur le plateau du guéridon déplacé, ou directement au
+  /// slot lumineux pour un grand gabarit.
+  (double, double) get plantFraction {
+    if (!hasPedestal) return slotFraction;
+    final d = pedestalTranslationFraction;
+    final top = CareEnvironmentSlots.pedestalTop;
+    return (top.$1 + d.$1, top.$2 + d.$2);
+  }
 
   /// L'humidificateur ne paraît que si l'air humide est un besoin : c'est
   /// lui qui rend l'humidité élevée perceptible dans la scène.
@@ -142,14 +156,20 @@ class CareEnvironmentVisualSpec {
 
   /// Où il se pose : à côté du guéridon quand la plante est dessus, sinon à
   /// côté du slot au sol.
-  (double, double) get humidifierFraction => hasPedestal
-      ? CareEnvironmentSlots.pedestalHumidifier
-      : CareEnvironmentSlots.humidifier[slot.name]!;
+  (double, double) get humidifierFraction {
+    if (!hasPedestal) return CareEnvironmentSlots.humidifier[slot.name]!;
+    final d = pedestalTranslationFraction;
+    final p = CareEnvironmentSlots.pedestalHumidifier;
+    return (p.$1 + d.$1, p.$2 + d.$2);
+  }
 
   /// D'où part la vapeur.
-  (double, double) get steamOriginFraction => hasPedestal
-      ? CareEnvironmentSlots.pedestalHumidifierTop
-      : CareEnvironmentSlots.humidifierTop[slot.name]!;
+  (double, double) get steamOriginFraction {
+    if (!hasPedestal) return CareEnvironmentSlots.humidifierTop[slot.name]!;
+    final d = pedestalTranslationFraction;
+    final p = CareEnvironmentSlots.pedestalHumidifierTop;
+    return (p.$1 + d.$1, p.$2 + d.$2);
+  }
 
   /// D'où souffle l'air à abriter : la fenêtre dans la pièce, l'ouverture
   /// au-dessus de la haie dehors. Un courant d'air vient d'une ouverture,
@@ -204,7 +224,6 @@ CareEnvironmentVisualSpec careEnvironmentSpec({
       environment: environment,
       speciesName: speciesName,
       family: family,
-      category: category,
       plant: plant,
     ),
     humidity: profile.humidity,
@@ -290,7 +309,6 @@ CarePlantSupport resolvePlantSupport({
   required CareEnvironmentKind environment,
   String? speciesName,
   String? family,
-  SpeciesCategory? category,
   required PlantVisualKind plant,
 }) {
   if (environment == CareEnvironmentKind.outdoorPatch) {
