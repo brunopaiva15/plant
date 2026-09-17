@@ -1,9 +1,9 @@
 {
   "totalSpecies": 1900,
   "resolution": {
-    "category": 156,
-    "family": 508,
-    "generic": 102,
+    "category": 87,
+    "family": 600,
+    "generic": 79,
     "genus": 1111,
     "species": 23
   },
@@ -14,10 +14,10 @@
     "species": 13
   },
   "heavyProfiles": {
-    "category:flower": 43,
-    "category:fruit": 29,
-    "category:indoor": 16,
-    "category:tree": 54,
+    "category:flower": 27,
+    "category:fruit": 14,
+    "category:indoor": 11,
+    "category:tree": 27,
     "family:Amaryllidaceae": 12,
     "family:Apiaceae": 18,
     "family:Apocynaceae": 12,
@@ -30,12 +30,13 @@
     "family:Fabaceae": 42,
     "family:Lamiaceae": 20,
     "family:Malvaceae": 12,
+    "family:Myrtaceae": 12,
     "family:Orchidaceae": 18,
     "family:Plantaginaceae": 11,
     "family:Poaceae": 28,
     "family:Ranunculaceae": 16,
-    "family:Rosaceae": 19,
-    "generic:(none)": 102,
+    "family:Rosaceae": 18,
+    "generic:(none)": 79,
     "genus:Abelia": 11,
     "genus:Abies": 55,
     "genus:Abutilon": 33,
