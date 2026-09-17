@@ -44,11 +44,8 @@ void main() {
       LightNeed.shade: (CarePlantSlot.backCorner, 'shade'),
       LightNeed.lowLight: (CarePlantSlot.back, 'low_light'),
       LightNeed.indirect: (CarePlantSlot.middle, 'indirect'),
-      LightNeed.brightIndirect: (
-        CarePlantSlot.nearWindowOutsideBeam,
-        'bright_indirect',
-      ),
-      LightNeed.someSun: (CarePlantSlot.nearWindowEdgeOfBeam, 'some_sun'),
+      LightNeed.brightIndirect: (CarePlantSlot.besideBeam, 'bright_indirect'),
+      LightNeed.someSun: (CarePlantSlot.beamEdge, 'some_sun'),
       LightNeed.fullSun: (CarePlantSlot.sunZone, 'full_sun'),
     };
 
@@ -435,17 +432,42 @@ void main() {
 
     test('la distance à la fenêtre ordonne les emplacements', () {
       // La fenêtre est à gauche de l'image : plus un besoin est sombre, plus
-      // l'emplacement est à droite, loin d'elle.
+      // l'emplacement est à droite, loin d'elle. L'ordre est strict — un
+      // besoin plus lumineux ne recule jamais.
       double x(CarePlantSlot s) => CareEnvironmentSlots.slots[s.name]!.$1;
-      expect(x(CarePlantSlot.backCorner), greaterThan(x(CarePlantSlot.middle)));
-      expect(
-        x(CarePlantSlot.middle),
-        greaterThan(x(CarePlantSlot.nearWindowOutsideBeam)),
-      );
-      expect(
-        x(CarePlantSlot.nearWindowOutsideBeam),
-        lessThan(x(CarePlantSlot.sunZone)),
-      );
+      final ordre = LightNeed.values.map(slotFor).toList();
+      for (var i = 1; i < ordre.length; i++) {
+        expect(
+          x(ordre[i]),
+          lessThan(x(ordre[i - 1])),
+          reason:
+              '${ordre[i].name} devrait être plus près de la fenêtre que '
+              '${ordre[i - 1].name}',
+        );
+      }
+    });
+
+    test('les six emplacements sont sur une droite, à pas constant', () {
+      // C'est ce qui fait lire la scène d'une fiche à l'autre : la plante
+      // avance d'un cran vers la lumière, elle ne se pose pas au hasard
+      // dans la pièce.
+      final points = LightNeed.values
+          .map((l) => CareEnvironmentSlots.slots[slotFor(l).name]!)
+          .toList();
+      final dx = points[0].$1 - points[1].$1;
+      final dy = points[0].$2 - points[1].$2;
+      for (var i = 1; i < points.length; i++) {
+        expect(
+          points[i - 1].$1 - points[i].$1,
+          closeTo(dx, 0.001),
+          reason: 'le pas en x change au cran $i',
+        );
+        expect(
+          points[i - 1].$2 - points[i].$2,
+          closeTo(dy, 0.001),
+          reason: 'le pas en y change au cran $i',
+        );
+      }
     });
   });
 }

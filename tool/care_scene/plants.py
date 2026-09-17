@@ -23,6 +23,14 @@ from care_scene.common import VUE  # noqa: E402
 
 UP = Vector((0, 0, 1))
 
+# L'echelle de la piece. Les recettes viennent de la collection de
+# l'onboarding, ou la plante est rendue seule : sa taille absolue n'y veut
+# rien dire. Ici elle partage le cadre avec une piece de 4,2 m sur 3,6 m, un
+# gueridon et un humidificateur, tous a l'echelle reelle — telles quelles,
+# les recettes donnaient un monstera de 3,3 m de large, dans un pot de
+# 1,3 m, qui traversait les murs et sortait du diorama.
+ECHELLE_PIECE = 0.50
+
 # ------------------------------------------------------------
 # les parametres des deux recettes `make_leaf` (collection)
 # ------------------------------------------------------------
@@ -555,10 +563,16 @@ PLANTES = {
 
 
 def construire(nom, position=(0.0, 0.0, 0.0)):
-    """La plante [nom], en pot, les pieds a [position]."""
+    """La plante [nom], en pot, les pieds a [position], a l'echelle de la
+    piece : les recettes sont baties a leur taille d'icone, puis tout
+    l'assemblage est reduit autour de [position] — le point que
+    l'application pose sur l'emplacement."""
     batisseur, echelle = PLANTES[nom]
     D = Vector(position)
     mats = _materiaux(nom)
     objets = _pot_et_terre(mats, echelle, D)
     objets += batisseur(nom, mats, D, echelle)
+    for ob in objets:
+        ob.scale = ob.scale * ECHELLE_PIECE
+        ob.location = D + (ob.location - D) * ECHELLE_PIECE
     return objets

@@ -110,9 +110,23 @@ comme pour l'autre.
 | `shade` | `backCorner` | le plus sombre, loin de la fenêtre |
 | `lowLight` | `back` | arrière de pièce |
 | `indirect` | `middle` | lumière diffuse |
-| `brightIndirect` | `nearWindowOutsideBeam` | pièce lumineuse, tache de soleil **à côté** de la plante |
-| `someSun` | `nearWindowEdgeOfBeam` | au bord de la tache |
+| `brightIndirect` | `besideBeam` | pièce lumineuse, tache de soleil **à côté** de la plante |
+| `someSun` | `beamEdge` | au bord de la tache |
 | `fullSun` | `sunZone` | dans le soleil |
+
+Les six emplacements tiennent sur **une droite, à pas constant** : du fond
+de la pièce jusque dans la tache de soleil, la plante avance d'un cran par
+cran de lumière, toujours du même pas et dans le même sens. La distance à
+la fenêtre décroît donc strictement, et les trois derniers crans se lisent
+sur la tache — à côté, sur son bord, dedans. Six positions choisies une par
+une se liraient comme un hasard : d'une fiche à l'autre, la plante
+sauterait d'un coin de la pièce à l'autre. `tool/care_scene/common.py` pose
+le départ et le pas, le reste en découle ; `test/features/care_environment_test.dart`
+vérifie l'ordre et la régularité du pas.
+
+L'humidificateur suit la plante d'un décalage d'écran constant, toujours du
+même côté — entre elle et la fenêtre : lui aussi doit se retrouver au même
+endroit d'une fiche à l'autre.
 
 La plante garde le même éclat d'une variante à l'autre : c'est le décor —
 luminosité, fenêtre, faisceau — qui porte l'information, pas un
@@ -143,11 +157,24 @@ comme un arbre), sa règle reste donc à l'espèce. Les orchidées terrestres du
 catalogue étendu (ophrys, céphalanthère) gardent elles aussi la feuille
 large : la silhouette en pot ne leur va pas.
 
+### L'échelle
+
+Les recettes de silhouette viennent de la collection de l'onboarding, où la
+plante est rendue seule : sa taille absolue n'y veut rien dire. Dans le
+diorama, elle partage le cadre avec une pièce de 4,2 m sur 3,6 m, un
+guéridon et un humidificateur modelés à l'échelle réelle.
+`plants.ECHELLE_PIECE` réduit donc tout l'assemblage autour de l'ancre
+avant le rendu : le monstera fait 1,5 m, pot compris, et tient dans la
+pièce aux six emplacements. À l'échelle des recettes, il faisait 3,3 m de
+large dans un pot de 1,3 m — ses feuilles traversaient les murs et
+sortaient du diorama, à côté d'un humidificateur haut de 47 cm.
+
 ### Ajouter une silhouette
 
 1. la construire dans `tool/care_scene/plants.py` (une entrée `PLANTES`,
    un constructeur) — les primitives sont dans `tool/clay_scene.py` et
-   `tool/cutting/common.py` ;
+   `tool/cutting/common.py` ; la bâtir à la taille des recettes,
+   `ECHELLE_PIECE` la met à l'échelle de la pièce au rendu ;
 2. la rendre : `python3 tool/build_care_scene_assets.py --only <nom>` ;
 3. une valeur dans `PlantVisualKind` et son chemin dans
    `CareEnvironmentVisualSpec.plantAsset` ;

@@ -50,13 +50,23 @@ SOLEIL = Vector((1.0, 0.18, -1.05))
 # `CarePlantSlot` cote application. La distance a la fenetre encode le besoin
 # lumineux : plus la plante est loin de la fenetre, moins elle demande de
 # lumiere.
+#
+# Les six tiennent sur UNE droite, a pas constant : du fond de la piece
+# jusque dans la tache de soleil, la plante glisse d'un cran a chaque cran
+# de lumiere, toujours du meme pas et dans le meme sens. Un emplacement pose
+# au hasard dans la piece se lirait comme un hasard — d'une fiche a l'autre,
+# la plante sauterait d'un coin a l'autre sans rien dire.
+#
+# La tache de soleil (room._faisceau, bakee dans le decor) va de x = -1.386
+# (bord cote fenetre) a x = 0.043 (bord cote piece) : c'est elle qui decide
+# des trois derniers crans — a cote, sur le bord, dedans.
+PAS = (-0.40, -0.12)
+_DEPART = (1.49, 1.15)
 SLOTS = {
-    "backCorner": (1.40, 1.05),
-    "back": (0.75, 1.05),
-    "middle": (0.55, -0.15),
-    "nearWindowOutsideBeam": (-1.45, -0.30),
-    "nearWindowEdgeOfBeam": (-1.20, 0.30),
-    "sunZone": (-0.55, 0.30),
+    nom: (round(_DEPART[0] + i * PAS[0], 2), round(_DEPART[1] + i * PAS[1], 2))
+    for i, nom in enumerate(
+        ["backCorner", "back", "middle", "besideBeam", "beamEdge", "sunZone"]
+    )
 }
 
 # La plante est rendue seule, au centre du monde ; l'application la translate

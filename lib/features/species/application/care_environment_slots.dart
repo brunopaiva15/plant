@@ -15,34 +15,34 @@ abstract final class CareEnvironmentSlots {
 
   /// Les emplacements, nommés comme les valeurs de `CarePlantSlot`.
   static const Map<String, (double, double)> slots = <String, (double, double)>{
-    'back': (0.66834, 0.57053),
-    'backCorner': (0.73979, 0.60011),
-    'middle': (0.54328, 0.63133),
-    'nearWindowEdgeOfBeam': (0.38955, 0.52547),
-    'nearWindowOutsideBeam': (0.31054, 0.54904),
-    'sunZone': (0.46101, 0.55505),
+    'back': (0.70399, 0.58717),
+    'backCorner': (0.75827, 0.59838),
+    'beamEdge': (0.54116, 0.55352),
+    'besideBeam': (0.59544, 0.56474),
+    'middle': (0.64972, 0.57595),
+    'sunZone': (0.48688, 0.54231),
   };
 
   /// L'humidificateur, posé à côté de la plante, par emplacement.
   static const Map<String, (double, double)> humidifier =
       <String, (double, double)>{
-        'back': (0.55334, 0.59553),
-        'backCorner': (0.62479, 0.62511),
-        'middle': (0.42828, 0.65633),
-        'nearWindowEdgeOfBeam': (0.50455, 0.55047),
-        'nearWindowOutsideBeam': (0.42554, 0.57404),
-        'sunZone': (0.57601, 0.58005),
+        'back': (0.58899, 0.61217),
+        'backCorner': (0.64327, 0.62338),
+        'beamEdge': (0.42616, 0.57852),
+        'besideBeam': (0.48044, 0.58974),
+        'middle': (0.53472, 0.60095),
+        'sunZone': (0.37188, 0.56731),
       };
 
   /// Le haut de l'humidificateur, d'où part la vapeur, par emplacement.
   static const Map<String, (double, double)> humidifierTop =
       <String, (double, double)>{
-        'back': (0.55334, 0.53046),
-        'backCorner': (0.62479, 0.56004),
-        'middle': (0.42828, 0.59126),
-        'nearWindowEdgeOfBeam': (0.50455, 0.48540),
-        'nearWindowOutsideBeam': (0.42554, 0.50897),
-        'sunZone': (0.57601, 0.51498),
+        'back': (0.58899, 0.54710),
+        'backCorner': (0.64327, 0.55831),
+        'beamEdge': (0.42616, 0.51345),
+        'besideBeam': (0.48044, 0.52467),
+        'middle': (0.53472, 0.53588),
+        'sunZone': (0.37188, 0.50224),
       };
 
   /// D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture au-dessus de la haie dehors.
