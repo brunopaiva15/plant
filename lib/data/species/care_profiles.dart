@@ -20,6 +20,9 @@ abstract final class CareProfiles {
   /// lue sur la fiche de l'espece. Le reste n'est pas source.
   static const _rhsHardiness = {CareField.hardiness: CareSource.rhs};
 
+  /// Rusticite et lumiere lues a la RHS.
+  static const _rhsHardinessAndLight = {CareField.hardiness: CareSource.rhs, CareField.light: CareSource.rhs};
+
   // « À surveiller » d'un feuillage tropical en appartement. L'eau d'abord,
   // puis les quatre suceurs de sève qu'un intérieur chauffé garde actifs
   // toute l'année — l'hiver ne les arrête plus —, les moucherons d'un terreau
@@ -95,7 +98,7 @@ abstract final class CareProfiles {
       pot: PotPreference.roomy,
       bloom: Bloom(window: MonthWindow(5, 8), triggers: [BloomTrigger.maturity], indoors: false),
       tipKeys: ['fingerTest', 'monsteraSupport', 'wipeLeaves'],
-      sourcing: _rhsHardiness,
+      sourcing: _rhsHardinessAndLight,
     ),
     'Dracaena trifasciata': CareProfile(
       wateringSummerDays: 18,
@@ -363,7 +366,7 @@ abstract final class CareProfiles {
       issues: [CommonIssue.aphids, CommonIssue.powderyMildew],
       outdoorFriendly: true,
       tipKeys: ['prunesAfterFlowering', 'hardyOutdoors'],
-      sourcing: _rhsHardiness,
+      sourcing: _rhsHardinessAndLight,
     ),
     'Jasminum polyanthum': CareProfile(
       wateringSummerDays: 8,
@@ -688,7 +691,7 @@ abstract final class CareProfiles {
     'Albuca spiralis': CareProfile(
       wateringSummerDays: 10,
       wateringWinterDays: 24,
-      light: LightNeed.someSun,
+      light: LightNeed.fullSun,
       humidity: HumidityNeed.low,
       difficulty: CareDifficulty.easy,
       soil: SoilKind.draining,
