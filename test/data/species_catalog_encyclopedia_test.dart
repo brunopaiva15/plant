@@ -11,7 +11,7 @@ import 'package:flora/domain/care/care_guide.dart';
 void main() {
   const careGuide = CatalogCareGuide();
 
-  test('encyclopédie : 1900 fiches dont les 1444 classes Iris', () {
+  test('encyclopédie : toutes les fiches qui ont un profil, dont les 1444 classes Iris', () {
     final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
     final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toList();
     final modelNames = modelSpecies.map((e) => e.toLowerCase()).toSet();
@@ -20,11 +20,9 @@ void main() {
         .toSet();
     final index = SpeciesIndex.parse(File('assets/species/catalog.tsv').readAsStringSync());
 
-    final irisOnly = IrisDetailedCatalog.from(modelSpecies: modelSpecies, index: index);
     final encyclopedia = IrisDetailedCatalog.from(
       modelSpecies: modelSpecies,
       index: index,
-      targetCount: IrisDetailedCatalog.encyclopediaTargetCount,
     );
 
     final names = encyclopedia.entries.map((e) => e.scientificName.toLowerCase()).toList();
@@ -34,11 +32,12 @@ void main() {
         .toList();
 
     expect(modelJson['classes'], 1444);
-    expect(irisOnly.entries, hasLength(1444));
-    expect(encyclopedia.entries, hasLength(1900));
+    // Sans plafond : toutes les classes Iris, toutes les fiches curatées qui
+    // ont un profil, puis tout le catalogue étendu qui en a un aussi.
+    expect(encyclopedia.entries, hasLength(33344));
     expect(names.toSet().length, names.length, reason: 'noms scientifiques dupliqués');
     expect(modelNames.difference(names.toSet()), isEmpty);
-    expect(extras, hasLength(456));
+    expect(extras, hasLength(31900));
     expect(extraAccepted.toSet().length, extraAccepted.length, reason: 'synonymes rejoués parmi les fiches hors Iris');
     expect(extraAccepted.where(modelAccepted.contains), isEmpty, reason: 'une fiche hors Iris rejoue une classe Iris sous un synonyme');
 
@@ -65,14 +64,15 @@ void main() {
     final encyclopedia = IrisDetailedCatalog.from(
       modelSpecies: modelSpecies,
       index: index,
-      targetCount: IrisDetailedCatalog.encyclopediaTargetCount,
     );
     final gbif = jsonDecode(File('tools/plant_dataset/cache/species.json').readAsStringSync()) as Map<String, dynamic>;
 
     // Divergences connues entre le catalogue et le cache GBIF, revues à la
     // main : noms de famille encore valides mais moins récents que ceux du
-    // backbone GBIF (APG contre GBIF), et quatre hybrides ou synonymes que
-    // GBIF ne résout pas. Le test reste un garde-fou pour tout le reste.
+    // backbone GBIF (APG contre GBIF), et onze hybrides ou synonymes que
+    // GBIF ne résout pas — Sorbus aria est Aria edulis, Chenopodium rubrum
+    // est Oxybasis rubra, les agrumes jabara et unshiu n'ont pas de nom
+    // accepté stable. Le test reste un garde-fou pour tout le reste.
     const famillesEquivalentes = <String, String>{
       'Phacelia tanacetifolia': 'Hydrophyllaceae',
       'Sambucus ebulus': 'Viburnaceae',
@@ -87,6 +87,13 @@ void main() {
       'Allium porrum',
       'Prunus dulcis',
       'Rosa × hybrida',
+      'Chenopodium rubrum',
+      'Citrus jabara',
+      'Citrus unshiu',
+      'Desmodium elegans',
+      'Piper methysticum',
+      'Sorbus aria',
+      'Sorbus intermedia',
     };
 
     final bad = <String>[];
