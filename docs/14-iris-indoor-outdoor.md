@@ -6,7 +6,8 @@
 > qui produit un embedding réutilisable par plusieurs spécialistes : Indoor,
 > Outdoor, taxonomie, prototypes de cultivars et détection d'inconnus.
 >
-> Iris 9.1 reste la première baseline Indoor. Iris 9 reste le dernier gros
+> Iris Indoor — codée « 9.1 » pendant le cadrage — reste la première
+> baseline Indoor. Iris 9 reste le dernier gros
 > entraînement de la génération « classifieur softmax ». Iris 10 change de
 > paradigme.
 
@@ -40,9 +41,9 @@ préparer les cultivars et de mieux traiter l'open-set.
 
 ## 2. La place des versions précédentes
 
-### Iris 9.1 = première Iris Indoor
+### Iris Indoor, la première spécialiste
 
-Iris 9.1 est déjà dessinée comme une spécialiste Indoor :
+Iris Indoor est déjà dessinée comme une spécialiste Indoor :
 
 - masque court de plantes réellement cultivées à l'intérieur ;
 - collecte orientée photos `captive` / plantes en pot ;
@@ -60,7 +61,7 @@ Iris 9 reste utile pour deux raisons :
 2. donner une baseline forte contre laquelle Iris 10 devra prouver son gain.
 
 Iris 10 ne sera pas considéré meilleur parce qu'il est plus moderne ; il doit
-battre Iris 9.1 sur Indoor, Iris 9 sur le généraliste, ou apporter une capacité
+battre Iris Indoor sur son terrain, Iris 9 sur le généraliste, ou apporter une capacité
 nouvelle mesurable à coût embarqué acceptable.
 
 ## 3. Architecture cible
@@ -279,7 +280,7 @@ Le contexte de l'app fournit un a priori, jamais une interdiction :
 - contexte inconnu -> les deux sont évalués ;
 - contradiction -> conserver les deux hypothèses jusqu'à l'arbitrage.
 
-Iris 9.1 fournit la première liste et le premier jeu de test Indoor. Outdoor
+Iris Indoor fournit la première liste et le premier jeu de test Indoor. Outdoor
 doit recevoir son propre jeu de test avant d'être considéré prêt.
 
 ## 9. Taxonomie hiérarchique : espèce, genre, famille
@@ -534,7 +535,7 @@ une architecture.
 
 ## 20. Ordre de mise en œuvre
 
-1. **Finir et mesurer Iris 9.1** comme baseline Indoor.
+1. **Finir et mesurer Iris Indoor** comme baseline Indoor.
 2. **Finir Iris 9** comme baseline classifier large/étroit.
 3. Construire le jeu de benchmark Iris 10 : Indoor, Outdoor, multi-photo, OOD.
 4. Cacher les embeddings **BioCLIP 2.5** sur le corpus et générer les références

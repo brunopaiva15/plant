@@ -1381,8 +1381,8 @@ référence par classe (`test/fixtures/`), correspondance `labels.txt` ↔
 
 Une version livrée = un numéro de plus dans `model.json`, donc un nom de plus
 à l'écran : après Iris 7 est venu Iris 8, et les suivantes s'appelleront
-Iris 9.1 et Iris 9 sans qu'on l'écrive nulle part. Le numéro est une
-**chaîne** — « 9.1 » y tient autant que « 9 », c'est ce qui distingue
+Iris Indoor et Iris 9 sans qu'on l'écrive nulle part. Le numéro est une
+**chaîne** — « Indoor » y tient autant que « 9 », c'est ce qui distingue
 l'export 500 intérieur (§ 13.3) de l'entraînement large (§ 13). Rien
 d'autre à renommer — ni le code, ni les traductions, qui reçoivent le nom
 composé (§ 0).
@@ -3194,12 +3194,14 @@ manquant — la part des photos par espèce — est exactement ce que le chantie
 2 produit. **Les deux chantiers se tiennent par là**, et la décision attend
 un chiffre mesuré plutôt qu'un pari.
 
-#### Iris 9.1 — décision posée le 17 septembre 2026 : 500 espèces exposées, pas plus, toutes d'intérieur
+#### Iris Indoor — décision posée le 17 septembre 2026 : 500 espèces exposées, pas plus, toutes d'intérieur
 
-Le nom d'abord, pour éviter la confusion : cette version-ci s'appellera
-**Iris 9.1** — l'Iris 9 du présent § 13 reste l'entraînement large prévu,
-et les deux ne se ressemblent pas. Le numéro est une chaîne libre dans
-`model.json` : « 9.1 » y tient autant que « 9 », rien à renommer (§ 8).
+Le nom d'abord, pour éviter la confusion : cette version-ci est **Iris
+Indoor** — codée « 9.1 » pendant le cadrage, nommée par `docs/14`, qui en
+fait la première spécialiste Indoor et la baseline que Iris 10 devra
+battre. L'Iris 9 du présent § 13 reste l'entraînement large prévu, et les
+deux ne se ressemblent pas. Le numéro est une chaîne libre dans
+`model.json` : « Indoor » y tient autant que « 9 », rien à renommer (§ 8).
 
 Le nombre n'attend plus la courbe : c'est une borne produit, assumée. La
 liste candidate est déposée, résolue nom par nom (GBIF `species/match`),
@@ -3233,8 +3235,8 @@ Le compte, lui, est arrêté.
 #### La disponibilité a tranché : ~341, pas 500
 
 La mesure est tombée le jour même (17 septembre 2026), sur les 204
-candidates (`disponibilite_9_1.csv` pour la borne basse GBIF,
-`disponibilite_9_1_inat.csv` pour la borne haute iNaturalist `captive`
+candidates (`disponibilite_indoor.csv` pour la borne basse GBIF,
+`disponibilite_indoor_inat.csv` pour la borne haute iNaturalist `captive`
 compris, licences libres) :
 
 | | espèces ≥ 25 images |
@@ -3282,14 +3284,14 @@ Le même jour, dans l'ordre du § 13.6 (doublons d'abord) :
    = *Sansevieria trifasciata*…) : le masque en résout 5 de lui-même en ne
    gardant qu'un membre, la sixième (*Cupressus* = *Hesperocyparis
    macrocarpa*) sort du champ intérieur sans décision.
-3. **Collecte** (`cible_9_1_collecte.txt`, `--target-per-species 300
+3. **Collecte** (`cible_indoor_collecte.txt`, `--target-per-species 300
    --allow-sa --captive-share 0.5 --captive-place 97391`) : **5 741 images
    gardées sur 5 819**, 0 en revue, licences 3 874 CC BY / 1 289 CC0 /
    578 CC BY-SA, attributions complètes. Test de validation passé avant
    (99/100) ; images contrôlées à la main après. 34 espèces à 27 images et
    plus — *Philodendron squamiferum* ferme la marche à 27, au-dessus du
    `--min-train`.
-4. **Le masque est figé** : `masque_9_1.txt`, **335 classes** — 155 déjà
+4. **Le masque est figé** : `masque_indoor.txt`, **335 classes** — 155 déjà
    exposées, 143 collectées sous un nom ou un autre (synonymes compris),
    4 substituts, 35 nouvelles, dédupliquées par `internal_id`. C'est le
    `--garder` de `retailler.py` à l'export ; les 143 ne valent que si la
