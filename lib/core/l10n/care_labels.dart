@@ -511,9 +511,47 @@ extension CareProfileLabels on AppLocalizations {
         CareMatch.edited => careMatchEdited,
       };
 
-  /// La source de la fiche, quand elle a été revue : « Revue d'après RHS ».
-  /// `null` pour une fiche estimée, qui ne dit rien de plus que son niveau.
-  String? careSourceNote(CareProfile p) => p.source == null ? null : careReviewedFrom(p.source!);
+  /// Ce que la fiche a de vérifié, champ par champ : « Vérifié d'après RHS :
+  /// température ». `null` pour une fiche estimée, qui ne dit rien de plus que
+  /// son niveau de résolution.
+  ///
+  /// Une source par fiche ne suffit pas : la rusticité peut venir de la RHS
+  /// quand l'arrosage reste une règle déduite, et le lecteur a le droit de
+  /// savoir laquelle des deux il lit.
+  String? careSourceNote(CareProfile p) {
+    if (p.sourcing.isEmpty) return null;
+    final parSource = <CareSource, List<CareField>>{};
+    for (final entree in p.sourcing.entries) {
+      parSource.putIfAbsent(entree.value, () => []).add(entree.key);
+    }
+    return [
+      for (final groupe in parSource.entries)
+        careVerifiedFields(_careSourceName(groupe.key), groupe.value.map(_careFieldLabel).join(', ')),
+    ].join(' · ');
+  }
+
+  String _careSourceName(CareSource source) => switch (source) {
+        CareSource.rhs => 'RHS',
+        CareSource.aspca => 'ASPCA',
+        CareSource.gbif => 'GBIF',
+        CareSource.habitat => careSourceHabitat,
+        CareSource.derived => careSourceDerived,
+      };
+
+  String _careFieldLabel(CareField field) => switch (field) {
+        CareField.hardiness => careTemperature,
+        CareField.light => careLight,
+        CareField.soil => careSoil,
+        CareField.water => careWater,
+        CareField.humidity => careHumidity,
+        CareField.watering => careWatering,
+        CareField.feeding => careFertilizing,
+        CareField.repotting => careRepotting,
+        CareField.bloom => careBloom,
+        CareField.propagation => carePropagation,
+        CareField.issues => careIssues,
+        CareField.toxicity => careToxicity,
+      };
 
   /// « de mars à septembre », dans la langue et le calendrier de l'utilisateur.
   String fertilizeWindowLabel(MonthWindow w, String localeTag) {

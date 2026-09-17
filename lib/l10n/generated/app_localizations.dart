@@ -9018,11 +9018,23 @@ abstract class AppLocalizations {
   /// **'Fiche corrigée à la main ; le reste vient du catalogue.'**
   String get careEditedNote;
 
-  /// No description provided for @careReviewedFrom.
+  /// No description provided for @careVerifiedFields.
   ///
   /// In fr, this message translates to:
-  /// **'Revue d\'après {name}'**
-  String careReviewedFrom(String name);
+  /// **'Vérifié d\'après {source} : {fields}'**
+  String careVerifiedFields(String source, String fields);
+
+  /// No description provided for @careSourceHabitat.
+  ///
+  /// In fr, this message translates to:
+  /// **'habitat d\'origine'**
+  String get careSourceHabitat;
+
+  /// No description provided for @careSourceDerived.
+  ///
+  /// In fr, this message translates to:
+  /// **'règle de culture'**
+  String get careSourceDerived;
 
   /// No description provided for @careStudio.
   ///

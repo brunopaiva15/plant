@@ -182,7 +182,7 @@ void main() {
     );
   });
 
-  testWidgets('une fiche revue dit sa source, une estimation se tait', (
+  testWidgets('une fiche revue dit ce qui est vérifié, une estimation se tait', (
     tester,
   ) async {
     await pump(
@@ -194,13 +194,13 @@ void main() {
         humidity: HumidityNeed.average,
         difficulty: CareDifficulty.easy,
         soil: SoilKind.standard,
-        source: 'RHS',
+        sourcing: {CareField.hardiness: CareSource.rhs},
       ),
     );
-    expect(find.text("Revue d'après RHS"), findsOneWidget);
+    expect(find.text("Vérifié d'après RHS : Température"), findsOneWidget);
 
     await pump(tester);
-    expect(find.textContaining("Revue d'après"), findsNothing);
+    expect(find.textContaining("Vérifié d'après"), findsNothing);
   });
 
   testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (

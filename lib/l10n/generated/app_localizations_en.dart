@@ -5210,9 +5210,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Profile corrected by hand; the rest comes from the catalogue.';
 
   @override
-  String careReviewedFrom(String name) {
-    return 'Reviewed from $name';
+  String careVerifiedFields(String source, String fields) {
+    return 'Verified from $source: $fields';
   }
+
+  @override
+  String get careSourceHabitat => 'native habitat';
+
+  @override
+  String get careSourceDerived => 'cultivation rule';
 
   @override
   String get careStudio => 'Care Studio';

@@ -5223,9 +5223,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Von Hand korrigiertes Profil; der Rest stammt aus dem Katalog.';
 
   @override
-  String careReviewedFrom(String name) {
-    return 'Nach $name überarbeitet';
+  String careVerifiedFields(String source, String fields) {
+    return 'Geprüft nach $source: $fields';
   }
+
+  @override
+  String get careSourceHabitat => 'Herkunftshabitat';
+
+  @override
+  String get careSourceDerived => 'Kultivierungsregel';
 
   @override
   String get careStudio => 'Care Studio';

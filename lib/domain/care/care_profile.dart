@@ -307,6 +307,45 @@ class DormantRest {
   final bool dark;
 }
 
+/// Un champ de la fiche, tel qu'il se vérifie indépendamment des autres.
+///
+/// La rusticité se lit chez la RHS, la toxicité chez l'ASPCA, la lumière et le
+/// substrat dans la fiche d'une plante ; l'arrosage en jours, lui, ne se lit
+/// nulle part — c'est une sortie de règle. Découper importe : sans cela, une
+/// fiche dit « revue d'après la RHS » et laisse croire que tout l'est.
+enum CareField {
+  hardiness,
+  light,
+  soil,
+  water,
+  humidity,
+  watering,
+  feeding,
+  repotting,
+  bloom,
+  propagation,
+  issues,
+  toxicity,
+}
+
+/// D'où vient la valeur d'un champ.
+enum CareSource {
+  /// La Royal Horticultural Society : rusticité, lumière, substrat, ennemis.
+  rhs,
+
+  /// L'American Society for the Prevention of Cruelty to Animals : toxicité.
+  aspca,
+
+  /// Le GBIF, pour la famille et la répartition.
+  gbif,
+
+  /// Déduit de l'habitat d'origine, quand aucune fiche ne le dit.
+  habitat,
+
+  /// Sorti d'une règle, pas d'une source : les intervalles en jours.
+  derived,
+}
+
 /// Fiche d'entretien d'une espèce : quand arroser, quelle lumière, quel
 /// substrat, à quelle fréquence rempoter, ce qu'il faut surveiller.
 ///
@@ -349,7 +388,7 @@ class CareProfile {
     this.bloom,
     this.dormancy,
     this.tipKeys = const [],
-    this.source,
+    this.sourcing = const {},
   });
 
   /// Jours entre deux arrosages en pleine croissance.
@@ -465,10 +504,13 @@ class CareProfile {
   /// Clés de conseils libres, résolues par la couche i18n.
   final List<String> tipKeys;
 
-  /// La référence consultée quand la fiche a été revue (« RHS », « ASPCA »…).
-  /// `null` = fiche estimée, pas encore confrontée à une source : c'est le cas
-  /// de la plupart des profils de genre, déduits de leur famille.
-  final String? source;
+  /// Ce qui, dans la fiche, a été confronté à une source.
+  ///
+  /// Une provenance par fiche est trop grossière : la rusticité d'un profil
+  /// peut venir de la RHS, sa lumière d'une observation et son arrosage d'une
+  /// règle déduite. Seul ce qui est écrit ici est vérifié ; le reste est une
+  /// estimation d'auteur, et la fiche le dit ainsi.
+  final Map<CareField, CareSource> sourcing;
 
   /// Plage d'hygrométrie idéale à viser, en pourcentage : celle de l'espèce
   /// quand elle est renseignée, sinon celle de son besoin.
