@@ -1,0 +1,501 @@
+nom_demande	verdict	cle_ou_accepte	note
+Monstera deliciosa	EXPOSEE		déjà servie par Iris 8
+Monstera adansonii	EXPOSEE		déjà servie par Iris 8
+Monstera obliqua	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Monstera dubia	A_COLLECTER	2868179	espèce acceptée, clé GBIF
+Monstera standleyana	A_COLLECTER	2868231	espèce acceptée, clé GBIF
+Monstera siltepecana	A_COLLECTER	2868229	espèce acceptée, clé GBIF
+Monstera esqueleto	PAS_ESPECE	RANG GENUS (Monstera Adans.) conf=94	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Monstera subpinnata	A_COLLECTER	2868129	espèce acceptée, clé GBIF
+Monstera pinnatipartita	A_COLLECTER	2868226	espèce acceptée, clé GBIF
+Monstera tuberculata	A_COLLECTER	2868210	espèce acceptée, clé GBIF
+Philodendron hederaceum	EXPOSEE		déjà servie par Iris 8
+Philodendron erubescens	EXPOSEE		déjà servie par Iris 8
+Philodendron birkin	PAS_ESPECE	RANG GENUS (Philodendron Schott) conf=92	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Philodendron gloriosum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Philodendron verrucosum	A_COLLECTER	2871089	espèce acceptée, clé GBIF
+Philodendron melanochrysum	A_COLLECTER	2871241	espèce acceptée, clé GBIF
+Philodendron squamiferum	A_COLLECTER	2870698	espèce acceptée, clé GBIF
+Philodendron pedatum	A_COLLECTER	2870914	espèce acceptée, clé GBIF
+Philodendron xanadu	SYNONYME	SYNONYME-> [9669385]	résoudre vers le nom accepté avant collecte
+Philodendron bipinnatifidum	EXPOSEE		déjà servie par Iris 8
+Philodendron brandtianum	A_COLLECTER	2870671	espèce acceptée, clé GBIF
+Philodendron atabapoense	A_COLLECTER	2871146	espèce acceptée, clé GBIF
+Philodendron billietiae	A_COLLECTER	2870818	espèce acceptée, clé GBIF
+Philodendron burle-marxii	A_COLLECTER	2871159	espèce acceptée, clé GBIF
+Philodendron hastatum	A_COLLECTER	2871100	espèce acceptée, clé GBIF
+Philodendron micans	SYNONYME	SYNONYME-> [7228286]	résoudre vers le nom accepté avant collecte
+Philodendron patriot	A_COLLECTER	6310060	espèce acceptée, clé GBIF
+Philodendron rugosum	A_COLLECTER	2870871	espèce acceptée, clé GBIF
+Philodendron tortum	A_COLLECTER	2870881	espèce acceptée, clé GBIF
+Philodendron tripartitum	A_COLLECTER	2870748	espèce acceptée, clé GBIF
+Epipremnum aureum	EXPOSEE		déjà servie par Iris 8
+Epipremnum pinnatum	EXPOSEE		déjà servie par Iris 8
+Epipremnum amplissimum	A_COLLECTER	2868312	espèce acceptée, clé GBIF
+Scindapsus pictus	EXPOSEE		déjà servie par Iris 8
+Scindapsus treubii	A_COLLECTER	2873707	espèce acceptée, clé GBIF
+Scindapsus officinalis	A_COLLECTER	2873716	espèce acceptée, clé GBIF
+Anthurium crystallinum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Anthurium clarinervium	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Anthurium andraeanum	EXPOSEE		déjà servie par Iris 8
+Anthurium scherzerianum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Anthurium veitchii	A_COLLECTER	2873417	espèce acceptée, clé GBIF
+Anthurium warocqueanum	A_COLLECTER	2873559	espèce acceptée, clé GBIF
+Anthurium hookeri	A_COLLECTER	2872293	espèce acceptée, clé GBIF
+Anthurium vittarifolium	A_COLLECTER	2873406	espèce acceptée, clé GBIF
+Anthurium forgetii	A_COLLECTER	2873656	espèce acceptée, clé GBIF
+Anthurium radicans	A_COLLECTER	2872788	espèce acceptée, clé GBIF
+Alocasia amazonica	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Alocasia zebrina	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Alocasia macrorrhizos	EXPOSEE		déjà servie par Iris 8
+Alocasia micholitziana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Alocasia reginula	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Alocasia baginda	A_COLLECTER	8316200	espèce acceptée, clé GBIF
+Alocasia stingray	PAS_ESPECE	RANG GENUS (Alocasia (Schott) G.Don) conf=92	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Alocasia wentii	A_COLLECTER	5329957	espèce acceptée, clé GBIF
+Alocasia lauterbachiana	A_COLLECTER	5329877	espèce acceptée, clé GBIF
+Alocasia cucullata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Alocasia cuprea	A_COLLECTER	5329958	espèce acceptée, clé GBIF
+Alocasia longiloba	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Alocasia sinuata	A_COLLECTER	5329859	espèce acceptée, clé GBIF
+Syngonium podophyllum	EXPOSEE		déjà servie par Iris 8
+Syngonium wendlandii	A_COLLECTER	2867865	espèce acceptée, clé GBIF
+Syngonium erythrophyllum	A_COLLECTER	2867864	espèce acceptée, clé GBIF
+Syngonium angustatum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Spathiphyllum wallisii	EXPOSEE		déjà servie par Iris 8
+Spathiphyllum cochlearispathum	A_COLLECTER	2869661	espèce acceptée, clé GBIF
+Aglaonema commutatum	EXPOSEE		déjà servie par Iris 8
+Aglaonema pictum	A_COLLECTER	2866460	espèce acceptée, clé GBIF
+Aglaonema modestum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Zamioculcas zamiifolia	EXPOSEE		déjà servie par Iris 8
+Dieffenbachia seguine	EXPOSEE		déjà servie par Iris 8
+Dieffenbachia maculata	SYNONYME	SYNONYME-> [2869345]	résoudre vers le nom accepté avant collecte
+Caladium bicolor	EXPOSEE		déjà servie par Iris 8
+Caladium humboldtii	A_COLLECTER	2868514	espèce acceptée, clé GBIF
+Xanthosoma sagittifolium	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Amorphophallus konjac	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Goeppertia orbifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Goeppertia makoyana	EXPOSEE		déjà servie par Iris 8
+Goeppertia insignis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Goeppertia roseopicta	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Goeppertia zebrina	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Goeppertia warscewiczii	A_COLLECTER	8184122	espèce acceptée, clé GBIF
+Goeppertia ornata	A_COLLECTER	7977204	espèce acceptée, clé GBIF
+Goeppertia rufibarba	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Goeppertia crocata	A_COLLECTER	7401775	espèce acceptée, clé GBIF
+Goeppertia musaica	PAS_ESPECE	RANG PHYLUM (Tracheophyta) conf=92	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Goeppertia veitchiana	A_COLLECTER	8146589	espèce acceptée, clé GBIF
+Goeppertia lietzei	A_COLLECTER	9578489	espèce acceptée, clé GBIF
+Maranta leuconeura	EXPOSEE		déjà servie par Iris 8
+Maranta arundinacea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Stromanthe sanguinea	EXPOSEE		déjà servie par Iris 8
+Ctenanthe oppenheimiana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ctenanthe burle-marxii	EXPOSEE		déjà servie par Iris 8
+Ctenanthe lubbersiana	A_COLLECTER	2762435	espèce acceptée, clé GBIF
+Ctenanthe setosa	A_COLLECTER	2762422	espèce acceptée, clé GBIF
+Dracaena trifasciata	EXPOSEE		déjà servie par Iris 8
+Dracaena angolensis	A_COLLECTER	10961470	espèce acceptée, clé GBIF
+Dracaena masoniana	A_COLLECTER	10956312	espèce acceptée, clé GBIF
+Dracaena hanningtonii	A_COLLECTER	5303896	espèce acceptée, clé GBIF
+Dracaena marginata	EXPOSEE		déjà servie par Iris 8
+Dracaena fragrans	EXPOSEE		déjà servie par Iris 8
+Dracaena reflexa	EXPOSEE		déjà servie par Iris 8
+Dracaena surculosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Dracaena draco	EXPOSEE		déjà servie par Iris 8
+Dracaena sanderiana	EXPOSEE		déjà servie par Iris 8
+Chlorophytum comosum	EXPOSEE		déjà servie par Iris 8
+Chlorophytum orchidastrum	A_COLLECTER	2774517	espèce acceptée, clé GBIF
+Asparagus setaceus	EXPOSEE		déjà servie par Iris 8
+Asparagus densiflorus	EXPOSEE		déjà servie par Iris 8
+Beaucarnea recurvata	EXPOSEE		déjà servie par Iris 8
+Aspidistra elatior	EXPOSEE		déjà servie par Iris 8
+Cordyline fruticosa	EXPOSEE		déjà servie par Iris 8
+Cordyline australis	EXPOSEE		déjà servie par Iris 8
+Yucca elephantipes	SYNONYME	SYNONYME-> [2775716]	résoudre vers le nom accepté avant collecte
+Yucca aloifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ledebouria socialis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Albuca spiralis	A_COLLECTER	2772304	espèce acceptée, clé GBIF
+Ficus elastica	EXPOSEE		déjà servie par Iris 8
+Ficus lyrata	EXPOSEE		déjà servie par Iris 8
+Ficus benjamina	EXPOSEE		déjà servie par Iris 8
+Ficus microcarpa	EXPOSEE		déjà servie par Iris 8
+Ficus umbellata	A_COLLECTER	5571957	espèce acceptée, clé GBIF
+Ficus pumila	EXPOSEE		déjà servie par Iris 8
+Ficus triangularis	SYNONYME	SYNONYME-> [5570837]	résoudre vers le nom accepté avant collecte
+Ficus altissima	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ficus religiosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ficus deltoidea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Dorstenia foetida	A_COLLECTER	7262610	espèce acceptée, clé GBIF
+Peperomia obtusifolia	EXPOSEE		déjà servie par Iris 8
+Peperomia argyreia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Peperomia caperata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Peperomia prostrata	A_COLLECTER	10776468	espèce acceptée, clé GBIF
+Peperomia polybotrya	A_COLLECTER	4186205	espèce acceptée, clé GBIF
+Peperomia tetraphylla	A_COLLECTER	3086448	espèce acceptée, clé GBIF
+Peperomia clusiifolia	A_COLLECTER	4184364	espèce acceptée, clé GBIF
+Peperomia graveolens	A_COLLECTER	4183917	espèce acceptée, clé GBIF
+Peperomia nivalis	A_COLLECTER	7305985	espèce acceptée, clé GBIF
+Peperomia verticillata	A_COLLECTER	8040674	espèce acceptée, clé GBIF
+Piper nigrum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Piper ornatum	A_COLLECTER	3086329	espèce acceptée, clé GBIF
+Piper crocatum	A_COLLECTER	7305692	espèce acceptée, clé GBIF
+Begonia maculata	EXPOSEE		déjà servie par Iris 8
+Begonia rex	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Begonia masoniana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Begonia corallina	SYNONYME	SYNONYME-> [7303475]	résoudre vers le nom accepté avant collecte
+Begonia erythrophylla	A_COLLECTER	4156797	espèce acceptée, clé GBIF
+Begonia metallica	A_COLLECTER	11184649	espèce acceptée, clé GBIF
+Begonia venosa	A_COLLECTER	4157897	espèce acceptée, clé GBIF
+Begonia listada	A_COLLECTER	4157039	espèce acceptée, clé GBIF
+Begonia amphioxus	A_COLLECTER	4159185	espèce acceptée, clé GBIF
+Begonia ferox	A_COLLECTER	9340381	espèce acceptée, clé GBIF
+Pilea peperomioides	EXPOSEE		déjà servie par Iris 8
+Pilea cadierei	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pilea involucrata	PAS_ESPECE	RANG GENUS (Pilea Lindl.) conf=97	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Pilea microphylla	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pilea meyeniana	PAS_ESPECE	INTROUVABLE (NONE, conf=100)	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Soleirolia soleirolii	EXPOSEE		déjà servie par Iris 8
+Pellionia pulchra	SYNONYME	SYNONYME-> [7916114]	résoudre vers le nom accepté avant collecte
+Pellionia daveauana	SYNONYME	SYNONYME-> [7916114]	résoudre vers le nom accepté avant collecte
+Nephrolepis exaltata	EXPOSEE		déjà servie par Iris 8
+Nephrolepis cordifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Asplenium nidus	EXPOSEE		déjà servie par Iris 8
+Asplenium bulbiferum	A_COLLECTER	7310861	espèce acceptée, clé GBIF
+Asplenium antiquum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Platycerium bifurcatum	EXPOSEE		déjà servie par Iris 8
+Platycerium grande	A_COLLECTER	8655717	espèce acceptée, clé GBIF
+Phlebodium aureum	EXPOSEE		déjà servie par Iris 8
+Adiantum capillus-veneris	EXPOSEE		déjà servie par Iris 8
+Adiantum raddianum	EXPOSEE		déjà servie par Iris 8
+Pteris cretica	EXPOSEE		déjà servie par Iris 8
+Pteris ensiformis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Davallia fejeensis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Cyrtomium falcatum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pellaea rotundifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Selaginella lepidophylla	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Selaginella kraussiana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Dypsis lutescens	EXPOSEE		déjà servie par Iris 8
+Howea forsteriana	EXPOSEE		déjà servie par Iris 8
+Chamaedorea elegans	EXPOSEE		déjà servie par Iris 8
+Chamaedorea seifrizii	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Rhapis excelsa	EXPOSEE		déjà servie par Iris 8
+Phoenix roebelenii	EXPOSEE		déjà servie par Iris 8
+Caryota mitis	EXPOSEE		déjà servie par Iris 8
+Licuala grandis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Livistona rotundifolia	SYNONYME	SYNONYME-> [2733431]	résoudre vers le nom accepté avant collecte
+Cycas revoluta	EXPOSEE		déjà servie par Iris 8
+Zamia furfuracea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Crassula ovata	EXPOSEE		déjà servie par Iris 8
+Crassula arborescens	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Crassula rupestris	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Crassula muscosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Echeveria elegans	EXPOSEE		déjà servie par Iris 8
+Echeveria agavoides	EXPOSEE		déjà servie par Iris 8
+Echeveria laui	A_COLLECTER	4200940	espèce acceptée, clé GBIF
+Sedum morganianum	EXPOSEE		déjà servie par Iris 8
+Sedum rubrotinctum	EXPOSEE		déjà servie par Iris 8
+Sedum sieboldii	SYNONYME	SYNONYME-> [7172849]	résoudre vers le nom accepté avant collecte
+Kalanchoe blossfeldiana	EXPOSEE		déjà servie par Iris 8
+Kalanchoe daigremontiana	EXPOSEE		déjà servie par Iris 8
+Kalanchoe tomentosa	EXPOSEE		déjà servie par Iris 8
+Kalanchoe thyrsiflora	A_COLLECTER	4198362	espèce acceptée, clé GBIF
+Aeonium arboreum	EXPOSEE		déjà servie par Iris 8
+Cotyledon tomentosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Graptopetalum paraguayense	EXPOSEE		déjà servie par Iris 8
+Pachyphytum oviferum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Sempervivum tectorum	EXPOSEE		déjà servie par Iris 8
+Aloe vera	EXPOSEE		déjà servie par Iris 8
+Aloe aristata	SYNONYME	SYNONYME-> [9505138]	résoudre vers le nom accepté avant collecte
+Aloe variegata	PAS_ESPECE	RANG FAMILY (Asphodelaceae) conf=97	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Aloe squarrosa	A_COLLECTER	2778154	espèce acceptée, clé GBIF
+Haworthiopsis fasciata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Haworthiopsis attenuata	EXPOSEE		déjà servie par Iris 8
+Haworthia cooperi	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Haworthia truncata	A_COLLECTER	8097702	espèce acceptée, clé GBIF
+Gasteria verrucosa	SYNONYME	SYNONYME-> [2778570]	résoudre vers le nom accepté avant collecte
+Schlumbergera truncata	EXPOSEE		déjà servie par Iris 8
+Hatiora gaertneri	A_COLLECTER	7280947	espèce acceptée, clé GBIF
+Rhipsalis baccifera	EXPOSEE		déjà servie par Iris 8
+Rhipsalis paradoxa	A_COLLECTER	7280743	espèce acceptée, clé GBIF
+Epiphyllum anguliger	SYNONYME	SYNONYME-> [10771315]	résoudre vers le nom accepté avant collecte
+Disocactus ackermannii	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Opuntia microdasys	EXPOSEE		déjà servie par Iris 8
+Echinocactus grusonii	EXPOSEE		déjà servie par Iris 8
+Gymnocalycium mihanovichii	EXPOSEE		déjà servie par Iris 8
+Mammillaria elongata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Cereus peruvianus	PAS_ESPECE	RANG FAMILY (Cactaceae) conf=97	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Cephalocereus senilis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Euphorbia trigona	EXPOSEE		déjà servie par Iris 8
+Euphorbia lactea	EXPOSEE		déjà servie par Iris 8
+Euphorbia milii	EXPOSEE		déjà servie par Iris 8
+Euphorbia tirucalli	EXPOSEE		déjà servie par Iris 8
+Euphorbia pulcherrima	EXPOSEE		déjà servie par Iris 8
+Euphorbia obesa	A_COLLECTER	4930719	espèce acceptée, clé GBIF
+Codiaeum variegatum	EXPOSEE		déjà servie par Iris 8
+Acalypha hispida	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Lithops lesliei	EXPOSEE		déjà servie par Iris 8
+Lithops pseudotruncatella	A_COLLECTER	7329176	espèce acceptée, clé GBIF
+Faucaria tigrina	A_COLLECTER	3703460	espèce acceptée, clé GBIF
+Conophytum bilobum	A_COLLECTER	7329433	espèce acceptée, clé GBIF
+Phalaenopsis equestris	A_COLLECTER	5310951	espèce acceptée, clé GBIF
+Dendrobium nobile	EXPOSEE		déjà servie par Iris 8
+Dendrobium phalaenopsis	SYNONYME	SYNONYME-> [5315722]	résoudre vers le nom accepté avant collecte
+Cymbidium hybrida	PAS_ESPECE	INTROUVABLE (NONE, conf=100)	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Oncidium flexuosum	PAS_ESPECE	RANG FAMILY (Orchidaceae) conf=97	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Miltoniopsis hybrida	PAS_ESPECE	RANG GENUS (Miltoniopsis God.-Leb.) conf=94	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Cambria hybrida	PAS_ESPECE	RANG GENUS (Cambria Neckaja & Ivanova, 1956) conf=94	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Paphiopedilum insigne	A_COLLECTER	2825576	espèce acceptée, clé GBIF
+Cattleya labiata	A_COLLECTER	2801162	espèce acceptée, clé GBIF
+Ludisia discolor	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Macodes petola	A_COLLECTER	2804641	espèce acceptée, clé GBIF
+Vanda coerulea	A_COLLECTER	2783163	espèce acceptée, clé GBIF
+Brassia verrucosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Epidendrum radicans	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Zygopetalum maculatum	A_COLLECTER	2837000	espèce acceptée, clé GBIF
+Vanilla planifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Tillandsia xerographica	A_COLLECTER	2695364	espèce acceptée, clé GBIF
+Tillandsia ionantha	EXPOSEE		déjà servie par Iris 8
+Tillandsia usneoides	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Guzmania lingulata	EXPOSEE		déjà servie par Iris 8
+Aechmea fasciata	EXPOSEE		déjà servie par Iris 8
+Vriesea splendens	EXPOSEE		déjà servie par Iris 8
+Neoregelia carolinae	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Billbergia nutans	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Cryptanthus zonatus	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ananas comosus var. variegatus	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Hoya carnosa	EXPOSEE		déjà servie par Iris 8
+Hoya kerrii	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Hoya australis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Hoya linearis	A_COLLECTER	7410932	espèce acceptée, clé GBIF
+Hoya pubicalyx	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Hoya bella	A_COLLECTER	3575282	espèce acceptée, clé GBIF
+Hoya compacta	SYNONYME	SYNONYME-> [8658195]	résoudre vers le nom accepté avant collecte
+Ceropegia woodii	EXPOSEE		déjà servie par Iris 8
+Ceropegia sandersonii	A_COLLECTER	7837855	espèce acceptée, clé GBIF
+Dischidia pectenoides	SYNONYME	SYNONYME-> [8017070]	résoudre vers le nom accepté avant collecte
+Dischidia nummularia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Dischidia ruscifolia	A_COLLECTER	7656154	espèce acceptée, clé GBIF
+Pachypodium lameri	A_COLLECTER	5535474	espèce acceptée, clé GBIF
+Adenium obesum	EXPOSEE		déjà servie par Iris 8
+Stapelia gigantea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Catharanthus roseus	EXPOSEE		déjà servie par Iris 8
+Mandevilla sanderi	EXPOSEE		déjà servie par Iris 8
+Tradescantia zebrina	EXPOSEE		déjà servie par Iris 8
+Tradescantia fluminensis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Tradescantia pallida	EXPOSEE		déjà servie par Iris 8
+Tradescantia spathacea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Tradescantia sillamontana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Callisia repens	EXPOSEE		déjà servie par Iris 8
+Callisia fragrans	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Cyanotis somaliensis	A_COLLECTER	5303359	espèce acceptée, clé GBIF
+Oxalis triangularis	EXPOSEE		déjà servie par Iris 8
+Oxalis tetraphylla	EXPOSEE		déjà servie par Iris 8
+Oxalis megalorrhiza	A_COLLECTER	7318087	espèce acceptée, clé GBIF
+Plectranthus scutellarioides	EXPOSEE		déjà servie par Iris 8
+Plectranthus verticillatus	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Plectranthus australis	SYNONYME	SYNONYME-> [10030768]	résoudre vers le nom accepté avant collecte
+Plectranthus amboinicus	SYNONYME	SYNONYME-> [5341313]	résoudre vers le nom accepté avant collecte
+Rosmarinus officinalis	SYNONYME	SYNONYME-> [10902460]	résoudre vers le nom accepté avant collecte
+Mentha spicata	EXPOSEE		déjà servie par Iris 8
+Ocimum basilicum	EXPOSEE		déjà servie par Iris 8
+Lavandula angustifolia	EXPOSEE		déjà servie par Iris 8
+Streptocarpus cultivar	PAS_ESPECE	RANG KINGDOM (Plantae) conf=92	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Saintpaulia ionantha	EXPOSEE		déjà servie par Iris 8
+Aeschynanthus radicans	EXPOSEE		déjà servie par Iris 8
+Aeschynanthus longicaulis	A_COLLECTER	3825597	espèce acceptée, clé GBIF
+Nematanthus gregarius	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Columnea gloria	SYNONYME	SYNONYME-> [6365214]	résoudre vers le nom accepté avant collecte
+Sinningia speciosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Episcia cupreata	EXPOSEE		déjà servie par Iris 8
+Chirita tamiana	SYNONYME	SYNONYME-> [12260221]	résoudre vers le nom accepté avant collecte
+Kohleria eriantha	SYNONYME	SYNONYME-> [6365157]	résoudre vers le nom accepté avant collecte
+Curio rowleyanus	EXPOSEE		déjà servie par Iris 8
+Curio radicans	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Curio herreanus	A_COLLECTER	3149664	espèce acceptée, clé GBIF
+Senecio macroglossus	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Gynura aurantiaca	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Gerbera jamesonii	EXPOSEE		déjà servie par Iris 8
+Chrysanthemum morifolium	A_COLLECTER	3150767	espèce acceptée, clé GBIF
+Argyranthemum frutescens	EXPOSEE		déjà servie par Iris 8
+Hedera helix	EXPOSEE		déjà servie par Iris 8
+Hedera canariensis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Schefflera arboricola	EXPOSEE		déjà servie par Iris 8
+Schefflera actinophylla	SYNONYME	SYNONYME-> [11008739]	résoudre vers le nom accepté avant collecte
+Fatsia japonica	EXPOSEE		déjà servie par Iris 8
+Fatshedera lizei	A_COLLECTER	3597552	espèce acceptée, clé GBIF
+Polyscias fruticosa	EXPOSEE		déjà servie par Iris 8
+Polyscias scutellaria	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Polyscias balfouriana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Tetrapanax papyrifer	EXPOSEE		déjà servie par Iris 8
+Pachira aquatica	EXPOSEE		déjà servie par Iris 8
+Hibiscus rosa-sinensis	EXPOSEE		déjà servie par Iris 8
+Abutilon pictum	SYNONYME	SYNONYME-> [7900084]	résoudre vers le nom accepté avant collecte
+Abutilon megapotamicum	SYNONYME	SYNONYME-> [8220878]	résoudre vers le nom accepté avant collecte
+Anisodontea capensis	A_COLLECTER	3940873	espèce acceptée, clé GBIF
+Citrus limon	A_COLLECTER	7647136	espèce acceptée, clé GBIF
+Citrus japonica	EXPOSEE		déjà servie par Iris 8
+Citrus mitis	PAS_ESPECE	RANG GENUS (Citrus L.) conf=97	cultivar/grex/nom de commerce → § 13.5, jamais une classe
+Citrus sinensis	SYNONYME	SYNONYME-> [8077391]	résoudre vers le nom accepté avant collecte
+Citrus aurantiifolia	A_COLLECTER	3190164	espèce acceptée, clé GBIF
+Citrus medica	EXPOSEE		déjà servie par Iris 8
+Murraya paniculata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Coffea arabica	EXPOSEE		déjà servie par Iris 8
+Gardenia jasminoides	EXPOSEE		déjà servie par Iris 8
+Pentas lanceolata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ixora coccinea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Nertera granadensis	A_COLLECTER	2911624	espèce acceptée, clé GBIF
+Hydrangea macrophylla	EXPOSEE		déjà servie par Iris 8
+Pelargonium zonale	EXPOSEE		déjà servie par Iris 8
+Pelargonium peltatum	EXPOSEE		déjà servie par Iris 8
+Pelargonium graveolens	EXPOSEE		déjà servie par Iris 8
+Pelargonium grandiflorum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Impatiens walleriana	EXPOSEE		déjà servie par Iris 8
+Impatiens hawkeri	EXPOSEE		déjà servie par Iris 8
+Cyclamen persicum	EXPOSEE		déjà servie par Iris 8
+Primula obconica	A_COLLECTER	7290874	espèce acceptée, clé GBIF
+Primula vulgaris	EXPOSEE		déjà servie par Iris 8
+Ardisia crenata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Lysimachia nummularia	EXPOSEE		déjà servie par Iris 8
+Rhododendron simsii	EXPOSEE		déjà servie par Iris 8
+Camellia japonica	EXPOSEE		déjà servie par Iris 8
+Plumbago auriculata	EXPOSEE		déjà servie par Iris 8
+Passiflora caerulea	EXPOSEE		déjà servie par Iris 8
+Passiflora edulis	EXPOSEE		déjà servie par Iris 8
+Jasminum polyanthum	EXPOSEE		déjà servie par Iris 8
+Jasminum sambac	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Olea europaea	EXPOSEE		déjà servie par Iris 8
+Bougainvillea glabra	EXPOSEE		déjà servie par Iris 8
+Clerodendrum thomsoniae	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Clerodendrum ugandense	SYNONYME	SYNONYME-> [7307159]	résoudre vers le nom accepté avant collecte
+Thunbergia erecta	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Thunbergia alata	EXPOSEE		déjà servie par Iris 8
+Fittonia albivenis	EXPOSEE		déjà servie par Iris 8
+Fittonia gigantea	A_COLLECTER	5574499	espèce acceptée, clé GBIF
+Hypoestes phyllostachya	EXPOSEE		déjà servie par Iris 8
+Pachystachys lutea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Aphelandra squarrosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Crossandra infundibuliformis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ruellia makoyana	A_COLLECTER	8029019	espèce acceptée, clé GBIF
+Hemigraphis alternata	SYNONYME	SYNONYME-> [8297383]	résoudre vers le nom accepté avant collecte
+Justicia brandegeeana	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Barleria cristata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Strelitzia reginae	EXPOSEE		déjà servie par Iris 8
+Strelitzia nicolai	EXPOSEE		déjà servie par Iris 8
+Ravenala madagascariensis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Musa acuminata	EXPOSEE		déjà servie par Iris 8
+Musa basjoo	EXPOSEE		déjà servie par Iris 8
+Musa velutina	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Ensete ventricosum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Canna indica	EXPOSEE		déjà servie par Iris 8
+Calathea allouia	SYNONYME	SYNONYME-> [8107795]	résoudre vers le nom accepté avant collecte
+Alpinia zerumbet	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Zingiber officinale	EXPOSEE		déjà servie par Iris 8
+Curcuma longa	EXPOSEE		déjà servie par Iris 8
+Hedychium coronarium	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Etlingera elatior	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Costus woodenii	A_COLLECTER	2756950	espèce acceptée, clé GBIF
+Dionaea muscipula	EXPOSEE		déjà servie par Iris 8
+Drosera capensis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Drosera rotundifolia	A_COLLECTER	3191030	espèce acceptée, clé GBIF
+Nepenthes alata	A_COLLECTER	3702270	espèce acceptée, clé GBIF
+Nepenthes ventricosa	A_COLLECTER	3702158	espèce acceptée, clé GBIF
+Sarracenia purpurea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Sarracenia leucophylla	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pinguicula moranensis	A_COLLECTER	7297919	espèce acceptée, clé GBIF
+Cephalotus follicularis	EXPOSEE		déjà servie par Iris 8
+Utricularia sandersonii	A_COLLECTER	4088290	espèce acceptée, clé GBIF
+Clivia miniata	EXPOSEE		déjà servie par Iris 8
+Hippeastrum hortorum	A_COLLECTER	7351546	espèce acceptée, clé GBIF
+Eucharis amazonica	SYNONYME	SYNONYME-> [10989209]	résoudre vers le nom accepté avant collecte
+Haemanthus katharinae	SYNONYME	SYNONYME-> [2860679]	résoudre vers le nom accepté avant collecte
+Cryptostephanus vansonii	A_COLLECTER	2860347	espèce acceptée, clé GBIF
+Agapanthus africanus	EXPOSEE		déjà servie par Iris 8
+Cyrtanthus elatus	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Zephyranthes carinata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Crinum asiaticum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Sprekelia formosissima	A_COLLECTER	2860360	espèce acceptée, clé GBIF
+Nerine bowdenii	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Lilium longiflorum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Tulipa gesneriana	EXPOSEE		déjà servie par Iris 8
+Hyacinthus orientalis	EXPOSEE		déjà servie par Iris 8
+Muscari armeniacum	EXPOSEE		déjà servie par Iris 8
+Narcissus tazzetta	A_COLLECTER	2858963	espèce acceptée, clé GBIF
+Cyclamen coum	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Convallaria majalis	EXPOSEE		déjà servie par Iris 8
+Gloriosa superba	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Bowiea volubilis	A_COLLECTER	7386178	espèce acceptée, clé GBIF
+Dioscorea elephantipes	A_COLLECTER	2755523	espèce acceptée, clé GBIF
+Stephania erecta	SYNONYME	SYNONYME-> [5592774]	résoudre vers le nom accepté avant collecte
+Stephania suberosa	A_COLLECTER	5592748	espèce acceptée, clé GBIF
+Stephania pierrei	A_COLLECTER	5592774	espèce acceptée, clé GBIF
+Phyllanthus mirabilis	A_COLLECTER	5381921	espèce acceptée, clé GBIF
+Adenia spinosa	A_COLLECTER	5527612	espèce acceptée, clé GBIF
+Jatropha podagrica	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Jatropha multifida	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Monadenium ritchiei	SYNONYME	SYNONYME-> [3067621]	résoudre vers le nom accepté avant collecte
+Synadenium grantii	SYNONYME	SYNONYME-> [3070438]	résoudre vers le nom accepté avant collecte
+Pedilanthus tithymaloides	SYNONYME	SYNONYME-> [3069168]	résoudre vers le nom accepté avant collecte
+Euphorbia tirucalli rosea	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Euphorbia leuconeura	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pilea grandolis	SYNONYME	SYNONYME-> [5361822]	résoudre vers le nom accepté avant collecte
+Pilea glaucophylla	SYNONYME	SYNONYME-> [5670242]	résoudre vers le nom accepté avant collecte
+Pilea nummulariifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Elatostema repens	SYNONYME	SYNONYME-> [7916114]	résoudre vers le nom accepté avant collecte
+Peperomia rotundifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Peperomia serpens	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Peperomia maculosa	A_COLLECTER	3086368	espèce acceptée, clé GBIF
+Peperomia metallica	A_COLLECTER	4184843	espèce acceptée, clé GBIF
+Peperomia incana	A_COLLECTER	8049505	espèce acceptée, clé GBIF
+Peperomia fraseri	A_COLLECTER	7305086	espèce acceptée, clé GBIF
+Begonia conchifolia	A_COLLECTER	7303439	espèce acceptée, clé GBIF
+Begonia foliosa	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Begonia nelumbiifolia	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Begonia goegoensis	A_COLLECTER	4157921	espèce acceptée, clé GBIF
+Begonia serratipetala	A_COLLECTER	4157972	espèce acceptée, clé GBIF
+Calathea metallica	A_COLLECTER	7722597	espèce acceptée, clé GBIF
+Calathea lindeniana	A_COLLECTER	9546997	espèce acceptée, clé GBIF
+Calathea louisae	SYNONYME	SYNONYME-> [9431418]	résoudre vers le nom accepté avant collecte
+Calathea ecuadoriana	SYNONYME	SYNONYME-> [9296883]	résoudre vers le nom accepté avant collecte
+Calathea chimboracensis	SYNONYME	SYNONYME-> [9355492]	résoudre vers le nom accepté avant collecte
+Schismatoglottis calyptrata	A_COLLECTER	2867982	espèce acceptée, clé GBIF
+Schismatoglottis wallichii	A_COLLECTER	2868039	espèce acceptée, clé GBIF
+Homalomena rubescens	A_COLLECTER	2868726	espèce acceptée, clé GBIF
+Homalomena wallisii	SYNONYME	SYNONYME-> [9255776]	résoudre vers le nom accepté avant collecte
+Bucephalandra pygmaea	A_COLLECTER	9524399	espèce acceptée, clé GBIF
+Cryptocoryne wendtii	A_COLLECTER	2869214	espèce acceptée, clé GBIF
+Anubias barteri	A_COLLECTER	2871871	espèce acceptée, clé GBIF
+Rhaphidophora tetrasperma	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Rhaphidophora decursiva	A_COLLECTER	5329707	espèce acceptée, clé GBIF
+Rhaphidophora cryptantha	A_COLLECTER	5329650	espèce acceptée, clé GBIF
+Rhaphidophora hayi	A_COLLECTER	5329786	espèce acceptée, clé GBIF
+Amydrium medium	A_COLLECTER	2870238	espèce acceptée, clé GBIF
+Amydrium zippelianum	A_COLLECTER	2870249	espèce acceptée, clé GBIF
+Lasia spinosa	A_COLLECTER	5330870	espèce acceptée, clé GBIF
+Cyrtosperma johnstonii	A_COLLECTER	2871907	espèce acceptée, clé GBIF
+Anadendrum microstachyum	A_COLLECTER	2870564	espèce acceptée, clé GBIF
+Pothos chinensis	A_COLLECTER	5330311	espèce acceptée, clé GBIF
+Pothos scandens	A_COLLECTER	5330394	espèce acceptée, clé GBIF
+Remusatia vivipara	A_COLLECTER	2871956	espèce acceptée, clé GBIF
+Typhonium blumei	A_COLLECTER	2869495	espèce acceptée, clé GBIF
+Pinanga coronata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Chamaedorea metallica	A_COLLECTER	2734536	espèce acceptée, clé GBIF
+Chamaedorea microspadix	A_COLLECTER	2734713	espèce acceptée, clé GBIF
+Chamaedorea radicalis	A_COLLECTER	2734396	espèce acceptée, clé GBIF
+Geonoma epetiolata	A_COLLECTER	2734364	espèce acceptée, clé GBIF
+Iguanura wallichiana	A_COLLECTER	7933984	espèce acceptée, clé GBIF
+Kerriodoxa elegans	A_COLLECTER	2732373	espèce acceptée, clé GBIF
+Aiphanes horrida	A_COLLECTER	2738639	espèce acceptée, clé GBIF
+Bismarckia nobilis	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Trachycarpus fortunei	EXPOSEE		déjà servie par Iris 8
+Washingtonia robusta	EXPOSEE		déjà servie par Iris 8
+Chamaerops humilis	EXPOSEE		déjà servie par Iris 8
+Brahea armata	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pachypodium saundersii	COLLECTEE		dans plants.csv, entraînée v8, exportable
+Pachypodium geayi	A_COLLECTER	5535488	espèce acceptée, clé GBIF
+Pachypodium brevicaule	A_COLLECTER	7155422	espèce acceptée, clé GBIF
+Euphorbia abdelkuri	A_COLLECTER	3069740	espèce acceptée, clé GBIF
+Euphorbia ambovombensis	A_COLLECTER	3065816	espèce acceptée, clé GBIF
+Euphorbia francoisii	SYNONYME	SYNONYME-> [3068908]	résoudre vers le nom accepté avant collecte
+Euphorbia decaryi	A_COLLECTER	3068904	espèce acceptée, clé GBIF
+Euphorbia cylindrifolia	A_COLLECTER	3070377	espèce acceptée, clé GBIF
+Euphorbia suzannae	A_COLLECTER	3067906	espèce acceptée, clé GBIF

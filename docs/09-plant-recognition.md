@@ -492,6 +492,12 @@ Ces images ne sont pas un complément faible, elles sont du bruit.
 | **Smithsonian Gardens** | `s3://smithsonian-open-access`, unité `ofeo-sg`, sans clé — l'API demande un numéro de téléphone américain, le seau non | 23 678 fiches, toutes « Living botanical specimens », 4 884 avec image **CC0** ; mais 1 035 noms pour 217 genres, à très forte dominante d'orchidées (Phalaenopsis 1 086, Dendrobium 467, Oncidium 321). **Recouvrement avec nos 1 445 classes : 6 espèces, 7 photos.** | ❌ |
 | **Smithsonian NMNH (Botany)** | idem | planches d'herbier | ❌ |
 | **USDA / USFWS / NPS** | — | planches d'herbier et photos de terrain déjà relayées par GBIF | ❌ |
+| **Trefle** | API REST, token gratuit | un relais, pas une source : les photos sont celles de **Pl@ntNet** (`bs.plantnet.org`) et de Kew, la licence n'existe qu'en texte libre dans un champ `copyright` — sur *Monstera deliciosa* : 33 images, 24 CC BY-SA, et le filtre naïf en classe une à tort en NC sur le nom de l'auteur | ❌ |
+| **Openverse** | API REST, anonyme 20 req/min et **200 req/jour** (mesuré), au-delà client OAuth | méta-moteur : il **relaye nos propres sources** (Flickr, Wikimedia, iNaturalist vu sur *Pilea peperomioides*) mais par leurs titres — aucune identification vérifiée (« Philodendron bipinnatifidum **and a blazing fire** », noms d'avant renommage) ; `license_type=commercial` laisse passer `by-nd`, il faut `commercial,modification` ; Rawpixel : 3 résultats sur *Monstera*, dont 2 illustrations | ❌ |
+| **Pexels** | API REST, clé gratuite | licence **maison, hors CC** — illisible pour `licenses.py`, donc refusée par construction ; aucune identification d'espèce (l'`alt` est du texte de référencement) ; le meilleur domaine visuel des trois — plantes en pot en intérieur — mais sans étiquettes | ❌ |
+| **iNaturalist Open Data (S3)** | seau AWS public, CSV mensuels | le **même contenu** que le connecteur API, en vrac : inclut CC BY-NC à refiltrer, sans résolution de synonymes ni `captive`/`place_id` — l'API rend le même service avec la couche d'identité en plus | ❌ (redondant) |
+| **Roboflow Universe** | web + API, clé | licences **déclarées par l'uploader**, provenance non vérifiée ; étiquettes vernaculaires (« zz plant », « Chloro**pythum** comosum »), classes maladie mêlées aux espèces ; le plus gros jeu « houseplant » : 2 077 images, 24 classes | ❌ |
+| **Kaggle « houseplant »** (Houseplant-30, House Plant Species…) | ZIP par dataset | le § 4.1 à l'état pur : Bing/Google scrapé, tri manuel « by non-expert », licence affichée contredite par le texte (« personal use only due to copyright ») ; le meilleur : 14 790 images, 47 classes. Exception trouvée là-bas : PlantCLEF → § 12.8 | ❌ |
 | **OGL-3.0, etalab-2.0, CUSTOM-ML** | — | **zéro image** portant ces licences dans nos sources | sans objet |
 
 Le cas Smithsonian Gardens mérite d'être retenu : 4 884 photos CC0 de
@@ -500,6 +506,27 @@ c'est pourtant sept images pour nous. Une source ne vaut pas par sa taille
 mais par son recouvrement avec le catalogue — la mesure coûte dix minutes
 et évite d'écrire un connecteur pour rien. Elle redeviendrait intéressante
 le jour où le catalogue s'ouvrirait aux orchidées d'intérieur.
+
+Le cas **Trefle**, mesuré le 17 septembre 2026, est l'inverse de celui de
+Smithsonian : le recouvrement serait bon, et c'est la traçabilité qui
+manque. Trefle n'est pas une banque d'images mais un agrégateur — son
+registre de sources le dit lui-même : sa seule source de photos est
+**Pl@ntNet**, et le reste (POWO, WFO, IPNI, GBIF) est de la taxonomie et
+des occurrences que nous avons déjà. Sonde sur *Monstera deliciosa*
+(`/api/v1/plants/search` puis `/api/v1/species/{id}`, token gratuit) :
+**33 images**, toutes servies depuis `bs.plantnet.org` ou le CDN de Kew,
+rangées par organe. La licence n'existe que dans un champ `copyright` en
+texte libre — « Taken Feb 11, 2017 by Michael Goddard (cc-by-sa) » — sans
+code ni URL. Que ce texte ne se parse pas se vérifie en une ligne : le
+filtre naïf y classe « Andrea Branca (cc-by-sa) » en non commercial, sur
+le seul nom de l'auteur ; à côté, une image sans aucune mention et un
+« Taken Jan 1, 1900 by EOL ». La règle du § 4.1 tranche sans appel :
+licence inconnue ou illisible, image refusée — et ici elle est illisible
+par construction. Même lue à la main, la récolte annonçait son profil :
+24 images CC BY-SA, six NC, trois © Kew, et presque tout en gros plans
+fleur/feuille, comme au § 12.8. Les mêmes photos, avec des licences
+structurées et un téléchargement en masse, sont dans PlantNet-300K : la
+porte reste celle du § 12.8, plafonnée et `habit` d'abord.
 
 
 ### 4.6 PlantNet-300K — étude et décision
@@ -1353,9 +1380,12 @@ référence par classe (`test/fixtures/`), correspondance `labels.txt` ↔
 ## 8. Mises à jour du modèle
 
 Une version livrée = un numéro de plus dans `model.json`, donc un nom de plus
-à l'écran : après Iris 7 est venu Iris 8, et la suivante s'appellera Iris 9
-sans qu'on l'écrive nulle part. Rien d'autre à renommer — ni le code, ni les
-traductions, qui reçoivent le nom composé (§ 0).
+à l'écran : après Iris 7 est venu Iris 8, et les suivantes s'appelleront
+Iris 9.1 et Iris 9 sans qu'on l'écrive nulle part. Le numéro est une
+**chaîne** — « 9.1 » y tient autant que « 9 », c'est ce qui distingue
+l'export 500 intérieur (§ 13.3) de l'entraînement large (§ 13). Rien
+d'autre à renommer — ni le code, ni les traductions, qui reçoivent le nom
+composé (§ 0).
 
 Deux options, à trancher au moment de la phase 2 :
 
@@ -2160,6 +2190,38 @@ Le pré-entraînement, lui, reste ce que le § 4.6 en disait : les poids publié
 sont des **ResNet18 PyTorch**, rien de réutilisable pour un MobileNetV3
 TensorFlow. Une passe complète de plus sur 306 000 images, pour un bénéfice
 que personne n'a mesuré. À garder pour le jour où le reste sera épuisé.
+
+#### Addendum (17 septembre 2026) : le même corpus, dix fois plus grand et mieux outillé
+
+**PlantCLEF** (éditions 2024 et 2025, LifeCLEF / Kaggle) distribue le jeu
+d'entraînement de Pl@ntNet : **1 408 033 images, 7 806 espèces**, 800 px
+de côté, splits fournis, complété d'images GBIF à étiquettes de confiance
+pour les espèces pauvres. Le CSV de métadonnées est public
+(`lab.plantnet.org`) et donne **par image** la licence, l'organe, l'auteur
+et `gbif_species_id` — tout ce qui manquait au 300K.
+
+Mesuré sur dix tranches du CSV (2 125 lignes, 16 espèces) :
+
+| | |
+|---|---|
+| licences | **99,6 % cc-by-sa**, reste cc-by-nc que le filtre du § 4.1 écarte — applicable **par image** |
+| `habit` (plante entière) | **25 %**, contre 1,1 % dans le 300K — et l'organe est une **colonne**, le plafonné « `habit` d'abord » devient un `ORDER BY` |
+| recouvrement avec `plants.csv` | 7 espèces sur 16 — c'est bien de la **flore sauvage**, pas une source pour le domaine salon |
+| bruit résiduel | même chez les experts : *Pseudopodospermum hispanicum* y figure en double pour une coquille d'auteur (« N.Kilia » / « N.Kilian ») ; les clés `gbif_species_id` ne recoupent pas nos `gbif_key` (format ou version de référentiel) — le rattachement se fera **par nom** |
+
+La sauvagine n'est pas le défaut qu'on croit : c'est exactement le principe
+« entraîner large » du § 13.2 — ces espèces ne seraient jamais exposées,
+et la v8 a mesuré que la largeur paie dans les représentations. Mais ce
+corpus ne comblera **jamais** le domaine salon : des *Knautia* dans une
+prairie n'apprennent rien d'un monstera sur un meuble. C'est donc un
+**chantier de volume, pas de domaine** — après les chantiers 2 et 4 du
+§ 13.3, pas avant.
+
+Conditions : inscription gratuite au challenge ; chaque image garde sa
+licence. Des poids ViT/DinoV2 affinés sur ce jeu sont publiés sur Zenodo
+— aussi inutilisables pour MobileNetV3 que ceux du 300K. La décision du
+§ 12.8 tient telle quelle, avec un réservoir dix fois plus profond :
+plafonné, `habit` d'abord.
 
 ### 12.9 Les hybrides sans image
 
@@ -3132,6 +3194,107 @@ manquant — la part des photos par espèce — est exactement ce que le chantie
 2 produit. **Les deux chantiers se tiennent par là**, et la décision attend
 un chiffre mesuré plutôt qu'un pari.
 
+#### Iris 9.1 — décision posée le 17 septembre 2026 : 500 espèces exposées, pas plus, toutes d'intérieur
+
+Le nom d'abord, pour éviter la confusion : cette version-ci s'appellera
+**Iris 9.1** — l'Iris 9 du présent § 13 reste l'entraînement large prévu,
+et les deux ne se ressemblent pas. Le numéro est une chaîne libre dans
+`model.json` : « 9.1 » y tient autant que « 9 », rien à renommer (§ 8).
+
+Le nombre n'attend plus la courbe : c'est une borne produit, assumée. La
+liste candidate est déposée, résolue nom par nom (GBIF `species/match`),
+dans `tools/plant_dataset/cible_interieur_500.tsv` :
+
+| verdict | nombre | ce que ça engage |
+|---|---|---|
+| déjà exposées par Iris 8 | **155** | rien |
+| dans `plants.csv`, entraînées v8, non exposées | **127** | exportables sans réentraînement, si présentes dans les 5 259 classes apprises — à vérifier à l'export |
+| absentes, espèces acceptées | **161** | la collecte nouvelle — d'abord `disponibilite.py`, pas avant |
+| absentes, synonymes | **43** | à collecter sous le nom accepté (*Rosmarinus officinalis* → *Salvia rosmarinus*…) |
+| pas des espèces (cultivars, grex) | **14** | jamais une classe (§ 13.5) : *Philodendron birkin*, *Alocasia stingray*, *Cambria hybrida*… |
+
+Deux conséquences d'arithmétique, pas d'opinion :
+
+1. **La liste plafonne à 486 classes.** Pour tenir « exactement 500 », il
+   faut au moins **14 espèces de substitution**, et davantage après le
+   passage de `disponibilite.py` — la liste des remplaçantes se dressera à
+   ce moment-là, sur le même rayon.
+2. **Retirer des sorties paie.** À courbe constante, passer de 1 444 à
+   500 exposées rend **2 à 3 points de top-1** mécaniquement (0,22-0,35
+   point par tranche de cent). Les ~950 espèces qui sortent du masque
+   basculent sur le repli Pl@ntNet et la réponse de genre : coût produit
+   connu, pas accident.
+
+Ce qui reste mesuré plutôt que parié : **lesquelles** des candidates
+tiennent leurs images (`disponibilite.py`), puis la part des photos des
+utilisateurs par espèce (chantier 2) pour trancher les limites de liste.
+Le compte, lui, est arrêté.
+
+#### La disponibilité a tranché : ~341, pas 500
+
+La mesure est tombée le jour même (17 septembre 2026), sur les 204
+candidates (`disponibilite_9_1.csv` pour la borne basse GBIF,
+`disponibilite_9_1_inat.csv` pour la borne haute iNaturalist `captive`
+compris, licences libres) :
+
+| | espèces ≥ 25 images |
+|---|---|
+| solides GBIF | 42 |
+| solides iNaturalist | 36 |
+| **union collectable** | **55 / 204** |
+
+Les 149 autres sont des espèces de collectionneurs que presque personne ne
+photographie sous licence libre — le rayon « plantes d'intérieur connues »
+était déjà épuisé par la liste elle-même, et `candidats_v8` ne recèle plus
+rien de non collecté (4 108 lignes sur 4 220 sont entrées à la v8). Les
+substituts maison (`phase1_species.txt`, par clé GBIF) n'ajoutent que
+**4** espèces : *Ravenea rivularis*, *Phalaenopsis amabilis*,
+*Streptocarpus ionanthus*, *Hippeastrum vittatum*.
+
+L'arithmétique finale, arbitrée le jour même : **155 + 127 + 55 + 4 =
+~341 espèces**, sous réserve que les 127 collectées soient bien dans les
+5 259 classes apprises de la v8 (à vérifier à l'export). La borne
+« pas plus de 500 » est respectée ; le reste des places se remplira par le
+chantier 2, qui produit exactement ce qui manque. Décision : **livrer avec
+le réel**, pas attendre le chiffre.
+
+#### Collecte faite : 35 espèces, 5 741 images
+
+Le même jour, dans l'ordre du § 13.6 (doublons d'abord) :
+
+1. **Contrôle des clés GBIF** sur les 59 (55 + 4) : 18 « nouvelles »
+   étaient déjà couvertes sous un nom accepté (*Dracaena angolensis* =
+   `sansevieria-cylindrica`, *Citrus limon* = `citrus-x-limon`…) ; 2
+   sous-taxons écartés (*Philodendron hederaceum var. hederaceum*, *Ficus
+   natalensis subsp. leprieurii* — des classes qui disputeraient les images
+   d'une espèce déjà collectée, le défaut du § 12.14). Restent **37**, puis
+   **35** après arbitrage de deux lignes au nom commercial seul au
+   catalogue applicatif.
+2. **Catalogue** : rien à ajouter côté application — les deux
+   *Rhaphidophora* étaient déjà curatées dans le palier `expansion_500`
+   (le test « aucun palier ne rejoue une espèce déjà curatée » veille) ;
+   côté collecte, **35 lignes** ajoutées à `plants.csv` (5 778 → 5 813),
+   enrichies (`enrich_plants.py`, clé GBIF pour chacune). Les 14
+   non-espèces de la liste sont restées ce qu'elles doivent être : des
+   fiches du catalogue applicatif, jamais des classes.
+   `doublons.py` signale au passage 6 paires préexistantes dans l'exposé
+   actuel (*Citrus × bergamia* = *Citrus × limon*, *Dracaena trifasciata*
+   = *Sansevieria trifasciata*…) : le masque en résout 5 de lui-même en ne
+   gardant qu'un membre, la sixième (*Cupressus* = *Hesperocyparis
+   macrocarpa*) sort du champ intérieur sans décision.
+3. **Collecte** (`cible_9_1_collecte.txt`, `--target-per-species 300
+   --allow-sa --captive-share 0.5 --captive-place 97391`) : **5 741 images
+   gardées sur 5 819**, 0 en revue, licences 3 874 CC BY / 1 289 CC0 /
+   578 CC BY-SA, attributions complètes. Test de validation passé avant
+   (99/100) ; images contrôlées à la main après. 34 espèces à 27 images et
+   plus — *Philodendron squamiferum* ferme la marche à 27, au-dessus du
+   `--min-train`.
+4. **Le masque est figé** : `masque_9_1.txt`, **335 classes** — 155 déjà
+   exposées, 143 collectées sous un nom ou un autre (synonymes compris),
+   4 substituts, 35 nouvelles, dédupliquées par `internal_id`. C'est le
+   `--garder` de `retailler.py` à l'export ; les 143 ne valent que si la
+   v8 les a apprises — sinon l'entraînement large les leur donne.
+
 **2. Les photos des utilisateurs.** La seule source qui règle **les deux**
 problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
 identification confirmée est une photo étiquetée, dans le bon domaine, de la
@@ -3277,8 +3440,11 @@ refaire.
 
 Un écran de validation — la fiche à gauche, les photos candidates à droite,
 trois réponses possibles (espèce confirmée, cultivar confirmé, insuffisant)
-— est la bonne réponse au défaut des sources sans identification : Unsplash
-donne des photos, pas des identifications, et un humain en ajoute une.
+— est la bonne réponse au défaut des sources sans identification : Unsplash,
+Openverse, Pexels donnent des photos, pas des identifications, et un humain
+en ajoute une. Ces trois-là sont mesurés et rangés au § 4.5 ; Pexels en est
+le tuyau désigné le jour où l'écran existe — le meilleur domaine visuel du
+lot, des intérieurs stylisés qui ressemblent aux photos des utilisateurs.
 
 **Mais il ne passe pas à l'échelle de l'entraînement.** Une photo de
 référence par fiche, ce sont ~5 000 décisions : faisable, et c'est l'usage
@@ -3360,7 +3526,11 @@ espèce de plus coûte.
   grande échelle (§ 12.16, § 13.5) ;
 - **pas d'espèces de plus pour le nombre.** C'est le renversement de la v8 :
   élargir le catalogue exposé se paie, et se paie en points. On continuera
-  d'en collecter — pour l'entraînement, pas pour l'affichage.
+  d'en collecter — pour l'entraînement, pas pour l'affichage ;
+- **pas de connecteur Trefle** : ce qu'il sert, ce sont les photos de
+  Pl@ntNet vues par un relais, la licence en texte libre dans un champ
+  `copyright` — non filtrable, mesuré et refusé au § 4.5. Le même corpus
+  existe avec des licences structurées dans PlantNet-300K (§ 12.8).
 
 ### 13.8 Ce qu'il faut retenir
 

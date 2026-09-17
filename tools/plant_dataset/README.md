@@ -71,6 +71,7 @@ clés sont mises en cache, une reprise ne redemande rien. Voir le § 12.14 de
 | `disponibilite.py` | Combien d'images une espèce a, avant de décider de la collecter. Trie les candidates entre solides, maigres, jamais photographiées et noms non résolus. Voir le § 12.11 de `docs/09`. |
 | `commons_apport.py` | Mesure ce que Wikimedia Commons ajouterait, espèce par espèce, sans télécharger d'image. Voir le § 12.2 de `docs/09`. |
 | `plantnet300k.py` | Mesure ce que PlantNet-300K apporterait, sur ses seules métadonnées (66 Mo) : recouvrement d'espèces, licences, cadrage. Voir le § 12.8 de `docs/09`. |
+| `cible_interieur_500.tsv` | La cible « 500 intérieur » de l'Iris 9, résolue nom par nom (GBIF `species/match`, 17 septembre 2026) : `EXPOSEE` (155), `COLLECTEE` (127), `A_COLLECTER` (161), `SYNONYME` (43), `PAS_ESPECE` (14). Voir le § 13.3 de `docs/09`. |
 | `plant_dataset/` | Le paquet : `taxonomy` (noms), `licenses`, `manifest`, `images`, `dedup`, `splits`, `fetchers/gbif`. |
 | `tests/` | Tests unitaires, avec des réponses GBIF réelles enregistrées dans `tests/fixtures/`. |
 | `dataset/` | Sortie. **Ignorée par Git.** |
