@@ -9,9 +9,14 @@ import '../application/care_environment_spec.dart';
 
 /// Le diorama « environnement idéal » : le décor lumineux rendu par Blender,
 /// les props du climat (humidificateur, grille d'aération), l'ombre qui pose
-/// la plante, la plante translatée sur l'emplacement qui dit son besoin, et
-/// les effets d'air dessinés ici — vapeur et flux, jamais bakés : ils
-/// respectent le reduced motion et passent à distance de la plante.
+/// la plante, la plante translatée sur son support, et les effets d'air
+/// dessinés ici — vapeur et flux, jamais bakés : ils respectent le reduced
+/// motion et passent à distance de la plante.
+///
+/// Dans la pièce, les petits et moyens gabarits sont réellement posés sur le
+/// guéridon du décor. Les grands gabarits restent au sol et le guéridon baké
+/// est recouvert par un morceau propre du même sol pour ne pas raconter une
+/// fausse information.
 ///
 /// Les effets respirent quelques cycles à l'ouverture puis se reposent :
 /// rien ne bouge en permanence dans la fiche. En reduced motion, ils sont
@@ -80,7 +85,7 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
   Widget build(BuildContext context) {
     final c = context.colors;
     final spec = widget.spec;
-    final slot = spec.slotFraction;
+    final plant = spec.plantFraction;
     const anchor = CareEnvironmentSlots.anchor;
     final anime = !MediaQuery.disableAnimationsOf(context);
     return AspectRatio(
@@ -94,7 +99,10 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
               fit: BoxFit.cover,
               excludeFromSemantics: true,
             ),
-            // L'humidificateur, posé à côté de la plante comme elle.
+            if (spec.hidesBackdropPedestal)
+              _BackdropPedestalMask(asset: spec.backdropAsset),
+            // L'humidificateur reste au sol : à côté du guéridon quand la
+            // plante est dessus, ou à côté de la plante quand elle est au sol.
             if (spec.hasHumidifier)
               FractionalTranslation(
                 translation: Offset(
@@ -109,16 +117,20 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
               ),
             CustomPaint(
               painter: _PlantShadowPainter(
-                center: Offset(slot.$1, slot.$2),
+                center: Offset(plant.$1, plant.$2),
                 color: c.ink.withValues(alpha: 0.16),
+                onPedestal: spec.hasPedestal,
               ),
             ),
-            // La plante est rendue au centre du monde ; elle glisse jusqu'à
-            // son emplacement, la base du pot sur le point projeté. Si un
-            // asset manquait malgré tout (test d'assets dédié), le repli est
-            // la feuille large — jamais une image cassée.
+            // La plante est rendue au centre du monde ; sa base de pot vient
+            // se poser soit sur le plateau du guéridon, soit sur le slot au
+            // sol. Si un asset manquait malgré tout (test d'assets dédié), le
+            // repli est la feuille large — jamais une image cassée.
             FractionalTranslation(
-              translation: Offset(slot.$1 - anchor.$1, slot.$2 - anchor.$2),
+              translation: Offset(
+                plant.$1 - anchor.$1,
+                plant.$2 - anchor.$2,
+              ),
               child: Image.asset(
                 spec.plantAsset,
                 fit: BoxFit.cover,
@@ -150,7 +162,7 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
                 builder: (context, _) => CustomPaint(
                   painter: _AirflowPainter(
                     kind: spec.airflow!,
-                    slot: Offset(slot.$1, slot.$2),
+                    slot: Offset(plant.$1, plant.$2),
                     origin: Offset(
                       spec.airflowOriginFraction.$1,
                       spec.airflowOriginFraction.$2,
@@ -167,37 +179,98 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
   }
 }
 
-/// L'ombre qui pose la plante sur le sol du diorama : une ellipse douce sous
-/// l'emplacement, pour qu'elle ne flotte pas.
+/// Les fonds intérieurs livrés jusqu'ici ont le guéridon directement baké
+/// dans l'image. Pour une grande plante, on recouvre uniquement cette petite
+/// zone avec une parcelle de sol prise un peu plus à gauche et au-dessus dans
+/// la même image : même variante de lumière, même grain, aucun aplat ajouté.
+///
+/// Le masque disparaîtra naturellement le jour où le guéridon deviendra une
+/// couche Blender séparée ; d'ici là il évite qu'un meuble vide reste visible
+/// derrière une plante qui doit être posée au sol.
+class _BackdropPedestalMask extends StatelessWidget {
+  const _BackdropPedestalMask({required this.asset});
+
+  final String asset;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final w = constraints.maxWidth;
+      final h = constraints.maxHeight;
+      return ClipPath(
+        clipper: const _PedestalPatchClipper(),
+        child: Transform.translate(
+          // Le pixel affiché dans la zone du guéridon vient d'une parcelle de
+          // sol propre située à gauche et légèrement plus haut dans le même
+          // décor. Ces décalages restent relatifs au cadre carré.
+          offset: Offset(w * 0.18, h * 0.06),
+          child: Image.asset(
+            asset,
+            fit: BoxFit.cover,
+            excludeFromSemantics: true,
+          ),
+        ),
+      );
+    },
+  );
+}
+
+class _PedestalPatchClipper extends CustomClipper<Path> {
+  const _PedestalPatchClipper();
+
+  @override
+  Path getClip(Size size) => Path()
+    ..moveTo(size.width * 0.49, size.height * 0.68)
+    ..lineTo(size.width * 0.64, size.height * 0.69)
+    ..lineTo(size.width * 0.66, size.height * 0.81)
+    ..lineTo(size.width * 0.60, size.height * 0.85)
+    ..lineTo(size.width * 0.50, size.height * 0.83)
+    ..lineTo(size.width * 0.47, size.height * 0.74)
+    ..close();
+
+  @override
+  bool shouldReclip(_PedestalPatchClipper oldClipper) => false;
+}
+
+/// L'ombre qui pose le pot sur son support. Sur le guéridon, elle est plus
+/// petite : elle tombe sur le plateau. Au sol, elle garde l'ellipse large du
+/// diorama d'origine.
 class _PlantShadowPainter extends CustomPainter {
-  const _PlantShadowPainter({required this.center, required this.color});
+  const _PlantShadowPainter({
+    required this.center,
+    required this.color,
+    required this.onPedestal,
+  });
 
   /// Le centre de l'ombre, en coordonnées fractionnaires du cadre.
   final Offset center;
   final Color color;
+  final bool onPedestal;
 
   @override
   void paint(Canvas canvas, Size size) {
     final c = Offset(center.dx * size.width, center.dy * size.height);
-    // Taillée sur le pot rendu par le pipeline (~0,64 m de large à
-    // l'échelle de la pièce), et non sur le cadre : une ombre plus large
-    // que la plante la ferait flotter au lieu de la poser.
     final rect = Rect.fromCenter(
       center: c,
-      width: size.width * 0.105,
-      height: size.width * 0.028,
+      width: size.width * (onPedestal ? 0.070 : 0.105),
+      height: size.width * (onPedestal ? 0.018 : 0.028),
     );
     canvas.drawOval(
       rect,
       Paint()
         ..color = color
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * 0.014),
+        ..maskFilter = MaskFilter.blur(
+          BlurStyle.normal,
+          size.width * (onPedestal ? 0.009 : 0.014),
+        ),
     );
   }
 
   @override
   bool shouldRepaint(_PlantShadowPainter old) =>
-      old.center != center || old.color != color;
+      old.center != center ||
+      old.color != color ||
+      old.onPedestal != onPedestal;
 }
 
 /// La vapeur de l'humidificateur : trois volutes qui montent en respirant,
