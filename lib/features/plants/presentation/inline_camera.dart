@@ -74,6 +74,19 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   /// web, le bureau, les tests — l'appelant garde l'appareil du système.
   static bool get isSupported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
+  /// Vrai quand la page ne peut pas tourner : sur Android le manifeste
+  /// verrouille le portrait sur tous les appareils, ailleurs c'est la taille
+  /// qui décide, comme dans `main.dart`. Sur tablette libre, la capture reste
+  /// au capteur : la page tourne aussi.
+  static bool get _portraitOnly {
+    if (kIsWeb) return false;
+    if (Platform.isAndroid) return true;
+    final views = WidgetsBinding.instance.platformDispatcher.views;
+    if (views.isEmpty) return false;
+    final size = views.first.physicalSize / views.first.devicePixelRatio;
+    return !size.isEmpty && size.shortestSide < 600;
+  }
+
   /// Demande le viseur. Sans effet s'il est déjà là.
   Future<void> start() async {
     if (_disposed) return;
@@ -159,6 +172,16 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
       // la photo finit de toute façon redimensionnée au stockage.
       controller = CameraController(back, ResolutionPreset.veryHigh, enableAudio: false);
       await controller.initialize();
+      // Le plugin suit le capteur, pas la page : appareil penché, il couche
+      // l'aperçu et la photo. Or ici la page ne tourne pas — voir `main.dart`
+      // et le manifeste Android — la capture s'aligne donc sur elle.
+      if (_portraitOnly) {
+        try {
+          await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+        } on CameraException {
+          // Verrou refusé : la capture suivra le capteur, comme avant.
+        }
+      }
       // La page a pu partir, ou changer d'étape, pendant l'ouverture : le
       // flux n'a alors plus personne devant lui.
       if (_disposed || !_wanted || _status != InlineCameraStatus.starting) {
