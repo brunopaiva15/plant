@@ -1,9 +1,9 @@
 {
   "totalSpecies": 1900,
   "resolution": {
-    "family": 791,
+    "family": 782,
     "genus": 1086,
-    "species": 23
+    "species": 32
   },
   "toxicityByLevel": {
     "family": 348,
@@ -12,7 +12,7 @@
     "species": 13
   },
   "heavyProfiles": {
-    "family:Amaryllidaceae": 12,
+    "family:Amaryllidaceae": 11,
     "family:Apiaceae": 18,
     "family:Apocynaceae": 12,
     "family:Arecaceae": 11,
@@ -23,7 +23,6 @@
     "family:Caprifoliaceae": 11,
     "family:Fabaceae": 42,
     "family:Lamiaceae": 20,
-    "family:Malvaceae": 12,
     "family:Myrtaceae": 12,
     "family:Nyctaginaceae": 25,
     "family:Orchidaceae": 18,
