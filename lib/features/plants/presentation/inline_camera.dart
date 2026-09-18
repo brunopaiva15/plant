@@ -236,9 +236,9 @@ class InlineCameraPreview extends StatelessWidget {
 
   final InlineCameraController controller;
 
-  /// Le viseur principal porte le balayage doux d'Iris. Le paramètre reste
-  /// disponible pour les écrans qui auraient besoin d'un aperçu totalement
-  /// neutre sans dupliquer le composant caméra.
+  /// Le viseur principal porte les quatre repères de cadrage d'Iris. Le
+  /// paramètre reste disponible pour les écrans qui ont besoin d'un aperçu
+  /// totalement neutre sans dupliquer le composant caméra.
   final bool scanningOverlay;
 
   @override
