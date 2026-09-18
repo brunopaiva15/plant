@@ -1752,144 +1752,69 @@ attendre qu'elle sauve les espèces les plus fragiles. Pour celles-là, il
 faudra autre chose — et le § 12.8 montre que PlantNet-300K, lui, en tient des
 centaines pour certaines.
 
-### 12.3 ✅ La deuxième photo, là où elle n'était pas proposée
+### 12.3 ✅ Une photo d'abord, une seconde seulement si Iris hésite
 
-Le bouton « ajouter une photo » n'apparaissait que si la politique hésitait.
-Une réponse **acceptée** ne le proposait donc jamais — or une réponse
-acceptée à 0,70 est juste **89,9 %** du temps sur les plantes d'appartement
-en pot (§ 12.12), et 89,1 % sur l'ensemble du test (§ 6.7). **Une réponse
-affirmée sur dix est fausse**, et c'était exactement celle à qui le geste
-correctif n'était jamais offert : le modèle avait le bon goût de douter, ou
-l'utilisateur n'avait rien.
+La création demandait trop tôt plusieurs vues : après la première photo, des
+emplacements invitaient déjà à photographier une feuille ou un autre angle,
+avant même qu'Iris ait répondu. Le gain multi-photo est réel (§ 6.7), mais le
+coût UX l'est aussi : la plupart des plantes n'ont pas besoin d'un mini
+shooting pour être ajoutées.
 
-Le geste, lui, est le meilleur de tout ce document : deux photos valent
-**13,7 points de top-1**, plus que dix heures de calcul et 160 000 images
-(§ 6.6). Il est gratuit, hors ligne, instantané.
+Le parcours est maintenant **progressif** :
 
-**Ce qui a été fait.** La décision quitte les deux écrans pour la couche
-domaine — `secondPhotoOffer()`, à côté de `FallbackPolicy` — et rend trois
-états au lieu d'un booléen :
+1. une seule photo est prise ;
+2. Iris démarre immédiatement sur cette photo, pendant qu'elle reste affichée
+   dans le grand cadre 4:5 ;
+3. les candidats sont toujours montrés ;
+4. si la réponse passe le seuil d'acceptation, aucune autre photo n'est
+   demandée ;
+5. si Iris hésite, les candidats restent visibles et un bouton facultatif
+   « Ajouter une photo » propose une seconde vue pour affiner ;
+6. après cette seconde photo, la fusion multi-photo est recalculée et il n'y a
+   pas de troisième prise dans ce parcours.
 
-| | quand | comment |
+La décision reste dans le domaine, via `secondPhotoOffer()` à côté de
+`FallbackPolicy` :
+
+| état | quand | interface |
 |---|---|---|
-| `prominent` | le modèle hésite | la bande, et sa phrase : quoi photographier |
-| `quiet` | la réponse est acceptée | la bande seule, sans phrase |
-| `none` | plus de photo possible, ou réponse venue de Pl@ntNet | pas de case libre |
+| `prominent` | réponse locale non acceptée | candidats + explication + bouton pour une 2e photo |
+| `none` | réponse acceptée, 2 photos déjà utilisées, ou réponse distante | aucune demande supplémentaire |
 
-La règle vaut là où une réponse est déjà affichée — la feuille et l'étape du
-nom. À l'étape photo de la création, personne n'a encore rien demandé au
-moteur : la bande y est une invitation, pas une correction.
+La seconde photo n'est donc plus une vérification systématique d'une réponse
+déjà solide. Elle devient un outil de résolution d'incertitude. Le bénéfice
+mesuré des deux photos — **+13,7 points de top-1** dans l'expérience du § 6.7 —
+est conservé là où il sert le plus.
 
-Les deux écrans (`identification_sheet.dart`, `create_plant_flow.dart`)
-partageaient jusqu'ici deux copies identiques de la règle ; ils appellent
-maintenant la même fonction, testée sans widget
-(`test/domain/identification/second_photo_offer_test.dart`).
+#### L'analyse reste sur la photo
 
-Le troisième cas mérite son mot : sur une réponse **distante**, une photo de
-plus ne rejouerait rien sans un nouvel appel, donc sans entamer le quota
-mensuel. Ce n'est plus le même geste gratuit, et on ne le propose pas.
+À la création, l'identification ne démarre plus en arrivant à l'étape du nom.
+Elle commence dès que la première photo est stockée. Le
+`ProcessingField` est posé sur **le grand aperçu de cette photo**, avec la
+marque Iris au centre, puis disparaît quand le calcul termine. L'étape du nom
+ne reçoit qu'un petit indicateur si l'utilisateur y arrive avant la fin du
+calcul : elle ne recrée plus une seconde carte-photo tassée entre les champs.
 
-Et le registre effacé est le point de la chose. Proposer une photo de plus
-après une bonne réponse ajoute un geste à un parcours qui marchait : sans
-phrase, sans l'imposer.
+Le viseur garde seulement quatre coins de cadrage. Le quadrillage a été retiré :
+la plante et les repères suffisent, et l'image n'a plus l'apparence d'un
+scanner.
 
-#### Un bouton ne dit pas qu'il y a une suite
+#### Les candidats restent la réponse principale
 
-Les deux registres ont d'abord été deux **boutons**, sous la liste des
-candidats, et le compte des photos une légende au-dessus d'elle : « Iris ·
-2 photos ». Personne ne devinait qu'on pouvait en prendre plusieurs à la
-suite, et c'est logique — un bouton au singulier, qui réapparaît à
-l'identique après avoir servi, ne promet pas de troisième tour, et une
-légende dit un **état**, jamais un geste.
+Une faible confiance ne cache jamais les propositions. L'écran écrit d'abord
+ce qu'Iris a trouvé, avec les mêmes crans de vraisemblance qu'avant. La seconde
+photo vient **après** la liste comme action facultative ; elle affine la
+réponse, elle ne la remplace pas.
 
-`IdentificationPhotoStrip` (`features/identification/presentation/`) les
-remplace par une bande de trois emplacements, posée **au-dessus** de la
-liste : les photos parties, puis la case libre qui les suit, puis la place
-qui reste. La suite n'a plus besoin d'être écrite, elle se voit — et le
-compte disparaît de la légende, deux vignettes le disant mieux.
+Dans la feuille « Identifier », le même contrat s'applique : deux photos au
+maximum et aucune différence de règle avec la création. Une photo déjà
+présente dans la galerie peut servir de seconde vue sans demander une nouvelle
+prise.
 
-Trois règles tiennent le composant :
+La photo supplémentaire prise uniquement pour identifier reste temporaire :
+elle s'efface en quittant le flux, tandis que la photo principale appartient à
+la plante.
 
-- **l'invitation reste décidée par le domaine.** `onAdd` nul, aucune case
-  libre : c'est ainsi qu'une réponse distante n'en propose pas ;
-- **une seule case écoute le doigt**, la première libre. Les suivantes sont
-  des contours — deux cibles côte à côte pour le même geste n'en font pas un
-  plus clair ;
-- **une photo se retire**, sauf la première, qui appartient à l'appelant. La
-  moyenne géométrique exige que les photos soient d'accord : un cliché raté
-  tire le résultat vers le bas, et le seul recours était jusqu'ici de fermer
-  la feuille. Tests : `test/features/identification_photo_strip_test.dart`.
-
-#### Les photos se prennent là où l'on photographie
-
-Première version : le viseur s'ouvrait dans la feuille d'identification et
-sous les suggestions de la création. Ça marchait, et c'était au mauvais
-endroit — une caméra logée dans une feuille de résultats, et un deuxième
-viseur dans un flux qui en avait déjà un. Les photos appartiennent à
-**l'écran où l'on photographie**, et les résultats à celui qui les montre.
-
-**À la création, tout remonte à l'étape photo.** Le viseur y était déjà ;
-il ne s'éteint simplement plus au premier déclenchement. On prend une photo,
-la bande apparaît sous le cadre, on en prend une deuxième et une troisième
-si on veut — le cadre lui-même est le déclencheur —, puis « Continuer ». La
-première est la photo de la plante ; les autres ne servent qu'à la
-reconnaître et s'effacent en partant.
-
-**L'en-tête suit l'état**, sans quoi l'écran redemande « Une photo ? » au
-sommet d'une photo déjà prise, et le viseur redevient illisible : personne ne
-comprend qu'il attend la *suivante*. Trois états, avec des phrases qui
-existaient déjà — rien de neuf à traduire, et le même vocabulaire d'un écran
-à l'autre :
-
-| photos | titre | sous-titre |
-|---|---|---|
-| aucune | « Une photo ? » | « Pour la reconnaître, et la retrouver dans votre liste. » |
-| une ou deux | « Deux photos valent mieux qu'une » (§ 6.7, la carte des réglages) | « Une autre photo aiderait à trancher. Une feuille, une fleur, ou la plante entière. » |
-| trois | « 3 photos » | le sous-titre d'origine — l'invitation est close |
-
-Le moteur ne reçoit plus rien tant qu'on est à l'étape photo : il reçoit
-**tout d'un coup** en arrivant à l'étape du nom. Une seule passe, avec les
-trois photos, plutôt qu'une réponse sur une photo suivie d'une correction —
-et la meilleure réponse dès le premier affichage. Le geste reste offert,
-jamais réclamé : « Continuer » est le bouton du dessus, et une seule photo
-suffit à passer.
-
-L'étape du nom garde la bande et la règle du § 12.3 — si Iris hésite, une
-photo de plus est proposée — mais par la feuille d'action, sans deuxième
-viseur.
-
-Ce qui reste de la première version : **la liste précédente reste à l'écran
-pendant une relance**. Seul le tout premier calcul, celui qui n'a rien à
-montrer, a droit au tourniquet.
-
-#### Depuis une fiche, les photos sont déjà là
-
-Une plante qu'on identifie depuis sa fiche a une galerie. La feuille s'ouvre
-donc **pré-remplie** : la photo principale, puis les deux plus récentes de la
-galerie (`plant_detail_screen.dart`). Trois photos valent 22,4 points de
-top-1 de plus qu'une seule, et celles-là ne coûtent ni un geste ni une
-seconde — elles sont déjà prises, déjà sur l'appareil. La bande les montre,
-et une croix retire celle qui n'aide pas.
-
-Deux garde-fous :
-
-- **on ne prête que ce qui est lisible** : les photos distantes (`isRemote`)
-  et les fichiers absents sont écartés. Le moteur échouerait à les lire, et
-  l'identification locale entière partirait au repli Pl@ntNet, sur le quota,
-  pour rien ;
-- **on n'efface que ce qu'on a pris.** Une photo prêtée se retire de la bande
-  sans disparaître de l'appareil ; une photo prise dans la feuille s'efface
-  en partant, comme avant. C'est ce que porte `_Shot`.
-
-#### Une photo de plus ne réinfère que la photo de plus
-
-`CascadeIdentifier` reclassait **toutes** les photos à chaque relance : la
-fusion se calcule bien sur la liste entière, mais l'inférence n'avait aucune
-raison de se refaire. À 320 px chaque image coûte près d'une seconde (§ 6.7),
-donc monter à trois photos en demandait six au lieu de trois — et le geste
-vient d'être rendu répétable. Un mémo par photo (chemin, taille, date) est
-posé en amont du cache de `identify`, qui garde lui des réponses finies par
-jeu de photos ; ici ce sont les scores bruts d'une image, avant fusion.
 
 ### 12.4 ✅ La matrice de confusion par genre
 
