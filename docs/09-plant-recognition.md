@@ -1791,9 +1791,18 @@ est conservé là où il sert le plus.
 À la création, l'identification ne démarre plus en arrivant à l'étape du nom.
 Elle commence dès que la première photo est stockée. Le
 `ProcessingField` est posé sur **le grand aperçu de cette photo**, avec la
-marque Iris au centre, puis disparaît quand le calcul termine. L'étape du nom
-ne reçoit qu'un petit indicateur si l'utilisateur y arrive avant la fin du
-calcul : elle ne recrée plus une seconde carte-photo tassée entre les champs.
+marque Iris au centre. Ce premier passage reste visible **au moins deux
+secondes**, même si le modèle répond plus vite : sinon l'effet ressemble à un
+flash décoratif plutôt qu'à une lecture.
+
+Dès que les candidats sont disponibles, les trois premiers noms apparaissent
+**directement sur la photo**, un par un, avec une courte entrée, une position
+et une légère rotation stables dérivées du nom scientifique. Le modèle ne
+prétend pas rendre ses résultats progressivement — la liste arrive d'un coup ;
+c'est l'interface qui la révèle en plusieurs temps. Quand les deux secondes
+minimales et le calcul sont terminés, le champ disparaît mais les noms restent
+sur l'aperçu jusqu'à « Continuer ». L'étape du nom garde ensuite la liste
+complète et les actions de confirmation comme avant.
 
 Le viseur garde seulement quatre coins de cadrage. Le quadrillage a été retiré :
 la plante et les repères suffisent, et l'image n'a plus l'apparence d'un
