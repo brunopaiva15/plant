@@ -2056,7 +2056,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchingOnline => 'Recherche en ligne…';
 
   @override
-  String get suggestionsLocal => 'Trouvé sur votre appareil, sans réseau';
+  String get suggestionsLocal => 'Résultats Iris sur votre appareil · photo non envoyée';
 
   @override
   String get suggestionsRemote => 'Proposé en ligne par Pl@ntNet';
