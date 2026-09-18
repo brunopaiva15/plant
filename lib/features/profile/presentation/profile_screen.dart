@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -251,11 +253,39 @@ class ProfileScreen extends ConsumerWidget {
 /// Tout en bas et sans le nom de l'application : on ne vient pas ici pour
 /// apprendre comment elle s'appelle, mais pour retrouver un numéro de version
 /// avant d'écrire au support.
-class _AppFooter extends ConsumerWidget {
+class _AppFooter extends ConsumerStatefulWidget {
   const _AppFooter();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AppFooter> createState() => _AppFooterState();
+}
+
+class _AppFooterState extends ConsumerState<_AppFooter> {
+  static const _requiredTaps = 5;
+  static const _tapWindow = Duration(seconds: 4);
+
+  int _versionTaps = 0;
+  Timer? _tapTimer;
+
+  @override
+  void dispose() {
+    _tapTimer?.cancel();
+    super.dispose();
+  }
+
+  void _tapVersion() {
+    _tapTimer?.cancel();
+    _versionTaps++;
+    if (_versionTaps >= _requiredTaps) {
+      _versionTaps = 0;
+      context.push(Routes.serviceStatus);
+      return;
+    }
+    _tapTimer = Timer(_tapWindow, () => _versionTaps = 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final c = context.colors;
     final style = context.text.caption.copyWith(color: c.inkTertiary);
@@ -277,7 +307,18 @@ class _AppFooter extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: Space.xs),
-        Text(l10n.version(ref.watch(appVersionProvider).label), style: style),
+        Pressable(
+          onTap: _tapVersion,
+          scale: 1,
+          haptic: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              l10n.version(ref.watch(appVersionProvider).label),
+              style: style,
+            ),
+          ),
+        ),
       ],
     );
   }
