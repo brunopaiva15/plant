@@ -27,6 +27,22 @@ class JevIrisDebugPanel extends StatefulWidget {
 }
 
 class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
+  @override
+  void didUpdateWidget(covariant JevIrisDebugPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final before = oldWidget.candidates
+        .take(5)
+        .map((c) => '${c.scientificName}:${c.score.toStringAsFixed(6)}')
+        .join('|');
+    final after = widget.candidates
+        .take(5)
+        .map((c) => '${c.scientificName}:${c.score.toStringAsFixed(6)}')
+        .join('|');
+    if (before == after && oldWidget.photoCount == widget.photoCount) return;
+    _response = null;
+    _error = null;
+    _latency = null;
+  }
   bool _loading = false;
   Map<String, dynamic>? _response;
   String? _error;
