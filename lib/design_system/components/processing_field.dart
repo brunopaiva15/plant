@@ -26,7 +26,8 @@ class ProcessingField extends StatefulWidget {
 
   final Widget child;
   final Widget? foreground;
-  final double height;
+  /// Hauteur imposée. `null` fait remplir les contraintes du parent.
+  final double? height;
   final BorderRadius borderRadius;
 
   @override
