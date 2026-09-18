@@ -323,6 +323,16 @@ void main() {
       findsOneWidget,
       reason: 'le nom commun est également repris comme nom de la plante',
     );
+    expect(
+      find.byIcon(CupertinoIcons.checkmark_alt_circle_fill),
+      findsOneWidget,
+      reason: 'la candidate choisie doit être réellement marquée utilisée',
+    );
+    expect(
+      find.widgetWithText(FloraButton, 'Utiliser'),
+      findsNWidgets(2),
+      reason: 'les deux autres candidates restent sélectionnables',
+    );
   });
 
   testWidgets("l'étape du nom s'ouvre sans clavier, et le champ à un toucher", (tester) async {

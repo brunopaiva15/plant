@@ -906,6 +906,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onRemovePhoto: _removeIdentificationPhoto,
               evaluation: _identificationEvaluation,
               genus: _identificationGenus,
+              selectedScientificName: _chosen?.scientificName,
             ),
           const SizedBox(height: Space.lg),
           Pressable(
@@ -980,10 +981,18 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   void _applyCandidate(IdentificationCandidate c) {
     setState(() {
       _chosen = c;
-      _chosenSource = c.source == IdentificationSource.remote ? ChosenSource.remote : ChosenSource.local;
+      _chosenSource = c.source == IdentificationSource.remote
+          ? ChosenSource.remote
+          : ChosenSource.local;
       _species.text = c.scientificName;
-      if (_name.text.trim().isEmpty) _name.text = c.commonName ?? c.scientificName.split(' ').first;
+      if (_name.text.trim().isEmpty) {
+        _name.text = c.commonName ?? c.scientificName.split(' ').first;
+      }
     });
+    _applyCareProfile(
+      c.scientificName,
+      family: speciesFamilyOf(ref, c.scientificName),
+    );
   }
 
   Widget _locationStep() {
@@ -1027,6 +1036,7 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onRemovePhoto,
     this.evaluation,
     this.genus,
+    this.selectedScientificName,
   });
 
   final Future<List<IdentificationCandidate>> future;
@@ -1052,6 +1062,10 @@ class _IdentificationSuggestions extends StatelessWidget {
 
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
+
+  /// Candidat déjà confirmé par l'utilisateur, y compris depuis l'overlay
+  /// affiché directement sur la photo.
+  final String? selectedScientificName;
 
   @override
   Widget build(BuildContext context) {
@@ -1096,7 +1110,11 @@ class _IdentificationSuggestions extends StatelessWidget {
               FloraGroup(
                 children: [
                   for (final c in results)
-                    CandidateRow(candidate: c, onUse: () => onPick(c)),
+                    CandidateRow(
+                      candidate: c,
+                      selected: c.scientificName == selectedScientificName,
+                      onUse: () => onPick(c),
+                    ),
                 ],
               ),
               if (state?.offer == SecondPhotoOffer.prominent &&
@@ -1159,7 +1177,11 @@ class _IdentificationSuggestions extends StatelessWidget {
               FloraGroup(
                 children: [
                   for (final c in results)
-                    CandidateRow(candidate: c, onUse: () => onPick(c)),
+                    CandidateRow(
+                      candidate: c,
+                      selected: c.scientificName == selectedScientificName,
+                      onUse: () => onPick(c),
+                    ),
                 ],
               ),
             ],
