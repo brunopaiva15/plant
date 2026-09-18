@@ -54,6 +54,7 @@ import '../data/services/photo_maintenance.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
+import '../data/services/jev_identification_policy.dart';
 import '../data/services/preferences_care_store.dart';
 import '../data/services/preferences_propagation_store.dart';
 import '../data/services/preferences_service.dart';
@@ -396,6 +397,11 @@ class LocalModelStatus {
 
 /// Compteurs de la cascade, persistés dans les réglages.
 final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>((ref) => PreferencesMetricsStore(ref.watch(preferencesServiceProvider)));
+
+/// Décision facultative Jev pour les scans qu'Iris juge ambigus. Le service
+/// possède son propre cache afin qu'un rebuild d'interface ne refasse pas un
+/// appel OpenRouter identique.
+final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) => JevIdentificationPolicy());
 
 /// Où partent les photos étiquetées en enregistrant, si elles partent :
 /// nulle part sans le consentement des réglages, sans compte distant, ou
