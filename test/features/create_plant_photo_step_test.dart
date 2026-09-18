@@ -48,6 +48,7 @@ class _FakeStorage extends PhotoStorageService {
 
   final String root;
   int picked = 0;
+  Completer<void>? importGate;
 
   @override
   Future<File?> pickSource(PhotoSource source) async {
@@ -58,6 +59,8 @@ class _FakeStorage extends PhotoStorageService {
 
   @override
   Future<StoredPhoto> importFile(File source) async {
+    final gate = importGate;
+    if (gate != null) await gate.future;
     final dir = Directory('$root/photos')..createSync(recursive: true);
     final name = 'p$picked';
     for (final suffix in ['.jpg', '_thumb.jpg']) {
@@ -193,6 +196,33 @@ void main() {
     // Pas encore de photo : rien à nommer, rien à ajouter.
     expect(find.text('La plante'), findsNothing);
     expect(find.text('Continuer'), findsNothing);
+  });
+
+  testWidgets('la photo source et la grille apparaissent avant la fin de l’import', (tester) async {
+    final gate = Completer<void>();
+    storage.importGate = gate;
+    await pumpFlow(tester, identifier: const _InstantIris());
+
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Aperçu'), findsOneWidget);
+    expect(find.byType(ProcessingField), findsOneWidget);
+    final rawPreview = tester.widgetList<Image>(find.byType(Image)).where(
+      (image) => image.image is FileImage &&
+          (image.image as FileImage).file.path.endsWith('raw-1.jpg'),
+    );
+    expect(rawPreview, hasLength(1));
+    expect(photoFiles(), isEmpty,
+        reason: 'la copie redimensionnée n’existe pas encore');
+    final continueButton =
+        tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Continuer'));
+    expect(continueButton.onPressed, isNull);
+
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(photoFiles(), hasLength(2));
   });
 
   testWidgets('la première photo suffit et « Reprendre » la supprime', (tester) async {
