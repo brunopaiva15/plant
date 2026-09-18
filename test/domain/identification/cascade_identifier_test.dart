@@ -115,6 +115,7 @@ void main() {
   final sure = [c('Monstera deliciosa Liebm.', 0.96), c('Monstera adansonii', 0.02)];
   final plausible = [c('Monstera deliciosa', 0.40), c('Monstera adansonii', 0.30)];
   final hesitant = [c('Monstera deliciosa', 0.15), c('Monstera adansonii', 0.12)];
+  final lost = [c('Monstera deliciosa', 0.05)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
   CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
@@ -296,20 +297,18 @@ void main() {
     expect(cascade.metrics.fallbacks, 0, reason: 'un appel direct n\'est pas un repli');
   });
 
-  test('hesitant local answer falls back to the remote service', () async {
+  test('hesitant local answer stays visible so a second photo can refine it', () async {
     final local = FakeLocal(hesitant);
     final remote = FakeRemote(remoteAnswer);
     final cascade = build(local, remote);
     final result = await cascade.identify([photo], language: 'de');
-    expect(remote.calls, 1);
-    expect(remote.lastLanguage, 'de');
-    expect(result.first.scientificName, 'Monstera adansonii');
-    expect(result.first.source, IdentificationSource.remote);
+    expect(remote.calls, 0);
+    expect(result.map((r) => r.scientificName), ['Monstera deliciosa', 'Monstera adansonii']);
+    expect(result.first.source, IdentificationSource.local);
     final m = cascade.metrics;
-    expect(m.fallbacks, 1);
-    expect(m.remote, 1);
-    expect(m.localAccepted, 0);
-    expect(m.fallbackRate, 1.0);
+    expect(m.fallbacks, 0);
+    expect(m.remote, 0);
+    expect(m.localAccepted, 1);
   });
 
   test('without a local model the remote service is used directly', () async {
@@ -353,8 +352,8 @@ void main() {
     expect(slow.metrics.errors, 1);
   });
 
-  test('remote failure after a hesitant local answer returns the local list', () async {
-    final cascade = build(FakeLocal(hesitant), FakeRemote(remoteAnswer, error: const IdentificationException('http 500')));
+  test('remote failure after no local candidate returns the weak local list', () async {
+    final cascade = build(FakeLocal(lost), FakeRemote(remoteAnswer, error: const IdentificationException('http 500')));
     final result = await cascade.identify([photo]);
     expect(result.first.scientificName, 'Monstera deliciosa');
     expect(cascade.metrics.errors, 1);
@@ -381,7 +380,7 @@ void main() {
     var day = DateTime(2026, 9, 5, 10);
     final remote = FakeRemote(remoteAnswer);
     final store = InMemoryMetricsStore();
-    final cascade = build(FakeLocal(hesitant), remote, store: store, limit: 2, now: () => day);
+    final cascade = build(FakeLocal(lost), remote, store: store, limit: 2, now: () => day);
     await cascade.identify([photo]);
     await cascade.identify([other]);
     expect(remote.calls, 2);
