@@ -522,7 +522,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ),
           _PhotoMode.review => (
               l10n.stepPhotoDoneTitle,
-              identifier.isConfigured ? l10n.identifying : l10n.stepPhotoDonePlain,
+              identifier.isConfigured ? null : l10n.stepPhotoDonePlain,
             ),
         };
         return _StepLayout(
@@ -827,7 +827,7 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// s'affiche que si la liste vient de l'appareil.
   final VoidCallback? onSearchOnline;
 
-  /// Présent tant qu'une photo de plus est acceptée.
+  /// Présent seulement quand Iris hésite et qu'une seconde photo peut aider.
   final VoidCallback? onAddPhoto;
 
   /// Retirer une photo ajoutée pour identifier. Jamais la première : c'est
@@ -867,19 +867,12 @@ class _IdentificationSuggestions extends StatelessWidget {
         final photoOffer = offer?.call(results) ?? SecondPhotoOffer.none;
         // Sur toutes les candidates rendues, pas sur les trois affichées.
         final genre = genus?.call(snap.data ?? const []);
-        // La bande montre ce qui est parti dès qu'il y a plusieurs photos, et
-        // la place libre seulement si la cascade en veut une de plus. Le
-        // compte n'est plus écrit — « · 2 photos » disait l'état sans jamais
-        // dire le geste ; deux vignettes et une case vide disent les deux.
-        final showStrip = paths.length > 1 || photoOffer != SecondPhotoOffer.none;
+        final hasSecondPhoto = paths.length > 1;
         return Padding(
           padding: const EdgeInsets.only(top: Space.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // D'où viennent ces noms : l'utilisateur a le droit de savoir si
-              // sa photo est partie sur le réseau, et de le demander sinon. Le
-              // téléphone et le nuage le disent avant la phrase.
               IdentificationSourceNote(
                 source: results.first.source,
                 label: switch (results.first.source) {
@@ -888,31 +881,34 @@ class _IdentificationSuggestions extends StatelessWidget {
                   IdentificationSource.unknown => l10n.identifyHint,
                 },
               ),
-              if (showStrip) ...[
+              if (hasSecondPhoto) ...[
                 const SizedBox(height: Space.xs),
                 IdentificationPhotoStrip(
                   paths: paths,
                   maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
-                  onAdd: photoOffer == SecondPhotoOffer.none ? null : onAddPhoto,
                   onRemove: onRemovePhoto,
                 ),
-                // Le modèle hésite : la photo est le geste qui tranche, et il
-                // vaut la phrase qui dit quoi photographier.
-                if (photoOffer == SecondPhotoOffer.prominent) ...[
-                  const SizedBox(height: Space.xs),
-                  Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                ],
               ],
               const SizedBox(height: Space.xs),
               if (genre != null) ...[
                 GenusRow(answer: genre, onUse: () => onPick(genusCandidate(genre, l10n.localeName))),
                 const SizedBox(height: Space.xs),
               ],
+              // Même quand Iris hésite, ses propositions restent visibles :
+              // la seconde photo affine la liste, elle ne la remplace pas.
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
-              // La photo d'abord, l'appel réseau ensuite : l'une est gratuite
-              // et immédiate, l'autre se prend sur un quota mensuel. Le geste
-              // gratuit est donc au-dessus de la liste, dans la bande, et
-              // celui qui se paie reste ici-bas.
+              if (photoOffer == SecondPhotoOffer.prominent && onAddPhoto != null) ...[
+                const SizedBox(height: Space.sm),
+                Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                const SizedBox(height: Space.xs),
+                FloraButton(
+                  label: l10n.identifyAnotherPhoto,
+                  icon: CupertinoIcons.camera,
+                  style: FloraButtonStyle.secondary,
+                  size: FloraButtonSize.small,
+                  onPressed: onAddPhoto,
+                ),
+              ],
               if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
                 const SizedBox(height: Space.sm),
                 FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.ghost, size: FloraButtonSize.small, onPressed: onSearchOnline),
@@ -966,12 +962,6 @@ class _Shutter extends StatelessWidget {
   }
 }
 
-/// La photo de la plante, puis les vues prises pour la reconnaître, chacune
-/// sous son nom ; les emplacements libres disent quoi photographier.
-///
-/// Trois cases égales ne disaient rien : laquelle est la photo de la plante,
-/// à quoi servent les autres, que deviennent-elles. Ici la première est
-/// « La plante », les suivantes portent le sujet conseillé.
 class _StepLayout extends StatelessWidget {
   const _StepLayout({required this.title, required this.body, required this.actions, this.subtitle, this.scrollable = false});
 
