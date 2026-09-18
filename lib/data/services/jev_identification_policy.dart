@@ -38,7 +38,7 @@ class JevIdentificationPolicy {
   final bool? _configuredOverride;
 
   bool get _isConfigured => _configuredOverride ?? JevConfig.isConfigured;
-  final _cache = <String, Future<JevProductDecision?>>{};
+  final _offerCache = <String, Future<SecondPhotoOffer>>{};
 
   static const _timeout = Duration(seconds: 3);
   static const _maxCacheEntries = 24;
@@ -48,7 +48,7 @@ class JevIdentificationPolicy {
     required List<IdentificationCandidate> candidates,
     required int photos,
     required int maxPhotos,
-  }) async {
+  }) {
     final fallback = secondPhotoOffer(
       policy,
       candidates,
@@ -58,12 +58,48 @@ class JevIdentificationPolicy {
 
     // Rien à arbitrer : Iris est déjà suffisamment sûr, la réponse n'est pas
     // locale, la liste est vide, ou le maximum de photos est atteint.
-    if (fallback == SecondPhotoOffer.none) return fallback;
-    if (!_isConfigured) return fallback;
+    if (fallback == SecondPhotoOffer.none || !_isConfigured) {
+      return Future.value(fallback);
+    }
 
+    final top5 = candidates
+        .where((c) => c.source == IdentificationSource.local)
+        .take(5)
+        .toList(growable: false);
+    if (top5.isEmpty || photos >= maxPhotos) return Future.value(fallback);
+
+    final key = [
+      photos,
+      maxPhotos,
+      for (final c in top5)
+        '${c.scientificName}:${c.score.toStringAsFixed(6)}',
+    ].join('|');
+
+    final cached = _offerCache[key];
+    if (cached != null) return cached;
+
+    final pending = _resolve(
+      top5,
+      fallback: fallback,
+      photos: photos,
+      maxPhotos: maxPhotos,
+    );
+    _offerCache[key] = pending;
+    if (_offerCache.length > _maxCacheEntries) {
+      _offerCache.remove(_offerCache.keys.first);
+    }
+    return pending;
+  }
+
+  Future<SecondPhotoOffer> _resolve(
+    List<IdentificationCandidate> candidates, {
+    required SecondPhotoOffer fallback,
+    required int photos,
+    required int maxPhotos,
+  }) async {
     try {
-      final decision = await _decision(
-        candidates: candidates,
+      final decision = await _request(
+        candidates,
         photos: photos,
         maxPhotos: maxPhotos,
       ).timeout(_timeout);
@@ -77,37 +113,6 @@ class JevIdentificationPolicy {
       // réponse inattendue ne doit jamais casser le scan.
       return fallback;
     }
-  }
-
-  Future<JevProductDecision?> _decision({
-    required List<IdentificationCandidate> candidates,
-    required int photos,
-    required int maxPhotos,
-  }) {
-    final top5 = candidates
-        .where((c) => c.source == IdentificationSource.local)
-        .take(5)
-        .toList(growable: false);
-    if (top5.isEmpty || photos >= maxPhotos) {
-      return Future.value(null);
-    }
-
-    final key = [
-      photos,
-      maxPhotos,
-      for (final c in top5)
-        '${c.scientificName}:${c.score.toStringAsFixed(6)}',
-    ].join('|');
-
-    final cached = _cache[key];
-    if (cached != null) return cached;
-
-    final pending = _request(top5, photos: photos, maxPhotos: maxPhotos);
-    _cache[key] = pending;
-    if (_cache.length > _maxCacheEntries) {
-      _cache.remove(_cache.keys.first);
-    }
-    return pending;
   }
 
   Future<JevProductDecision?> _request(
