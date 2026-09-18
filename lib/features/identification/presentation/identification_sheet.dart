@@ -297,10 +297,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                           excludeFromSemantics: true,
                           errorBuilder: (_, _, _) => ColoredBox(color: context.colors.surfaceMuted),
                         ),
-                        foregroundAlignment: Alignment.topCenter,
+                        foregroundAlignment: Alignment.topRight,
                         foreground: const Padding(
-                          padding: EdgeInsets.only(top: Space.lg),
-                          child: BreathingIrisMark(size: 72),
+                          padding: EdgeInsets.only(top: Space.xs, right: Space.sm),
+                          child: BreathingIrisMark(size: 48),
                         ),
                       ),
                       const SizedBox(height: Space.sm),
