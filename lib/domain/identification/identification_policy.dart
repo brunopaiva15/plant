@@ -12,8 +12,8 @@ enum IdentificationVerdict {
   /// pour une réponse dont il n'a peut-être pas besoin.
   plausible,
 
-  /// Le modèle n'a rien reconnu : c'est là que le service distant sert
-  /// vraiment, et l'appel se fait tout seul.
+  /// Le modèle a des candidats, mais trop faibles pour être plausibles.
+  /// Ils restent visibles afin qu'une seconde photo puisse les départager.
   uncertain,
 
   /// Rien d'exploitable : image hors sujet, modèle absent, liste vide.
