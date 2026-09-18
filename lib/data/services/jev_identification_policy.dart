@@ -49,9 +49,11 @@ class JevPipelineEvaluation {
 
 /// Couche de décision facultative autour d'Iris.
 ///
-/// Le pipeline local reste l'autorité de repli. Jev n'est consulté que dans
-/// le cas où cette politique aurait proposé une seconde photo. Il ne reçoit
-/// jamais la photo : seulement le Top-5, ses scores et le nombre de vues.
+/// Le pipeline local reste l'autorité de repli. Jev n'est consulté que quand
+/// Iris reste ambigu : après une photo pour décider si une seconde vue vaut
+/// la peine, puis après la seconde pour trancher entre afficher le résultat
+/// ou le garder explicitement incertain. Il ne reçoit jamais la photo :
+/// seulement le Top-5, ses scores et le nombre de vues.
 ///
 /// Les évaluations complètes sont mémorisées. L'UI de debug et le pipeline
 /// partagent exactement le même Future et donc le même appel réseau.
@@ -98,7 +100,31 @@ class JevIdentificationPolicy {
       maxPhotos: maxPhotos,
     );
 
-    if (fallback == SecondPhotoOffer.none) {
+    // Jev n'arbitre que la sortie locale d'Iris.
+    if (candidates.isEmpty ||
+        candidates.first.source != IdentificationSource.local) {
+      return Future.value(JevPipelineEvaluation(
+        offer: fallback,
+        consultedJev: false,
+        usedFallback: false,
+      ));
+    }
+
+    final top5 = candidates
+        .where((c) => c.source == IdentificationSource.local)
+        .take(5)
+        .toList(growable: false);
+    if (top5.isEmpty) {
+      return Future.value(JevPipelineEvaluation(
+        offer: fallback,
+        consultedJev: false,
+        usedFallback: false,
+      ));
+    }
+
+    // Un résultat déjà accepté par Iris n'a besoin d'aucun arbitrage réseau,
+    // que l'on soit à la première ou à la deuxième photo.
+    if (policy.decide(top5) == IdentificationVerdict.accepted) {
       return Future.value(JevPipelineEvaluation(
         offer: fallback,
         consultedJev: false,
@@ -112,18 +138,6 @@ class JevIdentificationPolicy {
         consultedJev: false,
         usedFallback: true,
         error: 'OPENROUTER_API_KEY absente',
-      ));
-    }
-
-    final top5 = candidates
-        .where((c) => c.source == IdentificationSource.local)
-        .take(5)
-        .toList(growable: false);
-    if (top5.isEmpty || photos >= maxPhotos) {
-      return Future.value(JevPipelineEvaluation(
-        offer: fallback,
-        consultedJev: false,
-        usedFallback: false,
       ));
     }
 
@@ -161,6 +175,7 @@ class JevIdentificationPolicy {
     required int maxPhotos,
   }) async {
     final stopwatch = Stopwatch()..start();
+    final atPhotoLimit = photos >= maxPhotos;
     try {
       final response = await _service
           .decide(
@@ -182,15 +197,19 @@ class JevIdentificationPolicy {
             questions: {
               'decision': {
                 'type': 'choice',
-                'instructions':
-                    'Choose the single product action Auxine should take now. Iris already considers this scan ambiguous enough that the local policy would ask for another photo. Decide whether another view is actually useful.',
+                'instructions': atPhotoLimit
+                    ? 'Auxine has already used the maximum number of photos. Choose the final product state for this still-ambiguous Iris result. Asking for another photo is not available.'
+                    : 'Choose the single product action Auxine should take now. Iris considers this scan ambiguous. Decide whether another view is actually useful.',
                 'criteria': {
-                  'show_result':
-                      'Do not ask for another photo because one Iris candidate already dominates enough that another view is unlikely to materially change the identification.',
-                  'ask_another_photo':
-                      'Ask for one more photo because two or more candidates remain close enough that another view could materially improve the identification. Only valid while photo_count is below max_photo_count.',
-                  'keep_uncertain':
-                      'Do not ask for another photo because the evidence is too weak or diffuse for another view to be a useful next step; keep the identification explicitly uncertain.',
+                  'show_result': atPhotoLimit
+                      ? 'Show the best current result because the combined two-photo Iris distribution now supports a useful leading candidate.'
+                      : 'Do not ask for another photo because one Iris candidate already dominates enough that another view is unlikely to materially change the identification.',
+                  if (!atPhotoLimit)
+                    'ask_another_photo':
+                        'Ask for one more photo because two or more candidates remain close enough that another view could materially improve the identification.',
+                  'keep_uncertain': atPhotoLimit
+                      ? 'Keep the result explicitly uncertain because even after the maximum number of photos the Iris distribution does not support a specific species strongly enough.'
+                      : 'Do not ask for another photo because the evidence is too weak or diffuse for another view to be a useful next step; keep the identification explicitly uncertain.',
                 },
               },
             },
