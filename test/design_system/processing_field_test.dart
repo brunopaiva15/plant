@@ -31,6 +31,27 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('le premier plan peut se placer en haut du champ', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        const ProcessingField(
+          height: 220,
+          child: ColoredBox(color: Colors.black),
+          foregroundAlignment: Alignment.topCenter,
+          foreground: Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: IrisMark(size: 56),
+          ),
+        ),
+      ),
+    );
+
+    final field = tester.getRect(find.byType(ProcessingField));
+    final mark = tester.getRect(find.byType(IrisMark));
+    expect(mark.center.dx, closeTo(field.center.dx, 0.5));
+    expect(mark.top, closeTo(field.top + 20, 0.5));
+  });
+
   testWidgets('le champ reste fixe avec reduced motion', (tester) async {
     await tester.pumpWidget(
       _host(
