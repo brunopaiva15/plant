@@ -90,6 +90,16 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
 
+  /// La première analyse reste volontairement visible au moins deux secondes,
+  /// même si Iris répond plus vite. Les noms, eux, peuvent commencer à
+  /// apparaître dès que le modèle les a rendus.
+  static const Duration _minimumPrimaryScan = Duration(seconds: 2);
+  Timer? _primaryScanTimer;
+  bool _primaryScanMinimumElapsed = true;
+  bool _primaryIdentificationDone = false;
+  List<IdentificationCandidate> _primaryPreviewCandidates = const [];
+  int _identificationRun = 0;
+
   /// Photos prises en plus, seulement pour lever un doute d'identification.
   /// Ce ne sont pas des photos de la plante : elles s'effacent en partant,
   /// que la création aboutisse ou non.
@@ -141,6 +151,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   @override
   void dispose() {
+    _primaryScanTimer?.cancel();
     _camera.dispose();
     _page.dispose();
     _name.dispose();
@@ -239,10 +250,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         ..clear()
         ..add(path);
       _identification = null;
+      _primaryPreviewCandidates = const [];
+      _primaryIdentificationDone = false;
+      _primaryScanMinimumElapsed = false;
       _mode = _PhotoMode.review;
     });
     await _camera.stop();
-    _startIdentification();
+    _startIdentification(revealOnPrimaryPhoto: true);
     Haptics.success();
   }
 
@@ -252,10 +266,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final storage = ref.read(photoStorageProvider);
     final old = _photo;
     _dropIdentificationExtras();
+    _primaryScanTimer?.cancel();
+    _identificationRun++;
     setState(() {
       _photo = null;
       _identificationPaths.clear();
       _identification = null;
+      _primaryPreviewCandidates = const [];
+      _primaryIdentificationDone = false;
+      _primaryScanMinimumElapsed = true;
       _mode = _PhotoMode.aim;
     });
     _camera.start();
@@ -265,15 +284,31 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// Identification en arrière-plan. La première passe démarre dès la photo
   /// principale ; si la confiance est trop faible, une seconde photo peut
   /// relancer exactement le même moteur et fusionner les deux vues.
-  void _startIdentification() {
+  void _startIdentification({bool revealOnPrimaryPhoto = false}) {
     final identifier = ref.read(plantIdentifierProvider);
     if (!identifier.isConfigured || _identificationPaths.isEmpty) return;
     final lang = _identificationLanguage;
-    setState(() {
-      _identification = identifier
-          .identify([for (final p in _identificationPaths) File(p)], language: lang)
-          .catchError((_) => <IdentificationCandidate>[]);
-    });
+    final run = ++_identificationRun;
+    final pending = identifier
+        .identify([for (final p in _identificationPaths) File(p)], language: lang)
+        .catchError((_) => <IdentificationCandidate>[]);
+
+    if (revealOnPrimaryPhoto) {
+      _primaryScanTimer?.cancel();
+      _primaryScanTimer = Timer(_minimumPrimaryScan, () {
+        if (!mounted || run != _identificationRun) return;
+        setState(() => _primaryScanMinimumElapsed = true);
+      });
+      pending.then((results) {
+        if (!mounted || run != _identificationRun) return;
+        setState(() {
+          _primaryIdentificationDone = true;
+          _primaryPreviewCandidates = results.take(3).toList(growable: false);
+        });
+      });
+    }
+
+    setState(() => _identification = pending);
   }
 
   /// Le modèle hésite-t-il ? La politique de la cascade le dit, celle-là
@@ -525,7 +560,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ),
           _PhotoMode.review => (
               l10n.stepPhotoDoneTitle,
-              identifier.isConfigured ? null : l10n.stepPhotoDonePlain,
+              !identifier.isConfigured
+                  ? l10n.stepPhotoDonePlain
+                  : (!_primaryIdentificationDone || !_primaryScanMinimumElapsed)
+                      ? l10n.identifying
+                      : _primaryPreviewCandidates.isEmpty
+                          ? l10n.identifyNone
+                          : l10n.identifyHint,
             ),
         };
         return _StepLayout(
@@ -557,7 +598,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                 FloraButton(label: l10n.withoutPhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _go(1)),
               ],
             _PhotoMode.review => [
-                FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
+                FloraButton(
+                  label: l10n.continueLabel,
+                  expand: true,
+                  onPressed: identifier.isConfigured && (!_primaryIdentificationDone || !_primaryScanMinimumElapsed)
+                      ? null
+                      : () => _go(1),
+                ),
                 const SizedBox(height: Space.xs),
                 FloraButton(label: l10n.retake, icon: CupertinoIcons.camera, style: FloraButtonStyle.ghost, expand: true, onPressed: _picking ? null : _retake),
               ],
@@ -576,19 +623,22 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final Widget content;
     if (_mode == _PhotoMode.review) {
       final image = PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
-      final identification = _identification;
-      content = identification == null
-          ? image
-          : FutureBuilder<List<IdentificationCandidate>>(
-              future: identification,
-              builder: (context, snap) => snap.connectionState == ConnectionState.done
-                  ? image
-                  : ProcessingField(
-                      height: null,
-                      child: image,
-                      foreground: const IrisMark(size: 84),
-                    ),
-            );
+      final scanning = _identification != null && (!_primaryIdentificationDone || !_primaryScanMinimumElapsed);
+      content = Stack(
+        fit: StackFit.expand,
+        children: [
+          if (scanning)
+            ProcessingField(
+              height: null,
+              child: image,
+              foreground: const IrisMark(size: 84),
+            )
+          else
+            image,
+          if (_primaryPreviewCandidates.isNotEmpty)
+            _DetectedPlantsOverlay(candidates: _primaryPreviewCandidates),
+        ],
+      );
     } else if (live) {
       content = Stack(
         fit: StackFit.expand,
@@ -920,6 +970,169 @@ class _IdentificationSuggestions extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Les noms qu'Iris vient de rendre, posés directement sur la photo.
+///
+/// Le modèle rend sa liste d'un coup. L'interface la révèle pourtant en
+/// plusieurs temps courts : cela donne à voir la lecture sans prétendre que
+/// le modèle produit réellement ses résultats un par un. Positions et petites
+/// rotations viennent du nom scientifique, donc elles paraissent organiques
+/// tout en restant stables d'un rebuild à l'autre.
+class _DetectedPlantsOverlay extends StatefulWidget {
+  const _DetectedPlantsOverlay({required this.candidates});
+
+  final List<IdentificationCandidate> candidates;
+
+  @override
+  State<_DetectedPlantsOverlay> createState() => _DetectedPlantsOverlayState();
+}
+
+class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1250),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.value = 1;
+    } else if (!_controller.isAnimating && _controller.value == 0) {
+      _controller.forward();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _DetectedPlantsOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final before = oldWidget.candidates.map((e) => e.scientificName).join('|');
+    final after = widget.candidates.map((e) => e.scientificName).join('|');
+    if (before == after) return;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.value = 1;
+    } else {
+      _controller
+        ..value = 0
+        ..forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  int _stableHash(String value) {
+    var hash = 17;
+    for (final unit in value.codeUnits) {
+      hash = (hash * 31 + unit) & 0x7fffffff;
+    }
+    return hash;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final items = widget.candidates.take(3).toList(growable: false);
+    const bases = <Alignment>[
+      Alignment(-0.60, -0.60),
+      Alignment(0.58, 0.02),
+      Alignment(-0.42, 0.60),
+    ];
+
+    return IgnorePointer(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          for (var i = 0; i < items.length; i++)
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                final start = 0.04 + i * 0.20;
+                final end = (start + 0.40).clamp(0.0, 1.0).toDouble();
+                final t = Interval(start, end, curve: Curves.easeOutBack)
+                    .transform(_controller.value.clamp(0.0, 1.0));
+                final seed = _stableHash(items[i].scientificName);
+                final dx = ((seed % 19) - 9) / 100;
+                final dy = (((seed ~/ 19) % 15) - 7) / 100;
+                final rotation = (((seed ~/ 285) % 13) - 6) * 0.008;
+                final base = bases[i];
+
+                return Align(
+                  alignment: Alignment(base.x + dx, base.y + dy),
+                  child: Opacity(
+                    opacity: t.clamp(0.0, 1.0),
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - t) * 10),
+                      child: Transform.rotate(
+                        angle: rotation,
+                        child: Transform.scale(
+                          scale: 0.90 + 0.10 * t,
+                          child: child,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 220),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: c.surface.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: (i == 0 ? c.sage : c.inkTertiary).withValues(alpha: 0.32),
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x26000000),
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          items[i].commonName?.trim().isNotEmpty == true
+                              ? items[i].commonName!
+                              : items[i].scientificName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: context.text.callout.copyWith(
+                            color: c.ink,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (items[i].commonName?.trim().isNotEmpty == true) ...[
+                          const SizedBox(height: 1),
+                          Text(
+                            items[i].scientificName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: context.text.caption.copyWith(color: c.inkSecondary),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
