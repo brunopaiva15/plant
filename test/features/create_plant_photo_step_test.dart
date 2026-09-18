@@ -267,7 +267,7 @@ void main() {
     expect(find.byType(ProcessingField), findsNothing);
   });
 
-  testWidgets('un résultat instantané garde deux secondes de scan et révèle les noms', (tester) async {
+  testWidgets('un résultat instantané garde une demi-seconde de scan et révèle les noms', (tester) async {
     await pumpFlow(tester, identifier: const _InstantIris());
     await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
     await tester.pump();
@@ -279,11 +279,11 @@ void main() {
     var continueButton = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Continuer'));
     expect(continueButton.onPressed, isNull, reason: 'le scan doit rester visible au moins deux secondes');
 
-    await tester.pump(const Duration(milliseconds: 1700));
+    await tester.pump(const Duration(milliseconds: 250));
     expect(find.byType(ProcessingField), findsOneWidget);
 
-    // À deux secondes, le scan ne disparaît pas d'un coup : l'ancien champ
-    // reste dans l'AnimatedSwitcher pendant son fondu de sortie.
+    // À 0,5 s, le scan ne disparaît pas d'un coup : l'ancien champ reste dans
+    // l'AnimatedSwitcher pendant son fondu de sortie.
     await tester.pump(const Duration(milliseconds: 220));
     expect(find.byType(ProcessingField), findsOneWidget);
 
@@ -292,6 +292,37 @@ void main() {
     continueButton = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Continuer'));
     expect(continueButton.onPressed, isNotNull);
     expect(find.text('Maranta'), findsOneWidget);
+  });
+
+  testWidgets('toucher un nom détecté le sélectionne et continue', (tester) async {
+    await pumpFlow(tester, identifier: const _InstantIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 120));
+
+    expect(find.text('Calathéa zébré'), findsOneWidget);
+    await tester.tap(find.text('Calathéa zébré'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nom'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is EditableText &&
+            widget.controller.text == 'Goeppertia zebrina',
+      ),
+      findsOneWidget,
+      reason: 'l’espèce tapée doit être préremplie à l’étape suivante',
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is EditableText &&
+            widget.controller.text == 'Calathéa zébré',
+      ),
+      findsOneWidget,
+      reason: 'le nom commun est également repris comme nom de la plante',
+    );
   });
 
   testWidgets("l'étape du nom s'ouvre sans clavier, et le champ à un toucher", (tester) async {

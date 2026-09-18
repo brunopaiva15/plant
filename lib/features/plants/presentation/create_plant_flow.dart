@@ -98,10 +98,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
 
-  /// La première analyse reste volontairement visible au moins deux secondes,
-  /// même si Iris répond plus vite. Les noms, eux, peuvent commencer à
-  /// apparaître dès que le modèle les a rendus.
-  static const Duration _minimumPrimaryScan = Duration(seconds: 2);
+  /// La première analyse reste visible au moins une demi-seconde, même si
+  /// Iris répond plus vite. Les noms peuvent apparaître dès que le modèle les
+  /// a rendus.
+  static const Duration _minimumPrimaryScan = Duration(milliseconds: 500);
   Timer? _primaryScanTimer;
   bool _primaryScanMinimumElapsed = true;
   bool _primaryIdentificationDone = false;
@@ -765,7 +765,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                   ),
           ),
           if (_primaryPreviewCandidates.isNotEmpty)
-            _DetectedPlantsOverlay(candidates: _primaryPreviewCandidates),
+            _DetectedPlantsOverlay(
+              candidates: _primaryPreviewCandidates,
+              onPick: _pickPreviewCandidate,
+            ),
         ],
       );
     } else if (live) {
@@ -960,6 +963,18 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         FloraButton(label: l10n.continueLabel, expand: true, onPressed: _name.text.trim().isEmpty ? null : () => _go(2)),
       ],
     );
+  }
+
+  void _pickPreviewCandidate(IdentificationCandidate candidate) {
+    if (_photo == null || _picking) return;
+
+    // Les résultats sont déjà là : le tap est une confirmation explicite,
+    // donc inutile de retenir l'utilisateur jusqu'à la fin du délai visuel.
+    _primaryScanTimer?.cancel();
+    _applyCandidate(candidate);
+    if (!mounted) return;
+    setState(() => _primaryScanMinimumElapsed = true);
+    _go(1);
   }
 
   void _applyCandidate(IdentificationCandidate c) {
@@ -1201,9 +1216,13 @@ class _IdentificationSuggestions extends StatelessWidget {
 /// rotations viennent du nom scientifique, donc elles paraissent organiques
 /// tout en restant stables d'un rebuild à l'autre.
 class _DetectedPlantsOverlay extends StatefulWidget {
-  const _DetectedPlantsOverlay({required this.candidates});
+  const _DetectedPlantsOverlay({
+    required this.candidates,
+    required this.onPick,
+  });
 
   final List<IdentificationCandidate> candidates;
+  final ValueChanged<IdentificationCandidate> onPick;
 
   @override
   State<_DetectedPlantsOverlay> createState() => _DetectedPlantsOverlayState();
@@ -1265,12 +1284,11 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
       Alignment(-0.42, 0.60),
     ];
 
-    return IgnorePointer(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          for (var i = 0; i < items.length; i++)
-            AnimatedBuilder(
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        for (var i = 0; i < items.length; i++)
+          AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
                 final start = 0.04 + i * 0.20;
@@ -1300,58 +1318,75 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
                   ),
                 );
               },
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 220),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: c.surface.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: (i == 0 ? c.sage : c.inkTertiary).withValues(alpha: 0.32),
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 12,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+              child: Pressable(
+                onTap: () => widget.onPick(items[i]),
+                semanticLabel:
+                    items[i].commonName?.trim().isNotEmpty == true
+                        ? items[i].commonName!
+                        : items[i].scientificName,
+                scale: 0.96,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 220,
+                    minHeight: 48,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          items[i].commonName?.trim().isNotEmpty == true
-                              ? items[i].commonName!
-                              : items[i].scientificName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: context.text.callout.copyWith(
-                            color: c.ink,
-                            fontWeight: FontWeight.w700,
-                          ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: c.surface.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: (i == 0 ? c.sage : c.inkTertiary)
+                            .withValues(alpha: 0.32),
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x26000000),
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
                         ),
-                        if (items[i].commonName?.trim().isNotEmpty == true) ...[
-                          const SizedBox(height: 1),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 11,
+                        vertical: 7,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
                           Text(
-                            items[i].scientificName,
+                            items[i].commonName?.trim().isNotEmpty == true
+                                ? items[i].commonName!
+                                : items[i].scientificName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
-                            style: context.text.caption.copyWith(color: c.inkSecondary),
+                            style: context.text.callout.copyWith(
+                              color: c.ink,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
+                          if (items[i].commonName?.trim().isNotEmpty == true) ...[
+                            const SizedBox(height: 1),
+                            Text(
+                              items[i].scientificName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: context.text.caption.copyWith(
+                                color: c.inkSecondary,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-        ],
-      ),
+      ],
     );
   }
 }
