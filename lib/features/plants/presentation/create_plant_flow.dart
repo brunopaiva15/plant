@@ -631,7 +631,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ProcessingField(
               height: null,
               child: image,
-              foreground: const IrisMark(size: 72),
+              foreground: const BreathingIrisMark(size: 72),
             )
           else
             image,
@@ -665,7 +665,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           // l'icône disparaissait dans sa pastille blanche.
           if (_mode == _PhotoMode.aim)
             Positioned(
-              left: Space.md,
+              // Le repère de cadrage occupe le coin inférieur gauche. Le
+              // bouton rentre d'un cran dans l'image pour rester un contrôle
+              // distinct au lieu de se superposer à ce repère.
+              left: Space.huge,
               bottom: Space.lg,
               child: FloraIconButton(
                 icon: CupertinoIcons.photo,
