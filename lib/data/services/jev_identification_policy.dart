@@ -36,7 +36,7 @@ class JevPipelineEvaluation {
   /// État produit final : Auxine ne présente aucune espèce comme conclusion,
   /// mais garde les candidates accessibles comme suggestions manuelles.
   bool get keepsUncertain =>
-      !usedFallback && decision?.action == JevProductAction.keepUncertain;
+      decision?.action == JevProductAction.keepUncertain;
 }
 
 /// Couche de décision facultative autour d'Iris.
@@ -125,10 +125,9 @@ class JevIdentificationPolicy {
     }
 
     if (!_isConfigured) {
-      return Future.value(JevPipelineEvaluation(
-        offer: fallback,
-        consultedJev: false,
-        usedFallback: true,
+      return Future.value(_fallbackEvaluation(
+        fallback,
+        atPhotoLimit: photos >= maxPhotos,
       ));
     }
 
@@ -208,10 +207,10 @@ class JevIdentificationPolicy {
 
       final decision = _parseDecision(response, photos: photos, maxPhotos: maxPhotos);
       if (decision == null) {
-        return JevPipelineEvaluation(
-          offer: fallback,
+        return _fallbackEvaluation(
+          fallback,
+          atPhotoLimit: atPhotoLimit,
           consultedJev: true,
-          usedFallback: true,
         );
       }
 
@@ -224,12 +223,30 @@ class JevIdentificationPolicy {
         decision: decision,
       );
     } catch (_) {
-      return JevPipelineEvaluation(
-        offer: fallback,
+      return _fallbackEvaluation(
+        fallback,
+        atPhotoLimit: atPhotoLimit,
         consultedJev: true,
-        usedFallback: true,
       );
     }
+  }
+
+  JevPipelineEvaluation _fallbackEvaluation(
+    SecondPhotoOffer fallback, {
+    required bool atPhotoLimit,
+    bool consultedJev = false,
+  }) {
+    return JevPipelineEvaluation(
+      offer: fallback,
+      consultedJev: consultedJev,
+      usedFallback: true,
+      decision: atPhotoLimit
+          ? const JevProductDecision(
+              action: JevProductAction.keepUncertain,
+              probability: null,
+            )
+          : null,
+    );
   }
 
   JevProductDecision? _parseDecision(
