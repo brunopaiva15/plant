@@ -48,6 +48,18 @@ class JevIrisDebugPanel extends ConsumerWidget {
         SecondPhotoOffer.none => 'Aucune deuxième photo',
       };
 
+  String _effectLabel(JevPipelineEvaluation result) {
+    if (photoCount >= maxPhotos) {
+      return switch (result.decision?.action) {
+        JevProductAction.showResult => 'Résultat affiché',
+        JevProductAction.keepUncertain => 'Résultat maintenu incertain',
+        JevProductAction.askAnotherPhoto => 'Résultat maintenu incertain',
+        null => 'Aucune autre photo possible',
+      };
+    }
+    return _offerLabel(result.offer);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!JevConfig.isConfigured || _top5.isEmpty) {
@@ -155,7 +167,7 @@ class JevIrisDebugPanel extends ConsumerWidget {
                       ),
                       _DebugMetric(
                         label: 'Décision appliquée',
-                        value: _offerLabel(result.offer),
+                        value: _effectLabel(result),
                       ),
                       Text(
                         result.usedFallback
@@ -181,7 +193,7 @@ class JevIrisDebugPanel extends ConsumerWidget {
                     ),
                     _DebugMetric(
                       label: 'Effet appliqué',
-                      value: _offerLabel(result.offer),
+                      value: _effectLabel(result),
                     ),
                     _DebugMetric(
                       label: 'Source',
@@ -212,15 +224,7 @@ class JevIrisDebugPanel extends ConsumerWidget {
                     ],
                     if (result.rawResponse != null) ...[
                       const SizedBox(height: Space.sm),
-                      SelectableText(
-                        const JsonEncoder.withIndent('  ')
-                            .convert(result.rawResponse),
-                        style: context.text.caption.copyWith(
-                          color: c.inkSecondary,
-                          fontFamily: 'monospace',
-                          height: 1.35,
-                        ),
-                      ),
+                      _RawJsonDisclosure(response: result.rawResponse!),
                     ],
                   ],
                 );
@@ -229,6 +233,46 @@ class JevIrisDebugPanel extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _RawJsonDisclosure extends StatefulWidget {
+  const _RawJsonDisclosure({required this.response});
+
+  final Map<String, dynamic> response;
+
+  @override
+  State<_RawJsonDisclosure> createState() => _RawJsonDisclosureState();
+}
+
+class _RawJsonDisclosureState extends State<_RawJsonDisclosure> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FloraButton(
+          label: _expanded ? 'Masquer le JSON' : 'Afficher le JSON brut',
+          style: FloraButtonStyle.ghost,
+          size: FloraButtonSize.small,
+          onPressed: () => setState(() => _expanded = !_expanded),
+        ),
+        if (_expanded) ...[
+          const SizedBox(height: Space.xs),
+          SelectableText(
+            const JsonEncoder.withIndent('  ').convert(widget.response),
+            style: context.text.caption.copyWith(
+              color: c.inkSecondary,
+              fontFamily: 'monospace',
+              height: 1.35,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
