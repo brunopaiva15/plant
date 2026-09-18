@@ -16,6 +16,8 @@ class FakeJev extends JevDecisionService {
   final Map<String, dynamic> response;
   final Object? error;
   int calls = 0;
+  Object? lastState;
+  Map<String, dynamic>? lastQuestions;
 
   @override
   Future<Map<String, dynamic>> decide({
@@ -23,6 +25,8 @@ class FakeJev extends JevDecisionService {
     required Map<String, dynamic> questions,
   }) async {
     calls++;
+    lastState = state;
+    lastQuestions = questions;
     if (error != null) throw error!;
     return response;
   }
@@ -99,6 +103,9 @@ void main() {
 
     expect(offer, SecondPhotoOffer.prominent);
     expect(fake.calls, 1);
+    final decision = fake.lastQuestions?['decision'] as Map<String, dynamic>;
+    final criteria = decision['criteria'] as Map<String, dynamic>;
+    expect(criteria.containsKey('ask_another_photo'), isTrue);
   });
 
   test('une erreur Jev retombe sur la politique Iris', () async {
@@ -176,18 +183,66 @@ void main() {
     expect(evaluation.error, contains('offline'));
   });
 
-  test('au maximum de photos Jev n’est pas consulté', () async {
-    final fake = FakeJev(answer('ask_another_photo', 0.99));
+  test('après deux photos ambiguës Jev tranche sans option de troisième photo', () async {
+    final fake = FakeJev(answer('keep_uncertain', 0.94));
     final policy = JevIdentificationPolicy(service: fake, configured: true);
 
-    final offer = await policy.secondPhotoOfferFor(
+    final evaluation = await policy.evaluate(
       policy: local,
-      candidates: [c('Aloe maculata', 0.23), c('Gasteria carinata', 0.17)],
+      candidates: [
+        c('Aloe maculata', 0.31),
+        c('Gasteria carinata', 0.27),
+        c('Haworthiopsis attenuata', 0.21),
+      ],
       photos: 2,
       maxPhotos: 2,
     );
 
-    expect(offer, SecondPhotoOffer.none);
+    expect(fake.calls, 1);
+    expect(evaluation.offer, SecondPhotoOffer.none);
+    expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+
+    final decision = fake.lastQuestions?['decision'] as Map<String, dynamic>;
+    final criteria = decision['criteria'] as Map<String, dynamic>;
+    expect(criteria.keys, containsAll(['show_result', 'keep_uncertain']));
+    expect(criteria.containsKey('ask_another_photo'), isFalse);
+  });
+
+  test('une réponse ask_another_photo impossible après deux photos est neutralisée', () async {
+    final fake = FakeJev(answer('ask_another_photo', 0.99));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: [
+        c('Aloe maculata', 0.31),
+        c('Gasteria carinata', 0.27),
+      ],
+      photos: 2,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 1);
+    expect(evaluation.offer, SecondPhotoOffer.none);
+    expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+  });
+
+  test('après deux photos un résultat Iris déjà net ne consulte toujours pas Jev', () async {
+    final fake = FakeJev(answer('keep_uncertain', 0.99));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: [
+        c('Dracaena trifasciata', 0.92),
+        c('Aloe maculata', 0.03),
+      ],
+      photos: 2,
+      maxPhotos: 2,
+    );
+
     expect(fake.calls, 0);
+    expect(evaluation.consultedJev, isFalse);
+    expect(evaluation.offer, SecondPhotoOffer.none);
   });
 }
