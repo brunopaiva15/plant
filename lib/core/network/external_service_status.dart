@@ -62,7 +62,98 @@ class ExternalServiceStatusService {
           uri: Uri.parse(
             SupabaseConfig.url.isEmpty
                 ? 'https://supabase.com'
-                : SupabaseConfig.url,
+                : '${SupabaseConfig.url.replaceAll(RegExp(r'/+
+          configured: SupabaseConfig.isConfigured,
+        ),
+        _Probe(
+          name: 'Partage public',
+          uri: Uri.parse(
+            SupabaseConfig.isConfigured
+                ? SupabaseConfig.shareBaseUrl
+                : 'https://supabase.com',
+          ),
+          configured: SupabaseConfig.isConfigured,
+        ),
+        _Probe(
+          name: 'OpenRouter · Jev',
+          uri: Uri.parse(JevConfig.endpoint),
+          configured: JevConfig.isConfigured,
+        ),
+        _Probe(
+          name: 'Pl@ntNet',
+          uri: Uri.parse('https://my-api.plantnet.org/v2/identify/all'),
+          configured: IdentificationConfig.isConfigured,
+        ),
+        _Probe(
+          name: 'Infomaniak AI',
+          uri: Uri.parse(
+            DiagnosisConfig.isConfigured
+                ? 'https://api.infomaniak.com/2/ai/${DiagnosisConfig.productId}/openai/v1/chat/completions'
+                : 'https://api.infomaniak.com',
+          ),
+          configured: DiagnosisConfig.isConfigured,
+        ),
+        _Probe(
+          name: 'Open-Meteo · Prévisions',
+          uri: Uri.parse('https://api.open-meteo.com/v1/forecast'),
+        ),
+        _Probe(
+          name: 'Open-Meteo · Géocodage',
+          uri: Uri.parse('https://geocoding-api.open-meteo.com/v1/search'),
+        ),
+        _Probe(
+          name: 'Open-Meteo · Archives',
+          uri: Uri.parse('https://archive-api.open-meteo.com/v1/archive'),
+        ),
+        _Probe(
+          name: 'GBIF',
+          uri: Uri.parse('https://api.gbif.org/v1/species/match'),
+        ),
+        _Probe(
+          name: 'Wikimedia Commons',
+          uri: Uri.parse('https://commons.wikimedia.org/w/api.php'),
+        ),
+      ];
+
+  Future<List<ExternalServiceStatus>> checkAll() =>
+      Future.wait(_probes.map(_check));
+
+  Future<ExternalServiceStatus> _check(_Probe probe) async {
+    if (!probe.configured) {
+      return ExternalServiceStatus(
+        name: probe.name,
+        state: ExternalServiceState.unconfigured,
+      );
+    }
+
+    final stopwatch = Stopwatch()..start();
+    try {
+      final request = http.Request('HEAD', probe.uri);
+      final response = await _client.send(request).timeout(_timeout);
+      stopwatch.stop();
+      final code = response.statusCode;
+      final state = switch (code) {
+        429 => ExternalServiceState.degraded,
+        >= 500 => ExternalServiceState.unavailable,
+        _ => ExternalServiceState.operational,
+      };
+      return ExternalServiceStatus(
+        name: probe.name,
+        state: state,
+        latency: stopwatch.elapsed,
+        httpStatus: code,
+      );
+    } on Object {
+      stopwatch.stop();
+      return ExternalServiceStatus(
+        name: probe.name,
+        state: ExternalServiceState.unavailable,
+        latency: stopwatch.elapsed,
+      );
+    }
+  }
+}
+), '')}/rest/v1/',
           ),
           configured: SupabaseConfig.isConfigured,
         ),
