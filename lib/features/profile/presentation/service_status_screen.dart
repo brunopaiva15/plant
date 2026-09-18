@@ -14,7 +14,6 @@ class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
   final _service = ExternalServiceStatusService();
   List<ExternalServiceStatus>? _statuses;
   bool _loading = false;
-  DateTime? _checkedAt;
 
   @override
   void initState() {
@@ -35,7 +34,6 @@ class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
     if (!mounted) return;
     setState(() {
       _statuses = statuses;
-      _checkedAt = DateTime.now();
       _loading = false;
     });
   }
@@ -48,29 +46,21 @@ class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Diagnostic technique caché. Les vérifications sont de simples '
-            'probes HTTPS : aucune photo, plante ou donnée personnelle n’est '
-            'envoyée, et aucun appel IA payant n’est déclenché.',
-            style: context.text.callout,
-          ),
-          const SizedBox(height: Space.sm),
-          Text(
-            '« Joignable » signifie que le service répond. Cela ne remplace '
-            'pas un test fonctionnel complet de chaque API.',
-            style: context.text.caption.copyWith(
-              color: context.colors.inkSecondary,
-            ),
-          ),
-          const SizedBox(height: Space.lg),
           if (statuses == null && _loading)
             const Center(child: AdaptiveProgress(size: 28))
           else if (statuses != null)
-            FloraGroup(
-              children: [
-                for (final status in statuses)
-                  _StatusRow(status: status),
-              ],
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: statuses.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: Space.sm,
+                mainAxisSpacing: Space.sm,
+                childAspectRatio: 1.35,
+              ),
+              itemBuilder: (context, index) =>
+                  _StatusTile(status: statuses[index]),
             ),
           const SizedBox(height: Space.md),
           FloraButton(
@@ -79,55 +69,59 @@ class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
             style: FloraButtonStyle.secondary,
             onPressed: _loading ? null : _refresh,
           ),
-          if (_checkedAt != null) ...[
-            const SizedBox(height: Space.xs),
-            Text(
-              'Dernière vérification · ${_time(_checkedAt!)}',
-              textAlign: TextAlign.center,
-              style: context.text.caption.copyWith(
-                color: context.colors.inkTertiary,
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
-
-  String _time(DateTime value) =>
-      '${value.hour.toString().padLeft(2, '0')}:'
-      '${value.minute.toString().padLeft(2, '0')}:'
-      '${value.second.toString().padLeft(2, '0')}';
 }
 
-class _StatusRow extends StatelessWidget {
-  const _StatusRow({required this.status});
+class _StatusTile extends StatelessWidget {
+  const _StatusTile({required this.status});
 
   final ExternalServiceStatus status;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final (label, icon, color) = switch (status.state) {
-      ExternalServiceState.operational => ('Joignable', '●', c.sage),
-      ExternalServiceState.degraded => ('Limité', '●', c.sun),
-      ExternalServiceState.unavailable => ('Indisponible', '●', c.rose),
-      ExternalServiceState.unconfigured => ('Non configuré', '○', c.inkTertiary),
+    final reachable = switch (status.state) {
+      ExternalServiceState.operational ||
+      ExternalServiceState.degraded => true,
+      ExternalServiceState.unavailable ||
+      ExternalServiceState.unconfigured => false,
     };
 
-    final details = <String>[
-      if (status.httpStatus != null) 'HTTP ${status.httpStatus}',
-      if (status.latency != null) '${status.latency!.inMilliseconds} ms',
-    ];
+    final color = reachable ? c.sage : c.danger;
 
-    return FloraListRow(
-      leading: Text(
-        icon,
-        style: context.text.callout.copyWith(color: color),
+    return FloraCard(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            status.name,
+            style: context.text.callout.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: Space.sm),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('●', style: context.text.callout.copyWith(color: color)),
+              const SizedBox(width: Space.xxs),
+              Flexible(
+                child: Text(
+                  reachable ? 'Joignable' : 'Pas joignable',
+                  style: context.text.caption.copyWith(color: color),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-      title: status.name,
-      subtitle: details.isEmpty ? label : '${label} · ${details.join(' · ')}',
-      chevron: false,
     );
   }
 }
