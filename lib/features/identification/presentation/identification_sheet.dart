@@ -99,7 +99,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
 
   /// Au-delà, une photo de plus n'apporte plus grand-chose et la recherche
   /// en ligne est le meilleur recours.
-  static const int maxPhotos = 3;
+  static const int maxPhotos = 2;
 
   /// Le magasin de photos, gardé dès l'ouverture : `dispose` efface les
   /// photos prises ici, et `ref` n'est plus lisible à ce moment-là — le
@@ -313,12 +313,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               // les cinq affichées : c'est la masse qui décide, et elle se
               // perdrait à tronquer deux fois.
               final genus = _genus(data ?? const []);
-              // La bande montre ce qui est parti dès qu'il y a plusieurs
-              // photos, et la place libre seulement si la cascade en veut
-              // une de plus. Le compte n'est plus écrit — « · 2 photos »
-              // disait l'état sans jamais dire le geste ; deux vignettes et
-              // une case vide disent les deux.
-              final showStrip = _paths.length > 1 || offer != SecondPhotoOffer.none;
+              final hasSecondPhoto = _paths.length > 1;
               // Pendant une relance, la liste à l'écran est la précédente et
               // la provenance de la suivante n'est pas encore connue : le
               // signe attend plutôt que d'affirmer l'ancienne.
@@ -327,39 +322,35 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   IdentificationSourceNote(source: source, label: busy ? l10n.identifying : _sourceHint(l10n, source)),
-                  if (showStrip) ...[
+                  if (hasSecondPhoto) ...[
                     const SizedBox(height: Space.xs),
                     IdentificationPhotoStrip(
                       paths: _paths,
                       maxPhotos: maxPhotos,
-                      // Rien n'est retiré de la bande pendant qu'on prend
-                      // une photo : les cases libres disparaîtraient puis
-                      // reviendraient. Les deux gestes se gardent eux-mêmes.
-                      onAdd: offer == SecondPhotoOffer.none ? null : _chooseSource,
                       onRemove: _removePhoto,
                     ),
-                    // Le modèle hésite : la photo est le geste qui tranche,
-                    // et il vaut la phrase qui dit quoi photographier.
-                    if (offer == SecondPhotoOffer.prominent) ...[
-                      const SizedBox(height: Space.xs),
-                      Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                    ],
                   ],
                   const SizedBox(height: Space.sm),
                   if (genus != null) ...[
                     GenusRow(answer: genus, onUse: () => _use(genusCandidate(genus, l10n.localeName))),
                     const SizedBox(height: Space.xs),
                   ],
+                  // Les propositions restent visibles même si Iris hésite.
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => _use(c))]),
                   _PhotoSourceNote(candidates: results),
-                  // La photo d'abord, l'appel réseau ensuite : l'une est
-                  // gratuite et immédiate, l'autre se prend sur un quota. Le
-                  // geste gratuit est donc au-dessus de la liste, dans la
-                  // bande, et celui qui se paie reste ici-bas.
+                  if (offer == SecondPhotoOffer.prominent && _paths.length < maxPhotos) ...[
+                    const SizedBox(height: Space.sm),
+                    Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                    const SizedBox(height: Space.xs),
+                    FloraButton(
+                      label: l10n.identifyAnotherPhoto,
+                      icon: CupertinoIcons.camera,
+                      style: FloraButtonStyle.secondary,
+                      onPressed: _chooseSource,
+                    ),
+                  ],
                   if (results.first.source == IdentificationSource.local && _canSearchOnline) ...[
                     const SizedBox(height: Space.sm),
-                    // Le modèle embarqué a déjà répondu : ce bouton-là sort
-                    // sur le réseau, et sans lui il ne rendrait qu'une erreur.
                     if (ref.watch(isOnlineProvider))
                       FloraButton(label: l10n.searchOnline, expand: true, style: FloraButtonStyle.ghost, onPressed: _searchOnline)
                     else
