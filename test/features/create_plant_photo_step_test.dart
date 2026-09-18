@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/native.dart';
@@ -17,12 +18,9 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// L'étape photo de la création, en trois états.
-///
-/// Ce qu'elle doit dire sans qu'on le devine : d'abord comment cadrer ; une
-/// fois la photo prise, que c'est bien elle (elle remplit le cadre), et
-/// quoi photographier de plus pour aider Iris — des emplacements nommés,
-/// jamais gardés ; et que « Reprendre » efface tout pour recommencer.
+/// L'étape photo de la création : une photo d'abord, analysée dans le grand
+/// cadre. Les vues supplémentaires ne sont plus demandées avant le résultat ;
+/// une seconde photo appartient à l'étape suivante et seulement si Iris hésite.
 ///
 /// Le banc d'essai n'a pas de caméra : c'est le chemin sans viseur qui est
 /// parcouru ici, celui où les gestes reviennent en boutons.
@@ -83,6 +81,16 @@ class _Iris implements PlantIdentifier {
 
   @override
   Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async => const [];
+}
+
+class _SlowIris implements PlantIdentifier {
+  final completer = Completer<List<IdentificationCandidate>>();
+
+  @override
+  bool get isConfigured => true;
+
+  @override
+  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) => completer.future;
 }
 
 void main() {
@@ -146,37 +154,40 @@ void main() {
     expect(find.text('Continuer'), findsNothing);
   });
 
-  testWidgets('on la garde ? : la photo prise, les vues nommées, et « Reprendre » efface tout', (tester) async {
+  testWidgets('la première photo suffit et « Reprendre » la supprime', (tester) async {
     await pumpFlow(tester);
     await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
     await tester.pumpAndSettle();
 
     expect(find.text('Aperçu'), findsOneWidget);
-    expect(find.textContaining('aide Iris'), findsOneWidget);
     expect(find.text('Continuer'), findsOneWidget);
     expect(find.text('Reprendre'), findsOneWidget);
-    // La bande dit laquelle est la photo de la plante, et quoi prendre ensuite.
-    expect(find.text('La plante'), findsOneWidget);
-    expect(find.text('Une feuille de près'), findsOneWidget);
-    expect(find.text('Autre vue'), findsOneWidget);
-    expect(find.bySemanticsLabel('Supprimer la photo'), findsNothing);
+    // Aucune seconde vue n'est demandée avant de connaître la confiance.
+    expect(find.text('La plante'), findsNothing);
+    expect(find.text('Une feuille de près'), findsNothing);
+    expect(find.text('Autre vue'), findsNothing);
     expect(photoFiles(), hasLength(2));
 
-    // Une vue de plus, sans viseur : l'appareil ou la galerie du système.
-    await tester.tap(find.text('Une feuille de près'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Choisir une photo').last);
-    await tester.pumpAndSettle();
-    expect(find.text('Aperçu'), findsOneWidget, reason: 'la vue prise, le cadre montre toujours la photo de la plante');
-    expect(find.bySemanticsLabel('Supprimer la photo'), findsOneWidget, reason: 'seule la vue de plus a une croix');
-    expect(photoFiles(), hasLength(4));
-
-    // Reprendre : la photo et sa vue partent ensemble, retour au viseur.
     await tester.tap(find.text('Reprendre'));
     await tester.pumpAndSettle();
     expect(find.text('Photo'), findsOneWidget);
-    expect(find.text('La plante'), findsNothing);
-    expect(photoFiles(), isEmpty, reason: 'rien ne reste sur le disque');
+    expect(photoFiles(), isEmpty, reason: 'la photo principale a bien été supprimée');
+  });
+
+  testWidgets('Iris analyse la première photo dans le grand cadre', (tester) async {
+    final iris = _SlowIris();
+    await pumpFlow(tester, identifier: iris);
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Aperçu'), findsOneWidget);
+    expect(find.byType(ProcessingField), findsOneWidget);
+    expect(find.byType(IrisMark), findsOneWidget);
+
+    iris.completer.complete(const []);
+    await tester.pumpAndSettle();
+    expect(find.byType(ProcessingField), findsNothing);
   });
 
   testWidgets("l'étape du nom s'ouvre sans clavier, et le champ à un toucher", (tester) async {
@@ -196,7 +207,7 @@ void main() {
     expect(edit.focusNode.hasFocus, isTrue, reason: 'le champ reste à un toucher');
   });
 
-  testWidgets("sans moteur d'identification, aucune vue n'est proposée", (tester) async {
+  testWidgets("sans moteur d'identification, aucune seconde photo n'est proposée", (tester) async {
     await pumpFlow(tester, identifier: const UnconfiguredIdentifier());
     await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
     await tester.pumpAndSettle();
