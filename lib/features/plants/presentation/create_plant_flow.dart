@@ -631,7 +631,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ProcessingField(
               height: null,
               child: image,
-              foreground: const IrisMark(size: 84),
+              foreground: const IrisMark(size: 72),
             )
           else
             image,
