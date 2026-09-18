@@ -2053,7 +2053,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchingOnline => 'Searching online…';
 
   @override
-  String get suggestionsLocal => 'Found on your device, no network';
+  String get suggestionsLocal => 'Iris results on your device · photo not uploaded';
 
   @override
   String get suggestionsRemote => 'Suggested online by Pl@ntNet';
