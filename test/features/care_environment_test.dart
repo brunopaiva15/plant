@@ -20,6 +20,7 @@ void main() {
   CareProfile avec({
     LightNeed light = LightNeed.brightIndirect,
     HumidityNeed humidity = HumidityNeed.high,
+    Set<HumidityMethod> humidityMethods = const {},
     AirflowPreference? airflow,
     int? idealTempMinC,
     int? idealTempMaxC,
@@ -30,6 +31,7 @@ void main() {
     wateringWinterDays: 14,
     light: light,
     humidity: humidity,
+    humidityMethods: humidityMethods,
     difficulty: CareDifficulty.easy,
     soil: SoilKind.standard,
     airflow: airflow,
@@ -148,26 +150,76 @@ void main() {
       final dedans = careEnvironmentSpec(
         profile: avec(airflow: AirflowPreference.sheltered),
       );
-      expect(dedans.airflowOriginFraction, CareEnvironmentSlots.airflow['indoor']);
+      expect(
+        dedans.airflowOriginFraction,
+        CareEnvironmentSlots.airflow['indoor'],
+      );
       final dehors = careEnvironmentSpec(
         profile: avec(airflow: AirflowPreference.sheltered),
         category: SpeciesCategory.tree,
       );
-      expect(dehors.airflowOriginFraction, CareEnvironmentSlots.airflow['outdoor']);
+      expect(
+        dehors.airflowOriginFraction,
+        CareEnvironmentSlots.airflow['outdoor'],
+      );
     });
   });
 
   group('les props du climat', () {
-    test('l\'humidificateur ne paraît que si l\'air humide est un besoin', () {
-      expect(careEnvironmentSpec(profile: base).hasHumidifier, isTrue);
+    test('l\'humidificateur ne paraît que si la fiche le prescrit', () {
+      expect(careEnvironmentSpec(profile: base).hasHumidifier, isFalse);
       expect(
-        careEnvironmentSpec(profile: avec(humidity: HumidityNeed.average))
-            .hasHumidifier,
+        careEnvironmentSpec(
+          profile: avec(humidityMethods: {HumidityMethod.humidifier}),
+        ).hasHumidifier,
+        isTrue,
+      );
+      expect(
+        careEnvironmentSpec(
+          profile: avec(
+            humidity: HumidityNeed.average,
+            humidityMethods: {HumidityMethod.humidifier},
+          ),
+        ).hasHumidifier,
         isFalse,
       );
       expect(
-        careEnvironmentSpec(profile: avec(humidity: HumidityNeed.low))
-            .hasHumidifier,
+        careEnvironmentSpec(
+          profile: avec(humidityMethods: {HumidityMethod.mist}),
+        ).hasHumidifier,
+        isFalse,
+      );
+    });
+
+    test('le plateau de billes paraît quand c\'est lui qui tient l\'air', () {
+      final plateau = careEnvironmentSpec(
+        profile: avec(humidityMethods: {HumidityMethod.tray}),
+      );
+      expect(plateau.hasHumidityTray, isTrue);
+      expect(plateau.hasHumidifier, isFalse);
+      expect(
+        plateau.humidityTrayAsset,
+        'assets/care_scene/props/humidity_tray.webp',
+      );
+
+      final lesDeux = careEnvironmentSpec(
+        profile: avec(
+          humidityMethods: {HumidityMethod.humidifier, HumidityMethod.tray},
+        ),
+      );
+      expect(lesDeux.hasHumidifier, isTrue);
+      expect(lesDeux.hasHumidityTray, isFalse);
+
+      expect(
+        careEnvironmentSpec(
+          profile: avec(humidityMethods: {HumidityMethod.mist}),
+        ).hasHumidityTray,
+        isFalse,
+      );
+      expect(
+        careEnvironmentSpec(
+          profile: avec(humidityMethods: {HumidityMethod.terrarium}),
+        ).hasHumidityTray,
         isFalse,
       );
     });
@@ -186,10 +238,22 @@ void main() {
           reason: 'la vapeur part du haut (${slot.name})',
         );
       }
-      expect(CareEnvironmentSlots.airflow['indoor']!.$1, inInclusiveRange(0.0, 1.0));
-      expect(CareEnvironmentSlots.airflow['indoor']!.$2, inInclusiveRange(0.0, 1.0));
-      expect(CareEnvironmentSlots.airflow['outdoor']!.$1, inInclusiveRange(0.0, 1.0));
-      expect(CareEnvironmentSlots.airflow['outdoor']!.$2, inInclusiveRange(0.0, 1.0));
+      expect(
+        CareEnvironmentSlots.airflow['indoor']!.$1,
+        inInclusiveRange(0.0, 1.0),
+      );
+      expect(
+        CareEnvironmentSlots.airflow['indoor']!.$2,
+        inInclusiveRange(0.0, 1.0),
+      );
+      expect(
+        CareEnvironmentSlots.airflow['outdoor']!.$1,
+        inInclusiveRange(0.0, 1.0),
+      );
+      expect(
+        CareEnvironmentSlots.airflow['outdoor']!.$2,
+        inInclusiveRange(0.0, 1.0),
+      );
     });
   });
 
@@ -326,12 +390,19 @@ void main() {
         'Dendrobium nobile',
         'Cymbidium hybridum',
       ]) {
-        expect(resolvePlantVisual(speciesName: nom), PlantVisualKind.orchid, reason: nom);
+        expect(
+          resolvePlantVisual(speciesName: nom),
+          PlantVisualKind.orchid,
+          reason: nom,
+        );
       }
       // Une orchidée terrestre du catalogue étendu garde la feuille large :
       // la silhouette en pot ne lui va pas.
       expect(
-        resolvePlantVisual(speciesName: 'Ophrys sphegodes', family: 'Orchidaceae'),
+        resolvePlantVisual(
+          speciesName: 'Ophrys sphegodes',
+          family: 'Orchidaceae',
+        ),
         PlantVisualKind.broadLeaf,
       );
     });
@@ -345,14 +416,24 @@ void main() {
         'Cissus rhombifolia',
         'Ceropegia woodii',
       ]) {
-        expect(resolvePlantVisual(speciesName: nom), PlantVisualKind.vine, reason: nom);
+        expect(
+          resolvePlantVisual(speciesName: nom),
+          PlantVisualKind.vine,
+          reason: nom,
+        );
       }
     });
 
     test('le philodendron grimpant est une liane, le selloum non', () {
       // Genre mixte : la règle reste à l'espèce.
-      expect(resolvePlantVisual(speciesName: 'Philodendron hederaceum'), PlantVisualKind.vine);
-      expect(resolvePlantVisual(speciesName: 'Philodendron bipinnatifidum'), PlantVisualKind.broadLeaf);
+      expect(
+        resolvePlantVisual(speciesName: 'Philodendron hederaceum'),
+        PlantVisualKind.vine,
+      );
+      expect(
+        resolvePlantVisual(speciesName: 'Philodendron bipinnatifidum'),
+        PlantVisualKind.broadLeaf,
+      );
     });
 
     test('une succulente sans autre indice tient de la rosette', () {

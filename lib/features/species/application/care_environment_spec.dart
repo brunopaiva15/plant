@@ -52,6 +52,7 @@ class CareEnvironmentVisualSpec {
     required this.plant,
     required this.humidity,
     required this.humidityRange,
+    this.humidityMethods = const {},
     this.support = CarePlantSupport.floor,
     this.airflow,
     this.tempRange,
@@ -79,6 +80,10 @@ class CareEnvironmentVisualSpec {
   /// La plage d'hygrométrie affichée en callout : celle de l'espèce quand
   /// elle est renseignée, celle du besoin sinon (cf. [CareProfile.humidityRange]).
   final (int, int) humidityRange;
+
+  /// Comment tenir l'air, quand la fiche le sait. Vide = rien n'est inventé
+  /// dans la scène : pas de machine, pas de plateau.
+  final Set<HumidityMethod> humidityMethods;
 
   /// L'air qui bouge, seulement quand la fiche le sait. `null` = la scène ne
   /// montre rien qui y touche.
@@ -134,9 +139,23 @@ class CareEnvironmentVisualSpec {
     return (s.$1 + p.$1 - a.$1, s.$2 + p.$2 - a.$2);
   }
 
-  /// L'humidificateur ne paraît que si l'air humide est un besoin : c'est
-  /// lui qui rend l'humidité élevée perceptible dans la scène.
-  bool get hasHumidifier => humidity == HumidityNeed.high;
+  /// L'humidificateur ne paraît que si la fiche le prescrit : air humide, et
+  /// `HumidityMethod.humidifier` parmi les méthodes. Un besoin sans méthode,
+  /// ou la brume seule, n'inventent pas une machine.
+  bool get hasHumidifier =>
+      humidity == HumidityNeed.high &&
+      humidityMethods.contains(HumidityMethod.humidifier);
+
+  /// Le plateau de billes, quand c'est lui qui tient l'air — et seulement
+  /// s'il n'y a pas déjà l'humidificateur : un seul prop d'humidité.
+  /// L'image n'est pas encore livrée : la scène ne le pose pas.
+  bool get hasHumidityTray =>
+      humidity == HumidityNeed.high &&
+      !hasHumidifier &&
+      humidityMethods.contains(HumidityMethod.tray);
+
+  /// Le plateau, même emplacement que l'humidificateur, une fois rendu.
+  String get humidityTrayAsset => 'assets/care_scene/props/humidity_tray.webp';
 
   /// Où il se pose : à côté de la plante, quel que soit son support.
   (double, double) get humidifierFraction =>
@@ -203,6 +222,7 @@ CareEnvironmentVisualSpec careEnvironmentSpec({
     ),
     humidity: profile.humidity,
     humidityRange: profile.humidityRange,
+    humidityMethods: profile.humidityMethods,
     airflow: profile.airflow,
     tempRange: plage,
     // Le seuil de dégâts ne se dit que faute de plage idéale : les deux

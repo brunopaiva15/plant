@@ -182,26 +182,27 @@ void main() {
     );
   });
 
-  testWidgets('une fiche revue dit ce qui est vérifié, une estimation se tait', (
-    tester,
-  ) async {
-    await pump(
-      tester,
-      const CareProfile(
-        wateringSummerDays: 7,
-        wateringWinterDays: 14,
-        light: LightNeed.brightIndirect,
-        humidity: HumidityNeed.average,
-        difficulty: CareDifficulty.easy,
-        soil: SoilKind.standard,
-        sourcing: {CareField.hardiness: CareSource.rhs},
-      ),
-    );
-    expect(find.text("Vérifié d'après RHS : Température"), findsOneWidget);
+  testWidgets(
+    'une fiche revue dit ce qui est vérifié, une estimation se tait',
+    (tester) async {
+      await pump(
+        tester,
+        const CareProfile(
+          wateringSummerDays: 7,
+          wateringWinterDays: 14,
+          light: LightNeed.brightIndirect,
+          humidity: HumidityNeed.average,
+          difficulty: CareDifficulty.easy,
+          soil: SoilKind.standard,
+          sourcing: {CareField.hardiness: CareSource.rhs},
+        ),
+      );
+      expect(find.text("Vérifié d'après RHS : Température"), findsOneWidget);
 
-    await pump(tester);
-    expect(find.textContaining("Vérifié d'après"), findsNothing);
-  });
+      await pump(tester);
+      expect(find.textContaining("Vérifié d'après"), findsNothing);
+    },
+  );
 
   testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (
     tester,
@@ -926,28 +927,52 @@ void main() {
     );
 
     testWidgets(
-      'l\'humidité élevée pose un humidificateur à côté de la plante',
+      'l\'humidité élevée pose un humidificateur seulement si la fiche le prescrit',
       (tester) async {
-        await pump(tester);
-        expect(image('humidifier.webp'), findsOneWidget);
-        // L'ombre et la vapeur : deux couches dessinées.
-        expect(couchesDessinees(), findsNWidgets(2));
-
         await pump(
           tester,
           const CareProfile(
             wateringSummerDays: 7,
             wateringWinterDays: 14,
             light: LightNeed.brightIndirect,
-            humidity: HumidityNeed.average,
+            humidity: HumidityNeed.high,
             difficulty: CareDifficulty.easy,
             soil: SoilKind.standard,
+            humidityMethods: {HumidityMethod.humidifier},
           ),
         );
+        expect(image('humidifier.webp'), findsOneWidget);
+        // L'ombre et la vapeur : deux couches dessinées.
+        expect(couchesDessinees(), findsNWidgets(2));
+
+        await pump(tester, profile);
         expect(image('humidifier.webp'), findsNothing);
         expect(couchesDessinees(), findsOneWidget, reason: 'l\'ombre seule');
       },
     );
+
+    testWidgets('un plateau de billes n\'invente pas d\'humidificateur', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const CareProfile(
+          wateringSummerDays: 7,
+          wateringWinterDays: 14,
+          light: LightNeed.brightIndirect,
+          humidity: HumidityNeed.high,
+          difficulty: CareDifficulty.easy,
+          soil: SoilKind.standard,
+          humidityMethods: {HumidityMethod.tray},
+        ),
+      );
+      expect(image('humidifier.webp'), findsNothing);
+      expect(
+        couchesDessinees(),
+        findsOneWidget,
+        reason: 'l\'ombre, pas de vapeur',
+      );
+    });
 
     testWidgets('l\'air à abriter entre par la fenêtre, à distance', (
       tester,
@@ -961,6 +986,7 @@ void main() {
           humidity: HumidityNeed.high,
           difficulty: CareDifficulty.demanding,
           soil: SoilKind.standard,
+          humidityMethods: {HumidityMethod.humidifier},
           airflow: AirflowPreference.sheltered,
         ),
       );
@@ -1041,6 +1067,7 @@ void main() {
           humidity: HumidityNeed.high,
           difficulty: CareDifficulty.demanding,
           soil: SoilKind.standard,
+          humidityMethods: {HumidityMethod.humidifier},
           airflow: AirflowPreference.sheltered,
         ),
         1.0,

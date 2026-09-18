@@ -8,8 +8,8 @@ import '../application/care_environment_slots.dart';
 import '../application/care_environment_spec.dart';
 
 /// Le diorama « environnement idéal » : le décor lumineux rendu par Blender,
-/// les props du climat (humidificateur, grille d'aération), l'ombre qui pose
-/// la plante, la plante translatée sur son support, et les effets d'air
+/// les props du climat (humidificateur), l'ombre qui pose la plante, la
+/// plante translatée sur son support, et les effets d'air
 /// dessinés ici — vapeur et flux, jamais bakés : ils respectent le reduced
 /// motion et passent à distance de la plante.
 ///
@@ -120,6 +120,9 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
                 ),
               // L'humidificateur reste au sol : à côté du guéridon quand la
               // plante est dessus, ou à côté de la plante quand elle est au sol.
+              // Un plateau de billes prendra la même place, une fois l'image
+              // livrée ; en attendant, un besoin tenu par le plateau seul
+              // n'invente pas de machine.
               if (spec.hasHumidifier)
                 FractionalTranslation(
                   translation: Offset(

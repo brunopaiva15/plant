@@ -187,7 +187,8 @@ des emplacements vaut d'une scène à l'autre. Les plantes sont rendues seules :
 `cactus`, `conifer`, `orchid` — neuf archétypes que le résolveur attache par
 espèce, genre, famille et catégorie. L'application les pose sur l'emplacement
 qui correspond au `LightNeed` de la fiche. Un prop dit le climat sans un
-mot : l'humidificateur (air humide), posé à côté de la plante. L'air à
+mot : l'humidificateur, seulement si la fiche prescrit la machine — jamais
+une machine inventée pour de la brume ou un plateau. L'air à
 abriter n'a pas de prop — il entre par une ouverture, la fenêtre dedans ou
 le côté ouvert du jardin dehors. La vapeur et les lignes de flux ne sont pas
 rendues : l'application les dessine (reduced motion, et le flux doit passer à

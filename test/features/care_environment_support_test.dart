@@ -96,6 +96,7 @@ void main() {
         wateringWinterDays: profile.wateringWinterDays,
         light: profile.light,
         humidity: HumidityNeed.high,
+        humidityMethods: {HumidityMethod.humidifier},
         difficulty: profile.difficulty,
         soil: profile.soil,
       );

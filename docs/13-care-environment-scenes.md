@@ -11,7 +11,8 @@ géométrie encode l'information :
 - la distance à la fenêtre (ou à la haie) = le besoin de lumière ;
 - la position par rapport à la tache de soleil = direct ou indirect ;
 - la luminosité du décor = l'intensité lumineuse ;
-- l'humidificateur et sa vapeur = l'air humide ;
+- l'humidificateur et sa vapeur = l'air humide, seulement si la fiche prescrit
+  la machine ;
 - les lignes de flux = l'air qui bouge, quand la fiche le sait ;
 - pièce ou jardin = le milieu de culture ;
 - la silhouette = le type de plante.
@@ -36,8 +37,9 @@ assets/care_scene/
 
 Dans l'application, `CareEnvironmentScene` empile : le décor lumineux, le
 guéridon posé sur l'emplacement lumineux quand la plante s'y pose (un prop
-rendu seul, comme l'humidificateur), l'humidificateur si l'air
-est humide, l'ombre, la plante translatée sur son support, la vapeur et les
+rendu seul, comme l'humidificateur), l'humidificateur si la fiche prescrit
+la machine, l'ombre, la plante
+translatée sur son support, la vapeur et les
 lignes de flux dessinées en `CustomPainter`, puis les puces d'information.
 Le diorama est une maquette posée dans la fiche : son cadre s'arrondit au
 rayon des cartes (`Radii.large`).
@@ -90,7 +92,11 @@ dans la scène :
   courants d'air ». Le champ est optionnel, propagé par `CareOverride`
   (Care Studio peut le retoucher) et ignoré par la complétion IA, qui ne se
   prononce pas ;
-- l'humidificateur ne paraît que pour `HumidityNeed.high`.
+- l'humidificateur ne paraît que si `HumidityNeed.high` **et** que la fiche
+  prescrit `HumidityMethod.humidifier`. La brume, le plateau, le terrarium,
+  ou un besoin sans méthode, ne posent pas de machine. Le plateau de billes
+  est décidé par la projection (`hasHumidityTray`) ; son image n'est pas
+  encore livrée, la scène ne l'affiche pas.
 
 ### Pièce ou jardin
 
