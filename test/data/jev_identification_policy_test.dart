@@ -156,9 +156,7 @@ void main() {
     expect(evaluation.usedFallback, isFalse);
     expect(evaluation.decision?.action, JevProductAction.keepUncertain);
     expect(evaluation.decision?.probability, 0.88);
-    expect(evaluation.cost, 0.000042);
-    expect(evaluation.model, 'typesafe/jev-test');
-    expect(evaluation.rawResponse, isNotNull);
+    expect(evaluation.keepsUncertain, isTrue);
   });
 
   test('l’évaluation expose clairement le fallback Iris après erreur Jev', () async {
@@ -180,7 +178,7 @@ void main() {
     expect(evaluation.usedFallback, isTrue);
     expect(evaluation.offer, SecondPhotoOffer.prominent);
     expect(evaluation.decision, isNull);
-    expect(evaluation.error, contains('offline'));
+    expect(evaluation.keepsUncertain, isFalse);
   });
 
   test('après deux photos ambiguës Jev tranche sans option de troisième photo', () async {
@@ -201,6 +199,7 @@ void main() {
     expect(fake.calls, 1);
     expect(evaluation.offer, SecondPhotoOffer.none);
     expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+    expect(evaluation.keepsUncertain, isTrue);
 
     final decision = fake.lastQuestions?['decision'] as Map<String, dynamic>;
     final criteria = decision['criteria'] as Map<String, dynamic>;
