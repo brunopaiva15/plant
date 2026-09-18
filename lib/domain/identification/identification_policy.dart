@@ -121,15 +121,6 @@ enum SecondPhotoOffer {
   /// top-1**, plus que dix heures de calcul et 160 000 images (§ 6.6).
   prominent,
 
-  /// Discrète, sous les candidats. La réponse est acceptée — elle s'affiche
-  /// comme « probable » et l'utilisateur ne se pose pas de question —, mais
-  /// à 0,70 **une réponse acceptée sur dix est fausse** (89,9 % de justesse
-  /// sur les plantes d'appartement en pot, mesuré sur l'Iris 7 au § 12.12 ;
-  /// le `threshold_curve` de `model.json` donne le chiffre du modèle livré).
-  /// Ne rien proposer, c'est réserver le correctif aux cas où le modèle a le
-  /// bon goût de douter. Le proposer en travers du chemin, c'est ajouter un geste à un
-  /// parcours qui marchait : d'où le registre effacé.
-  quiet,
 }
 
 /// Comment proposer la photo suivante, s'il faut la proposer.
@@ -150,7 +141,7 @@ SecondPhotoOffer secondPhotoOffer(
   // entamer le quota. Ce n'est plus le même geste gratuit.
   if (candidates.first.source != IdentificationSource.local) return SecondPhotoOffer.none;
   return policy.decide(candidates) == IdentificationVerdict.accepted
-      ? SecondPhotoOffer.quiet
+      ? SecondPhotoOffer.none
       : SecondPhotoOffer.prominent;
 }
 
