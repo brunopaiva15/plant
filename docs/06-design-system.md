@@ -61,6 +61,22 @@ pas.
 `FloraButton` l'utilisent ; `size` est le diamètre au repos (36 par défaut,
 14 dans un bouton). Avec *reduced motion*, la motte reste posée.
 
+### Traitement d'une image : le champ (`processing_field.dart`)
+Une attente n'a pas toujours la même échelle. Quand Iris traite la première
+photo, une petite motte sous le titre ferait croire à une attente générique :
+`ProcessingField` garde donc la photo à l'écran et pose dessus une grille de
+points terre cuite / sauge. Les points restent à leur place ; seule leur taille
+et leur opacité suivent une masse irrégulière qui respire. L'effet est inspiré
+du principe de ProcessingField (haplollc), réécrit en Flutter pour rester
+portable et dans les tokens d'Auxine.
+
+La marque d'Iris reste immobile au centre. Le voile est plus fort aux bords
+qu'au centre afin que la plante demeure reconnaissable pendant le calcul.
+Ce composant est réservé aux traitements qui portent réellement sur une
+surface ou une image ; les petites attentes continuent d'utiliser
+`AdaptiveProgress`. Avec *reduced motion*, le champ garde une image fixe et
+son contrôleur s'arrête complètement.
+
 ### La marque d'Iris (`iris_mark.dart`)
 Le logo du modèle embarqué, dans *Réglages > Identification* et au centre de
 son écran d'onboarding : une feuille peinte par `paintClay`, sa nervation, et
