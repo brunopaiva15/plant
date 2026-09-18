@@ -440,3 +440,40 @@ Pour un scan ambigu, la carte affiche automatiquement :
 Pour un scan déjà net selon Iris, elle indique `Jev non consulté` : aucun appel réseau n’est déclenché.
 
 La carte n’a donc plus de bouton `Comparer avec Jev` dans le flux d’identification. Le test statique de Profil reste séparé et sert uniquement au développement.
+
+
+### Décision finale après la seconde photo
+
+Le pipeline consulte maintenant Jev une seconde fois lorsque **deux photos ont déjà été fusionnées par Iris** et que le résultat reste ambigu.
+
+À cette étape, le schéma envoyé à Jev ne contient plus que deux actions possibles :
+
+```text
+show_result
+keep_uncertain
+```
+
+`ask_another_photo` est retiré du choix lui-même, et pas seulement interdit dans les instructions. Une garde supplémentaire transforme malgré tout une éventuelle réponse fournisseur incohérente en `keep_uncertain`.
+
+Le scénario de test complet devient donc :
+
+```text
+1 photo
+  ↓
+Iris net ───────────────→ résultat local, Jev non consulté
+  ↓ ambigu
+Jev
+  ├─ show_result
+  ├─ keep_uncertain
+  └─ ask_another_photo
+          ↓
+      2 photos fusionnées par Iris
+          ↓
+      Iris net ─────────→ résultat local, Jev non consulté
+          ↓ ambigu
+      Jev final
+          ├─ show_result
+          └─ keep_uncertain
+```
+
+Dans l'interface de debug, le JSON brut est maintenant replié par défaut et l'action de seconde photo reste placée avant la carte Jev afin que le debug ne masque jamais le geste utilisateur principal.

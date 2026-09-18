@@ -348,13 +348,6 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   ],
                   // Les propositions restent visibles même si Iris hésite.
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => _use(c))]),
-                  _PhotoSourceNote(candidates: results),
-                  if (!busy && results.first.source == IdentificationSource.local)
-                    JevIrisDebugPanel(
-                      candidates: results,
-                      photoCount: _paths.length,
-                      maxPhotos: maxPhotos,
-                    ),
                   if (offerFuture != null && _paths.length < maxPhotos)
                     FutureBuilder<SecondPhotoOffer>(
                       future: offerFuture,
@@ -380,6 +373,13 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                           ),
                         );
                       },
+                    ),
+                  _PhotoSourceNote(candidates: results),
+                  if (!busy && results.first.source == IdentificationSource.local)
+                    JevIrisDebugPanel(
+                      candidates: results,
+                      photoCount: _paths.length,
+                      maxPhotos: maxPhotos,
                     ),
                   if (results.first.source == IdentificationSource.local && _canSearchOnline) ...[
                     const SizedBox(height: Space.sm),

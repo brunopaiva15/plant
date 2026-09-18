@@ -992,12 +992,6 @@ class _IdentificationSuggestions extends StatelessWidget {
               // Même quand Iris hésite, ses propositions restent visibles :
               // la seconde photo affine la liste, elle ne la remplace pas.
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
-              if (results.first.source == IdentificationSource.local)
-                JevIrisDebugPanel(
-                  candidates: (snap.data ?? const <IdentificationCandidate>[]).take(5).toList(growable: false),
-                  photoCount: paths.length,
-                  maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
-                ),
               if (photoOfferFuture != null && onAddPhoto != null)
                 FutureBuilder<SecondPhotoOffer>(
                   future: photoOfferFuture,
@@ -1024,6 +1018,12 @@ class _IdentificationSuggestions extends StatelessWidget {
                       ),
                     );
                   },
+                ),
+              if (results.first.source == IdentificationSource.local)
+                JevIrisDebugPanel(
+                  candidates: (snap.data ?? const <IdentificationCandidate>[]).take(5).toList(growable: false),
+                  photoCount: paths.length,
+                  maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
                 ),
               if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
                 const SizedBox(height: Space.sm),
