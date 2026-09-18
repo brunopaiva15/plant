@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
+import 'jev_debug_sheet.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -194,6 +196,21 @@ class ProfileScreen extends ConsumerWidget {
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],
               ),
+              if (kDebugMode) ...[
+                const SizedBox(height: Space.lg),
+                FloraGroup(
+                  header: 'DEBUG',
+                  footer: 'Appelle OpenRouter / Decisions avec un cas Iris ambigu. Cette section n’existe pas en release.',
+                  children: [
+                    FloraListRow(
+                      leading: const Text('🧪', style: TextStyle(fontSize: 18)),
+                      title: 'Tester Jev',
+                      subtitle: '~typesafe/jev-latest',
+                      onTap: () => showJevDebugSheet(context),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: Space.xl),
               const _AppFooter(),
               const SizedBox(height: Space.lg),
