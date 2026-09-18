@@ -1057,7 +1057,7 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
                 final start = 0.04 + i * 0.20;
                 final end = (start + 0.40).clamp(0.0, 1.0).toDouble();
                 final t = Interval(start, end, curve: Curves.easeOutBack)
-                    .transform(_controller.value.clamp(0.0, 1.0));
+                    .transform(_controller.value.clamp(0.0, 1.0).toDouble());
                 final seed = _stableHash(items[i].scientificName);
                 final dx = ((seed % 19) - 9) / 100;
                 final dy = (((seed ~/ 19) % 15) - 7) / 100;
@@ -1067,7 +1067,7 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
                 return Align(
                   alignment: Alignment(base.x + dx, base.y + dy),
                   child: Opacity(
-                    opacity: t.clamp(0.0, 1.0),
+                    opacity: t.clamp(0.0, 1.0).toDouble(),
                     child: Transform.translate(
                       offset: Offset(0, (1 - t) * 10),
                       child: Transform.rotate(
