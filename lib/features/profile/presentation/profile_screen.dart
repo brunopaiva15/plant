@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/config/app_config.dart';
+import '../../../core/config/jev_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
@@ -196,11 +197,11 @@ class ProfileScreen extends ConsumerWidget {
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],
               ),
-              if (kDebugMode) ...[
+              if (kDebugMode || JevConfig.isConfigured) ...[
                 const SizedBox(height: Space.lg),
                 FloraGroup(
                   header: 'DEBUG',
-                  footer: 'Appelle OpenRouter / Decisions avec un cas Iris ambigu. Cette section n’existe pas en release.',
+                  footer: 'Appelle OpenRouter / Decisions avec un cas Iris ambigu. Visible en debug ou quand OPENROUTER_API_KEY est fournie au build.',
                   children: [
                     FloraListRow(
                       leading: const Text('🧪', style: TextStyle(fontSize: 18)),
