@@ -2037,6 +2037,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'A leaf, a flower or the whole plant helps narrow it down.';
 
   @override
+  String get identificationUncertainTitle => 'Uncertain identification';
+
+  @override
+  String get identificationUncertainBody =>
+      'Even with the available photos, no species stands out clearly enough. You can search online or choose manually if you recognise the plant.';
+
+  @override
+  String get identificationSuggestionsToCheck => 'Suggestions to check';
+
+  @override
   String get identifyConfirmWithPhoto => 'Confirm with a photo';
 
   @override
