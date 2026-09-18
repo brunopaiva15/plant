@@ -29,22 +29,17 @@ class JevPipelineEvaluation {
     required this.consultedJev,
     required this.usedFallback,
     this.decision,
-    this.latency,
-    this.cost,
-    this.model,
-    this.rawResponse,
-    this.error,
   });
 
   final SecondPhotoOffer offer;
   final bool consultedJev;
   final bool usedFallback;
   final JevProductDecision? decision;
-  final Duration? latency;
-  final double? cost;
-  final String? model;
-  final Map<String, dynamic>? rawResponse;
-  final String? error;
+
+  /// État produit final : Auxine ne présente aucune espèce comme conclusion,
+  /// mais garde les candidates accessibles comme suggestions manuelles.
+  bool get keepsUncertain =>
+      !usedFallback && decision?.action == JevProductAction.keepUncertain;
 }
 
 /// Couche de décision facultative autour d'Iris.
@@ -137,7 +132,6 @@ class JevIdentificationPolicy {
         offer: fallback,
         consultedJev: false,
         usedFallback: true,
-        error: 'OPENROUTER_API_KEY absente',
       ));
     }
 
@@ -174,7 +168,6 @@ class JevIdentificationPolicy {
     required int photos,
     required int maxPhotos,
   }) async {
-    final stopwatch = Stopwatch()..start();
     final atPhotoLimit = photos >= maxPhotos;
     try {
       final response = await _service
@@ -215,7 +208,6 @@ class JevIdentificationPolicy {
             },
           )
           .timeout(_timeout);
-      stopwatch.stop();
 
       final decision = _parseDecision(response, photos: photos, maxPhotos: maxPhotos);
       if (decision == null) {
@@ -223,11 +215,6 @@ class JevIdentificationPolicy {
           offer: fallback,
           consultedJev: true,
           usedFallback: true,
-          latency: stopwatch.elapsed,
-          cost: _cost(response),
-          model: response['model'] as String?,
-          rawResponse: response,
-          error: 'Réponse Jev invalide',
         );
       }
 
@@ -238,19 +225,12 @@ class JevIdentificationPolicy {
         consultedJev: true,
         usedFallback: false,
         decision: decision,
-        latency: stopwatch.elapsed,
-        cost: _cost(response),
-        model: response['model'] as String?,
-        rawResponse: response,
       );
-    } catch (e) {
-      stopwatch.stop();
+    } catch (_) {
       return JevPipelineEvaluation(
         offer: fallback,
         consultedJev: true,
         usedFallback: true,
-        latency: stopwatch.elapsed,
-        error: e.toString(),
       );
     }
   }
@@ -291,10 +271,4 @@ class JevIdentificationPolicy {
     );
   }
 
-  double? _cost(Map<String, dynamic> response) {
-    final usage = response['usage'];
-    return usage is Map<String, dynamic>
-        ? (usage['cost'] as num?)?.toDouble()
-        : null;
-  }
 }
