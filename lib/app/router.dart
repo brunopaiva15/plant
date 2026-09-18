@@ -33,6 +33,7 @@ import '../features/profile/presentation/action_types_screen.dart';
 import '../features/profile/presentation/appearance_screen.dart';
 import '../features/profile/presentation/notifications_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/profile/presentation/service_status_screen.dart';
 import '../features/profile/presentation/tags_screen.dart';
 import '../features/qr/application/plant_links.dart';
 import '../features/qr/presentation/scanner_screen.dart';
@@ -79,6 +80,7 @@ abstract final class Routes {
   static const tags = '/settings/tags';
   static const archive = '/settings/archive';
   static const about = '/settings/about';
+  static const serviceStatus = '/settings/service-status';
   static const support = '/settings/support';
   static const identification = '/settings/identification';
   static const scan = '/scan';
@@ -220,6 +222,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.tags, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const TagsScreen())),
       GoRoute(path: Routes.archive, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const ArchiveScreen())),
       GoRoute(path: Routes.about, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AboutScreen())),
+      GoRoute(path: Routes.serviceStatus, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const ServiceStatusScreen())),
       GoRoute(path: Routes.support, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const SupportScreen())),
       GoRoute(path: Routes.identification, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const IdentificationSettingsScreen())),
       GoRoute(path: Routes.weather, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const WeatherSettingsScreen())),
