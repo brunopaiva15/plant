@@ -128,7 +128,7 @@ void main() {
     expect(offer, SecondPhotoOffer.prominent);
   });
 
-  test('le debug relit exactement l’évaluation pipeline sans second appel', () async {
+  test('une même évaluation pipeline est réutilisée sans second appel', () async {
     final fake = FakeJev(answer('keep_uncertain', 0.88));
     final policy = JevIdentificationPolicy(service: fake, configured: true);
     final candidates = [
