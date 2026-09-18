@@ -28,10 +28,16 @@ class JevProductDecision {
 /// Les réponses sont mémorisées pour éviter qu'un rebuild Flutter ne refasse
 /// le même appel réseau.
 class JevIdentificationPolicy {
-  JevIdentificationPolicy({JevDecisionService? service})
-      : _service = service ?? JevDecisionService();
+  JevIdentificationPolicy({
+    JevDecisionService? service,
+    bool? configured,
+  })  : _service = service ?? JevDecisionService(),
+        _configuredOverride = configured;
 
   final JevDecisionService _service;
+  final bool? _configuredOverride;
+
+  bool get _isConfigured => _configuredOverride ?? JevConfig.isConfigured;
   final _cache = <String, Future<JevProductDecision?>>{};
 
   static const _timeout = Duration(seconds: 3);
@@ -53,7 +59,7 @@ class JevIdentificationPolicy {
     // Rien à arbitrer : Iris est déjà suffisamment sûr, la réponse n'est pas
     // locale, la liste est vide, ou le maximum de photos est atteint.
     if (fallback == SecondPhotoOffer.none) return fallback;
-    if (!JevConfig.isConfigured) return fallback;
+    if (!_isConfigured) return fallback;
 
     try {
       final decision = await _decision(
