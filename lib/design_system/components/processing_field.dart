@@ -20,12 +20,18 @@ class ProcessingField extends StatefulWidget {
     super.key,
     required this.child,
     this.foreground,
+    this.foregroundAlignment = Alignment.center,
     this.height = 220,
     this.borderRadius = Radii.xlAll,
   });
 
   final Widget child;
   final Widget? foreground;
+
+  /// Où placer le premier plan. Le centre reste le défaut pour les usages
+  /// existants ; les scans peuvent le remonter afin de libérer le sujet.
+  final Alignment foregroundAlignment;
+
   /// Hauteur imposée. `null` fait remplir les contraintes du parent.
   final double? height;
   final BorderRadius borderRadius;
@@ -94,7 +100,11 @@ class _ProcessingFieldState extends State<ProcessingField> with SingleTickerProv
                   dark: c.isDark,
                 ),
               ),
-              if (widget.foreground != null) Center(child: widget.foreground),
+              if (widget.foreground != null)
+                Align(
+                  alignment: widget.foregroundAlignment,
+                  child: widget.foreground,
+                ),
             ],
           ),
         ),
