@@ -297,7 +297,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                           excludeFromSemantics: true,
                           errorBuilder: (_, _, _) => ColoredBox(color: context.colors.surfaceMuted),
                         ),
-                        foreground: const IrisMark(size: 72),
+                        foreground: const BreathingIrisMark(size: 72),
                       ),
                       const SizedBox(height: Space.sm),
                       Text(l10n.identifying, style: context.text.callout),

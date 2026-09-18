@@ -57,6 +57,76 @@ class IrisMark extends StatelessWidget {
   }
 }
 
+/// Variante utilisée pendant une analyse : la marque respire très légèrement
+/// pour accompagner le champ sans devenir un deuxième loader.
+///
+/// L'amplitude reste volontairement faible et la position ne bouge jamais.
+/// Avec « Réduire les animations », la marque reste exactement à son échelle
+/// nominale et aucun contrôleur ne continue à tourner en arrière-plan.
+class BreathingIrisMark extends StatefulWidget {
+  const BreathingIrisMark({super.key, this.size = 72, this.semanticLabel});
+
+  final double size;
+  final String? semanticLabel;
+
+  @override
+  State<BreathingIrisMark> createState() => _BreathingIrisMarkState();
+}
+
+class _BreathingIrisMarkState extends State<BreathingIrisMark>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2200),
+  );
+
+  late final Animation<double> _scale = Tween<double>(
+    begin: 0.97,
+    end: 1.03,
+  ).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+  );
+
+  late final Animation<double> _opacity = Tween<double>(
+    begin: 0.94,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller
+        ..stop()
+        ..value = 0.5;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _opacity,
+      child: ScaleTransition(
+        scale: _scale,
+        child: IrisMark(
+          size: widget.size,
+          semanticLabel: widget.semanticLabel,
+        ),
+      ),
+    );
+  }
+}
+
 /// Le peintre de la marque. Sans champ : tout ce qu'il lui faut est constant,
 /// et le même exemplaire `const` sert donc les quatre palettes — c'est ce qui
 /// rend l'identité entre clair et sombre vérifiable plutôt que promise.
