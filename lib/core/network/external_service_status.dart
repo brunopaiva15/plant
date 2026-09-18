@@ -17,14 +17,12 @@ enum ExternalServiceState {
 class ExternalServiceStatus {
   const ExternalServiceStatus({
     required this.name,
-    required this.description,
     required this.state,
     this.latency,
     this.httpStatus,
   });
 
   final String name;
-  final String description;
   final ExternalServiceState state;
   final Duration? latency;
   final int? httpStatus;
@@ -33,13 +31,11 @@ class ExternalServiceStatus {
 class _Probe {
   const _Probe({
     required this.name,
-    required this.description,
     required this.uri,
     this.configured = true,
   });
 
   final String name;
-  final String description;
   final Uri uri;
   final bool configured;
 }
@@ -61,7 +57,6 @@ class ExternalServiceStatusService {
   List<_Probe> get _probes => [
         _Probe(
           name: 'Supabase',
-          description: 'Compte, synchronisation, communauté',
           uri: Uri.parse(
             SupabaseConfig.url.isEmpty
                 ? 'https://supabase.com'
@@ -71,7 +66,6 @@ class ExternalServiceStatusService {
         ),
         _Probe(
           name: 'Partage public',
-          description: 'Liens et pages de partage',
           uri: Uri.parse(
             SupabaseConfig.isConfigured
                 ? SupabaseConfig.shareBaseUrl
@@ -81,35 +75,29 @@ class ExternalServiceStatusService {
         ),
         _Probe(
           name: 'OpenRouter · Jev',
-          description: 'Décision produit sur les scans Iris ambigus',
           uri: Uri.parse('https://openrouter.ai'),
           configured: JevConfig.isConfigured,
         ),
         _Probe(
           name: 'Pl@ntNet',
-          description: 'Recherche d’identification en ligne',
           uri: Uri.parse('https://my-api.plantnet.org'),
           configured: IdentificationConfig.isConfigured,
         ),
         _Probe(
           name: 'Infomaniak AI',
-          description: 'Diagnostic, soins, boutures et recherche',
           uri: Uri.parse('https://api.infomaniak.com'),
           configured: DiagnosisConfig.isConfigured,
         ),
         _Probe(
           name: 'Open-Meteo',
-          description: 'Météo, géocodage et climat',
           uri: Uri.parse('https://api.open-meteo.com'),
         ),
         _Probe(
           name: 'GBIF',
-          description: 'Taxonomie et photos d’espèces',
           uri: Uri.parse('https://api.gbif.org'),
         ),
         _Probe(
           name: 'Wikimedia Commons',
-          description: 'Photos complémentaires d’espèces',
           uri: Uri.parse('https://commons.wikimedia.org'),
         ),
       ];
@@ -121,7 +109,6 @@ class ExternalServiceStatusService {
     if (!probe.configured) {
       return ExternalServiceStatus(
         name: probe.name,
-        description: probe.description,
         state: ExternalServiceState.unconfigured,
       );
     }
@@ -139,7 +126,6 @@ class ExternalServiceStatusService {
       };
       return ExternalServiceStatus(
         name: probe.name,
-        description: probe.description,
         state: state,
         latency: stopwatch.elapsed,
         httpStatus: code,
@@ -148,7 +134,6 @@ class ExternalServiceStatusService {
       stopwatch.stop();
       return ExternalServiceStatus(
         name: probe.name,
-        description: probe.description,
         state: ExternalServiceState.unavailable,
         latency: stopwatch.elapsed,
       );
