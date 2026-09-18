@@ -27,6 +27,7 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../identification/presentation/identification_photos.dart';
 import '../../identification/presentation/identification_sheet.dart';
+import '../../identification/presentation/jev_iris_debug_panel.dart';
 import '../../cuttings/presentation/propagation_guide_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
@@ -986,6 +987,11 @@ class _IdentificationSuggestions extends StatelessWidget {
               // Même quand Iris hésite, ses propositions restent visibles :
               // la seconde photo affine la liste, elle ne la remplace pas.
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
+              if (results.first.source == IdentificationSource.local)
+                JevIrisDebugPanel(
+                  candidates: (snap.data ?? const <IdentificationCandidate>[]).take(5).toList(growable: false),
+                  photoCount: paths.length,
+                ),
               if (photoOffer == SecondPhotoOffer.prominent && onAddPhoto != null) ...[
                 const SizedBox(height: Space.sm),
                 Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
