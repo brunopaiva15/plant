@@ -282,7 +282,7 @@ Référence initiale : https://typesafe.ai/blog/introducing-system-one-models-an
 
 ## Banc d’essai dans l’application
 
-Un test manuel est disponible uniquement en build Flutter debug :
+Un test manuel statique est disponible depuis Profil. La section est visible en debug et dans les builds où `OPENROUTER_API_KEY` est fournie :
 
 ```text
 Profil
@@ -313,10 +313,40 @@ avec quelques observations supplémentaires. Il pose en une seule requête :
 - une question `choice` sur la prochaine action d’Auxine ;
 - une question `score` sur la force globale des indices.
 
-La sheet affiche ensuite le JSON brut d’OpenRouter, probabilités comprises. Ce banc d’essai ne touche pas au flux d’identification réel et n’existe pas en release.
+La sheet affiche ensuite le JSON brut d’OpenRouter, probabilités comprises. Ce banc d’essai statique ne touche pas au flux d’identification réel.
 
 Implémentation :
 
 - `lib/core/config/jev_config.dart`
 - `lib/data/services/jev_decision_service.dart`
 - `lib/features/profile/presentation/jev_debug_sheet.dart`
+
+
+### Test sur le vrai Top-5 Iris
+
+Le banc d’essai principal est maintenant également branché sur les vrais résultats locaux d’Iris.
+
+Après un scan, dans le flux de création comme dans la feuille d’identification d’une plante existante, une carte `JEV DEBUG · IRIS TOP-5` apparaît quand OpenRouter est configuré.
+
+Elle reçoit exactement les cinq meilleures candidates locales rendues par Iris, leurs scores et le nombre de photos utilisées. La photo elle-même n’est pas envoyée à Jev.
+
+Le bouton `Comparer avec Jev` demande :
+
+- si l’identification est suffisamment fiable ;
+- quelle candidate du Top-5 est la mieux soutenue, avec une option `uncertain` ;
+- si Auxine doit afficher le résultat, demander une autre photo ou rester incertaine ;
+- un score ordonné de force des indices.
+
+La carte affiche côte à côte :
+
+- le Top-5 et les scores Iris ;
+- l’espèce choisie par Jev et sa probabilité ;
+- la décision de prochaine action ;
+- la probabilité que l’identification soit fiable ;
+- le score de force des indices ;
+- la latence réelle de la requête ;
+- le coût retourné par OpenRouter ;
+- le modèle Jev effectivement résolu par OpenRouter ;
+- le JSON brut pour inspection.
+
+Le résultat Jev est volontairement **non décisionnel** : il ne sélectionne pas une espèce, ne change pas les seuils Iris et ne modifie pas le flux produit. Si une seconde photo change le Top-5, l’ancienne réponse Jev est invalidée et doit être recalculée.
