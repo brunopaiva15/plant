@@ -379,3 +379,42 @@ Le signal principal à mesurer est la qualité de `decision` par rapport à la p
 Il ne faut pas valider Jev parce qu’il reproduit le top-1 d’Iris. Il faut le valider s’il améliore **la décision de produit autour de l’incertitude**.
 
 Tant que ce benchmark n’est pas concluant, le pipeline de production reste inchangé.
+
+
+## Intégration expérimentale dans le pipeline
+
+Jev est maintenant branché de façon conservatrice sur la décision de seconde photo.
+
+Le pipeline devient :
+
+```text
+Iris
+  ↓
+FallbackPolicy
+  ├─ résultat accepté ─────────────→ continuer localement
+  └─ seconde photo proposée
+            ↓
+           Jev
+            ├─ ask_another_photo → afficher l’invitation
+            ├─ show_result       → ne pas pousser de seconde photo
+            └─ keep_uncertain    → ne pas pousser de seconde photo
+```
+
+Points importants :
+
+- Iris reste le seul classifieur d’espèce ;
+- Jev ne reçoit jamais la photo, seulement le Top-5, les scores et le nombre de vues ;
+- un scan qu’Iris accepte déjà ne déclenche aucun appel Jev ;
+- Jev ne sélectionne jamais automatiquement une espèce ;
+- le choix utilisateur reste obligatoire comme avant ;
+- si Jev échoue, dépasse le délai ou répond dans un format inattendu, Auxine reprend exactement la décision locale de `secondPhotoOffer()` ;
+- le résultat est mis en cache afin qu’un rebuild Flutter ne refacture pas la même décision ;
+- le pipeline interdit toute troisième photo indépendamment de la réponse du fournisseur.
+
+L’appel Jev a un budget de trois secondes. Cela ne bloque pas les candidats Iris : seule l’invitation à ajouter une photo attend la décision.
+
+### Sécurité de la clé
+
+`OPENROUTER_API_KEY` fournie via `--dart-define` est embarquée dans le binaire de l’application et ne doit pas être considérée comme un secret pour une distribution publique.
+
+Cette intégration convient au benchmark/TestFlight actuel. Avant une activation de production à grande échelle, l’appel OpenRouter devrait passer par un backend contrôlé par Auxine avec authentification, quotas et possibilité de révoquer la clé sans republier l’application.
