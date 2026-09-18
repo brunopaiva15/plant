@@ -8,9 +8,18 @@ import 'package:flutter_test/flutter_test.dart';
 /// les quatre palettes, elle y est rigoureusement la même, et elle se tait
 /// tant qu'on ne la nomme pas.
 
-Widget _host(Widget child, {Brightness brightness = Brightness.light, bool highContrast = false}) => MaterialApp(
+Widget _host(
+  Widget child, {
+  Brightness brightness = Brightness.light,
+  bool highContrast = false,
+  bool disableAnimations = false,
+}) =>
+    MaterialApp(
       theme: buildFloraTheme(brightness, highContrast: highContrast),
-      home: Scaffold(body: Center(child: child)),
+      home: MediaQuery(
+        data: MediaQueryData(disableAnimations: disableAnimations),
+        child: Scaffold(body: Center(child: child)),
+      ),
     );
 
 void main() {
@@ -73,5 +82,21 @@ void main() {
     await tester.pumpWidget(_host(const IrisMark(semanticLabel: 'Iris')));
     expect(find.bySemanticsLabel('Iris'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('la variante de scan respire doucement', (tester) async {
+    await tester.pumpWidget(_host(const BreathingIrisMark(size: 64)));
+    await tester.pump();
+    expect(find.byType(BreathingIrisMark), findsOneWidget);
+    expect(tester.hasRunningAnimations, isTrue);
+  });
+
+  testWidgets('réduire les animations fige la respiration', (tester) async {
+    await tester.pumpWidget(
+      _host(const BreathingIrisMark(size: 64), disableAnimations: true),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    expect(tester.hasRunningAnimations, isFalse);
   });
 }
