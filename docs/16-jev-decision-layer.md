@@ -181,15 +181,27 @@ Cette logique ignore par exemple :
 - le fait que les deux meilleurs candidats appartiennent ou non au même genre ;
 - les informations déjà connues dans le Jardin.
 
-Jev pourrait alors produire plusieurs décisions :
+Le benchmark a montré qu’il vaut mieux éviter plusieurs décisions produit indépendantes : un premier essai pouvait juger une identification très fiable tout en demandant malgré tout une seconde photo.
+
+La règle de test devient donc une **décision produit unique** :
 
 ```text
-identification_reliable = faible
-need_another_photo       = forte
-best_next_photo          = whole_plant
+decision:
+Choice [
+  show_result,
+  ask_another_photo,
+  keep_uncertain
+]
 ```
 
-L’intérêt n’est donc pas seulement de choisir une espèce, mais de choisir **la prochaine action d’Auxine**.
+Les autres sorties restent explicatives :
+
+```text
+species     → candidat indicatif ou uncertain
+confidence  → force des indices
+```
+
+`decision` est la seule sortie qui pourrait, après validation du benchmark, piloter le flux d’Auxine. `species` et `confidence` servent à comprendre et mesurer la décision, pas à la contredire.
 
 ## Offline
 
@@ -330,19 +342,19 @@ Après un scan, dans le flux de création comme dans la feuille d’identificati
 
 Elle reçoit exactement les cinq meilleures candidates locales rendues par Iris, leurs scores et le nombre de photos utilisées. La photo elle-même n’est pas envoyée à Jev.
 
-Le bouton `Comparer avec Jev` demande :
+Le bouton `Comparer avec Jev` demande désormais trois sorties :
 
-- si l’identification est suffisamment fiable ;
-- quelle candidate du Top-5 est la mieux soutenue, avec une option `uncertain` ;
-- si Auxine doit afficher le résultat, demander une autre photo ou rester incertaine ;
-- un score ordonné de force des indices.
+- `decision`, une unique décision produit entre afficher le résultat, demander une autre photo ou rester incertain ;
+- `species`, la candidate du Top-5 la mieux soutenue, avec une option `uncertain`, uniquement comme explication ;
+- `confidence`, un score ordonné de force des indices, uniquement comme explication.
+
+La décision tient compte de `photo_count` : `ask_another_photo` n’est pertinent que tant que moins de deux photos ont été utilisées.
 
 La carte affiche côte à côte :
 
 - le Top-5 et les scores Iris ;
-- l’espèce choisie par Jev et sa probabilité ;
-- la décision de prochaine action ;
-- la probabilité que l’identification soit fiable ;
+- la décision produit unique et sa probabilité ;
+- l’espèce indicative choisie par Jev et sa probabilité ;
 - le score de force des indices ;
 - la latence réelle de la requête ;
 - le coût retourné par OpenRouter ;
@@ -350,3 +362,20 @@ La carte affiche côte à côte :
 - le JSON brut pour inspection.
 
 Le résultat Jev est volontairement **non décisionnel** : il ne sélectionne pas une espèce, ne change pas les seuils Iris et ne modifie pas le flux produit. Si une seconde photo change le Top-5, l’ancienne réponse Jev est invalidée et doit être recalculée.
+
+
+### Critère avant intégration au pipeline
+
+Le benchmark reste volontairement observationnel. Une intégration dans le pipeline Iris ne doit être envisagée qu’après comparaison sur des scans dont l’espèce réelle est connue.
+
+Le signal principal à mesurer est la qualité de `decision` par rapport à la politique actuelle d’Auxine :
+
+- moins de mauvais résultats affichés directement ;
+- pas de régression de précision sur les cas déjà nets ;
+- demandes de seconde photo concentrées sur les cas réellement ambigus ;
+- après deux photos, capacité à choisir entre `show_result` et `keep_uncertain` sans boucle ;
+- latence et coût suffisamment faibles pour rester acceptables en usage réel.
+
+Il ne faut pas valider Jev parce qu’il reproduit le top-1 d’Iris. Il faut le valider s’il améliore **la décision de produit autour de l’incertitude**.
+
+Tant que ce benchmark n’est pas concluant, le pipeline de production reste inchangé.
