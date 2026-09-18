@@ -98,10 +98,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
 
-  /// La première analyse reste volontairement visible au moins deux secondes,
-  /// même si Iris répond plus vite. Les noms, eux, peuvent commencer à
-  /// apparaître dès que le modèle les a rendus.
-  static const Duration _minimumPrimaryScan = Duration(seconds: 2);
+  /// La première analyse reste visible au moins une demi-seconde, même si
+  /// Iris répond plus vite. Les noms peuvent apparaître dès que le modèle les
+  /// a rendus.
+  static const Duration _minimumPrimaryScan = Duration(milliseconds: 500);
   Timer? _primaryScanTimer;
   bool _primaryScanMinimumElapsed = true;
   bool _primaryIdentificationDone = false;
