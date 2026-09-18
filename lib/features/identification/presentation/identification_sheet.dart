@@ -174,14 +174,18 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language)));
   }
 
-  /// Faut-il proposer une photo de plus, et sur quel ton ? C'est la
-  /// politique de la cascade qui le dit, celle-là même qui décide d'appeler
-  /// ou non le service distant, plutôt qu'un seuil recopié ici qui finirait
-  /// par diverger.
-  SecondPhotoOffer _offer(List<IdentificationCandidate> results) {
+  /// Faut-il proposer une photo de plus ? Iris tranche d'abord localement.
+  /// Jev n'est consulté que si cette politique locale aurait demandé une
+  /// seconde vue. En cas d'erreur ou de timeout, l'ancien comportement gagne.
+  Future<SecondPhotoOffer> _offer(List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    if (identifier is! CascadeIdentifier) return SecondPhotoOffer.none;
-    return secondPhotoOffer(identifier.policy, results, photos: _paths.length, maxPhotos: maxPhotos);
+    if (identifier is! CascadeIdentifier) return Future.value(SecondPhotoOffer.none);
+    return ref.read(jevIdentificationPolicyProvider).secondPhotoOfferFor(
+          policy: identifier.policy,
+          candidates: results,
+          photos: _paths.length,
+          maxPhotos: maxPhotos,
+        );
   }
 
   /// Le genre, quand aucune espèce ne passe le seuil. Même politique que le
@@ -313,7 +317,9 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               if (snap.hasError && data == null) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);
               final results = (data ?? const <IdentificationCandidate>[]).take(5).toList();
               if (results.isEmpty) return EmptyState(emoji: '🤔', title: l10n.identifyNone, compact: true);
-              final offer = _offer(results);
+              final offerFuture = !busy && results.first.source == IdentificationSource.local
+                  ? _offer(data ?? const <IdentificationCandidate>[])
+                  : null;
               // Le genre se somme sur toutes les candidates rendues, pas sur
               // les cinq affichées : c'est la masse qui décide, et elle se
               // perdrait à tronquer deux fois.
@@ -345,17 +351,32 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   _PhotoSourceNote(candidates: results),
                   if (!busy && results.first.source == IdentificationSource.local)
                     JevIrisDebugPanel(candidates: results, photoCount: _paths.length),
-                  if (offer == SecondPhotoOffer.prominent && _paths.length < maxPhotos) ...[
-                    const SizedBox(height: Space.sm),
-                    Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                    const SizedBox(height: Space.xs),
-                    FloraButton(
-                      label: l10n.identifyAnotherPhoto,
-                      icon: CupertinoIcons.camera,
-                      style: FloraButtonStyle.secondary,
-                      onPressed: _chooseSource,
+                  if (offerFuture != null && _paths.length < maxPhotos)
+                    FutureBuilder<SecondPhotoOffer>(
+                      future: offerFuture,
+                      builder: (context, offerSnap) {
+                        if (offerSnap.connectionState != ConnectionState.done ||
+                            offerSnap.data != SecondPhotoOffer.prominent) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: Space.sm),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                              const SizedBox(height: Space.xs),
+                              FloraButton(
+                                label: l10n.identifyAnotherPhoto,
+                                icon: CupertinoIcons.camera,
+                                style: FloraButtonStyle.secondary,
+                                onPressed: _chooseSource,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  ],
                   if (results.first.source == IdentificationSource.local && _canSearchOnline) ...[
                     const SizedBox(height: Space.sm),
                     if (ref.watch(isOnlineProvider))

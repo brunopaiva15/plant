@@ -312,13 +312,18 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     setState(() => _identification = pending);
   }
 
-  /// Le modèle hésite-t-il ? La politique de la cascade le dit, celle-là
-  /// même qui décide d'appeler ou non le service distant.
-  SecondPhotoOffer _identificationOffer(List<IdentificationCandidate> results) {
+  /// Le modèle hésite-t-il ? Iris décide d'abord localement. Si sa politique
+  /// demanderait une seconde photo, Jev peut arbitrer ce seul geste. En cas
+  /// d'échec réseau, le résultat retombe exactement sur la politique locale.
+  Future<SecondPhotoOffer> _identificationOffer(List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    if (identifier is! CascadeIdentifier) return SecondPhotoOffer.none;
-    return secondPhotoOffer(identifier.policy, results,
-        photos: _identificationPaths.length, maxPhotos: maxIdentificationPhotos);
+    if (identifier is! CascadeIdentifier) return Future.value(SecondPhotoOffer.none);
+    return ref.read(jevIdentificationPolicyProvider).secondPhotoOfferFor(
+          policy: identifier.policy,
+          candidates: results,
+          photos: _identificationPaths.length,
+          maxPhotos: maxIdentificationPhotos,
+        );
   }
 
   /// Le genre, quand aucune espèce ne passe le seuil : « Épicéa, espèce
@@ -929,7 +934,7 @@ class _IdentificationSuggestions extends StatelessWidget {
 
   /// Faut-il proposer une photo de plus, et sur quel ton ? Décidé par la
   /// cascade, comme dans la fiche d'identification.
-  final SecondPhotoOffer Function(List<IdentificationCandidate>)? offer;
+  final Future<SecondPhotoOffer> Function(List<IdentificationCandidate>)? offer;
 
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
@@ -954,7 +959,7 @@ class _IdentificationSuggestions extends StatelessWidget {
         }
         final results = (snap.data ?? const <IdentificationCandidate>[]).take(3).toList();
         if (results.isEmpty) return const SizedBox.shrink();
-        final photoOffer = offer?.call(results) ?? SecondPhotoOffer.none;
+        final photoOfferFuture = offer?.call(snap.data ?? const <IdentificationCandidate>[]);
         // Sur toutes les candidates rendues, pas sur les trois affichées.
         final genre = genus?.call(snap.data ?? const []);
         final hasSecondPhoto = paths.length > 1;
@@ -992,18 +997,33 @@ class _IdentificationSuggestions extends StatelessWidget {
                   candidates: (snap.data ?? const <IdentificationCandidate>[]).take(5).toList(growable: false),
                   photoCount: paths.length,
                 ),
-              if (photoOffer == SecondPhotoOffer.prominent && onAddPhoto != null) ...[
-                const SizedBox(height: Space.sm),
-                Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                const SizedBox(height: Space.xs),
-                FloraButton(
-                  label: l10n.identifyAnotherPhoto,
-                  icon: CupertinoIcons.camera,
-                  style: FloraButtonStyle.secondary,
-                  size: FloraButtonSize.small,
-                  onPressed: onAddPhoto,
+              if (photoOfferFuture != null && onAddPhoto != null)
+                FutureBuilder<SecondPhotoOffer>(
+                  future: photoOfferFuture,
+                  builder: (context, offerSnap) {
+                    if (offerSnap.connectionState != ConnectionState.done ||
+                        offerSnap.data != SecondPhotoOffer.prominent) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: Space.sm),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                          const SizedBox(height: Space.xs),
+                          FloraButton(
+                            label: l10n.identifyAnotherPhoto,
+                            icon: CupertinoIcons.camera,
+                            style: FloraButtonStyle.secondary,
+                            size: FloraButtonSize.small,
+                            onPressed: onAddPhoto,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              ],
               if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
                 const SizedBox(height: Space.sm),
                 FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.ghost, size: FloraButtonSize.small, onPressed: onSearchOnline),
