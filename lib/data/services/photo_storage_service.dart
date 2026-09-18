@@ -62,8 +62,10 @@ class PhotoStorageService {
     return root == null ? null : p.join(root.path, relative);
   }
 
-  /// Ouvre le picker natif ; retourne `null` si l'utilisateur annule.
-  Future<StoredPhoto?> pick(PhotoSource source) async {
+  /// Ouvre le picker natif et rend le fichier source tel que fourni par
+  /// l'appareil photo ou la photothèque. Utile quand l'UI doit montrer la
+  /// photo immédiatement, avant la compression et le stockage local.
+  Future<File?> pickSource(PhotoSource source) async {
     final file = await _picker.pickImage(
       source: source == PhotoSource.camera ? ImageSource.camera : ImageSource.gallery,
       // Une photo de la galerie peut dater d'il y a deux ans. Sans ses
@@ -72,8 +74,14 @@ class PhotoStorageService {
       // L'appareil photo, lui, n'a rien à raconter que l'instant présent.
       requestFullMetadata: source == PhotoSource.gallery,
     );
+    return file == null ? null : File(file.path);
+  }
+
+  /// Ouvre le picker natif ; retourne `null` si l'utilisateur annule.
+  Future<StoredPhoto?> pick(PhotoSource source) async {
+    final file = await pickSource(source);
     if (file == null) return null;
-    return importFile(File(file.path));
+    return importFile(file);
   }
 
   Future<StoredPhoto> importFile(File source) async {
