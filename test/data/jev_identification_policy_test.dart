@@ -29,6 +29,8 @@ class FakeJev extends JevDecisionService {
 }
 
 Map<String, dynamic> answer(String choice, double probability) => {
+      'model': 'typesafe/jev-test',
+      'usage': {'cost': 0.000042},
       'answers': {
         'decision': {
           'type': 'choice',
@@ -117,6 +119,61 @@ void main() {
     );
 
     expect(offer, SecondPhotoOffer.prominent);
+  });
+
+  test('le debug relit exactement l’évaluation pipeline sans second appel', () async {
+    final fake = FakeJev(answer('keep_uncertain', 0.88));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+    final candidates = [
+      c('Aloe maculata', 0.23),
+      c('Gasteria carinata', 0.17),
+      c('Haworthiopsis attenuata', 0.16),
+    ];
+
+    final offer = await policy.secondPhotoOfferFor(
+      policy: local,
+      candidates: candidates,
+      photos: 1,
+      maxPhotos: 2,
+    );
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: candidates,
+      photos: 1,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 1);
+    expect(offer, SecondPhotoOffer.none);
+    expect(evaluation.consultedJev, isTrue);
+    expect(evaluation.usedFallback, isFalse);
+    expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+    expect(evaluation.decision?.probability, 0.88);
+    expect(evaluation.cost, 0.000042);
+    expect(evaluation.model, 'typesafe/jev-test');
+    expect(evaluation.rawResponse, isNotNull);
+  });
+
+  test('l’évaluation expose clairement le fallback Iris après erreur Jev', () async {
+    final fake = FakeJev(const {}, error: StateError('offline'));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+    final candidates = [
+      c('Aloe maculata', 0.23),
+      c('Gasteria carinata', 0.17),
+    ];
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: candidates,
+      photos: 1,
+      maxPhotos: 2,
+    );
+
+    expect(evaluation.consultedJev, isTrue);
+    expect(evaluation.usedFallback, isTrue);
+    expect(evaluation.offer, SecondPhotoOffer.prominent);
+    expect(evaluation.decision, isNull);
+    expect(evaluation.error, contains('offline'));
   });
 
   test('au maximum de photos Jev n’est pas consulté', () async {

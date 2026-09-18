@@ -418,3 +418,25 @@ L’appel Jev a un budget de trois secondes. Cela ne bloque pas les candidats Ir
 `OPENROUTER_API_KEY` fournie via `--dart-define` est embarquée dans le binaire de l’application et ne doit pas être considérée comme un secret pour une distribution publique.
 
 Cette intégration convient au benchmark/TestFlight actuel. Avant une activation de production à grande échelle, l’appel OpenRouter devrait passer par un backend contrôlé par Auxine avec authentification, quotas et possibilité de révoquer la clé sans republier l’application.
+
+
+### Observer la vraie décision du pipeline
+
+La carte `JEV · DÉCISION PIPELINE` ne lance plus un benchmark séparé.
+
+Elle lit désormais **exactement la même évaluation mise en cache** que celle utilisée pour afficher ou masquer l’invitation à prendre une seconde photo. Cela garantit que l’écran de debug ne peut pas montrer une réponse différente de celle réellement appliquée.
+
+Pour un scan ambigu, la carte affiche automatiquement :
+
+- la décision Jev réellement utilisée ;
+- sa probabilité ;
+- l’effet appliqué par Auxine ;
+- si un fallback Iris a été utilisé ;
+- la latence de l’appel automatique ;
+- le coût retourné par OpenRouter ;
+- le modèle réellement résolu ;
+- le JSON brut de cette même requête.
+
+Pour un scan déjà net selon Iris, elle indique `Jev non consulté` : aucun appel réseau n’est déclenché.
+
+La carte n’a donc plus de bouton `Comparer avec Jev` dans le flux d’identification. Le test statique de Profil reste séparé et sert uniquement au développement.

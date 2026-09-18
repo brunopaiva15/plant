@@ -996,6 +996,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                 JevIrisDebugPanel(
                   candidates: (snap.data ?? const <IdentificationCandidate>[]).take(5).toList(growable: false),
                   photoCount: paths.length,
+                  maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
                 ),
               if (photoOfferFuture != null && onAddPhoto != null)
                 FutureBuilder<SecondPhotoOffer>(
