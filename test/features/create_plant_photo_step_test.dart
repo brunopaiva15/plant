@@ -50,13 +50,25 @@ class _FakeStorage extends PhotoStorageService {
   int picked = 0;
 
   @override
-  Future<StoredPhoto?> pick(PhotoSource source) async {
+  Future<File?> pickSource(PhotoSource source) async {
+    final raw = File('$root/raw-${++picked}.jpg');
+    File('store/demo-photos/monstera.jpg').copySync(raw.path);
+    return raw;
+  }
+
+  @override
+  Future<StoredPhoto> importFile(File source) async {
     final dir = Directory('$root/photos')..createSync(recursive: true);
-    final name = 'p${++picked}';
+    final name = 'p$picked';
     for (final suffix in ['.jpg', '_thumb.jpg']) {
-      File('store/demo-photos/monstera.jpg').copySync('${dir.path}/$name$suffix');
+      source.copySync('${dir.path}/$name$suffix');
     }
-    return StoredPhoto(filePath: '$name.jpg', thumbPath: '${name}_thumb.jpg', width: 800, height: 1000);
+    return StoredPhoto(
+      filePath: '$name.jpg',
+      thumbPath: '${name}_thumb.jpg',
+      width: 800,
+      height: 1000,
+    );
   }
 
   // Sans entrée/sortie asynchrone : le temps simulé du banc d'essai ne
@@ -191,6 +203,12 @@ void main() {
     expect(find.text('Aperçu'), findsOneWidget);
     expect(find.text('Continuer'), findsOneWidget);
     expect(find.text('Reprendre'), findsOneWidget);
+    final rawPreview = tester.widgetList<Image>(find.byType(Image)).where(
+      (image) => image.image is FileImage &&
+          (image.image as FileImage).file.path.endsWith('raw-1.jpg'),
+    );
+    expect(rawPreview, hasLength(1),
+        reason: 'le cadre garde le fichier source original, pas la miniature');
     // Aucune seconde vue n'est demandée avant de connaître la confiance.
     expect(find.text('La plante'), findsNothing);
     expect(find.text('Une feuille de près'), findsNothing);
