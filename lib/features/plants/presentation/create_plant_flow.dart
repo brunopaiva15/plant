@@ -631,7 +631,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             ProcessingField(
               height: null,
               child: image,
-              foreground: const BreathingIrisMark(size: 72),
+              foregroundAlignment: Alignment.topCenter,
+              foreground: const Padding(
+                padding: EdgeInsets.only(top: Space.lg),
+                child: BreathingIrisMark(size: 72),
+              ),
             )
           else
             image,
