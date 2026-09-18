@@ -264,8 +264,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       _reviewSource = source;
       _reviewSourceOwned = owned;
       _identification = null;
-      // L'aperçu brut a déjà posé ces états. On les garde afin que la grille
-      // reste parfaitement continue pendant le passage stockage → Iris.
+      _primaryPreviewCandidates = const [];
+      _primaryIdentificationDone = false;
+      _primaryScanMinimumElapsed = false;
       _mode = _PhotoMode.review;
     });
     unawaited(_camera.stop());
@@ -298,7 +299,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   void _deleteOwnedReviewSource() {
     final source = _reviewSource;
     if (!_reviewSourceOwned || source == null) return;
-    unawaited(source.delete().catchError((_) => source));
+    unawaited(_deleteFileQuietly(source));
+  }
+
+  Future<void> _deleteFileQuietly(File file) async {
+    try {
+      await file.delete();
+    } catch (_) {}
   }
 
   /// Retient la photo principale et lance Iris immédiatement dessus. La
