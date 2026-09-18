@@ -13,6 +13,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
+import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../identification/presentation/iris_feedback_prompt.dart';
@@ -27,7 +28,7 @@ import '../../locations/presentation/location_picker_sheet.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../identification/presentation/identification_photos.dart';
 import '../../identification/presentation/identification_sheet.dart';
-import '../../identification/presentation/jev_iris_debug_panel.dart';
+import '../../identification/presentation/identification_uncertainty.dart';
 import '../../cuttings/presentation/propagation_guide_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
@@ -312,13 +313,19 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     setState(() => _identification = pending);
   }
 
-  /// Le modèle hésite-t-il ? Iris décide d'abord localement. Si sa politique
-  /// demanderait une seconde photo, Jev peut arbitrer ce seul geste. En cas
-  /// d'échec réseau, le résultat retombe exactement sur la politique locale.
-  Future<SecondPhotoOffer> _identificationOffer(List<IdentificationCandidate> results) {
+  /// Évaluation produit complète : Iris reste le classifieur, Jev décide
+  /// seulement de la suite à donner à un résultat ambigu.
+  Future<JevPipelineEvaluation> _identificationEvaluation(
+      List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    if (identifier is! CascadeIdentifier) return Future.value(SecondPhotoOffer.none);
-    return ref.read(jevIdentificationPolicyProvider).secondPhotoOfferFor(
+    if (identifier is! CascadeIdentifier) {
+      return Future.value(const JevPipelineEvaluation(
+        offer: SecondPhotoOffer.none,
+        consultedJev: false,
+        usedFallback: false,
+      ));
+    }
+    return ref.read(jevIdentificationPolicyProvider).evaluate(
           policy: identifier.policy,
           candidates: results,
           photos: _identificationPaths.length,
@@ -802,7 +809,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               // Les deux gestes se gardent eux-mêmes.
               onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _chooseIdentificationSource : null,
               onRemovePhoto: _removeIdentificationPhoto,
-              offer: _identificationOffer,
+              evaluation: _identificationEvaluation,
               genus: _identificationGenus,
             ),
           const SizedBox(height: Space.lg),
@@ -911,7 +918,7 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onSearchOnline,
     this.onAddPhoto,
     this.onRemovePhoto,
-    this.offer,
+    this.evaluation,
     this.genus,
   });
 
@@ -932,9 +939,9 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Les photos soumises au moteur, en chemins absolus.
   final List<String> paths;
 
-  /// Faut-il proposer une photo de plus, et sur quel ton ? Décidé par la
-  /// cascade, comme dans la fiche d'identification.
-  final Future<SecondPhotoOffer> Function(List<IdentificationCandidate>)? offer;
+  /// Décision produit finale pour la liste locale courante.
+  final Future<JevPipelineEvaluation> Function(List<IdentificationCandidate>)?
+      evaluation;
 
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
@@ -957,12 +964,101 @@ class _IdentificationSuggestions extends StatelessWidget {
             ),
           );
         }
-        final results = (snap.data ?? const <IdentificationCandidate>[]).take(3).toList();
+        final all = snap.data ?? const <IdentificationCandidate>[];
+        final results = all.take(3).toList();
         if (results.isEmpty) return const SizedBox.shrink();
-        final photoOfferFuture = offer?.call(snap.data ?? const <IdentificationCandidate>[]);
+        final evaluationFuture =
+            results.first.source == IdentificationSource.local
+                ? evaluation?.call(all)
+                : null;
         // Sur toutes les candidates rendues, pas sur les trois affichées.
-        final genre = genus?.call(snap.data ?? const []);
+        final genre = genus?.call(all);
         final hasSecondPhoto = paths.length > 1;
+
+        Widget normalContent(JevPipelineEvaluation? state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (genre != null) ...[
+                GenusRow(
+                  answer: genre,
+                  onUse: () => onPick(genusCandidate(genre, l10n.localeName)),
+                ),
+                const SizedBox(height: Space.xs),
+              ],
+              FloraGroup(
+                children: [
+                  for (final c in results)
+                    CandidateRow(candidate: c, onUse: () => onPick(c)),
+                ],
+              ),
+              if (state?.offer == SecondPhotoOffer.prominent &&
+                  onAddPhoto != null) ...[
+                const SizedBox(height: Space.sm),
+                Text(l10n.identifyAnotherPhotoHint,
+                    style: context.text.caption),
+                const SizedBox(height: Space.xs),
+                FloraButton(
+                  label: l10n.identifyAnotherPhoto,
+                  icon: CupertinoIcons.camera,
+                  style: FloraButtonStyle.secondary,
+                  size: FloraButtonSize.small,
+                  onPressed: onAddPhoto,
+                ),
+              ],
+              if (results.first.source == IdentificationSource.local &&
+                  onSearchOnline != null) ...[
+                const SizedBox(height: Space.sm),
+                FloraButton(
+                  label: l10n.searchOnline,
+                  style: FloraButtonStyle.ghost,
+                  size: FloraButtonSize.small,
+                  onPressed: onSearchOnline,
+                ),
+              ],
+            ],
+          );
+        }
+
+        Widget uncertainContent() {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const IdentificationUncertaintyNotice(),
+              if (genre != null) ...[
+                const SizedBox(height: Space.sm),
+                GenusRow(
+                  answer: genre,
+                  onUse: () => onPick(genusCandidate(genre, l10n.localeName)),
+                ),
+              ],
+              if (onSearchOnline != null) ...[
+                const SizedBox(height: Space.sm),
+                FloraButton(
+                  label: l10n.searchOnline,
+                  expand: true,
+                  onPressed: onSearchOnline,
+                ),
+              ],
+              const SizedBox(height: Space.md),
+              Text(
+                l10n.identificationSuggestionsToCheck,
+                style: context.text.caption.copyWith(
+                  color: context.colors.inkSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: Space.xs),
+              FloraGroup(
+                children: [
+                  for (final c in results)
+                    CandidateRow(candidate: c, onUse: () => onPick(c)),
+                ],
+              ),
+            ],
+          );
+        }
+
         return Padding(
           padding: const EdgeInsets.only(top: Space.md),
           child: Column(
@@ -985,50 +1081,18 @@ class _IdentificationSuggestions extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: Space.xs),
-              if (genre != null) ...[
-                GenusRow(answer: genre, onUse: () => onPick(genusCandidate(genre, l10n.localeName))),
-                const SizedBox(height: Space.xs),
-              ],
-              // Même quand Iris hésite, ses propositions restent visibles :
-              // la seconde photo affine la liste, elle ne la remplace pas.
-              FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
-              if (photoOfferFuture != null && onAddPhoto != null)
-                FutureBuilder<SecondPhotoOffer>(
-                  future: photoOfferFuture,
-                  builder: (context, offerSnap) {
-                    if (offerSnap.connectionState != ConnectionState.done ||
-                        offerSnap.data != SecondPhotoOffer.prominent) {
-                      return const SizedBox.shrink();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.only(top: Space.sm),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                          const SizedBox(height: Space.xs),
-                          FloraButton(
-                            label: l10n.identifyAnotherPhoto,
-                            icon: CupertinoIcons.camera,
-                            style: FloraButtonStyle.secondary,
-                            size: FloraButtonSize.small,
-                            onPressed: onAddPhoto,
-                          ),
-                        ],
-                      ),
-                    );
+              if (evaluationFuture == null)
+                normalContent(null)
+              else
+                FutureBuilder<JevPipelineEvaluation>(
+                  future: evaluationFuture,
+                  builder: (context, decisionSnap) {
+                    final state = decisionSnap.data;
+                    return state?.keepsUncertain == true
+                        ? uncertainContent()
+                        : normalContent(state);
                   },
                 ),
-              if (results.first.source == IdentificationSource.local)
-                JevIrisDebugPanel(
-                  candidates: (snap.data ?? const <IdentificationCandidate>[]).take(5).toList(growable: false),
-                  photoCount: paths.length,
-                  maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
-                ),
-              if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
-                const SizedBox(height: Space.sm),
-                FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.ghost, size: FloraButtonSize.small, onPressed: onSearchOnline),
-              ],
             ],
           ),
         );
