@@ -285,8 +285,24 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               final data = snap.data ?? _last;
               if (busy && data == null) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Space.xxl),
-                  child: Column(children: [const AdaptiveProgress(), const SizedBox(height: Space.sm), Text(l10n.identifying, style: context.text.callout)]),
+                  padding: const EdgeInsets.only(bottom: Space.xl),
+                  child: Column(
+                    children: [
+                      ProcessingField(
+                        height: 220,
+                        child: Image.file(
+                          File(widget.path),
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.medium,
+                          excludeFromSemantics: true,
+                          errorBuilder: (_, _, _) => ColoredBox(color: context.colors.surfaceMuted),
+                        ),
+                        foreground: const IrisMark(size: 72),
+                      ),
+                      const SizedBox(height: Space.sm),
+                      Text(l10n.identifying, style: context.text.callout),
+                    ],
+                  ),
                 );
               }
               if (snap.hasError && data == null) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);

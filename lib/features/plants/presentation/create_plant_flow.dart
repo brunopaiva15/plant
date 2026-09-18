@@ -934,8 +934,27 @@ class _IdentificationSuggestions extends StatelessWidget {
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
           return Padding(
-            padding: const EdgeInsets.only(top: Space.sm),
-            child: Row(children: [const AdaptiveProgress(), const SizedBox(width: Space.xs), Text(l10n.identifying, style: context.text.caption)]),
+            padding: const EdgeInsets.only(top: Space.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ProcessingField(
+                  height: 190,
+                  child: paths.isEmpty
+                      ? ColoredBox(color: context.colors.surfaceMuted)
+                      : Image.file(
+                          File(paths.first),
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.medium,
+                          excludeFromSemantics: true,
+                          errorBuilder: (_, _, _) => ColoredBox(color: context.colors.surfaceMuted),
+                        ),
+                  foreground: const IrisMark(size: 64),
+                ),
+                const SizedBox(height: Space.xs),
+                Text(l10n.identifying, style: context.text.caption, textAlign: TextAlign.center),
+              ],
+            ),
           );
         }
         final results = (snap.data ?? const <IdentificationCandidate>[]).take(3).toList();
