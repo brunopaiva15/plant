@@ -247,6 +247,26 @@ void main() {
     expect(evaluation.decision?.action, JevProductAction.keepUncertain);
   });
 
+  test('après deux photos une réponse Jev invalide reste silencieusement incertaine', () async {
+    final fake = FakeJev(const {'answers': {}});
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: [
+        c('Aloe maculata', 0.31),
+        c('Gasteria carinata', 0.27),
+      ],
+      photos: 2,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 1);
+    expect(evaluation.usedFallback, isTrue);
+    expect(evaluation.offer, SecondPhotoOffer.none);
+    expect(evaluation.keepsUncertain, isTrue);
+  });
+
   test('après deux photos un résultat Iris déjà net ne consulte toujours pas Jev', () async {
     final fake = FakeJev(answer('keep_uncertain', 0.99));
     final policy = JevIdentificationPolicy(service: fake, configured: true);
