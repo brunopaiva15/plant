@@ -128,7 +128,7 @@ void main() {
     expect(offer, SecondPhotoOffer.prominent);
   });
 
-  test('le debug relit exactement l’évaluation pipeline sans second appel', () async {
+  test('une même évaluation pipeline est réutilisée sans second appel', () async {
     final fake = FakeJev(answer('keep_uncertain', 0.88));
     final policy = JevIdentificationPolicy(service: fake, configured: true);
     final candidates = [
@@ -156,9 +156,7 @@ void main() {
     expect(evaluation.usedFallback, isFalse);
     expect(evaluation.decision?.action, JevProductAction.keepUncertain);
     expect(evaluation.decision?.probability, 0.88);
-    expect(evaluation.cost, 0.000042);
-    expect(evaluation.model, 'typesafe/jev-test');
-    expect(evaluation.rawResponse, isNotNull);
+    expect(evaluation.keepsUncertain, isTrue);
   });
 
   test('l’évaluation expose clairement le fallback Iris après erreur Jev', () async {
@@ -180,7 +178,7 @@ void main() {
     expect(evaluation.usedFallback, isTrue);
     expect(evaluation.offer, SecondPhotoOffer.prominent);
     expect(evaluation.decision, isNull);
-    expect(evaluation.error, contains('offline'));
+    expect(evaluation.keepsUncertain, isFalse);
   });
 
   test('après deux photos ambiguës Jev tranche sans option de troisième photo', () async {
@@ -201,6 +199,7 @@ void main() {
     expect(fake.calls, 1);
     expect(evaluation.offer, SecondPhotoOffer.none);
     expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+    expect(evaluation.keepsUncertain, isTrue);
 
     final decision = fake.lastQuestions?['decision'] as Map<String, dynamic>;
     final criteria = decision['criteria'] as Map<String, dynamic>;
@@ -225,6 +224,47 @@ void main() {
     expect(fake.calls, 1);
     expect(evaluation.offer, SecondPhotoOffer.none);
     expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+  });
+
+  test('après deux photos ambiguës une panne Jev garde le résultat incertain', () async {
+    final fake = FakeJev(const {}, error: StateError('offline'));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: [
+        c('Aloe maculata', 0.31),
+        c('Gasteria carinata', 0.27),
+      ],
+      photos: 2,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 1);
+    expect(evaluation.usedFallback, isTrue);
+    expect(evaluation.offer, SecondPhotoOffer.none);
+    expect(evaluation.keepsUncertain, isTrue);
+    expect(evaluation.decision?.action, JevProductAction.keepUncertain);
+  });
+
+  test('après deux photos une réponse Jev invalide reste silencieusement incertaine', () async {
+    final fake = FakeJev(const {'answers': {}});
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: [
+        c('Aloe maculata', 0.31),
+        c('Gasteria carinata', 0.27),
+      ],
+      photos: 2,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 1);
+    expect(evaluation.usedFallback, isTrue);
+    expect(evaluation.offer, SecondPhotoOffer.none);
+    expect(evaluation.keepsUncertain, isTrue);
   });
 
   test('après deux photos un résultat Iris déjà net ne consulte toujours pas Jev', () async {

@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,14 +9,12 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/config/app_config.dart';
-import '../../../core/config/jev_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
-import 'jev_debug_sheet.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -197,21 +196,6 @@ class ProfileScreen extends ConsumerWidget {
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],
               ),
-              if (kDebugMode || JevConfig.isConfigured) ...[
-                const SizedBox(height: Space.lg),
-                FloraGroup(
-                  header: 'DEBUG',
-                  footer: 'Appelle OpenRouter / Decisions avec un cas Iris ambigu. Visible en debug ou quand OPENROUTER_API_KEY est fournie au build.',
-                  children: [
-                    FloraListRow(
-                      leading: const Text('🧪', style: TextStyle(fontSize: 18)),
-                      title: 'Tester Jev',
-                      subtitle: '~typesafe/jev-latest',
-                      onTap: () => showJevDebugSheet(context),
-                    ),
-                  ],
-                ),
-              ],
               const SizedBox(height: Space.xl),
               const _AppFooter(),
               const SizedBox(height: Space.lg),
@@ -269,11 +253,39 @@ class ProfileScreen extends ConsumerWidget {
 /// Tout en bas et sans le nom de l'application : on ne vient pas ici pour
 /// apprendre comment elle s'appelle, mais pour retrouver un numéro de version
 /// avant d'écrire au support.
-class _AppFooter extends ConsumerWidget {
+class _AppFooter extends ConsumerStatefulWidget {
   const _AppFooter();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AppFooter> createState() => _AppFooterState();
+}
+
+class _AppFooterState extends ConsumerState<_AppFooter> {
+  static const _requiredTaps = 5;
+  static const _tapWindow = Duration(seconds: 4);
+
+  int _versionTaps = 0;
+  Timer? _tapTimer;
+
+  @override
+  void dispose() {
+    _tapTimer?.cancel();
+    super.dispose();
+  }
+
+  void _tapVersion() {
+    _tapTimer?.cancel();
+    _versionTaps++;
+    if (_versionTaps >= _requiredTaps) {
+      _versionTaps = 0;
+      context.push(Routes.serviceStatus);
+      return;
+    }
+    _tapTimer = Timer(_tapWindow, () => _versionTaps = 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final c = context.colors;
     final style = context.text.caption.copyWith(color: c.inkTertiary);
@@ -295,7 +307,18 @@ class _AppFooter extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: Space.xs),
-        Text(l10n.version(ref.watch(appVersionProvider).label), style: style),
+        Pressable(
+          onTap: _tapVersion,
+          scale: 1,
+          haptic: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              l10n.version(ref.watch(appVersionProvider).label),
+              style: style,
+            ),
+          ),
+        ),
       ],
     );
   }

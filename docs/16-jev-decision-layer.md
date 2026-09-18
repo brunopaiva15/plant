@@ -231,249 +231,118 @@ Exemple :
 
 Cela pourrait limiter l’usage de Jev à une minorité des scans.
 
-## Benchmark à faire avant toute intégration
+## Validation continue
 
-Tester sur un ensemble de scans dont l’espèce réelle est connue, en particulier les cas où Iris hésite.
+Jev est maintenant intégré au pipeline produit. Le benchmark reste utile, mais il sert à mesurer et ajuster une intégration réelle plutôt qu'un banc d'essai séparé.
 
-Comparer :
+À suivre sur un ensemble de scans dont l'espèce réelle est connue :
 
-| Variante | Description |
-|---|---|
-| A | Top-1 Iris |
-| B | Iris + règles botaniques |
-| C | Iris + Jev |
-| D | Iris + règles botaniques + Jev |
+- taux de faux résultats présentés comme exploitables ;
+- taux de demandes d'une seconde photo ;
+- qualité après fusion de deux photos ;
+- fréquence de `keep_uncertain` ;
+- qualité des recherches en ligne déclenchées après incertitude ;
+- latence et coût des appels Jev ;
+- comportement hors ligne et en cas de timeout.
 
-Mesures :
+Le critère principal reste :
 
-- top-1 accuracy ;
-- top-3 accuracy ;
-- taux de faux résultats affichés comme certains ;
-- taux de demandes d’une seconde photo ;
-- accuracy après seconde photo ;
-- latence ;
-- coût par scan ;
-- taux de disponibilité hors ligne / en ligne.
+> **Est-ce que Jev réduit les mauvaises décisions produit autour d'une identification incertaine ?**
 
-Le critère principal ne doit pas être seulement « Jev change-t-il le top-1 ? », mais surtout :
+## Pipeline actuel
 
-> **Est-ce que Jev réduit les mauvaises décisions produit autour d’une identification incertaine ?**
-
-## Décision actuelle
-
-Ne pas intégrer Jev dans le cœur d’Iris pour le moment.
-
-À conserver comme piste pour une future couche de décision, probablement autour d’Iris 10 Core ou d’une génération ultérieure, après benchmark sur les scans ambigus.
-
-La direction à tester est :
-
-```text
-Iris → règles Auxine → Jev si nécessaire → action de l’application
-```
-
-et non :
-
-```text
-Photo → Jev → espèce
-```
-
-## Points à revalider avant implémentation
-
-Jev est encore une technologie récente. Avant de coder une intégration, revalider notamment :
-
-- API et disponibilité ;
-- formats de décisions typées ;
-- limites de cardinalité des choix ;
-- latence réelle depuis les régions utilisées par Auxine ;
-- coût ;
-- politique de confidentialité ;
-- possibilité éventuelle d’exécution locale à l’avenir.
-
-Référence initiale : https://typesafe.ai/blog/introducing-system-one-models-and-jev
-
-
-## Banc d’essai dans l’application
-
-Un test manuel statique est disponible depuis Profil. La section est visible en debug et dans les builds où `OPENROUTER_API_KEY` est fournie :
-
-```text
-Profil
-  ↓
-DEBUG
-  ↓
-Tester Jev
-```
-
-La clé OpenRouter est lue depuis le build :
-
-```bash
-flutter run --dart-define=OPENROUTER_API_KEY=…
-```
-
-Le bouton envoie à `https://openrouter.ai/api/alpha/decisions` un état de test représentant un scan Iris ambigu :
-
-```text
-Monstera adansonii        45 %
-Monstera deliciosa        41 %
-Rhaphidophora tetrasperma 14 %
-```
-
-avec quelques observations supplémentaires. Il pose en une seule requête :
-
-- une question `noul` sur la fiabilité de l’identification ;
-- une question `choice` sur l’espèce la plus cohérente ;
-- une question `choice` sur la prochaine action d’Auxine ;
-- une question `score` sur la force globale des indices.
-
-La sheet affiche ensuite le JSON brut d’OpenRouter, probabilités comprises. Ce banc d’essai statique ne touche pas au flux d’identification réel.
-
-Implémentation :
-
-- `lib/core/config/jev_config.dart`
-- `lib/data/services/jev_decision_service.dart`
-- `lib/features/profile/presentation/jev_debug_sheet.dart`
-
-
-### Test sur le vrai Top-5 Iris
-
-Le banc d’essai principal est maintenant également branché sur les vrais résultats locaux d’Iris.
-
-Après un scan, dans le flux de création comme dans la feuille d’identification d’une plante existante, une carte `JEV DEBUG · IRIS TOP-5` apparaît quand OpenRouter est configuré.
-
-Elle reçoit exactement les cinq meilleures candidates locales rendues par Iris, leurs scores et le nombre de photos utilisées. La photo elle-même n’est pas envoyée à Jev.
-
-Le bouton `Comparer avec Jev` demande désormais trois sorties :
-
-- `decision`, une unique décision produit entre afficher le résultat, demander une autre photo ou rester incertain ;
-- `species`, la candidate du Top-5 la mieux soutenue, avec une option `uncertain`, uniquement comme explication ;
-- `confidence`, un score ordonné de force des indices, uniquement comme explication.
-
-La décision tient compte de `photo_count` : `ask_another_photo` n’est pertinent que tant que moins de deux photos ont été utilisées.
-
-La carte affiche côte à côte :
-
-- le Top-5 et les scores Iris ;
-- la décision produit unique et sa probabilité ;
-- l’espèce indicative choisie par Jev et sa probabilité ;
-- le score de force des indices ;
-- la latence réelle de la requête ;
-- le coût retourné par OpenRouter ;
-- le modèle Jev effectivement résolu par OpenRouter ;
-- le JSON brut pour inspection.
-
-Le résultat Jev est volontairement **non décisionnel** : il ne sélectionne pas une espèce, ne change pas les seuils Iris et ne modifie pas le flux produit. Si une seconde photo change le Top-5, l’ancienne réponse Jev est invalidée et doit être recalculée.
-
-
-### Critère avant intégration au pipeline
-
-Le benchmark reste volontairement observationnel. Une intégration dans le pipeline Iris ne doit être envisagée qu’après comparaison sur des scans dont l’espèce réelle est connue.
-
-Le signal principal à mesurer est la qualité de `decision` par rapport à la politique actuelle d’Auxine :
-
-- moins de mauvais résultats affichés directement ;
-- pas de régression de précision sur les cas déjà nets ;
-- demandes de seconde photo concentrées sur les cas réellement ambigus ;
-- après deux photos, capacité à choisir entre `show_result` et `keep_uncertain` sans boucle ;
-- latence et coût suffisamment faibles pour rester acceptables en usage réel.
-
-Il ne faut pas valider Jev parce qu’il reproduit le top-1 d’Iris. Il faut le valider s’il améliore **la décision de produit autour de l’incertitude**.
-
-Tant que ce benchmark n’est pas concluant, le pipeline de production reste inchangé.
-
-
-## Intégration expérimentale dans le pipeline
-
-Jev est maintenant branché de façon conservatrice sur la décision de seconde photo.
-
-Le pipeline devient :
-
-```text
-Iris
-  ↓
-FallbackPolicy
-  ├─ résultat accepté ─────────────→ continuer localement
-  └─ seconde photo proposée
-            ↓
-           Jev
-            ├─ ask_another_photo → afficher l’invitation
-            ├─ show_result       → ne pas pousser de seconde photo
-            └─ keep_uncertain    → ne pas pousser de seconde photo
-```
-
-Points importants :
-
-- Iris reste le seul classifieur d’espèce ;
-- Jev ne reçoit jamais la photo, seulement le Top-5, les scores et le nombre de vues ;
-- un scan qu’Iris accepte déjà ne déclenche aucun appel Jev ;
-- Jev ne sélectionne jamais automatiquement une espèce ;
-- le choix utilisateur reste obligatoire comme avant ;
-- si Jev échoue, dépasse le délai ou répond dans un format inattendu, Auxine reprend exactement la décision locale de `secondPhotoOffer()` ;
-- le résultat est mis en cache afin qu’un rebuild Flutter ne refacture pas la même décision ;
-- le pipeline interdit toute troisième photo indépendamment de la réponse du fournisseur.
-
-L’appel Jev a un budget de trois secondes. Cela ne bloque pas les candidats Iris : seule l’invitation à ajouter une photo attend la décision.
-
-### Sécurité de la clé
-
-`OPENROUTER_API_KEY` fournie via `--dart-define` est embarquée dans le binaire de l’application et ne doit pas être considérée comme un secret pour une distribution publique.
-
-Cette intégration convient au benchmark/TestFlight actuel. Avant une activation de production à grande échelle, l’appel OpenRouter devrait passer par un backend contrôlé par Auxine avec authentification, quotas et possibilité de révoquer la clé sans republier l’application.
-
-
-### Observer la vraie décision du pipeline
-
-La carte `JEV · DÉCISION PIPELINE` ne lance plus un benchmark séparé.
-
-Elle lit désormais **exactement la même évaluation mise en cache** que celle utilisée pour afficher ou masquer l’invitation à prendre une seconde photo. Cela garantit que l’écran de debug ne peut pas montrer une réponse différente de celle réellement appliquée.
-
-Pour un scan ambigu, la carte affiche automatiquement :
-
-- la décision Jev réellement utilisée ;
-- sa probabilité ;
-- l’effet appliqué par Auxine ;
-- si un fallback Iris a été utilisé ;
-- la latence de l’appel automatique ;
-- le coût retourné par OpenRouter ;
-- le modèle réellement résolu ;
-- le JSON brut de cette même requête.
-
-Pour un scan déjà net selon Iris, elle indique `Jev non consulté` : aucun appel réseau n’est déclenché.
-
-La carte n’a donc plus de bouton `Comparer avec Jev` dans le flux d’identification. Le test statique de Profil reste séparé et sert uniquement au développement.
-
-
-### Décision finale après la seconde photo
-
-Le pipeline consulte maintenant Jev une seconde fois lorsque **deux photos ont déjà été fusionnées par Iris** et que le résultat reste ambigu.
-
-À cette étape, le schéma envoyé à Jev ne contient plus que deux actions possibles :
-
-```text
-show_result
-keep_uncertain
-```
-
-`ask_another_photo` est retiré du choix lui-même, et pas seulement interdit dans les instructions. Une garde supplémentaire transforme malgré tout une éventuelle réponse fournisseur incohérente en `keep_uncertain`.
-
-Le scénario de test complet devient donc :
+Le chemin de production est :
 
 ```text
 1 photo
   ↓
-Iris net ───────────────→ résultat local, Jev non consulté
-  ↓ ambigu
-Jev
-  ├─ show_result
-  ├─ keep_uncertain
-  └─ ask_another_photo
+Iris
+  ├─ résultat net ───────────────→ candidats locaux, aucun appel Jev
+  └─ résultat ambigu
           ↓
-      2 photos fusionnées par Iris
-          ↓
-      Iris net ─────────→ résultat local, Jev non consulté
-          ↓ ambigu
-      Jev final
-          ├─ show_result
-          └─ keep_uncertain
+         Jev
+          ├─ show_result         → candidats utilisables normalement
+          ├─ keep_uncertain      → état « identification incertaine »
+          └─ ask_another_photo   → proposer une seconde photo
+                                      ↓
+                               fusion Iris des 2 photos
+                                      ↓
+                               Iris net → candidats locaux
+                               Iris ambigu
+                                      ↓
+                                  Jev final
+                                  ├─ show_result
+                                  └─ keep_uncertain
 ```
 
-Dans l'interface de debug, le JSON brut est maintenant replié par défaut et l'action de seconde photo reste placée avant la carte Jev afin que le debug ne masque jamais le geste utilisateur principal.
+Après deux photos, `ask_another_photo` est retiré du schéma envoyé à Jev. Une garde supplémentaire transforme malgré tout une réponse fournisseur incohérente en `keep_uncertain`.
+
+## Effet produit de `keep_uncertain`
+
+`keep_uncertain` est un vrai état d'interface, pas seulement une information de diagnostic.
+
+Auxine :
+
+- affiche clairement que l'identification reste incertaine ;
+- ne présente aucune espèce comme conclusion recommandée ;
+- garde un éventuel genre fiable comme réponse plus prudente ;
+- met la recherche en ligne en recours principal quand elle est disponible ;
+- conserve les candidates Iris sous « suggestions à vérifier » pour une sélection manuelle ;
+- permet de poursuivre sans espèce dans le flux de création.
+
+`show_result` conserve le flux normal : les candidates restent utilisables et l'utilisateur garde le dernier mot.
+
+## Garde-fous
+
+- Iris reste le seul classifieur d'espèce ;
+- Jev ne reçoit jamais la photo, seulement le Top-5, les scores et le nombre de vues ;
+- un résultat déjà accepté par Iris ne déclenche aucun appel Jev ;
+- Jev ne sélectionne jamais automatiquement une espèce ;
+- le choix utilisateur reste obligatoire ;
+- le résultat Jev est mis en cache afin qu'un rebuild Flutter ne refasse pas le même appel ;
+- l'appel a un budget de trois secondes ;
+- en cas d'erreur, timeout ou réponse invalide, Auxine retombe sur la politique locale Iris ;
+- aucune troisième photo n'est possible.
+
+## Interface de développement
+
+Les interfaces de debug Jev ont été retirées du produit :
+
+- plus de carte Jev dans le flux d'identification ;
+- plus de bouton « Tester Jev » dans Profil ;
+- plus de JSON brut affiché dans l'application.
+
+La logique Jev reste couverte par les tests du service de décision.
+
+## Sécurité de la clé
+
+`OPENROUTER_API_KEY` fournie via `--dart-define` est embarquée dans le binaire et ne doit pas être considérée comme un secret pour une distribution publique.
+
+Avant une diffusion large, l'appel OpenRouter doit passer par un backend contrôlé par Auxine avec authentification, quotas, rate limiting et possibilité de révoquer la clé sans republier l'application.
+
+
+## Pannes Jev et diagnostic caché
+
+Une panne Jev ne doit jamais devenir un message d'erreur produit.
+
+Le comportement est volontairement transparent :
+
+- après une photo ambiguë, erreur, timeout, clé absente ou réponse invalide → la politique Iris locale reprend la main et peut proposer la seconde photo ;
+- après deux photos encore ambiguës, le même incident → Auxine garde l'identification incertaine ;
+- aucune erreur OpenRouter n'est affichée dans le flux d'identification ;
+- aucune troisième photo n'est possible.
+
+Pour diagnostiquer les services sans exposer de panneau technique dans l'interface normale, un écran caché est accessible depuis **Profil** en touchant **5 fois la version** en moins de quatre secondes.
+
+L'écran **État des services** vérifie uniquement la joignabilité HTTPS de :
+
+- Supabase ;
+- le service de partage public ;
+- OpenRouter / Jev ;
+- Pl@ntNet ;
+- Infomaniak AI ;
+- Open-Meteo prévisions, géocodage et archives ;
+- GBIF ;
+- Wikimedia Commons.
+
+Les probes utilisent uniquement des requêtes `HEAD` de cinq secondes maximum. Elles n'envoient aucune photo, aucune donnée plante, aucune donnée personnelle et ne déclenchent aucun appel IA payant. Un statut « Joignable » indique que le serveur répond ; il ne valide pas nécessairement les identifiants ou le fonctionnement métier complet de l'API.

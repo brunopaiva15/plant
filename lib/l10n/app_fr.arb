@@ -943,9 +943,12 @@
   "searchOnline": "Chercher en ligne",
   "identifyAnotherPhoto": "Ajouter une photo",
   "identifyAnotherPhotoHint": "Une feuille, une fleur ou la plante entière permet d'affiner.",
+  "identificationUncertainTitle": "Identification incertaine",
+  "identificationUncertainBody": "Même avec les photos disponibles, aucune espèce ne ressort assez nettement. Vous pouvez chercher en ligne ou choisir manuellement si vous reconnaissez la plante.",
+  "identificationSuggestionsToCheck": "Suggestions à vérifier",
   "identifyConfirmWithPhoto": "Confirmer avec une photo",
   "searchingOnline": "Recherche en ligne…",
-  "suggestionsLocal": "Trouvé sur votre appareil, sans réseau",
+  "suggestionsLocal": "Résultats Iris sur votre appareil · photo non envoyée",
   "suggestionsRemote": "Proposé en ligne par Pl@ntNet",
   "identifyOnDevice": "Reconnu par {name} sur l'appareil. Choisissez l'espèce",
   "@identifyOnDevice": {

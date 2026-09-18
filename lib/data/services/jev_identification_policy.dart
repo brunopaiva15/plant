@@ -20,31 +20,23 @@ class JevProductDecision {
 }
 
 /// Résultat exact utilisé par le pipeline d'identification.
-///
-/// La vue debug lit ce même objet mis en cache : elle ne refait donc jamais
-/// une requête OpenRouter pour expliquer une décision déjà prise.
 class JevPipelineEvaluation {
   const JevPipelineEvaluation({
     required this.offer,
     required this.consultedJev,
     required this.usedFallback,
     this.decision,
-    this.latency,
-    this.cost,
-    this.model,
-    this.rawResponse,
-    this.error,
   });
 
   final SecondPhotoOffer offer;
   final bool consultedJev;
   final bool usedFallback;
   final JevProductDecision? decision;
-  final Duration? latency;
-  final double? cost;
-  final String? model;
-  final Map<String, dynamic>? rawResponse;
-  final String? error;
+
+  /// État produit final : Auxine ne présente aucune espèce comme conclusion,
+  /// mais garde les candidates accessibles comme suggestions manuelles.
+  bool get keepsUncertain =>
+      decision?.action == JevProductAction.keepUncertain;
 }
 
 /// Couche de décision facultative autour d'Iris.
@@ -55,8 +47,8 @@ class JevPipelineEvaluation {
 /// ou le garder explicitement incertain. Il ne reçoit jamais la photo :
 /// seulement le Top-5, ses scores et le nombre de vues.
 ///
-/// Les évaluations complètes sont mémorisées. L'UI de debug et le pipeline
-/// partagent exactement le même Future et donc le même appel réseau.
+/// Les évaluations sont mémorisées afin qu'un rebuild d'interface ne refasse
+/// jamais le même appel réseau.
 class JevIdentificationPolicy {
   JevIdentificationPolicy({
     JevDecisionService? service,
@@ -133,11 +125,9 @@ class JevIdentificationPolicy {
     }
 
     if (!_isConfigured) {
-      return Future.value(JevPipelineEvaluation(
-        offer: fallback,
-        consultedJev: false,
-        usedFallback: true,
-        error: 'OPENROUTER_API_KEY absente',
+      return Future.value(_fallbackEvaluation(
+        fallback,
+        atPhotoLimit: photos >= maxPhotos,
       ));
     }
 
@@ -174,7 +164,6 @@ class JevIdentificationPolicy {
     required int photos,
     required int maxPhotos,
   }) async {
-    final stopwatch = Stopwatch()..start();
     final atPhotoLimit = photos >= maxPhotos;
     try {
       final response = await _service
@@ -215,19 +204,13 @@ class JevIdentificationPolicy {
             },
           )
           .timeout(_timeout);
-      stopwatch.stop();
 
       final decision = _parseDecision(response, photos: photos, maxPhotos: maxPhotos);
       if (decision == null) {
-        return JevPipelineEvaluation(
-          offer: fallback,
+        return _fallbackEvaluation(
+          fallback,
+          atPhotoLimit: atPhotoLimit,
           consultedJev: true,
-          usedFallback: true,
-          latency: stopwatch.elapsed,
-          cost: _cost(response),
-          model: response['model'] as String?,
-          rawResponse: response,
-          error: 'Réponse Jev invalide',
         );
       }
 
@@ -238,21 +221,32 @@ class JevIdentificationPolicy {
         consultedJev: true,
         usedFallback: false,
         decision: decision,
-        latency: stopwatch.elapsed,
-        cost: _cost(response),
-        model: response['model'] as String?,
-        rawResponse: response,
       );
-    } catch (e) {
-      stopwatch.stop();
-      return JevPipelineEvaluation(
-        offer: fallback,
+    } catch (_) {
+      return _fallbackEvaluation(
+        fallback,
+        atPhotoLimit: atPhotoLimit,
         consultedJev: true,
-        usedFallback: true,
-        latency: stopwatch.elapsed,
-        error: e.toString(),
       );
     }
+  }
+
+  JevPipelineEvaluation _fallbackEvaluation(
+    SecondPhotoOffer fallback, {
+    required bool atPhotoLimit,
+    bool consultedJev = false,
+  }) {
+    return JevPipelineEvaluation(
+      offer: fallback,
+      consultedJev: consultedJev,
+      usedFallback: true,
+      decision: atPhotoLimit
+          ? const JevProductDecision(
+              action: JevProductAction.keepUncertain,
+              probability: null,
+            )
+          : null,
+    );
   }
 
   JevProductDecision? _parseDecision(
@@ -291,10 +285,4 @@ class JevIdentificationPolicy {
     );
   }
 
-  double? _cost(Map<String, dynamic> response) {
-    final usage = response['usage'];
-    return usage is Map<String, dynamic>
-        ? (usage['cost'] as num?)?.toDouble()
-        : null;
-  }
 }

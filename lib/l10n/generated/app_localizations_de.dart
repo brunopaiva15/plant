@@ -2040,13 +2040,23 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein Blatt, eine Blüte oder die ganze Pflanze hilft beim Eingrenzen.';
 
   @override
+  String get identificationUncertainTitle => 'Bestimmung unsicher';
+
+  @override
+  String get identificationUncertainBody =>
+      'Auch mit den verfügbaren Fotos hebt sich keine Art deutlich genug ab. Sie können online suchen oder manuell auswählen, wenn Sie die Pflanze erkennen.';
+
+  @override
+  String get identificationSuggestionsToCheck => 'Vorschläge zum Prüfen';
+
+  @override
   String get identifyConfirmWithPhoto => 'Mit einem Foto bestätigen';
 
   @override
   String get searchingOnline => 'Online-Suche…';
 
   @override
-  String get suggestionsLocal => 'Auf deinem Gerät gefunden, ohne Netz';
+  String get suggestionsLocal => 'Iris-Ergebnisse auf deinem Gerät · Foto nicht hochgeladen';
 
   @override
   String get suggestionsRemote => 'Online von Pl@ntNet vorgeschlagen';

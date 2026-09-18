@@ -13,6 +13,7 @@ import '../../../core/network/connectivity.dart';
 import '../../../core/l10n/likelihood_labels.dart';
 import '../../../design_system/design_system.dart';
 import '../../../data/services/photo_storage_service.dart';
+import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../../domain/identification/identification_confidence.dart';
@@ -23,7 +24,7 @@ import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
 import 'identification_source_note.dart';
 import 'genus_row.dart';
-import 'jev_iris_debug_panel.dart';
+import 'identification_uncertainty.dart';
 
 /// Lance l'identification et laisse l'utilisateur choisir. Retourne le
 /// candidat retenu, ou `null`.
@@ -174,13 +175,18 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language)));
   }
 
-  /// Faut-il proposer une photo de plus ? Iris tranche d'abord localement.
-  /// Jev n'est consulté que si cette politique locale aurait demandé une
-  /// seconde vue. En cas d'erreur ou de timeout, l'ancien comportement gagne.
-  Future<SecondPhotoOffer> _offer(List<IdentificationCandidate> results) {
+  /// Décision produit complète autour d'un résultat Iris local ambigu.
+  Future<JevPipelineEvaluation> _evaluation(
+      List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    if (identifier is! CascadeIdentifier) return Future.value(SecondPhotoOffer.none);
-    return ref.read(jevIdentificationPolicyProvider).secondPhotoOfferFor(
+    if (identifier is! CascadeIdentifier) {
+      return Future.value(const JevPipelineEvaluation(
+        offer: SecondPhotoOffer.none,
+        consultedJev: false,
+        usedFallback: false,
+      ));
+    }
+    return ref.read(jevIdentificationPolicyProvider).evaluate(
           policy: identifier.policy,
           candidates: results,
           photos: _paths.length,
@@ -270,6 +276,116 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     return identifier is CascadeIdentifier && identifier.fallbackEnabled && identifier.fallback.isConfigured && identifier.remoteAllowedThisMonth;
   }
 
+  Widget _normalIdentificationContent(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<IdentificationCandidate> results,
+    GenusAnswer? genus,
+    JevPipelineEvaluation? state,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (genus != null) ...[
+          GenusRow(
+            answer: genus,
+            onUse: () => _use(genusCandidate(genus, l10n.localeName)),
+          ),
+          const SizedBox(height: Space.xs),
+        ],
+        FloraGroup(
+          children: [
+            for (final c in results)
+              CandidateRow(candidate: c, onUse: () => _use(c)),
+          ],
+        ),
+        if (state?.offer == SecondPhotoOffer.prominent &&
+            _paths.length < maxPhotos) ...[
+          const SizedBox(height: Space.sm),
+          Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+          const SizedBox(height: Space.xs),
+          FloraButton(
+            label: l10n.identifyAnotherPhoto,
+            icon: CupertinoIcons.camera,
+            style: FloraButtonStyle.secondary,
+            onPressed: _chooseSource,
+          ),
+        ],
+        _PhotoSourceNote(candidates: results),
+        if (results.first.source == IdentificationSource.local &&
+            _canSearchOnline) ...[
+          const SizedBox(height: Space.sm),
+          if (ref.watch(isOnlineProvider))
+            FloraButton(
+              label: l10n.searchOnline,
+              expand: true,
+              style: FloraButtonStyle.ghost,
+              onPressed: _searchOnline,
+            )
+          else
+            Text(
+              l10n.offlineIdentification,
+              style: context.text.caption,
+              textAlign: TextAlign.center,
+            ),
+        ],
+      ],
+    );
+  }
+
+  Widget _uncertainIdentificationContent(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<IdentificationCandidate> results,
+    GenusAnswer? genus,
+  ) {
+    final online = ref.watch(isOnlineProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const IdentificationUncertaintyNotice(),
+        if (genus != null) ...[
+          const SizedBox(height: Space.sm),
+          GenusRow(
+            answer: genus,
+            onUse: () => _use(genusCandidate(genus, l10n.localeName)),
+          ),
+        ],
+        if (_canSearchOnline) ...[
+          const SizedBox(height: Space.sm),
+          if (online)
+            FloraButton(
+              label: l10n.searchOnline,
+              expand: true,
+              onPressed: _searchOnline,
+            )
+          else
+            Text(
+              l10n.offlineIdentification,
+              style: context.text.caption,
+              textAlign: TextAlign.center,
+            ),
+        ],
+        const SizedBox(height: Space.md),
+        Text(
+          l10n.identificationSuggestionsToCheck,
+          style: context.text.caption.copyWith(
+            color: context.colors.inkSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: Space.xs),
+        FloraGroup(
+          children: [
+            for (final c in results)
+              CandidateRow(candidate: c, onUse: () => _use(c)),
+          ],
+        ),
+        _PhotoSourceNote(candidates: results),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -317,9 +433,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               if (snap.hasError && data == null) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);
               final results = (data ?? const <IdentificationCandidate>[]).take(5).toList();
               if (results.isEmpty) return EmptyState(emoji: '🤔', title: l10n.identifyNone, compact: true);
-              final offerFuture = !busy && results.first.source == IdentificationSource.local
-                  ? _offer(data ?? const <IdentificationCandidate>[])
-                  : null;
+              final evaluationFuture =
+                  !busy && results.first.source == IdentificationSource.local
+                      ? _evaluation(data ?? const <IdentificationCandidate>[])
+                      : null;
               // Le genre se somme sur toutes les candidates rendues, pas sur
               // les cinq affichées : c'est la masse qui décide, et elle se
               // perdrait à tronquer deux fois.
@@ -342,52 +459,36 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                     ),
                   ],
                   const SizedBox(height: Space.sm),
-                  if (genus != null) ...[
-                    GenusRow(answer: genus, onUse: () => _use(genusCandidate(genus, l10n.localeName))),
-                    const SizedBox(height: Space.xs),
-                  ],
-                  // Les propositions restent visibles même si Iris hésite.
-                  FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => _use(c))]),
-                  if (offerFuture != null && _paths.length < maxPhotos)
-                    FutureBuilder<SecondPhotoOffer>(
-                      future: offerFuture,
-                      builder: (context, offerSnap) {
-                        if (offerSnap.connectionState != ConnectionState.done ||
-                            offerSnap.data != SecondPhotoOffer.prominent) {
-                          return const SizedBox.shrink();
+                  if (evaluationFuture == null)
+                    _normalIdentificationContent(
+                      context,
+                      l10n,
+                      results,
+                      genus,
+                      null,
+                    )
+                  else
+                    FutureBuilder<JevPipelineEvaluation>(
+                      future: evaluationFuture,
+                      builder: (context, decisionSnap) {
+                        final state = decisionSnap.data;
+                        if (state?.keepsUncertain == true) {
+                          return _uncertainIdentificationContent(
+                            context,
+                            l10n,
+                            results,
+                            genus,
+                          );
                         }
-                        return Padding(
-                          padding: const EdgeInsets.only(top: Space.sm),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                              const SizedBox(height: Space.xs),
-                              FloraButton(
-                                label: l10n.identifyAnotherPhoto,
-                                icon: CupertinoIcons.camera,
-                                style: FloraButtonStyle.secondary,
-                                onPressed: _chooseSource,
-                              ),
-                            ],
-                          ),
+                        return _normalIdentificationContent(
+                          context,
+                          l10n,
+                          results,
+                          genus,
+                          state,
                         );
                       },
                     ),
-                  _PhotoSourceNote(candidates: results),
-                  if (!busy && results.first.source == IdentificationSource.local)
-                    JevIrisDebugPanel(
-                      candidates: results,
-                      photoCount: _paths.length,
-                      maxPhotos: maxPhotos,
-                    ),
-                  if (results.first.source == IdentificationSource.local && _canSearchOnline) ...[
-                    const SizedBox(height: Space.sm),
-                    if (ref.watch(isOnlineProvider))
-                      FloraButton(label: l10n.searchOnline, expand: true, style: FloraButtonStyle.ghost, onPressed: _searchOnline)
-                    else
-                      Text(l10n.offlineIdentification, style: context.text.caption, textAlign: TextAlign.center),
-                  ],
                 ],
               );
             },
