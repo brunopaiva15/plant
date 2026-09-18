@@ -3660,6 +3660,24 @@ abstract class AppLocalizations {
   /// **'Une feuille, une fleur ou la plante entière permet d\'affiner.'**
   String get identifyAnotherPhotoHint;
 
+  /// No description provided for @identificationUncertainTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identification incertaine'**
+  String get identificationUncertainTitle;
+
+  /// No description provided for @identificationUncertainBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Même avec les photos disponibles, aucune espèce ne ressort assez nettement. Vous pouvez chercher en ligne ou choisir manuellement si vous reconnaissez la plante.'**
+  String get identificationUncertainBody;
+
+  /// No description provided for @identificationSuggestionsToCheck.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suggestions à vérifier'**
+  String get identificationSuggestionsToCheck;
+
   /// No description provided for @identifyConfirmWithPhoto.
   ///
   /// In fr, this message translates to:
