@@ -652,32 +652,41 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             Center(child: ClayLoader(size: 32, color: c.sage))
           else
             Center(child: Icon(CupertinoIcons.camera, size: 44, color: c.sage)),
-          // Le déclencheur, au bas du cadre, comme sur n'importe quel appareil.
+          // Le déclencheur reste parfaitement centré. La galerie vient
+          // simplement se placer à sa gauche, à 12 points du bord du bouton
+          // photo : les deux commandes forment un seul groupe sans toucher
+          // les repères de cadrage.
           Positioned(
             left: 0,
             right: 0,
             bottom: Space.md,
-            child: Center(child: _Shutter(busy: _picking, enabled: _camera.isReady, onTap: _capture)),
-          ),
-          // La galerie et la croix sont posées sur le cadrage, pas sur un
-          // fond du thème : elles gardent les couleurs d'`OnMedia` dans les
-          // deux thèmes. En sombre, l'encre de la palette tourne au crème et
-          // l'icône disparaissait dans sa pastille blanche.
-          if (_mode == _PhotoMode.aim)
-            Positioned(
-              // Le repère de cadrage occupe le coin inférieur gauche. Le
-              // bouton rentre d'un cran dans l'image pour rester un contrôle
-              // distinct au lieu de se superposer à ce repère.
-              left: Space.huge,
-              bottom: Space.lg,
-              child: FloraIconButton(
-                icon: CupertinoIcons.photo,
-                semanticLabel: l10n.choosePhoto,
-                background: OnMedia.tile,
-                color: OnMedia.ink,
-                onPressed: _picking ? null : () => _pick(PhotoSource.gallery),
+            child: SizedBox(
+              height: 68,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  _Shutter(
+                    busy: _picking,
+                    enabled: _camera.isReady,
+                    onTap: _capture,
+                  ),
+                  if (_mode == _PhotoMode.aim)
+                    Transform.translate(
+                      // 34 = demi-déclencheur, 20 = demi-bouton galerie.
+                      // + Space.sm donne précisément 12 points entre les deux.
+                      offset: const Offset(-(34 + Space.sm + 20), 0),
+                      child: FloraIconButton(
+                        icon: CupertinoIcons.photo,
+                        semanticLabel: l10n.choosePhoto,
+                        background: OnMedia.tile,
+                        color: OnMedia.ink,
+                        onPressed: _picking ? null : () => _pick(PhotoSource.gallery),
+                      ),
+                    ),
+                ],
               ),
             ),
+          ),
         ],
       );
     } else {
