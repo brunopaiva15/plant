@@ -54,6 +54,7 @@ app.*.map.json
 /tools/plant_dataset/shard*/
 /tools/plant_dataset/.cache/
 /tools/plant_model/.cache/
+/tools/rhs_care/cache/
 /tools/plant_dataset/.pytest_cache/
 /models/
 /checkpoints/

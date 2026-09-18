@@ -1130,6 +1130,14 @@
   "careLightBright": "Bright indirect light",
   "careLightSome": "A few hours of sun",
   "careLightFull": "Full sun",
+  "careLightFloor": "Holds down to {value}",
+  "@careLightFloor": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "careLightLamp": "Under a lamp · full-spectrum LED, {min} to {max} µmol/m²/s, {hours} h a day",
   "careLightLampDli": "That is {min} to {max} mol/m²/day reaching the leaves.",
   "careHumidityLow": "Dry air is fine",

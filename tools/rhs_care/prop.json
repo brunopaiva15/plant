@@ -1,0 +1,5944 @@
+{
+  "bySpecies:Monstera deliciosa": {
+    "map": "bySpecies",
+    "key": "Monstera deliciosa",
+    "query": "Monstera deliciosa",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11192/monstera-deliciosa-f/details",
+    "slug": "monstera-deliciosa-f",
+    "raw": "Propagate by seed, root tip or stem cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed",
+      "water"
+    ]
+  },
+  "bySpecies:Dracaena trifasciata": {
+    "map": "bySpecies",
+    "key": "Dracaena trifasciata",
+    "query": "Dracaena trifasciata",
+    "current_propagation": [
+      "division",
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/530138/dracaena-trifasciata/details",
+    "slug": "dracaena-trifasciata",
+    "raw": "Propagate by leaf cuttings, suckers or division",
+    "propagation": [
+      "division",
+      "leafCutting",
+      "offsets"
+    ]
+  },
+  "bySpecies:Zamioculcas zamiifolia": {
+    "map": "bySpecies",
+    "key": "Zamioculcas zamiifolia",
+    "query": "Zamioculcas zamiifolia",
+    "current_propagation": [
+      "division",
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/19185/zamioculcas-zamiifolia/details",
+    "slug": "zamioculcas-zamiifolia",
+    "raw": "Propagate by leaf cuttings, using single leaflets",
+    "propagation": [
+      "leafCutting"
+    ]
+  },
+  "bySpecies:Spathiphyllum wallisii": {
+    "map": "bySpecies",
+    "key": "Spathiphyllum wallisii",
+    "query": "Spathiphyllum wallisii",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/17623/spathiphyllum-wallisii/details",
+    "slug": "spathiphyllum-wallisii",
+    "raw": "Propagate by division in winter or immediately after flowering",
+    "propagation": [
+      "division"
+    ]
+  },
+  "bySpecies:Pilea peperomioides": {
+    "map": "bySpecies",
+    "key": "Pilea peperomioides",
+    "query": "Pilea peperomioides",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/13015/pilea-peperomioides/details",
+    "slug": "pilea-peperomioides",
+    "raw": "Propagate by seed, by division or detatch rosettes in spring",
+    "propagation": [
+      "offsets",
+      "division",
+      "seed"
+    ]
+  },
+  "bySpecies:Ficus lyrata": {
+    "map": "bySpecies",
+    "key": "Ficus lyrata",
+    "query": "Ficus lyrata",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/7207/ficus-lyrata/details",
+    "slug": "ficus-lyrata",
+    "raw": "Propagate by seed, leaf-bud or semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Phalaenopsis amabilis": {
+    "map": "bySpecies",
+    "key": "Phalaenopsis amabilis",
+    "query": "Phalaenopsis amabilis",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/119644/phalaenopsis-amabilis/details",
+    "slug": "phalaenopsis-amabilis",
+    "raw": "Cuttings or offshoots (keikis) may root successfully when roots are 2cm long",
+    "propagation": [
+      "offsets"
+    ]
+  },
+  "bySpecies:Aloe vera": {
+    "map": "bySpecies",
+    "key": "Aloe vera",
+    "query": "Aloe vera",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/981/aloe-vera/details",
+    "slug": "aloe-vera",
+    "raw": "Propagate by seed as soon as ripe, or propagate by separating offsets in spring or early summer. Root offsets in cactus potting compost",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "bySpecies:Ocimum basilicum": {
+    "map": "bySpecies",
+    "key": "Ocimum basilicum",
+    "query": "Ocimum basilicum",
+    "current_propagation": [
+      "stemCutting",
+      "seed",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11649/ocimum-basilicum/details",
+    "slug": "ocimum-basilicum",
+    "raw": "Propagate by seed in gentle heat in spring under glass or indoors, or sow in-situ in summer. See sowing seeds indoors for further advice",
+    "propagation": [
+      "seed",
+      "water"
+    ]
+  },
+  "bySpecies:Solanum lycopersicum": {
+    "map": "bySpecies",
+    "key": "Solanum lycopersicum",
+    "query": "Solanum lycopersicum",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/293619/solanum-lycopersicum/details",
+    "slug": "solanum-lycopersicum",
+    "raw": "Propagate by seed. See sowing vegetable seeds or sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "bySpecies:Citrus × limon": {
+    "map": "bySpecies",
+    "key": "Citrus × limon",
+    "query": "Citrus × limon",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/384894/citrus-limon/details",
+    "slug": "citrus-limon",
+    "raw": "Propagate by semi-ripe cuttings in summer, or layer in early spring. Sow seed at 16°C in spring; seedlings do not come true to type",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Olea europaea": {
+    "map": "bySpecies",
+    "key": "Olea europaea",
+    "query": "Olea europaea",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/11735/olea-europaea-f/details",
+    "slug": "olea-europaea-f",
+    "raw": "Propagate by seed in spring at a temperature of 13-15°C (55-59°F). Can also be propagated by semi-ripe cuttings in summer",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Lavandula angustifolia": {
+    "map": "bySpecies",
+    "key": "Lavandula angustifolia",
+    "query": "Lavandula angustifolia",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/91398/lavandula-angustifolia/details",
+    "slug": "lavandula-angustifolia",
+    "raw": "Propagate by seed sown in a cold frame in spring, or by semi- hardwood cuttings in summer. See our video how to take lavender cuttings for more advice",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Hibiscus syriacus": {
+    "map": "bySpecies",
+    "key": "Hibiscus syriacus",
+    "query": "Hibiscus syriacus",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/40530/hibiscus-syriacus/details",
+    "slug": "hibiscus-syriacus",
+    "raw": "Propagate by semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "bySpecies:Jasminum polyanthum": {
+    "map": "bySpecies",
+    "key": "Jasminum polyanthum",
+    "query": "Jasminum polyanthum",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/9457/jasminum-polyanthum/details",
+    "slug": "jasminum-polyanthum",
+    "raw": "Propagate by semi-ripe cuttings in summer or by layering in autumn",
+    "propagation": [
+      "layering",
+      "stemCutting"
+    ]
+  },
+  "bySpecies:Cordyline australis": {
+    "map": "bySpecies",
+    "key": "Cordyline australis",
+    "query": "Cordyline australis",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/4361/cordyline-australis/details",
+    "slug": "cordyline-australis",
+    "raw": "Propagate by seed or suckers",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "bySpecies:Convolvulus tricolor": {
+    "map": "bySpecies",
+    "key": "Convolvulus tricolor",
+    "query": "Convolvulus tricolor",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/105536/convolvulus-tricolor/details",
+    "slug": "convolvulus-tricolor",
+    "raw": "Propagate by seed, root softwood cuttings in late summer, or Divide in spring",
+    "propagation": [
+      "seed",
+      "stemCutting",
+      "division"
+    ]
+  },
+  "bySpecies:Euphorbia pulcherrima": {
+    "map": "bySpecies",
+    "key": "Euphorbia pulcherrima",
+    "query": "Euphorbia pulcherrima",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/88057/euphorbia-pulcherrima/details",
+    "slug": "euphorbia-pulcherrima",
+    "raw": "Propagate by stem cuttings in early summer. Use a hormone rooting compound",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "bySpecies:Euphorbia milii": {
+    "map": "bySpecies",
+    "key": "Euphorbia milii",
+    "query": "Euphorbia milii",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/32739/euphorbia-milii/details",
+    "slug": "euphorbia-milii",
+    "raw": "Propagate by seed sown as soon as ripe at 15 to 20°C",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "bySpecies:Euphorbia trigona": {
+    "map": "bySpecies",
+    "key": "Euphorbia trigona",
+    "query": "Euphorbia trigona",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/131510/euphorbia-trigona/details",
+    "slug": "euphorbia-trigona",
+    "raw": "Propagate by cuttings in spring or early summer; dip cut surfaces in charcoal or lukewarm water to prevent bleeding",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "bySpecies:Euphorbia lactea": {
+    "map": "bySpecies",
+    "key": "Euphorbia lactea",
+    "query": "Euphorbia lactea",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsSoilAndWater",
+    "slug": "euphorbia-lactea",
+    "propagation": null
+  },
+  "bySpecies:Euphorbia ingens": {
+    "map": "bySpecies",
+    "key": "Euphorbia ingens",
+    "query": "Euphorbia ingens",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/7062/euphorbia-ingens/details",
+    "slug": "euphorbia-ingens",
+    "raw": "Propagate by seed sown at 15-18°C in early spring or stem cuttings in spring or early summer",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Euphorbia tirucalli": {
+    "map": "bySpecies",
+    "key": "Euphorbia tirucalli",
+    "query": "Euphorbia tirucalli",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessSoilWater",
+    "slug": "euphorbia-tirucalli",
+    "propagation": null
+  },
+  "bySpecies:Clivia miniata": {
+    "map": "bySpecies",
+    "key": "Clivia miniata",
+    "query": "Clivia miniata",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/4036/clivia-miniata/details",
+    "slug": "clivia-miniata",
+    "raw": "Propagate by seed at 16-21°C as soon as ripe or by division in late winter or early spring",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "bySpecies:Polyscias fruticosa": {
+    "map": "bySpecies",
+    "key": "Polyscias fruticosa",
+    "query": "Polyscias fruticosa",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/13473/polyscias-fruticosa/details",
+    "slug": "polyscias-fruticosa",
+    "propagation": null
+  },
+  "bySpecies:Schefflera arboricola": {
+    "map": "bySpecies",
+    "key": "Schefflera arboricola",
+    "query": "Schefflera arboricola",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/70437/schefflera-arboricola/details",
+    "slug": "schefflera-arboricola",
+    "raw": "Propagate by seed, semi-ripe cuttings or air- layering",
+    "propagation": [
+      "stemCutting",
+      "layering",
+      "seed"
+    ]
+  },
+  "bySpecies:Heptapleurum arboricola": {
+    "map": "bySpecies",
+    "key": "Heptapleurum arboricola",
+    "query": "Heptapleurum arboricola",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/187874/heptapleurum-arboricola/details",
+    "slug": "heptapleurum-arboricola",
+    "raw": "Propagate by seed, semi-ripe cuttings or air- layering",
+    "propagation": [
+      "stemCutting",
+      "layering",
+      "seed"
+    ]
+  },
+  "bySpecies:Pachira aquatica": {
+    "map": "bySpecies",
+    "key": "Pachira aquatica",
+    "query": "Pachira aquatica",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/12078/pachira-aquatica/details",
+    "slug": "pachira-aquatica",
+    "raw": "Propagate by seed, semi-ripe cuttings or air- layering",
+    "propagation": [
+      "stemCutting",
+      "layering",
+      "seed"
+    ]
+  },
+  "bySpecies:Sparrmannia africana": {
+    "map": "bySpecies",
+    "key": "Sparrmannia africana",
+    "query": "Sparrmannia africana",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/86756/sparrmannia-africana/details",
+    "slug": "sparrmannia-africana",
+    "raw": "Propagate by seed or semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Fenestraria rhopalophylla": {
+    "map": "bySpecies",
+    "key": "Fenestraria rhopalophylla",
+    "query": "Fenestraria rhopalophylla",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/131599/fenestraria-rhopalophylla/details",
+    "slug": "fenestraria-rhopalophylla",
+    "propagation": null
+  },
+  "bySpecies:Mesembryanthemum cordifolium": {
+    "map": "bySpecies",
+    "key": "Mesembryanthemum cordifolium",
+    "query": "Mesembryanthemum cordifolium",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/159833/mesembryanthemum-cordifolium/details",
+    "slug": "mesembryanthemum-cordifolium",
+    "raw": "Propagate by seed or cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Cissus rhombifolia": {
+    "map": "bySpecies",
+    "key": "Cissus rhombifolia",
+    "query": "Cissus rhombifolia",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/64602/cissus-rhombifolia/details",
+    "slug": "cissus-rhombifolia",
+    "raw": "Propagate by hardwood or greenwood cuttings in summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "bySpecies:Lobelia erinus": {
+    "map": "bySpecies",
+    "key": "Lobelia erinus",
+    "query": "Lobelia erinus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/142728/lobelia-erinus/details",
+    "slug": "lobelia-erinus",
+    "raw": "Propagate by seed sown at 13-18ºC in late winter",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "bySpecies:Hypoestes phyllostachya": {
+    "map": "bySpecies",
+    "key": "Hypoestes phyllostachya",
+    "query": "Hypoestes phyllostachya",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/73160/hypoestes-phyllostachya-v/details",
+    "slug": "hypoestes-phyllostachya-v",
+    "raw": "Propagate by seed, softwood cuttings in late spring, or semi-ripe cuttings in summer",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "bySpecies:Pimenta dioica": {
+    "map": "bySpecies",
+    "key": "Pimenta dioica",
+    "query": "Pimenta dioica",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/67301/pimenta-dioica/details",
+    "slug": "pimenta-dioica",
+    "propagation": null
+  },
+  "bySpecies:Albuca spiralis": {
+    "map": "bySpecies",
+    "key": "Albuca spiralis",
+    "query": "Albuca spiralis",
+    "current_propagation": [
+      "seed",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/73923/albuca-spiralis/details",
+    "slug": "albuca-spiralis",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "bySpecies:Bowiea volubilis": {
+    "map": "bySpecies",
+    "key": "Bowiea volubilis",
+    "query": "Bowiea volubilis",
+    "current_propagation": [
+      "seed",
+      "offsets"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/2364/bowiea-volubilis/details",
+    "slug": "bowiea-volubilis",
+    "propagation": null
+  },
+  "bySpecies:Ledebouria socialis": {
+    "map": "bySpecies",
+    "key": "Ledebouria socialis",
+    "query": "Ledebouria socialis",
+    "current_propagation": [
+      "offsets",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/80503/ledebouria-socialis/details",
+    "slug": "ledebouria-socialis",
+    "raw": "Propagate by seed or removing offsets",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Philodendron": {
+    "map": "byGenus",
+    "key": "Philodendron",
+    "query": "Philodendron hederaceum",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/514461/philodendron-hederaceum/details",
+    "slug": "philodendron-hederaceum",
+    "raw": "Propagate by stem-tip or leaf bud cuttings",
+    "propagation": [
+      "stemCutting",
+      "water"
+    ]
+  },
+  "byGenus:Epipremnum": {
+    "map": "byGenus",
+    "key": "Epipremnum",
+    "query": "Epipremnum aureum",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/91403/epipremnum-aureum/details",
+    "slug": "epipremnum-aureum",
+    "raw": "Propagate by leaf-bud, stem tip cuttings or by layering in spring or summer",
+    "propagation": [
+      "stemCutting",
+      "layering",
+      "water"
+    ]
+  },
+  "byGenus:Scindapsus": {
+    "map": "byGenus",
+    "key": "Scindapsus",
+    "query": "Scindapsus pictus",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/93929/scindapsus-pictus-v/details",
+    "slug": "scindapsus-pictus-v",
+    "raw": "Propagate by stem cuttings",
+    "propagation": [
+      "stemCutting",
+      "water"
+    ]
+  },
+  "byGenus:Monstera": {
+    "map": "byGenus",
+    "key": "Monstera",
+    "query": "Monstera deliciosa",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11192/monstera-deliciosa-f/details",
+    "slug": "monstera-deliciosa-f",
+    "raw": "Propagate by seed, root tip or stem cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed",
+      "water"
+    ]
+  },
+  "byGenus:Alocasia": {
+    "map": "byGenus",
+    "key": "Alocasia",
+    "query": "Alocasia macrorrhizos",
+    "current_propagation": [
+      "division",
+      "tuber"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/197177/alocasia-macrorrhizos/details",
+    "slug": "alocasia-macrorrhizos",
+    "raw": "Propagate by sowing seed at 23°C as soon as it's ripe, or by division of rhizomes in spring",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Anthurium": {
+    "map": "byGenus",
+    "key": "Anthurium",
+    "query": "Anthurium andraeanum",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/1349/anthurium-andraeanum/details",
+    "slug": "anthurium-andraeanum",
+    "raw": "Propagate by division , stem or rhizome cuttings and offsets in spring or summer; or propagate by seed at 24 to 27°C as soon as ripe",
+    "propagation": [
+      "division",
+      "stemCutting",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Aglaonema": {
+    "map": "byGenus",
+    "key": "Aglaonema",
+    "query": "Aglaonema modestum",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/707/aglaonema-modestum/details",
+    "slug": "aglaonema-modestum",
+    "raw": "Propagate by separating basal shoots with 3 or 4 leaves, ideally with roots attached, or Divide in spring",
+    "propagation": [
+      "division",
+      "offsets"
+    ]
+  },
+  "byGenus:Dieffenbachia": {
+    "map": "byGenus",
+    "key": "Dieffenbachia",
+    "query": "Dieffenbachia seguine",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/31781/dieffenbachia-seguine/details",
+    "slug": "dieffenbachia-seguine",
+    "raw": "Propagate by stem tip cuttings or take stem sections, each with a growth bud, and lay flat on the surface of the compost at 25°C. Can also be propagated by air layering",
+    "propagation": [
+      "stemCutting",
+      "layering"
+    ]
+  },
+  "byGenus:Syngonium": {
+    "map": "byGenus",
+    "key": "Syngonium",
+    "query": "Syngonium podophyllum",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/17899/syngonium-podophyllum/details",
+    "slug": "syngonium-podophyllum",
+    "raw": "Propagate from softwood stem tip cuttings and leaf bud cuttings in summer with bottom heat",
+    "propagation": [
+      "stemCutting",
+      "water"
+    ]
+  },
+  "byGenus:Zamioculcas": {
+    "map": "byGenus",
+    "key": "Zamioculcas",
+    "query": "Zamioculcas zamiifolia",
+    "current_propagation": [
+      "division",
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/19185/zamioculcas-zamiifolia/details",
+    "slug": "zamioculcas-zamiifolia",
+    "raw": "Propagate by leaf cuttings, using single leaflets",
+    "propagation": [
+      "leafCutting"
+    ]
+  },
+  "byGenus:Spathiphyllum": {
+    "map": "byGenus",
+    "key": "Spathiphyllum",
+    "query": "Spathiphyllum wallisii",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/17623/spathiphyllum-wallisii/details",
+    "slug": "spathiphyllum-wallisii",
+    "raw": "Propagate by division in winter or immediately after flowering",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Calathea": {
+    "map": "byGenus",
+    "key": "Calathea",
+    "query": "Calathea orbifolia",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/176990/calathea-orbifolia/details",
+    "slug": "calathea-orbifolia",
+    "raw": "Propagate by division of rhizomes in summer",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Goeppertia": {
+    "map": "byGenus",
+    "key": "Goeppertia",
+    "query": "Goeppertia makoyana",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/357223/goeppertia-makoyana/details",
+    "slug": "goeppertia-makoyana",
+    "raw": "Propagate by division in late spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Maranta": {
+    "map": "byGenus",
+    "key": "Maranta",
+    "query": "Maranta leuconeura",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/119598/maranta-leuconeura/details",
+    "slug": "maranta-leuconeura",
+    "raw": "propagate by basal cuttings, division or seed",
+    "propagation": [
+      "division",
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Ficus": {
+    "map": "byGenus",
+    "key": "Ficus",
+    "query": "Ficus lyrata",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/7207/ficus-lyrata/details",
+    "slug": "ficus-lyrata",
+    "raw": "Propagate by seed, leaf-bud or semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Dracaena": {
+    "map": "byGenus",
+    "key": "Dracaena",
+    "query": "Dracaena",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "error": "rep-other-genus",
+    "propagation": null
+  },
+  "byGenus:Sansevieria": {
+    "map": "byGenus",
+    "key": "Sansevieria",
+    "query": "Sansevieria cylindrica",
+    "current_propagation": [
+      "division",
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/16411/sansevieria-cylindrica/details",
+    "slug": "sansevieria-cylindrica",
+    "raw": "Propagate by leaf cuttings or division",
+    "propagation": [
+      "division",
+      "leafCutting"
+    ]
+  },
+  "byGenus:Yucca": {
+    "map": "byGenus",
+    "key": "Yucca",
+    "query": "Yucca gigantea",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilIssues",
+    "url": "https://www.rhs.org.uk/plants/522674/yucca-gigantea/details",
+    "slug": "yucca-gigantea",
+    "raw": "Propagate by seed, sown in spring at 19-24°C. Flowers may need hand-pollination to set seed. Rooted suckers can be removed in spring or take root cuttings in winter",
+    "propagation": [
+      "stemCutting",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Beaucarnea": {
+    "map": "byGenus",
+    "key": "Beaucarnea",
+    "query": "Beaucarnea recurvata",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/1993/beaucarnea-recurvata/details",
+    "slug": "beaucarnea-recurvata",
+    "raw": "Propagate by seed sown at 18 to 21°C in spring or root offsets in spring",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Aspidistra": {
+    "map": "byGenus",
+    "key": "Aspidistra",
+    "query": "Aspidistra elatior",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/1715/aspidistra-elatior/details",
+    "slug": "aspidistra-elatior",
+    "raw": "Propagate by division",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Chlorophytum": {
+    "map": "byGenus",
+    "key": "Chlorophytum",
+    "query": "Chlorophytum comosum",
+    "current_propagation": [
+      "offsets",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoil",
+    "url": "https://www.rhs.org.uk/plants/3761/chlorophytum-comosum/details",
+    "slug": "chlorophytum-comosum",
+    "raw": "Propagate by seed, by division or root plantlets",
+    "propagation": [
+      "offsets",
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Chamaedorea": {
+    "map": "byGenus",
+    "key": "Chamaedorea",
+    "query": "Chamaedorea elegans",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoil",
+    "url": "https://www.rhs.org.uk/plants/29185/chamaedorea-elegans/details",
+    "slug": "chamaedorea-elegans",
+    "raw": "Propagate by sowing seed in spring at 25°C",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Dypsis": {
+    "map": "byGenus",
+    "key": "Dypsis",
+    "query": "Dypsis lutescens",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "url": "https://www.rhs.org.uk/plants/128311/dypsis-lutescens/details",
+    "slug": "dypsis-lutescens",
+    "raw": "Propagate by seed sown at not less than 25°C",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Howea": {
+    "map": "byGenus",
+    "key": "Howea",
+    "query": "Howea forsteriana",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "url": "https://www.rhs.org.uk/plants/8845/howea-forsteriana/details",
+    "slug": "howea-forsteriana",
+    "raw": "Propagate by seed sown at not less than 19°C",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Trachycarpus": {
+    "map": "byGenus",
+    "key": "Trachycarpus",
+    "query": "Trachycarpus fortunei",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18291/trachycarpus-fortunei/details",
+    "slug": "trachycarpus-fortunei",
+    "raw": "Propagate by seed or by removing and potting up suckers",
+    "propagation": [
+      "seed",
+      "offsets"
+    ]
+  },
+  "byGenus:Nephrolepis": {
+    "map": "byGenus",
+    "key": "Nephrolepis",
+    "query": "Nephrolepis exaltata",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/11508/nephrolepis-exaltata/details",
+    "slug": "nephrolepis-exaltata",
+    "raw": "Propagate by spores, sow spores at 21°C (70°F) as soon as ripe. Separate rooted runners in late winter or early spring",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Asplenium": {
+    "map": "byGenus",
+    "key": "Asplenium",
+    "query": "Asplenium nidus",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/1728/asplenium-nidus/details",
+    "slug": "asplenium-nidus",
+    "raw": "Propagate by division , or propagate by sowing spores as soon as ripe at 21°C",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Adiantum": {
+    "map": "byGenus",
+    "key": "Adiantum",
+    "query": "Adiantum raddianum",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/20650/adiantum-raddianum/details",
+    "slug": "adiantum-raddianum",
+    "raw": "Propagate by sowing spores as soon as ripe at a minimum of 21°C, or propagate by division of the rhizomes in early spring",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Platycerium": {
+    "map": "byGenus",
+    "key": "Platycerium",
+    "query": "Platycerium bifurcatum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/13234/platycerium-bifurcatum/details",
+    "slug": "platycerium-bifurcatum",
+    "raw": "Sow spores when ripe or detach plantlets",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Echeveria": {
+    "map": "byGenus",
+    "key": "Echeveria",
+    "query": "Echeveria elegans",
+    "current_propagation": [
+      "leafCutting",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/6226/echeveria-elegans/details",
+    "slug": "echeveria-elegans",
+    "raw": "Propagate by seed sown as soon as ripe or by root, stem or leaf cuttings in spring",
+    "propagation": [
+      "leafCutting",
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Crassula": {
+    "map": "byGenus",
+    "key": "Crassula",
+    "query": "Crassula ovata",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/4739/crassula-ovata/details",
+    "slug": "crassula-ovata",
+    "raw": "Propagate by seed sown as soon as ripe or by offsets or by root, stem or leaf cuttings in spring",
+    "propagation": [
+      "leafCutting",
+      "stemCutting",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Sedum": {
+    "map": "byGenus",
+    "key": "Sedum",
+    "query": "Sedum morganianum",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/16969/sedum-morganianum/details",
+    "slug": "sedum-morganianum",
+    "raw": "Propagate by seed sown at 15 -18°C in early spring, or propagate by division",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Haworthiopsis": {
+    "map": "byGenus",
+    "key": "Haworthiopsis",
+    "query": "Haworthiopsis attenuata",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/504241/haworthiopsis-attenuata/details",
+    "slug": "haworthiopsis-attenuata",
+    "raw": "Sow seed at 21-24°C in spring, separate offsets or take leaf cuttings in spring and summer",
+    "propagation": [
+      "offsets",
+      "leafCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Kalanchoe": {
+    "map": "byGenus",
+    "key": "Kalanchoe",
+    "query": "Kalanchoe blossfeldiana",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/78810/kalanchoe-blossfeldiana/details",
+    "slug": "kalanchoe-blossfeldiana",
+    "raw": "Propagate by seed or offsets in spring",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Sempervivum": {
+    "map": "byGenus",
+    "key": "Sempervivum",
+    "query": "Sempervivum tectorum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/17164/sempervivum-tectorum/details",
+    "slug": "sempervivum-tectorum",
+    "raw": "Propagate by seed sown in spring, or root offsets in spring",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Curio": {
+    "map": "byGenus",
+    "key": "Curio",
+    "query": "Curio rowleyanus",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/353584/curio-rowleyanus/details",
+    "slug": "curio-rowleyanus",
+    "raw": "Propagate by softwood cutttings, internodal cuttings and division in spring and summer.",
+    "propagation": [
+      "stemCutting",
+      "division"
+    ]
+  },
+  "byGenus:Gasteria": {
+    "map": "byGenus",
+    "key": "Gasteria",
+    "query": "Gasteria verrucosa",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/7639/gasteria-verrucosa/details",
+    "slug": "gasteria-verrucosa",
+    "raw": "Propagate by seed, separating offsets or leaf cuttings",
+    "propagation": [
+      "offsets",
+      "leafCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Agave": {
+    "map": "byGenus",
+    "key": "Agave",
+    "query": "Agave americana",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/95075/agave-americana/details",
+    "slug": "agave-americana",
+    "raw": "Propagate by offsets taken in spring or autumn",
+    "propagation": [
+      "offsets"
+    ]
+  },
+  "byGenus:Aeonium": {
+    "map": "byGenus",
+    "key": "Aeonium",
+    "query": "Aeonium arboreum",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/498/aeonium-arboreum/details",
+    "slug": "aeonium-arboreum",
+    "raw": "Propagate by seed sown at 19-24°C in spring or by cuttings of rosettes kept at 18°C and barely moist until rooted",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Lithops": {
+    "map": "byGenus",
+    "key": "Lithops",
+    "query": "Lithops lesliei",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/10367/lithops-lesliei/details",
+    "slug": "lithops-lesliei",
+    "raw": "Propagate by seed or offsets in spring",
+    "propagation": [
+      "seed",
+      "offsets"
+    ]
+  },
+  "byGenus:Schlumbergera": {
+    "map": "byGenus",
+    "key": "Schlumbergera",
+    "query": "Schlumbergera truncata",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/141323/schlumbergera-truncata/details",
+    "slug": "schlumbergera-truncata",
+    "raw": "Propagate by stem cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Rhipsalis": {
+    "map": "byGenus",
+    "key": "Rhipsalis",
+    "query": "Rhipsalis baccifera",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/14483/rhipsalis-baccifera/details",
+    "slug": "rhipsalis-baccifera",
+    "raw": "Propagate by seed, sown at 19-24°C, or by stem cuttings in spring or summer",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Mentha": {
+    "map": "byGenus",
+    "key": "Mentha",
+    "query": "Mentha spicata",
+    "current_propagation": [
+      "stemCutting",
+      "division",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11055/mentha-spicata/details",
+    "slug": "mentha-spicata",
+    "raw": "Propagate by seed or division in spring or autumn",
+    "propagation": [
+      "division",
+      "seed",
+      "water"
+    ]
+  },
+  "byGenus:Thymus": {
+    "map": "byGenus",
+    "key": "Thymus",
+    "query": "Thymus vulgaris",
+    "current_propagation": [
+      "stemCutting",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18213/thymus-vulgaris/details",
+    "slug": "thymus-vulgaris",
+    "raw": "Propagate by seed, by division or plant rooted basal stem cuttings in spring",
+    "propagation": [
+      "stemCutting",
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Salvia": {
+    "map": "byGenus",
+    "key": "Salvia",
+    "query": "Salvia rosmarinus",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/384211/salvia-rosmarinus-ro/details",
+    "slug": "salvia-rosmarinus-ro",
+    "raw": "Propagate by seed in containers in a cold frame in spring or by semi-ripe cuttings in summer",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Petroselinum": {
+    "map": "byGenus",
+    "key": "Petroselinum",
+    "query": "Petroselinum crispum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/41248/petroselinum-crispum/details",
+    "slug": "petroselinum-crispum",
+    "raw": "Propagate by seed sown in situ, in succession from late spring through summer",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Ocimum": {
+    "map": "byGenus",
+    "key": "Ocimum",
+    "query": "Ocimum basilicum",
+    "current_propagation": [
+      "stemCutting",
+      "seed",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11649/ocimum-basilicum/details",
+    "slug": "ocimum-basilicum",
+    "raw": "Propagate by seed in gentle heat in spring under glass or indoors, or sow in-situ in summer. See sowing seeds indoors for further advice",
+    "propagation": [
+      "seed",
+      "water"
+    ]
+  },
+  "byGenus:Solanum": {
+    "map": "byGenus",
+    "key": "Solanum",
+    "query": "Solanum lycopersicum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/293619/solanum-lycopersicum/details",
+    "slug": "solanum-lycopersicum",
+    "raw": "Propagate by seed. See sowing vegetable seeds or sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Capsicum": {
+    "map": "byGenus",
+    "key": "Capsicum",
+    "query": "Capsicum annuum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/71018/capsicum-annuum/details",
+    "slug": "capsicum-annuum",
+    "raw": "Propagate by seed. See sowing vegetable seeds or sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Cucurbita": {
+    "map": "byGenus",
+    "key": "Cucurbita",
+    "query": "Cucurbita pepo",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/106106/cucurbita-pepo/details",
+    "slug": "cucurbita-pepo",
+    "raw": "Propagate by seed. See sowing vegetable seeds or sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Cucumis": {
+    "map": "byGenus",
+    "key": "Cucumis",
+    "query": "Cucumis sativus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/105568/cucumis-sativus/details",
+    "slug": "cucumis-sativus",
+    "raw": "Propagate by seed. See sowing vegetable seeds",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Fragaria": {
+    "map": "byGenus",
+    "key": "Fragaria",
+    "query": "Fragaria vesca",
+    "current_propagation": [
+      "offsets",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/7280/fragaria-vesca-f/details",
+    "slug": "fragaria-vesca-f",
+    "raw": "Remove and transplant runners. Propagate by seed sow at 13-18°C in spring",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Lactuca": {
+    "map": "byGenus",
+    "key": "Lactuca",
+    "query": "Lactuca sativa",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/106151/lactuca-sativa/details",
+    "slug": "lactuca-sativa",
+    "raw": "Propagate by seed. See sowing vegetable seeds",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Citrus": {
+    "map": "byGenus",
+    "key": "Citrus",
+    "query": "Citrus × limon",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/384894/citrus-limon/details",
+    "slug": "citrus-limon",
+    "raw": "Propagate by semi-ripe cuttings in summer, or layer in early spring. Sow seed at 16°C in spring; seedlings do not come true to type",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Prunus": {
+    "map": "byGenus",
+    "key": "Prunus",
+    "query": "Prunus avium",
+    "current_propagation": [
+      "layering",
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/13950/prunus-avium/details",
+    "slug": "prunus-avium",
+    "raw": "Propagate by Chip budding or grafting , although softwood cuttings in early summer with bottom heat can be successful.",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Malus": {
+    "map": "byGenus",
+    "key": "Malus",
+    "query": "Malus domestica",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/60558/malus-domestica-f/details",
+    "slug": "malus-domestica-f",
+    "raw": "Propagate by Chip budding in late summer, or grafting in mid-winter. Plants grown from pips are unlikely to resemble the parent",
+    "propagation": null
+  },
+  "byGenus:Vitis": {
+    "map": "byGenus",
+    "key": "Vitis",
+    "query": "Vitis vinifera",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/134401/vitis-vinifera/details",
+    "slug": "vitis-vinifera",
+    "raw": "Propagate by hardwood cuttings in late autumn or winter, or by softwood cuttings or semi-ripe cuttings from late spring to midsummer or grafting onto Phylloxera resistant rootstocks",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Rubus": {
+    "map": "byGenus",
+    "key": "Rubus",
+    "query": "Rubus idaeus",
+    "current_propagation": [
+      "division",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/16137/rubus-idaeus/details",
+    "slug": "rubus-idaeus",
+    "raw": "Choose disease-free stock for propagation. Propagate by softwood cuttings or semi-ripe cuttings from spring to midsummer, hardwood cuttings in winter, root cuttings in autumn and winter, leaf bud cuttings in mid to late summer, division from autumn to early spring and layering from late summer to early spring",
+    "propagation": [
+      "division",
+      "layering",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Vaccinium": {
+    "map": "byGenus",
+    "key": "Vaccinium",
+    "query": "Vaccinium corymbosum",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18670/vaccinium-corymbosum-f/details",
+    "slug": "vaccinium-corymbosum-f",
+    "raw": "Take 10-15cm (4-6in) softwood cuttings in late spring or semi-ripe cuttings in early summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Rosa": {
+    "map": "byGenus",
+    "key": "Rosa",
+    "query": "Rosa × hybrida",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/303868/rosa-hybrida/details",
+    "slug": "rosa-hybrida",
+    "raw": "Propagate by softwood cuttings in early to mid spring, hardwood cuttings in late summer to autumn or by Chip budding in summer; propagate by seed; species roses can be propagated by seed but need stratification and germination may take two seasons",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Hydrangea": {
+    "map": "byGenus",
+    "key": "Hydrangea",
+    "query": "Hydrangea macrophylla",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/40792/hydrangea-macrophylla-h/details",
+    "slug": "hydrangea-macrophylla-h",
+    "raw": "Propagate by softwood cuttings in early summer or hardwood cuttings in winter",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Pelargonium": {
+    "map": "byGenus",
+    "key": "Pelargonium",
+    "query": "Pelargonium grandiflorum",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/86807/pelargonium-grandiflorum/details",
+    "slug": "pelargonium-grandiflorum",
+    "raw": "Propagate from softwood cuttings from spring to autumn.",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Hosta": {
+    "map": "byGenus",
+    "key": "Hosta",
+    "query": "Hosta plantaginea",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/8821/hosta-plantaginea/details",
+    "slug": "hosta-plantaginea",
+    "raw": "Propagation by division in late summer or early spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Acer": {
+    "map": "byGenus",
+    "key": "Acer",
+    "query": "Acer palmatum",
+    "current_propagation": [
+      "layering",
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/225/acer-palmatum-1/details",
+    "slug": "acer-palmatum-1",
+    "raw": "Propagate by grafting or softwood cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Buxus": {
+    "map": "byGenus",
+    "key": "Buxus",
+    "query": "Buxus sempervirens",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/2579/buxus-sempervirens/details",
+    "slug": "buxus-sempervirens",
+    "raw": "Propagate from semi-ripe cuttings in summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Hedera": {
+    "map": "byGenus",
+    "key": "Hedera",
+    "query": "Hedera helix",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
+    "slug": "hedera-helix",
+    "raw": "Propagate by semi- hardwood cuttings in summer. Cuttings from adult growth will produce shrubby, non-climbing plants",
+    "propagation": [
+      "stemCutting",
+      "water"
+    ]
+  },
+  "byGenus:Hoya": {
+    "map": "byGenus",
+    "key": "Hoya",
+    "query": "Hoya carnosa",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "url": "https://www.rhs.org.uk/plants/8852/hoya-carnosa/details",
+    "slug": "hoya-carnosa",
+    "raw": "Propagate by semi- hardwood cuttings or by layering",
+    "propagation": [
+      "stemCutting",
+      "layering",
+      "water"
+    ]
+  },
+  "byGenus:Peperomia": {
+    "map": "byGenus",
+    "key": "Peperomia",
+    "query": "Peperomia obtusifolia",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/106212/peperomia-obtusifolia/details",
+    "slug": "peperomia-obtusifolia",
+    "raw": "Propagate by seed, softwood , leaf or bud cuttings",
+    "propagation": [
+      "leafCutting",
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Begonia": {
+    "map": "byGenus",
+    "key": "Begonia",
+    "query": "Begonia maculata",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/112222/begonia-maculata-c/details",
+    "slug": "begonia-maculata-c",
+    "raw": "Propagate by stem cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Tradescantia": {
+    "map": "byGenus",
+    "key": "Tradescantia",
+    "query": "Tradescantia zebrina",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/79575/tradescantia-zebrina/details",
+    "slug": "tradescantia-zebrina",
+    "raw": "Propagate by softwood cuttings using stem tips in spring or summer, rooting in peat-free cutting compost or water, then pot up into peat-free, loam-based potting compost",
+    "propagation": [
+      "stemCutting",
+      "water"
+    ]
+  },
+  "byGenus:Fittonia": {
+    "map": "byGenus",
+    "key": "Fittonia",
+    "query": "Fittonia albivenis",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/299385/fittonia-albivenis-lion/details",
+    "slug": "fittonia-albivenis-lion",
+    "propagation": null
+  },
+  "byGenus:Saintpaulia": {
+    "map": "byGenus",
+    "key": "Saintpaulia",
+    "query": "Saintpaulia ionantha",
+    "current_propagation": [
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/16203/saintpaulia-ionantha/details",
+    "slug": "saintpaulia-ionantha",
+    "raw": "Propagate by leaf cuttings in summer",
+    "propagation": [
+      "leafCutting"
+    ]
+  },
+  "byGenus:Cyclamen": {
+    "map": "byGenus",
+    "key": "Cyclamen",
+    "query": "Cyclamen persicum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/101163/cyclamen-persicum/details",
+    "slug": "cyclamen-persicum",
+    "raw": "Propagate by seed, in darkness as soon as ripe at 12 to 15°C. Can be beneficial to soak seed for 10 hours prior to sowing",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Crocus": {
+    "map": "byGenus",
+    "key": "Crocus",
+    "query": "Crocus vernus",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/29659/crocus-vernus/details",
+    "slug": "crocus-vernus",
+    "raw": "Propagate by division of clumps, or by separating cormlets",
+    "propagation": [
+      "offsets",
+      "division"
+    ]
+  },
+  "byGenus:Tulipa": {
+    "map": "byGenus",
+    "key": "Tulipa",
+    "query": "Tulipa gesneriana",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18512/tulipa-gesneriana/details",
+    "slug": "tulipa-gesneriana",
+    "raw": "Propagate by division , separating offsets in summer. See bulb propagation for more details",
+    "propagation": [
+      "offsets",
+      "division"
+    ]
+  },
+  "byGenus:Narcissus": {
+    "map": "byGenus",
+    "key": "Narcissus",
+    "query": "Narcissus pseudonarcissus",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11388/narcissus-pseudonarcissus-13/details",
+    "slug": "narcissus-pseudonarcissus-13",
+    "raw": "Propagate by removing offsets as the leaves fade in early summer",
+    "propagation": [
+      "offsets"
+    ]
+  },
+  "byGenus:Hyacinthus": {
+    "map": "byGenus",
+    "key": "Hyacinthus",
+    "query": "Hyacinthus orientalis",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/53644/hyacinthus-orientalis/details",
+    "slug": "hyacinthus-orientalis",
+    "raw": "Propagate by division , separating offsets when dormant in summer",
+    "propagation": [
+      "offsets",
+      "division"
+    ]
+  },
+  "byGenus:Hippeastrum": {
+    "map": "byGenus",
+    "key": "Hippeastrum",
+    "query": "Hippeastrum hortorum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/273811/hippeastrum-rio/details",
+    "slug": "hippeastrum-rio",
+    "propagation": null
+  },
+  "byGenus:Caladium": {
+    "map": "byGenus",
+    "key": "Caladium",
+    "query": "Caladium humboldtii",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/122407/caladium-humboldtii/details",
+    "slug": "caladium-humboldtii",
+    "propagation": null
+  },
+  "byGenus:Colocasia": {
+    "map": "byGenus",
+    "key": "Colocasia",
+    "query": "Colocasia esculenta",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/4248/colocasia-esculenta/details",
+    "slug": "colocasia-esculenta",
+    "raw": "Propagate by division in winter",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Zantedeschia": {
+    "map": "byGenus",
+    "key": "Zantedeschia",
+    "query": "Zantedeschia aethiopica",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/19190/zantedeschia-aethiopica/details",
+    "slug": "zantedeschia-aethiopica",
+    "raw": "Propagate by division in spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Dahlia": {
+    "map": "byGenus",
+    "key": "Dahlia",
+    "query": "Dahlia pinnata",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/183726/dahlia-pinnata/details",
+    "slug": "dahlia-pinnata",
+    "propagation": null
+  },
+  "byGenus:Canna": {
+    "map": "byGenus",
+    "key": "Canna",
+    "query": "Canna indica",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/3001/canna-indica/details",
+    "slug": "canna-indica",
+    "raw": "Propagate by seed (sown indoors) or propagate by division of rhizomes in spring",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Tillandsia": {
+    "map": "byGenus",
+    "key": "Tillandsia",
+    "query": "Tillandsia ionantha",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/45872/tillandsia-ionantha/details",
+    "slug": "tillandsia-ionantha",
+    "raw": "Propagate from seed (see Air plants) or by removing offsets once they are at least a third the size of the parent",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Strelitzia": {
+    "map": "byGenus",
+    "key": "Strelitzia",
+    "query": "Strelitzia reginae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/17807/strelitzia-reginae/details",
+    "slug": "strelitzia-reginae",
+    "raw": "Propagate by division of rooted suckers in spring. Although you can sow from seed in March to April, they have a very thick coating and will need to prepared by soaking prior to sowing",
+    "propagation": [
+      "division",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Musa": {
+    "map": "byGenus",
+    "key": "Musa",
+    "query": "Musa velutina",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11240/musa-velutina/details",
+    "slug": "musa-velutina",
+    "raw": "Propagate by seed or Divide established clumps",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Coffea": {
+    "map": "byGenus",
+    "key": "Coffea",
+    "query": "Coffea arabica",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "url": "https://www.rhs.org.uk/plants/4159/coffea-arabica/details",
+    "slug": "coffea-arabica",
+    "raw": "Propagate by sowing fresh seed. Germination may be erratic",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Ceropegia": {
+    "map": "byGenus",
+    "key": "Ceropegia",
+    "query": "Ceropegia woodii",
+    "current_propagation": [
+      "stemCutting",
+      "tuber"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/3451/ceropegia-woodii/details",
+    "slug": "ceropegia-woodii",
+    "raw": "Propagate by seed at 19-24°C (66-75°F) in early spring or propagate from stem bulbils. Alternatively take stem cuttings, 10-15cm (4-6in) long in early summer, root in a cactus compost at 22-25°C (72-77°F), and keep moist",
+    "propagation": [
+      "stemCutting",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Nerium": {
+    "map": "byGenus",
+    "key": "Nerium",
+    "query": "Nerium oleander",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/98456/nerium-oleander-l/details",
+    "slug": "nerium-oleander-l",
+    "raw": "Propagate by seed, semi- hardwood cuttings or by air layering in spring",
+    "propagation": [
+      "stemCutting",
+      "layering",
+      "seed",
+      "water"
+    ]
+  },
+  "byGenus:Camellia": {
+    "map": "byGenus",
+    "key": "Camellia",
+    "query": "Camellia japonica",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/2845/camellia-japonica/details",
+    "slug": "camellia-japonica",
+    "raw": "Propagate by semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Rhododendron": {
+    "map": "byGenus",
+    "key": "Rhododendron",
+    "query": "Rhododendron simsii",
+    "current_propagation": [
+      "layering",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/15682/rhododendron-simsii-ea/details",
+    "slug": "rhododendron-simsii-ea",
+    "raw": "Propagate by semi-ripe cuttings in late summer, or by grafting in winter",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Gardenia": {
+    "map": "byGenus",
+    "key": "Gardenia",
+    "query": "Gardenia jasminoides",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/7605/gardenia-jasminoides/details",
+    "slug": "gardenia-jasminoides",
+    "raw": "Propagate by seed, greenwood or semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Bougainvillea": {
+    "map": "byGenus",
+    "key": "Bougainvillea",
+    "query": "Bougainvillea glabra",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/91850/bougainvillea-glabra/details",
+    "slug": "bougainvillea-glabra",
+    "raw": "Propagate by layering in early spring, or by semi-ripe cuttings in summer or hardwood cuttings with bottom heat in winter",
+    "propagation": [
+      "stemCutting",
+      "layering"
+    ]
+  },
+  "byGenus:Phyllostachys": {
+    "map": "byGenus",
+    "key": "Phyllostachys",
+    "query": "Phyllostachys aurea",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/75274/phyllostachys-aurea/details",
+    "slug": "phyllostachys-aurea",
+    "raw": "Propagate by division in spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Fargesia": {
+    "map": "byGenus",
+    "key": "Fargesia",
+    "query": "Fargesia murielae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWater",
+    "url": "https://www.rhs.org.uk/plants/82475/fargesia-murielae/details",
+    "slug": "fargesia-murielae",
+    "raw": "Propagate by division or take cuttings of sections of young rhizomes in spring",
+    "propagation": [
+      "division",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Acacia": {
+    "map": "byGenus",
+    "key": "Acacia",
+    "query": "Acacia dealbata",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/24107/acacia-dealbata/details",
+    "slug": "acacia-dealbata",
+    "raw": "Propagate by seed or semi- hardwood cuttings",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Abies": {
+    "map": "byGenus",
+    "key": "Abies",
+    "query": "Abies nordmanniana",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/53/abies-nordmanniana/details",
+    "slug": "abies-nordmanniana",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Abutilon": {
+    "map": "byGenus",
+    "key": "Abutilon",
+    "query": "Abutilon megapotamicum",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/85/abutilon-megapotamicum/details",
+    "slug": "abutilon-megapotamicum",
+    "raw": "Propagate by seed in spring at 15°C to 18°C, or by softwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Ranunculus": {
+    "map": "byGenus",
+    "key": "Ranunculus",
+    "query": "Ranunculus flammula",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/94423/ranunculus-flammula/details",
+    "slug": "ranunculus-flammula",
+    "raw": "Propagate by seed sown as soon as ripe, or by division inspring or late summer",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Euphorbia": {
+    "map": "byGenus",
+    "key": "Euphorbia",
+    "query": "Euphorbia pulcherrima",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/88057/euphorbia-pulcherrima/details",
+    "slug": "euphorbia-pulcherrima",
+    "raw": "Propagate by stem cuttings in early summer. Use a hormone rooting compound",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Pinus": {
+    "map": "byGenus",
+    "key": "Pinus",
+    "query": "Pinus mugo",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/13101/pinus-mugo/details",
+    "slug": "pinus-mugo",
+    "raw": "Propagate by grafting",
+    "propagation": null
+  },
+  "byGenus:Abelia": {
+    "map": "byGenus",
+    "key": "Abelia",
+    "query": "Abelia × grandiflora",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/318335/abelia-lynn/details",
+    "slug": "abelia-lynn",
+    "raw": "Propagate by softwood cuttings in early summer or semi- hardwood cuttings in late summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Spiraea": {
+    "map": "byGenus",
+    "key": "Spiraea",
+    "query": "Spiraea",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/17638/spiraea/details",
+    "slug": "spiraea",
+    "propagation": null
+  },
+  "byGenus:Quercus": {
+    "map": "byGenus",
+    "key": "Quercus",
+    "query": "Quercus robur",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/14294/quercus-robur/details",
+    "slug": "quercus-robur",
+    "raw": "Propagate by seed, sown as soon as ripe, in a cold frame",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Lonicera": {
+    "map": "byGenus",
+    "key": "Lonicera",
+    "query": "Lonicera caerulea",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/10446/lonicera-caerulea/details",
+    "slug": "lonicera-caerulea",
+    "raw": "Propagate by seed in summer, removing the berry flesh before sowing, or by semi- hardwood or hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed",
+      "water"
+    ]
+  },
+  "byGenus:Iris": {
+    "map": "byGenus",
+    "key": "Iris",
+    "query": "Iris germanica",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/9256/iris-germanica/details",
+    "slug": "iris-germanica",
+    "raw": "Propagate by dividing irises from midsummer to early autumn, plant immediately in flowering positions",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Allium": {
+    "map": "byGenus",
+    "key": "Allium",
+    "query": "Allium schoenoprasum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/859/allium-schoenoprasum/details",
+    "slug": "allium-schoenoprasum",
+    "raw": "Propagate by seed, bulbs or division",
+    "propagation": [
+      "division",
+      "seed",
+      "tuber"
+    ]
+  },
+  "byGenus:Geranium": {
+    "map": "byGenus",
+    "key": "Geranium",
+    "query": "Geranium",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/162322/geranium/details",
+    "slug": "geranium",
+    "propagation": null
+  },
+  "byGenus:Berberis": {
+    "map": "byGenus",
+    "key": "Berberis",
+    "query": "Berberis aquifolium",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/68984/berberis-aquifolium/details",
+    "slug": "berberis-aquifolium",
+    "raw": "Propagate by seed and semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Picea": {
+    "map": "byGenus",
+    "key": "Picea",
+    "query": "Picea abies",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/12899/picea-abies/details",
+    "slug": "picea-abies",
+    "raw": "Propagate by seed or by semi- hardwood cuttings",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Centaurea": {
+    "map": "byGenus",
+    "key": "Centaurea",
+    "query": "Centaurea cyanus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/46174/centaurea-cyanus/details",
+    "slug": "centaurea-cyanus",
+    "raw": "Propagate by seed sown in-situ in spring or autumn",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Epipactis": {
+    "map": "byGenus",
+    "key": "Epipactis",
+    "query": "Epipactis helleborine",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/32097/epipactis-helleborine/details",
+    "slug": "epipactis-helleborine",
+    "raw": "Propagate by division in spring, ensuring each piece of rhizome has at least one growing point",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Juniperus": {
+    "map": "byGenus",
+    "key": "Juniperus",
+    "query": "Juniperus procumbens",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/9601/juniperus-procumbens/details",
+    "slug": "juniperus-procumbens",
+    "propagation": null
+  },
+  "byGenus:Salix": {
+    "map": "byGenus",
+    "key": "Salix",
+    "query": "Salix babylonica",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/66012/salix-babylonica/details",
+    "slug": "salix-babylonica",
+    "raw": "Propagate by softwood cuttings in early summer or hardwood cuttings in winter",
+    "propagation": [
+      "stemCutting",
+      "water"
+    ]
+  },
+  "byGenus:Crataegus": {
+    "map": "byGenus",
+    "key": "Crataegus",
+    "query": "Crataegus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/30846/crataegus/details",
+    "slug": "crataegus",
+    "propagation": null
+  },
+  "byGenus:Tilia": {
+    "map": "byGenus",
+    "key": "Tilia",
+    "query": "Tilia cordata",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18225/tilia-cordata/details",
+    "slug": "tilia-cordata",
+    "raw": "Propagate by seed, stratified in containers outdoors in spring. See Propagate from seed (tree/shrub ) Propagate by Chip budding although care must be taken with the choice of rootstock",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Abelmoschus": {
+    "map": "byGenus",
+    "key": "Abelmoschus",
+    "query": "Abelmoschus esculentus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/71839/abelmoschus-esculentus/details",
+    "slug": "abelmoschus-esculentus",
+    "raw": "Propagate by seed. See sowing vegetable seeds",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Hibiscus": {
+    "map": "byGenus",
+    "key": "Hibiscus",
+    "query": "Hibiscus syriacus",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/40530/hibiscus-syriacus/details",
+    "slug": "hibiscus-syriacus",
+    "raw": "Propagate by semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Brachychiton": {
+    "map": "byGenus",
+    "key": "Brachychiton",
+    "query": "Brachychiton acerifolius",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/114325/brachychiton-acerifolius/details",
+    "slug": "brachychiton-acerifolius",
+    "raw": "Propagate by seed as soon as ripe with heat in a propagator, or semi-ripe cuttings in summer, or hardwood cuttings in early autumn with bottom heat in a propagator",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Alnus": {
+    "map": "byGenus",
+    "key": "Alnus",
+    "query": "Alnus glutinosa",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/897/alnus-glutinosa/details",
+    "slug": "alnus-glutinosa",
+    "raw": "Propagate by seed or hardwood cuttings",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Corylus": {
+    "map": "byGenus",
+    "key": "Corylus",
+    "query": "Corylus avellana",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/4511/corylus-avellana-f/details",
+    "slug": "corylus-avellana-f",
+    "raw": "Propagate by seed, layering or stooling or removing rooted suckers",
+    "propagation": [
+      "layering",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Betula": {
+    "map": "byGenus",
+    "key": "Betula",
+    "query": "Betula pendula",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/2261/betula-pendula/details",
+    "slug": "betula-pendula",
+    "raw": "Propagate by seed, softwood cuttings or grafting",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Campanula": {
+    "map": "byGenus",
+    "key": "Campanula",
+    "query": "Campanula rotundifolia",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWater",
+    "url": "https://www.rhs.org.uk/plants/2969/campanula-rotundifolia/details",
+    "slug": "campanula-rotundifolia",
+    "raw": "Propagate by seed, division or take basal cuttings",
+    "propagation": [
+      "division",
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Clematis": {
+    "map": "byGenus",
+    "key": "Clematis",
+    "query": "Clematis viticella",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/29466/clematis-viticella/details",
+    "slug": "clematis-viticella",
+    "raw": "Root softwood cuttings in spring or semi-ripe cuttings in early summer. Propagate by layering in late winter or early spring",
+    "propagation": [
+      "layering",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Helleborus": {
+    "map": "byGenus",
+    "key": "Helleborus",
+    "query": "Helleborus niger",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/8575/helleborus-niger/details",
+    "slug": "helleborus-niger",
+    "raw": "Propagate by seed in pots in a cold frame as soon as seed is ripe or propagate by division after flowering in early spring or late summer",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Anemonoides": {
+    "map": "byGenus",
+    "key": "Anemonoides",
+    "query": "Anemonoides",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "error": "rep-other-genus",
+    "propagation": null
+  },
+  "byGenus:Delphinium": {
+    "map": "byGenus",
+    "key": "Delphinium",
+    "query": "Delphinium elatum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/5398/delphinium-elatum/details",
+    "slug": "delphinium-elatum",
+    "raw": "Propagate by taking pencil-thick, basal, softwood cuttings in early spring",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Adonis": {
+    "map": "byGenus",
+    "key": "Adonis",
+    "query": "Adonis vernalis",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/456/adonis-vernalis/details",
+    "slug": "adonis-vernalis",
+    "propagation": null
+  },
+  "byGenus:Cotoneaster": {
+    "map": "byGenus",
+    "key": "Cotoneaster",
+    "query": "Cotoneaster × suecicus",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/155965/cotoneaster-gui/details",
+    "slug": "cotoneaster-gui",
+    "propagation": null
+  },
+  "byGenus:Potentilla": {
+    "map": "byGenus",
+    "key": "Potentilla",
+    "query": "Potentilla",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/79537/potentilla/details",
+    "slug": "potentilla",
+    "propagation": null
+  },
+  "byGenus:Pyrus": {
+    "map": "byGenus",
+    "key": "Pyrus",
+    "query": "Pyrus communis",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/14227/pyrus-communis-f/details",
+    "slug": "pyrus-communis-f",
+    "raw": "Propagate by grafting or budding onto a clonal rootstock for fruit . Fruit grown from pips will not normally resemble the parent",
+    "propagation": null
+  },
+  "byGenus:Chaenomeles": {
+    "map": "byGenus",
+    "key": "Chaenomeles",
+    "query": "Chaenomeles",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/29072/chaenomeles/details",
+    "slug": "chaenomeles",
+    "propagation": null
+  },
+  "byGenus:Alchemilla": {
+    "map": "byGenus",
+    "key": "Alchemilla",
+    "query": "Alchemilla mollis",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/774/alchemilla-mollis/details",
+    "slug": "alchemilla-mollis",
+    "raw": "Propagate by seed in pots in a cold frame in spring or by division in spring or autumn",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Aronia": {
+    "map": "byGenus",
+    "key": "Aronia",
+    "query": "Aronia melanocarpa",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/145010/aronia-melanocarpa-nero/details",
+    "slug": "aronia-melanocarpa-nero",
+    "raw": "Propagate by softwood cuttings in early summer, propagate by suckers when plants are dormant and pot up",
+    "propagation": [
+      "stemCutting",
+      "offsets"
+    ]
+  },
+  "byGenus:Photinia": {
+    "map": "byGenus",
+    "key": "Photinia",
+    "query": "Photinia serratifolia",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/82748/photinia-serratifolia/details",
+    "slug": "photinia-serratifolia",
+    "raw": "Propagate by semi- hardwood cuttings in summer. Or propagate by seed sown in containers, in a cold frame in autumn",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Amelanchier": {
+    "map": "byGenus",
+    "key": "Amelanchier",
+    "query": "Amelanchier",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/156200/amelanchier/details",
+    "slug": "amelanchier",
+    "propagation": null
+  },
+  "byGenus:Fraxinus": {
+    "map": "byGenus",
+    "key": "Fraxinus",
+    "query": "Fraxinus excelsior",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/7308/fraxinus-excelsior/details",
+    "slug": "fraxinus-excelsior",
+    "raw": "Propagate by seed or grafting",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Ligustrum": {
+    "map": "byGenus",
+    "key": "Ligustrum",
+    "query": "Ligustrum vulgare",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/10108/ligustrum-vulgare/details",
+    "slug": "ligustrum-vulgare",
+    "raw": "Propagate by seed, semi- hardwood and hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Jasminum": {
+    "map": "byGenus",
+    "key": "Jasminum",
+    "query": "Jasminum polyanthum",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/9457/jasminum-polyanthum/details",
+    "slug": "jasminum-polyanthum",
+    "raw": "Propagate by semi-ripe cuttings in summer or by layering in autumn",
+    "propagation": [
+      "layering",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Syringa": {
+    "map": "byGenus",
+    "key": "Syringa",
+    "query": "Syringa vulgaris",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/99011/syringa-vulgaris/details",
+    "slug": "syringa-vulgaris",
+    "raw": "Propagate by softwood cuttings in summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Lathyrus": {
+    "map": "byGenus",
+    "key": "Lathyrus",
+    "query": "Lathyrus odoratus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/25520/lathyrus-odoratus/details",
+    "slug": "lathyrus-odoratus",
+    "raw": "Propagate by seed. Sow in a cold frame in early autumn, early spring or in-situ in mid-spring. See sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Vigna": {
+    "map": "byGenus",
+    "key": "Vigna",
+    "query": "Vigna unguiculata",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/161840/vigna-unguiculata/details",
+    "slug": "vigna-unguiculata",
+    "propagation": null
+  },
+  "byGenus:Phaseolus": {
+    "map": "byGenus",
+    "key": "Phaseolus",
+    "query": "Phaseolus vulgaris",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/105457/phaseolus-vulgaris/details",
+    "slug": "phaseolus-vulgaris",
+    "raw": "Propagate by seed. See sowing vegetable seeds",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Trifolium": {
+    "map": "byGenus",
+    "key": "Trifolium",
+    "query": "Trifolium incarnatum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/76701/trifolium-incarnatum/details",
+    "slug": "trifolium-incarnatum",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Lupinus": {
+    "map": "byGenus",
+    "key": "Lupinus",
+    "query": "Lupinus polyphyllus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/10573/lupinus-polyphyllus/details",
+    "slug": "lupinus-polyphyllus",
+    "raw": "Propagate by seed in early to mid-spring or by basal stem cuttings in mid to late spring",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Magnolia": {
+    "map": "byGenus",
+    "key": "Magnolia",
+    "query": "Magnolia × soulangeana",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/81963/magnolia-ann/details",
+    "slug": "magnolia-ann",
+    "raw": "Propagate by softwood cuttings from late spring to early summer or semi-ripe cuttings from late summer to autumn",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Viola": {
+    "map": "byGenus",
+    "key": "Viola",
+    "query": "Viola odorata",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/19006/viola-odorata-vt/details",
+    "slug": "viola-odorata-vt",
+    "raw": "Propagate by seed or division",
+    "propagation": [
+      "seed",
+      "division"
+    ]
+  },
+  "byGenus:Hypericum": {
+    "map": "byGenus",
+    "key": "Hypericum",
+    "query": "Hypericum perforatum",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/9021/hypericum-perforatum/details",
+    "slug": "hypericum-perforatum",
+    "raw": "Propagate by seed, division or take softwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Papaver": {
+    "map": "byGenus",
+    "key": "Papaver",
+    "query": "Papaver rhoeas",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/56687/papaver-rhoeas/details",
+    "slug": "papaver-rhoeas",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Corydalis": {
+    "map": "byGenus",
+    "key": "Corydalis",
+    "query": "Corydalis",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/105351/corydalis/details",
+    "slug": "corydalis",
+    "propagation": null
+  },
+  "byGenus:Chenopodium": {
+    "map": "byGenus",
+    "key": "Chenopodium",
+    "query": "Chenopodium quinoa",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/140062/chenopodium-quinoa/details",
+    "slug": "chenopodium-quinoa",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Achillea": {
+    "map": "byGenus",
+    "key": "Achillea",
+    "query": "Achillea millefolium",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/311/achillea-millefolium/details",
+    "slug": "achillea-millefolium",
+    "raw": "Propagate by seed or by division in the spring",
+    "propagation": [
+      "seed",
+      "division"
+    ]
+  },
+  "byGenus:Echinops": {
+    "map": "byGenus",
+    "key": "Echinops",
+    "query": "Echinops bannaticus",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/114273/echinops-bannaticus/details",
+    "slug": "echinops-bannaticus",
+    "raw": "Propagate by seed sown in seed bed in mid spring. Propagate by division in spring or autumn or by root cuttings in winter",
+    "propagation": [
+      "seed",
+      "division",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Rudbeckia": {
+    "map": "byGenus",
+    "key": "Rudbeckia",
+    "query": "Rudbeckia hirta",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/68850/rudbeckia-hirta/details",
+    "slug": "rudbeckia-hirta",
+    "raw": "Propagate by seed sown with gentle heat in spring. Light is needed for germination. Harden off before planting out",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Senecio": {
+    "map": "byGenus",
+    "key": "Senecio",
+    "query": "Senecio macroglossus",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/112131/senecio-macroglossus/details",
+    "slug": "senecio-macroglossus",
+    "propagation": null
+  },
+  "byGenus:Helianthus": {
+    "map": "byGenus",
+    "key": "Helianthus",
+    "query": "Helianthus annuus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/105515/helianthus-annuus/details",
+    "slug": "helianthus-annuus",
+    "raw": "Propagate by seed or division . Divide established clumps every 2-4 years to both increase plants and retain vigour. See sowing seeds indoors for further advice",
+    "propagation": [
+      "seed",
+      "division"
+    ]
+  },
+  "byGenus:Cichorium": {
+    "map": "byGenus",
+    "key": "Cichorium",
+    "query": "Cichorium intybus",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/41554/cichorium-intybus/details",
+    "slug": "cichorium-intybus",
+    "raw": "Propagate by seed. See sowing vegetable seeds or sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Artemisia": {
+    "map": "byGenus",
+    "key": "Artemisia",
+    "query": "Artemisia dracunculus",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/1632/artemisia-dracunculus/details",
+    "slug": "artemisia-dracunculus",
+    "raw": "Two varieties have different types of propagation. Propagate Russian tarragon by seed and French tarragon semi- hardwood cuttings in late summer.",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Leucanthemum": {
+    "map": "byGenus",
+    "key": "Leucanthemum",
+    "query": "Leucanthemum vulgare",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/32804/leucanthemum-vulgare/details",
+    "slug": "leucanthemum-vulgare",
+    "raw": "Propagate by seed or division",
+    "propagation": [
+      "seed",
+      "division"
+    ]
+  },
+  "byGenus:Coreopsis": {
+    "map": "byGenus",
+    "key": "Coreopsis",
+    "query": "Coreopsis tinctoria",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/60968/coreopsis-tinctoria/details",
+    "slug": "coreopsis-tinctoria",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Cosmos": {
+    "map": "byGenus",
+    "key": "Cosmos",
+    "query": "Cosmos bipinnatus",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/30717/cosmos-bipinnatus/details",
+    "slug": "cosmos-bipinnatus",
+    "raw": "See sowing seeds indoors",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Echinacea": {
+    "map": "byGenus",
+    "key": "Echinacea",
+    "query": "Echinacea purpurea",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/41568/echinacea-purpurea/details",
+    "slug": "echinacea-purpurea",
+    "raw": "Propagate by division in spring or autumn or by root cuttings from late autumn to early winter",
+    "propagation": [
+      "division",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Aloe": {
+    "map": "byGenus",
+    "key": "Aloe",
+    "query": "Aloe vera",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/981/aloe-vera/details",
+    "slug": "aloe-vera",
+    "raw": "Propagate by seed as soon as ripe, or propagate by separating offsets in spring or early summer. Root offsets in cactus potting compost",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Hemerocallis": {
+    "map": "byGenus",
+    "key": "Hemerocallis",
+    "query": "Hemerocallis fulva",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/8622/hemerocallis-fulva/details",
+    "slug": "hemerocallis-fulva",
+    "raw": "Propagate by division in early spring or early autumn",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Dianthus": {
+    "map": "byGenus",
+    "key": "Dianthus",
+    "query": "Dianthus caryophyllus",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/5707/dianthus-caryophyllus/details",
+    "slug": "dianthus-caryophyllus",
+    "raw": "Propagate by softwood cuttings of non-flowering shoots in summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Gymnadenia": {
+    "map": "byGenus",
+    "key": "Gymnadenia",
+    "query": "Gymnadenia",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/24179/gymnadenia/details",
+    "slug": "gymnadenia",
+    "propagation": null
+  },
+  "byGenus:Cephalanthera": {
+    "map": "byGenus",
+    "key": "Cephalanthera",
+    "query": "Cephalanthera",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/209122/cephalanthera/details",
+    "slug": "cephalanthera",
+    "propagation": null
+  },
+  "byGenus:Himantoglossum": {
+    "map": "byGenus",
+    "key": "Himantoglossum",
+    "query": "Himantoglossum",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/23381/himantoglossum-hircinum/details",
+    "slug": "himantoglossum-hircinum",
+    "propagation": null
+  },
+  "byGenus:Neottia": {
+    "map": "byGenus",
+    "key": "Neottia",
+    "query": "Neottia",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/284520/neottia-ovata/details",
+    "slug": "neottia-ovata",
+    "propagation": null
+  },
+  "byGenus:Platanthera": {
+    "map": "byGenus",
+    "key": "Platanthera",
+    "query": "Platanthera bifolia",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/160453/platanthera-bifolia/details",
+    "slug": "platanthera-bifolia",
+    "propagation": null
+  },
+  "byGenus:Veronica": {
+    "map": "byGenus",
+    "key": "Veronica",
+    "query": "Veronica longifolia",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18847/veronica-longifolia/details",
+    "slug": "veronica-longifolia",
+    "raw": "Propagate by division in autumn or spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Digitalis": {
+    "map": "byGenus",
+    "key": "Digitalis",
+    "query": "Digitalis purpurea",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/5862/digitalis-purpurea/details",
+    "slug": "digitalis-purpurea",
+    "raw": "Propagate by seed sown in-situ in late spring. Alternatively sow in seed trays in late spring and plant out to final position in late summer; deadhead flowers regularly if seed is not required",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Brassica": {
+    "map": "byGenus",
+    "key": "Brassica",
+    "query": "Brassica oleracea",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/106078/brassica-oleracea/details",
+    "slug": "brassica-oleracea",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Lilium": {
+    "map": "byGenus",
+    "key": "Lilium",
+    "query": "Lilium candidum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/10162/lilium-candidum-ixb-a/details",
+    "slug": "lilium-candidum-ixb-a",
+    "raw": "Propagate by seed, sown, when ripe, in containers in a cold frame or separate offsets after the foliage dies down",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Asparagus": {
+    "map": "byGenus",
+    "key": "Asparagus",
+    "query": "Asparagus officinalis",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/41557/asparagus-officinalis/details",
+    "slug": "asparagus-officinalis",
+    "raw": "Propagate by crowns. Although propagation by seed is possible, it is not advisable as seedlings take longer, and may not be male cultivars which produce better plants",
+    "propagation": [
+      "seed",
+      "division"
+    ]
+  },
+  "byGenus:Muscari": {
+    "map": "byGenus",
+    "key": "Muscari",
+    "query": "Muscari armeniacum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/11247/muscari-armeniacum/details",
+    "slug": "muscari-armeniacum",
+    "raw": "Propagate by seed, sown in autumn, in containers in a cold frame or separate offsets in summer",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Scilla": {
+    "map": "byGenus",
+    "key": "Scilla",
+    "query": "Scilla forbesii",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "url": "https://www.rhs.org.uk/plants/370266/scilla-forbesii/details",
+    "slug": "scilla-forbesii",
+    "raw": "Propagate by seed, sown in pots in a cold frame when ripe, keep shaded and do not allow to dry out. Alternatively remove offsets in summer. See bulb propagation",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Cordyline": {
+    "map": "byGenus",
+    "key": "Cordyline",
+    "query": "Cordyline australis",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/4361/cordyline-australis/details",
+    "slug": "cordyline-australis",
+    "raw": "Propagate by seed or suckers",
+    "propagation": [
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Ornithogalum": {
+    "map": "byGenus",
+    "key": "Ornithogalum",
+    "query": "Ornithogalum pyrenaicum",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "url": "https://www.rhs.org.uk/plants/11950/ornithogalum-pyrenaicum/details",
+    "slug": "ornithogalum-pyrenaicum",
+    "raw": "Propagate by seed. If sowing in pots, leave, undisturbed, for the first two years with the occasional feed of liquid fertiliser. After this, Divide the bulbs into two or three per pot, leaving to grow for another year before planting outside",
+    "propagation": [
+      "division",
+      "seed",
+      "tuber"
+    ]
+  },
+  "byGenus:Lamium": {
+    "map": "byGenus",
+    "key": "Lamium",
+    "query": "Lamium",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/130783/lamium/details",
+    "slug": "lamium",
+    "propagation": null
+  },
+  "byGenus:Coleus": {
+    "map": "byGenus",
+    "key": "Coleus",
+    "query": "Coleus scutellarioides",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/132520/coleus-scutellarioides/details",
+    "slug": "coleus-scutellarioides",
+    "raw": "Propagate by seed or cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Teucrium": {
+    "map": "byGenus",
+    "key": "Teucrium",
+    "query": "Teucrium fruticans",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18060/teucrium-fruticans/details",
+    "slug": "teucrium-fruticans",
+    "raw": "Propagate by softwood cuttings in early summer, semi-ripe cuttings in midsummer, both with bottom heat",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Nepeta": {
+    "map": "byGenus",
+    "key": "Nepeta",
+    "query": "Nepeta",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/21043/nepeta/details",
+    "slug": "nepeta",
+    "propagation": null
+  },
+  "byGenus:Origanum": {
+    "map": "byGenus",
+    "key": "Origanum",
+    "query": "Origanum vulgare",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11923/origanum-vulgare/details",
+    "slug": "origanum-vulgare",
+    "raw": "Propagate by seed or by division in the autumn or spring",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Phlomis": {
+    "map": "byGenus",
+    "key": "Phlomis",
+    "query": "Phlomis fruticosa",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/12700/phlomis-fruticosa/details",
+    "slug": "phlomis-fruticosa",
+    "raw": "Propagate by softwood cuttings in summer or division in the spring. Propagate by seed in late spring under cover",
+    "propagation": [
+      "stemCutting",
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Lavandula": {
+    "map": "byGenus",
+    "key": "Lavandula",
+    "query": "Lavandula angustifolia",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/91398/lavandula-angustifolia/details",
+    "slug": "lavandula-angustifolia",
+    "raw": "Propagate by seed sown in a cold frame in spring, or by semi- hardwood cuttings in summer. See our video how to take lavender cuttings for more advice",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Populus": {
+    "map": "byGenus",
+    "key": "Populus",
+    "query": "Populus tremula",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/13520/populus-tremula/details",
+    "slug": "populus-tremula",
+    "raw": "Propagate from hardwood cuttings in winter or suckers in autumn or late winter",
+    "propagation": [
+      "stemCutting",
+      "offsets",
+      "water"
+    ]
+  },
+  "byGenus:Oenanthe": {
+    "map": "byGenus",
+    "key": "Oenanthe",
+    "query": "Oenanthe aquatica",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/160040/oenanthe-aquatica/details",
+    "slug": "oenanthe-aquatica",
+    "raw": "Propagate by division in late spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Eryngium": {
+    "map": "byGenus",
+    "key": "Eryngium",
+    "query": "Eryngium",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/6775/eryngium/details",
+    "slug": "eryngium",
+    "propagation": null
+  },
+  "byGenus:Heracleum": {
+    "map": "byGenus",
+    "key": "Heracleum",
+    "query": "Heracleum",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/20779/heracleum/details",
+    "slug": "heracleum",
+    "propagation": null
+  },
+  "byGenus:Hesperocyparis": {
+    "map": "byGenus",
+    "key": "Hesperocyparis",
+    "query": "Hesperocyparis",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "error": "rep-other-genus",
+    "propagation": null
+  },
+  "byGenus:Cupressus": {
+    "map": "byGenus",
+    "key": "Cupressus",
+    "query": "Cupressus sempervirens",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/5079/cupressus-sempervirens/details",
+    "slug": "cupressus-sempervirens",
+    "raw": "Propagate by seed or semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Chamaecyparis": {
+    "map": "byGenus",
+    "key": "Chamaecyparis",
+    "query": "Chamaecyparis lawsoniana",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/3571/chamaecyparis-lawsoniana/details",
+    "slug": "chamaecyparis-lawsoniana",
+    "raw": "Propagate by seed and semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Ipomoea": {
+    "map": "byGenus",
+    "key": "Ipomoea",
+    "query": "Ipomoea purpurea",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/56562/ipomoea-purpurea/details",
+    "slug": "ipomoea-purpurea",
+    "raw": "Propagate by seed. See sowing seeds indoors for further advice",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Convolvulus": {
+    "map": "byGenus",
+    "key": "Convolvulus",
+    "query": "Convolvulus tricolor",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWater",
+    "url": "https://www.rhs.org.uk/plants/105536/convolvulus-tricolor/details",
+    "slug": "convolvulus-tricolor",
+    "raw": "Propagate by seed, root softwood cuttings in late summer, or Divide in spring",
+    "propagation": [
+      "seed",
+      "stemCutting",
+      "division"
+    ]
+  },
+  "byGenus:Larix": {
+    "map": "byGenus",
+    "key": "Larix",
+    "query": "Larix decidua",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/9835/larix-decidua/details",
+    "slug": "larix-decidua",
+    "raw": "Propagate by seed in containers in early spring, graft in winter, or root semi-ripe cuttings in summer under mist; cuttings are difficult to root",
+    "propagation": [
+      "seed",
+      "stemCutting"
+    ]
+  },
+  "byGenus:Cedrus": {
+    "map": "byGenus",
+    "key": "Cedrus",
+    "query": "Cedrus atlantica",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/3288/cedrus-atlantica/details",
+    "slug": "cedrus-atlantica",
+    "raw": "Propagate by semi- hardwood cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Gentiana": {
+    "map": "byGenus",
+    "key": "Gentiana",
+    "query": "Gentiana lutea",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/7793/gentiana-lutea/details",
+    "slug": "gentiana-lutea",
+    "raw": "Propagate by division in spring",
+    "propagation": [
+      "division"
+    ]
+  },
+  "byGenus:Rhaphidophora": {
+    "map": "byGenus",
+    "key": "Rhaphidophora",
+    "query": "Rhaphidophora tetrasperma",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/506806/rhaphidophora-tetrasperma/details",
+    "slug": "rhaphidophora-tetrasperma",
+    "propagation": null
+  },
+  "byGenus:Arum": {
+    "map": "byGenus",
+    "key": "Arum",
+    "query": "Arum",
+    "current_propagation": [
+      "tuber",
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/1651/arum/details",
+    "slug": "arum",
+    "propagation": null
+  },
+  "byGenus:Pilea": {
+    "map": "byGenus",
+    "key": "Pilea",
+    "query": "Pilea peperomioides",
+    "current_propagation": [
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/13015/pilea-peperomioides/details",
+    "slug": "pilea-peperomioides",
+    "raw": "Propagate by seed, by division or detatch rosettes in spring",
+    "propagation": [
+      "division",
+      "offsets",
+      "seed"
+    ]
+  },
+  "byGenus:Lysimachia": {
+    "map": "byGenus",
+    "key": "Lysimachia",
+    "query": "Lysimachia",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/20824/lysimachia/details",
+    "slug": "lysimachia",
+    "propagation": null
+  },
+  "byGenus:Primula": {
+    "map": "byGenus",
+    "key": "Primula",
+    "query": "Primula obconica",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/78912/primula-obconica-ob/details",
+    "slug": "primula-obconica-ob",
+    "raw": "Propagate by seed",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Aesculus": {
+    "map": "byGenus",
+    "key": "Aesculus",
+    "query": "Aesculus × carnea",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/579/aesculus-flava/details",
+    "slug": "aesculus-flava",
+    "raw": "Propagate by seed or grafting",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Ctenanthe": {
+    "map": "byGenus",
+    "key": "Ctenanthe",
+    "query": "Ctenanthe burle-marxii",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardinessLightIssues",
+    "url": "https://www.rhs.org.uk/plants/5026/ctenanthe-burle-marxii/details",
+    "slug": "ctenanthe-burle-marxii",
+    "raw": "Propagate by seed or by division in spring",
+    "propagation": [
+      "division",
+      "seed"
+    ]
+  },
+  "byGenus:Parthenocissus": {
+    "map": "byGenus",
+    "key": "Parthenocissus",
+    "query": "Parthenocissus",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/12345/parthenocissus/details",
+    "slug": "parthenocissus",
+    "propagation": null
+  },
+  "byGenus:Phoenix": {
+    "map": "byGenus",
+    "key": "Phoenix",
+    "query": "Phoenix roebelenii",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessAndLight",
+    "url": "https://www.rhs.org.uk/plants/12771/phoenix-roebelenii/details",
+    "slug": "phoenix-roebelenii",
+    "raw": "Propagate by seed sown at 19 to 24°C in spring",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byGenus:Sambucus": {
+    "map": "byGenus",
+    "key": "Sambucus",
+    "query": "Sambucus nigra",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/16391/sambucus-nigra/details",
+    "slug": "sambucus-nigra",
+    "raw": "Propagate by softwood or hardwood cuttings",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Viburnum": {
+    "map": "byGenus",
+    "key": "Viburnum",
+    "query": "Viburnum tinus",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/18950/viburnum-tinus/details",
+    "slug": "viburnum-tinus",
+    "raw": "Propagate by semi-ripe cuttings in summer",
+    "propagation": [
+      "stemCutting"
+    ]
+  },
+  "byGenus:Ilex": {
+    "map": "byGenus",
+    "key": "Ilex",
+    "query": "Ilex aquifolium",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/9087/ilex-aquifolium/details",
+    "slug": "ilex-aquifolium",
+    "raw": "Propagate by seed in a coldframe in autumn, or propagate by semi-ripe cuttings in late summer or early autumn or propagate by hardwood cuttings in January with bottom heat",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Artocarpus": {
+    "map": "byGenus",
+    "key": "Artocarpus",
+    "query": "Artocarpus altilis",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/1649/artocarpus-altilis/details",
+    "slug": "artocarpus-altilis",
+    "propagation": null
+  },
+  "byGenus:Morus": {
+    "map": "byGenus",
+    "key": "Morus",
+    "query": "Morus alba",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/11216/morus-alba/details",
+    "slug": "morus-alba",
+    "raw": "Propagate by seed, by semi-ripe cuttings in summer, or by hardwood cuttings in autumn",
+    "propagation": [
+      "stemCutting",
+      "seed"
+    ]
+  },
+  "byGenus:Petunia": {
+    "map": "byGenus",
+    "key": "Petunia",
+    "query": "Petunia × atkinsiana",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/278209/petunia-mp7/details",
+    "slug": "petunia-mp7",
+    "propagation": null
+  },
+  "byGenus:Heuchera": {
+    "map": "byGenus",
+    "key": "Heuchera",
+    "query": "Heuchera",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/8688/heuchera/details",
+    "slug": "heuchera",
+    "propagation": null
+  },
+  "byGenus:Hordeum": {
+    "map": "byGenus",
+    "key": "Hordeum",
+    "query": "Hordeum vulgare",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/277900/hordeum-vulgare/details",
+    "slug": "hordeum-vulgare",
+    "raw": "Propagate by seed in situ in spring or autumn",
+    "propagation": [
+      "seed"
+    ]
+  },
+  "byFamily:Ranunculaceae": {
+    "map": "byFamily",
+    "key": "Ranunculaceae",
+    "query": "Ranunculaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Caryophyllaceae": {
+    "map": "byFamily",
+    "key": "Caryophyllaceae",
+    "query": "Caryophyllaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Gentianaceae": {
+    "map": "byFamily",
+    "key": "Gentianaceae",
+    "query": "Gentianaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Primulaceae": {
+    "map": "byFamily",
+    "key": "Primulaceae",
+    "query": "Primulaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Violaceae": {
+    "map": "byFamily",
+    "key": "Violaceae",
+    "query": "Violaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Boraginaceae": {
+    "map": "byFamily",
+    "key": "Boraginaceae",
+    "query": "Boraginaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Plantaginaceae": {
+    "map": "byFamily",
+    "key": "Plantaginaceae",
+    "query": "Plantaginaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Papaveraceae": {
+    "map": "byFamily",
+    "key": "Papaveraceae",
+    "query": "Papaveraceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Iridaceae": {
+    "map": "byFamily",
+    "key": "Iridaceae",
+    "query": "Iridaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Liliaceae": {
+    "map": "byFamily",
+    "key": "Liliaceae",
+    "query": "Liliaceae",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Saxifragaceae": {
+    "map": "byFamily",
+    "key": "Saxifragaceae",
+    "query": "Saxifragaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Campanulaceae": {
+    "map": "byFamily",
+    "key": "Campanulaceae",
+    "query": "Campanulaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Malvaceae": {
+    "map": "byFamily",
+    "key": "Malvaceae",
+    "query": "Malvaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Oleaceae": {
+    "map": "byFamily",
+    "key": "Oleaceae",
+    "query": "Oleaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Betulaceae": {
+    "map": "byFamily",
+    "key": "Betulaceae",
+    "query": "Betulaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Fagaceae": {
+    "map": "byFamily",
+    "key": "Fagaceae",
+    "query": "Fagaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Salicaceae": {
+    "map": "byFamily",
+    "key": "Salicaceae",
+    "query": "Salicaceae",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Sapindaceae": {
+    "map": "byFamily",
+    "key": "Sapindaceae",
+    "query": "Sapindaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Caprifoliaceae": {
+    "map": "byFamily",
+    "key": "Caprifoliaceae",
+    "query": "Caprifoliaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Adoxaceae": {
+    "map": "byFamily",
+    "key": "Adoxaceae",
+    "query": "Adoxaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Hydrangeaceae": {
+    "map": "byFamily",
+    "key": "Hydrangeaceae",
+    "query": "Hydrangeaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Onagraceae": {
+    "map": "byFamily",
+    "key": "Onagraceae",
+    "query": "Onagraceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Polygonaceae": {
+    "map": "byFamily",
+    "key": "Polygonaceae",
+    "query": "Polygonaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Amaranthaceae": {
+    "map": "byFamily",
+    "key": "Amaranthaceae",
+    "query": "Amaranthaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Convolvulaceae": {
+    "map": "byFamily",
+    "key": "Convolvulaceae",
+    "query": "Convolvulaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Hypericaceae": {
+    "map": "byFamily",
+    "key": "Hypericaceae",
+    "query": "Hypericaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Vitaceae": {
+    "map": "byFamily",
+    "key": "Vitaceae",
+    "query": "Vitaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Magnoliaceae": {
+    "map": "byFamily",
+    "key": "Magnoliaceae",
+    "query": "Magnoliaceae",
+    "current_propagation": [
+      "layering"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Berberidaceae": {
+    "map": "byFamily",
+    "key": "Berberidaceae",
+    "query": "Berberidaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Aquifoliaceae": {
+    "map": "byFamily",
+    "key": "Aquifoliaceae",
+    "query": "Aquifoliaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Buxaceae": {
+    "map": "byFamily",
+    "key": "Buxaceae",
+    "query": "Buxaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Gesneriaceae": {
+    "map": "byFamily",
+    "key": "Gesneriaceae",
+    "query": "Gesneriaceae",
+    "current_propagation": [
+      "leafCutting"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Nymphaeaceae": {
+    "map": "byFamily",
+    "key": "Nymphaeaceae",
+    "query": "Nymphaeaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLight",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Urticaceae": {
+    "map": "byFamily",
+    "key": "Urticaceae",
+    "query": "Urticaceae",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Araceae": {
+    "map": "byFamily",
+    "key": "Araceae",
+    "query": "Araceae",
+    "current_propagation": [
+      "stemCutting",
+      "water"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Marantaceae": {
+    "map": "byFamily",
+    "key": "Marantaceae",
+    "query": "Marantaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cactaceae": {
+    "map": "byFamily",
+    "key": "Cactaceae",
+    "query": "Cactaceae",
+    "current_propagation": [
+      "stemCutting",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Crassulaceae": {
+    "map": "byFamily",
+    "key": "Crassulaceae",
+    "query": "Crassulaceae",
+    "current_propagation": [
+      "leafCutting",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Asphodelaceae": {
+    "map": "byFamily",
+    "key": "Asphodelaceae",
+    "query": "Asphodelaceae",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Asparagaceae": {
+    "map": "byFamily",
+    "key": "Asparagaceae",
+    "query": "Asparagaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Arecaceae": {
+    "map": "byFamily",
+    "key": "Arecaceae",
+    "query": "Arecaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoil",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Moraceae": {
+    "map": "byFamily",
+    "key": "Moraceae",
+    "query": "Moraceae",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Orchidaceae": {
+    "map": "byFamily",
+    "key": "Orchidaceae",
+    "query": "Orchidaceae",
+    "current_propagation": [
+      "division",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Bromeliaceae": {
+    "map": "byFamily",
+    "key": "Bromeliaceae",
+    "query": "Bromeliaceae",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lamiaceae": {
+    "map": "byFamily",
+    "key": "Lamiaceae",
+    "query": "Lamiaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Apiaceae": {
+    "map": "byFamily",
+    "key": "Apiaceae",
+    "query": "Apiaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Solanaceae": {
+    "map": "byFamily",
+    "key": "Solanaceae",
+    "query": "Solanaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cucurbitaceae": {
+    "map": "byFamily",
+    "key": "Cucurbitaceae",
+    "query": "Cucurbitaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Rosaceae": {
+    "map": "byFamily",
+    "key": "Rosaceae",
+    "query": "Rosaceae",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Rutaceae": {
+    "map": "byFamily",
+    "key": "Rutaceae",
+    "query": "Rutaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Asteraceae": {
+    "map": "byFamily",
+    "key": "Asteraceae",
+    "query": "Asteraceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Ericaceae": {
+    "map": "byFamily",
+    "key": "Ericaceae",
+    "query": "Ericaceae",
+    "current_propagation": [
+      "layering",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Droseraceae": {
+    "map": "byFamily",
+    "key": "Droseraceae",
+    "query": "Droseraceae",
+    "current_propagation": [
+      "division",
+      "leafCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Sarraceniaceae": {
+    "map": "byFamily",
+    "key": "Sarraceniaceae",
+    "query": "Sarraceniaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Nepenthaceae": {
+    "map": "byFamily",
+    "key": "Nepenthaceae",
+    "query": "Nepenthaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Amaryllidaceae": {
+    "map": "byFamily",
+    "key": "Amaryllidaceae",
+    "query": "Amaryllidaceae",
+    "current_propagation": [
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Fabaceae": {
+    "map": "byFamily",
+    "key": "Fabaceae",
+    "query": "Fabaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Brassicaceae": {
+    "map": "byFamily",
+    "key": "Brassicaceae",
+    "query": "Brassicaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Pinaceae": {
+    "map": "byFamily",
+    "key": "Pinaceae",
+    "query": "Pinaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cupressaceae": {
+    "map": "byFamily",
+    "key": "Cupressaceae",
+    "query": "Cupressaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Piperaceae": {
+    "map": "byFamily",
+    "key": "Piperaceae",
+    "query": "Piperaceae",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Apocynaceae": {
+    "map": "byFamily",
+    "key": "Apocynaceae",
+    "query": "Apocynaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Euphorbiaceae": {
+    "map": "byFamily",
+    "key": "Euphorbiaceae",
+    "query": "Euphorbiaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Poaceae": {
+    "map": "byFamily",
+    "key": "Poaceae",
+    "query": "Poaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Geraniaceae": {
+    "map": "byFamily",
+    "key": "Geraniaceae",
+    "query": "Geraniaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Acanthaceae": {
+    "map": "byFamily",
+    "key": "Acanthaceae",
+    "query": "Acanthaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Anacardiaceae": {
+    "map": "byFamily",
+    "key": "Anacardiaceae",
+    "query": "Anacardiaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed",
+      "layering"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Annonaceae": {
+    "map": "byFamily",
+    "key": "Annonaceae",
+    "query": "Annonaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Araucariaceae": {
+    "map": "byFamily",
+    "key": "Araucariaceae",
+    "query": "Araucariaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Begoniaceae": {
+    "map": "byFamily",
+    "key": "Begoniaceae",
+    "query": "Begoniaceae",
+    "current_propagation": [
+      "leafCutting",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Bignoniaceae": {
+    "map": "byFamily",
+    "key": "Bignoniaceae",
+    "query": "Bignoniaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Commelinaceae": {
+    "map": "byFamily",
+    "key": "Commelinaceae",
+    "query": "Commelinaceae",
+    "current_propagation": [
+      "stemCutting",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cornaceae": {
+    "map": "byFamily",
+    "key": "Cornaceae",
+    "query": "Cornaceae",
+    "current_propagation": [
+      "stemCutting",
+      "layering"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cyperaceae": {
+    "map": "byFamily",
+    "key": "Cyperaceae",
+    "query": "Cyperaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Elaeagnaceae": {
+    "map": "byFamily",
+    "key": "Elaeagnaceae",
+    "query": "Elaeagnaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lauraceae": {
+    "map": "byFamily",
+    "key": "Lauraceae",
+    "query": "Lauraceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Linaceae": {
+    "map": "byFamily",
+    "key": "Linaceae",
+    "query": "Linaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lythraceae": {
+    "map": "byFamily",
+    "key": "Lythraceae",
+    "query": "Lythraceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Myrtaceae": {
+    "map": "byFamily",
+    "key": "Myrtaceae",
+    "query": "Myrtaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Oxalidaceae": {
+    "map": "byFamily",
+    "key": "Oxalidaceae",
+    "query": "Oxalidaceae",
+    "current_propagation": [
+      "offsets",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Passifloraceae": {
+    "map": "byFamily",
+    "key": "Passifloraceae",
+    "query": "Passifloraceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Rhamnaceae": {
+    "map": "byFamily",
+    "key": "Rhamnaceae",
+    "query": "Rhamnaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Rubiaceae": {
+    "map": "byFamily",
+    "key": "Rubiaceae",
+    "query": "Rubiaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Scrophulariaceae": {
+    "map": "byFamily",
+    "key": "Scrophulariaceae",
+    "query": "Scrophulariaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Verbenaceae": {
+    "map": "byFamily",
+    "key": "Verbenaceae",
+    "query": "Verbenaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Acoraceae": {
+    "map": "byFamily",
+    "key": "Acoraceae",
+    "query": "Acoraceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Actinidiaceae": {
+    "map": "byFamily",
+    "key": "Actinidiaceae",
+    "query": "Actinidiaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Aizoaceae": {
+    "map": "byFamily",
+    "key": "Aizoaceae",
+    "query": "Aizoaceae",
+    "current_propagation": [
+      "stemCutting",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Alismataceae": {
+    "map": "byFamily",
+    "key": "Alismataceae",
+    "query": "Alismataceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Alstroemeriaceae": {
+    "map": "byFamily",
+    "key": "Alstroemeriaceae",
+    "query": "Alstroemeriaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Altingiaceae": {
+    "map": "byFamily",
+    "key": "Altingiaceae",
+    "query": "Altingiaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Araliaceae": {
+    "map": "byFamily",
+    "key": "Araliaceae",
+    "query": "Araliaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Balsaminaceae": {
+    "map": "byFamily",
+    "key": "Balsaminaceae",
+    "query": "Balsaminaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Bixaceae": {
+    "map": "byFamily",
+    "key": "Bixaceae",
+    "query": "Bixaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Calycanthaceae": {
+    "map": "byFamily",
+    "key": "Calycanthaceae",
+    "query": "Calycanthaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cannabaceae": {
+    "map": "byFamily",
+    "key": "Cannabaceae",
+    "query": "Cannabaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Capparaceae": {
+    "map": "byFamily",
+    "key": "Capparaceae",
+    "query": "Capparaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Caricaceae": {
+    "map": "byFamily",
+    "key": "Caricaceae",
+    "query": "Caricaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Celastraceae": {
+    "map": "byFamily",
+    "key": "Celastraceae",
+    "query": "Celastraceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cephalotaceae": {
+    "map": "byFamily",
+    "key": "Cephalotaceae",
+    "query": "Cephalotaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Ceratophyllaceae": {
+    "map": "byFamily",
+    "key": "Ceratophyllaceae",
+    "query": "Ceratophyllaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cercidiphyllaceae": {
+    "map": "byFamily",
+    "key": "Cercidiphyllaceae",
+    "query": "Cercidiphyllaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cistaceae": {
+    "map": "byFamily",
+    "key": "Cistaceae",
+    "query": "Cistaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cladophoraceae": {
+    "map": "byFamily",
+    "key": "Cladophoraceae",
+    "query": "Cladophoraceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cleomaceae": {
+    "map": "byFamily",
+    "key": "Cleomaceae",
+    "query": "Cleomaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Clusiaceae": {
+    "map": "byFamily",
+    "key": "Clusiaceae",
+    "query": "Clusiaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Colchicaceae": {
+    "map": "byFamily",
+    "key": "Colchicaceae",
+    "query": "Colchicaceae",
+    "current_propagation": [
+      "offsets",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Cycadaceae": {
+    "map": "byFamily",
+    "key": "Cycadaceae",
+    "query": "Cycadaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Dicksoniaceae": {
+    "map": "byFamily",
+    "key": "Dicksoniaceae",
+    "query": "Dicksoniaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Didiereaceae": {
+    "map": "byFamily",
+    "key": "Didiereaceae",
+    "query": "Didiereaceae",
+    "current_propagation": [
+      "stemCutting",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Dryopteridaceae": {
+    "map": "byFamily",
+    "key": "Dryopteridaceae",
+    "query": "Dryopteridaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Ebenaceae": {
+    "map": "byFamily",
+    "key": "Ebenaceae",
+    "query": "Ebenaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Equisetaceae": {
+    "map": "byFamily",
+    "key": "Equisetaceae",
+    "query": "Equisetaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Erythroxylaceae": {
+    "map": "byFamily",
+    "key": "Erythroxylaceae",
+    "query": "Erythroxylaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Escalloniaceae": {
+    "map": "byFamily",
+    "key": "Escalloniaceae",
+    "query": "Escalloniaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Garryaceae": {
+    "map": "byFamily",
+    "key": "Garryaceae",
+    "query": "Garryaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Gigartinaceae": {
+    "map": "byFamily",
+    "key": "Gigartinaceae",
+    "query": "Gigartinaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Ginkgoaceae": {
+    "map": "byFamily",
+    "key": "Ginkgoaceae",
+    "query": "Ginkgoaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Grossulariaceae": {
+    "map": "byFamily",
+    "key": "Grossulariaceae",
+    "query": "Grossulariaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Gunneraceae": {
+    "map": "byFamily",
+    "key": "Gunneraceae",
+    "query": "Gunneraceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Hamamelidaceae": {
+    "map": "byFamily",
+    "key": "Hamamelidaceae",
+    "query": "Hamamelidaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Juglandaceae": {
+    "map": "byFamily",
+    "key": "Juglandaceae",
+    "query": "Juglandaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Juncaceae": {
+    "map": "byFamily",
+    "key": "Juncaceae",
+    "query": "Juncaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lardizabalaceae": {
+    "map": "byFamily",
+    "key": "Lardizabalaceae",
+    "query": "Lardizabalaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lecythidaceae": {
+    "map": "byFamily",
+    "key": "Lecythidaceae",
+    "query": "Lecythidaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lentibulariaceae": {
+    "map": "byFamily",
+    "key": "Lentibulariaceae",
+    "query": "Lentibulariaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Lycopodiaceae": {
+    "map": "byFamily",
+    "key": "Lycopodiaceae",
+    "query": "Lycopodiaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Melanthiaceae": {
+    "map": "byFamily",
+    "key": "Melanthiaceae",
+    "query": "Melanthiaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Melastomataceae": {
+    "map": "byFamily",
+    "key": "Melastomataceae",
+    "query": "Melastomataceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Meliaceae": {
+    "map": "byFamily",
+    "key": "Meliaceae",
+    "query": "Meliaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Menyanthaceae": {
+    "map": "byFamily",
+    "key": "Menyanthaceae",
+    "query": "Menyanthaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Nelumbonaceae": {
+    "map": "byFamily",
+    "key": "Nelumbonaceae",
+    "query": "Nelumbonaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Nyctaginaceae": {
+    "map": "byFamily",
+    "key": "Nyctaginaceae",
+    "query": "Nyctaginaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Nyssaceae": {
+    "map": "byFamily",
+    "key": "Nyssaceae",
+    "query": "Nyssaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Onocleaceae": {
+    "map": "byFamily",
+    "key": "Onocleaceae",
+    "query": "Onocleaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Ophioglossaceae": {
+    "map": "byFamily",
+    "key": "Ophioglossaceae",
+    "query": "Ophioglossaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Orobanchaceae": {
+    "map": "byFamily",
+    "key": "Orobanchaceae",
+    "query": "Orobanchaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Paeoniaceae": {
+    "map": "byFamily",
+    "key": "Paeoniaceae",
+    "query": "Paeoniaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Palmariaceae": {
+    "map": "byFamily",
+    "key": "Palmariaceae",
+    "query": "Palmariaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Paulowniaceae": {
+    "map": "byFamily",
+    "key": "Paulowniaceae",
+    "query": "Paulowniaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Pedaliaceae": {
+    "map": "byFamily",
+    "key": "Pedaliaceae",
+    "query": "Pedaliaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Phytolaccaceae": {
+    "map": "byFamily",
+    "key": "Phytolaccaceae",
+    "query": "Phytolaccaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Pittosporaceae": {
+    "map": "byFamily",
+    "key": "Pittosporaceae",
+    "query": "Pittosporaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Platanaceae": {
+    "map": "byFamily",
+    "key": "Platanaceae",
+    "query": "Platanaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Plumbaginaceae": {
+    "map": "byFamily",
+    "key": "Plumbaginaceae",
+    "query": "Plumbaginaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Polemoniaceae": {
+    "map": "byFamily",
+    "key": "Polemoniaceae",
+    "query": "Polemoniaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Polygalaceae": {
+    "map": "byFamily",
+    "key": "Polygalaceae",
+    "query": "Polygalaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Polypodiaceae": {
+    "map": "byFamily",
+    "key": "Polypodiaceae",
+    "query": "Polypodiaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Pontederiaceae": {
+    "map": "byFamily",
+    "key": "Pontederiaceae",
+    "query": "Pontederiaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Portulacaceae": {
+    "map": "byFamily",
+    "key": "Portulacaceae",
+    "query": "Portulacaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Potamogetonaceae": {
+    "map": "byFamily",
+    "key": "Potamogetonaceae",
+    "query": "Potamogetonaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Pottiaceae": {
+    "map": "byFamily",
+    "key": "Pottiaceae",
+    "query": "Pottiaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Proteaceae": {
+    "map": "byFamily",
+    "key": "Proteaceae",
+    "query": "Proteaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Pteridaceae": {
+    "map": "byFamily",
+    "key": "Pteridaceae",
+    "query": "Pteridaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Sapotaceae": {
+    "map": "byFamily",
+    "key": "Sapotaceae",
+    "query": "Sapotaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Simaroubaceae": {
+    "map": "byFamily",
+    "key": "Simaroubaceae",
+    "query": "Simaroubaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Smilacaceae": {
+    "map": "byFamily",
+    "key": "Smilacaceae",
+    "query": "Smilacaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Staphyleaceae": {
+    "map": "byFamily",
+    "key": "Staphyleaceae",
+    "query": "Staphyleaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Styracaceae": {
+    "map": "byFamily",
+    "key": "Styracaceae",
+    "query": "Styracaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Tamaricaceae": {
+    "map": "byFamily",
+    "key": "Tamaricaceae",
+    "query": "Tamaricaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Taxaceae": {
+    "map": "byFamily",
+    "key": "Taxaceae",
+    "query": "Taxaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Thymelaeaceae": {
+    "map": "byFamily",
+    "key": "Thymelaeaceae",
+    "query": "Thymelaeaceae",
+    "current_propagation": [
+      "stemCutting",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Tropaeolaceae": {
+    "map": "byFamily",
+    "key": "Tropaeolaceae",
+    "query": "Tropaeolaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Typhaceae": {
+    "map": "byFamily",
+    "key": "Typhaceae",
+    "query": "Typhaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Ulmaceae": {
+    "map": "byFamily",
+    "key": "Ulmaceae",
+    "query": "Ulmaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Viscaceae": {
+    "map": "byFamily",
+    "key": "Viscaceae",
+    "query": "Viscaceae",
+    "current_propagation": [
+      "seed",
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Zamiaceae": {
+    "map": "byFamily",
+    "key": "Zamiaceae",
+    "query": "Zamiaceae",
+    "current_propagation": [
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Zingiberaceae": {
+    "map": "byFamily",
+    "key": "Zingiberaceae",
+    "query": "Zingiberaceae",
+    "current_propagation": [
+      "division",
+      "stemCutting"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Costaceae": {
+    "map": "byFamily",
+    "key": "Costaceae",
+    "query": "Costaceae",
+    "current_propagation": [
+      "division",
+      "stemCutting"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Davalliaceae": {
+    "map": "byFamily",
+    "key": "Davalliaceae",
+    "query": "Davalliaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Dioscoreaceae": {
+    "map": "byFamily",
+    "key": "Dioscoreaceae",
+    "query": "Dioscoreaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Menispermaceae": {
+    "map": "byFamily",
+    "key": "Menispermaceae",
+    "query": "Menispermaceae",
+    "current_propagation": [
+      "seed",
+      "division"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Musaceae": {
+    "map": "byFamily",
+    "key": "Musaceae",
+    "query": "Musaceae",
+    "current_propagation": [
+      "division",
+      "offsets"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Phyllanthaceae": {
+    "map": "byFamily",
+    "key": "Phyllanthaceae",
+    "query": "Phyllanthaceae",
+    "current_propagation": [
+      "seed"
+    ],
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Selaginellaceae": {
+    "map": "byFamily",
+    "key": "Selaginellaceae",
+    "query": "Selaginellaceae",
+    "current_propagation": [
+      "division"
+    ],
+    "current_sourcing": "_rhsLightWater",
+    "error": "not-a-taxon",
+    "propagation": null
+  },
+  "byFamily:Strelitziaceae": {
+    "map": "byFamily",
+    "key": "Strelitziaceae",
+    "query": "Strelitziaceae",
+    "current_propagation": [
+      "division",
+      "seed"
+    ],
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "propagation": null
+  }
+}

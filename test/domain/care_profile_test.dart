@@ -134,6 +134,12 @@ void main() {
       // La règle écrite l'emporte sur la lecture.
       expect(profile(dryDown: DryDown.fullyDry).dryDownRule, DryDown.fullyDry);
     });
+
+    test('chaque règle a un intervalle-rappel, et l\'inverse retombe dessus', () {
+      for (final rule in DryDown.values) {
+        expect(dryDownFromDays(daysFromDryDown(rule)), rule);
+      }
+    });
   });
 
   group('catalogue', () {
@@ -156,6 +162,16 @@ void main() {
       final fautifs = [
         for (final e in all.entries)
           if (e.value.inPon != SoilFreeFit.no && !e.value.potGrown) e.key,
+      ];
+      expect(fautifs, isEmpty);
+    });
+
+    test('un plancher de lumière est plus bas que l’idéal', () {
+      final fautifs = [
+        for (final e in all.entries)
+          if (e.value.lightTolerance case final floor?
+              when floor.index >= e.value.light.index)
+            e.key,
       ];
       expect(fautifs, isEmpty);
     });

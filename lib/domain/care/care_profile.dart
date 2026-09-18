@@ -99,6 +99,17 @@ DryDown dryDownFromDays(int days) => switch (days) {
       _ => DryDown.fullyDry,
     };
 
+/// Intervalle-rappel associé à une règle de séchage : une estimation, pas
+/// une cote. Le pot, la pièce et la saison la déplacent encore.
+int daysFromDryDown(DryDown rule) => switch (rule) {
+      DryDown.alwaysMoist => 2,
+      DryDown.surfaceDry => 4,
+      DryDown.topQuarterDry => 7,
+      DryDown.halfDry => 10,
+      DryDown.mostlyDry => 18,
+      DryDown.fullyDry => 30,
+    };
+
 /// Difficulté d'entretien.
 enum CareDifficulty { easy, medium, demanding }
 
@@ -398,7 +409,7 @@ class CareProfile {
   /// Jours entre deux arrosages au repos (hiver).
   final int wateringWinterDays;
 
-  /// La règle de séchage, quand elle est écrite à la main. `null` = on la lit
+  /// La règle de séchage, quand elle est écrite. `null` = on la lit
   /// dans l'intervalle d'arrosage (voir [dryDownRule]).
   final DryDown? dryDown;
 

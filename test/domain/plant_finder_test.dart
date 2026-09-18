@@ -61,7 +61,7 @@ void main() {
     test('un coin sombre ne reçoit pas de plante de lumière vive', () {
       final results = finder.search(const FinderCriteria(spot: FinderSpot.darkRoom), limit: 20);
       expect(results, isNotEmpty);
-      expect(results.every((m) => profileOf(m).light.index <= LightNeed.indirect.index), isTrue);
+      expect(results.every((m) => profileOf(m).lightFloor.index <= LightNeed.indirect.index), isTrue);
     });
 
     test('les autres réponses ne rachètent pas la lumière', () {
@@ -69,7 +69,7 @@ void main() {
       // les deux cases, mais aucune ne vit dans un coin sombre.
       final results = finder.search(const FinderCriteria(spot: FinderSpot.darkRoom, effort: FinderEffort.forgiving, safeOnly: true), limit: 20);
       expect(results, isNotEmpty);
-      expect(results.every((m) => profileOf(m).light.index <= LightNeed.indirect.index), isTrue);
+      expect(results.every((m) => profileOf(m).lightFloor.index <= LightNeed.indirect.index), isTrue);
       expect(results.any((m) => m.entry.category == SpeciesCategory.succulent), isFalse);
     });
 

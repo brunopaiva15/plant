@@ -1130,6 +1130,7 @@
   "careLightBright": "Luce viva indiretta",
   "careLightSome": "Qualche ora di sole",
   "careLightFull": "Pieno sole",
+  "careLightFloor": "Resiste fino a {value}",
   "careLightLamp": "Sotto lampada · LED a spettro completo, da {min} a {max} µmol/m²/s, {hours} h al giorno",
   "careLightLampDli": "Ossia da {min} a {max} mol/m²/giorno sul fogliame.",
   "careHumidityLow": "Aria secca va bene",

@@ -5610,6 +5610,12 @@ abstract class AppLocalizations {
   /// **'Plein soleil'**
   String get careLightFull;
 
+  /// No description provided for @careLightFloor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tient jusqu\'à {value}'**
+  String careLightFloor(String value);
+
   /// No description provided for @careLightLamp.
   ///
   /// In fr, this message translates to:

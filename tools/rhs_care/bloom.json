@@ -1,0 +1,6389 @@
+{
+  "bySpecies:Monstera deliciosa": {
+    "map": "bySpecies",
+    "key": "Monstera deliciosa",
+    "query": "Monstera deliciosa",
+    "current_bloom": {
+      "from": 5,
+      "to": 8,
+      "triggers": [
+        "maturity"
+      ],
+      "indoors": false
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11192/monstera-deliciosa-f/details",
+    "slug": "monstera-deliciosa-f",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [
+        "maturity"
+      ],
+      "indoors": false
+    }
+  },
+  "bySpecies:Dracaena trifasciata": {
+    "map": "bySpecies",
+    "key": "Dracaena trifasciata",
+    "query": "Dracaena trifasciata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/530138/dracaena-trifasciata/details",
+    "slug": "dracaena-trifasciata",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Zamioculcas zamiifolia": {
+    "map": "bySpecies",
+    "key": "Zamioculcas zamiifolia",
+    "query": "Zamioculcas zamiifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/19185/zamioculcas-zamiifolia/details",
+    "slug": "zamioculcas-zamiifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Spathiphyllum wallisii": {
+    "map": "bySpecies",
+    "key": "Spathiphyllum wallisii",
+    "query": "Spathiphyllum wallisii",
+    "current_bloom": {
+      "from": 4,
+      "to": 9,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/17623/spathiphyllum-wallisii/details",
+    "slug": "spathiphyllum-wallisii",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "bySpecies:Pilea peperomioides": {
+    "map": "bySpecies",
+    "key": "Pilea peperomioides",
+    "query": "Pilea peperomioides",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/13015/pilea-peperomioides/details",
+    "slug": "pilea-peperomioides",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Ficus lyrata": {
+    "map": "bySpecies",
+    "key": "Ficus lyrata",
+    "query": "Ficus lyrata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7207/ficus-lyrata/details",
+    "slug": "ficus-lyrata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Phalaenopsis amabilis": {
+    "map": "bySpecies",
+    "key": "Phalaenopsis amabilis",
+    "query": "Phalaenopsis amabilis",
+    "current_bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [
+        "coolNights",
+        "potbound",
+        "keepSpike"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/119644/phalaenopsis-amabilis/details",
+    "slug": "phalaenopsis-amabilis",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 1,
+      "to": 12,
+      "triggers": [
+        "coolNights",
+        "potbound",
+        "keepSpike"
+      ],
+      "indoors": true
+    }
+  },
+  "bySpecies:Aloe vera": {
+    "map": "bySpecies",
+    "key": "Aloe vera",
+    "query": "Aloe vera",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/981/aloe-vera/details",
+    "slug": "aloe-vera",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Ocimum basilicum": {
+    "map": "bySpecies",
+    "key": "Ocimum basilicum",
+    "query": "Ocimum basilicum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11649/ocimum-basilicum/details",
+    "slug": "ocimum-basilicum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Solanum lycopersicum": {
+    "map": "bySpecies",
+    "key": "Solanum lycopersicum",
+    "query": "Solanum lycopersicum",
+    "current_bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "evenWater"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/293619/solanum-lycopersicum/details",
+    "slug": "solanum-lycopersicum",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "evenWater"
+      ],
+      "indoors": true
+    }
+  },
+  "bySpecies:Citrus × limon": {
+    "map": "bySpecies",
+    "key": "Citrus × limon",
+    "query": "Citrus × limon",
+    "current_bloom": {
+      "from": 3,
+      "to": 6,
+      "triggers": [
+        "coolRest",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/384894/citrus-limon/details",
+    "slug": "citrus-limon",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [
+        "coolRest",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "bySpecies:Olea europaea": {
+    "map": "bySpecies",
+    "key": "Olea europaea",
+    "query": "Olea europaea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/11735/olea-europaea-f/details",
+    "slug": "olea-europaea-f",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Lavandula angustifolia": {
+    "map": "bySpecies",
+    "key": "Lavandula angustifolia",
+    "query": "Lavandula angustifolia",
+    "current_bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/91398/lavandula-angustifolia/details",
+    "slug": "lavandula-angustifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "deadhead"
+      ],
+      "indoors": true
+    }
+  },
+  "bySpecies:Hibiscus syriacus": {
+    "map": "bySpecies",
+    "key": "Hibiscus syriacus",
+    "query": "Hibiscus syriacus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/40530/hibiscus-syriacus/details",
+    "slug": "hibiscus-syriacus",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Jasminum polyanthum": {
+    "map": "bySpecies",
+    "key": "Jasminum polyanthum",
+    "query": "Jasminum polyanthum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/9457/jasminum-polyanthum/details",
+    "slug": "jasminum-polyanthum",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Cordyline australis": {
+    "map": "bySpecies",
+    "key": "Cordyline australis",
+    "query": "Cordyline australis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4361/cordyline-australis/details",
+    "slug": "cordyline-australis",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Convolvulus tricolor": {
+    "map": "bySpecies",
+    "key": "Convolvulus tricolor",
+    "query": "Convolvulus tricolor",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/105536/convolvulus-tricolor/details",
+    "slug": "convolvulus-tricolor",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Euphorbia pulcherrima": {
+    "map": "bySpecies",
+    "key": "Euphorbia pulcherrima",
+    "query": "Euphorbia pulcherrima",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/88057/euphorbia-pulcherrima/details",
+    "slug": "euphorbia-pulcherrima",
+    "seasons": [
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 2,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Euphorbia milii": {
+    "map": "bySpecies",
+    "key": "Euphorbia milii",
+    "query": "Euphorbia milii",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/32739/euphorbia-milii/details",
+    "slug": "euphorbia-milii",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Euphorbia trigona": {
+    "map": "bySpecies",
+    "key": "Euphorbia trigona",
+    "query": "Euphorbia trigona",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/131510/euphorbia-trigona/details",
+    "slug": "euphorbia-trigona",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Euphorbia lactea": {
+    "map": "bySpecies",
+    "key": "Euphorbia lactea",
+    "query": "Euphorbia lactea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsSoilAndWater",
+    "slug": "euphorbia-lactea",
+    "seasons": null,
+    "bloom": null
+  },
+  "bySpecies:Euphorbia ingens": {
+    "map": "bySpecies",
+    "key": "Euphorbia ingens",
+    "query": "Euphorbia ingens",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7062/euphorbia-ingens/details",
+    "slug": "euphorbia-ingens",
+    "seasons": [
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 9,
+      "to": 2,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Euphorbia tirucalli": {
+    "map": "bySpecies",
+    "key": "Euphorbia tirucalli",
+    "query": "Euphorbia tirucalli",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessSoilWater",
+    "slug": "euphorbia-tirucalli",
+    "seasons": null,
+    "bloom": null
+  },
+  "bySpecies:Clivia miniata": {
+    "map": "bySpecies",
+    "key": "Clivia miniata",
+    "query": "Clivia miniata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4036/clivia-miniata/details",
+    "slug": "clivia-miniata",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Polyscias fruticosa": {
+    "map": "bySpecies",
+    "key": "Polyscias fruticosa",
+    "query": "Polyscias fruticosa",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/13473/polyscias-fruticosa/details",
+    "slug": "polyscias-fruticosa",
+    "seasons": null,
+    "bloom": null
+  },
+  "bySpecies:Schefflera arboricola": {
+    "map": "bySpecies",
+    "key": "Schefflera arboricola",
+    "query": "Schefflera arboricola",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/70437/schefflera-arboricola/details",
+    "slug": "schefflera-arboricola",
+    "seasons": [],
+    "bloom": null
+  },
+  "bySpecies:Heptapleurum arboricola": {
+    "map": "bySpecies",
+    "key": "Heptapleurum arboricola",
+    "query": "Heptapleurum arboricola",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/187874/heptapleurum-arboricola/details",
+    "slug": "heptapleurum-arboricola",
+    "seasons": [],
+    "bloom": null
+  },
+  "bySpecies:Pachira aquatica": {
+    "map": "bySpecies",
+    "key": "Pachira aquatica",
+    "query": "Pachira aquatica",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/12078/pachira-aquatica/details",
+    "slug": "pachira-aquatica",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Sparrmannia africana": {
+    "map": "bySpecies",
+    "key": "Sparrmannia africana",
+    "query": "Sparrmannia africana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/86756/sparrmannia-africana/details",
+    "slug": "sparrmannia-africana",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Fenestraria rhopalophylla": {
+    "map": "bySpecies",
+    "key": "Fenestraria rhopalophylla",
+    "query": "Fenestraria rhopalophylla",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/131599/fenestraria-rhopalophylla/details",
+    "slug": "fenestraria-rhopalophylla",
+    "seasons": null,
+    "bloom": null
+  },
+  "bySpecies:Mesembryanthemum cordifolium": {
+    "map": "bySpecies",
+    "key": "Mesembryanthemum cordifolium",
+    "query": "Mesembryanthemum cordifolium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/159833/mesembryanthemum-cordifolium/details",
+    "slug": "mesembryanthemum-cordifolium",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Cissus rhombifolia": {
+    "map": "bySpecies",
+    "key": "Cissus rhombifolia",
+    "query": "Cissus rhombifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/64602/cissus-rhombifolia/details",
+    "slug": "cissus-rhombifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Lobelia erinus": {
+    "map": "bySpecies",
+    "key": "Lobelia erinus",
+    "query": "Lobelia erinus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/142728/lobelia-erinus/details",
+    "slug": "lobelia-erinus",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Hypoestes phyllostachya": {
+    "map": "bySpecies",
+    "key": "Hypoestes phyllostachya",
+    "query": "Hypoestes phyllostachya",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/73160/hypoestes-phyllostachya-v/details",
+    "slug": "hypoestes-phyllostachya-v",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Pimenta dioica": {
+    "map": "bySpecies",
+    "key": "Pimenta dioica",
+    "query": "Pimenta dioica",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/67301/pimenta-dioica/details",
+    "slug": "pimenta-dioica",
+    "seasons": null,
+    "bloom": null
+  },
+  "bySpecies:Albuca spiralis": {
+    "map": "bySpecies",
+    "key": "Albuca spiralis",
+    "query": "Albuca spiralis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/73923/albuca-spiralis/details",
+    "slug": "albuca-spiralis",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "bySpecies:Bowiea volubilis": {
+    "map": "bySpecies",
+    "key": "Bowiea volubilis",
+    "query": "Bowiea volubilis",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/2364/bowiea-volubilis/details",
+    "slug": "bowiea-volubilis",
+    "seasons": null,
+    "bloom": null
+  },
+  "bySpecies:Ledebouria socialis": {
+    "map": "bySpecies",
+    "key": "Ledebouria socialis",
+    "query": "Ledebouria socialis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/80503/ledebouria-socialis/details",
+    "slug": "ledebouria-socialis",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Philodendron": {
+    "map": "byGenus",
+    "key": "Philodendron",
+    "query": "Philodendron hederaceum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/514461/philodendron-hederaceum/details",
+    "slug": "philodendron-hederaceum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Epipremnum": {
+    "map": "byGenus",
+    "key": "Epipremnum",
+    "query": "Epipremnum aureum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/91403/epipremnum-aureum/details",
+    "slug": "epipremnum-aureum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Scindapsus": {
+    "map": "byGenus",
+    "key": "Scindapsus",
+    "query": "Scindapsus pictus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/93929/scindapsus-pictus-v/details",
+    "slug": "scindapsus-pictus-v",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Monstera": {
+    "map": "byGenus",
+    "key": "Monstera",
+    "query": "Monstera deliciosa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11192/monstera-deliciosa-f/details",
+    "slug": "monstera-deliciosa-f",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Alocasia": {
+    "map": "byGenus",
+    "key": "Alocasia",
+    "query": "Alocasia macrorrhizos",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/197177/alocasia-macrorrhizos/details",
+    "slug": "alocasia-macrorrhizos",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Anthurium": {
+    "map": "byGenus",
+    "key": "Anthurium",
+    "query": "Anthurium andraeanum",
+    "current_bloom": {
+      "from": 3,
+      "to": 10,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/1349/anthurium-andraeanum/details",
+    "slug": "anthurium-andraeanum",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 1,
+      "to": 12,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Aglaonema": {
+    "map": "byGenus",
+    "key": "Aglaonema",
+    "query": "Aglaonema modestum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/707/aglaonema-modestum/details",
+    "slug": "aglaonema-modestum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Dieffenbachia": {
+    "map": "byGenus",
+    "key": "Dieffenbachia",
+    "query": "Dieffenbachia seguine",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/31781/dieffenbachia-seguine/details",
+    "slug": "dieffenbachia-seguine",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Syngonium": {
+    "map": "byGenus",
+    "key": "Syngonium",
+    "query": "Syngonium podophyllum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/17899/syngonium-podophyllum/details",
+    "slug": "syngonium-podophyllum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Zamioculcas": {
+    "map": "byGenus",
+    "key": "Zamioculcas",
+    "query": "Zamioculcas zamiifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/19185/zamioculcas-zamiifolia/details",
+    "slug": "zamioculcas-zamiifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Spathiphyllum": {
+    "map": "byGenus",
+    "key": "Spathiphyllum",
+    "query": "Spathiphyllum wallisii",
+    "current_bloom": {
+      "from": 4,
+      "to": 9,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/17623/spathiphyllum-wallisii/details",
+    "slug": "spathiphyllum-wallisii",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Calathea": {
+    "map": "byGenus",
+    "key": "Calathea",
+    "query": "Calathea orbifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/176990/calathea-orbifolia/details",
+    "slug": "calathea-orbifolia",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Goeppertia": {
+    "map": "byGenus",
+    "key": "Goeppertia",
+    "query": "Goeppertia makoyana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/357223/goeppertia-makoyana/details",
+    "slug": "goeppertia-makoyana",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Maranta": {
+    "map": "byGenus",
+    "key": "Maranta",
+    "query": "Maranta leuconeura",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/119598/maranta-leuconeura/details",
+    "slug": "maranta-leuconeura",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ficus": {
+    "map": "byGenus",
+    "key": "Ficus",
+    "query": "Ficus lyrata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7207/ficus-lyrata/details",
+    "slug": "ficus-lyrata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Dracaena": {
+    "map": "byGenus",
+    "key": "Dracaena",
+    "query": "Dracaena",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilIssues",
+    "error": "rep-other-genus",
+    "bloom": null
+  },
+  "byGenus:Sansevieria": {
+    "map": "byGenus",
+    "key": "Sansevieria",
+    "query": "Sansevieria cylindrica",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/16411/sansevieria-cylindrica/details",
+    "slug": "sansevieria-cylindrica",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Yucca": {
+    "map": "byGenus",
+    "key": "Yucca",
+    "query": "Yucca gigantea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/522674/yucca-gigantea/details",
+    "slug": "yucca-gigantea",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Beaucarnea": {
+    "map": "byGenus",
+    "key": "Beaucarnea",
+    "query": "Beaucarnea recurvata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/1993/beaucarnea-recurvata/details",
+    "slug": "beaucarnea-recurvata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Aspidistra": {
+    "map": "byGenus",
+    "key": "Aspidistra",
+    "query": "Aspidistra elatior",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/1715/aspidistra-elatior/details",
+    "slug": "aspidistra-elatior",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Chlorophytum": {
+    "map": "byGenus",
+    "key": "Chlorophytum",
+    "query": "Chlorophytum comosum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilPropagation",
+    "url": "https://www.rhs.org.uk/plants/3761/chlorophytum-comosum/details",
+    "slug": "chlorophytum-comosum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Chamaedorea": {
+    "map": "byGenus",
+    "key": "Chamaedorea",
+    "query": "Chamaedorea elegans",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilPropagation",
+    "url": "https://www.rhs.org.uk/plants/29185/chamaedorea-elegans/details",
+    "slug": "chamaedorea-elegans",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Dypsis": {
+    "map": "byGenus",
+    "key": "Dypsis",
+    "query": "Dypsis lutescens",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/128311/dypsis-lutescens/details",
+    "slug": "dypsis-lutescens",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Howea": {
+    "map": "byGenus",
+    "key": "Howea",
+    "query": "Howea forsteriana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/8845/howea-forsteriana/details",
+    "slug": "howea-forsteriana",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Trachycarpus": {
+    "map": "byGenus",
+    "key": "Trachycarpus",
+    "query": "Trachycarpus fortunei",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18291/trachycarpus-fortunei/details",
+    "slug": "trachycarpus-fortunei",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Nephrolepis": {
+    "map": "byGenus",
+    "key": "Nephrolepis",
+    "query": "Nephrolepis exaltata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11508/nephrolepis-exaltata/details",
+    "slug": "nephrolepis-exaltata",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Asplenium": {
+    "map": "byGenus",
+    "key": "Asplenium",
+    "query": "Asplenium nidus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/1728/asplenium-nidus/details",
+    "slug": "asplenium-nidus",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Adiantum": {
+    "map": "byGenus",
+    "key": "Adiantum",
+    "query": "Adiantum raddianum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/20650/adiantum-raddianum/details",
+    "slug": "adiantum-raddianum",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Platycerium": {
+    "map": "byGenus",
+    "key": "Platycerium",
+    "query": "Platycerium bifurcatum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/13234/platycerium-bifurcatum/details",
+    "slug": "platycerium-bifurcatum",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Echeveria": {
+    "map": "byGenus",
+    "key": "Echeveria",
+    "query": "Echeveria elegans",
+    "current_bloom": {
+      "from": 4,
+      "to": 8,
+      "triggers": [
+        "coolRest",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/6226/echeveria-elegans/details",
+    "slug": "echeveria-elegans",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [
+        "coolRest",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Crassula": {
+    "map": "byGenus",
+    "key": "Crassula",
+    "query": "Crassula ovata",
+    "current_bloom": {
+      "from": 11,
+      "to": 2,
+      "triggers": [
+        "coolRest",
+        "drySpell",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4739/crassula-ovata/details",
+    "slug": "crassula-ovata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "coolRest",
+        "drySpell",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Sedum": {
+    "map": "byGenus",
+    "key": "Sedum",
+    "query": "Sedum morganianum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/16969/sedum-morganianum/details",
+    "slug": "sedum-morganianum",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Haworthiopsis": {
+    "map": "byGenus",
+    "key": "Haworthiopsis",
+    "query": "Haworthiopsis attenuata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/504241/haworthiopsis-attenuata/details",
+    "slug": "haworthiopsis-attenuata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Kalanchoe": {
+    "map": "byGenus",
+    "key": "Kalanchoe",
+    "query": "Kalanchoe blossfeldiana",
+    "current_bloom": {
+      "from": 12,
+      "to": 4,
+      "triggers": [
+        "shortDays",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/78810/kalanchoe-blossfeldiana/details",
+    "slug": "kalanchoe-blossfeldiana",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "shortDays",
+        "deadhead"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Sempervivum": {
+    "map": "byGenus",
+    "key": "Sempervivum",
+    "query": "Sempervivum tectorum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/17164/sempervivum-tectorum/details",
+    "slug": "sempervivum-tectorum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Curio": {
+    "map": "byGenus",
+    "key": "Curio",
+    "query": "Curio rowleyanus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/353584/curio-rowleyanus/details",
+    "slug": "curio-rowleyanus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Gasteria": {
+    "map": "byGenus",
+    "key": "Gasteria",
+    "query": "Gasteria verrucosa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7639/gasteria-verrucosa/details",
+    "slug": "gasteria-verrucosa",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Agave": {
+    "map": "byGenus",
+    "key": "Agave",
+    "query": "Agave americana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/95075/agave-americana/details",
+    "slug": "agave-americana",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Aeonium": {
+    "map": "byGenus",
+    "key": "Aeonium",
+    "query": "Aeonium arboreum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/498/aeonium-arboreum/details",
+    "slug": "aeonium-arboreum",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lithops": {
+    "map": "byGenus",
+    "key": "Lithops",
+    "query": "Lithops lesliei",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/10367/lithops-lesliei/details",
+    "slug": "lithops-lesliei",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Schlumbergera": {
+    "map": "byGenus",
+    "key": "Schlumbergera",
+    "query": "Schlumbergera truncata",
+    "current_bloom": {
+      "from": 11,
+      "to": 1,
+      "triggers": [
+        "shortDays",
+        "coolRest",
+        "noMove"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/141323/schlumbergera-truncata/details",
+    "slug": "schlumbergera-truncata",
+    "seasons": [
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 9,
+      "to": 2,
+      "triggers": [
+        "shortDays",
+        "coolRest",
+        "noMove"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Rhipsalis": {
+    "map": "byGenus",
+    "key": "Rhipsalis",
+    "query": "Rhipsalis baccifera",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/14483/rhipsalis-baccifera/details",
+    "slug": "rhipsalis-baccifera",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 1,
+      "to": 12,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Mentha": {
+    "map": "byGenus",
+    "key": "Mentha",
+    "query": "Mentha spicata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11055/mentha-spicata/details",
+    "slug": "mentha-spicata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Thymus": {
+    "map": "byGenus",
+    "key": "Thymus",
+    "query": "Thymus vulgaris",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18213/thymus-vulgaris/details",
+    "slug": "thymus-vulgaris",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Salvia": {
+    "map": "byGenus",
+    "key": "Salvia",
+    "query": "Salvia rosmarinus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/384211/salvia-rosmarinus-ro/details",
+    "slug": "salvia-rosmarinus-ro",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Petroselinum": {
+    "map": "byGenus",
+    "key": "Petroselinum",
+    "query": "Petroselinum crispum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/41248/petroselinum-crispum/details",
+    "slug": "petroselinum-crispum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ocimum": {
+    "map": "byGenus",
+    "key": "Ocimum",
+    "query": "Ocimum basilicum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11649/ocimum-basilicum/details",
+    "slug": "ocimum-basilicum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Solanum": {
+    "map": "byGenus",
+    "key": "Solanum",
+    "query": "Solanum lycopersicum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/293619/solanum-lycopersicum/details",
+    "slug": "solanum-lycopersicum",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Capsicum": {
+    "map": "byGenus",
+    "key": "Capsicum",
+    "query": "Capsicum annuum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/71018/capsicum-annuum/details",
+    "slug": "capsicum-annuum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Cucurbita": {
+    "map": "byGenus",
+    "key": "Cucurbita",
+    "query": "Cucurbita pepo",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/106106/cucurbita-pepo/details",
+    "slug": "cucurbita-pepo",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Cucumis": {
+    "map": "byGenus",
+    "key": "Cucumis",
+    "query": "Cucumis sativus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/105568/cucumis-sativus/details",
+    "slug": "cucumis-sativus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Fragaria": {
+    "map": "byGenus",
+    "key": "Fragaria",
+    "query": "Fragaria vesca",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7280/fragaria-vesca-f/details",
+    "slug": "fragaria-vesca-f",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lactuca": {
+    "map": "byGenus",
+    "key": "Lactuca",
+    "query": "Lactuca sativa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/106151/lactuca-sativa/details",
+    "slug": "lactuca-sativa",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Citrus": {
+    "map": "byGenus",
+    "key": "Citrus",
+    "query": "Citrus × limon",
+    "current_bloom": {
+      "from": 3,
+      "to": 6,
+      "triggers": [
+        "coolRest",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/384894/citrus-limon/details",
+    "slug": "citrus-limon",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [
+        "coolRest",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Prunus": {
+    "map": "byGenus",
+    "key": "Prunus",
+    "query": "Prunus avium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/13950/prunus-avium/details",
+    "slug": "prunus-avium",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Malus": {
+    "map": "byGenus",
+    "key": "Malus",
+    "query": "Malus domestica",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/60558/malus-domestica-f/details",
+    "slug": "malus-domestica-f",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Vitis": {
+    "map": "byGenus",
+    "key": "Vitis",
+    "query": "Vitis vinifera",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/134401/vitis-vinifera/details",
+    "slug": "vitis-vinifera",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Rubus": {
+    "map": "byGenus",
+    "key": "Rubus",
+    "query": "Rubus idaeus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/16137/rubus-idaeus/details",
+    "slug": "rubus-idaeus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Vaccinium": {
+    "map": "byGenus",
+    "key": "Vaccinium",
+    "query": "Vaccinium corymbosum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18670/vaccinium-corymbosum-f/details",
+    "slug": "vaccinium-corymbosum-f",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Rosa": {
+    "map": "byGenus",
+    "key": "Rosa",
+    "query": "Rosa × hybrida",
+    "current_bloom": {
+      "from": 5,
+      "to": 10,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/303868/rosa-hybrida/details",
+    "slug": "rosa-hybrida",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Hydrangea": {
+    "map": "byGenus",
+    "key": "Hydrangea",
+    "query": "Hydrangea macrophylla",
+    "current_bloom": {
+      "from": 6,
+      "to": 9,
+      "triggers": [
+        "fertilizer",
+        "evenWater"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/40792/hydrangea-macrophylla-h/details",
+    "slug": "hydrangea-macrophylla-h",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "fertilizer",
+        "evenWater"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Pelargonium": {
+    "map": "byGenus",
+    "key": "Pelargonium",
+    "query": "Pelargonium grandiflorum",
+    "current_bloom": {
+      "from": 4,
+      "to": 10,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/86807/pelargonium-grandiflorum/details",
+    "slug": "pelargonium-grandiflorum",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Hosta": {
+    "map": "byGenus",
+    "key": "Hosta",
+    "query": "Hosta plantaginea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/8821/hosta-plantaginea/details",
+    "slug": "hosta-plantaginea",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Acer": {
+    "map": "byGenus",
+    "key": "Acer",
+    "query": "Acer palmatum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/225/acer-palmatum-1/details",
+    "slug": "acer-palmatum-1",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Buxus": {
+    "map": "byGenus",
+    "key": "Buxus",
+    "query": "Buxus sempervirens",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/2579/buxus-sempervirens/details",
+    "slug": "buxus-sempervirens",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Hedera": {
+    "map": "byGenus",
+    "key": "Hedera",
+    "query": "Hedera helix",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/43091/hedera-helix/details",
+    "slug": "hedera-helix",
+    "seasons": [
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 9,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Hoya": {
+    "map": "byGenus",
+    "key": "Hoya",
+    "query": "Hoya carnosa",
+    "current_bloom": {
+      "from": 5,
+      "to": 9,
+      "triggers": [
+        "maturity",
+        "potbound",
+        "keepSpike"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/8852/hoya-carnosa/details",
+    "slug": "hoya-carnosa",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [
+        "maturity",
+        "potbound",
+        "keepSpike"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Peperomia": {
+    "map": "byGenus",
+    "key": "Peperomia",
+    "query": "Peperomia obtusifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/106212/peperomia-obtusifolia/details",
+    "slug": "peperomia-obtusifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Begonia": {
+    "map": "byGenus",
+    "key": "Begonia",
+    "query": "Begonia maculata",
+    "current_bloom": {
+      "from": 5,
+      "to": 10,
+      "triggers": [
+        "fertilizer",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/112222/begonia-maculata-c/details",
+    "slug": "begonia-maculata-c",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "fertilizer",
+        "deadhead"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Tradescantia": {
+    "map": "byGenus",
+    "key": "Tradescantia",
+    "query": "Tradescantia zebrina",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/79575/tradescantia-zebrina/details",
+    "slug": "tradescantia-zebrina",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 1,
+      "to": 12,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Fittonia": {
+    "map": "byGenus",
+    "key": "Fittonia",
+    "query": "Fittonia albivenis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/299385/fittonia-albivenis-lion/details",
+    "slug": "fittonia-albivenis-lion",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Saintpaulia": {
+    "map": "byGenus",
+    "key": "Saintpaulia",
+    "query": "Saintpaulia ionantha",
+    "current_bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "evenWater"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/16203/saintpaulia-ionantha/details",
+    "slug": "saintpaulia-ionantha",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 1,
+      "to": 12,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "evenWater"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Cyclamen": {
+    "map": "byGenus",
+    "key": "Cyclamen",
+    "query": "Cyclamen persicum",
+    "current_bloom": {
+      "from": 10,
+      "to": 3,
+      "triggers": [
+        "coolRest",
+        "deadhead",
+        "evenWater"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/101163/cyclamen-persicum/details",
+    "slug": "cyclamen-persicum",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [
+        "coolRest",
+        "deadhead",
+        "evenWater"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Crocus": {
+    "map": "byGenus",
+    "key": "Crocus",
+    "query": "Crocus vernus",
+    "current_bloom": {
+      "from": 2,
+      "to": 4,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/29659/crocus-vernus/details",
+    "slug": "crocus-vernus",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Tulipa": {
+    "map": "byGenus",
+    "key": "Tulipa",
+    "query": "Tulipa gesneriana",
+    "current_bloom": {
+      "from": 4,
+      "to": 5,
+      "triggers": [
+        "chillBulb",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18512/tulipa-gesneriana/details",
+    "slug": "tulipa-gesneriana",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "chillBulb",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Narcissus": {
+    "map": "byGenus",
+    "key": "Narcissus",
+    "query": "Narcissus pseudonarcissus",
+    "current_bloom": {
+      "from": 3,
+      "to": 4,
+      "triggers": [
+        "chillBulb",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11388/narcissus-pseudonarcissus-13/details",
+    "slug": "narcissus-pseudonarcissus-13",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "chillBulb",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Hyacinthus": {
+    "map": "byGenus",
+    "key": "Hyacinthus",
+    "query": "Hyacinthus orientalis",
+    "current_bloom": {
+      "from": 3,
+      "to": 4,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/53644/hyacinthus-orientalis/details",
+    "slug": "hyacinthus-orientalis",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Hippeastrum": {
+    "map": "byGenus",
+    "key": "Hippeastrum",
+    "query": "Hippeastrum hortorum",
+    "current_bloom": {
+      "from": 12,
+      "to": 3,
+      "triggers": [
+        "drySpell",
+        "potbound",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/273811/hippeastrum-rio/details",
+    "slug": "hippeastrum-rio",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Caladium": {
+    "map": "byGenus",
+    "key": "Caladium",
+    "query": "Caladium humboldtii",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/122407/caladium-humboldtii/details",
+    "slug": "caladium-humboldtii",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Colocasia": {
+    "map": "byGenus",
+    "key": "Colocasia",
+    "query": "Colocasia esculenta",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4248/colocasia-esculenta/details",
+    "slug": "colocasia-esculenta",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Zantedeschia": {
+    "map": "byGenus",
+    "key": "Zantedeschia",
+    "query": "Zantedeschia aethiopica",
+    "current_bloom": {
+      "from": 5,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/19190/zantedeschia-aethiopica/details",
+    "slug": "zantedeschia-aethiopica",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Dahlia": {
+    "map": "byGenus",
+    "key": "Dahlia",
+    "query": "Dahlia pinnata",
+    "current_bloom": {
+      "from": 7,
+      "to": 10,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/183726/dahlia-pinnata/details",
+    "slug": "dahlia-pinnata",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Canna": {
+    "map": "byGenus",
+    "key": "Canna",
+    "query": "Canna indica",
+    "current_bloom": {
+      "from": 7,
+      "to": 10,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/3001/canna-indica/details",
+    "slug": "canna-indica",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Tillandsia": {
+    "map": "byGenus",
+    "key": "Tillandsia",
+    "query": "Tillandsia ionantha",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/45872/tillandsia-ionantha/details",
+    "slug": "tillandsia-ionantha",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Strelitzia": {
+    "map": "byGenus",
+    "key": "Strelitzia",
+    "query": "Strelitzia reginae",
+    "current_bloom": {
+      "from": 2,
+      "to": 6,
+      "triggers": [
+        "maturity",
+        "potbound",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/17807/strelitzia-reginae/details",
+    "slug": "strelitzia-reginae",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [
+        "maturity",
+        "potbound",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Musa": {
+    "map": "byGenus",
+    "key": "Musa",
+    "query": "Musa velutina",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11240/musa-velutina/details",
+    "slug": "musa-velutina",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Coffea": {
+    "map": "byGenus",
+    "key": "Coffea",
+    "query": "Coffea arabica",
+    "current_bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "drySpell",
+        "maturity"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4159/coffea-arabica/details",
+    "slug": "coffea-arabica",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "drySpell",
+        "maturity"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Ceropegia": {
+    "map": "byGenus",
+    "key": "Ceropegia",
+    "query": "Ceropegia woodii",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/3451/ceropegia-woodii/details",
+    "slug": "ceropegia-woodii",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Nerium": {
+    "map": "byGenus",
+    "key": "Nerium",
+    "query": "Nerium oleander",
+    "current_bloom": {
+      "from": 6,
+      "to": 9,
+      "triggers": [
+        "brightLight",
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/98456/nerium-oleander-l/details",
+    "slug": "nerium-oleander-l",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Camellia": {
+    "map": "byGenus",
+    "key": "Camellia",
+    "query": "Camellia japonica",
+    "current_bloom": {
+      "from": 11,
+      "to": 4,
+      "triggers": [
+        "coolRest",
+        "evenWater",
+        "noMove"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/2845/camellia-japonica/details",
+    "slug": "camellia-japonica",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "coolRest",
+        "evenWater",
+        "noMove"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Rhododendron": {
+    "map": "byGenus",
+    "key": "Rhododendron",
+    "query": "Rhododendron simsii",
+    "current_bloom": {
+      "from": 4,
+      "to": 6,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/15682/rhododendron-simsii-ea/details",
+    "slug": "rhododendron-simsii-ea",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Gardenia": {
+    "map": "byGenus",
+    "key": "Gardenia",
+    "query": "Gardenia jasminoides",
+    "current_bloom": {
+      "from": 5,
+      "to": 9,
+      "triggers": [
+        "coolNights",
+        "evenWater",
+        "noMove"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7605/gardenia-jasminoides/details",
+    "slug": "gardenia-jasminoides",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [
+        "coolNights",
+        "evenWater",
+        "noMove"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Bougainvillea": {
+    "map": "byGenus",
+    "key": "Bougainvillea",
+    "query": "Bougainvillea glabra",
+    "current_bloom": {
+      "from": 5,
+      "to": 10,
+      "triggers": [
+        "drySpell",
+        "brightLight",
+        "potbound"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/91850/bougainvillea-glabra/details",
+    "slug": "bougainvillea-glabra",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [
+        "drySpell",
+        "brightLight",
+        "potbound"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Phyllostachys": {
+    "map": "byGenus",
+    "key": "Phyllostachys",
+    "query": "Phyllostachys aurea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/75274/phyllostachys-aurea/details",
+    "slug": "phyllostachys-aurea",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Fargesia": {
+    "map": "byGenus",
+    "key": "Fargesia",
+    "query": "Fargesia murielae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/82475/fargesia-murielae/details",
+    "slug": "fargesia-murielae",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Acacia": {
+    "map": "byGenus",
+    "key": "Acacia",
+    "query": "Acacia dealbata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/24107/acacia-dealbata/details",
+    "slug": "acacia-dealbata",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Abies": {
+    "map": "byGenus",
+    "key": "Abies",
+    "query": "Abies nordmanniana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/53/abies-nordmanniana/details",
+    "slug": "abies-nordmanniana",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Abutilon": {
+    "map": "byGenus",
+    "key": "Abutilon",
+    "query": "Abutilon megapotamicum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/85/abutilon-megapotamicum/details",
+    "slug": "abutilon-megapotamicum",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ranunculus": {
+    "map": "byGenus",
+    "key": "Ranunculus",
+    "query": "Ranunculus flammula",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/94423/ranunculus-flammula/details",
+    "slug": "ranunculus-flammula",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Euphorbia": {
+    "map": "byGenus",
+    "key": "Euphorbia",
+    "query": "Euphorbia pulcherrima",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/88057/euphorbia-pulcherrima/details",
+    "slug": "euphorbia-pulcherrima",
+    "seasons": [
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 2,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Pinus": {
+    "map": "byGenus",
+    "key": "Pinus",
+    "query": "Pinus mugo",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/13101/pinus-mugo/details",
+    "slug": "pinus-mugo",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Abelia": {
+    "map": "byGenus",
+    "key": "Abelia",
+    "query": "Abelia × grandiflora",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/318335/abelia-lynn/details",
+    "slug": "abelia-lynn",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Spiraea": {
+    "map": "byGenus",
+    "key": "Spiraea",
+    "query": "Spiraea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/17638/spiraea/details",
+    "slug": "spiraea",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Quercus": {
+    "map": "byGenus",
+    "key": "Quercus",
+    "query": "Quercus robur",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/14294/quercus-robur/details",
+    "slug": "quercus-robur",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lonicera": {
+    "map": "byGenus",
+    "key": "Lonicera",
+    "query": "Lonicera caerulea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/10446/lonicera-caerulea/details",
+    "slug": "lonicera-caerulea",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Iris": {
+    "map": "byGenus",
+    "key": "Iris",
+    "query": "Iris germanica",
+    "current_bloom": {
+      "from": 2,
+      "to": 6,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/9256/iris-germanica/details",
+    "slug": "iris-germanica",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Allium": {
+    "map": "byGenus",
+    "key": "Allium",
+    "query": "Allium schoenoprasum",
+    "current_bloom": {
+      "from": 5,
+      "to": 7,
+      "triggers": [
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/859/allium-schoenoprasum/details",
+    "slug": "allium-schoenoprasum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Geranium": {
+    "map": "byGenus",
+    "key": "Geranium",
+    "query": "Geranium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/162322/geranium/details",
+    "slug": "geranium",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Berberis": {
+    "map": "byGenus",
+    "key": "Berberis",
+    "query": "Berberis aquifolium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/68984/berberis-aquifolium/details",
+    "slug": "berberis-aquifolium",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Picea": {
+    "map": "byGenus",
+    "key": "Picea",
+    "query": "Picea abies",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/12899/picea-abies/details",
+    "slug": "picea-abies",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Centaurea": {
+    "map": "byGenus",
+    "key": "Centaurea",
+    "query": "Centaurea cyanus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/46174/centaurea-cyanus/details",
+    "slug": "centaurea-cyanus",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Epipactis": {
+    "map": "byGenus",
+    "key": "Epipactis",
+    "query": "Epipactis helleborine",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/32097/epipactis-helleborine/details",
+    "slug": "epipactis-helleborine",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Juniperus": {
+    "map": "byGenus",
+    "key": "Juniperus",
+    "query": "Juniperus procumbens",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/9601/juniperus-procumbens/details",
+    "slug": "juniperus-procumbens",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Salix": {
+    "map": "byGenus",
+    "key": "Salix",
+    "query": "Salix babylonica",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/66012/salix-babylonica/details",
+    "slug": "salix-babylonica",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Crataegus": {
+    "map": "byGenus",
+    "key": "Crataegus",
+    "query": "Crataegus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/30846/crataegus/details",
+    "slug": "crataegus",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Tilia": {
+    "map": "byGenus",
+    "key": "Tilia",
+    "query": "Tilia cordata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18225/tilia-cordata/details",
+    "slug": "tilia-cordata",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Abelmoschus": {
+    "map": "byGenus",
+    "key": "Abelmoschus",
+    "query": "Abelmoschus esculentus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/71839/abelmoschus-esculentus/details",
+    "slug": "abelmoschus-esculentus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Hibiscus": {
+    "map": "byGenus",
+    "key": "Hibiscus",
+    "query": "Hibiscus syriacus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/40530/hibiscus-syriacus/details",
+    "slug": "hibiscus-syriacus",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Brachychiton": {
+    "map": "byGenus",
+    "key": "Brachychiton",
+    "query": "Brachychiton acerifolius",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/114325/brachychiton-acerifolius/details",
+    "slug": "brachychiton-acerifolius",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Alnus": {
+    "map": "byGenus",
+    "key": "Alnus",
+    "query": "Alnus glutinosa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/897/alnus-glutinosa/details",
+    "slug": "alnus-glutinosa",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Corylus": {
+    "map": "byGenus",
+    "key": "Corylus",
+    "query": "Corylus avellana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4511/corylus-avellana-f/details",
+    "slug": "corylus-avellana-f",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Betula": {
+    "map": "byGenus",
+    "key": "Betula",
+    "query": "Betula pendula",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/2261/betula-pendula/details",
+    "slug": "betula-pendula",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Campanula": {
+    "map": "byGenus",
+    "key": "Campanula",
+    "query": "Campanula rotundifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/2969/campanula-rotundifolia/details",
+    "slug": "campanula-rotundifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Clematis": {
+    "map": "byGenus",
+    "key": "Clematis",
+    "query": "Clematis viticella",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/29466/clematis-viticella/details",
+    "slug": "clematis-viticella",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Helleborus": {
+    "map": "byGenus",
+    "key": "Helleborus",
+    "query": "Helleborus niger",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/8575/helleborus-niger/details",
+    "slug": "helleborus-niger",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Anemonoides": {
+    "map": "byGenus",
+    "key": "Anemonoides",
+    "query": "Anemonoides",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "error": "rep-other-genus",
+    "bloom": null
+  },
+  "byGenus:Delphinium": {
+    "map": "byGenus",
+    "key": "Delphinium",
+    "query": "Delphinium elatum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/5398/delphinium-elatum/details",
+    "slug": "delphinium-elatum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Adonis": {
+    "map": "byGenus",
+    "key": "Adonis",
+    "query": "Adonis vernalis",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/456/adonis-vernalis/details",
+    "slug": "adonis-vernalis",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Cotoneaster": {
+    "map": "byGenus",
+    "key": "Cotoneaster",
+    "query": "Cotoneaster × suecicus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/155965/cotoneaster-gui/details",
+    "slug": "cotoneaster-gui",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Potentilla": {
+    "map": "byGenus",
+    "key": "Potentilla",
+    "query": "Potentilla",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/79537/potentilla/details",
+    "slug": "potentilla",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Pyrus": {
+    "map": "byGenus",
+    "key": "Pyrus",
+    "query": "Pyrus communis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssues",
+    "url": "https://www.rhs.org.uk/plants/14227/pyrus-communis-f/details",
+    "slug": "pyrus-communis-f",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Chaenomeles": {
+    "map": "byGenus",
+    "key": "Chaenomeles",
+    "query": "Chaenomeles",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/29072/chaenomeles/details",
+    "slug": "chaenomeles",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Alchemilla": {
+    "map": "byGenus",
+    "key": "Alchemilla",
+    "query": "Alchemilla mollis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/774/alchemilla-mollis/details",
+    "slug": "alchemilla-mollis",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Aronia": {
+    "map": "byGenus",
+    "key": "Aronia",
+    "query": "Aronia melanocarpa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/145010/aronia-melanocarpa-nero/details",
+    "slug": "aronia-melanocarpa-nero",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Photinia": {
+    "map": "byGenus",
+    "key": "Photinia",
+    "query": "Photinia serratifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/82748/photinia-serratifolia/details",
+    "slug": "photinia-serratifolia",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Amelanchier": {
+    "map": "byGenus",
+    "key": "Amelanchier",
+    "query": "Amelanchier",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/156200/amelanchier/details",
+    "slug": "amelanchier",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Fraxinus": {
+    "map": "byGenus",
+    "key": "Fraxinus",
+    "query": "Fraxinus excelsior",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/7308/fraxinus-excelsior/details",
+    "slug": "fraxinus-excelsior",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ligustrum": {
+    "map": "byGenus",
+    "key": "Ligustrum",
+    "query": "Ligustrum vulgare",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/10108/ligustrum-vulgare/details",
+    "slug": "ligustrum-vulgare",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Jasminum": {
+    "map": "byGenus",
+    "key": "Jasminum",
+    "query": "Jasminum polyanthum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/9457/jasminum-polyanthum/details",
+    "slug": "jasminum-polyanthum",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Syringa": {
+    "map": "byGenus",
+    "key": "Syringa",
+    "query": "Syringa vulgaris",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/99011/syringa-vulgaris/details",
+    "slug": "syringa-vulgaris",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lathyrus": {
+    "map": "byGenus",
+    "key": "Lathyrus",
+    "query": "Lathyrus odoratus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/25520/lathyrus-odoratus/details",
+    "slug": "lathyrus-odoratus",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Vigna": {
+    "map": "byGenus",
+    "key": "Vigna",
+    "query": "Vigna unguiculata",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/161840/vigna-unguiculata/details",
+    "slug": "vigna-unguiculata",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Phaseolus": {
+    "map": "byGenus",
+    "key": "Phaseolus",
+    "query": "Phaseolus vulgaris",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/105457/phaseolus-vulgaris/details",
+    "slug": "phaseolus-vulgaris",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Trifolium": {
+    "map": "byGenus",
+    "key": "Trifolium",
+    "query": "Trifolium incarnatum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/76701/trifolium-incarnatum/details",
+    "slug": "trifolium-incarnatum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lupinus": {
+    "map": "byGenus",
+    "key": "Lupinus",
+    "query": "Lupinus polyphyllus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/10573/lupinus-polyphyllus/details",
+    "slug": "lupinus-polyphyllus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Magnolia": {
+    "map": "byGenus",
+    "key": "Magnolia",
+    "query": "Magnolia × soulangeana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/81963/magnolia-ann/details",
+    "slug": "magnolia-ann",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Viola": {
+    "map": "byGenus",
+    "key": "Viola",
+    "query": "Viola odorata",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/19006/viola-odorata-vt/details",
+    "slug": "viola-odorata-vt",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Hypericum": {
+    "map": "byGenus",
+    "key": "Hypericum",
+    "query": "Hypericum perforatum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/9021/hypericum-perforatum/details",
+    "slug": "hypericum-perforatum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Papaver": {
+    "map": "byGenus",
+    "key": "Papaver",
+    "query": "Papaver rhoeas",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/56687/papaver-rhoeas/details",
+    "slug": "papaver-rhoeas",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Corydalis": {
+    "map": "byGenus",
+    "key": "Corydalis",
+    "query": "Corydalis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/105351/corydalis/details",
+    "slug": "corydalis",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Chenopodium": {
+    "map": "byGenus",
+    "key": "Chenopodium",
+    "query": "Chenopodium quinoa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/140062/chenopodium-quinoa/details",
+    "slug": "chenopodium-quinoa",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Achillea": {
+    "map": "byGenus",
+    "key": "Achillea",
+    "query": "Achillea millefolium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/311/achillea-millefolium/details",
+    "slug": "achillea-millefolium",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Echinops": {
+    "map": "byGenus",
+    "key": "Echinops",
+    "query": "Echinops bannaticus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/114273/echinops-bannaticus/details",
+    "slug": "echinops-bannaticus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Rudbeckia": {
+    "map": "byGenus",
+    "key": "Rudbeckia",
+    "query": "Rudbeckia hirta",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/68850/rudbeckia-hirta/details",
+    "slug": "rudbeckia-hirta",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Senecio": {
+    "map": "byGenus",
+    "key": "Senecio",
+    "query": "Senecio macroglossus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/112131/senecio-macroglossus/details",
+    "slug": "senecio-macroglossus",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Helianthus": {
+    "map": "byGenus",
+    "key": "Helianthus",
+    "query": "Helianthus annuus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/105515/helianthus-annuus/details",
+    "slug": "helianthus-annuus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Cichorium": {
+    "map": "byGenus",
+    "key": "Cichorium",
+    "query": "Cichorium intybus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/41554/cichorium-intybus/details",
+    "slug": "cichorium-intybus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Artemisia": {
+    "map": "byGenus",
+    "key": "Artemisia",
+    "query": "Artemisia dracunculus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/1632/artemisia-dracunculus/details",
+    "slug": "artemisia-dracunculus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Leucanthemum": {
+    "map": "byGenus",
+    "key": "Leucanthemum",
+    "query": "Leucanthemum vulgare",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/32804/leucanthemum-vulgare/details",
+    "slug": "leucanthemum-vulgare",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Coreopsis": {
+    "map": "byGenus",
+    "key": "Coreopsis",
+    "query": "Coreopsis tinctoria",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/60968/coreopsis-tinctoria/details",
+    "slug": "coreopsis-tinctoria",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Cosmos": {
+    "map": "byGenus",
+    "key": "Cosmos",
+    "query": "Cosmos bipinnatus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/30717/cosmos-bipinnatus/details",
+    "slug": "cosmos-bipinnatus",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Echinacea": {
+    "map": "byGenus",
+    "key": "Echinacea",
+    "query": "Echinacea purpurea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/41568/echinacea-purpurea/details",
+    "slug": "echinacea-purpurea",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Aloe": {
+    "map": "byGenus",
+    "key": "Aloe",
+    "query": "Aloe vera",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/981/aloe-vera/details",
+    "slug": "aloe-vera",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Hemerocallis": {
+    "map": "byGenus",
+    "key": "Hemerocallis",
+    "query": "Hemerocallis fulva",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/8622/hemerocallis-fulva/details",
+    "slug": "hemerocallis-fulva",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Dianthus": {
+    "map": "byGenus",
+    "key": "Dianthus",
+    "query": "Dianthus caryophyllus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/5707/dianthus-caryophyllus/details",
+    "slug": "dianthus-caryophyllus",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Gymnadenia": {
+    "map": "byGenus",
+    "key": "Gymnadenia",
+    "query": "Gymnadenia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/24179/gymnadenia/details",
+    "slug": "gymnadenia",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Cephalanthera": {
+    "map": "byGenus",
+    "key": "Cephalanthera",
+    "query": "Cephalanthera",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/209122/cephalanthera/details",
+    "slug": "cephalanthera",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Himantoglossum": {
+    "map": "byGenus",
+    "key": "Himantoglossum",
+    "query": "Himantoglossum",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/23381/himantoglossum-hircinum/details",
+    "slug": "himantoglossum-hircinum",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Neottia": {
+    "map": "byGenus",
+    "key": "Neottia",
+    "query": "Neottia",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/284520/neottia-ovata/details",
+    "slug": "neottia-ovata",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Platanthera": {
+    "map": "byGenus",
+    "key": "Platanthera",
+    "query": "Platanthera bifolia",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/160453/platanthera-bifolia/details",
+    "slug": "platanthera-bifolia",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Veronica": {
+    "map": "byGenus",
+    "key": "Veronica",
+    "query": "Veronica longifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18847/veronica-longifolia/details",
+    "slug": "veronica-longifolia",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Digitalis": {
+    "map": "byGenus",
+    "key": "Digitalis",
+    "query": "Digitalis purpurea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/5862/digitalis-purpurea/details",
+    "slug": "digitalis-purpurea",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Brassica": {
+    "map": "byGenus",
+    "key": "Brassica",
+    "query": "Brassica oleracea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/106078/brassica-oleracea/details",
+    "slug": "brassica-oleracea",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lilium": {
+    "map": "byGenus",
+    "key": "Lilium",
+    "query": "Lilium candidum",
+    "current_bloom": {
+      "from": 4,
+      "to": 7,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/10162/lilium-candidum-ixb-a/details",
+    "slug": "lilium-candidum-ixb-a",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Asparagus": {
+    "map": "byGenus",
+    "key": "Asparagus",
+    "query": "Asparagus officinalis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/41557/asparagus-officinalis/details",
+    "slug": "asparagus-officinalis",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Muscari": {
+    "map": "byGenus",
+    "key": "Muscari",
+    "query": "Muscari armeniacum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11247/muscari-armeniacum/details",
+    "slug": "muscari-armeniacum",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Scilla": {
+    "map": "byGenus",
+    "key": "Scilla",
+    "query": "Scilla forbesii",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/370266/scilla-forbesii/details",
+    "slug": "scilla-forbesii",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Cordyline": {
+    "map": "byGenus",
+    "key": "Cordyline",
+    "query": "Cordyline australis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/4361/cordyline-australis/details",
+    "slug": "cordyline-australis",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ornithogalum": {
+    "map": "byGenus",
+    "key": "Ornithogalum",
+    "query": "Ornithogalum pyrenaicum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11950/ornithogalum-pyrenaicum/details",
+    "slug": "ornithogalum-pyrenaicum",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lamium": {
+    "map": "byGenus",
+    "key": "Lamium",
+    "query": "Lamium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/130783/lamium/details",
+    "slug": "lamium",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Coleus": {
+    "map": "byGenus",
+    "key": "Coleus",
+    "query": "Coleus scutellarioides",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/132520/coleus-scutellarioides/details",
+    "slug": "coleus-scutellarioides",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Teucrium": {
+    "map": "byGenus",
+    "key": "Teucrium",
+    "query": "Teucrium fruticans",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18060/teucrium-fruticans/details",
+    "slug": "teucrium-fruticans",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Nepeta": {
+    "map": "byGenus",
+    "key": "Nepeta",
+    "query": "Nepeta",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/21043/nepeta/details",
+    "slug": "nepeta",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Origanum": {
+    "map": "byGenus",
+    "key": "Origanum",
+    "query": "Origanum vulgare",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11923/origanum-vulgare/details",
+    "slug": "origanum-vulgare",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Phlomis": {
+    "map": "byGenus",
+    "key": "Phlomis",
+    "query": "Phlomis fruticosa",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/12700/phlomis-fruticosa/details",
+    "slug": "phlomis-fruticosa",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lavandula": {
+    "map": "byGenus",
+    "key": "Lavandula",
+    "query": "Lavandula angustifolia",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/91398/lavandula-angustifolia/details",
+    "slug": "lavandula-angustifolia",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Populus": {
+    "map": "byGenus",
+    "key": "Populus",
+    "query": "Populus tremula",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/13520/populus-tremula/details",
+    "slug": "populus-tremula",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Oenanthe": {
+    "map": "byGenus",
+    "key": "Oenanthe",
+    "query": "Oenanthe aquatica",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/160040/oenanthe-aquatica/details",
+    "slug": "oenanthe-aquatica",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Eryngium": {
+    "map": "byGenus",
+    "key": "Eryngium",
+    "query": "Eryngium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/6775/eryngium/details",
+    "slug": "eryngium",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Heracleum": {
+    "map": "byGenus",
+    "key": "Heracleum",
+    "query": "Heracleum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/20779/heracleum/details",
+    "slug": "heracleum",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Hesperocyparis": {
+    "map": "byGenus",
+    "key": "Hesperocyparis",
+    "query": "Hesperocyparis",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "error": "rep-other-genus",
+    "bloom": null
+  },
+  "byGenus:Cupressus": {
+    "map": "byGenus",
+    "key": "Cupressus",
+    "query": "Cupressus sempervirens",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/5079/cupressus-sempervirens/details",
+    "slug": "cupressus-sempervirens",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Chamaecyparis": {
+    "map": "byGenus",
+    "key": "Chamaecyparis",
+    "query": "Chamaecyparis lawsoniana",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/3571/chamaecyparis-lawsoniana/details",
+    "slug": "chamaecyparis-lawsoniana",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Ipomoea": {
+    "map": "byGenus",
+    "key": "Ipomoea",
+    "query": "Ipomoea purpurea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/56562/ipomoea-purpurea/details",
+    "slug": "ipomoea-purpurea",
+    "seasons": [
+      "Summer",
+      "Autumn"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 11,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Convolvulus": {
+    "map": "byGenus",
+    "key": "Convolvulus",
+    "query": "Convolvulus tricolor",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterPropagation",
+    "url": "https://www.rhs.org.uk/plants/105536/convolvulus-tricolor/details",
+    "slug": "convolvulus-tricolor",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Larix": {
+    "map": "byGenus",
+    "key": "Larix",
+    "query": "Larix decidua",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/9835/larix-decidua/details",
+    "slug": "larix-decidua",
+    "seasons": [
+      "Spring"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Cedrus": {
+    "map": "byGenus",
+    "key": "Cedrus",
+    "query": "Cedrus atlantica",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/3288/cedrus-atlantica/details",
+    "slug": "cedrus-atlantica",
+    "seasons": [],
+    "bloom": null
+  },
+  "byGenus:Gentiana": {
+    "map": "byGenus",
+    "key": "Gentiana",
+    "query": "Gentiana lutea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/7793/gentiana-lutea/details",
+    "slug": "gentiana-lutea",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Rhaphidophora": {
+    "map": "byGenus",
+    "key": "Rhaphidophora",
+    "query": "Rhaphidophora tetrasperma",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/506806/rhaphidophora-tetrasperma/details",
+    "slug": "rhaphidophora-tetrasperma",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Arum": {
+    "map": "byGenus",
+    "key": "Arum",
+    "query": "Arum",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/1651/arum/details",
+    "slug": "arum",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Pilea": {
+    "map": "byGenus",
+    "key": "Pilea",
+    "query": "Pilea peperomioides",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/13015/pilea-peperomioides/details",
+    "slug": "pilea-peperomioides",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Lysimachia": {
+    "map": "byGenus",
+    "key": "Lysimachia",
+    "query": "Lysimachia",
+    "current_bloom": {
+      "from": 10,
+      "to": 4,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/20824/lysimachia/details",
+    "slug": "lysimachia",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Primula": {
+    "map": "byGenus",
+    "key": "Primula",
+    "query": "Primula obconica",
+    "current_bloom": {
+      "from": 10,
+      "to": 4,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/78912/primula-obconica-ob/details",
+    "slug": "primula-obconica-ob",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    }
+  },
+  "byGenus:Aesculus": {
+    "map": "byGenus",
+    "key": "Aesculus",
+    "query": "Aesculus × carnea",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/579/aesculus-flava/details",
+    "slug": "aesculus-flava",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ctenanthe": {
+    "map": "byGenus",
+    "key": "Ctenanthe",
+    "query": "Ctenanthe burle-marxii",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/5026/ctenanthe-burle-marxii/details",
+    "slug": "ctenanthe-burle-marxii",
+    "seasons": [
+      "Spring",
+      "Summer",
+      "Autumn",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 1,
+      "to": 12,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Parthenocissus": {
+    "map": "byGenus",
+    "key": "Parthenocissus",
+    "query": "Parthenocissus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/12345/parthenocissus/details",
+    "slug": "parthenocissus",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Phoenix": {
+    "map": "byGenus",
+    "key": "Phoenix",
+    "query": "Phoenix roebelenii",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightPropagation",
+    "url": "https://www.rhs.org.uk/plants/12771/phoenix-roebelenii/details",
+    "slug": "phoenix-roebelenii",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Sambucus": {
+    "map": "byGenus",
+    "key": "Sambucus",
+    "query": "Sambucus nigra",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/16391/sambucus-nigra/details",
+    "slug": "sambucus-nigra",
+    "seasons": [
+      "Summer"
+    ],
+    "bloom": {
+      "from": 6,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Viburnum": {
+    "map": "byGenus",
+    "key": "Viburnum",
+    "query": "Viburnum tinus",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/18950/viburnum-tinus/details",
+    "slug": "viburnum-tinus",
+    "seasons": [
+      "Spring",
+      "Winter"
+    ],
+    "bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Ilex": {
+    "map": "byGenus",
+    "key": "Ilex",
+    "query": "Ilex aquifolium",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/9087/ilex-aquifolium/details",
+    "slug": "ilex-aquifolium",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Artocarpus": {
+    "map": "byGenus",
+    "key": "Artocarpus",
+    "query": "Artocarpus altilis",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/1649/artocarpus-altilis/details",
+    "slug": "artocarpus-altilis",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Morus": {
+    "map": "byGenus",
+    "key": "Morus",
+    "query": "Morus alba",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/11216/morus-alba/details",
+    "slug": "morus-alba",
+    "seasons": [
+      "Spring",
+      "Summer"
+    ],
+    "bloom": {
+      "from": 3,
+      "to": 8,
+      "triggers": [],
+      "indoors": true
+    }
+  },
+  "byGenus:Petunia": {
+    "map": "byGenus",
+    "key": "Petunia",
+    "query": "Petunia × atkinsiana",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "url": "https://www.rhs.org.uk/plants/278209/petunia-mp7/details",
+    "slug": "petunia-mp7",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Heuchera": {
+    "map": "byGenus",
+    "key": "Heuchera",
+    "query": "Heuchera",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardiness",
+    "url": "https://www.rhs.org.uk/plants/8688/heuchera/details",
+    "slug": "heuchera",
+    "seasons": null,
+    "bloom": null
+  },
+  "byGenus:Hordeum": {
+    "map": "byGenus",
+    "key": "Hordeum",
+    "query": "Hordeum vulgare",
+    "current_bloom": null,
+    "current_sourcing": "_rhsHardinessLightSoilWaterIssuesPropagation",
+    "url": "https://www.rhs.org.uk/plants/277900/hordeum-vulgare/details",
+    "slug": "hordeum-vulgare",
+    "seasons": [],
+    "bloom": null
+  },
+  "byFamily:Ranunculaceae": {
+    "map": "byFamily",
+    "key": "Ranunculaceae",
+    "query": "Ranunculaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Caryophyllaceae": {
+    "map": "byFamily",
+    "key": "Caryophyllaceae",
+    "query": "Caryophyllaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Gentianaceae": {
+    "map": "byFamily",
+    "key": "Gentianaceae",
+    "query": "Gentianaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Primulaceae": {
+    "map": "byFamily",
+    "key": "Primulaceae",
+    "query": "Primulaceae",
+    "current_bloom": {
+      "from": 10,
+      "to": 4,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Violaceae": {
+    "map": "byFamily",
+    "key": "Violaceae",
+    "query": "Violaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Boraginaceae": {
+    "map": "byFamily",
+    "key": "Boraginaceae",
+    "query": "Boraginaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Plantaginaceae": {
+    "map": "byFamily",
+    "key": "Plantaginaceae",
+    "query": "Plantaginaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Papaveraceae": {
+    "map": "byFamily",
+    "key": "Papaveraceae",
+    "query": "Papaveraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Iridaceae": {
+    "map": "byFamily",
+    "key": "Iridaceae",
+    "query": "Iridaceae",
+    "current_bloom": {
+      "from": 2,
+      "to": 6,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Liliaceae": {
+    "map": "byFamily",
+    "key": "Liliaceae",
+    "query": "Liliaceae",
+    "current_bloom": {
+      "from": 4,
+      "to": 7,
+      "triggers": [
+        "chillBulb",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Saxifragaceae": {
+    "map": "byFamily",
+    "key": "Saxifragaceae",
+    "query": "Saxifragaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Campanulaceae": {
+    "map": "byFamily",
+    "key": "Campanulaceae",
+    "query": "Campanulaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Malvaceae": {
+    "map": "byFamily",
+    "key": "Malvaceae",
+    "query": "Malvaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Oleaceae": {
+    "map": "byFamily",
+    "key": "Oleaceae",
+    "query": "Oleaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Betulaceae": {
+    "map": "byFamily",
+    "key": "Betulaceae",
+    "query": "Betulaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Fagaceae": {
+    "map": "byFamily",
+    "key": "Fagaceae",
+    "query": "Fagaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Salicaceae": {
+    "map": "byFamily",
+    "key": "Salicaceae",
+    "query": "Salicaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Sapindaceae": {
+    "map": "byFamily",
+    "key": "Sapindaceae",
+    "query": "Sapindaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Caprifoliaceae": {
+    "map": "byFamily",
+    "key": "Caprifoliaceae",
+    "query": "Caprifoliaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Adoxaceae": {
+    "map": "byFamily",
+    "key": "Adoxaceae",
+    "query": "Adoxaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Hydrangeaceae": {
+    "map": "byFamily",
+    "key": "Hydrangeaceae",
+    "query": "Hydrangeaceae",
+    "current_bloom": {
+      "from": 6,
+      "to": 9,
+      "triggers": [
+        "fertilizer",
+        "evenWater"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Onagraceae": {
+    "map": "byFamily",
+    "key": "Onagraceae",
+    "query": "Onagraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Polygonaceae": {
+    "map": "byFamily",
+    "key": "Polygonaceae",
+    "query": "Polygonaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Amaranthaceae": {
+    "map": "byFamily",
+    "key": "Amaranthaceae",
+    "query": "Amaranthaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Convolvulaceae": {
+    "map": "byFamily",
+    "key": "Convolvulaceae",
+    "query": "Convolvulaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Hypericaceae": {
+    "map": "byFamily",
+    "key": "Hypericaceae",
+    "query": "Hypericaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Vitaceae": {
+    "map": "byFamily",
+    "key": "Vitaceae",
+    "query": "Vitaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Magnoliaceae": {
+    "map": "byFamily",
+    "key": "Magnoliaceae",
+    "query": "Magnoliaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Berberidaceae": {
+    "map": "byFamily",
+    "key": "Berberidaceae",
+    "query": "Berberidaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Aquifoliaceae": {
+    "map": "byFamily",
+    "key": "Aquifoliaceae",
+    "query": "Aquifoliaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Buxaceae": {
+    "map": "byFamily",
+    "key": "Buxaceae",
+    "query": "Buxaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Gesneriaceae": {
+    "map": "byFamily",
+    "key": "Gesneriaceae",
+    "query": "Gesneriaceae",
+    "current_bloom": {
+      "from": 3,
+      "to": 11,
+      "triggers": [
+        "brightLight",
+        "potbound",
+        "evenWater"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Nymphaeaceae": {
+    "map": "byFamily",
+    "key": "Nymphaeaceae",
+    "query": "Nymphaeaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLight",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Urticaceae": {
+    "map": "byFamily",
+    "key": "Urticaceae",
+    "query": "Urticaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Araceae": {
+    "map": "byFamily",
+    "key": "Araceae",
+    "query": "Araceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Marantaceae": {
+    "map": "byFamily",
+    "key": "Marantaceae",
+    "query": "Marantaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cactaceae": {
+    "map": "byFamily",
+    "key": "Cactaceae",
+    "query": "Cactaceae",
+    "current_bloom": {
+      "from": 4,
+      "to": 6,
+      "triggers": [
+        "coolRest",
+        "drySpell",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Crassulaceae": {
+    "map": "byFamily",
+    "key": "Crassulaceae",
+    "query": "Crassulaceae",
+    "current_bloom": {
+      "from": 4,
+      "to": 8,
+      "triggers": [
+        "coolRest",
+        "brightLight"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Asphodelaceae": {
+    "map": "byFamily",
+    "key": "Asphodelaceae",
+    "query": "Asphodelaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Asparagaceae": {
+    "map": "byFamily",
+    "key": "Asparagaceae",
+    "query": "Asparagaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Arecaceae": {
+    "map": "byFamily",
+    "key": "Arecaceae",
+    "query": "Arecaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoil",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Moraceae": {
+    "map": "byFamily",
+    "key": "Moraceae",
+    "query": "Moraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Orchidaceae": {
+    "map": "byFamily",
+    "key": "Orchidaceae",
+    "query": "Orchidaceae",
+    "current_bloom": {
+      "from": 12,
+      "to": 5,
+      "triggers": [
+        "coolNights",
+        "potbound",
+        "keepSpike"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Bromeliaceae": {
+    "map": "byFamily",
+    "key": "Bromeliaceae",
+    "query": "Bromeliaceae",
+    "current_bloom": {
+      "from": 5,
+      "to": 9,
+      "triggers": [
+        "maturity",
+        "potbound"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lamiaceae": {
+    "map": "byFamily",
+    "key": "Lamiaceae",
+    "query": "Lamiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Apiaceae": {
+    "map": "byFamily",
+    "key": "Apiaceae",
+    "query": "Apiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Solanaceae": {
+    "map": "byFamily",
+    "key": "Solanaceae",
+    "query": "Solanaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cucurbitaceae": {
+    "map": "byFamily",
+    "key": "Cucurbitaceae",
+    "query": "Cucurbitaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Rosaceae": {
+    "map": "byFamily",
+    "key": "Rosaceae",
+    "query": "Rosaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Rutaceae": {
+    "map": "byFamily",
+    "key": "Rutaceae",
+    "query": "Rutaceae",
+    "current_bloom": {
+      "from": 3,
+      "to": 6,
+      "triggers": [
+        "coolRest",
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Asteraceae": {
+    "map": "byFamily",
+    "key": "Asteraceae",
+    "query": "Asteraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Ericaceae": {
+    "map": "byFamily",
+    "key": "Ericaceae",
+    "query": "Ericaceae",
+    "current_bloom": {
+      "from": 4,
+      "to": 6,
+      "triggers": [
+        "coolRest",
+        "deadhead"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Droseraceae": {
+    "map": "byFamily",
+    "key": "Droseraceae",
+    "query": "Droseraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Sarraceniaceae": {
+    "map": "byFamily",
+    "key": "Sarraceniaceae",
+    "query": "Sarraceniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Nepenthaceae": {
+    "map": "byFamily",
+    "key": "Nepenthaceae",
+    "query": "Nepenthaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Amaryllidaceae": {
+    "map": "byFamily",
+    "key": "Amaryllidaceae",
+    "query": "Amaryllidaceae",
+    "current_bloom": {
+      "from": 3,
+      "to": 6,
+      "triggers": [
+        "brightLight",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Fabaceae": {
+    "map": "byFamily",
+    "key": "Fabaceae",
+    "query": "Fabaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Brassicaceae": {
+    "map": "byFamily",
+    "key": "Brassicaceae",
+    "query": "Brassicaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Pinaceae": {
+    "map": "byFamily",
+    "key": "Pinaceae",
+    "query": "Pinaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cupressaceae": {
+    "map": "byFamily",
+    "key": "Cupressaceae",
+    "query": "Cupressaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Piperaceae": {
+    "map": "byFamily",
+    "key": "Piperaceae",
+    "query": "Piperaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Apocynaceae": {
+    "map": "byFamily",
+    "key": "Apocynaceae",
+    "query": "Apocynaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Euphorbiaceae": {
+    "map": "byFamily",
+    "key": "Euphorbiaceae",
+    "query": "Euphorbiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Poaceae": {
+    "map": "byFamily",
+    "key": "Poaceae",
+    "query": "Poaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Geraniaceae": {
+    "map": "byFamily",
+    "key": "Geraniaceae",
+    "query": "Geraniaceae",
+    "current_bloom": {
+      "from": 4,
+      "to": 10,
+      "triggers": [
+        "brightLight",
+        "deadhead",
+        "fertilizer"
+      ],
+      "indoors": true
+    },
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Acanthaceae": {
+    "map": "byFamily",
+    "key": "Acanthaceae",
+    "query": "Acanthaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Anacardiaceae": {
+    "map": "byFamily",
+    "key": "Anacardiaceae",
+    "query": "Anacardiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Annonaceae": {
+    "map": "byFamily",
+    "key": "Annonaceae",
+    "query": "Annonaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Araucariaceae": {
+    "map": "byFamily",
+    "key": "Araucariaceae",
+    "query": "Araucariaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Begoniaceae": {
+    "map": "byFamily",
+    "key": "Begoniaceae",
+    "query": "Begoniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Bignoniaceae": {
+    "map": "byFamily",
+    "key": "Bignoniaceae",
+    "query": "Bignoniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Commelinaceae": {
+    "map": "byFamily",
+    "key": "Commelinaceae",
+    "query": "Commelinaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cornaceae": {
+    "map": "byFamily",
+    "key": "Cornaceae",
+    "query": "Cornaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cyperaceae": {
+    "map": "byFamily",
+    "key": "Cyperaceae",
+    "query": "Cyperaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Elaeagnaceae": {
+    "map": "byFamily",
+    "key": "Elaeagnaceae",
+    "query": "Elaeagnaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lauraceae": {
+    "map": "byFamily",
+    "key": "Lauraceae",
+    "query": "Lauraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Linaceae": {
+    "map": "byFamily",
+    "key": "Linaceae",
+    "query": "Linaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lythraceae": {
+    "map": "byFamily",
+    "key": "Lythraceae",
+    "query": "Lythraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Myrtaceae": {
+    "map": "byFamily",
+    "key": "Myrtaceae",
+    "query": "Myrtaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Oxalidaceae": {
+    "map": "byFamily",
+    "key": "Oxalidaceae",
+    "query": "Oxalidaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Passifloraceae": {
+    "map": "byFamily",
+    "key": "Passifloraceae",
+    "query": "Passifloraceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Rhamnaceae": {
+    "map": "byFamily",
+    "key": "Rhamnaceae",
+    "query": "Rhamnaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Rubiaceae": {
+    "map": "byFamily",
+    "key": "Rubiaceae",
+    "query": "Rubiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Scrophulariaceae": {
+    "map": "byFamily",
+    "key": "Scrophulariaceae",
+    "query": "Scrophulariaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Verbenaceae": {
+    "map": "byFamily",
+    "key": "Verbenaceae",
+    "query": "Verbenaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Acoraceae": {
+    "map": "byFamily",
+    "key": "Acoraceae",
+    "query": "Acoraceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Actinidiaceae": {
+    "map": "byFamily",
+    "key": "Actinidiaceae",
+    "query": "Actinidiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Aizoaceae": {
+    "map": "byFamily",
+    "key": "Aizoaceae",
+    "query": "Aizoaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Alismataceae": {
+    "map": "byFamily",
+    "key": "Alismataceae",
+    "query": "Alismataceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Alstroemeriaceae": {
+    "map": "byFamily",
+    "key": "Alstroemeriaceae",
+    "query": "Alstroemeriaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Altingiaceae": {
+    "map": "byFamily",
+    "key": "Altingiaceae",
+    "query": "Altingiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Araliaceae": {
+    "map": "byFamily",
+    "key": "Araliaceae",
+    "query": "Araliaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Balsaminaceae": {
+    "map": "byFamily",
+    "key": "Balsaminaceae",
+    "query": "Balsaminaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Bixaceae": {
+    "map": "byFamily",
+    "key": "Bixaceae",
+    "query": "Bixaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Calycanthaceae": {
+    "map": "byFamily",
+    "key": "Calycanthaceae",
+    "query": "Calycanthaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cannabaceae": {
+    "map": "byFamily",
+    "key": "Cannabaceae",
+    "query": "Cannabaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Capparaceae": {
+    "map": "byFamily",
+    "key": "Capparaceae",
+    "query": "Capparaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Caricaceae": {
+    "map": "byFamily",
+    "key": "Caricaceae",
+    "query": "Caricaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Celastraceae": {
+    "map": "byFamily",
+    "key": "Celastraceae",
+    "query": "Celastraceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cephalotaceae": {
+    "map": "byFamily",
+    "key": "Cephalotaceae",
+    "query": "Cephalotaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Ceratophyllaceae": {
+    "map": "byFamily",
+    "key": "Ceratophyllaceae",
+    "query": "Ceratophyllaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cercidiphyllaceae": {
+    "map": "byFamily",
+    "key": "Cercidiphyllaceae",
+    "query": "Cercidiphyllaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cistaceae": {
+    "map": "byFamily",
+    "key": "Cistaceae",
+    "query": "Cistaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cladophoraceae": {
+    "map": "byFamily",
+    "key": "Cladophoraceae",
+    "query": "Cladophoraceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cleomaceae": {
+    "map": "byFamily",
+    "key": "Cleomaceae",
+    "query": "Cleomaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Clusiaceae": {
+    "map": "byFamily",
+    "key": "Clusiaceae",
+    "query": "Clusiaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Colchicaceae": {
+    "map": "byFamily",
+    "key": "Colchicaceae",
+    "query": "Colchicaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Cycadaceae": {
+    "map": "byFamily",
+    "key": "Cycadaceae",
+    "query": "Cycadaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Dicksoniaceae": {
+    "map": "byFamily",
+    "key": "Dicksoniaceae",
+    "query": "Dicksoniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Didiereaceae": {
+    "map": "byFamily",
+    "key": "Didiereaceae",
+    "query": "Didiereaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Dryopteridaceae": {
+    "map": "byFamily",
+    "key": "Dryopteridaceae",
+    "query": "Dryopteridaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Ebenaceae": {
+    "map": "byFamily",
+    "key": "Ebenaceae",
+    "query": "Ebenaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Equisetaceae": {
+    "map": "byFamily",
+    "key": "Equisetaceae",
+    "query": "Equisetaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Erythroxylaceae": {
+    "map": "byFamily",
+    "key": "Erythroxylaceae",
+    "query": "Erythroxylaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Escalloniaceae": {
+    "map": "byFamily",
+    "key": "Escalloniaceae",
+    "query": "Escalloniaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Garryaceae": {
+    "map": "byFamily",
+    "key": "Garryaceae",
+    "query": "Garryaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Gigartinaceae": {
+    "map": "byFamily",
+    "key": "Gigartinaceae",
+    "query": "Gigartinaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Ginkgoaceae": {
+    "map": "byFamily",
+    "key": "Ginkgoaceae",
+    "query": "Ginkgoaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Grossulariaceae": {
+    "map": "byFamily",
+    "key": "Grossulariaceae",
+    "query": "Grossulariaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Gunneraceae": {
+    "map": "byFamily",
+    "key": "Gunneraceae",
+    "query": "Gunneraceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Hamamelidaceae": {
+    "map": "byFamily",
+    "key": "Hamamelidaceae",
+    "query": "Hamamelidaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Juglandaceae": {
+    "map": "byFamily",
+    "key": "Juglandaceae",
+    "query": "Juglandaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Juncaceae": {
+    "map": "byFamily",
+    "key": "Juncaceae",
+    "query": "Juncaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lardizabalaceae": {
+    "map": "byFamily",
+    "key": "Lardizabalaceae",
+    "query": "Lardizabalaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lecythidaceae": {
+    "map": "byFamily",
+    "key": "Lecythidaceae",
+    "query": "Lecythidaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lentibulariaceae": {
+    "map": "byFamily",
+    "key": "Lentibulariaceae",
+    "query": "Lentibulariaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Lycopodiaceae": {
+    "map": "byFamily",
+    "key": "Lycopodiaceae",
+    "query": "Lycopodiaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Melanthiaceae": {
+    "map": "byFamily",
+    "key": "Melanthiaceae",
+    "query": "Melanthiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Melastomataceae": {
+    "map": "byFamily",
+    "key": "Melastomataceae",
+    "query": "Melastomataceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Meliaceae": {
+    "map": "byFamily",
+    "key": "Meliaceae",
+    "query": "Meliaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Menyanthaceae": {
+    "map": "byFamily",
+    "key": "Menyanthaceae",
+    "query": "Menyanthaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Nelumbonaceae": {
+    "map": "byFamily",
+    "key": "Nelumbonaceae",
+    "query": "Nelumbonaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Nyctaginaceae": {
+    "map": "byFamily",
+    "key": "Nyctaginaceae",
+    "query": "Nyctaginaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Nyssaceae": {
+    "map": "byFamily",
+    "key": "Nyssaceae",
+    "query": "Nyssaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Onocleaceae": {
+    "map": "byFamily",
+    "key": "Onocleaceae",
+    "query": "Onocleaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Ophioglossaceae": {
+    "map": "byFamily",
+    "key": "Ophioglossaceae",
+    "query": "Ophioglossaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Orobanchaceae": {
+    "map": "byFamily",
+    "key": "Orobanchaceae",
+    "query": "Orobanchaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Paeoniaceae": {
+    "map": "byFamily",
+    "key": "Paeoniaceae",
+    "query": "Paeoniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Palmariaceae": {
+    "map": "byFamily",
+    "key": "Palmariaceae",
+    "query": "Palmariaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Paulowniaceae": {
+    "map": "byFamily",
+    "key": "Paulowniaceae",
+    "query": "Paulowniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Pedaliaceae": {
+    "map": "byFamily",
+    "key": "Pedaliaceae",
+    "query": "Pedaliaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Phytolaccaceae": {
+    "map": "byFamily",
+    "key": "Phytolaccaceae",
+    "query": "Phytolaccaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Pittosporaceae": {
+    "map": "byFamily",
+    "key": "Pittosporaceae",
+    "query": "Pittosporaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Platanaceae": {
+    "map": "byFamily",
+    "key": "Platanaceae",
+    "query": "Platanaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Plumbaginaceae": {
+    "map": "byFamily",
+    "key": "Plumbaginaceae",
+    "query": "Plumbaginaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Polemoniaceae": {
+    "map": "byFamily",
+    "key": "Polemoniaceae",
+    "query": "Polemoniaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Polygalaceae": {
+    "map": "byFamily",
+    "key": "Polygalaceae",
+    "query": "Polygalaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Polypodiaceae": {
+    "map": "byFamily",
+    "key": "Polypodiaceae",
+    "query": "Polypodiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Pontederiaceae": {
+    "map": "byFamily",
+    "key": "Pontederiaceae",
+    "query": "Pontederiaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Portulacaceae": {
+    "map": "byFamily",
+    "key": "Portulacaceae",
+    "query": "Portulacaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Potamogetonaceae": {
+    "map": "byFamily",
+    "key": "Potamogetonaceae",
+    "query": "Potamogetonaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Pottiaceae": {
+    "map": "byFamily",
+    "key": "Pottiaceae",
+    "query": "Pottiaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Proteaceae": {
+    "map": "byFamily",
+    "key": "Proteaceae",
+    "query": "Proteaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Pteridaceae": {
+    "map": "byFamily",
+    "key": "Pteridaceae",
+    "query": "Pteridaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Sapotaceae": {
+    "map": "byFamily",
+    "key": "Sapotaceae",
+    "query": "Sapotaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Simaroubaceae": {
+    "map": "byFamily",
+    "key": "Simaroubaceae",
+    "query": "Simaroubaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Smilacaceae": {
+    "map": "byFamily",
+    "key": "Smilacaceae",
+    "query": "Smilacaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Staphyleaceae": {
+    "map": "byFamily",
+    "key": "Staphyleaceae",
+    "query": "Staphyleaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Styracaceae": {
+    "map": "byFamily",
+    "key": "Styracaceae",
+    "query": "Styracaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Tamaricaceae": {
+    "map": "byFamily",
+    "key": "Tamaricaceae",
+    "query": "Tamaricaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Taxaceae": {
+    "map": "byFamily",
+    "key": "Taxaceae",
+    "query": "Taxaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Thymelaeaceae": {
+    "map": "byFamily",
+    "key": "Thymelaeaceae",
+    "query": "Thymelaeaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Tropaeolaceae": {
+    "map": "byFamily",
+    "key": "Tropaeolaceae",
+    "query": "Tropaeolaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Typhaceae": {
+    "map": "byFamily",
+    "key": "Typhaceae",
+    "query": "Typhaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Ulmaceae": {
+    "map": "byFamily",
+    "key": "Ulmaceae",
+    "query": "Ulmaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Viscaceae": {
+    "map": "byFamily",
+    "key": "Viscaceae",
+    "query": "Viscaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Zamiaceae": {
+    "map": "byFamily",
+    "key": "Zamiaceae",
+    "query": "Zamiaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Zingiberaceae": {
+    "map": "byFamily",
+    "key": "Zingiberaceae",
+    "query": "Zingiberaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Costaceae": {
+    "map": "byFamily",
+    "key": "Costaceae",
+    "query": "Costaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Davalliaceae": {
+    "map": "byFamily",
+    "key": "Davalliaceae",
+    "query": "Davalliaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Dioscoreaceae": {
+    "map": "byFamily",
+    "key": "Dioscoreaceae",
+    "query": "Dioscoreaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightSoilWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Menispermaceae": {
+    "map": "byFamily",
+    "key": "Menispermaceae",
+    "query": "Menispermaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Musaceae": {
+    "map": "byFamily",
+    "key": "Musaceae",
+    "query": "Musaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Phyllanthaceae": {
+    "map": "byFamily",
+    "key": "Phyllanthaceae",
+    "query": "Phyllanthaceae",
+    "current_bloom": null,
+    "current_sourcing": null,
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Selaginellaceae": {
+    "map": "byFamily",
+    "key": "Selaginellaceae",
+    "query": "Selaginellaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWater",
+    "error": "not-a-taxon",
+    "bloom": null
+  },
+  "byFamily:Strelitziaceae": {
+    "map": "byFamily",
+    "key": "Strelitziaceae",
+    "query": "Strelitziaceae",
+    "current_bloom": null,
+    "current_sourcing": "_rhsLightWaterIssues",
+    "error": "not-a-taxon",
+    "bloom": null
+  }
+}

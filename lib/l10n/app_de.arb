@@ -1130,6 +1130,7 @@
   "careLightBright": "Helles indirektes Licht",
   "careLightSome": "Ein paar Stunden Sonne",
   "careLightFull": "Volle Sonne",
+  "careLightFloor": "Hält bis {value}",
   "careLightLamp": "Unter Lampe · Vollspektrum-LED, {min} bis {max} µmol/m²/s, {hours} h am Tag",
   "careLightLampDli": "Das sind {min} bis {max} mol/m²/Tag am Blattwerk.",
   "careHumidityLow": "Trockene Luft ist in Ordnung",

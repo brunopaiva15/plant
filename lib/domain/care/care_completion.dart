@@ -93,6 +93,7 @@ class CareCompletion {
         wateringWinterDays: wateringWinterDays ?? base.wateringWinterDays,
         dryDown: base.dryDown,
         light: light ?? base.light,
+        lightTolerance: light == null ? base.lightTolerance : null,
         humidity: humidity ?? base.humidity,
         difficulty: difficulty ?? base.difficulty,
         soil: soil ?? base.soil,
@@ -132,6 +133,7 @@ class CareCompletion {
         bloom: base.bloom,
         dormancy: base.dormancy,
         tipKeys: base.tipKeys,
+        sourcing: base.sourcing,
       );
 
   Map<String, Object?> toJson() => {

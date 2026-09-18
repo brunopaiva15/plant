@@ -204,6 +204,72 @@ void main() {
     },
   );
 
+  testWidgets('une lumière sourcée dit l\'idéal et le plancher', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.someSun,
+        lightTolerance: LightNeed.lowLight,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        sourcing: {
+          CareField.hardiness: CareSource.rhs,
+          CareField.light: CareSource.rhs,
+        },
+      ),
+    );
+    expect(find.text('Quelques heures de soleil'), findsWidgets);
+    expect(find.text('Tient jusqu\'à Faible lumière'), findsOneWidget);
+    expect(
+      find.text("Vérifié d'après RHS : Température, Lumière"),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('un substrat sourcé entre dans le tampon RHS', (tester) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.acidic,
+        water: WaterTolerance.strict,
+        sourcing: {
+          CareField.soil: CareSource.rhs,
+          CareField.water: CareSource.rhs,
+        },
+      ),
+    );
+    expect(find.text("Vérifié d'après RHS : Substrat, Eau"), findsOneWidget);
+  });
+
+  testWidgets('des problèmes sourcés entrent dans le tampon RHS', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const CareProfile(
+        wateringSummerDays: 7,
+        wateringWinterDays: 14,
+        light: LightNeed.brightIndirect,
+        humidity: HumidityNeed.average,
+        difficulty: CareDifficulty.easy,
+        soil: SoilKind.standard,
+        issues: [CommonIssue.scale],
+        sourcing: {CareField.issues: CareSource.rhs},
+      ),
+    );
+    expect(find.text("Vérifié d'après RHS : À surveiller"), findsOneWidget);
+  });
+
   testWidgets('le substrat dit son mélange et ce qu’elle accepte hors du pot', (
     tester,
   ) async {

@@ -178,7 +178,10 @@ class CareGuideBody extends ConsumerWidget {
           tint: c.sunSoft,
           title: l10n.careLight,
           value: l10n.lightName(p.light),
-          details: [l10n.careLightLamp(lamp.ppfdMin, lamp.ppfdMax, lamp.hours)],
+          details: [
+            ?l10n.lightFloorNote(p),
+            l10n.careLightLamp(lamp.ppfdMin, lamp.ppfdMax, lamp.hours),
+          ],
           badge: p.outdoorFriendly ? ('🌤️', l10n.guideBadgeOutdoor) : null,
           notes: [l10n.careLightLampDli(lamp.dliMin, lamp.dliMax)],
         ),

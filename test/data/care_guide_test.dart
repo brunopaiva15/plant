@@ -189,12 +189,15 @@ void main() {
 
     test('une floraison dit sa saison et ce qui la décide', () {
       // Sans condition, la carte n'apprend rien de plus que le calendrier ;
-      // au-delà de trois, elle ne se lit plus.
+      // au-delà de trois, elle ne se lit plus. Une fenêtre lue à la RHS
+      // n'invente pas de déclencheur : le calendrier suffit.
       final bad = <String>[];
       for (final entry in _allProfiles.entries) {
         final bloom = entry.value.bloom;
         if (bloom == null) continue;
-        if (bloom.triggers.isEmpty || bloom.triggers.length > 3) bad.add(entry.key);
+        final sourced = entry.value.sourcing[CareField.bloom] == CareSource.rhs;
+        if (bloom.triggers.isEmpty && !sourced) bad.add(entry.key);
+        if (bloom.triggers.length > 3) bad.add(entry.key);
         if (bloom.triggers.toSet().length != bloom.triggers.length) bad.add(entry.key);
       }
       expect(bad, isEmpty, reason: 'floraisons sans condition, en double, ou trop bavardes : $bad');

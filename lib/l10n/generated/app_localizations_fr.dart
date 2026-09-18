@@ -3236,6 +3236,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careLightFull => 'Plein soleil';
 
   @override
+  String careLightFloor(String value) {
+    return 'Tient jusqu\'à $value';
+  }
+
+  @override
   String careLightLamp(int min, int max, int hours) {
     return 'Sous lampe · LED à spectre complet, $min à $max µmol/m²/s, $hours h par jour';
   }

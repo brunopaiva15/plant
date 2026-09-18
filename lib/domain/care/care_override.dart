@@ -50,6 +50,7 @@ class CareOverride {
         wateringWinterDays: wateringWinterDays ?? base.wateringWinterDays,
         dryDown: base.dryDown,
         light: light ?? base.light,
+        lightTolerance: base.lightTolerance,
         humidity: humidity ?? base.humidity,
         difficulty: difficulty ?? base.difficulty,
         soil: base.soil,
@@ -81,6 +82,7 @@ class CareOverride {
         bloom: base.bloom,
         dormancy: base.dormancy,
         tipKeys: base.tipKeys,
+        sourcing: base.sourcing,
       );
 
   Map<String, Object?> toJson() => {

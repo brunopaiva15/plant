@@ -18,6 +18,14 @@ extension CareProfileLabels on AppLocalizations {
         LightNeed.fullSun => careLightFull,
       };
 
+  /// Le plancher, quand il est plus bas que l'idéal RHS : « Tient jusqu'à
+  /// l'ombre ». `null` si la plante ne descend pas plus bas que son idéal.
+  String? lightFloorNote(CareProfile p) {
+    final floor = p.lightTolerance;
+    if (floor == null || floor == p.light) return null;
+    return careLightFloor(lightName(floor));
+  }
+
   String humidityName(HumidityNeed v) => switch (v) {
         HumidityNeed.low => careHumidityLow,
         HumidityNeed.average => careHumidityAverage,

@@ -31,8 +31,12 @@ void main() {
     });
 
     test('une tige tendre pour les aromatiques', () {
-      expect(_kind('Mentha spicata'), PropagationGuideKind.stemSoft);
+      expect(_kind('Lavandula angustifolia'), PropagationGuideKind.stemSoft);
       expect(_kind('Ocimum basilicum'), PropagationGuideKind.stemSoft);
+    });
+
+    test('la menthe de jardin se divise', () {
+      expect(_kind('Mentha spicata'), PropagationGuideKind.division);
     });
 
     test('une division pour les touffes', () {
@@ -72,14 +76,17 @@ void main() {
 
     test('une bouture de feuille reste disponible pour le sansevieria', () {
       final options = _options('Dracaena trifasciata');
-      expect(options.map((o) => o.kind), [PropagationGuideKind.division, PropagationGuideKind.leafCutting]);
+      expect(options.map((o) => o.kind), [
+        PropagationGuideKind.division,
+        PropagationGuideKind.leafCutting,
+        PropagationGuideKind.offset,
+      ]);
       // La division vient en premier : c'est la méthode conseillée.
       expect(options.first.method, Propagation.division);
     });
 
-    test('le zamioculcas propose les deux mêmes gestes', () {
-      expect(_options('Zamioculcas zamiifolia').map((o) => o.kind),
-          [PropagationGuideKind.division, PropagationGuideKind.leafCutting]);
+    test('le zamioculcas se bouture en feuille', () {
+      expect(_options('Zamioculcas zamiifolia').map((o) => o.kind), [PropagationGuideKind.leafCutting]);
     });
   });
 
@@ -192,7 +199,7 @@ void main() {
     test("« water » n'est pas une méthode, c'est un milieu", () {
       final monstera = CareProfiles.bySpecies['Monstera deliciosa']!;
       expect(monstera.propagation, contains(Propagation.water));
-      expect(monstera.propagationMethods, [Propagation.stemCutting]);
+      expect(monstera.propagationMethods, [Propagation.stemCutting, Propagation.seed]);
       expect(monstera.rootingMedium, RootingMedium.water);
     });
 

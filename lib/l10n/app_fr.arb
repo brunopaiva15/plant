@@ -1629,6 +1629,14 @@
   "careLightBright": "Lumière vive indirecte",
   "careLightSome": "Quelques heures de soleil",
   "careLightFull": "Plein soleil",
+  "careLightFloor": "Tient jusqu'à {value}",
+  "@careLightFloor": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "careLightLamp": "Sous lampe · LED à spectre complet, {min} à {max} µmol/m²/s, {hours} h par jour",
   "@careLightLamp": {
     "placeholders": {
