@@ -294,6 +294,37 @@ void main() {
     expect(find.text('Maranta'), findsOneWidget);
   });
 
+  testWidgets('toucher un nom détecté le sélectionne et continue', (tester) async {
+    await pumpFlow(tester, identifier: const _InstantIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 120));
+
+    expect(find.text('Calathéa zébré'), findsOneWidget);
+    await tester.tap(find.text('Calathéa zébré'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nom'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is EditableText &&
+            widget.controller.text == 'Goeppertia zebrina',
+      ),
+      findsOneWidget,
+      reason: 'l’espèce tapée doit être préremplie à l’étape suivante',
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is EditableText &&
+            widget.controller.text == 'Calathéa zébré',
+      ),
+      findsOneWidget,
+      reason: 'le nom commun est également repris comme nom de la plante',
+    );
+  });
+
   testWidgets("l'étape du nom s'ouvre sans clavier, et le champ à un toucher", (tester) async {
     await pumpFlow(tester);
     await tester.tap(find.widgetWithText(FloraButton, 'Continuer sans photo'));
