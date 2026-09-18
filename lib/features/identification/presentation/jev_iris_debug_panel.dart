@@ -71,15 +71,17 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
   Map<String, dynamic> get _questions {
     final candidates = _top5;
     return {
-      'identification_reliable': {
-        'type': 'noul',
+      'decision': {
+        'type': 'choice',
         'instructions':
-            'Based on the Iris score distribution, is the evidence strong enough for Auxine to present one species as the identification?',
+            'Choose the single product action Auxine should take now. This is the authoritative product decision; the species and confidence questions are explanatory only.',
         'criteria': {
-          'true':
-              'One candidate is sufficiently dominant relative to the alternatives that presenting it is reasonable.',
-          'false':
-              'The candidates remain ambiguous enough that Auxine should avoid presenting one species as reliable.',
+          'show_result':
+              'Show the best current species result when one Iris candidate clearly dominates the alternatives and another photo is unlikely to materially change the identification. A very high top score with a wide margin strongly supports this action.',
+          'ask_another_photo':
+              'Ask for one more photo only when photo_count is below 2 and two or more candidates remain close enough that another view could materially change the identification.',
+          'keep_uncertain':
+              'Keep the identification explicitly uncertain when no candidate is sufficiently supported and either two photos have already been used or another photo is unlikely to resolve the ambiguity.',
         },
       },
       'species': {
@@ -91,18 +93,6 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
             'candidate_${i + 1}':
                 '${candidate.scientificName}; Iris score ${candidate.score.toStringAsFixed(4)}.',
           'uncertain': 'No candidate is sufficiently supported by the available Iris scores.',
-        },
-      },
-      'next_action': {
-        'type': 'choice',
-        'instructions':
-            'What should Auxine do next to minimise the risk of a wrong identification?',
-        'criteria': {
-          'show_result': 'Show the best current species result.',
-          'ask_another_photo':
-              'Ask for another photo of the same plant and run Iris again before deciding.',
-          'keep_uncertain':
-              'Keep the current identification explicitly uncertain without selecting a species.',
         },
       },
       'confidence': {
@@ -188,9 +178,8 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
     if (!JevConfig.isConfigured || _top5.isEmpty) return const SizedBox.shrink();
 
     final c = context.colors;
-    final reliable = (_answer('identification_reliable')?['noul'] as num?)?.toDouble();
+    final decision = _answer('decision');
     final species = _answer('species');
-    final nextAction = _answer('next_action');
     final score = (_answer('confidence')?['score'] as num?)?.toDouble();
     final cost = ((_response?['usage'] as Map<String, dynamic>?)?['cost'] as num?)?.toDouble();
     final model = _response?['model'] as String?;
@@ -250,16 +239,15 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
               const SizedBox(height: Space.sm),
               Text('Jev', style: context.text.title3),
               const SizedBox(height: Space.xs),
-              _DebugMetric(label: 'Identification fiable', value: _pct(reliable)),
               _DebugMetric(
-                label: 'Espèce',
-                value: _speciesLabel(species?['choice'] as String?),
-                detail: _pct(_selectedProbability(species)),
+                label: 'Décision produit',
+                value: _actionLabel(decision?['choice']),
+                detail: _pct(_selectedProbability(decision)),
               ),
               _DebugMetric(
-                label: 'Action',
-                value: _actionLabel(nextAction?['choice']),
-                detail: _pct(_selectedProbability(nextAction)),
+                label: 'Espèce indicative',
+                value: _speciesLabel(species?['choice'] as String?),
+                detail: _pct(_selectedProbability(species)),
               ),
               _DebugMetric(
                 label: 'Force des indices',
