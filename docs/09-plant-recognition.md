@@ -279,7 +279,7 @@ groupe :
 Le `--dart-define` est indispensable : une variable d'environnement de CI
 n'entre pas toute seule dans le binaire Flutter.
 
-- Déclenché seulement sur `uncertain` / `noCandidate`, ou sans modèle local.
+- Déclenché automatiquement seulement sur `noCandidate`, erreur locale ou absence de modèle. Une liste `uncertain` reste visible pour permettre la seconde photo.
 - Coupable par l'utilisateur (réglage « Repli en ligne ») : tout reste alors
   sur l'appareil.
 - **Quota mensuel** de 30 appels par appareil (`monthlyRemoteLimit`), remis
