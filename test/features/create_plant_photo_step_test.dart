@@ -93,6 +93,35 @@ class _SlowIris implements PlantIdentifier {
   Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) => completer.future;
 }
 
+class _InstantIris implements PlantIdentifier {
+  const _InstantIris();
+
+  @override
+  bool get isConfigured => true;
+
+  @override
+  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async => const [
+        IdentificationCandidate(
+          scientificName: 'Goeppertia zebrina',
+          commonName: 'Calathéa zébré',
+          score: 0.82,
+          source: IdentificationSource.local,
+        ),
+        IdentificationCandidate(
+          scientificName: 'Goeppertia warszewiczii',
+          commonName: 'Calathéa',
+          score: 0.11,
+          source: IdentificationSource.local,
+        ),
+        IdentificationCandidate(
+          scientificName: 'Maranta leuconeura',
+          commonName: 'Maranta',
+          score: 0.05,
+          source: IdentificationSource.local,
+        ),
+      ];
+}
+
 void main() {
   late Directory temp;
   late _FakeStorage storage;
@@ -188,6 +217,28 @@ void main() {
     iris.completer.complete(const []);
     await tester.pumpAndSettle();
     expect(find.byType(ProcessingField), findsNothing);
+  });
+
+  testWidgets('un résultat instantané garde deux secondes de scan et révèle les noms', (tester) async {
+    await pumpFlow(tester, identifier: const _InstantIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.byType(ProcessingField), findsOneWidget);
+    expect(find.text('Calathéa zébré'), findsOneWidget);
+    expect(find.text('Goeppertia zebrina'), findsOneWidget);
+    var continueButton = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Continuer'));
+    expect(continueButton.onPressed, isNull, reason: 'le scan doit rester visible au moins deux secondes');
+
+    await tester.pump(const Duration(milliseconds: 1700));
+    expect(find.byType(ProcessingField), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(ProcessingField), findsNothing);
+    continueButton = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Continuer'));
+    expect(continueButton.onPressed, isNotNull);
+    expect(find.text('Maranta'), findsOneWidget);
   });
 
   testWidgets("l'étape du nom s'ouvre sans clavier, et le champ à un toucher", (tester) async {
