@@ -668,7 +668,7 @@
   "identificationSuggestionsToCheck": "Vorschläge zum Prüfen",
   "identifyConfirmWithPhoto": "Mit einem Foto bestätigen",
   "searchingOnline": "Online-Suche…",
-  "suggestionsLocal": "Auf deinem Gerät gefunden, ohne Netz",
+  "suggestionsLocal": "Iris-Ergebnisse auf deinem Gerät · Foto nicht hochgeladen",
   "suggestionsRemote": "Online von Pl@ntNet vorgeschlagen",
   "identifyOnDevice": "Von {name} auf dem Gerät erkannt. Wählen Sie die Art",
   "identifyViaPlantNet": "Online von Pl@ntNet erkannt. Wählen Sie die Art",
