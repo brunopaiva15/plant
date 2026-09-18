@@ -23,6 +23,7 @@ import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
 import 'identification_source_note.dart';
 import 'genus_row.dart';
+import 'jev_iris_debug_panel.dart';
 
 /// Lance l'identification et laisse l'utilisateur choisir. Retourne le
 /// candidat retenu, ou `null`.
@@ -342,6 +343,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   // Les propositions restent visibles même si Iris hésite.
                   FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => _use(c))]),
                   _PhotoSourceNote(candidates: results),
+                  if (!busy && results.first.source == IdentificationSource.local)
+                    JevIrisDebugPanel(candidates: results, photoCount: _paths.length),
                   if (offer == SecondPhotoOffer.prominent && _paths.length < maxPhotos) ...[
                     const SizedBox(height: Space.sm),
                     Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
