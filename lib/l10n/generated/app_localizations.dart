@@ -3693,7 +3693,7 @@ abstract class AppLocalizations {
   /// No description provided for @suggestionsLocal.
   ///
   /// In fr, this message translates to:
-  /// **'Trouvé sur votre appareil, sans réseau'**
+  /// **'Résultats Iris sur votre appareil · photo non envoyée'**
   String get suggestionsLocal;
 
   /// No description provided for @suggestionsRemote.
