@@ -85,6 +85,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   int _step = 0;
   StoredPhoto? _photo;
 
+  /// Fichier source exact rendu par la caméra ou la photothèque. Il reste
+  /// affiché tel quel dans le cadre : la copie 2048 px et la miniature ne
+  /// servent qu'au stockage, jamais à cet aperçu.
+  File? _reviewSource;
+  bool _reviewSourceOwned = false;
+
   /// Où en est l'étape photo : on vise, puis on regarde la photo pendant
   /// qu'Iris l'analyse.
   _PhotoMode _mode = _PhotoMode.aim;
@@ -154,6 +160,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   @override
   void dispose() {
     _primaryScanTimer?.cancel();
+    _deleteOwnedReviewSource();
     _camera.dispose();
     _page.dispose();
     _name.dispose();
@@ -198,12 +205,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     if (_picking) return;
     setState(() => _picking = true);
     try {
-      final stored = await ref.read(photoStorageProvider).pick(source);
-      if (stored == null || !mounted) return;
-      await _accept(stored);
+      final storage = ref.read(photoStorageProvider);
+      final raw = await storage.pickSource(source);
+      if (raw == null || !mounted) return;
+
+      // Le fichier source devient l'aperçu avant toute compression.
+      _showRawPreview(raw, owned: source == PhotoSource.camera);
+
+      final stored = await storage.importFile(raw);
+      if (mounted) await _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.pick');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) {
+        await _recoverFromPreviewFailure();
+        ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      }
     } finally {
       if (mounted) setState(() => _picking = false);
     }
@@ -225,19 +241,64 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       return _pick(PhotoSource.camera);
     }
     try {
+      // Dès que le plugin rend la photo, elle remplace le viseur. La copie
+      // optimisée peut ensuite se fabriquer sans changer ce que l'on voit.
+      _showRawPreview(shot, owned: true);
+
       final stored = await ref.read(photoStorageProvider).importFile(shot);
       if (mounted) await _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.capture');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) {
+        await _recoverFromPreviewFailure();
+        ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      }
     } finally {
-      // Le fichier brut du plugin a servi : la copie compressée le remplace,
-      // et le dossier temporaire n'a pas à garder de pleine résolution.
-      try {
-        await shot.delete();
-      } catch (_) {}
       if (mounted) setState(() => _picking = false);
     }
+  }
+
+  void _showRawPreview(File source, {required bool owned}) {
+    if (!mounted) return;
+    setState(() {
+      _reviewSource = source;
+      _reviewSourceOwned = owned;
+      _identification = null;
+      // L'aperçu brut a déjà posé ces états. On les garde afin que la grille
+      // reste parfaitement continue pendant le passage stockage → Iris.
+      _mode = _PhotoMode.review;
+    });
+    unawaited(_camera.stop());
+  }
+
+  Future<void> _recoverFromPreviewFailure() async {
+    final source = _reviewSource;
+    final owned = _reviewSourceOwned;
+    if (mounted) {
+      setState(() {
+        _reviewSource = null;
+        _reviewSourceOwned = false;
+        _photo = null;
+        _identificationPaths.clear();
+        _identification = null;
+        _primaryPreviewCandidates = const [];
+        _primaryIdentificationDone = false;
+        _primaryScanMinimumElapsed = true;
+        _mode = _PhotoMode.aim;
+      });
+      _camera.start();
+    }
+    if (owned && source != null) {
+      try {
+        await source.delete();
+      } catch (_) {}
+    }
+  }
+
+  void _deleteOwnedReviewSource() {
+    final source = _reviewSource;
+    if (!_reviewSourceOwned || source == null) return;
+    unawaited(source.delete().catchError((_) => source));
   }
 
   /// Retient la photo principale et lance Iris immédiatement dessus. La
@@ -267,11 +328,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   Future<void> _retake() async {
     final storage = ref.read(photoStorageProvider);
     final old = _photo;
+    final raw = _reviewSource;
+    final rawOwned = _reviewSourceOwned;
     _dropIdentificationExtras();
     _primaryScanTimer?.cancel();
     _identificationRun++;
     setState(() {
       _photo = null;
+      _reviewSource = null;
+      _reviewSourceOwned = false;
       _identificationPaths.clear();
       _identification = null;
       _primaryPreviewCandidates = const [];
@@ -281,6 +346,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     });
     _camera.start();
     if (old != null) await storage.deleteFiles(old.filePath, old.thumbPath);
+    if (rawOwned && raw != null) {
+      try {
+        await raw.delete();
+      } catch (_) {}
+    }
   }
 
   /// Identification en arrière-plan. La première passe démarre dès la photo
@@ -614,7 +684,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                 FloraButton(
                   label: l10n.continueLabel,
                   expand: true,
-                  onPressed: identifier.isConfigured && (!_primaryIdentificationDone || !_primaryScanMinimumElapsed)
+                  onPressed: _photo == null ||
+                          _picking ||
+                          (identifier.isConfigured &&
+                              (!_primaryIdentificationDone || !_primaryScanMinimumElapsed))
                       ? null
                       : () => _go(1),
                 ),
@@ -635,8 +708,20 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final c = context.colors;
     final Widget content;
     if (_mode == _PhotoMode.review) {
-      final image = PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
-      final scanning = _identification != null && (!_primaryIdentificationDone || !_primaryScanMinimumElapsed);
+      final raw = _reviewSource;
+      final Widget image = raw != null
+          ? Image.file(
+              raw,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              gaplessPlayback: true,
+            )
+          : _photo != null
+              ? PlantImage(relativePath: _photo!.filePath)
+              : const SizedBox.expand();
+      final identifier = ref.watch(plantIdentifierProvider);
+      final scanning = identifier.isConfigured &&
+          (!_primaryIdentificationDone || !_primaryScanMinimumElapsed);
       content = Stack(
         fit: StackFit.expand,
         children: [
@@ -1297,8 +1382,6 @@ class _Shutter extends StatelessWidget {
         ),
         child: Container(
           decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-          alignment: Alignment.center,
-          child: busy ? ClayLoader(size: 16, color: context.colors.sage) : null,
         ),
       ),
     );
