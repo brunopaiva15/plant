@@ -1789,8 +1789,10 @@ est conservé là où il sert le plus.
 #### L'analyse reste sur la photo
 
 À la création, l'identification ne démarre plus en arrivant à l'étape du nom.
-Elle commence dès que la première photo est stockée. Le
-`ProcessingField` est posé sur **le grand aperçu de cette photo**. La grille
+Dès que la caméra ou la photothèque rend le fichier source, **la photo brute
+remplace immédiatement le viseur** et le `ProcessingField` se pose dessus.
+La compression 2048 px et la miniature continuent en arrière-plan pour le
+stockage ; elles ne remplacent jamais l'image source dans ce cadre. La grille
 reste fixe mais sa masse dérive et se replie en faisant respirer les points ;
 la petite marque Iris reste en haut à droite. Ce premier passage reste visible
 **au moins deux secondes**, même si le modèle répond plus vite, et son entrée
