@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../theme/flora_theme.dart';
 import '../tokens/radius.dart';
@@ -40,54 +41,70 @@ class ProcessingField extends StatefulWidget {
   State<ProcessingField> createState() => _ProcessingFieldState();
 }
 
-class _ProcessingFieldState extends State<ProcessingField> with TickerProviderStateMixin {
-  /// Horloge longue : la masse dérive et se replie sur plusieurs périodes
-  /// incompatibles, comme le ProcessingField d'origine. Les points eux-mêmes
-  /// restent strictement immobiles.
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 12),
-  )..repeat();
+class _ProcessingFieldState extends State<ProcessingField>
+    with TickerProviderStateMixin {
+  /// Impulsion vsync. La valeur 0–1 ne décrit rien : c'est le temps écoulé
+  /// depuis le départ du champ qui nourrit la masse, comme le TimelineView
+  /// d'origine, sans sauter en fin de boucle.
+  late final AnimationController _heartbeat;
 
   /// Petite entrée de matière : le champ ne "pop" pas sur la photo.
-  late final AnimationController _appearance = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 320),
-  )..forward();
+  late final AnimationController _appearance;
 
-  late final Animation<double> _fade = CurvedAnimation(
-    parent: _appearance,
-    curve: Curves.easeOutCubic,
-  );
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
 
-  late final Animation<double> _scale = Tween<double>(
-    begin: 0.988,
-    end: 1,
-  ).animate(CurvedAnimation(parent: _appearance, curve: Curves.easeOutCubic));
+  /// Instant du premier battement : le temps du champ part de zéro, pour que
+  /// les deux secondes d'un scan montrent déjà la dérive.
+  Duration _origin = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _origin = SchedulerBinding.instance.currentFrameTimeStamp;
+    _heartbeat = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat();
+    _appearance = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    )..forward();
+    _fade = CurvedAnimation(parent: _appearance, curve: Curves.easeOutCubic);
+    _scale = Tween<double>(begin: 0.988, end: 1).animate(_fade);
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final reduce = MediaQuery.disableAnimationsOf(context);
+    _syncMotion(MediaQuery.disableAnimationsOf(context));
+  }
+
+  void _syncMotion(bool reduce) {
     if (reduce) {
-      // Un état fixe assez organique pour garder le sens du composant, sans
-      // mouvement caché qui continuerait à consommer des images.
-      if (_controller.isAnimating) _controller.stop();
-      _controller.value = 0.31;
+      if (_heartbeat.isAnimating) _heartbeat.stop();
       _appearance
         ..stop()
         ..value = 1;
     } else {
-      if (!_controller.isAnimating) _controller.repeat();
+      if (!_heartbeat.isAnimating) {
+        _origin = SchedulerBinding.instance.currentFrameTimeStamp;
+        _heartbeat.repeat();
+      }
       if (!_appearance.isAnimating && _appearance.value == 0) {
         _appearance.forward();
       }
     }
   }
 
+  double get _elapsedSeconds {
+    final delta = SchedulerBinding.instance.currentFrameTimeStamp - _origin;
+    return delta.inMicroseconds / Duration.microsecondsPerSecond;
+  }
+
   @override
   void dispose() {
-    _controller.dispose();
+    _heartbeat.dispose();
     _appearance.dispose();
     super.dispose();
   }
@@ -95,48 +112,58 @@ class _ProcessingFieldState extends State<ProcessingField> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    return RepaintBoundary(
-      child: FadeTransition(
-        opacity: _fade,
-        child: ScaleTransition(
-          scale: _scale,
-          child: ClipRRect(
-            borderRadius: widget.borderRadius,
-            child: SizedBox(
-              width: double.infinity,
-              height: widget.height,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  widget.child,
-                  // Un voile clair garde la photo lisible sans brunir l'analyse.
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        radius: 1.05,
-                        colors: [
-                          Colors.white.withValues(alpha: c.isDark ? 0.18 : 0.14),
-                          c.surface.withValues(alpha: c.isDark ? 0.32 : 0.26),
-                        ],
+    final reduce = MediaQuery.disableAnimationsOf(context);
+    return FadeTransition(
+      opacity: _fade,
+      child: ScaleTransition(
+        scale: _scale,
+        child: ClipRRect(
+          borderRadius: widget.borderRadius,
+          child: SizedBox(
+            width: double.infinity,
+            height: widget.height,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                widget.child,
+                // Un voile clair garde la photo lisible sans brunir l'analyse.
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      radius: 1.05,
+                      colors: [
+                        Colors.white.withValues(alpha: c.isDark ? 0.18 : 0.14),
+                        c.surface.withValues(alpha: c.isDark ? 0.32 : 0.26),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: RepaintBoundary(
+                      child: AnimatedBuilder(
+                        animation: _heartbeat,
+                        builder: (context, _) {
+                          return CustomPaint(
+                            painter: _ProcessingFieldPainter(
+                              time: reduce ? null : _elapsedSeconds,
+                              primary: const Color(0xFFFDFBF7),
+                              secondary: const Color(0xFFF0EBE3),
+                              accent: const Color(0xFFE7EFE6),
+                              dark: c.isDark,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                  CustomPaint(
-                    painter: _ProcessingFieldPainter(
-                      progress: _controller,
-                      primary: const Color(0xFFFDFBF7),
-                      secondary: const Color(0xFFF0EBE3),
-                      accent: const Color(0xFFE7EFE6),
-                      dark: c.isDark,
-                    ),
+                ),
+                if (widget.foreground != null)
+                  Align(
+                    alignment: widget.foregroundAlignment,
+                    child: widget.foreground,
                   ),
-                  if (widget.foreground != null)
-                    Align(
-                      alignment: widget.foregroundAlignment,
-                      child: widget.foreground,
-                    ),
-                ],
-              ),
+              ],
             ),
           ),
         ),
@@ -147,14 +174,17 @@ class _ProcessingFieldState extends State<ProcessingField> with TickerProviderSt
 
 class _ProcessingFieldPainter extends CustomPainter {
   _ProcessingFieldPainter({
-    required this.progress,
+    required this.time,
     required this.primary,
     required this.secondary,
     required this.accent,
     required this.dark,
-  }) : super(repaint: progress);
+  });
 
-  final Animation<double> progress;
+  /// Secondes depuis le départ du champ. `null` est l'image fixe : masse au
+  /// centre, souffle à mi-course, plis non tournés — Reduce Motion et fin de
+  /// travail, comme le ProcessingField d'origine.
+  final double? time;
   final Color primary;
   final Color secondary;
   final Color accent;
@@ -166,11 +196,11 @@ class _ProcessingFieldPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
 
-    // Douze secondes de temps continu. Les périodes ci-dessous ne se divisent
-    // pas entre elles : la forme dérive, respire et se replie sans donner
-    // l'impression de rejouer la même boucle courte.
-    final time = progress.value * 12;
+    // Les périodes ci-dessous ne se divisent pas entre elles : la forme
+    // dérive, respire et se replie sans rejouer une boucle courte.
     final twoPi = math.pi * 2;
+    final t = time;
+    final foldT = t ?? 0;
 
     // Grille carrée fixe qui couvre réellement tout le cadre.
     final columns = math.max(1, (size.width / _spacing).round());
@@ -179,20 +209,25 @@ class _ProcessingFieldPainter extends CustomPainter {
     final originY = (size.height - step * rows) / 2;
 
     // La masse se déplace sous la grille ; aucun centre de point ne bouge.
-    final centreX = size.width * (0.5 + 0.17 * math.sin(twoPi * time / 8.3));
-    final centreY =
-        size.height * (0.5 + 0.19 * math.sin(twoPi * time / 6.7 + 0.9));
-    final breath = 1 + 0.10 * math.sin(twoPi * time / 6.1);
-    final swell = 0.82 + 0.18 * math.sin(twoPi * time / 7.1);
+    final centreX = t == null
+        ? size.width / 2
+        : size.width * (0.5 + 0.17 * math.sin(twoPi * foldT / 8.3));
+    final centreY = t == null
+        ? size.height / 2
+        : size.height * (0.5 + 0.19 * math.sin(twoPi * foldT / 6.7 + 0.9));
+    final breath = t == null ? 1.0 : 1 + 0.10 * math.sin(twoPi * foldT / 6.1);
+    final swell = t == null
+        ? 0.82
+        : 0.82 + 0.18 * math.sin(twoPi * foldT / 7.1);
     final reachX = math.max(0.5, size.width * 0.40 * breath);
     final reachY = math.max(0.5, size.height * 0.40 * breath);
 
-    final fold1 = 0.34 * time;
-    final fold2 = -0.22 * time;
-    final fold3 = 0.16 * time;
-    final depth1 = 0.10 + 0.08 * math.sin(twoPi * time / 5.9);
-    final depth2 = 0.06 + 0.05 * math.sin(twoPi * time / 4.3 + 1.7);
-    final depth3 = 0.05 + 0.04 * math.sin(twoPi * time / 7.7 + 0.4);
+    final fold1 = 0.34 * foldT;
+    final fold2 = -0.22 * foldT;
+    final fold3 = 0.16 * foldT;
+    final depth1 = 0.10 + 0.08 * math.sin(twoPi * foldT / 5.9);
+    final depth2 = 0.06 + 0.05 * math.sin(twoPi * foldT / 4.3 + 1.7);
+    final depth3 = 0.05 + 0.04 * math.sin(twoPi * foldT / 7.7 + 0.4);
 
     const softness = 0.34;
     const radiusFloorRatio = 0.085;
@@ -213,28 +248,31 @@ class _ProcessingFieldPainter extends CustomPainter {
 
         final distance = math.sqrt(nx * nx + ny * ny);
         final angle = math.atan2(ny, nx);
-        final outline = 1 +
+        final outline =
+            1 +
             depth1 * math.sin(3 * angle + fold1) +
             depth2 * math.sin(5 * angle + fold2) +
             depth3 * math.sin(2 * angle + fold3);
 
-        final ramp =
-            ((outline + softness - distance) / (2 * softness))
-                .clamp(0.0, 1.0)
-                .toDouble();
+        final ramp = ((outline + softness - distance) / (2 * softness)).clamp(
+          0.0,
+          1.0,
+        );
         final smooth = ramp * ramp * (3 - 2 * ramp);
-        final level = (smooth * swell).clamp(0.0, 1.0).toDouble();
+        final level = (smooth * swell).clamp(0.0, 1.0);
 
         final radius = radiusFloor + radiusSpan * level;
-        final alpha = (inkFloor + inkSpan * level) *
-            (dark ? 0.92 : 0.78);
+        final alpha = (inkFloor + inkSpan * level) * (dark ? 0.92 : 0.78);
 
         // Presque monochrome, comme l'original : juste un soupçon de sauge
         // dans les points les plus calmes pour rester dans la matière Auxine.
         final quiet = 1 - level;
         final base = Color.lerp(primary, secondary, quiet * 0.35)!;
-        final dot =
-            Color.lerp(base, accent, quiet * 0.10)!.withValues(alpha: alpha);
+        final dot = Color.lerp(
+          base,
+          accent,
+          quiet * 0.10,
+        )!.withValues(alpha: alpha);
 
         canvas.drawCircle(Offset(x, y), radius, Paint()..color = dot);
       }
@@ -243,7 +281,7 @@ class _ProcessingFieldPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ProcessingFieldPainter old) =>
-      old.progress != progress ||
+      old.time != time ||
       old.primary != primary ||
       old.secondary != secondary ||
       old.accent != accent ||
