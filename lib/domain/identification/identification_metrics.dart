@@ -32,7 +32,7 @@ class IdentificationMetrics {
   /// Appels au service distant, toutes raisons confondues.
   final int remote;
 
-  /// Appels distants déclenchés *après* une réponse locale incertaine.
+  /// Appels distants déclenchés après une tentative locale sans candidat exploitable.
   final int fallbacks;
   final int cacheHits;
   final int errors;
