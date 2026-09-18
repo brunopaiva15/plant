@@ -278,3 +278,45 @@ Jev est encore une technologie récente. Avant de coder une intégration, revali
 - possibilité éventuelle d’exécution locale à l’avenir.
 
 Référence initiale : https://typesafe.ai/blog/introducing-system-one-models-and-jev
+
+
+## Banc d’essai dans l’application
+
+Un test manuel est disponible uniquement en build Flutter debug :
+
+```text
+Profil
+  ↓
+DEBUG
+  ↓
+Tester Jev
+```
+
+La clé OpenRouter est lue depuis le build :
+
+```bash
+flutter run --dart-define=OPENROUTER_API_KEY=…
+```
+
+Le bouton envoie à `https://openrouter.ai/api/alpha/decisions` un état de test représentant un scan Iris ambigu :
+
+```text
+Monstera adansonii        45 %
+Monstera deliciosa        41 %
+Rhaphidophora tetrasperma 14 %
+```
+
+avec quelques observations supplémentaires. Il pose en une seule requête :
+
+- une question `noul` sur la fiabilité de l’identification ;
+- une question `choice` sur l’espèce la plus cohérente ;
+- une question `choice` sur la prochaine action d’Auxine ;
+- une question `score` sur la force globale des indices.
+
+La sheet affiche ensuite le JSON brut d’OpenRouter, probabilités comprises. Ce banc d’essai ne touche pas au flux d’identification réel et n’existe pas en release.
+
+Implémentation :
+
+- `lib/core/config/jev_config.dart`
+- `lib/data/services/jev_decision_service.dart`
+- `lib/features/profile/presentation/jev_debug_sheet.dart`
