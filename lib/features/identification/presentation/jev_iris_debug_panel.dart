@@ -159,6 +159,14 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
 
   String _pct(double? value) => value == null ? '—' : '${(value * 100).toStringAsFixed(0)} %';
 
+  String _actionLabel(Object? choice) => switch (choice) {
+        'show_result' => 'Afficher le résultat',
+        'ask_another_photo' => 'Demander une autre photo',
+        'keep_uncertain' => 'Rester incertain',
+        null => '—',
+        _ => choice.toString(),
+      };
+
   @override
   Widget build(BuildContext context) {
     if (!JevConfig.isConfigured || _top5.isEmpty) return const SizedBox.shrink();
@@ -234,13 +242,7 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
               ),
               _DebugMetric(
                 label: 'Action',
-                value: switch (nextAction?['choice']) {
-                  'show_result' => 'Afficher le résultat',
-                  'ask_another_photo' => 'Demander une autre photo',
-                  'keep_uncertain' => 'Rester incertain',
-                  final String other => other,
-                  _ => '—',
-                },
+                value: _actionLabel(nextAction?['choice']),
                 detail: _pct(_selectedProbability(nextAction)),
               ),
               _DebugMetric(
