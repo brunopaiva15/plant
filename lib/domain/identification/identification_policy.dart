@@ -108,9 +108,8 @@ class FallbackPolicy {
 
 /// Ce que l'écran d'identification propose comme photo supplémentaire.
 ///
-/// Le geste est le même dans les trois cas — une photo de plus, gratuite,
-/// hors ligne, instantanée — mais il ne se propose pas de la même façon
-/// selon qu'il tranche une hésitation ou qu'il vérifie une certitude.
+/// Une seconde photo est un recours gratuit et hors ligne : elle n'est
+/// proposée que lorsque la réponse locale n'est pas assez sûre.
 enum SecondPhotoOffer {
   /// Rien : la réponse ne vient pas du modèle embarqué, la liste est vide,
   /// ou le maximum de photos est atteint.
@@ -120,7 +119,6 @@ enum SecondPhotoOffer {
   /// photo est le geste qui tranche : deux photos valent **13,7 points de
   /// top-1**, plus que dix heures de calcul et 160 000 images (§ 6.6).
   prominent,
-
 }
 
 /// Comment proposer la photo suivante, s'il faut la proposer.
