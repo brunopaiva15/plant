@@ -521,10 +521,16 @@ class _PhotoSourceNote extends ConsumerWidget {
 }
 
 class CandidateRow extends ConsumerWidget {
-  const CandidateRow({super.key, required this.candidate, required this.onUse});
+  const CandidateRow({
+    super.key,
+    required this.candidate,
+    required this.onUse,
+    this.selected = false,
+  });
 
   final IdentificationCandidate candidate;
   final VoidCallback onUse;
+  final bool selected;
 
   /// Le côté de la vignette. Assez grand pour qu'une feuille se distingue
   /// d'une fleur, assez petit pour que la ligne reste une ligne de liste.
@@ -552,15 +558,25 @@ class CandidateRow extends ConsumerWidget {
       // décale sous le doigt au moment où l'on vise est une liste qui trompe.
       leadingWidth: thumbnailSize,
       leading: image == null ? _ConfidenceMark(confidence: confidence) : _CandidateThumbnail(image: image, scientificName: candidate.scientificName),
-      trailing: FloraButton(
-        label: l10n.useThis,
-        size: FloraButtonSize.small,
-        style: FloraButtonStyle.tonal,
-        onPressed: () {
-          Haptics.success();
-          onUse();
-        },
-      ),
+      trailing: selected
+          ? Semantics(
+              selected: true,
+              label: l10n.done,
+              child: Icon(
+                CupertinoIcons.checkmark_alt_circle_fill,
+                color: context.colors.sage,
+                size: 28,
+              ),
+            )
+          : FloraButton(
+              label: l10n.useThis,
+              size: FloraButtonSize.small,
+              style: FloraButtonStyle.tonal,
+              onPressed: () {
+                Haptics.success();
+                onUse();
+              },
+            ),
       chevron: false,
     );
   }
