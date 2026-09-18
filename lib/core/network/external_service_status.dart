@@ -54,6 +54,8 @@ class ExternalServiceStatusService {
 
   static const _timeout = Duration(seconds: 5);
 
+  void close() => _client.close();
+
   List<_Probe> get _probes => [
         _Probe(
           name: 'Supabase',
