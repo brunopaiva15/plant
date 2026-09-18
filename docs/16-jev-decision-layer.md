@@ -319,3 +319,30 @@ La logique Jev reste couverte par les tests du service de décision.
 `OPENROUTER_API_KEY` fournie via `--dart-define` est embarquée dans le binaire et ne doit pas être considérée comme un secret pour une distribution publique.
 
 Avant une diffusion large, l'appel OpenRouter doit passer par un backend contrôlé par Auxine avec authentification, quotas, rate limiting et possibilité de révoquer la clé sans republier l'application.
+
+
+## Pannes Jev et diagnostic caché
+
+Une panne Jev ne doit jamais devenir un message d'erreur produit.
+
+Le comportement est volontairement transparent :
+
+- après une photo ambiguë, erreur, timeout, clé absente ou réponse invalide → la politique Iris locale reprend la main et peut proposer la seconde photo ;
+- après deux photos encore ambiguës, le même incident → Auxine garde l'identification incertaine ;
+- aucune erreur OpenRouter n'est affichée dans le flux d'identification ;
+- aucune troisième photo n'est possible.
+
+Pour diagnostiquer les services sans exposer de panneau technique dans l'interface normale, un écran caché est accessible depuis **Profil** en touchant **5 fois la version** en moins de quatre secondes.
+
+L'écran **État des services** vérifie uniquement la joignabilité HTTPS de :
+
+- Supabase ;
+- le service de partage public ;
+- OpenRouter / Jev ;
+- Pl@ntNet ;
+- Infomaniak AI ;
+- Open-Meteo prévisions, géocodage et archives ;
+- GBIF ;
+- Wikimedia Commons.
+
+Les probes utilisent uniquement des requêtes `HEAD` de cinq secondes maximum. Elles n'envoient aucune photo, aucune donnée plante, aucune donnée personnelle et ne déclenchent aucun appel IA payant. Un statut « Joignable » indique que le serveur répond ; il ne valide pas nécessairement les identifiants ou le fonctionnement métier complet de l'API.
