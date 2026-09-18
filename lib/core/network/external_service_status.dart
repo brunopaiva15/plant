@@ -62,7 +62,8 @@ class ExternalServiceStatusService {
           uri: Uri.parse(
             SupabaseConfig.url.isEmpty
                 ? 'https://supabase.com'
-                : '${SupabaseConfig.url.replaceAll(RegExp(r'/+
+                : '${SupabaseConfig.url.replaceAll(RegExp(r'/+$'), '')}/rest/v1/',
+          ),
           configured: SupabaseConfig.isConfigured,
         ),
         _Probe(
@@ -112,86 +113,6 @@ class ExternalServiceStatusService {
         _Probe(
           name: 'Wikimedia Commons',
           uri: Uri.parse('https://commons.wikimedia.org/w/api.php'),
-        ),
-      ];
-
-  Future<List<ExternalServiceStatus>> checkAll() =>
-      Future.wait(_probes.map(_check));
-
-  Future<ExternalServiceStatus> _check(_Probe probe) async {
-    if (!probe.configured) {
-      return ExternalServiceStatus(
-        name: probe.name,
-        state: ExternalServiceState.unconfigured,
-      );
-    }
-
-    final stopwatch = Stopwatch()..start();
-    try {
-      final request = http.Request('HEAD', probe.uri);
-      final response = await _client.send(request).timeout(_timeout);
-      stopwatch.stop();
-      final code = response.statusCode;
-      final state = switch (code) {
-        429 => ExternalServiceState.degraded,
-        >= 500 => ExternalServiceState.unavailable,
-        _ => ExternalServiceState.operational,
-      };
-      return ExternalServiceStatus(
-        name: probe.name,
-        state: state,
-        latency: stopwatch.elapsed,
-        httpStatus: code,
-      );
-    } on Object {
-      stopwatch.stop();
-      return ExternalServiceStatus(
-        name: probe.name,
-        state: ExternalServiceState.unavailable,
-        latency: stopwatch.elapsed,
-      );
-    }
-  }
-}
-), '')}/rest/v1/',
-          ),
-          configured: SupabaseConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'Partage public',
-          uri: Uri.parse(
-            SupabaseConfig.isConfigured
-                ? SupabaseConfig.shareBaseUrl
-                : 'https://supabase.com',
-          ),
-          configured: SupabaseConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'OpenRouter · Jev',
-          uri: Uri.parse('https://openrouter.ai'),
-          configured: JevConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'Pl@ntNet',
-          uri: Uri.parse('https://my-api.plantnet.org'),
-          configured: IdentificationConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'Infomaniak AI',
-          uri: Uri.parse('https://api.infomaniak.com'),
-          configured: DiagnosisConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'Open-Meteo',
-          uri: Uri.parse('https://api.open-meteo.com'),
-        ),
-        _Probe(
-          name: 'GBIF',
-          uri: Uri.parse('https://api.gbif.org'),
-        ),
-        _Probe(
-          name: 'Wikimedia Commons',
-          uri: Uri.parse('https://commons.wikimedia.org'),
         ),
       ];
 
