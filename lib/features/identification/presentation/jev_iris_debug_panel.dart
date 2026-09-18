@@ -1,188 +1,70 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/providers.dart';
 import '../../../core/config/jev_config.dart';
-import '../../../data/services/jev_decision_service.dart';
+import '../../../data/services/jev_identification_policy.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/identification_policy.dart';
 import '../../../domain/identification/plant_identifier.dart';
 
-/// Banc d'essai Jev branché sur la vraie sortie locale d'Iris.
+/// Inspection de la vraie décision Jev utilisée par le pipeline.
 ///
-/// Il ne change jamais l'identification retenue par Auxine : il montre
-/// seulement, côte à côte, ce qu'Iris a rendu et ce que Jev décide à partir
-/// de ce Top-5.
-class JevIrisDebugPanel extends StatefulWidget {
+/// Cette carte ne possède aucun client OpenRouter. Elle demande au service de
+/// pipeline son évaluation mise en cache, c'est-à-dire exactement le même
+/// Future que celui utilisé pour décider d'afficher ou non la seconde photo.
+class JevIrisDebugPanel extends ConsumerWidget {
   const JevIrisDebugPanel({
     super.key,
     required this.candidates,
     required this.photoCount,
+    required this.maxPhotos,
   });
 
   final List<IdentificationCandidate> candidates;
   final int photoCount;
+  final int maxPhotos;
 
-  @override
-  State<JevIrisDebugPanel> createState() => _JevIrisDebugPanelState();
-}
+  List<IdentificationCandidate> get _top5 => candidates
+      .where((c) => c.source == IdentificationSource.local)
+      .take(5)
+      .toList(growable: false);
 
-class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
-  @override
-  void didUpdateWidget(covariant JevIrisDebugPanel oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final before = oldWidget.candidates
-        .take(5)
-        .map((c) => '${c.scientificName}:${c.score.toStringAsFixed(6)}')
-        .join('|');
-    final after = widget.candidates
-        .take(5)
-        .map((c) => '${c.scientificName}:${c.score.toStringAsFixed(6)}')
-        .join('|');
-    if (before == after && oldWidget.photoCount == widget.photoCount) return;
-    _response = null;
-    _error = null;
-    _latency = null;
-  }
-  bool _loading = false;
-  Map<String, dynamic>? _response;
-  String? _error;
-  Duration? _latency;
+  String _pct(double? value) =>
+      value == null ? '—' : '${(value * 100).toStringAsFixed(0)} %';
 
-  List<IdentificationCandidate> get _top5 =>
-      widget.candidates.where((c) => c.source == IdentificationSource.local).take(5).toList(growable: false);
-
-  Map<String, dynamic> get _state {
-    final candidates = _top5;
-    return {
-      'source': 'Iris on-device classifier',
-      'photo_count': widget.photoCount,
-      'iris_candidates': [
-        for (final (i, candidate) in candidates.indexed)
-          {
-            'id': 'candidate_${i + 1}',
-            'scientific_name': candidate.scientificName,
-            'iris_score': candidate.score,
-          },
-      ],
-      if (candidates.length >= 2) 'top1_margin': candidates[0].score - candidates[1].score,
-    };
-  }
-
-  Map<String, dynamic> get _questions {
-    final candidates = _top5;
-    return {
-      'decision': {
-        'type': 'choice',
-        'instructions':
-            'Choose the single product action Auxine should take now. This is the authoritative product decision; the species and confidence questions are explanatory only.',
-        'criteria': {
-          'show_result':
-              'Show the best current species result when one Iris candidate clearly dominates the alternatives and another photo is unlikely to materially change the identification. A very high top score with a wide margin strongly supports this action.',
-          'ask_another_photo':
-              'Ask for one more photo only when photo_count is below 2 and two or more candidates remain close enough that another view could materially change the identification.',
-          'keep_uncertain':
-              'Keep the identification explicitly uncertain when no candidate is sufficiently supported and either two photos have already been used or another photo is unlikely to resolve the ambiguity.',
-        },
-      },
-      'species': {
-        'type': 'choice',
-        'instructions':
-            'Which Iris candidate is the best-supported identification? Choose uncertain when the score distribution does not justify selecting one.',
-        'criteria': {
-          for (final (i, candidate) in candidates.indexed)
-            'candidate_${i + 1}':
-                '${candidate.scientificName}; Iris score ${candidate.score.toStringAsFixed(4)}.',
-          'uncertain': 'No candidate is sufficiently supported by the available Iris scores.',
-        },
-      },
-      'confidence': {
-        'type': 'score',
-        'instructions':
-            'How strong is the current evidence for a specific species identification?',
-        'criteria': ['Very uncertain', 'Uncertain', 'Plausible', 'Strong'],
-      },
-    };
-  }
-
-  Future<void> _run() async {
-    if (_top5.isEmpty || _loading) return;
-    setState(() {
-      _loading = true;
-      _response = null;
-      _error = null;
-      _latency = null;
-    });
-
-    final stopwatch = Stopwatch()..start();
-    try {
-      final response = await JevDecisionService().decide(
-        state: _state,
-        questions: _questions,
-      );
-      stopwatch.stop();
-      if (!mounted) return;
-      setState(() {
-        _response = response;
-        _latency = stopwatch.elapsed;
-      });
-    } catch (e) {
-      stopwatch.stop();
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _latency = stopwatch.elapsed;
-      });
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  Map<String, dynamic>? _answer(String key) {
-    final answers = _response?['answers'];
-    if (answers is! Map<String, dynamic>) return null;
-    final answer = answers[key];
-    return answer is Map<String, dynamic> ? answer : null;
-  }
-
-  String _speciesLabel(String? choice) {
-    if (choice == null) return '—';
-    if (choice == 'uncertain') return 'Incertain';
-    final match = RegExp(r'^candidate_(\d+)$').firstMatch(choice);
-    if (match == null) return choice;
-    final index = (int.tryParse(match.group(1) ?? '') ?? 0) - 1;
-    final candidates = _top5;
-    if (index < 0 || index >= candidates.length) return choice;
-    return candidates[index].scientificName;
-  }
-
-  double? _selectedProbability(Map<String, dynamic>? answer) {
-    if (answer == null) return null;
-    final choice = answer['choice'];
-    final probabilities = answer['probabilities'];
-    if (choice is! String || probabilities is! Map<String, dynamic>) return null;
-    return (probabilities[choice] as num?)?.toDouble();
-  }
-
-  String _pct(double? value) => value == null ? '—' : '${(value * 100).toStringAsFixed(0)} %';
-
-  String _actionLabel(Object? choice) => switch (choice) {
-        'show_result' => 'Afficher le résultat',
-        'ask_another_photo' => 'Demander une autre photo',
-        'keep_uncertain' => 'Rester incertain',
+  String _actionLabel(JevProductAction? action) => switch (action) {
+        JevProductAction.showResult => 'Afficher le résultat',
+        JevProductAction.askAnotherPhoto => 'Demander une autre photo',
+        JevProductAction.keepUncertain => 'Rester incertain',
         null => '—',
-        _ => choice.toString(),
+      };
+
+  String _offerLabel(SecondPhotoOffer offer) => switch (offer) {
+        SecondPhotoOffer.prominent => 'Deuxième photo proposée',
+        SecondPhotoOffer.none => 'Aucune deuxième photo',
       };
 
   @override
-  Widget build(BuildContext context) {
-    if (!JevConfig.isConfigured || _top5.isEmpty) return const SizedBox.shrink();
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!JevConfig.isConfigured || _top5.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier) return const SizedBox.shrink();
+
+    final evaluation = ref.read(jevIdentificationPolicyProvider).evaluate(
+          policy: identifier.policy,
+          candidates: candidates,
+          photos: photoCount,
+          maxPhotos: maxPhotos,
+        );
 
     final c = context.colors;
-    final decision = _answer('decision');
-    final species = _answer('species');
-    final score = (_answer('confidence')?['score'] as num?)?.toDouble();
-    final cost = ((_response?['usage'] as Map<String, dynamic>?)?['cost'] as num?)?.toDouble();
-    final model = _response?['model'] as String?;
 
     return Padding(
       padding: const EdgeInsets.only(top: Space.md),
@@ -194,11 +76,16 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
               children: [
                 Expanded(
                   child: Text(
-                    'JEV DEBUG · IRIS TOP-5',
-                    style: context.text.caption.copyWith(fontWeight: FontWeight.w700),
+                    'JEV · DÉCISION PIPELINE',
+                    style: context.text.caption.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                Text('${widget.photoCount} photo${widget.photoCount > 1 ? 's' : ''}', style: context.text.caption),
+                Text(
+                  '${photoCount} photo${photoCount > 1 ? 's' : ''}',
+                  style: context.text.caption,
+                ),
               ],
             ),
             const SizedBox(height: Space.sm),
@@ -207,71 +94,138 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Row(
                   children: [
-                    SizedBox(width: 20, child: Text('${i + 1}.', style: context.text.caption)),
-                    Expanded(child: Text(candidate.scientificName, style: context.text.callout)),
-                    Text(_pct(candidate.score), style: context.text.callout.copyWith(fontWeight: FontWeight.w600)),
+                    SizedBox(
+                      width: 20,
+                      child: Text('${i + 1}.', style: context.text.caption),
+                    ),
+                    Expanded(
+                      child: Text(
+                        candidate.scientificName,
+                        style: context.text.callout,
+                      ),
+                    ),
+                    Text(
+                      _pct(candidate.score),
+                      style: context.text.callout.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
             const SizedBox(height: Space.sm),
             Text(
-              'Jev ne reçoit pas la photo : uniquement ce vrai Top-5 Iris et le nombre de photos.',
+              'Lecture du même appel automatique que le pipeline. Aucun second appel Jev n’est envoyé par cette carte.',
               style: context.text.caption.copyWith(color: c.inkSecondary),
             ),
-            const SizedBox(height: Space.sm),
-            FloraButton(
-              label: _loading ? 'Analyse Jev…' : 'Comparer avec Jev',
-              expand: true,
-              style: FloraButtonStyle.secondary,
-              onPressed: _loading ? null : _run,
+            const SizedBox(height: Space.md),
+            FutureBuilder<JevPipelineEvaluation>(
+              future: evaluation,
+              builder: (context, snap) {
+                if (snap.connectionState != ConnectionState.done) {
+                  return Row(
+                    children: [
+                      const AdaptiveProgress(size: 22),
+                      const SizedBox(width: Space.xs),
+                      Expanded(
+                        child: Text(
+                          'Décision pipeline en cours…',
+                          style: context.text.callout,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                final result = snap.data;
+                if (result == null) {
+                  return Text(
+                    'Impossible de lire la décision pipeline.',
+                    style: context.text.caption.copyWith(color: c.rose),
+                  );
+                }
+
+                if (!result.consultedJev) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _DebugMetric(
+                        label: 'Jev',
+                        value: 'Non consulté',
+                      ),
+                      _DebugMetric(
+                        label: 'Décision appliquée',
+                        value: _offerLabel(result.offer),
+                      ),
+                      Text(
+                        result.usedFallback
+                            ? 'La politique Iris locale a été utilisée.'
+                            : 'Iris était déjà suffisamment net : aucun appel réseau nécessaire.',
+                        style: context.text.caption.copyWith(
+                          color: c.inkSecondary,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Divider(height: 1, color: c.line),
+                    const SizedBox(height: Space.sm),
+                    _DebugMetric(
+                      label: 'Décision Jev',
+                      value: _actionLabel(result.decision?.action),
+                      detail: _pct(result.decision?.probability),
+                    ),
+                    _DebugMetric(
+                      label: 'Effet appliqué',
+                      value: _offerLabel(result.offer),
+                    ),
+                    _DebugMetric(
+                      label: 'Source',
+                      value: result.usedFallback
+                          ? 'Fallback Iris'
+                          : 'Appel automatique partagé',
+                    ),
+                    _DebugMetric(
+                      label: 'Latence',
+                      value: result.latency == null
+                          ? '—'
+                          : '${result.latency!.inMilliseconds} ms',
+                    ),
+                    _DebugMetric(
+                      label: 'Coût',
+                      value: result.cost == null
+                          ? '—'
+                          : '\$${result.cost!.toStringAsFixed(7)}',
+                    ),
+                    if (result.model != null)
+                      _DebugMetric(label: 'Modèle', value: result.model!),
+                    if (result.error != null) ...[
+                      const SizedBox(height: Space.xs),
+                      Text(
+                        result.error!,
+                        style: context.text.caption.copyWith(color: c.rose),
+                      ),
+                    ],
+                    if (result.rawResponse != null) ...[
+                      const SizedBox(height: Space.sm),
+                      SelectableText(
+                        const JsonEncoder.withIndent('  ')
+                            .convert(result.rawResponse),
+                        style: context.text.caption.copyWith(
+                          color: c.inkSecondary,
+                          fontFamily: 'monospace',
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              },
             ),
-            if (_loading) ...[
-              const SizedBox(height: Space.sm),
-              const Center(child: AdaptiveProgress(size: 24)),
-            ],
-            if (_error != null) ...[
-              const SizedBox(height: Space.sm),
-              Text(_error!, style: context.text.caption.copyWith(color: c.rose)),
-            ],
-            if (_response != null) ...[
-              const SizedBox(height: Space.md),
-              Divider(height: 1, color: c.line),
-              const SizedBox(height: Space.sm),
-              Text('Jev', style: context.text.title3),
-              const SizedBox(height: Space.xs),
-              _DebugMetric(
-                label: 'Décision produit',
-                value: _actionLabel(decision?['choice']),
-                detail: _pct(_selectedProbability(decision)),
-              ),
-              _DebugMetric(
-                label: 'Espèce indicative',
-                value: _speciesLabel(species?['choice'] as String?),
-                detail: _pct(_selectedProbability(species)),
-              ),
-              _DebugMetric(
-                label: 'Force des indices',
-                value: score == null ? '—' : '${score.toStringAsFixed(2)} / 3',
-              ),
-              _DebugMetric(
-                label: 'Latence',
-                value: _latency == null ? '—' : '${_latency!.inMilliseconds} ms',
-              ),
-              _DebugMetric(
-                label: 'Coût',
-                value: cost == null ? '—' : '\$${cost.toStringAsFixed(7)}',
-              ),
-              if (model != null) _DebugMetric(label: 'Modèle', value: model),
-              const SizedBox(height: Space.xs),
-              SelectableText(
-                const JsonEncoder.withIndent('  ').convert(_response),
-                style: context.text.caption.copyWith(
-                  color: c.inkSecondary,
-                  fontFamily: 'monospace',
-                  height: 1.35,
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -280,7 +234,11 @@ class _JevIrisDebugPanelState extends State<JevIrisDebugPanel> {
 }
 
 class _DebugMetric extends StatelessWidget {
-  const _DebugMetric({required this.label, required this.value, this.detail});
+  const _DebugMetric({
+    required this.label,
+    required this.value,
+    this.detail,
+  });
 
   final String label;
   final String value;
@@ -294,12 +252,19 @@ class _DebugMetric extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Text(label, style: context.text.caption.copyWith(color: c.inkSecondary))),
+          Expanded(
+            child: Text(
+              label,
+              style: context.text.caption.copyWith(color: c.inkSecondary),
+            ),
+          ),
           const SizedBox(width: Space.sm),
           Flexible(
             child: Text(
-              detail == null ? value : '$value · $detail',
-              style: context.text.callout.copyWith(fontWeight: FontWeight.w600),
+              detail == null ? value : '${value} · ${detail}',
+              style: context.text.callout.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
               textAlign: TextAlign.right,
             ),
           ),
