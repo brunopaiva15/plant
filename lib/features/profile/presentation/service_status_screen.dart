@@ -22,6 +22,12 @@ class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
     _refresh();
   }
 
+  @override
+  void dispose() {
+    _service.close();
+    super.dispose();
+  }
+
   Future<void> _refresh() async {
     if (_loading) return;
     setState(() => _loading = true);
@@ -104,7 +110,7 @@ class _StatusRow extends StatelessWidget {
     final c = context.colors;
     final (label, icon, color) = switch (status.state) {
       ExternalServiceState.operational => ('Joignable', '●', c.sage),
-      ExternalServiceState.degraded => ('Limité', '●', c.warning),
+      ExternalServiceState.degraded => ('Limité', '●', c.sun),
       ExternalServiceState.unavailable => ('Indisponible', '●', c.rose),
       ExternalServiceState.unconfigured => ('Non configuré', '○', c.inkTertiary),
     };
