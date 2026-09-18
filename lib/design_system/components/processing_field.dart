@@ -73,16 +73,14 @@ class _ProcessingFieldState extends State<ProcessingField> with SingleTickerProv
             fit: StackFit.expand,
             children: [
               widget.child,
-              // Le bord se voile un peu plus que le centre : la photo reste
-              // reconnaissable là où Iris regarde, et le champ ressort sans
-              // transformer l'attente en écran opaque.
+              // Un voile clair garde la photo lisible sans brunir l'analyse.
               DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
-                    radius: 0.92,
+                    radius: 1.05,
                     colors: [
-                      c.surface.withValues(alpha: c.isDark ? 0.34 : 0.30),
-                      c.surface.withValues(alpha: c.isDark ? 0.66 : 0.58),
+                      Colors.white.withValues(alpha: c.isDark ? 0.18 : 0.14),
+                      c.surface.withValues(alpha: c.isDark ? 0.32 : 0.26),
                     ],
                   ),
                 ),
@@ -90,8 +88,9 @@ class _ProcessingFieldState extends State<ProcessingField> with SingleTickerProv
               CustomPaint(
                 painter: _ProcessingFieldPainter(
                   progress: _controller,
-                  primary: c.terracotta,
-                  secondary: c.sage,
+                  primary: const Color(0xFFFDFBF7),
+                  secondary: const Color(0xFFF0EBE3),
+                  accent: const Color(0xFFE7EFE6),
                   dark: c.isDark,
                 ),
               ),
@@ -109,12 +108,14 @@ class _ProcessingFieldPainter extends CustomPainter {
     required this.progress,
     required this.primary,
     required this.secondary,
+    required this.accent,
     required this.dark,
   }) : super(repaint: progress);
 
   final Animation<double> progress;
   final Color primary;
   final Color secondary;
+  final Color accent;
   final bool dark;
 
   static const double _spacing = 14;
@@ -126,54 +127,63 @@ class _ProcessingFieldPainter extends CustomPainter {
     final phase = progress.value * math.pi * 2;
     final cx = 0.035 * math.sin(phase * 0.78);
     final cy = 0.025 * math.cos(phase * 0.62);
-    final breath = 0.97 + 0.045 * math.sin(phase);
+    final breath = 0.98 + 0.04 * math.sin(phase);
 
-    // Un halo presque imperceptible rassemble visuellement les points sans
-    // dessiner une forme fermée autour d'Iris.
-    final haloRect = Rect.fromCenter(
-      center: size.center(Offset.zero),
-      width: size.width * 0.72,
-      height: size.height * 0.82,
-    );
-    canvas.drawOval(
-      haloRect,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            primary.withValues(alpha: dark ? 0.11 : 0.08),
-            primary.withValues(alpha: 0),
-          ],
-        ).createShader(haloRect),
-    );
-
+    // Le nuage organique reste plus vivant au centre, mais le champ de points
+    // ne s'arrête plus à sa frontière : toute la photo participe à la lecture.
     for (double y = _spacing / 2; y < size.height; y += _spacing) {
       for (double x = _spacing / 2; x < size.width; x += _spacing) {
         final nx = (x / size.width) * 2 - 1 - cx;
         final ny = (y / size.height) * 2 - 1 - cy;
         final theta = math.atan2(ny, nx);
 
-        // L'ellipse est volontairement irrégulière : trois fréquences lentes
-        // empêchent l'œil de lire un cercle qui gonfle et dégonfle.
-        final dist = math.sqrt(math.pow(nx / 0.92, 2) + math.pow(ny / 0.78, 2));
+        final dist = math.sqrt(
+          math.pow(nx / 0.96, 2) + math.pow(ny / 0.86, 2),
+        );
+
         final boundary = breath *
-            (0.66 +
+            (0.72 +
                 0.045 * math.sin(theta * 3 + phase * 0.82) +
                 0.030 * math.sin(theta * 5 - phase * 1.16) +
                 0.018 * math.cos(theta * 2 + phase * 0.46));
 
-        final strength = ((boundary - dist) / 0.23 + 0.52).clamp(0.0, 1.0).toDouble();
-        final pulse = 0.5 + 0.5 * math.sin(dist * 13.5 - phase * 2.25 + theta * 0.7);
-
-        final radius = 0.70 + strength * 1.95 * (0.86 + pulse * 0.14);
-        final alpha = (0.035 + strength * (dark ? 0.49 : 0.41)).clamp(0.0, 1.0).toDouble();
-
-        // La terre cuite domine au centre, le vert apparaît davantage sur la
-        // périphérie. Le mélange se déplace très lentement, sans faire voyager
-        // les points eux-mêmes.
-        final mix = (0.28 + 0.36 * (1 - strength) + 0.10 * math.sin(theta + phase * 0.35))
+        // Intensité de la masse centrale.
+        final core = ((boundary - dist) / 0.30 + 0.58)
             .clamp(0.0, 1.0)
             .toDouble();
-        final dot = Color.lerp(primary, secondary, mix)!.withValues(alpha: alpha);
+
+        // Intensité de fond : elle ne tombe jamais à zéro, même dans les
+        // coins. C'est elle qui fait couvrir le champ sur toute la photo.
+        final field = (1.12 - dist / 1.55).clamp(0.18, 1.0).toDouble();
+
+        final pulse =
+            0.5 + 0.5 * math.sin(dist * 13.5 - phase * 2.25 + theta * 0.7);
+
+        final strength =
+            (0.35 * field + 0.65 * core).clamp(0.0, 1.0).toDouble();
+
+        final radius =
+            0.85 + field * 0.38 + strength * 1.35 * (0.86 + pulse * 0.14);
+
+        final alpha = (0.10 +
+                field * (dark ? 0.10 : 0.08) +
+                strength * (dark ? 0.24 : 0.20))
+            .clamp(0.0, 1.0)
+            .toDouble();
+
+        // Blanc cassé en majorité, avec juste une trace de sauge très douce
+        // pour éviter un champ purement clinique.
+        final accentMix =
+            (0.12 +
+                    0.16 * (1 - strength) +
+                    0.05 * math.sin(theta + phase * 0.35))
+                .clamp(0.0, 1.0)
+                .toDouble();
+
+        final base =
+            Color.lerp(primary, secondary, 0.55 * (1 - strength))!;
+        final dot =
+            Color.lerp(base, accent, accentMix)!.withValues(alpha: alpha);
 
         canvas.drawCircle(Offset(x, y), radius, Paint()..color = dot);
       }
@@ -182,5 +192,9 @@ class _ProcessingFieldPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ProcessingFieldPainter old) =>
-      old.progress != progress || old.primary != primary || old.secondary != secondary || old.dark != dark;
+      old.progress != progress ||
+      old.primary != primary ||
+      old.secondary != secondary ||
+      old.accent != accent ||
+      old.dark != dark;
 }
