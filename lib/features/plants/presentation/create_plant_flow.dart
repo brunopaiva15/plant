@@ -297,7 +297,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// où la recherche en ligne se prend sur un quota mensuel.
   Future<void> _addIdentificationPhoto(PhotoSource source) async {
     final identifier = ref.read(plantIdentifierProvider);
-    if (_picking || !identifier.isConfigured || _identificationPaths.isEmpty) return;
+    if (_picking ||
+        !identifier.isConfigured ||
+        _identificationPaths.isEmpty ||
+        _identificationPaths.length >= maxIdentificationPhotos) {
+      return;
+    }
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
@@ -322,16 +327,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final stored = _identificationExtras.removeAt(index - 1);
     final storage = ref.read(photoStorageProvider);
     setState(() => _identificationPaths.removeAt(index));
-    // À l'étape photo, rien n'a encore été demandé au moteur : il n'y a rien
-    // à relancer, seulement une case qui se libère — et le viseur qui peut
-    // reprendre pour la remplir.
+    // La première photo est réévaluée seule après retrait de la seconde.
     if (_identification != null) _startIdentification();
-    if (_step == 0) _camera.start();
     await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
   /// Range une photo d'identification de plus et relance le moteur.
   Future<void> _acceptIdentificationPhoto(StoredPhoto stored) async {
+    if (_identificationPaths.length >= maxIdentificationPhotos) return;
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
     setState(() {
