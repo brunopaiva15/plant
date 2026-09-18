@@ -65,17 +65,19 @@ pas.
 Une attente n'a pas toujours la même échelle. Quand Iris traite la première
 photo, une petite motte sous le titre ferait croire à une attente générique :
 `ProcessingField` garde donc la photo à l'écran et pose dessus une grille de
-points terre cuite / sauge. Les points restent à leur place ; seule leur taille
-et leur opacité suivent une masse irrégulière qui respire. L'effet est inspiré
-du principe de ProcessingField (haplollc), réécrit en Flutter pour rester
-portable et dans les tokens d'Auxine.
+points blanc cassé / crème. Leurs centres restent strictement fixes ; c'est une
+masse souple qui dérive et se replie sous la grille, faisant varier rayon et
+opacité de chaque point. Les périodes de dérive, souffle et plis ne se divisent
+pas entre elles, sur le principe de ProcessingField (haplollc), réécrit en
+Flutter.
 
-La marque d'Iris reste immobile au centre. Le voile est plus fort aux bords
-qu'au centre afin que la plante demeure reconnaissable pendant le calcul.
-Ce composant est réservé aux traitements qui portent réellement sur une
-surface ou une image ; les petites attentes continuent d'utiliser
-`AdaptiveProgress`. Avec *reduced motion*, le champ garde une image fixe et
-son contrôleur s'arrête complètement.
+Le champ entre et sort par un court fondu accompagné d'un changement d'échelle
+presque imperceptible, plutôt que de surgir ou disparaître d'une image. La
+marque d'Iris respire à part, petite et posée en haut à droite afin de ne pas
+masquer le sujet. Ce composant est réservé aux traitements qui portent
+réellement sur une surface ou une image ; les petites attentes continuent
+d'utiliser `AdaptiveProgress`. Avec *reduced motion*, le champ garde une image
+fixe et ses contrôleurs s'arrêtent complètement.
 
 ### La marque d'Iris (`iris_mark.dart`)
 Le logo du modèle embarqué, dans *Réglages > Identification* et au centre de

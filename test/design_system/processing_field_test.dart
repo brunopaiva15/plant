@@ -27,6 +27,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(ProcessingField), findsOneWidget);
     expect(find.byType(IrisMark), findsOneWidget);
+    expect(find.byType(FadeTransition), findsWidgets);
+    expect(find.byType(ScaleTransition), findsWidgets);
     expect(tester.hasRunningAnimations, isTrue);
     expect(tester.takeException(), isNull);
   });

@@ -1790,10 +1790,11 @@ est conservé là où il sert le plus.
 
 À la création, l'identification ne démarre plus en arrivant à l'étape du nom.
 Elle commence dès que la première photo est stockée. Le
-`ProcessingField` est posé sur **le grand aperçu de cette photo**, avec la
-marque Iris au centre. Ce premier passage reste visible **au moins deux
-secondes**, même si le modèle répond plus vite : sinon l'effet ressemble à un
-flash décoratif plutôt qu'à une lecture.
+`ProcessingField` est posé sur **le grand aperçu de cette photo**. La grille
+reste fixe mais sa masse dérive et se replie en faisant respirer les points ;
+la petite marque Iris reste en haut à droite. Ce premier passage reste visible
+**au moins deux secondes**, même si le modèle répond plus vite, et son entrée
+comme sa sortie se font en fondu plutôt que par coupure.
 
 Dès que les candidats sont disponibles, les trois premiers noms apparaissent
 **directement sur la photo**, un par un, avec une courte entrée, une position

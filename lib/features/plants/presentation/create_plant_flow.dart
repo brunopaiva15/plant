@@ -627,18 +627,38 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       content = Stack(
         fit: StackFit.expand,
         children: [
-          if (scanning)
-            ProcessingField(
-              height: null,
-              child: image,
-              foregroundAlignment: Alignment.topCenter,
-              foreground: const Padding(
-                padding: EdgeInsets.only(top: Space.lg),
-                child: BreathingIrisMark(size: 72),
-              ),
-            )
-          else
-            image,
+          AnimatedSwitcher(
+            duration: Motion.of(context, const Duration(milliseconds: 280)),
+            reverseDuration: Motion.of(context, const Duration(milliseconds: 240)),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            layoutBuilder: (current, previous) =>
+                Stack(fit: StackFit.expand, children: [...previous, ?current]),
+            transitionBuilder: (child, animation) {
+              final scale = Tween<double>(begin: 0.992, end: 1).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              );
+              return FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(scale: scale, child: child),
+              );
+            },
+            child: scanning
+                ? ProcessingField(
+                    key: const ValueKey('iris-processing'),
+                    height: null,
+                    child: image,
+                    foregroundAlignment: Alignment.topRight,
+                    foreground: const Padding(
+                      padding: EdgeInsets.only(top: Space.xs, right: Space.sm),
+                      child: BreathingIrisMark(size: 48),
+                    ),
+                  )
+                : KeyedSubtree(
+                    key: const ValueKey('iris-photo'),
+                    child: image,
+                  ),
+          ),
           if (_primaryPreviewCandidates.isNotEmpty)
             _DetectedPlantsOverlay(candidates: _primaryPreviewCandidates),
         ],

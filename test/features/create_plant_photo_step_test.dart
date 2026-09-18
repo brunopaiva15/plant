@@ -234,6 +234,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1700));
     expect(find.byType(ProcessingField), findsOneWidget);
 
+    // À deux secondes, le scan ne disparaît pas d'un coup : l'ancien champ
+    // reste dans l'AnimatedSwitcher pendant son fondu de sortie.
+    await tester.pump(const Duration(milliseconds: 220));
+    expect(find.byType(ProcessingField), findsOneWidget);
+
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(ProcessingField), findsNothing);
     continueButton = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Continuer'));
