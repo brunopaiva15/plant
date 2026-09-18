@@ -20,9 +20,6 @@ class JevProductDecision {
 }
 
 /// Résultat exact utilisé par le pipeline d'identification.
-///
-/// La vue debug lit ce même objet mis en cache : elle ne refait donc jamais
-/// une requête OpenRouter pour expliquer une décision déjà prise.
 class JevPipelineEvaluation {
   const JevPipelineEvaluation({
     required this.offer,
@@ -50,8 +47,8 @@ class JevPipelineEvaluation {
 /// ou le garder explicitement incertain. Il ne reçoit jamais la photo :
 /// seulement le Top-5, ses scores et le nombre de vues.
 ///
-/// Les évaluations complètes sont mémorisées. L'UI de debug et le pipeline
-/// partagent exactement le même Future et donc le même appel réseau.
+/// Les évaluations sont mémorisées afin qu'un rebuild d'interface ne refasse
+/// jamais le même appel réseau.
 class JevIdentificationPolicy {
   JevIdentificationPolicy({
     JevDecisionService? service,
