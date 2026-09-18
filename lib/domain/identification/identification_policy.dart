@@ -12,8 +12,8 @@ enum IdentificationVerdict {
   /// pour une réponse dont il n'a peut-être pas besoin.
   plausible,
 
-  /// Le modèle n'a rien reconnu : c'est là que le service distant sert
-  /// vraiment, et l'appel se fait tout seul.
+  /// Le modèle a des candidats, mais trop faibles pour être plausibles.
+  /// Ils restent visibles afin qu'une seconde photo puisse les départager.
   uncertain,
 
   /// Rien d'exploitable : image hors sujet, modèle absent, liste vide.
@@ -108,9 +108,8 @@ class FallbackPolicy {
 
 /// Ce que l'écran d'identification propose comme photo supplémentaire.
 ///
-/// Le geste est le même dans les trois cas — une photo de plus, gratuite,
-/// hors ligne, instantanée — mais il ne se propose pas de la même façon
-/// selon qu'il tranche une hésitation ou qu'il vérifie une certitude.
+/// Une seconde photo est un recours gratuit et hors ligne : elle n'est
+/// proposée que lorsque la réponse locale n'est pas assez sûre.
 enum SecondPhotoOffer {
   /// Rien : la réponse ne vient pas du modèle embarqué, la liste est vide,
   /// ou le maximum de photos est atteint.
@@ -120,16 +119,6 @@ enum SecondPhotoOffer {
   /// photo est le geste qui tranche : deux photos valent **13,7 points de
   /// top-1**, plus que dix heures de calcul et 160 000 images (§ 6.6).
   prominent,
-
-  /// Discrète, sous les candidats. La réponse est acceptée — elle s'affiche
-  /// comme « probable » et l'utilisateur ne se pose pas de question —, mais
-  /// à 0,70 **une réponse acceptée sur dix est fausse** (89,9 % de justesse
-  /// sur les plantes d'appartement en pot, mesuré sur l'Iris 7 au § 12.12 ;
-  /// le `threshold_curve` de `model.json` donne le chiffre du modèle livré).
-  /// Ne rien proposer, c'est réserver le correctif aux cas où le modèle a le
-  /// bon goût de douter. Le proposer en travers du chemin, c'est ajouter un geste à un
-  /// parcours qui marchait : d'où le registre effacé.
-  quiet,
 }
 
 /// Comment proposer la photo suivante, s'il faut la proposer.
@@ -150,7 +139,7 @@ SecondPhotoOffer secondPhotoOffer(
   // entamer le quota. Ce n'est plus le même geste gratuit.
   if (candidates.first.source != IdentificationSource.local) return SecondPhotoOffer.none;
   return policy.decide(candidates) == IdentificationVerdict.accepted
-      ? SecondPhotoOffer.quiet
+      ? SecondPhotoOffer.none
       : SecondPhotoOffer.prominent;
 }
 

@@ -77,15 +77,14 @@ class CreatePlantFlow extends ConsumerStatefulWidget {
 class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   final _page = PageController();
 
-  /// Le viseur de la première étape. Il ne tourne que là, et seulement tant
-  /// qu'il reste une case libre : il ne s'éteint plus à la première photo,
-  /// c'est ce qui permet d'en prendre deux ou trois à la file.
+  /// Le viseur de la première étape. Une seule photo suffit au premier
+  /// passage d'Iris ; il s'arrête dès qu'elle est prise.
   final _camera = InlineCameraController();
   int _step = 0;
   StoredPhoto? _photo;
 
-  /// Où en est l'étape photo : on vise, on regarde la photo prise, ou on
-  /// vise une vue de plus pour un emplacement précis.
+  /// Où en est l'étape photo : on vise, puis on regarde la photo pendant
+  /// qu'Iris l'analyse.
   _PhotoMode _mode = _PhotoMode.aim;
   bool _picking = false;
   bool _saving = false;
@@ -107,8 +106,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   IdentificationCandidate? _chosen;
   ChosenSource? _chosenSource;
 
-  /// Au-delà, une photo de plus n'apporte plus grand-chose.
-  static const int maxIdentificationPhotos = 3;
+  /// Une photo d'abord ; une seconde seulement si Iris hésite.
+  static const int maxIdentificationPhotos = 2;
 
   late final _name = TextEditingController(text: widget.parentName == null ? '' : context.l10n.cuttingOf(widget.parentName!));
   final _species = TextEditingController();
@@ -168,21 +167,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     // Le clavier ne suit aucun changement d'étape : ouvert, il écrase la mise
     // en page (l'aperçu photo, les propositions d'identification).
     FocusManager.instance.primaryFocus?.unfocus();
-    // Le viseur n'a de raison de tourner qu'à l'étape photo, et seulement
-    // tant qu'il reste de la place : ailleurs, il ne ferait que tenir la
-    // caméra et vider la batterie. Il ne s'éteint plus à la première photo —
-    // c'est ce qui permet d'en prendre deux ou trois à la file.
-    if (step == 0 && _identificationPaths.length < maxIdentificationPhotos) {
+    // Le viseur ne tourne que lorsqu'on vise réellement. Une photo déjà
+    // prise reste un aperçu, même si on revient à la première étape.
+    if (step == 0 && _mode == _PhotoMode.aim) {
       _camera.start();
     } else {
       _camera.stop();
     }
     setState(() => _step = step);
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
-    // En arrivant à l'étape du nom, le moteur reçoit toutes les photos d'un
-    // coup — et une seule fois : revenir en arrière puis repasser ici ne
-    // relance rien tant que les photos n'ont pas changé.
-    if (step == 1 && _identification == null) _startIdentification();
   }
 
   /// Ouvre l'appareil photo ou la galerie du système. Le viseur intégré a
@@ -234,27 +227,22 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     }
   }
 
-  /// Retient une photo, sans quitter l'étape, et la montre : la première est
-  /// celle de la plante, les suivantes des vues pour l'identification.
+  /// Retient la photo principale et lance Iris immédiatement dessus. La
+  /// seconde photo, si elle devient utile, sera proposée après les résultats.
   Future<void> _accept(StoredPhoto stored) async {
     final storage = ref.read(photoStorageProvider);
     final path = await storage.absolutePath(stored.filePath);
     if (!mounted) return;
     setState(() {
-      if (_photo == null) {
-        _photo = stored;
-      } else {
-        _identificationExtras.add(stored);
-      }
-      _identificationPaths.add(path);
-      // Les photos ont changé : la réponse d'avant ne vaut plus, et la
-      // suivante se demandera en arrivant à l'étape du nom.
+      _photo = stored;
+      _identificationPaths
+        ..clear()
+        ..add(path);
       _identification = null;
-      // Le cadre montre ce qu'on vient de prendre : c'est la confirmation.
       _mode = _PhotoMode.review;
     });
-    // Plus d'emplacement libre : le viseur n'a plus rien à faire.
-    if (_identificationPaths.length >= maxIdentificationPhotos) _camera.stop();
+    await _camera.stop();
+    _startIdentification();
     Haptics.success();
   }
 
@@ -274,31 +262,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     if (old != null) await storage.deleteFiles(old.filePath, old.thumbPath);
   }
 
-  /// Une vue de plus, pour l'emplacement touché. Avec le viseur, le cadre
-  /// repasse en direct ; sans lui, l'appareil ou la galerie du système.
-  void _openExtraSlot() {
-    if (_picking || _identificationPaths.length >= maxIdentificationPhotos) return;
-    if (_camera.hasViewfinder) {
-      Haptics.selection();
-      setState(() => _mode = _PhotoMode.extra);
-      return;
-    }
-    _showPhotoSources();
-  }
-
-  void _cancelExtra() {
-    Haptics.selection();
-    setState(() => _mode = _PhotoMode.review);
-  }
-
-  /// Identification en arrière-plan, sur **toutes** les photos de l'étape
-  /// d'avant, en arrivant à l'étape du nom. Les suggestions y apparaissent
-  /// sans étape supplémentaire.
-  ///
-  /// Une seule passe, avec tout ce qu'on a : deux photos valent 13,7 points
-  /// de top-1 et trois en valent 22,4 (docs/09 § 6.7). Les demander d'abord
-  /// et répondre ensuite vaut mieux que répondre sur une seule photo, puis
-  /// se corriger.
+  /// Identification en arrière-plan. La première passe démarre dès la photo
+  /// principale ; si la confiance est trop faible, une seconde photo peut
+  /// relancer exactement le même moteur et fusionner les deux vues.
   void _startIdentification() {
     final identifier = ref.read(plantIdentifierProvider);
     if (!identifier.isConfigured || _identificationPaths.isEmpty) return;
@@ -331,7 +297,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   /// où la recherche en ligne se prend sur un quota mensuel.
   Future<void> _addIdentificationPhoto(PhotoSource source) async {
     final identifier = ref.read(plantIdentifierProvider);
-    if (_picking || !identifier.isConfigured || _identificationPaths.isEmpty) return;
+    if (_picking ||
+        !identifier.isConfigured ||
+        _identificationPaths.isEmpty ||
+        _identificationPaths.length >= maxIdentificationPhotos) {
+      return;
+    }
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
@@ -356,16 +327,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final stored = _identificationExtras.removeAt(index - 1);
     final storage = ref.read(photoStorageProvider);
     setState(() => _identificationPaths.removeAt(index));
-    // À l'étape photo, rien n'a encore été demandé au moteur : il n'y a rien
-    // à relancer, seulement une case qui se libère — et le viseur qui peut
-    // reprendre pour la remplir.
+    // La première photo est réévaluée seule après retrait de la seconde.
     if (_identification != null) _startIdentification();
-    if (_step == 0) _camera.start();
     await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
   /// Range une photo d'identification de plus et relance le moteur.
   Future<void> _acceptIdentificationPhoto(StoredPhoto stored) async {
+    if (_identificationPaths.length >= maxIdentificationPhotos) return;
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
     setState(() {
@@ -537,40 +506,27 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     );
   }
 
-  /// L'étape photo, en trois états qui se lisent d'un coup d'œil.
+  /// L'étape photo a deux temps : viser, puis laisser Iris lire la photo.
   ///
-  /// **Viser** : le viseur est dans le cadre, le déclencheur rond posé
-  /// dessus, la galerie dans un coin. Rien à chercher ailleurs.
-  /// **On la garde ?** : la photo prise remplit le cadre — c'est la confirmation —,
-  /// et dessous, des emplacements qui disent quoi photographier de plus pour
-  /// aider Iris.
-  /// **Une vue de plus** : le viseur revient pour l'emplacement touché, avec
-  /// son titre, et rend la main dès la prise.
-  ///
-  /// Avant, le viseur restait devant la photo prise, qui n'apparaissait
-  /// qu'en vignette ; trois cases égales ne disaient ni laquelle était la
-  /// photo de la plante, ni à quoi servaient les autres.
+  /// La première photo est suffisante pour essayer. On ne demande plus des
+  /// vues supplémentaires avant de connaître le résultat ; une seconde photo
+  /// n'apparaît que plus tard, si la confiance le justifie.
   Widget _photoStep() {
     final l10n = context.l10n;
     final identifier = ref.watch(plantIdentifierProvider);
-    final taken = _identificationPaths.length;
-    final full = taken >= maxIdentificationPhotos;
-    final hints = [l10n.viewLeafClose, l10n.viewAnother];
-    final extraIndex = _identificationExtras.length;
     return ListenableBuilder(
       listenable: _camera,
       builder: (context, _) {
-        // La mise en page suit le viseur, présent ou en train de revenir ;
-        // seul l'aperçu lui-même attend d'être prêt.
         final live = _camera.hasViewfinder;
         final (title, subtitle) = switch (_mode) {
-          // Une bouture se cadre comme une plante, mais c'est elle qu'on nomme.
-          _PhotoMode.aim => (l10n.stepPhotoTitle, widget.parentPlantId == null ? l10n.stepPhotoSubtitle : l10n.stepPhotoSubtitleCutting),
+          _PhotoMode.aim => (
+              l10n.stepPhotoTitle,
+              widget.parentPlantId == null ? l10n.stepPhotoSubtitle : l10n.stepPhotoSubtitleCutting,
+            ),
           _PhotoMode.review => (
               l10n.stepPhotoDoneTitle,
-              identifier.isConfigured && !full ? l10n.stepPhotoDoneSubtitle(AppConfig.modelName) : l10n.stepPhotoDonePlain,
+              identifier.isConfigured ? null : l10n.stepPhotoDonePlain,
             ),
-          _PhotoMode.extra => (hints[extraIndex.clamp(0, hints.length - 1)], l10n.viewForModel(AppConfig.modelName)),
         };
         return _StepLayout(
           title: title,
@@ -583,32 +539,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                   aspectRatio: 4 / 5,
                   child: AnimatedSwitcher(
                     duration: Motion.of(context, Motion.standard),
-                    // La pile du fondu doit remplir le cadre : lâche, elle
-                    // laisserait l'invite flotter au milieu et la photo
-                    // prise reprendre son propre format.
                     layoutBuilder: (current, previous) => Stack(fit: StackFit.expand, children: [...previous, ?current]),
-                    child: KeyedSubtree(key: ValueKey(_mode == _PhotoMode.review), child: _photoFrame(live: live)),
+                    child: KeyedSubtree(key: ValueKey(_mode), child: _photoFrame(live: live)),
                   ),
                 ),
               ),
-              // Les vues pour l'identification n'ont de sens que si un
-              // moteur peut les lire : sans lui, rien n'est proposé.
-              if (_mode == _PhotoMode.review && identifier.isConfigured) ...[
-                const SizedBox(height: Space.md),
-                _ViewsStrip(
-                  plantThumb: _photo!.thumbPath,
-                  extras: _identificationExtras,
-                  hints: hints,
-                  onAdd: full ? null : _openExtraSlot,
-                  onRemove: _removeIdentificationPhoto,
-                ),
-              ],
             ],
           ),
           actions: switch (_mode) {
             _PhotoMode.aim => [
-                // Le viseur porte son déclencheur : ici, seulement la porte de
-                // sortie. Sans viseur, les deux gestes reviennent en boutons.
                 if (!live) ...[
                   FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
                   const SizedBox(height: Space.xs),
@@ -621,11 +560,6 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                 FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
                 const SizedBox(height: Space.xs),
                 FloraButton(label: l10n.retake, icon: CupertinoIcons.camera, style: FloraButtonStyle.ghost, expand: true, onPressed: _picking ? null : _retake),
-              ],
-            _PhotoMode.extra => [
-                FloraButton(label: l10n.continueLabel, expand: true, onPressed: () => _go(1)),
-                const SizedBox(height: Space.xs),
-                FloraButton(label: l10n.cancel, style: FloraButtonStyle.ghost, expand: true, onPressed: _cancelExtra),
               ],
           },
         );
@@ -641,7 +575,20 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final c = context.colors;
     final Widget content;
     if (_mode == _PhotoMode.review) {
-      content = PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
+      final image = PlantImage(relativePath: _photo!.thumbPath, cacheWidth: 900);
+      final identification = _identification;
+      content = identification == null
+          ? image
+          : FutureBuilder<List<IdentificationCandidate>>(
+              future: identification,
+              builder: (context, snap) => snap.connectionState == ConnectionState.done
+                  ? image
+                  : ProcessingField(
+                      height: null,
+                      child: image,
+                      foreground: const IrisMark(size: 84),
+                    ),
+            );
     } else if (live) {
       content = Stack(
         fit: StackFit.expand,
@@ -676,18 +623,6 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                 background: OnMedia.tile,
                 color: OnMedia.ink,
                 onPressed: _picking ? null : () => _pick(PhotoSource.gallery),
-              ),
-            ),
-          if (_mode == _PhotoMode.extra)
-            Positioned(
-              top: Space.sm,
-              right: Space.sm,
-              child: FloraIconButton(
-                icon: CupertinoIcons.xmark,
-                semanticLabel: l10n.cancel,
-                background: OnMedia.tile,
-                color: OnMedia.ink,
-                onPressed: _cancelExtra,
               ),
             ),
         ],
@@ -729,20 +664,6 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     // ouvre l'appareil photo du système.
     if (_mode == _PhotoMode.review) return frame;
     return Pressable(onTap: live ? (_camera.isReady ? _capture : null) : () => _pick(PhotoSource.camera), scale: 0.98, haptic: false, child: frame);
-  }
-
-  /// Les deux sources du système, pour une vue de plus quand le viseur
-  /// n'est pas là.
-  Future<void> _showPhotoSources() {
-    final l10n = context.l10n;
-    return showAdaptiveActionSheet(
-      context,
-      cancelLabel: l10n.cancel,
-      actions: [
-        SheetAction(label: l10n.takePhoto, icon: CupertinoIcons.camera, onPressed: () => _pick(PhotoSource.camera)),
-        SheetAction(label: l10n.choosePhoto, icon: CupertinoIcons.photo, onPressed: () => _pick(PhotoSource.gallery)),
-      ],
-    );
   }
 
   Widget _nameStep() {
@@ -909,7 +830,7 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// s'affiche que si la liste vient de l'appareil.
   final VoidCallback? onSearchOnline;
 
-  /// Présent tant qu'une photo de plus est acceptée.
+  /// Présent seulement quand Iris hésite et qu'une seconde photo peut aider.
   final VoidCallback? onAddPhoto;
 
   /// Retirer une photo ajoutée pour identifier. Jamais la première : c'est
@@ -934,25 +855,12 @@ class _IdentificationSuggestions extends StatelessWidget {
       builder: (context, snap) {
         if (snap.connectionState != ConnectionState.done) {
           return Padding(
-            padding: const EdgeInsets.only(top: Space.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            padding: const EdgeInsets.only(top: Space.sm),
+            child: Row(
               children: [
-                ProcessingField(
-                  height: 190,
-                  child: paths.isEmpty
-                      ? ColoredBox(color: context.colors.surfaceMuted)
-                      : Image.file(
-                          File(paths.first),
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.medium,
-                          excludeFromSemantics: true,
-                          errorBuilder: (_, _, _) => ColoredBox(color: context.colors.surfaceMuted),
-                        ),
-                  foreground: const IrisMark(size: 64),
-                ),
-                const SizedBox(height: Space.xs),
-                Text(l10n.identifying, style: context.text.caption, textAlign: TextAlign.center),
+                const AdaptiveProgress(size: 24),
+                const SizedBox(width: Space.xs),
+                Text(l10n.identifying, style: context.text.caption),
               ],
             ),
           );
@@ -962,19 +870,12 @@ class _IdentificationSuggestions extends StatelessWidget {
         final photoOffer = offer?.call(results) ?? SecondPhotoOffer.none;
         // Sur toutes les candidates rendues, pas sur les trois affichées.
         final genre = genus?.call(snap.data ?? const []);
-        // La bande montre ce qui est parti dès qu'il y a plusieurs photos, et
-        // la place libre seulement si la cascade en veut une de plus. Le
-        // compte n'est plus écrit — « · 2 photos » disait l'état sans jamais
-        // dire le geste ; deux vignettes et une case vide disent les deux.
-        final showStrip = paths.length > 1 || photoOffer != SecondPhotoOffer.none;
+        final hasSecondPhoto = paths.length > 1;
         return Padding(
           padding: const EdgeInsets.only(top: Space.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // D'où viennent ces noms : l'utilisateur a le droit de savoir si
-              // sa photo est partie sur le réseau, et de le demander sinon. Le
-              // téléphone et le nuage le disent avant la phrase.
               IdentificationSourceNote(
                 source: results.first.source,
                 label: switch (results.first.source) {
@@ -983,31 +884,34 @@ class _IdentificationSuggestions extends StatelessWidget {
                   IdentificationSource.unknown => l10n.identifyHint,
                 },
               ),
-              if (showStrip) ...[
+              if (hasSecondPhoto) ...[
                 const SizedBox(height: Space.xs),
                 IdentificationPhotoStrip(
                   paths: paths,
                   maxPhotos: _CreatePlantFlowState.maxIdentificationPhotos,
-                  onAdd: photoOffer == SecondPhotoOffer.none ? null : onAddPhoto,
                   onRemove: onRemovePhoto,
                 ),
-                // Le modèle hésite : la photo est le geste qui tranche, et il
-                // vaut la phrase qui dit quoi photographier.
-                if (photoOffer == SecondPhotoOffer.prominent) ...[
-                  const SizedBox(height: Space.xs),
-                  Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
-                ],
               ],
               const SizedBox(height: Space.xs),
               if (genre != null) ...[
                 GenusRow(answer: genre, onUse: () => onPick(genusCandidate(genre, l10n.localeName))),
                 const SizedBox(height: Space.xs),
               ],
+              // Même quand Iris hésite, ses propositions restent visibles :
+              // la seconde photo affine la liste, elle ne la remplace pas.
               FloraGroup(children: [for (final c in results) CandidateRow(candidate: c, onUse: () => onPick(c))]),
-              // La photo d'abord, l'appel réseau ensuite : l'une est gratuite
-              // et immédiate, l'autre se prend sur un quota mensuel. Le geste
-              // gratuit est donc au-dessus de la liste, dans la bande, et
-              // celui qui se paie reste ici-bas.
+              if (photoOffer == SecondPhotoOffer.prominent && onAddPhoto != null) ...[
+                const SizedBox(height: Space.sm),
+                Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
+                const SizedBox(height: Space.xs),
+                FloraButton(
+                  label: l10n.identifyAnotherPhoto,
+                  icon: CupertinoIcons.camera,
+                  style: FloraButtonStyle.secondary,
+                  size: FloraButtonSize.small,
+                  onPressed: onAddPhoto,
+                ),
+              ],
               if (results.first.source == IdentificationSource.local && onSearchOnline != null) ...[
                 const SizedBox(height: Space.sm),
                 FloraButton(label: l10n.searchOnline, style: FloraButtonStyle.ghost, size: FloraButtonSize.small, onPressed: onSearchOnline),
@@ -1020,8 +924,8 @@ class _IdentificationSuggestions extends StatelessWidget {
   }
 }
 
-/// Les trois états de l'étape photo.
-enum _PhotoMode { aim, review, extra }
+/// Les deux états de l'étape photo.
+enum _PhotoMode { aim, review }
 
 /// Le déclencheur : un anneau blanc et son disque, posés sur le viseur.
 class _Shutter extends StatelessWidget {
@@ -1056,144 +960,6 @@ class _Shutter extends StatelessWidget {
           alignment: Alignment.center,
           child: busy ? ClayLoader(size: 16, color: context.colors.sage) : null,
         ),
-      ),
-    );
-  }
-}
-
-/// La photo de la plante, puis les vues prises pour la reconnaître, chacune
-/// sous son nom ; les emplacements libres disent quoi photographier.
-///
-/// Trois cases égales ne disaient rien : laquelle est la photo de la plante,
-/// à quoi servent les autres, que deviennent-elles. Ici la première est
-/// « La plante », les suivantes portent le sujet conseillé.
-class _ViewsStrip extends StatelessWidget {
-  const _ViewsStrip({required this.plantThumb, required this.extras, required this.hints, required this.onAdd, required this.onRemove});
-
-  final String plantThumb;
-  final List<StoredPhoto> extras;
-
-  /// Un sujet conseillé par emplacement libre, dans l'ordre.
-  final List<String> hints;
-
-  /// Nul quand tous les emplacements sont pris.
-  final VoidCallback? onAdd;
-
-  /// Retirer une vue, par son rang global (la photo de la plante est 0).
-  final ValueChanged<int> onRemove;
-
-  static const double _size = 64;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final c = context.colors;
-    final slots = <Widget>[
-      _slot(context, caption: l10n.viewPlant, child: _thumb(context, PlantImage(relativePath: plantThumb, cacheWidth: 200))),
-      for (final (i, e) in extras.indexed)
-        _slot(
-          context,
-          caption: hints[i.clamp(0, hints.length - 1)],
-          child: _thumb(
-            context,
-            PlantImage(relativePath: e.thumbPath, cacheWidth: 200),
-            onRemove: () => onRemove(i + 1),
-          ),
-        ),
-      for (var i = extras.length; i < hints.length; i++)
-        // Seul le premier emplacement libre écoute : deux cibles pour le
-        // même geste n'en font pas un plus clair. La cible, c'est la tuile
-        // et son libellé ensemble.
-        if (i == extras.length && onAdd != null)
-          Pressable(
-            onTap: onAdd,
-            scale: 0.95,
-            semanticLabel: hints[i],
-            child: _slot(
-              context,
-              caption: hints[i],
-              child: Container(
-                width: _size,
-                height: _size,
-                decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.mediumAll),
-                child: Icon(CupertinoIcons.camera_fill, color: c.sage, size: 22),
-              ),
-            ),
-          )
-        else
-          _slot(
-            context,
-            caption: hints[i],
-            muted: true,
-            child: Container(
-              width: _size,
-              height: _size,
-              decoration: BoxDecoration(borderRadius: Radii.mediumAll, border: Border.all(color: c.line)),
-              child: Icon(CupertinoIcons.plus, color: c.inkTertiary, size: 14),
-            ),
-          ),
-    ];
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final (i, s) in slots.indexed) ...[
-          if (i > 0) const SizedBox(width: Space.sm),
-          s,
-        ],
-      ],
-    );
-  }
-
-  Widget _slot(BuildContext context, {required String caption, required Widget child, bool muted = false}) {
-    return SizedBox(
-      width: 84,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          child,
-          const SizedBox(height: Space.xxs),
-          Text(
-            caption,
-            style: context.text.caption.copyWith(color: muted ? context.colors.inkTertiary : context.colors.inkSecondary, fontSize: 11),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _thumb(BuildContext context, Widget image, {VoidCallback? onRemove}) {
-    final c = context.colors;
-    final clipped = ClipRRect(borderRadius: Radii.mediumAll, child: SizedBox(width: _size, height: _size, child: image));
-    if (onRemove == null) return clipped;
-    return SizedBox(
-      width: _size,
-      height: _size,
-      child: Stack(
-        children: [
-          clipped,
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Pressable(
-              onTap: onRemove,
-              scale: 0.9,
-              minTapTarget: false,
-              semanticLabel: context.l10n.deletePhoto,
-              child: Padding(
-                padding: const EdgeInsets.all(Space.xxs),
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(color: c.surface.withValues(alpha: 0.92), shape: BoxShape.circle),
-                  child: Icon(CupertinoIcons.xmark, size: 11, color: c.ink),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

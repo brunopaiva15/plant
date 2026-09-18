@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 /// Surimpression de cadrage pour les prises destinées à Iris.
 ///
-/// Le layout « scan » reste volontairement statique : une grille presque
-/// invisible et quatre repères doux cadrent la plante sans ajouter de
-/// balayage animé. Rien n'intercepte les gestes du viseur.
+/// Le layout « scan » reste volontairement statique : quatre repères doux
+/// cadrent la plante sans quadrillage ni balayage animé. La photo reste ainsi
+/// le seul sujet du viseur. Rien n'intercepte ses gestes.
 class ScanningOverlay extends StatelessWidget {
   const ScanningOverlay({
     super.key,
@@ -32,25 +32,12 @@ class _ScanningPainter extends CustomPainter {
 
   final Color color;
 
-  static const double _grid = 44;
   static const double _inset = 18;
   static const double _corner = 28;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
-
-    // La grille sert uniquement de matière au viseur. Elle doit se deviner,
-    // jamais concurrencer la plante ni donner un rendu « scanner médical ».
-    final gridPaint = Paint()
-      ..color = color.withValues(alpha: 0.075)
-      ..strokeWidth = 0.7;
-    for (double x = _grid; x < size.width; x += _grid) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
-    }
-    for (double y = _grid; y < size.height; y += _grid) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
-    }
 
     // Quatre coins arrondis : ils cadrent la plante sans enfermer l'image
     // dans un rectangle complet.

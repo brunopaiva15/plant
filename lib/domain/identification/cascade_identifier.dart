@@ -29,12 +29,11 @@ typedef CatalogLookup = CatalogMatch? Function(String scientificName, String lan
 /// Le déroulé, pour une photo :
 /// 1. cache : la même photo déjà identifiée rend le même résultat ;
 /// 2. modèle local, s'il est chargé, avec un délai maximal ;
-/// 3. [FallbackPolicy] : réponse acceptée → on s'arrête là, sans réseau ;
-/// 4. sinon service distant, s'il est configuré, autorisé, et sous le
-///    quota du jour ;
-/// 5. sans service distant utilisable, on rend la réponse locale, même
-///    incertaine — mieux vaut une liste douteuse qu'un écran vide, et
-///    l'interface montre toujours plusieurs candidats.
+/// 3. [FallbackPolicy] : toute liste locale exploitable est montrée, même
+///    incertaine ; l'interface peut alors proposer une seconde photo ;
+/// 4. le service distant ne part tout seul que si le modèle n'a réellement
+///    aucun candidat exploitable, s'il a échoué ou s'il est absent ;
+/// 5. la recherche en ligne reste disponible explicitement sous les candidats.
 class CascadeIdentifier implements PlantIdentifier {
   CascadeIdentifier({
     required this.local,
@@ -152,13 +151,12 @@ class CascadeIdentifier implements PlantIdentifier {
       }
     }
 
-    // Réponse sûre, ou seulement plausible : dans les deux cas on s'arrête
-    // là. Une liste plausible est utile telle quelle — l'écran en montre
-    // cinq et l'utilisateur choisit — et il peut demander une recherche en
-    // ligne si rien ne lui convient. Payer l'appel d'avance reviendrait à
-    // le faire pour toutes les photos, y compris celles où le modèle avait
-    // déjà proposé la bonne espèce.
-    if (verdict == IdentificationVerdict.accepted || verdict == IdentificationVerdict.plausible) {
+    // Dès qu'Iris a une liste exploitable, on la montre. Une réponse faible
+    // n'est plus remplacée immédiatement par le réseau : l'utilisateur voit
+    // les candidats et peut ajouter une seconde photo pour les départager.
+    // Le repli automatique est réservé à `noCandidate`, au modèle absent ou
+    // à une erreur locale.
+    if (verdict != IdentificationVerdict.noCandidate) {
       m = m.copyWith(
         localAccepted: m.localAccepted + 1,
         confidenceSum: m.confidenceSum + localResult.first.score,
