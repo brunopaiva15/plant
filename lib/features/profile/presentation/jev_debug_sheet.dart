@@ -21,6 +21,7 @@ class _JevDebugBody extends StatefulWidget {
 
 class _JevDebugBodyState extends State<_JevDebugBody> {
   static const _state = {
+    'photo_count': 1,
     'iris_candidates': [
       ['Monstera adansonii', 0.45],
       ['Monstera deliciosa', 0.41],
@@ -33,15 +34,17 @@ class _JevDebugBodyState extends State<_JevDebugBody> {
   };
 
   static const _questions = <String, dynamic>{
-    'identification_reliable': {
-      'type': 'noul',
+    'decision': {
+      'type': 'choice',
       'instructions':
-          'Is the plant identification reliable enough to show as a result?',
+          'Choose the single product action Auxine should take now. This is the authoritative product decision; the species and confidence questions are explanatory only.',
       'criteria': {
-        'true':
-            'The available evidence strongly supports one candidate and displaying it would be reasonable.',
-        'false':
-            'The candidates remain too ambiguous and another observation would be safer.',
+        'show_result':
+            'Show the best current species result when one candidate clearly dominates and another photo is unlikely to materially change the identification.',
+        'ask_another_photo':
+            'Ask for one more photo only when photo_count is below 2 and the candidates remain close enough that another view could materially change the identification.',
+        'keep_uncertain':
+            'Keep the identification explicitly uncertain when no candidate is sufficiently supported and another photo should not be requested.',
       },
     },
     'species': {
@@ -56,20 +59,6 @@ class _JevDebugBodyState extends State<_JevDebugBody> {
         'rhaphidophora_tetrasperma':
             'Rhaphidophora tetrasperma, typically smaller leaves with edge splits rather than internal holes.',
         'uncertain': 'The evidence is insufficient to choose safely.',
-      },
-    },
-    'next_action': {
-      'type': 'choice',
-      'instructions':
-          'What should Auxine do next to minimise a wrong identification?',
-      'criteria': {
-        'show_result': 'Show the current best species result.',
-        'ask_whole_plant_photo':
-            'Ask for another photo showing the whole plant.',
-        'ask_leaf_closeup':
-            'Ask for a close-up showing one mature leaf clearly.',
-        'keep_uncertain':
-            'Keep the identification explicitly uncertain without requesting another photo.',
       },
     },
     'confidence': {
@@ -123,8 +112,8 @@ class _JevDebugBodyState extends State<_JevDebugBody> {
           const SheetHeader(title: 'Debug · Jev'),
           Text(
             'Envoie un cas Iris ambigu à ${JevConfig.model} via OpenRouter. '
-            'Le test demande à Jev si le résultat est fiable, quelle espèce '
-            'choisir et quelle action Auxine devrait prendre ensuite.',
+            'Le test demande à Jev une décision produit unique, puis une '
+            'espèce et un score uniquement pour expliquer cette décision.',
             style: context.text.callout,
           ),
           const SizedBox(height: Space.md),
