@@ -268,12 +268,14 @@ CarePlantSlot slotFor(LightNeed light) => switch (light) {
 /// Rien n'est inventé : sans `outdoorFriendly`, une plante gélive dont la
 /// fiche ne dit pas qu'elle sort reste dans la pièce.
 ///
-/// Les succulentes restent dedans quoi qu'il arrive. Le catalogue en compte
-/// deux fois plus de plantes d'appartement que de rustiques, et leur
-/// appliquer la règle déplacerait une trentaine de fiches pour un gain
-/// discutable ; la ligne des aromatiques leur irait telle quelle le jour où
-/// on le décide. Sans catégorie (catalogue étendu), la pièce est le repli :
-/// les plantes de l'app sont d'abord des plantes d'intérieur.
+/// Les succulentes suivent la même règle. Elle n'a pu être activée qu'après
+/// correction de leurs fiches : quinze d'entre elles héritaient d'un profil
+/// de genre ou de famille taillé pour leurs cousines de jardin et se
+/// déclaraient rustiques — une *Euphorbia obesa* annonçait −10 °C. La règle
+/// les aurait plantées dans une pelouse.
+///
+/// Sans catégorie (catalogue étendu), la pièce est le repli : les plantes de
+/// l'app sont d'abord des plantes d'intérieur.
 CareEnvironmentKind environmentFor(
   CareProfile profile,
   SpeciesCategory? category,
@@ -285,15 +287,17 @@ CareEnvironmentKind environmentFor(
   SpeciesCategory.vegetable => profile.frostHardy
       ? CareEnvironmentKind.outdoorPatch
       : CareEnvironmentKind.balcony,
-  // Ce qui peut aller dans les deux sens.
-  SpeciesCategory.herb || SpeciesCategory.flower => profile.frostHardy
+  // Ce qui peut aller dans les deux sens. Les succulentes en sont : un
+  // sempervivum passe l'hiver sur un toit, une echeveria passe l'été
+  // dehors en pot, une euphorbe de collection ne sort pas.
+  SpeciesCategory.herb ||
+  SpeciesCategory.flower ||
+  SpeciesCategory.succulent => profile.frostHardy
       ? CareEnvironmentKind.outdoorPatch
       : profile.outdoorFriendly
       ? CareEnvironmentKind.balcony
       : CareEnvironmentKind.indoorRoom,
-  SpeciesCategory.indoor ||
-  SpeciesCategory.succulent ||
-  null => CareEnvironmentKind.indoorRoom,
+  SpeciesCategory.indoor || null => CareEnvironmentKind.indoorRoom,
 };
 
 /// Espèces d'intérieur dont le gabarit adulte est sans ambiguïté celui d'une
