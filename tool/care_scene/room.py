@@ -1,7 +1,7 @@
 # ============================================================
 # La piece du diorama : une dalle, deux murs, une fenetre a gauche, un
 # voilage, un coin salon et son decor — plinthes, tapis, cadres, console,
-# lampadaire, panier. Assez pour lire « une piece habitee », assez sobre
+# lampadaire, pouf. Assez pour lire « une piece habitee », assez sobre
 # pour que la plante reste le sujet. Le gueridon n'est pas bake ici : c'est
 # un prop (props.py), pose par l'application sur l'emplacement lumineux.
 #
@@ -73,7 +73,6 @@ def _materiaux(v):
         "encre": materiau("MAT_Encre", "B7C4B4", rough=0.74, relief=0.008),
         "laiton": materiau("MAT_Laiton", "C2A878", rough=0.42, relief=0.004),
         "bois_clair": materiau("MAT_BoisClair", "D7BE9B", rough=0.62, relief=0.010),
-        "osier": materiau("MAT_Osier", "D2B98E", rough=0.78, relief=0.026),
         "livre_a": materiau("MAT_LivreA", "A9BE99", rough=0.72, relief=0.010),
         "livre_b": materiau("MAT_LivreB", "D9B79A", rough=0.72, relief=0.010),
         "livre_c": materiau("MAT_LivreC", "BFC7D2", rough=0.72, relief=0.010),
@@ -266,15 +265,6 @@ def _pouf(m):
     pouf.location = (1.60, -1.45, 0.0)
 
 
-def _panier(m):
-    # Un panier d'osier a cote du canape : rond, bas, il casse les angles
-    # droits du mobilier.
-    p = revolve("Panier", [(0.0, 0.0), (0.20, 0.0), (0.225, 0.03), (0.245, 0.24),
-                           (0.235, 0.26), (0.215, 0.245), (0.195, 0.03), (0.0, 0.02)],
-                44, [m["osier"]], 30.0)
-    p.location = (-1.78, -0.52, 0.0)
-
-
 def _decor(m):
     _plinthes(m)
     _tapis(m)
@@ -282,7 +272,6 @@ def _decor(m):
     _console(m)
     _lampadaire(m)
     _pouf(m)
-    _panier(m)
 
 
 def _faisceau(force):

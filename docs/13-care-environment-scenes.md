@@ -120,7 +120,7 @@ l'autre.
 
 Tous deux restent en retrait — la plante est le sujet. La pièce est
 habitée : plinthes, tapis, cadres au mur, console et ses livres,
-lampadaire, panier, un coin salon. Le jardin dit « dehors » sans devenir un
+lampadaire, pouf, un coin salon. Le jardin dit « dehors » sans devenir un
 jardin botanique : pelouse sauge, massif de pleine terre là où la plante se
 pose, allée de gravier et pas japonais, palissade bordée de touffes
 fleuries, haie basse, un petit arbre, un arrosoir.
