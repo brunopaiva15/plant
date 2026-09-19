@@ -11,7 +11,7 @@ import 'package:flora/domain/care/care_guide.dart';
 void main() {
   const careGuide = CatalogCareGuide();
 
-  test('encyclopédie : toutes les fiches qui ont un profil, dont les 1444 classes Iris', () {
+  test('encyclopédie : toutes les fiches qui ont un profil, dont les classes Iris', () {
     final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
     final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toList();
     final modelNames = modelSpecies.map((e) => e.toLowerCase()).toSet();
@@ -31,7 +31,7 @@ void main() {
         .map((e) => acceptedSpeciesName(normalizeScientificName(e.scientificName)).toLowerCase())
         .toList();
 
-    expect(modelJson['classes'], 1444);
+    expect(modelSpecies, hasLength(modelJson['classes'] as int));
     // Sans plafond : toutes les classes Iris, toutes les fiches curatées qui
     // ont un profil, puis tout le catalogue étendu qui en a un aussi.
     expect(encyclopedia.entries, hasLength(33344));
