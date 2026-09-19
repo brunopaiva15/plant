@@ -3694,10 +3694,26 @@ deux côtés, seule la recette diffère.
 | justesse quand elle accepte | 0,9176 | **0,9284** (+1,1) |
 | top-1, plantes cultivées | **0,6525** | 0,6410 (−1,2) |
 
-**La recette d'aujourd'hui est moins bonne que celle de la v8**, et le § 4 de
-`docs/10` fixe le seuil d'alerte à « un point ou deux ». Trois points est
-au-delà. L'écart se resserre à 1,2 sur les plantes cultivées : la perte est
+Trois points, quand le § 4 de `docs/10` fixe le seuil d'alerte à « un point
+ou deux ». L'écart se resserre à 1,2 sur les plantes cultivées : la perte est
 concentrée sur les espèces sauvages.
+
+**Mais ce n'est pas la recette qui est moins bonne : l'entraînement n'était
+pas fini.** Le journal le dit sans ambiguïté — à la douzième et dernière
+époque de réglage fin, `val_loss` descendait encore (2,5245 → 2,5084) et
+`val_accuracy` montait encore (0,4885 → 0,4950). `state.json` porte
+`fine_epochs_done: 12`, les douze demandées : **aucun arrêt anticipé**. Ce
+n'est pas la validation qui a dit stop, c'est `--fine-epochs 12`.
+
+Un second écart accompagne le premier : 24 842 pas de 32 images font
+`--batch 32`, le défaut, là où la v8 tournait à 128. C'est précisément la
+variable que le point 4 ci-dessus demande de trancher « une fois pour
+toutes », et elle a été changée sans qu'on le décide.
+
+Le diagnostic est donc **un entraînement tronqué**, pas une recette dégradée,
+et il se répare en reprenant : `train.py` redémarre à `initial_epoch` depuis
+son point de sauvegarde, et l'arrêt anticipé restaure les meilleurs poids.
+Rien n'est perdu.
 
 Le compte d'Iris Indoor tombe alors juste, et c'est la première fois :
 
@@ -3709,15 +3725,47 @@ Le compte d'Iris Indoor tombe alors juste, et c'est la première fois :
 
 Le gain était réel, mais net d'une perte qu'on n'avait pas isolée.
 
-**Deux conséquences.** D'abord, ne pas couper Outdoor dans cette tête : il
-serait trois points sous l'Iris 8 sur son propre terrain, et l'Iris 8 *est*
-déjà un spécialiste extérieur. Ensuite, comprendre la régression avant de
-lancer Iris 9, qui partirait sinon d'une base abîmée.
+**Deux conséquences.** D'abord, ne pas couper Outdoor dans cette tête tant
+qu'elle n'a pas fini : il serait trois points sous l'Iris 8 sur son propre
+terrain, et l'Iris 8 *est* déjà un spécialiste extérieur. Ensuite, ne pas
+lancer Iris 9 sur ce constat-là : la recette n'a pas été jugée, elle a été
+interrompue.
 
-Et le point 4 ci-dessus s'applique à nous : **ce run a changé plusieurs
-choses à la fois** — 35 espèces ajoutées, le découpage corrigé du § 12.19 qui
-rend ~112 classes à validation mince, et peut-être des hyperparamètres. On
-reproduit exactement ce qu'on reprochait à la v8.
+#### Ce que la donnée n'explique pas, et comment on l'a su
+
+Avant d'arriver au journal, deux hypothèses sont tombées, et leur chute vaut
+d'être notée — elles auraient coûté une collecte chacune.
+
+**Les classes maigres.** On a cru que le découpage corrigé du § 12.19 avait
+fait entrer des classes mal nourries qui abîmaient le dorsal. Reconstruits
+depuis les deux `splits.csv` aux seuils `--min-train 25` / `--min-val 3`, les
+deux jeux enseignent **5 343 et 5 376 classes** : trente-trois entrées,
+aucune sortie, médiane de 119 images d'entraînement contre 156 pour le jeu.
+Une seule sous quarante. Trente-trois classes nourries ne coûtent pas trois
+points.
+
+**Le vol en sortie.** Il n'a même pas lieu d'être : les classes
+supplémentaires ne sont pas dans les sorties du modèle retaillé, leurs
+colonnes ont été supprimées. Elles ne peuvent voler personne à l'inférence.
+
+Ce que `confusions.py` disait, en revanche, pointait déjà ailleurs. Les
+erreurs, sur 6 000 images :
+
+| | Iris 8 | tête du 19 | écart |
+|---|---|---|---|
+| dans le même genre | 325 | 313 | −12 |
+| dans la même famille | 313 | 323 | +10 |
+| **au-delà** | **1 378** | **1 545** | **+167** |
+
+**Toute la régression est « au-delà »** — les confusions hors famille, celles
+que le § 6.9 appelle les vrais défauts. Le fine-grained est intact à douze
+erreurs près. Un réseau qui n'a pas fini d'apprendre perd d'abord le
+grossier, pas le fin : c'est cohérent avec un entraînement tronqué, et ça ne
+l'est pas avec une recette mal réglée.
+
+Et le point 4 ci-dessus s'appliquait bien à nous, mais sur un autre point que
+celui qu'on cherchait : **le lot a changé sans décision**, 32 au lieu de 128.
+On reproduit exactement ce qu'on reprochait à la v8 — un run, deux variables.
 
 #### Six doublons dans l'exposé, et ils ne datent pas d'aujourd'hui
 
