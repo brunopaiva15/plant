@@ -554,7 +554,20 @@ carte — crème, ou terre cuite quand il y a urgence, seule couleur qui change
 —, puis ce qui avait été signalé et coché, puis les pistes. Chaque piste porte
 la tuile de sa famille (l'illustration d'argile de la base sur sa teinte), son
 cran de vraisemblance, son explication, et ses gestes sous un filet ; celles
-que la base connaît mènent à leur fiche de l'encyclopédie. Quand rien ne
+que la base connaît mènent à leur fiche de l'encyclopédie.
+
+**Une piste peut n'être un problème pour personne.** Des gouttes claires et
+collantes sous un philodendron sont du nectar extrafloral aussi souvent que du
+miellat de cochenilles, et la moitié de ce qu'on photographie par inquiétude
+n'a rien d'anormal. Ces pistes-là viennent dans la même liste, au même rang de
+vraisemblance, et se lisent autrement : une feuille sur la sauge au lieu de
+l'argile d'une famille — elles n'en ont pas —, et une seconde pastille,
+« Phénomène normal », à côté du cran. Elles ne mènent nulle part : l'encyclopédie
+parle de ce qui se soigne. Quand aucune piste n'est un problème, le constat le
+dit avant tout le reste : « Rien d'anormal », sur la feuille, plutôt que
+« Constat » sur le stéthoscope — trois cartes à lire avant de comprendre que
+rien ne va mal, c'est trois cartes d'inquiétude pour rien. Un compte rendu
+pareil n'est jamais urgent. Quand rien ne
 tranche, la photo de plus se propose après les pistes, jamais à leur place
 (docs/16). Le même corps sert à la réouverture depuis le journal, à ceci près
 que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas

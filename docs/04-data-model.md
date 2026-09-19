@@ -380,3 +380,29 @@ Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
 exemples, un genre ne rend pas toutes ses espèces sensibles, et la
 vérification GBIF porte sur les noms de plantes, pas sur les relations
 hôte-problème.
+
+## Base des phénomènes naturels (hors base locale)
+`assets/problems/natural.txt` : ce que la plante fait normalement et qu'on
+prend pour un problème — nectar extrafloral, guttation, vieille feuille du bas
+qui jaunit, panachure, racines aériennes, latex à la coupe, repos hivernal.
+Même fichier à séparateurs `|`, lu par le même chargeur, dans le même isolat,
+et porté par le même `ProblemCatalog` (`naturalCauses`, `natural(id)`,
+`naturalFor`).
+
+| Champ | Contenu |
+|---|---|
+| `id` | `N` et deux chiffres, `N01` à `N18`. Aucune confusion possible avec les trois chiffres d'un problème, ni dans la réponse du service, ni dans un compte rendu gardé. |
+| `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
+| `portee` | `GENERAL`, `LARGE`, `CIBLE`, comme la base des problèmes |
+| `taxons_hotes_scientifiques` | Les plantes qui le montrent, aux mêmes rangs : espèce, genre, famille, ou `Tracheophyta` |
+
+Les deux bases restent séparées parce que les choses le sont : un phénomène
+naturel n'est pas un problème de plus, il est ce qui n'en est pas un. Il n'a
+donc ni famille, ni illustration d'argile, ni page d'encyclopédie, et la fiche
+de soin ne le lit pas — elle parle de ce qui se soigne. Seul le diagnostic s'en
+sert : `naturalFor` en tire la liste soumise avec les problèmes, le service
+rend `N01`, l'application affiche son nom et sait que la piste n'est pas un
+souci (docs/09, § 9).
+
+L'actif peut manquer sans emporter l'autre : le diagnostic repart alors sans
+phénomènes naturels, comme avant qu'ils existent.

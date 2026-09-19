@@ -11,6 +11,7 @@ import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/diagnosis_observations.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
 import '../../domain/home/home_climate.dart';
+import '../../domain/problems/natural_cause.dart';
 import '../../domain/problems/plant_problem.dart';
 
 /// Diagnostic par les AI Services d'Infomaniak (hébergés en Suisse), via
@@ -69,6 +70,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? species,
     String? symptoms,
     List<PlantProblem> candidates = const [],
+    List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
@@ -93,6 +95,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           species: species,
           symptoms: symptoms,
           candidates: candidates,
+          naturalCauses: naturalCauses,
           frequentIds: frequentIds,
           indoorClimate: indoorClimate,
           reportedClimate: reportedClimate,
@@ -120,7 +123,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     // inventé, soit il désigne un problème qu'on a écarté pour cette plante.
     Diagnosis? diagnosis;
     try {
-      diagnosis = _read(response, candidates, language);
+      diagnosis = _read(response, candidates, naturalCauses, language);
     } on DiagnosisException catch (e) {
       // Un refus de contenu ne se rejoue pas ; une réponse illisible, si.
       if (e.message != 'empty') rethrow;
@@ -134,7 +137,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       final second = await ask(constrainJson: constrainJson, maxTokens: _wideTokens);
       _check(second);
       try {
-        diagnosis = _read(second, candidates, language);
+        diagnosis = _read(second, candidates, naturalCauses, language);
       } on DiagnosisException catch (e) {
         throw DiagnosisException(e.message == 'empty' ? 'unreadable' : e.message);
       }
@@ -148,6 +151,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
             species: species,
             symptoms: symptoms,
             candidates: candidates,
+            naturalCauses: naturalCauses,
             frequentIds: frequentIds,
             observations: observations,
           );
@@ -174,6 +178,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? species,
     String? symptoms,
     required List<PlantProblem> candidates,
+    required List<NaturalCause> naturalCauses,
     required Set<String> frequentIds,
     DiagnosisObservations? observations,
   }) async {
@@ -185,6 +190,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         species: species,
         symptoms: symptoms,
         candidates: candidates,
+        naturalCauses: naturalCauses,
         frequentIds: frequentIds,
         observations: observations,
       );
@@ -196,7 +202,8 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       final repli = parseResponse(
         response.body,
         allowed: {for (final p in candidates) p.id},
-        byName: namesOf(candidates, language),
+        allowedNatural: {for (final n in naturalCauses) n.id},
+        byName: namesOf(candidates, language, naturalCauses: naturalCauses),
       );
       if (repli.causes.isEmpty) return diagnosis;
       // Le résumé reste celui de la première passe : c'est elle qui a vu les
@@ -222,6 +229,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? species,
     String? symptoms,
     List<PlantProblem> candidates = const [],
+    List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     DiagnosisObservations? observations,
   }) =>
@@ -242,6 +250,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
                 species: species,
                 symptoms: symptoms,
                 candidates: candidates,
+                naturalCauses: naturalCauses,
                 frequentIds: frequentIds,
                 observations: observations,
               ),
@@ -269,7 +278,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (candidates.isEmpty) return diagnosis;
     final orphelines = [
       for (final (i, c) in diagnosis.causes.indexed)
-        if (c.problemId == null) i,
+        // Une piste naturelle n'a rien à chercher dans la base des
+        // problèmes : lui en coller un serait la renier.
+        if (c.problemId == null && !c.natural) i,
     ];
     if (orphelines.isEmpty) return diagnosis;
     try {
@@ -399,10 +410,12 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   }
 
   /// Le compte rendu d'une réponse, borné à ce qu'on a soumis.
-  Diagnosis _read(http.Response response, List<PlantProblem> candidates, String language) => parseResponse(
+  Diagnosis _read(http.Response response, List<PlantProblem> candidates, List<NaturalCause> naturalCauses, String language) =>
+      parseResponse(
         response.body,
         allowed: {for (final p in candidates) p.id},
-        byName: namesOf(candidates, language),
+        allowedNatural: {for (final n in naturalCauses) n.id},
+        byName: namesOf(candidates, language, naturalCauses: naturalCauses),
       );
 
   Future<http.Response> _post(Map<String, Object?> body, {Duration timeout = const Duration(minutes: 2)}) => _client
@@ -467,15 +480,29 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Weigh the species, the light, the soil, the season and the room given in the message against every cause, and drop a cause one of '
       'them rules out instead of listing it anyway. '
       'Always give at least one cause, whatever the photos show: "causes" is never empty. '
-      'Every cause is a problem of the plant — a disorder, a pest, a disease, a care mistake. The photo is never a cause: never write that the '
+      // La moitié de ce qui inquiète est normal, et la consigne n'ouvrait
+      // aucune porte à cette réponse-là : il ne restait qu'à ranger du
+      // nectar extrafloral parmi les ravageurs. Une piste naturelle est une
+      // piste comme les autres, avec sa vraisemblance et ses gestes — le
+      // geste pouvant être de ne rien faire.
+      'Not everything a plant does is a problem. Clear sticky drops of extrafloral nectar, water beads at the leaf tips in the morning, an old '
+      'lower leaf going yellow, variegation, aerial roots: these worry the owner and nothing is wrong. The message lists such normal phenomena '
+      'under numbers starting with "N". When one of them explains what is seen, give it as a cause like any other, with its number in "problem" '
+      'and "natural": true, and weigh it against the problems instead of naming a problem by default. '
+      'A natural phenomenon may be "likely" when the photos really show it, it is never "urgent", and it is never a disorder, a pest or a '
+      'disease. Set "natural": false on every other cause — a cause that carries a three-digit number is a problem, never a normal phenomenon. '
+      'Every other cause is a problem of the plant — a disorder, a pest, a disease, a care mistake. The photo is never a cause: never write that the '
       'reported symptom is missing from it, that it is unclear, or that another photo is needed, neither as a title, nor as an explanation, '
       'nor as an action, nor in "summary". Describe what the photos do show, never what they fail to show. '
       'When the photos do not show what the owner describes, work from the description, the species and the season: the owner has the plant in '
       'front of them, and what they report happened even if the frame missed it. Such causes are "possible" or "unlikely", never "likely". '
       'If the plant looks healthy on the photos, say so in "summary" and still give the one or two most plausible causes of what the owner '
-      'reports, as "unlikely". Set "urgent" only for pests, rot or rapid decline. '
-      'The message lists known problems for this plant, each as a three-digit number and a name. Read that list before you name anything. '
-      'For every cause, decide "problem" first, before writing its title: the number of the listed problem it is, or null when it is none of them. '
+      'reports, as "unlikely" — unless a normal phenomenon explains what is reported, which may be "likely". '
+      'Set "urgent" only for pests, rot or rapid decline. '
+      'The message lists known problems for this plant, each as a three-digit number and a name, and the normal phenomena as "N" numbers. '
+      'Read both lists before you name anything. '
+      'For every cause, decide "problem" first, before writing its title: the number of the listed problem or normal phenomenon it is, or null '
+      'when it is neither. '
       'Always include the key, never write a number that is not on the list, and when a listed problem fits, use its number even if you would '
       'have worded the name differently. '
       'One cause is one listed problem. When two listed problems both fit what you see, give them as two causes, each with its own number, '
@@ -492,7 +519,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Keep every explanation to two sentences at most and every action to one line, so the answer ends before it runs out of room. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
       '"summary" (string), "urgent" (boolean), "view" (string or null), "causes" (array of objects with "problem" (string or null), '
-      '"title" (string), "likelihood" (string), "explanation" (string), "actions" (array of strings)).';
+      '"natural" (boolean), "title" (string), "likelihood" (string), "explanation" (string), "actions" (array of strings)).';
 
   static String userPrompt({
     required String language,
@@ -500,6 +527,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     String? species,
     String? symptoms,
     List<PlantProblem> candidates = const [],
+    List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
@@ -523,6 +551,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // donne au modèle un vocabulaire au lieu de le laisser improviser un
       // nom à chaque analyse, et c'est ce nom-là que l'application affichera.
       ...shortlist(candidates, frequentIds, language),
+      // Ce que la plante fait normalement, à côté de ce qui lui arrive. Sans
+      // cette liste, une goutte de nectar sous un philodendron n'avait que
+      // des ravageurs pour s'expliquer.
+      ...naturalShortlist(naturalCauses, language),
       // Ce que la personne décrit a été vu sur la plante, pas sur la photo :
       // le cadrage rate souvent la feuille dont elle parle, et le modèle
       // répondait alors que le symptôme n'était pas visible au lieu de
@@ -624,12 +656,21 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   ///
   /// Un nom qui se normalise comme un autre est écarté des deux côtés : mieux
   /// vaut ne rien rattraper que de trancher au hasard entre deux pistes.
-  static Map<String, String> namesOf(List<PlantProblem> candidates, String language) {
+  static Map<String, String> namesOf(List<PlantProblem> candidates, String language, {List<NaturalCause> naturalCauses = const []}) {
     final vus = <String, String?>{};
+    void retenir(String id, String name) {
+      final clef = normaliseName(name);
+      if (clef.isEmpty) return;
+      vus[clef] = vus.containsKey(clef) ? null : id;
+    }
+
     for (final p in candidates) {
-      final clef = normaliseName(p.nameIn(language));
-      if (clef.isEmpty) continue;
-      vus[clef] = vus.containsKey(clef) ? null : p.id;
+      retenir(p.id, p.nameIn(language));
+    }
+    // Les deux bases ensemble : un nom qui les désigne toutes les deux ne
+    // rattrape rien, et c'est ce qu'on veut.
+    for (final n in naturalCauses) {
+      retenir(n.id, n.nameIn(language));
     }
     return {
       for (final e in vus.entries)
@@ -674,14 +715,36 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     ];
   }
 
+  /// Les phénomènes naturels tels qu'ils partent : une liste à part, dite
+  /// pour ce qu'elle est.
+  ///
+  /// Elle vient après celle des problèmes, et le modèle a besoin d'entendre
+  /// qu'elle n'en est pas la suite : ce sont les réponses possibles quand
+  /// rien ne va mal, pas un dernier groupe de troubles.
+  static List<String> naturalShortlist(List<NaturalCause> naturalCauses, String language) {
+    if (naturalCauses.isEmpty) return const [];
+    return [
+      'Normal on this kind of plant, not problems, as "number name": '
+          '${naturalCauses.map((n) => '${n.id} ${n.nameIn(language)}').join('; ')}.',
+      'Any of these explains what is seen without anything being wrong; give it as a cause with "natural": true.',
+    ];
+  }
+
   /// Extrait le diagnostic d'une réponse chat completions. Le contenu peut
   /// être une chaîne ou une liste de fragments ; du JSON entouré de
   /// balises Markdown ou d'une phrase est accepté.
   ///
   /// [allowed] borne les numéros acceptés à ceux qu'on a soumis. `null`
   /// laisse passer n'importe quel numéro à trois chiffres, ce qui n'a de sens
-  /// que hors appel réel. [byName] rattrape les pistes nommées sans numéro.
-  static Diagnosis parseResponse(String body, {Set<String>? allowed, Map<String, String> byName = const {}}) {
+  /// que hors appel réel. [allowedNatural] fait la même chose pour les
+  /// numéros des phénomènes naturels. [byName] rattrape les pistes nommées
+  /// sans numéro, des deux bases.
+  static Diagnosis parseResponse(
+    String body, {
+    Set<String>? allowed,
+    Set<String>? allowedNatural,
+    Map<String, String> byName = const {},
+  }) {
     final json = jsonDecode(body) as Map<String, dynamic>;
     final choices = (json['choices'] as List?) ?? const [];
     if (choices.isEmpty) throw const DiagnosisException('empty');
@@ -692,16 +755,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (data == null) throw const DiagnosisException('empty');
     final causes = ((data['causes'] as List?) ?? const [])
         .whereType<Map>()
-        .map((c) => DiagnosisCause(
-              title: (c['title'] as String?) ?? '',
-              likelihood: Likelihood.parse(c['likelihood']),
-              explanation: (c['explanation'] as String?) ?? '',
-              actions: ((c['actions'] as List?) ?? const []).whereType<String>().toList(),
-              problemId: _problemId(c['problem'], allowed) ?? _problemByName(c['title'], byName),
-            ))
+        .map((c) => _cause(c, allowed: allowed, allowedNatural: allowedNatural, byName: byName))
         // Une cause sans titre reste lisible si elle porte un numéro : la
         // base lui en donnera un, dans la bonne langue.
-        .where((c) => c.title.isNotEmpty || c.problemId != null)
+        .where((c) => c.title.isNotEmpty || c.problemId != null || c.naturalId != null)
         .toList();
     // Trois crans laissent beaucoup d'ex æquo. Le rang d'arrivée les
     // départage, car le service a déjà classé ses pistes de la plus à la
@@ -714,11 +771,52 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     return Diagnosis(
       summary: (data['summary'] as String?) ?? '',
       causes: [for (final (_, c) in classees) c],
-      urgent: data['urgent'] == true,
+      // Un compte rendu dont aucune piste n'est un problème n'a rien à
+      // traiter rapidement : la carte rouge le démentirait. La consigne le
+      // dit déjà au modèle ; ici on ne le lui demande pas deux fois.
+      urgent: data['urgent'] == true && !(causes.isNotEmpty && causes.every((c) => c.natural)),
       // Ce que le service aurait voulu voir de plus. L'application en fera
       // une proposition de photo ou rien du tout ; le compte rendu, lui, n'en
       // parle jamais.
       suggestedView: DiagnosisView.parse(data['view']),
+    );
+  }
+
+  /// Une piste telle que le service l'a écrite, rattachée à la base quand
+  /// elle s'y retrouve : le numéro d'un problème, celui d'un phénomène
+  /// naturel, ou rien.
+  ///
+  /// Les deux numéros s'excluent : `060` est un ravageur, `N01` du nectar,
+  /// et un modèle qui écrirait les deux aurait de toute façon tranché en
+  /// écrivant le premier.
+  static DiagnosisCause _cause(
+    Map<Object?, Object?> raw, {
+    Set<String>? allowed,
+    Set<String>? allowedNatural,
+    Map<String, String> byName = const {},
+  }) {
+    var naturalId = _naturalId(raw['problem'], allowedNatural);
+    var problemId = naturalId == null ? _problemId(raw['problem'], allowed) : null;
+    if (naturalId == null && problemId == null) {
+      // Dernier recours : le nom exact d'une entrée soumise, sans son
+      // numéro. La forme du numéro dit de quelle base il vient.
+      final trouve = _problemByName(raw['title'], byName);
+      if (trouve != null && trouve.startsWith('N')) {
+        naturalId = trouve;
+      } else {
+        problemId = trouve;
+      }
+    }
+    return DiagnosisCause(
+      title: (raw['title'] as String?) ?? '',
+      likelihood: Likelihood.parse(raw['likelihood']),
+      explanation: (raw['explanation'] as String?) ?? '',
+      actions: ((raw['actions'] as List?) ?? const []).whereType<String>().toList(),
+      problemId: problemId,
+      naturalId: naturalId,
+      // Le numéro tranche : ce que la base range parmi les problèmes n'est
+      // pas un phénomène naturel, quoi que dise la clé du même nom.
+      natural: naturalId != null || (problemId == null && raw['natural'] == true),
     );
   }
 
@@ -750,12 +848,31 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   /// Le numéro rendu, s'il est bien formé et s'il faisait partie de la liste
   /// soumise. Un modèle qui écrit « 60 » ou « id 060 » veut dire 060.
   static String? _problemId(Object? raw, Set<String>? allowed) {
+    // « N01 » n'est pas le problème 001 : les chiffres seuls ne disent pas
+    // de quelle base ils viennent.
+    if (raw is String && _naturalShape.hasMatch(raw)) return null;
     final digits = RegExp(r'\d+').firstMatch(switch (raw) { num n => '$n', String t => t, _ => '' })?.group(0);
     if (digits == null || digits.length > 3) return null;
     final id = digits.padLeft(3, '0');
     if (id == '000') return null;
     return allowed == null || allowed.contains(id) ? id : null;
   }
+
+  /// Le numéro d'un phénomène naturel rendu, s'il est bien formé et s'il
+  /// faisait partie de ceux qu'on a soumis. « N1 », « n01 » et « N01 »
+  /// disent la même chose.
+  static String? _naturalId(Object? raw, Set<String>? allowed) {
+    if (raw is! String) return null;
+    final chiffres = _naturalShape.firstMatch(raw)?.group(1);
+    if (chiffres == null) return null;
+    final id = 'N${chiffres.padLeft(2, '0')}';
+    return allowed == null || allowed.contains(id) ? id : null;
+  }
+
+  /// La forme d'un numéro de phénomène naturel, telle qu'elle se lit dans
+  /// une réponse : un N en tête, puis des chiffres. Ce qui suit ne compte
+  /// pas — un modèle recopie parfois « N01 Nectar extrafloral » en entier.
+  static final RegExp _naturalShape = RegExp(r'^\s*n[\s.:-]*0*(\d{1,2})\b', caseSensitive: false);
 
   /// Dernier recours : le service a écrit le nom exact d'une piste soumise
   /// sans en donner le numéro.

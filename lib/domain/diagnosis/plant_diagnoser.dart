@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import '../home/home_climate.dart';
+import '../problems/natural_cause.dart';
 import '../problems/plant_problem.dart';
 import 'diagnosis_observations.dart';
 
@@ -62,7 +63,15 @@ enum DiagnosisView {
 
 /// Une cause possible, avec sa vraisemblance et des gestes concrets.
 class DiagnosisCause {
-  const DiagnosisCause({required this.title, required this.likelihood, required this.explanation, required this.actions, this.problemId});
+  const DiagnosisCause({
+    required this.title,
+    required this.likelihood,
+    required this.explanation,
+    required this.actions,
+    this.problemId,
+    this.naturalId,
+    this.natural = false,
+  });
 
   /// Le titre rendu par le service. Sert de repli quand la cause ne
   /// correspond à rien de la base ; sinon c'est le nom de la base qui
@@ -78,18 +87,39 @@ class DiagnosisCause {
   /// que de l'admettre.
   final String? problemId;
 
+  /// Numéro du phénomène naturel dans la base locale, quand la cause en est
+  /// un et que le service l'a reconnu. Exclusif de [problemId] : une chose
+  /// est un problème ou elle n'en est pas un.
+  final String? naturalId;
+
+  /// Vrai quand la cause n'est pas un problème : la plante fait ce qu'elle
+  /// fait normalement.
+  ///
+  /// Des gouttes collantes sous un philodendron sont du nectar extrafloral
+  /// aussi souvent que du miellat de cochenilles, et la moitié de ce qu'on
+  /// photographie inquiète sans rien avoir d'anormal. Une piste pareille
+  /// n'appelle pas de soin : elle se lit autrement, elle ne rend jamais le
+  /// compte rendu urgent, et elle ne met pas la plante à surveiller.
+  ///
+  /// Toujours vrai quand [naturalId] est donné ; vrai aussi pour un
+  /// phénomène que la base ne connaît pas — elle est courte, et la plante
+  /// fait plus de choses normales qu'on n'en a listé.
+  final bool natural;
+
   Map<String, Object?> toJson() => {
         'title': title,
         'likelihood': likelihood.name,
         'explanation': explanation,
         'actions': actions,
         if (problemId != null) 'problemId': problemId,
+        if (naturalId != null) 'naturalId': naturalId,
+        if (natural) 'natural': true,
       };
 
   /// Une piste qui n'a rien à montrer : ni nom propre, ni numéro pour que la
   /// base la nomme, ni explication. Une carte vide ne dit rien de plus qu'une
   /// carte absente.
-  bool get isBlank => title.isEmpty && problemId == null && explanation.isEmpty;
+  bool get isBlank => title.isEmpty && problemId == null && naturalId == null && explanation.isEmpty;
 
   /// Relit une cause gardée au journal. Tolérante : une analyse conservée il
   /// y a six mois a pu être écrite par une version antérieure, et un champ
@@ -103,6 +133,8 @@ class DiagnosisCause {
             if (a is String && a.trim().isNotEmpty) a,
         ],
         problemId: json['problemId'] is String ? json['problemId'] as String : null,
+        naturalId: json['naturalId'] is String ? json['naturalId'] as String : null,
+        natural: json['natural'] == true || json['naturalId'] is String,
       );
 }
 
@@ -118,6 +150,11 @@ class Diagnosis {
 
   /// Vrai si la plante mérite une attention rapide (parasites, pourriture…).
   final bool urgent;
+
+  /// Vrai quand aucune piste n'est un problème : ce qui a été photographié
+  /// est ce que la plante fait normalement. Le compte rendu le dit alors en
+  /// tête, plutôt que de laisser lire trois cartes comme trois soucis.
+  bool get onlyNatural => causes.isNotEmpty && causes.every((c) => c.natural);
 
   /// La vue qui manquait au service pour trancher, quand il en nomme une.
   ///
@@ -169,6 +206,12 @@ abstract class PlantDiagnoser {
     /// Une liste de pistes soumise au service, pas une liste de réponses :
     /// la plante peut très bien avoir autre chose.
     List<PlantProblem> candidates = const [],
+
+    /// Ce que cette plante fait normalement et qu'on prend pour un problème :
+    /// nectar extrafloral, guttation, vieille feuille du bas qui jaunit.
+    /// Soumis à côté des problèmes — la moitié des photos d'inquiétude ne
+    /// montrent rien d'anormal, et le service n'y pensait pas tout seul.
+    List<NaturalCause> naturalCauses = const [],
 
     /// Parmi eux, ceux que la fiche d'entretien signale pour l'espèce.
     Set<String> frequentIds = const {},
@@ -242,6 +285,7 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     String? species,
     String? symptoms,
     List<PlantProblem> candidates = const [],
+    List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,

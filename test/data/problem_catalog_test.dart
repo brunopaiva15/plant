@@ -9,7 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// et une base retouchée à la main doit se voir ici.
 void main() {
   final file = File('assets/problems/catalog.txt');
-  final catalog = ProblemCatalog.parse(file.readAsStringSync());
+  final naturalFile = File('assets/problems/natural.txt');
+  final catalog = ProblemCatalog.parseAll((file.readAsStringSync(), naturalFile.readAsStringSync()));
 
   group('la base embarquée', () {
     test('compte ses deux cents entrées, numérotées sans trou', () {
@@ -69,6 +70,70 @@ void main() {
       expect(oidium.nameIn('de'), 'Echter Mehltau');
       expect(oidium.nameIn('it'), 'Oidi');
       expect(oidium.nameIn('es'), 'Oïdiums', reason: 'langue non traduite');
+    });
+  });
+
+  group('la base des phénomènes naturels', () {
+    test('chaque entrée porte un numéro en N et quatre noms', () {
+      expect(catalog.naturalCauses, isNotEmpty);
+      for (final n in catalog.naturalCauses) {
+        expect(n.id, matches(RegExp(r'^N\d{2}$')), reason: n.fr);
+        for (final name in [n.fr, n.en, n.it, n.de]) {
+          expect(name.trim(), isNotEmpty, reason: n.id);
+        }
+        expect(n.hosts, isNotEmpty, reason: n.id);
+      }
+    });
+
+    test('les numéros sont uniques et ne croisent jamais ceux des problèmes', () {
+      final ids = catalog.naturalCauses.map((n) => n.id).toList();
+      expect(ids.toSet(), hasLength(ids.length));
+      for (final id in ids) {
+        expect(catalog[id], isNull, reason: '$id désigne aussi un problème');
+      }
+    });
+
+    test('la portée générale va de pair avec l\'embranchement entier', () {
+      for (final n in catalog.naturalCauses) {
+        expect(n.hosts.contains('Tracheophyta'), n.scope == ProblemScope.general, reason: '${n.id} ${n.en}');
+      }
+    });
+
+    test('le nom suit la langue demandée, le français par défaut', () {
+      final nectar = catalog.natural('N01')!;
+      expect(nectar.nameIn('fr'), 'Nectar extrafloral');
+      expect(nectar.nameIn('en'), 'Extrafloral nectar');
+      expect(nectar.nameIn('it'), 'Nettare extrafloreale');
+      expect(nectar.nameIn('de'), 'Extrafloraler Nektar');
+      expect(nectar.nameIn('es'), 'Nectar extrafloral', reason: 'langue non traduite');
+    });
+
+    test('un numéro se relit quelle que soit sa casse, et l\'inconnu ne rend rien', () {
+      expect(catalog.natural('n01')?.id, 'N01');
+      expect(catalog.natural('N99'), isNull);
+      expect(catalog.natural(null), isNull);
+    });
+
+    test('la plante attire ce qu\'elle montre, l\'universel vaut pour toutes', () {
+      List<String> pour({String? species, String? family}) =>
+          catalog.naturalFor(species: species, family: family).map((n) => n.id).toList();
+
+      final philodendron = pour(species: 'Philodendron hederaceum', family: 'Araceae');
+      expect(philodendron, contains('N01'), reason: 'des gouttes collantes y sont du nectar aussi souvent que du miellat');
+      expect(philodendron, contains('N02'), reason: 'la guttation vaut pour toutes les plantes');
+      expect(philodendron, isNot(contains('N17')), reason: 'la mue est affaire de lithops');
+
+      final lithops = pour(species: 'Lithops lesliei');
+      expect(lithops, contains('N17'));
+      expect(lithops, isNot(contains('N01')));
+
+      expect(pour(), isNotEmpty, reason: 'sans espèce, il reste ce qui vaut pour toutes');
+    });
+
+    test('un actif absent laisse la base des problèmes entière', () {
+      final sansNaturels = ProblemCatalog.parseAll((file.readAsStringSync(), ''));
+      expect(sansNaturels.problems, hasLength(200));
+      expect(sansNaturels.naturalCauses, isEmpty);
     });
   });
 

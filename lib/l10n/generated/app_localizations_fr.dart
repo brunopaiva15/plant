@@ -2503,6 +2503,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diagnosisFinding => 'Constat';
 
   @override
+  String get diagnosisNothingWrong => 'Rien d\'anormal';
+
+  @override
+  String get diagnosisNatural => 'Phénomène normal';
+
+  @override
   String get analyze => 'Analyser';
 
   @override

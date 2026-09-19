@@ -1,0 +1,32 @@
+# BASE_PHENOMENES_NATURELS_FR_EN_IT_DE
+# Encodage: UTF-8. Separateur de champs: |. Separateur de taxons: ;.
+# Ce que la plante fait normalement et qu'on prend pour un probleme: des
+# gouttes de nectar collantes sous les feuilles, une vieille feuille du bas
+# qui jaunit, des racines qui sortent du pot. Ce ne sont ni des troubles, ni
+# des ravageurs, ni des maladies: rien n'est a soigner.
+# Identifiants: N suivi de deux chiffres, pour qu'aucun ne se confonde avec
+# les trois chiffres des 200 problemes.
+# GENERAL: possible sur les plantes vasculaires selon les conditions et le stade.
+# LARGE: nombreux hotes; les taxons indiques sont des exemples non exhaustifs.
+# CIBLE: hotes principaux ou exemples dans un groupe cible; liste non exhaustive.
+# Un genre ou une famille ne signifie pas que toutes ses especes le montrent.
+# Champs: id|nom_fr|nom_en|nom_it|nom_de|portee|taxons_hotes_scientifiques
+id|nom_fr|nom_en|nom_it|nom_de|portee|taxons_hotes_scientifiques
+N01|Nectar extrafloral|Extrafloral nectar|Nettare extrafloreale|Extrafloraler Nektar|LARGE|Philodendron;Monstera;Anthurium;Passiflora;Prunus;Euphorbia;Vicia faba;Ricinus communis;Gossypium;Hibiscus
+N02|Guttation|Guttation|Guttazione|Guttation|GENERAL|Tracheophyta
+N03|Vieillissement des feuilles basses|Ageing of the lower leaves|Invecchiamento delle foglie basali|Alterung der unteren Blätter|GENERAL|Tracheophyta
+N04|Panachure naturelle|Natural variegation|Variegatura naturale|Natürliche Panaschierung|LARGE|Epipremnum;Scindapsus;Monstera;Aglaonema;Dieffenbachia;Goeppertia;Ctenanthe;Hedera helix;Chlorophytum comosum;Tradescantia
+N05|Fenestration des feuilles adultes|Fenestration of mature leaves|Fenestratura delle foglie adulte|Fensterung der reifen Blätter|CIBLE|Monstera;Rhaphidophora;Epipremnum pinnatum
+N06|Racines aériennes|Aerial roots|Radici aeree|Luftwurzeln|LARGE|Monstera;Philodendron;Epipremnum;Anthurium;Orchidaceae;Ficus
+N07|Cataphylles et gaines sèches|Dry cataphylls and sheaths|Catafilli e guaine secche|Trockene Niederblätter und Blattscheiden|LARGE|Philodendron;Monstera;Anthurium;Strelitzia;Zamioculcas zamiifolia;Arecaceae
+N08|Feuilles jeunes pâles ou rougies|Pale or reddish young leaves|Foglie giovani pallide o rossastre|Blasse oder rötliche junge Blätter|LARGE|Philodendron;Monstera;Syzygium;Photinia;Pieris;Rosa;Quercus
+N09|Latex ou sève à la coupe|Latex or sap at a cut|Lattice o linfa al taglio|Milchsaft oder Saft an der Schnittstelle|LARGE|Ficus;Euphorbia;Hoya;Plumeria;Nerium oleander;Papaver;Lactuca sativa
+N10|Pruine cireuse|Waxy bloom|Pruina cerosa|Wachsbereifung|LARGE|Echeveria;Pachyphytum;Graptopetalum;Sedum;Prunus domestica;Vitis vinifera;Brassica oleracea
+N11|Chute des fleurs fanées|Drop of spent flowers|Caduta dei fiori appassiti|Abfallen verblühter Blüten|GENERAL|Tracheophyta
+N12|Repos hivernal|Winter dormancy|Riposo invernale|Winterruhe|GENERAL|Tracheophyta
+N13|Poils et écailles du feuillage|Leaf hairs and scales|Peluria e squame fogliari|Blatthaare und Schuppen|LARGE|Tillandsia;Begonia;Saintpaulia;Streptocarpus;Stachys byzantina;Olea europaea;Rhododendron
+N14|Traces de calcaire de l'eau d'arrosage|Hard-water marks|Aloni di calcare dell'acqua|Kalkflecken vom Gießwasser|GENERAL|Tracheophyta
+N15|Feuillage qui jaunit après la floraison|Bulb foliage dying back after flowering|Fogliame che ingiallisce dopo la fioritura|Nach der Blüte vergilbendes Laub|CIBLE|Narcissus;Tulipa;Hyacinthus;Hippeastrum;Galanthus;Crocus
+N16|Chute des feuilles en automne|Autumn leaf drop|Caduta autunnale delle foglie|Herbstlicher Blattfall|LARGE|Acer;Quercus;Fagus;Betula;Rosa;Hydrangea;Ficus carica;Vitis vinifera
+N17|Mue des plantes-cailloux|Leaf renewal in living stones|Muta delle piante sasso|Blatterneuerung bei Lebenden Steinen|CIBLE|Lithops;Conophytum
+N18|Cotylédons qui se flétrissent|Cotyledons withering|Cotiledoni che appassiscono|Welkende Keimblätter|GENERAL|Tracheophyta

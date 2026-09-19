@@ -2500,6 +2500,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diagnosisFinding => 'Finding';
 
   @override
+  String get diagnosisNothingWrong => 'Nothing wrong';
+
+  @override
+  String get diagnosisNatural => 'Normal phenomenon';
+
+  @override
   String get analyze => 'Analyze';
 
   @override

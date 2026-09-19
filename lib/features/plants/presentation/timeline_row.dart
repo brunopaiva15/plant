@@ -169,7 +169,13 @@ class DiagnosisTimelineCard extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: Space.xs),
-                    Text(l10n.likelihoodLabel(cause.likelihood), style: context.text.caption),
+                    // Sur une ligne, un mot : d'une piste naturelle on
+                    // retient qu'il n'y avait rien à soigner, pas son cran
+                    // de vraisemblance — le losange le dit déjà.
+                    Text(
+                      cause.natural ? l10n.diagnosisNatural : l10n.likelihoodLabel(cause.likelihood),
+                      style: context.text.caption,
+                    ),
                   ],
                 ),
               ),
