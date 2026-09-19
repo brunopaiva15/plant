@@ -158,7 +158,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// Retenir une candidate, c'est l'enregistrer : l'appelant écrit l'espèce
   /// dès le retour. Si la personne l'a permis, les photos partent entraîner
   /// Iris — à côté, sans retenir la feuille.
-  void _use(IdentificationCandidate c) {
+  void _use(IdentificationCandidate c, [JevProductAction? after]) {
+    ref.read(jevIdentificationPolicyProvider).noteCandidateChosen(after);
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is CascadeIdentifier) {
       unawaited(ref.read(irisFeedbackRecorderProvider).record(IrisFeedback(
@@ -174,7 +175,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     Navigator.of(context).pop(c);
   }
 
-  Future<void> _searchOnline() async {
+  Future<void> _searchOnline([JevProductAction? after]) async {
+    ref.read(jevIdentificationPolicyProvider).noteOnlineSearch(after);
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is! CascadeIdentifier) return;
     setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language)));
@@ -193,6 +195,22 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     }
     return ref.read(jevIdentificationPolicyProvider).evaluate(
           policy: _policy,
+          candidates: results,
+          photos: _paths.length,
+          maxPhotos: maxPhotos,
+          online: ref.read(isOnlineProvider),
+        );
+  }
+
+  /// Ce qu'Iris seule conclut, disponible sans attendre le réseau. C'est
+  /// l'état affiché tant que Jev n'a pas répondu : l'arbitrage distant
+  /// corrige une proposition déjà là plutôt que de retenir l'écran.
+  JevPipelineEvaluation? _localEvaluation(
+      List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier) return null;
+    return ref.read(jevIdentificationPolicyProvider).localEvaluation(
+          policy: identifier.policy,
           candidates: results,
           photos: _paths.length,
           maxPhotos: maxPhotos,
@@ -296,20 +314,22 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     GenusAnswer? genus,
     JevPipelineEvaluation? state,
   ) {
+    final action = state?.decision?.action;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (genus != null) ...[
           GenusRow(
             answer: genus,
-            onUse: () => _use(genusCandidate(genus, l10n.localeName)),
+            onUse: () =>
+                _use(genusCandidate(genus, l10n.localeName), action),
           ),
           const SizedBox(height: Space.xs),
         ],
         FloraGroup(
           children: [
             for (final c in results)
-              CandidateRow(candidate: c, onUse: () => _use(c), policy: _policy),
+              CandidateRow(candidate: c, onUse: () => _use(c, action), policy: _policy),
           ],
         ),
         if (state?.offer == SecondPhotoOffer.prominent &&
@@ -333,7 +353,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               label: l10n.searchOnline,
               expand: true,
               style: FloraButtonStyle.ghost,
-              onPressed: _searchOnline,
+              onPressed: () => _searchOnline(action),
             )
           else
             Text(
@@ -361,7 +381,9 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
           const SizedBox(height: Space.sm),
           GenusRow(
             answer: genus,
-            onUse: () => _use(genusCandidate(genus, l10n.localeName)),
+            onUse: () => _use(
+                genusCandidate(genus, l10n.localeName),
+                JevProductAction.keepUncertain),
           ),
         ],
         if (_canSearchOnline) ...[
@@ -370,7 +392,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
             FloraButton(
               label: l10n.searchOnline,
               expand: true,
-              onPressed: _searchOnline,
+              onPressed: () => _searchOnline(JevProductAction.keepUncertain),
             )
           else
             Text(
@@ -391,7 +413,11 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         FloraGroup(
           children: [
             for (final c in results)
-              CandidateRow(candidate: c, onUse: () => _use(c), policy: _policy),
+              CandidateRow(
+                candidate: c,
+                onUse: () => _use(c, JevProductAction.keepUncertain),
+                policy: _policy,
+              ),
           ],
         ),
         _PhotoSourceNote(candidates: results),
@@ -483,6 +509,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   else
                     FutureBuilder<JevPipelineEvaluation>(
                       future: evaluationFuture,
+                      initialData:
+                          _localEvaluation(data ?? const <IdentificationCandidate>[]),
                       builder: (context, decisionSnap) {
                         final state = decisionSnap.data;
                         if (state?.keepsUncertain == true) {

@@ -1548,6 +1548,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Location unavailable. You can pick a town in Profile › Weather.';
 
   @override
+  String get locationUnavailable => 'Location unavailable.';
+
+  @override
   String get onbHomeTitle => 'Your home';
 
   @override
@@ -2202,7 +2205,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'For outdoor plants: rain that has fallen counts as watering, rain that is forecast postpones it, and frost and heat are flagged. Open-Meteo data, no account or key required.';
+      'For outdoor plants: rain that has fallen counts as watering, rain that is forecast postpones it, and frost and heat are flagged. Open-Meteo data.';
 
   @override
   String get weatherPlace => 'Place';

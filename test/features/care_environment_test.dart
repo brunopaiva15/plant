@@ -26,6 +26,7 @@ void main() {
     int? idealTempMaxC,
     int? damageBelowC,
     int? survivalMinC,
+    bool outdoorFriendly = false,
   }) => CareProfile(
     wateringSummerDays: 7,
     wateringWinterDays: 14,
@@ -39,6 +40,7 @@ void main() {
     idealTempMaxC: idealTempMaxC,
     damageBelowC: damageBelowC,
     survivalMinC: survivalMinC,
+    outdoorFriendly: outdoorFriendly,
   );
 
   group('la lumière décide de l\'emplacement et du décor', () {
@@ -154,13 +156,29 @@ void main() {
         dedans.airflowOriginFraction,
         CareEnvironmentSlots.airflow['indoor'],
       );
-      final dehors = careEnvironmentSpec(
-        profile: avec(airflow: AirflowPreference.sheltered),
+      // Un arbre rustique va en pleine terre : l'air passe au-dessus de la
+      // haie. Non rustique, il vit en pot au balcon, et l'air vient du vide
+      // par-dessus le garde-corps — trois décors, trois ouvertures.
+      final jardin = careEnvironmentSpec(
+        profile: avec(
+          airflow: AirflowPreference.sheltered,
+          survivalMinC: -15,
+        ),
         category: SpeciesCategory.tree,
       );
+      expect(jardin.environment, CareEnvironmentKind.outdoorPatch);
       expect(
-        dehors.airflowOriginFraction,
+        jardin.airflowOriginFraction,
         CareEnvironmentSlots.airflow['outdoor'],
+      );
+      final balcon = careEnvironmentSpec(
+        profile: avec(airflow: AirflowPreference.sheltered),
+        category: SpeciesCategory.fruit,
+      );
+      expect(balcon.environment, CareEnvironmentKind.balcony);
+      expect(
+        balcon.airflowOriginFraction,
+        CareEnvironmentSlots.airflow['balcony'],
       );
     });
   });
@@ -257,27 +275,45 @@ void main() {
     });
   });
 
-  group('pièce ou dehors', () {
-    test('les arbres, fruitiers et légumes vont dehors', () {
-      for (final cat in [
-        SpeciesCategory.tree,
-        SpeciesCategory.fruit,
-        SpeciesCategory.vegetable,
-      ]) {
+  group('pièce, balcon ou jardin', () {
+    const dehors = [
+      SpeciesCategory.tree,
+      SpeciesCategory.fruit,
+      SpeciesCategory.vegetable,
+    ];
+
+    test('les arbres, fruitiers et légumes ne finissent jamais dedans', () {
+      for (final cat in dehors) {
         expect(
           environmentFor(base, cat),
-          CareEnvironmentKind.outdoorPatch,
+          isNot(CareEnvironmentKind.indoorRoom),
           reason: cat.name,
         );
       }
     });
 
-    test('les plantes d\'intérieur et succulentes restent dedans', () {
-      for (final cat in [SpeciesCategory.indoor, SpeciesCategory.succulent]) {
+    test('rustique, ils vont en pleine terre ; gélifs, au balcon', () {
+      for (final cat in dehors) {
+        expect(
+          environmentFor(avec(survivalMinC: -15), cat),
+          CareEnvironmentKind.outdoorPatch,
+          reason: '${cat.name} rustique',
+        );
+        // Un citronnier ne se plante pas dans une pelouse : il passe
+        // l'année dehors en pot et rentre l'hiver.
         expect(
           environmentFor(base, cat),
+          CareEnvironmentKind.balcony,
+          reason: '${cat.name} gélif',
+        );
+      }
+    });
+
+    test('les plantes d\'intérieur restent dedans, rustiques ou non', () {
+      for (final p in [base, avec(survivalMinC: -15), avec(outdoorFriendly: true)]) {
+        expect(
+          environmentFor(p, SpeciesCategory.indoor),
           CareEnvironmentKind.indoorRoom,
-          reason: cat.name,
         );
       }
     });
@@ -302,19 +338,75 @@ void main() {
       );
     });
 
+    test('gélive mais qui sort : le balcon, et seulement si la fiche le dit',
+        () {
+      for (final cat in [SpeciesCategory.herb, SpeciesCategory.flower]) {
+        expect(
+          environmentFor(avec(outdoorFriendly: true), cat),
+          CareEnvironmentKind.balcony,
+          reason: '${cat.name} qui passe la saison dehors',
+        );
+        // Rien n'est inventé : sans `outdoorFriendly`, on ne sort pas la
+        // plante.
+        expect(
+          environmentFor(base, cat),
+          CareEnvironmentKind.indoorRoom,
+          reason: '${cat.name} dont la fiche ne dit rien',
+        );
+      }
+    });
+
+    test('les succulentes suivent la même règle que les aromatiques', () {
+      // Un sempervivum passe l'hiver sur un toit.
+      expect(
+        environmentFor(avec(survivalMinC: -15), SpeciesCategory.succulent),
+        CareEnvironmentKind.outdoorPatch,
+      );
+      // Une echeveria passe l'été dehors en pot et rentre.
+      expect(
+        environmentFor(avec(outdoorFriendly: true), SpeciesCategory.succulent),
+        CareEnvironmentKind.balcony,
+      );
+      // Une euphorbe de collection ne sort pas.
+      expect(
+        environmentFor(base, SpeciesCategory.succulent),
+        CareEnvironmentKind.indoorRoom,
+      );
+    });
+
     test('sans catégorie, la pièce est le repli', () {
       expect(environmentFor(base, null), CareEnvironmentKind.indoorRoom);
     });
 
-    test('dehors a son propre décor lumineux', () {
-      final spec = careEnvironmentSpec(
-        profile: base,
+    test('chaque décor a ses propres images', () {
+      final jardin = careEnvironmentSpec(
+        profile: avec(survivalMinC: -15),
         category: SpeciesCategory.tree,
       );
-      expect(spec.environment, CareEnvironmentKind.outdoorPatch);
+      expect(jardin.environment, CareEnvironmentKind.outdoorPatch);
       expect(
-        spec.backdropAsset,
+        jardin.backdropAsset,
         'assets/care_scene/outdoor/light/bright_indirect.webp',
+      );
+
+      final balcon = careEnvironmentSpec(
+        profile: base,
+        category: SpeciesCategory.fruit,
+      );
+      expect(balcon.environment, CareEnvironmentKind.balcony);
+      expect(
+        balcon.backdropAsset,
+        'assets/care_scene/balcony/light/bright_indirect.webp',
+      );
+
+      // L'air à abriter entre par une ouverture propre à chaque décor.
+      expect(
+        balcon.airflowOriginFraction,
+        CareEnvironmentSlots.airflow['balcony'],
+      );
+      expect(
+        jardin.airflowOriginFraction,
+        CareEnvironmentSlots.airflow['outdoor'],
       );
     });
   });

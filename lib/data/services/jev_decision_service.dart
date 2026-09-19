@@ -19,13 +19,20 @@ class JevDecisionException implements Exception {
 /// typées, puis rend leurs probabilités. Le workflow reste entièrement dans
 /// Auxine.
 class JevDecisionService {
-  JevDecisionService({http.Client? client}) : _client = client ?? http.Client();
+  JevDecisionService({http.Client? client})
+      : _client = client ?? http.Client(),
+        _ownsClient = client == null;
 
   final http.Client _client;
+  final bool _ownsClient;
 
+  /// Le budget vient de l'appelant : c'est lui qui sait combien de temps
+  /// l'interface peut attendre, et deux durées pour un même appel finissent
+  /// toujours par diverger.
   Future<Map<String, dynamic>> decide({
     required Object state,
     required Map<String, dynamic> questions,
+    required Duration timeout,
   }) async {
     if (!JevConfig.isConfigured) {
       throw const JevDecisionException('OPENROUTER_API_KEY manquante');
@@ -44,7 +51,10 @@ class JevDecisionService {
             'questions': questions,
           }),
         )
-        .timeout(const Duration(seconds: 30));
+        .timeout(
+          timeout,
+          onTimeout: () => throw const JevDecisionException('délai dépassé'),
+        );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw JevDecisionException(
@@ -57,5 +67,11 @@ class JevDecisionService {
       throw const JevDecisionException('réponse JSON inattendue');
     }
     return decoded;
+  }
+
+  /// Ferme le client que le service a ouvert lui-même. Un client prêté
+  /// appartient à l'appelant, qui le referme quand il en a fini.
+  void close() {
+    if (_ownsClient) _client.close();
   }
 }

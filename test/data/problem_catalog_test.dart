@@ -28,6 +28,26 @@ void main() {
       }
     });
 
+    test('chaque synonyme apporte ce que le titre ne dit pas', () {
+      // Un synonyme déjà trouvable par le titre n'ajoute rien et alourdit la
+      // base : la recherche sans lui doit échouer pour qu'il se justifie.
+      for (final p in catalog.problems) {
+        final sansSynonymes = PlantProblem(
+          id: p.id,
+          kind: p.kind,
+          scope: p.scope,
+          fr: p.fr,
+          en: p.en,
+          it: p.it,
+          de: p.de,
+          hosts: p.hosts,
+        );
+        for (final synonyme in p.aliases) {
+          expect(sansSynonymes.matches(synonyme), isFalse, reason: '${p.id} « $synonyme » se trouve déjà par le titre');
+        }
+      }
+    });
+
     test('la portée générale va de pair avec l\'embranchement entier', () {
       for (final p in catalog.problems) {
         final universel = p.hosts.contains('Tracheophyta');
@@ -154,6 +174,70 @@ void main() {
     });
   });
 
+  group('la recherche de l\'encyclopédie', () {
+    List<String> cherche(String q) => catalog.problems.where((p) => p.matches(q)).map((p) => p.id).toList();
+
+    test('le nom courant trouve l\'entrée que la base nomme autrement', () {
+      expect(cherche('araignée rouge'), contains('060'), reason: 'la base dit « Tétranyques »');
+      expect(cherche('maladie du blanc'), contains('126'), reason: 'la base dit « Oïdiums »');
+      expect(cherche('vers blancs'), contains('083'), reason: 'la base dit « larves de hannetons »');
+      expect(cherche('cul noir'), contains('039'), reason: 'la base dit « nécrose apicale »');
+    });
+
+    test('le singulier trouve le pluriel, et l\'ordre des mots est libre', () {
+      expect(cherche('araignees rouges'), contains('060'));
+      expect(cherche('rouge araignée'), contains('060'));
+      expect(cherche('pourriture racinaire'), containsAll(['172', '173']));
+    });
+
+    test('le trait d\'union et l\'apostrophe ne séparent pas deux mondes', () {
+      expect(cherche('sur-arrosage'), contains('002'));
+      expect(cherche('surarrosage'), contains('002'));
+      expect(cherche('l\'oïdium'), contains('126'));
+      expect(cherche('(CMV)'), contains('191'));
+    });
+
+    test('le mot tapé ouvre un mot de l\'entrée, il ne s\'y cache pas', () {
+      // « rosa » est au milieu d'« ar-rosa-ge » : le manque d'eau n'a rien à
+      // faire dans une recherche sur les rosiers.
+      expect(cherche('rosa'), containsAll(['138', '147']));
+      expect(cherche('rosa'), isNot(contains('001')));
+      expect(cherche('rosa'), isNot(contains('002')));
+    });
+
+    test('un mot long vaut aussi au milieu d\'un autre, pour l\'allemand', () {
+      expect(cherche('milben'), contains('060'), reason: 'Spinnmilben');
+      expect(cherche('fliege'), contains('110'), reason: 'Zwiebelfliege');
+      expect(cherche('mehltau'), contains('126'), reason: 'Echter Mehltau');
+      expect(cherche('arrosage'), contains('002'), reason: 'surarrosage');
+    });
+
+    test('les quatre langues répondent, quelle que soit celle qu\'on lit', () {
+      for (final q in ['tétranyques', 'spider mites', 'ragnetto rosso', 'Spinnmilben']) {
+        expect(cherche(q), contains('060'), reason: q);
+      }
+    });
+
+    test('le numéro et les hôtes restent des entrées de recherche', () {
+      expect(cherche('060'), ['060']);
+      expect(cherche('rosa'), containsAll(['138', '147']));
+    });
+
+    test('sans terme la base entière reste, un mot inconnu ne rend rien', () {
+      expect(cherche(''), hasLength(200));
+      expect(cherche('   '), hasLength(200));
+      expect(cherche('zzzzz'), isEmpty);
+    });
+
+    test('les synonymes ne s\'affichent nulle part', () {
+      final tetranyques = catalog['060']!;
+      expect(tetranyques.aliases, contains('Araignées rouges'));
+      for (final langue in ['fr', 'en', 'it', 'de']) {
+        expect(tetranyques.nameIn(langue).toLowerCase(), isNot(contains('rouge')), reason: langue);
+      }
+    });
+  });
+
   group('une base illisible', () {
     test('les lignes mal formées tombent, le reste tient', () {
       final c = ProblemCatalog.parse([
@@ -162,10 +246,14 @@ void main() {
         '001|ABIOTIQUE|Manque d\'eau|Water deficit|Carenza d\'acqua|Wassermangel|GENERAL|Tracheophyta',
         '002|INCONNU|x|x|x|x|GENERAL|Tracheophyta',
         '003|ABIOTIQUE|x|x|x|x|AILLEURS|Tracheophyta',
+        '004|ABIOTIQUE|x|x|x|x|GENERAL|Tracheophyta|Un autre nom;Encore un',
+        '005|ABIOTIQUE|x|x|x|x|GENERAL|Tracheophyta|un|champ de trop',
         'trois champs|seulement|ici',
         '',
       ].join('\n'));
-      expect(c.problems.map((p) => p.id), ['001']);
+      expect(c.problems.map((p) => p.id), ['001', '004']);
+      expect(c['001']!.aliases, isEmpty, reason: 'le neuvième champ est facultatif');
+      expect(c['004']!.aliases, ['Un autre nom', 'Encore un']);
     });
 
     test('une base absente ne fait rien planter', () {

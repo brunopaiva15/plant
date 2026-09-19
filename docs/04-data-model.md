@@ -304,6 +304,26 @@ l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
 | `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
 | `portee` | `GENERAL` (toutes les plantes vasculaires), `LARGE` (beaucoup d'hôtes, exemples), `CIBLE` (hôtes principaux) |
 | `taxons_hotes_scientifiques` | Hôtes séparés par `;`, à tous les rangs : espèce, genre, famille, ou `Tracheophyta` |
+| `synonymes_recherche` | Facultatif. Les autres noms sous lesquels on cherche l'entrée, séparés par `;`, toutes langues mêlées. Jamais affichés. 171 entrées sur 200 en portent. |
+
+La recherche de l'encyclopédie (`PlantProblem.matches`) porte sur le numéro,
+les quatre noms, les synonymes et les hôtes. Chaque mot tapé doit ouvrir un
+mot de l'entrée : le pluriel ne compte pas, l'ordre des mots non plus, le
+trait d'union et l'apostrophe séparent comme l'espace, et une lettre isolée
+est un article qu'on laisse tomber. Ouvrir un mot, et pas s'y trouver
+n'importe où, sinon « rosa » sortirait le manque d'eau, qui parle
+d'ar-rosa-ge ; à partir de cinq lettres le mot vaut quand même au milieu d'un
+autre, parce que l'allemand soude les siens et que « Milben » doit sortir les
+« Spinnmilben ».
+
+Les quatre langues répondent ensemble, pas seulement celle qui est lue :
+« spider mites » trouve les tétranyques depuis une application en français.
+Un synonyme est un autre **nom** de l'entrée — un nom courant, un nom
+scientifique qui circule, une abréviation —, jamais un symptôme, un
+traitement ni un nom de plante : les hôtes s'en chargent. Un synonyme déjà
+trouvable par le titre n'entre pas, et un test le vérifie. Ils ne s'affichent
+nulle part : la base garde un seul nom par langue, pour que deux analyses de
+la même chose se lisent pareil.
 
 Elle sert de vocabulaire commun au diagnostic. `candidatesFor` réduit la base
 aux pistes qui peuvent concerner une plante — l'universel, plus ce qui vise son

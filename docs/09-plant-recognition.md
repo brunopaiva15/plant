@@ -261,7 +261,8 @@ scripts:
         --dart-define=PLANTNET_API_KEY=$PLANTNET_API_KEY \
         --dart-define=INFOMANIAK_AI_API_KEY=$INFOMANIAK_AI_API_KEY \
         --dart-define=INFOMANIAK_AI_PRODUCT_ID=$INFOMANIAK_AI_PRODUCT_ID \
-        --dart-define=INFOMANIAK_AI_MODEL=$INFOMANIAK_AI_MODEL
+        --dart-define=INFOMANIAK_AI_MODEL=$INFOMANIAK_AI_MODEL \
+        --dart-define=OPENROUTER_API_KEY=$OPENROUTER_API_KEY
 ```
 
 Toutes les variables de build de l'application, à mettre dans le même
@@ -273,6 +274,7 @@ groupe :
 | `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » (jeton d'API Infomaniak, portée AI Services) | diagnostic absent |
 | `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
 | `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
+| `OPENROUTER_API_KEY` | couche de décision Jev sur les scans qu'Iris juge ambigus (docs/16) | politique Iris locale seule |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
 | `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
 

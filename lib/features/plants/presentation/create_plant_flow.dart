@@ -11,6 +11,7 @@ import '../../../app/router.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../data/services/jev_identification_policy.dart';
@@ -403,6 +404,30 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       ));
     }
     return ref.read(jevIdentificationPolicyProvider).evaluate(
+          policy: identifier.policy,
+          candidates: results,
+          photos: _identificationPaths.length,
+          maxPhotos: maxIdentificationPhotos,
+          online: ref.read(isOnlineProvider),
+        );
+  }
+
+  /// Ce que la personne a fait de la décision affichée. Les deux gestes
+  /// qui contredisent Jev sont les seuls qui disent quelque chose de la
+  /// qualité de son arbitrage.
+  void _noteJevChoice(JevProductAction? after) =>
+      ref.read(jevIdentificationPolicyProvider).noteCandidateChosen(after);
+
+  void _noteJevOnlineSearch(JevProductAction? after) =>
+      ref.read(jevIdentificationPolicyProvider).noteOnlineSearch(after);
+
+  /// La conclusion d'Iris seule, rendue sans attendre le réseau : c'est
+  /// l'état montré tant que Jev n'a pas répondu.
+  JevPipelineEvaluation? _localIdentificationEvaluation(
+      List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier) return null;
+    return ref.read(jevIdentificationPolicyProvider).localEvaluation(
           policy: identifier.policy,
           candidates: results,
           photos: _identificationPaths.length,
@@ -905,6 +930,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _chooseIdentificationSource : null,
               onRemovePhoto: _removeIdentificationPhoto,
               evaluation: _identificationEvaluation,
+              localEvaluation: _localIdentificationEvaluation,
+              onChoiceMade: _noteJevChoice,
+              onOnlineSearchAsked: _noteJevOnlineSearch,
               genus: _identificationGenus,
               selectedScientificName: _chosen?.scientificName,
             ),
@@ -1035,6 +1063,9 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onAddPhoto,
     this.onRemovePhoto,
     this.evaluation,
+    this.localEvaluation,
+    this.onChoiceMade,
+    this.onOnlineSearchAsked,
     this.genus,
     this.selectedScientificName,
   });
@@ -1059,6 +1090,16 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Décision produit finale pour la liste locale courante.
   final Future<JevPipelineEvaluation> Function(List<IdentificationCandidate>)?
       evaluation;
+
+  /// La même décision, telle qu'Iris seule la rend : affichée pendant que
+  /// l'arbitrage distant se fait attendre.
+  final JevPipelineEvaluation? Function(List<IdentificationCandidate>)?
+      localEvaluation;
+
+  /// Les deux gestes qui peuvent contredire la décision Jev affichée, pour
+  /// les compteurs : retenir une candidate, et chercher en ligne.
+  final ValueChanged<JevProductAction?>? onChoiceMade;
+  final ValueChanged<JevProductAction?>? onOnlineSearchAsked;
 
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
@@ -1097,13 +1138,19 @@ class _IdentificationSuggestions extends StatelessWidget {
         final hasSecondPhoto = paths.length > 1;
 
         Widget normalContent(JevPipelineEvaluation? state) {
+          final action = state?.decision?.action;
+          void pick(IdentificationCandidate c) {
+            onChoiceMade?.call(action);
+            onPick(c);
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (genre != null) ...[
                 GenusRow(
                   answer: genre,
-                  onUse: () => onPick(genusCandidate(genre, l10n.localeName)),
+                  onUse: () => pick(genusCandidate(genre, l10n.localeName)),
                 ),
                 const SizedBox(height: Space.xs),
               ],
@@ -1113,7 +1160,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                     CandidateRow(
                       candidate: c,
                       selected: c.scientificName == selectedScientificName,
-                      onUse: () => onPick(c),
+                      onUse: () => pick(c),
                     ),
                 ],
               ),
@@ -1138,7 +1185,10 @@ class _IdentificationSuggestions extends StatelessWidget {
                   label: l10n.searchOnline,
                   style: FloraButtonStyle.ghost,
                   size: FloraButtonSize.small,
-                  onPressed: onSearchOnline,
+                  onPressed: () {
+                    onOnlineSearchAsked?.call(action);
+                    onSearchOnline!();
+                  },
                 ),
               ],
             ],
@@ -1146,6 +1196,12 @@ class _IdentificationSuggestions extends StatelessWidget {
         }
 
         Widget uncertainContent() {
+          const after = JevProductAction.keepUncertain;
+          void pick(IdentificationCandidate c) {
+            onChoiceMade?.call(after);
+            onPick(c);
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1154,7 +1210,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                 const SizedBox(height: Space.sm),
                 GenusRow(
                   answer: genre,
-                  onUse: () => onPick(genusCandidate(genre, l10n.localeName)),
+                  onUse: () => pick(genusCandidate(genre, l10n.localeName)),
                 ),
               ],
               if (onSearchOnline != null) ...[
@@ -1162,7 +1218,10 @@ class _IdentificationSuggestions extends StatelessWidget {
                 FloraButton(
                   label: l10n.searchOnline,
                   expand: true,
-                  onPressed: onSearchOnline,
+                  onPressed: () {
+                    onOnlineSearchAsked?.call(after);
+                    onSearchOnline!();
+                  },
                 ),
               ],
               const SizedBox(height: Space.md),
@@ -1180,7 +1239,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                     CandidateRow(
                       candidate: c,
                       selected: c.scientificName == selectedScientificName,
-                      onUse: () => onPick(c),
+                      onUse: () => pick(c),
                     ),
                 ],
               ),
@@ -1215,6 +1274,7 @@ class _IdentificationSuggestions extends StatelessWidget {
               else
                 FutureBuilder<JevPipelineEvaluation>(
                   future: evaluationFuture,
+                  initialData: localEvaluation?.call(all),
                   builder: (context, decisionSnap) {
                     final state = decisionSnap.data;
                     return state?.keepsUncertain == true

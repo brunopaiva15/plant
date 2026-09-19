@@ -2,8 +2,14 @@ import '../../../domain/care/care_profile.dart';
 import '../../../domain/species/species_info.dart';
 import 'care_environment_slots.dart';
 
-/// Le décor de la scène d'environnement idéal : une pièce, ou un coin dehors.
-enum CareEnvironmentKind { indoorRoom, outdoorPatch }
+/// Le décor de la scène d'environnement idéal : une pièce, un balcon, ou un
+/// coin de jardin.
+///
+/// Les trois disent la même chose de l'espèce, à un cran près : elle vit
+/// dedans, elle vit dehors mais en pot, ou elle vit dehors en pleine terre.
+/// Ce n'est pas une préférence de décor, c'est ce que la fiche sait de sa
+/// rusticité — et c'est [environmentFor] qui en décide, nulle part ailleurs.
+enum CareEnvironmentKind { indoorRoom, balcony, outdoorPatch }
 
 /// Le support visuel de la plante dans le diorama.
 ///
@@ -99,6 +105,8 @@ class CareEnvironmentVisualSpec {
   String get backdropAsset => switch (environment) {
     CareEnvironmentKind.indoorRoom =>
       'assets/care_scene/indoor/light/${_lightFile(light)}.webp',
+    CareEnvironmentKind.balcony =>
+      'assets/care_scene/balcony/light/${_lightFile(light)}.webp',
     CareEnvironmentKind.outdoorPatch =>
       'assets/care_scene/outdoor/light/${_lightFile(light)}.webp',
   };
@@ -166,12 +174,14 @@ class CareEnvironmentVisualSpec {
       CareEnvironmentSlots.humidifierTop[slot.name]!;
 
   /// D'où souffle l'air à abriter : la fenêtre dans la pièce, l'ouverture
-  /// au-dessus de la haie dehors. Un courant d'air vient d'une ouverture,
-  /// jamais d'une machine.
+  /// au-dessus de la haie dehors, le vide par-dessus le garde-corps sur un
+  /// balcon. Un courant d'air vient d'une ouverture, jamais d'une machine.
   (double, double) get airflowOriginFraction =>
-      CareEnvironmentSlots.airflow[environment == CareEnvironmentKind.indoorRoom
-          ? 'indoor'
-          : 'outdoor']!;
+      CareEnvironmentSlots.airflow[switch (environment) {
+        CareEnvironmentKind.indoorRoom => 'indoor',
+        CareEnvironmentKind.balcony => 'balcony',
+        CareEnvironmentKind.outdoorPatch => 'outdoor',
+      }]!;
 
   /// L'air qui bouge ne se dessine que quand il dit quelque chose : à
   /// abriter ou bien ventilé. `normal` n'a pas d'emphase, `null` n'a rien.
@@ -242,27 +252,52 @@ CarePlantSlot slotFor(LightNeed light) => switch (light) {
   LightNeed.fullSun => CarePlantSlot.sunZone,
 };
 
-/// Pièce ou dehors, décidé ici et nulle part ailleurs.
+/// Pièce, balcon ou jardin, décidé ici et nulle part ailleurs.
 ///
-/// La catégorie d'usage donne le premier mot ; la rusticité départage les
-/// cas ambigus — une aromatique ou une fleur annuelle qui gèle vit en pot
-/// dedans, une vivace rustique a sa place dehors. Sans catégorie (catalogue
-/// étendu), la pièce est le repli : les plantes de l'app sont d'abord des
-/// plantes d'intérieur.
+/// La catégorie d'usage donne le premier mot, la rusticité le second. Les
+/// deux notions existaient déjà dans la fiche, avec exactement ce sens :
+/// [CareProfile.frostHardy] dit qu'elle tient le gel, *donc qu'elle vit
+/// dehors en pleine terre* ; [CareProfile.outdoorFriendly] qu'elle passe la
+/// belle saison dehors sans pour autant la passer en terre. Entre les deux
+/// il y a le balcon : dehors, mais en pot, et qui rentre l'hiver.
+///
+/// Ce que le balcon corrige : un citronnier — `fruit`, non rustique —
+/// était planté dans une pelouse, et une aromatique gélive était envoyée
+/// dans le salon alors que sa place est dehors en pot.
+///
+/// Rien n'est inventé : sans `outdoorFriendly`, une plante gélive dont la
+/// fiche ne dit pas qu'elle sort reste dans la pièce.
+///
+/// Les succulentes suivent la même règle. Elle n'a pu être activée qu'après
+/// correction de leurs fiches : quinze d'entre elles héritaient d'un profil
+/// de genre ou de famille taillé pour leurs cousines de jardin et se
+/// déclaraient rustiques — une *Euphorbia obesa* annonçait −10 °C. La règle
+/// les aurait plantées dans une pelouse.
+///
+/// Sans catégorie (catalogue étendu), la pièce est le repli : les plantes de
+/// l'app sont d'abord des plantes d'intérieur.
 CareEnvironmentKind environmentFor(
   CareProfile profile,
   SpeciesCategory? category,
 ) => switch (category) {
+  // Ce qui vit dehors de toute façon : la rusticité dit seulement si c'est
+  // en pleine terre ou en pot. Un arbre ne finit jamais dans un salon.
   SpeciesCategory.tree ||
   SpeciesCategory.fruit ||
-  SpeciesCategory.vegetable => CareEnvironmentKind.outdoorPatch,
-  SpeciesCategory.herb || SpeciesCategory.flower =>
-    profile.frostHardy
-        ? CareEnvironmentKind.outdoorPatch
-        : CareEnvironmentKind.indoorRoom,
-  SpeciesCategory.indoor ||
-  SpeciesCategory.succulent ||
-  null => CareEnvironmentKind.indoorRoom,
+  SpeciesCategory.vegetable => profile.frostHardy
+      ? CareEnvironmentKind.outdoorPatch
+      : CareEnvironmentKind.balcony,
+  // Ce qui peut aller dans les deux sens. Les succulentes en sont : un
+  // sempervivum passe l'hiver sur un toit, une echeveria passe l'été
+  // dehors en pot, une euphorbe de collection ne sort pas.
+  SpeciesCategory.herb ||
+  SpeciesCategory.flower ||
+  SpeciesCategory.succulent => profile.frostHardy
+      ? CareEnvironmentKind.outdoorPatch
+      : profile.outdoorFriendly
+      ? CareEnvironmentKind.balcony
+      : CareEnvironmentKind.indoorRoom,
+  SpeciesCategory.indoor || null => CareEnvironmentKind.indoorRoom,
 };
 
 /// Espèces d'intérieur dont le gabarit adulte est sans ambiguïté celui d'une
@@ -302,7 +337,9 @@ CarePlantSupport resolvePlantSupport({
   String? family,
   required PlantVisualKind plant,
 }) {
-  if (environment == CareEnvironmentKind.outdoorPatch) {
+  // Le guéridon est un meuble de salon : dehors comme au balcon, un pot se
+  // pose par terre.
+  if (environment != CareEnvironmentKind.indoorRoom) {
     return CarePlantSupport.floor;
   }
 
