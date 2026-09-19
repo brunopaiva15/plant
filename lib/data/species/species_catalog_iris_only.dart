@@ -69,15 +69,19 @@ abstract final class SpeciesCatalogIrisOnly {
     SpeciesCatalogEntry('Westringia fruticosa', 'Lamiaceae', SpeciesCategory.tree, fr: 'Romarin d\'Australie', en: 'Coastal rosemary', de: 'Australischer Rosmarin'),
     SpeciesCatalogEntry('Yucca gloriosa', 'Asparagaceae', SpeciesCategory.tree, fr: 'Yucca superbe', en: 'Spanish dagger', de: 'Palmlilie'),
 
-    // Ajoutées à la livraison d'Iris Indoor : six classes de la collecte du
+    // Ajoutées à la livraison d'Iris Indoor : cinq classes de la collecte du
     // 17 septembre qu'aucun des deux catalogues ne nommait, et dont la fiche
-    // s'ouvrait donc sans famille. Trois portent un nom accepté récent que le
+    // s'ouvrait donc sans famille. Deux portent un nom accepté récent que le
     // catalogue étendu connaît encore sous l'ancien.
+    //
+    // *Sedum rubrotinctum* n'en fait pas partie, bien qu'elle en ait l'air :
+    // la table des noms acceptés la renvoie déjà sur *Sedum × rubrotinctum*,
+    // qui a sa fiche. Lui en écrire une seconde, c'était deux entrées pour
+    // une plante — le défaut du § 12.14.
     SpeciesCatalogEntry('Callianthe picta', 'Malvaceae', SpeciesCategory.indoor, fr: 'Abutilon panaché', en: 'Redvein abutilon', de: 'Schönmalve'),
     SpeciesCatalogEntry('Coleus australis', 'Lamiaceae', SpeciesCategory.indoor, fr: 'Lierre suédois', en: 'Swedish ivy', de: 'Schwedischer Efeu', it: 'Edera svedese'),
     SpeciesCatalogEntry('Euphorbia tithymaloides', 'Euphorbiaceae', SpeciesCategory.succulent, fr: 'Plante chaussure', en: 'Devil\'s backbone', de: 'Schuhblume'),
     SpeciesCatalogEntry('Kohleria hirsuta', 'Gesneriaceae', SpeciesCategory.indoor, fr: 'Kohleria', en: 'Hairy kohleria', de: 'Kohlerie', it: 'Kohleria'),
-    SpeciesCatalogEntry('Sedum rubrotinctum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Orpin rougissant', en: 'Jelly bean plant', de: 'Rote Fetthenne'),
     SpeciesCatalogEntry('Streptocarpus ionanthus', 'Gesneriaceae', SpeciesCategory.indoor, fr: 'Violette africaine', en: 'African violet', de: 'Usambaraveilchen', it: 'Violetta africana'),
   ];
 }
