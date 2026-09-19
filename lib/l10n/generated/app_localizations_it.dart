@@ -5876,6 +5876,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ospiti principali di un gruppo mirato; l\'elenco non è esaustivo.';
 
   @override
+  String get problemOtherNames => 'Altri nomi';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Nomi comuni e scientifici che indicano la stessa cosa.';
+
+  @override
   String get problemHosts => 'Ospiti';
 
   @override

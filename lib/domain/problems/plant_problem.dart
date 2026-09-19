@@ -78,9 +78,10 @@ class PlantProblem {
   /// (« araignée rouge » pour les tétranyques), et le nom scientifique du
   /// genre quand il est plus connu que le nom français (« Botrytis »).
   ///
-  /// Ils ne s'affichent jamais : la base garde un seul nom par langue, pour
-  /// que deux analyses de la même chose se lisent pareil. Ils ne servent
-  /// qu'à retrouver l'entrée.
+  /// Ils servent à retrouver l'entrée, et la fiche du problème les donne
+  /// sous le titre. Ils ne remplacent jamais ce titre : la base garde un
+  /// seul nom par langue, pour que deux analyses de la même chose se lisent
+  /// pareil.
   final List<String> aliases;
 
   String nameIn(String languageCode) => switch (languageCode) {

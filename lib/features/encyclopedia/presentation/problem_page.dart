@@ -16,9 +16,9 @@ import '../../problems/presentation/problem_kind_icon.dart';
 
 /// La page d'un des deux cents problèmes de la base.
 ///
-/// Elle ne dit que ce que la base contient — un nom, une famille, une
-/// étendue, des hôtes — et rien de ce qu'un modèle pourrait inventer par
-/// dessus : le diagnostic, lui, a une photo sous les yeux ; ici on lit une
+/// Elle ne dit que ce que la base contient — un nom, les autres noms de la
+/// même chose, une famille, une étendue, des hôtes — et rien de ce qu'un
+/// modèle pourrait inventer par dessus : le diagnostic, lui, a une photo sous les yeux ; ici on lit une
 /// fiche, et une fiche qui broderait ne serait plus une fiche.
 class ProblemPage extends ConsumerWidget {
   const ProblemPage({super.key, required this.problemId});
@@ -57,6 +57,7 @@ class ProblemPage extends ConsumerWidget {
             footer: l10n.problemScopeNote(problem.scope),
             children: [_row(l10n.problemScope, l10n.problemScopeName(problem.scope))],
           ),
+          _OtherNames(problem: problem),
           _Hosts(problem: problem),
           _InGarden(problem: problem),
         ],
@@ -135,6 +136,46 @@ class _Header extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Les autres noms sous lesquels la base connaît l'entrée.
+///
+/// Le titre n'en garde qu'un par langue, pour que deux analyses de la même
+/// chose se lisent pareil ; les autres se lisent ici, où une fiche de
+/// référence doit les donner — c'est « araignée rouge » qu'on a en tête, pas
+/// « tétranyque ».
+///
+/// Toutes langues mêlées, comme la base les range : un nom scientifique ne
+/// vaut pour aucune en particulier, et un nom courant d'ailleurs reste un
+/// nom de la même chose.
+///
+/// Absente des vingt-neuf entrées dont le titre porte déjà le mot qu'on
+/// chercherait.
+class _OtherNames extends StatelessWidget {
+  const _OtherNames({required this.problem});
+
+  final PlantProblem problem;
+
+  @override
+  Widget build(BuildContext context) {
+    if (problem.aliases.isEmpty) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: Space.lg),
+        Text(l10n.problemOtherNames, style: context.text.title3),
+        const SizedBox(height: Space.sm),
+        FloraGroup(
+          footer: l10n.problemOtherNamesNote,
+          children: [
+            for (final name in problem.aliases)
+              FloraListRow(title: name, titleMaxLines: 2, dense: true, chevron: false),
+          ],
+        ),
+      ],
     );
   }
 }
