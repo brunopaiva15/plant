@@ -120,7 +120,15 @@ l'autre.
 
 Tous deux restent en retrait — la plante est le sujet. La pièce est
 habitée : plinthes, tapis, cadres au mur, console et ses livres,
-lampadaire, pouf, un coin salon. Le jardin dit « dehors » sans devenir un
+lampadaire dans l'angle, pouf, une pile de livres posée au sol contre le
+fauteuil, un coin salon.
+
+Le décor n'a pas vocation à se remplir : un bac en bois a été retiré du coin
+salon parce qu'on ne savait pas ce qu'il faisait là et qu'il pouvait se lire
+comme un pot sans plante. Ce qui l'a remplacé — la pile de livres — est
+rectangulaire et bas, là où la table basse, le guéridon et le pouf sont
+ronds, et il répète le motif des livres de la console : les deux côtés de la
+pièce se répondent. Le jardin dit « dehors » sans devenir un
 jardin botanique : pelouse sauge, massif de pleine terre là où la plante se
 pose, allée de gravier et pas japonais, palissade bordée de touffes
 fleuries, haie basse, un petit arbre, un arrosoir.

@@ -1,7 +1,8 @@
 # ============================================================
 # La piece du diorama : une dalle, deux murs, une fenetre a gauche, un
 # voilage, un coin salon et son decor — plinthes, tapis, cadres, console,
-# lampadaire, pouf. Assez pour lire « une piece habitee », assez sobre
+# lampadaire, pouf, une pile de livres. Assez pour lire « une piece
+# habitee », assez sobre
 # pour que la plante reste le sujet. Le gueridon n'est pas bake ici : c'est
 # un prop (props.py), pose par l'application sur l'emplacement lumineux.
 #
@@ -25,7 +26,7 @@
 # ============================================================
 import bpy
 from mathutils import Vector
-from math import sin, pi
+from math import cos, radians, sin, pi
 import os, sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -265,6 +266,55 @@ def _pouf(m):
     pouf.location = (1.60, -1.45, 0.0)
 
 
+def _boite_tournee(nom, centre, taille, angle, mat, biseau=0.010):
+    """Une boite posee a plat, pivotee autour de son axe vertical.
+
+    `boite` ne sait pas tourner : ses sommets sont en coordonnees du monde
+    et l'objet reste a l'origine, si bien qu'un `rotation_euler` l'enverrait
+    a l'autre bout de la piece. On tourne donc les sommets.
+    """
+    cx, cy, cz = centre
+    sx, sy, sz = taille
+    ca, sa = cos(angle), sin(angle)
+    verts = []
+    for dz in (-sz / 2.0, sz / 2.0):
+        for (ux, uy) in ((-sx / 2, -sy / 2), (sx / 2, -sy / 2),
+                         (sx / 2, sy / 2), (-sx / 2, sy / 2)):
+            verts.append((cx + ux * ca - uy * sa, cy + ux * sa + uy * ca, cz + dz))
+    faces = [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4),
+             (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    return maille(nom, verts, faces, mat, biseau=biseau)
+
+
+def _livres_au_sol(m):
+    """Une pile de livres posee au sol contre le fauteuil.
+
+    Elle remplace le bac en bois, dont on ne savait pas ce qu'il faisait la
+    et qui pouvait se lire comme un pot sans plante. Une forme basse et
+    rectangulaire tranche avec tous les ronds de la piece — la table basse,
+    le gueridon, le pouf — et repete le motif des livres de la console : les
+    deux cotes de la piece se repondent.
+
+    Les volumes se decalent et pivotent d'un peu : une pile parfaitement
+    alignee se lit comme un bloc, pas comme des livres.
+    """
+    x, y = -1.66, -0.38
+    pile = [
+        (0.40, 0.29, 0.072, 7.0, "livre_b"),
+        (0.37, 0.27, 0.064, -11.0, "livre_a"),
+        (0.39, 0.28, 0.058, 4.0, "livre_c"),
+        (0.34, 0.25, 0.052, -6.0, "livre_b"),
+        (0.30, 0.22, 0.046, 12.0, "livre_a"),
+    ]
+    z = 0.0
+    for i, (lx, ly, h, rot, mat) in enumerate(pile):
+        z += h / 2.0
+        _boite_tournee("Livre_Sol_%d" % i,
+                       (x + 0.012 * i, y - 0.009 * i, z),
+                       (lx, ly, h), radians(rot), m[mat])
+        z += h / 2.0
+
+
 def _decor(m):
     _plinthes(m)
     _tapis(m)
@@ -272,6 +322,7 @@ def _decor(m):
     _console(m)
     _lampadaire(m)
     _pouf(m)
+    _livres_au_sol(m)
 
 
 def _faisceau(force):
