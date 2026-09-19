@@ -11,7 +11,7 @@
 # Six noms conserves sous leur nom scientifique, sans correspondance GBIF automatique definitive: Allium porrum;Cedrus;Goeppertia;Hosta;Prunus dulcis;Schlumbergera.
 # Synonymes pour la recherche: Pisum sativum -> Lathyrus oleraceus; Eriobotrya japonica -> Rhaphiolepis bibas.
 # Dernier champ, facultatif: les autres noms sous lesquels on cherche l'entree, toutes langues melees.
-# Ils ne s'affichent jamais; le nom montre reste celui des quatre colonnes de noms.
+# La fiche du probleme les affiche sous le titre; le titre, lui, reste celui des quatre colonnes de noms.
 # Un synonyme est un autre NOM de l'entree: nom courant, nom scientifique qui circule, abreviation.
 # Jamais un symptome, un traitement ni un nom de plante: les taxons hotes s'en chargent deja.
 # Un synonyme que le titre permet deja de trouver n'entre pas; un test le verifie.

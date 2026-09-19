@@ -5849,6 +5849,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Main hosts within a target group; the list is not exhaustive.';
 
   @override
+  String get problemOtherNames => 'Other names';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Common and scientific names for the same thing.';
+
+  @override
   String get problemHosts => 'Hosts';
 
   @override

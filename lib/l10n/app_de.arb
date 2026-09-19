@@ -1875,6 +1875,8 @@
   "problemScopeGeneralNote": "Möglich bei Gefäßpflanzen, je nach Bedingungen und Entwicklungsstadium.",
   "problemScopeWideNote": "Viele Wirte; die genannten Taxa sind Beispiele.",
   "problemScopeTargetNote": "Hauptwirte einer Zielgruppe; die Liste ist nicht vollständig.",
+  "problemOtherNames": "Weitere Namen",
+  "problemOtherNamesNote": "Gebräuchliche und wissenschaftliche Namen für dieselbe Sache.",
   "problemHosts": "Wirte",
   "problemHostsAll": "Alle Gefäßpflanzen",
   "problemHostsNote": "Eine Gattung oder Familie macht nicht alle ihre Arten anfällig.",

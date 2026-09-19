@@ -1882,6 +1882,8 @@
   "problemScopeGeneralNote": "Possible on vascular plants, depending on conditions and growth stage.",
   "problemScopeWideNote": "Many hosts; the taxa listed are examples.",
   "problemScopeTargetNote": "Main hosts within a target group; the list is not exhaustive.",
+  "problemOtherNames": "Other names",
+  "problemOtherNamesNote": "Common and scientific names for the same thing.",
   "problemHosts": "Hosts",
   "problemHostsAll": "All vascular plants",
   "problemHostsNote": "A genus or a family does not make all of its species susceptible.",
