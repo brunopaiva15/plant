@@ -540,6 +540,7 @@ class _SpeciesSheet extends ConsumerWidget {
           CareGuideBody(
             care: care,
             speciesName: scientificName,
+            family: family ?? speciesFamilyLookup(ref)(scientificName),
             category: SpeciesCatalog.findAccepted(scientificName)?.category,
             paper: false,
           ),

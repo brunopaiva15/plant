@@ -8,15 +8,16 @@ Ce document répond à une question différente de [`14-sourcer-les-fiches.md`](
 
 La mesure de référence est `test/data/care_coverage_snapshot.json` :
 
-- **33 343 fiches espèce** dans l'encyclopédie ;
+- **33 325 fiches espèce** dans l'encyclopédie ;
 - **671 profils d'entretien réellement utilisés** ;
 - **280 profils espèce** ;
 - **215 profils genre** ;
 - **176 profils famille** ;
-- résolution actuelle des 33 343 fiches : **278 espèce**, **6 983 genre**, **26 081 famille**, **1 générique**.
+- résolution actuelle des 33 325 fiches : **289 espèce**, **6 972 genre**, **26 064 famille**.
 
-La fiche générique est *Callianthe picta*, une classe du modèle sans famille
-au catalogue étendu : ni son genre ni sa famille ne répondent pour elle.
+Plus aucune fiche ne tombe sur le profil générique : *Callianthe picta*, la
+dernière, a reçu sa famille. Les trois niveaux de l'instantané sont donc
+l'espèce, le genre et la famille.
 
 Le lot des 242 fiches espèce d'Iris Indoor a été écrit par
 `tools/rhs_care/extract_indoor.py` ; la méthode est décrite en phase 10 de

@@ -274,8 +274,14 @@ CarePlantSlot slotFor(LightNeed light) => switch (light) {
 /// déclaraient rustiques — une *Euphorbia obesa* annonçait −10 °C. La règle
 /// les aurait plantées dans une pelouse.
 ///
-/// Sans catégorie (catalogue étendu), la pièce est le repli : les plantes de
-/// l'app sont d'abord des plantes d'intérieur.
+/// Sans catégorie — le catalogue étendu n'en porte pas, et une fiche
+/// complétée par l'IA non plus — la fiche reste seule à parler : la même
+/// lecture de rusticité s'applique alors, plutôt qu'un repli qui la
+/// contredit. C'est ce repli qui posait un *Pinus parviflora*, rustique à
+/// −15 °C, dans un salon : l'espèce manque aux deux catalogues, donc sa
+/// catégorie aussi, alors que son profil disait déjà qu'elle vit dehors.
+/// Faute des deux indices, la pièce reste le repli : les plantes de l'app
+/// sont d'abord des plantes d'intérieur.
 CareEnvironmentKind environmentFor(
   CareProfile profile,
   SpeciesCategory? category,
@@ -287,17 +293,19 @@ CareEnvironmentKind environmentFor(
   SpeciesCategory.vegetable => profile.frostHardy
       ? CareEnvironmentKind.outdoorPatch
       : CareEnvironmentKind.balcony,
+  SpeciesCategory.indoor => CareEnvironmentKind.indoorRoom,
   // Ce qui peut aller dans les deux sens. Les succulentes en sont : un
   // sempervivum passe l'hiver sur un toit, une echeveria passe l'été
-  // dehors en pot, une euphorbe de collection ne sort pas.
+  // dehors en pot, une euphorbe de collection ne sort pas. L'espèce sans
+  // catégorie suit la même règle : sa fiche est tout ce qu'on a.
   SpeciesCategory.herb ||
   SpeciesCategory.flower ||
-  SpeciesCategory.succulent => profile.frostHardy
+  SpeciesCategory.succulent ||
+  null => profile.frostHardy
       ? CareEnvironmentKind.outdoorPatch
       : profile.outdoorFriendly
       ? CareEnvironmentKind.balcony
       : CareEnvironmentKind.indoorRoom,
-  SpeciesCategory.indoor || null => CareEnvironmentKind.indoorRoom,
 };
 
 /// Espèces d'intérieur dont le gabarit adulte est sans ambiguïté celui d'une
@@ -395,6 +403,24 @@ const _silhouettesParGenre = <String, PlantVisualKind>{
   'dendrobium': PlantVisualKind.orchid,
   'cymbidium': PlantVisualKind.orchid,
   'oncidium': PlantVisualKind.orchid,
+  // Les conifères par le genre, et pas seulement par la famille : une
+  // espèce absente des deux catalogues n'a pas de famille à donner, et
+  // c'est par là que le pin blanc du Japon se retrouvait en feuille large.
+  // Le port est un trait de genre chez tous ceux-ci.
+  'pinus': PlantVisualKind.conifer,
+  'picea': PlantVisualKind.conifer,
+  'abies': PlantVisualKind.conifer,
+  'cedrus': PlantVisualKind.conifer,
+  'larix': PlantVisualKind.conifer,
+  'tsuga': PlantVisualKind.conifer,
+  'pseudotsuga': PlantVisualKind.conifer,
+  'juniperus': PlantVisualKind.conifer,
+  'thuja': PlantVisualKind.conifer,
+  'chamaecyparis': PlantVisualKind.conifer,
+  'cupressus': PlantVisualKind.conifer,
+  'cryptomeria': PlantVisualKind.conifer,
+  'taxus': PlantVisualKind.conifer,
+  'araucaria': PlantVisualKind.conifer,
 };
 
 /// Les familles dont la forme est un trait de famille : un cactus est un
@@ -404,6 +430,9 @@ const _silhouettesParGenre = <String, PlantVisualKind>{
 const _silhouettesParFamille = <String, PlantVisualKind>{
   'Cactaceae': PlantVisualKind.cactus,
   'Pinaceae': PlantVisualKind.conifer,
+  'Cupressaceae': PlantVisualKind.conifer,
+  'Taxaceae': PlantVisualKind.conifer,
+  'Araucariaceae': PlantVisualKind.conifer,
   'Arecaceae': PlantVisualKind.uprightLeaf,
 };
 
