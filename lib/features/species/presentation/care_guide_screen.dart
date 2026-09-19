@@ -65,6 +65,7 @@ class CareGuideScreen extends ConsumerWidget {
             care: care,
             plantName: plant?.name,
             speciesName: plant?.speciesName,
+            family: family,
             location: location,
             plantLight: plant?.light,
             category: plant?.speciesName == null ? null : SpeciesCatalog.findAccepted(plant!.speciesName!)?.category,
@@ -98,6 +99,7 @@ class CareGuideBody extends ConsumerWidget {
     required this.care,
     this.plantName,
     this.speciesName,
+    this.family,
     this.location,
     this.header,
     this.plantLight,
@@ -112,6 +114,11 @@ class CareGuideBody extends ConsumerWidget {
   /// Nom scientifique, quand il est connu : c'est par lui que la base des
   /// problèmes retrouve ce qui touche cette plante.
   final String? speciesName;
+
+  /// Famille botanique, quand elle est connue : c'est par elle que la scène
+  /// d'environnement retrouve une silhouette de conifère ou de palmier.
+  final String? family;
+
   final Location? location;
   final Widget? header;
 
@@ -164,7 +171,7 @@ class CareGuideBody extends ConsumerWidget {
         // détail des besoins. La scène montre l'idéal de la fiche, jamais
         // l'état réel de la pièce — c'est HomeClimateFitCard qui compare.
         if (showEnvironmentHero)
-          CareEnvironmentHero(profile: p, speciesName: speciesName, category: category),
+          CareEnvironmentHero(profile: p, speciesName: speciesName, family: family, category: category),
 
         SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 

@@ -374,7 +374,20 @@ void main() {
       );
     });
 
-    test('sans catégorie, la pièce est le repli', () {
+    test('sans catégorie, la fiche décide, et la pièce est le repli', () {
+      // Une espèce absente des deux catalogues n'a pas de catégorie. Sa
+      // fiche, elle, en a une : un *Pinus parviflora* rustique à −15 °C
+      // était planté dans un salon parce que le repli passait avant elle.
+      expect(
+        environmentFor(avec(damageBelowC: -15, outdoorFriendly: true), null),
+        CareEnvironmentKind.outdoorPatch,
+      );
+      expect(
+        environmentFor(avec(outdoorFriendly: true), null),
+        CareEnvironmentKind.balcony,
+      );
+      // Rien n'est inventé : une fiche qui ne dit ni l'un ni l'autre reste
+      // dans la pièce.
       expect(environmentFor(base, null), CareEnvironmentKind.indoorRoom);
     });
 
@@ -463,6 +476,44 @@ void main() {
         resolvePlantVisual(speciesName: 'Picea abies', family: 'Pinaceae'),
         PlantVisualKind.conifer,
       );
+    });
+
+    test('le genre suffit quand la famille manque', () {
+      // Le catalogue étendu ignore le pin blanc du Japon : sans famille,
+      // la silhouette tombait sur la feuille large.
+      expect(
+        resolvePlantVisual(speciesName: 'Pinus parviflora'),
+        PlantVisualKind.conifer,
+      );
+      for (final nom in [
+        'Juniperus chinensis',
+        'Thuja occidentalis',
+        'Chamaecyparis obtusa',
+        'Cryptomeria japonica',
+        'Taxus baccata',
+        'Araucaria heterophylla',
+      ]) {
+        expect(
+          resolvePlantVisual(speciesName: nom),
+          PlantVisualKind.conifer,
+          reason: nom,
+        );
+      }
+    });
+
+    test('les familles de conifères en sont aussi', () {
+      for (final famille in [
+        'Pinaceae',
+        'Cupressaceae',
+        'Taxaceae',
+        'Araucariaceae',
+      ]) {
+        expect(
+          resolvePlantVisual(family: famille),
+          PlantVisualKind.conifer,
+          reason: famille,
+        );
+      }
     });
 
     test('les fougères d\'appartement sont des fougères', () {

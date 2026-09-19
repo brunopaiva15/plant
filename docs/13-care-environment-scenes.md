@@ -142,7 +142,7 @@ Entre les deux, il y a le balcon. La règle est centralisée dans
 | `herb`, `flower` | jardin si rustique ; **balcon** si `outdoorFriendly` ; pièce sinon |
 | `succulent` | même règle que les aromatiques |
 | `indoor` | pièce |
-| pas de catégorie | pièce (repli) |
+| pas de catégorie | même règle que les aromatiques : jardin si rustique, **balcon** si `outdoorFriendly`, pièce sinon |
 
 Ce que le balcon corrige : un citronnier — `fruit`, non rustique — était
 planté dans une pelouse, et une aromatique gélive était envoyée dans le
@@ -151,6 +151,15 @@ déplace une soixantaine d'espèces, surtout des fruitiers et des légumes.
 
 Rien n'est inventé : sans `outdoorFriendly`, une plante gélive dont la fiche
 ne dit pas qu'elle sort reste dans la pièce.
+
+**Pas de catégorie ne veut pas dire pas d'information.** Le catalogue étendu
+n'en porte pas, et une fiche complétée par l'IA non plus ; le repli « pièce »
+passait alors avant la fiche et la contredisait. Un *Pinus parviflora* —
+absent des deux catalogues, donc sans catégorie, mais dont le profil de
+genre porte −15 °C et `outdoorFriendly` — était posé sur un guéridon de
+salon. La fiche décide maintenant dans ces cas-là, avec la même lecture de
+rusticité que pour une aromatique. La pièce reste le repli quand la fiche ne
+dit ni le gel ni la sortie.
 
 **Les succulentes ont demandé de corriger les fiches d'abord.** Appliquer la
 règle telle quelle en envoyait la moitié au jardin à tort : quinze espèces
@@ -282,9 +291,15 @@ mieux.
 | `fern` | nephrolepis, asplenium, adiantum, platycerium |
 | `rosette` | succulentes non cactées (catégorie) |
 | `cactus` | Cactaceae |
-| `conifer` | Pinaceae |
+| `conifer` | pinus, picea, abies, cedrus, larix, tsuga, pseudotsuga, juniperus, thuja, chamaecyparis, cupressus, cryptomeria, taxus, araucaria (genres) ; Pinaceae, Cupressaceae, Taxaceae, Araucariaceae (familles) |
 | `orchid` | phalaenopsis, dendrobium, cymbidium, oncidium |
 | `broadLeaf` | tout le reste |
+
+Les conifères sont rangés au genre **et** à la famille. La famille seule ne
+suffisait pas : elle vient de l'index des espèces, qui ignore beaucoup
+d'espèces cultivées — un pin blanc du Japon arrivait donc sans famille et
+repartait en feuille large. Le port est de toute façon un trait de genre
+chez tous ceux-là.
 
 Un genre ne se range dans la table que si la forme tient pour tout le
 genre : le philodendron est mixte (le grimpant retombe, le selloum pousse
