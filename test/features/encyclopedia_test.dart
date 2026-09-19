@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flora/app/providers.dart';
 import 'package:flora/core/l10n/care_labels.dart';
+import 'package:flora/core/utils/search_text.dart';
 import 'package:flora/data/problems/problem_catalog.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/data/species/species_catalog.dart';
@@ -149,6 +150,39 @@ void main() {
       await tester.pump();
 
       expect(find.text('Monstera deliciosa · Araceae'), findsOneWidget);
+    });
+
+    testWidgets('la liste reste rangée, avec ou sans recherche', (tester) async {
+      // Le rayon range ses fiches une fois pour toutes, puis ne fait plus que
+      // les filtrer : trier trente-trois mille espèces à chaque frappe tenait
+      // l'écran trois secondes. Filtrer une liste déjà rangée garde son ordre
+      // — c'est ce que ce test vérifie, sans quoi l'optimisation se paierait
+      // en fiches dans le désordre.
+      await pump(tester, const EncyclopediaScreen());
+      await tester.tap(find.text('Espèces'));
+      await tester.pump();
+
+      List<String> titres() => tester.widgetList<FloraListRow>(find.byType(FloraListRow)).map((r) => r.title).toList();
+
+      void estRangee(List<String> noms, String quand) {
+        for (var i = 1; i < noms.length; i++) {
+          expect(
+            foldSpeciesName(noms[i - 1]).compareTo(foldSpeciesName(noms[i])),
+            lessThanOrEqualTo(0),
+            reason: '$quand : « ${noms[i - 1]} » est listé avant « ${noms[i]} »',
+          );
+        }
+      }
+
+      final sansRecherche = titres();
+      expect(sansRecherche.length, greaterThan(1));
+      estRangee(sansRecherche, 'sans recherche');
+
+      await tester.enterText(find.byType(EditableText).first, 'a');
+      await tester.pump();
+      final avecRecherche = titres();
+      expect(avecRecherche.length, greaterThan(1));
+      estRangee(avecRecherche, 'avec une recherche');
     });
 
     testWidgets('changer de rayon vide la recherche', (tester) async {
