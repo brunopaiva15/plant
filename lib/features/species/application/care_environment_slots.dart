@@ -26,33 +26,30 @@ abstract final class CareEnvironmentSlots {
     'middle': (0.61227, 0.57733),
     'sunZone': (0.48798, 0.54276),
   };
-
   /// L'humidificateur, posé à côté de la plante, par emplacement.
-  static const Map<String, (double, double)> humidifier =
-      <String, (double, double)>{
-        'back': (0.53870, 0.61386),
-        'backCorner': (0.58013, 0.62538),
-        'beamEdge': (0.41441, 0.57929),
-        'besideBeam': (0.45584, 0.59081),
-        'middle': (0.49727, 0.60233),
-        'sunZone': (0.37298, 0.56776),
-      };
+  static const Map<String, (double, double)> humidifier = <String, (double, double)>{
+    'back': (0.53870, 0.61386),
+    'backCorner': (0.58013, 0.62538),
+    'beamEdge': (0.41441, 0.57929),
+    'besideBeam': (0.45584, 0.59081),
+    'middle': (0.49727, 0.60233),
+    'sunZone': (0.37298, 0.56776),
+  };
 
   /// Le haut de l'humidificateur, d'où part la vapeur, par emplacement.
-  static const Map<String, (double, double)> humidifierTop =
-      <String, (double, double)>{
-        'back': (0.53870, 0.54879),
-        'backCorner': (0.58013, 0.56031),
-        'beamEdge': (0.41441, 0.51422),
-        'besideBeam': (0.45584, 0.52574),
-        'middle': (0.49727, 0.53726),
-        'sunZone': (0.37298, 0.50269),
-      };
+  static const Map<String, (double, double)> humidifierTop = <String, (double, double)>{
+    'back': (0.53870, 0.54879),
+    'backCorner': (0.58013, 0.56031),
+    'beamEdge': (0.41441, 0.51422),
+    'besideBeam': (0.45584, 0.52574),
+    'middle': (0.49727, 0.53726),
+    'sunZone': (0.37298, 0.50269),
+  };
 
-  /// D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture au-dessus de la haie dehors.
-  static const Map<String, (double, double)> airflow =
-      <String, (double, double)>{
-        'indoor': (0.29062, 0.30704),
-        'outdoor': (0.27584, 0.32316),
-      };
+  /// D'où souffle l'air à abriter : la fenêtre dans la pièce, l'ouverture au-dessus de la haie dehors, le vide par-dessus le garde-corps sur un balcon.
+  static const Map<String, (double, double)> airflow = <String, (double, double)>{
+    'balcony': (0.28862, 0.34518),
+    'indoor': (0.29062, 0.30704),
+    'outdoor': (0.27584, 0.32316),
+  };
 }

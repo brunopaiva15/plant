@@ -30,9 +30,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import bpy  # noqa: E402
 from clay_scene import purge, rendu_transparent, grain  # noqa: E402
-from care_scene import common, room, outdoor, plants, props  # noqa: E402
+from care_scene import common, room, outdoor, balcony, plants, props  # noqa: E402
 
-GROUPES = ["indoor", "outdoor", "plants", "props"]
+GROUPES = ["indoor", "outdoor", "balcony", "plants", "props"]
 
 
 def _options(argv):
@@ -117,6 +117,7 @@ def exporte_slots(dossier, res):
         "airflow": {
             "indoor": list(common.projette(cam, (-common.PIECE_X, 0.30, 1.50))),
             "outdoor": list(common.projette(cam, (-2.00, 0.00, 1.55))),
+            "balcony": list(common.projette(cam, (-2.04, 0.20, 1.25))),
         },
     }
     chemin = os.path.join(dossier, "slots.json")
@@ -162,6 +163,22 @@ def rendre_outdoor(res, samples, dossier, filtre):
         print("LUMIERE outdoor/%s -> %s" % (nom, chemin), flush=True)
 
 
+def rendre_balcony(res, samples, dossier, filtre):
+    for nom in balcony.VARIANTES:
+        if filtre and nom != filtre:
+            continue
+        purge()
+        bpy.context.scene.name = "balcony_" + nom
+        cam, Rv, Uv, Cv = common.camera_fixe()
+        mobilier = balcony.construire(nom, Rv, Uv, Cv)
+        fautifs = common.verifie_couloir(cam, mobilier)
+        if fautifs:
+            print("ATTENTION devant la plante : %s" % ", ".join(sorted(fautifs)), flush=True)
+        chemin = os.path.join(dossier, "balcony", "light", nom + ".png")
+        _rend(chemin, res, samples)
+        print("LUMIERE balcony/%s -> %s" % (nom, chemin), flush=True)
+
+
 def rendre_plantes(res, samples, dossier, filtre):
     for nom in plants.PLANTES:
         if filtre and nom != filtre:
@@ -205,6 +222,8 @@ if GROUPE in ("indoor", "all"):
     rendre_indoor(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("outdoor", "all"):
     rendre_outdoor(RES, SAMPLES, DOSSIER, FILTRE)
+if GROUPE in ("balcony", "all"):
+    rendre_balcony(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("plants", "all"):
     rendre_plantes(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("props", "all"):

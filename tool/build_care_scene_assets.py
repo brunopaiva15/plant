@@ -29,7 +29,9 @@ SCRIPT = os.path.join(RACINE, "tool", "build_care_scene.py")
 SORTIE = os.path.join(RACINE, "assets", "care_scene")
 DART = os.path.join(RACINE, "lib", "features", "species", "application", "care_environment_slots.dart")
 
-GROUPES = ["indoor", "outdoor", "plants", "props"]
+GROUPES = ["indoor", "outdoor", "balcony", "plants", "props"]
+# Les groupes qui portent les six variantes de lumiere.
+GROUPES_LUMIERE = ["indoor", "outdoor", "balcony"]
 # Miroirs de room.VARIANTES, plants.PLANTES et props.PROPS, pour valider
 # --only sans lancer Blender.
 LUMIERES = ["shade", "low_light", "indirect", "bright_indirect", "some_sun", "full_sun"]
@@ -169,8 +171,9 @@ def genere_dart(dossier):
     )
     lignes.append("")
     lignes += carte(
-        "D'où souffle l'air à abriter : la fenêtre dedans, l'ouverture "
-        "au-dessus de la haie dehors.",
+        "D'où souffle l'air à abriter : la fenêtre dans la pièce, "
+        "l'ouverture au-dessus de la haie dehors, le vide par-dessus le "
+        "garde-corps sur un balcon.",
         ("airflow", donnees["airflow"]),
     )
     lignes += [
@@ -195,6 +198,7 @@ def planche(dossier):
 
     lumieres = [os.path.join(dossier, "indoor", "light", nom + ".png") for nom in LUMIERES]
     lumieres += [os.path.join(dossier, "outdoor", "light", nom + ".png") for nom in LUMIERES]
+    lumieres += [os.path.join(dossier, "balcony", "light", nom + ".png") for nom in LUMIERES]
     lumieres = [p for p in lumieres if os.path.isfile(p)]
     plantes = sorted(glob.glob(os.path.join(dossier, "plants", "*.png")))
     plantes += sorted(glob.glob(os.path.join(dossier, "props", "*.png")))
@@ -259,7 +263,12 @@ def main():
     filtre = None
     if args.only:
         if args.only in LUMIERES:
-            groupes, filtre = ["indoor", "outdoor"], args.only
+            # Une lumiere se rend dans les decors demandes, ou dans les trois
+            # si aucun n'est nomme. Avant, `--only` forcait indoor+outdoor et
+            # ignorait le groupe passe en argument.
+            demandes = [g for g in groupes if g in GROUPES_LUMIERE]
+            groupes = demandes or list(GROUPES_LUMIERE)
+            filtre = args.only
         elif args.only in PLANTES:
             groupes, filtre = ["plants"], args.only
         elif args.only in PROPS:

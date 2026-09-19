@@ -29,6 +29,7 @@ dizaines d'images WebP transparentes, superposées par un `Stack`.
 ```
 assets/care_scene/
     indoor/light/    shade … full_sun      la pièce, six lumières
+    balcony/light/   shade … full_sun      le balcon, six lumières
     outdoor/light/   shade … full_sun      le jardin, six lumières
     plants/          monstera, broad_leaf, upright_leaf, vine,
                      fern, rosette, cactus, conifer, orchid
@@ -98,22 +99,47 @@ dans la scène :
   est décidé par la projection (`hasHumidityTray`) ; son image n'est pas
   encore livrée, la scène ne l'affiche pas.
 
-### Pièce ou jardin
+### Pièce, balcon ou jardin
 
-La règle est centralisée dans `environmentFor`, nulle part ailleurs :
+Trois décors, pour trois façons de vivre : dedans, dehors mais en pot, ou
+dehors en pleine terre. Les deux notions qui départagent existaient déjà
+dans la fiche, avec exactement ce sens :
+
+- `CareProfile.frostHardy` (`winterMinC ≤ 0`) — elle tient le gel, **donc
+  elle vit dehors en pleine terre** ;
+- `CareProfile.outdoorFriendly` — elle passe la belle saison dehors, sans
+  pour autant la passer en terre.
+
+Entre les deux, il y a le balcon. La règle est centralisée dans
+`environmentFor`, nulle part ailleurs :
 
 | Données | Scène |
 |---|---|
-| `tree`, `fruit`, `vegetable` | jardin |
+| `tree`, `fruit`, `vegetable` | jardin si rustique, **balcon** sinon |
+| `herb`, `flower` | jardin si rustique ; **balcon** si `outdoorFriendly` ; pièce sinon |
 | `indoor`, `succulent` | pièce |
-| `herb`, `flower` | jardin si rustique (`frostHardy`), pièce sinon |
 | pas de catégorie | pièce (repli) |
 
-Un arbre ne finit jamais dans un salon. Les deux décors partagent caméra,
+Ce que le balcon corrige : un citronnier — `fruit`, non rustique — était
+planté dans une pelouse, et une aromatique gélive était envoyée dans le
+salon alors que sa place est dehors en pot. Sur le catalogue livré, la règle
+déplace une soixantaine d'espèces, surtout des fruitiers et des légumes.
+
+Rien n'est inventé : sans `outdoorFriendly`, une plante gélive dont la fiche
+ne dit pas qu'elle sort reste dans la pièce.
+
+**Les succulentes restent dedans quoi qu'il arrive.** Le catalogue en compte
+deux fois plus de plantes d'appartement que de rustiques, et leur appliquer
+la règle déplacerait une trentaine de fiches pour un gain discutable. La
+ligne des aromatiques leur irait telle quelle le jour où on le décide.
+
+Un arbre ne finit jamais dans un salon. Les trois décors partagent caméra,
 bornes et direction de soleil : la table des emplacements vaut pour l'un
-comme pour l'autre. Ils partagent aussi **la même dalle** : le jardin est
-une maquette posée, exactement comme la pièce, et le vide autour reste
-transparent. C'est ce qui leur donne le même statut dans la fiche — un
+comme pour les autres. Le garde-corps du balcon est du même côté que la
+fenêtre de la pièce et la haie du jardin, si bien que la plante s'approche
+toujours de la lumière dans le même sens. Ils partagent aussi **la même
+dalle** : le jardin et le balcon sont des maquettes posées, exactement comme
+la pièce, et le vide autour reste transparent. C'est ce qui leur donne le même statut dans la fiche — un
 jardin qui remplirait le cadre bord à bord ferait changer le décor de
 nature d'une espèce à l'autre, maquette d'un côté, photo pleine page de
 l'autre.
@@ -131,7 +157,10 @@ ronds, et il répète le motif des livres de la console : les deux côtés de la
 pièce se répondent. Le jardin dit « dehors » sans devenir un
 jardin botanique : pelouse sauge, massif de pleine terre là où la plante se
 pose, allée de gravier et pas japonais, palissade bordée de touffes
-fleuries, haie basse, un petit arbre, un arrosoir.
+fleuries, haie basse, un petit arbre, un arrosoir. Le balcon dit « dehors,
+mais chez soi » : lames de terrasse, façade et sa porte-fenêtre, garde-corps
+de métal sombre, jardinière accrochée, tabouret, paillasson, le même
+arrosoir que le jardin — c'est la même main qui s'occupe de la plante.
 
 ### Rien ne passe devant la plante
 
@@ -290,7 +319,7 @@ python3 tool/build_care_scene_assets.py
 # aperçu rapide + planche contact dans /tmp/care_scene (ne livre rien)
 python3 tool/build_care_scene_assets.py --preview
 # un groupe, une seule lumière, plante ou prop
-python3 tool/build_care_scene_assets.py indoor
+python3 tool/build_care_scene_assets.py indoor balcony
 python3 tool/build_care_scene_assets.py --only monstera
 # juste le poids de ce qui est livré
 python3 tool/build_care_scene_assets.py --poids
@@ -301,8 +330,9 @@ installé. Les PNG intermédiaires restent dans `/tmp/care_scene`, hors Git.
 Résolution de livraison : 1024 px (le héros s'affiche à 320–380 logical
 px, soit ~1 000 px physiques sur écran @3x).
 
-**Budget de poids : 8 Mo** pour toute la fonctionnalité. La vague 1 pèse
-~0,4 Mo ; le test d'assets verrouille le total.
+**Budget de poids : 8 Mo** pour toute la fonctionnalité. Les trois décors,
+leurs silhouettes et leurs props pèsent ensemble moins de 0,6 Mo ; le test
+d'assets verrouille le total.
 
 ## Idéal et réel
 
@@ -333,3 +363,12 @@ l'emplacement à `profile.light` pour décider où la plante apparaît.
 - `test/assets/care_scene_assets_test.dart` — les fichiers : chaque
   lumière, silhouette et prop existe, en-tête RIFF/WEBP, chemins du
   résolveur, poids sous le budget, déclarations du pubspec.
+
+Ce dernier tient deux invariants **différents**, et c'est voulu. Dans la
+pièce, les murs bornent la plante : toute la silhouette doit tomber sur le
+décor, sinon elle traverse un mur. Dehors et au balcon, il n'y a que du
+transparent au-dessus de la dalle : une plante y dépasse dans le ciel, et
+c'est normal. Ce qui doit tenir là, c'est le **pied** — le pot se pose sur
+le sol, jamais dans le vide à côté de la dalle. Confondre les deux a failli
+faire passer pour une régression le jour où le jardin est devenu une
+maquette posée.
