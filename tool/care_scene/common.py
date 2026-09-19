@@ -5,8 +5,8 @@
 # projection des emplacements de plante vers l'image.
 #
 # A la difference des objets clay habituels, TOUTES les couches partagent le
-# meme cadre : la camera est calculee une fois pour toutes sur les bornes de
-# la piece, pas sur le contenu de chaque couche. C'est ce qui permet a
+# meme cadre : la camera est posee une fois pour toutes par des constantes,
+# pas sur le contenu de chaque couche. C'est ce qui permet a
 # l'application de superposer decor, plante et props sans decallage — et la
 # raison pour laquelle `studio()` de clay_scene, qui cadre sur le contenu,
 # n'est pas utilise ici.
@@ -31,13 +31,34 @@ EL = radians(32.0)
 VUE = Vector((cos(AZ) * cos(EL), sin(AZ) * cos(EL), sin(EL)))
 CIBLE = Vector((0.0, 0.05, 0.80))
 DIST = 30.0
-MARGE = 1.05
 
-# Les bornes du diorama, dalle comprise : c'est sur elles — constantes — que
-# le cadre est calcule.
+# ------------------------------------------------------------
+# le cadre
+# ------------------------------------------------------------
+# Le cadre est pose en constantes explicites, jamais calcule sur le contenu :
+# c'est la meme raison qui fait que la camera ne cadre pas chaque couche
+# separement. S'il suivait la geometrie, ajouter un prop deplacerait le
+# cadre, et avec lui toute la table des emplacements et toutes les images.
+#
+# Il etait carre. Le contenu des trois decors et des silhouettes tient en
+# 6,34 de large sur 5,64 de haut : le carre perdait donc pres d'un quart de
+# sa surface, surtout en hauteur, et la plante s'en trouvait d'autant plus
+# petite. Les valeurs ci-dessous portent deja leur marge de 5 %.
+# Le cadre livre, en pixels : c'est lui qui fixe le format, et l'`aspect`
+# lu par Flutter en decoule. Un apercu rendu plus petit garde le meme
+# rapport a l'arrondi pres.
+CADRE_RES = (1024, 910)
+CADRE_RATIO = CADRE_RES[0] / float(CADRE_RES[1])
+CADRE_DEMI_L = 3.33
+# Le contenu est plus haut que bas autour de la visee : la camera monte
+# d'autant le long de l'axe vertical de l'image pour le centrer.
+CADRE_VISEE_U = 0.30
+
+# Les dimensions de la piece, dont se servent les trois decors pour se
+# superposer exactement. Le cadre, lui, ne s'en deduit plus : il est pose
+# par les constantes CADRE_* ci-dessus.
 PIECE_X, PIECE_Y, PIECE_Z = 2.1, 1.8, 2.7
 EPAIS_MUR = 0.12
-X_MAX, Y_MAX, Z_MAX = 2.5, 2.25, 2.78
 
 # La fenetre, sur le mur de gauche (-x) : elle apparait a gauche de l'image,
 # la lumiere decline vers la droite.
@@ -84,8 +105,8 @@ ANCRE_MONDE = Vector((0.0, 0.0, 0.0))
 def camera_fixe():
     """La camera orthographique commune a toutes les couches.
 
-    Le cadre (position, `ortho_scale`, visee) ne depend que des bornes de la
-    piece definies plus haut : deux couches au contenu different obtiennent
+    Le cadre (position, `ortho_scale`, visee) ne depend que des constantes
+    CADRE_* definies plus haut : deux couches au contenu different obtiennent
     exactement le meme cadrage, condition de la composition cote application.
     """
     sc = bpy.context.scene
@@ -103,16 +124,22 @@ def camera_fixe():
     Rv = (M @ Vector((1, 0, 0))).normalized()
     Uv = (M @ Vector((0, 1, 0))).normalized()
     Cv = (M @ Vector((0, 0, 1))).normalized()
-    coins = [Vector((x, y, z))
-             for x in (-X_MAX, X_MAX)
-             for y in (-Y_MAX, Y_MAX)
-             for z in (0.0, Z_MAX)]
-    a = [(p - cam.location).dot(Rv) for p in coins]
-    b = [(p - cam.location).dot(Uv) for p in coins]
-    demi = max(max(abs(v) for v in a), max(abs(v) for v in b))
-    donnees.ortho_scale = 2.0 * demi * MARGE
+    # Recentrer le cadre sur le contenu : monter la camera le long de l'axe
+    # vertical de l'image fait descendre le contenu d'autant.
+    cam.location = cam.location + Uv * CADRE_VISEE_U
+    # `ortho_scale` porte sur la plus grande dimension du rendu — ici la
+    # largeur, le cadre etant plus large que haut.
+    donnees.ortho_scale = 2.0 * CADRE_DEMI_L
     bpy.context.view_layer.update()
     return cam, Rv, Uv, Cv
+
+
+def resolution(largeur):
+    # Les deux dimensions du rendu pour une largeur donnee. Le cadre n'est
+    # plus carre : toute projection et tout rendu doivent partager ce
+    # format, sinon `world_to_camera_view` rend des y compresses et la
+    # plante ne tombe plus sur son ombre.
+    return int(largeur), int(round(largeur * CADRE_RES[1] / float(CADRE_RES[0])))
 
 
 def projette(cam, p):
@@ -248,6 +275,103 @@ def monde(force, couleur=(0.85, 0.87, 0.86)):
     bg.inputs[0].default_value = (couleur[0], couleur[1], couleur[2], 1.0)
     bg.inputs[1].default_value = force
     return w
+
+
+# ------------------------------------------------------------
+# le couloir de la plante : la contrainte est a l'ecran, pas dans la piece
+# ------------------------------------------------------------
+# L'enveloppe commune aux neuf silhouettes dans leur image, relative au
+# point d'ancrage, mesuree sur les sprites livres. Deux objets
+# eloignes de deux metres dans la piece peuvent parfaitement se superposer
+# dans une vue orthographique : c'est ce qui avait mis un lampadaire pile
+# sous le pot.
+#
+# Elle est en fractions du cadre : elle change donc avec le cadre. Pour la
+# remesurer apres un changement de CADRE_* ou de silhouette :
+#
+#     python3 tool/mesure_enveloppe.py
+ENVELOPPE_PLANTE = (-0.1282, -0.2161, 0.1257, 0.04)
+
+
+def releve_gueridon(cam):
+    # De combien le gueridon souleve la plante, en fraction d'image. Deduit
+    # de la projection plutot que fige : une constante mesuree dans un cadre
+    # devient fausse dans le suivant.
+    return projette(cam, (0.0, 0.0, 0.605))[1] - projette(cam, (0.0, 0.0, 0.0))[1]
+
+
+def rects_plante(cam):
+    """Pour chaque emplacement, le rectangle d'ecran que la plante peut
+    occuper et la distance de cet emplacement a la camera.
+
+    La projection depend du format de l'image : on le fixe au carre, comme
+    les couches le seront. Sans cela `world_to_camera_view` rend des y
+    compresses par le 16:9 par defaut de Blender — meme piege que dans
+    `exporte_slots`.
+    """
+    sc = bpy.context.scene
+    memo = (sc.render.resolution_x, sc.render.resolution_y)
+    sc.render.resolution_x, sc.render.resolution_y = resolution(1024)
+    bpy.context.view_layer.update()
+    ex0, ey0, ex1, ey1 = ENVELOPPE_PLANTE
+    releve = releve_gueridon(cam)
+    out = []
+    for (x, y) in SLOTS.values():
+        sx, sy = projette(cam, (x, y, 0.0))
+        profondeur = (Vector((x, y, 0.0)) - cam.location).length
+        # au sol, et sur le gueridon qui souleve la plante
+        for dz in (0.0, releve):
+            out.append(((sx + ex0, sy + ey0 + dz, sx + ex1, sy + ey1 + dz), profondeur))
+    sc.render.resolution_x, sc.render.resolution_y = memo
+    bpy.context.view_layer.update()
+    return out
+
+
+def verifie_couloir(cam, objets, marge=0.5, pas=7):
+    """Les objets de [objets] qui se retrouveraient DEVANT la plante.
+
+    La contrainte est a l'ecran : dans une vue orthographique, deux objets
+    eloignes de deux metres dans la piece se superposent parfaitement. Un
+    lampadaire pose dans le coin oppose peut donc monter pile sous le pot —
+    c'est arrive, et rien ne le disait.
+
+    Passer derriere la plante n'est pas une faute : c'est ce qui donne sa
+    profondeur a la scene. Seul compte ce qui est plus pres de la camera que
+    l'emplacement dont il recoupe la silhouette.
+
+    On regarde les sommets, pas la boite englobante : une plinthe ou un
+    tapis sont de longues boites dont un coin frole la camera alors que rien
+    de leur matiere ne passe devant la plante. [pas] echantillonne les
+    maillages denses.
+
+    [marge] est la distance, en metres, au-dela de laquelle « devant » veut
+    dire quelque chose. La console du fond est a deux centimetres pres a la
+    profondeur de l'emplacement du milieu : la signaler serait du bruit. Le
+    lampadaire fautif, lui, etait deux metres et demi en avant.
+    """
+    rects = rects_plante(cam)
+    sc = bpy.context.scene
+    memo = (sc.render.resolution_x, sc.render.resolution_y)
+    sc.render.resolution_x, sc.render.resolution_y = resolution(1024)
+    bpy.context.view_layer.update()
+    fautifs = []
+    for ob in objets:
+        if ob is None or ob.type != "MESH":
+            continue
+        M = ob.matrix_world
+        sommets = ob.data.vertices
+        indices = range(0, len(sommets), pas if len(sommets) > 400 else 1)
+        for i in indices:
+            p = M @ sommets[i].co
+            d = (p - cam.location).length
+            fx, fy = projette(cam, p)
+            if any(d < prof - marge and r[0] <= fx <= r[2] and r[1] <= fy <= r[3]
+                   for r, prof in rects):
+                fautifs.append(ob.name)
+                break
+    sc.render.resolution_x, sc.render.resolution_y = memo
+    bpy.context.view_layer.update()
+    return sorted(set(fautifs))
 
 
 def eclairage_plante(centre, Rv, Uv, Cv):

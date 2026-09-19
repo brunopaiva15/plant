@@ -77,15 +77,39 @@ void main() {
       expect(spec.hasPedestal, isFalse);
     });
 
-    test('dehors il n\'y a jamais de guéridon', () {
+    test('au jardin il n\'y a jamais de guéridon', () {
+      // Un pommier tient le gel : il va en pleine terre.
       final spec = careEnvironmentSpec(
-        profile: profile,
+        profile: CareProfile(
+          wateringSummerDays: profile.wateringSummerDays,
+          wateringWinterDays: profile.wateringWinterDays,
+          light: profile.light,
+          humidity: profile.humidity,
+          difficulty: profile.difficulty,
+          soil: profile.soil,
+          survivalMinC: -20,
+        ),
         speciesName: 'Malus domestica',
         family: 'Rosaceae',
         category: SpeciesCategory.tree,
       );
 
       expect(spec.environment, CareEnvironmentKind.outdoorPatch);
+      expect(spec.support, CarePlantSupport.floor);
+      expect(spec.hasPedestal, isFalse);
+    });
+
+    test('au balcon non plus : le guéridon est un meuble de salon', () {
+      // Un citronnier ne tient pas le gel : il vit en pot, dehors, et rentre
+      // l'hiver. Son pot se pose par terre, pas sur un guéridon.
+      final spec = careEnvironmentSpec(
+        profile: profile,
+        speciesName: 'Citrus limon',
+        family: 'Rutaceae',
+        category: SpeciesCategory.fruit,
+      );
+
+      expect(spec.environment, CareEnvironmentKind.balcony);
       expect(spec.support, CarePlantSupport.floor);
       expect(spec.hasPedestal, isFalse);
     });

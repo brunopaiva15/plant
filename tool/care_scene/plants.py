@@ -41,20 +41,32 @@ RECETTES = {
         "pot": ("C87A57", 1.0),
         "feuille": "0E6B34",
         "feuilles": [
-            (206.0, 34.0, 0.66, 1.16, 0.435, 4, 2, -8.0),
-            (28.0, 30.0, 0.78, 1.08, 0.435, 4, 2, 6.0),
-            (96.0, 16.0, 0.92, 0.78, 0.435, 3, 1, -10.0),
-            (320.0, 22.0, 0.85, 0.95, 0.435, 4, 1, 9.0),
+            (206.0, 38.0, 0.62, 1.14, 0.435, 4, 2, -8.0),
+            (28.0, 34.0, 0.74, 1.08, 0.435, 4, 2, 6.0),
+            (272.0, 41.0, 0.58, 1.02, 0.430, 4, 2, -11.0),
+            (96.0, 30.0, 0.80, 0.96, 0.435, 4, 1, -10.0),
+            (320.0, 26.0, 0.82, 0.98, 0.435, 4, 1, 9.0),
+            (158.0, 22.0, 0.86, 0.90, 0.430, 3, 1, 7.0),
+            (58.0, 17.0, 0.72, 0.74, 0.420, 3, 1, -6.0),
+            (238.0, 13.0, 0.64, 0.62, 0.405, 2, 0, 8.0),
+            (128.0, 8.0, 0.48, 0.48, 0.390, 2, 0, -5.0),
         ],
     },
     "broad_leaf": {
         "pot": ("B87050", 0.92),
         "feuille": "18693C",
         "feuilles": [
-            (200.0, 42.0, 0.50, 0.80, 0.60, 0, 0, -12.0),
-            (44.0, 38.0, 0.62, 0.86, 0.60, 0, 0, 10.0),
-            (300.0, 24.0, 0.74, 0.72, 0.58, 0, 0, -6.0),
-            (128.0, 55.0, 0.40, 0.62, 0.56, 0, 0, 14.0),
+            (20.0, 46.0, 0.68, 0.84, 0.60, 0, 0, -12.0),
+            (157.0, 49.0, 0.72, 0.86, 0.60, 0, 0, 9.0),
+            (295.0, 44.0, 0.66, 0.80, 0.59, 0, 0, -7.0),
+            (72.0, 40.0, 0.70, 0.82, 0.60, 0, 0, 13.0),
+            (210.0, 42.0, 0.64, 0.78, 0.58, 0, 0, -10.0),
+            (347.0, 36.0, 0.68, 0.80, 0.59, 0, 0, 6.0),
+            (125.0, 31.0, 0.58, 0.72, 0.57, 0, 0, -14.0),
+            (262.0, 27.0, 0.56, 0.70, 0.57, 0, 0, 11.0),
+            (40.0, 22.0, 0.50, 0.64, 0.55, 0, 0, -5.0),
+            (177.0, 16.0, 0.42, 0.56, 0.53, 0, 0, 8.0),
+            (300.0, 9.0, 0.32, 0.44, 0.50, 0, 0, -9.0),
         ],
     },
 }
@@ -157,6 +169,11 @@ def _upright(nom, mats, D, echelle_pot):
         (30.0, 17.0, 1.10, 0.095, 6.0),
         (150.0, 12.0, 1.32, 0.105, -5.0),
         (260.0, 20.0, 0.92, 0.110, 3.0),
+        (12.0, 11.0, 1.36, 0.098, -6.0),
+        (188.0, 16.0, 1.16, 0.102, 5.0),
+        (68.0, 21.0, 0.86, 0.092, -4.0),
+        (292.0, 8.0, 1.48, 0.096, 2.0),
+        (238.0, 13.0, 1.04, 0.088, -7.0),
     ]
     for idx, (az, tilt, L, larg, roll) in enumerate(lames):
         a, t = radians(az), radians(tilt)
@@ -201,8 +218,10 @@ def _vine(nom, mats, D, echelle_pot):
     # lit « grimpante ».
     tiges = [
         (25.0, 1.00, 0.85),
+        (78.0, 0.86, 0.48),
         (110.0, 0.90, 0.55),
         (200.0, 1.05, 0.75),
+        (248.0, 0.92, 0.66),
         (290.0, 0.95, 0.60),
     ]
     for idx, (az, lon, tombant) in enumerate(tiges):
@@ -221,17 +240,27 @@ def _vine(nom, mats, D, echelle_pot):
         objets.append(tube_along("Tige_%02d" % (idx + 1), pts, radii, mat=mats["tige"], seg=10, cap=4))
         # Deux feuilles par tige : une drapee sur le rebord, une au bout de
         # la retombee — toutes dehors.
-        for j, s in enumerate((0.55, 1.0)):
-            P = pts[2] if s < 1.0 else pts[-1]
-            T = (pts[3] - pts[1]).normalized() if s < 1.0 else (pts[-1] - pts[-2]).normalized()
+        # Reparties le long de la retombee, pas empilees au meme point : une
+        # tige de misere porte des feuilles sur toute sa longueur.
+        for j, s in enumerate((0.05, 0.42, 0.74, 1.0)):
+            u = s * (len(pts) - 3)
+            k = min(int(u) + 2, len(pts) - 2)
+            f = u - (k - 2)
+            P = pts[k] * (1.0 - f) + pts[k + 1] * f
+            T = (pts[k + 1] - pts[k]).normalized()
             F = (VUE * 0.72 + UP * 0.42 + outward * 0.22).normalized()
-            Yl = (outward * 0.60 + UP * 0.45 + T * 0.30).normalized()
+            # Les feuilles alternent d'un cote puis de l'autre de la tige et
+            # s'inclinent differemment : alignees pareil, elles faisaient un
+            # peigne le long du fil.
+            cote = outward.cross(UP).normalized() * (1.0 if j % 2 else -1.0)
+            Yl = (outward * (0.40 - 0.22 * s) + UP * (0.52 - 0.60 * s)
+                  + T * 0.34 + cote * 0.46).normalized()
             Zl = (F - F.dot(Yl) * Yl)
             if Zl.length < 1e-4:
                 Zl = UP
             Zl.normalize()
             Xl = Yl.cross(Zl)
-            L = 0.30 if s < 1.0 else 0.36
+            L = 0.30 + 0.10 * s
             Pp = P + Yl * 0.16
             objets.append(tube_along("Petiole_%02d_%d" % (idx + 1, j), [P, Pp],
                                      [0.016, 0.012], mat=mats["tige"], seg=8, cap=3))
@@ -239,7 +268,7 @@ def _vine(nom, mats, D, echelle_pot):
                                     Xl, Yl, Zl, L=L, n_fentes=0, mat=mats["feuille"],
                                     n_trous=0, w_ratio=0.46))
     # Le dessus du pot n'est pas chauve : deux feuilles dressees au centre.
-    for k, az in enumerate((60.0, 240.0)):
+    for k, az in enumerate((60.0, 150.0, 240.0, 330.0)):
         a = radians(az)
         outward = Vector((cos(a), sin(a), 0.0))
         P = D + Vector((0.05 * cos(a), 0.05 * sin(a), sol - 0.02))
@@ -278,7 +307,7 @@ def _pinnee(name, origine, direction, az, L, W, mats):
     return limbe(name, (origine, X, Y, Z), demi, mats["feuille"], L=L, nu=24, ep=0.012, creux=0.10)
 
 
-def _fronde(name, base, az, tilt, L, mats, n_paire=7):
+def _fronde(name, base, az, tilt, L, mats, n_paire=9):
     """Une fronde : son rachis, arque vers l'exterieur, et ses pinnules en
     deux ranges, plus courtes vers le bout."""
     a, t = radians(az), radians(tilt)
@@ -319,10 +348,14 @@ def _fern(nom, mats, D, echelle_pot):
     # (azimut, inclinaison, longueur) : une couronne de frondes.
     frondes = [
         (0.0, 38.0, 1.05),
+        (33.0, 46.0, 0.88),
         (52.0, 30.0, 1.15),
+        (85.0, 50.0, 0.82),
         (104.0, 42.0, 0.95),
         (156.0, 28.0, 1.10),
+        (186.0, 48.0, 0.86),
         (208.0, 40.0, 1.00),
+        (240.0, 52.0, 0.78),
         (262.0, 32.0, 1.12),
         (312.0, 44.0, 0.90),
     ]
@@ -356,11 +389,16 @@ def _feuille_charnue(name, base, az, tilt, L, W, courbure, mats, matiere="charnu
 # (azimut, inclinaison, longueur, largeur, courbure) — la rosette du guide,
 # recentree sur le pot.
 ROSETTE = [
-    (18.0, 52.0, 1.00, 1.00, 0.30),
+    (18.0, 48.0, 1.04, 1.02, 0.32),
+    (52.0, 54.0, 0.98, 0.99, 0.29),
     (76.0, 64.0, 0.88, 0.94, 0.24),
+    (110.0, 51.0, 1.00, 1.00, 0.30),
     (142.0, 58.0, 0.96, 0.98, 0.28),
+    (172.0, 66.0, 0.86, 0.92, 0.23),
     (205.0, 70.0, 0.82, 0.90, 0.20),
+    (232.0, 60.0, 0.92, 0.95, 0.26),
     (256.0, 55.0, 0.94, 0.96, 0.30),
+    (288.0, 68.0, 0.84, 0.89, 0.21),
     (312.0, 74.0, 0.76, 0.86, 0.18),
     (348.0, 82.0, 0.62, 0.80, 0.12),
 ]
@@ -406,7 +444,9 @@ def _cactus(nom, mats, D, echelle_pot):
     raquettes = [
         (0.0, 10.0, 0.95, 0.34, 0.10),
         (75.0, 14.0, 0.78, 0.30, 0.09),
+        (140.0, 9.0, 0.86, 0.32, 0.095),
         (210.0, 7.0, 0.68, 0.28, 0.085),
+        (265.0, 13.0, 0.60, 0.27, 0.082),
         (320.0, 12.0, 0.56, 0.26, 0.08),
     ]
     for idx, (az, tilt, L, W, ep) in enumerate(raquettes):
@@ -417,29 +457,62 @@ def _cactus(nom, mats, D, echelle_pot):
     # un coup d'oeil.
     base = D + Vector((0.14, 0.0, sol - 0.02)) + (UP * 0.42) + Vector((0.10, 0.0, 0.0))
     objets += _raquette("Raquette_Jeune", base, 40.0, 55.0, 0.34, 0.18, 0.07, mats, n=8)
+    a2 = radians(140.0)
+    base2 = D + Vector((0.14 * cos(a2), 0.14 * sin(a2), sol - 0.02)) + UP * 0.38
+    objets += _raquette("Raquette_Jeune_2", base2, 195.0, 58.0, 0.28, 0.15, 0.062, mats, n=8)
     return objets
 
 
 # ------------------------------------------------------------
-# conifer : un tronc et trois étages de houppier
+# conifer : un tronc effile et ses etages de branches
 # ------------------------------------------------------------
 def _conifere(nom, mats, D, echelle_pot):
+    """Un jeune conifere en pot.
+
+    Trois cones empiles sur un baton donnaient un sapin de Noel en
+    plastique : la silhouette d'un conifere ne tient pas au nombre de
+    volumes mais a la suite serree d'etages qui retombent, du plus large en
+    bas au plus fin au sommet, chacun legerement decale.
+    """
     objets = []
     sol = Z_TERRE * echelle_pot
-    # Le tronc.
-    tronc_profil = [(0.0, 0.0), (0.055, 0.0), (0.062, 0.05), (0.052, 0.55), (0.040, 0.62), (0.0, 0.64)]
-    tronc = revolve("Tronc", tronc_profil, 48, [mats["tronc"]], 26.0)
-    tronc.location = D + Vector((0, 0, sol - 0.02))
+    base = D + Vector((0.0, 0.0, sol - 0.02))
+    H = 1.52
+
+    tronc_profil = [(0.0, 0.0), (0.062, 0.0), (0.068, 0.03), (0.050, 0.40),
+                    (0.034, 0.72), (0.020, 0.92), (0.0, 1.0)]
+    tronc = revolve("Tronc", [(r, z * H) for (r, z) in tronc_profil], 40,
+                    [mats["tronc"]], 26.0)
+    tronc.location = base
     objets.append(tronc)
-    # Trois etages de houppier, en goutte inverse : large au milieu, fin aux
-    # deux bouts, et le dernier conique. Chacun a (rayon, hauteur, base).
-    z0 = D.z + sol + 0.22
-    etages = [(0.40, 0.34, 0.0), (0.30, 0.32, 0.26), (0.17, 0.30, 0.50)]
-    prof = [(0.0, 0.0), (0.30, 0.0), (1.0, 0.55), (0.72, 0.85), (0.0, 1.0)]
-    for i, (r, h, base_z) in enumerate(etages):
-        boule = revolve("Houppier_%d" % (i + 1), [(rr * r, zz * h) for (rr, zz) in prof], 64, [mats["feuille"]], 30.0)
-        boule.location = Vector((D.x, D.y, z0 + base_z))
-        objets.append(boule)
+
+    # Une jupe : elle part du tronc, descend jusqu'au bord, et revient par
+    # le dessous — une coquille fine, pas une boule.
+    jupe = [(0.0, 0.58), (0.30, 0.50), (0.62, 0.33), (0.86, 0.14), (1.0, 0.0),
+            (0.90, 0.03), (0.64, 0.21), (0.32, 0.38), (0.0, 0.46)]
+    n = 9
+    for i in range(n):
+        s_ = i / (n - 1.0)
+        # Une variation tres faible : plus haut, les etages se mettaient a
+        # tourner et l'arbre devenait une glace a l'italienne.
+        r = (0.455 * (1.0 - s_) ** 0.82 + 0.055) * (1.0 + 0.025 * sin(i * 2.9))
+        h = 0.30 * (1.0 - 0.42 * s_)
+        z = (0.13 + 0.78 * s_) * H
+        etage = revolve("Etage_%02d" % (i + 1),
+                        [(rr * r, zz * h) for (rr, zz) in jupe], 44,
+                        [mats["feuille"]], 30.0)
+        # Un decalage infime par etage : sans lui, la pile est trop reguliere
+        # pour etre un arbre.
+        etage.location = base + Vector((0.008 * sin(i * 2.3),
+                                        0.008 * cos(i * 1.7), z))
+        objets.append(etage)
+
+    # La fleche : le conifere finit en pointe, pas sur un etage tronque.
+    fleche = revolve("Fleche", [(0.0, 0.0), (0.085, 0.02), (0.060, 0.09),
+                                (0.028, 0.16), (0.0, 0.21)], 32,
+                     [mats["feuille"]], 30.0)
+    fleche.location = base + Vector((0.0, 0.0, 0.93 * H))
+    objets.append(fleche)
     return objets
 
 
@@ -535,13 +608,29 @@ def _orchid(nom, mats, D, echelle_pot):
     # d'orchidee ne monte pas d'une rosette, elle pousse entre ses feuilles.
     feuilles = [
         (16.0, 30.0, 0.72, 1.24, -10.0),
+        (66.0, 21.0, 0.60, 1.08, 6.0),
         (112.0, 24.0, 0.66, 1.16, 8.0),
+        (158.0, 33.0, 0.70, 1.18, -9.0),
         (202.0, 34.0, 0.76, 1.22, -7.0),
+        (248.0, 19.0, 0.58, 1.04, 11.0),
         (292.0, 26.0, 0.62, 1.12, 10.0),
+        (338.0, 37.0, 0.68, 1.14, -5.0),
     ]
     for idx, (az, tilt, L, W, roulis) in enumerate(feuilles):
         objets += _limbe_orchidee("Feuille_%02d" % (idx + 1), base, az, tilt, L, W, mats, roulis=roulis)
     objets += _limbe_orchidee("Feuille_Coeur", base, 252.0, 58.0, 0.30, 0.56, mats, matiere="pousse")
+    objets += _limbe_orchidee("Feuille_Coeur_2", base, 84.0, 64.0, 0.26, 0.48, mats, matiere="pousse")
+    # Les racines aeriennes : c'est a elles qu'on reconnait une phalaenopsis
+    # en pot, autant qu'a ses fleurs.
+    for k, az in enumerate((40.0, 130.0, 226.0, 310.0)):
+        a = radians(az)
+        o = Vector((cos(a), sin(a), 0.0))
+        d = base + o * 0.26 + UP * 0.10
+        objets.append(tube_along("Racine_%d" % (k + 1),
+                                 [base + o * 0.10 + UP * 0.12, d,
+                                  d + o * 0.16 - UP * 0.14],
+                                 [0.030, 0.026, 0.020], mat=mats["pousse"],
+                                 seg=10, cap=3))
     objets += _hampe_orchidee(mats, base)
     return objets
 

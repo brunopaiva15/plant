@@ -30,9 +30,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import bpy  # noqa: E402
 from clay_scene import purge, rendu_transparent, grain  # noqa: E402
-from care_scene import common, room, outdoor, plants, props  # noqa: E402
+from care_scene import common, room, outdoor, balcony, plants, props  # noqa: E402
 
-GROUPES = ["indoor", "outdoor", "plants", "props"]
+GROUPES = ["indoor", "outdoor", "balcony", "plants", "props"]
 
 
 def _options(argv):
@@ -62,6 +62,11 @@ def _options(argv):
 def _rend(chemin, res, samples):
     os.makedirs(os.path.dirname(chemin), exist_ok=True)
     rendu_transparent(res, samples)
+    # `rendu_transparent` est partage avec les autres objets clay, qui se
+    # rendent au carre. Le cadre de la scene d'environnement ne l'est plus :
+    # on repose le format apres, sans toucher au reglage commun.
+    bpy.context.scene.render.resolution_x, bpy.context.scene.render.resolution_y = \
+        common.resolution(res)
     bpy.context.scene.render.filepath = chemin
     bpy.ops.render.render(write_still=True)
     grain(chemin)
@@ -74,13 +79,14 @@ def exporte_slots(dossier, res):
     cote application.
 
     La projection depend du format de l'image : `world_to_camera_view` lit le
-    rapport largeur/hauteur de la scene. On fixe donc le rendu au carre AVANT
-    de projeter, comme les couches le seront : sans quoi les y sortiraient
-    compresses par le 16:9 par defaut de Blender, et la plante ne tomberait
-    plus sur son ombre."""
+    rapport largeur/hauteur de la scene. On fixe donc le rendu au format du
+    cadre AVANT de projeter, comme les couches le seront : sans quoi les y
+    sortiraient compresses par le 16:9 par defaut de Blender, et la plante ne
+    tomberait plus sur son ombre."""
     purge()
-    bpy.context.scene.render.resolution_x = res
-    bpy.context.scene.render.resolution_y = res
+    _RES_X, _RES_Y = common.resolution(res)
+    bpy.context.scene.render.resolution_x = _RES_X
+    bpy.context.scene.render.resolution_y = _RES_Y
     cam, _, _, _ = common.camera_fixe()
     # L'humidificateur est pose a cote de la plante par un decalage d'ecran
     # (la projection orthographique est lineaire) : toujours du meme cote,
@@ -104,7 +110,9 @@ def exporte_slots(dossier, res):
     # a z=0.605 : on exporte le point du plateau, la ou la base du pot se
     # pose, dans le repere de l'image du prop.
     donnees = {
-        "aspect": 1.0,
+        # Le format du cadre livre, pas celui de l'apercu en cours : c'est ce
+        # rapport que Flutter pose sur ses images.
+        "aspect": round(common.CADRE_RATIO, 5),
         "ancre": list(base),
         "pedestalPot": list(common.projette(cam, (0.0, 0.0, 0.605))),
         "slots": {nom: list(common.projette(cam, (x, y, 0.0)))
@@ -117,6 +125,7 @@ def exporte_slots(dossier, res):
         "airflow": {
             "indoor": list(common.projette(cam, (-common.PIECE_X, 0.30, 1.50))),
             "outdoor": list(common.projette(cam, (-2.00, 0.00, 1.55))),
+            "balcony": list(common.projette(cam, (-2.04, 0.20, 1.25))),
         },
     }
     chemin = os.path.join(dossier, "slots.json")
@@ -132,8 +141,13 @@ def rendre_indoor(res, samples, dossier, filtre):
             continue
         purge()
         bpy.context.scene.name = "indoor_" + nom
-        _, Rv, Uv, Cv = common.camera_fixe()
-        room.construire(nom, Rv, Uv, Cv)
+        cam, Rv, Uv, Cv = common.camera_fixe()
+        mobilier = room.construire(nom, Rv, Uv, Cv)
+        # Le decor ne doit rien poser devant la plante : la contrainte est a
+        # l'ecran, deux objets eloignes dans la scene s'y superposent.
+        fautifs = common.verifie_couloir(cam, mobilier)
+        if fautifs:
+            print("ATTENTION devant la plante : %s" % ", ".join(sorted(fautifs)), flush=True)
         chemin = os.path.join(dossier, "indoor", "light", nom + ".png")
         _rend(chemin, res, samples)
         print("LUMIERE %s -> %s" % (nom, chemin), flush=True)
@@ -145,11 +159,32 @@ def rendre_outdoor(res, samples, dossier, filtre):
             continue
         purge()
         bpy.context.scene.name = "outdoor_" + nom
-        _, Rv, Uv, Cv = common.camera_fixe()
-        outdoor.construire(nom, Rv, Uv, Cv)
+        cam, Rv, Uv, Cv = common.camera_fixe()
+        mobilier = outdoor.construire(nom, Rv, Uv, Cv)
+        # Le decor ne doit rien poser devant la plante : la contrainte est a
+        # l'ecran, deux objets eloignes dans la scene s'y superposent.
+        fautifs = common.verifie_couloir(cam, mobilier)
+        if fautifs:
+            print("ATTENTION devant la plante : %s" % ", ".join(sorted(fautifs)), flush=True)
         chemin = os.path.join(dossier, "outdoor", "light", nom + ".png")
         _rend(chemin, res, samples)
         print("LUMIERE outdoor/%s -> %s" % (nom, chemin), flush=True)
+
+
+def rendre_balcony(res, samples, dossier, filtre):
+    for nom in balcony.VARIANTES:
+        if filtre and nom != filtre:
+            continue
+        purge()
+        bpy.context.scene.name = "balcony_" + nom
+        cam, Rv, Uv, Cv = common.camera_fixe()
+        mobilier = balcony.construire(nom, Rv, Uv, Cv)
+        fautifs = common.verifie_couloir(cam, mobilier)
+        if fautifs:
+            print("ATTENTION devant la plante : %s" % ", ".join(sorted(fautifs)), flush=True)
+        chemin = os.path.join(dossier, "balcony", "light", nom + ".png")
+        _rend(chemin, res, samples)
+        print("LUMIERE balcony/%s -> %s" % (nom, chemin), flush=True)
 
 
 def rendre_plantes(res, samples, dossier, filtre):
@@ -195,6 +230,8 @@ if GROUPE in ("indoor", "all"):
     rendre_indoor(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("outdoor", "all"):
     rendre_outdoor(RES, SAMPLES, DOSSIER, FILTRE)
+if GROUPE in ("balcony", "all"):
+    rendre_balcony(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("plants", "all"):
     rendre_plantes(RES, SAMPLES, DOSSIER, FILTRE)
 if GROUPE in ("props", "all"):
