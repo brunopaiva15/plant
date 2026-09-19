@@ -3918,3 +3918,149 @@ vingt-deux heures de collecte et une nuit de mesures :
 > **La largeur se paie dans les sorties, pas dans l'entraînement.**
 > Collecter tout ce qu'on trouve, n'exposer que ce qu'on sert.
 
+
+## 14. Livrer Indoor et Outdoor ensemble
+
+Iris Indoor est livré, Iris Outdoor est cadré, et la question qui vient n'est
+plus « comment les entraîner » mais **comment les embarquer tous les deux**.
+Cette section fixe ce qui est décidé avant la mesure, et ce que la mesure
+doit trancher. Elle prolonge le § 8 de `docs/14`, qui pose Indoor et Outdoor
+comme deux vues du même cerveau ; ici, le cerveau est encore un softmax.
+
+### 14.1 Deux masques d'une même tête, ou deux entraînements
+
+C'est le point qui commande tout le reste, et il tient en une ligne :
+
+> **Deux masques coupés dans la même tête ont des scores comparables. Deux
+> entraînements différents n'en ont pas.**
+
+Retailler, c'est supprimer des colonnes de la dernière couche, puis
+renormaliser : `exp(zᵢ) / Σ_gardées exp(zⱼ)`. Les logits `zᵢ` ne bougent pas.
+Deux masques taillés dans la même tête rendent donc des probabilités qui
+vivent sur la même échelle, et un 0,74 de l'un se compare honnêtement à un
+0,71 de l'autre. C'est ce qui rend un arbitrage possible.
+
+Deux entraînements distincts ne donnent pas cette garantie. Leurs
+calibrations diffèrent, et le § 13.6 en a payé la démonstration : la tête du
+19 septembre et l'Iris 8 n'étaient même pas comparables classe pour classe
+sans repasser par un jeu d'images commun.
+
+**Conséquence.** L'Indoor livré vient de la tête du 19 septembre — dont les
+poids sont perdus (§ 13.6) — et l'Outdoor viendra de la passe complète de
+l'Iris 9. Les deux ne peuvent pas travailler ensemble : ils ne sont pas
+calibrés l'un pour l'autre. Il n'y a donc pas de version intermédiaire à
+bricoler. **Indoor et Outdoor sortent tous les deux de la tête de l'Iris 9,
+ou ils ne cohabitent pas.**
+
+### 14.2 Un fichier, pas deux
+
+Embarquer deux modèles, c'est payer deux fois le même réseau pour deux
+dernières couches. Le dorsal MobileNetV3Large pèse environ 5,99 Mo et ne
+dépend pas du nombre de sorties ; la tête coûte `960 × classes × 2 octets`.
+
+| | classes demandées | poids livré |
+|---|---|---|
+| Indoor seul | 363 | ~6,65 Mo |
+| Outdoor seul | 1 444 | ~8,63 Mo |
+| **les deux fichiers** | | **~15,28 Mo** |
+| **un modèle d'union** | **1 612** | **~8,94 Mo** |
+
+L'union des deux masques fait 1 612 entrées : 195 espèces communes, 168
+propres à Indoor, le reste à Outdoor. Avec le masque Indoor élargi
+(`masque_indoor_large.txt`, 421 entrées), l'union monte à 1 635 et le poids à
+~8,98 Mo — vingt-trois espèces de plus pour quarante kilo-octets.
+
+Un seul fichier coûte donc **2,3 Mo de plus qu'Indoor seul, et 6,3 Mo de
+moins que deux fichiers**. Il évite aussi ce qui ne se lit pas dans un
+tableau : un second interpréteur, un second isolat, une seconde seconde
+d'inférence par photo — et la cascade en enchaîne jusqu'à trois (§ 12.3).
+
+#### Le masque dans l'app rend exactement ce que `retailler.py` rend
+
+Le graphe applique son softmax sur les 1 612 sorties, donc l'app lit
+`exp(zᵢ) / Σ_toutes exp(zⱼ)`. Garder les classes du contexte et diviser par
+leur somme donne `exp(zᵢ) / Σ_gardées exp(zⱼ)` : **la même formule que le
+retaillage, au même résultat près de l'arrondi**. Le masque appliqué dans
+`tflite_plant_model.dart` n'est pas une approximation du modèle retaillé,
+c'en est l'égal.
+
+C'est ce qui rend la décision facile : les ~3 points que rapporte le masque
+étroit (§ 13.6) s'obtiennent **sans second fichier**. Ils ne tiennent pas au
+poids livré, ils tiennent à la renormalisation.
+
+Et un masque qui vit dans l'app se change sans rien retélécharger. Une plante
+déplacée du salon au balcon change de contexte à la lecture suivante ; deux
+fichiers auraient demandé de recharger l'autre modèle.
+
+### 14.3 Le contexte donne un a priori, jamais une interdiction
+
+La règle vient du § 8 de `docs/14`, et elle contredit le masque dur si on
+l'applique sans précaution : couper une classe, c'est rendre la bonne réponse
+**impossible**, pas seulement improbable. Un monstera sur un balcon en été
+n'est pas un cas rare.
+
+La sortie s'écrit donc en deux temps, sur une seule inférence :
+
+1. `p_contexte` — les probabilités renormalisées sur le masque du lieu. C'est
+   ce qui est proposé, et c'est là que les trois points sont gagnés ;
+2. `p_global` — les probabilités sur les 1 612, gardées sans coût, puisque le
+   réseau les a calculées de toute façon.
+
+Et la règle d'arbitrage à mesurer :
+
+- si `p_contexte` accepte au sens du § 3.1 — seuil 0,70, marge 0,25 —
+  l'application affirme, et n'ouvre pas `p_global` ;
+- sinon, si le premier de `p_global` dépasse nettement le premier de
+  `p_contexte`, ce candidat hors contexte est proposé comme **plausible**,
+  avec son lieu d'origine pour ce qu'il vaut ;
+- contexte inconnu — une photo identifiée hors d'une plante enregistrée —
+  `p_global` seul, aucun masque.
+
+Cette règle remplace le palliatif posé le 19 septembre, où Iris propose au
+lieu d'affirmer dès que le lieu est extérieur
+(`identification_policy.dart`, `localMayAffirm`). Le palliatif était juste
+tant que le modèle embarqué était un spécialiste intérieur seul face à
+l'extérieur ; il n'a plus de raison d'être une fois l'Outdoor livré, et
+`outdoor_policy_test.dart` devra être réécrit en conséquence, pas supprimé —
+il porte le cas mesuré, une *Veronica elliptica* rendue *Nephrolepis
+cordifolia* à 0,8978.
+
+Le lieu est déjà résolu côté app : `plant_detail_screen.dart` lit
+`locationsProvider` et sait si la plante est dehors. C'est le même signal qui
+choisira le masque ; rien de nouveau n'est à collecter auprès de
+l'utilisateur.
+
+### 14.4 Ce qu'il faut mesurer avant de livrer
+
+Aucune de ces lignes ne demande une collecte ; toutes demandent la tête
+complète de l'Iris 9.
+
+| mesure | comment | ce qu'elle décide |
+|---|---|---|
+| Indoor 363 vs Indoor élargi 421 | deux retaillages, `compare_models.py` sur le même jeu | quel masque intérieur on livre |
+| Outdoor 1 444 contre l'Iris 8 | `compare_models.py`, classes communes | si l'Outdoor a le droit d'exister — l'Iris 8 *est* déjà un spécialiste extérieur |
+| union 1 612 + masque appliqué | `compare_models.py` sur le jeu Indoor | vérifier l'égalité annoncée au § 14.2 ; un écart signale un bogue, pas un arbitrage |
+| hors-sujet sur l'union masquée | `hors_sujet.py` | le masque restreint 1 612 sorties à ~363 : le taux d'affirmation à tort des plantes hors catalogue remonte-t-il au-dessus des 27,5 % du § 12.7 |
+| fiches manquantes sur 1 612 | le compteur du § 12.1 | combien de classes exposées ne mènent à rien — le défaut du § 12.14, à l'échelle de l'union |
+
+Deux d'entre elles sont des portes, au sens du § 13.7 :
+
+- **l'Outdoor n'est pas prêt tant qu'il n'a pas son propre jeu de test.** Le
+  § 8 de `docs/14` le dit, et le seul chiffre disponible aujourd'hui — 0,6365
+  contre 0,6672 — a été lu sur une tête tronquée, donc ne juge rien ;
+- **une classe exposée sans fiche est une impasse.** Elle se nomme à l'écran
+  et ne mène à aucun conseil. À 336 sorties, six cas (§ 13.3). À 1 612, le
+  compte est à faire avant, pas après.
+
+### 14.5 Ce qu'on ne fera pas
+
+- **pas deux fichiers `.tflite`.** Six mégaoctets et une seconde d'inférence
+  pour une renormalisation qui se calcule en quelques lignes ;
+- **pas de téléchargement séparé du modèle Outdoor.** Le § 8 prévoit une
+  mise à jour de modèle, pas deux catalogues à tenir à jour séparément ;
+- **pas de masque dur sans issue.** Une classe hors contexte est déclassée,
+  jamais supprimée : le § 3.2 décrit exactement cette panne — un modèle qui
+  ne peut pas dire la bonne réponse répond faux avec assurance ;
+- **pas d'arbitrage entre deux entraînements.** Tant que les deux masques ne
+  viennent pas de la même tête, comparer leurs scores n'a pas de sens
+  (§ 14.1).
