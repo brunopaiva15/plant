@@ -2104,7 +2104,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Arterkennung auf dem Gerät durch $name, ohne Netz. Im Zweifel kann das Foto an Pl@ntNet gesendet werden.';
+    return 'Arterkennung auf dem Gerät durch $name, ohne Netz. Im Zweifel kann das Foto an Pl@ntNet gesendet werden oder an ein in der Schweiz gehostetes Modell (Infomaniak AI Services), das zwischen den Vorschlägen entscheidet.';
   }
 
   @override

@@ -688,7 +688,7 @@
   "identifyError": "Identificazione impossibile. Controlla la connessione e riprova.",
   "useThis": "Usa",
   "identificationSettings": "Identificazione",
-  "identificationHint": "Riconoscimento delle specie sul dispositivo da parte di {name}, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.",
+  "identificationHint": "Riconoscimento delle specie sul dispositivo da parte di {name}, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet o a un modello ospitato in Svizzera (AI Services di Infomaniak) che decide tra i suggerimenti.",
   "identificationEnabled": "Identificazione attiva",
   "identificationDisabled": "Non configurata",
   "identificationFallback": "Fallback online",

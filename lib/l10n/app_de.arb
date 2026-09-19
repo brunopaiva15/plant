@@ -688,7 +688,7 @@
   "identifyError": "Bestimmung nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "useThis": "Verwenden",
   "identificationSettings": "Bestimmung",
-  "identificationHint": "Arterkennung auf dem Gerät durch {name}, ohne Netz. Im Zweifel kann das Foto an Pl@ntNet gesendet werden.",
+  "identificationHint": "Arterkennung auf dem Gerät durch {name}, ohne Netz. Im Zweifel kann das Foto an Pl@ntNet gesendet werden oder an ein in der Schweiz gehostetes Modell (Infomaniak AI Services), das zwischen den Vorschlägen entscheidet.",
   "identificationEnabled": "Bestimmung aktiviert",
   "identificationDisabled": "Nicht konfiguriert",
   "identificationFallback": "Online-Rückfall",

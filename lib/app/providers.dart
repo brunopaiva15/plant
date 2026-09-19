@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/network/connectivity.dart';
 import '../core/observability/observability.dart';
 import '../data/db/database.dart';
 import '../data/repositories/action_repository_impl.dart';
@@ -443,6 +444,9 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
     fallback: remote,
     fallbackEnabled: fallbackEnabled,
     arbiter: ref.watch(identificationArbiterProvider),
+    // Lu à l'appel, pas surveillé : une coupure ne doit pas reconstruire la
+    // cascade, qui perdrait son cache et les scores déjà calculés.
+    online: () => ref.read(isOnlineProvider),
     metrics: ref.watch(identificationMetricsStoreProvider),
     lookup: (name, language) => catalogLookup(name, ref.read(speciesIndexProvider).value, language),
   );

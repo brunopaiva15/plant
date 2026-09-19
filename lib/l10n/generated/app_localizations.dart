@@ -3771,7 +3771,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnaissance des espèces sur l\'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
+  /// **'Reconnaissance des espèces sur l\'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet, ou à un modèle hébergé en Suisse (AI Services d\'Infomaniak) qui départage les propositions.'**
   String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.

@@ -2101,7 +2101,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Species recognised on the device by $name, without a network. When in doubt, the photo can be sent to Pl@ntNet.';
+    return 'Species recognised on the device by $name, without a network. When in doubt, the photo can be sent to Pl@ntNet, or to a model hosted in Switzerland (Infomaniak AI Services) that settles between the suggestions.';
   }
 
   @override

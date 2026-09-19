@@ -45,12 +45,14 @@ class CascadeIdentifier implements PlantIdentifier {
     this.monthlyRemoteLimit = 30,
     this.arbiter = const NoArbiter(),
     this.monthlyArbiterLimit = 60,
+    bool Function()? online,
     this.localTimeout = const Duration(seconds: 4),
     CatalogLookup? lookup,
     DateTime Function()? now,
     this.cacheSize = 24,
   })  : metricsStore = metrics ?? InMemoryMetricsStore(),
         _lookup = lookup ?? ((_, _) => null),
+        _online = online ?? (() => true),
         _now = now ?? DateTime.now;
 
   final LocalPlantModel local;
@@ -88,6 +90,14 @@ class CascadeIdentifier implements PlantIdentifier {
   final Duration localTimeout;
   final int cacheSize;
   final CatalogLookup _lookup;
+
+  /// L'état du réseau, lu au moment de l'appel.
+  ///
+  /// Hors ligne, l'arbitrage n'est pas tenté : il ne pourrait qu'échouer, et
+  /// il ferait attendre la personne le temps que le délai expire — devant un
+  /// écran qui vient de promettre une reconnaissance sans réseau. C'est ce que
+  /// fait déjà la couche Jev, qui reçoit la même information.
+  final bool Function() _online;
   final DateTime Function() _now;
   final _cache = <String, List<IdentificationCandidate>>{};
 
@@ -211,7 +221,7 @@ class CascadeIdentifier implements PlantIdentifier {
       );
       // Iris a une liste mais hésite : c'est là, et seulement là, qu'un
       // deuxième regard sur la photo peut changer quelque chose.
-      if (arbiterAvailable && arbiterAllowedThisMonth && worthArbitrating(policy, localResult)) {
+      if (arbiterAvailable && _online() && arbiterAllowedThisMonth && worthArbitrating(policy, localResult)) {
         m = await _arbitrate(key: key, images: images, candidates: localResult, language: language, metrics: m);
       }
       await metricsStore.write(m);

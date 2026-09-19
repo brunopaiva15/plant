@@ -688,7 +688,7 @@
   "identifyError": "Couldn't identify. Check your connection and try again.",
   "useThis": "Use",
   "identificationSettings": "Identification",
-  "identificationHint": "Species recognised on the device by {name}, without a network. When in doubt, the photo can be sent to Pl@ntNet.",
+  "identificationHint": "Species recognised on the device by {name}, without a network. When in doubt, the photo can be sent to Pl@ntNet, or to a model hosted in Switzerland (Infomaniak AI Services) that settles between the suggestions.",
   "identificationEnabled": "Identification enabled",
   "identificationDisabled": "Not configured",
   "identificationFallback": "Online fallback",

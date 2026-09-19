@@ -147,7 +147,7 @@ void main() {
   final lost = [c('Monstera deliciosa', 0.05)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
-  CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup, IdentificationArbiter? arbiter, int arbiterLimit = 200}) =>
+  CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup, IdentificationArbiter? arbiter, int arbiterLimit = 200, bool online = true}) =>
       CascadeIdentifier(
         local: local,
         fallback: remote,
@@ -156,6 +156,7 @@ void main() {
         monthlyRemoteLimit: limit,
         arbiter: arbiter ?? const NoArbiter(),
         monthlyArbiterLimit: arbiterLimit,
+        online: () => online,
         now: now,
         lookup: lookup ??
             (name, language) => name.startsWith('Monstera deliciosa')
@@ -612,6 +613,19 @@ void main() {
       await cascade.identify([photo]);
       expect(arbiter.calls, 0);
       expect(cascade.arbiterAvailable, isFalse);
+    });
+
+    test('hors ligne, rien n\'est tenté', () async {
+      // L'appel ne pourrait qu'échouer, et il ferait attendre le délai entier
+      // devant un écran qui promet une reconnaissance sans réseau.
+      final arbiter = FakeArbiter(picked);
+      final store = InMemoryMetricsStore();
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), store: store, arbiter: arbiter, online: false);
+      final result = await cascade.identify([photo]);
+      expect(arbiter.calls, 0);
+      expect(store.read().arbiterCalls, 0);
+      expect(store.read().arbiterIncidents, 0);
+      expect(result.first.scientificName, 'Monstera deliciosa');
     });
 
     test('sans clé, aucun appel', () async {

@@ -451,6 +451,12 @@ jamais.
 | liste distante | non — elle a déjà tranché |
 | une seule candidate | non — ce serait demander une confirmation, pas un arbitrage |
 
+**Hors ligne, rien n'est tenté.** La cascade lit l'état du réseau avant
+d'appeler (`online`, câblé sur `isOnlineProvider`). Sans cette lecture, un
+appareil sans réseau attendait le délai entier à chaque scan hésitant, devant
+un écran qui vient de promettre une reconnaissance sans réseau — et pour un
+appel qui ne pouvait qu'échouer.
+
 **Il retient l'écran, et c'est un choix.** L'appel se fait dans
 `CascadeIdentifier.identify`, avant que la liste ne s'affiche, avec un délai
 de huit secondes. L'alternative — montrer la liste puis la réordonner quand
@@ -477,6 +483,12 @@ Deux interrupteurs pour une seule promesse en feraient deux promesses à tenir.
 Et la ligne de provenance dit alors « vérifié en ligne » avec le **nuage** du
 § 3.8, jamais « sans réseau » — « vérifié » plutôt que « départagé » parce que
 la phrase doit rester vraie quand l'avis a été « aucune de ces candidates ».
+
+**Le service est nommé là où on le cherche.** Le texte de tête de *Réglages >
+Identification* dit « un modèle hébergé en Suisse (AI Services d'Infomaniak) »,
+les mêmes mots que l'écran Diagnostic : l'application nomme ses tiers, et ne
+laissait ici qu'un « en ligne » anonyme. La phrase du flux, elle, reste courte
+— c'est Iris qui propose, l'arbitre ne fait que classer.
 
 **Le quota, et ce qu'il borne vraiment.** Soixante arbitrages par appareil et
 par mois civil, le double du quota Pl@ntNet : un arbitrage coûte environ un
