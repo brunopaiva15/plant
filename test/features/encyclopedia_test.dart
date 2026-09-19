@@ -257,6 +257,23 @@ void main() {
       expect(find.text(oidium.hosts.first), findsOneWidget);
     });
 
+    testWidgets('les autres noms de l\'entrée sont donnés, le titre ne bouge pas', (tester) async {
+      await pump(tester, const ProblemPage(problemId: '060'));
+
+      final tetranyques = catalog['060']!;
+      expect(find.text(tetranyques.fr), findsWidgets, reason: 'le titre reste « Tétranyques »');
+      expect(find.text('Autres noms'), findsOneWidget);
+      expect(find.text('Araignées rouges'), findsOneWidget);
+      expect(find.text('Tetranychus urticae'), findsOneWidget, reason: 'le nom scientifique aussi');
+    });
+
+    testWidgets('sans autre nom, la section n\'apparaît pas', (tester) async {
+      // 016, les dégâts de grêle : le titre porte déjà le mot qu'on taperait.
+      expect(catalog['016']!.aliases, isEmpty);
+      await pump(tester, const ProblemPage(problemId: '016'));
+      expect(find.text('Autres noms'), findsNothing);
+    });
+
     testWidgets('un problème universel nomme toutes les plantes vasculaires', (tester) async {
       await pump(tester, const ProblemPage(problemId: '001'));
       expect(find.text('Toutes les plantes vasculaires'), findsOneWidget);

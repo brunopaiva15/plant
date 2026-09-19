@@ -2948,6 +2948,8 @@
   "problemScopeGeneralNote": "Possible sur les plantes vasculaires, selon les conditions et le stade.",
   "problemScopeWideNote": "Nombreux hôtes ; les taxons cités sont des exemples.",
   "problemScopeTargetNote": "Hôtes principaux d'un groupe cible ; la liste n'est pas exhaustive.",
+  "problemOtherNames": "Autres noms",
+  "problemOtherNamesNote": "Noms courants et scientifiques qui désignent la même chose.",
   "problemHosts": "Hôtes",
   "problemHostsAll": "Toutes les plantes vasculaires",
   "problemHostsNote": "Un genre ou une famille ne rend pas toutes ses espèces sensibles.",

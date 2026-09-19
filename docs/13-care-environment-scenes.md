@@ -42,6 +42,8 @@ rendu seul, comme l'humidificateur), l'humidificateur si la fiche prescrit
 la machine, l'ombre, la plante
 translatée sur son support, la vapeur et les
 lignes de flux dessinées en `CustomPainter`, puis les puces d'information.
+À l'ouverture, la pile se pose — gros plan sur la plante, puis recul —
+(voir *La pose*, plus bas).
 Le diorama est une maquette posée dans la fiche : son cadre s'arrondit au
 rayon des cartes (`Radii.large`).
 
@@ -335,6 +337,36 @@ Les effets respirent trois cycles à l'ouverture puis se reposent : rien ne
 bouge en permanence dans la fiche. En reduced motion, ils sont statiques et
 lisibles.
 
+### La pose
+
+À l'ouverture, la scène **se pose** plutôt que d'apparaître. Le cadre est
+d'abord serré sur la plante (`zoomInitial`, 1,3 ×, ancré un peu au-dessus
+du pied du pot) ; la plante descend sur son emplacement en s'éclaircissant,
+et son ombre naît avec elle ; quand le pot touche, deux ondes partent du
+point de contact, à plat sur le sol, et s'éteignent en s'élargissant ; puis
+la caméra recule jusqu'au cadre entier. Le tout tient en 1,4 s
+(`CareEnvironmentScene.poseDuration`).
+
+Ce que la pose raconte, c'est ce que la scène est faite pour dire : le
+regard part de la plante et finit sur l'endroit où elle est. Sans elle, la
+scène s'affichait d'un bloc et la plante n'était qu'un objet parmi le
+mobilier — on ne voyait pas tout de suite que c'était elle le sujet, ni que
+sa place dans la pièce voulait dire quelque chose. Le point d'ancrage du
+recul ne bouge pas à l'écran : la plante reste là où le regard l'a trouvée,
+c'est la pièce qui se découvre autour.
+
+Un seul contrôleur mène les trois temps, en intervalles qui se chevauchent :
+l'onde part à l'instant où le pot touche, et la caméra recule pendant que
+l'onde s'éteint. L'onde se dessine dans la couche de l'ombre
+(`_PlantShadowPainter`), sous la plante, pas dans une couche de plus. Le
+guéridon et l'humidificateur sont des meubles : ils sont là dès le départ,
+seule la plante se pose.
+
+La pose se rejoue quand la plante change de place, de silhouette ou de
+décor (Care Studio retouche la lumière, par exemple) : le regard la retrouve
+là où elle est allée. En reduced motion, rien de tout cela — la scène est
+posée dès la première image, au cadre entier.
+
 L'ombre, elle, **fuit la fenêtre** : dans les deux décors le jour vient de
 la gauche, et l'ombre bakée du fauteuil part vers la droite. Une ellipse
 centrée et symétrique contredisait cette lumière et nimbait l'objet au lieu
@@ -391,7 +423,8 @@ l'emplacement à `profile.light` pour décider où la plante apparaît.
   table des emplacements ;
 - `test/features/care_guide_test.dart` — le héros : présence, puces
   honnêtes, sémantique, Dynamic Type, reduced motion, `paper: false`,
-  props et effets selon la fiche ;
+  props et effets selon la fiche, la pose (gros plan puis recul, plante
+  posée dès la première image en reduced motion) ;
 - `test/assets/care_scene_assets_test.dart` — les fichiers : chaque
   lumière, silhouette et prop existe, en-tête RIFF/WEBP, chemins du
   résolveur, poids sous le budget, déclarations du pubspec.

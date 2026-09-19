@@ -5941,6 +5941,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Hôtes principaux d\'un groupe cible ; la liste n\'est pas exhaustive.';
 
   @override
+  String get problemOtherNames => 'Autres noms';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Noms courants et scientifiques qui désignent la même chose.';
+
+  @override
   String get problemHosts => 'Hôtes';
 
   @override

@@ -229,7 +229,9 @@ void main() {
       expect(cherche('zzzzz'), isEmpty);
     });
 
-    test('les synonymes ne s\'affichent nulle part', () {
+    test('le synonyme reste à côté du titre, il ne le remplace pas', () {
+      // La fiche du problème donne les autres noms ; le titre, lui, garde un
+      // seul nom par langue, pour que deux analyses se lisent pareil.
       final tetranyques = catalog['060']!;
       expect(tetranyques.aliases, contains('Araignées rouges'));
       for (final langue in ['fr', 'en', 'it', 'de']) {

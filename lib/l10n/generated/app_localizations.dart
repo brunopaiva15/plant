@@ -10098,6 +10098,18 @@ abstract class AppLocalizations {
   /// **'Hôtes principaux d\'un groupe cible ; la liste n\'est pas exhaustive.'**
   String get problemScopeTargetNote;
 
+  /// No description provided for @problemOtherNames.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autres noms'**
+  String get problemOtherNames;
+
+  /// No description provided for @problemOtherNamesNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noms courants et scientifiques qui désignent la même chose.'**
+  String get problemOtherNamesNote;
+
   /// No description provided for @problemHosts.
   ///
   /// In fr, this message translates to:

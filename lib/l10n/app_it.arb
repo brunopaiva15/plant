@@ -1898,6 +1898,8 @@
   "problemScopeGeneralNote": "Possibile sulle piante vascolari, secondo le condizioni e lo stadio.",
   "problemScopeWideNote": "Molti ospiti; i taxa citati sono esempi.",
   "problemScopeTargetNote": "Ospiti principali di un gruppo mirato; l'elenco non è esaustivo.",
+  "problemOtherNames": "Altri nomi",
+  "problemOtherNamesNote": "Nomi comuni e scientifici che indicano la stessa cosa.",
   "problemHosts": "Ospiti",
   "problemHostsAll": "Tutte le piante vascolari",
   "problemHostsNote": "Un genere o una famiglia non rende sensibili tutte le sue specie.",

@@ -5923,6 +5923,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Hauptwirte einer Zielgruppe; die Liste ist nicht vollständig.';
 
   @override
+  String get problemOtherNames => 'Weitere Namen';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Gebräuchliche und wissenschaftliche Namen für dieselbe Sache.';
+
+  @override
   String get problemHosts => 'Wirte';
 
   @override
