@@ -2427,7 +2427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'The leaves, the stem, the soil — close up and whole. Results are indicative only.';
+      'Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.';
 
   @override
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
@@ -2522,11 +2522,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisUnreadable =>
-      'The analysis came back unusable. Try again.';
+      'The analysis did not go through. Try again.';
 
   @override
   String get diagnosisUncertain =>
-      'The photos do not settle it. The leads below remain to be checked.';
+      'The photos are not enough to conclude. The leads below still need checking.';
 
   @override
   String get diagnosisAnotherPhotoHint =>

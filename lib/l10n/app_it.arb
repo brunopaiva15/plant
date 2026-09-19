@@ -890,7 +890,7 @@
     }
   },
   "diagnosisTitle": "Diagnosi",
-  "diagnosisHint": "Foglie, fusto, terra — da vicino e per intero. I risultati sono indicativi.",
+  "diagnosisHint": "Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.",
   "diagnosisSymptomsHint": "Cosa hai notato (facoltativo)…",
   "diagnosisChecks": "Osservazioni",
   "diagnosisChecksHint": "Facoltativo: ciò che la foto non mostra affina l'analisi.",
@@ -920,8 +920,8 @@
   "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
   "diagnosisUnauthorized": "La diagnosi non è disponibile al momento. Riprova più tardi.",
   "diagnosisBusy": "Il servizio di analisi non risponde. Riprova tra poco.",
-  "diagnosisUnreadable": "L'analisi non ha restituito nulla di utilizzabile. Riprova.",
-  "diagnosisUncertain": "Le foto non bastano a decidere. Le ipotesi qui sotto restano da verificare.",
+  "diagnosisUnreadable": "L'analisi non è riuscita. Riprova.",
+  "diagnosisUncertain": "Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.",
   "diagnosisAnotherPhotoHint": "Un'altra foto renderebbe l'analisi più precisa.",
   "diagnosisAnotherPhotoView": "Da fotografare: {view}.",
   "@diagnosisAnotherPhotoView": {

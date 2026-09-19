@@ -4317,7 +4317,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les feuilles, la tige, la terre — de près et en entier. Les résultats sont indicatifs.'**
+  /// **'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
   /// No description provided for @diagnosisSymptomsHint.
@@ -4497,13 +4497,13 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisUnreadable.
   ///
   /// In fr, this message translates to:
-  /// **'L\'analyse n\'a rien rendu d\'exploitable. Réessayez.'**
+  /// **'L\'analyse n\'a pas abouti. Réessayez.'**
   String get diagnosisUnreadable;
 
   /// No description provided for @diagnosisUncertain.
   ///
   /// In fr, this message translates to:
-  /// **'Les photos ne suffisent pas à trancher. Les pistes ci-dessous restent à vérifier.'**
+  /// **'Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.'**
   String get diagnosisUncertain;
 
   /// No description provided for @diagnosisAnotherPhotoHint.

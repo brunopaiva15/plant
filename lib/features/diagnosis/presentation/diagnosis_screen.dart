@@ -509,12 +509,29 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
           onSystemCamera: () => _addPhoto(PhotoSource.camera),
         ),
         const SizedBox(height: Space.sm),
-        _Shots(
-          photos: _photos,
-          max: DiagnosisLimits.maxImages,
-          onPick: () => _addPhoto(PhotoSource.gallery),
-          onRemove: _removePhoto,
+        // Les deux gestes sont écrits, comme partout où l'on ajoute une
+        // photo : toucher le cadre déclenche aussi, mais personne n'a à le
+        // deviner.
+        FloraButton(
+          label: l10n.takePhoto,
+          icon: CupertinoIcons.camera_fill,
+          style: FloraButtonStyle.secondary,
+          expand: true,
+          loading: _picking,
+          onPressed: _full ? null : _capture,
         ),
+        const SizedBox(height: Space.xs),
+        FloraButton(
+          label: l10n.choosePhoto,
+          icon: CupertinoIcons.photo,
+          style: FloraButtonStyle.ghost,
+          expand: true,
+          onPressed: _full || _picking ? null : () => _addPhoto(PhotoSource.gallery),
+        ),
+        if (_photos.isNotEmpty) ...[
+          const SizedBox(height: Space.sm),
+          _Shots(photos: _photos, max: DiagnosisLimits.maxImages, onRemove: _removePhoto),
+        ],
         const SizedBox(height: Space.sm),
         Text(_full ? l10n.diagnosisPhotosFull : l10n.diagnosisHint, style: context.text.caption),
 
@@ -720,16 +737,16 @@ class _Viewfinder extends StatelessWidget {
   }
 }
 
-/// Les trois places d'une analyse : ce qui est pris, et ce qui reste.
+/// Les photos prises, et les places qui restent.
 ///
-/// La place libre n'est pas un bouton de plus : elle montre qu'une photo
-/// peut encore partir, et mène à la galerie — le viseur, lui, est au-dessus.
+/// La bande ne sert qu'à montrer : elle dit ce qui partira à l'analyse et
+/// combien de vues restent possibles. Les deux boutons au-dessus, eux, sont
+/// les gestes.
 class _Shots extends StatelessWidget {
-  const _Shots({required this.photos, required this.max, required this.onPick, required this.onRemove});
+  const _Shots({required this.photos, required this.max, required this.onRemove});
 
   final List<StoredPhoto> photos;
   final int max;
-  final VoidCallback onPick;
   final ValueChanged<int> onRemove;
 
   static const double side = 76;
@@ -749,12 +766,7 @@ class _Shots extends StatelessWidget {
             Expanded(
               child: i < photos.length
                   ? _Shot(photo: photos[i], onRemove: () => onRemove(i), label: l10n.diagnosisRemovePhoto)
-                  : Pressable(
-                      onTap: i == photos.length ? onPick : null,
-                      scale: 0.95,
-                      semanticLabel: l10n.gallery,
-                      child: _Slot(open: i == photos.length),
-                    ),
+                  : const _Slot(),
             ),
           ],
         ],
@@ -764,24 +776,19 @@ class _Shots extends StatelessWidget {
 }
 
 /// La place d'une photo qui n'est pas encore prise.
-///
-/// La première libre est ouverte — elle mène à la galerie, le viseur étant
-/// juste au-dessus — ; les suivantes disent seulement combien il en reste.
 class _Slot extends StatelessWidget {
-  const _Slot({required this.open});
-
-  final bool open;
+  const _Slot();
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     return Container(
       decoration: BoxDecoration(
-        color: open ? c.sageSoft : c.surfaceMuted,
+        color: c.surfaceMuted,
         borderRadius: Radii.mediumAll,
         border: Border.all(color: c.line),
       ),
-      child: Icon(CupertinoIcons.photo, size: 20, color: open ? c.sage : c.inkTertiary),
+      child: Icon(CupertinoIcons.photo, size: 20, color: c.inkTertiary),
     );
   }
 }

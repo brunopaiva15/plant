@@ -2432,7 +2432,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Foglie, fusto, terra — da vicino e per intero. I risultati sono indicativi.';
+      'Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.';
 
   @override
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
@@ -2526,12 +2526,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Il servizio di analisi non risponde. Riprova tra poco.';
 
   @override
-  String get diagnosisUnreadable =>
-      'L\'analisi non ha restituito nulla di utilizzabile. Riprova.';
+  String get diagnosisUnreadable => 'L\'analisi non è riuscita. Riprova.';
 
   @override
   String get diagnosisUncertain =>
-      'Le foto non bastano a decidere. Le ipotesi qui sotto restano da verificare.';
+      'Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.';
 
   @override
   String get diagnosisAnotherPhotoHint =>

@@ -2432,7 +2432,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Blätter, Stängel, Erde — aus der Nähe und ganz. Die Ergebnisse sind Hinweise.';
+      'Fotografieren Sie Blätter, Stängel und Erde, aus der Nähe und ganz. Die Ergebnisse sind Hinweise.';
 
   @override
   String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
@@ -2527,11 +2527,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisUnreadable =>
-      'Die Analyse kam unbrauchbar zurück. Erneut versuchen.';
+      'Die Analyse ist fehlgeschlagen. Erneut versuchen.';
 
   @override
   String get diagnosisUncertain =>
-      'Die Fotos entscheiden es nicht. Die Spuren unten bleiben zu prüfen.';
+      'Die Fotos reichen für keinen Schluss. Die Spuren unten müssen geprüft werden.';
 
   @override
   String get diagnosisAnotherPhotoHint =>

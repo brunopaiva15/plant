@@ -890,7 +890,7 @@
     }
   },
   "diagnosisTitle": "Diagnose",
-  "diagnosisHint": "Blätter, Stängel, Erde — aus der Nähe und ganz. Die Ergebnisse sind Hinweise.",
+  "diagnosisHint": "Fotografieren Sie Blätter, Stängel und Erde, aus der Nähe und ganz. Die Ergebnisse sind Hinweise.",
   "diagnosisSymptomsHint": "Was dir aufgefallen ist (optional)…",
   "diagnosisChecks": "Beobachtungen",
   "diagnosisChecksHint": "Optional: Was das Foto nicht zeigt, schärft die Analyse.",
@@ -920,8 +920,8 @@
   "diagnosisRefused": "Dieses Foto konnte nicht analysiert werden.",
   "diagnosisUnauthorized": "Die Diagnose ist im Moment nicht verfügbar. Versuche es später noch einmal.",
   "diagnosisBusy": "Der Analysedienst antwortet nicht. In einem Moment erneut versuchen.",
-  "diagnosisUnreadable": "Die Analyse kam unbrauchbar zurück. Erneut versuchen.",
-  "diagnosisUncertain": "Die Fotos entscheiden es nicht. Die Spuren unten bleiben zu prüfen.",
+  "diagnosisUnreadable": "Die Analyse ist fehlgeschlagen. Erneut versuchen.",
+  "diagnosisUncertain": "Die Fotos reichen für keinen Schluss. Die Spuren unten müssen geprüft werden.",
   "diagnosisAnotherPhotoHint": "Ein weiteres Foto würde die Analyse schärfen.",
   "diagnosisAnotherPhotoView": "Zu fotografieren: {view}.",
   "@diagnosisAnotherPhotoView": {

@@ -71,10 +71,11 @@ void main() {
   testWidgets('la page s’ouvre sur le viseur, et sur les trois places des photos', (tester) async {
     await _open(tester, FakeHomeClimateService());
     // Le viseur est dans la page, comme partout où l'on photographie une
-    // plante. Sans caméra — ici, un test —, le cadre garde son invite.
+    // plante, et les deux gestes sont écrits sous lui : rien à deviner.
     expect(find.byType(CaptureFrame), findsOneWidget);
-    expect(find.text('Prendre une photo'), findsWidgets);
-    expect(find.text('Les feuilles, la tige, la terre — de près et en entier. Les résultats sont indicatifs.'), findsOneWidget);
+    expect(find.widgetWithText(FloraButton, 'Prendre une photo'), findsOneWidget);
+    expect(find.widgetWithText(FloraButton, 'Choisir une photo'), findsOneWidget);
+    expect(find.text('Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'), findsOneWidget);
     // Le geste de la page est en bas, et il attend une photo pour s'allumer.
     final analyser = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Analyser'));
     expect(analyser.onPressed, isNull, reason: 'aucune photo, rien à analyser');

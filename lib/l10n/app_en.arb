@@ -890,7 +890,7 @@
     }
   },
   "diagnosisTitle": "Diagnosis",
-  "diagnosisHint": "The leaves, the stem, the soil — close up and whole. Results are indicative only.",
+  "diagnosisHint": "Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.",
   "diagnosisSymptomsHint": "What you noticed (optional)…",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Optional: what the photo cannot show sharpens the analysis.",
@@ -920,8 +920,8 @@
   "diagnosisRefused": "This photo couldn't be analyzed.",
   "diagnosisUnauthorized": "Diagnosis is unavailable right now. Try again later.",
   "diagnosisBusy": "The analysis service is not answering. Try again in a moment.",
-  "diagnosisUnreadable": "The analysis came back unusable. Try again.",
-  "diagnosisUncertain": "The photos do not settle it. The leads below remain to be checked.",
+  "diagnosisUnreadable": "The analysis did not go through. Try again.",
+  "diagnosisUncertain": "The photos are not enough to conclude. The leads below still need checking.",
   "diagnosisAnotherPhotoHint": "One more photo would sharpen the analysis.",
   "diagnosisAnotherPhotoView": "To photograph: {view}.",
   "@diagnosisAnotherPhotoView": {
