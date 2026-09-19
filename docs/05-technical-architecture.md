@@ -159,6 +159,50 @@ la coquille soit là, après l'onboarding s'il y en a un.
   autre appareil — s'en vont. Les fichiers de moins de douze heures sont
   épargnés : pendant une création, la photo existe avant sa ligne.
 
+## La fenêtre : téléphone, tablette, pliable (`app/orientation_lock.dart`)
+
+Sur téléphone, l'application se tient en portrait : chaque écran est une
+colonne, et le paysage n'apporterait qu'une mise en page étirée. Sur tablette,
+elle ne verrouille rien — iPadOS attend qu'une application tourne et cohabite
+avec une autre, et le refuser est un motif de rejet. La limite est à 600 points
+de côté le plus court ; au-delà de 700 points de large, le contenu rend son
+surplus en marges (`readableInset`, `design_system/components/page_scaffold.dart`).
+
+L'iPhone Duo tient les deux rôles dans la même séance : fermé, son écran
+extérieur fait environ 466 points de large ; ouvert, l'écran intérieur en fait
+environ 669, et rien n'a été relancé entre les deux. (Apple publie les pixels —
+1398 × 2034 dehors, 2007 × 2853 dedans pour le magasin — pas les points ; ces
+deux nombres s'en déduisent au facteur 3 et restent à confirmer sur
+l'appareil. Si l'écran intérieur passait sous la limite des 600, c'est la
+limite qu'il faudrait corriger, pas le mécanisme.) Le verrou n'est donc plus une décision de
+démarrage mais un état — `OrientationLock` écoute `didChangeMetrics` et le pose
+ou le retire à chaque pli —, et aucune taille n'est gardée : `isCompactWindow()`
+mesure la vue implicite à chaque appel. Le viseur intégré suit la même règle
+(`features/plants/presentation/inline_camera.dart`) : son verrou de capture se
+défait quand l'appareil s'ouvre, faute de quoi une photo prise après le pli
+sortirait couchée.
+
+Côté iOS, trois points valent d'être connus :
+
+- `UIRequiresFullScreen` ne doit pas revenir dans `Info.plist`. La clé dit au
+  système que l'application veut tout l'écran à l'ancienne manière, et la tient
+  hors de l'adaptation — fermée comme ouverte.
+- L'écran intérieur n'honore pas `UISupportedInterfaceOrientations` : la
+  déclaration portrait ne vaut que pour l'écran extérieur. Une page doit savoir
+  tourner, pas s'y opposer.
+- `TARGETED_DEVICE_FAMILY = "1,2"` était déjà posé pour l'iPad ; c'est cette
+  valeur qui ouvre à l'écran intérieur les mises en page larges d'UIKit.
+
+La construction demande le SDK iOS 27.1 (Xcode 27.1, en bêta depuis le
+18 septembre 2026, sur un Mac Apple Silicon en macOS 26.6 ou plus récent). En
+deçà, iOS applique ses replis de compatibilité : la fenêtre n'atteint pas les
+bords de l'écran intérieur et reste tenue en une colonne. La cible de
+déploiement, elle, ne bouge pas : iOS 17.
+
+Ce qui reste à faire quand l'appareil sera là (23 octobre 2026) : les visuels
+du magasin pour l'écran intérieur (`store/README.md`) et, si la place le
+justifie, une famille de widget plus grande que `systemMedium`.
+
 ## Performance
 - Listes en `Sliver*` / `GridView.builder` (virtualisées), `RepaintBoundary` sur les cartes.
 - Requêtes drift ciblées + streams ; pas de rechargement global.
@@ -174,6 +218,8 @@ la coquille soit là, après l'onboarding s'il y en a un.
   correction météo d'un intervalle, gel et chaleur, zone de rusticité.
 - `test/data/*_repository_test.dart` : repositories sur base en mémoire (créer plante, arroser, archiver / restaurer, recherche).
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
+- `test/app/orientation_lock_test.dart` : le verrou de portrait posé et retiré
+  quand la fenêtre change de taille en cours de séance (pliable).
 
 ## La météo (`domain/weather/`, `features/weather/`)
 Un seul appel sert tout : `weatherWindowProvider` demande trois jours passés,
