@@ -2052,6 +2052,48 @@ des meilleurs scores :
 Trente photos et dix minutes tranchent entre trois chantiers de tailles très
 différentes. Aucun n'a de raison d'être entrepris avant.
 
+#### La moitié plantes, mesurée le 19 septembre 2026
+
+`tools/plant_model/hors_sujet.py` fait cette mesure. Première passe sur la
+moitié la plus difficile — **40 plantes hors catalogue**, tirées du jeu de
+test parmi les classes qu'Iris Indoor n'expose pas, donc étiquetées :
+
+| bande | Iris Indoor | Iris 8 sur les mêmes photos |
+|---|---|---|
+| sous le plancher (0,10) | 1 — 2,5 % | 1 — 2,5 % |
+| plausible | 28 — 70,0 % | 28 — 70,0 % |
+| **affirmé (≥ 0,70)** | **11 — 27,5 %** | 11 — 27,5 % |
+| score médian | 0,4430 | 0,4571 |
+
+Les bandes se ressemblent ; ce qu'elles contiennent, non. Sur les dix plus
+affirmées, la v8 en avait **quatre justes** — c'étaient des espèces qu'elle
+exposait. Iris Indoor n'en a aucune, et **les dix sont acceptées** par
+`FallbackPolicy` : affirmées sans réserve, sans appel à Pl@ntNet.
+
+| la plante photographiée | ce qu'Iris Indoor répond | |
+|---|---|---|
+| *Aloiampelos tenuior* | *Aloe vera* | 0,9983 |
+| *Salvia mexicana* | *Sinningia speciosa* | 0,9590 |
+| *Agave lophantha* | *Tillandsia ionantha* | 0,9328 |
+| *Veronica elliptica* | *Nephrolepis cordifolia*, une fougère | 0,8978 |
+
+Certaines sont des voisines pardonnables — *Echeveria × imbricata* rendue
+*Echeveria elegans*, *Stachys arvensis* rendue basilic, deux Lamiacées. Une
+dicotylédone à fleurs rendue fougère à 0,90 ne l'est pas.
+
+C'est la troisième ligne du tableau ci-dessus, et elle a une conséquence
+que le § 13.3 n'avait pas prévue : **rétrécir le masque ne transforme pas
+ces réponses en repli, il les transforme en erreurs confiantes.** La
+dégradation douce annoncée n'existe pas pour ces photos-là.
+
+**Ce que cette passe ne dit pas.** n = 40, et rien que des plantes : les
+non-plantes — chat, meuble, visage, mur, plat — restent à mesurer, et
+c'était la question d'origine du § 3.2. Les images viennent en outre du jeu
+de test, donc de photos naturalistes, pas de photos de salon. Et la mesure
+donne une proportion **parmi les photos hors catalogue**, pas leur fréquence
+chez les utilisateurs : ce dernier terme est exactement ce que le chantier 2
+du § 13.3 produit.
+
 #### Si la mesure la réclame
 
 Une classe de plus, entraînée sur des négatifs de deux natures : des
@@ -3164,6 +3206,13 @@ Deux conséquences d'arithmétique, pas d'opinion :
    basculent sur le repli Pl@ntNet et la réponse de genre : coût produit
    connu, pas accident.
 
+   > **Cette dernière phrase est fausse pour un quart d'entre elles**, et la
+   > mesure du § 12.7 le dit : sur 40 photos de plantes hors catalogue,
+   > Iris Indoor en **affirme 27,5 %** au-dessus du seuil et avec la marge.
+   > La cascade ne bascule pas, elle répond — et elle répond faux. Ce qui
+   > était écrit comme une dégradation douce est, pour ces photos-là, une
+   > erreur confiante. Le coût était sous-estimé, pas la direction.
+
 Ce qui reste mesuré plutôt que parié : **lesquelles** des candidates
 tiennent leurs images (`disponibilite.py`), puis la part des photos des
 utilisateurs par espèce (chantier 2) pour trancher les limites de liste.
@@ -3407,8 +3456,10 @@ l'autonomie, l'inverse de ce que la v8 avait obtenu.
 #### Ce que livrer retire
 
 Iris Indoor expose 336 classes dont 144 inconnues de la v8 : **192 communes**.
-Livrer retire donc **1 252 espèces** de ce que l'application savait nommer,
-qui basculent sur la réponse de genre et le repli Pl@ntNet.
+Livrer retire donc **1 252 espèces** de ce que l'application savait nommer.
+Elles ne basculent pas toutes sur la réponse de genre et le repli Pl@ntNet :
+pour un quart d'entre elles, le modèle affirme à leur place une plante
+d'intérieur qu'il connaît, au-dessus du seuil et avec la marge (§ 12.7).
 
 C'est la décision du § 13.3, mais la coupe est plus large que les ~950
 anticipées : le masque est tombé à 336 au lieu des 500 visés. Pour une
@@ -3631,11 +3682,11 @@ sauvegarde. Une recette à la fois, comme au § 12.
 manqué à la v8 : on a collecté 4 220 espèces avant de savoir ce qu'une
 espèce de plus coûte.
 
-| porte | ce qu'elle décide | coût |
+| porte | ce qu'elle décide | état |
 |---|---|---|
-| la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | quelques heures de GPU, jeu déjà collecté |
-| `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | deux heures |
-| la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | à mesurer sur les 3 606 images |
+| la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | **franchie** — lue au § 6.7 bis, c'est elle qui a décidé des 336 exposées |
+| la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | **à moitié** — plantes hors catalogue mesurées le 19 septembre (§ 12.7), 27,5 % affirmées à tort ; les non-plantes restent à faire |
+| `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | **ouverte** — deux heures, et elle commande toute la branche |
 
 **Ce qu'on ne fera pas, et pourquoi :**
 
