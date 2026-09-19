@@ -144,7 +144,22 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
       if (await File(other).exists()) others.add(other);
     }
     if (!mounted) return;
-    final candidate = await showIdentificationSheet(context, absoluteImagePath: path, others: others);
+    // Dehors, le modèle embarqué propose au lieu d'affirmer : il n'expose que
+    // des plantes d'intérieur, et il en nomme une avec assurance devant une
+    // plante de jardin (§ 12.7 de `docs/09`). Emplacement inconnu ou non
+    // renseigné : on ne suppose rien, c'est la règle d'origine qui s'applique.
+    final locations = ref.read(locationsProvider).value ?? const <Location>[];
+    final outdoor = locations
+            .where((l) => l.id == plant.locationId)
+            .firstOrNull
+            ?.isOutdoor ??
+        false;
+    final candidate = await showIdentificationSheet(
+      context,
+      absoluteImagePath: path,
+      others: others,
+      outdoor: outdoor,
+    );
     if (candidate == null || !mounted) return;
     await ref.read(plantRepositoryProvider).update(plant.copyWith(speciesName: () => candidate.scientificName));
     if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.speciesSet, emoji: '🔬'));

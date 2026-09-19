@@ -17,6 +17,85 @@ abstract final class CareProfiles {
   // ignore: unused_field — raccourci écrit par extract_prop.
   static const _layering = [Propagation.layering];
 
+  // ── Conduites partagées ───────────────────────────────────────────────
+  // Quatre familles de succulentes tendres dont aucune n'avait d'entrée à
+  // elle. Écrites une fois plutôt que recopiées quinze fois ; le bloc qui
+  // les utilise, plus bas, dit d'où vient chaque conduite.
+
+  /// Les euphorbes succulentes de collection, sur le modèle d'`Euphorbia
+  /// trigona`. Dix degrés : elles viennent de Madagascar, de Socotra ou du
+  /// Karoo, pas des massifs européens.
+  static const _euphorbeSucculente = CareProfile(
+    wateringSummerDays: 30,
+    wateringWinterDays: 64,
+    dryDown: DryDown.fullyDry,
+    light: LightNeed.someSun,
+    humidity: HumidityNeed.low,
+    difficulty: CareDifficulty.easy,
+    soil: SoilKind.cactus,
+    fertilizingDays: 60,
+    repotEveryMonths: 36,
+    damageBelowC: 10,
+    propagation: _cutting,
+    issues: [CommonIssue.overwatering, CommonIssue.rootRot, CommonIssue.mealybugs, CommonIssue.etiolation],
+    tipKeys: ['drySoilFirst'],
+  );
+
+  /// Les crassulacées retombantes et tendres — queue-d'âne, trompe-l'œil —
+  /// sur le modèle d'`Echeveria` : elles passent l'été dehors en pot et
+  /// rentrent avant les premiers froids.
+  static const _sedumTendre = CareProfile(
+    wateringSummerDays: 21,
+    wateringWinterDays: 45,
+    dryDown: DryDown.fullyDry,
+    light: LightNeed.someSun,
+    humidity: HumidityNeed.low,
+    difficulty: CareDifficulty.easy,
+    soil: SoilKind.cactus,
+    fertilizingDays: 60,
+    repotEveryMonths: 24,
+    damageBelowC: 5,
+    propagation: _leaf,
+    issues: [CommonIssue.overwatering, CommonIssue.rootRot, CommonIssue.mealybugs, CommonIssue.etiolation],
+    outdoorFriendly: true,
+    tipKeys: ['drySoilFirst'],
+  );
+
+  /// Les mésembs de collection — conophytums, faucarias — sur le modèle de
+  /// `Lithops` : un repos sec marqué, et pas de gel.
+  static const _mesembTendre = CareProfile(
+    wateringSummerDays: 30,
+    wateringWinterDays: 90,
+    dryDown: DryDown.fullyDry,
+    light: LightNeed.fullSun,
+    humidity: HumidityNeed.low,
+    difficulty: CareDifficulty.medium,
+    soil: SoilKind.cactus,
+    repotEveryMonths: 36,
+    damageBelowC: 5,
+    propagation: _division,
+    issues: [CommonIssue.overwatering, CommonIssue.rootRot],
+    tipKeys: ['drySoilFirst'],
+  );
+
+  /// Les caudex des régions chaudes, dont la `Dorstenia foetida` : douze
+  /// degrés, et un repos sec quand les feuilles tombent.
+  static const _caudexTendre = CareProfile(
+    wateringSummerDays: 14,
+    wateringWinterDays: 60,
+    dryDown: DryDown.fullyDry,
+    light: LightNeed.brightIndirect,
+    humidity: HumidityNeed.low,
+    difficulty: CareDifficulty.medium,
+    soil: SoilKind.cactus,
+    fertilizingDays: 45,
+    repotEveryMonths: 36,
+    damageBelowC: 12,
+    propagation: _seed,
+    issues: [CommonIssue.overwatering, CommonIssue.rootRot],
+    tipKeys: ['drySoilFirst'],
+  );
+
   /// Ce qui, dans ces profils, a ete confronte a la RHS : la rusticite,
   /// lue sur la fiche de l'espece. Le reste n'est pas source.
   /// Racine du tampon lumière : extract_light y rattache `light`.
@@ -718,6 +797,32 @@ abstract final class CareProfiles {
       tipKeys: ['drySoilFirst', 'sharpSpines'],
       sourcing: _rhsHardinessLightSoilWaterHumidityWateringFeedingRepottingIssuesPropagationBloom,
     ),
+    // ── Les succulentes que leur genre déclarait rustiques ────────────────
+    // Faute d'entrée à elles, ces espèces héritaient d'un profil de genre ou
+    // de famille taillé pour leurs cousines de jardin : `Euphorbia` porte
+    // −10 °C (les euphorbes de massif), `Sedum` −5 °C (les sédums de
+    // rocaille), `Senecio` −12 °C, `Aizoaceae` −5 °C, `Moraceae` −12 °C.
+    // Leur fiche annonçait donc qu'une plante de rebord de fenêtre passe
+    // l'hiver dehors — un mauvais conseil, et de quoi l'envoyer en pleine
+    // terre dans la scène d'environnement.
+    //
+    // La conduite reprend celle de leur plus proche voisine déjà au
+    // catalogue : `Euphorbia trigona` pour les euphorbes succulentes,
+    // `Echeveria` pour les sédums tendres, `Lithops` pour les mésembs. Seul
+    // le seuil de froid est affirmé ici, et il n'est pas sourcé à la RHS :
+    // pas de `sourcing`, la fiche ne prétend donc rien.
+    'Euphorbia abdelkuri': _euphorbeSucculente,
+    'Euphorbia ambovombensis': _euphorbeSucculente,
+    'Euphorbia cylindrifolia': _euphorbeSucculente,
+    'Euphorbia decaryi': _euphorbeSucculente,
+    'Euphorbia francoisii': _euphorbeSucculente,
+    'Euphorbia obesa': _euphorbeSucculente,
+    'Euphorbia suzannae': _euphorbeSucculente,
+    'Sedum pachyphyllum': _sedumTendre,
+    'Sedum × rubrotinctum': _sedumTendre,
+    'Faucaria tigrina': _mesembTendre,
+    'Senecio macroglossus': _sedumTendre,
+    'Dorstenia foetida': _caudexTendre,
     'Euphorbia lactea': CareProfile(
       wateringSummerDays: 30,
       wateringWinterDays: 64,

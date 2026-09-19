@@ -14,16 +14,17 @@ import 'package:flora/data/species/species_index.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue éditorial : 1453 fiches curatées, uniques, avec famille et catégorie', () {
+  test('catalogue éditorial : 1458 fiches curatées, uniques, avec famille et catégorie', () {
     // 1 453 et non 1 200 : les paliers 1 000 et 1 200 rejouaient 72 espèces
     // déjà curatées, et 59 classes d'Iris que personne ne nommait ont été
     // écrites à la main (`species_catalog_iris_only.dart`). Le lot des plantes
     // d'intérieur en a ajouté 266 : aracées de collection, orchidées,
     // broméliacées, carnivores, caudex, palmiers et fougères d'appartement,
     // dont les noms anglais, allemands et italiens ont été repris du catalogue
-    // étendu quand il les connaissait.
+    // étendu quand il les connaissait. Iris Indoor en a ajouté cinq de plus :
+    // des classes de sa collecte que ni l'un ni l'autre catalogue ne nommait.
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(1453));
+    expect(SpeciesCatalog.entries, hasLength(1458));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -75,21 +76,23 @@ void main() {
     expect(masquees, hasLength(27), reason: masquees.join(', '));
   });
 
-  test('encyclopédie Iris : exactement les 1444 classes du modèle', () {
+  test('encyclopédie Iris : exactement les classes du modèle livré', () {
     final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
     final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toList();
     final index = SpeciesIndex.parse(File('assets/species/catalog.tsv').readAsStringSync());
     final detailed = IrisDetailedCatalog.from(modelSpecies: modelSpecies, index: index);
     final names = detailed.entries.map((e) => e.scientificName).toList();
 
-    expect(modelJson['classes'], 1444);
-    expect(modelSpecies, hasLength(1444));
-    expect(modelSpecies.toSet(), hasLength(1444));
-    // Les 1 444 classes du modèle sont toutes dans l'encyclopédie, qui en
-    // couvre bien plus depuis que le plafond de 1 900 fiches est tombé.
+    // Le nombre de classes appartient au modèle livré, pas au test : il suit
+    // la fiche du § 0, que `model_facts_test.dart` tient contre `labels.txt`.
+    final classes = modelJson['classes'] as int;
+    expect(modelSpecies, hasLength(classes));
+    expect(modelSpecies.toSet(), hasLength(classes));
+    // Les classes du modèle sont toutes dans l'encyclopédie, qui en couvre
+    // bien plus depuis que le plafond de 1 900 fiches est tombé.
     expect(names.toSet().length, names.length);
     expect(modelSpecies.toSet().difference(names.toSet()), isEmpty);
-    expect(detailed.entries.length, greaterThan(1444));
+    expect(detailed.entries.length, greaterThan(classes));
     expect(detailed.entries.every((e) => e.commonName('fr').trim().isNotEmpty), isTrue);
     // Une fiche sans famille est une fiche à moitié vide.
     expect(detailed.entries.where((e) => e.family.trim().isEmpty), isEmpty);
@@ -148,28 +151,20 @@ void main() {
     expect(SpeciesCatalog.find('Metasequoia glyptostroboides')?.category, SpeciesCategory.tree);
   });
 
-  test('catalogue : les 150 entrées du palier 800 sont des classes Iris 8', () {
-    final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
-    final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toSet();
+  test('catalogue : les 150 entrées du palier 800, uniques et catégorisées', () {
     final addedNames = SpeciesCatalog800.entries.map((e) => e.scientificName).toList();
 
-    expect(modelJson['classes'], 1444);
     expect(addedNames, hasLength(150));
     expect(addedNames.toSet().length, addedNames.length);
-    expect(addedNames.where((name) => !modelSpecies.contains(name)), isEmpty);
     expect(SpeciesCatalog.find('Abies bracteata')?.category, SpeciesCategory.tree);
     expect(SpeciesCatalog.find('Salvia microphylla')?.category, SpeciesCategory.flower);
   });
 
-  test('catalogue : les 196 entrées du palier 1000 sont des classes Iris 8', () {
-    final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
-    final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toSet();
+  test('catalogue : les 196 entrées du palier 1000, uniques et catégorisées', () {
     final addedNames = SpeciesCatalog1000.entries.map((e) => e.scientificName).toList();
 
-    expect(modelJson['classes'], 1444);
     expect(addedNames, hasLength(196));
     expect(addedNames.toSet().length, addedNames.length);
-    expect(addedNames.where((name) => !modelSpecies.contains(name)), isEmpty);
     expect(SpeciesCatalog.find('Ranunculus flammula')?.category, SpeciesCategory.flower);
     expect(SpeciesCatalog.find('Parrotia persica')?.category, SpeciesCategory.tree);
     expect(SpeciesCatalog.find('Zingiber officinale')?.category, SpeciesCategory.herb);
@@ -177,15 +172,11 @@ void main() {
     expect(SpeciesCatalog.find('Ranunculus flammula')?.fr, 'Renoncule flammette');
   });
 
-  test('catalogue : les 132 entrées du palier 1200 sont des classes Iris 8', () {
-    final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
-    final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values.cast<String>().toSet();
+  test('catalogue : les 132 entrées du palier 1200, uniques et catégorisées', () {
     final addedNames = SpeciesCatalog1200.entries.map((e) => e.scientificName).toList();
 
-    expect(modelJson['classes'], 1444);
     expect(addedNames, hasLength(132));
     expect(addedNames.toSet().length, addedNames.length);
-    expect(addedNames.where((name) => !modelSpecies.contains(name)), isEmpty);
     expect(SpeciesCatalog.find('Adiantum capillus-veneris')?.category, SpeciesCategory.indoor);
     expect(SpeciesCatalog.find('Austrocylindropuntia subulata')?.category, SpeciesCategory.succulent);
     expect(SpeciesCatalog.find('Arctium tomentosum')?.category, SpeciesCategory.herb);
@@ -194,6 +185,33 @@ void main() {
     expect(SpeciesCatalog.find('Akebia quinata')?.category, SpeciesCategory.flower);
     expect(SpeciesCatalog.find('Aesculus × carnea')?.category, SpeciesCategory.tree);
     expect(SpeciesCatalog.find('Akebia quinata')?.fr, 'Akébie à cinq feuilles');
+  });
+
+  // Trois tests affirmaient « les 150 entrées du palier 800 sont des classes
+  // Iris 8 » : les paliers avaient été curatés depuis la liste des classes du
+  // modèle d'alors. Iris Indoor n'expose plus que ce qui pousse à l'intérieur,
+  // et l'affirmation est devenue fausse par construction — c'est la décision
+  // du § 13.3 de `docs/09`, pas un accident.
+  //
+  // Une fiche que le modèle ne nomme pas n'est donc pas un défaut : elle tombe
+  // sur la réponse de genre et le repli Pl@ntNet. Mais le nombre doit rester
+  // visible, et ne pas remonter sans qu'on l'ait décidé.
+  test('catalogue : ce que le modèle livré ne sait pas nommer, compté', () {
+    final modelJson = jsonDecode(File('assets/model/model.json').readAsStringSync()) as Map<String, dynamic>;
+    final modelSpecies = (modelJson['species'] as Map<String, dynamic>).values
+        .cast<String>()
+        .map((name) => name.toLowerCase())
+        .toSet();
+    final curatees = SpeciesCatalog.entries.map((e) => e.scientificName).toList();
+    final muettes = curatees.where((name) => !modelSpecies.contains(name.toLowerCase())).toList();
+
+    expect(curatees, hasLength(1458));
+    expect(
+      muettes,
+      hasLength(lessThanOrEqualTo(_fichesSansClasse)),
+      reason: 'le modèle nommait ${curatees.length - _fichesSansClasse} fiches curatées '
+          'sur ${curatees.length}, il en nomme ${curatees.length - muettes.length}',
+    );
   });
 
   test('catalogue : aucun palier ne rejoue une espèce déjà curatée', () {
@@ -215,7 +233,7 @@ void main() {
     // Le moissonnage Wikidata a manqué le genre Euphorbia en entier, et des
     // arbres aussi communs que le chêne-liège : 63 classes du modèle
     // n'avaient ni famille ni nom, dans aucune des quatre langues.
-    expect(SpeciesCatalogIrisOnly.entries, hasLength(59));
+    expect(SpeciesCatalogIrisOnly.entries, hasLength(64));
     expect(SpeciesCatalog.find('Quercus suber')?.fr, 'Chêne-liège');
     expect(SpeciesCatalog.find('Quercus suber')?.family, 'Fagaceae');
     expect(SpeciesCatalog.find('Robinia pseudoacacia')?.de, 'Gewöhnliche Robinie');
@@ -258,3 +276,8 @@ List<String> _dups(List<String> l) {
   final seen = <String>{};
   return l.where((n) => !seen.add(n)).toList();
 }
+
+/// Mesuré sur Iris Indoor : 1 139 des 1 458 fiches curatées n'ont pas de classe
+/// dans le modèle livré, qui en nomme 319. Le plafond n'interdit pas d'en
+/// perdre — il interdit d'en perdre sans le voir.
+const int _fichesSansClasse = 1139;

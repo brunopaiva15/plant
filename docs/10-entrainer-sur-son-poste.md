@@ -15,7 +15,7 @@ une machine recyclée dès qu'elle s'endormait. Sur une carte grand public, la
 même passe coûte de l'ordre d'une heure. C'est ce qui a rendu la v7 puis la v8
 possibles : quatre recettes dans un après-midi au lieu d'une par nuit.
 
-La version que l'application livre aujourd'hui est l'**Iris 8** ; son numéro
+La version que l'application livre aujourd'hui est l'**Iris Indoor** ; son numéro
 et ses chiffres ne s'écrivent pas ici, ils sont dans
 `assets/model/model.json` et repris une seule fois, au § 0 de
 [`09-plant-recognition.md`](09-plant-recognition.md). La procédure ci-dessous
@@ -257,6 +257,15 @@ diffère — pas la peine d'enchaîner, il faut comprendre quoi.
 L'entraînement est **reprenable** : relancer la même ligne repart du dernier
 point de sauvegarde (toutes les 200 lots). `--fine-epochs 0` évalue et
 exporte depuis un point de sauvegarde sans rien réentraîner.
+
+> **Reprendre n'est pas prolonger.** Seuls les poids sont restaurés : Adam
+> repart de moments nuls. Sur un réseau interrompu en route, c'est sans
+> conséquence ; sur un réseau qui a convergé, ça coûte cher. Mesuré le
+> 19 septembre 2026 — huit époques ajoutées après coup ont rendu un modèle
+> **2,3 points de validation sous son point de départ**, et `fine.weights.h5`
+> étant réécrit à chaque époque, les poids d'avant étaient perdus. Pour
+> allonger un entraînement, relancer une passe entière avec le bon nombre
+> d'époques.
 
 ## 5. Comparer, toujours à armes égales
 

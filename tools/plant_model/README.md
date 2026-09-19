@@ -31,6 +31,11 @@ Relancer la même ligne reprend au dernier point de sauvegarde. Avec
 `--fine-epochs 0`, l'entraînement est sauté : le modèle est évalué et
 exporté depuis le point de sauvegarde tel quel.
 
+**Reprendre n'est pas prolonger** : seuls les poids sont restaurés, Adam
+repart de zéro, et ajouter des époques à un réseau déjà convergé lui coûte
+des points (§ 13.6 de `docs/09`). Le point de sauvegarde est par ailleurs
+réécrit à chaque époque, donc une reprise efface ce dont elle est partie.
+
 Sorties, directement dans les assets de l'app :
 
 | Fichier | Contenu |

@@ -1,15 +1,14 @@
 {
   "totalSpecies": 33343,
   "resolution": {
-    "family": 26081,
-    "generic": 1,
-    "genus": 6983,
-    "species": 278
+    "family": 26080,
+    "genus": 6974,
+    "species": 289
   },
   "toxicityByLevel": {
-    "family": 6041,
+    "family": 6042,
     "genus": 2909,
-    "none": 24380,
+    "none": 24379,
     "species": 13
   },
   "heavyProfiles": {
@@ -40,7 +39,7 @@
     "family:Lamiaceae": 474,
     "family:Lauraceae": 130,
     "family:Liliaceae": 183,
-    "family:Malvaceae": 288,
+    "family:Malvaceae": 289,
     "family:Myrtaceae": 534,
     "family:Onagraceae": 257,
     "family:Orchidaceae": 2013,
@@ -74,7 +73,7 @@
     "genus:Rubus": 559,
     "genus:Salix": 177,
     "genus:Salvia": 108,
-    "genus:Senecio": 102,
+    "genus:Senecio": 101,
     "genus:Solanum": 107,
     "genus:Trifolium": 158,
     "genus:Viola": 158

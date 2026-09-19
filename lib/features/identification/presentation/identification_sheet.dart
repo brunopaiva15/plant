@@ -39,18 +39,23 @@ Future<IdentificationCandidate?> showIdentificationSheet(
   BuildContext context, {
   required String absoluteImagePath,
   List<String> others = const [],
+  bool outdoor = false,
 }) =>
     showFloraSheet<IdentificationCandidate>(
       context,
       scrollable: true,
-      builder: (_) => _IdentificationBody(path: absoluteImagePath, others: others),
+      builder: (_) => _IdentificationBody(path: absoluteImagePath, others: others, outdoor: outdoor),
     );
 
 class _IdentificationBody extends ConsumerStatefulWidget {
-  const _IdentificationBody({required this.path, this.others = const []});
+  const _IdentificationBody({required this.path, this.others = const [], this.outdoor = false});
 
   final String path;
   final List<String> others;
+
+  /// La plante vit dehors. Le modèle embarqué n'expose que de l'intérieur :
+  /// il propose alors au lieu d'affirmer (`FallbackPolicy.outdoors`).
+  final bool outdoor;
 
   @override
   ConsumerState<_IdentificationBody> createState() => _IdentificationBodyState();
@@ -189,7 +194,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
       ));
     }
     return ref.read(jevIdentificationPolicyProvider).evaluate(
-          policy: identifier.policy,
+          policy: _policy,
           candidates: results,
           photos: _paths.length,
           maxPhotos: maxPhotos,
@@ -212,11 +217,19 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         );
   }
 
+  /// La politique de la cascade, tempérée par l'emplacement. Lue une fois et
+  /// partagée : un seuil recopié dans une vue finit toujours par diverger.
+  FallbackPolicy get _policy {
+    final identifier = ref.read(plantIdentifierProvider);
+    final base = identifier is CascadeIdentifier ? identifier.policy : const FallbackPolicy();
+    return widget.outdoor ? base.outdoors() : base;
+  }
+
   /// Le genre, quand aucune espèce ne passe le seuil. Même politique que le
   /// reste : c'est elle qui dit ce que « sûr » veut dire.
   GenusAnswer? _genus(List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
-    return identifier is CascadeIdentifier ? genusAnswer(identifier.policy, results) : null;
+    return identifier is CascadeIdentifier ? genusAnswer(_policy, results) : null;
   }
 
   /// Une photo de plus, et on recommence. C'est gratuit, hors ligne et
@@ -316,7 +329,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         FloraGroup(
           children: [
             for (final c in results)
-              CandidateRow(candidate: c, onUse: () => _use(c, action)),
+              CandidateRow(candidate: c, onUse: () => _use(c, action), policy: _policy),
           ],
         ),
         if (state?.offer == SecondPhotoOffer.prominent &&
@@ -403,6 +416,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               CandidateRow(
                 candidate: c,
                 onUse: () => _use(c, JevProductAction.keepUncertain),
+                policy: _policy,
               ),
           ],
         ),
@@ -553,11 +567,16 @@ class CandidateRow extends ConsumerWidget {
     required this.candidate,
     required this.onUse,
     this.selected = false,
+    this.policy = const FallbackPolicy(),
   });
 
   final IdentificationCandidate candidate;
   final VoidCallback onUse;
   final bool selected;
+
+  /// Celle de la cascade, tempérée par l'emplacement s'il est extérieur : le
+  /// mot affiché doit dire la même chose que la décision prise.
+  final FallbackPolicy policy;
 
   /// Le côté de la vignette. Assez grand pour qu'une feuille se distingue
   /// d'une fleur, assez petit pour que la ligne reste une ligne de liste.
@@ -566,7 +585,7 @@ class CandidateRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final confidence = IdentificationConfidence.of(candidate);
+    final confidence = IdentificationConfidence.of(candidate, policy: policy);
     final mot = l10n.confidenceLabel(confidence);
     final commun = candidate.commonName ?? '';
     // Pl@ntNet livre sa photo de référence avec le résultat ; le modèle

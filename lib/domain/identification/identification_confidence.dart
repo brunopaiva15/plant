@@ -41,6 +41,15 @@ enum IdentificationConfidence {
     IdentificationCandidate candidate, {
     FallbackPolicy policy = const FallbackPolicy(),
   }) {
+    // Dehors, la politique refuse d'affirmer une réponse de l'appareil
+    // (`FallbackPolicy.outdoors`). Le mot doit descendre avec elle : annoncer
+    // « probable » ce que la cascade vient de refuser d'accepter, ce serait
+    // dire deux choses contraires sur le même écran.
+    if (candidate.source == IdentificationSource.local && !policy.localMayAffirm) {
+      return candidate.score >= policy.plausibleThreshold
+          ? IdentificationConfidence.possible
+          : IdentificationConfidence.unlikely;
+    }
     final (haut, moyen) = switch (candidate.source) {
       IdentificationSource.local => (policy.acceptThreshold, policy.plausibleThreshold),
       _ => (remoteLikely, remotePossible),

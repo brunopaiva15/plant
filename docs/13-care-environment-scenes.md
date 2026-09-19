@@ -138,7 +138,8 @@ Entre les deux, il y a le balcon. La règle est centralisée dans
 |---|---|
 | `tree`, `fruit`, `vegetable` | jardin si rustique, **balcon** sinon |
 | `herb`, `flower` | jardin si rustique ; **balcon** si `outdoorFriendly` ; pièce sinon |
-| `indoor`, `succulent` | pièce |
+| `succulent` | même règle que les aromatiques |
+| `indoor` | pièce |
 | pas de catégorie | pièce (repli) |
 
 Ce que le balcon corrige : un citronnier — `fruit`, non rustique — était
@@ -149,10 +150,20 @@ déplace une soixantaine d'espèces, surtout des fruitiers et des légumes.
 Rien n'est inventé : sans `outdoorFriendly`, une plante gélive dont la fiche
 ne dit pas qu'elle sort reste dans la pièce.
 
-**Les succulentes restent dedans quoi qu'il arrive.** Le catalogue en compte
-deux fois plus de plantes d'appartement que de rustiques, et leur appliquer
-la règle déplacerait une trentaine de fiches pour un gain discutable. La
-ligne des aromatiques leur irait telle quelle le jour où on le décide.
+**Les succulentes ont demandé de corriger les fiches d'abord.** Appliquer la
+règle telle quelle en envoyait la moitié au jardin à tort : quinze espèces
+n'avaient pas de profil à elles et héritaient de leur genre ou de leur
+famille — `Euphorbia` porte −10 °C (les euphorbes de massif), `Sedum` −5 °C
+(les sédums de rocaille), `Aizoaceae` −5 °C. Une *Euphorbia obesa* annonçait
+donc qu'elle survit à −10 °C, et une queue-d'âne aurait fini plantée dans
+une pelouse.
+
+Ce n'était pas un défaut de la scène : la fiche donnait déjà ce mauvais
+conseil, la scène n'aurait fait que le rendre visible. Les quinze espèces
+ont reçu leur propre seuil de froid (`care_profiles.dart`, bloc « Les
+succulentes que leur genre déclarait rustiques »), la conduite étant reprise
+de leur plus proche voisine au catalogue. Ces seuils ne sont pas sourcés à
+la RHS et ne le prétendent pas.
 
 Un arbre ne finit jamais dans un salon. Les trois décors partagent caméra,
 bornes et direction de soleil : la table des emplacements vaut pour l'un

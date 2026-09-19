@@ -8,10 +8,10 @@
 > l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
 > même plante valent quatorze points de top-1, trois en valent vingt-deux.
 
-Le modèle embarqué s'appelle **Iris**, et la version livrée est la huitième :
-c'est donc **Iris 8** que l'application nomme à l'écran. Le reste de ce
-document parle de « la v8 » quand il compare des entraînements entre eux —
-ce sont les mêmes poids, vus du côté de la recette plutôt que du produit.
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la première
+spécialiste d'intérieur : c'est **Iris Indoor** que l'application nomme à l'écran.
+Quand ce document parle de « la v8 », il parle de la version précédente,
+restée la référence contre laquelle Iris Indoor s'est mesurée.
 
 Les numéros plus anciens qu'on croise ici — la v6, l'Iris 7 — **datent une
 mesure** : ils disent sur quel modèle un chiffre a été obtenu, et une section
@@ -44,23 +44,23 @@ relit le fichier et fait échouer la suite si cette table s'en écarte.
 
 | clé de `model.json` | valeur | |
 |---|---|---|
-| `version` | 8 | le numéro affiché, collé à « Iris » |
+| `version` | Indoor | le numéro affiché, collé à « Iris » |
 | `architecture` | MobileNetV3Large | la dorsale |
-| `classes` | 1 444 | espèces exposées, une ligne de `labels.txt` chacune |
+| `classes` | 336 | espèces exposées, une ligne de `labels.txt` chacune |
 | `input_size` | 320 | pixels de côté à l'inférence |
 | `load_size` | 366 | décodage avant recadrage |
 | `source_size` | 448 | côté des images du jeu |
 | `preprocessing` | `included_in_graph_uint8_0_255` | la normalisation est dans le graphe |
-| `bytes` | 8 765 332 | soit 8,77 Mo de `.tflite` |
-| `sha256` | 9760ded18778… | empreinte du fichier de poids |
-| `metrics.images` | 28 836 | images de test |
-| `metrics.top1` | 0,6627 | la bonne espèce en tête |
-| `metrics.top3` | 0,8047 | dans les trois premières |
-| `metrics.macro_f1` | 0,6472 | moyenne par classe, sans pondérer par le volume |
-| `metrics.mean_confidence` | 0,6843 | score moyen du premier candidat |
-| `metrics.captive.images` | 3 946 | sous-ensemble des plantes cultivées |
-| `metrics.captive.top1` | 0,6483 | ce que voit qui photographie son pot |
-| `metrics.captive.top3` | 0,7960 | |
+| `bytes` | 6 635 756 | soit 6,64 Mo de `.tflite` |
+| `sha256` | 6a33f3dfd94c… | empreinte du fichier de poids |
+| `metrics.images` | 6 856 | images de test |
+| `metrics.top1` | 0,7461 | la bonne espèce en tête |
+| `metrics.top3` | 0,8677 | dans les trois premières |
+| `metrics.macro_f1` | 0,7101 | moyenne par classe, sans pondérer par le volume |
+| `metrics.mean_confidence` | 0,7464 | score moyen du premier candidat |
+| `metrics.captive.images` | 2 871 | sous-ensemble des plantes cultivées |
+| `metrics.captive.top1` | 0,7262 | ce que voit qui photographie son pot |
+| `metrics.captive.top3` | 0,8589 | |
 
 <!-- /fiche -->
 
@@ -2054,6 +2054,48 @@ des meilleurs scores :
 Trente photos et dix minutes tranchent entre trois chantiers de tailles très
 différentes. Aucun n'a de raison d'être entrepris avant.
 
+#### La moitié plantes, mesurée le 19 septembre 2026
+
+`tools/plant_model/hors_sujet.py` fait cette mesure. Première passe sur la
+moitié la plus difficile — **40 plantes hors catalogue**, tirées du jeu de
+test parmi les classes qu'Iris Indoor n'expose pas, donc étiquetées :
+
+| bande | Iris Indoor | Iris 8 sur les mêmes photos |
+|---|---|---|
+| sous le plancher (0,10) | 1 — 2,5 % | 1 — 2,5 % |
+| plausible | 28 — 70,0 % | 28 — 70,0 % |
+| **affirmé (≥ 0,70)** | **11 — 27,5 %** | 11 — 27,5 % |
+| score médian | 0,4430 | 0,4571 |
+
+Les bandes se ressemblent ; ce qu'elles contiennent, non. Sur les dix plus
+affirmées, la v8 en avait **quatre justes** — c'étaient des espèces qu'elle
+exposait. Iris Indoor n'en a aucune, et **les dix sont acceptées** par
+`FallbackPolicy` : affirmées sans réserve, sans appel à Pl@ntNet.
+
+| la plante photographiée | ce qu'Iris Indoor répond | |
+|---|---|---|
+| *Aloiampelos tenuior* | *Aloe vera* | 0,9983 |
+| *Salvia mexicana* | *Sinningia speciosa* | 0,9590 |
+| *Agave lophantha* | *Tillandsia ionantha* | 0,9328 |
+| *Veronica elliptica* | *Nephrolepis cordifolia*, une fougère | 0,8978 |
+
+Certaines sont des voisines pardonnables — *Echeveria × imbricata* rendue
+*Echeveria elegans*, *Stachys arvensis* rendue basilic, deux Lamiacées. Une
+dicotylédone à fleurs rendue fougère à 0,90 ne l'est pas.
+
+C'est la troisième ligne du tableau ci-dessus, et elle a une conséquence
+que le § 13.3 n'avait pas prévue : **rétrécir le masque ne transforme pas
+ces réponses en repli, il les transforme en erreurs confiantes.** La
+dégradation douce annoncée n'existe pas pour ces photos-là.
+
+**Ce que cette passe ne dit pas.** n = 40, et rien que des plantes : les
+non-plantes — chat, meuble, visage, mur, plat — restent à mesurer, et
+c'était la question d'origine du § 3.2. Les images viennent en outre du jeu
+de test, donc de photos naturalistes, pas de photos de salon. Et la mesure
+donne une proportion **parmi les photos hors catalogue**, pas leur fréquence
+chez les utilisateurs : ce dernier terme est exactement ce que le chantier 2
+du § 13.3 produit.
+
 #### Si la mesure la réclame
 
 Une classe de plus, entraînée sur des négatifs de deux natures : des
@@ -3166,6 +3208,13 @@ Deux conséquences d'arithmétique, pas d'opinion :
    basculent sur le repli Pl@ntNet et la réponse de genre : coût produit
    connu, pas accident.
 
+   > **Cette dernière phrase est fausse pour un quart d'entre elles**, et la
+   > mesure du § 12.7 le dit : sur 40 photos de plantes hors catalogue,
+   > Iris Indoor en **affirme 27,5 %** au-dessus du seuil et avec la marge.
+   > La cascade ne bascule pas, elle répond — et elle répond faux. Ce qui
+   > était écrit comme une dégradation douce est, pour ces photos-là, une
+   > erreur confiante. Le coût était sous-estimé, pas la direction.
+
 Ce qui reste mesuré plutôt que parié : **lesquelles** des candidates
 tiennent leurs images (`disponibilite.py`), puis la part des photos des
 utilisateurs par espèce (chantier 2) pour trancher les limites de liste.
@@ -3228,13 +3277,246 @@ Le même jour, dans l'ordre du § 13.6 (doublons d'abord) :
    gardées sur 5 819**, 0 en revue, licences 3 874 CC BY / 1 289 CC0 /
    578 CC BY-SA, attributions complètes. Test de validation passé avant
    (99/100) ; images contrôlées à la main après. 34 espèces à 27 images et
-   plus — *Philodendron squamiferum* ferme la marche à 27, au-dessus du
-   `--min-train`.
+   plus — *Philodendron squamiferum* ferme la marche à 27.
+
+   > **Ce contrôle comparait le mauvais nombre**, et il a coûté la plupart
+   > des vingt-sept classes perdues au retaillage.
+   > `--min-train 25` compte les images d'**entraînement**, pas les
+   > images collectées : le découpage en prélève une part pour la validation
+   > et le test. Les 27 de *Philodendron squamiferum* ont donné 22 en
+   > entraînement, et la classe a sauté. Le seuil de collecte utile est donc
+   > d'environ **32 images**, et plutôt 40 puisque le découpage ne sépare
+   > jamais un groupe d'observation et ne tombe pas sur la proportion
+   > voulue. Mesuré au retaillage, plus bas.
 4. **Le masque est figé** : `masque_indoor.txt`, **335 classes** — 155 déjà
    exposées, 143 collectées sous un nom ou un autre (synonymes compris),
    4 substituts, 35 nouvelles, dédupliquées par `internal_id`. C'est le
    `--garder` de `retailler.py` à l'export ; les 143 ne valent que si la
    v8 les a apprises — sinon l'entraînement large les leur donne.
+
+#### Entraînée, retaillée deux fois : 336 classes
+
+L'entraînement large a tourné sur `dataset-v8-indoor` — le jeu de la v8 plus
+les 35 espèces ci-dessus, 5 632 lignes — et en a appris **5 376** classes,
+les 256 autres tombant sous `--min-train` ou `--min-val`. Le fichier de
+16,3 Mo qu'il exporte n'est pas livrable, et le § 13.2 dit pourquoi : à
+5 376 sorties, il n'accepte que 25 % des photos au seuil 0,8. C'est la
+moitié « entraîner large », pas un modèle.
+
+`retailler.py --garder masque_indoor.txt` a fait la seconde moitié en
+quelques minutes. Il a fallu s'y reprendre à deux fois, et la deuxième passe
+est la plus instructive des deux.
+
+| | premier retaillage | **livré** |
+|---|---|---|
+| classes demandées | 335 | 363 |
+| classes gardées | 308 | **336** |
+| taille | 6,6 Mo | **6,64 Mo** |
+| top-1 sur son test | 0,7537 | 0,7461 |
+
+Ces chiffres-là sont ceux de leur propre test, à 308 puis 336 réponses
+possibles : ils ne se comparent ni entre eux ni à aucun autre `model.json`
+(§ 5 de `docs/10`). Les mesures qui comptent sont plus bas.
+
+#### Les 27 classes manquantes : le seuil de collecte, pas le découpage
+
+Vingt-sept classes du masque n'ont pas de colonne dans la tête entraînée.
+**Aucune n'atteint 25 images d'entraînement**, et plusieurs manquent
+entièrement au jeu — `goeppertia-orbifolia`, `goeppertia-rufibarba`,
+`vriesea-splendens`, `alocasia-amazonica`, `citrus-medica`,
+`citrus-x-aurantifolia`, `citrus-x-aurantium`. Les deux *Goeppertia* sentent
+le synonyme non résolu (*Calathea* → *Goeppertia*) et *Alocasia × amazonica*
+est un hybride, donc jamais une classe (§ 13.5) : à vérifier avant toute
+reprise de collecte.
+
+`--min-val 3` n'a jamais eu l'occasion de mordre. Le découpage corrigé du
+§ 12.19 n'y est pour rien : **c'est le seuil de collecte qui a été lu sur le
+mauvais nombre**, comme dit plus haut.
+
+Le peloton s'arrête juste sous la barre, et c'est ce qui rend la perte
+évitable :
+
+| | images d'entraînement |
+|---|---|
+| `peperomia-argyreia` | **24** |
+| `haworthia-truncata`, `philodendron-squamiferum` | 22 |
+| `ravenea-rivularis` | 21 |
+| `gynura-aurantiaca` | 20 |
+| `alocasia-reginula` | 19 |
+| `brassia-verrucosa` | 18 |
+
+Sept espèces d'intérieur très courantes à une poignée d'images près, dont
+une à **une seule**. La liste complète se regénère du journal de retaillage :
+
+```bash
+awk '/demandées que le modèle/{f=1;next} /chargement des poids/{f=0} f' \
+  iris-indoor-retaille.log | tr -d ' ' | grep .
+```
+
+**Aucune ne se rattrape par un retaillage** : une classe que la tête n'a pas
+apprise n'a pas de colonne à garder. C'est collecte puis passe complète, ou
+rien.
+
+#### Le masque perdait 28 plantes d'appartement, et personne ne le vérifiait
+
+Le premier retaillage a produit un modèle mesurable, et `interieur.py` l'a
+recalé net : **44 des 167 plantes de `phase1_species.txt` hors d'atteinte**.
+Treize seulement s'expliquaient par l'entraînement — treize des vingt-sept
+ci-dessus. Les **31 autres n'étaient pas dans `masque_indoor.txt` du tout**,
+et **28 d'entre elles étaient exposées par l'Iris 8**.
+
+Livrer ainsi aurait retiré à l'utilisateur des plantes que l'application
+nommait la veille, et pas des espèces sauvages : presque tout le rayon
+cactées et succulentes (*Agave americana*, *Opuntia ficus-indica*,
+*Mammillaria hahniana*, *Cereus repandus*, *Astrophytum myriostigma*,
+*Ferocactus latispinus*, *Epiphyllum oxypetalum*, *Selenicereus undatus*,
+*Hatiora salicornioides*, *Aloe arborescens*, deux *Gasteria*, *Crassula
+perforata*, *Portulacaria afra*), plus *Zantedeschia aethiopica*, *Medinilla
+magnifica*, *Stephanotis floribunda*, *Livistona chinensis*, *Cyperus
+alternifolius*, *Cissus rhombifolia*, trois *Ficus*, *Colocasia esculenta*
+et *Areca catechu*.
+
+La cause est une frontière qu'on n'a pas franchie exprès : le masque a été
+bâti depuis `cible_interieur_500.tsv`, et son arithmétique — 155 + 143 + 4 +
+35 — n'a jamais demandé **« est-ce que ça couvre les 167 ? »**. Les deux
+listes ne parlent d'ailleurs pas la même langue : `phase1_species.txt` porte
+des noms scientifiques, `masque_indoor.txt` des `internal_id`, si bien qu'un
+rapprochement naïf ne trouve aucune intersection et rassure à tort.
+
+Le *Calathea orbifolia* en est le symptôme le plus net : `calathea-orbifolia`
+et `goeppertia-orbifolia` portent **la même clé GBIF 7476815** — deux lignes
+du catalogue pour une plante, le défaut du § 12.14. Le masque avait retenu le
+nom neuf, celui qui n'a pas d'images.
+
+Les 28 étant toutes apprises par l'entraînement large, elles se sont
+récupérées par un second retaillage de quelques minutes, sans rien
+réentraîner. Trois restent dehors faute d'avoir été apprises —
+`calathea-orbifolia`, `cymbidium-hybridum`, `columnea-gloriosa` —, et
+l'Iris 8 ne les exposait pas davantage.
+
+Il reste donc **16 noms d'intérieur hors d'atteinte** au lieu de 44 : les
+trois ci-dessus et treize des vingt-sept. Plus aucune perte d'écriture, rien
+que la dette de collecte — **contre `phase1_species.txt`**, et c'est la
+réserve qui compte : voir plus bas.
+
+#### Trois plantes du salon, et le troisième trou du même masque
+
+Le soir de la livraison, trois plantes photographiées dans l'application :
+un **frangipanier**, une **Alocasia 'Jacklyn'**, un **avocatier**. Aucune
+reconnue par Iris Indoor, toutes trois nommées par Pl@ntNet.
+
+La cascade a fait ce qu'il fallait — elle n'a affirmé aucune plante
+d'appartement fausse, elle est passée au repli. Ce n'est donc pas le défaut
+du § 12.7, c'est de la **couverture** : le modèle n'a aucune sortie pour
+elles.
+
+| | au catalogue de collecte | dans le masque |
+|---|---|---|
+| *Plumeria obtusa* | oui | non — seule *P. rubra* est exposée |
+| *Persea americana* | oui | non |
+| *Alocasia scalprum* | **non** | non — jamais collectée |
+
+Le balayage qui suit donne l'ampleur : **55 fiches que l'application curate
+en `indoor` ou `succulent` sont collectables et hors du masque** — *Calathea
+orbifolia*, *Araucaria heterophylla*, *Agave attenuata*, sept *Asplenium* et
+*Dryopteris*, une douzaine d'*Echeveria* et de *Kalanchoe*. Cent
+quatre-vingt-quinze autres ne sont même pas dans `plants.csv`.
+
+**Mais aucune des trois plantes du salon n'est dans ces 55**, et c'est la
+vraie leçon. *Persea americana* est curatée `SpeciesCategory.fruit` :
+l'avocatier qu'on fait pousser d'un noyau sur un rebord de fenêtre est rangé
+au rayon fruitier. *Plumeria obtusa* n'est pas curatée du tout.
+
+**Les catégories éditoriales de l'application ne décrivent pas ce que les
+gens gardent chez eux.** Le masque a été bâti sur une liste
+(`cible_interieur_500.tsv`), rapiécé avec `phase1_species.txt`, puis mesuré
+contre les catégories du catalogue : trois sources, trois trous, et chacune
+répond à une question légèrement différente de celle qui compte.
+
+Ce qu'il faut en tirer pour le masque suivant : **une règle, pas une liste.**
+Tout ce que la tête a appris et dont l'application a une fiche, moins ce qui
+est franchement sauvage, puis deux ou trois tailles mesurées sur la courbe du
+§ 6.7 bis — elle chiffre le prix à 0,22-0,35 point de top-1 par tranche de
+cent espèces exposées. Passer de 336 à ~600 coûterait moins d'un point et
+rendrait ces 55, plus l'avocatier et le frangipanier.
+
+Et une action qui ne dépend d'aucun modèle : **`alocasia-scalprum` manque à
+`plants.csv`**, donc n'a jamais été collectée, donc ne sera apprise par
+aucun entraînement. Aucun masque ne la rendra tant que la ligne n'existe pas.
+
+> **n = 3**, et des photos de salon plutôt qu'un jeu de test. Ça nomme une
+> catégorie de défaut, ça n'en donne pas la fréquence — exactement comme les
+> quatre scans du § 13.3. Le terme manquant reste le chantier 2.
+
+#### Le verdict : le réseau perd, le produit gagne
+
+`compare_models.py`, 2 000 images de plantes cultivées, sur les seules
+classes que les deux modèles connaissent :
+
+| à armes égales, sorties masquées | Iris 8 | Iris Indoor |
+|---|---|---|
+| top-1 | **0,7850** | 0,7710 |
+| top-3 | **0,8985** | 0,8855 |
+| seuil 0,70 | 61,1 % acceptées, 0,9517 | 60,1 %, 0,9542 |
+
+| sorties entières, ce que l'application rend | Iris 8 | Iris Indoor |
+|---|---|---|
+| top-1 | 0,7175 | **0,7350** (+1,8) |
+| top-3 | 0,8460 | **0,8650** (+1,9) |
+| seuil 0,70 | 63,1 % acceptées, 0,9208 | 61,6 %, **0,9302** |
+
+Plus 144 espèces qu'Iris 8 ne sait pas nommer, rendues à 0,7315 de top-1 —
+pour elles la v8 est à zéro par construction.
+
+**Le réseau est 1,4 point en dessous de la v8, et le produit est quand même
+meilleur de 1,8.** Les deux ne se contredisent pas : le gain ne vient pas
+d'un meilleur apprentissage mais du masque, exactement ce qu'annonce le
+§ 13.2. Ce léger recul du réseau n'est pas expliqué — 117 classes apprises de
+plus que la v8, ou la variation d'une passe à l'autre — et il ne se mesurera
+qu'en le reproduisant.
+
+Le masque élargi se paie, et le prix est connu : le premier retaillage à 308
+rendait +2,5 points là où celui-ci en rend +1,8, et l'autonomie recule d'un
+point et demi au lieu d'être plate. Sept dixièmes de point et quelques
+appels à Pl@ntNet de plus, contre 28 plantes rendues à l'utilisateur : c'est
+le bon côté de l'échange, et c'est un arbitrage, pas un progrès gratuit.
+
+Sur le terrain qui compte, `interieur.py` sur 3 653 images de plantes
+d'appartement — dont 1 995 photographiées en pot, au plus près de l'usage :
+
+| | catalogue entier | sorties masquées à l'intérieur |
+|---|---|---|
+| top-1 | 0,7394 | 0,7963 |
+| seuil 0,70 | 61,7 % acceptées, 0,9299 | 69,5 %, 0,9531 |
+
+Le **prix de l'étendue** reste de 5,7 points de top-1 et 7,9 d'autonomie,
+même à 336 sorties : la courbe du § 6.7 bis n'est pas épuisée, elle est
+seulement devenue un arbitrage de couverture plutôt qu'un gain gratuit.
+
+Deux chiffres à ne pas confondre, parce qu'ils se ressemblent :
+**l'autonomie ne gagne pas dix points, elle en perd un et demi.** Le
+54,9 % → 63,2 % qu'on lit en rapprochant les deux `model.json` est un
+artefact de deux jeux de test différents ; à armes égales, c'est 63,1 % →
+61,6 %. Ce que la livraison gagne, c'est un point de justesse, deux de top-1
+et 144 espèces.
+
+`acceptThreshold` **reste donc à 0,70**. La courbe propre d'Iris Indoor offre
+0,60 à 69,6 % pour 0,9107, mais cette justesse-là passe sous les 0,9208
+d'aujourd'hui mesurés à armes égales : ce serait payer de la justesse pour de
+l'autonomie, l'inverse de ce que la v8 avait obtenu.
+
+#### Ce que livrer retire
+
+Iris Indoor expose 336 classes dont 144 inconnues de la v8 : **192 communes**.
+Livrer retire donc **1 252 espèces** de ce que l'application savait nommer.
+Elles ne basculent pas toutes sur la réponse de genre et le repli Pl@ntNet :
+pour un quart d'entre elles, le modèle affirme à leur place une plante
+d'intérieur qu'il connaît, au-dessus du seuil et avec la marge (§ 12.7).
+
+C'est la décision du § 13.3, mais la coupe est plus large que les ~950
+anticipées : le masque est tombé à 336 au lieu des 500 visés. Pour une
+application de plantes d'appartement c'est l'arbitrage voulu ; il se relit le
+jour où le chantier 2 donne la part réelle des photos par espèce.
 
 **2. Les photos des utilisateurs.** La seule source qui règle **les deux**
 problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
@@ -3446,17 +3728,167 @@ Le reste ne bouge pas : `--backbone large`, `--dropout 0.5`, `--unfreeze
 100`, `--input-size 320`, précision mixte, cache de traits et points de
 sauvegarde. Une recette à la fois, comme au § 12.
 
+#### Le masque rapporte, la recette coûte — mesuré le 19 septembre 2026
+
+Jusqu'ici les deux se confondaient. Iris Indoor rendait +1,8 point de top-1
+sur ce que l'application livre, et son réseau paraissait « 1,4 point sous la
+v8 » — mais mesuré à **masques différents**, ce qui ne veut rien dire.
+
+`masque_outdoor.txt` a permis de les séparer : il reprend l'ensemble exposé
+par l'Iris 8 tel quel, coupé dans la tête large d'aujourd'hui. Même masque des
+deux côtés, seule la recette diffère.
+
+| 6 000 images, classes communes | Iris 8 | tête du 19 septembre |
+|---|---|---|
+| top-1, sorties masquées | **0,6672** | 0,6365 (−3,1) |
+| top-3 | **0,8063** | 0,7825 |
+| autonomie au seuil 0,70 | **55,0 %** | 48,2 % (−6,8) |
+| justesse quand elle accepte | 0,9176 | **0,9284** (+1,1) |
+| top-1, plantes cultivées | **0,6525** | 0,6410 (−1,2) |
+
+Trois points, quand le § 4 de `docs/10` fixe le seuil d'alerte à « un point
+ou deux ». L'écart se resserre à 1,2 sur les plantes cultivées : la perte est
+concentrée sur les espèces sauvages.
+
+**Mais ce n'est pas la recette qui est moins bonne : l'entraînement n'était
+pas fini.** Le journal le dit sans ambiguïté — à la douzième et dernière
+époque de réglage fin, `val_loss` descendait encore (2,5245 → 2,5084) et
+`val_accuracy` montait encore (0,4885 → 0,4950). `state.json` porte
+`fine_epochs_done: 12`, les douze demandées : **aucun arrêt anticipé**. Ce
+n'est pas la validation qui a dit stop, c'est `--fine-epochs 12`.
+
+Un second écart accompagne le premier : 24 842 pas de 32 images font
+`--batch 32`, le défaut, là où la v8 tournait à 128. C'est précisément la
+variable que le point 4 ci-dessus demande de trancher « une fois pour
+toutes », et elle a été changée sans qu'on le décide.
+
+Le diagnostic est donc **un entraînement tronqué**, pas une recette dégradée.
+
+#### Mais la reprise ne le répare pas : elle coûte 2,3 points
+
+Huit époques de plus ont été lancées depuis le point de sauvegarde, sept
+heures de calcul. Résultat :
+
+| | val_accuracy | val_loss |
+|---|---|---|
+| époque 12, avant la reprise | **0,4950** | **2,5084** |
+| époque 15 | 0,4612 | — |
+| époque 20, fin de la reprise | 0,4723 | 2,7272 |
+
+La reprise **repart 3,4 points plus bas**, remonte de ~0,003 par époque, et
+finit encore **2,3 points sous son point de départ** — avec une perte de
+validation nettement pire, 2,73 contre 2,51. Elle ne s'est pas contentée de
+plonger : elle s'est installée dans un moins bon creux.
+
+La cause est à `train.py:705` : `model.compile(optimizer=Adam(args.fine_lr))`
+construit un optimiseur **neuf**. Les poids sont restaurés, les moments
+accumulés d'Adam ne le sont pas, et un réseau convergé n'aime pas qu'on lui
+remette un optimiseur à zéro.
+
+Deux effets de bord vont avec, et ils comptent :
+
+- `_Checkpoint.on_epoch_end` réécrit `fine.weights.h5` à chaque époque. **Les
+  poids d'avant la reprise sont perdus** — on ne peut plus couper un nouveau
+  masque dans la tête qui a produit l'Indoor livré. Seuls les `.tflite`
+  déjà exportés subsistent ;
+- l'arrêt anticipé est reconstruit lui aussi, donc son `restore_best_weights`
+  restaure le meilleur **de la reprise**, pas celui d'avant.
+
+La reprise reste bonne pour ce qu'elle a été écrite — une machine qui
+s'endort, un run tué, reprendre là où on en était. Elle ne l'est pas pour
+**prolonger** un entraînement qui a convergé : mieux vaut relancer une passe
+entière avec le bon nombre d'époques que d'en ajouter après coup.
+
+Et la question de départ reste donc ouverte : on ne saura pas par cette voie
+si douze époques suffisaient. Il faudra une passe complète, `--batch 128`,
+et assez d'époques pour que la validation décroche d'elle-même.
+
+Le compte d'Iris Indoor tombe alors juste, et c'est la première fois :
+
+```text
++3 environ  ce que rapporte le masque étroit
+−1 environ  ce que coûte la recette
+= +1,8      mesuré sur ce que l'application rend
+```
+
+Le gain était réel, mais net d'une perte qu'on n'avait pas isolée.
+
+**Deux conséquences.** D'abord, ne pas couper Outdoor dans cette tête tant
+qu'elle n'a pas fini : il serait trois points sous l'Iris 8 sur son propre
+terrain, et l'Iris 8 *est* déjà un spécialiste extérieur. Ensuite, ne pas
+lancer Iris 9 sur ce constat-là : la recette n'a pas été jugée, elle a été
+interrompue.
+
+#### Ce que la donnée n'explique pas, et comment on l'a su
+
+Avant d'arriver au journal, deux hypothèses sont tombées, et leur chute vaut
+d'être notée — elles auraient coûté une collecte chacune.
+
+**Les classes maigres.** On a cru que le découpage corrigé du § 12.19 avait
+fait entrer des classes mal nourries qui abîmaient le dorsal. Reconstruits
+depuis les deux `splits.csv` aux seuils `--min-train 25` / `--min-val 3`, les
+deux jeux enseignent **5 343 et 5 376 classes** : trente-trois entrées,
+aucune sortie, médiane de 119 images d'entraînement contre 156 pour le jeu.
+Une seule sous quarante. Trente-trois classes nourries ne coûtent pas trois
+points.
+
+**Le vol en sortie.** Il n'a même pas lieu d'être : les classes
+supplémentaires ne sont pas dans les sorties du modèle retaillé, leurs
+colonnes ont été supprimées. Elles ne peuvent voler personne à l'inférence.
+
+Ce que `confusions.py` disait, en revanche, pointait déjà ailleurs. Les
+erreurs, sur 6 000 images :
+
+| | Iris 8 | tête du 19 | écart |
+|---|---|---|---|
+| dans le même genre | 325 | 313 | −12 |
+| dans la même famille | 313 | 323 | +10 |
+| **au-delà** | **1 378** | **1 545** | **+167** |
+
+**Toute la régression est « au-delà »** — les confusions hors famille, celles
+que le § 6.9 appelle les vrais défauts. Le fine-grained est intact à douze
+erreurs près. Un réseau qui n'a pas fini d'apprendre perd d'abord le
+grossier, pas le fin : c'est cohérent avec un entraînement tronqué, et ça ne
+l'est pas avec une recette mal réglée.
+
+Et le point 4 ci-dessus s'appliquait bien à nous, mais sur un autre point que
+celui qu'on cherchait : **le lot a changé sans décision**, 32 au lieu de 128.
+On reproduit exactement ce qu'on reprochait à la v8 — un run, deux variables.
+
+#### Six doublons dans l'exposé, et ils ne datent pas d'aujourd'hui
+
+`doublons.py` trouve **six clés GBIF en double** parmi les 1 444 classes que
+l'Iris 8 expose : *Cupressus macrocarpa* = *Hesperocyparis macrocarpa*,
+*Dracaena trifasciata* = *Sansevieria trifasciata*, *Echinocactus grusonii* =
+*Kroenleinia grusonii*, *Coleus scutellarioides* = *Plectranthus
+scutellarioides*, *Citrus × bergamia* = *Citrus × limon*, *Citrus myrtifolia*
+= *Citrus × aurantium*.
+
+Douze classes pour six plantes. Chaque photo peut être étiquetée des deux
+façons et la moitié compte comme fausse : `confusions.py` voit six
+*Cupressus* rendus *Hesperocyparis*, et le modèle n'a pas tort. C'est le
+défaut du § 12.14, dans l'ensemble livré.
+
+Trois se tranchent seules — la table des noms acceptés résout vers un membre
+qui seul a une fiche. Les trois autres sont des décisions éditoriales : deux
+paires de *Citrus* portent la même clé **et** deux fiches curatées, et
+*Coleus* résout vers un *Plectranthus* qui n'a pas de fiche.
+
+**Ces doublons sont dans le masque, donc dans les deux modèles à l'identique** :
+ils ne sont pour rien dans les trois points d'écart. C'est un gain gratuit
+— six classes de moins, un retaillage de cinq minutes — pas une explication.
+
 ### 13.7 Les trois portes, et ce qu'on ne fera pas
 
 **Aucun de ces chantiers ne commence avant sa porte.** C'est ce qui a
 manqué à la v8 : on a collecté 4 220 espèces avant de savoir ce qu'une
 espèce de plus coûte.
 
-| porte | ce qu'elle décide | coût |
+| porte | ce qu'elle décide | état |
 |---|---|---|
-| la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | quelques heures de GPU, jeu déjà collecté |
-| `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | deux heures |
-| la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | à mesurer sur les 3 606 images |
+| la **courbe des tailles de sortie** | combien d'espèces exposer, donc lesquelles nourrir | **franchie** — lue au § 6.7 bis, c'est elle qui a décidé des 336 exposées |
+| la classe **« autre »** (§ 3.2) | si un masque contextuel est tenable, ou s'il rend impossible la bonne réponse | **à moitié** — plantes hors catalogue mesurées le 19 septembre (§ 12.7), 27,5 % affirmées à tort ; les non-plantes restent à faire |
+| `prototypes.py` (§ 12.18) | si l'embedding sépare deux cultivars, donc si la branche cultivars existe | **ouverte** — deux heures, et elle commande toute la branche |
 
 **Ce qu'on ne fera pas, et pourquoi :**
 
