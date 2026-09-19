@@ -53,9 +53,30 @@ d'une machine. Seules ses lignes de flux sont dessinées.
 
 Toutes les couches sortent de **la même caméra orthographique, au cadrage
 fixe** (`tool/care_scene/common.py`) : position, `ortho_scale` et visée
-calculés une fois pour toutes sur les bornes du diorama — jamais sur le
-contenu d'une couche. C'est la condition de la composition : deux couches
-au contenu différent doivent obtenir exactement le même cadre.
+posés par les constantes `CADRE_*` — jamais calculés sur le contenu d'une
+couche. C'est la condition de la composition : deux couches au contenu
+différent doivent obtenir exactement le même cadre. Et c'est pour cela que
+le cadre est en constantes plutôt que déduit de la géométrie : s'il suivait
+le contenu, ajouter un prop le déplacerait, et avec lui la table des
+emplacements et toutes les images.
+
+**Le cadre n'est pas carré.** Il l'a été, et il perdait près d'un quart de
+sa surface : le contenu des trois décors et des silhouettes tient en 6,34
+de large sur 5,64 de haut, et la visée n'était pas centrée dessus — le
+diorama flottait dans un carré trop haut, la plante d'autant plus petite.
+Le cadre livré fait **1024 × 910** (rapport 1,125) et la caméra monte de
+`CADRE_VISEE_U` pour centrer le contenu. L'occupation du cadre est passée
+de 88 × 78 % à 94 × 94 %, et la part transparente de 53 % à 39 %.
+
+`CareEnvironmentSlots.aspect` porte ce rapport : côté Flutter, l'`AspectRatio`
+du héros suit le pipeline sans rien à changer.
+
+Deux pièges à connaître si on retouche le cadre. `world_to_camera_view` lit
+le format de la scène : toute projection doit le poser avant de projeter,
+sinon les *y* sortent compressés par le 16:9 par défaut de Blender et la
+plante ne tombe plus sur son ombre. Et `rendu_transparent` de `clay_scene`
+est partagé avec les autres objets clay, qui se rendent au carré : le format
+se repose **après** lui.
 
 `studio()` de `tool/clay_scene.py`, qui cadre chaque sujet au plus juste,
 ne convient donc pas ici. Les objets clay habituels (icône, collection,

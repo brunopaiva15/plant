@@ -132,7 +132,7 @@ def genere_dart(dossier):
         "// régénéré à chaque construction des assets.",
         "abstract final class CareEnvironmentSlots {",
         "  /// Format du cadre (largeur / hauteur).",
-        "  static const double aspect = %.2f;" % donnees["aspect"],
+        "  static const double aspect = %.5f;" % donnees["aspect"],
         "",
         "  /// Point d'ancrage de la plante dans son image : la base du pot,",
         "  /// rendue au centre du monde.",

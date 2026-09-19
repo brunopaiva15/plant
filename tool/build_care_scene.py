@@ -62,6 +62,11 @@ def _options(argv):
 def _rend(chemin, res, samples):
     os.makedirs(os.path.dirname(chemin), exist_ok=True)
     rendu_transparent(res, samples)
+    # `rendu_transparent` est partage avec les autres objets clay, qui se
+    # rendent au carre. Le cadre de la scene d'environnement ne l'est plus :
+    # on repose le format apres, sans toucher au reglage commun.
+    bpy.context.scene.render.resolution_x, bpy.context.scene.render.resolution_y = \
+        common.resolution(res)
     bpy.context.scene.render.filepath = chemin
     bpy.ops.render.render(write_still=True)
     grain(chemin)
@@ -74,13 +79,14 @@ def exporte_slots(dossier, res):
     cote application.
 
     La projection depend du format de l'image : `world_to_camera_view` lit le
-    rapport largeur/hauteur de la scene. On fixe donc le rendu au carre AVANT
-    de projeter, comme les couches le seront : sans quoi les y sortiraient
-    compresses par le 16:9 par defaut de Blender, et la plante ne tomberait
-    plus sur son ombre."""
+    rapport largeur/hauteur de la scene. On fixe donc le rendu au format du
+    cadre AVANT de projeter, comme les couches le seront : sans quoi les y
+    sortiraient compresses par le 16:9 par defaut de Blender, et la plante ne
+    tomberait plus sur son ombre."""
     purge()
-    bpy.context.scene.render.resolution_x = res
-    bpy.context.scene.render.resolution_y = res
+    _RES_X, _RES_Y = common.resolution(res)
+    bpy.context.scene.render.resolution_x = _RES_X
+    bpy.context.scene.render.resolution_y = _RES_Y
     cam, _, _, _ = common.camera_fixe()
     # L'humidificateur est pose a cote de la plante par un decalage d'ecran
     # (la projection orthographique est lineaire) : toujours du meme cote,
@@ -104,7 +110,9 @@ def exporte_slots(dossier, res):
     # a z=0.605 : on exporte le point du plateau, la ou la base du pot se
     # pose, dans le repere de l'image du prop.
     donnees = {
-        "aspect": 1.0,
+        # Le format du cadre livre, pas celui de l'apercu en cours : c'est ce
+        # rapport que Flutter pose sur ses images.
+        "aspect": round(common.CADRE_RATIO, 5),
         "ancre": list(base),
         "pedestalPot": list(common.projette(cam, (0.0, 0.0, 0.605))),
         "slots": {nom: list(common.projette(cam, (x, y, 0.0)))
