@@ -3226,13 +3226,136 @@ Le même jour, dans l'ordre du § 13.6 (doublons d'abord) :
    gardées sur 5 819**, 0 en revue, licences 3 874 CC BY / 1 289 CC0 /
    578 CC BY-SA, attributions complètes. Test de validation passé avant
    (99/100) ; images contrôlées à la main après. 34 espèces à 27 images et
-   plus — *Philodendron squamiferum* ferme la marche à 27, au-dessus du
-   `--min-train`.
+   plus — *Philodendron squamiferum* ferme la marche à 27.
+
+   > **Ce contrôle comparait le mauvais nombre**, et il a coûté la plupart
+   > des vingt-sept classes perdues au retaillage.
+   > `--min-train 25` compte les images d'**entraînement**, pas les
+   > images collectées : le découpage en prélève une part pour la validation
+   > et le test. Les 27 de *Philodendron squamiferum* ont donné 22 en
+   > entraînement, et la classe a sauté. Le seuil de collecte utile est donc
+   > d'environ **32 images**, et plutôt 40 puisque le découpage ne sépare
+   > jamais un groupe d'observation et ne tombe pas sur la proportion
+   > voulue. Mesuré au retaillage, plus bas.
 4. **Le masque est figé** : `masque_indoor.txt`, **335 classes** — 155 déjà
    exposées, 143 collectées sous un nom ou un autre (synonymes compris),
    4 substituts, 35 nouvelles, dédupliquées par `internal_id`. C'est le
    `--garder` de `retailler.py` à l'export ; les 143 ne valent que si la
    v8 les a apprises — sinon l'entraînement large les leur donne.
+
+#### Entraînée puis retaillée : 308 classes, et ce que la comparaison dit
+
+L'entraînement large a tourné sur `dataset-v8-indoor` — le jeu de la v8 plus
+les 35 espèces ci-dessus, 5 632 lignes — et en a appris **5 376** classes,
+les 256 autres tombant sous `--min-train` ou `--min-val`. Le fichier de
+16,3 Mo qu'il exporte n'est pas livrable, et le § 13.2 dit pourquoi : à
+5 376 sorties, il n'accepte que 25 % des photos au seuil 0,8. C'est la
+moitié « entraîner large », pas un modèle.
+
+`retailler.py --garder masque_indoor.txt` a fait la seconde moitié en
+quelques minutes :
+
+| | |
+|---|---|
+| classes demandées | 335 |
+| classes gardées | **308** |
+| taille | **6,6 Mo** |
+| top-1 / top-3 / macro-F1 | 0,7537 / 0,8723 / 0,7205 |
+| seuil 0,70 marge 0,25 | 64,5 % acceptées, 0,9364 |
+
+Ces chiffres-là sont ceux de son propre test, à 308 réponses possibles : ils
+ne se comparent à aucun autre `model.json` (§ 5 de `docs/10`). Le verdict est
+plus bas.
+
+#### Les 27 classes manquantes : le seuil de collecte, pas le découpage
+
+Vingt-sept classes du masque n'ont pas de colonne dans la tête entraînée.
+**Aucune n'atteint 25 images d'entraînement**, et plusieurs manquent
+entièrement au jeu — `goeppertia-orbifolia`, `goeppertia-rufibarba`,
+`vriesea-splendens`, `alocasia-amazonica`, `citrus-medica`,
+`citrus-x-aurantifolia`, `citrus-x-aurantium`. Les deux *Goeppertia* sentent
+le synonyme non résolu (*Calathea* → *Goeppertia*) et *Alocasia × amazonica*
+est un hybride, donc jamais une classe (§ 13.5) : à vérifier avant toute
+reprise de collecte.
+
+`--min-val 3` n'a jamais eu l'occasion de mordre. Le découpage corrigé du
+§ 12.19 n'y est pour rien : **c'est le seuil de collecte qui a été lu sur le
+mauvais nombre**, comme dit plus haut.
+
+Le peloton s'arrête juste sous la barre, et c'est ce qui rend la perte
+évitable :
+
+| | images d'entraînement |
+|---|---|
+| `peperomia-argyreia` | **24** |
+| `haworthia-truncata`, `philodendron-squamiferum` | 22 |
+| `ravenea-rivularis` | 21 |
+| `gynura-aurantiaca` | 20 |
+| `alocasia-reginula` | 19 |
+| `brassia-verrucosa` | 18 |
+
+Sept espèces d'intérieur très courantes à une poignée d'images près, dont
+une à **une seule**. La liste complète se regénère du journal de retaillage :
+
+```bash
+awk '/demandées que le modèle/{f=1;next} /chargement des poids/{f=0} f' \
+  iris-indoor-retaille.log | tr -d ' ' | grep .
+```
+
+**Aucune ne se rattrape par un retaillage** : une classe que la tête n'a pas
+apprise n'a pas de colonne à garder. C'est collecte puis passe complète, ou
+rien. Décision conforme au § 13.3 : livrer les 308, porter les 27 en dette.
+
+#### Le verdict : le réseau perd, le produit gagne
+
+`compare_models.py`, 1 815 images de plantes cultivées, sur les seules
+classes que les deux modèles connaissent :
+
+| à armes égales, sorties masquées | Iris 8 | Iris Indoor |
+|---|---|---|
+| top-1 | **0,7967** | 0,7774 |
+| top-3 | **0,8992** | 0,8959 |
+| seuil 0,70 | 60,8 % acceptées, 0,9547 | 61,7 %, 0,9544 |
+
+| sorties entières, ce que l'application rend | Iris 8 | Iris Indoor |
+|---|---|---|
+| top-1 | 0,7152 | **0,7399** (+2,5) |
+| top-3 | 0,8386 | **0,8716** (+3,3) |
+| seuil 0,70 | 63,0 % acceptées, 0,9205 | **63,3 %, 0,9303** |
+
+Plus 144 espèces qu'Iris 8 ne sait pas nommer, rendues à 0,7455 de top-1 —
+pour elles la v8 est à zéro par construction.
+
+**Le réseau est 1,9 point en dessous de la v8, et le produit est quand même
+meilleur de 2,5.** Les deux points ne se contredisent pas : le gain ne vient
+pas d'un meilleur apprentissage mais du masque à 308, exactement ce
+qu'annonce le § 13.2. Ce léger recul du réseau n'est pas expliqué — 117
+classes apprises de plus que la v8, ou la variation d'une passe à l'autre —
+et il ne se mesurera qu'en le reproduisant.
+
+Deux chiffres à ne pas confondre, parce qu'ils se ressemblent :
+**l'autonomie ne gagne pas dix points, elle gagne deux dixièmes.** Le
+54,9 % → 64,5 % qu'on lit en rapprochant les deux `model.json` est un
+artefact de deux jeux de test différents ; à armes égales, c'est 63,0 % →
+63,3 %. Le gain réel est ailleurs : un point de justesse, deux et demi de
+top-1, et 144 espèces de plus.
+
+`acceptThreshold` **reste donc à 0,70**. Sa courbe propre offre 0,60 à
+70,9 % pour 0,9130, mais cette justesse-là passe sous les 0,9205
+d'aujourd'hui mesurés à armes égales : ce serait payer de la justesse pour
+de l'autonomie, l'inverse de ce que la v8 avait obtenu.
+
+#### Ce que livrer retire
+
+Indoor expose 308 classes dont 144 inconnues de la v8 : **164 communes**.
+Livrer retire donc **1 280 espèces** de ce que l'application sait nommer, qui
+basculent sur la réponse de genre et le repli Pl@ntNet.
+
+C'est la décision du § 13.3, mais la coupe est plus large que les ~950
+anticipées : le masque est tombé à 308 au lieu des 500 visés, et les 27
+manquantes creusent encore. Pour une application de plantes d'appartement
+c'est l'arbitrage voulu ; il se relit le jour où le chantier 2 donne la part
+réelle des photos par espèce.
 
 **2. Les photos des utilisateurs.** La seule source qui règle **les deux**
 problèmes à la fois — le domaine visuel *et* les cultivars. Chaque
