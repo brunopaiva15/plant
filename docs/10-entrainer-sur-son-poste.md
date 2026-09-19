@@ -15,7 +15,7 @@ une machine recyclée dès qu'elle s'endormait. Sur une carte grand public, la
 même passe coûte de l'ordre d'une heure. C'est ce qui a rendu la v7 puis la v8
 possibles : quatre recettes dans un après-midi au lieu d'une par nuit.
 
-La version que l'application livre aujourd'hui est l'**Iris 8** ; son numéro
+La version que l'application livre aujourd'hui est l'**Iris Indoor** ; son numéro
 et ses chiffres ne s'écrivent pas ici, ils sont dans
 `assets/model/model.json` et repris une seule fois, au § 0 de
 [`09-plant-recognition.md`](09-plant-recognition.md). La procédure ci-dessous
