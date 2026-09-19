@@ -304,6 +304,14 @@ l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
 | `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
 | `portee` | `GENERAL` (toutes les plantes vasculaires), `LARGE` (beaucoup d'hôtes, exemples), `CIBLE` (hôtes principaux) |
 | `taxons_hotes_scientifiques` | Hôtes séparés par `;`, à tous les rangs : espèce, genre, famille, ou `Tracheophyta` |
+| `synonymes_recherche` | Facultatif. Les autres noms sous lesquels on cherche l'entrée, séparés par `;`, toutes langues mêlées. Jamais affichés. |
+
+La recherche de l'encyclopédie (`PlantProblem.matches`) porte sur le numéro,
+les quatre noms, les synonymes et les hôtes, mot à mot et chaque mot en
+sous-chaîne : « araignée rouge » trouve les tétranyques, « spider mites »
+aussi depuis une application en français, et le pluriel ne compte pas. Les
+synonymes existent pour ça et rien d'autre : la base garde un seul nom par
+langue, pour que deux analyses de la même chose se lisent pareil.
 
 Elle sert de vocabulaire commun au diagnostic. `candidatesFor` réduit la base
 aux pistes qui peuvent concerner une plante — l'universel, plus ce qui vise son

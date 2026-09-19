@@ -1,3 +1,5 @@
+import '../../core/utils/search_text.dart';
+
 /// Nature d'un problème, telle que la base la classe.
 enum ProblemKind {
   /// Ni ravageur ni maladie : l'eau, la lumière, le froid, le substrat, une
@@ -55,6 +57,7 @@ class PlantProblem {
     required this.it,
     required this.de,
     required this.hosts,
+    this.aliases = const [],
   });
 
   final String id;
@@ -70,12 +73,51 @@ class PlantProblem {
   /// (`Brassicaceae`), ou l'embranchement entier (`Tracheophyta`).
   final List<String> hosts;
 
+  /// Les autres noms sous lesquels on cherche ce problème, toutes langues
+  /// mêlées : les noms courants que la base n'a pas retenus comme titre
+  /// (« araignée rouge » pour les tétranyques), et le nom scientifique du
+  /// genre quand il est plus connu que le nom français (« Botrytis »).
+  ///
+  /// Ils ne s'affichent jamais : la base garde un seul nom par langue, pour
+  /// que deux analyses de la même chose se lisent pareil. Ils ne servent
+  /// qu'à retrouver l'entrée.
+  final List<String> aliases;
+
   String nameIn(String languageCode) => switch (languageCode) {
         'en' => en,
         'it' => it,
         'de' => de,
         _ => fr,
       };
+
+  /// Tout ce sous quoi l'entrée se cherche, normalisé une fois pour toutes :
+  /// le numéro qui circule entre l'IA et l'application, les quatre noms, les
+  /// autres noms, et les hôtes — « rosa » doit sortir ce qui touche les
+  /// rosiers.
+  ///
+  /// Les quatre langues ensemble, et pas seulement celle qui est lue :
+  /// « spider mites » tapé dans une application en français trouve la bonne
+  /// entrée, et personne n'a à deviner comment la base a traduit.
+  ///
+  /// Reconstruit à chaque recherche : deux cents entrées de quelques mots
+  /// pèsent moins que la liste qu'on redessine en même temps, et une entrée
+  /// de la base reste constante.
+  String get _searchIndex => foldSpeciesName([id, fr, en, it, de, ...aliases, ...hosts].join(' '));
+
+  /// L'entrée répond-elle à cette recherche ?
+  ///
+  /// Mot à mot, et chaque mot en sous-chaîne : « araignée rouge » doit
+  /// trouver « araignées rouges », « pourriture racinaire » les
+  /// « pourritures racinaires », et l'ordre des mots ne doit pas compter.
+  bool matches(String query) {
+    final q = foldSpeciesName(query);
+    if (q.isEmpty) return true;
+    final index = _searchIndex;
+    for (final word in q.split(RegExp(r'\s+'))) {
+      if (word.isNotEmpty && !index.contains(word)) return false;
+    }
+    return true;
+  }
 
   /// Ce problème peut-il concerner cette plante ?
   ///

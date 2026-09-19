@@ -91,12 +91,15 @@ class ProblemCatalog {
 
   /// Lit l'actif embarqué. Les lignes de commentaire et l'en-tête sautent ;
   /// une ligne mal formée est ignorée plutôt que de faire tomber le reste.
+  ///
+  /// Le neuvième champ, les synonymes de recherche, est facultatif : la
+  /// plupart des entrées portent déjà le nom sous lequel on les cherche.
   static ProblemCatalog parse(String raw) {
     final out = <PlantProblem>[];
     for (final line in const LineSplitter().convert(raw)) {
       if (line.isEmpty || line.startsWith('#') || line.startsWith('id|')) continue;
       final f = line.split('|');
-      if (f.length != 8) continue;
+      if (f.length != 8 && f.length != 9) continue;
       final kind = ProblemKind.parse(f[1]);
       final scope = ProblemScope.parse(f[6]);
       if (kind == null || scope == null || f[0].isEmpty) continue;
@@ -111,6 +114,11 @@ class ProblemCatalog {
         hosts: [
           for (final h in f[7].split(';'))
             if (h.trim().isNotEmpty) h.trim(),
+        ],
+        aliases: [
+          if (f.length == 9)
+            for (final a in f[8].split(';'))
+              if (a.trim().isNotEmpty) a.trim(),
         ],
       ));
     }

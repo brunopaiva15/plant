@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
-import '../../../core/utils/search_text.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
@@ -25,18 +24,19 @@ class ProblemsSlivers extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final language = Localizations.localeOf(context).languageCode;
     final catalog = ref.watch(problemCatalogProvider).value;
     if (catalog == null) return const SliverCentered(child: AdaptiveProgress());
 
-    final q = foldSpeciesName(query);
+    // La recherche est dans `PlantProblem.matches` : les noms des quatre
+    // langues, les synonymes, le numéro et les hôtes.
+    //
     // Le tri range les familles dans l'ordre de l'énumération — troubles,
     // ravageurs, maladies, affections —, et les numéros à l'intérieur. La
     // base les numérote presque ainsi, à une entrée près : la fumagine porte
     // le 181, au milieu des maladies.
     final found = [
       for (final p in catalog.problems)
-        if ((kind == null || p.kind == kind) && _matches(p, q, language)) p,
+        if ((kind == null || p.kind == kind) && p.matches(query)) p,
     ]..sort((a, b) {
         final byKind = a.kind.index.compareTo(b.kind.index);
         return byKind != 0 ? byKind : a.id.compareTo(b.id);
@@ -92,19 +92,6 @@ class ProblemsSlivers extends ConsumerWidget {
           ),
       ],
     );
-  }
-
-  /// La recherche porte sur le nom affiché, sur le numéro qui circule entre
-  /// l'IA et l'application, et sur les hôtes : « rosa » doit sortir ce qui
-  /// touche les rosiers.
-  static bool _matches(PlantProblem p, String q, String language) {
-    if (q.isEmpty) return true;
-    if (p.id.contains(q)) return true;
-    if (foldSpeciesName(p.nameIn(language)).contains(q)) return true;
-    for (final host in p.hosts) {
-      if (foldSpeciesName(host).contains(q)) return true;
-    }
-    return false;
   }
 }
 

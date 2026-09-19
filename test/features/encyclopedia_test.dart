@@ -110,6 +110,14 @@ void main() {
       expect(find.text(catalog['126']!.fr), findsOneWidget);
     });
 
+    testWidgets('un nom courant retrouve l\'entrée que la base nomme autrement', (tester) async {
+      await pump(tester, const EncyclopediaScreen());
+      await tester.enterText(find.byType(EditableText).first, 'araignée rouge');
+      await tester.pump();
+
+      expect(find.text(catalog['060']!.fr), findsOneWidget, reason: 'la base dit « Tétranyques »');
+    });
+
     testWidgets('un mot sans réponse le dit, plutôt qu\'une liste vide', (tester) async {
       await pump(tester, const EncyclopediaScreen());
       await tester.enterText(find.byType(EditableText).first, 'zzzzz');
