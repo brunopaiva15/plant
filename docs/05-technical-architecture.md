@@ -199,6 +199,13 @@ deçà, iOS applique ses replis de compatibilité : la fenêtre n'atteint pas le
 bords de l'écran intérieur et reste tenue en une colonne. La cible de
 déploiement, elle, ne bouge pas : iOS 17.
 
+Ce que l'ouverture change à l'écran : le menu passe debout sur le bord droit
+(`FloraTabRail`, `app/shell.dart`), le contenu prenant ce qui reste — une
+pilule posée en bas traverserait tout l'écran pour quatre onglets. La bascule
+tient en deux nombres, dans `FloraTabRail.fitsIn`, et l'iPad n'est pas
+concerné : il garde sa barre du bas. Le détail du rail est dans docs/06,
+section « Le menu debout ».
+
 Pour relever les cotes d'une pose qu'on n'a pas sous la main, une sonde écrit
 la fenêtre dans la console à chaque changement — taille, marges sûres, écran,
 nombre de vues, pli — et rien par défaut :
@@ -241,6 +248,8 @@ justifie, une famille de widget plus grande que `systemMedium`.
   quand la fenêtre change de taille en cours de séance (pliable).
 - `test/app/window_probe_test.dart` : la sonde de fenêtre reste muette tant
   qu'on ne la demande pas.
+- `test/design_system/tab_rail_test.dart` : où le menu se met debout, et ce
+  qu'il fait une fois debout (bord, bande réservée, cibles, bulle).
 
 ## La météo (`domain/weather/`, `features/weather/`)
 Un seul appel sert tout : `weatherWindowProvider` demande trois jours passés,

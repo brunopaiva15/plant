@@ -136,7 +136,8 @@ accepte le multitâche ; le contenu se recentre au-delà de 700 pt de large.
 
 Sur iPhone Duo, la fenêtre est mesurée à chaque pli et non au lancement : le
 verrou de portrait tombe quand l'appareil s'ouvre et revient quand il se
-ferme, viseur photo compris. La construction iOS demande le SDK 27.1
+ferme, viseur photo compris. Appareil ouvert, le menu passe debout sur le bord
+droit ; l'iPad, lui, garde sa barre en bas. La construction iOS demande le SDK 27.1
 (Xcode 27.1) ; la cible de déploiement reste iOS 17. Détails :
 [docs/05-technical-architecture.md](docs/05-technical-architecture.md),
 section « La fenêtre ».

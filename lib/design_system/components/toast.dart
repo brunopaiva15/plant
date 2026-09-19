@@ -12,6 +12,7 @@ import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
 import 'clay.dart';
 import 'pressable.dart';
+import 'tab_bar.dart';
 
 /// Toast avec action d'annulation. Un seul toast à la fois ; le suivant
 /// remplace le précédent (et déclenche son expiration).
@@ -66,13 +67,18 @@ class ToastHost extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toast = ref.watch(toastProvider);
+    // Le toast flotte au-dessus de toute l'application : c'est à lui d'éviter
+    // le menu, où qu'il soit. En bas, il se pose au-dessus de la pilule ;
+    // debout à droite, il se range à gauche du rail et redescend, puisque
+    // plus rien n'occupe le bas de l'écran.
+    final rail = FloraTabRail.fitsIn(context) ? FloraTabRail.reserved(context) : 0.0;
     return Stack(
       children: [
         child,
         Positioned(
           left: Space.md,
-          right: Space.md,
-          bottom: MediaQuery.paddingOf(context).bottom + 96,
+          right: Space.md + rail,
+          bottom: MediaQuery.paddingOf(context).bottom + (rail > 0 ? Space.md : 96),
           child: IgnorePointer(
             ignoring: toast == null,
             child: AnimatedSwitcher(
