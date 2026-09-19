@@ -400,8 +400,15 @@ final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>(
 
 /// Décision facultative Jev pour les scans qu'Iris juge ambigus. Le service
 /// possède son propre cache afin qu'un rebuild d'interface ne refasse pas un
-/// appel OpenRouter identique.
-final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) => JevIdentificationPolicy());
+/// appel OpenRouter identique, et tient ses compteurs avec ceux de la
+/// cascade : des totaux, sur l'appareil.
+final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) {
+  final policy = JevIdentificationPolicy(
+    metrics: ref.watch(identificationMetricsStoreProvider),
+  );
+  ref.onDispose(policy.dispose);
+  return policy;
+});
 
 /// Où partent les photos étiquetées en enregistrant, si elles partent :
 /// nulle part sans le consentement des réglages, sans compte distant, ou
