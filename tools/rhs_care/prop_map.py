@@ -33,6 +33,10 @@ _NEEDLES: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"bud cuttings?"), "stemCutting"),
     (re.compile(r"stem[- ]tip"), "stemCutting"),
     (re.compile(r"stem tip"), "stemCutting"),
+    # « take tip or leaf cuttings » : une bouture de tête est une bouture
+    # de tige, et la feuille seule à côté ne la remplace pas.
+    (re.compile(r"tip cuttings?"), "stemCutting"),
+    (re.compile(r"tip or leaf cuttings?"), "stemCutting"),
     (re.compile(r"stem[- ]cuttings?"), "stemCutting"),
     (re.compile(r"basal stem"), "stemCutting"),
     (re.compile(r"semi[- ]hardwood"), "stemCutting"),

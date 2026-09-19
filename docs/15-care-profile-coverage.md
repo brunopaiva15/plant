@@ -8,12 +8,19 @@ Ce document répond à une question différente de [`14-sourcer-les-fiches.md`](
 
 La mesure de référence est `test/data/care_coverage_snapshot.json` :
 
-- **33 344 fiches espèce** dans l'encyclopédie ;
-- **428 profils d'entretien réellement utilisés** ;
-- **38 profils espèce** ;
-- **214 profils genre** ;
+- **33 343 fiches espèce** dans l'encyclopédie ;
+- **671 profils d'entretien réellement utilisés** ;
+- **280 profils espèce** ;
+- **215 profils genre** ;
 - **176 profils famille** ;
-- résolution actuelle des 33 344 fiches : **38 espèce**, **7 124 genre**, **26 182 famille**.
+- résolution actuelle des 33 343 fiches : **278 espèce**, **6 983 genre**, **26 081 famille**, **1 générique**.
+
+La fiche générique est *Callianthe picta*, une classe du modèle sans famille
+au catalogue étendu : ni son genre ni sa famille ne répondent pour elle.
+
+Le lot des 242 fiches espèce d'Iris Indoor a été écrit par
+`tools/rhs_care/extract_indoor.py` ; la méthode est décrite en phase 10 de
+[`14-sourcer-les-fiches.md`](14-sourcer-les-fiches.md).
 
 La cascade reste :
 
@@ -29,12 +36,20 @@ Cible recommandée :
 
 | Étape | Profils espèce | Profils totaux | But |
 |---|---:|---:|---|
-| Aujourd'hui | 38 | 428 | couverture taxonomique large |
-| Après P0 | 78 | 468 | classiques d'intérieur couverts précisément |
-| Après P0 + P1 | 113 | 503 | **cible recommandée pour la V1 publique** |
-| Après P0 à P3 | 158 | 548 | socle populaire + collection + comestible/balcon |
+| Point de départ | 38 | 429 | couverture taxonomique large |
+| Cible P0 + P1 | 113 | 504 | cible recommandée pour la V1 publique |
+| Cible P0 à P3 | 158 | 549 | socle populaire + collection + comestible/balcon |
+| Aujourd'hui, lot Indoor écrit | 280 | 671 | les espèces qu'Iris Indoor expose |
 
-Un objectif de **700 profils** reste raisonnable ensuite, mais il ne doit pas être atteint en ajoutant des genres obscurs seulement parce qu'ils couvrent beaucoup d'espèces. Après P0–P3, les ajouts doivent être guidés par l'usage réel, les recherches dans l'app et les erreurs constatées du fallback genre/famille.
+Le lot Indoor couvre 32 des 40 espèces P0, 22 des 35 P1 et 13 des 25 P2. Les
+manquantes ne sont pas des oublis : leur genre répond déjà exactement comme
+elles, parce qu'il a été ancré sur leur propre page RHS — *Maranta
+leuconeura*, *Strelitzia reginae*, *Chlorophytum comosum*, *Coffea arabica*,
+*Dypsis lutescens*, *Ceropegia woodii* sont dans ce cas. Écrire leur fiche
+espèce ne ferait qu'une copie de plus à tenir à jour. P3 (aromatiques,
+potager, balcon) reste presque entier : il sort du masque intérieur.
+
+Un objectif de **700 profils** reste à portée, mais il ne doit pas être atteint en ajoutant des genres obscurs seulement parce qu'ils couvrent beaucoup d'espèces. Après P0–P3, les ajouts doivent être guidés par l'usage réel, les recherches dans l'app et les erreurs constatées du fallback genre/famille.
 
 ## Méthode de priorisation
 
@@ -212,6 +227,15 @@ Le catalogue et la recherche peuvent garder les alias. Exemples à traiter expli
 - les cultivars comme Philodendron 'Birkin', 'Pink Princess', Monstera 'Thai Constellation' ou les hybrides horticoles restent des alias/cultivars et ne doivent pas devenir arbitrairement des espèces botaniques.
 
 Avant d'ajouter une clé à `CareProfiles.bySpecies`, la résoudre contre la taxonomie du catalogue/GBIF et vérifier que la fiche d'encyclopédie emploie la même clé canonique.
+
+Le lot Indoor a donc été écrit sous les noms que l'app résout déjà —
+`plants.csv`, `catalog.tsv` et les classes du modèle portent tous
+`Philodendron bipinnatifidum`, pas `Thaumatophyllum bipinnatifidum` :
+déplacer la clé aurait rendu la fiche inatteignable pour la plante
+identifiée. Un cas reste à réconcilier : le catalogue connaît la même
+broméliacée sous `Vriesea splendens` (le modèle) et `Lutheria splendens` (le
+nom accepté). La fiche vit sous le premier ; `CatalogCareGuide` n'applique
+pas `acceptedSpeciesName`, donc le second retombe sur sa famille.
 
 ## Définition de « terminé » pour un nouveau profil
 

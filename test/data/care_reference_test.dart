@@ -457,6 +457,58 @@ void main() {
     });
   });
 
+  group('espèces du masque Indoor, contre leur héritage', () {
+    // Ces fiches existent parce que le genre ou la famille disaient faux sur
+    // un point qui coûte la plante. Source : la page RHS de l'espèce, cote de
+    // rusticité comprise.
+
+    test('Phlebodium aureum : une fougère tropicale dans une famille rustique', () {
+      // Polypodiaceae tient -22 °C d'après le polypode commun. Le phlebodium
+      // est H1B : sorti l'hiver, il meurt.
+      final p = care('Phlebodium aureum', 'Polypodiaceae').profile;
+      expect(p.damageBelowC, 13);
+      expect(p.frostHardy, isFalse);
+      expect(p.sourcing[CareField.hardiness], CareSource.rhs);
+      expect(CareProfiles.byFamily['Polypodiaceae']!.damageBelowC, lessThan(0));
+    });
+
+    test('Asparagus densiflorus : le genre passe l\'hiver dehors, pas elle', () {
+      final p = care('Asparagus densiflorus', 'Asparagaceae').profile;
+      expect(p.damageBelowC, 8, reason: 'RHS H1C : 5 à 10 °C');
+      expect(p.frostHardy, isFalse);
+      expect(CareProfiles.byGenus['Asparagus']!.frostHardy, isTrue);
+    });
+
+    test('Alocasia zebrina : sous verre toute l\'année', () {
+      final p = care('Alocasia zebrina', 'Araceae').profile;
+      expect(p.damageBelowC, 15, reason: 'RHS H1A : plus de 15 °C');
+      expect(p.sourcing[CareField.hardiness], CareSource.rhs);
+    });
+
+    test('Dendrobium nobile : la page RHS ne nomme pas le keiki, la fiche le garde', () {
+      // « Propagation by division » ne dit pas que le keiki n'existe pas :
+      // une liste qui garde ce que la page tait n'est pas déclarée sourcée.
+      final p = care('Dendrobium nobile', 'Orchidaceae').profile;
+      expect(p.propagation, contains(Propagation.offsets));
+      expect(p.propagation, contains(Propagation.division));
+      expect(p.sourcing[CareField.propagation], isNull);
+    });
+
+    test('Gynura aurantiaca : la bouture de tige, et rien d\'autre', () {
+      final p = care('Gynura aurantiaca', 'Asteraceae').profile;
+      expect(p.propagation, [Propagation.stemCutting]);
+      expect(p.sourcing[CareField.propagation], CareSource.rhs);
+    });
+
+    test('une fiche Indoor ne prête pas la floraison du genre', () {
+      // Monstera adansonii n'a pas de tableau Colour & Scent : la fenêtre
+      // lue sur la page de deliciosa ne lui appartient pas.
+      final p = care('Monstera adansonii', 'Araceae').profile;
+      expect(p.bloom, isNull);
+      expect(CareProfiles.byGenus['Monstera']!.bloom, isNotNull);
+    });
+  });
+
   group('familles, ancrées sur une espèce représentative', () {
     test('Orchidaceae : le keiki reste hors source, les nuits fraîches restent', () {
       final p = CareProfiles.byFamily['Orchidaceae']!;
