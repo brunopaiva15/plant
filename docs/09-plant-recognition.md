@@ -3676,6 +3676,72 @@ Le reste ne bouge pas : `--backbone large`, `--dropout 0.5`, `--unfreeze
 100`, `--input-size 320`, précision mixte, cache de traits et points de
 sauvegarde. Une recette à la fois, comme au § 12.
 
+#### Le masque rapporte, la recette coûte — mesuré le 19 septembre 2026
+
+Jusqu'ici les deux se confondaient. Iris Indoor rendait +1,8 point de top-1
+sur ce que l'application livre, et son réseau paraissait « 1,4 point sous la
+v8 » — mais mesuré à **masques différents**, ce qui ne veut rien dire.
+
+`masque_outdoor.txt` a permis de les séparer : il reprend l'ensemble exposé
+par l'Iris 8 tel quel, coupé dans la tête large d'aujourd'hui. Même masque des
+deux côtés, seule la recette diffère.
+
+| 6 000 images, classes communes | Iris 8 | tête du 19 septembre |
+|---|---|---|
+| top-1, sorties masquées | **0,6672** | 0,6365 (−3,1) |
+| top-3 | **0,8063** | 0,7825 |
+| autonomie au seuil 0,70 | **55,0 %** | 48,2 % (−6,8) |
+| justesse quand elle accepte | 0,9176 | **0,9284** (+1,1) |
+| top-1, plantes cultivées | **0,6525** | 0,6410 (−1,2) |
+
+**La recette d'aujourd'hui est moins bonne que celle de la v8**, et le § 4 de
+`docs/10` fixe le seuil d'alerte à « un point ou deux ». Trois points est
+au-delà. L'écart se resserre à 1,2 sur les plantes cultivées : la perte est
+concentrée sur les espèces sauvages.
+
+Le compte d'Iris Indoor tombe alors juste, et c'est la première fois :
+
+```text
++3 environ  ce que rapporte le masque étroit
+−1 environ  ce que coûte la recette
+= +1,8      mesuré sur ce que l'application rend
+```
+
+Le gain était réel, mais net d'une perte qu'on n'avait pas isolée.
+
+**Deux conséquences.** D'abord, ne pas couper Outdoor dans cette tête : il
+serait trois points sous l'Iris 8 sur son propre terrain, et l'Iris 8 *est*
+déjà un spécialiste extérieur. Ensuite, comprendre la régression avant de
+lancer Iris 9, qui partirait sinon d'une base abîmée.
+
+Et le point 4 ci-dessus s'applique à nous : **ce run a changé plusieurs
+choses à la fois** — 35 espèces ajoutées, le découpage corrigé du § 12.19 qui
+rend ~112 classes à validation mince, et peut-être des hyperparamètres. On
+reproduit exactement ce qu'on reprochait à la v8.
+
+#### Six doublons dans l'exposé, et ils ne datent pas d'aujourd'hui
+
+`doublons.py` trouve **six clés GBIF en double** parmi les 1 444 classes que
+l'Iris 8 expose : *Cupressus macrocarpa* = *Hesperocyparis macrocarpa*,
+*Dracaena trifasciata* = *Sansevieria trifasciata*, *Echinocactus grusonii* =
+*Kroenleinia grusonii*, *Coleus scutellarioides* = *Plectranthus
+scutellarioides*, *Citrus × bergamia* = *Citrus × limon*, *Citrus myrtifolia*
+= *Citrus × aurantium*.
+
+Douze classes pour six plantes. Chaque photo peut être étiquetée des deux
+façons et la moitié compte comme fausse : `confusions.py` voit six
+*Cupressus* rendus *Hesperocyparis*, et le modèle n'a pas tort. C'est le
+défaut du § 12.14, dans l'ensemble livré.
+
+Trois se tranchent seules — la table des noms acceptés résout vers un membre
+qui seul a une fiche. Les trois autres sont des décisions éditoriales : deux
+paires de *Citrus* portent la même clé **et** deux fiches curatées, et
+*Coleus* résout vers un *Plectranthus* qui n'a pas de fiche.
+
+**Ces doublons sont dans le masque, donc dans les deux modèles à l'identique** :
+ils ne sont pour rien dans les trois points d'écart. C'est un gain gratuit
+— six classes de moins, un retaillage de cinq minutes — pas une explication.
+
 ### 13.7 Les trois portes, et ce qu'on ne fera pas
 
 **Aucun de ces chantiers ne commence avant sa porte.** C'est ce qui a
