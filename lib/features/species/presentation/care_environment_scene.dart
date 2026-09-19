@@ -7,6 +7,40 @@ import '../../../domain/care/care_profile.dart';
 import '../application/care_environment_slots.dart';
 import '../application/care_environment_spec.dart';
 
+/// La teinte que la variante de lumière pose sur ce qui est posé dans le
+/// décor — la plante, le guéridon, l'humidificateur.
+///
+/// La plante est rendue une seule fois, dans son propre studio : la rendre
+/// six fois, une par lumière, aurait multiplié les images par six. Sans
+/// correction elle garde donc le même éclat au fond d'une pièce sombre que
+/// dans la tache de soleil, et se lit comme une vignette collée sur le
+/// décor. Un gain par canal et un peu de saturation suffisent à la faire
+/// entrer dans la lumière de la pièce, pour zéro octet.
+///
+/// Les valeurs suivent les variantes de `tool/care_scene/room.py` : l'écart
+/// d'ambiance entre `shade` et `fullSun` y est d'environ un tiers.
+ColorFilter _lumiereDeLaScene(LightNeed light) {
+  final (double gr, double gg, double gb, double sat) = switch (light) {
+    LightNeed.shade => (0.78, 0.78, 0.76, 0.90),
+    LightNeed.lowLight => (0.85, 0.85, 0.83, 0.94),
+    LightNeed.indirect => (0.92, 0.92, 0.91, 0.97),
+    LightNeed.brightIndirect => (0.99, 0.99, 0.98, 1.00),
+    LightNeed.someSun => (1.05, 1.02, 0.97, 1.04),
+    LightNeed.fullSun => (1.10, 1.05, 0.96, 1.07),
+  };
+  // Saturation autour de la luminance, puis gain par canal. L'alpha n'est
+  // pas touché : la silhouette garde exactement sa découpe.
+  const lr = 0.2126, lg = 0.7152, lb = 0.0722;
+  double c(double l, bool diagonale, double gain) =>
+      gain * (diagonale ? l + sat * (1 - l) : l - sat * l);
+  return ColorFilter.matrix(<double>[
+    c(lr, true, gr), c(lg, false, gr), c(lb, false, gr), 0, 0,
+    c(lr, false, gg), c(lg, true, gg), c(lb, false, gg), 0, 0,
+    c(lr, false, gb), c(lg, false, gb), c(lb, true, gb), 0, 0,
+    0, 0, 0, 1, 0,
+  ]);
+}
+
 /// Le diorama « environnement idéal » : le décor lumineux rendu par Blender,
 /// les props du climat (humidificateur), l'ombre qui pose la plante, la
 /// plante translatée sur son support, et les effets d'air
@@ -88,6 +122,9 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
     final plant = spec.plantFraction;
     const anchor = CareEnvironmentSlots.anchor;
     final anime = !MediaQuery.disableAnimationsOf(context);
+    // Ce qui est posé dans le décor prend sa lumière ; le décor, lui, la
+    // porte déjà (il est rendu une fois par variante).
+    final lumiere = _lumiereDeLaScene(spec.light);
     // Le diorama est une maquette posée dans la fiche : les coins s'arrondissent
     // comme les cartes alentour, sinon le carré de pelouse fait bloc collé.
     return ClipRRect(
@@ -112,10 +149,13 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
                     spec.slotFraction.$1 - anchor.$1,
                     spec.slotFraction.$2 - anchor.$2,
                   ),
-                  child: Image.asset(
-                    spec.pedestalAsset,
-                    fit: BoxFit.cover,
-                    excludeFromSemantics: true,
+                  child: ColorFiltered(
+                    colorFilter: lumiere,
+                    child: Image.asset(
+                      spec.pedestalAsset,
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                    ),
                   ),
                 ),
               // L'humidificateur reste au sol : à côté du guéridon quand la
@@ -129,10 +169,13 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
                     spec.humidifierFraction.$1 - anchor.$1,
                     spec.humidifierFraction.$2 - anchor.$2,
                   ),
-                  child: Image.asset(
-                    'assets/care_scene/props/humidifier.webp',
-                    fit: BoxFit.cover,
-                    excludeFromSemantics: true,
+                  child: ColorFiltered(
+                    colorFilter: lumiere,
+                    child: Image.asset(
+                      'assets/care_scene/props/humidifier.webp',
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                    ),
                   ),
                 ),
               CustomPaint(
@@ -141,7 +184,7 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
                   support: spec.hasPedestal
                       ? Offset(spec.slotFraction.$1, spec.slotFraction.$2)
                       : null,
-                  color: c.ink.withValues(alpha: 0.16),
+                  color: c.ink.withValues(alpha: 0.30),
                 ),
               ),
               // La plante est rendue au centre du monde ; sa base de pot vient
@@ -150,14 +193,17 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
               // repli est la feuille large — jamais une image cassée.
               FractionalTranslation(
                 translation: Offset(plant.$1 - anchor.$1, plant.$2 - anchor.$2),
-                child: Image.asset(
-                  spec.plantAsset,
-                  fit: BoxFit.cover,
-                  excludeFromSemantics: true,
-                  errorBuilder: (context, error, stack) => Image.asset(
-                    'assets/care_scene/plants/broad_leaf.webp',
+                child: ColorFiltered(
+                  colorFilter: lumiere,
+                  child: Image.asset(
+                    spec.plantAsset,
                     fit: BoxFit.cover,
                     excludeFromSemantics: true,
+                    errorBuilder: (context, error, stack) => Image.asset(
+                      'assets/care_scene/plants/broad_leaf.webp',
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                    ),
                   ),
                 ),
               ),
@@ -199,10 +245,16 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
   }
 }
 
-/// L'ombre qui pose le pot sur son support, et le meuble sur le sol. Sur le
-/// guéridon, l'ombre du pot est plus petite : elle tombe sur le plateau, et
-/// le meuble a la sienne au sol. Au sol, la plante garde l'ellipse large du
-/// diorama d'origine.
+/// L'ombre qui pose le pot sur son support, et le meuble sur le sol.
+///
+/// Elle fuit la fenêtre : dans les deux décors le jour vient de la gauche,
+/// et l'ombre bakée du fauteuil part vers la droite. Une ellipse centrée et
+/// symétrique, comme celle d'avant, contredisait cette lumière et nimbait
+/// l'objet au lieu de le poser.
+///
+/// Deux passes à chaque contact : un noyau serré, qui fait le contact
+/// lui-même, et un halo large et clair pour l'ombre portée. Une seule
+/// ellipse très floue ne donne ni l'un ni l'autre.
 class _PlantShadowPainter extends CustomPainter {
   const _PlantShadowPainter({
     required this.pot,
@@ -216,17 +268,39 @@ class _PlantShadowPainter extends CustomPainter {
   /// Le point au sol sous le guéridon, quand la plante est dessus — `null`
   /// quand elle est posée directement au sol.
   final Offset? support;
+
+  /// La teinte de l'ombre, à son opacité de noyau ; le halo en dérive.
   final Color color;
+
+  /// Le sens dans lequel l'ombre s'étire, à l'opposé de la fenêtre.
+  static const _fuite = Offset(0.030, 0.006);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
     if (support case final s?) {
-      _ellipse(canvas, size, paint, s, 0.095, 0.024, 0.013);
-      _ellipse(canvas, size, paint, pot, 0.070, 0.018, 0.009);
+      // Le meuble au sol, puis le pot sur son plateau : deux contacts, deux
+      // ombres, la seconde plus petite parce qu'elle tombe de moins haut.
+      _contact(canvas, size, s, 0.080, 0.021, 1.0);
+      _contact(canvas, size, pot, 0.058, 0.015, 0.72);
     } else {
-      _ellipse(canvas, size, paint, pot, 0.105, 0.028, 0.014);
+      _contact(canvas, size, pot, 0.090, 0.024, 1.0);
     }
+  }
+
+  void _contact(
+    Canvas canvas,
+    Size size,
+    Offset c,
+    double largeur,
+    double hauteur,
+    double echelle,
+  ) {
+    final paint = Paint();
+    // Le halo d'abord, le noyau par-dessus : l'inverse effacerait le noyau.
+    _ellipse(canvas, size, paint, c + _fuite * echelle, largeur * 1.55,
+        hauteur * 1.45, 0.019, color.withValues(alpha: color.a * 0.45));
+    _ellipse(canvas, size, paint, c + _fuite * 0.42 * echelle, largeur,
+        hauteur, 0.006, color);
   }
 
   void _ellipse(
@@ -237,6 +311,7 @@ class _PlantShadowPainter extends CustomPainter {
     double largeur,
     double hauteur,
     double flou,
+    Color couleur,
   ) {
     canvas.drawOval(
       Rect.fromCenter(
@@ -244,7 +319,9 @@ class _PlantShadowPainter extends CustomPainter {
         width: size.width * largeur,
         height: size.width * hauteur,
       ),
-      paint..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * flou),
+      paint
+        ..color = couleur
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * flou),
     );
   }
 

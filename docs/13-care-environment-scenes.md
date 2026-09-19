@@ -171,9 +171,16 @@ L'humidificateur suit la plante d'un décalage d'écran constant, toujours du
 même côté — entre elle et la fenêtre : lui aussi doit se retrouver au même
 endroit d'une fiche à l'autre.
 
-La plante garde le même éclat d'une variante à l'autre : c'est le décor —
-luminosité, fenêtre, faisceau — qui porte l'information, pas un
-ré-éclairage de la plante (ce qui aurait multiplié les rendus par six).
+La plante n'est **rendue qu'une fois**, dans son propre studio : la rendre
+six fois, une par lumière, aurait multiplié les images par six. Mais elle ne
+garde pas pour autant le même éclat d'une variante à l'autre — sans rien,
+elle brillait au fond d'une pièce sombre comme dans la tache de soleil et se
+lisait comme une vignette collée. `_lumiereDeLaScene`
+(`care_environment_scene.dart`) lui applique un gain par canal et un peu de
+saturation, par variante, et la même teinte au guéridon et à
+l'humidificateur. Zéro octet livré, et la plante entre dans la lumière de la
+pièce. C'est le décor qui porte l'information de lumière ; le filtre ne fait
+que l'accorder.
 
 ## Les silhouettes
 
@@ -181,6 +188,20 @@ Neuf archétypes, pas 1 900 modèles. Le résolveur (`resolvePlantVisual`)
 décide dans l'ordre : l'espèce nommée, le genre, la famille, la catégorie
 d'usage, et enfin le repli `broadLeaf` — une feuille large vaut mieux
 qu'une mauvaise fougère.
+
+Chaque archétype porte **entre neuf et quatorze organes** — feuilles, lames,
+frondes, raquettes. À trois ou quatre, la plante se lisait comme un croquis :
+on voyait à travers, et aucun réglage de lumière ou d'ombre ne rattrapait
+ça. Les tables de `tool/care_scene/plants.py` sont la seule chose à toucher
+pour en ajouter ; le test d'assets vérifie qu'aucune silhouette ne sort du
+diorama à quelque emplacement qu'elle se pose, et c'est lui qui borne la
+densité.
+
+Deux pièges rencontrés en les densifiant : des organes régulièrement
+espacés le long d'une tige font un peigne, il faut les faire alterner de
+part et d'autre ; et une irrégularité trop forte entre les étages du
+conifère le transforme en glace à l'italienne — la régularité valait
+mieux.
 
 | Archétype | Exemples |
 |---|---|
@@ -243,8 +264,15 @@ une couche bakée ne le pourrait pas.
 
 Les effets respirent trois cycles à l'ouverture puis se reposent : rien ne
 bouge en permanence dans la fiche. En reduced motion, ils sont statiques et
-lisibles. L'ombre de la plante est une ellipse douce dessinée sous son
-emplacement : elle ne flotte jamais.
+lisibles.
+
+L'ombre, elle, **fuit la fenêtre** : dans les deux décors le jour vient de
+la gauche, et l'ombre bakée du fauteuil part vers la droite. Une ellipse
+centrée et symétrique contredisait cette lumière et nimbait l'objet au lieu
+de le poser. Chaque contact reçoit donc deux passes — un noyau serré qui
+fait le contact, un halo large et clair pour l'ombre portée, tous deux
+décalés à l'opposé de la fenêtre. Une seule ellipse très floue ne donnait
+ni l'un ni l'autre.
 
 ## Régénérer les assets
 
