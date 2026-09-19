@@ -11,6 +11,7 @@ import '../../../app/router.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/network/connectivity.dart';
 import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../data/services/jev_identification_policy.dart';
@@ -403,6 +404,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       ));
     }
     return ref.read(jevIdentificationPolicyProvider).evaluate(
+          policy: identifier.policy,
+          candidates: results,
+          photos: _identificationPaths.length,
+          maxPhotos: maxIdentificationPhotos,
+          online: ref.read(isOnlineProvider),
+        );
+  }
+
+  /// La conclusion d'Iris seule, rendue sans attendre le réseau : c'est
+  /// l'état montré tant que Jev n'a pas répondu.
+  JevPipelineEvaluation? _localIdentificationEvaluation(
+      List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier) return null;
+    return ref.read(jevIdentificationPolicyProvider).localEvaluation(
           policy: identifier.policy,
           candidates: results,
           photos: _identificationPaths.length,
@@ -905,6 +921,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onAddPhoto: _identificationPaths.length < maxIdentificationPhotos ? _chooseIdentificationSource : null,
               onRemovePhoto: _removeIdentificationPhoto,
               evaluation: _identificationEvaluation,
+              localEvaluation: _localIdentificationEvaluation,
               genus: _identificationGenus,
               selectedScientificName: _chosen?.scientificName,
             ),
@@ -1035,6 +1052,7 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onAddPhoto,
     this.onRemovePhoto,
     this.evaluation,
+    this.localEvaluation,
     this.genus,
     this.selectedScientificName,
   });
@@ -1059,6 +1077,11 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Décision produit finale pour la liste locale courante.
   final Future<JevPipelineEvaluation> Function(List<IdentificationCandidate>)?
       evaluation;
+
+  /// La même décision, telle qu'Iris seule la rend : affichée pendant que
+  /// l'arbitrage distant se fait attendre.
+  final JevPipelineEvaluation? Function(List<IdentificationCandidate>)?
+      localEvaluation;
 
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
@@ -1215,6 +1238,7 @@ class _IdentificationSuggestions extends StatelessWidget {
               else
                 FutureBuilder<JevPipelineEvaluation>(
                   future: evaluationFuture,
+                  initialData: localEvaluation?.call(all),
                   builder: (context, decisionSnap) {
                     final state = decisionSnap.data;
                     return state?.keepsUncertain == true

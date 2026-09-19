@@ -191,6 +191,22 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
           candidates: results,
           photos: _paths.length,
           maxPhotos: maxPhotos,
+          online: ref.read(isOnlineProvider),
+        );
+  }
+
+  /// Ce qu'Iris seule conclut, disponible sans attendre le réseau. C'est
+  /// l'état affiché tant que Jev n'a pas répondu : l'arbitrage distant
+  /// corrige une proposition déjà là plutôt que de retenir l'écran.
+  JevPipelineEvaluation? _localEvaluation(
+      List<IdentificationCandidate> results) {
+    final identifier = ref.read(plantIdentifierProvider);
+    if (identifier is! CascadeIdentifier) return null;
+    return ref.read(jevIdentificationPolicyProvider).localEvaluation(
+          policy: identifier.policy,
+          candidates: results,
+          photos: _paths.length,
+          maxPhotos: maxPhotos,
         );
   }
 
@@ -470,6 +486,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   else
                     FutureBuilder<JevPipelineEvaluation>(
                       future: evaluationFuture,
+                      initialData:
+                          _localEvaluation(data ?? const <IdentificationCandidate>[]),
                       builder: (context, decisionSnap) {
                         final state = decisionSnap.data;
                         if (state?.keepsUncertain == true) {

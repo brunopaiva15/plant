@@ -14,7 +14,10 @@ class FakeJev extends JevDecisionService {
   FakeJev(this.response, {this.error});
 
   final Map<String, dynamic> response;
-  final Object? error;
+
+  /// Modifiable : un incident réseau se répare, et c'est justement ce que
+  /// la fenêtre de silence doit laisser arriver.
+  Object? error;
   int calls = 0;
   Object? lastState;
   Map<String, dynamic>? lastQuestions;
@@ -23,6 +26,7 @@ class FakeJev extends JevDecisionService {
   Future<Map<String, dynamic>> decide({
     required Object state,
     required Map<String, dynamic> questions,
+    required Duration timeout,
   }) async {
     calls++;
     lastState = state;
@@ -126,6 +130,101 @@ void main() {
     );
 
     expect(offer, SecondPhotoOffer.prominent);
+  });
+
+  test('hors ligne, Auxine ne consulte jamais Jev', () async {
+    final fake = FakeJev(answer('keep_uncertain', 0.91));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+    final candidates = [c('Aloe maculata', 0.23), c('Gasteria carinata', 0.17)];
+
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: candidates,
+      photos: 1,
+      maxPhotos: 2,
+      online: false,
+    );
+
+    expect(fake.calls, 0);
+    expect(evaluation.consultedJev, isFalse);
+    expect(evaluation.usedFallback, isTrue);
+    expect(evaluation.offer, SecondPhotoOffer.prominent);
+    expect(evaluation.keepsUncertain, isFalse);
+  });
+
+  test('le retour du réseau rouvre une question laissée hors ligne', () async {
+    final fake = FakeJev(answer('show_result', 0.86));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+    final candidates = [c('Aloe maculata', 0.23), c('Gasteria carinata', 0.17)];
+
+    await policy.evaluate(
+      policy: local,
+      candidates: candidates,
+      photos: 1,
+      maxPhotos: 2,
+      online: false,
+    );
+    final evaluation = await policy.evaluate(
+      policy: local,
+      candidates: candidates,
+      photos: 1,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 1);
+    expect(evaluation.decision?.action, JevProductAction.showResult);
+  });
+
+  test('un incident Jev ne condamne pas le scan pour la session', () async {
+    var clock = DateTime(2026, 9, 19, 10);
+    final fake = FakeJev(answer('show_result', 0.81), error: StateError('boom'));
+    final policy = JevIdentificationPolicy(
+      service: fake,
+      configured: true,
+      now: () => clock,
+    );
+    final candidates = [c('Aloe maculata', 0.23), c('Gasteria carinata', 0.17)];
+
+    Future<JevPipelineEvaluation> evaluate() => policy.evaluate(
+          policy: local,
+          candidates: candidates,
+          photos: 1,
+          maxPhotos: 2,
+        );
+
+    expect((await evaluate()).usedFallback, isTrue);
+    expect(fake.calls, 1);
+
+    // Un écran qui se reconstruit ne doit pas rappeler OpenRouter à chaque
+    // image : la fenêtre de silence tient.
+    expect((await evaluate()).usedFallback, isTrue);
+    expect(fake.calls, 1);
+
+    // Passé la fenêtre, la question se repose — et le réseau est revenu.
+    clock = clock.add(const Duration(seconds: 30));
+    fake.error = null;
+    final repaired = await evaluate();
+
+    expect(fake.calls, 2);
+    expect(repaired.usedFallback, isFalse);
+    expect(repaired.decision?.action, JevProductAction.showResult);
+  });
+
+  test('l’état local est disponible sans attendre Jev', () {
+    final fake = FakeJev(answer('show_result', 0.81));
+    final policy = JevIdentificationPolicy(service: fake, configured: true);
+
+    final evaluation = policy.localEvaluation(
+      policy: local,
+      candidates: [c('Aloe maculata', 0.23), c('Gasteria carinata', 0.17)],
+      photos: 1,
+      maxPhotos: 2,
+    );
+
+    expect(fake.calls, 0);
+    expect(evaluation.offer, SecondPhotoOffer.prominent);
+    expect(evaluation.consultedJev, isFalse);
+    expect(evaluation.keepsUncertain, isFalse);
   });
 
   test('une même évaluation pipeline est réutilisée sans second appel', () async {

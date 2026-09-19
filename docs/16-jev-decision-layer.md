@@ -297,10 +297,17 @@ Auxine :
 - Iris reste le seul classifieur d'espèce ;
 - Jev ne reçoit jamais la photo, seulement le Top-5, les scores et le nombre de vues ;
 - un résultat déjà accepté par Iris ne déclenche aucun appel Jev ;
+- sans clé ou sans réseau, aucun appel n'est tenté : la réponse locale part
+  aussitôt, et le retour du réseau rouvre la question ;
 - Jev ne sélectionne jamais automatiquement une espèce ;
 - le choix utilisateur reste obligatoire ;
-- le résultat Jev est mis en cache afin qu'un rebuild Flutter ne refasse pas le même appel ;
-- l'appel a un budget de trois secondes ;
+- une décision Jev est mise en cache afin qu'un rebuild Flutter ne refasse pas
+  le même appel ;
+- un incident, lui, n'est pas mémorisé : il ouvre une fenêtre de vingt
+  secondes pendant laquelle Auxine s'en tient à la politique locale sans
+  rappeler OpenRouter, puis la question se repose ;
+- l'appel a un budget unique de trois secondes, porté par la requête ;
+- pendant ce délai, l'interface affiche déjà ce qu'Iris seule conclut ;
 - en cas d'erreur, timeout ou réponse invalide, Auxine retombe sur la politique locale Iris ;
 - aucune troisième photo n'est possible.
 
@@ -327,7 +334,7 @@ Une panne Jev ne doit jamais devenir un message d'erreur produit.
 
 Le comportement est volontairement transparent :
 
-- après une photo ambiguë, erreur, timeout, clé absente ou réponse invalide → la politique Iris locale reprend la main et peut proposer la seconde photo ;
+- après une photo ambiguë, erreur, timeout, clé absente, appareil hors ligne ou réponse invalide → la politique Iris locale reprend la main et peut proposer la seconde photo ;
 - après deux photos encore ambiguës, le même incident → Auxine garde l'identification incertaine ;
 - aucune erreur OpenRouter n'est affichée dans le flux d'identification ;
 - aucune troisième photo n'est possible.
