@@ -19,6 +19,7 @@ export 'pressable.dart';
 export 'processing_field.dart';
 export 'scanning_overlay.dart';
 export 'section_header.dart';
+export 'shutter.dart';
 export 'sheets.dart';
 export 'skeleton.dart';
 export 'step_dots.dart';

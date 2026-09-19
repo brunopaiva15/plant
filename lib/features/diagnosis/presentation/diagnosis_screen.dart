@@ -501,32 +501,45 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Viewfinder(
-          camera: _camera,
-          full: _full,
-          busy: _picking,
-          onShoot: _capture,
-          onSystemCamera: () => _addPhoto(PhotoSource.camera),
-        ),
-        const SizedBox(height: Space.sm),
-        // Les deux gestes sont écrits, comme partout où l'on ajoute une
-        // photo : toucher le cadre déclenche aussi, mais personne n'a à le
-        // deviner.
-        FloraButton(
-          label: l10n.takePhoto,
-          icon: CupertinoIcons.camera_fill,
-          style: FloraButtonStyle.secondary,
-          expand: true,
-          loading: _picking,
-          onPressed: _full ? null : _capture,
-        ),
-        const SizedBox(height: Space.xs),
-        FloraButton(
-          label: l10n.choosePhoto,
-          icon: CupertinoIcons.photo,
-          style: FloraButtonStyle.ghost,
-          expand: true,
-          onPressed: _full || _picking ? null : () => _addPhoto(PhotoSource.gallery),
+        // Le cadre et ce qui l'accompagne se redessinent avec le viseur :
+        // celui-ci peut arriver en retard, ou ne jamais venir.
+        ListenableBuilder(
+          listenable: _camera,
+          builder: (context, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _Viewfinder(
+                camera: _camera,
+                full: _full,
+                busy: _picking,
+                onShoot: _capture,
+                onPick: () => _addPhoto(PhotoSource.gallery),
+                onSystemCamera: () => _addPhoto(PhotoSource.camera),
+              ),
+              // Sans viseur (refus, appareil sans caméra, ordinateur), le
+              // cadre n'a pas de commandes à porter : les deux gestes
+              // s'écrivent sous lui, comme à la création d'une plante.
+              if (!_camera.hasViewfinder && !_full) ...[
+                const SizedBox(height: Space.sm),
+                FloraButton(
+                  label: l10n.takePhoto,
+                  icon: CupertinoIcons.camera_fill,
+                  style: FloraButtonStyle.secondary,
+                  expand: true,
+                  loading: _picking,
+                  onPressed: _capture,
+                ),
+                const SizedBox(height: Space.xs),
+                FloraButton(
+                  label: l10n.choosePhoto,
+                  icon: CupertinoIcons.photo,
+                  style: FloraButtonStyle.ghost,
+                  expand: true,
+                  onPressed: _picking ? null : () => _addPhoto(PhotoSource.gallery),
+                ),
+              ],
+            ],
+          ),
         ),
         if (_photos.isNotEmpty) ...[
           const SizedBox(height: Space.sm),
@@ -694,17 +707,20 @@ class _Bar extends StatelessWidget {
   }
 }
 
-/// Le viseur de la page : on vise la feuille malade et on touche le cadre.
+/// Le viseur de la page, avec ses commandes posées dessus.
 ///
-/// C'est le geste de toute l'application — le viseur est dans la page, jamais
-/// derrière une feuille d'action système. Sans caméra disponible, le cadre
-/// garde son invite et ouvre l'appareil photo du système.
+/// C'est le cadre de la création d'une plante, à l'identique : le
+/// déclencheur au centre en bas, la galerie à sa gauche, et le cadre qui
+/// déclenche aussi quand on le touche. Sans caméra disponible, le cadre
+/// garde son invite, ouvre l'appareil photo du système, et ce sont les deux
+/// boutons de la page qui prennent le relais.
 class _Viewfinder extends StatelessWidget {
   const _Viewfinder({
     required this.camera,
     required this.full,
     required this.busy,
     required this.onShoot,
+    required this.onPick,
     required this.onSystemCamera,
   });
 
@@ -714,6 +730,7 @@ class _Viewfinder extends StatelessWidget {
   final bool full;
   final bool busy;
   final VoidCallback onShoot;
+  final VoidCallback onPick;
   final VoidCallback onSystemCamera;
 
   @override
@@ -721,18 +738,57 @@ class _Viewfinder extends StatelessWidget {
     final l10n = context.l10n;
     return ListenableBuilder(
       listenable: camera,
-      builder: (context, _) => AspectRatio(
-        aspectRatio: 4 / 5,
-        child: Opacity(
-          opacity: full ? 0.5 : 1,
-          child: Pressable(
-            onTap: full || busy ? null : (camera.hasViewfinder ? onShoot : onSystemCamera),
-            scale: 0.98,
-            semanticLabel: l10n.takePhoto,
-            child: CaptureFrame(camera: camera),
+      builder: (context, _) {
+        final live = camera.hasViewfinder;
+        return AspectRatio(
+          aspectRatio: 4 / 5,
+          child: Opacity(
+            opacity: full ? 0.5 : 1,
+            child: Pressable(
+              onTap: full || busy ? null : (live ? (camera.isReady ? onShoot : null) : onSystemCamera),
+              scale: 0.98,
+              haptic: false,
+              semanticLabel: l10n.takePhoto,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CaptureFrame(camera: camera),
+                  if (live && !full)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: Space.md,
+                      child: SizedBox(
+                        height: Shutter.side,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Shutter(
+                              busy: busy,
+                              enabled: camera.isReady,
+                              semanticLabel: l10n.takePhoto,
+                              onTap: onShoot,
+                            ),
+                            Transform.translate(
+                              offset: const Offset(-Shutter.asideOffset, 0),
+                              child: FloraIconButton(
+                                icon: CupertinoIcons.photo,
+                                semanticLabel: l10n.choosePhoto,
+                                background: OnMedia.tile,
+                                color: OnMedia.ink,
+                                onPressed: busy ? null : onPick,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

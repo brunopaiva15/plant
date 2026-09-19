@@ -528,12 +528,16 @@ leurs gestes — défilait dans une demi-hauteur d'écran. C'est une page,
 poussée depuis la fiche (`/plants/:id/diagnosis`), et elle suit les trois
 temps du geste sans jamais changer d'écran.
 
-**Montrer.** Le viseur occupe le haut de la page, en 4:5, comme partout où
-l'on photographie une plante : on vise la feuille malade, on touche le cadre.
-Dessous, les trois places d'une analyse — ce qui est pris, ce qui reste ; la
-première libre mène à la galerie, les autres ne font que dire combien il en
-reste. Sans caméra — refus, appareil sans viseur, test —, le cadre garde son
-invite et ouvre l'appareil du système.
+**Montrer.** Le viseur occupe le haut de la page, en 4:5, avec ses commandes
+posées dessus : le déclencheur au centre en bas (`Shutter`, partagé avec la
+création d'une plante), la galerie à sa gauche à douze points, et le cadre
+qui déclenche aussi quand on le touche. Sans caméra (refus, appareil sans
+viseur, test), le cadre garde son invite, ouvre l'appareil du système, et
+les deux boutons écrits — « Prendre une photo », « Choisir une photo » —
+prennent le relais sous lui, exactement comme à la création d'une plante.
+Une fois la première photo prise, une bande montre ce qui partira à
+l'analyse et les places qui restent ; elle ne sert qu'à montrer, la croix
+d'une vignette mise à part.
 
 Puis ce qu'on décrit, et ce qu'on est allé vérifier de sa main : une carte par
 sujet, tuile d'emoji et teinte comprises, comme les volets de la fiche
