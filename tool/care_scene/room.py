@@ -204,12 +204,11 @@ def _tapis(m):
 
 
 def _cadres(m):
-    # Trois cadres au mur du fond : deux du cote du coin salon, un dans le
-    # coin droit. Leur x d'ecran tombe de part et d'autre de la bande que la
-    # plante occupe — le couloir des emplacements passe entre les deux
-    # groupes.
-    for nom, x, z, lx, lz in (("A", -1.50, 1.48, 0.62, 0.78),
-                              ("B", -0.82, 1.34, 0.46, 0.56),
+    # Trois cadres au mur du fond : deux au centre gauche, un dans le coin
+    # droit. Les deux premiers laissent l'angle au lampadaire, dont
+    # l'abat-jour les couvrait.
+    for nom, x, z, lx, lz in (("A", -1.20, 1.48, 0.58, 0.72),
+                              ("B", -0.55, 1.33, 0.44, 0.54),
                               ("C", 1.90, 1.52, 0.62, 0.46)):
         y = PIECE_Y - 0.035
         boite("Cadre_%s" % nom, (x, y, z), (lx, 0.035, lz), m["cadre"], 0.012)
@@ -238,12 +237,14 @@ def _console(m):
 
 
 def _lampadaire(m):
-    # A l'avant gauche : un pied fin, un abat-jour clair. La position est
-    # contrainte a l'ecran, pas dans la piece — pose a droite, son mat
-    # montait pile sous le pot a quatre emplacements sur six et la plante
-    # avait l'air vissee dessus. Ici il degage la bande que la plante occupe
-    # (x ecran 0,37 a 0,81) et son abat-jour passe sous la fenetre.
-    x, y = -0.60, -1.78
+    # Dans l'angle des deux murs, au fond : la place d'un lampadaire. La
+    # contrainte est a l'ecran, pas dans la piece — pose dans le coin avant
+    # droit, son mat montait pile sous le pot a quatre emplacements sur six
+    # et la plante avait l'air vissee dessus. Ici il est a 32,3 m de la
+    # camera contre 31,0 au plus loin des emplacements : il passe donc
+    # DERRIERE la plante, qui le masque parfois, et c'est ce qui donne sa
+    # profondeur a la scene.
+    x, y = -1.82, 1.50
     base = revolve("Lampe_Base", [(0.0, 0.0), (0.17, 0.0), (0.175, 0.018),
                                   (0.05, 0.030), (0.0, 0.030)], 40, [m["laiton"]], 30.0)
     base.location = (x, y, 0.0)
