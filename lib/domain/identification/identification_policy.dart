@@ -33,7 +33,30 @@ class FallbackPolicy {
     this.plausibleThreshold = 0.25,
     this.minMargin = 0.25,
     this.floor = 0.10,
+    this.localMayAffirm = true,
   });
+
+  /// La même règle, pour une photo prise à un emplacement **extérieur**.
+  ///
+  /// Le modèle embarqué n'expose que des plantes d'intérieur (§ 13.3 de
+  /// `docs/09`), et mesuré sur 40 photos de plantes hors catalogue il en
+  /// **affirme 27,5 %** au-dessus du seuil et avec la marge — une plante de
+  /// jardin forcée dans une liste d'appartement, sans que rien ne s'y oppose
+  /// (§ 12.7). Ni le seuil, ni la marge, ni le repli ne voient cette
+  /// erreur-là : elle est confiante.
+  ///
+  /// Dehors, Iris propose donc au lieu d'affirmer. Ce n'est pas une
+  /// interdiction — `docs/14` § 8 est explicite, le contexte donne un a
+  /// priori, jamais une interdiction : les candidates restent toutes
+  /// affichées, le genre répond toujours, et la seconde photo est proposée
+  /// puisque la réponse n'est plus tenue pour sûre.
+  FallbackPolicy outdoors() => FallbackPolicy(
+        acceptThreshold: acceptThreshold,
+        plausibleThreshold: plausibleThreshold,
+        minMargin: minMargin,
+        floor: floor,
+        localMayAffirm: false,
+      );
 
   /// Score minimal du premier candidat pour l'accepter sans discuter.
   ///
@@ -94,13 +117,27 @@ class FallbackPolicy {
   /// c'est la réponse d'un modèle à qui l'on montre un chat.
   final double floor;
 
+  /// Si le modèle embarqué a le droit d'affirmer seul, sans réserve.
+  ///
+  /// Vrai partout sauf à un emplacement extérieur, où [outdoors] le retire.
+  /// Une réponse **distante** n'est jamais concernée : elle a déjà tranché,
+  /// et elle connaît des dizaines de milliers d'espèces plutôt que les
+  /// quelques centaines d'un spécialiste d'intérieur.
+  final bool localMayAffirm;
+
   IdentificationVerdict decide(List<IdentificationCandidate> candidates) {
     if (candidates.isEmpty) return IdentificationVerdict.noCandidate;
     final sorted = [...candidates]..sort((a, b) => b.score.compareTo(a.score));
     final top = sorted.first.score;
     if (top < floor) return IdentificationVerdict.noCandidate;
     final second = sorted.length > 1 ? sorted[1].score : 0.0;
-    if (top >= acceptThreshold && top - second >= minMargin) return IdentificationVerdict.accepted;
+    if (top >= acceptThreshold && top - second >= minMargin) {
+      final fromDevice = sorted.first.source == IdentificationSource.local;
+      if (!fromDevice || localMayAffirm) return IdentificationVerdict.accepted;
+      // Dehors : la liste vaut toujours d'être montrée, mais pas d'être
+      // présentée comme sûre.
+      return IdentificationVerdict.plausible;
+    }
     if (top >= plausibleThreshold) return IdentificationVerdict.plausible;
     return IdentificationVerdict.uncertain;
   }
@@ -181,7 +218,11 @@ GenusAnswer? genusAnswer(FallbackPolicy policy, List<IdentificationCandidate> ca
   if (candidates.isEmpty) return null;
   final sorted = [...candidates]..sort((a, b) => b.score.compareTo(a.score));
   if (sorted.first.source != IdentificationSource.local) return null;
-  if (sorted.first.score >= policy.acceptThreshold) return null;
+  // « L'espèce garde la priorité » veut dire : là où elle a répondu. Dehors
+  // elle n'a pas le droit d'affirmer, donc elle n'a pas répondu, et le genre
+  // reprend son rôle — c'est même là qu'il sert le plus, « un érable, espèce
+  // incertaine » étant exactement ce qu'on peut dire d'une plante de jardin.
+  if (policy.decide(sorted) == IdentificationVerdict.accepted) return null;
 
   final masses = <String, double>{};
   final counts = <String, int>{};
@@ -194,5 +235,11 @@ GenusAnswer? genusAnswer(FallbackPolicy policy, List<IdentificationCandidate> ca
   if (masses.isEmpty) return null;
   final best = masses.entries.reduce((a, b) => b.value > a.value ? b : a);
   if (best.value < policy.acceptThreshold) return null;
+  // Un genre d'une seule espèce n'est pas une réponse de genre : sa masse
+  // *est* le score de l'espèce, et la nommer « genre » ne ferait que
+  // rhabiller une réponse d'espèce. La garde était implicite tant que
+  // l'espèce répondait toujours au-dessus du seuil ; dehors elle n'a plus le
+  // droit, et il faut l'écrire.
+  if (counts[best.key]! < 2) return null;
   return GenusAnswer(genus: best.key, mass: best.value, species: counts[best.key]!);
 }
