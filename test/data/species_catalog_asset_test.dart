@@ -90,6 +90,41 @@ void main() {
     expect(leaked, isEmpty, reason: leaked.take(5).map((r) => r.scientificName).join(', '));
   });
 
+  test('aucun nom ne porte le balisage de sa source', () {
+    // Wikidata rend les libellés tels quels : l'italique de Wikipédia, les
+    // guillemets échappés d'un CSV relu une fois de trop, les entités HTML
+    // et les crochets de note arrivaient jusqu'à l'encyclopédie, affichés
+    // comme des noms — « ''Cocus wood'' », « \\Coleus canina\\"" ».
+    // `scrub` les retire à la génération ; ce test tient la promesse.
+    final artefacts = <String, RegExp>{
+      'italique wiki': RegExp("''"),
+      'antislash': RegExp(r'\\'),
+      'guillemet droit': RegExp('"'),
+      'crochet': RegExp(r'[\[\]]'),
+      'entité HTML': RegExp(r'&[a-z]+;|&#[0-9]+;'),
+      'balise': RegExp('<[^>]+>'),
+    };
+    final fautifs = <String>[];
+    for (final r in index.records) {
+      for (final nom in [r.fr, r.en, r.de, r.it, ...r.alternates]) {
+        if (nom.isEmpty) continue;
+        for (final entry in artefacts.entries) {
+          if (entry.value.hasMatch(nom)) {
+            fautifs.add('${r.scientificName} : « $nom » (${entry.key})');
+          }
+        }
+      }
+    }
+    expect(fautifs, isEmpty, reason: fautifs.take(5).join(' ; '));
+  });
+
+  test('l\'apostrophe des noms véritables est préservée', () {
+    // Le nettoyage ne doit pas manger les noms qui portent vraiment une
+    // apostrophe ou une okina : hawaïens, anglais possessifs.
+    expect(index.find('Rubus hawaiensis')?.fr, 'ʻĀkala');
+    expect(index.find('Metrosideros polymorpha')?.fr, "'ohi'a");
+  });
+
   test('la recherche reste instantanée sur le catalogue complet', () {
     final watch = Stopwatch()..start();
     for (final q in ['edel', 'gentia', 'erable', 'rosa', 'thym', 'muguet']) {

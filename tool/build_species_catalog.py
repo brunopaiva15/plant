@@ -15,6 +15,7 @@ courant n'existe, et ces lignes-là n'apportent rien à la recherche.
 Usage : python3 tool/build_species_catalog.py harvest.tsv genus_family.json sortie.tsv
 """
 import csv
+import html
 import json
 import re
 import sys
@@ -31,6 +32,14 @@ LATIN_TAIL = re.compile(r'(us|um|is|ii|ae|ata|atum|osa|osum|ensis|folia|folium|f
                         r'oides|ifera|iferum|alis|ale|ana|anum|ica|icum|inus|ina|inum)$')
 AUTHORSHIP = re.compile(r'\s+(?:L\.|DC\.|Mill\.|Sm\.|Lam\.|Cass\.|Vahl|Hook\.)$')
 LANG_TAG = re.compile(r'@[a-z]{2}(-[a-z]+)?$', re.I)
+# Les marques d'italique de Wikipédia : « ''Cocus wood'' ». Deux apostrophes
+# ou plus ne sont jamais un nom ; une seule peut l'être (« 'ohi'a »).
+WIKI_EMPHASIS = re.compile(r"'{2,}")
+# Un lien ou une note entre crochets : « Phragmites vallatoria [(L.) 1992] ».
+BRACKETED = re.compile(r'\[[^\]]*\]')
+# Le « × » des hybrides détaché du nothogenre : « × Cupressocyparis ». Le nom
+# reste latin derrière, et c'est [is_scientific] qui doit pouvoir le voir.
+NOTHOGENUS = re.compile(r'^[×x]\s+(?=[A-Z])')
 
 
 def fold(s):
@@ -46,9 +55,39 @@ def fold(s):
     return ''.join(c for c in s if not unicodedata.combining(c)).lower().strip()
 
 
+def scrub(value):
+    """Retire ce qui n'est pas le nom : balisage wiki, échappements fuités.
+
+    Wikidata rend des libellés tels quels, avec ce que la source y avait
+    laissé. Quatre traces arrivaient jusqu'à l'encyclopédie, affichées comme
+    des noms : l'italique de Wikipédia (« \'\'Cocus wood\'\' »), les guillemets
+    échappés d'un CSV relu une fois de trop (« \\Coleus canina\\"" »), les
+    entités HTML (« Golden&nbsp;torch ») et les crochets de note.
+
+    L'apostrophe simple est laissée tranquille : elle porte des noms
+    véritables — « \'ohi\'a », « ʻĀkala », « Walker\'s Cattleya ». Seul le
+    guillemet droit disparaît partout, aucun nom courant n\'en porte.
+    """
+    value = html.unescape(value.replace('&nbsp;', ' '))
+    value = value.replace('\\', '').replace('"', '')
+    value = WIKI_EMPHASIS.sub('', value)
+    value = BRACKETED.sub(' ', value).replace('[', ' ').replace(']', ' ').strip()
+    # Un libellé entièrement entre apostrophes : elles encadrent, elles ne
+    # nomment pas. Ce qui reste est souvent un binôme latin, et le filtre
+    # d'après peut enfin le reconnaître.
+    if len(value) > 1 and value[0] == "'" and value[-1] == "'":
+        value = value[1:-1].strip()
+    # Une parenthèse sans sa jumelle : « (Walker's Cattleya ». Les paires
+    # équilibrées, elles, disent quelque chose — « (common) lancepod ».
+    if value.count('(') != value.count(')'):
+        value = value.replace('(', ' ').replace(')', ' ')
+    value = NOTHOGENUS.sub('', value)
+    return re.sub(r'\s{2,}', ' ', value).strip(' \t-~')
+
+
 def clean(value):
     """Retire l'étiquette de langue que Wikidata colle aux libellés en TSV."""
-    return AUTHORSHIP.sub('', LANG_TAG.sub('', value.strip())).strip()
+    return scrub(AUTHORSHIP.sub('', LANG_TAG.sub('', value.strip())).strip())
 
 
 def is_scientific(value, name, genera):
