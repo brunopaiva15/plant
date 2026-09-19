@@ -28,6 +28,26 @@ void main() {
       }
     });
 
+    test('chaque synonyme apporte ce que le titre ne dit pas', () {
+      // Un synonyme déjà trouvable par le titre n'ajoute rien et alourdit la
+      // base : la recherche sans lui doit échouer pour qu'il se justifie.
+      for (final p in catalog.problems) {
+        final sansSynonymes = PlantProblem(
+          id: p.id,
+          kind: p.kind,
+          scope: p.scope,
+          fr: p.fr,
+          en: p.en,
+          it: p.it,
+          de: p.de,
+          hosts: p.hosts,
+        );
+        for (final synonyme in p.aliases) {
+          expect(sansSynonymes.matches(synonyme), isFalse, reason: '${p.id} « $synonyme » se trouve déjà par le titre');
+        }
+      }
+    });
+
     test('la portée générale va de pair avec l\'embranchement entier', () {
       for (final p in catalog.problems) {
         final universel = p.hosts.contains('Tracheophyta');
@@ -167,7 +187,29 @@ void main() {
     test('le singulier trouve le pluriel, et l\'ordre des mots est libre', () {
       expect(cherche('araignees rouges'), contains('060'));
       expect(cherche('rouge araignée'), contains('060'));
-      expect(cherche('pourriture racinaire'), contains('173'));
+      expect(cherche('pourriture racinaire'), containsAll(['172', '173']));
+    });
+
+    test('le trait d\'union et l\'apostrophe ne séparent pas deux mondes', () {
+      expect(cherche('sur-arrosage'), contains('002'));
+      expect(cherche('surarrosage'), contains('002'));
+      expect(cherche('l\'oïdium'), contains('126'));
+      expect(cherche('(CMV)'), contains('191'));
+    });
+
+    test('le mot tapé ouvre un mot de l\'entrée, il ne s\'y cache pas', () {
+      // « rosa » est au milieu d'« ar-rosa-ge » : le manque d'eau n'a rien à
+      // faire dans une recherche sur les rosiers.
+      expect(cherche('rosa'), containsAll(['138', '147']));
+      expect(cherche('rosa'), isNot(contains('001')));
+      expect(cherche('rosa'), isNot(contains('002')));
+    });
+
+    test('un mot long vaut aussi au milieu d\'un autre, pour l\'allemand', () {
+      expect(cherche('milben'), contains('060'), reason: 'Spinnmilben');
+      expect(cherche('fliege'), contains('110'), reason: 'Zwiebelfliege');
+      expect(cherche('mehltau'), contains('126'), reason: 'Echter Mehltau');
+      expect(cherche('arrosage'), contains('002'), reason: 'surarrosage');
     });
 
     test('les quatre langues répondent, quelle que soit celle qu\'on lit', () {

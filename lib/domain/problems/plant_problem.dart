@@ -106,18 +106,41 @@ class PlantProblem {
 
   /// L'entrée répond-elle à cette recherche ?
   ///
-  /// Mot à mot, et chaque mot en sous-chaîne : « araignée rouge » doit
-  /// trouver « araignées rouges », « pourriture racinaire » les
-  /// « pourritures racinaires », et l'ordre des mots ne doit pas compter.
+  /// Chaque mot tapé doit ouvrir un mot de l'entrée : « araignée rouge »
+  /// trouve « araignées rouges », « pourriture racinaire » les « pourritures
+  /// racinaires », et l'ordre des mots ne compte pas. Ouvrir un mot, et pas
+  /// s'y trouver n'importe où : sinon « rosa » sortirait le manque d'eau, qui
+  /// parle d'ar-rosa-ge.
+  ///
+  /// À partir de cinq lettres, un mot vaut quand même s'il se trouve au
+  /// milieu d'un autre : l'allemand soude ses mots, et « Milben » doit sortir
+  /// les « Spinnmilben ». Cinq lettres, parce qu'en dessous les rencontres
+  /// par hasard l'emportent.
   bool matches(String query) {
     final q = foldSpeciesName(query);
     if (q.isEmpty) return true;
     final index = _searchIndex;
-    for (final word in q.split(RegExp(r'\s+'))) {
-      if (word.isNotEmpty && !index.contains(word)) return false;
+    final words = index.split(_separators);
+    for (final word in q.split(_separators)) {
+      // Une lettre seule est un article que l'apostrophe vient de détacher —
+      // le « l » de « l'oïdium », le « d » de « manque d'eau » —, pas un
+      // terme de recherche.
+      if (word.length < 2) continue;
+      if (words.any((w) => w.startsWith(word))) continue;
+      if (word.length >= _minInfixLength && index.contains(word)) continue;
+      return false;
     }
     return true;
   }
+
+  /// Ce qui sépare deux mots, dans la recherche comme dans l'entrée. Le trait
+  /// d'union et l'apostrophe en font partie : « sur-arrosage » et
+  /// « surarrosage » tombent sur la même entrée, « l'oïdium » sur
+  /// « Oïdiums », et « (CMV) » sur la mosaïque du concombre.
+  static final RegExp _separators = RegExp(r"[\s\-\u2013\u2014'\u2019,;:()\[\]/]+");
+
+  /// En deçà, un mot ne vaut qu'en tête d'un autre.
+  static const int _minInfixLength = 5;
 
   /// Ce problème peut-il concerner cette plante ?
   ///
