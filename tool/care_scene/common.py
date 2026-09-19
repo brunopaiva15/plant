@@ -280,8 +280,8 @@ def monde(force, couleur=(0.85, 0.87, 0.86)):
 # ------------------------------------------------------------
 # le couloir de la plante : la contrainte est a l'ecran, pas dans la piece
 # ------------------------------------------------------------
-# L'enveloppe de la silhouette la plus large (le monstera) dans son image,
-# relative au point d'ancrage, mesuree sur le sprite livre. Deux objets
+# L'enveloppe commune aux neuf silhouettes dans leur image, relative au
+# point d'ancrage, mesuree sur les sprites livres. Deux objets
 # eloignes de deux metres dans la piece peuvent parfaitement se superposer
 # dans une vue orthographique : c'est ce qui avait mis un lampadaire pile
 # sous le pot.
@@ -290,7 +290,7 @@ def monde(force, couleur=(0.85, 0.87, 0.86)):
 # remesurer apres un changement de CADRE_* ou de silhouette :
 #
 #     python3 tool/mesure_enveloppe.py
-ENVELOPPE_PLANTE = (-0.118, -0.176, 0.112, 0.015)
+ENVELOPPE_PLANTE = (-0.1282, -0.2161, 0.1257, 0.04)
 
 
 def releve_gueridon(cam):
