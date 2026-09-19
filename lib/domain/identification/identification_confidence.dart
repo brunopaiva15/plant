@@ -41,6 +41,16 @@ enum IdentificationConfidence {
     IdentificationCandidate candidate, {
     FallbackPolicy policy = const FallbackPolicy(),
   }) {
+    // Un candidat que le lieu n'attendait pas est **proposé**, pas affirmé :
+    // il n'a pas passé le masque, seulement l'écart qui lui rend la parole
+    // (§ 14.3 de `docs/09`). Son score est d'ailleurs sur l'autre échelle,
+    // celle de toutes les sorties, et le comparer au seuil d'acceptation
+    // n'aurait pas de sens.
+    if (!candidate.inContext) {
+      return candidate.globalScore >= policy.plausibleThreshold
+          ? IdentificationConfidence.possible
+          : IdentificationConfidence.unlikely;
+    }
     // Dehors, la politique refuse d'affirmer une réponse de l'appareil
     // (`FallbackPolicy.outdoors`). Le mot doit descendre avec elle : annoncer
     // « probable » ce que la cascade vient de refuser d'accepter, ce serait

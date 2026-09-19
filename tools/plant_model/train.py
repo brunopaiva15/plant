@@ -507,7 +507,8 @@ def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     }
 
 
-def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: dict, quantize_ds=None) -> dict:
+def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: dict, quantize_ds=None,
+                  masks: dict[str, list[str]] | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
@@ -538,6 +539,16 @@ def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: di
         'threshold_curve': metrics.get('threshold_curve', []),
         'species': {c: names.get(c, c) for c in classes},
     }
+    if masks:
+        # Les masques de lieu. Un modèle d'union porte toutes ses classes dans
+        # `labels.txt` et dit ici lesquelles appartiennent à quel lieu ;
+        # l'application renormalise sur celles du lieu — `exp(zᵢ) / Σ_gardées`
+        # — ce qui rend exactement ce que rendrait ce modèle retaillé sur ce
+        # masque (§ 14.2 de `docs/09`). Un modèle à un seul domaine n'écrit
+        # rien : sans cet objet, l'application ne masque pas.
+        garde = set(classes)
+        propres = {nom: [c for c in classes if c in set(ids) & garde] for nom, ids in masks.items()}
+        meta['masks'] = {nom: ids for nom, ids in propres.items() if ids and len(ids) < len(classes)}
     (out / 'model.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
     return meta
 

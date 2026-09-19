@@ -34,6 +34,7 @@ import '../../cuttings/presentation/propagation_guide_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../domain/care/care_guide.dart';
+import '../../../domain/identification/identification_context.dart';
 import '../../species/presentation/species_field.dart';
 import 'inline_camera.dart';
 
@@ -361,6 +362,24 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     }
   }
 
+  /// Le lieu de la plante, quand il est déjà connu — une plante créée depuis
+  /// un emplacement le porte dès l'ouverture.
+  ///
+  /// L'étape de l'emplacement vient **après** celle de la photo : le plus
+  /// souvent il n'est donc pas encore choisi, et le modèle répond alors sans
+  /// masque. C'est voulu : deviner « intérieur » ferait perdre au premier
+  /// geste ce qu'un lieu juste ferait gagner ensuite.
+  IdentificationContext get _place {
+    final id = _noLocation ? null : _locationId;
+    if (id == null) return IdentificationContext.unknown;
+    final locations = ref.read(locationsProvider).value ?? const <Location>[];
+    return switch (locations.where((l) => l.id == id).firstOrNull?.isOutdoor) {
+      true => IdentificationContext.outdoor,
+      false => IdentificationContext.indoor,
+      null => IdentificationContext.unknown,
+    };
+  }
+
   /// Identification en arrière-plan. La première passe démarre dès la photo
   /// principale ; si la confiance est trop faible, une seconde photo peut
   /// relancer exactement le même moteur et fusionner les deux vues.
@@ -370,7 +389,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final lang = _identificationLanguage;
     final run = ++_identificationRun;
     final pending = identifier
-        .identify([for (final p in _identificationPaths) File(p)], language: lang)
+        .identify([for (final p in _identificationPaths) File(p)], language: lang, context: _place)
         .catchError((_) => <IdentificationCandidate>[]);
 
     if (revealOnPrimaryPhoto) {
@@ -526,7 +545,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       // Toutes les photos partent : le quota se compte à l'appel, pas à
       // l'image, et Pl@ntNet en accepte plusieurs.
       _identification = identifier
-          .identifyRemotely([for (final p in _identificationPaths) File(p)], language: lang)
+          .identifyRemotely([for (final p in _identificationPaths) File(p)], language: lang, context: _place)
           .catchError((_) => <IdentificationCandidate>[]);
     });
   }

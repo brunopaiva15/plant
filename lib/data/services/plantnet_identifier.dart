@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
+import '../../domain/identification/identification_context.dart';
 import '../../domain/identification/plant_identifier.dart';
 import '../../domain/species/species_info.dart';
 
@@ -19,7 +20,8 @@ class PlantNetIdentifier implements PlantIdentifier {
   bool get isConfigured => apiKey.trim().isNotEmpty;
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async {
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) async {
     if (!isConfigured) throw const IdentificationException('missing api key');
     // `include-related-images` rend, pour chaque espèce proposée, quelques
     // photos de référence de la base Pl@ntNet. Elles ne coûtent ni appel ni

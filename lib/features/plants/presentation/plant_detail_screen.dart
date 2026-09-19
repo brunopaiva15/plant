@@ -13,6 +13,7 @@ import '../../../core/l10n/care_labels.dart';
 import '../../../core/observability/observability.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
+import '../../../domain/identification/identification_context.dart';
 import '../../../domain/models/models.dart';
 import '../../account/application/membership_providers.dart';
 import '../../actions/application/care_actions.dart';
@@ -144,21 +145,27 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
       if (await File(other).exists()) others.add(other);
     }
     if (!mounted) return;
-    // Dehors, le modèle embarqué propose au lieu d'affirmer : il n'expose que
-    // des plantes d'intérieur, et il en nomme une avec assurance devant une
-    // plante de jardin (§ 12.7 de `docs/09`). Emplacement inconnu ou non
-    // renseigné : on ne suppose rien, c'est la règle d'origine qui s'applique.
+    // Le lieu de la plante, quand l'emplacement le dit. Il sert d'a priori au
+    // modèle — jamais d'interdiction, `docs/14` § 8 — et, tant que le modèle
+    // embarqué n'expose que de l'intérieur, il retient Iris dehors : il y
+    // nomme une plante de jardin avec assurance (§ 12.7 de `docs/09`).
+    //
+    // Emplacement non renseigné ou supprimé : **on ne suppose rien**. Deviner
+    // « intérieur » ferait gagner le masque à tout le monde, et le ferait
+    // perdre à qui a mis sa plante dehors sans le dire — le masque n'est un
+    // gain que lorsqu'il est juste.
     final locations = ref.read(locationsProvider).value ?? const <Location>[];
-    final outdoor = locations
-            .where((l) => l.id == plant.locationId)
-            .firstOrNull
-            ?.isOutdoor ??
-        false;
+    final location = locations.where((l) => l.id == plant.locationId).firstOrNull;
+    final place = switch (location?.isOutdoor) {
+      true => IdentificationContext.outdoor,
+      false => IdentificationContext.indoor,
+      null => IdentificationContext.unknown,
+    };
     final candidate = await showIdentificationSheet(
       context,
       absoluteImagePath: path,
       others: others,
-      outdoor: outdoor,
+      place: place,
     );
     if (candidate == null || !mounted) return;
     await ref.read(plantRepositoryProvider).update(plant.copyWith(speciesName: () => candidate.scientificName));

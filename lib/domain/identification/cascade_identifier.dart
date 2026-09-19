@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import '../../core/utils/scientific_name.dart';
+import 'identification_context.dart';
 import 'identification_metrics.dart';
 import 'identification_policy.dart';
 import 'local_plant_model.dart';
@@ -97,7 +98,8 @@ class CascadeIdentifier implements PlantIdentifier {
   /// Interroge le service distant sans repasser par le modèle local.
   /// Appelée quand l'utilisateur demande explicitement une recherche en
   /// ligne, parce qu'aucune proposition locale ne lui convient.
-  Future<List<IdentificationCandidate>> identifyRemotely(List<File> images, {String? language}) async {
+  Future<List<IdentificationCandidate>> identifyRemotely(List<File> images,
+      {String? language, IdentificationContext context = IdentificationContext.unknown}) async {
     if (images.isEmpty) return const [];
     if (!fallbackEnabled || !fallback.isConfigured) return const [];
     var m = metricsStore.read();
@@ -111,7 +113,7 @@ class CascadeIdentifier implements PlantIdentifier {
     try {
       final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote, language);
       await metricsStore.write(m);
-      _cache[await _cacheKey(images)] = remote;
+      _cache[await _cacheKey(images, context)] = remote;
       return remote;
     } on Object {
       await metricsStore.write(m.copyWith(errors: m.errors + 1));
@@ -120,9 +122,10 @@ class CascadeIdentifier implements PlantIdentifier {
   }
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async {
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+      {String? language, IdentificationContext context = IdentificationContext.unknown}) async {
     if (images.isEmpty) return const [];
-    final key = await _cacheKey(images);
+    final key = await _cacheKey(images, context);
     final cached = _cache[key];
     if (cached != null) {
       await _update((m) => m.copyWith(cacheHits: m.cacheHits + 1));
@@ -141,7 +144,7 @@ class CascadeIdentifier implements PlantIdentifier {
     if (localRan) {
       m = m.copyWith(local: m.local + 1);
       try {
-        localResult = _mark(await _classifyAll(images), IdentificationSource.local, language);
+        localResult = _mark(await _classifyAll(images, context), IdentificationSource.local, language);
         lastLocal = localResult;
         verdict = policy.decide(localResult);
       } on Object {
@@ -232,20 +235,51 @@ class CascadeIdentifier implements PlantIdentifier {
   final _shots = <String, List<IdentificationCandidate>>{};
 
   /// Les scores du modèle pour une photo, calculés une seule fois.
-  Future<List<IdentificationCandidate>> _classifyOnce(File image) async {
-    final key = await _fileKey(image);
+  ///
+  /// Le lieu entre dans la clé : la même photo masquée sur l'intérieur et sur
+  /// l'extérieur ne rend pas les mêmes scores, et servir l'une pour l'autre
+  /// donnerait une réponse renormalisée sur le mauvais ensemble.
+  Future<List<IdentificationCandidate>> _classifyOnce(File image, IdentificationContext context) async {
+    final key = '${await _fileKey(image)}|${context.name}';
     final known = _shots[key];
     if (known != null) return known;
-    final result = await local.classify(image).timeout(localTimeout);
+    final result = await local.classify(image, context: context).timeout(localTimeout);
     _shots[key] = result;
     if (_shots.length > _maxShots) _shots.remove(_shots.keys.first);
     return result;
   }
 
-  Future<List<IdentificationCandidate>> _classifyAll(List<File> images) async {
+  /// Le modèle sur toutes les photos, fusionnées.
+  ///
+  /// Les candidats du lieu et ceux d'ailleurs sont fusionnés **séparément**.
+  /// Les premiers sont renormalisés sur le masque, les seconds ne le sont
+  /// pas : les mélanger dans une même moyenne géométrique reviendrait à
+  /// additionner deux échelles, et la remise à l'échelle qui suit porterait
+  /// sur une masse qui ne veut rien dire.
+  Future<List<IdentificationCandidate>> _classifyAll(
+      List<File> images, IdentificationContext context) async {
     if (images.length == 1) {
-      return _classifyOnce(images.first);
+      return _classifyOnce(images.first, context);
     }
+    final shots = <List<IdentificationCandidate>>[];
+    for (final image in images) {
+      shots.add(await _classifyOnce(image, context));
+    }
+    final outside = [
+      for (final shot in shots) [for (final c in shot) if (!c.inContext) c],
+    ];
+    if (outside.every((s) => s.isEmpty)) return _merge(shots, inContext: true);
+    return [
+      ..._merge([
+        for (final shot in shots) [for (final c in shot) if (c.inContext) c],
+      ], inContext: true),
+      ..._merge(outside, inContext: false),
+    ];
+  }
+
+  /// La fusion multi-photo d'une seule échelle de scores.
+  List<IdentificationCandidate> _merge(List<List<IdentificationCandidate>> shots,
+      {required bool inContext}) {
     // Plusieurs photos de la même plante : on fusionne par **moyenne
     // géométrique** des scores, c'est-à-dire moyenne des logarithmes.
     //
@@ -261,11 +295,11 @@ class CascadeIdentifier implements PlantIdentifier {
     // ayant tronqué sa liste, elle est sous le plus petit score rendu, et
     // sous le seuil de troncature. C'est une pénalité, pas un veto.
     final scores = <Map<String, double>>[];
+    final globals = <Map<String, double>>[];
     final floors = <double>[];
     final commons = <String, String?>{};
     var coveredMass = 0.0;
-    for (final image in images) {
-      final result = await _classifyOnce(image);
+    for (final result in shots) {
       final byName = {for (final c in result) c.scientificName: c.score};
       var floor = _absentScore;
       for (final s in byName.values) {
@@ -273,24 +307,33 @@ class CascadeIdentifier implements PlantIdentifier {
         coveredMass += s;
       }
       scores.add(byName);
+      globals.add({for (final c in result) c.scientificName: c.globalScore});
       floors.add(floor);
       for (final c in result) {
         commons.putIfAbsent(c.scientificName, () => c.commonName);
       }
     }
-    coveredMass /= images.length;
+    coveredMass /= shots.length;
 
     final names = {for (final s in scores) ...s.keys};
     if (names.isEmpty) return const [];
     final merged = <String, double>{};
+    // Le score global se fusionne de la même façon, mais **sans remise à
+    // l'échelle** : c'est lui qui sert à comparer le lieu et le reste du
+    // monde (`FallbackPolicy.challenger`), et une échelle appliquée d'un seul
+    // côté fausserait la comparaison.
+    final mergedGlobal = <String, double>{};
     var total = 0.0;
     for (final name in names) {
       var sumOfLogs = 0.0;
+      var sumOfGlobalLogs = 0.0;
       for (var i = 0; i < scores.length; i++) {
         sumOfLogs += math.log(math.max(scores[i][name] ?? floors[i], 1e-9));
+        sumOfGlobalLogs += math.log(math.max(globals[i][name] ?? floors[i], 1e-9));
       }
       final score = math.exp(sumOfLogs / scores.length);
       merged[name] = score;
+      mergedGlobal[name] = math.exp(sumOfGlobalLogs / scores.length);
       total += score;
     }
 
@@ -312,6 +355,8 @@ class CascadeIdentifier implements PlantIdentifier {
           scientificName: e.key,
           commonName: commons[e.key],
           score: (e.value * scale).clamp(0.0, 1.0),
+          globalScore: (mergedGlobal[e.key] ?? e.value).clamp(0.0, 1.0),
+          inContext: inContext,
         ),
     ]..sort((a, b) => b.score.compareTo(a.score));
   }
@@ -342,12 +387,12 @@ class CascadeIdentifier implements PlantIdentifier {
 
   Future<void> _update(IdentificationMetrics Function(IdentificationMetrics) change) => metricsStore.write(change(metricsStore.read()));
 
-  Future<String> _cacheKey(List<File> images) async {
+  Future<String> _cacheKey(List<File> images, IdentificationContext context) async {
     final parts = <String>[];
     for (final f in images) {
       parts.add(await _fileKey(f));
     }
-    return parts.join(';');
+    return '${parts.join(';')}@${context.name}';
   }
 
   /// Ce qui distingue une photo d'une autre : son chemin, sa taille et sa

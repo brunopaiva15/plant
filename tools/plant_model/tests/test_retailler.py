@@ -9,10 +9,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from retailler import decouper, garder
+from retailler import decouper, garder, lire_masques
 
 
 def test_kept_classes_follow_the_trained_order_not_the_requested_one():
@@ -64,3 +65,37 @@ def test_cutting_preserves_the_ratio_between_two_kept_logits():
     coupe = decouper([noyau, biais], ['a', 'b', 'c'], ['a', 'c'])
     petit = traits @ coupe[-2] + coupe[-1]
     assert np.allclose(petit, complet[:, [0, 2]])
+
+
+def test_a_mask_is_read_as_name_equals_file(tmp_path):
+    fichier = tmp_path / 'indoor.txt'
+    fichier.write_text('monstera-deliciosa\nficus-lyrata\n', encoding='utf-8')
+    assert lire_masques([f'indoor={fichier}']) == {
+        'indoor': ['monstera-deliciosa', 'ficus-lyrata'],
+    }
+
+
+def test_a_mask_without_a_name_is_refused(tmp_path):
+    """« --masque fichier.txt » ne dit pas de quel lieu il parle, et un masque
+    sans lieu n'a rien à écrire dans `model.json`."""
+    with pytest.raises(SystemExit):
+        lire_masques([str(tmp_path / 'indoor.txt')])
+
+
+def test_two_masks_keep_their_own_lists(tmp_path):
+    (tmp_path / 'a.txt').write_text('a\nb\n', encoding='utf-8')
+    (tmp_path / 'b.txt').write_text('b\nc\n', encoding='utf-8')
+    masques = lire_masques([f'indoor={tmp_path / "a.txt"}', f'outdoor={tmp_path / "b.txt"}'])
+    # Une espèce peut appartenir aux deux : ce sont des contextes, pas deux
+    # taxonomies exclusives (`docs/14` § 8).
+    assert masques == {'indoor': ['a', 'b'], 'outdoor': ['b', 'c']}
+
+
+def test_the_union_of_two_masks_is_what_a_union_model_exposes(tmp_path):
+    """Sans `--garder`, c'est l'union des masques qui fait la liste : la dire
+    deux fois inviterait les deux listes à diverger."""
+    (tmp_path / 'a.txt').write_text('a\nb\n', encoding='utf-8')
+    (tmp_path / 'b.txt').write_text('b\nc\n', encoding='utf-8')
+    masques = lire_masques([f'indoor={tmp_path / "a.txt"}', f'outdoor={tmp_path / "b.txt"}'])
+    union = sorted({c for ids in masques.values() for c in ids})
+    assert garder(['a', 'b', 'c', 'd'], union) == ['a', 'b', 'c']

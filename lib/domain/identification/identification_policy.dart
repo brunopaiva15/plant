@@ -34,6 +34,7 @@ class FallbackPolicy {
     this.minMargin = 0.25,
     this.floor = 0.10,
     this.localMayAffirm = true,
+    this.contextMargin = 0.15,
   });
 
   /// La même règle, pour une photo prise à un emplacement **extérieur**.
@@ -56,6 +57,7 @@ class FallbackPolicy {
         minMargin: minMargin,
         floor: floor,
         localMayAffirm: false,
+        contextMargin: contextMargin,
       );
 
   /// Score minimal du premier candidat pour l'accepter sans discuter.
@@ -125,7 +127,36 @@ class FallbackPolicy {
   /// quelques centaines d'un spécialiste d'intérieur.
   final bool localMayAffirm;
 
+  /// De combien un candidat **hors du lieu** doit dépasser le meilleur
+  /// candidat du lieu, sur l'échelle globale, pour être proposé quand même.
+  ///
+  /// C'est la moitié applicative de la règle du § 8 de `docs/14` : le
+  /// contexte donne un a priori, jamais une interdiction. Sans elle, masquer
+  /// reviendrait à rendre la bonne réponse impossible — un monstera sur un
+  /// balcon en été n'est pas un cas rare, et le § 3.2 décrit exactement cette
+  /// panne, un modèle qui répond faux avec assurance parce qu'il ne peut pas
+  /// répondre juste.
+  ///
+  /// La valeur n'est pas mesurée : elle attend la tête de l'Iris 9 et les
+  /// mesures du § 14.4 de `docs/09`. Quinze points d'écart, c'est ce qu'il
+  /// faut pour qu'un candidat écarté par le lieu reprenne la parole sans
+  /// couvrir la réponse du lieu à chaque hésitation.
+  final double contextMargin;
+
   IdentificationVerdict decide(List<IdentificationCandidate> candidates) {
+    if (candidates.isEmpty) return IdentificationVerdict.noCandidate;
+    final verdict = _decideAmong(inContext(candidates));
+    if (verdict == IdentificationVerdict.accepted) return verdict;
+    // Le lieu n'a pas tranché. Un candidat d'ailleurs, nettement plus fort
+    // sur l'échelle globale, vaut d'être montré — plutôt que de laisser la
+    // cascade remplacer la liste par un appel distant.
+    if (verdict.index > IdentificationVerdict.plausible.index && challenger(candidates) != null) {
+      return IdentificationVerdict.plausible;
+    }
+    return verdict;
+  }
+
+  IdentificationVerdict _decideAmong(List<IdentificationCandidate> candidates) {
     if (candidates.isEmpty) return IdentificationVerdict.noCandidate;
     final sorted = [...candidates]..sort((a, b) => b.score.compareTo(a.score));
     final top = sorted.first.score;
@@ -141,6 +172,37 @@ class FallbackPolicy {
     if (top >= plausibleThreshold) return IdentificationVerdict.plausible;
     return IdentificationVerdict.uncertain;
   }
+
+  /// Le meilleur candidat hors du lieu, s'il mérite d'être proposé.
+  ///
+  /// La comparaison se fait sur [IdentificationCandidate.globalScore] et pas
+  /// sur le score affiché : deux scores renormalisés sur deux ensembles
+  /// différents ne se comparent pas, les scores globaux si (§ 14.1 de
+  /// `docs/09`). Rend `null` quand le modèle n'a pas de masque — tous les
+  /// candidats sont alors dans le contexte.
+  IdentificationCandidate? challenger(List<IdentificationCandidate> candidates) {
+    IdentificationCandidate? best;
+    var inside = 0.0;
+    for (final c in candidates) {
+      if (c.inContext) {
+        if (c.globalScore > inside) inside = c.globalScore;
+      } else if (best == null || c.globalScore > best.globalScore) {
+        best = c;
+      }
+    }
+    if (best == null || best.globalScore < floor) return null;
+    return best.globalScore - inside >= contextMargin ? best : null;
+  }
+}
+
+/// Les candidats que le lieu attendait.
+///
+/// Quand aucun ne l'est — modèle sans masque, ou lieu qui n'explique rien —
+/// la liste entière est rendue : une réponse hors contexte reste une
+/// réponse, et la juger sur rien reviendrait à n'en donner aucune.
+List<IdentificationCandidate> inContext(List<IdentificationCandidate> candidates) {
+  final kept = [for (final c in candidates) if (c.inContext) c];
+  return kept.isEmpty ? candidates : kept;
 }
 
 /// Ce que l'écran d'identification propose comme photo supplémentaire.
@@ -216,7 +278,10 @@ class GenusAnswer {
 /// aussi souvent qu'une réponse à l'espèce.
 GenusAnswer? genusAnswer(FallbackPolicy policy, List<IdentificationCandidate> candidates) {
   if (candidates.isEmpty) return null;
-  final sorted = [...candidates]..sort((a, b) => b.score.compareTo(a.score));
+  // Sommer les scores d'un genre suppose qu'ils sont sur la même échelle :
+  // les candidats du lieu sont renormalisés entre eux, ceux d'ailleurs ne le
+  // sont pas. On ne mélange donc pas les deux dans une même masse.
+  final sorted = [...inContext(candidates)]..sort((a, b) => b.score.compareTo(a.score));
   if (sorted.first.source != IdentificationSource.local) return null;
   // « L'espèce garde la priorité » veut dire : là où elle a répondu. Dehors
   // elle n'a pas le droit d'affirmer, donc elle n'a pas répondu, et le genre

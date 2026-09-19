@@ -4042,6 +4042,8 @@ complète de l'Iris 9.
 | union 1 612 + masque appliqué | `compare_models.py` sur le jeu Indoor | vérifier l'égalité annoncée au § 14.2 ; un écart signale un bogue, pas un arbitrage |
 | hors-sujet sur l'union masquée | `hors_sujet.py` | le masque restreint 1 612 sorties à ~363 : le taux d'affirmation à tort des plantes hors catalogue remonte-t-il au-dessus des 27,5 % du § 12.7 |
 | fiches manquantes sur 1 612 | le compteur du § 12.1 | combien de classes exposées ne mènent à rien — le défaut du § 12.14, à l'échelle de l'union |
+| masquer ou non quand le lieu n'est pas renseigné | `interieur.py`, une fois avec le masque intérieur, une fois sans | ce que l'application fait pour qui n'a jamais rangé ses plantes — aujourd'hui elle ne masque pas |
+| la marge du candidat d'ailleurs | `hors_sujet.py` sur des plantes d'un lieu et de l'autre | `FallbackPolicy.contextMargin`, posée à 0,15 sans mesure |
 
 Deux d'entre elles sont des portes, au sens du § 13.7 :
 
@@ -4052,7 +4054,40 @@ Deux d'entre elles sont des portes, au sens du § 13.7 :
   et ne mène à aucun conseil. À 336 sorties, six cas (§ 13.3). À 1 612, le
   compte est à faire avant, pas après.
 
-### 14.5 Ce qu'on ne fera pas
+### 14.5 Ce qui est déjà dans le code
+
+Tout ce qui ne dépendait pas du modèle a été écrit, et se tait tant qu'aucun
+masque n'est livré. `assets/model/model.json` ne porte pas d'objet `masks` :
+l'application se comporte donc **exactement** comme avant cette section.
+
+| où | quoi |
+|---|---|
+| `lib/domain/identification/identification_context.dart` | le lieu — `indoor`, `outdoor`, `unknown` |
+| `lib/domain/identification/context_mask.dart` | la lecture des masques et la renormalisation, en fonctions pures : ce ne sont que des divisions, elles se mesurent sans interpréteur natif |
+| `tflite_plant_model.dart` | une seule inférence, le masque appliqué à sa sortie |
+| `cascade_identifier.dart` | le lieu porté jusqu'au modèle, présent dans les clés de cache, et la fusion multi-photo faite **par échelle** |
+| `identification_policy.dart` | le verdict rendu sur les classes du lieu, et `challenger` — le candidat d'ailleurs qui reprend la parole |
+| `identification_sheet.dart` | le candidat d'ailleurs affiché en dernier, après la réponse du lieu |
+| `retailler.py --masque nom=fichier` | l'export d'un modèle d'union, `--garder` devenant l'union des masques |
+
+Deux choix méritent d'être dits, parce qu'ils se lisent mal dans un diff :
+
+- **la réserve du dehors se lève toute seule.** Aujourd'hui Iris propose au
+  lieu d'affirmer à un emplacement extérieur (§ 13.3). Ce n'est pas une règle
+  sur l'extérieur, c'est une règle sur un modèle qui n'expose que de
+  l'intérieur : la feuille d'identification demande au modèle quels lieux il
+  couvre, et la réserve tombe le jour où un masque extérieur est livré. Aucune
+  constante à changer, rien à se rappeler ;
+- **un lieu non renseigné ne masque rien.** Deviner « intérieur » ferait
+  gagner le masque à tout le monde et le ferait perdre à qui a mis sa plante
+  dehors sans le dire. C'est la ligne à mesurer du § 14.4 : le masque n'est un
+  gain que lorsqu'il est juste.
+
+Ce qui reste, et qui demande le modèle : les valeurs. `contextMargin` est
+posée à 0,15 sans mesure, et la masse minimale sous laquelle renormaliser
+ment n'est bornée que numériquement.
+
+### 14.6 Ce qu'on ne fera pas
 
 - **pas deux fichiers `.tflite`.** Six mégaoctets et une seconde d'inférence
   pour une renormalisation qui se calcule en quelques lignes ;
