@@ -68,5 +68,16 @@ abstract final class SpeciesCatalogIrisOnly {
     SpeciesCatalogEntry('Viburnum × bodnantense', 'Adoxaceae', SpeciesCategory.tree, fr: 'Viorne de Bodnant', en: 'Bodnant viburnum', de: 'Bodnant-Schneeball'),
     SpeciesCatalogEntry('Westringia fruticosa', 'Lamiaceae', SpeciesCategory.tree, fr: 'Romarin d\'Australie', en: 'Coastal rosemary', de: 'Australischer Rosmarin'),
     SpeciesCatalogEntry('Yucca gloriosa', 'Asparagaceae', SpeciesCategory.tree, fr: 'Yucca superbe', en: 'Spanish dagger', de: 'Palmlilie'),
+
+    // Ajoutées à la livraison d'Iris Indoor : six classes de la collecte du
+    // 17 septembre qu'aucun des deux catalogues ne nommait, et dont la fiche
+    // s'ouvrait donc sans famille. Trois portent un nom accepté récent que le
+    // catalogue étendu connaît encore sous l'ancien.
+    SpeciesCatalogEntry('Callianthe picta', 'Malvaceae', SpeciesCategory.indoor, fr: 'Abutilon panaché', en: 'Redvein abutilon', de: 'Schönmalve'),
+    SpeciesCatalogEntry('Coleus australis', 'Lamiaceae', SpeciesCategory.indoor, fr: 'Lierre suédois', en: 'Swedish ivy', de: 'Schwedischer Efeu', it: 'Edera svedese'),
+    SpeciesCatalogEntry('Euphorbia tithymaloides', 'Euphorbiaceae', SpeciesCategory.succulent, fr: 'Plante chaussure', en: 'Devil\'s backbone', de: 'Schuhblume'),
+    SpeciesCatalogEntry('Kohleria hirsuta', 'Gesneriaceae', SpeciesCategory.indoor, fr: 'Kohleria', en: 'Hairy kohleria', de: 'Kohlerie', it: 'Kohleria'),
+    SpeciesCatalogEntry('Sedum rubrotinctum', 'Crassulaceae', SpeciesCategory.succulent, fr: 'Orpin rougissant', en: 'Jelly bean plant', de: 'Rote Fetthenne'),
+    SpeciesCatalogEntry('Streptocarpus ionanthus', 'Gesneriaceae', SpeciesCategory.indoor, fr: 'Violette africaine', en: 'African violet', de: 'Usambaraveilchen', it: 'Violetta africana'),
   ];
 }

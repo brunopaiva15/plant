@@ -14,16 +14,17 @@ import 'package:flora/data/species/species_index.dart';
 import 'package:flora/domain/species/species_info.dart';
 
 void main() {
-  test('catalogue éditorial : 1453 fiches curatées, uniques, avec famille et catégorie', () {
+  test('catalogue éditorial : 1459 fiches curatées, uniques, avec famille et catégorie', () {
     // 1 453 et non 1 200 : les paliers 1 000 et 1 200 rejouaient 72 espèces
     // déjà curatées, et 59 classes d'Iris que personne ne nommait ont été
     // écrites à la main (`species_catalog_iris_only.dart`). Le lot des plantes
     // d'intérieur en a ajouté 266 : aracées de collection, orchidées,
     // broméliacées, carnivores, caudex, palmiers et fougères d'appartement,
     // dont les noms anglais, allemands et italiens ont été repris du catalogue
-    // étendu quand il les connaissait.
+    // étendu quand il les connaissait. Iris Indoor en a ajouté six de plus :
+    // des classes de sa collecte que ni l'un ni l'autre catalogue ne nommait.
     final names = SpeciesCatalog.entries.map((e) => e.scientificName.toLowerCase()).toList();
-    expect(SpeciesCatalog.entries, hasLength(1453));
+    expect(SpeciesCatalog.entries, hasLength(1459));
     expect(names.toSet().length, names.length, reason: 'doublons : ${_dups(names)}');
     for (final e in SpeciesCatalog.entries) {
       expect(e.fr.trim(), isNotEmpty);
@@ -204,7 +205,7 @@ void main() {
     final curatees = SpeciesCatalog.entries.map((e) => e.scientificName).toList();
     final muettes = curatees.where((name) => !modelSpecies.contains(name.toLowerCase())).toList();
 
-    expect(curatees, hasLength(1453));
+    expect(curatees, hasLength(1459));
     expect(
       muettes,
       hasLength(lessThanOrEqualTo(_fichesSansClasse)),
@@ -276,7 +277,7 @@ List<String> _dups(List<String> l) {
   return l.where((n) => !seen.add(n)).toList();
 }
 
-/// Mesuré sur Iris Indoor : 1 139 des 1 453 fiches curatées n'ont pas de classe
-/// dans le modèle livré, qui en nomme 314. Le plafond n'interdit pas d'en
+/// Mesuré sur Iris Indoor : 1 139 des 1 459 fiches curatées n'ont pas de classe
+/// dans le modèle livré, qui en nomme 320. Le plafond n'interdit pas d'en
 /// perdre — il interdit d'en perdre sans le voir.
 const int _fichesSansClasse = 1139;
