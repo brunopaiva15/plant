@@ -91,4 +91,12 @@ void main() {
 /// descend le plus souvent qu'à la famille, la part monte à 78 %. La suite est
 /// écrite dans l'autre sens : chaque fiche de genre ou d'espèce qu'on ajoute
 /// fait baisser cette part.
-const double _familyShareCeiling = 26182 / 33344;
+///
+/// Recalée une seconde fois à la livraison d'Iris Indoor, et le diff de
+/// l'instantané dit pourquoi : **le numérateur n'a pas bougé**, 26 182 fiches
+/// résolues à la famille avant comme après. C'est le dénominateur qui perd une
+/// fiche, l'encyclopédie passant de 33 344 à 33 343 — une classe du modèle qui
+/// n'avait pas de fiche au catalogue et qui n'est plus exposée. Aucune
+/// résolution n'a régressé ; l'ancien plafond portait sur les 1 444 classes de
+/// l'Iris 8 et n'est pas comparable à celui-ci.
+const double _familyShareCeiling = 26182 / 33343;
