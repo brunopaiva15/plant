@@ -2059,7 +2059,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchingOnline => 'Recherche en ligne…';
 
   @override
-  String get suggestionsLocal => 'Résultats Iris sur votre appareil · photo non envoyée';
+  String get suggestionsLocal =>
+      'Résultats Iris sur votre appareil · photo non envoyée';
 
   @override
   String get suggestionsRemote => 'Proposé en ligne par Pl@ntNet';
@@ -2503,6 +2504,45 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get diagnosisUnauthorized =>
       'Le diagnostic est indisponible pour le moment. Réessayez plus tard.';
+
+  @override
+  String get diagnosisBusy =>
+      'Le service d\'analyse ne répond pas. Réessayez dans un moment.';
+
+  @override
+  String get diagnosisUnreadable =>
+      'L\'analyse n\'a rien rendu d\'exploitable. Réessayez.';
+
+  @override
+  String get diagnosisUncertain =>
+      'Les photos ne suffisent pas à trancher. Les pistes ci-dessous restent à vérifier.';
+
+  @override
+  String get diagnosisAnotherPhotoHint =>
+      'Une photo de plus préciserait l\'analyse.';
+
+  @override
+  String diagnosisAnotherPhotoView(String view) {
+    return 'À photographier : $view.';
+  }
+
+  @override
+  String get diagnosisAnotherPhoto => 'Ajouter une photo';
+
+  @override
+  String get diagnosisViewLeafCloseup => 'une feuille de près';
+
+  @override
+  String get diagnosisViewLeafUnderside => 'le revers d\'une feuille';
+
+  @override
+  String get diagnosisViewWholePlant => 'la plante entière';
+
+  @override
+  String get diagnosisViewStemBase => 'la base de la tige';
+
+  @override
+  String get diagnosisViewSoilRoots => 'la terre au pied';
 
   @override
   String get possibleCauses => 'Pistes possibles';

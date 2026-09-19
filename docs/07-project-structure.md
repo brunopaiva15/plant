@@ -23,7 +23,7 @@ lib/
 │   ├── repositories/              interfaces
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
-│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
+│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé), DiagnosisNextStep (montrer / redemander une photo / rester incertain)
 │   ├── cuttings/                  PropagationGuideKind et ses étapes, choix du guide (resolver), PropagationRefinement, PropagationGuideStore
 │   ├── location/                  LocationService (lieu de la météo : onboarding, réglages)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison et Google Home), MultiHomeClimateService, HomeClimateAdvisor
@@ -33,7 +33,7 @@ lib/
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService, GoogleHomeClimateService
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, JevIdentificationPolicy, JevDiagnosisPolicy, DeviceLocationService, OpenMeteoService, HomeKitClimateService, GoogleHomeClimateService
 │   ├── auth/                      LocalAuthRepository
 │   └── community/                 SupabaseCommunityTips (fonctions SQL security definer)
 ├── features/

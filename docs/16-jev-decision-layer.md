@@ -306,6 +306,78 @@ Iris
 
 Après deux photos, `ask_another_photo` est retiré du schéma envoyé à Jev. Une garde supplémentaire transforme malgré tout une réponse fournisseur incohérente en `keep_uncertain`.
 
+## Jev côté diagnostic
+
+Le même arbitrage sert au diagnostic « Ma plante a un problème », avec les
+mêmes règles et le même repli. Le service d'analyse reste seul à regarder les
+photos et seul à nommer les pistes ; Jev ne tranche qu'une question, celle
+que des seuils rigides tranchaient mal.
+
+```text
+photos
+  ↓
+service d'analyse (Infomaniak)
+  ↓
+compte rendu : pistes classées, vraisemblances, vue souhaitée
+  ↓
+règle locale Auxine
+  ├─ une piste probable et une seule ──→ montrer, aucun appel Jev
+  └─ deux probables, ou aucune
+          ↓
+         Jev
+          ├─ show_result        → le compte rendu se lit tel quel
+          ├─ ask_another_photo  → proposer la vue que le service a nommée
+          └─ keep_uncertain     → dire que rien ne tranche
+```
+
+La règle locale (`lib/domain/diagnosis/diagnosis_policy.dart`) est
+volontairement courte : un compte rendu est net quand il désigne **une piste
+probable et une seule**. Deux pistes probables ne sont pas une réponse plus
+riche — elles appellent deux gestes différents. Sans photo à demander, il
+reste à le dire.
+
+### Ce que Jev reçoit
+
+Ni photo, ni résumé, ni titre de piste, ni un mot écrit par la personne :
+
+```json
+{
+  "photo_count": 1,
+  "max_photo_count": 3,
+  "urgent": false,
+  "owner_described_symptoms": true,
+  "checked_by_hand": ["soil", "bugs"],
+  "not_checked": ["roots", "light"],
+  "view_the_report_would_like": "leaf_underside",
+  "causes": [{"rank": 1, "likelihood": "likely", "known_problem": true}],
+  "likely_count": 2
+}
+```
+
+Ce qui a été vérifié à la main compte autant que le reste : une photo de plus
+ne remplacera jamais un doigt dans la terre, et une incertitude qui tient à
+des racines jamais regardées ne se lève pas en cadrant mieux.
+
+### Garde-fous, les mêmes
+
+- le service d'analyse reste seul à voir les photos et seul à nommer les
+  pistes ; Jev ne choisit aucune cause ;
+- un compte rendu déjà net ne déclenche aucun appel ;
+- sans clé, sans réseau, en cas d'erreur, de délai dépassé ou de réponse
+  incohérente, la règle locale s'applique et le compte rendu reste entier ;
+- l'appel a le même budget de trois secondes, et l'écran affiche déjà le
+  compte rendu pendant ce temps — l'arbitrage corrige une décision déjà
+  prise, il ne retient rien ;
+- une décision se mémorise, un incident ouvre vingt secondes de silence ;
+- `ask_another_photo` est retiré du schéma à la troisième photo, et une
+  réponse incohérente y devient `keep_uncertain` ;
+- la photo proposée reste une proposition : les pistes sont lisibles
+  au-dessus, et rien n'oblige à la donner.
+
+Ce qui manque encore : des compteurs. `IdentificationMetrics` ne tient que
+la cascade d'identification, et les arbitrages du diagnostic ne se comptent
+nulle part — leur qualité ne se mesure donc pas comme celle des autres.
+
 ## Effet produit de `keep_uncertain`
 
 `keep_uncertain` est un vrai état d'interface, pas seulement une information de diagnostic.

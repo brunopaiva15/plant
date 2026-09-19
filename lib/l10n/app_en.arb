@@ -914,6 +914,24 @@
   "diagnosisError": "Couldn't analyze. Check your connection and try again.",
   "diagnosisRefused": "This photo couldn't be analyzed.",
   "diagnosisUnauthorized": "Diagnosis is unavailable right now. Try again later.",
+  "diagnosisBusy": "The analysis service is not answering. Try again in a moment.",
+  "diagnosisUnreadable": "The analysis came back unusable. Try again.",
+  "diagnosisUncertain": "The photos do not settle it. The leads below remain to be checked.",
+  "diagnosisAnotherPhotoHint": "One more photo would sharpen the analysis.",
+  "diagnosisAnotherPhotoView": "To photograph: {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Add a photo",
+  "diagnosisViewLeafCloseup": "a leaf up close",
+  "diagnosisViewLeafUnderside": "the underside of a leaf",
+  "diagnosisViewWholePlant": "the whole plant",
+  "diagnosisViewStemBase": "the base of the stem",
+  "diagnosisViewSoilRoots": "the soil at the base",
   "possibleCauses": "Possible causes",
   "causesHint": "Ranked by likelihood, to confirm.",
   "likelihoodLikely": "Likely",

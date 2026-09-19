@@ -914,6 +914,24 @@
   "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "diagnosisRefused": "Dieses Foto konnte nicht analysiert werden.",
   "diagnosisUnauthorized": "Die Diagnose ist im Moment nicht verfügbar. Versuche es später noch einmal.",
+  "diagnosisBusy": "Der Analysedienst antwortet nicht. In einem Moment erneut versuchen.",
+  "diagnosisUnreadable": "Die Analyse kam unbrauchbar zurück. Erneut versuchen.",
+  "diagnosisUncertain": "Die Fotos entscheiden es nicht. Die Spuren unten bleiben zu prüfen.",
+  "diagnosisAnotherPhotoHint": "Ein weiteres Foto würde die Analyse schärfen.",
+  "diagnosisAnotherPhotoView": "Zu fotografieren: {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Foto hinzufügen",
+  "diagnosisViewLeafCloseup": "ein Blatt aus der Nähe",
+  "diagnosisViewLeafUnderside": "die Blattunterseite",
+  "diagnosisViewWholePlant": "die ganze Pflanze",
+  "diagnosisViewStemBase": "der Stängelansatz",
+  "diagnosisViewSoilRoots": "die Erde am Fuß",
   "possibleCauses": "Mögliche Ursachen",
   "causesHint": "Nach Wahrscheinlichkeit geordnet, zu bestätigen.",
   "likelihoodLikely": "Wahrscheinlich",

@@ -4458,6 +4458,72 @@ abstract class AppLocalizations {
   /// **'Le diagnostic est indisponible pour le moment. Réessayez plus tard.'**
   String get diagnosisUnauthorized;
 
+  /// No description provided for @diagnosisBusy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le service d\'analyse ne répond pas. Réessayez dans un moment.'**
+  String get diagnosisBusy;
+
+  /// No description provided for @diagnosisUnreadable.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse n\'a rien rendu d\'exploitable. Réessayez.'**
+  String get diagnosisUnreadable;
+
+  /// No description provided for @diagnosisUncertain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les photos ne suffisent pas à trancher. Les pistes ci-dessous restent à vérifier.'**
+  String get diagnosisUncertain;
+
+  /// No description provided for @diagnosisAnotherPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une photo de plus préciserait l\'analyse.'**
+  String get diagnosisAnotherPhotoHint;
+
+  /// No description provided for @diagnosisAnotherPhotoView.
+  ///
+  /// In fr, this message translates to:
+  /// **'À photographier : {view}.'**
+  String diagnosisAnotherPhotoView(String view);
+
+  /// No description provided for @diagnosisAnotherPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get diagnosisAnotherPhoto;
+
+  /// No description provided for @diagnosisViewLeafCloseup.
+  ///
+  /// In fr, this message translates to:
+  /// **'une feuille de près'**
+  String get diagnosisViewLeafCloseup;
+
+  /// No description provided for @diagnosisViewLeafUnderside.
+  ///
+  /// In fr, this message translates to:
+  /// **'le revers d\'une feuille'**
+  String get diagnosisViewLeafUnderside;
+
+  /// No description provided for @diagnosisViewWholePlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'la plante entière'**
+  String get diagnosisViewWholePlant;
+
+  /// No description provided for @diagnosisViewStemBase.
+  ///
+  /// In fr, this message translates to:
+  /// **'la base de la tige'**
+  String get diagnosisViewStemBase;
+
+  /// No description provided for @diagnosisViewSoilRoots.
+  ///
+  /// In fr, this message translates to:
+  /// **'la terre au pied'**
+  String get diagnosisViewSoilRoots;
+
   /// No description provided for @possibleCauses.
   ///
   /// In fr, this message translates to:

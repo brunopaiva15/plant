@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/diagnosis/diagnosis_observations.dart';
+import '../../../domain/diagnosis/diagnosis_policy.dart';
 import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
 import '../../../domain/home/home_climate.dart';
@@ -61,6 +63,15 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
   bool _busy = false;
   Diagnosis? _result;
 
+  /// Ce que l'écran fait du compte rendu affiché : le montrer, proposer une
+  /// photo de plus, ou dire que rien ne tranche. La règle locale répond tout
+  /// de suite, l'arbitrage Jev la corrige s'il arrive (docs/16).
+  DiagnosisNextStep _step = DiagnosisNextStep.showResult;
+
+  /// Le rang de l'analyse en cours. Une décision Jev qui revient après
+  /// qu'une nouvelle photo a relancé l'analyse ne concerne plus rien.
+  int _round = 0;
+
   /// Vrai dès que le diagnostic est parti au journal : les photos lui
   /// appartiennent alors, et le compte rendu les remontrera à sa réouverture.
   bool _keepPhotos = false;
@@ -89,9 +100,30 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     super.dispose();
   }
 
-  Future<void> _addPhoto(PhotoSource source) async {
+  Future<void> _addPhoto(PhotoSource source, {bool thenAnalyze = false}) async {
     final stored = await ref.read(photoStorageProvider).pick(source);
-    if (stored != null && mounted) setState(() => _photos.add(stored));
+    if (stored == null || !mounted) return;
+    setState(() {
+      _photos.add(stored);
+      // La photo demandée relance l'analyse entière, les deux ou trois vues
+      // ensemble : c'est le compte rendu qui se refait, pas un complément
+      // qui se recolle à côté du précédent.
+      if (thenAnalyze) _result = null;
+    });
+    if (thenAnalyze) await _analyze();
+  }
+
+  /// Demander la photo qui manque, par l'appareil ou la galerie.
+  void _chooseSource({bool thenAnalyze = false}) {
+    final l10n = context.l10n;
+    showAdaptiveActionSheet(
+      context,
+      cancelLabel: l10n.cancel,
+      actions: [
+        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addPhoto(PhotoSource.camera, thenAnalyze: thenAnalyze)),
+        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addPhoto(PhotoSource.gallery, thenAnalyze: thenAnalyze)),
+      ],
+    );
   }
 
   Future<void> _analyze() async {
@@ -99,7 +131,9 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
     final l10n = context.l10n;
     setState(() => _busy = true);
     final storage = ref.read(photoStorageProvider);
-    final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    final prefs = ref.read(preferencesProvider);
+    final lang = prefs.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    final round = ++_round;
     try {
       final files = [for (final p in _photos) File(await storage.absolutePath(p.filePath))];
       final frequent = ProblemCatalog.idsForIssues(_knownIssues()).toSet();
@@ -120,27 +154,80 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             indoorClimate: measured,
             reportedClimate: _reportedClimate(measured),
             observations: _observations,
+            // Ce qu'aucune photo ne dit : dedans ou dehors, quel jour, quel
+            // hémisphère. Une cochenille de salon en février et une brûlure
+            // de balcon en juillet ne se confondent pas.
+            indoors: _indoors(),
+            date: DateTime.now(),
+            latitude: prefs.weatherPlace?.latitude,
           ));
       Haptics.success();
-      if (mounted) setState(() => _result = result);
+      if (mounted) {
+        setState(() {
+          _result = result;
+          _step = ref.read(jevDiagnosisPolicyProvider).localStep(result, photos: _photos.length, maxPhotos: DiagnosisLimits.maxImages);
+        });
+        _arbitrate(result, round);
+      }
     } on OfflineException {
       // L'analyse se fait chez le prestataire : hors ligne, les photos ne
       // partent pas et il n'y a rien à attendre.
       ref.read(toastProvider.notifier).show(ToastData(message: l10n.offlineDiagnosis, emoji: '📡'));
     } on DiagnosisException catch (e) {
+      // Chaque panne a sa phrase : une clé refusée ne se réessaie pas, un
+      // service saturé oui, et un réseau coupé ne dit rien du service. Tout
+      // ramener à « Vérifiez votre connexion » envoyait chercher un problème
+      // là où il n'y en avait pas.
       final message = switch (e.message) {
         'refusal' => l10n.diagnosisRefused,
-        'unauthorized' => l10n.diagnosisUnauthorized,
-        'quota' => l10n.diagnosisUnauthorized,
+        'unauthorized' || 'quota' => l10n.diagnosisUnauthorized,
+        'busy' => l10n.diagnosisBusy,
+        'unreadable' || 'empty' => l10n.diagnosisUnreadable,
         _ => l10n.diagnosisError,
       };
       ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '!'));
     } catch (e, st) {
-      ref.read(crashReporterProvider).report(e, st, context: 'diagnosis');
+      // Un réseau qui lâche se dit, il ne se rapporte pas comme un plantage.
+      if (!isNetworkFailure(e)) ref.read(crashReporterProvider).report(e, st, context: 'diagnosis');
       ref.read(toastProvider.notifier).show(ToastData(message: l10n.diagnosisError, emoji: '!'));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// L'arbitrage Jev, quand le compte rendu ne désigne pas une piste et une
+  /// seule.
+  ///
+  /// Il ne retient pas l'écran : le compte rendu est déjà là, avec la
+  /// décision locale, et la réponse distante ne fait que la corriger dans
+  /// les trois secondes. Sans clé, sans réseau ou en cas d'incident, la
+  /// décision locale reste celle qui s'applique.
+  void _arbitrate(Diagnosis result, int round) {
+    unawaited(ref
+        .read(jevDiagnosisPolicyProvider)
+        .evaluate(
+          diagnosis: result,
+          photos: _photos.length,
+          maxPhotos: DiagnosisLimits.maxImages,
+          observations: _observations,
+          symptomsGiven: _symptoms.text.trim().isNotEmpty,
+          online: ref.read(isOnlineProvider),
+        )
+        .then((step) {
+      // Une photo de plus a pu relancer l'analyse entre-temps : cet
+      // arbitrage-là ne porte plus sur ce qui est à l'écran.
+      if (!mounted || round != _round) return;
+      setState(() => _step = step);
+    }));
+  }
+
+  /// Dedans ou dehors, quand la plante a un emplacement. Sans emplacement,
+  /// on ne suppose rien : une plante de balcon rangée nulle part n'est pas
+  /// une plante d'intérieur.
+  bool? _indoors() {
+    final location = widget.plant.locationId;
+    if (location == null) return null;
+    return !ref.read(outdoorLocationIdsProvider).contains(location);
   }
 
   /// La mesure de la maison, pour une plante qui y vit. Une plante dehors
@@ -284,14 +371,7 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
                     ),
                   if (_photos.length < DiagnosisLimits.maxImages)
                     Pressable(
-                      onTap: () => showAdaptiveActionSheet(
-                        context,
-                        cancelLabel: l10n.cancel,
-                        actions: [
-                          SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addPhoto(PhotoSource.camera)),
-                          SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addPhoto(PhotoSource.gallery)),
-                        ],
-                      ),
+                      onTap: _chooseSource,
                       scale: 0.95,
                       semanticLabel: l10n.addPhotos,
                       child: Container(
@@ -390,6 +470,14 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
             else
               FloraButton(label: l10n.analyze, icon: CupertinoIcons.sparkles, expand: true, onPressed: _photos.isEmpty ? null : _analyze),
           ] else ...[
+            // Ce que les photos n'ont pas tranché se dit avant les pistes, pas
+            // après : lire trois causes en croyant qu'elles concluent, puis
+            // apprendre en bas qu'elles ne concluent rien, c'est lire deux
+            // fois.
+            if (_step == DiagnosisNextStep.keepUncertain) ...[
+              Text(l10n.diagnosisUncertain, style: context.text.callout.copyWith(color: c.inkSecondary)),
+              const SizedBox(height: Space.sm),
+            ],
             // Le même corps que la réouverture depuis le journal : ce qu'on
             // lit ici est exactement ce qu'on retrouvera plus tard.
             DiagnosisReportView(
@@ -400,6 +488,25 @@ class _DiagnosisBodyState extends ConsumerState<_DiagnosisBody> {
                 observations: _observations,
               ),
             ),
+            // Une photo de plus quand rien ne se détache, et de préférence
+            // celle que le service a nommée. Le compte rendu reste entier
+            // au-dessus : c'est une proposition, pas un mur.
+            if (_step == DiagnosisNextStep.askAnotherPhoto && _photos.length < DiagnosisLimits.maxImages) ...[
+              const SizedBox(height: Space.md),
+              Text(l10n.diagnosisAnotherPhotoHint, style: context.text.callout),
+              if (_result!.suggestedView case final view?) ...[
+                const SizedBox(height: Space.xxs),
+                Text(l10n.diagnosisAnotherPhotoView(l10n.diagnosisViewLabel(view)), style: context.text.caption),
+              ],
+              const SizedBox(height: Space.xs),
+              FloraButton(
+                label: l10n.diagnosisAnotherPhoto,
+                icon: CupertinoIcons.camera,
+                style: FloraButtonStyle.secondary,
+                expand: true,
+                onPressed: () => _chooseSource(thenAnalyze: true),
+              ),
+            ],
             const SizedBox(height: Space.md),
             FloraButton(label: l10n.saveToJournal, icon: CupertinoIcons.book, expand: true, onPressed: _save),
             const SizedBox(height: Space.xs),

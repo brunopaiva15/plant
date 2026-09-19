@@ -914,6 +914,24 @@
   "diagnosisError": "Analisi impossibile. Controlla la connessione e riprova.",
   "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
   "diagnosisUnauthorized": "La diagnosi non è disponibile al momento. Riprova più tardi.",
+  "diagnosisBusy": "Il servizio di analisi non risponde. Riprova tra poco.",
+  "diagnosisUnreadable": "L'analisi non ha restituito nulla di utilizzabile. Riprova.",
+  "diagnosisUncertain": "Le foto non bastano a decidere. Le ipotesi qui sotto restano da verificare.",
+  "diagnosisAnotherPhotoHint": "Un'altra foto renderebbe l'analisi più precisa.",
+  "diagnosisAnotherPhotoView": "Da fotografare: {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Aggiungi una foto",
+  "diagnosisViewLeafCloseup": "una foglia da vicino",
+  "diagnosisViewLeafUnderside": "il rovescio di una foglia",
+  "diagnosisViewWholePlant": "la pianta intera",
+  "diagnosisViewStemBase": "la base del fusto",
+  "diagnosisViewSoilRoots": "la terra ai piedi",
   "possibleCauses": "Cause possibili",
   "causesHint": "Ordinate per verosimiglianza, da confermare.",
   "likelihoodLikely": "Probabile",

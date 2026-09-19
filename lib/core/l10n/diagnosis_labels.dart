@@ -1,4 +1,5 @@
 import '../../domain/diagnosis/diagnosis_observations.dart';
+import '../../domain/diagnosis/plant_diagnoser.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Les mots des observations : la terre, les racines, la lumière, les
@@ -39,4 +40,21 @@ extension DiagnosisObservationLabels on AppLocalizations {
         if (o.light != null) (light, lightExposureLabel(o.light!)),
         if (o.bugs != null) (diagnosisBugs, bugSightingLabel(o.bugs!)),
       ];
+}
+
+/// La photo qu'il reste à prendre, nommée.
+///
+/// « Une meilleure photo » ne dit pas quoi cadrer ; « le revers d'une
+/// feuille » se photographie sans y réfléchir. Les cinq vues sont celles que
+/// le service a le droit de demander, et elles se lisent comme des groupes
+/// nominaux : la phrase qui les accueille les met bout à bout sans article à
+/// recoller.
+extension DiagnosisViewLabels on AppLocalizations {
+  String diagnosisViewLabel(DiagnosisView v) => switch (v) {
+        DiagnosisView.leafCloseup => diagnosisViewLeafCloseup,
+        DiagnosisView.leafUnderside => diagnosisViewLeafUnderside,
+        DiagnosisView.wholePlant => diagnosisViewWholePlant,
+        DiagnosisView.stemBase => diagnosisViewStemBase,
+        DiagnosisView.soilRoots => diagnosisViewSoilRoots,
+      };
 }
