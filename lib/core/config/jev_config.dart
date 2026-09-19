@@ -1,5 +1,5 @@
-/// Jev / OpenRouter est une piste expérimentale utilisée uniquement par les
-/// outils de debug pour l'instant.
+/// Jev / OpenRouter, la couche de décision consultée quand Iris reste
+/// ambigu. Sans clé, Auxine s'en passe : l'identification reste entière.
 ///
 /// La clé est fournie au build :
 /// `--dart-define=OPENROUTER_API_KEY=…`

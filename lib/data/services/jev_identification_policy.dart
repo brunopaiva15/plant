@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import '../../core/config/jev_config.dart';
+import '../../domain/identification/identification_metrics.dart';
 import '../../domain/identification/identification_policy.dart';
 import '../../domain/identification/plant_identifier.dart';
 import 'jev_decision_service.dart';
@@ -47,23 +50,51 @@ class JevPipelineEvaluation {
 /// ou le garder explicitement incertain. Il ne reçoit jamais la photo :
 /// seulement le Top-5, ses scores et le nombre de vues.
 ///
-/// Les évaluations sont mémorisées afin qu'un rebuild d'interface ne refasse
-/// jamais le même appel réseau.
+/// Une décision rendue est mémorisée afin qu'un rebuild d'interface ne
+/// refasse jamais le même appel réseau. Un appel qui n'a rien rendu, lui,
+/// ne se mémorise pas : il se tait un moment, puis se laisse reposer.
 class JevIdentificationPolicy {
   JevIdentificationPolicy({
     JevDecisionService? service,
     bool? configured,
+    DateTime Function()? now,
+    IdentificationMetricsStore? metrics,
   })  : _service = service ?? JevDecisionService(),
-        _configuredOverride = configured;
+        _configuredOverride = configured,
+        _now = now ?? DateTime.now,
+        _metrics = metrics;
 
   final JevDecisionService _service;
   final bool? _configuredOverride;
+  final DateTime Function() _now;
+
+  /// Les compteurs de la cascade, quand l'application en tient. Ce sont des
+  /// totaux : aucune espèce, aucune photo, aucun horodatage individuel.
+  final IdentificationMetricsStore? _metrics;
+
+  /// Un même écran laisse retoucher son choix. La suite d'une décision ne
+  /// se compte donc qu'une fois, sans quoi une personne indécise pèserait
+  /// plus lourd qu'une autre dans le taux.
+  bool _pickCounted = false;
+  bool _searchCounted = false;
 
   bool get _isConfigured => _configuredOverride ?? JevConfig.isConfigured;
 
   final _evaluationCache = <String, Future<JevPipelineEvaluation>>{};
 
-  static const _timeout = Duration(seconds: 3);
+  /// Quand le dernier incident réseau a fermé la porte, par état de scan.
+  ///
+  /// Une réponse Jev se mémorise pour de bon : le même Top-5 donnerait la
+  /// même décision. Un incident, non — il ne dit rien de la plante, et le
+  /// garder en cache condamnerait ce scan au repli local pour toute la
+  /// session sur une simple coupure. Il ouvre donc une fenêtre de silence,
+  /// assez longue pour qu'un écran qui se reconstruit ne rappelle pas
+  /// OpenRouter à chaque image.
+  final _incidents = <String, DateTime>{};
+
+  /// Ce que l'interface peut attendre avant de montrer la réponse d'Iris.
+  static const budget = Duration(seconds: 3);
+  static const _retryCooldown = Duration(seconds: 20);
   static const _maxCacheEntries = 24;
 
   Future<SecondPhotoOffer> secondPhotoOfferFor({
@@ -71,19 +102,44 @@ class JevIdentificationPolicy {
     required List<IdentificationCandidate> candidates,
     required int photos,
     required int maxPhotos,
+    bool online = true,
   }) =>
       evaluate(
         policy: policy,
         candidates: candidates,
         photos: photos,
         maxPhotos: maxPhotos,
+        online: online,
       ).then((evaluation) => evaluation.offer);
+
+  /// Ce qu'Auxine sait dire sans réseau, tout de suite.
+  ///
+  /// C'est la réponse d'Iris seule, celle que l'interface affiche pendant
+  /// que Jev réfléchit : l'arbitrage distant corrige une proposition déjà
+  /// là plutôt que de retenir l'écran le temps d'un appel.
+  JevPipelineEvaluation localEvaluation({
+    required FallbackPolicy policy,
+    required List<IdentificationCandidate> candidates,
+    required int photos,
+    required int maxPhotos,
+  }) =>
+      JevPipelineEvaluation(
+        offer: secondPhotoOffer(
+          policy,
+          candidates,
+          photos: photos,
+          maxPhotos: maxPhotos,
+        ),
+        consultedJev: false,
+        usedFallback: false,
+      );
 
   Future<JevPipelineEvaluation> evaluate({
     required FallbackPolicy policy,
     required List<IdentificationCandidate> candidates,
     required int photos,
     required int maxPhotos,
+    bool online = true,
   }) {
     final fallback = secondPhotoOffer(
       policy,
@@ -124,7 +180,11 @@ class JevIdentificationPolicy {
       ));
     }
 
-    if (!_isConfigured) {
+    // Sans clé ou sans réseau, l'appel ne peut qu'échouer : autant rendre
+    // la réponse d'Iris tout de suite plutôt que de dépenser le budget à
+    // attendre un échec. Rien n'est mémorisé, le retour du réseau
+    // rouvre donc la question.
+    if (!_isConfigured || !online) {
       return Future.value(_fallbackEvaluation(
         fallback,
         atPhotoLimit: photos >= maxPhotos,
@@ -145,6 +205,18 @@ class JevIdentificationPolicy {
     final cached = _evaluationCache[key];
     if (cached != null) return cached;
 
+    final incident = _incidents[key];
+    if (incident != null) {
+      if (_now().difference(incident) < _retryCooldown) {
+        return Future.value(_fallbackEvaluation(
+          fallback,
+          atPhotoLimit: photos >= maxPhotos,
+          consultedJev: true,
+        ));
+      }
+      _incidents.remove(key);
+    }
+
     final pending = _resolve(
       top5,
       fallback: fallback,
@@ -152,6 +224,14 @@ class JevIdentificationPolicy {
       maxPhotos: maxPhotos,
     );
     _evaluationCache[key] = pending;
+    // Une décision se mémorise, un incident non : `consultedJev` avec
+    // `usedFallback` est la signature exacte d'un appel parti sans rien
+    // rendre.
+    unawaited(pending.then((evaluation) {
+      if (evaluation.consultedJev && evaluation.usedFallback) {
+        _noteIncident(key);
+      }
+    }));
     if (_evaluationCache.length > _maxCacheEntries) {
       _evaluationCache.remove(_evaluationCache.keys.first);
     }
@@ -165,6 +245,7 @@ class JevIdentificationPolicy {
     required int maxPhotos,
   }) async {
     final atPhotoLimit = photos >= maxPhotos;
+    final elapsed = Stopwatch()..start();
     try {
       final response = await _service
           .decide(
@@ -202,17 +283,19 @@ class JevIdentificationPolicy {
                 },
               },
             },
-          )
-          .timeout(_timeout);
+            timeout: budget,
+          );
 
       final decision = _parseDecision(response, photos: photos, maxPhotos: maxPhotos);
       if (decision == null) {
+        _recordIncident(elapsed.elapsedMilliseconds);
         return _fallbackEvaluation(
           fallback,
           atPhotoLimit: atPhotoLimit,
           consultedJev: true,
         );
       }
+      _recordDecision(decision.action, elapsed.elapsedMilliseconds);
 
       return JevPipelineEvaluation(
         offer: decision.action == JevProductAction.askAnotherPhoto
@@ -223,11 +306,78 @@ class JevIdentificationPolicy {
         decision: decision,
       );
     } catch (_) {
+      _recordIncident(elapsed.elapsedMilliseconds);
       return _fallbackEvaluation(
         fallback,
         atPhotoLimit: atPhotoLimit,
         consultedJev: true,
       );
+    }
+  }
+
+  void _recordDecision(JevProductAction action, int latencyMs) {
+    _pickCounted = false;
+    _searchCounted = false;
+    _update((m) => m.copyWith(
+          jevConsulted: m.jevConsulted + 1,
+          jevLatencyMsSum: m.jevLatencyMsSum + latencyMs,
+          jevShowResult: m.jevShowResult +
+              (action == JevProductAction.showResult ? 1 : 0),
+          jevAskAnotherPhoto: m.jevAskAnotherPhoto +
+              (action == JevProductAction.askAnotherPhoto ? 1 : 0),
+          jevKeepUncertain: m.jevKeepUncertain +
+              (action == JevProductAction.keepUncertain ? 1 : 0),
+        ));
+  }
+
+  void _recordIncident(int latencyMs) {
+    _update((m) => m.copyWith(
+          jevConsulted: m.jevConsulted + 1,
+          jevIncidents: m.jevIncidents + 1,
+          jevLatencyMsSum: m.jevLatencyMsSum + latencyMs,
+        ));
+  }
+
+  /// Ce que la personne a fait de la décision.
+  ///
+  /// Les deux gestes qui comptent sont ceux qui contredisent Jev : chercher
+  /// en ligne un résultat qu'il jugeait montrable, et retenir malgré tout
+  /// une candidate qu'il refusait de conclure. Le reste de l'écran ne dit
+  /// rien de la qualité de l'arbitrage.
+  void noteCandidateChosen(JevProductAction? after) {
+    if (after != JevProductAction.keepUncertain || _pickCounted) return;
+    _pickCounted = true;
+    _update((m) => m.copyWith(
+          jevKeepUncertainThenPicked: m.jevKeepUncertainThenPicked + 1,
+        ));
+  }
+
+  void noteOnlineSearch(JevProductAction? after) {
+    if (after != JevProductAction.showResult || _searchCounted) return;
+    _searchCounted = true;
+    _update((m) => m.copyWith(
+          jevShowResultThenSearched: m.jevShowResultThenSearched + 1,
+        ));
+  }
+
+  void _update(IdentificationMetrics Function(IdentificationMetrics) change) {
+    final store = _metrics;
+    if (store == null) return;
+    unawaited(store.write(change(store.read())));
+  }
+
+  /// Un appel qui n'a rien rendu : on oublie le résultat pour que la
+  /// question puisse se reposer, et on note l'heure pour ne pas la reposer
+  /// à chaque image.
+  ///
+  /// Le ménage se fait ici, une fois la réponse connue, et non dans
+  /// `_resolve` : l'entrée de cache n'existe pas encore quand celui-ci
+  /// commence, et un échec immédiat la laisserait derrière lui.
+  void _noteIncident(String key) {
+    _evaluationCache.remove(key);
+    _incidents[key] = _now();
+    if (_incidents.length > _maxCacheEntries) {
+      _incidents.remove(_incidents.keys.first);
     }
   }
 
@@ -248,6 +398,9 @@ class JevIdentificationPolicy {
           : null,
     );
   }
+
+  /// Referme le client HTTP quand le fournisseur est jeté.
+  void dispose() => _service.close();
 
   JevProductDecision? _parseDecision(
     Map<String, dynamic> response, {

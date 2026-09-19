@@ -249,6 +249,35 @@ Le critère principal reste :
 
 > **Est-ce que Jev réduit les mauvaises décisions produit autour d'une identification incertaine ?**
 
+### Ce que l'appareil compte
+
+`IdentificationMetrics` tient les totaux de la cascade ; les arbitrages Jev
+y ont leurs propres compteurs, de la même nature : des nombres, sans espèce,
+sans photo, sans horodatage individuel, et qui ne quittent pas l'appareil.
+
+| Compteur | Ce qu'il dit |
+|---|---|
+| `jevConsulted` | arbitrages réellement partis sur le réseau |
+| `jevIncidents` | appels partis sans rien rendre |
+| `jevLatencyMsSum` | somme des durées, pour la moyenne |
+| `jevShowResult`, `jevAskAnotherPhoto`, `jevKeepUncertain` | répartition des décisions |
+| `jevShowResultThenSearched` | résultats montrés que la personne est allée vérifier en ligne |
+| `jevKeepUncertainThenPicked` | incertitudes qu'elle a tranchées elle-même |
+
+Les deux derniers sont les seuls qui répondent au critère principal, parce
+qu'ils enregistrent un désaccord entre la décision et le geste qui a suivi :
+
+- un fort `jevShowResultDoubtRate` signale des résultats présentés comme
+  exploitables sans l'être ;
+- un fort `jevKeepUncertainOverrideRate` signale une prudence qui coûte un
+  geste pour rien.
+
+Les autres décrivent l'activité, pas sa qualité. Un même écran laissant
+retoucher son choix, la suite d'une décision n'est comptée qu'une fois.
+
+Ces totaux se lisent sur l'écran caché **État des services**, sous les
+services eux-mêmes.
+
 ## Pipeline actuel
 
 Le chemin de production est :
@@ -297,10 +326,17 @@ Auxine :
 - Iris reste le seul classifieur d'espèce ;
 - Jev ne reçoit jamais la photo, seulement le Top-5, les scores et le nombre de vues ;
 - un résultat déjà accepté par Iris ne déclenche aucun appel Jev ;
+- sans clé ou sans réseau, aucun appel n'est tenté : la réponse locale part
+  aussitôt, et le retour du réseau rouvre la question ;
 - Jev ne sélectionne jamais automatiquement une espèce ;
 - le choix utilisateur reste obligatoire ;
-- le résultat Jev est mis en cache afin qu'un rebuild Flutter ne refasse pas le même appel ;
-- l'appel a un budget de trois secondes ;
+- une décision Jev est mise en cache afin qu'un rebuild Flutter ne refasse pas
+  le même appel ;
+- un incident, lui, n'est pas mémorisé : il ouvre une fenêtre de vingt
+  secondes pendant laquelle Auxine s'en tient à la politique locale sans
+  rappeler OpenRouter, puis la question se repose ;
+- l'appel a un budget unique de trois secondes, porté par la requête ;
+- pendant ce délai, l'interface affiche déjà ce qu'Iris seule conclut ;
 - en cas d'erreur, timeout ou réponse invalide, Auxine retombe sur la politique locale Iris ;
 - aucune troisième photo n'est possible.
 
@@ -312,7 +348,8 @@ Les interfaces de debug Jev ont été retirées du produit :
 - plus de bouton « Tester Jev » dans Profil ;
 - plus de JSON brut affiché dans l'application.
 
-La logique Jev reste couverte par les tests du service de décision.
+La logique Jev reste couverte par les tests du service de décision, et ses
+totaux se lisent sur l'écran caché décrit plus bas.
 
 ## Sécurité de la clé
 
@@ -327,7 +364,7 @@ Une panne Jev ne doit jamais devenir un message d'erreur produit.
 
 Le comportement est volontairement transparent :
 
-- après une photo ambiguë, erreur, timeout, clé absente ou réponse invalide → la politique Iris locale reprend la main et peut proposer la seconde photo ;
+- après une photo ambiguë, erreur, timeout, clé absente, appareil hors ligne ou réponse invalide → la politique Iris locale reprend la main et peut proposer la seconde photo ;
 - après deux photos encore ambiguës, le même incident → Auxine garde l'identification incertaine ;
 - aucune erreur OpenRouter n'est affichée dans le flux d'identification ;
 - aucune troisième photo n'est possible.

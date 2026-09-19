@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/providers.dart';
 import '../../../core/network/external_service_status.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/identification/identification_metrics.dart';
 
-class ServiceStatusScreen extends StatefulWidget {
+class ServiceStatusScreen extends ConsumerStatefulWidget {
   const ServiceStatusScreen({super.key});
 
   @override
-  State<ServiceStatusScreen> createState() => _ServiceStatusScreenState();
+  ConsumerState<ServiceStatusScreen> createState() =>
+      _ServiceStatusScreenState();
 }
 
-class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
+class _ServiceStatusScreenState extends ConsumerState<ServiceStatusScreen> {
   final _service = ExternalServiceStatusService();
   List<ExternalServiceStatus>? _statuses;
   bool _loading = false;
@@ -63,11 +67,84 @@ class _ServiceStatusScreenState extends State<ServiceStatusScreen> {
                   _StatusTile(status: statuses[index]),
             ),
           const SizedBox(height: Space.md),
+          _JevDecisions(
+            metrics: ref.read(identificationMetricsStoreProvider).read(),
+          ),
+          const SizedBox(height: Space.md),
           FloraButton(
             label: _loading ? 'Vérification…' : 'Actualiser',
             expand: true,
             style: FloraButtonStyle.secondary,
             onPressed: _loading ? null : _refresh,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Ce que Jev a décidé, et ce que la personne en a fait.
+///
+/// Les deux dernières lignes sont les seules qui disent si l'arbitrage sert
+/// à quelque chose : un résultat montré puis cherché en ligne était
+/// insuffisant, une incertitude tranchée malgré tout était trop prudente.
+/// Le reste décrit seulement l'activité.
+///
+/// Comme le reste de cet écran caché, les libellés ne passent pas par les
+/// ARB : c'est un panneau de diagnostic, pas une surface produit.
+class _JevDecisions extends StatelessWidget {
+  const _JevDecisions({required this.metrics});
+
+  final IdentificationMetrics metrics;
+
+  @override
+  Widget build(BuildContext context) {
+    final quiet = context.text.caption
+        .copyWith(color: context.colors.inkSecondary);
+    if (metrics.jevConsulted == 0) {
+      return FloraCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Décisions Jev', style: context.text.title3),
+            const SizedBox(height: Space.xs),
+            Text('Aucun arbitrage pour l’instant.', style: quiet),
+          ],
+        ),
+      );
+    }
+
+    final latency = metrics.jevAverageLatencyMs.round();
+    return FloraCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Décisions Jev', style: context.text.title3),
+          const SizedBox(height: Space.xs),
+          Text(
+            '${metrics.jevConsulted} arbitrages · '
+            '${metrics.jevIncidents} sans réponse · '
+            '$latency ms en moyenne',
+            style: quiet,
+          ),
+          const SizedBox(height: Space.xxs),
+          Text(
+            'Montrer : ${metrics.jevShowResult} · '
+            'Autre photo : ${metrics.jevAskAnotherPhoto} · '
+            'Incertain : ${metrics.jevKeepUncertain}',
+            style: quiet,
+          ),
+          const SizedBox(height: Space.sm),
+          Text(
+            'Montrés puis cherchés en ligne : '
+            '${metrics.jevShowResultThenSearched} sur ${metrics.jevShowResult}',
+            style: quiet,
+          ),
+          const SizedBox(height: Space.xxs),
+          Text(
+            'Incertitudes tranchées quand même : '
+            '${metrics.jevKeepUncertainThenPicked} sur ${metrics.jevKeepUncertain}',
+            style: quiet,
           ),
         ],
       ),

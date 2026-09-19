@@ -2826,6 +2826,12 @@ abstract class AppLocalizations {
   /// **'Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.'**
   String get locationFailed;
 
+  /// No description provided for @locationUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Position indisponible.'**
+  String get locationUnavailable;
+
   /// No description provided for @onbHomeTitle.
   ///
   /// In fr, this message translates to:
@@ -3939,7 +3945,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo, sans compte ni clé.'**
+  /// **'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo.'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.

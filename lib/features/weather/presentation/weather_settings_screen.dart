@@ -13,7 +13,8 @@ import '../../../domain/weather/weather.dart';
 import '../application/weather_providers.dart';
 import 'weather_widgets.dart' show weatherTemp;
 
-/// Choix du lieu météo (recherche de ville Open-Meteo).
+/// Choix du lieu météo : la position de l'appareil, ou une recherche de
+/// ville Open-Meteo.
 class WeatherSettingsScreen extends ConsumerStatefulWidget {
   const WeatherSettingsScreen({super.key});
 
@@ -27,6 +28,7 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
   List<WeatherPlace> _results = const [];
   bool _searching = false;
   bool _searched = false;
+  bool _locating = false;
 
   @override
   void dispose() {
@@ -58,6 +60,37 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
         _searched = true;
       });
     }
+  }
+
+  /// Le lieu depuis l'appareil, sans rien taper. La position sert une fois,
+  /// arrondie au kilomètre : seuls la ville et ses coordonnées arrondies
+  /// sont gardées. Refus, position coupée ou géocodeur muet : la ligne
+  /// reprend sa place et le champ de recherche reste.
+  Future<void> _locate() async {
+    if (_locating) return;
+    final l10n = context.l10n;
+    setState(() => _locating = true);
+    final lang = ref.read(preferencesProvider).locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    WeatherPlace? place;
+    try {
+      place = await ref.read(locationServiceProvider).currentPlace(language: lang);
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'weather_settings_location');
+    }
+    if (!mounted) return;
+    setState(() => _locating = false);
+    if (place == null) {
+      ref.read(toastProvider.notifier).show(ToastData(message: l10n.locationUnavailable, emoji: '!'));
+      return;
+    }
+    await ref.read(preferencesProvider.notifier).setWeatherPlace(place);
+    Haptics.success();
+    if (!mounted) return;
+    _query.clear();
+    setState(() {
+      _results = const [];
+      _searched = false;
+    });
   }
 
   @override
@@ -95,6 +128,16 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
                   title: l10n.weatherForecastTitle,
                   onTap: () => context.push(Routes.forecast),
                 ),
+              // La ville sans la taper : l'appareil la donne, et le champ de
+              // recherche reste dessous pour qui préfère une autre ville.
+              FloraListRow(
+                leading: Icon(CupertinoIcons.location_fill, size: 20, color: c.inkSecondary),
+                title: _locating ? l10n.locating : l10n.useMyLocation,
+                titleMaxLines: 2,
+                trailing: _locating ? const AdaptiveProgress(size: 20) : null,
+                chevron: false,
+                onTap: _locating ? null : _locate,
+              ),
             ],
           ),
           if (place != null) ...[
@@ -111,6 +154,10 @@ class _WeatherSettingsScreenState extends ConsumerState<WeatherSettingsScreen> {
                 FloraListRow(
                   leading: const Text('🌧️', style: TextStyle(fontSize: 18)),
                   title: l10n.weatherRainCounts,
+                  // « La pluie compte comme un arrosage » ne tient pas sur une
+                  // ligne à côté d'un interrupteur : elle plie plutôt que de
+                  // se faire couper.
+                  titleMaxLines: 2,
                   trailing: AdaptiveSwitch(
                     value: ref.watch(preferencesProvider.select((p) => p.rainCountsAsWatering)),
                     onChanged: (v) => ref.read(preferencesProvider.notifier).setRainCountsAsWatering(v),

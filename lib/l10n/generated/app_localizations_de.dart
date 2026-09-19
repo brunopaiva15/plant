@@ -1551,6 +1551,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Standort nicht verfügbar. Du kannst unter Profil › Wetter eine Stadt wählen.';
 
   @override
+  String get locationUnavailable => 'Standort nicht verfügbar.';
+
+  @override
   String get onbHomeTitle => 'Dein Zuhause';
 
   @override
@@ -2206,7 +2209,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Für Pflanzen im Freien: gefallener Regen zählt als Gießen, angekündigter Regen verschiebt es, und Frost wie Hitze werden gemeldet. Daten von Open-Meteo, ohne Konto oder Schlüssel.';
+      'Für Pflanzen im Freien: gefallener Regen zählt als Gießen, angekündigter Regen verschiebt es, und Frost wie Hitze werden gemeldet. Daten von Open-Meteo.';
 
   @override
   String get weatherPlace => 'Ort';
