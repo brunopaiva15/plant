@@ -17,7 +17,7 @@ lib/
 ├── design_system/
 │   ├── tokens/                    colors, typography (Shantell Sans + système), spacing, radius, motion
 │   ├── theme/                     ThemeData clair / sombre, FloraTheme extension
-│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay
+│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay, shutter.dart = le déclencheur posé sur un viseur
 ├── domain/
 │   ├── models/                    Plant, Location, PlantAction, CareSchedule, PlantPhoto, ActionType, Tag…
 │   ├── repositories/              interfaces
