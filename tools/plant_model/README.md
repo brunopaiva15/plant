@@ -205,3 +205,32 @@ celle du § 6.7 de `docs/09`, porte sur les versions et non sur les seuils :
 fait remonter le seuil à 0,70 pour l'Iris 7 — il y rendait l'autonomie qu'avait
 la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %. L'Iris 8 l'a
 gardé tel quel et rend davantage des deux côtés (§ 6.7 bis de `docs/09`).
+
+## Ce qu'un deuxième regard sur la photo rapporterait
+
+```bash
+export INFOMANIAK_AI_API_KEY=… INFOMANIAK_AI_PRODUCT_ID=…
+python3 arbitre.py --modele ../../assets/model --dataset ../plant_dataset/dataset --a-blanc
+python3 arbitre.py --modele ../../assets/model --dataset ../plant_dataset/dataset --limite 300 --cultivees
+```
+
+L'application sait soumettre la photo et les cinq candidates d'Iris à un
+modèle qui voit les images, et lui demander laquelle correspond — question
+fermée, un numéro ou zéro (§ 3.9 de `docs/09`). Reste à savoir si cet avis vaut
+mieux que l'ordre d'Iris.
+
+L'outil ne mesure que la population concernée : les photos qu'Iris **n'accepte
+pas**, seuil et marge de `FallbackPolicy` comprises. Il rend le top-1 d'Iris,
+le top-1 après arbitrage, le plafond — le top-5, qu'un arbitre parfait
+atteindrait —, la part des avis rendus et leur justesse, les déplacements
+gagnés et perdus, les francs facturés et les secondes par appel.
+
+`--a-blanc` n'appelle rien : il sélectionne la population et annonce la
+facture. Trois cents photos arbitrées coûtent moins d'un franc — la question
+ne se discute donc pas, elle se mesure. `--melanger` bat l'ordre des
+candidates soumises : si le résultat change, c'est l'ordre d'Iris qui était
+lu, pas la photo.
+
+La consigne et la question sont recopiées de
+`lib/data/services/infomaniak_identification_arbiter.dart` : mesurer autre
+chose que ce qui est livré ne mesure rien, et les deux se modifient ensemble.

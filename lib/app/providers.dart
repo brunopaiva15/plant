@@ -25,6 +25,7 @@ import '../data/services/infomaniak_advisor.dart';
 import '../data/services/infomaniak_care_completer.dart';
 import '../data/services/infomaniak_propagation_refiner.dart';
 import '../data/services/infomaniak_diagnoser.dart';
+import '../data/services/infomaniak_identification_arbiter.dart';
 import '../data/services/gbif_species_service.dart';
 import '../data/services/wikimedia_species_service.dart';
 import '../data/services/google_home_climate_service.dart';
@@ -72,6 +73,7 @@ import '../data/services/supabase_iris_feedback_recorder.dart';
 import '../domain/identification/iris_feedback.dart';
 import '../data/services/local_plant_model_factory.dart';
 import '../domain/identification/cascade_identifier.dart';
+import '../domain/identification/identification_arbiter.dart';
 import '../domain/identification/identification_metrics.dart';
 import '../domain/identification/local_plant_model.dart';
 import '../domain/identification/plant_identifier.dart';
@@ -440,8 +442,21 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
     local: local,
     fallback: remote,
     fallbackEnabled: fallbackEnabled,
+    arbiter: ref.watch(identificationArbiterProvider),
     metrics: ref.watch(identificationMetricsStoreProvider),
     lookup: (name, language) => catalogLookup(name, ref.read(speciesIndexProvider).value, language),
+  );
+});
+
+/// L'arbitre des listes qu'Iris ne tranche pas : même clé Infomaniak que le
+/// diagnostic, même modèle, la photo réduite un peu plus. Sans clé, la
+/// cascade est celle d'avant et rien n'apparaît à l'écran.
+final identificationArbiterProvider = Provider<IdentificationArbiter>((ref) {
+  if (!DiagnosisConfig.isConfigured) return const NoArbiter();
+  return InfomaniakIdentificationArbiter(
+    apiKey: DiagnosisConfig.apiKey,
+    productId: DiagnosisConfig.productId,
+    model: DiagnosisConfig.model,
   );
 });
 

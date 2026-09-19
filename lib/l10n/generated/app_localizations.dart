@@ -3708,6 +3708,12 @@ abstract class AppLocalizations {
   /// **'Proposé en ligne par Pl@ntNet'**
   String get suggestionsRemote;
 
+  /// No description provided for @suggestionsArbitrated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résultats Iris, vérifiés en ligne'**
+  String get suggestionsArbitrated;
+
   /// No description provided for @identifyOnDevice.
   ///
   /// In fr, this message translates to:
@@ -3719,6 +3725,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Reconnu en ligne par Pl@ntNet. Choisissez l\'espèce'**
   String get identifyViaPlantNet;
+
+  /// No description provided for @identifyArbitrated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reconnu par {name}, vérifié en ligne. Choisissez l\'espèce'**
+  String identifyArbitrated(String name);
+
+  /// No description provided for @identifyArbitratedRow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départagé d\'après la photo'**
+  String get identifyArbitratedRow;
 
   /// No description provided for @identifyPhotoSource.
   ///
@@ -3777,7 +3795,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationFallbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
+  /// **'En cas de doute de {name}, la photo est envoyée à Pl@ntNet, ou à l\'IA qui départage ses propositions. Désactivé, tout reste sur l\'appareil.'**
   String identificationFallbackHint(String name);
 
   /// No description provided for @irisFeedback.
@@ -3839,6 +3857,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{used} recherches en ligne sur {limit} ce mois-ci.'**
   String onlineSearchesMonth(int used, int limit);
+
+  /// No description provided for @photoArbitrationsMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'{used} arbitrages de photo sur {limit} ce mois-ci, dont {leads} ont changé la proposition.'**
+  String photoArbitrationsMonth(int used, int limit, int leads);
 
   /// No description provided for @irisSection.
   ///

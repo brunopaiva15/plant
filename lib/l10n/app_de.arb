@@ -671,8 +671,18 @@
   "searchingOnline": "Online-Suche…",
   "suggestionsLocal": "Iris-Ergebnisse auf deinem Gerät · Foto nicht hochgeladen",
   "suggestionsRemote": "Online von Pl@ntNet vorgeschlagen",
+  "suggestionsArbitrated": "Iris-Ergebnisse, online geprüft",
   "identifyOnDevice": "Von {name} auf dem Gerät erkannt. Wählen Sie die Art",
   "identifyViaPlantNet": "Online von Pl@ntNet erkannt. Wählen Sie die Art",
+  "identifyArbitrated": "Von {name} erkannt, online geprüft. Wählen Sie die Art",
+  "@identifyArbitrated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "identifyArbitratedRow": "Anhand des Fotos entschieden",
   "identifyPhotoSource": "Fotos von Pl@ntNet und GBIF. Ein Foto antippen, um die Artenseite zu öffnen.",
   "identifyNone": "Keine zuverlässige Übereinstimmung.",
   "identifyError": "Bestimmung nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
@@ -682,7 +692,7 @@
   "identificationEnabled": "Bestimmung aktiviert",
   "identificationDisabled": "Nicht konfiguriert",
   "identificationFallback": "Online-Rückfall",
-  "identificationFallbackHint": "Im Zweifel von {name} wird das Foto an Pl@ntNet gesendet. Aus: alles bleibt auf dem Gerät.",
+  "identificationFallbackHint": "Im Zweifel von {name} wird das Foto an Pl@ntNet gesendet oder an die KI, die zwischen seinen Vorschlägen entscheidet. Aus: alles bleibt auf dem Gerät.",
   "irisFeedback": "Senden identifizierter Fotos",
   "irisFeedbackHint": "Die zum Identifizieren aufgenommenen Fotos und der gewählte Name werden gesendet, sobald eine Pflanze benannt wird, und trainieren die nächsten Versionen des Modells {name}. Sie sind nur für das sendende Konto lesbar, und dessen Löschung entfernt sie. Ausgeschaltet verlassen sie das Gerät nicht.",
   "@irisFeedbackHint": {
@@ -713,6 +723,20 @@
         "type": "int"
       },
       "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "photoArbitrationsMonth": "{used} von {limit} Foto-Entscheidungen diesen Monat, {leads} haben den Vorschlag geändert.",
+  "@photoArbitrationsMonth": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "leads": {
         "type": "int"
       }
     }

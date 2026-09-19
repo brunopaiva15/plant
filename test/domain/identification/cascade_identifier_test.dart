@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flora/domain/identification/cascade_identifier.dart';
+import 'package:flora/domain/identification/identification_arbiter.dart';
 import 'package:flora/domain/identification/identification_metrics.dart';
 import 'package:flora/domain/identification/identification_policy.dart';
 import 'package:flora/domain/identification/local_plant_model.dart';
@@ -99,6 +100,34 @@ class FakeRemote implements PlantIdentifier {
   }
 }
 
+/// Un avis extérieur sur les candidates d'Iris, sans réseau.
+class FakeArbiter implements IdentificationArbiter {
+  FakeArbiter(this.answer, {this.configured = true, this.error});
+
+  Arbitration? answer;
+  bool configured;
+  Object? error;
+  int calls = 0;
+  List<IdentificationCandidate>? lastCandidates;
+  String? lastLanguage;
+
+  @override
+  bool get isConfigured => configured;
+
+  @override
+  Future<Arbitration?> arbitrate({
+    required List<File> images,
+    required List<IdentificationCandidate> candidates,
+    required String language,
+  }) async {
+    calls++;
+    lastCandidates = candidates;
+    lastLanguage = language;
+    if (error != null) throw error!;
+    return answer;
+  }
+}
+
 void main() {
   late Directory dir;
   late File photo;
@@ -118,13 +147,15 @@ void main() {
   final lost = [c('Monstera deliciosa', 0.05)];
   final remoteAnswer = [c('Monstera adansonii', 0.88), c('Monstera deliciosa', 0.10)];
 
-  CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup}) =>
+  CascadeIdentifier build(LocalPlantModel local, FakeRemote remote, {InMemoryMetricsStore? store, bool fallbackEnabled = true, int limit = 200, DateTime Function()? now, CatalogLookup? lookup, IdentificationArbiter? arbiter, int arbiterLimit = 200}) =>
       CascadeIdentifier(
         local: local,
         fallback: remote,
         metrics: store ?? InMemoryMetricsStore(),
         fallbackEnabled: fallbackEnabled,
         monthlyRemoteLimit: limit,
+        arbiter: arbiter ?? const NoArbiter(),
+        monthlyArbiterLimit: arbiterLimit,
         now: now,
         lookup: lookup ??
             (name, language) => name.startsWith('Monstera deliciosa')
@@ -500,6 +531,131 @@ void main() {
     expect(IdentificationMetrics.decode('{not json').total, 0);
     expect(m.localSuccessRate, 0.75);
     expect(m.averageConfidence, closeTo(0.84, 1e-9));
+  });
+
+  group('l\'arbitrage de la photo', () {
+    const picked = Arbitration(outcome: ArbitrationOutcome.picked, scientificName: 'Monstera adansonii', trait: 'fenestrations');
+
+    test('une réponse acceptée ne part pas se faire arbitrer', () async {
+      final arbiter = FakeArbiter(picked);
+      final cascade = build(FakeLocal(sure), FakeRemote(remoteAnswer), arbiter: arbiter);
+      await cascade.identify([photo]);
+      expect(arbiter.calls, 0);
+      expect(cascade.lastArbitration, isNull);
+    });
+
+    test('une liste plausible part, et l\'avis se retient', () async {
+      final store = InMemoryMetricsStore();
+      final arbiter = FakeArbiter(picked);
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), store: store, arbiter: arbiter);
+      final result = await cascade.identify([photo], language: 'fr');
+      expect(arbiter.calls, 1);
+      expect(arbiter.lastLanguage, 'fr');
+      expect(cascade.lastArbitration?.scientificName, 'Monstera adansonii');
+      expect(cascade.lastArbitration?.trait, 'fenestrations');
+      // La liste rendue reste celle d'Iris, dans son ordre : rien ne se
+      // réordonne sous le doigt de la personne, c'est l'écran qui met la
+      // candidate désignée en évidence.
+      expect(result.first.scientificName, 'Monstera deliciosa');
+      final m = store.read();
+      expect(m.arbiterCalls, 1);
+      expect(m.arbiterPicks, 1);
+      // L'avis déplace la tête de liste : c'est le seul cas qui compte comme
+      // un gain.
+      expect(m.arbiterLeads, 1);
+    });
+
+    test('un avis qui confirme la tête de liste ne compte pas comme un gain', () async {
+      final store = InMemoryMetricsStore();
+      final arbiter = FakeArbiter(const Arbitration(outcome: ArbitrationOutcome.picked, scientificName: 'Monstera deliciosa'));
+      await build(FakeLocal(plausible), FakeRemote(remoteAnswer), store: store, arbiter: arbiter).identify([photo]);
+      expect(store.read().arbiterPicks, 1);
+      expect(store.read().arbiterLeads, 0);
+    });
+
+    test('« aucune de ces candidates » et « pas une plante » se comptent à part', () async {
+      final store = InMemoryMetricsStore();
+      await build(FakeLocal(plausible), FakeRemote(remoteAnswer), store: store, arbiter: FakeArbiter(const Arbitration.none()))
+          .identify([photo]);
+      expect(store.read().arbiterNone, 1);
+
+      final autre = InMemoryMetricsStore();
+      await build(FakeLocal(hesitant), FakeRemote(remoteAnswer),
+              store: autre, arbiter: FakeArbiter(const Arbitration(outcome: ArbitrationOutcome.notPlant)))
+          .identify([photo]);
+      expect(autre.read().arbiterNotPlant, 1);
+    });
+
+    test('un appel qui ne rend rien est un incident, pas une erreur', () async {
+      final store = InMemoryMetricsStore();
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), store: store, arbiter: FakeArbiter(null));
+      final result = await cascade.identify([photo]);
+      expect(result.first.scientificName, 'Monstera deliciosa');
+      expect(store.read().arbiterIncidents, 1);
+      expect(store.read().errors, 0);
+      expect(cascade.lastArbitration, isNull);
+    });
+
+    test('une exception de l\'arbitre est absorbée', () async {
+      final store = InMemoryMetricsStore();
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer),
+          store: store, arbiter: FakeArbiter(picked, error: StateError('boum')));
+      final result = await cascade.identify([photo]);
+      expect(result, isNotEmpty);
+      expect(store.read().arbiterIncidents, 1);
+    });
+
+    test('le repli coupé dans les réglages coupe aussi l\'arbitrage', () async {
+      // C'est la même promesse : la photo ne sort pas de l'appareil.
+      final arbiter = FakeArbiter(picked);
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), fallbackEnabled: false, arbiter: arbiter);
+      await cascade.identify([photo]);
+      expect(arbiter.calls, 0);
+      expect(cascade.arbiterAvailable, isFalse);
+    });
+
+    test('sans clé, aucun appel', () async {
+      final arbiter = FakeArbiter(picked, configured: false);
+      await build(FakeLocal(plausible), FakeRemote(remoteAnswer), arbiter: arbiter).identify([photo]);
+      expect(arbiter.calls, 0);
+    });
+
+    test('le quota du mois borne les appels', () async {
+      final store = InMemoryMetricsStore();
+      final arbiter = FakeArbiter(picked);
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), store: store, arbiter: arbiter, arbiterLimit: 1);
+      await cascade.identify([photo]);
+      await cascade.identify([other]);
+      expect(arbiter.calls, 1);
+      expect(cascade.arbiterAllowedThisMonth, isFalse);
+      expect(store.read().arbiterInPeriod, 1);
+    });
+
+    test('la même photo ne repaie pas un arbitrage, et retrouve son avis', () async {
+      final arbiter = FakeArbiter(picked);
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), arbiter: arbiter);
+      await cascade.identify([photo]);
+      await cascade.identify([other]);
+      await cascade.identify([photo]);
+      expect(arbiter.calls, 2);
+      expect(cascade.lastArbitration?.scientificName, 'Monstera adansonii');
+    });
+
+    test('une recherche en ligne efface l\'avis : la liste n\'est plus celle d\'Iris', () async {
+      final arbiter = FakeArbiter(picked);
+      final cascade = build(FakeLocal(plausible), FakeRemote(remoteAnswer), arbiter: arbiter);
+      await cascade.identify([photo]);
+      expect(cascade.lastArbitration, isNotNull);
+      await cascade.identifyRemotely([photo]);
+      expect(cascade.lastArbitration, isNull);
+    });
+
+    test('l\'arbitre reçoit les candidates rattachées au catalogue', () async {
+      final arbiter = FakeArbiter(picked);
+      await build(FakeLocal(plausible), FakeRemote(remoteAnswer), arbiter: arbiter).identify([photo], language: 'fr');
+      expect(arbiter.lastCandidates?.first.internalId, 'monstera-deliciosa');
+      expect(arbiter.lastCandidates?.first.source, IdentificationSource.local);
+    });
   });
 
   test('policy is consulted with the merged list', () {

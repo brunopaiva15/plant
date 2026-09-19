@@ -2,15 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
 
 import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/diagnosis_observations.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
 import '../../domain/home/home_climate.dart';
 import '../../domain/problems/plant_problem.dart';
+import 'model_image.dart';
 
 /// Diagnostic par les AI Services d'Infomaniak (hébergés en Suisse), via
 /// leur route compatible OpenAI : un modèle qui voit les images reçoit les
@@ -306,24 +305,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       .timeout(timeout);
 
   /// La photo telle qu'elle part : JPEG, grand côté à [maxSide] au plus.
-  /// Une image illisible part telle quelle, le service dira ce qu'il en pense.
-  static Future<Uint8List> prepareImage(Uint8List bytes) => compute(_shrink, bytes);
-
-  static Uint8List _shrink(Uint8List bytes) {
-    final img.Image? decoded;
-    try {
-      decoded = img.decodeImage(bytes);
-    } on Object {
-      // Le décodeur peut lever sur un fichier tronqué : on envoie tel quel.
-      return bytes;
-    }
-    if (decoded == null) return bytes;
-    var image = decoded;
-    if (image.width > maxSide || image.height > maxSide) {
-      image = image.width >= image.height ? img.copyResize(image, width: maxSide) : img.copyResize(image, height: maxSide);
-    }
-    return Uint8List.fromList(img.encodeJpg(image, quality: 85));
-  }
+  /// Le détail est dans `shrinkForModel`, partagé avec l'arbitre
+  /// d'identification, qui envoie les mêmes photos un peu plus petites.
+  static Future<Uint8List> prepareImage(Uint8List bytes) => shrinkForModel(bytes, maxSide: maxSide);
 
   /// Corps de requête, au format OpenAI (exposé pour les tests).
   static Map<String, Object?> buildRequest({required String model, required List<Map<String, Object?>> parts, required String language, required bool constrainJson}) => {

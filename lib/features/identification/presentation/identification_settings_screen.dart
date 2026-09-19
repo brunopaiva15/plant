@@ -108,6 +108,19 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           if (identifier is CascadeIdentifier) ...[
             const SizedBox(height: Space.xxs),
             Text(l10n.onlineSearchesMonth(identifier.remoteUsedThisMonth, identifier.monthlyRemoteLimit), style: context.text.caption),
+            // Le départage des listes qu'Iris n'a pas tranchées. Sans clé au
+            // build, la ligne n'aurait que des zéros à montrer.
+            if (identifier.arbiterAvailable) ...[
+              const SizedBox(height: Space.xxs),
+              Text(
+                l10n.photoArbitrationsMonth(
+                  identifier.arbiterUsedThisMonth,
+                  identifier.monthlyArbiterLimit,
+                  metrics.arbiterLeads,
+                ),
+                style: context.text.caption,
+              ),
+            ],
           ],
         ],
       ),

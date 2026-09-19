@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import '../../core/utils/scientific_name.dart';
+import 'identification_arbiter.dart';
 import 'identification_metrics.dart';
 import 'identification_policy.dart';
 import 'local_plant_model.dart';
@@ -42,6 +43,8 @@ class CascadeIdentifier implements PlantIdentifier {
     IdentificationMetricsStore? metrics,
     this.fallbackEnabled = true,
     this.monthlyRemoteLimit = 30,
+    this.arbiter = const NoArbiter(),
+    this.monthlyArbiterLimit = 60,
     this.localTimeout = const Duration(seconds: 4),
     CatalogLookup? lookup,
     DateTime Function()? now,
@@ -71,11 +74,32 @@ class CascadeIdentifier implements PlantIdentifier {
   /// appel Pl@ntNet se paie et que le modèle embarqué doit suffire au
   /// quotidien ; la recherche en ligne est le recours, pas la règle.
   final int monthlyRemoteLimit;
+
+  /// L'avis extérieur demandé sur les listes qu'Iris ne tranche pas. Sans clé
+  /// au build, c'est [NoArbiter] et la cascade est celle d'avant.
+  final IdentificationArbiter arbiter;
+
+  /// Arbitrages par appareil et par mois civil. Deux fois le quota Pl@ntNet,
+  /// parce qu'un arbitrage coûte environ le dixième d'un centime là où un
+  /// appel Pl@ntNet se paie — mais un plafond quand même : la clé est dans le
+  /// binaire (§ 3.3 de docs/09), et c'est elle, pas l'usage normal, qui peut
+  /// coûter cher.
+  final int monthlyArbiterLimit;
   final Duration localTimeout;
   final int cacheSize;
   final CatalogLookup _lookup;
   final DateTime Function() _now;
   final _cache = <String, List<IdentificationCandidate>>{};
+
+  /// L'avis de l'arbitre sur la dernière réponse rendue, ou `null` s'il n'a
+  /// pas été consulté, n'a rien rendu, ou si la réponse vient du réseau.
+  /// Les écrans le lisent pour montrer la candidate départagée et pour dire
+  /// que la photo est sortie de l'appareil.
+  Arbitration? lastArbitration;
+
+  /// Le même avis, gardé par jeu de photos comme les réponses : rouvrir la
+  /// feuille sur la même photo ne repaie pas un arbitrage.
+  final _arbitrations = <String, Arbitration>{};
 
   IdentificationMetrics get metrics => metricsStore.read();
 
@@ -94,6 +118,23 @@ class CascadeIdentifier implements PlantIdentifier {
   /// Reste-t-il du quota distant ce mois-ci ?
   bool get remoteAllowedThisMonth => remoteUsedThisMonth < monthlyRemoteLimit;
 
+  /// Arbitrages déjà demandés ce mois-ci.
+  int get arbiterUsedThisMonth {
+    final m = metricsStore.read();
+    return m.arbiterPeriod == _month() ? m.arbiterInPeriod : 0;
+  }
+
+  /// Reste-t-il du quota d'arbitrage ce mois-ci ?
+  bool get arbiterAllowedThisMonth => arbiterUsedThisMonth < monthlyArbiterLimit;
+
+  /// L'arbitrage est-il utilisable ?
+  ///
+  /// Le même interrupteur que le repli : ce qu'il gouverne, c'est la sortie
+  /// de la photo de l'appareil sur hésitation, et l'arbitrage est exactement
+  /// cela. Deux interrupteurs pour une seule promesse en feraient deux
+  /// promesses à tenir.
+  bool get arbiterAvailable => fallbackEnabled && arbiter.isConfigured;
+
   /// Interroge le service distant sans repasser par le modèle local.
   /// Appelée quand l'utilisateur demande explicitement une recherche en
   /// ligne, parce qu'aucune proposition locale ne lui convient.
@@ -111,7 +152,12 @@ class CascadeIdentifier implements PlantIdentifier {
     try {
       final remote = _mark(await fallback.identify(images, language: language), IdentificationSource.remote, language);
       await metricsStore.write(m);
-      _cache[await _cacheKey(images)] = remote;
+      // La recherche en ligne a tranché elle-même : l'avis de l'arbitre
+      // portait sur la liste d'Iris, qui n'est plus celle affichée.
+      lastArbitration = null;
+      final key = await _cacheKey(images);
+      _arbitrations.remove(key);
+      _cache[key] = remote;
       return remote;
     } on Object {
       await metricsStore.write(m.copyWith(errors: m.errors + 1));
@@ -125,9 +171,11 @@ class CascadeIdentifier implements PlantIdentifier {
     final key = await _cacheKey(images);
     final cached = _cache[key];
     if (cached != null) {
+      lastArbitration = _arbitrations[key];
       await _update((m) => m.copyWith(cacheHits: m.cacheHits + 1));
       return cached;
     }
+    lastArbitration = null;
 
     var m = metricsStore.read().copyWith(total: metricsStore.read().total + 1);
     List<IdentificationCandidate> localResult = const [];
@@ -161,6 +209,11 @@ class CascadeIdentifier implements PlantIdentifier {
         localAccepted: m.localAccepted + 1,
         confidenceSum: m.confidenceSum + localResult.first.score,
       );
+      // Iris a une liste mais hésite : c'est là, et seulement là, qu'un
+      // deuxième regard sur la photo peut changer quelque chose.
+      if (arbiterAvailable && arbiterAllowedThisMonth && worthArbitrating(policy, localResult)) {
+        m = await _arbitrate(key: key, images: images, candidates: localResult, language: language, metrics: m);
+      }
       await metricsStore.write(m);
       return _remember(key, localResult);
     }
@@ -197,6 +250,48 @@ class CascadeIdentifier implements PlantIdentifier {
     if (localResult.isNotEmpty) m = m.copyWith(confidenceSum: m.confidenceSum + localResult.first.score);
     await metricsStore.write(m);
     return _remember(key, localResult);
+  }
+
+  /// Demande l'avis de l'arbitre et compte ce qu'il a rendu.
+  ///
+  /// Il retient l'écran — d'où le délai serré côté service — mais il évite
+  /// une liste qui se réordonne sous le doigt de la personne, ce qui serait
+  /// pire qu'une seconde d'attente. Un appel qui échoue ne se voit pas : la
+  /// liste d'Iris est rendue telle quelle.
+  Future<IdentificationMetrics> _arbitrate({
+    required String key,
+    required List<File> images,
+    required List<IdentificationCandidate> candidates,
+    required String? language,
+    required IdentificationMetrics metrics,
+  }) async {
+    final month = _month();
+    final used = metrics.arbiterPeriod == month ? metrics.arbiterInPeriod : 0;
+    var m = metrics.copyWith(
+      arbiterCalls: metrics.arbiterCalls + 1,
+      arbiterPeriod: month,
+      arbiterInPeriod: used + 1,
+    );
+    final started = _now();
+    Arbitration? avis;
+    try {
+      avis = await arbiter.arbitrate(images: images, candidates: candidates, language: language ?? 'en');
+    } on Object {
+      avis = null;
+    }
+    m = m.copyWith(arbiterLatencyMsSum: m.arbiterLatencyMsSum + _now().difference(started).inMilliseconds.abs());
+    if (avis == null) return m.copyWith(arbiterIncidents: m.arbiterIncidents + 1);
+    lastArbitration = avis;
+    _arbitrations[key] = avis;
+    if (_arbitrations.length > cacheSize) _arbitrations.remove(_arbitrations.keys.first);
+    return switch (avis.outcome) {
+      ArbitrationOutcome.picked => m.copyWith(
+          arbiterPicks: m.arbiterPicks + 1,
+          arbiterLeads: m.arbiterLeads + (arbitrationLeads(candidates, avis) ? 1 : 0),
+        ),
+      ArbitrationOutcome.none => m.copyWith(arbiterNone: m.arbiterNone + 1),
+      ArbitrationOutcome.notPlant => m.copyWith(arbiterNotPlant: m.arbiterNotPlant + 1),
+    };
   }
 
   /// Charge le modèle si ce n'est pas déjà fait. Faux si le chargement

@@ -671,8 +671,18 @@
   "searchingOnline": "Ricerca online…",
   "suggestionsLocal": "Risultati Iris sul dispositivo · foto non inviata",
   "suggestionsRemote": "Proposto online da Pl@ntNet",
+  "suggestionsArbitrated": "Risultati Iris, verificati online",
   "identifyOnDevice": "Riconosciuta da {name} sul dispositivo. Scegliete la specie",
   "identifyViaPlantNet": "Riconosciuta online da Pl@ntNet. Scegliete la specie",
+  "identifyArbitrated": "Riconosciuta da {name}, verificata online. Scegliete la specie",
+  "@identifyArbitrated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "identifyArbitratedRow": "Decisa in base alla foto",
   "identifyPhotoSource": "Foto da Pl@ntNet e GBIF. Toccane una per aprire la scheda della specie.",
   "identifyNone": "Nessuna corrispondenza affidabile.",
   "identifyError": "Identificazione impossibile. Controlla la connessione e riprova.",
@@ -682,7 +692,7 @@
   "identificationEnabled": "Identificazione attiva",
   "identificationDisabled": "Non configurata",
   "identificationFallback": "Fallback online",
-  "identificationFallbackHint": "In caso di dubbio di {name}, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.",
+  "identificationFallbackHint": "In caso di dubbio di {name}, la foto viene inviata a Pl@ntNet o all'IA che decide tra i suggerimenti. Disattivato, tutto resta sul dispositivo.",
   "irisFeedback": "Invio delle foto identificate",
   "irisFeedbackHint": "Le foto scattate per identificare e il nome scelto vengono inviati appena una pianta viene nominata, e addestrano le prossime versioni del modello {name}. Sono leggibili solo dall'account che le invia, e la sua eliminazione le cancella. Disattivato, non lasciano il dispositivo.",
   "@irisFeedbackHint": {
@@ -713,6 +723,20 @@
         "type": "int"
       },
       "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "photoArbitrationsMonth": "{used} arbitraggi di foto su {limit} questo mese, {leads} hanno cambiato il suggerimento.",
+  "@photoArbitrationsMonth": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "leads": {
         "type": "int"
       }
     }

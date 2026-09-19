@@ -18,6 +18,8 @@ import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../identification/presentation/iris_feedback_prompt.dart';
+import '../../../domain/identification/identification_arbiter.dart';
+import '../../identification/presentation/arbitration_row.dart';
 import '../../identification/presentation/genus_row.dart';
 import '../../identification/presentation/identification_source_note.dart';
 import '../../../domain/identification/plant_identifier.dart';
@@ -441,6 +443,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   GenusAnswer? _identificationGenus(List<IdentificationCandidate> results) {
     final identifier = ref.read(plantIdentifierProvider);
     return identifier is CascadeIdentifier ? genusAnswer(identifier.policy, results) : null;
+  }
+
+  /// L'avis de l'arbitre distant sur la liste affichée, quand il a été
+  /// consulté. La cascade le garde ; l'écran n'appelle rien lui-même.
+  Arbitration? _identificationArbitration() {
+    final identifier = ref.read(plantIdentifierProvider);
+    return identifier is CascadeIdentifier ? identifier.lastArbitration : null;
   }
 
   /// Une photo de plus pour trancher. Gratuite, hors ligne et immédiate, là
@@ -934,6 +943,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onChoiceMade: _noteJevChoice,
               onOnlineSearchAsked: _noteJevOnlineSearch,
               genus: _identificationGenus,
+              arbitration: _identificationArbitration,
               selectedScientificName: _chosen?.scientificName,
             ),
           const SizedBox(height: Space.lg),
@@ -1067,6 +1077,7 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onChoiceMade,
     this.onOnlineSearchAsked,
     this.genus,
+    this.arbitration,
     this.selectedScientificName,
   });
 
@@ -1104,6 +1115,9 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
 
+  /// L'avis du deuxième regard sur la photo, quand la cascade l'a demandé.
+  final Arbitration? Function()? arbitration;
+
   /// Candidat déjà confirmé par l'utilisateur, y compris depuis l'overlay
   /// affiché directement sur la photo.
   final String? selectedScientificName;
@@ -1133,8 +1147,16 @@ class _IdentificationSuggestions extends StatelessWidget {
             results.first.source == IdentificationSource.local
                 ? evaluation?.call(all)
                 : null;
+        // L'avis du deuxième regard, et la candidate qu'il désigne — seulement
+        // quand elle n'est pas déjà en tête. Elle peut se trouver au-delà des
+        // trois lignes affichées : c'est justement là qu'elle est utile.
+        final avis = arbitration?.call();
+        // `pick` est pris : chaque contenu a sa fonction de choix.
+        final departagee = arbitrationLeads(all, avis) ? arbitratedCandidate(all, avis) : null;
         // Sur toutes les candidates rendues, pas sur les trois affichées.
-        final genre = genus?.call(all);
+        // Le genre se tait quand l'arbitre a nommé une espèce : lui a vu la
+        // photo, et deux réponses d'un autre rang se contrediraient.
+        final genre = departagee != null ? null : genus?.call(all);
         final hasSecondPhoto = paths.length > 1;
 
         Widget normalContent(JevPipelineEvaluation? state) {
@@ -1147,6 +1169,10 @@ class _IdentificationSuggestions extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (departagee != null) ...[
+                ArbitrationRow(candidate: departagee, trait: avis?.trait, onUse: () => pick(departagee)),
+                const SizedBox(height: Space.xs),
+              ],
               if (genre != null) ...[
                 GenusRow(
                   answer: genre,
@@ -1206,6 +1232,10 @@ class _IdentificationSuggestions extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const IdentificationUncertaintyNotice(),
+              if (departagee != null) ...[
+                const SizedBox(height: Space.sm),
+                ArbitrationRow(candidate: departagee, trait: avis?.trait, onUse: () => pick(departagee)),
+              ],
               if (genre != null) ...[
                 const SizedBox(height: Space.sm),
                 GenusRow(
@@ -1254,7 +1284,9 @@ class _IdentificationSuggestions extends StatelessWidget {
             children: [
               IdentificationSourceNote(
                 source: results.first.source,
+                arbitrated: avis != null,
                 label: switch (results.first.source) {
+                  IdentificationSource.local when avis != null => l10n.suggestionsArbitrated,
                   IdentificationSource.local => l10n.suggestionsLocal,
                   IdentificationSource.remote => l10n.suggestionsRemote,
                   IdentificationSource.unknown => l10n.identifyHint,

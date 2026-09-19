@@ -2059,10 +2059,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchingOnline => 'Ricerca online…';
 
   @override
-  String get suggestionsLocal => 'Risultati Iris sul dispositivo · foto non inviata';
+  String get suggestionsLocal =>
+      'Risultati Iris sul dispositivo · foto non inviata';
 
   @override
   String get suggestionsRemote => 'Proposto online da Pl@ntNet';
+
+  @override
+  String get suggestionsArbitrated => 'Risultati Iris, verificati online';
 
   @override
   String identifyOnDevice(String name) {
@@ -2072,6 +2076,14 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get identifyViaPlantNet =>
       'Riconosciuta online da Pl@ntNet. Scegliete la specie';
+
+  @override
+  String identifyArbitrated(String name) {
+    return 'Riconosciuta da $name, verificata online. Scegliete la specie';
+  }
+
+  @override
+  String get identifyArbitratedRow => 'Decisa in base alla foto';
 
   @override
   String get identifyPhotoSource =>
@@ -2106,7 +2118,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'In caso di dubbio di $name, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
+    return 'In caso di dubbio di $name, la foto viene inviata a Pl@ntNet o all\'IA che decide tra i suggerimenti. Disattivato, tutto resta sul dispositivo.';
   }
 
   @override
@@ -2148,6 +2160,11 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String onlineSearchesMonth(int used, int limit) {
     return '$used ricerche online su $limit questo mese.';
+  }
+
+  @override
+  String photoArbitrationsMonth(int used, int limit, int leads) {
+    return '$used arbitraggi di foto su $limit questo mese, $leads hanno cambiato il suggerimento.';
   }
 
   @override

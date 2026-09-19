@@ -26,6 +26,15 @@ class IdentificationMetrics {
     this.jevShowResultThenSearched = 0,
     this.jevKeepUncertainThenPicked = 0,
     this.jevLatencyMsSum = 0,
+    this.arbiterCalls = 0,
+    this.arbiterPicks = 0,
+    this.arbiterLeads = 0,
+    this.arbiterNone = 0,
+    this.arbiterNotPlant = 0,
+    this.arbiterIncidents = 0,
+    this.arbiterPeriod = '',
+    this.arbiterInPeriod = 0,
+    this.arbiterLatencyMsSum = 0,
   });
 
   /// Identifications demandées (hors cache).
@@ -80,6 +89,39 @@ class IdentificationMetrics {
   /// Somme des durées d'appel, en millisecondes, pour la moyenne.
   final int jevLatencyMsSum;
 
+  /// Arbitrages de photo réellement partis chez Infomaniak. Un scan qu'Iris
+  /// juge net, le repli coupé dans les réglages, le quota du mois épuisé ou
+  /// l'absence de clé n'en produisent aucun.
+  final int arbiterCalls;
+
+  /// Avis qui ont désigné une candidate d'Iris.
+  final int arbiterPicks;
+
+  /// Avis qui ont désigné une **autre** candidate que celle qu'Iris mettait
+  /// en tête. C'est le seul compteur qui mesure un gain : les autres avis
+  /// confirment un ordre que l'écran donnait déjà.
+  final int arbiterLeads;
+
+  /// Avis « aucune de ces candidates » : la liste d'Iris est à côté, et la
+  /// recherche en ligne est le recours.
+  final int arbiterNone;
+
+  /// Avis « ce n'est pas une plante ». Le garde-fou hors distribution du
+  /// § 3.2 de docs/09, que la classe « autre » n'a jamais livré.
+  final int arbiterNotPlant;
+
+  /// Appels partis sans rien rendre : erreur, délai dépassé, réponse
+  /// illisible. La liste d'Iris est alors rendue telle quelle.
+  final int arbiterIncidents;
+
+  /// Mois civil (AAAA-MM) du compteur [arbiterInPeriod].
+  final String arbiterPeriod;
+  final int arbiterInPeriod;
+
+  /// Somme des durées d'appel, en millisecondes, pour la moyenne. L'arbitrage
+  /// retient l'écran : sa latence est la première chose à surveiller.
+  final int arbiterLatencyMsSum;
+
   /// Arbitrages effectivement rendus, incidents exclus.
   int get jevAnswered => jevShowResult + jevAskAnotherPhoto + jevKeepUncertain;
 
@@ -92,6 +134,14 @@ class IdentificationMetrics {
   /// Part des incertitudes que la personne a tranchées elle-même.
   double get jevKeepUncertainOverrideRate =>
       jevKeepUncertain == 0 ? 0 : jevKeepUncertainThenPicked / jevKeepUncertain;
+
+  /// Part des appels qui ont désigné une candidate.
+  double get arbiterPickRate => arbiterCalls == 0 ? 0 : arbiterPicks / arbiterCalls;
+
+  /// Part des appels qui ont changé la tête de liste.
+  double get arbiterLeadRate => arbiterCalls == 0 ? 0 : arbiterLeads / arbiterCalls;
+
+  double get arbiterAverageLatencyMs => arbiterCalls == 0 ? 0 : arbiterLatencyMsSum / arbiterCalls;
 
   double get localSuccessRate => local == 0 ? 0 : localAccepted / local;
   double get fallbackRate => local == 0 ? 0 : fallbacks / local;
@@ -120,6 +170,15 @@ class IdentificationMetrics {
     int? jevShowResultThenSearched,
     int? jevKeepUncertainThenPicked,
     int? jevLatencyMsSum,
+    int? arbiterCalls,
+    int? arbiterPicks,
+    int? arbiterLeads,
+    int? arbiterNone,
+    int? arbiterNotPlant,
+    int? arbiterIncidents,
+    String? arbiterPeriod,
+    int? arbiterInPeriod,
+    int? arbiterLatencyMsSum,
   }) =>
       IdentificationMetrics(
         total: total ?? this.total,
@@ -143,6 +202,15 @@ class IdentificationMetrics {
         jevKeepUncertainThenPicked:
             jevKeepUncertainThenPicked ?? this.jevKeepUncertainThenPicked,
         jevLatencyMsSum: jevLatencyMsSum ?? this.jevLatencyMsSum,
+        arbiterCalls: arbiterCalls ?? this.arbiterCalls,
+        arbiterPicks: arbiterPicks ?? this.arbiterPicks,
+        arbiterLeads: arbiterLeads ?? this.arbiterLeads,
+        arbiterNone: arbiterNone ?? this.arbiterNone,
+        arbiterNotPlant: arbiterNotPlant ?? this.arbiterNotPlant,
+        arbiterIncidents: arbiterIncidents ?? this.arbiterIncidents,
+        arbiterPeriod: arbiterPeriod ?? this.arbiterPeriod,
+        arbiterInPeriod: arbiterInPeriod ?? this.arbiterInPeriod,
+        arbiterLatencyMsSum: arbiterLatencyMsSum ?? this.arbiterLatencyMsSum,
       );
 
   Map<String, Object> toJson() => {
@@ -165,6 +233,15 @@ class IdentificationMetrics {
         'jevShowResultThenSearched': jevShowResultThenSearched,
         'jevKeepUncertainThenPicked': jevKeepUncertainThenPicked,
         'jevLatencyMsSum': jevLatencyMsSum,
+        'arbiterCalls': arbiterCalls,
+        'arbiterPicks': arbiterPicks,
+        'arbiterLeads': arbiterLeads,
+        'arbiterNone': arbiterNone,
+        'arbiterNotPlant': arbiterNotPlant,
+        'arbiterIncidents': arbiterIncidents,
+        'arbiterPeriod': arbiterPeriod,
+        'arbiterInPeriod': arbiterInPeriod,
+        'arbiterLatencyMsSum': arbiterLatencyMsSum,
       };
 
   static IdentificationMetrics fromJson(Map<String, dynamic> json) {
@@ -189,6 +266,15 @@ class IdentificationMetrics {
       jevShowResultThenSearched: i('jevShowResultThenSearched'),
       jevKeepUncertainThenPicked: i('jevKeepUncertainThenPicked'),
       jevLatencyMsSum: i('jevLatencyMsSum'),
+      arbiterCalls: i('arbiterCalls'),
+      arbiterPicks: i('arbiterPicks'),
+      arbiterLeads: i('arbiterLeads'),
+      arbiterNone: i('arbiterNone'),
+      arbiterNotPlant: i('arbiterNotPlant'),
+      arbiterIncidents: i('arbiterIncidents'),
+      arbiterPeriod: (json['arbiterPeriod'] as String?) ?? '',
+      arbiterInPeriod: i('arbiterInPeriod'),
+      arbiterLatencyMsSum: i('arbiterLatencyMsSum'),
     );
   }
 

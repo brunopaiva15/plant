@@ -17,11 +17,13 @@ import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../../domain/identification/identification_confidence.dart';
+import '../../../domain/identification/identification_arbiter.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../domain/species/species_info.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
+import 'arbitration_row.dart';
 import 'identification_source_note.dart';
 import 'genus_row.dart';
 import 'identification_uncertainty.dart';
@@ -212,6 +214,13 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         );
   }
 
+  /// L'avis de l'arbitre sur la réponse affichée, quand il a été consulté.
+  /// La cascade le garde par jeu de photos : l'écran n'appelle rien lui-même.
+  Arbitration? _arbitration() {
+    final identifier = ref.read(plantIdentifierProvider);
+    return identifier is CascadeIdentifier ? identifier.lastArbitration : null;
+  }
+
   /// Le genre, quand aucune espèce ne passe le seuil. Même politique que le
   /// reste : c'est elle qui dit ce que « sûr » veut dire.
   GenusAnswer? _genus(List<IdentificationCandidate> results) {
@@ -281,7 +290,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
 
   /// D'où vient la réponse : sur l'appareil, ou par le service en ligne.
   /// L'utilisateur a le droit de savoir si sa photo est partie sur le réseau.
-  String _sourceHint(AppLocalizations l10n, IdentificationSource source) => switch (source) {
+  String _sourceHint(AppLocalizations l10n, IdentificationSource source, {bool arbitrated = false}) => switch (source) {
+        IdentificationSource.local when arbitrated => l10n.identifyArbitrated(AppConfig.modelName),
         IdentificationSource.local => l10n.identifyOnDevice(AppConfig.modelName),
         IdentificationSource.remote => l10n.identifyViaPlantNet,
         IdentificationSource.unknown => l10n.identifyHint,
@@ -299,12 +309,18 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     AppLocalizations l10n,
     List<IdentificationCandidate> results,
     GenusAnswer? genus,
-    JevPipelineEvaluation? state,
-  ) {
+    JevPipelineEvaluation? state, {
+    IdentificationCandidate? pick,
+    String? trait,
+  }) {
     final action = state?.decision?.action;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (pick != null) ...[
+          ArbitrationRow(candidate: pick, trait: trait, onUse: () => _use(pick, action)),
+          const SizedBox(height: Space.xs),
+        ],
         if (genus != null) ...[
           GenusRow(
             answer: genus,
@@ -357,13 +373,23 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     BuildContext context,
     AppLocalizations l10n,
     List<IdentificationCandidate> results,
-    GenusAnswer? genus,
-  ) {
+    GenusAnswer? genus, {
+    IdentificationCandidate? pick,
+    String? trait,
+  }) {
     final online = ref.watch(isOnlineProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const IdentificationUncertaintyNotice(),
+        if (pick != null) ...[
+          const SizedBox(height: Space.sm),
+          ArbitrationRow(
+            candidate: pick,
+            trait: trait,
+            onUse: () => _use(pick, JevProductAction.keepUncertain),
+          ),
+        ],
         if (genus != null) ...[
           const SizedBox(height: Space.sm),
           GenusRow(
@@ -462,10 +488,18 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                   !busy && results.first.source == IdentificationSource.local
                       ? _evaluation(data ?? const <IdentificationCandidate>[])
                       : null;
+              // L'avis de l'arbitre, et la candidate qu'il désigne — seulement
+              // quand elle n'est pas déjà en tête de liste.
+              final arbitration = busy ? null : _arbitration();
+              final pick = arbitrationLeads(results, arbitration) ? arbitratedCandidate(results, arbitration) : null;
               // Le genre se somme sur toutes les candidates rendues, pas sur
               // les cinq affichées : c'est la masse qui décide, et elle se
               // perdrait à tronquer deux fois.
-              final genus = _genus(data ?? const []);
+              //
+              // Deux réponses d'un autre rang au-dessus de la même liste se
+              // contrediraient : quand l'arbitre nomme une espèce, il a vu la
+              // photo, et le genre n'a rien à ajouter.
+              final genus = pick != null ? null : _genus(data ?? const []);
               final hasSecondPhoto = _paths.length > 1;
               // Pendant une relance, la liste à l'écran est la précédente et
               // la provenance de la suivante n'est pas encore connue : le
@@ -474,7 +508,11 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  IdentificationSourceNote(source: source, label: busy ? l10n.identifying : _sourceHint(l10n, source)),
+                  IdentificationSourceNote(
+                    source: source,
+                    arbitrated: arbitration != null,
+                    label: busy ? l10n.identifying : _sourceHint(l10n, source, arbitrated: arbitration != null),
+                  ),
                   if (hasSecondPhoto) ...[
                     const SizedBox(height: Space.xs),
                     IdentificationPhotoStrip(
@@ -491,6 +529,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                       results,
                       genus,
                       null,
+                      pick: pick,
+                      trait: arbitration?.trait,
                     )
                   else
                     FutureBuilder<JevPipelineEvaluation>(
@@ -505,6 +545,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                             l10n,
                             results,
                             genus,
+                            pick: pick,
+                            trait: arbitration?.trait,
                           );
                         }
                         return _normalIdentificationContent(
@@ -513,6 +555,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                           results,
                           genus,
                           state,
+                          pick: pick,
+                          trait: arbitration?.trait,
                         );
                       },
                     ),

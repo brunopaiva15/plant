@@ -951,6 +951,7 @@
   "searchingOnline": "Recherche en ligne…",
   "suggestionsLocal": "Résultats Iris sur votre appareil · photo non envoyée",
   "suggestionsRemote": "Proposé en ligne par Pl@ntNet",
+  "suggestionsArbitrated": "Résultats Iris, vérifiés en ligne",
   "identifyOnDevice": "Reconnu par {name} sur l'appareil. Choisissez l'espèce",
   "@identifyOnDevice": {
     "placeholders": {
@@ -960,6 +961,15 @@
     }
   },
   "identifyViaPlantNet": "Reconnu en ligne par Pl@ntNet. Choisissez l'espèce",
+  "identifyArbitrated": "Reconnu par {name}, vérifié en ligne. Choisissez l'espèce",
+  "@identifyArbitrated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "identifyArbitratedRow": "Départagé d'après la photo",
   "identifyPhotoSource": "Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l'espèce.",
   "identifyNone": "Aucune correspondance fiable.",
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
@@ -976,7 +986,7 @@
   "identificationEnabled": "Identification activée",
   "identificationDisabled": "Non configurée",
   "identificationFallback": "Repli en ligne",
-  "identificationFallbackHint": "En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil.",
+  "identificationFallbackHint": "En cas de doute de {name}, la photo est envoyée à Pl@ntNet, ou à l'IA qui départage ses propositions. Désactivé, tout reste sur l'appareil.",
   "@identificationFallbackHint": {
     "placeholders": {
       "name": {
@@ -1034,6 +1044,20 @@
         "type": "int"
       },
       "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "photoArbitrationsMonth": "{used} arbitrages de photo sur {limit} ce mois-ci, dont {leads} ont changé la proposition.",
+  "@photoArbitrationsMonth": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "leads": {
         "type": "int"
       }
     }

@@ -21,9 +21,15 @@ import '../../../domain/identification/plant_identifier.dart';
 /// « appareil » ou « réseau » quand on ne sait pas mentirait ; la phrase
 /// générique, elle, ne promet rien.
 class IdentificationSourceNote extends StatelessWidget {
-  const IdentificationSourceNote({super.key, required this.source, required this.label});
+  const IdentificationSourceNote({super.key, required this.source, required this.label, this.arbitrated = false});
 
   final IdentificationSource source;
+
+  /// La photo est sortie de l'appareil pour départager les candidates d'Iris
+  /// (§ 3.9 de docs/09-plant-recognition.md). La liste reste celle d'Iris,
+  /// mais le nuage se lit avant la phrase, et c'est lui qui engage la vie
+  /// privée : « sans réseau » ne se dit pas d'une réponse arbitrée en ligne.
+  final bool arbitrated;
 
   /// La phrase, déjà traduite et déjà choisie par l'appelant : la feuille
   /// d'identification et le flux de création ne disent pas la même chose de
@@ -40,11 +46,13 @@ class IdentificationSourceNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = context.text.caption;
-    final icon = switch (source) {
-      IdentificationSource.local => CupertinoIcons.device_phone_portrait,
-      IdentificationSource.remote => CupertinoIcons.cloud,
-      IdentificationSource.unknown => null,
-    };
+    final icon = arbitrated && source != IdentificationSource.unknown
+        ? CupertinoIcons.cloud
+        : switch (source) {
+            IdentificationSource.local => CupertinoIcons.device_phone_portrait,
+            IdentificationSource.remote => CupertinoIcons.cloud,
+            IdentificationSource.unknown => null,
+          };
     if (icon == null) return Text(label, style: style);
     final scaler = MediaQuery.textScalerOf(context);
     final size = scaler.scale(_iconSize);

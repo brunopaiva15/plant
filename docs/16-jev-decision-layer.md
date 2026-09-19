@@ -104,6 +104,15 @@ B : 39 %
 
 Dans ce cas, il risque surtout de reformuler l’incertitude existante.
 
+> **Ce que l’application fait depuis, et qui répond à cette remarque.** Les
+> candidates qu’Iris ne tranche pas partent maintenant, avec la photo, à un
+> modèle qui voit les images (§ 3.9 de [docs/09](09-plant-recognition.md)) :
+> question fermée sur les cinq noms, un numéro en retour, et le caractère
+> visible qui a décidé. C’est le regard sur la photo que Jev n’a pas, et c’est
+> lui qui produit les informations discriminantes énumérées ci-dessous au lieu
+> de les attendre de la personne. Les deux couches ne se remplacent pas :
+> l’une dit *quelle candidate*, l’autre *quoi faire du résultat*.
+
 Il devient intéressant lorsqu’on lui fournit **des informations supplémentaires réellement discriminantes**, par exemple :
 
 - taille ou forme des feuilles ;

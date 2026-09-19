@@ -144,6 +144,8 @@ CascadeIdentifier  (lib/domain/identification/cascade_identifier.dart)
    │  2. LocalPlantModel.classify()      ── délai max 4 s, erreur absorbée
    │  3. FallbackPolicy.decide()
    │        accepted  → réponse locale, fin, aucun réseau
+   │        plausible / uncertain → arbitrage (§ 3.9), si permis et sous quota :
+   │              la photo et les cinq noms partent, un numéro revient
    │        uncertain / noCandidate ↓
    │  4. repli autorisé ? (réglage utilisateur, clé Pl@ntNet, quota du mois)
    │        oui → PlantNetIdentifier.identify()
@@ -163,6 +165,10 @@ Fichiers :
 | `lib/domain/identification/local_plant_model.dart` | interface `LocalPlantModel` + `NoLocalModel` |
 | `lib/data/services/tflite_plant_model.dart` | le modèle embarqué, exécuté par TensorFlow Lite |
 | `lib/domain/identification/cascade_identifier.dart` | la cascade |
+| `lib/domain/identification/identification_arbiter.dart` | l'arbitre : l'interface, l'avis, et qui mérite d'être départagé (§ 3.9) |
+| `lib/data/services/infomaniak_identification_arbiter.dart` | l'appel Infomaniak, question fermée et lecture stricte |
+| `lib/features/identification/presentation/arbitration_row.dart` | la candidate départagée, au-dessus de la liste |
+| `tools/plant_model/arbitre.py` | ce que l'arbitrage rapporte, mesuré hors ligne avant d'annoncer quoi que ce soit |
 | `lib/domain/identification/identification_metrics.dart` | compteurs + magasin |
 | `lib/data/services/preferences_metrics_store.dart` | compteurs persistés dans `SharedPreferences` |
 | `lib/features/identification/presentation/identification_settings_screen.dart` | interrupteurs « Repli en ligne » et « Envoi des photos identifiées » + ligne de compteurs |
@@ -271,9 +277,9 @@ groupe :
 | Variable | Sert à | Sans elle |
 |---|---|---|
 | `PLANTNET_API_KEY` | repli Pl@ntNet de l'identification | modèle embarqué seul |
-| `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » (jeton d'API Infomaniak, portée AI Services) | diagnostic absent |
-| `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
-| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
+| `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » et arbitrage des listes qu'Iris ne tranche pas (§ 3.9) — jeton d'API Infomaniak, portée AI Services | diagnostic et arbitrage absents |
+| `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic et arbitrage absents |
+| `INFOMANIAK_AI_MODEL` | modèle du diagnostic et de l'arbitrage ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
 | `OPENROUTER_API_KEY` | couche de décision Jev sur les scans qu'Iris juge ambigus (docs/16) | politique Iris locale seule |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
 | `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
@@ -317,10 +323,16 @@ Sur l'appareil, dans les réglages, sans réseau (`IdentificationMetrics`) :
 | `cacheHits`, `errors`, `quotaRefusals` | |
 | `confidenceSum` | pour la confiance moyenne |
 | `remotePeriod`, `remoteInPeriod` | quota du mois |
+| `arbiterCalls`, `arbiterPicks`, `arbiterLeads` | arbitrages partis (§ 3.9), avis qui désignent une candidate, avis qui **déplacent** la tête de liste |
+| `arbiterNone`, `arbiterNotPlant`, `arbiterIncidents` | « aucune de ces candidates », « pas une plante », appels sans réponse exploitable |
+| `arbiterPeriod`, `arbiterInPeriod`, `arbiterLatencyMsSum` | quota du mois et latence, l'arbitrage retenant l'écran |
 
 Dérivés : `localSuccessRate`, `fallbackRate`, `averageConfidence`,
 `remoteCallsSaved` (= `localAccepted + cacheHits`, l'économie estimée en
-appels distants). Affichés dans l'écran Identification.
+appels distants), `arbiterPickRate`, `arbiterLeadRate`,
+`arbiterAverageLatencyMs`. Affichés dans l'écran Identification — pour
+l'arbitre, le quota du mois et le nombre de propositions changées, et
+seulement quand une clé est là.
 
 Aucune remontée serveur pour l'instant. Si un jour on agrège ces compteurs,
 ce sera par un envoi **opt-in**, de totaux seulement — jamais d'image, jamais
@@ -332,6 +344,10 @@ de nom d'espèce.
   modèle est sûr de lui.
 - Elle n'est envoyée à Pl@ntNet que sur hésitation, si l'utilisateur a
   laissé le repli activé, et avec sa propre clé — comme aujourd'hui.
+- Sur hésitation également, et sous le **même** interrupteur, elle peut partir
+  aux AI Services d'Infomaniak, en Suisse, pour départager les candidates
+  d'Iris (§ 3.9) : réduite à 768 px, rien n'étant gardé au-delà de la requête.
+  L'écran le dit alors, du nuage et de la phrase.
 - Les compteurs ne contiennent ni image, ni espèce, ni horodatage
   individuel.
 - Les vignettes de la liste (§ 3.7) sortent un **nom d'espèce**, jamais une
@@ -373,6 +389,10 @@ Elle porte donc un signe à sa gauche (`IdentificationSourceNote`) : un
 est partie chez Pl@ntNet. Il ne remplace pas la phrase, il se lit avant elle ;
 pour la synthèse vocale il est décoratif, puisqu'elle lit déjà la phrase.
 
+Une liste d'Iris **vérifiée en ligne** (§ 3.9) porte le nuage elle aussi, et
+la phrase change avec lui : la liste vient bien de l'appareil, mais la photo
+en est sortie, et c'est cela que le signe promet.
+
 Trois règles le tiennent honnête :
 
 - **`unknown` n'a pas de signe.** Un dessin qui affirme « appareil » ou
@@ -389,6 +409,115 @@ Trois règles le tiennent honnête :
 Les deux écrans qui proposent des espèces le portent : la feuille « Espèce »
 (`identification_sheet.dart`) et l'étape *Nom* du flux de création
 (`create_plant_flow.dart`).
+
+### 3.9 L'arbitre distant : un deuxième regard sur la photo
+
+Iris hésite sur près de quatre photos de plantes en pot sur dix — c'est
+l'arithmétique du couple (seuil, marge) du § 3.1 appliqué à la courbe de
+`assets/model/model.json`. Sur ces photos-là, **la bonne espèce est
+généralement déjà à l'écran sans être en tête** : le même calcul, fait sur les
+taux `captive` du modèle livré, donne un top-1 aux alentours de 40 % dans la
+population hésitante contre un top-3 entre 63 et 75 %. Le nom manquant n'est
+donc pas un nom de plus : c'est de savoir **laquelle** de ces trois lignes
+regarder.
+
+D'où l'arbitre : la photo et les candidates d'Iris partent aux AI Services
+d'Infomaniak — la même clé, le même produit et le même modèle que le
+diagnostic du § 9 —, et la réponse désigne l'une des candidates, ou aucune.
+`lib/data/services/infomaniak_identification_arbiter.dart`.
+
+**La question est fermée, et c'est tout l'intérêt.** On soumet des noms
+numérotés et on demande un numéro. Un modèle généraliste à qui l'on demande
+« quelle est cette plante ? » rend un binôme plausible et inventé, hors du
+catalogue : pas d'identifiant interne, donc pas de fiche d'entretien, pas de
+vignette, et une espèce fausse inscrite dans le journal. L'ensemble ouvert
+reste le travail de Pl@ntNet. Un numéro, lui, ne peut désigner qu'une
+candidate d'Iris, avec son score, son rattachement et sa vignette.
+
+**Les scores ne partent pas.** « 44 % / 39 % » ancrerait la réponse sur
+l'ordre qu'on fait justement arbitrer, et un avis qui recopie l'avis qu'on
+arbitre ne vaut rien — c'est la remarque de [docs/16](16-jev-decision-layer.md),
+§ « Jev ne doit pas remplacer Iris ». Ce qu'on achète ici, c'est un deuxième
+regard sur la **photo**, et c'est aussi ce qui manquait à Jev, qui ne la voit
+jamais.
+
+**Où il intervient, et où il n'intervient pas.**
+
+| Verdict d'Iris | Arbitre |
+|---|---|
+| `accepted` | non — la réponse est juste neuf fois sur dix, il n'y a rien à gagner et tout à perdre |
+| `plausible`, `uncertain` | oui, c'est la population utile |
+| `noCandidate` | non — il n'y a pas d'ensemble à fermer ; c'est le repli Pl@ntNet |
+| liste distante | non — elle a déjà tranché |
+| une seule candidate | non — ce serait demander une confirmation, pas un arbitrage |
+
+**Il retient l'écran, et c'est un choix.** L'appel se fait dans
+`CascadeIdentifier.identify`, avant que la liste ne s'affiche, avec un délai
+de huit secondes. L'alternative — montrer la liste puis la réordonner quand
+l'avis arrive — fait bouger les lignes sous le doigt de la personne, ce qui
+est pire qu'une seconde d'attente. La latence moyenne est comptée
+(`arbiterLatencyMsSum`) : c'est la première chose à surveiller.
+
+**Ce que l'écran en montre.** La liste garde l'ordre d'Iris. La candidate
+désignée s'affiche **au-dessus**, comme le genre du § 12.15, avec le caractère
+qui a décidé en sous-titre — « fenestrations », « feuille charnue » : la
+personne a la plante devant elle, et un caractère qu'elle peut aller vérifier
+vaut mieux qu'un nom de plus (`ArbitrationRow`). Deux règles la tiennent :
+
+- **elle ne paraît que si l'avis déplace la tête de liste.** Un arbitre qui
+  confirme la première candidate n'a rien à ajouter à un écran qui la montre
+  déjà en premier ;
+- **le genre se tait alors.** Deux réponses d'un autre rang au-dessus de la
+  même liste se contrediraient, et celle qui a vu la photo passe devant.
+
+**La photo sort de l'appareil : le même interrupteur, et le nuage.**
+L'arbitrage est gouverné par « Repli en ligne » (§ 3.3), parce que ce que cet
+interrupteur promet est exactement cela — la photo ne part pas sur hésitation.
+Deux interrupteurs pour une seule promesse en feraient deux promesses à tenir.
+Et la ligne de provenance dit alors « vérifié en ligne » avec le **nuage** du
+§ 3.8, jamais « sans réseau » — « vérifié » plutôt que « départagé » parce que
+la phrase doit rester vraie quand l'avis a été « aucune de ces candidates ».
+
+**Le quota, et ce qu'il borne vraiment.** Soixante arbitrages par appareil et
+par mois civil, le double du quota Pl@ntNet : un arbitrage coûte environ un
+dixième de centime — l'image réduite à 768 px, la consigne, cinq noms et une
+réponse de cent jetons —, là où un appel Pl@ntNet se paie. Ce n'est donc pas
+l'usage normal que le plafond borne, c'est **la clé compilée dans le binaire**
+(§ 3.3) : à ce tarif, une clé extraite et poussée à quelques requêtes par
+seconde coûte des centaines de francs par jour. La parade reste la même, un
+relais côté serveur qui garde la clé.
+
+**Ce qui n'est pas encore mesuré.** Le gain. Le mécanisme est livré, le
+raisonnement tient, et la connaissance botanique fine d'un modèle généraliste
+sur les espèces d'intérieur du catalogue reste une inconnue : bonne sur les
+grands classiques, douteuse sur les cultivars. Ce qui suit se mesure **avant**
+d'annoncer quoi que ce soit, avec `tools/plant_model/arbitre.py`, sur la seule
+population concernée — les photos hésitantes du jeu de test :
+
+```bash
+export INFOMANIAK_AI_API_KEY=… INFOMANIAK_AI_PRODUCT_ID=…
+python3 arbitre.py --modele ../../assets/model --dataset /data2/dataset --a-blanc
+python3 arbitre.py --modele ../../assets/model --dataset /data2/dataset --limite 300 --cultivees
+```
+
+`--a-blanc` sélectionne la population et annonce la facture sans appeler. Et
+la facture est le vrai argument de cette mesure : **trois cents photos
+arbitrées coûtent moins d'un franc**, si bien que la question ne se discute
+pas, elle se mesure. Ce que le script rend : top-1 d'Iris, top-1 après
+arbitrage, plafond (le top-5, qu'un arbitre parfait atteindrait), part des
+avis rendus et leur justesse, déplacements gagnés et perdus, francs facturés,
+secondes par appel. `--melanger` bat l'ordre des candidates : si le mélange
+change le résultat, c'est l'ordre d'Iris qui était lu, pas la photo.
+
+Le modèle se change au build (`INFOMANIAK_AI_MODEL`), sans toucher au code :
+comparer deux modèles ne coûte donc qu'une deuxième passe du script.
+
+**Le hors-distribution en prime.** « Est-ce que c'est même une plante ? » est
+la question qu'un modèle généraliste réussit le mieux, et l'arbitre y répond
+sans supplément (`ArbitrationOutcome.notPlant`, compté dans
+`arbiterNotPlant`). C'est le garde-fou du § 3.2 que la classe « autre » n'a
+jamais livré ; pour l'instant l'application le compte sans rien en dire à
+l'écran, faute de savoir à quelle fréquence il se trompe.
 
 ## 4. Sources d'images et licences
 

@@ -671,8 +671,18 @@
   "searchingOnline": "Searching online…",
   "suggestionsLocal": "Iris results on your device · photo not uploaded",
   "suggestionsRemote": "Suggested online by Pl@ntNet",
+  "suggestionsArbitrated": "Iris results, checked online",
   "identifyOnDevice": "Recognised by {name} on the device. Choose the species",
   "identifyViaPlantNet": "Recognised online by Pl@ntNet. Choose the species",
+  "identifyArbitrated": "Recognised by {name}, checked online. Choose the species",
+  "@identifyArbitrated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "identifyArbitratedRow": "Settled from the photo",
   "identifyPhotoSource": "Photos from Pl@ntNet and GBIF. Tap one to open the species page.",
   "identifyNone": "No reliable match.",
   "identifyError": "Couldn't identify. Check your connection and try again.",
@@ -682,7 +692,7 @@
   "identificationEnabled": "Identification enabled",
   "identificationDisabled": "Not configured",
   "identificationFallback": "Online fallback",
-  "identificationFallbackHint": "When {name} is in doubt, the photo is sent to Pl@ntNet. Off, everything stays on the device.",
+  "identificationFallbackHint": "When {name} is in doubt, the photo is sent to Pl@ntNet, or to the AI that settles its suggestions. Off, everything stays on the device.",
   "irisFeedback": "Sending identified photos",
   "irisFeedbackHint": "The photos taken to identify and the chosen name are sent as soon as a plant is named, and train the next versions of the {name} model. They are readable only by the account that sends them, and deleting it erases them. Off, they do not leave the device.",
   "@irisFeedbackHint": {
@@ -713,6 +723,20 @@
         "type": "int"
       },
       "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "photoArbitrationsMonth": "{used} of {limit} photo arbitrations this month, {leads} changed the suggestion.",
+  "@photoArbitrationsMonth": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "leads": {
         "type": "int"
       }
     }
