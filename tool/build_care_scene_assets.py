@@ -73,9 +73,18 @@ def rend(blender, groupe, dossier, res, samples, apercu, filtre):
         queue = (r.stdout.splitlines()[-30:] + r.stderr.splitlines()[-10:])
         sys.stderr.write("\n".join(queue) + "\n")
         sys.exit("Blender a échoué sur %s (code %d)" % (groupe, r.returncode))
+    alerte = False
     for ligne in r.stdout.splitlines():
         if ligne.startswith(("LUMIERE ", "PLANTE ", "SLOTS ")):
             print("   " + ligne, flush=True)
+        elif ligne.startswith("ATTENTION "):
+            # Le decor pose quelque chose devant la plante. On ne bloque pas
+            # le rendu — au constructeur de trancher — mais cela ne se perd
+            # pas dans la sortie de Blender.
+            sys.stderr.write("   " + ligne + "\n")
+            alerte = True
+    if alerte:
+        sys.stderr.flush()
 
 
 def emballe(groupe, dossier, qualite):

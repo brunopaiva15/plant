@@ -132,8 +132,13 @@ def rendre_indoor(res, samples, dossier, filtre):
             continue
         purge()
         bpy.context.scene.name = "indoor_" + nom
-        _, Rv, Uv, Cv = common.camera_fixe()
-        room.construire(nom, Rv, Uv, Cv)
+        cam, Rv, Uv, Cv = common.camera_fixe()
+        mobilier = room.construire(nom, Rv, Uv, Cv)
+        # Le decor ne doit rien poser devant la plante : la contrainte est a
+        # l'ecran, deux objets eloignes dans la scene s'y superposent.
+        fautifs = common.verifie_couloir(cam, mobilier)
+        if fautifs:
+            print("ATTENTION devant la plante : %s" % ", ".join(sorted(fautifs)), flush=True)
         chemin = os.path.join(dossier, "indoor", "light", nom + ".png")
         _rend(chemin, res, samples)
         print("LUMIERE %s -> %s" % (nom, chemin), flush=True)
@@ -145,8 +150,13 @@ def rendre_outdoor(res, samples, dossier, filtre):
             continue
         purge()
         bpy.context.scene.name = "outdoor_" + nom
-        _, Rv, Uv, Cv = common.camera_fixe()
-        outdoor.construire(nom, Rv, Uv, Cv)
+        cam, Rv, Uv, Cv = common.camera_fixe()
+        mobilier = outdoor.construire(nom, Rv, Uv, Cv)
+        # Le decor ne doit rien poser devant la plante : la contrainte est a
+        # l'ecran, deux objets eloignes dans la scene s'y superposent.
+        fautifs = common.verifie_couloir(cam, mobilier)
+        if fautifs:
+            print("ATTENTION devant la plante : %s" % ", ".join(sorted(fautifs)), flush=True)
         chemin = os.path.join(dossier, "outdoor", "light", nom + ".png")
         _rend(chemin, res, samples)
         print("LUMIERE outdoor/%s -> %s" % (nom, chemin), flush=True)

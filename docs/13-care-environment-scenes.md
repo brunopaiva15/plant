@@ -125,10 +125,24 @@ jardin botanique : pelouse sauge, massif de pleine terre là où la plante se
 pose, allée de gravier et pas japonais, palissade bordée de touffes
 fleuries, haie basse, un petit arbre, un arrosoir.
 
-Rien de tout cela ne croise le chemin de la plante. Le décor des deux
-scènes vit hors du couloir des six emplacements et hors de la tache de
-soleil : à quelque cran qu'elle se pose, la plante ne rencontre ni un
-meuble, ni un massif, ni une touffe.
+### Rien ne passe devant la plante
+
+La règle est **à l'écran, pas dans la pièce**. La vue est orthographique :
+deux objets éloignés de deux mètres s'y superposent parfaitement. Un
+lampadaire posé dans le coin opposé montait ainsi pile sous le pot à quatre
+emplacements sur six, et la plante avait l'air vissée dessus — une
+vérification en coordonnées monde ne voyait rien.
+
+`common.verifie_couloir` la tient maintenant à chaque rendu. Elle projette
+les sommets du mobilier — pas sa boîte englobante, qu'une plinthe ou un
+tapis rendent énorme — et signale ce qui recoupe la silhouette de la plante
+en étant plus proche de la caméra que l'emplacement concerné, d'au moins
+un demi-mètre. En deçà, l'objet est à la profondeur de l'emplacement : le
+signaler serait du bruit.
+
+Passer **derrière** la plante n'est pas une faute, c'est ce qui donne sa
+profondeur à la scène : la console du fond et ses cadres sont partiellement
+masqués quand la plante se pose au fond, et c'est très bien ainsi.
 
 ### Les six lumières
 

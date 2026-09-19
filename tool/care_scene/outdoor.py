@@ -27,6 +27,7 @@
 #
 # Rien ne s'execute a l'import.
 # ============================================================
+import bpy
 from mathutils import Vector
 import os, sys
 
@@ -273,6 +274,13 @@ def construire(nom_variante, Rv, Uv, Cv):
     _lointain(m)
     _haie(m)
     _pierres(m)
+    # Le mobilier est recense a la pose : c'est lui, et lui seul, que
+    # la verification du couloir regarde — le sol et les murs passent
+    # forcement devant la plante sans que cela veuille rien dire.
+    avant = set(bpy.context.scene.objects.keys())
     _decor(m)
+    mobilier = [bpy.context.scene.objects[n]
+                for n in set(bpy.context.scene.objects.keys()) - avant]
     _faisceau(v["faisceau"])
     _lumieres(v, Rv, Uv, Cv)
+    return mobilier

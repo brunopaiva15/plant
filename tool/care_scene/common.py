@@ -250,6 +250,94 @@ def monde(force, couleur=(0.85, 0.87, 0.86)):
     return w
 
 
+# ------------------------------------------------------------
+# le couloir de la plante : la contrainte est a l'ecran, pas dans la piece
+# ------------------------------------------------------------
+# L'enveloppe de la silhouette la plus large (le monstera) dans son image,
+# relative au point d'ancrage, mesuree sur le sprite livre. Deux objets
+# eloignes de deux metres dans la piece peuvent parfaitement se superposer
+# dans une vue orthographique : c'est ce qui avait mis un lampadaire pile
+# sous le pot. `build_care_scene_assets.py --couloir` la reverifie sur les
+# webp livres.
+ENVELOPPE_PLANTE = (-0.118, -0.176, 0.112, 0.015)
+
+# Le gueridon souleve la plante de cette fraction d'image (plateau - ancre).
+RELEVE_GUERIDON = -0.0716
+
+
+def rects_plante(cam):
+    """Pour chaque emplacement, le rectangle d'ecran que la plante peut
+    occuper et la distance de cet emplacement a la camera.
+
+    La projection depend du format de l'image : on le fixe au carre, comme
+    les couches le seront. Sans cela `world_to_camera_view` rend des y
+    compresses par le 16:9 par defaut de Blender — meme piege que dans
+    `exporte_slots`.
+    """
+    sc = bpy.context.scene
+    memo = (sc.render.resolution_x, sc.render.resolution_y)
+    sc.render.resolution_x = sc.render.resolution_y = 1024
+    bpy.context.view_layer.update()
+    ex0, ey0, ex1, ey1 = ENVELOPPE_PLANTE
+    out = []
+    for (x, y) in SLOTS.values():
+        sx, sy = projette(cam, (x, y, 0.0))
+        profondeur = (Vector((x, y, 0.0)) - cam.location).length
+        # au sol, et sur le gueridon qui souleve la plante
+        for dz in (0.0, RELEVE_GUERIDON):
+            out.append(((sx + ex0, sy + ey0 + dz, sx + ex1, sy + ey1 + dz), profondeur))
+    sc.render.resolution_x, sc.render.resolution_y = memo
+    bpy.context.view_layer.update()
+    return out
+
+
+def verifie_couloir(cam, objets, marge=0.5, pas=7):
+    """Les objets de [objets] qui se retrouveraient DEVANT la plante.
+
+    La contrainte est a l'ecran : dans une vue orthographique, deux objets
+    eloignes de deux metres dans la piece se superposent parfaitement. Un
+    lampadaire pose dans le coin oppose peut donc monter pile sous le pot —
+    c'est arrive, et rien ne le disait.
+
+    Passer derriere la plante n'est pas une faute : c'est ce qui donne sa
+    profondeur a la scene. Seul compte ce qui est plus pres de la camera que
+    l'emplacement dont il recoupe la silhouette.
+
+    On regarde les sommets, pas la boite englobante : une plinthe ou un
+    tapis sont de longues boites dont un coin frole la camera alors que rien
+    de leur matiere ne passe devant la plante. [pas] echantillonne les
+    maillages denses.
+
+    [marge] est la distance, en metres, au-dela de laquelle « devant » veut
+    dire quelque chose. La console du fond est a deux centimetres pres a la
+    profondeur de l'emplacement du milieu : la signaler serait du bruit. Le
+    lampadaire fautif, lui, etait deux metres et demi en avant.
+    """
+    rects = rects_plante(cam)
+    sc = bpy.context.scene
+    memo = (sc.render.resolution_x, sc.render.resolution_y)
+    sc.render.resolution_x = sc.render.resolution_y = 1024
+    bpy.context.view_layer.update()
+    fautifs = []
+    for ob in objets:
+        if ob is None or ob.type != "MESH":
+            continue
+        M = ob.matrix_world
+        sommets = ob.data.vertices
+        indices = range(0, len(sommets), pas if len(sommets) > 400 else 1)
+        for i in indices:
+            p = M @ sommets[i].co
+            d = (p - cam.location).length
+            fx, fy = projette(cam, p)
+            if any(d < prof - marge and r[0] <= fx <= r[2] and r[1] <= fy <= r[3]
+                   for r, prof in rects):
+                fautifs.append(ob.name)
+                break
+    sc.render.resolution_x, sc.render.resolution_y = memo
+    bpy.context.view_layer.update()
+    return sorted(set(fautifs))
+
+
 def eclairage_plante(centre, Rv, Uv, Cv):
     """Les trois lumieres du studio clay, posees autour de la plante : elle
     garde le meme eclat quelle que soit la variante de la piece — c'est le

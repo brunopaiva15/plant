@@ -5,11 +5,16 @@
 # pour que la plante reste le sujet. Le gueridon n'est pas bake ici : c'est
 # un prop (props.py), pose par l'application sur l'emplacement lumineux.
 #
-# Tout le decor vit hors du couloir des six emplacements — ils courent de
-# (1.15, 0.85) a (-0.50, 0.55), leur humidificateur les suit a gauche, et
-# la tache de soleil va de x = -1.39 a x = 0.04. Le mobilier tient donc au
-# mur du fond derriere eux, dans le coin avant droit, ou du cote du canape :
-# la plante ne rencontre jamais un meuble, a quelque cran qu'elle se pose.
+# Aucun meuble ne passe DEVANT la plante. La contrainte est a l'ecran, pas
+# dans la piece : la vue est orthographique, deux objets eloignes de deux
+# metres s'y superposent parfaitement. Un lampadaire pose dans le coin
+# oppose montait ainsi pile sous le pot a quatre emplacements sur six, et
+# la plante avait l'air vissee dessus. `common.verifie_couloir` le dit
+# maintenant a chaque rendu.
+#
+# Passer DERRIERE la plante n'est pas une faute : la console du fond et ses
+# cadres sont partiellement masques quand la plante se pose au fond, et
+# c'est ce qui donne sa profondeur a la scene.
 #
 # Les six variantes de lumiere partagent la meme geometrie ; seuls la
 # lumiere, la vitre et la tache de soleil au sol changent. La plante n'est
@@ -199,12 +204,13 @@ def _tapis(m):
 
 
 def _cadres(m):
-    # Trois cadres au mur du fond : deux du cote du coin salon, un au-dessus
-    # de la console. Ils habillent le mur sans jamais se retrouver derriere
-    # la plante, dont le couloir passe entre les deux groupes.
+    # Trois cadres au mur du fond : deux du cote du coin salon, un dans le
+    # coin droit. Leur x d'ecran tombe de part et d'autre de la bande que la
+    # plante occupe — le couloir des emplacements passe entre les deux
+    # groupes.
     for nom, x, z, lx, lz in (("A", -1.50, 1.48, 0.62, 0.78),
                               ("B", -0.82, 1.34, 0.46, 0.56),
-                              ("C", 1.42, 1.52, 0.70, 0.50)):
+                              ("C", 1.90, 1.52, 0.62, 0.46)):
         y = PIECE_Y - 0.035
         boite("Cadre_%s" % nom, (x, y, z), (lx, 0.035, lz), m["cadre"], 0.012)
         boite("Toile_%s" % nom, (x, y - 0.022, z), (lx - 0.09, 0.012, lz - 0.09), m["toile"], 0.006)
@@ -232,9 +238,12 @@ def _console(m):
 
 
 def _lampadaire(m):
-    # Dans le coin avant droit, hors de tout : un pied fin, un abat-jour
-    # clair. Il donne de la hauteur a un cote de la piece qui n'en a pas.
-    x, y = 1.82, -1.22
+    # A l'avant gauche : un pied fin, un abat-jour clair. La position est
+    # contrainte a l'ecran, pas dans la piece — pose a droite, son mat
+    # montait pile sous le pot a quatre emplacements sur six et la plante
+    # avait l'air vissee dessus. Ici il degage la bande que la plante occupe
+    # (x ecran 0,37 a 0,81) et son abat-jour passe sous la fenetre.
+    x, y = -0.60, -1.78
     base = revolve("Lampe_Base", [(0.0, 0.0), (0.17, 0.0), (0.175, 0.018),
                                   (0.05, 0.030), (0.0, 0.030)], 40, [m["laiton"]], 30.0)
     base.location = (x, y, 0.0)
@@ -243,6 +252,17 @@ def _lampadaire(m):
     abat = revolve("Lampe_Abat", [(0.0, 0.0), (0.20, 0.0), (0.155, 0.26), (0.0, 0.26)],
                    40, [m["toile"]], 30.0)
     abat.location = (x, y, 1.28)
+
+
+def _pouf(m):
+    # Le coin avant droit se lit vide depuis que le lampadaire l'a quitte.
+    # Un pouf bas le remplit sans risque : a cette distance de la camera,
+    # son sommet se projette bien sous le pot, a quelque emplacement que la
+    # plante se pose.
+    pouf = revolve("Pouf", [(0.0, 0.0), (0.26, 0.0), (0.285, 0.05),
+                            (0.275, 0.28), (0.24, 0.34), (0.0, 0.35)],
+                   44, [m["tissu_clair"]], 30.0)
+    pouf.location = (1.60, -1.45, 0.0)
 
 
 def _panier(m):
@@ -260,6 +280,7 @@ def _decor(m):
     _cadres(m)
     _console(m)
     _lampadaire(m)
+    _pouf(m)
     _panier(m)
 
 
@@ -302,7 +323,14 @@ def construire(nom_variante, Rv, Uv, Cv):
     _murs(m)
     _fenetre(m)
     _rideau(m)
+    # Le mobilier est recense a la pose : c'est lui, et lui seul, que
+    # la verification du couloir regarde — le sol et les murs passent
+    # forcement devant la plante sans que cela veuille rien dire.
+    avant = set(bpy.context.scene.objects.keys())
     _salon(m)
     _decor(m)
+    mobilier = [bpy.context.scene.objects[n]
+                for n in set(bpy.context.scene.objects.keys()) - avant]
     _faisceau(v["faisceau"])
     _lumieres(v, Rv, Uv, Cv)
+    return mobilier
