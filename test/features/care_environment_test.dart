@@ -309,12 +309,11 @@ void main() {
       }
     });
 
-    test('les plantes d\'intérieur et succulentes restent dedans', () {
-      for (final cat in [SpeciesCategory.indoor, SpeciesCategory.succulent]) {
+    test('les plantes d\'intérieur restent dedans, rustiques ou non', () {
+      for (final p in [base, avec(survivalMinC: -15), avec(outdoorFriendly: true)]) {
         expect(
-          environmentFor(base, cat),
+          environmentFor(p, SpeciesCategory.indoor),
           CareEnvironmentKind.indoorRoom,
-          reason: cat.name,
         );
       }
     });
@@ -357,15 +356,20 @@ void main() {
       }
     });
 
-    test('les succulentes restent dedans, même rustiques', () {
-      // Choix assumé : le catalogue en compte deux fois plus de plantes
-      // d'appartement que de rustiques.
+    test('les succulentes suivent la même règle que les aromatiques', () {
+      // Un sempervivum passe l'hiver sur un toit.
       expect(
         environmentFor(avec(survivalMinC: -15), SpeciesCategory.succulent),
-        CareEnvironmentKind.indoorRoom,
+        CareEnvironmentKind.outdoorPatch,
       );
+      // Une echeveria passe l'été dehors en pot et rentre.
       expect(
         environmentFor(avec(outdoorFriendly: true), SpeciesCategory.succulent),
+        CareEnvironmentKind.balcony,
+      );
+      // Une euphorbe de collection ne sort pas.
+      expect(
+        environmentFor(base, SpeciesCategory.succulent),
         CareEnvironmentKind.indoorRoom,
       );
     });
