@@ -3760,10 +3760,46 @@ Un second écart accompagne le premier : 24 842 pas de 32 images font
 variable que le point 4 ci-dessus demande de trancher « une fois pour
 toutes », et elle a été changée sans qu'on le décide.
 
-Le diagnostic est donc **un entraînement tronqué**, pas une recette dégradée,
-et il se répare en reprenant : `train.py` redémarre à `initial_epoch` depuis
-son point de sauvegarde, et l'arrêt anticipé restaure les meilleurs poids.
-Rien n'est perdu.
+Le diagnostic est donc **un entraînement tronqué**, pas une recette dégradée.
+
+#### Mais la reprise ne le répare pas : elle coûte 2,3 points
+
+Huit époques de plus ont été lancées depuis le point de sauvegarde, sept
+heures de calcul. Résultat :
+
+| | val_accuracy | val_loss |
+|---|---|---|
+| époque 12, avant la reprise | **0,4950** | **2,5084** |
+| époque 15 | 0,4612 | — |
+| époque 20, fin de la reprise | 0,4723 | 2,7272 |
+
+La reprise **repart 3,4 points plus bas**, remonte de ~0,003 par époque, et
+finit encore **2,3 points sous son point de départ** — avec une perte de
+validation nettement pire, 2,73 contre 2,51. Elle ne s'est pas contentée de
+plonger : elle s'est installée dans un moins bon creux.
+
+La cause est à `train.py:705` : `model.compile(optimizer=Adam(args.fine_lr))`
+construit un optimiseur **neuf**. Les poids sont restaurés, les moments
+accumulés d'Adam ne le sont pas, et un réseau convergé n'aime pas qu'on lui
+remette un optimiseur à zéro.
+
+Deux effets de bord vont avec, et ils comptent :
+
+- `_Checkpoint.on_epoch_end` réécrit `fine.weights.h5` à chaque époque. **Les
+  poids d'avant la reprise sont perdus** — on ne peut plus couper un nouveau
+  masque dans la tête qui a produit l'Indoor livré. Seuls les `.tflite`
+  déjà exportés subsistent ;
+- l'arrêt anticipé est reconstruit lui aussi, donc son `restore_best_weights`
+  restaure le meilleur **de la reprise**, pas celui d'avant.
+
+La reprise reste bonne pour ce qu'elle a été écrite — une machine qui
+s'endort, un run tué, reprendre là où on en était. Elle ne l'est pas pour
+**prolonger** un entraînement qui a convergé : mieux vaut relancer une passe
+entière avec le bon nombre d'époques que d'en ajouter après coup.
+
+Et la question de départ reste donc ouverte : on ne saura pas par cette voie
+si douze époques suffisaient. Il faudra une passe complète, `--batch 128`,
+et assez d'époques pour que la validation décroche d'elle-même.
 
 Le compte d'Iris Indoor tombe alors juste, et c'est la première fois :
 

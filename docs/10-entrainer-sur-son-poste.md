@@ -258,6 +258,15 @@ L'entraînement est **reprenable** : relancer la même ligne repart du dernier
 point de sauvegarde (toutes les 200 lots). `--fine-epochs 0` évalue et
 exporte depuis un point de sauvegarde sans rien réentraîner.
 
+> **Reprendre n'est pas prolonger.** Seuls les poids sont restaurés : Adam
+> repart de moments nuls. Sur un réseau interrompu en route, c'est sans
+> conséquence ; sur un réseau qui a convergé, ça coûte cher. Mesuré le
+> 19 septembre 2026 — huit époques ajoutées après coup ont rendu un modèle
+> **2,3 points de validation sous son point de départ**, et `fine.weights.h5`
+> étant réécrit à chaque époque, les poids d'avant étaient perdus. Pour
+> allonger un entraînement, relancer une passe entière avec le bon nombre
+> d'époques.
+
 ## 5. Comparer, toujours à armes égales
 
 Les chiffres de deux `model.json` **ne se comparent pas** : ils viennent de
