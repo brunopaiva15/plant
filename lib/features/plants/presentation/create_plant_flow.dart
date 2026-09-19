@@ -412,6 +412,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         );
   }
 
+  /// Ce que la personne a fait de la décision affichée. Les deux gestes
+  /// qui contredisent Jev sont les seuls qui disent quelque chose de la
+  /// qualité de son arbitrage.
+  void _noteJevChoice(JevProductAction? after) =>
+      ref.read(jevIdentificationPolicyProvider).noteCandidateChosen(after);
+
+  void _noteJevOnlineSearch(JevProductAction? after) =>
+      ref.read(jevIdentificationPolicyProvider).noteOnlineSearch(after);
+
   /// La conclusion d'Iris seule, rendue sans attendre le réseau : c'est
   /// l'état montré tant que Jev n'a pas répondu.
   JevPipelineEvaluation? _localIdentificationEvaluation(
@@ -922,6 +931,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onRemovePhoto: _removeIdentificationPhoto,
               evaluation: _identificationEvaluation,
               localEvaluation: _localIdentificationEvaluation,
+              onChoiceMade: _noteJevChoice,
+              onOnlineSearchAsked: _noteJevOnlineSearch,
               genus: _identificationGenus,
               selectedScientificName: _chosen?.scientificName,
             ),
@@ -1053,6 +1064,8 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onRemovePhoto,
     this.evaluation,
     this.localEvaluation,
+    this.onChoiceMade,
+    this.onOnlineSearchAsked,
     this.genus,
     this.selectedScientificName,
   });
@@ -1082,6 +1095,11 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// l'arbitrage distant se fait attendre.
   final JevPipelineEvaluation? Function(List<IdentificationCandidate>)?
       localEvaluation;
+
+  /// Les deux gestes qui peuvent contredire la décision Jev affichée, pour
+  /// les compteurs : retenir une candidate, et chercher en ligne.
+  final ValueChanged<JevProductAction?>? onChoiceMade;
+  final ValueChanged<JevProductAction?>? onOnlineSearchAsked;
 
   /// Le genre à proposer au-dessus des espèces, décidé par la même politique.
   final GenusAnswer? Function(List<IdentificationCandidate>)? genus;
@@ -1120,13 +1138,19 @@ class _IdentificationSuggestions extends StatelessWidget {
         final hasSecondPhoto = paths.length > 1;
 
         Widget normalContent(JevPipelineEvaluation? state) {
+          final action = state?.decision?.action;
+          void pick(IdentificationCandidate c) {
+            onChoiceMade?.call(action);
+            onPick(c);
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (genre != null) ...[
                 GenusRow(
                   answer: genre,
-                  onUse: () => onPick(genusCandidate(genre, l10n.localeName)),
+                  onUse: () => pick(genusCandidate(genre, l10n.localeName)),
                 ),
                 const SizedBox(height: Space.xs),
               ],
@@ -1136,7 +1160,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                     CandidateRow(
                       candidate: c,
                       selected: c.scientificName == selectedScientificName,
-                      onUse: () => onPick(c),
+                      onUse: () => pick(c),
                     ),
                 ],
               ),
@@ -1161,7 +1185,10 @@ class _IdentificationSuggestions extends StatelessWidget {
                   label: l10n.searchOnline,
                   style: FloraButtonStyle.ghost,
                   size: FloraButtonSize.small,
-                  onPressed: onSearchOnline,
+                  onPressed: () {
+                    onOnlineSearchAsked?.call(action);
+                    onSearchOnline!();
+                  },
                 ),
               ],
             ],
@@ -1169,6 +1196,12 @@ class _IdentificationSuggestions extends StatelessWidget {
         }
 
         Widget uncertainContent() {
+          const after = JevProductAction.keepUncertain;
+          void pick(IdentificationCandidate c) {
+            onChoiceMade?.call(after);
+            onPick(c);
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1177,7 +1210,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                 const SizedBox(height: Space.sm),
                 GenusRow(
                   answer: genre,
-                  onUse: () => onPick(genusCandidate(genre, l10n.localeName)),
+                  onUse: () => pick(genusCandidate(genre, l10n.localeName)),
                 ),
               ],
               if (onSearchOnline != null) ...[
@@ -1185,7 +1218,10 @@ class _IdentificationSuggestions extends StatelessWidget {
                 FloraButton(
                   label: l10n.searchOnline,
                   expand: true,
-                  onPressed: onSearchOnline,
+                  onPressed: () {
+                    onOnlineSearchAsked?.call(after);
+                    onSearchOnline!();
+                  },
                 ),
               ],
               const SizedBox(height: Space.md),
@@ -1203,7 +1239,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                     CandidateRow(
                       candidate: c,
                       selected: c.scientificName == selectedScientificName,
-                      onUse: () => onPick(c),
+                      onUse: () => pick(c),
                     ),
                 ],
               ),

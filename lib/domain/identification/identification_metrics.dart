@@ -18,6 +18,14 @@ class IdentificationMetrics {
     this.confidenceSum = 0,
     this.remotePeriod = '',
     this.remoteInPeriod = 0,
+    this.jevConsulted = 0,
+    this.jevIncidents = 0,
+    this.jevShowResult = 0,
+    this.jevAskAnotherPhoto = 0,
+    this.jevKeepUncertain = 0,
+    this.jevShowResultThenSearched = 0,
+    this.jevKeepUncertainThenPicked = 0,
+    this.jevLatencyMsSum = 0,
   });
 
   /// Identifications demandées (hors cache).
@@ -47,6 +55,44 @@ class IdentificationMetrics {
   final String remotePeriod;
   final int remoteInPeriod;
 
+  /// Arbitrages Jev réellement partis sur le réseau. Un scan qu'Iris juge
+  /// net, un appareil hors ligne ou une clé absente n'en produisent aucun.
+  final int jevConsulted;
+
+  /// Appels partis sans rien rendre : erreur, délai dépassé, réponse
+  /// illisible. Auxine est alors retombée sur la politique Iris locale.
+  final int jevIncidents;
+
+  /// Les trois décisions rendues, dans leur proportion.
+  final int jevShowResult;
+  final int jevAskAnotherPhoto;
+  final int jevKeepUncertain;
+
+  /// Jev a dit « montre le résultat », et la personne est quand même allée
+  /// chercher en ligne. C'est le signe d'un résultat présenté comme
+  /// exploitable sans l'être.
+  final int jevShowResultThenSearched;
+
+  /// Jev a refusé de conclure, et la personne a quand même retenu une
+  /// candidate. C'est le signe d'une prudence qui lui a coûté un geste.
+  final int jevKeepUncertainThenPicked;
+
+  /// Somme des durées d'appel, en millisecondes, pour la moyenne.
+  final int jevLatencyMsSum;
+
+  /// Arbitrages effectivement rendus, incidents exclus.
+  int get jevAnswered => jevShowResult + jevAskAnotherPhoto + jevKeepUncertain;
+
+  double get jevAverageLatencyMs => jevConsulted == 0 ? 0 : jevLatencyMsSum / jevConsulted;
+
+  /// Part des résultats montrés que la personne n'a pas jugés suffisants.
+  double get jevShowResultDoubtRate =>
+      jevShowResult == 0 ? 0 : jevShowResultThenSearched / jevShowResult;
+
+  /// Part des incertitudes que la personne a tranchées elle-même.
+  double get jevKeepUncertainOverrideRate =>
+      jevKeepUncertain == 0 ? 0 : jevKeepUncertainThenPicked / jevKeepUncertain;
+
   double get localSuccessRate => local == 0 ? 0 : localAccepted / local;
   double get fallbackRate => local == 0 ? 0 : fallbacks / local;
   double get averageConfidence => total == 0 ? 0 : confidenceSum / total;
@@ -66,6 +112,14 @@ class IdentificationMetrics {
     double? confidenceSum,
     String? remotePeriod,
     int? remoteInPeriod,
+    int? jevConsulted,
+    int? jevIncidents,
+    int? jevShowResult,
+    int? jevAskAnotherPhoto,
+    int? jevKeepUncertain,
+    int? jevShowResultThenSearched,
+    int? jevKeepUncertainThenPicked,
+    int? jevLatencyMsSum,
   }) =>
       IdentificationMetrics(
         total: total ?? this.total,
@@ -79,6 +133,16 @@ class IdentificationMetrics {
         confidenceSum: confidenceSum ?? this.confidenceSum,
         remotePeriod: remotePeriod ?? this.remotePeriod,
         remoteInPeriod: remoteInPeriod ?? this.remoteInPeriod,
+        jevConsulted: jevConsulted ?? this.jevConsulted,
+        jevIncidents: jevIncidents ?? this.jevIncidents,
+        jevShowResult: jevShowResult ?? this.jevShowResult,
+        jevAskAnotherPhoto: jevAskAnotherPhoto ?? this.jevAskAnotherPhoto,
+        jevKeepUncertain: jevKeepUncertain ?? this.jevKeepUncertain,
+        jevShowResultThenSearched:
+            jevShowResultThenSearched ?? this.jevShowResultThenSearched,
+        jevKeepUncertainThenPicked:
+            jevKeepUncertainThenPicked ?? this.jevKeepUncertainThenPicked,
+        jevLatencyMsSum: jevLatencyMsSum ?? this.jevLatencyMsSum,
       );
 
   Map<String, Object> toJson() => {
@@ -93,6 +157,14 @@ class IdentificationMetrics {
         'confidenceSum': confidenceSum,
         'remotePeriod': remotePeriod,
         'remoteInPeriod': remoteInPeriod,
+        'jevConsulted': jevConsulted,
+        'jevIncidents': jevIncidents,
+        'jevShowResult': jevShowResult,
+        'jevAskAnotherPhoto': jevAskAnotherPhoto,
+        'jevKeepUncertain': jevKeepUncertain,
+        'jevShowResultThenSearched': jevShowResultThenSearched,
+        'jevKeepUncertainThenPicked': jevKeepUncertainThenPicked,
+        'jevLatencyMsSum': jevLatencyMsSum,
       };
 
   static IdentificationMetrics fromJson(Map<String, dynamic> json) {
@@ -109,6 +181,14 @@ class IdentificationMetrics {
       confidenceSum: (json['confidenceSum'] as num?)?.toDouble() ?? 0,
       remotePeriod: (json['remotePeriod'] as String?) ?? '',
       remoteInPeriod: i('remoteInPeriod'),
+      jevConsulted: i('jevConsulted'),
+      jevIncidents: i('jevIncidents'),
+      jevShowResult: i('jevShowResult'),
+      jevAskAnotherPhoto: i('jevAskAnotherPhoto'),
+      jevKeepUncertain: i('jevKeepUncertain'),
+      jevShowResultThenSearched: i('jevShowResultThenSearched'),
+      jevKeepUncertainThenPicked: i('jevKeepUncertainThenPicked'),
+      jevLatencyMsSum: i('jevLatencyMsSum'),
     );
   }
 

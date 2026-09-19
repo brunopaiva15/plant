@@ -153,7 +153,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// Retenir une candidate, c'est l'enregistrer : l'appelant écrit l'espèce
   /// dès le retour. Si la personne l'a permis, les photos partent entraîner
   /// Iris — à côté, sans retenir la feuille.
-  void _use(IdentificationCandidate c) {
+  void _use(IdentificationCandidate c, [JevProductAction? after]) {
+    ref.read(jevIdentificationPolicyProvider).noteCandidateChosen(after);
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is CascadeIdentifier) {
       unawaited(ref.read(irisFeedbackRecorderProvider).record(IrisFeedback(
@@ -169,7 +170,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     Navigator.of(context).pop(c);
   }
 
-  Future<void> _searchOnline() async {
+  Future<void> _searchOnline([JevProductAction? after]) async {
+    ref.read(jevIdentificationPolicyProvider).noteOnlineSearch(after);
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is! CascadeIdentifier) return;
     setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language)));
@@ -299,20 +301,22 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     GenusAnswer? genus,
     JevPipelineEvaluation? state,
   ) {
+    final action = state?.decision?.action;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (genus != null) ...[
           GenusRow(
             answer: genus,
-            onUse: () => _use(genusCandidate(genus, l10n.localeName)),
+            onUse: () =>
+                _use(genusCandidate(genus, l10n.localeName), action),
           ),
           const SizedBox(height: Space.xs),
         ],
         FloraGroup(
           children: [
             for (final c in results)
-              CandidateRow(candidate: c, onUse: () => _use(c)),
+              CandidateRow(candidate: c, onUse: () => _use(c, action)),
           ],
         ),
         if (state?.offer == SecondPhotoOffer.prominent &&
@@ -336,7 +340,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               label: l10n.searchOnline,
               expand: true,
               style: FloraButtonStyle.ghost,
-              onPressed: _searchOnline,
+              onPressed: () => _searchOnline(action),
             )
           else
             Text(
@@ -364,7 +368,9 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
           const SizedBox(height: Space.sm),
           GenusRow(
             answer: genus,
-            onUse: () => _use(genusCandidate(genus, l10n.localeName)),
+            onUse: () => _use(
+                genusCandidate(genus, l10n.localeName),
+                JevProductAction.keepUncertain),
           ),
         ],
         if (_canSearchOnline) ...[
@@ -373,7 +379,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
             FloraButton(
               label: l10n.searchOnline,
               expand: true,
-              onPressed: _searchOnline,
+              onPressed: () => _searchOnline(JevProductAction.keepUncertain),
             )
           else
             Text(
@@ -394,7 +400,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         FloraGroup(
           children: [
             for (final c in results)
-              CandidateRow(candidate: c, onUse: () => _use(c)),
+              CandidateRow(
+                candidate: c,
+                onUse: () => _use(c, JevProductAction.keepUncertain),
+              ),
           ],
         ),
         _PhotoSourceNote(candidates: results),

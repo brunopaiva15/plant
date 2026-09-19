@@ -249,6 +249,35 @@ Le critère principal reste :
 
 > **Est-ce que Jev réduit les mauvaises décisions produit autour d'une identification incertaine ?**
 
+### Ce que l'appareil compte
+
+`IdentificationMetrics` tient les totaux de la cascade ; les arbitrages Jev
+y ont leurs propres compteurs, de la même nature : des nombres, sans espèce,
+sans photo, sans horodatage individuel, et qui ne quittent pas l'appareil.
+
+| Compteur | Ce qu'il dit |
+|---|---|
+| `jevConsulted` | arbitrages réellement partis sur le réseau |
+| `jevIncidents` | appels partis sans rien rendre |
+| `jevLatencyMsSum` | somme des durées, pour la moyenne |
+| `jevShowResult`, `jevAskAnotherPhoto`, `jevKeepUncertain` | répartition des décisions |
+| `jevShowResultThenSearched` | résultats montrés que la personne est allée vérifier en ligne |
+| `jevKeepUncertainThenPicked` | incertitudes qu'elle a tranchées elle-même |
+
+Les deux derniers sont les seuls qui répondent au critère principal, parce
+qu'ils enregistrent un désaccord entre la décision et le geste qui a suivi :
+
+- un fort `jevShowResultDoubtRate` signale des résultats présentés comme
+  exploitables sans l'être ;
+- un fort `jevKeepUncertainOverrideRate` signale une prudence qui coûte un
+  geste pour rien.
+
+Les autres décrivent l'activité, pas sa qualité. Un même écran laissant
+retoucher son choix, la suite d'une décision n'est comptée qu'une fois.
+
+Ces totaux se lisent sur l'écran caché **État des services**, sous les
+services eux-mêmes.
+
 ## Pipeline actuel
 
 Le chemin de production est :
@@ -319,7 +348,8 @@ Les interfaces de debug Jev ont été retirées du produit :
 - plus de bouton « Tester Jev » dans Profil ;
 - plus de JSON brut affiché dans l'application.
 
-La logique Jev reste couverte par les tests du service de décision.
+La logique Jev reste couverte par les tests du service de décision, et ses
+totaux se lisent sur l'écran caché décrit plus bas.
 
 ## Sécurité de la clé
 

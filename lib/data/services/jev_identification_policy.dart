@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../../core/config/jev_config.dart';
+import '../../domain/identification/identification_metrics.dart';
 import '../../domain/identification/identification_policy.dart';
 import '../../domain/identification/plant_identifier.dart';
 import 'jev_decision_service.dart';
@@ -57,13 +58,25 @@ class JevIdentificationPolicy {
     JevDecisionService? service,
     bool? configured,
     DateTime Function()? now,
+    IdentificationMetricsStore? metrics,
   })  : _service = service ?? JevDecisionService(),
         _configuredOverride = configured,
-        _now = now ?? DateTime.now;
+        _now = now ?? DateTime.now,
+        _metrics = metrics;
 
   final JevDecisionService _service;
   final bool? _configuredOverride;
   final DateTime Function() _now;
+
+  /// Les compteurs de la cascade, quand l'application en tient. Ce sont des
+  /// totaux : aucune espèce, aucune photo, aucun horodatage individuel.
+  final IdentificationMetricsStore? _metrics;
+
+  /// Un même écran laisse retoucher son choix. La suite d'une décision ne
+  /// se compte donc qu'une fois, sans quoi une personne indécise pèserait
+  /// plus lourd qu'une autre dans le taux.
+  bool _pickCounted = false;
+  bool _searchCounted = false;
 
   bool get _isConfigured => _configuredOverride ?? JevConfig.isConfigured;
 
@@ -232,6 +245,7 @@ class JevIdentificationPolicy {
     required int maxPhotos,
   }) async {
     final atPhotoLimit = photos >= maxPhotos;
+    final elapsed = Stopwatch()..start();
     try {
       final response = await _service
           .decide(
@@ -274,12 +288,14 @@ class JevIdentificationPolicy {
 
       final decision = _parseDecision(response, photos: photos, maxPhotos: maxPhotos);
       if (decision == null) {
+        _recordIncident(elapsed.elapsedMilliseconds);
         return _fallbackEvaluation(
           fallback,
           atPhotoLimit: atPhotoLimit,
           consultedJev: true,
         );
       }
+      _recordDecision(decision.action, elapsed.elapsedMilliseconds);
 
       return JevPipelineEvaluation(
         offer: decision.action == JevProductAction.askAnotherPhoto
@@ -290,12 +306,64 @@ class JevIdentificationPolicy {
         decision: decision,
       );
     } catch (_) {
+      _recordIncident(elapsed.elapsedMilliseconds);
       return _fallbackEvaluation(
         fallback,
         atPhotoLimit: atPhotoLimit,
         consultedJev: true,
       );
     }
+  }
+
+  void _recordDecision(JevProductAction action, int latencyMs) {
+    _pickCounted = false;
+    _searchCounted = false;
+    _update((m) => m.copyWith(
+          jevConsulted: m.jevConsulted + 1,
+          jevLatencyMsSum: m.jevLatencyMsSum + latencyMs,
+          jevShowResult: m.jevShowResult +
+              (action == JevProductAction.showResult ? 1 : 0),
+          jevAskAnotherPhoto: m.jevAskAnotherPhoto +
+              (action == JevProductAction.askAnotherPhoto ? 1 : 0),
+          jevKeepUncertain: m.jevKeepUncertain +
+              (action == JevProductAction.keepUncertain ? 1 : 0),
+        ));
+  }
+
+  void _recordIncident(int latencyMs) {
+    _update((m) => m.copyWith(
+          jevConsulted: m.jevConsulted + 1,
+          jevIncidents: m.jevIncidents + 1,
+          jevLatencyMsSum: m.jevLatencyMsSum + latencyMs,
+        ));
+  }
+
+  /// Ce que la personne a fait de la décision.
+  ///
+  /// Les deux gestes qui comptent sont ceux qui contredisent Jev : chercher
+  /// en ligne un résultat qu'il jugeait montrable, et retenir malgré tout
+  /// une candidate qu'il refusait de conclure. Le reste de l'écran ne dit
+  /// rien de la qualité de l'arbitrage.
+  void noteCandidateChosen(JevProductAction? after) {
+    if (after != JevProductAction.keepUncertain || _pickCounted) return;
+    _pickCounted = true;
+    _update((m) => m.copyWith(
+          jevKeepUncertainThenPicked: m.jevKeepUncertainThenPicked + 1,
+        ));
+  }
+
+  void noteOnlineSearch(JevProductAction? after) {
+    if (after != JevProductAction.showResult || _searchCounted) return;
+    _searchCounted = true;
+    _update((m) => m.copyWith(
+          jevShowResultThenSearched: m.jevShowResultThenSearched + 1,
+        ));
+  }
+
+  void _update(IdentificationMetrics Function(IdentificationMetrics) change) {
+    final store = _metrics;
+    if (store == null) return;
+    unawaited(store.write(change(store.read())));
   }
 
   /// Un appel qui n'a rien rendu : on oublie le résultat pour que la
