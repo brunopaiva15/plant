@@ -10,6 +10,7 @@ import 'app/orientation_lock.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/sync_coordinator.dart';
+import 'app/window_probe.dart';
 import 'core/l10n/l10n.dart';
 import 'core/config/app_version.dart';
 import 'core/config/supabase_config.dart';
@@ -38,6 +39,10 @@ Future<void> main() async {
   // fenêtre au lieu d'être décidé ici une fois pour toutes ; les raisons sont
   // dans `app/orientation_lock.dart`.
   await OrientationLock().attach();
+
+  // Relevé des cotes de la fenêtre dans la console, sur demande :
+  // `--dart-define=WINDOW_DEBUG=true`. Sans cela, rien ne s'écrit.
+  WindowProbe.attachIfRequested();
 
   // La version vient du binaire, jamais d'une constante recopiée : c'est
   // `pubspec.yaml` qui la fixe, et les deux plateformes l'y prennent déjà.

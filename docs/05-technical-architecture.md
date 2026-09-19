@@ -199,6 +199,25 @@ deçà, iOS applique ses replis de compatibilité : la fenêtre n'atteint pas le
 bords de l'écran intérieur et reste tenue en une colonne. La cible de
 déploiement, elle, ne bouge pas : iOS 17.
 
+Pour relever les cotes d'une pose qu'on n'a pas sous la main, une sonde écrit
+la fenêtre dans la console à chaque changement — taille, marges sûres, écran,
+nombre de vues, pli — et rien par défaut :
+
+```bash
+flutter run --dart-define=WINDOW_DEBUG=true   # appareil, simulateur
+flutter run -d chrome                         # puis ?window dans l'adresse
+```
+
+`app/window_probe.dart`. Elle sert surtout à trancher une question ouverte :
+Flutter ne remplit `MediaQuery.displayFeatures` que sur Android — `dart:ui` le
+dit —, donc sur iOS la liste est vide et rien ne dit où passe le pli. Tant
+qu'il en sera ainsi, une mise en page qui s'aligne sur la charnière demandera
+un canal natif, comme ceux qui existent déjà
+(`ios/Runner/HomeClimateChannel.swift`, `HapticsChannel.swift`). Une
+proposition est ouverte chez Flutter pour alimenter ces display features
+depuis les *reserved regions* d'iOS 27.1 (flutter/flutter#192515) ; si elle
+atterrit, le canal devient inutile.
+
 Ce qui reste à faire quand l'appareil sera là (23 octobre 2026) : les visuels
 du magasin pour l'écran intérieur (`store/README.md`) et, si la place le
 justifie, une famille de widget plus grande que `systemMedium`.
@@ -220,6 +239,8 @@ justifie, une famille de widget plus grande que `systemMedium`.
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
 - `test/app/orientation_lock_test.dart` : le verrou de portrait posé et retiré
   quand la fenêtre change de taille en cours de séance (pliable).
+- `test/app/window_probe_test.dart` : la sonde de fenêtre reste muette tant
+  qu'on ne la demande pas.
 
 ## La météo (`domain/weather/`, `features/weather/`)
 Un seul appel sert tout : `weatherWindowProvider` demande trois jours passés,
