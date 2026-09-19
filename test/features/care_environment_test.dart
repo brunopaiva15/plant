@@ -156,13 +156,29 @@ void main() {
         dedans.airflowOriginFraction,
         CareEnvironmentSlots.airflow['indoor'],
       );
-      final dehors = careEnvironmentSpec(
-        profile: avec(airflow: AirflowPreference.sheltered),
+      // Un arbre rustique va en pleine terre : l'air passe au-dessus de la
+      // haie. Non rustique, il vit en pot au balcon, et l'air vient du vide
+      // par-dessus le garde-corps — trois décors, trois ouvertures.
+      final jardin = careEnvironmentSpec(
+        profile: avec(
+          airflow: AirflowPreference.sheltered,
+          survivalMinC: -15,
+        ),
         category: SpeciesCategory.tree,
       );
+      expect(jardin.environment, CareEnvironmentKind.outdoorPatch);
       expect(
-        dehors.airflowOriginFraction,
+        jardin.airflowOriginFraction,
         CareEnvironmentSlots.airflow['outdoor'],
+      );
+      final balcon = careEnvironmentSpec(
+        profile: avec(airflow: AirflowPreference.sheltered),
+        category: SpeciesCategory.fruit,
+      );
+      expect(balcon.environment, CareEnvironmentKind.balcony);
+      expect(
+        balcon.airflowOriginFraction,
+        CareEnvironmentSlots.airflow['balcony'],
       );
     });
   });
