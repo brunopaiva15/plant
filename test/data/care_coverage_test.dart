@@ -99,4 +99,12 @@ void main() {
 /// n'avait pas de fiche au catalogue et qui n'est plus exposée. Aucune
 /// résolution n'a régressé ; l'ancien plafond portait sur les 1 444 classes de
 /// l'Iris 8 et n'est pas comparable à celui-ci.
-const double _familyShareCeiling = 26182 / 33343;
+///
+/// Puis relevée de trois fiches, en toute connaissance de cause : les cinq
+/// classes qu'Iris Indoor exposait sans nom ont reçu la leur, et trois d'entre
+/// elles tombaient jusque-là sur un profil générique. Elles résolvent
+/// maintenant à la famille — une fiche qui monte de « rien » à « famille » fait
+/// monter cette part, et c'est un progrès, pas la régression que le cliquet
+/// surveille. Le niveau `generic` disparaît de l'instantané par la même
+/// occasion.
+const double _familyShareCeiling = 26185 / 33343;
