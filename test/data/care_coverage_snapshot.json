@@ -1,15 +1,14 @@
 {
   "totalSpecies": 33343,
   "resolution": {
-    "family": 26182,
-    "generic": 3,
+    "family": 26185,
     "genus": 7121,
     "species": 37
   },
   "toxicityByLevel": {
-    "family": 6041,
+    "family": 6042,
     "genus": 2909,
-    "none": 24380,
+    "none": 24379,
     "species": 13
   },
   "heavyProfiles": {
@@ -40,7 +39,7 @@
     "family:Lamiaceae": 476,
     "family:Lauraceae": 130,
     "family:Liliaceae": 183,
-    "family:Malvaceae": 289,
+    "family:Malvaceae": 290,
     "family:Myrtaceae": 534,
     "family:Onagraceae": 258,
     "family:Orchidaceae": 2016,
