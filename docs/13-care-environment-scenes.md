@@ -111,11 +111,24 @@ La règle est centralisée dans `environmentFor`, nulle part ailleurs :
 
 Un arbre ne finit jamais dans un salon. Les deux décors partagent caméra,
 bornes et direction de soleil : la table des emplacements vaut pour l'un
-comme pour l'autre. Tous deux restent en retrait — la plante est le sujet :
-la pièce meublée d'un guéridon et d'un petit coin salon qui ne croisent
-jamais son chemin, le jardin sobre (pelouse sauge, massif minéral là où
-elle se pose, palissade, haie basse, deux volumes lointains) plutôt qu'un
-jardin botanique qui lui disputerait l'œil.
+comme pour l'autre. Ils partagent aussi **la même dalle** : le jardin est
+une maquette posée, exactement comme la pièce, et le vide autour reste
+transparent. C'est ce qui leur donne le même statut dans la fiche — un
+jardin qui remplirait le cadre bord à bord ferait changer le décor de
+nature d'une espèce à l'autre, maquette d'un côté, photo pleine page de
+l'autre.
+
+Tous deux restent en retrait — la plante est le sujet. La pièce est
+habitée : plinthes, tapis, cadres au mur, console et ses livres,
+lampadaire, panier, un coin salon. Le jardin dit « dehors » sans devenir un
+jardin botanique : pelouse sauge, massif de pleine terre là où la plante se
+pose, allée de gravier et pas japonais, palissade bordée de touffes
+fleuries, haie basse, un petit arbre, un arrosoir.
+
+Rien de tout cela ne croise le chemin de la plante. Le décor des deux
+scènes vit hors du couloir des six emplacements et hors de la tache de
+soleil : à quelque cran qu'elle se pose, la plante ne rencontre ni un
+meuble, ni un massif, ni une touffe.
 
 ### Les six lumières
 

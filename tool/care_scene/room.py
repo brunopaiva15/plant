@@ -1,8 +1,15 @@
 # ============================================================
 # La piece du diorama : une dalle, deux murs, une fenetre a gauche, un
-# voilage, un coin salon — assez pour lire « une piece », assez sobre pour
-# que la plante reste le sujet. Le gueridon n'est pas bake ici : c'est un
-# prop (props.py), pose par l'application sur l'emplacement lumineux.
+# voilage, un coin salon et son decor — plinthes, tapis, cadres, console,
+# lampadaire, panier. Assez pour lire « une piece habitee », assez sobre
+# pour que la plante reste le sujet. Le gueridon n'est pas bake ici : c'est
+# un prop (props.py), pose par l'application sur l'emplacement lumineux.
+#
+# Tout le decor vit hors du couloir des six emplacements — ils courent de
+# (1.15, 0.85) a (-0.50, 0.55), leur humidificateur les suit a gauche, et
+# la tache de soleil va de x = -1.39 a x = 0.04. Le mobilier tient donc au
+# mur du fond derriere eux, dans le coin avant droit, ou du cote du canape :
+# la plante ne rencontre jamais un meuble, a quelque cran qu'elle se pose.
 #
 # Les six variantes de lumiere partagent la meme geometrie ; seuls la
 # lumiere, la vitre et la tache de soleil au sol changent. La plante n'est
@@ -52,6 +59,20 @@ def _materiaux(v):
         "bois": materiau("MAT_Bois", "C99A6B", rough=0.60, relief=0.010),
         "tringle": materiau("MAT_Tringle", "8A6B4F", rough=0.55, relief=0.006),
         "vitre": materiau_vitre(v["chaleur"], v["vitre"]),
+        # Le decor : un tapis, des cadres, une console, un lampadaire, un
+        # panier. Des tons voisins de ceux de la piece — ils meublent, ils
+        # ne parlent pas.
+        "tapis": materiau("MAT_Tapis", "E2D6BE", rough=0.86, relief=0.024),
+        "tapis_motif": materiau("MAT_TapisMotif", "CBBC9F", rough=0.86, relief=0.024),
+        "toile": materiau("MAT_Toile", "EDE4D4", rough=0.72, relief=0.008),
+        "encre": materiau("MAT_Encre", "B7C4B4", rough=0.74, relief=0.008),
+        "laiton": materiau("MAT_Laiton", "C2A878", rough=0.42, relief=0.004),
+        "bois_clair": materiau("MAT_BoisClair", "D7BE9B", rough=0.62, relief=0.010),
+        "osier": materiau("MAT_Osier", "D2B98E", rough=0.78, relief=0.026),
+        "livre_a": materiau("MAT_LivreA", "A9BE99", rough=0.72, relief=0.010),
+        "livre_b": materiau("MAT_LivreB", "D9B79A", rough=0.72, relief=0.010),
+        "livre_c": materiau("MAT_LivreC", "BFC7D2", rough=0.72, relief=0.010),
+        "ceramique": materiau("MAT_Ceramique", "E7DCC9", rough=0.50, relief=0.006),
     }
 
 
@@ -155,6 +176,93 @@ def _salon(m):
     ob.location = (-1.05, -1.55, 0.0)
 
 
+# Les zones que le decor ne touche jamais : les six emplacements courent sur
+# une droite de (1.15, 0.85) a (-0.50, 0.55), leur humidificateur les suit a
+# gauche, et la tache de soleil va de x = -1.39 a x = 0.04. Tout ce qui est
+# pose ici vit ailleurs : le long du mur du fond derriere les emplacements,
+# dans le coin avant droit, ou du cote du canape.
+def _plinthes(m):
+    # Une plinthe au pied des deux murs : c'est le detail qui fait qu'une
+    # boite blanche devient une piece.
+    boite("Plinthe_Fond", (0.0, PIECE_Y - 0.025, 0.055),
+          (2 * PIECE_X, 0.05, 0.11), m["cadre"], 0.008)
+    boite("Plinthe_Gauche", (-PIECE_X + 0.025, 0.0, 0.055),
+          (0.05, 2 * PIECE_Y, 0.11), m["cadre"], 0.008)
+
+
+def _tapis(m):
+    # Devant le canape, loin des emplacements et de la tache de soleil. Une
+    # bordure plus foncee suffit a le lire comme un tapis et pas comme une
+    # plaque.
+    boite("Tapis", (-1.12, -1.05, 0.010), (1.66, 1.30, 0.020), m["tapis_motif"], 0.012)
+    boite("Tapis_Champ", (-1.12, -1.05, 0.021), (1.48, 1.12, 0.020), m["tapis"], 0.010)
+
+
+def _cadres(m):
+    # Trois cadres au mur du fond : deux du cote du coin salon, un au-dessus
+    # de la console. Ils habillent le mur sans jamais se retrouver derriere
+    # la plante, dont le couloir passe entre les deux groupes.
+    for nom, x, z, lx, lz in (("A", -1.50, 1.48, 0.62, 0.78),
+                              ("B", -0.82, 1.34, 0.46, 0.56),
+                              ("C", 1.42, 1.52, 0.70, 0.50)):
+        y = PIECE_Y - 0.035
+        boite("Cadre_%s" % nom, (x, y, z), (lx, 0.035, lz), m["cadre"], 0.012)
+        boite("Toile_%s" % nom, (x, y - 0.022, z), (lx - 0.09, 0.012, lz - 0.09), m["toile"], 0.006)
+        boite("Trait_%s" % nom, (x, y - 0.030, z - 0.04), (lx - 0.20, 0.010, lz * 0.34), m["encre"], 0.006)
+
+
+def _console(m):
+    # Une console basse contre le mur du fond, a droite : elle ferme la
+    # piece de ce cote et donne une echelle au mur nu. Elle reste derriere
+    # les emplacements (y = 1.62 contre 0.85 au plus proche).
+    y = 1.62
+    boite("Console_Plateau", (1.42, y, 0.66), (1.26, 0.34, 0.05), m["bois_clair"], 0.014)
+    boite("Console_Tablette", (1.42, y, 0.30), (1.16, 0.30, 0.04), m["bois_clair"], 0.012)
+    for i, x in enumerate((0.85, 1.99)):
+        boite("Console_Joue_%d" % i, (x, y, 0.33), (0.05, 0.32, 0.66), m["bois_clair"], 0.012)
+    # Trois livres debout et un petit vase : de la vie, pas une nature morte.
+    for i, (x, h, ep, mat) in enumerate(((1.02, 0.26, 0.05, "livre_a"),
+                                         (1.08, 0.23, 0.04, "livre_b"),
+                                         (1.13, 0.27, 0.05, "livre_c"))):
+        boite("Livre_%d" % i, (x, y, 0.69 + h / 2), (ep, 0.20, h), m[mat], 0.008)
+    vase = revolve("Vase", [(0.0, 0.0), (0.085, 0.0), (0.095, 0.05), (0.070, 0.15),
+                            (0.055, 0.21), (0.062, 0.24), (0.050, 0.25), (0.0, 0.25)],
+                   40, [m["ceramique"]], 30.0)
+    vase.location = (1.78, y, 0.685)
+
+
+def _lampadaire(m):
+    # Dans le coin avant droit, hors de tout : un pied fin, un abat-jour
+    # clair. Il donne de la hauteur a un cote de la piece qui n'en a pas.
+    x, y = 1.82, -1.22
+    base = revolve("Lampe_Base", [(0.0, 0.0), (0.17, 0.0), (0.175, 0.018),
+                                  (0.05, 0.030), (0.0, 0.030)], 40, [m["laiton"]], 30.0)
+    base.location = (x, y, 0.0)
+    tube_along("Lampe_Pied", [(x, y, 0.03), (x, y, 1.30)], [0.018, 0.016],
+               mat=m["laiton"], seg=16, cap=3)
+    abat = revolve("Lampe_Abat", [(0.0, 0.0), (0.20, 0.0), (0.155, 0.26), (0.0, 0.26)],
+                   40, [m["toile"]], 30.0)
+    abat.location = (x, y, 1.28)
+
+
+def _panier(m):
+    # Un panier d'osier a cote du canape : rond, bas, il casse les angles
+    # droits du mobilier.
+    p = revolve("Panier", [(0.0, 0.0), (0.20, 0.0), (0.225, 0.03), (0.245, 0.24),
+                           (0.235, 0.26), (0.215, 0.245), (0.195, 0.03), (0.0, 0.02)],
+                44, [m["osier"]], 30.0)
+    p.location = (-1.78, -0.52, 0.0)
+
+
+def _decor(m):
+    _plinthes(m)
+    _tapis(m)
+    _cadres(m)
+    _console(m)
+    _lampadaire(m)
+    _panier(m)
+
+
 def _faisceau(force):
     if force <= 0.0:
         return
@@ -195,5 +303,6 @@ def construire(nom_variante, Rv, Uv, Cv):
     _fenetre(m)
     _rideau(m)
     _salon(m)
+    _decor(m)
     _faisceau(v["faisceau"])
     _lumieres(v, Rv, Uv, Cv)
