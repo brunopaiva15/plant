@@ -3394,7 +3394,57 @@ l'Iris 8 ne les exposait pas davantage.
 
 Il reste donc **16 noms d'intérieur hors d'atteinte** au lieu de 44 : les
 trois ci-dessus et treize des vingt-sept. Plus aucune perte d'écriture, rien
-que la dette de collecte.
+que la dette de collecte — **contre `phase1_species.txt`**, et c'est la
+réserve qui compte : voir plus bas.
+
+#### Trois plantes du salon, et le troisième trou du même masque
+
+Le soir de la livraison, trois plantes photographiées dans l'application :
+un **frangipanier**, une **Alocasia 'Jacklyn'**, un **avocatier**. Aucune
+reconnue par Iris Indoor, toutes trois nommées par Pl@ntNet.
+
+La cascade a fait ce qu'il fallait — elle n'a affirmé aucune plante
+d'appartement fausse, elle est passée au repli. Ce n'est donc pas le défaut
+du § 12.7, c'est de la **couverture** : le modèle n'a aucune sortie pour
+elles.
+
+| | au catalogue de collecte | dans le masque |
+|---|---|---|
+| *Plumeria obtusa* | oui | non — seule *P. rubra* est exposée |
+| *Persea americana* | oui | non |
+| *Alocasia scalprum* | **non** | non — jamais collectée |
+
+Le balayage qui suit donne l'ampleur : **55 fiches que l'application curate
+en `indoor` ou `succulent` sont collectables et hors du masque** — *Calathea
+orbifolia*, *Araucaria heterophylla*, *Agave attenuata*, sept *Asplenium* et
+*Dryopteris*, une douzaine d'*Echeveria* et de *Kalanchoe*. Cent
+quatre-vingt-quinze autres ne sont même pas dans `plants.csv`.
+
+**Mais aucune des trois plantes du salon n'est dans ces 55**, et c'est la
+vraie leçon. *Persea americana* est curatée `SpeciesCategory.fruit` :
+l'avocatier qu'on fait pousser d'un noyau sur un rebord de fenêtre est rangé
+au rayon fruitier. *Plumeria obtusa* n'est pas curatée du tout.
+
+**Les catégories éditoriales de l'application ne décrivent pas ce que les
+gens gardent chez eux.** Le masque a été bâti sur une liste
+(`cible_interieur_500.tsv`), rapiécé avec `phase1_species.txt`, puis mesuré
+contre les catégories du catalogue : trois sources, trois trous, et chacune
+répond à une question légèrement différente de celle qui compte.
+
+Ce qu'il faut en tirer pour le masque suivant : **une règle, pas une liste.**
+Tout ce que la tête a appris et dont l'application a une fiche, moins ce qui
+est franchement sauvage, puis deux ou trois tailles mesurées sur la courbe du
+§ 6.7 bis — elle chiffre le prix à 0,22-0,35 point de top-1 par tranche de
+cent espèces exposées. Passer de 336 à ~600 coûterait moins d'un point et
+rendrait ces 55, plus l'avocatier et le frangipanier.
+
+Et une action qui ne dépend d'aucun modèle : **`alocasia-scalprum` manque à
+`plants.csv`**, donc n'a jamais été collectée, donc ne sera apprise par
+aucun entraînement. Aucun masque ne la rendra tant que la ligne n'existe pas.
+
+> **n = 3**, et des photos de salon plutôt qu'un jeu de test. Ça nomme une
+> catégorie de défaut, ça n'en donne pas la fréquence — exactement comme les
+> quatre scans du § 13.3. Le terme manquant reste le chantier 2.
 
 #### Le verdict : le réseau perd, le produit gagne
 
