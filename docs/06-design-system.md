@@ -521,6 +521,45 @@ Deux vignettes de la même photo peuvent se trouver sur la fiche — la bande
 Croissance et le journal — : chacune a son nom de héros (`growth-` et
 `photo-`), et la visionneuse reçoit celui de la vignette d'où elle part.
 
+## La page du diagnostic (`features/diagnosis/presentation/diagnosis_screen.dart`)
+« Ma plante a un problème » était une feuille tirée du bas de la fiche : un
+viseur n'y tenait pas, et le compte rendu — cinq pistes, leurs explications,
+leurs gestes — défilait dans une demi-hauteur d'écran. C'est une page,
+poussée depuis la fiche (`/plants/:id/diagnosis`), et elle suit les trois
+temps du geste sans jamais changer d'écran.
+
+**Montrer.** Le viseur occupe le haut de la page, en 4:5, comme partout où
+l'on photographie une plante : on vise la feuille malade, on touche le cadre.
+Dessous, les trois places d'une analyse — ce qui est pris, ce qui reste ; la
+première libre mène à la galerie, les autres ne font que dire combien il en
+reste. Sans caméra — refus, appareil sans viseur, test —, le cadre garde son
+invite et ouvre l'appareil du système.
+
+Puis ce qu'on décrit, et ce qu'on est allé vérifier de sa main : une carte par
+sujet, tuile d'emoji et teinte comprises, comme les volets de la fiche
+d'entretien — la terre en terre cuite, les racines en sauge, la lumière en
+ocre, les insectes en rose, l'air autour de la plante en bleu. Rien n'est
+coché d'avance, et ce qui n'est pas coché ne part pas.
+
+**Chercher.** La photo passe au centre dans son propre halo, les quatre
+familles de problèmes tournant autour (`AnalysisWait`) ; le formulaire
+s'efface, la barre du bas avec lui.
+
+**Répondre.** Le compte rendu prend la page : le constat d'abord, sur une
+carte — crème, ou terre cuite quand il y a urgence, seule couleur qui change
+—, puis ce qui avait été signalé et coché, puis les pistes. Chaque piste porte
+la tuile de sa famille (l'illustration d'argile de la base sur sa teinte), son
+cran de vraisemblance, son explication, et ses gestes sous un filet ; celles
+que la base connaît mènent à leur fiche de l'encyclopédie. Quand rien ne
+tranche, la photo de plus se propose après les pistes, jamais à leur place
+(docs/16). Le même corps sert à la réouverture depuis le journal, à ceci près
+que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas
+une ligne du compte rendu.
+
+**La barre du bas ne porte qu'un geste à la fois** : analyser, puis
+enregistrer dans le journal. `test/features/diagnosis_screen_test.dart` tient
+le formulaire.
+
 ## La fenêtre des nouveautés (`features/whats_new/`)
 Ce que l'application montre après une mise à jour : un bandeau teinté qui
 s'éteint dans le fond de la page, la marque posée au centre sur une médaille

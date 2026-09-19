@@ -4317,7 +4317,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisHint.
   ///
   /// In fr, this message translates to:
-  /// **'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.'**
+  /// **'Les feuilles, la tige, la terre — de près et en entier. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
   /// No description provided for @diagnosisSymptomsHint.
@@ -4427,6 +4427,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dans la terre'**
   String get diagnosisBugsInSoil;
+
+  /// No description provided for @diagnosisSymptoms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Symptômes'**
+  String get diagnosisSymptoms;
+
+  /// No description provided for @diagnosisAround.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autour de la plante'**
+  String get diagnosisAround;
+
+  /// No description provided for @diagnosisPhotosFull.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trois photos au maximum.'**
+  String get diagnosisPhotosFull;
+
+  /// No description provided for @diagnosisRemovePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer cette photo'**
+  String get diagnosisRemovePhoto;
+
+  /// No description provided for @diagnosisFinding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Constat'**
+  String get diagnosisFinding;
 
   /// No description provided for @analyze.
   ///

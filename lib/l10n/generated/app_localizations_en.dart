@@ -2427,7 +2427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Photograph the leaves, stem or soil from several angles. Results are indicative only.';
+      'The leaves, the stem, the soil — close up and whole. Results are indicative only.';
 
   @override
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
@@ -2483,6 +2483,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisBugsInSoil => 'In the soil';
+
+  @override
+  String get diagnosisSymptoms => 'Symptoms';
+
+  @override
+  String get diagnosisAround => 'Around the plant';
+
+  @override
+  String get diagnosisPhotosFull => 'Three photos at most.';
+
+  @override
+  String get diagnosisRemovePhoto => 'Remove this photo';
+
+  @override
+  String get diagnosisFinding => 'Finding';
 
   @override
   String get analyze => 'Analyze';

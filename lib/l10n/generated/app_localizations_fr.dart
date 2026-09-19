@@ -2430,7 +2430,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.';
+      'Les feuilles, la tige, la terre — de près et en entier. Les résultats sont indicatifs.';
 
   @override
   String get diagnosisSymptomsHint => 'Ce que vous avez remarqué (facultatif)…';
@@ -2486,6 +2486,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisBugsInSoil => 'Dans la terre';
+
+  @override
+  String get diagnosisSymptoms => 'Symptômes';
+
+  @override
+  String get diagnosisAround => 'Autour de la plante';
+
+  @override
+  String get diagnosisPhotosFull => 'Trois photos au maximum.';
+
+  @override
+  String get diagnosisRemovePhoto => 'Retirer cette photo';
+
+  @override
+  String get diagnosisFinding => 'Constat';
 
   @override
   String get analyze => 'Analyser';

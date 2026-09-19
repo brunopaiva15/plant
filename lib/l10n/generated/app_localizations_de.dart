@@ -2432,7 +2432,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Fotografieren Sie Blätter, Stängel oder Erde aus mehreren Winkeln. Die Ergebnisse sind Hinweise.';
+      'Blätter, Stängel, Erde — aus der Nähe und ganz. Die Ergebnisse sind Hinweise.';
 
   @override
   String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
@@ -2488,6 +2488,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisBugsInSoil => 'In der Erde';
+
+  @override
+  String get diagnosisSymptoms => 'Symptome';
+
+  @override
+  String get diagnosisAround => 'Um die Pflanze herum';
+
+  @override
+  String get diagnosisPhotosFull => 'Höchstens drei Fotos.';
+
+  @override
+  String get diagnosisRemovePhoto => 'Dieses Foto entfernen';
+
+  @override
+  String get diagnosisFinding => 'Befund';
 
   @override
   String get analyze => 'Analysieren';
