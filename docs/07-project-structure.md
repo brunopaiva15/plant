@@ -25,7 +25,7 @@ lib/
 │   ├── identification/            PlantIdentifier (interface, candidats)
 │   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
 │   ├── cuttings/                  PropagationGuideKind et ses étapes, choix du guide (resolver), PropagationRefinement, PropagationGuideStore
-│   ├── location/                  LocationService (lieu de la météo, à l'onboarding)
+│   ├── location/                  LocationService (lieu de la météo : onboarding, réglages)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison et Google Home), MultiHomeClimateService, HomeClimateAdvisor
 │   ├── weather/                   WeatherService, WeatherAdvisor (pluie), WeatherTrend (intervalles), OutdoorAlertAdvisor (gel, chaleur), RegionClimate (zone de rusticité)
 │   ├── auth/                      AuthRepository, AppUser

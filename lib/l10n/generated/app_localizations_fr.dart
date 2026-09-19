@@ -1550,6 +1550,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Position indisponible. Vous pourrez choisir une ville dans Profil › Météo.';
 
   @override
+  String get locationUnavailable => 'Position indisponible.';
+
+  @override
   String get onbHomeTitle => 'Votre intérieur';
 
   @override
@@ -2206,7 +2209,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo, sans compte ni clé.';
+      'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo.';
 
   @override
   String get weatherPlace => 'Lieu';
