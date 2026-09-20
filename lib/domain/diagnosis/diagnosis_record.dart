@@ -42,6 +42,7 @@ class DiagnosisRecord {
     String? symptoms,
     this.photos = const [],
     this.observations = DiagnosisObservations.none,
+    this.answers = const [],
   }) : symptoms = symptoms != null && symptoms.trim().isNotEmpty ? symptoms.trim() : null;
 
   /// Clé sous laquelle le compte rendu vit dans `PlantAction.metadata`. Les
@@ -64,12 +65,18 @@ class DiagnosisRecord {
   /// mené aux pistes, et la photo n'en montre rien.
   final DiagnosisObservations observations;
 
+  /// Ce que le service avait demandé, et ce qu'on lui a répondu. Gardé pour
+  /// la même raison que les symptômes : c'est une part de ce qui a mené aux
+  /// pistes, et le compte rendu ne se relit pas sans elle.
+  final List<DiagnosisAnswer> answers;
+
   Map<String, Object?> toJson() => {
         'version': 1,
         ...diagnosis.toJson(),
         if (symptoms != null && symptoms!.isNotEmpty) 'symptoms': symptoms,
         if (photos.isNotEmpty) 'photos': [for (final p in photos) p.toJson()],
         if (observations.isNotEmpty) 'observations': observations.toJson(),
+        if (answers.isNotEmpty) 'answers': [for (final a in answers) a.toJson()],
       };
 
   /// Le compte rendu porté par une entrée du journal, ou `null` pour une
@@ -92,6 +99,10 @@ class DiagnosisRecord {
       observations: json['observations'] is Map
           ? DiagnosisObservations.fromJson((json['observations'] as Map).cast<String, Object?>())
           : DiagnosisObservations.none,
+      answers: [
+        for (final a in json['answers'] is List ? json['answers'] as List : const [])
+          if (a is Map) ?DiagnosisAnswer.fromJson(a.cast<String, Object?>()),
+      ],
     );
   }
 }

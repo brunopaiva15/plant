@@ -360,6 +360,19 @@ des racines jamais regardées ne se lève pas en cadrant mieux.
 `normal_phenomenon` dit qu'une piste n'est pas un problème (docs/09, § 9) :
 une vue de plus ne la départagera pas d'un souci qui n'existe pas.
 
+### Ce que la décision commande, et dans quel ordre
+
+`ask_another_photo` et `keep_uncertain` disent tous deux que rien ne tranche.
+Ce qui manque n'est pourtant pas toujours une photo : le plus souvent c'est
+un mot — depuis quand, ce qui a changé dans la pièce, ce qui a déjà été
+tenté. Le service peut donc poser **une à trois questions** avec son compte
+rendu (docs/09, § 9), et l'écran les préfère à la photo quand il y en a :
+elles se répondent sur place, la photo demande de se relever. Une seule des
+deux cartes paraît, et aucune sur un compte rendu net — `show_result` ne
+demande rien, ni vue ni question. Répondre relance l'analyse entière, photos
+comprises, avec les réponses en plus ; la carte de la photo revient d'elle-même
+si le tour suivant ne tranche toujours pas.
+
 ### Garde-fous, les mêmes
 
 - le service d'analyse reste seul à voir les photos et seul à nommer les
@@ -374,7 +387,8 @@ une vue de plus ne la départagera pas d'un souci qui n'existe pas.
 - `ask_another_photo` est retiré du schéma à la troisième photo, et une
   réponse incohérente y devient `keep_uncertain` ;
 - la photo proposée reste une proposition : les pistes sont lisibles
-  au-dessus, et rien n'oblige à la donner.
+  au-dessus, et rien n'oblige à la donner — les questions non plus, et une
+  question déjà répondue ne se repose pas.
 
 Ce qui manque encore : des compteurs. `IdentificationMetrics` ne tient que
 la cascade d'identification, et les arbitrages du diagnostic ne se comptent

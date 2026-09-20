@@ -2553,6 +2553,18 @@ class AppLocalizationsIt extends AppLocalizations {
       'Un\'altra foto renderebbe l\'analisi più precisa.';
 
   @override
+  String get diagnosisQuestionsHint => 'Ciò che manca per decidere.';
+
+  @override
+  String get diagnosisAnswerHint => 'Risposta…';
+
+  @override
+  String get diagnosisAnswerAgain => 'Rifare l\'analisi';
+
+  @override
+  String get diagnosisAnswersNoted => 'Risposte date';
+
+  @override
   String diagnosisAnotherPhotoView(String view) {
     return 'Da fotografare: $view.';
   }

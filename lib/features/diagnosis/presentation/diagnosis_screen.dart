@@ -137,6 +137,11 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   /// Pour poser le curseur dans le champ quand c'est lui qui manque.
   final _symptomsFocus = FocusNode();
 
+  /// Ce que le service a demandé au fil des tours, et ce qu'on lui a
+  /// répondu. Cela s'accumule : chaque analyse repart avec tout, puisqu'elle
+  /// se refait en entier.
+  final _answered = <DiagnosisAnswer>[];
+
   /// Vrai dès que le champ dit quelque chose. Gardé à part pour ne rebâtir
   /// la barre du bas qu'au passage du vide au plein, et non à chaque lettre.
   bool _symptomsGiven = false;
@@ -326,6 +331,9 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
             indoorClimate: measured,
             reportedClimate: _reportedClimate(measured),
             observations: _observations,
+            // Ce que le service avait demandé au tour d'avant, avec ses
+            // questions : une réponse seule ne voudrait rien dire.
+            answers: _answered,
             // Ce qu'aucune photo ne dit : dedans ou dehors, quel jour, quel
             // hémisphère. Une cochenille de salon en février et une brûlure
             // de balcon en juillet ne se confondent pas.
@@ -428,6 +436,35 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     return reported.isEmpty ? null : reported;
   }
 
+  /// Les questions du compte rendu auxquelles il reste à répondre, et
+  /// seulement quand rien ne tranche.
+  ///
+  /// Un compte rendu qui désigne une piste et une seule ne demande rien :
+  /// c'est la même règle que pour la photo de plus (docs/16), une seule
+  /// décision à la fois. Ce qui a déjà été répondu ne se redemande pas non
+  /// plus — la consigne l'interdit au service, et l'écran ne s'y fie pas.
+  List<String> get _openQuestions {
+    final result = _result;
+    if (result == null || _step == DiagnosisNextStep.showResult) return const [];
+    final done = {for (final a in _answered) a.question.trim().toLowerCase()};
+    return [
+      for (final q in result.questions)
+        if (!done.contains(q.trim().toLowerCase())) q,
+    ];
+  }
+
+  /// Ce qui vient d'être répondu part avec le reste, et l'analyse se refait
+  /// en entier : les deux ou trois photos, ce qui a été décrit, ce qui a été
+  /// vérifié, et maintenant ce qui a été demandé.
+  void _answerAndRetry(List<DiagnosisAnswer> given) {
+    if (given.isEmpty || _busy) return;
+    setState(() {
+      _answered.addAll(given);
+      _result = null;
+    });
+    unawaited(_analyze());
+  }
+
   /// Ce qui a été coché, tel qu'il part à l'analyse et tel qu'il sera gardé
   /// avec elle.
   DiagnosisObservations get _observations => DiagnosisObservations(soil: _soil, roots: _roots, light: _light, bugs: _bugs);
@@ -453,6 +490,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
         symptoms: _symptoms.text.trim(),
         photos: [for (final p in _photos) DiagnosisPhoto(filePath: p.filePath, thumbPath: p.thumbPath)],
         observations: _observations,
+        answers: List.of(_answered),
       );
 
   /// Enregistre le diagnostic entier dans le journal.
@@ -770,10 +808,18 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
         // Le même corps que la réouverture depuis le journal : ce qu'on lit
         // ici est exactement ce qu'on retrouvera plus tard.
         DiagnosisReportView(record: _record, uncertain: _step == DiagnosisNextStep.keepUncertain),
-        // Une photo de plus quand rien ne se détache, et de préférence celle
-        // que le service a nommée. Le compte rendu reste entier au-dessus :
-        // c'est une proposition, pas un mur.
-        if (_step == DiagnosisNextStep.askAnotherPhoto && !_full) ...[
+        // Ce qui manque pour trancher, dans l'ordre du moins coûteux : trois
+        // questions se répondent sur place, une photo demande de se relever.
+        // Une seule des deux cartes paraît — le compte rendu reste entier
+        // au-dessus, c'est une proposition, pas un mur.
+        if (_openQuestions case final questions when questions.isNotEmpty) ...[
+          const SizedBox(height: Space.lg),
+          DiagnosisQuestionsCard(
+            key: ValueKey(questions.join('\u0000')),
+            questions: questions,
+            onAnswered: _answerAndRetry,
+          ),
+        ] else if (_step == DiagnosisNextStep.askAnotherPhoto && !_full) ...[
           const SizedBox(height: Space.lg),
           AnotherPhotoCard(
             view: _result!.suggestedView,

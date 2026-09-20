@@ -928,6 +928,10 @@
   "diagnosisUnreadable": "Die Analyse ist fehlgeschlagen. Erneut versuchen.",
   "diagnosisUncertain": "Die Fotos reichen für keinen Schluss. Die Spuren unten müssen geprüft werden.",
   "diagnosisAnotherPhotoHint": "Ein weiteres Foto würde die Analyse schärfen.",
+  "diagnosisQuestionsHint": "Was zum Entscheiden fehlt.",
+  "diagnosisAnswerHint": "Antwort…",
+  "diagnosisAnswerAgain": "Analyse erneut starten",
+  "diagnosisAnswersNoted": "Gegebene Antworten",
   "diagnosisAnotherPhotoView": "Zu fotografieren: {view}.",
   "@diagnosisAnotherPhotoView": {
     "placeholders": {

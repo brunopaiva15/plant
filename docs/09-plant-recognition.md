@@ -1467,6 +1467,21 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   fait une proposition (docs/16, « Jev côté diagnostic ») : le compte rendu
   reste entier au-dessus, la photo ajoutée relance l'analyse avec les deux ou
   trois vues ensemble, et trois photos restent le plafond.
+- **Poser une question plutôt que deviner** : quand rien ne tranche, le
+  compte rendu porte une seconde clé à part, `questions` — une à trois
+  questions courtes, dans la langue de la personne, ou une liste vide. La
+  consigne les borne : seulement ce qui changerait l'ordre des pistes
+  (depuis quand, ce qui a changé autour de la plante, le dernier arrosage ou
+  rempotage, ce qui a déjà été tenté), jamais ce que la demande contient
+  déjà, jamais une photo — c'est `view` —, et rien du tout sur un compte
+  rendu net. Les pistes sont rendues en entier dans tous les cas : une
+  question affine une réponse, elle ne la remplace pas. Les réponses
+  repartent avec leur question (`answersLine`), pèsent comme une observation,
+  et l'analyse se refait en entier — photos comprises — au lieu de se
+  recoller à la précédente. Elles sont gardées avec le compte rendu et se
+  relisent des mois plus tard, comme les symptômes et les observations.
+  L'écran préfère les questions à la photo de plus quand il a les deux
+  (docs/16).
 - **Tout n'est pas un problème** : la consigne ouvrait les pistes aux seuls
   troubles, ravageurs, maladies et fautes d'entretien, si bien que des gouttes
   de nectar extrafloral n'avaient que des cochenilles pour s'expliquer. Une

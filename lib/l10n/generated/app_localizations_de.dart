@@ -2554,6 +2554,18 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein weiteres Foto würde die Analyse schärfen.';
 
   @override
+  String get diagnosisQuestionsHint => 'Was zum Entscheiden fehlt.';
+
+  @override
+  String get diagnosisAnswerHint => 'Antwort…';
+
+  @override
+  String get diagnosisAnswerAgain => 'Analyse erneut starten';
+
+  @override
+  String get diagnosisAnswersNoted => 'Gegebene Antworten';
+
+  @override
   String diagnosisAnotherPhotoView(String view) {
     return 'Zu fotografieren: $view.';
   }

@@ -2548,6 +2548,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'One more photo would sharpen the analysis.';
 
   @override
+  String get diagnosisQuestionsHint => 'What is missing to decide.';
+
+  @override
+  String get diagnosisAnswerHint => 'Answer…';
+
+  @override
+  String get diagnosisAnswerAgain => 'Run the analysis again';
+
+  @override
+  String get diagnosisAnswersNoted => 'Answers given';
+
+  @override
   String diagnosisAnotherPhotoView(String view) {
     return 'To photograph: $view.';
   }

@@ -122,6 +122,18 @@ class DiagnosisReportView extends ConsumerWidget {
             ],
           ),
         ],
+        // Ce que le service avait demandé et ce qu'on lui a répondu : une part
+        // de ce qui a mené aux pistes, au même titre que les symptômes.
+        if (record.answers.isNotEmpty) ...[
+          const SizedBox(height: Space.sm),
+          FloraGroup(
+            header: l10n.diagnosisAnswersNoted,
+            children: [
+              for (final a in record.answers)
+                FloraListRow(title: a.question, subtitle: a.answer, chevron: false, dense: true, titleMaxLines: 2),
+            ],
+          ),
+        ],
         if (diagnosis.causes.isNotEmpty) ...[
           SectionHeader(title: l10n.possibleCauses, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.xxs)),
           Text(l10n.causesHint, style: context.text.caption),
@@ -235,6 +247,90 @@ class AnotherPhotoCard extends StatelessWidget {
             style: FloraButtonStyle.secondary,
             expand: true,
             onPressed: onAdd,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Les questions du service, avec de quoi y répondre.
+///
+/// Une photo ne dit ni depuis quand, ni ce qui a changé dans la pièce, ni ce
+/// qui a déjà été tenté ; le service répondait donc avec ce qu'il avait.
+/// Quand rien ne tranche, il pose une à trois questions, et la réponse
+/// relance l'analyse entière — ce n'est pas un complément qui se recolle à
+/// côté du compte rendu précédent, c'est le compte rendu qui se refait.
+///
+/// Elle porte ses champs elle-même : des questions qui changent emportent les
+/// brouillons qu'on leur destinait, ce qui est exactement ce qu'on veut.
+class DiagnosisQuestionsCard extends StatefulWidget {
+  const DiagnosisQuestionsCard({super.key, required this.questions, required this.onAnswered});
+
+  final List<String> questions;
+
+  /// Ce qui a été rempli — les questions laissées vides ne partent pas.
+  final ValueChanged<List<DiagnosisAnswer>> onAnswered;
+
+  @override
+  State<DiagnosisQuestionsCard> createState() => _DiagnosisQuestionsCardState();
+}
+
+class _DiagnosisQuestionsCardState extends State<DiagnosisQuestionsCard> {
+  late final _fields = {for (final q in widget.questions) q: TextEditingController()};
+
+  @override
+  void dispose() {
+    for (final field in _fields.values) {
+      field.dispose();
+    }
+    super.dispose();
+  }
+
+  List<DiagnosisAnswer> get _given => [
+        for (final e in _fields.entries)
+          if (e.value.text.trim().isNotEmpty) DiagnosisAnswer(question: e.key, answer: e.value.text.trim()),
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final given = _given;
+    return FloraCard(
+      color: c.sunSoft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              EmojiTile(emoji: '💬', background: c.surface, variant: 1),
+              const SizedBox(width: Space.md),
+              Expanded(child: Text(l10n.diagnosisQuestionsHint, style: context.text.callout)),
+            ],
+          ),
+          for (final q in widget.questions) ...[
+            const SizedBox(height: Space.sm),
+            Text(q, style: context.text.body),
+            const SizedBox(height: Space.xxs),
+            FloraTextField(
+              controller: _fields[q],
+              hint: l10n.diagnosisAnswerHint,
+              minLines: 1,
+              maxLines: 3,
+              // La carte se redessine à mesure : c'est ce qui allume le
+              // geste dès la première réponse écrite.
+              onChanged: (_) => setState(() {}),
+            ),
+          ],
+          const SizedBox(height: Space.sm),
+          FloraButton(
+            label: l10n.diagnosisAnswerAgain,
+            icon: CupertinoIcons.sparkles,
+            style: FloraButtonStyle.secondary,
+            expand: true,
+            onPressed: given.isEmpty ? null : () => widget.onAnswered(given),
           ),
         ],
       ),

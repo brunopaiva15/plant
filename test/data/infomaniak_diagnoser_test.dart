@@ -248,6 +248,22 @@ void main() {
       expect(lire(null).suggestedView, isNull);
     });
 
+    test('les questions sont lues, trois au plus, sans doublon ni vide', () {
+      Diagnosis lire(Object? questions) => InfomaniakDiagnoser.parseResponse(_completion(jsonEncode({
+            'summary': '…',
+            'questions': questions,
+            'causes': [
+              {'title': 'Air sec', 'likelihood': 'possible'},
+            ],
+          })));
+      expect(lire(['Depuis quand ?', 'Arrosée quand ?']).questions, ['Depuis quand ?', 'Arrosée quand ?']);
+      // La consigne en demande trois au plus ; on ne dépend pas de son respect.
+      expect(lire(['a', 'b', 'c', 'd']).questions, ['a', 'b', 'c']);
+      expect(lire(['  Depuis quand ?  ', '', 'depuis quand ?']).questions, ['Depuis quand ?']);
+      expect(lire(null).questions, isEmpty);
+      expect(lire('depuis quand ?').questions, isEmpty, reason: 'une chaîne n’est pas une liste de questions');
+    });
+
     test('une réponse coupée en chemin garde ce qui avait été écrit', () {
       // Le cas le plus fréquent d'« Analyse impossible » : la réponse
       // s'arrête au milieu d'un mot faute de jetons. Deux pistes étaient
@@ -354,6 +370,47 @@ void main() {
       final texte = InfomaniakDiagnoser.userPrompt(language: 'fr', symptoms: 'feuille sèche tombante');
       expect(texte, contains('feuille sèche tombante'));
       expect(texte, contains('whether or not the photos show it'));
+    });
+
+    test('la consigne peut poser des questions, mais seulement utiles', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // Une photo ne dit ni depuis quand, ni ce qui a changé, ni ce qui a
+      // déjà été tenté : le service n'avait aucun moyen de le demander.
+      expect(consigne, contains('"questions" key next to "summary"'));
+      expect(consigne, contains('never ask more than three'));
+      expect(consigne, contains('Never ask what the message already answers'));
+      // Une question ne remplace jamais une réponse.
+      expect(consigne, contains('questions refine an answer, they never replace one'));
+      expect(consigne, contains('"questions" (array of strings, possibly empty)'));
+    });
+
+    test('les réponses de la personne repartent avec la question', () {
+      final texte = InfomaniakDiagnoser.userPrompt(
+        language: 'fr',
+        answers: const [
+          DiagnosisAnswer(question: 'Depuis quand ?', answer: 'Huit jours'),
+          DiagnosisAnswer(question: 'Arrosée quand ?', answer: 'Avant-hier'),
+        ],
+      );
+      // La question repart avec la réponse : « huit jours » seul ne veut rien
+      // dire.
+      expect(texte, contains('"Depuis quand ?" — Huit jours'));
+      expect(texte, contains('"Arrosée quand ?" — Avant-hier'));
+      expect(texte, contains('do not ask any of these again'));
+      // Rien à dire quand rien n'a été demandé.
+      expect(InfomaniakDiagnoser.answersLine(const []), isNull);
+      expect(InfomaniakDiagnoser.userPrompt(language: 'fr'), isNot(contains('Asked of the owner')));
+      // Une réponse vide ne part pas.
+      expect(InfomaniakDiagnoser.answersLine(const [DiagnosisAnswer(question: 'Depuis quand ?', answer: '  ')]), isNull);
+    });
+
+    test('la passe de repli emporte aussi les réponses', () {
+      final body = InfomaniakDiagnoser.buildFallbackRequest(
+        model: 'm',
+        language: 'fr',
+        answers: const [DiagnosisAnswer(question: 'Rempotée quand ?', answer: 'Au printemps')],
+      );
+      expect(jsonEncode(body), contains('Au printemps'));
     });
 
     test('la base locale part comme liste de pistes, groupée par nature', () async {

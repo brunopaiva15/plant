@@ -1232,6 +1232,10 @@
   "diagnosisUnreadable": "L'analyse n'a pas abouti. Réessayez.",
   "diagnosisUncertain": "Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.",
   "diagnosisAnotherPhotoHint": "Une photo de plus préciserait l'analyse.",
+  "diagnosisQuestionsHint": "Ce qui manque pour trancher.",
+  "diagnosisAnswerHint": "Réponse…",
+  "diagnosisAnswerAgain": "Reprendre l'analyse",
+  "diagnosisAnswersNoted": "Réponses données",
   "diagnosisAnotherPhotoView": "À photographier : {view}.",
   "@diagnosisAnotherPhotoView": {
     "placeholders": {

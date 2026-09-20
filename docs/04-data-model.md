@@ -131,10 +131,15 @@ journal des mois plus tard au lieu d'en relire l'aperçu
 {"version": 1, "summary": "…", "urgent": true,
  "symptoms": "ce que l'utilisateur avait décrit",
  "observations": {"soil": "soggy", "roots": "soft", "light": "direct", "bugs": "none"},
+ "answers": [{"question": "Depuis quand ?", "answer": "Huit jours"}],
  "causes": [{"title": "…", "problemId": "002", "likelihood": "likely",
              "explanation": "…", "actions": ["…"]}],
  "photos": [{"file": "…jpg", "thumb": "…_thumb.jpg"}]}
 ```
+
+`answers` garde les questions que le service avait posées quand rien ne
+tranchait, et ce qu'on lui a répondu (docs/09, § 9) : elles ont pesé sur les
+pistes, le compte rendu ne se relit pas sans elles.
 
 Les `problemId` sont conservés plutôt que les seuls noms : à la réouverture,
 les pistes sont renommées par la base des problèmes, dans la langue de

@@ -88,6 +88,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
     bool? indoors,
     DateTime? date,
     double? latitude,
@@ -113,6 +114,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           indoorClimate: indoorClimate,
           reportedClimate: reportedClimate,
           observations: observations,
+          answers: answers,
           indoors: indoors,
           date: date,
           latitude: latitude,
@@ -167,6 +169,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
             naturalCauses: naturalCauses,
             frequentIds: frequentIds,
             observations: observations,
+            answers: answers,
           );
     return _numberLeftovers(complete, candidates, language);
   }
@@ -194,6 +197,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     required List<NaturalCause> naturalCauses,
     required Set<String> frequentIds,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
   }) async {
     try {
       final body = buildFallbackRequest(
@@ -206,6 +210,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         naturalCauses: naturalCauses,
         frequentIds: frequentIds,
         observations: observations,
+        answers: answers,
       );
       var response = await _post(body, timeout: const Duration(seconds: 60));
       if (response.statusCode == 400) {
@@ -228,6 +233,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         // La vue à demander est celle de la passe qui a vu les photos ; le
         // repli, lui, n'en a regardé aucune.
         suggestedView: diagnosis.suggestedView,
+        // Les questions aussi : celles du repli portent sur une analyse
+        // faite sans les photos.
+        questions: diagnosis.questions,
       );
     } on Object {
       return diagnosis;
@@ -245,6 +253,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
   }) =>
       {
         'model': model,
@@ -266,6 +275,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
                 naturalCauses: naturalCauses,
                 frequentIds: frequentIds,
                 observations: observations,
+                answers: answers,
               ),
               'Give the one or two most plausible causes, as "possible" or "unlikely".',
             ].join(' '),
@@ -323,7 +333,13 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           problemId: e.value,
         );
       }
-      return Diagnosis(summary: diagnosis.summary, causes: causes, urgent: diagnosis.urgent, suggestedView: diagnosis.suggestedView);
+      return Diagnosis(
+        summary: diagnosis.summary,
+        causes: causes,
+        urgent: diagnosis.urgent,
+        suggestedView: diagnosis.suggestedView,
+        questions: diagnosis.questions,
+      );
     } on Object {
       return diagnosis;
     }
@@ -575,10 +591,21 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'This key is the only place a missing view may be named: never in "summary", never in a title, an explanation or an action. '
       'It is a suggestion to the application, not a refusal to answer — the causes are given in full either way. '
       'When a pest is in play and the photos do not settle which one, "view" is "leaf_underside": that is where thrips, mites and scale sit. '
+      // Le service n'avait aucun moyen de demander. Une photo ne dit ni depuis
+      // quand, ni ce qui a changé dans la pièce, ni ce qui a déjà été tenté :
+      // il répondait donc avec ce qu'il avait, et le compte rendu restait
+      // général faute d'une question à trois mots.
+      'Add a "questions" key next to "summary": up to three short questions to the owner, each one line, or an empty array. Ask only what '
+      'would change which cause comes first — when it started and how fast it spread, what changed around the plant, when it was last watered, '
+      'fed or repotted, what has already been tried, whether other plants show the same. Never ask what the message already answers, never ask '
+      'for a photo — that is "view" — and never ask more than three. '
+      'Ask nothing when one cause is already settled, and nothing when the answer would not change the order: an empty array is the ordinary '
+      'answer. The causes are given in full either way: questions refine an answer, they never replace one. '
       'Write every text field in the language with code "$language", in a warm, plain, human tone, without jargon. '
       'Keep every explanation to two sentences at most and every action to one line, so the answer ends before it runs out of room. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
-      '"summary" (string), "urgent" (boolean), "view" (string or null), "causes" (array of objects with "problem" (string or null), '
+      '"summary" (string), "urgent" (boolean), "view" (string or null), "questions" (array of strings, possibly empty), '
+      '"causes" (array of objects with "problem" (string or null), '
       '"natural" (boolean), "title" (string), "likelihood" (string), "explanation" (string), "actions" (array of strings)).';
 
   static String userPrompt({
@@ -592,6 +619,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
     bool? indoors,
     DateTime? date,
     double? latitude,
@@ -626,6 +654,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // le dit, sans quoi le modèle conseillait de vérifier ce qui venait de
       // l'être.
       ?observationsLine(observations),
+      // Ce que le service avait demandé au tour précédent. Il ne voit pas
+      // ses propres questions revenir : elles lui sont rendues avec les
+      // réponses, sans quoi une réponse seule ne veut rien dire.
+      ?answersLine(answers),
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
@@ -711,6 +743,24 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         'These were verified, not guessed, and no photo shows them: weigh every cause for and against them, '
         'as heavily as what the photos show, say so in the summary when they are what settles it, '
         'and never give as an action something that has already been checked here.';
+  }
+
+  /// Ce que le service avait demandé et ce qu'on lui a répondu, ou `null`
+  /// quand il n'avait rien demandé.
+  ///
+  /// Une analyse ne se recolle pas à la précédente : elle se refait en
+  /// entier, photos comprises, avec ces réponses en plus. Elles valent ce que
+  /// vaut une observation — la personne a la plante devant elle —, et le
+  /// service n'a plus à reposer la même question.
+  static String? answersLine(List<DiagnosisAnswer> answers) {
+    final pairs = [
+      for (final a in answers)
+        if (a.question.trim().isNotEmpty && a.answer.trim().isNotEmpty) '"${a.question.trim()}" — ${a.answer.trim()}',
+    ];
+    if (pairs.isEmpty) return null;
+    return 'Asked of the owner, and answered: ${pairs.join('; ')}. '
+        'These answers are about the plant in front of them: take them as given, weigh them like the photos, and do not ask any of these '
+        'again.';
   }
 
   /// Les noms des pistes soumises, normalisés, pour le filet de rattrapage.
@@ -840,6 +890,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // une proposition de photo ou rien du tout ; le compte rendu, lui, n'en
       // parle jamais.
       suggestedView: DiagnosisView.parse(data['view']),
+      // Ce qu'il aurait voulu savoir de plus : trois questions au plus, et
+      // rien de ce que la question portait déjà.
+      questions: Diagnosis.readQuestions(data['questions']),
     );
   }
 

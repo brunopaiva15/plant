@@ -4542,6 +4542,30 @@ abstract class AppLocalizations {
   /// **'Une photo de plus préciserait l\'analyse.'**
   String get diagnosisAnotherPhotoHint;
 
+  /// No description provided for @diagnosisQuestionsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qui manque pour trancher.'**
+  String get diagnosisQuestionsHint;
+
+  /// No description provided for @diagnosisAnswerHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réponse…'**
+  String get diagnosisAnswerHint;
+
+  /// No description provided for @diagnosisAnswerAgain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre l'analyse'**
+  String get diagnosisAnswerAgain;
+
+  /// No description provided for @diagnosisAnswersNoted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réponses données'**
+  String get diagnosisAnswersNoted;
+
   /// No description provided for @diagnosisAnotherPhotoView.
   ///
   /// In fr, this message translates to:

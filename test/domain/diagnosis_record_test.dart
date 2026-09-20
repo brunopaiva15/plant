@@ -80,6 +80,41 @@ void main() {
     expect(sans.toJson().containsKey('observations'), isFalse);
   });
 
+  test('les questions du service et les réponses se relisent', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: diagnostic,
+      answers: const [DiagnosisAnswer(question: 'Depuis quand ?', answer: 'Huit jours')],
+    ))!;
+    expect(relu.answers, hasLength(1));
+    expect(relu.answers.single.question, 'Depuis quand ?');
+    expect(relu.answers.single.answer, 'Huit jours');
+
+    // Une réponse sans sa question ne se relit pas : « huit jours » seul ne
+    // dit rien.
+    final abime = DiagnosisRecord.fromMetadata(const {
+      DiagnosisRecord.metadataKey: {
+        'summary': 'Taches brunes.',
+        'answers': [
+          {'answer': 'Huit jours'},
+          {'question': 'Rempotée quand ?', 'answer': '  '},
+          {'question': 'Arrosée quand ?', 'answer': 'Avant-hier'},
+        ],
+      },
+    })!;
+    expect(abime.answers, hasLength(1));
+    expect(abime.answers.single.question, 'Arrosée quand ?');
+
+    // Rien de demandé, rien de gardé.
+    expect(DiagnosisRecord(diagnosis: diagnostic).toJson().containsKey('answers'), isFalse);
+  });
+
+  test('les questions restées sans réponse se relisent avec le compte rendu', () {
+    final avec = Diagnosis(summary: diagnostic.summary, causes: diagnostic.causes, questions: const ['Depuis quand ?']);
+    final relu = throughJson(DiagnosisRecord(diagnosis: avec))!;
+    expect(relu.diagnosis.questions, ['Depuis quand ?']);
+    expect(DiagnosisRecord(diagnosis: diagnostic).toJson().containsKey('questions'), isFalse);
+  });
+
   test('un mot d’observation inconnu vaut une case non répondue', () {
     final relu = DiagnosisRecord.fromMetadata(const {
       DiagnosisRecord.metadataKey: {

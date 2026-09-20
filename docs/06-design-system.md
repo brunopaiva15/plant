@@ -669,8 +669,13 @@ dit avant tout le reste : « Rien d'anormal », sur la feuille, plutôt que
 « Constat » sur le stéthoscope — trois cartes à lire avant de comprendre que
 rien ne va mal, c'est trois cartes d'inquiétude pour rien. Un compte rendu
 pareil n'est jamais urgent. Quand rien ne
-tranche, la photo de plus se propose après les pistes, jamais à leur place
-(docs/16). Le même corps sert à la réouverture depuis le journal, à ceci près
+tranche, ce qui manque se propose après les pistes, jamais à leur place
+(docs/16) : d'abord les une à trois questions que le service a posées — une
+carte ocre, un champ par question, « Reprendre l'analyse » dessous —, et la
+photo de plus quand il n'en a posé aucune. Une seule des deux, et jamais sur
+un compte rendu net. Répondre refait l'analyse entière ; les réponses
+rejoignent ensuite les symptômes et les observations dans le compte rendu
+gardé. Le même corps sert à la réouverture depuis le journal, à ceci près
 que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas
 une ligne du compte rendu.
 

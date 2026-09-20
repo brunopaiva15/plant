@@ -928,6 +928,10 @@
   "diagnosisUnreadable": "L'analisi non è riuscita. Riprova.",
   "diagnosisUncertain": "Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.",
   "diagnosisAnotherPhotoHint": "Un'altra foto renderebbe l'analisi più precisa.",
+  "diagnosisQuestionsHint": "Ciò che manca per decidere.",
+  "diagnosisAnswerHint": "Risposta…",
+  "diagnosisAnswerAgain": "Rifare l'analisi",
+  "diagnosisAnswersNoted": "Risposte date",
   "diagnosisAnotherPhotoView": "Da fotografare: {view}.",
   "@diagnosisAnotherPhotoView": {
     "placeholders": {
