@@ -285,63 +285,72 @@ class FloraTabRail extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // Ce que les boutons de page prendront, l'écart compris. Les onglets
-          // se contentent du reste : dans une fenêtre courte — un pliable
-          // fermé et couché —, ils se resserrent plutôt que de déborder.
+          // L'ordre est celui d'iOS, et non l'inverse : « reserve the top for
+          // primary navigation controls, like back or close, followed by
+          // prominent actions » ; la barre d'onglets, elle, « moves to the
+          // bottom of the vertical bar ». Les boutons de la page sont donc en
+          // haut, sous la pile du système, et la pilule en bas.
+          //
+          // Rien ne bouge pour autant d'une page à l'autre : les boutons sont
+          // calés sous le dégagement du haut, la pilule contre le bas, et
+          // c'est le vide entre les deux qui absorbe la différence.
           final placeDesBoutons = actions.isEmpty
               ? 0.0
               : actions.length * _actionSize + (actions.length - 1) * Space.xs + Space.md;
           final voulu = 12 + _slot * tabs.length;
           final dispo = constraints.hasBoundedHeight ? constraints.maxHeight : double.infinity;
-          // Tout se cale en haut, et non au milieu : c'est ce qui fait qu'une
-          // pilule ne se déplace ni d'un onglet à l'autre, ni d'un pli à
-          // l'autre. En bas, les boutons pendent et la place qui reste ne
-          // sert qu'à eux.
           final souhaite = _degagement(context, regions) - Space.md;
           // Sauf dans une fenêtre trop courte pour ce dégagement : les
-          // onglets gardent alors leurs 44 points de cible et la colonne
-          // remonte de ce qu'il faut.
+          // onglets gardent alors leurs 44 points de cible et le groupe du
+          // haut remonte de ce qu'il faut.
           final piluleMinimale = 12 + kMinTapTarget * tabs.length;
           final haut = dispo.isFinite ? math.max(0.0, math.min(souhaite, dispo - placeDesBoutons - piluleMinimale)) : 0.0;
           final hauteur = dispo.isFinite ? math.min(voulu, math.max(0.0, dispo - haut - placeDesBoutons)) : voulu;
 
-          final colonne = Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClayBox(
-                color: c.surface,
-                shape: const ClayShape.pill(),
-                width: _width,
-                height: hauteur,
-                padding: const EdgeInsets.all(6),
-                child: _TabStrip(
-                  axis: Axis.vertical,
-                  showLabels: false,
-                  tabs: tabs,
-                  index: index,
-                  labelLines: 1,
-                  onSelect: (i) {
-                    if (i != index) Haptics.selection();
-                    onSelect(i);
-                  },
-                ),
-              ),
-              if (actions.isNotEmpty) ...[
-                const SizedBox(height: Space.md),
-                for (final (i, action) in actions.indexed) ...[
-                  if (i > 0) const SizedBox(height: Space.xs),
-                  action,
-                ],
-              ],
+          final boutons = <Widget>[
+            for (final (i, action) in actions.indexed) ...[
+              if (i > 0) const SizedBox(height: Space.xs),
+              action,
             ],
+          ];
+          final pilule = ClayBox(
+            color: c.surface,
+            shape: const ClayShape.pill(),
+            width: _width,
+            height: hauteur,
+            padding: const EdgeInsets.all(6),
+            child: _TabStrip(
+              axis: Axis.vertical,
+              showLabels: false,
+              tabs: tabs,
+              index: index,
+              labelLines: 1,
+              onSelect: (i) {
+                if (i != index) Haptics.selection();
+                onSelect(i);
+              },
+            ),
           );
-          if (!dispo.isFinite) return colonne;
+
+          if (!dispo.isFinite) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [...boutons, if (actions.isNotEmpty) const SizedBox(height: Space.md), pilule],
+            );
+          }
           // `max` n'est pas un détail : une colonne qui épouse son contenu se
           // ferait recentrer par la rangée qui la porte, et le décalage
           // calculé ici s'ajouterait à ce recentrage.
           return Column(
             mainAxisSize: MainAxisSize.max,
-            children: [SizedBox(height: haut), colonne],
+            children: [
+              SizedBox(height: haut),
+              ...boutons,
+              // Le vide qui sépare les deux groupes, celui-là même que le
+              // système met entre ses placements du haut et ceux du bas.
+              const Spacer(),
+              pilule,
+            ],
           );
         },
       ),
