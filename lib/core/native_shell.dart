@@ -138,8 +138,10 @@ abstract final class NativeShell {
   static String? _derniereChrome;
   static int _profondeur = 0;
   static bool _barreDemandee = false;
+  static bool _voilee = false;
 
-  /// Combien de routes couvrent la coquille. Dit par l'observateur du
+  /// Ce qui couvre la coquille — les pages d'un côté, les surcouches de
+  /// l'autre. Dit par l'observateur du
   /// navigateur racine (`app/native_chrome_observer.dart`).
   ///
   /// UIKit ne sait rien de la navigation de Flutter : une fiche, un scanner,
@@ -148,11 +150,13 @@ abstract final class NativeShell {
   /// qui couvre la coquille les efface donc, **et la page qui s'ouvre les
   /// redemande si elle sait les remplir** — une fiche à grand titre le fait,
   /// un scanner non.
-  static void setDepth(int depth) {
-    if (depth == _profondeur) return;
-    _profondeur = depth;
-    // À chaque changement d'étage, la barre est à reconquérir.
-    _barreDemandee = false;
+  static void setOverlay({required int pages, required int veils}) {
+    _voilee = veils > 0;
+    if (pages != _profondeur) {
+      _profondeur = pages;
+      // À chaque changement d'étage, la barre est à reconquérir.
+      _barreDemandee = false;
+    }
     _appliquerChrome();
   }
 
@@ -168,7 +172,13 @@ abstract final class NativeShell {
   /// d'iOS, et `hidesBottomBarWhenPushed` ne dit rien d'autre.
   static Future<void> _appliquerChrome() async {
     if (!isSupported) return;
-    final charge = {'bar': _profondeur == 0 || _barreDemandee, 'tabs': _profondeur == 0};
+    final charge = {
+      'bar': _profondeur == 0 || _barreDemandee,
+      'tabs': _profondeur == 0,
+      // Voiler plutôt qu'effacer : une barre retirée rend sa place au
+      // contenu, et la page glisse sous le menu qui vient de s'ouvrir.
+      'veil': _voilee,
+    };
     final empreinte = charge.toString();
     if (empreinte == _derniereChrome) return;
     _derniereChrome = empreinte;

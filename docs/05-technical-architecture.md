@@ -234,6 +234,14 @@ d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. P
 bouton retour : celui-là attend d'être rendu par la pile de navigation
 elle-même.
 
+**Une page et une surcouche ne se valent pas.** Un menu d'action, une alerte,
+ne prennent pas la place de la page : elles se posent dessus le temps d'un
+choix. Les effacer pour de bon rendrait leur place au contenu, la marge sûre
+changerait, et la page glisserait sous le menu qui vient de s'ouvrir — ce
+qu'elle faisait. Ces routes-là ne font donc que **voiler** la chrome :
+`alpha` à zéro, intouchable, et toujours là où elle était. L'observateur les
+compte à part (`PageRoute` ou non).
+
 **Et la chrome s'efface quand une page la couvre.** UIKit ne sait rien de la
 navigation de Flutter : une fiche de plante, un scanner de QR code, une
 feuille d'ajout sont des routes que go_router pose par-dessus la coquille, et

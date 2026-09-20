@@ -108,10 +108,21 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       let args = call.arguments as? [String: Any] ?? [:]
       let barre = (args["bar"] as? Bool) ?? true
       let ongletsVisibles = (args["tabs"] as? Bool) ?? true
+      // Voiler n'est pas effacer. Une barre retirée rend sa place au contenu,
+      // et la page glisse — ce qui se voit au premier menu d'action ouvert.
+      // Une surcouche ne prend pas la place de la page : la chrome reste là
+      // où elle était, invisible et intouchable, le temps du choix.
+      let voile = (args["veil"] as? Bool) ?? false
       for navigation in navigations {
         navigation.setNavigationBarHidden(!barre, animated: false)
+        navigation.navigationBar.alpha = voile ? 0 : 1
+        navigation.navigationBar.isUserInteractionEnabled = !voile
       }
-      onglets?.tabBar.isHidden = !ongletsVisibles
+      if let barreDOnglets = onglets?.tabBar {
+        barreDOnglets.isHidden = !ongletsVisibles
+        barreDOnglets.alpha = voile ? 0 : 1
+        barreDOnglets.isUserInteractionEnabled = !voile
+      }
       result(true)
     case "setActions":
       guard let args = call.arguments as? [String: Any] else {
