@@ -159,24 +159,29 @@ la coquille soit là, après l'onboarding s'il y en a un.
   autre appareil — s'en vont. Les fichiers de moins de douze heures sont
   épargnés : pendant une création, la photo existe avant sa ligne.
 
-## La fenêtre : téléphone, tablette, pliable (`app/orientation_lock.dart`)
+## La fenêtre : téléphone, tablette, pliable (`app/window.dart`)
 
 Sur téléphone, l'application se tient en portrait : chaque écran est une
 colonne, et le paysage n'apporterait qu'une mise en page étirée. Sur tablette,
-elle ne verrouille rien — iPadOS attend qu'une application tourne et cohabite
-avec une autre, et le refuser est un motif de rejet. La limite est à 600 points
-de côté le plus court ; au-delà de 700 points de large, le contenu rend son
-surplus en marges (`readableInset`, `design_system/components/page_scaffold.dart`).
+rien n'est verrouillé — iPadOS attend qu'une application tourne et cohabite
+avec une autre, et le refuser est un motif de rejet. **Ces deux règles sont
+déclarées, pas demandées** : `ios/Runner/Info.plist` porte le portrait sur
+iPhone et les quatre orientations sur iPad, le manifeste Android porte le
+portrait partout. Aucun code ne fait de demande à l'exécution, et la section
+« Ce qu'il ne faut pas refaire », plus bas, dit pourquoi.
+
+Ce que le code décide, c'est où se poser dans la fenêtre qu'on lui donne. La
+limite est à 600 points de côté le plus court ; au-delà de 700 points de
+large, le contenu rend son surplus en marges (`readableInset`,
+`design_system/components/page_scaffold.dart`).
 
 L'iPhone Duo tient les deux rôles dans la même séance : fermé il est un
-téléphone, ouvert une tablette, et rien n'a été relancé entre les deux. Le
-verrou n'est donc plus une décision de démarrage mais un état —
-`OrientationLock` écoute `didChangeMetrics` et le pose ou le retire à chaque
-pli —, et aucune taille n'est gardée : `isCompactWindow()` mesure la vue
-implicite à chaque appel. Le viseur intégré suit la même règle
-(`features/plants/presentation/inline_camera.dart`) : son verrou de capture se
-défait quand l'appareil s'ouvre, faute de quoi une photo prise après le pli
-sortirait couchée.
+téléphone, ouvert une tablette, et rien n'a été relancé entre les deux. Aucune
+taille n'est donc gardée : `isCompactWindow()` mesure la vue implicite à
+chaque appel, et le viseur intégré suit la même règle
+(`features/plants/presentation/inline_camera.dart`) — son verrou de capture,
+qui passe par le plugin caméra et non par UIKit, se défait quand l'appareil
+s'ouvre, faute de quoi une photo prise après le pli sortirait couchée.
 
 ### Les cotes, mesurées
 
@@ -217,13 +222,7 @@ Deux constats de ces relevés valent plus que les nombres :
   même pas de nouveau relevé : la scène garde la même surface. Rien, côté
   Dart, ne dit où passe la charnière.
 - `SystemChrome.setPreferredOrientations` est **refusé** par UIKit, qui répond
-  `UISceneErrorDomain Code=101`. Dart n'en sait rien — l'engine passe un
-  gestionnaire d'erreur vide. L'écran extérieur tourne donc malgré la
-  déclaration portrait, et l'application doit être juste en 678 × 466. Ce sont
-  `Info.plist` et la mise en page qui tiennent la barre, pas `OrientationLock`,
-  qui ne décide rien ici — et rien ailleurs non plus, puisque `Info.plist` et
-  le manifeste Android disent déjà la même chose. Le retirer est la suite
-  logique ; il est gardé le temps qu'on en décide.
+  `UISceneErrorDomain Code=101`. Voir juste en dessous.
 
 Côté iOS, trois points valent d'être connus :
 
@@ -248,6 +247,28 @@ pilule posée en bas traverserait tout l'écran pour quatre onglets. La bascule
 tient en deux nombres, dans `FloraTabRail.fitsIn`, et l'iPad n'est pas
 concerné : il garde sa barre du bas. Le détail du rail est dans docs/06,
 section « Le menu debout ».
+
+### Ce qu'il ne faut pas refaire
+
+L'application a demandé le portrait à `SystemChrome.setPreferredOrientations`
+dès que la fenêtre était compacte. Elle ne le fait plus, et ne doit pas
+recommencer.
+
+Sur l'iPhone Duo, la demande est refusée : UIKit répond `UISceneErrorDomain
+Code=101`, et Dart n'en sait rien — l'engine passe un gestionnaire d'erreur
+vide, si bien que l'appel paraît réussir. L'écran extérieur tourne donc quoi
+qu'on demande, et 678 × 466 est un état à tenir, pas à empêcher.
+
+Ailleurs, la demande ne faisait que répéter ce qui était déjà déclaré dans
+`Info.plist` et dans le manifeste. Sur iPad, Flutter note d'ailleurs qu'elle
+n'est honorée que si le multitâche est coupé — ce qu'on ne fait pas, et qu'on
+ne fera pas. Il restait donc un mécanisme qui ne décidait rien et qui, sur
+pliable, laissait une erreur UIKit dans la console à chaque lancement.
+
+C'est aussi la conclusion du harnais Duo de *disquebleu*, dans les mêmes
+termes : « ne pas réintroduire de verrouillage programmatique de
+l'orientation ; utiliser la taille de scène et les insets réellement reçus par
+Flutter ».
 
 Pour relever les cotes d'une pose qu'on n'a pas sous la main,
 `app/window_probe.dart` écrit la fenêtre dans la console à chaque changement —
@@ -289,8 +310,8 @@ justifie, une famille de widget plus grande que `systemMedium`.
   correction météo d'un intervalle, gel et chaleur, zone de rusticité.
 - `test/data/*_repository_test.dart` : repositories sur base en mémoire (créer plante, arroser, archiver / restaurer, recherche).
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
-- `test/app/orientation_lock_test.dart` : le verrou de portrait posé et retiré
-  quand la fenêtre change de taille en cours de séance (pliable).
+- `test/app/window_test.dart` : la fenêtre courante, mesurée à chaque appel et
+  non au démarrage — la réponse change au pli.
 - `test/app/window_probe_test.dart` : la sonde de fenêtre écrit sans qu'on lui
   demande rien, attend la première image, et ne se répète pas.
 - `test/design_system/tab_rail_test.dart` : où le menu se met debout, et ce

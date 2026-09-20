@@ -3,7 +3,7 @@ import 'dart:ui' show DisplayFeature;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'orientation_lock.dart';
+import 'window.dart';
 
 /// Ce que la fenêtre dit d'elle-même, écrit dans la console à chaque
 /// changement.
@@ -78,7 +78,7 @@ class _WindowProbeObserver with WidgetsBindingObserver {
       _ligne('taille', '${_pt(mq.size.width)} × ${_pt(mq.size.height)} pt · dpr ${_nb(mq.devicePixelRatio)} '
           '· physique ${_pt(view.physicalSize.width)} × ${_pt(view.physicalSize.height)} px'),
       _ligne('orientation', '${mq.orientation.name} · côté le plus court ${_pt(mq.size.shortestSide)} pt'),
-      _ligne('verrou portrait', isCompactWindow() ? 'posé (fenêtre compacte)' : 'retiré'),
+      _ligne('fenêtre', isCompactWindow() ? 'compacte — menu en bas' : 'large — menu debout à droite'),
       _ligne('marges sûres', _bords(mq.padding)),
       _ligne('marges vues', _bords(mq.viewPadding)),
       _ligne('clavier', _bords(mq.viewInsets)),

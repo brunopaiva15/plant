@@ -6,7 +6,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
-import 'app/orientation_lock.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/sync_coordinator.dart';
@@ -33,12 +32,6 @@ Future<void> main() async {
   if (kDebugMode && kIsWeb && Uri.base.queryParameters.containsKey('ios')) {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
-
-  // Le portrait sur téléphone, les quatre orientations sur tablette — et, sur
-  // un pliable, l'un puis l'autre dans la même séance. Le verrou suit la
-  // fenêtre au lieu d'être décidé ici une fois pour toutes ; les raisons sont
-  // dans `app/orientation_lock.dart`.
-  await OrientationLock().attach();
 
   // Relevé des cotes de la fenêtre dans la console, en debug seulement.
   WindowProbe.attach();
