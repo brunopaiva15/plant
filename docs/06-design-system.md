@@ -560,8 +560,9 @@ que la base connaît mènent à leur fiche de l'encyclopédie.
 collantes sous un philodendron sont du nectar extrafloral aussi souvent que du
 miellat de cochenilles, et la moitié de ce qu'on photographie par inquiétude
 n'a rien d'anormal. Ces pistes-là viennent dans la même liste, au même rang de
-vraisemblance, et se lisent autrement : une feuille sur la sauge au lieu de
-l'argile d'une famille — elles n'en ont pas —, et une seconde pastille,
+vraisemblance, et se lisent autrement : sur la sauge, le cinquième symbole
+d'argile — une feuille saine, la goutte claire suspendue à sa pointe — au lieu
+de celui d'une famille, dont elles ne relèvent pas ; et une seconde pastille,
 « Phénomène normal », à côté du cran. Elles ne mènent nulle part : l'encyclopédie
 parle de ce qui se soigne. Quand aucune piste n'est un problème, le constat le
 dit avant tout le reste : « Rien d'anormal », sur la feuille, plutôt que

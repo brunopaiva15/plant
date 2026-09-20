@@ -364,31 +364,34 @@ class _KindTile extends StatelessWidget {
 
   final PlantProblem? problem;
 
-  /// Une piste qui n'est pas un problème : elle n'a pas de famille, donc pas
-  /// de dessin d'argile. La feuille sur la sauge dit ce qu'il y a à dire, et
-  /// ne se confond avec aucune des quatre familles.
+  /// Une piste qui n'est pas un problème : elle a son symbole d'argile, la
+  /// feuille et sa goutte claire, qui ne se confond avec aucune des quatre
+  /// familles.
   final bool natural;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     final p = problem;
-    if (p == null && natural) return EmojiTile(emoji: '🌿', size: EmojiTile.side, background: c.sageSoft, variant: 3);
-    final tint = switch (p?.kind) {
-      ProblemKind.disorder => c.sunSoft,
-      ProblemKind.pest => c.terracottaSoft,
-      ProblemKind.disease => c.roseSoft,
-      ProblemKind.condition => c.sageSoft,
-      null => c.surfaceMuted,
-    };
+    final tint = natural && p == null
+        ? c.sageSoft
+        : switch (p?.kind) {
+            ProblemKind.disorder => c.sunSoft,
+            ProblemKind.pest => c.terracottaSoft,
+            ProblemKind.disease => c.roseSoft,
+            ProblemKind.condition => c.sageSoft,
+            null => c.surfaceMuted,
+          };
     return Container(
       width: EmojiTile.side,
       height: EmojiTile.side,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: tint, borderRadius: Radii.mediumAll),
-      child: p == null
-          ? Icon(CupertinoIcons.question, size: 18, color: c.inkTertiary)
-          : ProblemIcon(problem: p, side: 30),
+      child: p != null
+          ? ProblemIcon(problem: p, side: 30)
+          : natural
+              ? const NaturalCauseIcon(side: 30)
+              : Icon(CupertinoIcons.question, size: 18, color: c.inkTertiary),
     );
   }
 }

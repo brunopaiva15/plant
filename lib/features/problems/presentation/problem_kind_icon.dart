@@ -104,6 +104,38 @@ class ProblemKindIcon extends StatelessWidget {
   }
 }
 
+/// Le symbole d'argile de ce qui n'est pas un problème.
+///
+/// Cinquième pièce du même studio que les quatre familles, et à part comme
+/// ce qu'elle nomme : une feuille saine, la goutte claire suspendue à sa
+/// pointe, deux perles de nectar sur la nervure. Ni lésion, ni dépôt, ni
+/// insecte — c'est l'absence de tout cela qui fait le symbole.
+///
+/// Un phénomène naturel n'a pas d'illustration à lui : la base en compte
+/// trente-deux, et ce qu'ils ont en commun — il n'y a rien à soigner — est
+/// justement ce que la carte doit dire.
+class NaturalCauseIcon extends StatelessWidget {
+  const NaturalCauseIcon({super.key, this.side = 40});
+
+  static const asset = 'assets/problems/clay_naturel.webp';
+
+  final double side;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image(
+      image: ClayIllustration.provider(asset, side, MediaQuery.devicePixelRatioOf(context)),
+      width: side,
+      height: side,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      // L'image porte ce que le nom de la piste ne dit pas : qu'elle n'est
+      // pas un problème.
+      semanticLabel: context.l10n.diagnosisNatural,
+    );
+  }
+}
+
 /// L'image d'un problème : la sienne quand elle existe, celle de sa famille
 /// sinon.
 ///

@@ -8,25 +8,39 @@ import 'package:flora/features/problems/presentation/illustrated_problems.dart';
 import 'package:flora/features/problems/presentation/problem_kind_icon.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Les quatre symboles d'argile des familles de problèmes. On vérifie les
-/// fichiers réellement embarqués : une image renommée ou oubliée dans le
-/// pubspec ne se verrait qu'à l'exécution, sur l'appareil.
+/// Les quatre symboles d'argile des familles de problèmes, et le cinquième —
+/// celui de ce qui n'en est pas un. On vérifie les fichiers réellement
+/// embarqués : une image renommée ou oubliée dans le pubspec ne se verrait
+/// qu'à l'exécution, sur l'appareil.
 void main() {
+  /// Un fichier livré, et qui est bien une image WebP.
+  void verifieWebp(String path, {required String raison}) {
+    final file = File(path);
+    expect(file.existsSync(), isTrue, reason: '$raison → $path');
+    expect(file.lengthSync(), greaterThan(1024), reason: raison);
+    // En-tête RIFF/WEBP : le fichier est bien ce qu'il prétend être.
+    final head = file.openSync().readSync(12);
+    expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF', reason: raison);
+    expect(String.fromCharCodes(head.sublist(8, 12)), 'WEBP', reason: raison);
+  }
+
   test('chaque famille a son image, présente et non vide', () {
     for (final kind in ProblemKind.values) {
-      final file = File(ProblemKindIcon.assetOf(kind));
-      expect(file.existsSync(), isTrue, reason: '${kind.name} → ${file.path}');
-      expect(file.lengthSync(), greaterThan(1024), reason: kind.name);
-      // En-tête RIFF/WEBP : le fichier est bien ce qu'il prétend être.
-      final head = file.openSync().readSync(12);
-      expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF', reason: kind.name);
-      expect(String.fromCharCodes(head.sublist(8, 12)), 'WEBP', reason: kind.name);
+      verifieWebp(ProblemKindIcon.assetOf(kind), raison: kind.name);
     }
   });
 
   test('les quatre pointent sur quatre images différentes', () {
     final paths = {for (final kind in ProblemKind.values) ProblemKindIcon.assetOf(kind)};
     expect(paths, hasLength(ProblemKind.values.length));
+  });
+
+  test('ce qui n\'est pas un problème a son propre symbole', () {
+    // Une piste naturelle n'emprunte le dessin d'aucune famille : sa carte
+    // dirait sinon qu'elle en est une.
+    verifieWebp(NaturalCauseIcon.asset, raison: 'phénomène naturel');
+    final familles = {for (final kind in ProblemKind.values) ProblemKindIcon.assetOf(kind)};
+    expect(familles, isNot(contains(NaturalCauseIcon.asset)));
   });
 
   test('le dossier des images est déclaré dans le pubspec', () {

@@ -410,6 +410,18 @@ sert : `naturalFor` en tire la liste soumise avec les problèmes, le service
 rend `N01`, l'application affiche son nom et sait que la piste n'est pas un
 souci (docs/09, § 9).
 
+Le symbole d'argile de ces pistes, `assets/problems/clay_naturel.webp`, est la
+cinquième pièce du studio des quatre familles (`tool/build_category_logos.py`,
+rendu par le même script, recadré à la même échelle par
+`tool/pack_category_logos.py --seulement naturel`, qui ne réécrit pas les
+quatre autres et prévient si le nouveau venu déborde de leur boîte) : une
+feuille saine, la goutte claire suspendue à sa pointe, deux perles de nectar
+sur la nervure. Ni lésion, ni dépôt, ni insecte — c'est l'absence de tout cela
+qui fait le symbole. La goutte est pâle sans être blanche : un blanc mat sur
+une feuille, ici, se lirait cochenille farineuse. Un phénomène n'a pas
+d'illustration à lui : ce que les trente-deux ont en commun — il n'y a rien à
+soigner — est justement ce que la carte doit dire.
+
 N'entre ici que ce dont il n'y a **rien à soigner**. Ce que la base des
 problèmes traite déjà n'y a pas sa place, même quand la chose passe pour
 anodine : la croûte blanche des sels est l'entrée `023`, l'œdème physiologique
