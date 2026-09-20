@@ -1,4 +1,5 @@
 import 'package:flora/app/window_probe.dart';
+import 'package:flora/core/window_regions.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -50,6 +51,48 @@ void main() {
     expect(bloc, contains('[auxine:fenêtre]'));
     expect(bloc, contains('669.0 × 951.0 pt'));
     expect(bloc, contains('displayFeatures est vide'));
+    // Le menu relevé est celui qui sera posé : 669 × 951 le met debout.
+    expect(bloc, contains('debout, à droite'));
+  });
+
+  testWidgets('elle dit pourquoi le système n\'annonce rien', (tester) async {
+    addTearDown(WindowProbe.detach);
+    addTearDown(tester.view.reset);
+    resize(tester, const Size(669, 951));
+
+    final lignes = await _capture(tester, () async {
+      WindowProbe.attach();
+      await tester.pumpWidget(const SizedBox());
+      await tester.idle();
+    });
+
+    // « Aucune région annoncée » a trop de causes pour se lire seul : la
+    // ligne suivante les distingue, et c'est elle qu'on lira sur l'appareil.
+    final bloc = lignes.join('\n');
+    expect(bloc, contains('régions système'));
+    expect(bloc, contains('réponse du natif'));
+  });
+
+  testWidgets('une réponse tardive du natif donne un relevé de plus', (tester) async {
+    addTearDown(WindowProbe.detach);
+    addTearDown(tester.view.reset);
+    addTearDown(() => WindowRegionsService.lastAnswer.value = 'pas encore demandé');
+    resize(tester, const Size(669, 951));
+
+    final lignes = await _capture(tester, () async {
+      WindowProbe.attach();
+      await tester.pumpWidget(const SizedBox());
+      await tester.idle();
+
+      // Le natif répond après la première image : sans l'écoute, le relevé
+      // resterait sur son « pas encore demandé ».
+      WindowRegionsService.lastAnswer.value = '{available: true}';
+      await tester.idle();
+    });
+
+    final releves = lignes.where((l) => l.startsWith('[auxine:fenêtre] relevé ')).toList();
+    expect(releves.length, 2);
+    expect(releves.last, contains('{available: true}'));
   });
 
   testWidgets('un pli donne un nouveau relevé, un clavier n\'en donne pas', (tester) async {

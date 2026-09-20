@@ -239,8 +239,11 @@ class FloraTabRail extends StatelessWidget {
   /// cas de l'iPad en Split View aux deux tiers, 678 × 1133, qui vaut 0,60.
   ///
   /// Les cotes viennent de Xcode 27.1, sur un binaire bord-à-bord.
-  static bool fitsIn(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
+  static bool fitsIn(BuildContext context) => fitsInSize(MediaQuery.sizeOf(context));
+
+  /// La même décision, sur une taille nue : ce dont la sonde a besoin, qui
+  /// n'a pas de `BuildContext` sous la main.
+  static bool fitsInSize(Size size) {
     if (size.shortestSide >= 700) return false;
     if (size.width < 460) return false;
     return size.width / size.height > 0.6;
