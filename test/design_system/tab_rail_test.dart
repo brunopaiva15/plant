@@ -280,6 +280,18 @@ void main() {
       expect(466 - annonce.center.dx, closeTo(47.83, 0.5));
     });
 
+    testWidgets('l\'ouvert couché remonte la colonne, sans la décaler', (tester) async {
+      // Relevé du 20 septembre 2026, 951 × 669 : une seule région, la bande,
+      // haute de 120 au lieu de 170. Il y a moins de système au-dessus, la
+      // colonne remonte d'autant. L'axe, lui, ne bouge pas : iOS n'annonce
+      // pas la caméra dans cette pose, et la mesure tient.
+      WindowRegionsService.regions.value = const WindowRegions(systemStackBottom: 120);
+      await _pumpRail(tester, size: const Size(951, 669), rightInset: 84);
+      final pill = _pill(tester);
+      expect(pill.top, moreOrLessEquals(128, epsilon: 0.5));
+      expect(951 - pill.center.dx, closeTo(48, 0.5));
+    });
+
     testWidgets('une annonce qui manque laisse la mesure en place', (tester) async {
       // Le pli seul : il ne dit rien de la pile ni de l'axe.
       WindowRegionsService.regions.value = const WindowRegions(fold: Rect.fromLTWH(0, 470, 669, 12));

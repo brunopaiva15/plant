@@ -177,15 +177,23 @@ abstract final class WindowRegionsService {
     // Une pile de plus d'un tiers de la fenêtre n'est pas une pile.
     if (bas != null && bas > hauteur / 3) bas = null;
 
-    // L'axe se lit sur la plus étroite des régions — la caméra —, et non sur
-    // la bande : les glyphes ne sont pas centrés dedans. Sur le Duo fermé, la
-    // caméra donne 47,8 points depuis le bord droit là où la bande en donne
-    // 42, et ce sont bien les 47,7 mesurés au pixel sur une capture.
+    // L'axe, lui, ne se lit que sur une région qui **flotte** : la caméra. La
+    // bande est écartée pour la raison inverse de celle qui la retient plus
+    // haut — elle part du bord haut, et son milieu n'est pas celui des
+    // glyphes. Mesurés dans la même pose : 42 points du bord pour le milieu
+    // de la bande, 47,8 pour la caméra, et les 47,7 relevés au pixel sur une
+    // capture donnent raison à la seconde.
+    //
+    // Ce n'est pas un détail de quelques points. iOS n'annonce la caméra que
+    // dans certaines poses — fermé oui, ouvert couché non —, si bien qu'un
+    // repli sur la bande ferait sauter le menu de six points d'un pli à
+    // l'autre. Sans région flottante, on ne dit rien, et l'appelant garde sa
+    // mesure : elle vaut 48, la caméra 47,8, et rien ne bouge.
     Rect? repere;
     for (final r in occlusions) {
+      if (r.top <= 1) continue;
       if (repere == null || r.width < repere.width) repere = r;
     }
-    repere ??= barre;
     double? axe;
     if (repere != null) {
       final depuisLeBord = largeur - repere.center.dx;

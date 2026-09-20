@@ -315,18 +315,32 @@ Mais les occlusions en donnent deux, pas une :
 | `382, 0 · 84 × 170` | la **bande du système**, large comme la marge sûre de ce côté. Son bas, 170, borne la pile |
 | `399,7 ; 29,3 · 37 × 37` | la **caméra**, qui flotte dedans. Son milieu tombe à 47,8 points du bord droit |
 
-D'où les deux règles de `parse`. Le bas de la pile ne vient que d'une région
-qui **part du bord haut** : la bande en est une, la caméra non — elle est le
-haut de la pile, jamais son bas, et prise seule elle poserait le menu au-dessus
-de l'heure. L'axe, lui, se lit sur la **plus étroite** des régions : la caméra
-donne 47,8 là où le milieu de la bande donne 42, et les glyphes sont sur le
-premier axe, pas sur le second.
+D'où les deux règles de `parse`, qui se répondent. Le bas de la pile ne vient
+que d'une région qui **part du bord haut** — la bande. L'axe ne vient que d'une
+région qui **flotte** — la caméra. Chacune est écartée du rôle de l'autre, et
+pour de bonnes raisons : une caméra est le haut de la pile, jamais son bas, et
+prise seule elle poserait le menu au-dessus de l'heure ; le milieu de la bande
+n'est pas celui des glyphes, 42 points du bord contre 47,8 dans la même pose.
 
-Les deux confirment la mesure au lieu de la démentir : 47,8 contre les 47,7
-relevés au pixel, et un menu qui commence à 178 points contre 172. C'est aussi
-pourquoi l'air sous une région annoncée n'est pas celui d'une mesure — huit
-points sous ce que le système se réserve, trente-deux sous des glyphes vus sur
-une capture.
+La seconde règle compte plus qu'il n'y paraît, parce qu'iOS n'annonce pas la
+caméra dans toutes les poses :
+
+| pose | régions annoncées | ce qu'on en retient |
+|---|---|---|
+| fermé, 466 × 678 | bande `382, 0 · 84 × 170`, caméra `399,7 ; 29,3 · 37 × 37` | pile 170, axe 47,8 |
+| ouvert couché, 951 × 669 | bande `867, 0 · 84 × 120` | pile 120, **pas d'axe** |
+
+Se rabattre sur la bande dans le second cas ferait sauter le menu de six points
+d'un pli à l'autre. Sans région flottante on ne dit donc rien, et la mesure —
+48 — tient : la colonne ne bouge pas d'un dixième entre les deux poses.
+
+Le bas de la pile, lui, varie vraiment d'une pose à l'autre : 170 fermé, 120
+ouvert couché. C'est le vrai gain du canal, celui qu'aucune constante ne
+pouvait rendre. L'axe, la mesure l'avait déjà juste.
+
+C'est aussi pourquoi l'air sous une région annoncée n'est pas celui d'une
+mesure — huit points sous ce que le système se réserve, trente-deux sous des
+glyphes vus sur une capture.
 
 Deux garde-fous, parce que la réponse vient de l'extérieur. Le premier est un
 `#if compiler(>=6.4)` autour des *reserved regions* : le symbole n'existe pas

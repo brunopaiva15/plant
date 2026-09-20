@@ -425,7 +425,9 @@ où sont réellement la bande du système, la caméra et le pli, et le menu s'y
 range quand la réponse est plausible — voir docs/05, « Ce que le système
 réserve ». Sur l'écran extérieur du Duo, iOS annonce une bande haute de 170
 points et une caméra à 47,8 du bord droit : le menu commence à 178 au lieu de
-172, et son axe ne bouge pas d'un dixième. Les 140 et les 47,7 points restent
+172, et son axe ne bouge pas d'un dixième. Ouvert et couché, la bande ne fait
+plus que 120 et la colonne remonte d'autant — il y a moins de système
+au-dessus d'elle. Aucune constante ne savait faire ça. Les 140 et les 47,7 points restent
 écrits dans le code, et servent partout où le canal se tait : ailleurs que sur iOS, sur un binaire construit avec un SDK
 plus ancien, ou quand la réponse est invraisemblable. Le menu se pose alors où
 il se posait avant, ce qui est déjà juste : l'annonce affine, elle ne porte
