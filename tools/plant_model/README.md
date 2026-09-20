@@ -95,6 +95,17 @@ ce rapport s'inverse et c'est le processeur qui fait attendre. Un i7-9700K
 être sur un SSD** : 290 000 fichiers lus dans un ordre différent à chaque
 époque sont le pire cas pour un disque à plateaux.
 
+**Mesurer la machine avant d'y déplacer le jeu.** Copier des dizaines de
+gigaoctets pour découvrir qu'une carte n'apporte rien, c'est une journée
+perdue. `../plant_dataset/echantillon.py` prélève quelques centaines de
+mégaoctets — mêmes images, même tuyau, même recette, seul le nombre de
+classes change — et cela suffit à comparer deux machines : à 320 px le
+dorsal coûte environ 0,45 GFLOP par image contre 0,01 pour la tête, si bien
+qu'un débit lu sur 120 classes décrit la machine à quelques pour cent près.
+Lancer ensuite `train.py --steps-per-epoch 60 --fine-epochs 2 --ram-budget 0`
+sur l'échantillon et lire le `s/step` de la **seconde** époque : la première
+paie la compilation du graphe.
+
 **Le jeu d'images n'est pas dans Git** (15 Go). Il se reconstruit avec
 [`../plant_dataset`](../plant_dataset/README.md), en parts parallèles :
 comptez trois heures sur quatre cœurs, moins sur huit. Recopier d'abord
