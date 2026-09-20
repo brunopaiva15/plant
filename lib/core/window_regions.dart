@@ -141,33 +141,40 @@ abstract final class WindowRegionsService {
     final divisions = _rects(raw['divisions']);
     final barre = _rect(raw['statusBar']);
 
-    // Seule la barre d'état peut dire où **finit** la pile : c'est elle qui
-    // contient l'heure et le wifi. Une caméra ne borne rien — elle en est le
-    // haut. Sans cadre de barre d'état crédible, on ne prétend donc pas
-    // savoir, et l'appelant garde sa mesure.
+    // Ce qui **borne** la pile, c'est la bande du système : la région qui
+    // part du bord haut et descend. Sur l'iPhone Duo fermé, iOS l'annonce
+    // large de 84 points — la marge sûre de ce côté — et haute de 170.
     //
-    // Sur l'iPhone Duo, justement, `statusBarFrame` rend 466 × 2 points en
-    // haut à gauche pendant que l'heure est debout contre le bord droit : il
-    // n'a pas suivi la barre dans sa rotation. C'est ce cadre-là qu'on écarte
-    // ici, et c'est pour lui que ces bornes existent.
+    // Une caméra, elle, flotte dedans : elle est le haut de la pile, jamais
+    // son bas, et prise seule elle placerait le menu au-dessus de l'heure.
+    // D'où la condition sur le bord haut, et non sur le genre de région.
+    //
+    // Le cadre de la barre d'état y passe aussi, pour les appareils d'un seul
+    // écran. Sur le Duo il ne sert à rien : il rend 466 × 2 points en haut à
+    // gauche pendant que l'heure est debout contre le bord droit, et ses deux
+    // points de haut le disqualifient ici.
     double? bas;
-    if (barre != null && barre.height >= 20) {
-      bas = barre.bottom;
-      for (final r in occlusions) {
-        bas = math.max(bas!, r.bottom);
-      }
-      // Une pile de plus d'un tiers de la fenêtre n'est pas une pile.
-      if (bas! > hauteur / 3) bas = null;
+    for (final r in [?barre, ...occlusions]) {
+      if (r.top > 1 || r.height < 20) continue;
+      bas = bas == null ? r.bottom : math.max(bas, r.bottom);
     }
+    // Une pile de plus d'un tiers de la fenêtre n'est pas une pile.
+    if (bas != null && bas > hauteur / 3) bas = null;
 
-    // L'axe se lit d'abord sur la caméra, qui est le haut de la pile ; à
-    // défaut sur la barre d'état.
-    final repere = occlusions.isNotEmpty ? occlusions.first : barre;
+    // L'axe se lit sur la plus étroite des régions — la caméra —, et non sur
+    // la bande : les glyphes ne sont pas centrés dedans. Sur le Duo fermé, la
+    // caméra donne 47,8 points depuis le bord droit là où la bande en donne
+    // 42, et ce sont bien les 47,7 mesurés au pixel sur une capture.
+    Rect? repere;
+    for (final r in occlusions) {
+      if (repere == null || r.width < repere.width) repere = r;
+    }
+    repere ??= barre;
     double? axe;
     if (repere != null) {
       final depuisLeBord = largeur - repere.center.dx;
       // Au-delà, ce n'est plus une colonne de bord : la barre d'état est
-      // sans doute horizontale, et son milieu au milieu de l'écran.
+      // sans doute couchée, et son milieu au milieu de l'écran.
       if (depuisLeBord > 16 && depuisLeBord < largeur / 4) axe = depuisLeBord;
     }
 

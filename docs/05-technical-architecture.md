@@ -301,14 +301,32 @@ chacune décidait jusqu'ici d'une constante relevée au pixel sur une capture :
 la vue Flutter, en points. `WindowRegionsService` les lit au lancement et à
 chaque `didChangeMetrics`, c'est-à-dire à chaque pli et à chaque rotation.
 
-Une des trois est déjà tombée. Mesuré sur le simulateur de l'écran extérieur,
-`statusBarFrame` rend **466 × 2 points en haut à gauche** pendant que l'heure
-et le wifi sont debout contre le bord droit : le cadre n'a pas suivi la barre
-dans sa rotation. Le bas de la pile ne viendra donc pas de là, et les 140
-points mesurés restent la seule source. C'est aussi pourquoi `parse` n'accepte
-un bas de pile que si la barre d'état est elle-même crédible — au moins 20
-points de haut : une caméra est le **haut** de la pile, jamais son bas, et
-seule ne borne rien.
+Le relevé du 20 septembre 2026, sur le simulateur de l'écran extérieur, dit
+comment les trois se lisent — et il vaut mieux que ce qu'on espérait.
+
+`statusBarFrame` est mort sur cet appareil : il rend **466 × 2 points en haut
+à gauche** pendant que l'heure et le wifi sont debout contre le bord droit. Le
+cadre n'a pas suivi la barre dans sa rotation.
+
+Mais les occlusions en donnent deux, pas une :
+
+| région annoncée | ce qu'elle vaut |
+|---|---|
+| `382, 0 · 84 × 170` | la **bande du système**, large comme la marge sûre de ce côté. Son bas, 170, borne la pile |
+| `399,7 ; 29,3 · 37 × 37` | la **caméra**, qui flotte dedans. Son milieu tombe à 47,8 points du bord droit |
+
+D'où les deux règles de `parse`. Le bas de la pile ne vient que d'une région
+qui **part du bord haut** : la bande en est une, la caméra non — elle est le
+haut de la pile, jamais son bas, et prise seule elle poserait le menu au-dessus
+de l'heure. L'axe, lui, se lit sur la **plus étroite** des régions : la caméra
+donne 47,8 là où le milieu de la bande donne 42, et les glyphes sont sur le
+premier axe, pas sur le second.
+
+Les deux confirment la mesure au lieu de la démentir : 47,8 contre les 47,7
+relevés au pixel, et un menu qui commence à 178 points contre 172. C'est aussi
+pourquoi l'air sous une région annoncée n'est pas celui d'une mesure — huit
+points sous ce que le système se réserve, trente-deux sous des glyphes vus sur
+une capture.
 
 Deux garde-fous, parce que la réponse vient de l'extérieur. Le premier est un
 `#if compiler(>=6.4)` autour des *reserved regions* : le symbole n'existe pas

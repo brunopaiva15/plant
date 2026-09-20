@@ -256,10 +256,28 @@ void main() {
     });
 
     testWidgets('le bas de la pile annoncé décide du dégagement', (tester) async {
-      // 32 points d'air sous la pile, comme pour la mesure de repli.
+      // Huit points sous la région annoncée, et non les 32 qui dégagent des
+      // glyphes mesurés : la région est déjà ce que le système se réserve.
       WindowRegionsService.regions.value = const WindowRegions(systemStackBottom: 60);
       await _pumpRail(tester);
-      expect(_pill(tester).top, moreOrLessEquals(92, epsilon: 0.5));
+      expect(_pill(tester).top, moreOrLessEquals(68, epsilon: 0.5));
+    });
+
+    testWidgets('le relevé du Duo fermé ne déplace presque pas la colonne', (tester) async {
+      // Ce que le simulateur a répondu le 20 septembre 2026 : bande haute de
+      // 170 points, caméra à 47,8 du bord droit. La mesure disait 172 et
+      // 47,7 — l'annonce la remplace sans la démentir.
+      await _pumpRail(tester, size: const Size(466, 678), rightInset: 84);
+      final mesure = _pill(tester);
+      WindowRegionsService.regions.value = const WindowRegions(
+        systemStackBottom: 170,
+        systemAxisFromRight: 47.83,
+      );
+      await tester.pump();
+      final annonce = _pill(tester);
+      expect(annonce.top, moreOrLessEquals(178, epsilon: 0.5));
+      expect((annonce.top - mesure.top).abs(), lessThan(8), reason: 'la colonne saute');
+      expect(466 - annonce.center.dx, closeTo(47.83, 0.5));
     });
 
     testWidgets('une annonce qui manque laisse la mesure en place', (tester) async {
