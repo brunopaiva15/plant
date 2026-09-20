@@ -1,0 +1,161 @@
+import 'package:flora/design_system/design_system.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// Le menu debout, celui des fenêtres larges qui ne sont pas des tablettes.
+///
+/// Un iPhone Duo fermé montre ~466 points de large, ouvert ~669 : c'est le
+/// second cas que sert ce rail. Un iPad, lui, garde sa pilule en bas — d'où
+/// la seconde condition, sur le côté le plus court.
+
+const _tabs = [
+  FloraTab(icon: CupertinoIcons.sun_max, activeIcon: CupertinoIcons.sun_max_fill, label: "Aujourd'hui"),
+  FloraTab(icon: CupertinoIcons.square_grid_2x2, activeIcon: CupertinoIcons.square_grid_2x2_fill, label: 'Plantes'),
+  FloraTab(icon: CupertinoIcons.house, activeIcon: CupertinoIcons.house_fill, label: 'Jardin'),
+  FloraTab(icon: CupertinoIcons.person, activeIcon: CupertinoIcons.person_fill, label: 'Profil'),
+];
+
+/// Le rail monté comme la coquille le monte : à droite d'un contenu qui prend
+/// le reste.
+Future<void> _pumpRail(
+  WidgetTester tester, {
+  Size size = const Size(669, 951),
+  double rightInset = 0,
+  int index = 0,
+  ValueChanged<int>? onSelect,
+}) async {
+  await tester.binding.setSurfaceSize(size);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: buildFloraTheme(Brightness.light),
+      home: MediaQuery(
+        data: MediaQueryData(
+          size: size,
+          padding: EdgeInsets.only(right: rightInset),
+          viewPadding: EdgeInsets.only(right: rightInset),
+        ),
+        child: Scaffold(
+          extendBody: true,
+          body: Row(
+            children: [
+              const Expanded(child: SizedBox.expand(key: Key('contenu'))),
+              FloraTabRail(tabs: _tabs, index: index, onSelect: onSelect ?? (_) {}),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.pump();
+}
+
+/// La pilule du rail : la seule boîte d'argile de ce montage.
+Rect _pill(WidgetTester tester) => tester.getRect(find.byType(ClayBox).first);
+
+/// La bulle : la seule pièce sauge du rail.
+Rect _bulle(WidgetTester tester) => tester.getRect(
+      find.byWidgetPredicate(
+        (w) => w is DecoratedBox && w.decoration is BoxDecoration && (w.decoration as BoxDecoration).color == FloraColors.light.sage,
+      ),
+    );
+
+void main() {
+  group('où le menu se met debout', () {
+    // (ce qu'on tient, la fenêtre, le menu debout)
+    const cas = <(String, Size, bool)>[
+      ('iPhone', Size(402, 874), false),
+      ('iPhone Duo fermé', Size(466, 678), false),
+      ('iPhone Duo ouvert', Size(669, 951), true),
+      ('iPhone Duo ouvert, couché', Size(951, 669), true),
+      ('iPad mini, portrait', Size(744, 1133), false),
+      ('iPad 11 pouces, paysage', Size(1180, 820), false),
+      ('une app posée à côté d\'une autre', Size(320, 951), false),
+    ];
+    for (final (appareil, size, debout) in cas) {
+      testWidgets('$appareil : ${debout ? 'à droite' : 'en bas'}', (tester) async {
+        await tester.binding.setSurfaceSize(size);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        late bool result;
+        await tester.pumpWidget(
+          MediaQuery(
+            data: MediaQueryData(size: size),
+            child: Builder(builder: (context) {
+              result = FloraTabRail.fitsIn(context);
+              return const SizedBox();
+            }),
+          ),
+        );
+        expect(result, debout);
+      });
+    }
+  });
+
+  group('le menu debout', () {
+    testWidgets('se range contre le bord droit, à hauteur du regard', (tester) async {
+      await _pumpRail(tester);
+      final pill = _pill(tester);
+      // Contre le bord droit, pas au milieu.
+      expect(669 - pill.right, lessThan(20), reason: 'la pilule flotte loin du bord');
+      // Et centrée dans la hauteur.
+      expect(pill.center.dy, closeTo(951 / 2, 1));
+      // Une colonne, pas une barre : plus haute que large.
+      expect(pill.height, greaterThan(pill.width * 2));
+    });
+
+    testWidgets('laisse au système la bande qu\'il réserve à droite', (tester) async {
+      await _pumpRail(tester, rightInset: 40);
+      // Sur un pliable ouvert, la barre d'état passe debout à droite : il y a
+      // quelque chose d'écrit dans cette bande, on ne la traverse pas.
+      expect(669 - _pill(tester).right, closeTo(40, 0.5));
+    });
+
+    testWidgets('ne laisse pas le contenu passer dessous', (tester) async {
+      await _pumpRail(tester);
+      final contenu = tester.getRect(find.byKey(const Key('contenu')));
+      expect(contenu.right, lessThanOrEqualTo(_pill(tester).left + 0.5));
+    });
+
+    testWidgets('chaque onglet reste sous le doigt : 44 points au moins', (tester) async {
+      await _pumpRail(tester);
+      for (final tab in _tabs) {
+        final cible = tester.getSize(find.bySemanticsLabel(tab.label));
+        expect(cible.width, greaterThanOrEqualTo(44));
+        expect(cible.height, greaterThanOrEqualTo(44));
+      }
+    });
+
+    testWidgets('toucher un onglet le choisit', (tester) async {
+      final choisis = <int>[];
+      await _pumpRail(tester, onSelect: choisis.add);
+      await tester.tap(find.bySemanticsLabel('Jardin'));
+      await tester.pump();
+      expect(choisis, [2]);
+    });
+
+    testWidgets('la bulle glisse dans la colonne au lieu d\'y sauter', (tester) async {
+      await _pumpRail(tester);
+      final depart = _bulle(tester);
+
+      await _pumpRail(tester, index: 3);
+      await tester.pump(const Duration(milliseconds: 60));
+      final route = _bulle(tester);
+      expect(route.top, greaterThan(depart.top), reason: 'elle est partie');
+      expect(route.top, lessThan(depart.top + depart.height * 3), reason: 'et elle est encore en route');
+
+      await tester.pumpAndSettle();
+      final arrivee = _bulle(tester);
+      expect(arrivee.top, moreOrLessEquals(depart.top + depart.height * 3, epsilon: 1));
+      // Elle descend : elle ne s'étire pas, et elle ne part pas de côté.
+      expect(arrivee.height, moreOrLessEquals(depart.height, epsilon: 0.5));
+      expect(arrivee.center.dx, moreOrLessEquals(depart.center.dx, epsilon: 0.5));
+    });
+
+    testWidgets('dans une fenêtre courte, la colonne se resserre au lieu de déborder', (tester) async {
+      await _pumpRail(tester, size: const Size(669, 260));
+      expect(tester.takeException(), isNull);
+      expect(_pill(tester).height, lessThanOrEqualTo(260));
+    });
+  });
+}

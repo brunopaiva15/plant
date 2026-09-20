@@ -116,14 +116,126 @@ class FloraTabBar extends StatelessWidget {
   }
 }
 
+/// Le même menu, debout sur le bord droit.
+///
+/// Sur un appareil qui s'ouvre — l'iPhone Duo —, la fenêtre devient large
+/// sans devenir une tablette : une pilule posée en bas traverse alors tout
+/// l'écran pour quatre onglets, et le pouce qui tient l'appareil ouvert est
+/// sur le côté, pas en bas. Le menu passe donc à droite, en colonne.
+///
+/// Rien d'autre ne change : c'est la même bulle, le même ressort, la même
+/// argile. Seuls les libellés tombent — quatre mots debout doubleraient la
+/// largeur de la colonne, et `Semantics` les dit toujours à VoiceOver.
+class FloraTabRail extends StatelessWidget {
+  const FloraTabRail({super.key, required this.tabs, required this.index, required this.onSelect});
+
+  final List<FloraTab> tabs;
+  final int index;
+  final ValueChanged<int> onSelect;
+
+  /// La largeur de la colonne. Avec ses 6 points de marge intérieure, chaque
+  /// onglet reçoit 52 points de large : au-delà des 44 exigés.
+  static const double _width = 64;
+
+  /// La hauteur d'un onglet dans la colonne.
+  static const double _slot = 56;
+
+  /// Le blanc minimal entre la pilule et le bord.
+  static const double _edgeGap = Space.sm;
+
+  /// La fenêtre est large, sans être celle d'une tablette.
+  ///
+  /// Deux conditions, et les deux comptent. Large : en deçà de 600 points, le
+  /// menu debout mangerait un dixième de la largeur du contenu. Pas une
+  /// tablette : un iPad garde sa barre en bas, et son côté le plus court fait
+  /// au minimum 744 points là où l'écran intérieur du Duo en fait environ 669.
+  ///
+  /// La limite des 700 points est donc un entre-deux, pas une mesure : Flutter
+  /// ne sait pas dire « iPhone » ou « iPad » sans canal natif, et ne remplit
+  /// pas `displayFeatures` sur iOS (voir `app/window_probe.dart`). Un iPad en
+  /// Split View réglé aux deux tiers tomberait du mauvais côté ; c'est le seul
+  /// cas connu, et il disparaîtra le jour où un canal dira le pli.
+  static bool fitsIn(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    return size.width >= 600 && size.shortestSide < 700;
+  }
+
+  /// La largeur que le rail prend au contenu, bord compris. Sert à ce qui
+  /// flotte par-dessus l'application et doit l'éviter — le toast.
+  static double reserved(BuildContext context) => Space.md + _width + _rightInset(context);
+
+  /// Le blanc entre la pilule et le bord droit. Ce que le système réserve de
+  /// ce côté — sur un pliable ouvert, la barre d'état passe debout à droite —
+  /// est rendu en entier : contrairement à l'indicateur d'accueil, il y a
+  /// quelque chose d'écrit dedans.
+  static double _rightInset(BuildContext context) =>
+      math.max(_edgeGap, MediaQuery.paddingOf(context).right);
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(Space.md, Space.md, _rightInset(context), Space.md),
+      // `widthFactor: 1` fait ici ce que `heightFactor` fait pour la barre du
+      // bas : la colonne épouse sa pilule en largeur et ne se centre que dans
+      // la hauteur.
+      child: Center(
+        widthFactor: 1,
+        child: LayoutBuilder(
+          builder: (context, constraints) => ClayBox(
+            color: c.surface,
+            shape: const ClayShape.pill(),
+            width: _width,
+            // La colonne ne dépasse jamais ce qu'on lui laisse : dans une
+            // fenêtre courte — un pliable à demi replié, une app posée à côté
+            // d'une autre —, les onglets se resserrent au lieu de déborder.
+            height: constraints.hasBoundedHeight
+                ? math.min(12 + _slot * tabs.length, constraints.maxHeight)
+                : 12 + _slot * tabs.length,
+            padding: const EdgeInsets.all(6),
+            child: _TabStrip(
+              axis: Axis.vertical,
+              showLabels: false,
+              tabs: tabs,
+              index: index,
+              labelLines: 1,
+              onSelect: (i) {
+                if (i != index) Haptics.selection();
+                onSelect(i);
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// La rangée d'onglets et la bulle qui court dessous.
 class _TabStrip extends StatefulWidget {
-  const _TabStrip({required this.tabs, required this.index, required this.onSelect, required this.labelLines});
+  const _TabStrip({
+    required this.tabs,
+    required this.index,
+    required this.onSelect,
+    required this.labelLines,
+    this.axis = Axis.horizontal,
+    this.showLabels = true,
+  });
 
   final List<FloraTab> tabs;
   final int index;
   final ValueChanged<int> onSelect;
   final int labelLines;
+
+  /// Le sens de la course : la pilule du bas est une rangée, le rail de
+  /// droite une colonne. Tout le reste — la bulle, le ressort, la couleur
+  /// qui vire au passage — est commun aux deux.
+  final Axis axis;
+
+  /// Le rail se passe de libellés : quatre mots debout feraient une colonne
+  /// deux fois plus large, et le lecteur d'écran les annonce de toute façon
+  /// (voir la `Semantics` de [_TabItem]).
+  final bool showLabels;
 
   @override
   State<_TabStrip> createState() => _TabStripState();
@@ -167,28 +279,37 @@ class _TabStripState extends State<_TabStrip> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final vertical = widget.axis == Axis.vertical;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final slot = constraints.maxWidth / widget.tabs.length;
+        final slot = (vertical ? constraints.maxHeight : constraints.maxWidth) / widget.tabs.length;
         return Stack(
           children: [
             Positioned.fill(
               child: AnimatedBuilder(
                 animation: _bubble,
-                builder: (context, child) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: Transform.translate(
-                    // Le dépassement du ressort est borné aux onglets qui
-                    // existent : aux deux bouts, la bulle se poserait sinon
-                    // un point ou deux en dehors de la pilule.
-                    offset: Offset(_bubble.value.clamp(0, widget.tabs.length - 1) * slot, 0),
-                    child: SizedBox(width: slot, height: double.infinity, child: child),
-                  ),
-                ),
+                builder: (context, child) {
+                  // Le dépassement du ressort est borné aux onglets qui
+                  // existent : aux deux bouts, la bulle se poserait sinon
+                  // un point ou deux en dehors de la pilule.
+                  final course = _bubble.value.clamp(0, widget.tabs.length - 1) * slot;
+                  return Align(
+                    alignment: vertical ? Alignment.topCenter : Alignment.centerLeft,
+                    child: Transform.translate(
+                      offset: vertical ? Offset(0, course) : Offset(course, 0),
+                      child: SizedBox(
+                        width: vertical ? double.infinity : slot,
+                        height: vertical ? slot : double.infinity,
+                        child: child,
+                      ),
+                    ),
+                  );
+                },
                 child: DecoratedBox(decoration: BoxDecoration(color: c.sage, borderRadius: Radii.fullAll)),
               ),
             ),
-            Row(
+            Flex(
+              direction: widget.axis,
               children: [
                 for (final (i, tab) in widget.tabs.indexed)
                   Expanded(
@@ -202,6 +323,7 @@ class _TabStripState extends State<_TabStrip> with TickerProviderStateMixin {
                       bubble: _bubble,
                       pop: i == widget.index ? _pop : null,
                       labelLines: widget.labelLines,
+                      showLabel: widget.showLabels,
                       onTap: () => widget.onSelect(i),
                     ),
                   ),
@@ -215,7 +337,7 @@ class _TabStripState extends State<_TabStrip> with TickerProviderStateMixin {
 }
 
 class _TabItem extends StatelessWidget {
-  const _TabItem({required this.tab, required this.index, required this.selected, required this.bubble, required this.pop, required this.onTap, this.labelLines = 1});
+  const _TabItem({required this.tab, required this.index, required this.selected, required this.bubble, required this.pop, required this.onTap, this.labelLines = 1, this.showLabel = true});
 
   final FloraTab tab;
   final int index;
@@ -231,6 +353,9 @@ class _TabItem extends StatelessWidget {
 
   final VoidCallback onTap;
   final int labelLines;
+
+  /// Le libellé sous l'icône. Éteint dans le rail, où l'icône suffit.
+  final bool showLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -254,21 +379,23 @@ class _TabItem extends StatelessWidget {
             final covered = (1 - (bubble.value - index).abs()).clamp(0.0, 1.0);
             final fg = Color.lerp(c.inkSecondary, c.onSage, covered)!;
             final on = covered > 0.5;
+            final icone = Transform.scale(
+              scale: pop?.value ?? 1,
+              child: AnimatedSwitcher(
+                duration: Motion.of(context, Motion.micro),
+                child: Icon(
+                  on ? tab.activeIcon : tab.icon,
+                  key: ValueKey(on),
+                  size: FloraTabBar._iconSize,
+                  color: fg,
+                ),
+              ),
+            );
+            if (!showLabel) return Center(child: icone);
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Transform.scale(
-                  scale: pop?.value ?? 1,
-                  child: AnimatedSwitcher(
-                    duration: Motion.of(context, Motion.micro),
-                    child: Icon(
-                      on ? tab.activeIcon : tab.icon,
-                      key: ValueKey(on),
-                      size: FloraTabBar._iconSize,
-                      color: fg,
-                    ),
-                  ),
-                ),
+                icone,
                 const SizedBox(height: 2),
                 Text(
                   tab.label,

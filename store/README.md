@@ -170,6 +170,12 @@ le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 `compose.py` télécharge la police Inter (SIL OFL) dans `store/fonts/` au
 premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
+L'iPhone Duo a sa propre taille de visuel — 2007 × 2853 pour l'écran
+intérieur —, mais App Store Connect n'en accepte pas encore le dépôt : la
+série iPhone 6,7 pouces vaut pour lui aussi en attendant. Quand la case
+s'ouvrira, ce sera un troisième gabarit dans `FORMATS` et un troisième passage
+de `capture_ios.sh`, avec un cadre d'appareil ouvert à dessiner.
+
 Les objets d'argile ne sont jamais agrandis au-delà de leur taille native
 (`crisp()`) : ces images font 640 ou 1024 pixels, et les étirer plus loin
 les fait fondre.
