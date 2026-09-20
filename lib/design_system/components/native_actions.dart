@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/native_shell.dart';
 import '../../core/sf_symbols.dart';
@@ -21,9 +22,15 @@ class NativeActions extends StatefulWidget {
     required this.leading,
     required this.actions,
     required this.child,
+    this.titleListenable,
   });
 
   final String title;
+
+  /// Un titre qui change en cours de route : celui qui apparaît dans la barre
+  /// quand le grand titre d'une page s'en va en défilant. Prend le pas sur
+  /// [title] quand il est là.
+  final ValueListenable<String>? titleListenable;
 
   /// Le bouton de tête de la page, s'il en a un : le tableau de bord sur
   /// « Aujourd'hui ». Il va à gauche de la barre, là où iOS met la
@@ -96,10 +103,21 @@ class _NativeActionsState extends State<NativeActions> {
   void initState() {
     super.initState();
     _pile.add(this);
+    widget.titleListenable?.addListener(_publier);
+  }
+
+  @override
+  void didUpdateWidget(NativeActions old) {
+    super.didUpdateWidget(old);
+    if (old.titleListenable != widget.titleListenable) {
+      old.titleListenable?.removeListener(_publier);
+      widget.titleListenable?.addListener(_publier);
+    }
   }
 
   @override
   void dispose() {
+    widget.titleListenable?.removeListener(_publier);
     _pile.remove(this);
     _publier();
     super.dispose();
@@ -139,7 +157,7 @@ class _NativeActionsState extends State<NativeActions> {
     final actuelle = _pile.isEmpty ? null : _pile.last;
     NativeShell.onAction = actuelle?._toucher;
     NativeShell.publishActions(
-      title: actuelle?.widget.title ?? '',
+      title: actuelle?.widget.titleListenable?.value ?? actuelle?.widget.title ?? '',
       leading: [for (final e in actuelle?.widget.leading ?? const <NativeActionEntry>[]) e.action],
       actions: [for (final e in actuelle?.widget.actions ?? const <NativeActionEntry>[]) e.action],
     );

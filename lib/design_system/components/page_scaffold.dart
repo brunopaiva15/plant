@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/native_shell.dart';
@@ -128,6 +130,14 @@ class LargeTitlePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Le titre replié a besoin d'un porteur qui survive aux reconstructions :
+    // c'est lui qui monte dans la barre du système quand le grand titre s'en
+    // va. Inutile là où la barre est celle de Flutter.
+    if (!NativeShell.isSupported) return _construire(context, null);
+    return _AvecTitreReplie(builder: (context, replie) => _construire(context, replie));
+  }
+
+  Widget _construire(BuildContext context, ValueNotifier<String>? replie) {
     final c = context.colors;
 
     // Quand le menu est debout à droite, les boutons du haut de page le
@@ -181,8 +191,21 @@ class LargeTitlePage extends StatelessWidget {
         ? null
         : (debout ? _impliedBackButton(context) : (leading ?? _impliedBackButton(context)));
     final Widget? suite = debout || natif != null ? null : _headerActions();
+    // Deux barres se superposaient : celle du système portait les boutons, et
+    // celle de Flutter dessinait le titre une rangée plus bas. Là où UIKit
+    // tient la barre, le grand titre devient donc du contenu, et c'est le
+    // système qui porte le titre replié — sur la ligne des boutons.
+    final aTitreNatif = natif != null && replie != null && isCupertino(context);
     final Widget header;
-    if (isCupertino(context)) {
+    if (aTitreNatif) {
+      header = _GrandTitreNatif(
+        title: title,
+        replie: replie,
+        gauche: gauche,
+        droite: droite,
+        searchField: searchField,
+      );
+    } else if (isCupertino(context)) {
       header = CupertinoSliverNavigationBar(
         largeTitle: Text(title),
         middle: collapsedTitle == null ? null : _CollapsedTitle(text: collapsedTitle!),
@@ -250,6 +273,7 @@ class LargeTitlePage extends StatelessWidget {
           physics: floraScrollPhysics,
           slivers: [
             header,
+            if (aTitreNatif) _TitreReplie(notifier: replie, texte: collapsedTitle ?? title),
             if (gauche == 0 && droite == 0)
               ...slivers
             else
@@ -265,7 +289,13 @@ class LargeTitlePage extends StatelessWidget {
 
     // Le natif ne dessine que si tous les boutons lui parlent.
     if (natif == null) return coquille;
-    return NativeActions(title: '', leading: natif.leading, actions: natif.actions, child: coquille);
+    return NativeActions(
+      title: '',
+      titleListenable: aTitreNatif ? replie : null,
+      leading: natif.leading,
+      actions: natif.actions,
+      child: coquille,
+    );
   }
 
   /// Les boutons tels que le haut de page les porte : en rangée, séparés.
@@ -470,4 +500,119 @@ class FloraPage extends StatelessWidget {
       body: Column(children: [Expanded(child: body(0)), ?bottom]),
     );
   }
+}
+
+/// Le grand titre d'une page dont la barre est celle d'UIKit.
+///
+/// Sans lui, deux barres se superposaient : celle du système portait les
+/// boutons, et celle de Flutter dessinait le titre une rangée plus bas. Le
+/// titre replié descendait donc d'une hauteur de barre, ce qu'aucune
+/// application native ne fait.
+///
+/// Le grand titre devient du contenu, en tête des slivers, et c'est le
+/// système qui porte le titre replié — sur la même ligne que les boutons,
+/// comme partout ailleurs sur iOS.
+class _GrandTitreNatif extends StatelessWidget {
+  const _GrandTitreNatif({
+    required this.title,
+    required this.replie,
+    required this.gauche,
+    required this.droite,
+    required this.searchField,
+  });
+
+  final String title;
+  final ValueNotifier<String> replie;
+  final double gauche;
+  final double droite;
+  final Widget? searchField;
+
+  @override
+  Widget build(BuildContext context) {
+    final marge = EdgeInsets.fromLTRB(math.max(Space.md, gauche), 0, math.max(Space.md, droite), 0);
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top + Space.xs, bottom: Space.xs),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: marge,
+              child: Text(title, style: CupertinoTheme.of(context).textTheme.navLargeTitleTextStyle),
+            ),
+            if (searchField != null)
+              Padding(padding: marge.add(const EdgeInsets.only(top: Space.sm)), child: searchField),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Dit à la barre du système quand le grand titre a quitté l'écran.
+///
+/// Un sliver de rien du tout, posé juste après le titre : c'est de l'endroit
+/// où il se trouve qu'on déduit ce qu'il faut écrire dans la barre. `pinned`
+/// le garde en vie une fois sorti, faute de quoi il cesserait de répondre au
+/// moment précis où sa réponse compte.
+class _TitreReplie extends SingleChildRenderObjectWidget {
+  const _TitreReplie({required this.notifier, required this.texte});
+
+  final ValueNotifier<String> notifier;
+  final String texte;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) => _RenderTitreReplie(notifier, texte);
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderTitreReplie renderObject) {
+    renderObject
+      ..notifier = notifier
+      ..texte = texte;
+  }
+}
+
+class _RenderTitreReplie extends RenderSliver {
+  _RenderTitreReplie(this.notifier, this.texte);
+
+  ValueNotifier<String> notifier;
+  String texte;
+
+  @override
+  void performLayout() {
+    // Le titre est parti dès que le défilement a mangé ce qui le précède.
+    final parti = constraints.scrollOffset > 0;
+    final voulu = parti ? texte : '';
+    if (notifier.value != voulu) {
+      // Pendant une mise en page : on attend l'image suivante pour prévenir,
+      // sans quoi on rebâtirait un arbre en cours de construction.
+      final cible = notifier;
+      SchedulerBinding.instance.addPostFrameCallback((_) => cible.value = voulu);
+    }
+    geometry = SliverGeometry.zero;
+  }
+}
+
+
+/// Porte le titre replié d'une page, et le fait vivre aussi longtemps qu'elle.
+class _AvecTitreReplie extends StatefulWidget {
+  const _AvecTitreReplie({required this.builder});
+
+  final Widget Function(BuildContext, ValueNotifier<String>) builder;
+
+  @override
+  State<_AvecTitreReplie> createState() => _AvecTitreReplieState();
+}
+
+class _AvecTitreReplieState extends State<_AvecTitreReplie> {
+  final ValueNotifier<String> _replie = ValueNotifier<String>('');
+
+  @override
+  void dispose() {
+    _replie.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, _replie);
 }
