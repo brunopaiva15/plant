@@ -20,6 +20,7 @@ String sectionLabel(AppLocalizations l10n, BackupSection s) => switch (s) {
       BackupSection.inventory => l10n.sectionInventory,
       BackupSection.tasks => l10n.sectionTasks,
       BackupSection.calendar => l10n.sectionCalendar,
+      BackupSection.rooms => l10n.sectionRooms,
     };
 
 String sectionEmoji(BackupSection s) => switch (s) {
@@ -30,6 +31,7 @@ String sectionEmoji(BackupSection s) => switch (s) {
       BackupSection.inventory => '🧰',
       BackupSection.tasks => '📋',
       BackupSection.calendar => '🗓️',
+      BackupSection.rooms => '📐',
     };
 
 /// Sauvegarde et restauration, section par section.

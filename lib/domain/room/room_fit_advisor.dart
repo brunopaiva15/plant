@@ -88,13 +88,14 @@ abstract final class RoomFitAdvisor {
     ScannedRoom room, {
     bool southern = false,
     List<CardinalDirection?>? directions,
+    List<WindowDressing>? dressings,
     double? latitude,
     List<RoomPoint> heaters = const [],
   }) {
     final elevation = RoomLightModel.sunElevationFor(latitude);
     final spots = <SurveyedSpot>[];
     for (final c in _candidates(room)) {
-      final sample = RoomLightModel.sample(room, c.point, height: c.height, southern: southern, directions: directions, sunElevationDeg: elevation);
+      final sample = RoomLightModel.sample(room, c.point, height: c.height, southern: southern, directions: directions, dressings: dressings, sunElevationDeg: elevation);
       final nearest = _nearestVisibleWindow(room, c, directions);
       spots.add(SurveyedSpot(
         point: c.point,
@@ -117,11 +118,12 @@ abstract final class RoomFitAdvisor {
     RoomPoint point, {
     bool southern = false,
     List<CardinalDirection?>? directions,
+    List<WindowDressing>? dressings,
     double? latitude,
     List<RoomPoint> heaters = const [],
   }) {
     final c = _Candidate(point, PlacementSurface.floor, RoomLightModel.potHeight);
-    final sample = RoomLightModel.sample(room, point, height: c.height, southern: southern, directions: directions, sunElevationDeg: RoomLightModel.sunElevationFor(latitude));
+    final sample = RoomLightModel.sample(room, point, height: c.height, southern: southern, directions: directions, dressings: dressings, sunElevationDeg: RoomLightModel.sunElevationFor(latitude));
     final nearest = _nearestVisibleWindow(room, c, directions);
     return SurveyedSpot(
       point: point,
@@ -193,10 +195,11 @@ abstract final class RoomFitAdvisor {
     ScannedRoom room, {
     bool southern = false,
     List<CardinalDirection?>? directions,
+    List<WindowDressing>? dressings,
     double? latitude,
     List<RoomPoint> heaters = const [],
   }) =>
-      placeIn(profile, survey(room, southern: southern, directions: directions, latitude: latitude, heaters: heaters));
+      placeIn(profile, survey(room, southern: southern, directions: directions, dressings: dressings, latitude: latitude, heaters: heaters));
 
   /// Le score d'une place, de 0 à 1.
   static double score(CareProfile profile, {required LightNeed light, required bool drafty, required bool humidRoom, bool nearHeater = false}) {

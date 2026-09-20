@@ -14,6 +14,9 @@ enum BackupSection {
   inventory,
   tasks,
   calendar,
+
+  /// Les relevés de la maison au LiDAR, leurs repères et leurs fichiers.
+  rooms,
 }
 
 extension BackupSectionTables on BackupSection {
@@ -27,6 +30,7 @@ extension BackupSectionTables on BackupSection {
         BackupSection.inventory => ['inventory_groups', 'inventory_items', 'inventory_tags'],
         BackupSection.tasks => ['tasks'],
         BackupSection.calendar => ['event_categories', 'calendar_entries'],
+        BackupSection.rooms => ['room_scans', 'room_markers'],
       };
 
   /// Sections dont celle-ci a besoin pour que ses lignes tiennent debout.
@@ -34,7 +38,7 @@ extension BackupSectionTables on BackupSection {
         BackupSection.garden => const {},
         BackupSection.plants => const {BackupSection.garden},
         BackupSection.photos || BackupSection.care => const {BackupSection.garden, BackupSection.plants},
-        BackupSection.inventory || BackupSection.tasks || BackupSection.calendar => const {BackupSection.garden},
+        BackupSection.inventory || BackupSection.tasks || BackupSection.calendar || BackupSection.rooms => const {BackupSection.garden},
       };
 }
 
@@ -61,6 +65,8 @@ const backupTableOrder = <String>[
   'event_categories',
   'calendar_entries',
   'tasks',
+  'room_scans',
+  'room_markers',
 ];
 
 /// Complète une sélection avec ce dont elle dépend : importer des photos sans

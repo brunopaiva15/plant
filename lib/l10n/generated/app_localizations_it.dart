@@ -6590,4 +6590,23 @@ class AppLocalizationsIt extends AppLocalizations {
   String placementCurrent(String place, String light) {
     return 'Ora: $place · $light';
   }
+
+  @override
+  String get sectionRooms => 'Rilievi della casa';
+
+  @override
+  String get roomScanCurtain => 'Tenda';
+
+  @override
+  String get roomScanCurtainNone => 'Senza tenda';
+
+  @override
+  String get roomScanCurtainSheer => 'Tenda leggera';
+
+  @override
+  String get roomScanCurtainDrawn => 'Tenda spesso tirata';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.';
 }

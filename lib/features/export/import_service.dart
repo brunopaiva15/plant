@@ -9,6 +9,7 @@ import '../../core/config/app_config.dart';
 import '../../data/db/database.dart';
 import '../../data/db/row_defaults.dart';
 import '../../data/services/photo_storage_service.dart';
+import '../../data/services/room_scan_service.dart';
 import 'backup_sections.dart';
 
 /// Ce qu'une sauvegarde contient, lu avant de décider quoi importer.
@@ -57,10 +58,11 @@ enum ImportFailure { notAZip, noData, wrongApp, tooRecent }
 
 /// Restauration d'une sauvegarde produite par [ExportService].
 class ImportService {
-  ImportService(this._db, this._photos);
+  ImportService(this._db, this._photos, {RoomScanStore? rooms}) : _rooms = rooms ?? RoomScanStore();
 
   final FloraDatabase _db;
   final PhotoStorageService _photos;
+  final RoomScanStore _rooms;
 
   /// Lit l'entête sans rien écrire : de quoi montrer un aperçu avant import.
   Future<BackupManifest> inspect(File zip) async {
@@ -124,6 +126,7 @@ class ImportService {
     }
 
     final photos = tables.contains('plant_photos') ? await _restorePhotos(archive) : 0;
+    if (tables.contains('room_scans')) await _restoreRooms(archive);
     return ImportReport(imported: imported, skipped: skipped, photos: photos);
   }
 
@@ -159,6 +162,22 @@ class ImportService {
       final relative = entry.name.substring('photos/'.length);
       if (relative.isEmpty || relative.contains('..')) continue;
       final target = File(await _photos.absolutePath(relative));
+      if (await target.exists()) continue;
+      await target.parent.create(recursive: true);
+      await target.writeAsBytes(entry.content as List<int>);
+      written++;
+    }
+    return written;
+  }
+
+  /// Les fichiers des relevés, à leur place, sans écraser ceux qui existent.
+  Future<int> _restoreRooms(Archive archive) async {
+    var written = 0;
+    for (final entry in archive.files) {
+      if (!entry.isFile || !entry.name.startsWith('rooms/')) continue;
+      final relative = entry.name.substring('rooms/'.length);
+      if (relative.isEmpty || relative.contains('..')) continue;
+      final target = File(await _rooms.absolutePath(relative));
       if (await target.exists()) continue;
       await target.parent.create(recursive: true);
       await target.writeAsBytes(entry.content as List<int>);
@@ -210,6 +229,10 @@ class ImportService {
         await _db.into(_db.eventCategories).insertOnConflictUpdate(EventCategoryRow.fromJson(json, serializer: s));
       case 'calendar_entries':
         await _db.into(_db.calendarEntries).insertOnConflictUpdate(CalendarEntryRow.fromJson(json, serializer: s));
+      case 'room_scans':
+        await _db.into(_db.roomScans).insertOnConflictUpdate(RoomScanRow.fromJson(json, serializer: s));
+      case 'room_markers':
+        await _db.into(_db.roomMarkers).insertOnConflictUpdate(RoomMarkerRow.fromJson(json, serializer: s));
     }
   }
 }

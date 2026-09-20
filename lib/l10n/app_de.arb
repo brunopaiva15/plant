@@ -2223,5 +2223,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sectionRooms": "Raumscans",
+  "roomScanCurtain": "Vorhang",
+  "roomScanCurtainNone": "Kein Vorhang",
+  "roomScanCurtainSheer": "Gardine",
+  "roomScanCurtainDrawn": "Vorhang meist zugezogen",
+  "roomScanCurtainHelp": "RoomPlan sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei."
 }

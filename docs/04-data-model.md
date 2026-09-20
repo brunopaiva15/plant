@@ -102,7 +102,8 @@ room_markers   id, scan_id, kind (windowOrientation | heater | plant), x, z,
 Un relevé est une ligne et un fichier : le JSON du `CapturedRoom` de RoomPlan
 vit dans `Documents/rooms/<id>.json`, la base n'en garde que le chemin
 relatif. Rien ne part dans l'outbox — le plan de chez soi ne se synchronise
-pas, et ne s'exporte pas encore. `north_offset_deg` est le cap du nord dans
+pas ; il part dans l'export ZIP, section « Relevés de la maison », avec le
+JSON de chaque pièce sous `rooms/`. `north_offset_deg` est le cap du nord dans
 le repère du relevé, mesuré à la boussole ; nul quand elle n'a rien donné de
 stable. `section_label` est le type de pièce que RoomPlan reconnaît sur
 iOS 17 (`kitchen`, `bathroom`…), nul sinon.
@@ -112,7 +113,8 @@ capteur a vu : refaire un relevé ne perd pas les repères.
 `windowOrientation` est l'orientation confirmée d'une fenêtre, indexée par
 son rang dans le JSON ; `heater` un radiateur posé du doigt, collé au mur
 le plus proche ; `plant` la place d'une plante du jardin (`plant_id`), une
-par plante et par relevé. `structure_id` (v14) réunit les pièces d'un même
+par plante et par relevé ; `windowSheer` et `windowDrawn` ce qui habille
+une fenêtre (`window_index`), un au plus par fenêtre. `structure_id` (v14) réunit les pièces d'un même
 relevé d'appartement, dont les fichiers vivent dans un dossier
 (`rooms/<id>/<n>.json`) et partagent le repère.
 

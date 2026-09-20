@@ -6584,4 +6584,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String placementCurrent(String place, String light) {
     return 'Jetzt: $place · $light';
   }
+
+  @override
+  String get sectionRooms => 'Raumscans';
+
+  @override
+  String get roomScanCurtain => 'Vorhang';
+
+  @override
+  String get roomScanCurtainNone => 'Kein Vorhang';
+
+  @override
+  String get roomScanCurtainSheer => 'Gardine';
+
+  @override
+  String get roomScanCurtainDrawn => 'Vorhang meist zugezogen';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.';
 }

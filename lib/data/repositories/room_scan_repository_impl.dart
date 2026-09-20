@@ -114,7 +114,7 @@ class DriftRoomScanRepository implements RoomScanRepository {
   }
 
   @override
-  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId}) async {
+  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId, int? windowIndex}) async {
     final now = DateTime.now();
     final id = _uuid.v4();
     await _db.into(_db.roomMarkers).insert(RoomMarkersCompanion.insert(
@@ -124,6 +124,7 @@ class DriftRoomScanRepository implements RoomScanRepository {
           x: x,
           z: z,
           plantId: Value(plantId),
+          windowIndex: Value(windowIndex),
           createdAt: now,
           updatedAt: now,
         ));
