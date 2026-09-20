@@ -102,13 +102,34 @@ abstract final class NativeShell {
   /// Une déclaration identique à la précédente n'est pas renvoyée : une page
   /// se reconstruit souvent, et UIKit refait ses boutons chaque fois qu'on
   /// les lui redonne.
-  static Future<void> publishActions({String? title, List<NativeAction> actions = const []}) async {
+  static Future<void> publishActions({
+    String? title,
+    List<NativeAction> leading = const [],
+    List<NativeAction> actions = const [],
+  }) async {
     if (!isSupported) return;
-    final charge = {'title': title ?? '', 'actions': [for (final a in actions) a.toMap()]};
+    final charge = {
+      'title': title ?? '',
+      'leading': [for (final a in leading) a.toMap()],
+      'actions': [for (final a in actions) a.toMap()],
+    };
     final empreinte = charge.toString();
     if (empreinte == _dernieresActions) return;
     _dernieresActions = empreinte;
     await _invoke('setActions', charge);
+  }
+
+  static bool? _derniereEclipse;
+
+  /// Masque ou rend la chrome native.
+  ///
+  /// Une page ouverte par Flutter par-dessus la coquille — une fiche, un
+  /// scanner, une feuille — n'existe pas pour UIKit : sans cela, ses barres
+  /// restaient posées par-dessus, avec les boutons de la page d'en dessous.
+  static Future<void> setChromeHidden(bool hidden) async {
+    if (!isSupported || hidden == _derniereEclipse) return;
+    _derniereEclipse = hidden;
+    await _invoke('setChromeHidden', hidden);
   }
 
   static Future<void> _invoke(String methode, Object? arguments) async {
@@ -119,6 +140,7 @@ abstract final class NativeShell {
       _derniers = null;
       _dernierChoisi = null;
       _dernieresActions = null;
+      _derniereEclipse = null;
     } on PlatformException catch (e) {
       debugPrint('[auxine:natif] refus de $methode : ${e.message}');
     }

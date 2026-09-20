@@ -168,9 +168,17 @@ class LargeTitlePage extends StatelessWidget {
     // bande verticale de l'iPhone Duo. `describe` rend `null` si un bouton
     // lui échappe, et la page garde alors les siens.
     final aCeder = <Widget>[if (actions != null) ...actions! else ?trailing];
-    final natif = NativeShell.isSupported && !debout ? NativeActions.describe(aCeder) : null;
+    // Le bouton de tête part aussi — le tableau de bord d'« Aujourd'hui » —,
+    // mais pas le retour : celui-là attend d'être rendu par la pile de
+    // navigation elle-même.
+    final teteCedable = <Widget>[?leading];
+    final natif = NativeShell.isSupported && !debout
+        ? NativeActions.describe(teteCedable, aCeder)
+        : null;
 
-    final lead = debout ? _impliedBackButton(context) : (leading ?? _impliedBackButton(context));
+    final lead = debout || natif != null
+        ? _impliedBackButton(context)
+        : (leading ?? _impliedBackButton(context));
     final Widget? suite = debout || natif != null ? null : _headerActions();
     final Widget header;
     if (isCupertino(context)) {
@@ -256,7 +264,7 @@ class LargeTitlePage extends StatelessWidget {
 
     // Le natif ne dessine que si tous les boutons lui parlent.
     if (natif == null) return coquille;
-    return NativeActions(title: '', actions: natif, child: coquille);
+    return NativeActions(title: '', leading: natif.leading, actions: natif.actions, child: coquille);
   }
 
   /// Les boutons tels que le haut de page les porte : en rangée, séparés.

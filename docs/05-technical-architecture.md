@@ -229,6 +229,20 @@ menus » ne dit rien des titres. Deux titres empilés seraient une faute ; c'est
 donc le natif qui se tait. À rouvrir si la bande horizontale que la barre
 garde en haut se révèle trop chère.
 
+Le bouton de tête d'une page part avec les autres — le tableau de bord
+d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. Pas le
+bouton retour : celui-là attend d'être rendu par la pile de navigation
+elle-même.
+
+**Et la chrome s'efface quand une page la couvre.** UIKit ne sait rien de la
+navigation de Flutter : une fiche de plante, un scanner de QR code, une
+feuille d'ajout sont des routes que go_router pose par-dessus la coquille, et
+les barres natives restaient là — sur la page ouverte, avec les boutons de
+celle d'en dessous. `app/native_chrome_observer.dart` observe le navigateur
+racine : tant qu'il reste une route au-dessus de la première, les deux barres
+s'effacent. Les pages des branches d'onglets ne passent pas par là, elles ont
+leur propre navigateur, et c'est bien la coquille qu'on regarde alors.
+
 Ce qui reste à faire : le bouton retour, le placement des actions proéminentes
 (`pinnedTrailingGroup`), et les marges sûres rendues par le natif plutôt que
 mesurées.

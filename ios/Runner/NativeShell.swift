@@ -100,6 +100,16 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     case "setSelected":
       choisir((call.arguments as? Int) ?? 0)
       result(true)
+    case "setChromeHidden":
+      // Une page ouverte par Flutter par-dessus la coquille n'existe pas pour
+      // UIKit : sans cela, ses barres restaient posées dessus, avec les
+      // boutons de la page d'en dessous.
+      let cache = (call.arguments as? Bool) ?? false
+      for navigation in navigations {
+        navigation.setNavigationBarHidden(cache, animated: false)
+      }
+      onglets?.tabBar.isHidden = cache
+      result(true)
     case "setActions":
       guard let args = call.arguments as? [String: Any] else {
         result(false)
@@ -173,31 +183,42 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
 
   /// Pose le titre et les boutons de la page ouverte sur l'onglet courant.
   ///
-  /// Les boutons vont à droite, dans l'ordre reçu : `rightBarButtonItems` les
-  /// range de droite à gauche, donc la liste est retournée pour que le
-  /// premier déclaré reste le plus près du bord — l'ordre qu'une page écrit.
+  /// Le bouton de tête va à gauche, là où iOS met la navigation ; les autres
+  /// à droite. `rightBarButtonItems` les range de droite à gauche, donc la
+  /// liste est retournée pour que le premier déclaré reste le plus près du
+  /// bord — l'ordre qu'une page écrit.
   private func appliquer(_ args: [String: Any]) {
     guard let onglets, onglets.selectedIndex < hotes.count else { return }
     let item = hotes[onglets.selectedIndex].navigationItem
     let titre = args["title"] as? String
     item.title = (titre?.isEmpty ?? true) ? nil : titre
 
-    var boutons: [UIBarButtonItem] = []
     identifiants = []
-    for brut in args["actions"] as? [[String: Any]] ?? [] {
-      guard let id = brut["id"] as? String, let symbole = brut["symbol"] as? String else { continue }
+    let aGauche = boutons(args["leading"])
+    let aDroite = boutons(args["actions"])
+    item.leftBarButtonItems = aGauche.isEmpty ? nil : aGauche
+    item.rightBarButtonItems = aDroite.isEmpty ? nil : aDroite.reversed()
+  }
+
+  /// Bâtit les boutons d'un côté, en notant leur identité au passage.
+  private func boutons(_ brut: Any?) -> [UIBarButtonItem] {
+    var faits: [UIBarButtonItem] = []
+    for description in brut as? [[String: Any]] ?? [] {
+      guard let id = description["id"] as? String,
+        let symbole = description["symbol"] as? String
+      else { continue }
       let bouton = UIBarButtonItem(
         image: UIImage(systemName: symbole),
         style: .plain,
         target: self,
         action: #selector(touche(_:)))
       bouton.tag = identifiants.count
-      bouton.accessibilityLabel = brut["title"] as? String
-      bouton.isEnabled = (brut["enabled"] as? Bool) ?? true
+      bouton.accessibilityLabel = description["title"] as? String
+      bouton.isEnabled = (description["enabled"] as? Bool) ?? true
       identifiants.append(id)
-      boutons.append(bouton)
+      faits.append(bouton)
     }
-    item.rightBarButtonItems = boutons.isEmpty ? nil : boutons.reversed()
+    return faits
   }
 
   @objc private func touche(_ envoyeur: UIBarButtonItem) {

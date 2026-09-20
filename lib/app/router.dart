@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'native_chrome_observer.dart';
+
 import '../core/config/app_config.dart';
 import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
@@ -118,6 +120,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   late final GoRouter router;
   router = GoRouter(
     navigatorKey: rootNavigatorKey,
+    // La chrome native s'efface tant qu'une page couvre la coquille : UIKit
+    // ne sait rien des routes de Flutter, et ses barres restaient posées
+    // par-dessus. Sans effet hors d'iOS.
+    observers: [NativeChromeObserver()],
     initialLocation: onboardingDone ? Routes.today : Routes.onboarding,
     redirect: (context, state) {
       // Un lien `auxine://…` — QR scanné depuis l'appareil photo du système,

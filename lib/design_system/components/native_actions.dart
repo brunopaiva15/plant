@@ -15,14 +15,39 @@ import 'buttons.dart';
 /// boutons en argile. Une rangée moitié système moitié argile serait pire que
 /// l'une ou l'autre, et le nom manquant s'écrit dans la console en debug.
 class NativeActions extends StatefulWidget {
-  const NativeActions({super.key, required this.title, required this.actions, required this.child});
+  const NativeActions({
+    super.key,
+    required this.title,
+    required this.leading,
+    required this.actions,
+    required this.child,
+  });
 
   final String title;
+
+  /// Le bouton de tête de la page, s'il en a un : le tableau de bord sur
+  /// « Aujourd'hui ». Il va à gauche de la barre, là où iOS met la
+  /// navigation.
+  final List<NativeActionEntry> leading;
+
   final List<NativeActionEntry> actions;
   final Widget child;
 
   /// Ce que le natif saura dessiner, ou `null` si un bouton lui échappe.
-  static List<NativeActionEntry>? describe(List<Widget> boutons) {
+  ///
+  /// Les deux côtés d'un coup : une page qui céderait sa droite mais garderait
+  /// sa gauche mélangerait le système et l'argile dans la même barre.
+  static ({List<NativeActionEntry> leading, List<NativeActionEntry> actions})? describe(
+    List<Widget> leading,
+    List<Widget> actions,
+  ) {
+    final aGauche = _decrire(leading, 'L');
+    final aDroite = _decrire(actions, 'R');
+    if (aGauche == null || aDroite == null) return null;
+    return (leading: aGauche, actions: aDroite);
+  }
+
+  static List<NativeActionEntry>? _decrire(List<Widget> boutons, String prefixe) {
     final decrits = <NativeActionEntry>[];
     for (final (i, bouton) in boutons.indexed) {
       if (bouton is! FloraIconButton) return null;
@@ -37,7 +62,7 @@ class NativeActions extends StatefulWidget {
       }
       decrits.add((
         action: NativeAction(
-          id: '$i',
+          id: '$prefixe$i',
           symbol: symbole,
           title: bouton.semanticLabel,
           enabled: bouton.onPressed != null,
@@ -104,13 +129,15 @@ class _NativeActionsState extends State<NativeActions> {
     NativeShell.onAction = actuelle?._toucher;
     NativeShell.publishActions(
       title: actuelle?.widget.title ?? '',
+      leading: [for (final e in actuelle?.widget.leading ?? const <NativeActionEntry>[]) e.action],
       actions: [for (final e in actuelle?.widget.actions ?? const <NativeActionEntry>[]) e.action],
     );
   }
 
   void _toucher(String id) {
-    final i = int.tryParse(id);
-    if (i == null || i < 0 || i >= widget.actions.length) return;
-    widget.actions[i].onPressed?.call();
+    final liste = id.startsWith('L') ? widget.leading : widget.actions;
+    final i = int.tryParse(id.substring(1));
+    if (i == null || i < 0 || i >= liste.length) return;
+    liste[i].onPressed?.call();
   }
 }

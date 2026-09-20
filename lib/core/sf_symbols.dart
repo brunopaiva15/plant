@@ -18,6 +18,14 @@ abstract final class SfSymbols {
   // table constante dont la classe redéfinit `==`.
   static final Map<int, String> _table = {
     CupertinoIcons.plus.codePoint: 'plus',
+    CupertinoIcons.chart_bar.codePoint: 'chart.bar',
+    CupertinoIcons.chart_bar_alt_fill.codePoint: 'chart.bar.fill',
+    CupertinoIcons.chart_pie.codePoint: 'chart.pie',
+    CupertinoIcons.list_bullet.codePoint: 'list.bullet',
+    CupertinoIcons.square_list.codePoint: 'list.bullet.rectangle',
+    CupertinoIcons.bolt.codePoint: 'bolt',
+    CupertinoIcons.bolt_fill.codePoint: 'bolt.fill',
+    CupertinoIcons.bolt_slash.codePoint: 'bolt.slash',
     CupertinoIcons.camera.codePoint: 'camera',
     CupertinoIcons.camera_fill.codePoint: 'camera.fill',
     CupertinoIcons.xmark.codePoint: 'xmark',
