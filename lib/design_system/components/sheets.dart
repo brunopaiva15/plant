@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -28,16 +30,18 @@ Future<T?> showFloraSheet<T>(
     shape: const RoundedRectangleBorder(borderRadius: Radii.sheetTop),
     clipBehavior: Clip.antiAlias,
     constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.92),
-    builder: (ctx) => Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SheetHandle(),
-            Flexible(child: scrollable ? SingleChildScrollView(child: builder(ctx)) : builder(ctx)),
-          ],
+    builder: (ctx) => _MargesLaterales(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SheetHandle(),
+              Flexible(child: scrollable ? SingleChildScrollView(child: builder(ctx)) : builder(ctx)),
+            ],
+          ),
         ),
       ),
     ),
@@ -56,7 +60,7 @@ Future<T?> showFloraFlow<T>(BuildContext context, {required WidgetBuilder builde
     return showCupertinoSheet<T>(
       context: context,
       useNestedNavigation: true,
-      scrollableBuilder: (ctx, _) => builder(ctx),
+      scrollableBuilder: (ctx, _) => _MargesLaterales(child: builder(ctx)),
     );
   }
   return Navigator.of(context, rootNavigator: true).push<T>(
@@ -91,7 +95,7 @@ Future<T?> showFloraScrollableFlow<T>(
 }) {
   Haptics.light();
   if (isCupertino(context)) {
-    return showCupertinoSheet<T>(context: context, useNestedNavigation: true, scrollableBuilder: builder);
+    return showCupertinoSheet<T>(context: context, useNestedNavigation: true, scrollableBuilder: (ctx, controller) => _MargesLaterales(child: builder(ctx, controller)));
   }
   return Navigator.of(context, rootNavigator: true).push<T>(
     MaterialPageRoute(fullscreenDialog: true, builder: (ctx) => builder(ctx, null)),
@@ -134,5 +138,36 @@ class SheetHeader extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Rend à une feuille les marges que le système réserve sur les côtés.
+///
+/// `CupertinoSheetRoute` **remplace** la marge de son contenu par
+/// `EdgeInsets.only(top: 15)` — celle de sa poignée. Tout ce que le système
+/// réservait sur les côtés disparaît donc, et un `SafeArea` posé dans la
+/// feuille n'écarte plus rien. Sur un téléphone ordinaire cela ne se voit pas ;
+/// sur l'iPhone Duo, la bande de la caméra occupe quatre-vingt-quatre points
+/// d'un bord, et le contenu passait dessous.
+///
+/// On relit donc les marges à la source — la vue —, et on garde la plus
+/// grande des deux de chaque côté. Seulement les côtés : le haut et le bas
+/// d'une feuille sont sa propre affaire, et les lui rendre la décalerait.
+class _MargesLaterales extends StatelessWidget {
+  const _MargesLaterales({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final heritee = MediaQuery.of(context);
+    final vue = MediaQueryData.fromView(View.of(context));
+    final marges = heritee.padding;
+    final rendue = marges.copyWith(
+      left: math.max(marges.left, vue.padding.left),
+      right: math.max(marges.right, vue.padding.right),
+    );
+    if (rendue == marges) return child;
+    return MediaQuery(data: heritee.copyWith(padding: rendue), child: child);
   }
 }

@@ -39,6 +39,22 @@ double readableInset(BuildContext context, {double maxWidth = 700}) {
   return width <= maxWidth ? 0 : (width - maxWidth) / 2;
 }
 
+/// Ce que le système réserve sur les côtés, à ajouter à toute marge de page.
+///
+/// Sur un pliable, la bande de la caméra et de l'heure occupe un bord entier
+/// — quatre-vingt-quatre points sur l'iPhone Duo — et change de côté avec la
+/// rotation. Une page qui pose sa marge à la main passe donc dessous, et
+/// c'est arrivé partout où on l'a oublié : les pages secondaires, la fiche
+/// d'une plante, les feuilles.
+///
+/// D'où cette fonction plutôt qu'un `MediaQuery.paddingOf` recopié : un seul
+/// endroit à corriger, et un nom qui dit à quoi elle sert quand on lit une
+/// page. Elle s'ajoute aux marges de lecture, elle ne les remplace pas.
+EdgeInsets systemSideInsets(BuildContext context) {
+  final marges = MediaQuery.paddingOf(context);
+  return EdgeInsets.only(left: marges.left, right: marges.right);
+}
+
 /// Un état vide posé au milieu de ce que l'œil voit : entre le bas de
 /// l'en-tête et le haut de la barre d'onglets.
 ///
@@ -437,6 +453,9 @@ class FloraPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    // La marge de lecture seule : ce que le système réserve sur les bords est
+    // déjà retiré par le `SafeArea` du corps, et l'ajouter ici le compterait
+    // deux fois — mesuré à 188 points au lieu de 104 sur un pliable.
     final side = bleed ? 0.0 : Space.page + readableInset(context);
     Widget body(double topInset) {
       if (!scrollable) return Padding(padding: EdgeInsets.only(top: topInset), child: child);
