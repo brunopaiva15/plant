@@ -350,17 +350,20 @@ dedans. Ce qui flotte par-dessus l'application doit l'éviter aussi — le toast
 se range à gauche du rail et redescend, puisque plus rien n'occupe le bas
 (`FloraTabRail.reserved`).
 
-La bascule est dans `FloraTabRail.fitsIn` : au moins 600 points de large, et
-moins de 700 points de côté le plus court. La seconde condition est ce qui
-laisse l'iPad à sa barre du bas ; c'est un entre-deux, pas une mesure, faute
-de savoir dire « iPhone » ou « iPad » depuis Flutter.
+La bascule est dans `FloraTabRail.fitsIn`, et tient en trois conditions.
 
-Sur les poses mesurées du Duo, ça donne : fermé 466 × 678, la barre reste en
-bas ; **fermé et couché 678 × 466, le menu se met debout** — voulu, une
-fenêtre de 466 points de haut est celle où une barre posée en bas coûte le
-plus cher, et l'écran extérieur tourne quoi qu'on déclare ; ouvert 669 × 951
-et 951 × 669, debout aussi ; en multitâche (445 × 626, 320 × 626), la barre
-revient en bas.
+| | Pourquoi |
+|---|---|
+| côté le plus court < 700 | pas une tablette : le plus petit iPad en fait 744, et l'iPad garde sa barre du bas |
+| largeur ≥ 460 | assez large pour céder les 80 points de la colonne ; l'écran extérieur du Duo en fait 466, il lui reste 386 |
+| largeur / hauteur > 0,6 | pas une colonne de téléphone — c'est la **forme** qui tranche, pas la taille |
+
+La troisième est celle qui compte. Un iPhone en portrait est étroit et long
+(402 × 874, soit 0,46) et une barre en bas y est chez elle ; les fenêtres du
+Duo sont trapues — 0,69 fermé, 0,70 ouvert, 1,4 couché. Toutes les poses du
+Duo passent donc debout, écran extérieur compris. Les tranches de multitâche
+(445 × 626, 320 × 626) restent en bas, et l'iPad en Split View aux deux tiers
+— 678 × 1133, soit 0,60 — aussi, ce que la règle précédente ratait.
 
 La bande de la caméra fait 84 points mesurés et change de côté selon la
 rotation : le rail la rend en entier quand elle est à droite, et se recolle au
