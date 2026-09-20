@@ -360,7 +360,7 @@ une fois, et une seule.**
 |---|---|
 | `LargeTitlePage` | la page, dans ses `SliverPadding` |
 | `FloraPage` | le `SafeArea` de son corps — ne rien ajouter par-dessus |
-| la fiche d'une plante | un `SliverPadding` qui couvre tout sauf la photo |
+| la fiche d'une plante | un `SliverPadding` qui couvre tout, **photo comprise** |
 | une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface |
 
 La deuxième ligne a coûté un aller-retour : ajouter la marge à `FloraPage`
@@ -370,6 +370,12 @@ un test qui n'accepte qu'un plafond laisse passer le double comptage.
 
 `systemSideInsets` existe pour les pages qui n'ont ni l'un ni l'autre : elle
 dit à quoi sert la valeur, là où un `MediaQuery.paddingOf` recopié ne dit rien.
+
+**La photo ne fait pas exception**, contrairement à ce qu'on avait d'abord
+laissé. Une région réservée n'est pas une marge de confort : le système y pose
+l'heure et le wifi, et une image qui passe dessous les rend illisibles. La
+hauteur de l'en-tête se calcule donc sur la largeur qui reste, sans quoi les
+proportions de l'image se faussent de ce que la bande a pris.
 
 ### Ce qui vit dans la barre, et ce qui vit dessous
 La barre garde toute la largeur — c'est ce que fait iOS —, et seul le contenu
