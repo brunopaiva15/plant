@@ -126,7 +126,7 @@ class ProfileScreen extends ConsumerWidget {
                   // Le relevé au LiDAR : expérimental, derrière son drapeau, et
                   // seulement sur un appareil qui sait relever.
                   if (ref.watch(roomScanAvailableProvider).value ?? false)
-                    FloraListRow(leading: const Text('📐', style: TextStyle(fontSize: 18)), title: l10n.roomScan, trailing: value(l10n.placementRoomsCount(ref.watch(roomScansProvider).value?.length ?? 0)), chevron: true, onTap: () => context.push(Routes.roomScan)),
+                    FloraListRow(leading: const Text('📐', style: TextStyle(fontSize: 18)), title: l10n.roomScan, trailing: value(l10n.roomScanRoomsShort(ref.watch(roomScansProvider).value?.length ?? 0)), chevron: true, onTap: () => context.push(Routes.roomScan)),
                 ],
               ),
               const SizedBox(height: Space.lg),

@@ -11177,6 +11177,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Poser'**
   String get roomScanPlace;
+
+  /// No description provided for @roomScanRoomsShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucune} =1{1 pièce} other{{count} pièces}}'**
+  String roomScanRoomsShort(int count);
 }
 
 class _AppLocalizationsDelegate

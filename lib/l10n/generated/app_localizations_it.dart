@@ -6612,4 +6612,16 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanPlace => 'Posare';
+
+  @override
+  String roomScanRoomsShort(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stanze',
+      one: '1 stanza',
+      zero: 'Nessuna',
+    );
+    return '$_temp0';
+  }
 }
