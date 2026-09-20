@@ -352,6 +352,14 @@ pour se lire seul — pas d'iOS, un binaire construit sans le canal, un SDK
 antérieur à 27.1, une vue pas encore posée, ou une cote écartée par `parse`.
 La seconde ligne les distingue.
 
+Deux `ValueNotifier`, et leur ordre compte : les régions sont publiées
+**avant** la réponse. Un notifieur prévient ses auditeurs sur-le-champ, si bien
+que la sonde, qui écoute la réponse pour écrire son relevé, lisait des régions
+encore vides — et comme une seule réponse suffit à l'appareil, elle ne
+repassait jamais. Le relevé affichait « aucune région annoncée » sous une
+réponse qui en contenait deux. `test/core/window_regions_test.dart` tient
+l'ordre par un auditeur.
+
 La première demande part de `main()`, avant la première image : la scène n'est
 pas encore active, la fenêtre pas encore clé, la barre d'état vaut zéro. Le
 service redemande donc une fois la fenêtre posée, et c'est cette réponse-là
