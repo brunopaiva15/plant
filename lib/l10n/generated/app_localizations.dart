@@ -4557,7 +4557,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisAnswerAgain.
   ///
   /// In fr, this message translates to:
-  /// **'Reprendre l'analyse'**
+  /// **'Reprendre l\'analyse'**
   String get diagnosisAnswerAgain;
 
   /// No description provided for @diagnosisAnswersNoted.
@@ -10092,6 +10092,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{Aucun problème} =1{1 problème} other{{count} problèmes}}'**
   String encyclopediaProblemCount(int count);
 
+  /// No description provided for @encyclopediaNaturalCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aucun phénomène normal} =1{1 phénomène normal} other{{count} phénomènes normaux}}'**
+  String encyclopediaNaturalCount(int count);
+
   /// No description provided for @encyclopediaSpeciesCount.
   ///
   /// In fr, this message translates to:
@@ -10217,6 +10223,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ni l\'un ni l\'autre : la fumagine pousse sur le miellat, sans s\'attaquer à la plante.'**
   String get problemKindConditionNote;
+
+  /// No description provided for @naturalCauses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Phénomènes normaux'**
+  String get naturalCauses;
+
+  /// No description provided for @naturalCauseNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que la plante fait normalement et qu\'on prend pour un problème : rien à soigner.'**
+  String get naturalCauseNote;
 
   /// No description provided for @careLightShadeNote.
   ///

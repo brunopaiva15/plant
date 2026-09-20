@@ -398,6 +398,14 @@ class CauseCard extends StatelessWidget {
   /// côté : elle porte le dessin de ce phénomène-là.
   final NaturalCause? naturalCause;
 
+  VoidCallback? _destination(BuildContext context) {
+    final known = problem;
+    final natural = naturalCause;
+    if (known != null) return () => context.push(Routes.encyclopediaProblem(known.id));
+    if (natural != null) return () => context.push(Routes.encyclopediaNatural(natural.id));
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
@@ -406,9 +414,10 @@ class CauseCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: Space.sm),
       child: FloraCard(
         // Une piste que la base connaît mène à sa fiche : ce que c'est, qui
-        // elle touche, à quoi elle ressemble. Une piste hors base n'a nulle
-        // part où mener et ne se presse pas.
-        onTap: known == null ? null : () => context.push(Routes.encyclopediaProblem(known.id)),
+        // elle touche, à quoi elle ressemble — qu'elle soit un problème ou un
+        // phénomène naturel. Une piste hors base n'a nulle part où mener et
+        // ne se presse pas.
+        onTap: _destination(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -460,7 +469,7 @@ class CauseCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (known != null) ...[
+                if (known != null || naturalCause != null) ...[
                   const SizedBox(width: Space.xs),
                   Icon(CupertinoIcons.chevron_right, size: 15, color: c.inkTertiary),
                 ],

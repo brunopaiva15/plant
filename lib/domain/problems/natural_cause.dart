@@ -1,3 +1,4 @@
+import '../../core/utils/search_text.dart';
 import 'plant_problem.dart';
 
 /// Un phénomène naturel : ce que la plante fait normalement et qu'on prend
@@ -46,6 +47,15 @@ class NaturalCause {
         'de' => de,
         _ => fr,
       };
+
+  /// Tout ce sous quoi l'entrée se cherche dans l'encyclopédie : le numéro,
+  /// les quatre noms, les hôtes — comme un problème, moins les autres noms,
+  /// que la base n'a pas.
+  String get _searchIndex => foldSpeciesName([id, fr, en, it, de, ...hosts].join(' '));
+
+  /// L'entrée répond-elle à cette recherche ? Même règle que pour un
+  /// problème, [searchMatches] : les deux se cherchent dans la même liste.
+  bool matches(String query) => searchMatches(_searchIndex, query);
 
   /// Ce phénomène peut-il concerner cette plante ? Posé large, comme pour un
   /// problème : il s'agit de dresser une liste de pistes, pas de trancher.

@@ -13,6 +13,7 @@ import 'package:flora/domain/care/toxicity.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flora/features/encyclopedia/presentation/encyclopedia_screen.dart';
+import 'package:flora/features/encyclopedia/presentation/natural_cause_page.dart';
 import 'package:flora/features/encyclopedia/presentation/problem_page.dart';
 import 'package:flora/features/encyclopedia/presentation/species_page.dart';
 import 'package:flora/features/plants/application/plant_providers.dart';
@@ -24,10 +25,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// L'encyclopédie montre les actifs embarqués sans rien y ajouter : les tests
-/// lui donnent donc la vraie base des deux cents problèmes, lue sur le
-/// disque, et non un jeu d'essai qui aurait toujours raison.
+/// lui donnent donc la vraie base des deux cents problèmes et celle des
+/// phénomènes naturels, lues sur le disque, et non un jeu d'essai qui aurait
+/// toujours raison.
 void main() {
-  final catalog = ProblemCatalog.parse(File('assets/problems/catalog.txt').readAsStringSync());
+  final catalog = ProblemCatalog.parseAll((
+    File('assets/problems/catalog.txt').readAsStringSync(),
+    File('assets/problems/natural.txt').readAsStringSync(),
+  ));
+  final naturels = catalog.naturalCauses.length;
 
   Plant plante(String name, {String? species}) => Plant(
         id: name,
@@ -70,11 +76,96 @@ void main() {
   }
 
   group('le rayon des problèmes', () {
-    testWidgets('annonce les deux cents entrées de la base', (tester) async {
+    testWidgets('annonce les deux cents entrées de la base, et les phénomènes naturels', (tester) async {
       await pump(tester, const EncyclopediaScreen());
-      expect(find.text('200 problèmes'), findsOneWidget);
+      expect(naturels, greaterThan(0));
+      expect(find.text('200 problèmes · $naturels phénomènes normaux'), findsOneWidget);
       // La liste s'ouvre sur les troubles : l'énumération les range d'abord.
       expect(find.text('Troubles'), findsWidgets);
+    });
+
+    testWidgets('les phénomènes naturels ferment la liste, sous leur titre', (tester) async {
+      // Ils ne sont pas une famille de plus — il n'y a rien à soigner —, mais
+      // c'est ici qu'on vient les chercher, avec la même question en tête.
+      // Une recherche que les deux bases entendent ramène le tout sur un
+      // écran : la liste est paresseuse, et deux cents lignes ne se
+      // construisent pas pour rien.
+      await pump(tester, const EncyclopediaScreen());
+      await tester.enterText(find.byType(EditableText).first, 'monstera');
+      await tester.pump();
+
+      // Le bas de la liste passe sous le pli : on l'amène sous les yeux, et
+      // les lignes déjà construites au-dessus y restent.
+      final vertical = find.descendant(of: find.byType(CustomScrollView), matching: find.byType(Scrollable)).first;
+      await tester.scrollUntilVisible(find.byType(NaturalCauseIcon), 100, scrollable: vertical);
+      await tester.pumpAndSettle();
+
+      final titre = find.widgetWithText(SectionHeader, 'Phénomènes normaux');
+      expect(titre, findsOneWidget);
+      final haut = tester.getTopLeft(titre).dy;
+      expect(find.byType(ProblemIcon), findsWidgets);
+      for (final probleme in find.byType(ProblemIcon).evaluate()) {
+        expect(tester.getTopLeft(find.byElementPredicate((e) => e == probleme)).dy, lessThan(haut));
+      }
+      expect(tester.getTopLeft(find.byType(NaturalCauseIcon).first).dy, greaterThan(haut));
+    });
+
+    testWidgets('la puce des phénomènes normaux ne garde qu\'eux', (tester) async {
+      await pump(tester, const EncyclopediaScreen());
+
+      // La bande de puces défile, et la dernière n'est pas construite tant
+      // qu'on ne l'a pas amenée sous les yeux.
+      final puce = find.widgetWithText(FloraChip, 'Phénomènes normaux');
+      await tester.dragUntilVisible(puce, find.byType(ListView).first, const Offset(-200, 0));
+      // Le geste laisse la bande sur son élan ; toucher pendant qu'elle
+      // glisse ne fait que l'arrêter.
+      await tester.pumpAndSettle();
+      await tester.tap(puce);
+      await tester.pump();
+
+      expect(find.text('$naturels phénomènes normaux'), findsOneWidget);
+      expect(find.text(catalog.natural('N01')!.fr), findsOneWidget);
+      expect(find.text(catalog['001']!.fr), findsNothing);
+      // Le compte ne dit pas « aucun problème » devant une liste pleine.
+      expect(find.textContaining('problème'), findsNothing);
+    });
+
+    testWidgets('une famille choisie laisse aussi les phénomènes naturels dehors', (tester) async {
+      await pump(tester, const EncyclopediaScreen());
+      final troubles = catalog.problems.where((p) => p.kind == ProblemKind.disorder).length;
+
+      await tester.tap(find.widgetWithText(FloraChip, 'Troubles'));
+      await tester.pump();
+
+      expect(find.text('$troubles problèmes'), findsOneWidget);
+      expect(find.byType(NaturalCauseIcon), findsNothing);
+    });
+
+    testWidgets('la recherche trouve un phénomène naturel sous ses noms et son numéro', (tester) async {
+      await pump(tester, const EncyclopediaScreen());
+      await tester.enterText(find.byType(EditableText).first, 'guttation');
+      await tester.pump();
+
+      // Rien dans la base des problèmes ne s'appelle ainsi : le compte ne
+      // parle que des phénomènes.
+      expect(find.text('1 phénomène normal'), findsOneWidget);
+      expect(find.text(catalog.natural('N02')!.fr), findsOneWidget);
+
+      await tester.enterText(find.byType(EditableText).first, 'N01');
+      await tester.pump();
+      expect(find.text(catalog.natural('N01')!.fr), findsOneWidget);
+    });
+
+    testWidgets('la recherche compte les deux bases quand les deux répondent', (tester) async {
+      await pump(tester, const EncyclopediaScreen());
+      await tester.enterText(find.byType(EditableText).first, 'monstera');
+      await tester.pump();
+
+      final problemes = catalog.problems.where((p) => p.matches('monstera')).length;
+      final phenomenes = catalog.naturalCauses.where((n) => n.matches('monstera')).length;
+      expect(problemes, greaterThan(0));
+      expect(phenomenes, greaterThan(0), reason: 'la fenestration cite le monstera');
+      expect(find.text('$problemes problèmes · $phenomenes phénomènes normaux'), findsOneWidget);
     });
 
     testWidgets('une famille choisie ne laisse que la sienne', (tester) async {
@@ -99,8 +190,10 @@ void main() {
       await tester.pump();
 
       final attendus = catalog.problems.where((p) => p.hosts.any((h) => h.toLowerCase().contains('lycopersicum'))).length;
+      final phenomenes = catalog.naturalCauses.where((n) => n.hosts.any((h) => h.toLowerCase().contains('lycopersicum'))).length;
       expect(attendus, greaterThan(0), reason: 'la base cite la tomate');
-      expect(find.text('$attendus problèmes'), findsOneWidget);
+      expect(phenomenes, 1, reason: 'la chute physiologique des jeunes fruits aussi');
+      expect(find.text('$attendus problèmes · 1 phénomène normal'), findsOneWidget);
     });
 
     testWidgets('un numéro de la base retrouve son entrée', (tester) async {
@@ -230,7 +323,7 @@ void main() {
       expect(find.text('Ombre'), findsNothing);
     });
 
-    testWidgets('les quatre familles de problèmes y portent leur symbole', (tester) async {
+    testWidgets('les quatre familles de problèmes y portent leur symbole, et ce qui n\'en est pas un', (tester) async {
       // C'est ici qu'on vient chercher ce que l'argile d'une fiche de soin ou
       // d'un diagnostic veut dire ; les autres termes ne se dessinent nulle
       // part, et n'ont donc rien à montrer.
@@ -240,6 +333,10 @@ void main() {
 
       expect(find.text('Ravageur'), findsOneWidget);
       expect(find.byType(ProblemKindIcon), findsNWidgets(ProblemKind.values.length));
+      // La feuille et sa goutte : le symbole d'une piste qui n'est pas un
+      // problème, défini à côté des quatre familles qu'il n'est pas.
+      expect(find.text('Phénomène normal'), findsOneWidget);
+      expect(find.byType(NaturalCauseIcon), findsOneWidget);
     });
   });
 
@@ -314,6 +411,49 @@ void main() {
     });
   });
 
+  group("la page d'un phénomène naturel", () {
+    testWidgets('dit ce qu\'il est, son étendue et ses hôtes', (tester) async {
+      await pump(tester, const NaturalCausePage(naturalId: 'N01'));
+
+      final nectar = catalog.natural('N01')!;
+      expect(find.text(nectar.fr), findsWidgets);
+      expect(find.text('Phénomène normal · Entrée N01'), findsOneWidget);
+      // La phrase qui fait l'entrée, et qu'on vient vérifier ici.
+      expect(find.textContaining('rien à soigner'), findsOneWidget);
+      expect(find.text('Nombreux hôtes'), findsOneWidget);
+      expect(find.text('Hôtes'), findsOneWidget);
+      expect(find.text(nectar.hosts.first), findsOneWidget);
+    });
+
+    testWidgets('un phénomène universel nomme toutes les plantes vasculaires', (tester) async {
+      await pump(tester, const NaturalCausePage(naturalId: 'N02'));
+      expect(find.text('Toutes les plantes vasculaires'), findsOneWidget);
+      expect(find.text('Dans le jardin'), findsNothing);
+    });
+
+    testWidgets('les plantes du jardin qui le montrent sont listées', (tester) async {
+      // N01, le nectar extrafloral : la base cite le genre Philodendron.
+      await pump(
+        tester,
+        const NaturalCausePage(naturalId: 'N01'),
+        plants: [
+          PlantSummary(plant: plante('Philo', species: 'Philodendron hederaceum')),
+          PlantSummary(plant: plante('Nino', species: 'Dracaena trifasciata')),
+        ],
+      );
+
+      expect(catalog.natural('N01')!.hosts, contains('Philodendron'));
+      expect(find.text('Dans le jardin'), findsOneWidget);
+      expect(find.text('Philo'), findsOneWidget);
+      expect(find.text('Nino'), findsNothing);
+    });
+
+    testWidgets('un numéro absent de la base ne laisse pas une page muette', (tester) async {
+      await pump(tester, const NaturalCausePage(naturalId: 'N99'));
+      expect(find.text('Aucun résultat'), findsOneWidget);
+    });
+  });
+
   group("la fiche d'une espèce", () {
     testWidgets('porte la fiche d\'entretien du catalogue, sans plante', (tester) async {
       await pump(tester, const EncyclopediaSpeciesPage(scientificName: 'Monstera deliciosa'));
@@ -340,6 +480,7 @@ void main() {
         final l10n = await AppLocalizations.delegate.load(locale);
         final notes = <String>[
           for (final v in ProblemKind.values) l10n.problemKindNote(v),
+          l10n.naturalCauseNote,
           for (final v in LightNeed.values) l10n.lightNote(v),
           for (final v in HumidityNeed.values) l10n.humidityNote(v),
           for (final v in SoilKind.values) l10n.soilNote(v),

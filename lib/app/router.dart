@@ -16,6 +16,7 @@ import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
 import '../features/encyclopedia/presentation/encyclopedia_screen.dart';
+import '../features/encyclopedia/presentation/natural_cause_page.dart';
 import '../features/encyclopedia/presentation/problem_page.dart';
 import '../features/encyclopedia/presentation/species_page.dart';
 import '../features/export/presentation/backup_screen.dart';
@@ -100,6 +101,7 @@ abstract final class Routes {
   static const activityLog = '/activity';
   static const encyclopedia = '/encyclopedia';
   static String encyclopediaProblem(String id) => '/encyclopedia/problems/$id';
+  static String encyclopediaNatural(String id) => '/encyclopedia/natural/$id';
 
   /// Le nom scientifique passe en paramètre de requête, pas de chemin : il
   /// porte une espace, parfois un « × » d'hybride, et un chemin n'en veut pas.
@@ -185,6 +187,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/encyclopedia/problems/:id',
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => platformPage(c, s, ProblemPage(problemId: s.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/encyclopedia/natural/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, NaturalCausePage(naturalId: s.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/encyclopedia/species',

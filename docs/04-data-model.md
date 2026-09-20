@@ -409,11 +409,18 @@ et porté par le même `ProblemCatalog` (`naturalCauses`, `natural(id)`,
 
 Les deux bases restent séparées parce que les choses le sont : un phénomène
 naturel n'est pas un problème de plus, il est ce qui n'en est pas un. Il n'a
-donc ni famille, ni illustration d'argile, ni page d'encyclopédie, et la fiche
-de soin ne le lit pas — elle parle de ce qui se soigne. Seul le diagnostic s'en
-sert : `naturalFor` en tire la liste soumise avec les problèmes, le service
-rend `N01`, l'application affiche son nom et sait que la piste n'est pas un
-souci (docs/09, § 9).
+donc pas de famille, et la fiche de soin ne le lit pas — elle parle de ce qui
+se soigne. Le diagnostic s'en sert : `naturalFor` en tire la liste soumise
+avec les problèmes, le service rend `N01`, l'application affiche son nom et
+sait que la piste n'est pas un souci (docs/09, § 9). L'encyclopédie le montre :
+dans le rayon des problèmes, sous son propre titre après les quatre familles,
+avec sa puce, son compte et sa recherche (`NaturalCause.matches`, la même règle
+que `PlantProblem.matches`, portée par `searchMatches`), et chaque phénomène a
+sa page (`/encyclopedia/natural/N01`) — un nom, une étendue, des hôtes, les
+plantes du jardin qui le montrent, et la phrase qui fait l'entrée : rien à
+soigner. La carte d'une piste naturelle du diagnostic y mène, comme celle d'un
+problème mène à la sienne. Le vocabulaire définit « Phénomène normal » à côté
+des quatre familles qu'il n'est pas.
 
 Le symbole d'argile de ces pistes, `assets/problems/clay_naturel.webp`, est la
 cinquième pièce du studio des quatre familles (`tool/build_category_logos.py`,
