@@ -197,21 +197,30 @@ class FloraTabRail extends StatelessWidget {
 
   /// La largeur que le rail prend au contenu, bord compris. Sert à ce qui
   /// flotte par-dessus l'application et doit l'éviter — le toast.
-  static double reserved(BuildContext context) => Space.md + _width + _rightInset(context);
+  static double reserved(BuildContext context) => Space.md + _width + _rightInset;
 
-  /// Le blanc entre la pilule et le bord droit. Ce que le système réserve de
-  /// ce côté est rendu en entier : contrairement à l'indicateur d'accueil, il
-  /// y a quelque chose dedans. Sur un Duo couché, cette bande fait 84 points
-  /// mesurés — et elle passe à gauche selon le sens de rotation, auquel cas
-  /// il ne reste ici que le blanc minimal. Rien n'est supposé symétrique.
-  static double _rightInset(BuildContext context) =>
-      math.max(_edgeGap, MediaQuery.paddingOf(context).right);
+  /// Le blanc entre la pilule et le bord droit : le minimum, toujours.
+  ///
+  /// La colonne se pose **dans** la bande que le système réserve de ce côté —
+  /// 84 points mesurés sur un Duo — et non à côté d'elle. C'est là que le
+  /// pliable met les commandes d'une application, sous l'heure et le wifi, et
+  /// s'en écarter laissait une colonne vide large comme un pouce.
+  ///
+  /// Ce n'est pas contredire la marge : elle vaut pour le **contenu**, qui
+  /// s'arrête bien avant (voir `app/shell.dart`, le contenu prend ce que la
+  /// colonne lui laisse). Le menu, lui, est du châssis, comme la barre
+  /// d'outils debout d'iOS.
+  ///
+  /// Ce qui l'empêche de heurter l'heure, c'est sa position : la colonne est
+  /// centrée dans la hauteur, et les éléments du système se tiennent en haut
+  /// de la bande dans toutes les poses mesurées.
+  static double get _rightInset => _edgeGap;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     return Padding(
-      padding: EdgeInsets.fromLTRB(Space.md, Space.md, _rightInset(context), Space.md),
+      padding: const EdgeInsets.fromLTRB(Space.md, Space.md, _edgeGap, Space.md),
       // `widthFactor: 1` fait ici ce que `heightFactor` fait pour la barre du
       // bas : la colonne épouse sa pilule en largeur et ne se centre que dans
       // la hauteur.

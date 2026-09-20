@@ -113,16 +113,22 @@ void main() {
       expect(pill.height, greaterThan(pill.width * 2));
     });
 
-    testWidgets('laisse au système la bande qu\'il réserve à droite', (tester) async {
-      // 84 points : la bande de la caméra sur un Duo couché, mesurée dans
-      // Xcode 27.1. Il y a quelque chose dedans, on ne la traverse pas.
+    testWidgets('se pose dans la bande du système, pas à côté', (tester) async {
+      // 84 points : la bande de l'heure et du wifi sur un Duo, mesurée dans
+      // Xcode 27.1. C'est là que le pliable met les commandes d'une app ; s'en
+      // écarter laissait une colonne vide large comme un pouce.
       await _pumpRail(tester, size: const Size(951, 669), rightInset: 84);
-      expect(951 - _pill(tester).right, closeTo(84, 0.5));
+      expect(951 - _pill(tester).right, lessThan(16), reason: 'la colonne reste à côté de la bande au lieu d\'y entrer');
     });
 
-    testWidgets('et se recolle au bord quand la bande passe de l\'autre côté', (tester) async {
-      // Selon le sens de rotation, la même bande se retrouve à gauche : il ne
-      // reste alors rien à éviter de ce côté-ci.
+    testWidgets('mais le contenu, lui, s\'arrête avant la bande', (tester) async {
+      // La marge vaut pour le contenu ; le menu est du châssis. Le contenu
+      // prend ce que la colonne lui laisse, et ce reste tombe en deçà.
+      await _pumpRail(tester, size: const Size(951, 669), rightInset: 84);
+      expect(tester.getRect(find.byKey(const Key('contenu'))).right, lessThanOrEqualTo(951 - 84));
+    });
+
+    testWidgets('elle reste au bord quand la bande passe de l\'autre côté', (tester) async {
       await _pumpRail(tester, size: const Size(678, 466));
       expect(678 - _pill(tester).right, lessThan(16), reason: 'la pilule s\'écarte du bord sans raison');
     });

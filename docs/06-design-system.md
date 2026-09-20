@@ -343,12 +343,17 @@ c'est ce que le rail perd pour l'œil qu'il garde pour l'oreille. En retour, la
 colonne ne bouge plus avec Dynamic Type, là où la barre du bas s'agrandit et
 passe à deux lignes.
 
-La **bande que le système réserve à droite** est rendue en entier, pas
-traversée comme l'est l'indicateur d'accueil en bas : sur un pliable ouvert,
-la barre d'état passe debout de ce côté, et il y a quelque chose d'écrit
-dedans. Ce qui flotte par-dessus l'application doit l'éviter aussi — le toast
-se range à gauche du rail et redescend, puisque plus rien n'occupe le bas
-(`FloraTabRail.reserved`).
+La colonne se pose **dans** la bande que le système réserve à droite — 84
+points mesurés —, pas à côté d'elle. C'est là que le pliable met les commandes
+d'une application, sous l'heure et le wifi ; s'en écarter laissait une colonne
+vide large comme un pouce. Ce n'est pas contredire la marge : elle vaut pour
+le **contenu**, qui s'arrête bien avant, puisqu'il ne prend que ce que la
+colonne lui laisse. Le menu, lui, est du châssis, comme la barre d'outils
+debout d'iOS. Ce qui l'empêche de heurter l'heure, c'est sa position : centrée
+dans la hauteur, quand les éléments du système se tiennent en haut de la bande
+dans toutes les poses mesurées. Ce qui flotte par-dessus l'application évite
+la colonne à son tour — le toast se range à sa gauche et redescend, puisque
+plus rien n'occupe le bas (`FloraTabRail.reserved`).
 
 La bascule est dans `FloraTabRail.fitsIn`, et tient en trois conditions.
 
@@ -365,10 +370,10 @@ Duo passent donc debout, écran extérieur compris. Les tranches de multitâche
 (445 × 626, 320 × 626) restent en bas, et l'iPad en Split View aux deux tiers
 — 678 × 1133, soit 0,60 — aussi, ce que la règle précédente ratait.
 
-La bande de la caméra fait 84 points mesurés et change de côté selon la
-rotation : le rail la rend en entier quand elle est à droite, et se recolle au
-bord quand elle passe à gauche. La pilule du bas fait de même, bord par bord —
-rien n'est supposé symétrique. Voir docs/05, section « La fenêtre ».
+La bande fait 84 points mesurés et change de côté selon la rotation. La
+colonne reste au bord droit dans les deux cas ; c'est le contenu et la pilule
+du bas qui s'écartent, bord par bord — rien n'est supposé symétrique. Voir
+docs/05, section « La fenêtre ».
 
 #### Les boutons de la page descendent avec
 Debout, la colonne ne porte pas que les onglets : les boutons du haut de page
