@@ -173,7 +173,11 @@ class _NativeActionsState extends State<NativeActions> {
   /// plus. Appelé au rendu et au départ d'une page.
   static void _publier() {
     final actuelle = _pile.isEmpty ? null : _pile.last;
-    NativeShell.onAction = actuelle?._toucher;
+    // Le canal appelle toujours la même fonction, qui cherche la page du
+    // sommet au moment du geste. Poser la fermeture d'une page donnée
+    // laissait celle-ci recevoir les touches après qu'une autre lui ait pris
+    // la barre : le bouton s'allumait et rien ne se passait.
+    NativeShell.onAction = actuelle == null ? null : _toucherLeSommet;
     NativeShell.publishActions(
       title: actuelle?.widget.titleListenable?.value ?? actuelle?.widget.title ?? '',
       leading: [for (final e in actuelle?.widget.leading ?? const <NativeActionEntry>[]) e.action],
@@ -187,10 +191,26 @@ class _NativeActionsState extends State<NativeActions> {
     if (mounted) setState(() {});
   }
 
+  /// La page du sommet reçoit le geste, quelle qu'elle soit.
+  static void _toucherLeSommet(String id) {
+    final actuelle = _pile.isEmpty ? null : _pile.last;
+    assert(() {
+      debugPrint('[auxine:natif] touche $id → ${actuelle == null ? "personne" : actuelle.widget.title}');
+      return true;
+    }());
+    actuelle?._toucher(id);
+  }
+
   void _toucher(String id) {
     final liste = id.startsWith('L') ? widget.leading : widget.actions;
     final i = int.tryParse(id.substring(1));
-    if (i == null || i < 0 || i >= liste.length) return;
+    if (i == null || i < 0 || i >= liste.length) {
+      assert(() {
+        debugPrint('[auxine:natif] touche $id sans destinataire — ${liste.length} bouton(s) de ce côté');
+        return true;
+      }());
+      return;
+    }
     liste[i].onPressed?.call();
   }
 }
