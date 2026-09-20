@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
@@ -65,7 +66,26 @@ abstract final class NativeShell {
   static const MethodChannel _channel = MethodChannel('ch.vergasta.plant/native_shell');
 
   /// La chrome native n'existe que côté iOS.
-  static bool get isSupported => !kIsWeb && Platform.isIOS;
+  static bool get isSupported => debugForceSupported || (!kIsWeb && Platform.isIOS);
+
+  /// Pour qu'un test puisse répondre à la place du natif. Faux ailleurs.
+  @visibleForTesting
+  static bool debugForceSupported = false;
+
+  /// Remet le service à neuf entre deux tests.
+  @visibleForTesting
+  static void debugReset() {
+    debugForceSupported = false;
+    _derniers = null;
+    _dernierChoisi = null;
+    _dernieresActions = null;
+    _derniereChrome = null;
+    _profondeur = 0;
+    overlay.value = 0;
+    _barreDemandee = false;
+    _voilee = false;
+    _coquilleDeclaree = false;
+  }
 
   /// Ce que fait un onglet touché. Posé par la coquille.
   static void Function(int index)? onTab;
@@ -101,7 +121,7 @@ abstract final class NativeShell {
     if (!isSupported) return;
     if (!_coquilleDeclaree) {
       _coquilleDeclaree = true;
-      await _appliquerChrome();
+      _appliquerChrome();
     }
     final declaration = [for (final t in tabs) t.toMap()].toString();
     if (declaration != _derniers) {
@@ -190,7 +210,17 @@ abstract final class NativeShell {
 
   /// La barre d'onglets ne survit pas à une page empilée : c'est la règle
   /// d'iOS, et `hidesBottomBarWhenPushed` ne dit rien d'autre.
-  static Future<void> _appliquerChrome() async {
+  /// Sans `await` entre les deux envois, et ce n'est pas un détail.
+  ///
+  /// Le garde-fou ci-dessous vidait la barre puis **attendait** avant de la
+  /// masquer. Cette attente laissait passer une image : la page qui s'ouvrait
+  /// demandait la barre et publiait ses boutons dans l'intervalle, et le
+  /// masquage arrivait après, effaçant ce qu'elle venait de poser. Une fiche
+  /// de plante se retrouvait sans aucun bouton.
+  ///
+  /// Un canal de méthode livre dans l'ordre où on lui confie : il suffit donc
+  /// de lui confier les deux à la suite, sans rien attendre entre.
+  static void _appliquerChrome() {
     if (!isSupported) return;
     final charge = {
       'bar': _coquilleDeclaree && (_profondeur == 0 || _barreDemandee),
@@ -203,15 +233,13 @@ abstract final class NativeShell {
     if (empreinte == _derniereChrome) return;
     _derniereChrome = empreinte;
     debugPrint('[auxine:natif] chrome $empreinte');
-    // Une barre effacée ne garde pas ses boutons. Ce n'est pas seulement de
-    // l'hygiène : si l'effacement échouait pour une raison quelconque, elle
-    // montrerait ceux de la page d'en dessous — et c'est précisément ce que
-    // le relevé permettra de distinguer d'un simple binaire en retard.
+    // Une barre effacée ne garde pas ses boutons : sinon elle montrerait ceux
+    // de la page d'en dessous le jour où l'effacement échouerait.
     if (charge['bar'] == false) {
       _dernieresActions = null;
-      await _invoke('setActions', const {'title': '', 'leading': [], 'actions': []});
+      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': []}));
     }
-    await _invoke('setChrome', charge);
+    unawaited(_invoke('setChrome', charge));
   }
 
   static Future<void> _invoke(String methode, Object? arguments) async {

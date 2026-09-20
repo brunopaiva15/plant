@@ -248,6 +248,15 @@ une page secondaire — y prétendent à tout étage, puisqu'elles *sont* cet
 reprenne la barre quand ce qui la couvrait s'en va : rien ne la forcerait
 sinon à se redessiner, et la barre reviendrait vide.
 
+**Et rien ne s'attend entre deux envois.** Le garde-fou qui vide la barre
+avant de la masquer *attendait* la première réponse. Cette attente laissait
+passer une image : la page qui s'ouvrait demandait la barre et publiait ses
+boutons dans l'intervalle, et le masquage arrivait après, effaçant ce qu'elle
+venait de poser — une fiche de plante se retrouvait sans aucun bouton. Un
+canal de méthode livre dans l'ordre où on lui confie ; il suffit de lui
+confier les deux à la suite. `test/core/native_shell_test.dart` tient l'ordre,
+et échoue sur la version qui attendait.
+
 **La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
 s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
 de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
