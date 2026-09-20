@@ -2505,6 +2505,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diagnosisFinding => 'Befund';
 
   @override
+  String get diagnosisNothingWrong => 'Nichts Auffälliges';
+
+  @override
+  String get diagnosisNatural => 'Normale Erscheinung';
+
+  @override
   String get analyze => 'Analysieren';
 
   @override

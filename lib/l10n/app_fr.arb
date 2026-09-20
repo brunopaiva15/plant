@@ -1218,6 +1218,8 @@
   "diagnosisPhotosFull": "Trois photos au maximum.",
   "diagnosisRemovePhoto": "Retirer cette photo",
   "diagnosisFinding": "Constat",
+  "diagnosisNothingWrong": "Rien d'anormal",
+  "diagnosisNatural": "Phénomène normal",
   "analyze": "Analyser",
   "analyzing": "Analyse en cours…",
   "diagnosisError": "Analyse impossible. Vérifiez votre connexion et réessayez.",

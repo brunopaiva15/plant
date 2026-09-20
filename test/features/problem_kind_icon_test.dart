@@ -4,29 +4,92 @@ import 'package:flora/data/problems/problem_catalog.dart';
 import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
+import 'package:flora/domain/problems/natural_cause.dart';
+import 'package:flora/features/problems/presentation/illustrated_natural.dart';
 import 'package:flora/features/problems/presentation/illustrated_problems.dart';
 import 'package:flora/features/problems/presentation/problem_kind_icon.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Les quatre symboles d'argile des familles de problèmes. On vérifie les
-/// fichiers réellement embarqués : une image renommée ou oubliée dans le
-/// pubspec ne se verrait qu'à l'exécution, sur l'appareil.
+/// Les quatre symboles d'argile des familles de problèmes, et le cinquième —
+/// celui de ce qui n'en est pas un. On vérifie les fichiers réellement
+/// embarqués : une image renommée ou oubliée dans le pubspec ne se verrait
+/// qu'à l'exécution, sur l'appareil.
 void main() {
+  /// Un fichier livré, et qui est bien une image WebP.
+  void verifieWebp(String path, {required String raison}) {
+    final file = File(path);
+    expect(file.existsSync(), isTrue, reason: '$raison → $path');
+    expect(file.lengthSync(), greaterThan(1024), reason: raison);
+    // En-tête RIFF/WEBP : le fichier est bien ce qu'il prétend être.
+    final head = file.openSync().readSync(12);
+    expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF', reason: raison);
+    expect(String.fromCharCodes(head.sublist(8, 12)), 'WEBP', reason: raison);
+  }
+
   test('chaque famille a son image, présente et non vide', () {
     for (final kind in ProblemKind.values) {
-      final file = File(ProblemKindIcon.assetOf(kind));
-      expect(file.existsSync(), isTrue, reason: '${kind.name} → ${file.path}');
-      expect(file.lengthSync(), greaterThan(1024), reason: kind.name);
-      // En-tête RIFF/WEBP : le fichier est bien ce qu'il prétend être.
-      final head = file.openSync().readSync(12);
-      expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF', reason: kind.name);
-      expect(String.fromCharCodes(head.sublist(8, 12)), 'WEBP', reason: kind.name);
+      verifieWebp(ProblemKindIcon.assetOf(kind), raison: kind.name);
     }
   });
 
   test('les quatre pointent sur quatre images différentes', () {
     final paths = {for (final kind in ProblemKind.values) ProblemKindIcon.assetOf(kind)};
     expect(paths, hasLength(ProblemKind.values.length));
+  });
+
+  test('ce qui n\'est pas un problème a son propre symbole', () {
+    // Une piste naturelle n'emprunte le dessin d'aucune famille : sa carte
+    // dirait sinon qu'elle en est une.
+    verifieWebp(NaturalCauseIcon.commonAsset, raison: 'phénomène naturel');
+    final familles = {for (final kind in ProblemKind.values) ProblemKindIcon.assetOf(kind)};
+    expect(familles, isNot(contains(NaturalCauseIcon.commonAsset)));
+  });
+
+  group('les illustrations par phénomène naturel', () {
+    final base = ProblemCatalog.parseAll((
+      File('assets/problems/catalog.txt').readAsStringSync(),
+      File('assets/problems/natural.txt').readAsStringSync(),
+    ));
+    final dossier = Directory('assets/problems/natural');
+
+    test('la liste et le dossier disent la même chose', () {
+      // Les deux sont écrits ensemble par tool/pack_natural_icons.py.
+      final fichiers = dossier
+          .listSync()
+          .whereType<File>()
+          .map((f) => f.uri.pathSegments.last)
+          .where((n) => n.endsWith('.webp'))
+          .map((n) => n.substring(0, n.length - 5))
+          .toSet();
+      expect(fichiers, illustratedNaturalCauses);
+      expect(illustratedNaturalCauses, isNotEmpty);
+    });
+
+    test('chaque phénomène de la base a son dessin, et rien d\'autre n\'en a', () {
+      expect(illustratedNaturalCauses, {for (final n in base.naturalCauses) n.id});
+      for (final n in base.naturalCauses) {
+        verifieWebp(NaturalCauseIcon.assetOf(n), raison: '${n.id} ${n.fr}');
+        expect(NaturalCauseIcon.assetOf(n), isNot(NaturalCauseIcon.commonAsset), reason: n.id);
+      }
+    });
+
+    test('un phénomène hors base retombe sur le symbole commun', () {
+      const inconnu = NaturalCause(
+        id: 'N99',
+        scope: ProblemScope.wide,
+        fr: 'fr',
+        en: 'en',
+        it: 'it',
+        de: 'de',
+        hosts: ['Tracheophyta'],
+      );
+      expect(NaturalCauseIcon.assetOf(inconnu), NaturalCauseIcon.commonAsset);
+      expect(NaturalCauseIcon.assetOf(null), NaturalCauseIcon.commonAsset);
+    });
+
+    test('le dossier est déclaré dans le pubspec', () {
+      expect(File('pubspec.yaml').readAsStringSync(), contains('- assets/problems/natural/'));
+    });
   });
 
   test('le dossier des images est déclaré dans le pubspec', () {

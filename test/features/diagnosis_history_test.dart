@@ -6,6 +6,7 @@ import 'package:flora/domain/diagnosis/diagnosis_observations.dart';
 import 'package:flora/domain/diagnosis/diagnosis_record.dart';
 import 'package:flora/domain/diagnosis/plant_diagnoser.dart';
 import 'package:flora/domain/models/models.dart';
+import 'package:flora/domain/problems/natural_cause.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flora/features/account/application/membership_providers.dart';
 import 'package:flora/features/plants/presentation/timeline_row.dart';
@@ -27,6 +28,16 @@ void main() {
       it: 'it',
       de: 'de',
       hosts: const ['Tracheophyta'],
+    ),
+  ], naturalCauses: const [
+    NaturalCause(
+      id: 'N01',
+      scope: ProblemScope.wide,
+      fr: 'Nectar extrafloral',
+      en: 'Extrafloral nectar',
+      it: 'it',
+      de: 'de',
+      hosts: ['Philodendron'],
     ),
   ]);
 
@@ -139,6 +150,49 @@ void main() {
     expect(find.text('Insectes'), findsOneWidget);
     expect(find.text('Aucun vu'), findsOneWidget);
     expect(find.text('Racines'), findsNothing);
+  });
+
+  testWidgets('un compte rendu sans problème le dit avant tout le reste', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    final record = DiagnosisRecord(
+      diagnosis: const Diagnosis(
+        summary: 'Des gouttes claires et collantes sous les feuilles.',
+        causes: [
+          DiagnosisCause(
+            title: 'Gouttes sucrées',
+            likelihood: Likelihood.likely,
+            explanation: 'Le philodendron en produit sur ses pétioles et le revers de ses feuilles.',
+            actions: ['Essuyer la feuille si les gouttes gênent'],
+            naturalId: 'N01',
+            natural: true,
+          ),
+        ],
+      ),
+      symptoms: 'On dirait de l\'eau, mais ça colle.',
+    );
+    await pumpJournal(tester, entry(metadata: {DiagnosisRecord.metadataKey: record.toJson()}, notes: '…'));
+
+    // L'aperçu nomme la piste par la base et dit ce qu'elle est.
+    expect(find.text('Nectar extrafloral'), findsOneWidget);
+    expect(find.text('Gouttes sucrées'), findsNothing);
+    expect(find.text('Phénomène normal'), findsOneWidget);
+    expect(find.text('Probable'), findsNothing);
+
+    await tester.tap(find.textContaining('Voir le diagnostic complet'));
+    await tester.pumpAndSettle();
+
+    // Le constat le dit avant les pistes : il n'y a rien à soigner.
+    expect(find.text('Rien d\'anormal'), findsOneWidget);
+    expect(find.text('Constat'), findsNothing);
+    expect(find.text('À traiter rapidement'), findsNothing);
+    // La carte garde son cran de vraisemblance et dit en plus qu'elle n'est
+    // pas un problème.
+    expect(find.text('Probable'), findsOneWidget);
+    expect(find.text('Phénomène normal'), findsWidgets);
+    expect(find.text('Essuyer la feuille si les gouttes gênent'), findsOneWidget);
   });
 
   testWidgets('une note ordinaire reste une note', (tester) async {

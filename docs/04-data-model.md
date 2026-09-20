@@ -380,3 +380,64 @@ Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
 exemples, un genre ne rend pas toutes ses espèces sensibles, et la
 vérification GBIF porte sur les noms de plantes, pas sur les relations
 hôte-problème.
+
+## Base des phénomènes naturels (hors base locale)
+`assets/problems/natural.txt` : ce que la plante fait normalement et qu'on
+prend pour un problème. Deux familles s'y mêlent — ce que la plante fait et
+qui inquiète (guttation, nectar extrafloral, vieille feuille du bas qui
+jaunit, panachure, racines aériennes, latex à la coupe, repos hivernal), et
+ce qu'on prend pour un ravageur ou une maladie (sores d'une fougère pour des
+cochenilles, laine des aréoles pour des cochenilles farineuses, liégeage d'un
+cactus pour une pourriture, nodosités des légumineuses pour des galles de
+nématodes, lichens de l'écorce pour un mal de l'arbre). La seconde est celle
+qui coûte le plus cher : l'erreur y fait traiter une plante qui n'a rien.
+Même fichier à séparateurs `|`, lu par le même chargeur, dans le même isolat,
+et porté par le même `ProblemCatalog` (`naturalCauses`, `natural(id)`,
+`naturalFor`).
+
+| Champ | Contenu |
+|---|---|
+| `id` | `N` et deux chiffres, `N01` à `N32`. Aucune confusion possible avec les trois chiffres d'un problème, ni dans la réponse du service, ni dans un compte rendu gardé. |
+| `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
+| `portee` | `GENERAL`, `LARGE`, `CIBLE`, comme la base des problèmes |
+| `taxons_hotes_scientifiques` | Les plantes qui le montrent, aux mêmes rangs : espèce, genre, famille, ou `Tracheophyta` |
+
+Les deux bases restent séparées parce que les choses le sont : un phénomène
+naturel n'est pas un problème de plus, il est ce qui n'en est pas un. Il n'a
+donc ni famille, ni illustration d'argile, ni page d'encyclopédie, et la fiche
+de soin ne le lit pas — elle parle de ce qui se soigne. Seul le diagnostic s'en
+sert : `naturalFor` en tire la liste soumise avec les problèmes, le service
+rend `N01`, l'application affiche son nom et sait que la piste n'est pas un
+souci (docs/09, § 9).
+
+Le symbole d'argile de ces pistes, `assets/problems/clay_naturel.webp`, est la
+cinquième pièce du studio des quatre familles (`tool/build_category_logos.py`,
+rendu par le même script, recadré à la même échelle par
+`tool/pack_category_logos.py --seulement naturel`, qui ne réécrit pas les
+quatre autres et prévient si le nouveau venu déborde de leur boîte) : une
+feuille saine, la goutte claire suspendue à sa pointe, deux perles de nectar
+sur la nervure. Ni lésion, ni dépôt, ni insecte — c'est l'absence de tout cela
+qui fait le symbole. La goutte est pâle sans être blanche : un blanc mat sur
+une feuille, ici, se lirait cochenille farineuse.
+
+Chaque phénomène a ensuite son propre dessin, dans
+`assets/problems/natural/<id>.webp`, comme chaque problème a le sien :
+trente-deux scènes rendues par `tool/build_natural_icons.py` dans le même
+studio, réduites par `tool/pack_natural_icons.py`, qui écrit la liste des
+identifiants illustrés dans `illustrated_natural.dart`. Un phénomène que la
+base ne nomme pas — le service en trouve hors liste — retombe sur le symbole
+commun, ce qui est exactement ce qu'on sait de lui.
+
+N'entre ici que ce dont il n'y a **rien à soigner**. Ce que la base des
+problèmes traite déjà n'y a pas sa place, même quand la chose passe pour
+anodine : la croûte blanche des sels est l'entrée `023`, l'œdème physiologique
+la `038`, et deux réponses contraires sur la même photo valent moins qu'une
+seule. `test/data/problem_catalog_test.dart` le vérifie — aucun nom, dans
+aucune des quatre langues, ne peut être celui d'un problème ni l'un de ses
+synonymes.
+
+La liste soumise à une analyse tient en neuf à quatorze entrées selon
+l'espèce, soit une ligne de plus dans la demande.
+
+L'actif peut manquer sans emporter l'autre : le diagnostic repart alors sans
+phénomènes naturels, comme avant qu'ils existent.

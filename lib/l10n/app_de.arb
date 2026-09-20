@@ -914,6 +914,8 @@
   "diagnosisPhotosFull": "Höchstens drei Fotos.",
   "diagnosisRemovePhoto": "Dieses Foto entfernen",
   "diagnosisFinding": "Befund",
+  "diagnosisNothingWrong": "Nichts Auffälliges",
+  "diagnosisNatural": "Normale Erscheinung",
   "analyze": "Analysieren",
   "analyzing": "Analyse läuft…",
   "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",

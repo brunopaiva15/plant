@@ -1457,6 +1457,26 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   fait une proposition (docs/16, « Jev côté diagnostic ») : le compte rendu
   reste entier au-dessus, la photo ajoutée relance l'analyse avec les deux ou
   trois vues ensemble, et trois photos restent le plafond.
+- **Tout n'est pas un problème** : la consigne ouvrait les pistes aux seuls
+  troubles, ravageurs, maladies et fautes d'entretien, si bien que des gouttes
+  de nectar extrafloral n'avaient que des cochenilles pour s'expliquer. Une
+  seconde base part donc avec la demande, `assets/problems/natural.txt`
+  (docs/04) : trente-deux phénomènes numérotés `N01` à `N32` — nectar
+  extrafloral, guttation, vieille feuille du bas qui jaunit, panachure,
+  racines aériennes, latex à la coupe, repos hivernal, et les confusions qui
+  font traiter une plante saine : sores d'une fougère pris pour des
+  cochenilles, laine des aréoles, liégeage d'un cactus pris pour une
+  pourriture, nodosités des légumineuses prises pour des galles de nématodes,
+  lichens de l'écorce —, réduits comme les problèmes à ce que l'espèce, son
+  genre ou sa famille peuvent montrer, soit neuf à quatorze entrées. Le service les rend comme
+  n'importe quelle piste, numéro dans `problem` et `"natural": true`, avec leur
+  cran de vraisemblance et leurs gestes — celui de ne rien faire en est un. Les
+  deux numérotations ne se croisent jamais, et le numéro tranche contre la clé :
+  ce que la base range en ravageur n'est pas un phénomène normal. Un compte
+  rendu dont aucune piste n'est un problème n'est jamais urgent, ne met pas la
+  plante à surveiller, et n'est pas envoyé chercher un numéro à la deuxième
+  passe. La base est courte : un phénomène qui n'y est pas reste un phénomène,
+  sous le nom que le service lui donne.
 - **Toujours au moins une piste** : la consigne interdit d'en faire une de la
   photo — « la feuille sèche n'est pas visible sur l'image » n'est pas un
   diagnostic, et le symptôme a bien été vu sur la plante même quand le

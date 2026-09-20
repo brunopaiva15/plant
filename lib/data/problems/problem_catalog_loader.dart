@@ -13,6 +13,11 @@ class ProblemCatalogLoader {
 
   static const assetPath = 'assets/problems/catalog.txt';
 
+  /// La base des phénomènes naturels, lue avec l'autre : c'est le même
+  /// vocabulaire du diagnostic, en deux fichiers parce que ce sont deux
+  /// choses.
+  static const naturalAssetPath = 'assets/problems/natural.txt';
+
   final AssetBundle _bundle;
   Future<ProblemCatalog>? _pending;
 
@@ -21,7 +26,13 @@ class ProblemCatalogLoader {
   Future<ProblemCatalog> _read() async {
     try {
       final raw = await _bundle.loadString(assetPath, cache: false);
-      return await compute(ProblemCatalog.parse, raw);
+      // Le second actif manque sans emporter le premier : le diagnostic
+      // repart alors sans phénomènes naturels, comme avant qu'ils existent.
+      var natural = '';
+      try {
+        natural = await _bundle.loadString(naturalAssetPath, cache: false);
+      } catch (_) {}
+      return await compute(ProblemCatalog.parseAll, (raw, natural));
     } catch (_) {
       // Actif absent (tests, build partiel) : le diagnostic repart sans
       // liste de pistes, comme avant qu'elle existe.

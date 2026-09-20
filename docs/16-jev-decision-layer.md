@@ -349,7 +349,7 @@ Ni photo, ni résumé, ni titre de piste, ni un mot écrit par la personne :
   "checked_by_hand": ["soil", "bugs"],
   "not_checked": ["roots", "light"],
   "view_the_report_would_like": "leaf_underside",
-  "causes": [{"rank": 1, "likelihood": "likely", "known_problem": true}],
+  "causes": [{"rank": 1, "likelihood": "likely", "known_problem": true, "normal_phenomenon": false}],
   "likely_count": 2
 }
 ```
@@ -357,6 +357,8 @@ Ni photo, ni résumé, ni titre de piste, ni un mot écrit par la personne :
 Ce qui a été vérifié à la main compte autant que le reste : une photo de plus
 ne remplacera jamais un doigt dans la terre, et une incertitude qui tient à
 des racines jamais regardées ne se lève pas en cadrant mieux.
+`normal_phenomenon` dit qu'une piste n'est pas un problème (docs/09, § 9) :
+une vue de plus ne la départagera pas d'un souci qui n'existe pas.
 
 ### Garde-fous, les mêmes
 
