@@ -4,8 +4,10 @@ import '../../../core/l10n/l10n.dart';
 import '../../../data/problems/problem_catalog.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
+import '../../../domain/problems/natural_cause.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../onboarding/presentation/clay_illustration.dart';
+import 'illustrated_natural.dart';
 import 'illustrated_problems.dart';
 
 /// Le nom d'une famille de problèmes, au singulier et au pluriel.
@@ -115,23 +117,38 @@ class ProblemKindIcon extends StatelessWidget {
 /// trente-deux, et ce qu'ils ont en commun — il n'y a rien à soigner — est
 /// justement ce que la carte doit dire.
 class NaturalCauseIcon extends StatelessWidget {
-  const NaturalCauseIcon({super.key, this.side = 40});
+  const NaturalCauseIcon({super.key, this.cause, this.side = 40});
 
-  static const asset = 'assets/problems/clay_naturel.webp';
+  /// Le symbole commun : celui d'une piste hors base, et le repli de toutes
+  /// les autres.
+  static const commonAsset = 'assets/problems/clay_naturel.webp';
+
+  /// Le phénomène, quand la base l'a reconnu. `null` pour un phénomène
+  /// qu'elle ne connaît pas : il garde la feuille et sa goutte.
+  final NaturalCause? cause;
 
   final double side;
 
+  static bool isIllustrated(NaturalCause? cause) =>
+      cause != null && illustratedNaturalCauses.contains(cause.id);
+
+  static String assetOf(NaturalCause? cause) =>
+      isIllustrated(cause) ? 'assets/problems/natural/${cause!.id}.webp' : commonAsset;
+
   @override
   Widget build(BuildContext context) {
+    final language = Localizations.localeOf(context).languageCode;
+    final own = isIllustrated(cause);
     return Image(
-      image: ClayIllustration.provider(asset, side, MediaQuery.devicePixelRatioOf(context)),
+      image: ClayIllustration.provider(assetOf(cause), side, MediaQuery.devicePixelRatioOf(context)),
       width: side,
       height: side,
       fit: BoxFit.contain,
       filterQuality: FilterQuality.high,
-      // L'image porte ce que le nom de la piste ne dit pas : qu'elle n'est
-      // pas un problème.
-      semanticLabel: context.l10n.diagnosisNatural,
+      // Le nom du phénomène quand l'image est la sienne ; sinon ce que
+      // l'image dit alors, et que le nom de la piste tait : qu'il n'y a rien
+      // à soigner.
+      semanticLabel: own ? cause!.nameIn(language) : context.l10n.diagnosisNatural,
     );
   }
 }

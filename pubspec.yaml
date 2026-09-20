@@ -121,6 +121,8 @@ flutter:
     # Une illustration par problème, nommée par son identifiant. Le dossier
     # parent ne suffit pas : Flutter ne descend pas dans les sous-dossiers.
     - assets/problems/icons/
+    # Et une par phénomène naturel, nommée pareil.
+    - assets/problems/natural/
     # Les six formes d'engrais, rendues dans le studio d'argile d'Auxine.
     - assets/inventory/fertilizer_forms/
     # Illustrations 3D de l'onboarding : une image par écran, animée par l'app,

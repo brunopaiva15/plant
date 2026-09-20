@@ -139,9 +139,12 @@ def drop(name, x, z, radius, height, mat, depth=.40, angle=-10):
 
 
 class Leaf:
-    def __init__(self, x=0, z=0, scale=1, lean=30):
+    def __init__(self, x=0, z=0, scale=1, lean=30, mat=None, vein=None, stem=None, veins=True):
         self.x=x; self.z=z; self.scale=scale
         self.a=math.radians(lean)
+        # Les symboles de familles gardent la sauge ; les icones des
+        # phenomenes empruntent la meme feuille en ocre ou en creme.
+        self.mat=mat; self.vein=vein; self.stem=stem; self.veins=veins
 
     def coords(self, t, f, offset=0):
         width=.68*math.sin(math.pi*max(.00001,min(.99999,t)))**.72
@@ -182,17 +185,19 @@ class Leaf:
             for j in range(nf):
                 a=i*(nf+1)+j
                 faces.append((a,a+count,a+count+1,a+1))
-        leaf=mesh('Feuille_argile',verts,faces,M['sage'])
+        limbe=self.mat or M['sage']; nervure=self.vein or M['sage_light']; petiole=self.stem or M['sage_dark']
+        leaf=mesh('Feuille_argile',verts,faces,limbe)
         # Raised veins are fully modelled; no bitmap decals.
-        tube('Nervure_principale',[self.coords(t,0,.012) for t in [.015,.12,.25,.40,.56,.72,.88,.97]],
-             [.035,.035,.032,.028,.025,.021,.015,.009],M['sage_light'])
-        for side in (-1,1):
-            for i,t in enumerate((.24,.40,.56,.72)):
-                pts=[self.coords(t+u*.11,side*u*.80,.008) for u in (0,.2,.4,.6,.8,1)]
-                tube(f'Nervure_{side}_{i}',pts,[.017,.016,.014,.012,.009,.005],M['sage_light'])
+        if self.veins:
+            tube('Nervure_principale',[self.coords(t,0,.012) for t in [.015,.12,.25,.40,.56,.72,.88,.97]],
+                 [.035,.035,.032,.028,.025,.021,.015,.009],nervure)
+            for side in (-1,1):
+                for i,t in enumerate((.24,.40,.56,.72)):
+                    pts=[self.coords(t+u*.11,side*u*.80,.008) for u in (0,.2,.4,.6,.8,1)]
+                    tube(f'Nervure_{side}_{i}',pts,[.017,.016,.014,.012,.009,.005],nervure)
         p0=Vector(self.coords(.018,0,-.02)); p1=Vector(self.coords(.11,0,-.02))
         end=p0-(p1-p0).normalized()*.28*self.scale
-        tube('Petiole',[tuple(end),tuple(p0),self.coords(.10,0,-.018)],.048*self.scale,M['sage_dark'])
+        tube('Petiole',[tuple(end),tuple(p0),self.coords(.10,0,-.018)],.048*self.scale,petiole)
         return leaf
 
 

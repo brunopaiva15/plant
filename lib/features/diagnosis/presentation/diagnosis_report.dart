@@ -15,6 +15,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
+import '../../../domain/problems/natural_cause.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
 
@@ -126,7 +127,12 @@ class DiagnosisReportView extends ConsumerWidget {
           Text(l10n.causesHint, style: context.text.caption),
           const SizedBox(height: Space.sm),
           for (final cause in diagnosis.causes)
-            CauseCard(cause: cause, title: diagnosisCauseTitle(cause, catalog, language), problem: catalog?[cause.problemId]),
+            CauseCard(
+              cause: cause,
+              title: diagnosisCauseTitle(cause, catalog, language),
+              problem: catalog?[cause.problemId],
+              naturalCause: catalog?.natural(cause.naturalId),
+            ),
         ],
       ],
     );
@@ -249,7 +255,7 @@ String diagnosisCauseTitle(DiagnosisCause cause, ProblemCatalog? catalog, String
 
 /// Une piste : son nom, sa vraisemblance, ce qu'elle explique, les gestes.
 class CauseCard extends StatelessWidget {
-  const CauseCard({super.key, required this.cause, required this.title, this.problem});
+  const CauseCard({super.key, required this.cause, required this.title, this.problem, this.naturalCause});
 
   final DiagnosisCause cause;
 
@@ -260,6 +266,10 @@ class CauseCard extends StatelessWidget {
   /// cause hors base, qui n'a alors pas d'image plutôt qu'une image
   /// approximative.
   final PlantProblem? problem;
+
+  /// L'entrée de la base des phénomènes naturels, même chose de l'autre
+  /// côté : elle porte le dessin de ce phénomène-là.
+  final NaturalCause? naturalCause;
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +294,7 @@ class CauseCard extends StatelessWidget {
                 // maladies. Une piste hors base garde la tuile, sans dessin,
                 // et un phénomène naturel porte la feuille : il n'a pas de
                 // famille.
-                _KindTile(problem: known, natural: cause.natural),
+                _KindTile(problem: known, natural: cause.natural, naturalCause: naturalCause),
                 const SizedBox(width: Space.md),
                 Expanded(
                   child: Column(
@@ -360,9 +370,13 @@ class CauseCard extends StatelessWidget {
 
 /// La tuile d'une piste : le dessin de la base sur la teinte de sa famille.
 class _KindTile extends StatelessWidget {
-  const _KindTile({required this.problem, this.natural = false});
+  const _KindTile({required this.problem, this.natural = false, this.naturalCause});
 
   final PlantProblem? problem;
+
+  /// Le phénomène nommé par la base, quand il l'est : il a son dessin, comme
+  /// un problème a le sien.
+  final NaturalCause? naturalCause;
 
   /// Une piste qui n'est pas un problème : elle a son symbole d'argile, la
   /// feuille et sa goutte claire, qui ne se confond avec aucune des quatre
@@ -390,7 +404,7 @@ class _KindTile extends StatelessWidget {
       child: p != null
           ? ProblemIcon(problem: p, side: 30)
           : natural
-              ? const NaturalCauseIcon(side: 30)
+              ? NaturalCauseIcon(cause: naturalCause, side: 30)
               : Icon(CupertinoIcons.question, size: 18, color: c.inkTertiary),
     );
   }

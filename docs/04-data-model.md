@@ -418,9 +418,15 @@ quatre autres et prévient si le nouveau venu déborde de leur boîte) : une
 feuille saine, la goutte claire suspendue à sa pointe, deux perles de nectar
 sur la nervure. Ni lésion, ni dépôt, ni insecte — c'est l'absence de tout cela
 qui fait le symbole. La goutte est pâle sans être blanche : un blanc mat sur
-une feuille, ici, se lirait cochenille farineuse. Un phénomène n'a pas
-d'illustration à lui : ce que les trente-deux ont en commun — il n'y a rien à
-soigner — est justement ce que la carte doit dire.
+une feuille, ici, se lirait cochenille farineuse.
+
+Chaque phénomène a ensuite son propre dessin, dans
+`assets/problems/natural/<id>.webp`, comme chaque problème a le sien :
+trente-deux scènes rendues par `tool/build_natural_icons.py` dans le même
+studio, réduites par `tool/pack_natural_icons.py`, qui écrit la liste des
+identifiants illustrés dans `illustrated_natural.dart`. Un phénomène que la
+base ne nomme pas — le service en trouve hors liste — retombe sur le symbole
+commun, ce qui est exactement ce qu'on sait de lui.
 
 N'entre ici que ce dont il n'y a **rien à soigner**. Ce que la base des
 problèmes traite déjà n'y a pas sa place, même quand la chose passe pour
