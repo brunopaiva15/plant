@@ -397,16 +397,18 @@ une rangée ne se range pas debout. Les pages qui n'ont qu'un bouton gardent
 
 **Tout se cale en haut**, et rien n'est centré. C'est ce qui fait qu'une
 pilule ne se déplace ni d'un onglet à l'autre, ni d'un pli à l'autre : elle
-commence à 152 points du bord haut dans toutes les poses, et les boutons
+commence à 172 points du bord haut dans toutes les poses, et les boutons
 pendent dessous. Centrer, même la pilule seule, la faisait bouger dès que la
 fenêtre changeait de hauteur — et à centrer le groupe entier, elle remontait
 d'un cran à chaque bouton de plus, jusqu'à passer sous l'heure du système.
 
-Ces 152 points sont une mesure, pas un choix : sur l'écran extérieur du Duo,
+Ces 172 points sont une mesure plus une marge : sur l'écran extérieur du Duo,
 la pile caméra + heure + wifi descend à 140 points, là où
 `MediaQuery.padding.top` n'en annonce que 82. iOS ne dit donc pas où s'arrête
-sa propre colonne, et la nôtre commence sous la mesure, avec un peu d'air. Si
-une pose annonçait davantage, c'est l'annonce qui l'emporterait.
+sa propre colonne, et la nôtre commence sous la mesure. Si une pose annonçait
+davantage, c'est l'annonce qui l'emporterait. Les 32 points d'air ne sont pas
+décoratifs : douze collaient la pilule au wifi, et deux pièces d'argile de 64
+points de large demandent plus d'écart qu'un glyphe de vingt.
 
 Le dégagement cède avant les cibles : dans une fenêtre trop courte — un Duo
 fermé et couché, 466 points de haut pour quatre onglets et quatre boutons —

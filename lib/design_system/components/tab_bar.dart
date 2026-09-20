@@ -176,9 +176,13 @@ class FloraTabRail extends StatelessWidget {
   ///
   /// iOS n'en dit rien de fiable : `MediaQuery.padding.top` annonce 82 points
   /// dans cette pose, là où la pile en descend à 140. La colonne commence
-  /// donc en dessous, avec un peu d'air. Si une pose annonçait davantage,
-  /// c'est elle qui l'emporterait.
-  static const double _sousLesElementsDuSysteme = 152;
+  /// donc en dessous. Si une pose annonçait davantage, c'est elle qui
+  /// l'emporterait.
+  ///
+  /// Les 32 points d'air ne sont pas décoratifs : douze collaient la pilule
+  /// au wifi, et deux pièces d'argile de 64 points de large ont besoin de
+  /// plus d'écart qu'un glyphe de vingt.
+  static const double _sousLesElementsDuSysteme = 140 + Space.xxl;
 
   /// Le blanc entre la pilule et le bord droit, choisi pour que la colonne
   /// tombe sur le **même axe** que les éléments du système.

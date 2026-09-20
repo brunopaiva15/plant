@@ -126,8 +126,8 @@ void main() {
       expect(669 - pill.center.dx, closeTo(48, 0.5), reason: 'la colonne n\'est pas sur l\'axe du système');
       // Et calée en haut, sous la caméra, l'heure et le wifi — qui
       // descendent à 140 points alors qu'iOS n'en annonce que 82.
-      expect(pill.top, greaterThanOrEqualTo(140));
-      expect(pill.top, lessThan(200));
+      expect(pill.top, greaterThanOrEqualTo(140 + 24), reason: 'la pilule colle aux glyphes du système');
+      expect(pill.top, lessThan(210));
       // Une colonne, pas une barre : plus haute que large.
       expect(pill.height, greaterThan(pill.width * 2));
     });
