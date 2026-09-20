@@ -160,7 +160,7 @@ final roomPlantSpotsProvider = Provider.family<Map<String, SurveyedSpot>, String
   };
 });
 
-/// « Qui serait bien ici » : les plantes du jardin dont l'espèce est
+/// « Le jardin dans cette pièce » : les plantes du jardin dont l'espèce est
 /// connue, classées par leur meilleure place dans la pièce. Une fiche
 /// générique ne se classe pas — sans l'espèce, la lumière demandée n'est
 /// pas connue.

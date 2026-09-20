@@ -1988,7 +1988,7 @@
   "moderationRestore": "Restore",
   "confirmRestoreTip": "Restore this tip? Its reports are cleared.",
   "roomScan": "Home scan",
-  "roomScanHint": "A room scanned with the camera and the LiDAR gives its walls, windows and doors. For a plant, the app reads where it would do best. The scan stays on the device.",
+  "roomScanHint": "A room surveyed with the camera and the LiDAR gives its walls, windows and doors. The light at each spot follows from them, to tell where to put a plant. The survey stays on the device.",
   "roomScanStart": "Scan a room",
   "roomScanRooms": "Scanned rooms",
   "roomScanEmptyTitle": "No room scanned",
@@ -2028,7 +2028,7 @@
   "roomScanWindowUnknown": "Unknown orientation",
   "roomScanWindowFromCompass": "From the compass",
   "roomScanWindowConfirmed": "Confirmed",
-  "roomScanOrientationHelp": "The compass is off by ten to fifteen degrees: each window's orientation is confirmed here.",
+  "roomScanOrientationHelp": "The compass is off by ten to fifteen degrees. Each window's orientation is corrected here.",
   "roomScanDelete": "Delete the scan",
   "roomScanDeleteConfirm": "The scan and its markers are removed from the device.",
   "roomScanCapturedOn": "Scanned on {date}",
@@ -2054,7 +2054,7 @@
   "directionWest": "west",
   "directionNorthWest": "north-west",
   "placementTitle": "Where to put it",
-  "placementHint": "The spots found in the scanned rooms, for this plant. It can live elsewhere.",
+  "placementHint": "Spots are ranked by the light they receive, compared with the light on the care sheet.",
   "placementRoomsCount": "{count, plural, =1{one room scanned} other{{count} rooms scanned}}",
   "@placementRoomsCount": {
     "placeholders": {
@@ -2063,14 +2063,14 @@
       }
     }
   },
-  "placementVerdictGood": "This room suits it.",
-  "placementVerdictAcceptable": "This room more or less suits it.",
-  "placementVerdictUnsuitable": "This room does not suit it.",
-  "placementShortfallTooDark": "Too dark for what it needs.",
-  "placementShortfallTooBright": "Too much direct sun for it.",
-  "placementShortfallDrafty": "Every spot is near a door, and it dislikes draughts.",
-  "placementShortfallTooDry": "A humid room, for a plant that wants dry air.",
-  "placementGeneric": "The page is generic: without the species, the light it needs is not known.",
+  "placementVerdictGood": "Suitable room.",
+  "placementVerdictAcceptable": "Acceptable room, with no ideal spot.",
+  "placementVerdictUnsuitable": "Unsuitable room.",
+  "placementShortfallTooDark": "Too dark for the light required.",
+  "placementShortfallTooBright": "Too much direct sun.",
+  "placementShortfallDrafty": "Every spot is near a door: draughts.",
+  "placementShortfallTooDry": "Wet room, humid air: the care sheet calls for dry air.",
+  "placementGeneric": "Generic care sheet: without a species, the light required is unknown.",
   "placementDistanceM": "{m} m",
   "@placementDistanceM": {
     "placeholders": {
@@ -2118,8 +2118,8 @@
   },
   "placementOnSillUnknown": "on the window sill",
   "placementDeepInRoom": "at the back, away from the windows",
-  "placementDraftyNote": "Near a door: the air moves there.",
-  "placementHumidRoomNote": "Humid room: the air is damper there.",
+  "placementDraftyNote": "Near a door: draught.",
+  "placementHumidRoomNote": "Wet room: more humid air.",
   "placementPlanSemantics": "Room plan seen from above, {count} spots kept.",
   "@placementPlanSemantics": {
     "placeholders": {
@@ -2129,7 +2129,7 @@
     }
   },
   "roomScanHeaters": "Radiators",
-  "roomScanHeatersHelp": "RoomPlan does not see radiators. Placed on the plan, a radiator keeps away the plants that dislike dry, hot air.",
+  "roomScanHeatersHelp": "The survey does not see radiators. Placed on the plan, a radiator counts as dry, hot air within 80 cm.",
   "roomScanAddHeater": "Place a radiator",
   "roomScanTapForHeater": "Tap the plan where the radiator is.",
   "roomScanHeatersCount": "{count, plural, =0{no radiator} =1{one radiator} other{{count} radiators}}",
@@ -2142,7 +2142,7 @@
   },
   "roomScanRemoveHeater": "Remove this radiator",
   "roomScanFillLocation": "Fill in the location",
-  "roomScanFillLocationDetail": "Orientation “{orientation}”, light “{light}”, from the scan. What is already filled in does not change.",
+  "roomScanFillLocationDetail": "Orientation {orientation}, light {light}, from the survey. Fields already filled in do not change.",
   "@roomScanFillLocationDetail": {
     "placeholders": {
       "orientation": {
@@ -2154,12 +2154,12 @@
     }
   },
   "roomScanLocationFilled": "Location filled in",
-  "roomScanWhoFitsHere": "Who would do well here",
-  "roomScanWhoFitsHint": "The plants of the garden, ranked by what the room gives them.",
+  "roomScanWhoFitsHere": "The garden in this room",
+  "roomScanWhoFitsHint": "Each plant is rated on the room's light and its care sheet.",
   "roomScanNoPlantsToRank": "No plant with a known species.",
-  "placementShortfallHeater": "Every spot is near a radiator, and it dislikes dry, hot air.",
-  "placementHeaterNote": "Near a radiator: the air is dry and hot there.",
-  "placementAtHome": "At home",
+  "placementShortfallHeater": "Every spot is near a radiator: dry, hot air.",
+  "placementHeaterNote": "Near a radiator: dry, hot air.",
+  "placementAtHome": "Room sensor",
   "roomScanStartStructure": "Scan the whole home",
   "roomScanStructureHint": "Scanning the whole home goes room by room: “Next room” between each, “Done” at the end. The rooms are placed relative to one another.",
   "roomScanNextRoom": "Next room",
@@ -2172,7 +2172,7 @@
     }
   },
   "roomScanPlantsOnPlan": "Plants on the plan",
-  "roomScanPlantsHelp": "A plant placed on the plan is judged where it stands: the list says whether another spot would suit it better.",
+  "roomScanPlantsHelp": "A plant placed on the plan is rated at its spot. The list flags a clearly better spot.",
   "roomScanAddPlant": "Place a plant",
   "roomScanTapForPlant": "Tap the plan where {plant} is.",
   "@roomScanTapForPlant": {
@@ -2191,7 +2191,7 @@
     }
   },
   "roomScanNoPlantToPlace": "No plant to place.",
-  "roomScanPlantWellPlaced": "Well placed · {light}",
+  "roomScanPlantWellPlaced": "Suitable spot · {light}",
   "@roomScanPlantWellPlaced": {
     "placeholders": {
       "light": {
@@ -2199,7 +2199,7 @@
       }
     }
   },
-  "roomScanPlantBetterAt": "Now {light} · better {place}",
+  "roomScanPlantBetterAt": "Current spot {light} · better {place}",
   "@roomScanPlantBetterAt": {
     "placeholders": {
       "light": {
@@ -2211,8 +2211,8 @@
     }
   },
   "placementAllRooms": "All rooms",
-  "placementChoose": "Choose this spot",
-  "placementChosen": "Chosen spot: {place}",
+  "placementChoose": "Place here",
+  "placementChosen": "Placed {place}",
   "@placementChosen": {
     "placeholders": {
       "place": {
@@ -2220,7 +2220,7 @@
       }
     }
   },
-  "placementCurrent": "Now: {place} · {light}",
+  "placementCurrent": "Current spot: {place} · {light}",
   "@placementCurrent": {
     "placeholders": {
       "place": {
@@ -2236,7 +2236,7 @@
   "roomScanCurtainNone": "No curtain",
   "roomScanCurtainSheer": "Sheer curtain",
   "roomScanCurtainDrawn": "Curtain often drawn",
-  "roomScanCurtainHelp": "RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.",
+  "roomScanCurtainHelp": "The survey sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.",
   "roomScanPlace": "Place",
   "roomScanRoomsShort": "{count, plural, =0{None} =1{1 room} other{{count} rooms}}",
   "@roomScanRoomsShort": {
@@ -2247,7 +2247,7 @@
     }
   },
   "roomScanThisRoom": "Survey this room",
-  "roomScanThisRoomHint": "The room's plan, surveyed with the camera, tells where a plant would do best in it.",
+  "roomScanThisRoomHint": "The room's plan gives the light at each spot, to choose where to put a plant.",
   "roomScanRoomPlan": "Room plan",
   "roomScanPlantsOnPlanCount": "{count, plural, =0{no plant on the plan} =1{one plant on the plan} other{{count} plants on the plan}}",
   "@roomScanPlantsOnPlanCount": {

@@ -894,8 +894,8 @@ au code.
   chaque point, `RoomFitAdvisor.survey` lit la pièce une fois — lumière
   selon la latitude du lieu de la météo, air qui bouge, radiateurs posés —
   et `placeIn` classe les places d'une fiche sur ce relevé ; c'est ce qui
-  permet de juger tout le jardin sur la même grille (« Qui serait bien
-  ici »). Les seuils sont calibrés sur la pièce du diorama : les six
+  permet de juger tout le jardin sur la même grille (« Le jardin dans
+  cette pièce »). Les seuils sont calibrés sur la pièce du diorama : les six
   emplacements de docs/13 rendent leurs six crans, ce que
   `test/domain/room_light_model_test.dart` verrouille — sans latitude, à
   45° de soleil ; le test dit aussi ce que Paris et les tropiques changent.

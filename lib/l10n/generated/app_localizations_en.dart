@@ -6208,7 +6208,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanHint =>
-      'A room scanned with the camera and the LiDAR gives its walls, windows and doors. For a plant, the app reads where it would do best. The scan stays on the device.';
+      'A room surveyed with the camera and the LiDAR gives its walls, windows and doors. The light at each spot follows from them, to tell where to put a plant. The survey stays on the device.';
 
   @override
   String get roomScanStart => 'Scan a room';
@@ -6282,7 +6282,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'The compass is off by ten to fifteen degrees: each window\'s orientation is confirmed here.';
+      'The compass is off by ten to fifteen degrees. Each window\'s orientation is corrected here.';
 
   @override
   String get roomScanDelete => 'Delete the scan';
@@ -6343,7 +6343,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placementHint =>
-      'The spots found in the scanned rooms, for this plant. It can live elsewhere.';
+      'Spots are ranked by the light they receive, compared with the light on the care sheet.';
 
   @override
   String placementRoomsCount(int count) {
@@ -6357,31 +6357,31 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get placementVerdictGood => 'This room suits it.';
+  String get placementVerdictGood => 'Suitable room.';
 
   @override
-  String get placementVerdictAcceptable => 'This room more or less suits it.';
+  String get placementVerdictAcceptable =>
+      'Acceptable room, with no ideal spot.';
 
   @override
-  String get placementVerdictUnsuitable => 'This room does not suit it.';
+  String get placementVerdictUnsuitable => 'Unsuitable room.';
 
   @override
-  String get placementShortfallTooDark => 'Too dark for what it needs.';
+  String get placementShortfallTooDark => 'Too dark for the light required.';
 
   @override
-  String get placementShortfallTooBright => 'Too much direct sun for it.';
+  String get placementShortfallTooBright => 'Too much direct sun.';
 
   @override
-  String get placementShortfallDrafty =>
-      'Every spot is near a door, and it dislikes draughts.';
+  String get placementShortfallDrafty => 'Every spot is near a door: draughts.';
 
   @override
   String get placementShortfallTooDry =>
-      'A humid room, for a plant that wants dry air.';
+      'Wet room, humid air: the care sheet calls for dry air.';
 
   @override
   String get placementGeneric =>
-      'The page is generic: without the species, the light it needs is not known.';
+      'Generic care sheet: without a species, the light required is unknown.';
 
   @override
   String placementDistanceM(String m) {
@@ -6421,10 +6421,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get placementDeepInRoom => 'at the back, away from the windows';
 
   @override
-  String get placementDraftyNote => 'Near a door: the air moves there.';
+  String get placementDraftyNote => 'Near a door: draught.';
 
   @override
-  String get placementHumidRoomNote => 'Humid room: the air is damper there.';
+  String get placementHumidRoomNote => 'Wet room: more humid air.';
 
   @override
   String placementPlanSemantics(int count) {
@@ -6436,7 +6436,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'RoomPlan does not see radiators. Placed on the plan, a radiator keeps away the plants that dislike dry, hot air.';
+      'The survey does not see radiators. Placed on the plan, a radiator counts as dry, hot air within 80 cm.';
 
   @override
   String get roomScanAddHeater => 'Place a radiator';
@@ -6464,32 +6464,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Orientation “$orientation”, light “$light”, from the scan. What is already filled in does not change.';
+    return 'Orientation $orientation, light $light, from the survey. Fields already filled in do not change.';
   }
 
   @override
   String get roomScanLocationFilled => 'Location filled in';
 
   @override
-  String get roomScanWhoFitsHere => 'Who would do well here';
+  String get roomScanWhoFitsHere => 'The garden in this room';
 
   @override
   String get roomScanWhoFitsHint =>
-      'The plants of the garden, ranked by what the room gives them.';
+      'Each plant is rated on the room\'s light and its care sheet.';
 
   @override
   String get roomScanNoPlantsToRank => 'No plant with a known species.';
 
   @override
   String get placementShortfallHeater =>
-      'Every spot is near a radiator, and it dislikes dry, hot air.';
+      'Every spot is near a radiator: dry, hot air.';
 
   @override
-  String get placementHeaterNote =>
-      'Near a radiator: the air is dry and hot there.';
+  String get placementHeaterNote => 'Near a radiator: dry, hot air.';
 
   @override
-  String get placementAtHome => 'At home';
+  String get placementAtHome => 'Room sensor';
 
   @override
   String get roomScanStartStructure => 'Scan the whole home';
@@ -6511,7 +6510,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanPlantsHelp =>
-      'A plant placed on the plan is judged where it stands: the list says whether another spot would suit it better.';
+      'A plant placed on the plan is rated at its spot. The list flags a clearly better spot.';
 
   @override
   String get roomScanAddPlant => 'Place a plant';
@@ -6531,28 +6530,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String roomScanPlantWellPlaced(String light) {
-    return 'Well placed · $light';
+    return 'Suitable spot · $light';
   }
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Now $light · better $place';
+    return 'Current spot $light · better $place';
   }
 
   @override
   String get placementAllRooms => 'All rooms';
 
   @override
-  String get placementChoose => 'Choose this spot';
+  String get placementChoose => 'Place here';
 
   @override
   String placementChosen(String place) {
-    return 'Chosen spot: $place';
+    return 'Placed $place';
   }
 
   @override
   String placementCurrent(String place, String light) {
-    return 'Now: $place · $light';
+    return 'Current spot: $place · $light';
   }
 
   @override
@@ -6572,7 +6571,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.';
+      'The survey sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.';
 
   @override
   String get roomScanPlace => 'Place';
@@ -6594,7 +6593,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanThisRoomHint =>
-      'The room\'s plan, surveyed with the camera, tells where a plant would do best in it.';
+      'The room\'s plan gives the light at each spot, to choose where to put a plant.';
 
   @override
   String get roomScanRoomPlan => 'Room plan';

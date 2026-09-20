@@ -21,7 +21,7 @@ import 'room_scan_labels.dart';
 /// pièces classées d'abord, quand il y en a plusieurs ; puis la pièce
 /// choisie, son plan, trois places nommées, et ce qu'elle vaut en une
 /// phrase. Pour une plante du jardin, la place d'aujourd'hui si elle est
-/// posée sur le plan, et « Choisir cette place ». [initialScanId] ouvre
+/// posée sur le plan, et « Poser ici ». [initialScanId] ouvre
 /// sur une pièce donnée — celle où la plante est, quand on vient de sa
 /// fiche — plutôt que sur la mieux classée.
 Future<void> showRoomFit(BuildContext context, {required CareProfile profile, required bool generic, String? plantId, String? plantName, String? initialScanId}) =>

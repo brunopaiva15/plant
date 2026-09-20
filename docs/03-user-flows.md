@@ -255,9 +255,9 @@ Profil ─[tap « Relevé de la maison »]⟶ la même chose pour toutes les pi�
 Fiche plante ─ carte « Où la poser · Salon · à 1 m de la fenêtre sud » sous
   « Comment en prendre soin », dès que son emplacement est relevé ─[tap]⟶ Où la poser
   ouvert sur sa pièce · plan avec le lavis de lumière et les places numérotées
-  « Cette pièce lui convient. » puis 1 · à 1 m de la fenêtre sud · Lumière vive
-  [Choisir cette place] ⟶ la plante est posée sur le plan
-  ⟶ la carte devient « Salon · à 1 m de la fenêtre sud » · « Bien placée · Lumière
+  « Pièce adaptée. » puis 1 · à 1 m de la fenêtre sud · Lumière vive
+  [Poser ici] ⟶ la plante est posée sur le plan
+  ⟶ la carte devient « Salon · à 1 m de la fenêtre sud » · « Place adaptée · Lumière
     vive », ou « mieux sur la table » si une place la dépasse nettement
 Fiche d'entretien ─[tap « Où la poser », sous le diorama]⟶ la même feuille
 ```

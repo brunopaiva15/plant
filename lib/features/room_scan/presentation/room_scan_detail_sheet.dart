@@ -310,7 +310,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
   }
 }
 
-/// « Qui serait bien ici » : les plantes du jardin classées par ce que la
+/// « Le jardin dans cette pièce » : les plantes du jardin classées par ce que la
 /// pièce leur donne, et la fiche d'entretien à un toucher.
 class _WhoFitsHere extends ConsumerWidget {
   const _WhoFitsHere({required this.scanId});

@@ -269,7 +269,7 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   « Salon » sans relevé), à la casse près ; deux emplacements du même nom,
   et c'est la main qui décide. Sur un appareil sans LiDAR, la ligne
   n'existe pas.
-- **Fiche de la pièce relevée › « Qui serait bien ici »** (palier 2) : les
+- **Fiche de la pièce relevée › « Le jardin dans cette pièce »** (palier 2) : les
   plantes du jardin classées par leur score dans cette pièce.
 
 Le flux du relevé est le même d'où qu'on parte (`room_scan_flow.dart`) ;
@@ -286,7 +286,7 @@ Fiche d'entretien ─[tap « Où la poser »]⟶ Résultat
     retenues en pastilles numérotées
   Trois lignes : « 1 · À un mètre de la fenêtre sud-ouest · lumière vive »
   Une ligne de réserve quand la fiche est générique ou sans lumière connue
-  [Choisir cette place] (palier 3) ⟶ pose un repère « plant » et
+  [Poser ici] (palier 3) ⟶ pose un repère « plant » et
     renseigne l'emplacement de la plante
 ```
 
@@ -333,7 +333,7 @@ et en relever un autre.
 
 **Palier 2 — la maison telle qu'elle est.** Les radiateurs posés du doigt
 (`room_markers`, collés au mur le plus proche), la latitude du lieu de la
-météo dans la portée de la tache de soleil, « Qui serait bien ici » sur la
+météo dans la portée de la tache de soleil, « Le jardin dans cette pièce » sur la
 pièce, le croisement avec la mesure des capteurs de la maison
 (`homeReadingProvider`) quand le capteur porte le nom de la pièce ou de
 son emplacement, et le remplissage proposé de `locations.orientation` et
@@ -351,9 +351,9 @@ au « Terminer », et chaque pièce part dans son fichier sous un même
 `structure_id` (schéma v14). « Où la poser » classe d'abord les pièces —
 toutes, pas seulement celles d'un même relevé —, la meilleure s'ouvre
 d'elle-même. Une plante du jardin se pose sur le plan de la pièce ; elle
-est alors jugée là où elle est, et « Qui serait bien ici » dit « mieux
+est alors jugée là où elle est, et « Le jardin dans cette pièce » dit « mieux
 sur la table » quand la meilleure place dépasse la sienne d'au moins un
-quart. Depuis sa fiche, « Choisir cette place » la pose sur le plan et la
+quart. Depuis sa fiche, « Poser ici » la pose sur le plan et la
 déménage dans l'emplacement du relevé s'il en a un. **Livré dans ce
 dépôt.** La synchronisation des relevés n'est pas faite : un plan de chez
 soi dans un jardin partagé pose la question de ce qu'on partage, qui

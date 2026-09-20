@@ -1981,7 +1981,7 @@
   "moderationRestore": "Wiederherstellen",
   "confirmRestoreTip": "Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht.",
   "roomScan": "Raumscan",
-  "roomScanHint": "Ein mit Kamera und LiDAR gescannter Raum liefert seine Wände, Fenster und Türen. Für eine Pflanze liest die App daraus, wo sie am besten stünde. Der Scan bleibt auf dem Gerät.",
+  "roomScanHint": "Ein mit Kamera und LiDAR erfasster Raum liefert seine Wände, Fenster und Türen. Daraus ergibt sich das Licht an jedem Platz, und damit, wo eine Pflanze stehen kann. Die Erfassung bleibt auf dem Gerät.",
   "roomScanStart": "Raum scannen",
   "roomScanRooms": "Gescannte Räume",
   "roomScanEmptyTitle": "Kein Raum gescannt",
@@ -2021,7 +2021,7 @@
   "roomScanWindowUnknown": "Ausrichtung unbekannt",
   "roomScanWindowFromCompass": "Laut Kompass",
   "roomScanWindowConfirmed": "Bestätigt",
-  "roomScanOrientationHelp": "Der Kompass irrt um zehn bis fünfzehn Grad: Die Ausrichtung jedes Fensters wird hier bestätigt.",
+  "roomScanOrientationHelp": "Der Kompass irrt um zehn bis fünfzehn Grad. Die Ausrichtung jedes Fensters wird hier korrigiert.",
   "roomScanDelete": "Scan löschen",
   "roomScanDeleteConfirm": "Der Scan und seine Markierungen verschwinden vom Gerät.",
   "roomScanCapturedOn": "Gescannt am {date}",
@@ -2047,7 +2047,7 @@
   "directionWest": "Westen",
   "directionNorthWest": "Nordwesten",
   "placementTitle": "Wohin damit",
-  "placementHint": "Die Plätze, die in den gescannten Räumen für diese Pflanze gefunden wurden. Sie kann auch anderswo stehen.",
+  "placementHint": "Die Plätze sind nach ihrem Licht geordnet, verglichen mit dem Licht der Pflegekarte.",
   "placementRoomsCount": "{count, plural, =1{ein gescannter Raum} other{{count} gescannte Räume}}",
   "@placementRoomsCount": {
     "placeholders": {
@@ -2056,14 +2056,14 @@
       }
     }
   },
-  "placementVerdictGood": "Dieser Raum passt zu ihr.",
-  "placementVerdictAcceptable": "Dieser Raum passt einigermaßen zu ihr.",
-  "placementVerdictUnsuitable": "Dieser Raum passt nicht zu ihr.",
-  "placementShortfallTooDark": "Zu dunkel für das, was sie braucht.",
-  "placementShortfallTooBright": "Zu viel direkte Sonne für sie.",
-  "placementShortfallDrafty": "Alle Plätze liegen nahe einer Tür, und sie verträgt keinen Durchzug.",
-  "placementShortfallTooDry": "Ein Feuchtraum, für eine Pflanze, die trockene Luft will.",
-  "placementGeneric": "Die Seite ist allgemein: Ohne die Art ist nicht bekannt, wie viel Licht sie braucht.",
+  "placementVerdictGood": "Geeigneter Raum.",
+  "placementVerdictAcceptable": "Annehmbarer Raum, ohne idealen Platz.",
+  "placementVerdictUnsuitable": "Ungeeigneter Raum.",
+  "placementShortfallTooDark": "Zu dunkel für das geforderte Licht.",
+  "placementShortfallTooBright": "Zu viel direkte Sonne.",
+  "placementShortfallDrafty": "Jeder Platz liegt nahe einer Tür: Durchzug.",
+  "placementShortfallTooDry": "Feuchtraum, feuchte Luft: Die Pflegekarte verlangt trockene Luft.",
+  "placementGeneric": "Allgemeine Pflegekarte: Ohne Art ist das geforderte Licht unbekannt.",
   "placementDistanceM": "{m} m",
   "@placementDistanceM": {
     "placeholders": {
@@ -2111,8 +2111,8 @@
   },
   "placementOnSillUnknown": "auf der Fensterbank",
   "placementDeepInRoom": "hinten im Raum, weit weg von den Fenstern",
-  "placementDraftyNote": "Nahe einer Tür: Hier bewegt sich die Luft.",
-  "placementHumidRoomNote": "Feuchtraum: Die Luft ist hier feuchter.",
+  "placementDraftyNote": "Nahe einer Tür: Durchzug.",
+  "placementHumidRoomNote": "Feuchtraum: feuchtere Luft.",
   "placementPlanSemantics": "Grundriss des Raums von oben, {count} ausgewählte Plätze.",
   "@placementPlanSemantics": {
     "placeholders": {
@@ -2122,7 +2122,7 @@
     }
   },
   "roomScanHeaters": "Heizkörper",
-  "roomScanHeatersHelp": "RoomPlan erkennt keine Heizkörper. Auf dem Grundriss gesetzt, hält ein Heizkörper die Pflanzen fern, die trockene, warme Luft nicht vertragen.",
+  "roomScanHeatersHelp": "Die Erfassung sieht keine Heizkörper. Auf dem Grundriss gesetzt, zählt ein Heizkörper im Umkreis von 80 cm als trockene, warme Luft.",
   "roomScanAddHeater": "Heizkörper setzen",
   "roomScanTapForHeater": "Auf dem Grundriss dort tippen, wo der Heizkörper steht.",
   "roomScanHeatersCount": "{count, plural, =0{kein Heizkörper} =1{ein Heizkörper} other{{count} Heizkörper}}",
@@ -2135,7 +2135,7 @@
   },
   "roomScanRemoveHeater": "Diesen Heizkörper entfernen",
   "roomScanFillLocation": "Ort ausfüllen",
-  "roomScanFillLocationDetail": "Ausrichtung „{orientation}“, Licht „{light}“, laut Scan. Was schon ausgefüllt ist, bleibt unverändert.",
+  "roomScanFillLocationDetail": "Ausrichtung {orientation}, Licht {light}, laut Erfassung. Schon ausgefüllte Felder bleiben unverändert.",
   "@roomScanFillLocationDetail": {
     "placeholders": {
       "orientation": {
@@ -2147,12 +2147,12 @@
     }
   },
   "roomScanLocationFilled": "Ort ausgefüllt",
-  "roomScanWhoFitsHere": "Wer hier gut stünde",
-  "roomScanWhoFitsHint": "Die Pflanzen des Gartens, geordnet nach dem, was der Raum ihnen bietet.",
+  "roomScanWhoFitsHere": "Der Garten in diesem Raum",
+  "roomScanWhoFitsHint": "Jede Pflanze wird nach dem Licht des Raums und ihrer Pflegekarte bewertet.",
   "roomScanNoPlantsToRank": "Keine Pflanze mit bekannter Art.",
-  "placementShortfallHeater": "Alle Plätze liegen nahe einem Heizkörper, und sie verträgt keine trockene, warme Luft.",
-  "placementHeaterNote": "Nahe einem Heizkörper: Die Luft ist hier trocken und warm.",
-  "placementAtHome": "Bei dir",
+  "placementShortfallHeater": "Jeder Platz liegt nahe einem Heizkörper: trockene, warme Luft.",
+  "placementHeaterNote": "Nahe einem Heizkörper: trockene, warme Luft.",
+  "placementAtHome": "Sensor des Raums",
   "roomScanStartStructure": "Die ganze Wohnung scannen",
   "roomScanStructureHint": "Die ganze Wohnung scannen geht Raum für Raum: „Nächster Raum“ dazwischen, „Fertig“ am Ende. Die Räume werden zueinander gesetzt.",
   "roomScanNextRoom": "Nächster Raum",
@@ -2165,7 +2165,7 @@
     }
   },
   "roomScanPlantsOnPlan": "Pflanzen auf dem Grundriss",
-  "roomScanPlantsHelp": "Eine Pflanze auf dem Grundriss wird dort beurteilt, wo sie steht: Die Liste sagt, ob ein anderer Platz besser zu ihr passt.",
+  "roomScanPlantsHelp": "Eine Pflanze auf dem Grundriss wird an ihrem Platz bewertet. Die Liste zeigt einen deutlich besseren Platz an.",
   "roomScanAddPlant": "Pflanze setzen",
   "roomScanTapForPlant": "Auf dem Grundriss dort tippen, wo {plant} steht.",
   "@roomScanTapForPlant": {
@@ -2184,7 +2184,7 @@
     }
   },
   "roomScanNoPlantToPlace": "Keine Pflanze zu setzen.",
-  "roomScanPlantWellPlaced": "Gut platziert · {light}",
+  "roomScanPlantWellPlaced": "Geeigneter Platz · {light}",
   "@roomScanPlantWellPlaced": {
     "placeholders": {
       "light": {
@@ -2192,7 +2192,7 @@
       }
     }
   },
-  "roomScanPlantBetterAt": "Jetzt {light} · besser {place}",
+  "roomScanPlantBetterAt": "Aktueller Platz {light} · besser {place}",
   "@roomScanPlantBetterAt": {
     "placeholders": {
       "light": {
@@ -2204,8 +2204,8 @@
     }
   },
   "placementAllRooms": "Alle Räume",
-  "placementChoose": "Diesen Platz wählen",
-  "placementChosen": "Gewählter Platz: {place}",
+  "placementChoose": "Hierhin setzen",
+  "placementChosen": "Gesetzt {place}",
   "@placementChosen": {
     "placeholders": {
       "place": {
@@ -2213,7 +2213,7 @@
       }
     }
   },
-  "placementCurrent": "Jetzt: {place} · {light}",
+  "placementCurrent": "Aktueller Platz: {place} · {light}",
   "@placementCurrent": {
     "placeholders": {
       "place": {
@@ -2229,7 +2229,7 @@
   "roomScanCurtainNone": "Kein Vorhang",
   "roomScanCurtainSheer": "Gardine",
   "roomScanCurtainDrawn": "Vorhang meist zugezogen",
-  "roomScanCurtainHelp": "RoomPlan sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.",
+  "roomScanCurtainHelp": "Die Erfassung sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.",
   "roomScanPlace": "Setzen",
   "roomScanRoomsShort": "{count, plural, =0{Keiner} =1{1 Raum} other{{count} Räume}}",
   "@roomScanRoomsShort": {
@@ -2240,7 +2240,7 @@
     }
   },
   "roomScanThisRoom": "Diesen Raum erfassen",
-  "roomScanThisRoomHint": "Der mit der Kamera erfasste Grundriss sagt, wo eine Pflanze in diesem Raum am besten stünde.",
+  "roomScanThisRoomHint": "Der Grundriss des Raums liefert das Licht an jedem Platz, um zu wählen, wo eine Pflanze steht.",
   "roomScanRoomPlan": "Grundriss des Raums",
   "roomScanPlantsOnPlanCount": "{count, plural, =0{keine Pflanze auf dem Grundriss} =1{eine Pflanze auf dem Grundriss} other{{count} Pflanzen auf dem Grundriss}}",
   "@roomScanPlantsOnPlanCount": {

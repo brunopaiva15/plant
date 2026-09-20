@@ -6253,7 +6253,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanHint =>
-      'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. Pour une plante, l\'application y lit où elle serait le mieux. Le relevé reste sur l\'appareil.';
+      'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s\'en déduit, pour dire où poser une plante. Le relevé reste sur l\'appareil.';
 
   @override
   String get roomScanStart => 'Relever une pièce';
@@ -6327,7 +6327,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'La boussole se trompe de dix à quinze degrés : l\'orientation de chaque fenêtre se confirme ici.';
+      'La boussole a dix à quinze degrés d\'erreur. L\'orientation de chaque fenêtre se corrige ici.';
 
   @override
   String get roomScanDelete => 'Supprimer le relevé';
@@ -6388,7 +6388,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get placementHint =>
-      'Les places lues dans les pièces relevées, pour cette fiche. La plante peut vivre ailleurs.';
+      'Les places sont classées d\'après la lumière qu\'elles reçoivent, comparée à celle de la fiche.';
 
   @override
   String placementRoomsCount(int count) {
@@ -6402,33 +6402,33 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get placementVerdictGood => 'Cette pièce lui convient.';
+  String get placementVerdictGood => 'Pièce adaptée.';
 
   @override
   String get placementVerdictAcceptable =>
-      'Cette pièce lui convient à peu près.';
+      'Pièce acceptable, sans place idéale.';
 
   @override
-  String get placementVerdictUnsuitable => 'Cette pièce ne lui convient pas.';
+  String get placementVerdictUnsuitable => 'Pièce inadaptée.';
 
   @override
   String get placementShortfallTooDark =>
-      'Trop sombre pour ce qu\'elle demande.';
+      'Trop sombre pour la lumière demandée.';
 
   @override
-  String get placementShortfallTooBright => 'Trop de soleil direct pour elle.';
+  String get placementShortfallTooBright => 'Trop de soleil direct.';
 
   @override
   String get placementShortfallDrafty =>
-      'Toutes les places sont près d\'une porte, et elle craint les courants d\'air.';
+      'Chaque place est près d\'une porte : courants d\'air.';
 
   @override
   String get placementShortfallTooDry =>
-      'Une pièce d\'eau, pour une plante qui veut l\'air sec.';
+      'Pièce d\'eau, air humide : la fiche demande l\'air sec.';
 
   @override
   String get placementGeneric =>
-      'La fiche est générique : sans l\'espèce, la lumière qu\'elle demande n\'est pas connue.';
+      'Fiche générique : sans espèce, la lumière demandée n\'est pas connue.';
 
   @override
   String placementDistanceM(String m) {
@@ -6468,11 +6468,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get placementDeepInRoom => 'au fond, loin des fenêtres';
 
   @override
-  String get placementDraftyNote => 'Près d\'une porte : l\'air y bouge.';
+  String get placementDraftyNote => 'Près d\'une porte : courant d\'air.';
 
   @override
-  String get placementHumidRoomNote =>
-      'Pièce d\'eau : l\'air y est plus humide.';
+  String get placementHumidRoomNote => 'Pièce d\'eau : air plus humide.';
 
   @override
   String placementPlanSemantics(int count) {
@@ -6484,7 +6483,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'RoomPlan ne voit pas les radiateurs. Posé sur le plan, un radiateur écarte les plantes qui craignent l\'air sec et chaud.';
+      'Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm.';
 
   @override
   String get roomScanAddHeater => 'Poser un radiateur';
@@ -6513,32 +6512,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Orientation « $orientation », lumière « $light », d\'après le relevé. Ce qui est déjà renseigné ne change pas.';
+    return 'Orientation $orientation, lumière $light, d\'après le relevé. Les champs déjà remplis ne changent pas.';
   }
 
   @override
   String get roomScanLocationFilled => 'Emplacement renseigné';
 
   @override
-  String get roomScanWhoFitsHere => 'Qui serait bien ici';
+  String get roomScanWhoFitsHere => 'Le jardin dans cette pièce';
 
   @override
   String get roomScanWhoFitsHint =>
-      'Les plantes du jardin, classées par ce que la pièce leur donne.';
+      'Chaque plante est notée d\'après la lumière de la pièce et sa fiche.';
 
   @override
   String get roomScanNoPlantsToRank => 'Aucune plante avec une espèce connue.';
 
   @override
   String get placementShortfallHeater =>
-      'Toutes les places sont près d\'un radiateur, et elle craint l\'air sec et chaud.';
+      'Chaque place est près d\'un radiateur : air sec et chaud.';
 
   @override
-  String get placementHeaterNote =>
-      'Près d\'un radiateur : l\'air y est sec et chaud.';
+  String get placementHeaterNote => 'Près d\'un radiateur : air sec et chaud.';
 
   @override
-  String get placementAtHome => 'Chez vous';
+  String get placementAtHome => 'Capteur de la pièce';
 
   @override
   String get roomScanStartStructure => 'Relever l\'appartement';
@@ -6560,7 +6558,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanPlantsHelp =>
-      'Une plante posée sur le plan est jugée là où elle est : la liste dit si une autre place lui irait mieux.';
+      'Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure.';
 
   @override
   String get roomScanAddPlant => 'Poser une plante';
@@ -6580,28 +6578,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String roomScanPlantWellPlaced(String light) {
-    return 'Bien placée · $light';
+    return 'Place adaptée · $light';
   }
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Aujourd\'hui $light · mieux $place';
+    return 'Place actuelle $light · mieux $place';
   }
 
   @override
   String get placementAllRooms => 'Toutes les pièces';
 
   @override
-  String get placementChoose => 'Choisir cette place';
+  String get placementChoose => 'Poser ici';
 
   @override
   String placementChosen(String place) {
-    return 'Place choisie : $place';
+    return 'Posée $place';
   }
 
   @override
   String placementCurrent(String place, String light) {
-    return 'Aujourd\'hui : $place · $light';
+    return 'Place actuelle : $place · $light';
   }
 
   @override
@@ -6621,7 +6619,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.';
+      'Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.';
 
   @override
   String get roomScanPlace => 'Poser';
@@ -6643,7 +6641,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanThisRoomHint =>
-      'Le plan de la pièce, relevé avec l\'appareil photo, dit où une plante y serait le mieux.';
+      'Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante.';
 
   @override
   String get roomScanRoomPlan => 'Plan de la pièce';
