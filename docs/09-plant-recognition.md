@@ -273,7 +273,7 @@ groupe :
 | `PLANTNET_API_KEY` | repli Pl@ntNet de l'identification | modèle embarqué seul |
 | `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » (jeton d'API Infomaniak, portée AI Services) | diagnostic absent |
 | `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
-| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
+| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `Qwen/Qwen3.5-397B-A17B-FP8` par défaut | le défaut |
 | `OPENROUTER_API_KEY` | couche de décision Jev sur les scans qu'Iris juge ambigus (docs/16) | politique Iris locale seule |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
 | `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
@@ -1410,13 +1410,15 @@ modèle embarqué, qui ne sait que nommer une espèce. Il envoie les photos aux 
 Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
 (`lib/data/services/infomaniak_diagnoser.dart`) :
 
-- **Modèle** : `mistralai/Mistral-Small-4-119B-2603` par défaut, choisi
-  parce qu'il voit les images, qu'il est stable, qu'il parle bien français
-  et qu'il est le moins cher de sa taille en sortie (0,20 / 0,75 CHF par
-  million de jetons). Un diagnostic — une à trois photos réduites à
-  1 024 px, la consigne, 300 à 500 jetons de réponse — coûte de l'ordre
-  d'un millième de franc. Le modèle se change au build
-  (`INFOMANIAK_AI_MODEL`), sans toucher au code.
+- **Modèle** : `Qwen/Qwen3.5-397B-A17B-FP8` par défaut, choisi parce qu'il
+  voit les images, qu'il parle bien français et qu'il lit une photo de
+  plante malade avec plus de justesse que Mistral Small 4, qui tenait ce
+  rôle jusque-là. Il coûte quatre fois plus cher (0,80 / 3,60 CHF par
+  million de jetons contre 0,20 / 0,75) : un diagnostic — une à trois
+  photos réduites à 1 024 px, la consigne, 300 à 500 jetons de réponse —
+  revient à quelques millièmes de franc au lieu d'un seul. Le modèle se
+  change au build (`INFOMANIAK_AI_MODEL`), sans toucher au code ; Mistral
+  Small 4 reste donc disponible d'un `--dart-define`.
 - **Clé** : celle de l'éditeur, au build, comme Pl@ntNet (§ 3.3). Aucun
   réglage côté utilisateur ; l'écran « Diagnostic » dit seulement si le
   service est là et où partent les photos.
@@ -1504,9 +1506,11 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   en montre l'aperçu et le rouvre d'un doigt, des mois plus tard, dans la
   langue du moment.
 - **Ce qui n'est pas mesuré** : la justesse de ces modèles sur des maladies
-  de plantes. La seule façon de choisir entre Mistral Small 4, Qwen 3.5 et
-  Kimi est un jeu d'essai de vingt à trente photos de plantes à problème
-  connu, envoyées avec la même consigne. Il reste à constituer.
+  de plantes. Qwen 3.5 a été retenu sur sa réputation et ses classements
+  généraux, pas sur des photos de plantes. La seule façon de départager
+  Qwen 3.5, Mistral Small 4 et Kimi est un jeu d'essai de vingt à trente
+  photos de plantes à problème connu, envoyées avec la même consigne. Il
+  reste à constituer.
 
 ## 9 bis. Compléter une fiche d'entretien que le catalogue ne connaît pas
 

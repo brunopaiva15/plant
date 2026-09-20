@@ -39,7 +39,7 @@ Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${Date
 InfomaniakDiagnoser _diagnoser(http.Client client) => InfomaniakDiagnoser(
       apiKey: 'tok',
       productId: '12345',
-      model: 'mistralai/Mistral-Small-4-119B-2603',
+      model: 'Qwen/Qwen3.5-397B-A17B-FP8',
       client: client,
       // Les renvois ne font pas attendre les tests.
       retryPause: Duration.zero,
@@ -296,7 +296,7 @@ void main() {
       expect(captured.url.toString(), 'https://api.infomaniak.com/2/ai/12345/openai/v1/chat/completions');
       expect(captured.headers['authorization'], 'Bearer tok');
       final body = jsonDecode(captured.body) as Map<String, dynamic>;
-      expect(body['model'], 'mistralai/Mistral-Small-4-119B-2603');
+      expect(body['model'], 'Qwen/Qwen3.5-397B-A17B-FP8');
       expect(body['response_format'], {'type': 'json_object'});
       final messages = body['messages'] as List;
       expect(messages.first['role'], 'system');
