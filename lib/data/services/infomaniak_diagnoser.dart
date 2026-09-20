@@ -57,18 +57,34 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Ce qu'on attend d'une réponse, et combien de fois on repose la question.
   ///
-  /// Une minute suffit largement à trois photos réduites, téléversement
-  /// compris — les photos partent plus grandes depuis qu'un dégât d'un
-  /// millimètre doit y survivre ([maxSide]), et quarante secondes se
-  /// jouaient alors sur la qualité du réseau. Au-delà d'une minute, c'est
+  /// Une minute suffisait à trois photos réduites, téléversement compris —
+  /// les photos partent plus grandes depuis qu'un dégât d'un millimètre doit
+  /// y survivre ([maxSide]), et quarante secondes se jouaient alors sur la
+  /// qualité du réseau. Le modèle réfléchit avant d'écrire, et cette
+  /// réflexion prend le temps qu'elle prend ([_answerTokens]) : une minute
+  /// et demie la laisse aller au bout d'une photo difficile. Au-delà, c'est
   /// que la demande s'est perdue, et la reposer vaut mieux que de l'attendre.
-  static const _callTimeout = Duration(seconds: 60);
+  static const _callTimeout = Duration(seconds: 90);
   static const _attempts = 3;
 
   /// Jetons laissés à la réponse, et ce qu'on redonne quand elle est revenue
   /// coupée au milieu d'une phrase.
-  static const _answerTokens = 1600;
-  static const _wideTokens = 2600;
+  ///
+  /// La réflexion du modèle se paie sur ce budget. Qwen 3.5 réfléchit avant
+  /// de répondre, et cette réflexion, invisible, compte dans `max_tokens` au
+  /// même titre que la réponse. Mille six cents jetons suffisaient à la
+  /// réponse — trois cents à cinq cents —, pas toujours à ce qui la précède :
+  /// devant une photo difficile, la réflexion mangeait parfois le budget
+  /// entier, et le service rendait un contenu vide, arrêté faute de place.
+  /// Deux fois de suite sur la même photo, et l'écran disait « L'analyse n'a
+  /// pas abouti » à quelqu'un dont le troisième essai, moins long à
+  /// réfléchir, passait. C'était la panne intermittente du diagnostic.
+  ///
+  /// On garde la réflexion — c'est elle qui lit le motif avant de nommer —
+  /// et on lui laisse la place. Le plafond ne coûte rien tant qu'il n'est
+  /// pas atteint : seuls les jetons écrits se facturent.
+  static const _answerTokens = 5000;
+  static const _wideTokens = 9000;
 
   Uri get endpoint => Uri.parse('https://api.infomaniak.com/2/ai/$productId/openai/v1/chat/completions');
 
@@ -121,20 +137,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         ),
       },
     ];
-    Future<http.Response> ask({required bool options, int maxTokens = _answerTokens}) {
-      final body = buildRequest(model: model, parts: parts, language: language, constrainJson: true, maxTokens: maxTokens);
-      return _send(options ? body : withoutOptions(body));
-    }
+    Future<http.Response> ask({required bool constrainJson, int maxTokens = _answerTokens}) =>
+        _send(buildRequest(model: model, parts: parts, language: language, constrainJson: constrainJson, maxTokens: maxTokens));
 
-    // Le format JSON contraint et la réflexion coupée ne sont pas entendus
-    // par tous les modèles : si le service refuse la demande, la même repart
-    // sans eux — la consigne demande déjà du JSON, le lecteur est tolérant,
-    // et une réflexion restée allumée se lit encore ([withoutThinking]).
-    var options = true;
-    var response = await ask(options: options);
+    // Le format JSON contraint n'est pas garanti par tous les modèles : si
+    // le service le refuse, on renvoie la même demande sans lui — la consigne
+    // demande déjà du JSON, et le lecteur est tolérant.
+    var constrainJson = true;
+    var response = await ask(constrainJson: constrainJson);
     if (response.statusCode == 400) {
-      options = false;
-      response = await ask(options: options);
+      constrainJson = false;
+      response = await ask(constrainJson: constrainJson);
     }
     _check(response);
     // Un numéro qu'on n'a pas soumis ne vaut rien : soit le modèle l'a
@@ -152,7 +165,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // même pas pu la réparer. La même demande repart une fois, avec de
       // quoi finir. C'est ce cas-là qui affichait « Analyse impossible » à
       // quelqu'un dont le réseau allait très bien.
-      final second = await ask(options: options, maxTokens: _wideTokens);
+      final second = await ask(constrainJson: constrainJson, maxTokens: _wideTokens);
       _check(second);
       try {
         diagnosis = _read(second, candidates, naturalCauses, language);
@@ -217,7 +230,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       );
       var response = await _post(body, timeout: const Duration(seconds: 60));
       if (response.statusCode == 400) {
-        response = await _post(withoutOptions(body), timeout: const Duration(seconds: 60));
+        response = await _post({...body}..remove('response_format'), timeout: const Duration(seconds: 60));
       }
       if (response.statusCode != 200) return diagnosis;
       final repli = parseResponse(
@@ -260,9 +273,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   }) =>
       {
         'model': model,
-        'max_tokens': 900,
+        // Le modèle réfléchit avant d'écrire, et sa réflexion se paie sur
+        // ce budget ([_answerTokens]) : neuf cents jetons n'y suffisaient pas.
+        'max_tokens': 3000,
         'temperature': 0.2,
-        ...noThinking,
         'response_format': {'type': 'json_object'},
         'messages': [
           {'role': 'system', 'content': systemPrompt(language)},
@@ -317,9 +331,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         causes: [for (final i in orphelines) diagnosis.causes[i]],
         language: language,
       );
-      var response = await _post(body, timeout: const Duration(seconds: 30));
+      var response = await _post(body, timeout: const Duration(seconds: 60));
       if (response.statusCode == 400) {
-        response = await _post(withoutOptions(body), timeout: const Duration(seconds: 30));
+        response = await _post({...body}..remove('response_format'), timeout: const Duration(seconds: 60));
       }
       if (response.statusCode != 200) return diagnosis;
       final trouves = parseMapping(response.body, allowed: {for (final p in candidates) p.id});
@@ -358,10 +372,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   }) =>
       {
         'model': model,
-        'max_tokens': 300,
+        // Trois cents jetons suffisaient à la réponse, pas à la réflexion
+        // qui la précède ([_answerTokens]) : la passe échouait en silence.
+        'max_tokens': 1500,
         // Un rattachement, pas une création.
         'temperature': 0.0,
-        ...noThinking,
         'response_format': {'type': 'json_object'},
         'messages': [
           {
@@ -476,35 +491,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     return Uint8List.fromList(img.encodeJpg(image, quality: 85));
   }
 
-  /// La réflexion du modèle, coupée.
-  ///
-  /// Qwen 3.5 réfléchit avant de répondre, et par défaut : un monologue
-  /// invisible, facturé, qui compte dans `max_tokens` au même titre que la
-  /// réponse. Devant une photo il durait parfois plus que le budget entier,
-  /// et le service rendait alors un contenu vide, arrêté faute de place —
-  /// la réponse n'avait pas commencé. Deux fois de suite sur la même photo,
-  /// et l'écran disait « L'analyse n'a pas abouti » à quelqu'un dont le
-  /// troisième essai, moins bavard en réflexion, passait. C'était la panne
-  /// intermittente du diagnostic, celle qui se corrige en réessayant.
-  ///
-  /// La consigne fait déjà raisonner le modèle à voix haute — le motif
-  /// avant le nom, le résumé avant la conclusion — ; la réflexion cachée
-  /// n'ajoutait que du hasard, de l'attente et des jetons. Infomaniak la
-  /// coupe par `reasoning_effort: "none"`, sur toutes les passes : celle de
-  /// rattachement, à trois cents jetons, n'avait aucune chance devant elle.
-  /// Un modèle qui ne réfléchit pas n'en tient pas compte, et un service qui
-  /// refuserait le paramètre reçoit la même demande sans lui.
-  static const noThinking = {'reasoning_effort': 'none'};
-
-  /// La même demande sans ses options — le format contraint, la réflexion
-  /// coupée —, pour un service qui a refusé l'une d'elles. Laquelle, on ne
-  /// le sait pas, et une troisième demande avec les photos pour le savoir
-  /// coûterait plus qu'elle ne rapporte.
-  static Map<String, Object?> withoutOptions(Map<String, Object?> body) =>
-      {...body}
-        ..remove('response_format')
-        ..remove('reasoning_effort');
-
   /// Corps de requête, au format OpenAI (exposé pour les tests).
   static Map<String, Object?> buildRequest({
     required String model,
@@ -517,7 +503,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         'model': model,
         'max_tokens': maxTokens,
         'temperature': 0.2,
-        ...noThinking,
         if (constrainJson) 'response_format': {'type': 'json_object'},
         'messages': [
           {'role': 'system', 'content': systemPrompt(language)},
@@ -1053,10 +1038,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   /// Le texte d'une réponse sans la réflexion que le modèle y aurait
   /// laissée.
   ///
-  /// Un service qui n'a pas coupé la réflexion ([noThinking] refusé ou
-  /// ignoré) peut la rendre dans le contenu même, entre balises `<think>` —
-  /// ou après une ouverture que son gabarit avait déjà écrite, auquel cas
-  /// il n'en reste que la fermeture. Le lecteur y trouvait des accolades
+  /// Le service rend en général la réflexion à part ; il arrive qu'elle
+  /// vienne dans le contenu même, entre balises `<think>` — ou après une
+  /// ouverture que son gabarit avait déjà écrite, auquel cas il n'en reste
+  /// que la fermeture. Le lecteur y trouvait des accolades
   /// avant le JSON, un brouillon de réponse le plus souvent, et prenait le
   /// brouillon pour la réponse. Une réflexion ouverte et jamais close ne
   /// laisse rien à lire : la réponse n'avait pas commencé, et l'appelant la
