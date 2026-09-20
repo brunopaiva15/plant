@@ -6625,4 +6625,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanPlace => 'Poser';
+
+  @override
+  String roomScanRoomsShort(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pièces',
+      one: '1 pièce',
+      zero: 'Aucune',
+    );
+    return '$_temp0';
+  }
 }
