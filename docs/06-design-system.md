@@ -327,6 +327,25 @@ départ et l'arrivée. Les libellés virent au passage — leur couleur suit la
 part de l'onglet que la bulle recouvre — au lieu de basculer à l'arrivée, et
 l'icône qui l'accueille se pose au ressort.
 
+### Le grand titre là où la barre est celle d'UIKit
+Deux barres se superposaient : celle du système portait les boutons, et celle
+de Flutter dessinait le titre une rangée plus bas. Le titre replié descendait
+donc d'une hauteur de barre, ce qu'aucune application native ne fait.
+
+Là où UIKit tient la barre, Flutter n'en dessine plus : le **grand titre
+devient du contenu**, en tête des slivers, avec sa police arrondie intacte.
+C'est le système qui porte le **titre replié**, sur la même ligne que les
+boutons — « Auxine » à côté du tableau de bord et de l'ajout.
+
+Le passage de l'un à l'autre se lit sur un sliver de rien du tout, posé juste
+après le titre : dès que le défilement a mangé ce qui le précède, il écrit le
+titre replié dans la barre, et l'efface au retour. Il prévient à l'image
+suivante et non pendant la mise en page, faute de quoi il rebâtirait un arbre
+en cours de construction.
+
+Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
+`CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
+
 ### Ce qui vit dans la barre, et ce qui vit dessous
 La barre garde toute la largeur — c'est ce que fait iOS —, et seul le contenu
 se tient dans les marges. D'où une règle facile à oublier : **ce qui est posé

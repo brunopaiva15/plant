@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/config/app_config.dart';
 import '../../core/haptics.dart';
 import '../theme/flora_theme.dart';
+import '../../core/native_shell.dart';
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
@@ -72,7 +73,12 @@ class ToastHost extends ConsumerWidget {
     // le menu, où qu'il soit. En bas, il se pose au-dessus de la pilule ;
     // debout à droite, il se range à gauche du rail et redescend, puisque
     // plus rien n'occupe le bas de l'écran.
-    final rail = FloraTabRail.fitsIn(context) ? FloraTabRail.reserved(context) : 0.0;
+    // Là où la chrome est celle d'UIKit, il n'y a ni pilule ni rail à éviter :
+    // la barre d'onglets est dans la marge sûre, et s'en écarter de seize
+    // points suffit. Sans cela le toast montait de quatre-vingts points, le
+    // bas de l'écran étant compté deux fois.
+    final natif = NativeShell.isSupported;
+    final rail = !natif && FloraTabRail.fitsIn(context) ? FloraTabRail.reserved(context) : 0.0;
     // Et ce que le système réserve sur les côtés, bord par bord : sur un
     // pliable, la bande de la caméra passe à droite ou à gauche selon la
     // rotation.
@@ -83,7 +89,7 @@ class ToastHost extends ConsumerWidget {
         Positioned(
           left: Space.md + marges.left,
           right: Space.md + math.max(rail, marges.right),
-          bottom: marges.bottom + (rail > 0 ? Space.md : 96),
+          bottom: marges.bottom + (natif || rail > 0 ? Space.md : 96),
           child: IgnorePointer(
             ignoring: toast == null,
             child: AnimatedSwitcher(

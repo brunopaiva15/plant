@@ -1,4 +1,5 @@
 import 'package:flora/design_system/design_system.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,4 +79,33 @@ void main() {
         // le rend aux deux places.
         expect(find.text('Jardin'), findsWidgets);
       }));
+
+  _testsDuTitreNatif();
+}
+
+/// Là où UIKit tient la barre, le grand titre devient du contenu et c'est le
+/// système qui porte le titre replié. Deux barres se superposaient sinon :
+/// celle du système avec les boutons, celle de Flutter une rangée plus bas.
+void _testsDuTitreNatif() {
+  testWidgets('sans barre native, la barre de Flutter reste', (tester) async {
+    // `NativeShell.isSupported` est faux sous `flutter test` : c'est le
+    // chemin ordinaire qu'on vérifie ici, et qu'il ne faut pas casser.
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildFloraTheme(Brightness.light).copyWith(platform: TargetPlatform.iOS),
+        home: const Material(
+          child: LargeTitlePage(
+            title: 'Bonsoir',
+            collapsedTitle: 'Auxine',
+            slivers: [SliverToBoxAdapter(child: SizedBox(height: 2000))],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(CupertinoSliverNavigationBar), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

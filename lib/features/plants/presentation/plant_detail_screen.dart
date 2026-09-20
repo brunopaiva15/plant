@@ -11,6 +11,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/observability/observability.dart';
+import '../../../core/native_shell.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
@@ -219,7 +220,32 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     final top = MediaQuery.paddingOf(context).top;
     final width = MediaQuery.sizeOf(context).width;
 
-    return Scaffold(
+    // Le retour, le cœur et le menu partent à UIKit quand il tient la barre :
+    // ils flottent sur la photo, mais ce sont des commandes de navigation et
+    // d'action, et c'est à ce titre qu'iOS les range dans la bande verticale
+    // de l'iPhone Duo. `describe` rend `null` si l'un lui échappe, et la page
+    // les garde alors sur la photo comme avant.
+    final retour = FloraIconButton(
+      icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded,
+      semanticLabel: l10n.back,
+      onPressed: () => context.pop(),
+    );
+    final favori = FloraIconButton(
+      icon: plant.isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+      color: plant.isFavorite ? c.rose : null,
+      semanticLabel: l10n.favorite,
+      onPressed: () => _toggleFavorite(plant),
+    );
+    final plus = FloraIconButton(
+      icon: CupertinoIcons.ellipsis,
+      semanticLabel: l10n.more,
+      onPressed: () => _menu(plant),
+    );
+    final natif = NativeShell.isSupported
+        ? NativeActions.describe(<Widget>[retour], <Widget>[favori, plus])
+        : null;
+
+    final page = Scaffold(
       backgroundColor: c.canvas,
       body: CustomScrollView(
         physics: floraScrollPhysics,
@@ -231,17 +257,13 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             backgroundColor: c.canvas,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
-            leadingWidth: 64,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: Space.sm),
-              child: Center(child: FloraIconButton(icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded, semanticLabel: l10n.back, onPressed: () => context.pop())),
-            ),
-            actions: [
-              FloraIconButton(icon: plant.isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart, color: plant.isFavorite ? c.rose : null, semanticLabel: l10n.favorite, onPressed: () => _toggleFavorite(plant)),
-              const SizedBox(width: Space.xs),
-              FloraIconButton(icon: CupertinoIcons.ellipsis, semanticLabel: l10n.more, onPressed: () => _menu(plant)),
-              const SizedBox(width: Space.sm),
-            ],
+            leadingWidth: natif == null ? 64 : 0,
+            leading: natif != null
+                ? null
+                : Padding(padding: const EdgeInsets.only(left: Space.sm), child: Center(child: retour)),
+            actions: natif != null
+                ? null
+                : [favori, const SizedBox(width: Space.xs), plus, const SizedBox(width: Space.sm)],
             flexibleSpace: Stack(
               fit: StackFit.expand,
               children: [
@@ -406,6 +428,9 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
         ],
       ),
     );
+
+    if (natif == null) return page;
+    return NativeActions(title: '', leading: natif.leading, actions: natif.actions, child: page);
   }
 }
 

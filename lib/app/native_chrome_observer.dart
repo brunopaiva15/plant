@@ -9,34 +9,56 @@ import '../core/native_shell.dart';
 /// par-dessus la coquille, et les barres natives restaient là, posées sur la
 /// page ouverte avec les boutons de celle d'en dessous.
 ///
-/// Un observateur du navigateur racine suffit à le dire : tant qu'il reste
-/// une route au-dessus de la première — la coquille —, les barres s'effacent.
-/// Les pages des branches d'onglets, elles, ne passent pas par ici : elles
-/// ont leur propre navigateur, et c'est bien la coquille qu'on regarde.
+/// Un observateur du navigateur racine suffit à le dire : il compte les
+/// routes posées au-dessus de la première — la coquille. À partir de là, la
+/// barre d'onglets s'efface, comme sur iOS, et la barre du haut aussi —
+/// jusqu'à ce que la page ouverte la redemande, si elle sait la remplir. Une
+/// fiche à grand titre le fait ; un scanner non.
+///
+/// **Une page et une surcouche ne se valent pas.** Un menu d'action ou une
+/// alerte ne prend pas la place de la page, elle se pose dessus le temps d'un
+/// choix. L'effacer pour de bon changerait la marge sûre, et la page
+/// glisserait sous le menu — ce qu'elle faisait. Ces routes-là ne font donc
+/// que voiler la chrome : invisible, intouchable, et toujours là où elle
+/// était.
+///
+/// Les pages des branches d'onglets ne passent pas par ici : elles ont leur
+/// propre navigateur, et c'est bien la coquille qu'on regarde alors.
 class NativeChromeObserver extends NavigatorObserver {
-  int _empilees = 0;
+  /// Les pages posées sur la coquille : une fiche, un scanner, une feuille.
+  int _pages = 0;
 
-  void _dire() => NativeShell.setChromeHidden(_empilees > 0);
+  /// Les surcouches qui ne sont pas des pages : un menu d'action, une
+  /// alerte. Elles n'occupent pas la place, elles se posent dessus.
+  int _surcouches = 0;
+
+  void _dire() => NativeShell.setOverlay(pages: _pages, veils: _surcouches);
+
+  void _compter(Route<Object?> route, int sens) {
+    if (route is PageRoute) {
+      _pages = (_pages + sens).clamp(0, 99);
+    } else {
+      _surcouches = (_surcouches + sens).clamp(0, 99);
+    }
+    _dire();
+  }
 
   @override
   void didPush(Route<Object?> route, Route<Object?>? previousRoute) {
     // La toute première route est la coquille : elle ne compte pas.
     if (previousRoute == null) return;
-    _empilees += 1;
-    _dire();
+    _compter(route, 1);
   }
 
   @override
   void didPop(Route<Object?> route, Route<Object?>? previousRoute) {
     if (previousRoute == null) return;
-    _empilees = _empilees > 0 ? _empilees - 1 : 0;
-    _dire();
+    _compter(route, -1);
   }
 
   @override
   void didRemove(Route<Object?> route, Route<Object?>? previousRoute) {
     if (previousRoute == null) return;
-    _empilees = _empilees > 0 ? _empilees - 1 : 0;
-    _dire();
+    _compter(route, -1);
   }
 }

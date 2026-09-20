@@ -12,6 +12,7 @@ export 'empty_state.dart';
 export 'header_fade.dart';
 export 'iris_mark.dart';
 export 'list_row.dart';
+export 'native_actions.dart';
 export 'page_scaffold.dart';
 export 'paper.dart';
 export 'plant_image.dart';

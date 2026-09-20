@@ -89,6 +89,8 @@ abstract final class SfSymbols {
     CupertinoIcons.eye.codePoint: 'eye',
     CupertinoIcons.eye_slash.codePoint: 'eye.slash',
     CupertinoIcons.heart.codePoint: 'heart',
+    CupertinoIcons.heart_fill.codePoint: 'heart.fill',
+    CupertinoIcons.star_fill.codePoint: 'star.fill',
     CupertinoIcons.star.codePoint: 'star',
   };
 }

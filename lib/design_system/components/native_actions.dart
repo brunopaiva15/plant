@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/native_shell.dart';
 import '../../core/sf_symbols.dart';
@@ -21,9 +22,15 @@ class NativeActions extends StatefulWidget {
     required this.leading,
     required this.actions,
     required this.child,
+    this.titleListenable,
   });
 
   final String title;
+
+  /// Un titre qui change en cours de route : celui qui apparaît dans la barre
+  /// quand le grand titre d'une page s'en va en défilant. Prend le pas sur
+  /// [title] quand il est là.
+  final ValueListenable<String>? titleListenable;
 
   /// Le bouton de tête de la page, s'il en a un : le tableau de bord sur
   /// « Aujourd'hui ». Il va à gauche de la barre, là où iOS met la
@@ -66,6 +73,10 @@ class NativeActions extends StatefulWidget {
           symbol: symbole,
           title: bouton.semanticLabel,
           enabled: bouton.onPressed != null,
+          // L'ajout est l'action principale d'Auxine, partout où elle est
+          // offerte : c'est elle qu'iOS doit garder visible quand la bande
+          // déborde, plutôt que de la replier dans le menu.
+          prominent: bouton.icon.codePoint == CupertinoIcons.plus.codePoint,
         ),
         onPressed: bouton.onPressed,
       ));
@@ -92,10 +103,21 @@ class _NativeActionsState extends State<NativeActions> {
   void initState() {
     super.initState();
     _pile.add(this);
+    widget.titleListenable?.addListener(_publier);
+  }
+
+  @override
+  void didUpdateWidget(NativeActions old) {
+    super.didUpdateWidget(old);
+    if (old.titleListenable != widget.titleListenable) {
+      old.titleListenable?.removeListener(_publier);
+      widget.titleListenable?.addListener(_publier);
+    }
   }
 
   @override
   void dispose() {
+    widget.titleListenable?.removeListener(_publier);
     _pile.remove(this);
     _publier();
     super.dispose();
@@ -118,7 +140,14 @@ class _NativeActionsState extends State<NativeActions> {
     // bouton qui s'éteint, une sélection qui en ajoute un. Le service écarte
     // les déclarations identiques, si bien qu'un rendu ordinaire ne traverse
     // pas le canal.
-    if (visible) _publier();
+    if (visible) {
+      // Une page empilée n'a pas la barre de droit : l'observateur l'a
+      // effacée au moment de la poussée, et c'est à elle de la redemander.
+      // Celles qui ne savent pas la remplir — un scanner, une feuille — ne
+      // passent pas par ici et la laissent effacée.
+      NativeShell.requestBar();
+      _publier();
+    }
     return widget.child;
   }
 
@@ -128,7 +157,7 @@ class _NativeActionsState extends State<NativeActions> {
     final actuelle = _pile.isEmpty ? null : _pile.last;
     NativeShell.onAction = actuelle?._toucher;
     NativeShell.publishActions(
-      title: actuelle?.widget.title ?? '',
+      title: actuelle?.widget.titleListenable?.value ?? actuelle?.widget.title ?? '',
       leading: [for (final e in actuelle?.widget.leading ?? const <NativeActionEntry>[]) e.action],
       actions: [for (final e in actuelle?.widget.actions ?? const <NativeActionEntry>[]) e.action],
     );
