@@ -119,11 +119,18 @@ abstract final class WindowRegionsService {
       // qui écoute la réponse pour écrire son relevé — lisait des régions
       // encore vides. Une seule réponse suffisant à l'appareil, elle ne
       // repassait jamais.
-      regions.value = parse(raw);
+      final lues = parse(raw);
+      regions.value = lues;
       // Rendu à clés triées, et non `raw.toString()` : le canal rend une
       // carte dont l'ordre change d'un appel à l'autre, et la sonde croyait
       // à quatre fenêtres différentes là où il n'y en avait qu'une.
-      lastAnswer.value = _rendu(raw);
+      //
+      // Et une réponse pleine dont rien n'est retenu le dit : c'est la seule
+      // façon de distinguer un natif qui se tait d'un natif qu'on écarte. Le
+      // canal a déjà oublié d'envoyer les cotes de la vue une fois, et rien
+      // dans le relevé ne le criait.
+      final rendu = _rendu(raw);
+      lastAnswer.value = lues.isEmpty ? '$rendu — rien retenu' : rendu;
     } on PlatformException catch (e) {
       lastAnswer.value = 'le canal a refusé : ${e.message}';
     } on MissingPluginException {
