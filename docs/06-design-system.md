@@ -409,6 +409,17 @@ attache sans qu'on le lui dise, et le tap sur la barre d'état — que le
 `Scaffold` sert avec ce même contrôleur — continue de marcher. La remontée
 suit *réduire les animations* : un saut au lieu d'une glissade.
 
+### Une page que la barre du bas referme (`ScrollFade`)
+Une barre posée sous la page la referme : le dernier élément visible s'arrête
+net sur elle, au pixel près, et rien ne distingue une page qui se termine là
+d'une page qui continue. `FloraPage` efface donc le bas de sa zone défilante
+tant qu'il reste du contenu dessous — une couche teintée du `canvas`, réglée
+sur ce qui reste à défiler, qui s'efface elle-même une fois le bas atteint.
+C'est une couche colorée et non un masque d'opacité (`HeaderFade`) : la page
+porte la même couleur des deux côtés de la barre, le voile n'a donc rien à
+trahir, et il évite un `saveLayer` par-dessus un viseur de caméra. Les pages
+sans barre du bas s'en passent : leur contenu touche déjà le bord de l'écran.
+
 ## Les textes (`lib/l10n/*.arb`)
 Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court.
 - Une phrase dit une chose, à l'indicatif. Un titre est un nom, pas une
@@ -435,7 +446,7 @@ d'exclamation, pas de titre en forme de question, et une liste de tournures
 interdites par langue. Une tournure à bannir de plus s'ajoute là.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
 Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
@@ -612,11 +623,34 @@ Une fois la première photo prise, une bande montre ce qui partira à
 l'analyse et les places qui restent ; elle ne sert qu'à montrer, la croix
 d'une vignette mise à part.
 
+**Ce qu'on a remarqué se demande, il ne se propose plus.** Le champ des
+symptômes était facultatif, et c'est ce qui rendait les comptes rendus
+généraux : une photo seule ne dit ni depuis quand, ni ce qui a changé, ni ce
+qu'on a déjà fait à la plante. « Analyser » attend donc une photo, puis une
+description — dans cet ordre, une chose à la fois. Le bouton éteint ne reste
+pas muet : la barre du bas nomme ce qui manque au-dessus de lui, et quand
+c'est la description, elle le dit avec la pastille qui y mène et y pose le
+curseur. Les observations, elles, restent facultatives : on ne fait pas
+sortir une motte de son pot pour avoir le droit de demander.
+
 Puis ce qu'on décrit, et ce qu'on est allé vérifier de sa main : une carte par
 sujet, tuile d'emoji et teinte comprises, comme les volets de la fiche
 d'entretien — la terre en terre cuite, les racines en sauge, la lumière en
 ocre, les insectes en rose, l'air autour de la plante en bleu. Rien n'est
-coché d'avance, et ce qui n'est pas coché ne part pas.
+coché d'avance, et ce qui n'est pas coché ne part pas. Ce qui est coché part
+comme un constat et non comme une impression : la consigne le pèse comme une
+photo — une terre détrempée et des racines brunes peuvent mener à une piste
+*probable* que l'image ne montre pas —, et le compte rendu dit dans son
+constat quand c'est ce qui tranche.
+
+**Ce qui attend dessous se dit.** Le viseur prend le haut de l'écran et la
+barre du bas referme la page : les symptômes et les observations — ce qui
+affine le plus l'analyse — tiennent entièrement sous la ligne de flottaison,
+et rien dans le dessin ne le laissait deviner. Une pastille posée sous la
+consigne de prise de vue les nomme, « Plus bas : symptômes et observations »,
+et y mène d'un toucher — la section se pose sous la barre du titre, non
+derrière elle. Le fondu du bas de page (`ScrollFade`) dit le reste : la page
+ne s'arrête plus net sur la barre.
 
 **Chercher.** La photo passe au centre dans son propre halo, les quatre
 familles de problèmes tournant autour (`AnalysisWait`) ; le formulaire
@@ -643,8 +677,13 @@ dit avant tout le reste : « Rien d'anormal », sur la feuille, plutôt que
 « Constat » sur le stéthoscope — trois cartes à lire avant de comprendre que
 rien ne va mal, c'est trois cartes d'inquiétude pour rien. Un compte rendu
 pareil n'est jamais urgent. Quand rien ne
-tranche, la photo de plus se propose après les pistes, jamais à leur place
-(docs/16). Le même corps sert à la réouverture depuis le journal, à ceci près
+tranche, ce qui manque se propose après les pistes, jamais à leur place
+(docs/16) : d'abord les une à trois questions que le service a posées — une
+carte ocre, un champ par question, « Reprendre l'analyse » dessous —, et la
+photo de plus quand il n'en a posé aucune. Une seule des deux, et jamais sur
+un compte rendu net. Répondre refait l'analyse entière ; les réponses
+rejoignent ensuite les symptômes et les observations dans le compte rendu
+gardé. Le même corps sert à la réouverture depuis le journal, à ceci près
 que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas
 une ligne du compte rendu.
 

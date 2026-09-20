@@ -2433,7 +2433,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.';
 
   @override
-  String get diagnosisSymptomsHint => 'Ce que vous avez remarqué (facultatif)…';
+  String get diagnosisMoreBelow => 'Plus bas : symptômes et observations';
+
+  @override
+  String get diagnosisSymptomsHint => 'Ce que vous avez remarqué…';
+
+  @override
+  String get diagnosisNeedsPhoto => 'Une photo au moins.';
+
+  @override
+  String get diagnosisNeedsSymptoms =>
+      'Ce que vous avez remarqué, même en quelques mots.';
 
   @override
   String get diagnosisChecks => 'Observations';
@@ -2540,6 +2550,18 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get diagnosisAnotherPhotoHint =>
       'Une photo de plus préciserait l\'analyse.';
+
+  @override
+  String get diagnosisQuestionsHint => 'Ce qui manque pour trancher.';
+
+  @override
+  String get diagnosisAnswerHint => 'Réponse…';
+
+  @override
+  String get diagnosisAnswerAgain => 'Reprendre l\'analyse';
+
+  @override
+  String get diagnosisAnswersNoted => 'Réponses données';
 
   @override
   String diagnosisAnotherPhotoView(String view) {

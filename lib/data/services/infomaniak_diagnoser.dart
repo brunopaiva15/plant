@@ -18,9 +18,9 @@ import '../../domain/problems/plant_problem.dart';
 /// leur route compatible OpenAI : un modèle qui voit les images reçoit les
 /// photos et rend un JSON — résumé, urgence, causes classées avec des gestes.
 ///
-/// Les photos sont réduites à [maxSide] pixels avant l'envoi : c'est ce
-/// que le modèle regarde de toute façon, et la facture se compte en jetons
-/// d'image. Rien n'est stocké côté service au-delà de la requête.
+/// Les photos sont réduites à [maxSide] pixels avant l'envoi : la facture se
+/// compte en jetons d'image, et une photo de téléphone entière n'en vaut pas
+/// le prix. Rien n'est stocké côté service au-delà de la requête.
 class InfomaniakDiagnoser implements PlantDiagnoser {
   InfomaniakDiagnoser({
     required this.apiKey,
@@ -41,15 +41,28 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   final Duration retryPause;
 
   static const maxImages = 3;
-  static const maxSide = 1024;
+
+  /// Grand côté des photos envoyées, en pixels.
+  ///
+  /// Mille vingt-quatre suffisaient à voir une feuille jaune ; pas à voir ce
+  /// qui distingue les pistes entre elles. Un thrips mesure un millimètre, et
+  /// son dégât est un piqueté argenté semé de points noirs : sur un gros plan
+  /// de téléphone ramené à mille pixels, il ne reste que quelques pixels
+  /// ternes, que le modèle a lus comme du calcaire — et le compte rendu
+  /// répondait « feuilles vertes, sans taches » à qui photographiait de près.
+  /// Mille cinq cents pixels doublent le nombre de points de l'image et son
+  /// poids ; c'est ce que coûte un compte rendu qui nomme le ravageur au lieu
+  /// de rester général.
+  static const maxSide = 1536;
 
   /// Ce qu'on attend d'une réponse, et combien de fois on repose la question.
   ///
-  /// Quarante secondes suffisent largement à trois photos réduites ; au-delà,
-  /// c'est que la demande s'est perdue, et la reposer vaut mieux que de
-  /// l'attendre. Trois tentatives au pire, soit deux minutes, ce qu'une seule
-  /// attente de deux minutes coûtait déjà — sauf qu'elle ne rendait rien.
-  static const _callTimeout = Duration(seconds: 40);
+  /// Une minute suffit largement à trois photos réduites, téléversement
+  /// compris — les photos partent plus grandes depuis qu'un dégât d'un
+  /// millimètre doit y survivre ([maxSide]), et quarante secondes se
+  /// jouaient alors sur la qualité du réseau. Au-delà d'une minute, c'est
+  /// que la demande s'est perdue, et la reposer vaut mieux que de l'attendre.
+  static const _callTimeout = Duration(seconds: 60);
   static const _attempts = 3;
 
   /// Jetons laissés à la réponse, et ce qu'on redonne quand elle est revenue
@@ -75,6 +88,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
     bool? indoors,
     DateTime? date,
     double? latitude,
@@ -100,6 +114,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           indoorClimate: indoorClimate,
           reportedClimate: reportedClimate,
           observations: observations,
+          answers: answers,
           indoors: indoors,
           date: date,
           latitude: latitude,
@@ -154,6 +169,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
             naturalCauses: naturalCauses,
             frequentIds: frequentIds,
             observations: observations,
+            answers: answers,
           );
     return _numberLeftovers(complete, candidates, language);
   }
@@ -181,6 +197,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     required List<NaturalCause> naturalCauses,
     required Set<String> frequentIds,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
   }) async {
     try {
       final body = buildFallbackRequest(
@@ -193,6 +210,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         naturalCauses: naturalCauses,
         frequentIds: frequentIds,
         observations: observations,
+        answers: answers,
       );
       var response = await _post(body, timeout: const Duration(seconds: 60));
       if (response.statusCode == 400) {
@@ -215,6 +233,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         // La vue à demander est celle de la passe qui a vu les photos ; le
         // repli, lui, n'en a regardé aucune.
         suggestedView: diagnosis.suggestedView,
+        // Les questions aussi : celles du repli portent sur une analyse
+        // faite sans les photos.
+        questions: diagnosis.questions,
       );
     } on Object {
       return diagnosis;
@@ -232,6 +253,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
   }) =>
       {
         'model': model,
@@ -253,6 +275,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
                 naturalCauses: naturalCauses,
                 frequentIds: frequentIds,
                 observations: observations,
+                answers: answers,
               ),
               'Give the one or two most plausible causes, as "possible" or "unlikely".',
             ].join(' '),
@@ -310,7 +333,13 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           problemId: e.value,
         );
       }
-      return Diagnosis(summary: diagnosis.summary, causes: causes, urgent: diagnosis.urgent, suggestedView: diagnosis.suggestedView);
+      return Diagnosis(
+        summary: diagnosis.summary,
+        causes: causes,
+        urgent: diagnosis.urgent,
+        suggestedView: diagnosis.suggestedView,
+        questions: diagnosis.questions,
+      );
     } on Object {
       return diagnosis;
     }
@@ -468,6 +497,25 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Rate each cause with "likelihood", one of exactly these three words: "likely", "possible", "unlikely". '
       'Do not use numbers or percentages: you cannot measure this from a photo, and a figure would suggest a precision you do not have. '
       'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
+      // Ce que la personne est allée vérifier de sa main — la terre au doigt,
+      // les racines hors du pot, les insectes sous les feuilles — n'est pas
+      // une impression : c'est un constat, et aucune photo ne le montre. La
+      // consigne le rangeait pourtant sous la règle des symptômes racontés,
+      // qui interdit « probable » à tout ce que l'image ne montre pas : une
+      // terre détrempée et des racines brunes ne pouvaient alors jamais mener
+      // à une pourriture probable, et la personne lisait un compte rendu où
+      // ce qu'elle était allée voir ne pesait rien.
+      'The message may also carry what the owner checked by hand: the soil a couple of centimetres down, the roots out of the pot, the light '
+      'the plant gets, insects on it or in the soil. These are observations of the plant itself, as solid as the photos and about things no '
+      'photo shows. Weigh them exactly like the photos: a cause they support may be "likely", and a cause they contradict is dropped rather '
+      'than listed. '
+      // Le cas qui a fait tout revoir : « insectes sur la plante » coché, deux
+      // photos de thrips, et un compte rendu de phénomènes normaux. Ce que la
+      // personne a vu de ses yeux ne se discute pas parce que l'image de son
+      // téléphone ne le montre pas — un thrips mesure un millimètre.
+      'When the owner checked that insects are on the plant or in the soil, they have seen them and the photos may well not: most are one or '
+      'two millimetres across. Give a pest among the causes, first and "likely" unless the damage plainly names another one, and never answer '
+      'with normal phenomena alone. When the owner checked that no insect was found on a close look, weigh pests down instead. '
       // Ce qui sépare réellement deux pistes n'est pas la couleur mais le
       // motif : quelles feuilles, quelle zone de la feuille, sec ou mou, net
       // ou diffus. Sans cette consigne, le modèle nomme la couleur qu'il voit
@@ -476,7 +524,24 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'sits at the edge, at the tip, between the veins or all over, whether it is dry or soft, sharply outlined or diffuse, and whether it '
       'spreads. The pattern separates what the colour alone confuses: a yellowing that starts on the oldest leaves is not the one that '
       'starts on the newest. '
+      // Un ravageur ne se voit pas, ses dégâts si. Le modèle rendait « feuilles
+      // vertes et brillantes, sans taches » sur un gros plan de Monstera
+      // piqueté d'argenté, et rangeait les points noirs du frass avec le
+      // calcaire : les deux sont blanchâtres de loin. Les signatures se
+      // nomment, sinon elles ne se cherchent pas — et c'est la différence
+      // entre un compte rendu général et un compte rendu qui sert.
+      'The photos may be at different scales: read each one at its own scale, and a close-up at the scale of a few millimetres. Never settle '
+      'for what the wide shot says about a leaf the close-up shows. Before calling a leaf clean, look over its surface: stippling, fine '
+      'speckling, webbing, a sticky film, minute black dots or specks that look like dirt are what a pest leaves, and none of them survives '
+      'being looked at from a distance. '
+      'What that damage says: silvery or bronzed stippling, often along the midrib and the veins, carrying minute black dots of frass, is '
+      'thrips — not limescale, which is a chalky white deposit left in the dried rings of water drops, sits on top of the leaf, wipes off and '
+      'leaves green tissue under it. Very fine pale speckling with thin webbing is spider mites; white cottony tufts in the leaf axils are '
+      'mealybugs; brown limpet-like bumps with a sticky film or black sooty mould are scale insects; small dark flies around the soil are '
+      'fungus gnats. Name the pest the damage points to, not "a pest". '
       'Say in "summary" what you actually see — where it is, what it looks like — before any conclusion. '
+      'When what the owner checked by hand is what settles the answer, say that in "summary" too: a summary that describes only the photos '
+      'hides what the answer was really based on. '
       'Weigh the species, the light, the soil, the season and the room given in the message against every cause, and drop a cause one of '
       'them rules out instead of listing it anyway. '
       'Always give at least one cause, whatever the photos show: "causes" is never empty. '
@@ -490,14 +555,24 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'under numbers starting with "N". When one of them explains what is seen, give it as a cause like any other, with its number in "problem" '
       'and "natural": true, and weigh it against the problems instead of naming a problem by default. '
       'A natural phenomenon may be "likely" when the photos really show it, it is never "urgent", and it is never a disorder, a pest or a '
-      'disease. Set "natural": false on every other cause — a cause that carries a three-digit number is a problem, never a normal phenomenon. '
+      'disease. '
+      // Une feuille basse qui jaunit de vieillesse et, sous elle, « laisser
+      // sécher le substrat entre deux arrosages » : le geste traitait l'excès
+      // d'eau, c'est-à-dire une autre piste, sous une cause qui ne demandait
+      // rien. La personne lit les gestes, pas le rang des pistes.
+      'Its actions follow from it being normal — leave it be, take the spent leaf off, wipe the deposit away — and never treat a problem that '
+      'is not there. This holds for every cause, normal or not: an action belongs under the cause it acts on, and an action that treats '
+      'another cause is misplaced — put it under that one, or leave it out. '
+      'Set "natural": false on every other cause — a cause that carries a three-digit number is a problem, never a normal phenomenon. '
       'Every other cause is a problem of the plant — a disorder, a pest, a disease, a care mistake. The photo is never a cause: never write that the '
       'reported symptom is missing from it, that it is unclear, or that another photo is needed, neither as a title, nor as an explanation, '
       'nor as an action, nor in "summary". Describe what the photos do show, never what they fail to show. '
       'When the photos do not show what the owner describes, work from the description, the species and the season: the owner has the plant in '
-      'front of them, and what they report happened even if the frame missed it. Such causes are "possible" or "unlikely", never "likely". '
+      'front of them, and what they report happened even if the frame missed it. Such causes are "possible" or "unlikely", never "likely" — '
+      'unless what the owner checked by hand supports them, which is an observation and not a report. '
       'If the plant looks healthy on the photos, say so in "summary" and still give the one or two most plausible causes of what the owner '
-      'reports, as "unlikely" — unless a normal phenomenon explains what is reported, which may be "likely". '
+      'reports, as "unlikely" — unless a normal phenomenon explains what is reported, or a hand check points to a cause the leaves do not '
+      'show yet, either of which may be "likely". '
       'Set "urgent" only for pests, rot or rapid decline. '
       'The message lists known problems for this plant, each as a three-digit number and a name, and the normal phenomena as "N" numbers. '
       'Read both lists before you name anything. '
@@ -515,10 +590,22 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       '"leaf_closeup", "leaf_underside", "whole_plant", "stem_base", "soil_roots", or null when the photos already show what is needed. '
       'This key is the only place a missing view may be named: never in "summary", never in a title, an explanation or an action. '
       'It is a suggestion to the application, not a refusal to answer — the causes are given in full either way. '
+      'When a pest is in play and the photos do not settle which one, "view" is "leaf_underside": that is where thrips, mites and scale sit. '
+      // Le service n'avait aucun moyen de demander. Une photo ne dit ni depuis
+      // quand, ni ce qui a changé dans la pièce, ni ce qui a déjà été tenté :
+      // il répondait donc avec ce qu'il avait, et le compte rendu restait
+      // général faute d'une question à trois mots.
+      'Add a "questions" key next to "summary": up to three short questions to the owner, each one line, or an empty array. Ask only what '
+      'would change which cause comes first — when it started and how fast it spread, what changed around the plant, when it was last watered, '
+      'fed or repotted, what has already been tried, whether other plants show the same. Never ask what the message already answers, never ask '
+      'for a photo — that is "view" — and never ask more than three. '
+      'Ask nothing when one cause is already settled, and nothing when the answer would not change the order: an empty array is the ordinary '
+      'answer. The causes are given in full either way: questions refine an answer, they never replace one. '
       'Write every text field in the language with code "$language", in a warm, plain, human tone, without jargon. '
       'Keep every explanation to two sentences at most and every action to one line, so the answer ends before it runs out of room. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
-      '"summary" (string), "urgent" (boolean), "view" (string or null), "causes" (array of objects with "problem" (string or null), '
+      '"summary" (string), "urgent" (boolean), "view" (string or null), "questions" (array of strings, possibly empty), '
+      '"causes" (array of objects with "problem" (string or null), '
       '"natural" (boolean), "title" (string), "likelihood" (string), "explanation" (string), "actions" (array of strings)).';
 
   static String userPrompt({
@@ -532,6 +619,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
     bool? indoors,
     DateTime? date,
     double? latitude,
@@ -566,6 +654,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // le dit, sans quoi le modèle conseillait de vérifier ce qui venait de
       // l'être.
       ?observationsLine(observations),
+      // Ce que le service avait demandé au tour précédent. Il ne voit pas
+      // ses propres questions revenir : elles lui sont rendues avec les
+      // réponses, sans quoi une réponse seule ne veut rien dire.
+      ?answersLine(answers),
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
@@ -649,7 +741,26 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     ].whereType<String>().join('; ');
     return 'Checked by the owner, by hand, on the plant itself: $facts. '
         'These were verified, not guessed, and no photo shows them: weigh every cause for and against them, '
+        'as heavily as what the photos show, say so in the summary when they are what settles it, '
         'and never give as an action something that has already been checked here.';
+  }
+
+  /// Ce que le service avait demandé et ce qu'on lui a répondu, ou `null`
+  /// quand il n'avait rien demandé.
+  ///
+  /// Une analyse ne se recolle pas à la précédente : elle se refait en
+  /// entier, photos comprises, avec ces réponses en plus. Elles valent ce que
+  /// vaut une observation — la personne a la plante devant elle —, et le
+  /// service n'a plus à reposer la même question.
+  static String? answersLine(List<DiagnosisAnswer> answers) {
+    final pairs = [
+      for (final a in answers)
+        if (a.question.trim().isNotEmpty && a.answer.trim().isNotEmpty) '"${a.question.trim()}" — ${a.answer.trim()}',
+    ];
+    if (pairs.isEmpty) return null;
+    return 'Asked of the owner, and answered: ${pairs.join('; ')}. '
+        'These answers are about the plant in front of them: take them as given, weigh them like the photos, and do not ask any of these '
+        'again.';
   }
 
   /// Les noms des pistes soumises, normalisés, pour le filet de rattrapage.
@@ -779,6 +890,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       // une proposition de photo ou rien du tout ; le compte rendu, lui, n'en
       // parle jamais.
       suggestedView: DiagnosisView.parse(data['view']),
+      // Ce qu'il aurait voulu savoir de plus : trois questions au plus, et
+      // rien de ce que la question portait déjà.
+      questions: Diagnosis.readQuestions(data['questions']),
     );
   }
 

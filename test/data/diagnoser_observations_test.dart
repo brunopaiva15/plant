@@ -49,6 +49,36 @@ void main() {
     expect(line, contains('undersides of the leaves'));
   });
 
+  test('un constat de la main pèse autant qu’une photo', () {
+    final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+    // La consigne rangeait tout ce que l'image ne montre pas sous la règle
+    // des symptômes racontés, qui interdit « probable » : une terre
+    // détrempée et des racines brunes ne menaient alors jamais à une
+    // pourriture probable, et ce qu'on était allé vérifier ne pesait rien.
+    expect(consigne, contains('checked by hand'));
+    expect(consigne, contains('as solid as the photos'));
+    expect(consigne, contains('a cause they support may be "likely"'));
+    expect(consigne, contains('never "likely" — unless what the owner checked by hand supports them'));
+    // Une plante saine en photo dont la terre et les racines disent autre
+    // chose : le constat décide, la photo ne le couvre pas.
+    expect(consigne, contains('a hand check points to a cause the leaves do not show yet'));
+    // Et le compte rendu dit sur quoi il s'appuie, faute de quoi la personne
+    // lit un résumé de ses photos et croit ses réponses perdues.
+    expect(consigne, contains('say that in "summary" too'));
+  });
+
+  test('des insectes vus de ses yeux valent une piste de ravageur', () {
+    final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+    // Le cas qui a fait revoir la consigne : « insectes sur la plante »
+    // coché, deux photos de thrips, et un compte rendu de phénomènes
+    // normaux. Un thrips mesure un millimètre : l'image ne le montrera pas.
+    expect(consigne, contains('When the owner checked that insects are on the plant or in the soil'));
+    expect(consigne, contains('Give a pest among the causes'));
+    expect(consigne, contains('never answer with normal phenomena alone'));
+    // Et la case « aucun vu » joue dans l'autre sens.
+    expect(consigne, contains('weigh pests down instead'));
+  });
+
   test('la passe de repli les emporte aussi', () {
     // Le repli juge sur les mots, les photos n'ayant rien donné : c'est là
     // que ce qui a été vérifié compte le plus.

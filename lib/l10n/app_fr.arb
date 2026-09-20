@@ -1195,7 +1195,10 @@
   "you": "vous",
   "diagnosisTitle": "Diagnostic",
   "diagnosisHint": "Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.",
-  "diagnosisSymptomsHint": "Ce que vous avez remarqué (facultatif)…",
+  "diagnosisMoreBelow": "Plus bas : symptômes et observations",
+  "diagnosisSymptomsHint": "Ce que vous avez remarqué…",
+  "diagnosisNeedsPhoto": "Une photo au moins.",
+  "diagnosisNeedsSymptoms": "Ce que vous avez remarqué, même en quelques mots.",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Facultatif : ce que la photo ne montre pas affine l'analyse.",
   "diagnosisSoil": "Terre",
@@ -1229,6 +1232,10 @@
   "diagnosisUnreadable": "L'analyse n'a pas abouti. Réessayez.",
   "diagnosisUncertain": "Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.",
   "diagnosisAnotherPhotoHint": "Une photo de plus préciserait l'analyse.",
+  "diagnosisQuestionsHint": "Ce qui manque pour trancher.",
+  "diagnosisAnswerHint": "Réponse…",
+  "diagnosisAnswerAgain": "Reprendre l'analyse",
+  "diagnosisAnswersNoted": "Réponses données",
   "diagnosisAnotherPhotoView": "À photographier : {view}.",
   "@diagnosisAnotherPhotoView": {
     "placeholders": {

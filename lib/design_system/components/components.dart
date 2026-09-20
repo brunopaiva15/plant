@@ -19,6 +19,7 @@ export 'pressable.dart';
 export 'rail_actions.dart';
 export 'processing_field.dart';
 export 'scanning_overlay.dart';
+export 'scroll_fade.dart';
 export 'section_header.dart';
 export 'shutter.dart';
 export 'sheets.dart';

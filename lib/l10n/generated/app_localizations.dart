@@ -4320,11 +4320,29 @@ abstract class AppLocalizations {
   /// **'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
+  /// No description provided for @diagnosisMoreBelow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus bas : symptômes et observations'**
+  String get diagnosisMoreBelow;
+
   /// No description provided for @diagnosisSymptomsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ce que vous avez remarqué (facultatif)…'**
+  /// **'Ce que vous avez remarqué…'**
   String get diagnosisSymptomsHint;
+
+  /// No description provided for @diagnosisNeedsPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une photo au moins.'**
+  String get diagnosisNeedsPhoto;
+
+  /// No description provided for @diagnosisNeedsSymptoms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que vous avez remarqué, même en quelques mots.'**
+  String get diagnosisNeedsSymptoms;
 
   /// No description provided for @diagnosisChecks.
   ///
@@ -4523,6 +4541,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Une photo de plus préciserait l\'analyse.'**
   String get diagnosisAnotherPhotoHint;
+
+  /// No description provided for @diagnosisQuestionsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce qui manque pour trancher.'**
+  String get diagnosisQuestionsHint;
+
+  /// No description provided for @diagnosisAnswerHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réponse…'**
+  String get diagnosisAnswerHint;
+
+  /// No description provided for @diagnosisAnswerAgain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre l'analyse'**
+  String get diagnosisAnswerAgain;
+
+  /// No description provided for @diagnosisAnswersNoted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réponses données'**
+  String get diagnosisAnswersNoted;
 
   /// No description provided for @diagnosisAnotherPhotoView.
   ///

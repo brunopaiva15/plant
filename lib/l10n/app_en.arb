@@ -891,7 +891,10 @@
   },
   "diagnosisTitle": "Diagnosis",
   "diagnosisHint": "Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.",
-  "diagnosisSymptomsHint": "What you noticed (optional)…",
+  "diagnosisMoreBelow": "Below: symptoms and observations",
+  "diagnosisSymptomsHint": "What you noticed…",
+  "diagnosisNeedsPhoto": "One photo at least.",
+  "diagnosisNeedsSymptoms": "What you noticed, even in a few words.",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Optional: what the photo cannot show sharpens the analysis.",
   "diagnosisSoil": "Soil",
@@ -925,6 +928,10 @@
   "diagnosisUnreadable": "The analysis did not go through. Try again.",
   "diagnosisUncertain": "The photos are not enough to conclude. The leads below still need checking.",
   "diagnosisAnotherPhotoHint": "One more photo would sharpen the analysis.",
+  "diagnosisQuestionsHint": "What is missing to decide.",
+  "diagnosisAnswerHint": "Answer…",
+  "diagnosisAnswerAgain": "Run the analysis again",
+  "diagnosisAnswersNoted": "Answers given",
   "diagnosisAnotherPhotoView": "To photograph: {view}.",
   "@diagnosisAnotherPhotoView": {
     "placeholders": {

@@ -41,6 +41,23 @@ abstract final class DiagnosisLimits {
   static const maxImages = 3;
 }
 
+/// Ce qui manque encore avant de pouvoir analyser.
+enum DiagnosisNeed { photo, symptoms }
+
+/// La photo d'abord, puis ce que la personne a remarqué ; `null` quand
+/// l'analyse peut partir.
+///
+/// La description était facultative, et c'est ce qui rendait les comptes
+/// rendus généraux : une photo seule ne dit ni depuis quand, ni ce qui a
+/// changé, ni ce qui a été fait à la plante — le modèle n'a alors que des
+/// pixels, et il répond ce que des pixels permettent. Deux mots suffisent à
+/// tout changer ; on les demande donc.
+DiagnosisNeed? diagnosisNeed({required int photos, required String symptoms}) {
+  if (photos <= 0) return DiagnosisNeed.photo;
+  if (symptoms.trim().isEmpty) return DiagnosisNeed.symptoms;
+  return null;
+}
+
 /// « Ma plante a un problème » : une page, trois temps.
 ///
 /// C'était une feuille qu'on tirait du bas de la fiche, où un viseur ne
@@ -54,7 +71,9 @@ abstract final class DiagnosisLimits {
 /// 1. **Montrer.** Le viseur occupe le haut de la page, comme partout
 ///    ailleurs où l'on photographie une plante (docs/06, « Les photos ») ;
 ///    dessous, les places des trois photos, puis ce qu'on décrit et ce qu'on
-///    est allé vérifier de sa main, une carte par sujet.
+///    est allé vérifier de sa main, une carte par sujet. Tout cela tient
+///    sous la ligne de flottaison : une invite le nomme et y mène, et le bas
+///    de la page s'efface en fondu plutôt que de s'arrêter net sur la barre.
 /// 2. **Chercher.** La photo passe au centre dans son halo, les quatre
 ///    familles de problèmes tournant autour (`AnalysisWait`).
 /// 3. **Répondre.** Le compte rendu prend la page entière : le constat, les
@@ -111,17 +130,40 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   /// Gardé dès le départ : `ref` ne se lit plus au moment de disposer.
   late final PhotoStorageService _storage;
 
+  /// Le début de ce qui se demande sous le viseur : la cible du geste qui y
+  /// mène, et le repère de ce que l'invite annonce.
+  final _symptomsKey = GlobalKey();
+
+  /// Pour poser le curseur dans le champ quand c'est lui qui manque.
+  final _symptomsFocus = FocusNode();
+
+  /// Ce que le service a demandé au fil des tours, et ce qu'on lui a
+  /// répondu. Cela s'accumule : chaque analyse repart avec tout, puisqu'elle
+  /// se refait en entier.
+  final _answered = <DiagnosisAnswer>[];
+
+  /// Vrai dès que le champ dit quelque chose. Gardé à part pour ne rebâtir
+  /// la barre du bas qu'au passage du vide au plein, et non à chaque lettre.
+  bool _symptomsGiven = false;
+
   @override
   void initState() {
     super.initState();
     _storage = ref.read(photoStorageProvider);
+    _symptoms.addListener(_watchSymptoms);
     _camera.start();
+  }
+
+  void _watchSymptoms() {
+    final given = _symptoms.text.trim().isNotEmpty;
+    if (given != _symptomsGiven) setState(() => _symptomsGiven = given);
   }
 
   @override
   void dispose() {
     _camera.dispose();
     _symptoms.dispose();
+    _symptomsFocus.dispose();
     _temperature.dispose();
     _humidity.dispose();
     // Une analyse qu'on n'a pas gardée n'a laissé que des fichiers : on
@@ -199,6 +241,42 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     unawaited(_storage.deleteFiles(gone.filePath, gone.thumbPath));
   }
 
+  /// Descendre au deuxième temps de la page.
+  ///
+  /// Le viseur occupe le haut de l'écran et la barre du bas referme la page :
+  /// le formulaire qui affine le plus l'analyse — les symptômes, puis ce
+  /// qu'on est allé vérifier — tient tout entier sous la ligne de flottaison,
+  /// et rien dans le dessin ne le laissait deviner. L'invite le nomme et y
+  /// mène ; le fondu du bas de page, lui, dit qu'il y a quelque chose.
+  ///
+  /// La section se pose sous la barre du titre, non derrière elle : la marge
+  /// haute de la page est celle sous laquelle le contenu défile.
+  Future<void> _showSymptoms() async {
+    final target = _symptomsKey.currentContext;
+    if (target == null) return;
+    final scrollable = Scrollable.maybeOf(target);
+    final section = target.findRenderObject();
+    final viewport = scrollable?.context.findRenderObject();
+    if (scrollable == null || section is! RenderBox || viewport is! RenderBox) return;
+    // Ce qui sépare la section de sa place : le haut de la zone défilante,
+    // plus la marge sous laquelle le contenu passe — la barre du titre d'iOS
+    // est translucide, la page défile dessous.
+    final travel = section.localToGlobal(Offset.zero).dy - viewport.localToGlobal(Offset.zero).dy - MediaQuery.paddingOf(target).top;
+    final position = scrollable.position;
+    final to = (position.pixels + travel).clamp(position.minScrollExtent, position.maxScrollExtent);
+    final duration = Motion.of(target, Motion.emphasis);
+    if (duration == Duration.zero) return position.jumpTo(to);
+    await position.animateTo(to, duration: duration, curve: Motion.easeInOut);
+  }
+
+  /// Le champ, et le curseur dedans : ce que demande la pastille de la barre
+  /// du bas quand c'est la description qui manque. La page y descend d'abord,
+  /// le clavier ensuite — l'inverse ferait deux montées pour un geste.
+  Future<void> _writeSymptoms() async {
+    await _showSymptoms();
+    if (mounted) _symptomsFocus.requestFocus();
+  }
+
   /// Demander la photo qui manque, par l'appareil ou la galerie.
   void _chooseSource({bool thenAnalyze = false}) {
     final l10n = context.l10n;
@@ -214,7 +292,8 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
 
   Future<void> _analyze() async {
     final plant = _plant;
-    if (_photos.isEmpty || _busy || plant == null) return;
+    if (_busy || plant == null) return;
+    if (diagnosisNeed(photos: _photos.length, symptoms: _symptoms.text) != null) return;
     final l10n = context.l10n;
     FocusManager.instance.primaryFocus?.unfocus();
     // Le viseur ne tourne que devant quelqu'un qui vise : pendant l'analyse
@@ -252,6 +331,9 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
             indoorClimate: measured,
             reportedClimate: _reportedClimate(measured),
             observations: _observations,
+            // Ce que le service avait demandé au tour d'avant, avec ses
+            // questions : une réponse seule ne voudrait rien dire.
+            answers: _answered,
             // Ce qu'aucune photo ne dit : dedans ou dehors, quel jour, quel
             // hémisphère. Une cochenille de salon en février et une brûlure
             // de balcon en juillet ne se confondent pas.
@@ -354,6 +436,35 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     return reported.isEmpty ? null : reported;
   }
 
+  /// Les questions du compte rendu auxquelles il reste à répondre, et
+  /// seulement quand rien ne tranche.
+  ///
+  /// Un compte rendu qui désigne une piste et une seule ne demande rien :
+  /// c'est la même règle que pour la photo de plus (docs/16), une seule
+  /// décision à la fois. Ce qui a déjà été répondu ne se redemande pas non
+  /// plus — la consigne l'interdit au service, et l'écran ne s'y fie pas.
+  List<String> get _openQuestions {
+    final result = _result;
+    if (result == null || _step == DiagnosisNextStep.showResult) return const [];
+    final done = {for (final a in _answered) a.question.trim().toLowerCase()};
+    return [
+      for (final q in result.questions)
+        if (!done.contains(q.trim().toLowerCase())) q,
+    ];
+  }
+
+  /// Ce qui vient d'être répondu part avec le reste, et l'analyse se refait
+  /// en entier : les deux ou trois photos, ce qui a été décrit, ce qui a été
+  /// vérifié, et maintenant ce qui a été demandé.
+  void _answerAndRetry(List<DiagnosisAnswer> given) {
+    if (given.isEmpty || _busy) return;
+    setState(() {
+      _answered.addAll(given);
+      _result = null;
+    });
+    unawaited(_analyze());
+  }
+
   /// Ce qui a été coché, tel qu'il part à l'analyse et tel qu'il sera gardé
   /// avec elle.
   DiagnosisObservations get _observations => DiagnosisObservations(soil: _soil, roots: _roots, light: _light, bugs: _bugs);
@@ -379,6 +490,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
         symptoms: _symptoms.text.trim(),
         photos: [for (final p in _photos) DiagnosisPhoto(filePath: p.filePath, thumbPath: p.thumbPath)],
         observations: _observations,
+        answers: List.of(_answered),
       );
 
   /// Enregistre le diagnostic entier dans le journal.
@@ -478,17 +590,29 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     if (_result == null) {
       // L'analyse part chez le prestataire : sans réseau le bouton n'aurait
       // qu'un échec à rendre, et il vaut mieux le dire avant.
+      if (!ref.watch(isOnlineProvider)) {
+        return _Bar(children: [OfflineBanner(message: l10n.offlineDiagnosis, padding: EdgeInsets.zero)]);
+      }
+      // Un bouton éteint sans raison n'apprend rien : ce qui manque se dit
+      // au-dessus de lui, dans l'ordre où cela se donne. La description
+      // manquante y mène, puisqu'elle s'écrit hors de vue.
+      final need = diagnosisNeed(photos: _photos.length, symptoms: _symptoms.text);
       return _Bar(
         children: [
-          if (!ref.watch(isOnlineProvider))
-            OfflineBanner(message: l10n.offlineDiagnosis, padding: EdgeInsets.zero)
-          else
-            FloraButton(
-              label: l10n.analyze,
-              icon: CupertinoIcons.sparkles,
-              expand: true,
-              onPressed: _photos.isEmpty ? null : _analyze,
-            ),
+          if (need == DiagnosisNeed.photo) ...[
+            Text(l10n.diagnosisNeedsPhoto, style: context.text.caption, textAlign: TextAlign.center),
+            const SizedBox(height: Space.xs),
+          ],
+          if (need == DiagnosisNeed.symptoms) ...[
+            _MoreBelow(label: l10n.diagnosisNeedsSymptoms, onTap: _writeSymptoms),
+            const SizedBox(height: Space.xxs),
+          ],
+          FloraButton(
+            label: l10n.analyze,
+            icon: CupertinoIcons.sparkles,
+            expand: true,
+            onPressed: need == null ? _analyze : null,
+          ),
         ],
       );
     }
@@ -557,9 +681,11 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
         ],
         const SizedBox(height: Space.sm),
         Text(_full ? l10n.diagnosisPhotosFull : l10n.diagnosisHint, style: context.text.caption),
+        const SizedBox(height: Space.xs),
+        _MoreBelow(label: l10n.diagnosisMoreBelow, onTap: _showSymptoms),
 
-        SectionHeader(title: l10n.diagnosisSymptoms, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.sm)),
-        FloraTextField(controller: _symptoms, hint: l10n.diagnosisSymptomsHint, minLines: 2, maxLines: 5),
+        SectionHeader(key: _symptomsKey, title: l10n.diagnosisSymptoms, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.sm)),
+        FloraTextField(controller: _symptoms, focusNode: _symptomsFocus, hint: l10n.diagnosisSymptomsHint, minLines: 2, maxLines: 5),
 
         SectionHeader(title: l10n.diagnosisChecks, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.xxs)),
         // Ce qu'une photo ne montrera jamais et que la personne, elle, peut
@@ -682,10 +808,18 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
         // Le même corps que la réouverture depuis le journal : ce qu'on lit
         // ici est exactement ce qu'on retrouvera plus tard.
         DiagnosisReportView(record: _record, uncertain: _step == DiagnosisNextStep.keepUncertain),
-        // Une photo de plus quand rien ne se détache, et de préférence celle
-        // que le service a nommée. Le compte rendu reste entier au-dessus :
-        // c'est une proposition, pas un mur.
-        if (_step == DiagnosisNextStep.askAnotherPhoto && !_full) ...[
+        // Ce qui manque pour trancher, dans l'ordre du moins coûteux : trois
+        // questions se répondent sur place, une photo demande de se relever.
+        // Une seule des deux cartes paraît — le compte rendu reste entier
+        // au-dessus, c'est une proposition, pas un mur.
+        if (_openQuestions case final questions when questions.isNotEmpty) ...[
+          const SizedBox(height: Space.lg),
+          DiagnosisQuestionsCard(
+            key: ValueKey(questions.join('\u0000')),
+            questions: questions,
+            onAnswered: _answerAndRetry,
+          ),
+        ] else if (_step == DiagnosisNextStep.askAnotherPhoto && !_full) ...[
           const SizedBox(height: Space.lg),
           AnotherPhotoCard(
             view: _result!.suggestedView,
@@ -712,6 +846,46 @@ class _Bar extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.fromLTRB(Space.page + inset, Space.xs, Space.page + inset, Space.sm),
         child: Column(mainAxisSize: MainAxisSize.min, children: children),
+      ),
+    );
+  }
+}
+
+/// L'invite qui dit que la page continue.
+///
+/// Elle nomme ce qui attend dessous et y mène d'un toucher. Une pastille
+/// posée au milieu, sous la consigne de prise de vue : à cet endroit-là, elle
+/// tombe sous l'œil qui vient de lire comment photographier et qui cherche
+/// quoi faire ensuite.
+class _MoreBelow extends StatelessWidget {
+  const _MoreBelow({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Align(
+      child: Pressable(
+        onTap: onTap,
+        scale: 0.96,
+        child: DecoratedBox(
+          decoration: BoxDecoration(color: c.sageSoft, borderRadius: Radii.fullAll),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.xs),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(label, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                ),
+                const SizedBox(width: Space.xxs),
+                Icon(CupertinoIcons.chevron_down, size: 13, color: c.sage),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

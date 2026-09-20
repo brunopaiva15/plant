@@ -1415,10 +1415,18 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   plante malade avec plus de justesse que Mistral Small 4, qui tenait ce
   rôle jusque-là. Il coûte quatre fois plus cher (0,80 / 3,60 CHF par
   million de jetons contre 0,20 / 0,75) : un diagnostic — une à trois
-  photos réduites à 1 024 px, la consigne, 300 à 500 jetons de réponse —
+  photos réduites à 1 536 px, la consigne, 300 à 500 jetons de réponse —
   revient à quelques millièmes de franc au lieu d'un seul. Le modèle se
   change au build (`INFOMANIAK_AI_MODEL`), sans toucher au code ; Mistral
   Small 4 reste donc disponible d'un `--dart-define`.
+- **Taille des photos** : 1 536 px sur le grand côté, et non 1 024. Mille
+  vingt-quatre suffisaient à voir une feuille jaune, pas à voir ce qui
+  sépare deux pistes : un thrips mesure un millimètre et son dégât est un
+  piqueté argenté semé de points noirs, dont il ne restait que quelques
+  pixels ternes — lus comme du calcaire, sous un constat qui disait
+  « feuilles vertes, sans taches ». L'image double de poids et de jetons ;
+  c'est le prix d'un compte rendu qui nomme le ravageur. Le délai d'une
+  tentative passe de 40 à 60 secondes pour absorber le téléversement.
 - **Clé** : celle de l'éditeur, au build, comme Pl@ntNet (§ 3.3). Aucun
   réglage côté utilisateur ; l'écran « Diagnostic » dit seulement si le
   service est là et où partent les photos.
@@ -1459,6 +1467,21 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   fait une proposition (docs/16, « Jev côté diagnostic ») : le compte rendu
   reste entier au-dessus, la photo ajoutée relance l'analyse avec les deux ou
   trois vues ensemble, et trois photos restent le plafond.
+- **Poser une question plutôt que deviner** : quand rien ne tranche, le
+  compte rendu porte une seconde clé à part, `questions` — une à trois
+  questions courtes, dans la langue de la personne, ou une liste vide. La
+  consigne les borne : seulement ce qui changerait l'ordre des pistes
+  (depuis quand, ce qui a changé autour de la plante, le dernier arrosage ou
+  rempotage, ce qui a déjà été tenté), jamais ce que la demande contient
+  déjà, jamais une photo — c'est `view` —, et rien du tout sur un compte
+  rendu net. Les pistes sont rendues en entier dans tous les cas : une
+  question affine une réponse, elle ne la remplace pas. Les réponses
+  repartent avec leur question (`answersLine`), pèsent comme une observation,
+  et l'analyse se refait en entier — photos comprises — au lieu de se
+  recoller à la précédente. Elles sont gardées avec le compte rendu et se
+  relisent des mois plus tard, comme les symptômes et les observations.
+  L'écran préfère les questions à la photo de plus quand il a les deux
+  (docs/16).
 - **Tout n'est pas un problème** : la consigne ouvrait les pistes aux seuls
   troubles, ravageurs, maladies et fautes d'entretien, si bien que des gouttes
   de nectar extrafloral n'avaient que des cochenilles pour s'expliquer. Une
@@ -1488,6 +1511,13 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   décrits et la liste des problèmes connus suffisent à une piste incertaine,
   qui vaut mieux qu'un compte rendu vide. Ce repli est un bonus, jamais un
   motif d'échec.
+- **Une description, pas seulement des photos** : le champ des symptômes
+  était facultatif, et une photo seule ne dit ni depuis quand, ni ce qui a
+  changé, ni ce qui a déjà été tenté — le modèle n'a alors que des pixels et
+  répond ce que des pixels permettent. L'analyse attend donc une photo au
+  moins, puis quelques mots ; la barre du bas nomme celui des deux qui
+  manque (`diagnosisNeed`). Les quatre observations, elles, restent
+  facultatives.
 - **Ce que la photo ne montre pas** : quatre questions facultatives sous les
   symptômes — la terre au doigt, les racines hors du pot, la lumière reçue,
   les insectes trouvés (`DiagnosisObservations`). Ce sont elles qui
@@ -1498,6 +1528,37 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   « Aucun insecte vu » en fait partie : une case vide ne dit rien, cochée
   elle pèse contre les ravageurs. Rien n'est coché d'avance, rien n'est
   obligatoire, et ce qui n'est pas coché ne part pas.
+
+  Un constat pèse autant qu'une photo, et non moins : la consigne plafonnait
+  à « possible » tout ce que l'image ne montre pas — la règle des symptômes
+  racontés —, si bien qu'une terre détrempée et des racines brunes ne
+  menaient jamais à une pourriture probable. Un constat de la main est une
+  observation de la plante, pas une impression : il peut rendre une piste
+  probable, en écarter une, et le résumé dit quand c'est lui qui tranche.
+  « Insectes sur la plante » va plus loin encore : la personne les a vus,
+  l'appareil non — un thrips mesure un millimètre —, donc une piste de
+  ravageur figure dans les pistes, en tête, et des phénomènes normaux seuls
+  ne sont pas une réponse.
+- **Nommer le ravageur, pas « un ravageur »** : le compte rendu restait
+  général là où un gros plan disait tout. La consigne demande maintenant de
+  lire chaque photo à son échelle — un gros plan se lit de près, il ne se
+  résume pas par la vue d'ensemble —, de regarder la surface d'une feuille
+  avant de la dire saine, et elle nomme les signatures : piqueté argenté ou
+  bronzé le long des nervures semé de points noirs de frass pour les thrips,
+  fin piqueté pâle et toile ténue pour les acariens, amas cotonneux aux
+  aisselles pour les cochenilles farineuses, boucliers bruns et miellat
+  poisseux pour les cochenilles à bouclier, moucherons sombres au ras de la
+  terre pour les sciarides. Le calcaire d'arrosage en est distingué
+  explicitement — dépôt blanc crayeux en auréoles de gouttes séchées, sur le
+  dessus, qui s'essuie et laisse le tissu vert dessous —, parce que c'est
+  pour lui que des thrips ont été pris.
+- **Un geste se range sous la cause qu'il traite** : « Vieillissement des
+  feuilles basses » portait « laisser sécher le substrat entre deux
+  arrosages ». Le geste traitait l'excès d'eau, c'est-à-dire une autre
+  piste, sous une cause qui ne demandait rien. Les gestes d'un phénomène
+  normal suivent de ce qu'il est normal — laisser faire, ôter la feuille
+  épuisée, essuyer le dépôt —, et jamais un traitement pour un problème
+  absent.
 - **Ce qui est gardé** : l'analyse enregistrée l'est entière. La note du
   journal en garde le résumé et les trois premières pistes ; le compte rendu
   complet — chaque piste avec son explication et ses gestes, l'urgence, les

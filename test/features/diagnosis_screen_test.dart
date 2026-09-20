@@ -81,6 +81,41 @@ void main() {
     expect(analyser.onPressed, isNull, reason: 'aucune photo, rien à analyser');
   });
 
+  test('l’analyse veut une photo, puis ce qu’on a remarqué', () {
+    // La description était facultative, et c'est ce qui rendait les comptes
+    // rendus généraux : une photo seule ne dit ni depuis quand, ni ce qui a
+    // changé, ni ce qu'on a déjà fait à la plante.
+    expect(diagnosisNeed(photos: 0, symptoms: ''), DiagnosisNeed.photo);
+    expect(diagnosisNeed(photos: 0, symptoms: 'feuilles molles'), DiagnosisNeed.photo, reason: 'la photo vient en premier');
+    expect(diagnosisNeed(photos: 1, symptoms: ''), DiagnosisNeed.symptoms);
+    expect(diagnosisNeed(photos: 1, symptoms: '   \n  '), DiagnosisNeed.symptoms, reason: 'des espaces ne décrivent rien');
+    expect(diagnosisNeed(photos: 1, symptoms: 'feuilles molles depuis huit jours'), isNull);
+  });
+
+  testWidgets('sans photo, la barre dit ce qui manque', (tester) async {
+    await _open(tester, FakeHomeClimateService());
+    expect(find.text('Une photo au moins.'), findsOneWidget);
+    // Une chose à la fois : la description ne se réclame qu'une fois la
+    // photo prise.
+    expect(find.text('Ce que vous avez remarqué, même en quelques mots.'), findsNothing);
+  });
+
+  testWidgets('une invite dit que la page continue, et y mène', (tester) async {
+    await _open(tester, FakeHomeClimateService());
+    // Le viseur prend le haut de l'écran et la barre du bas referme la page :
+    // sans invite, rien ne disait que le formulaire continuait dessous.
+    final invite = find.text('Plus bas : symptômes et observations');
+    expect(invite, findsOneWidget);
+    final avant = tester.getTopLeft(find.text('Symptômes')).dy;
+    expect(avant, greaterThan(422), reason: 'les symptômes sont sous la ligne de flottaison');
+
+    await tester.tap(invite);
+    await tester.pumpAndSettle();
+    final apres = tester.getTopLeft(find.text('Symptômes')).dy;
+    expect(apres, lessThan(avant));
+    expect(apres, lessThan(200), reason: 'la section est remontée en tête de page');
+  });
+
   testWidgets('sans capteur, la température et l’humidité se demandent, facultatives', (tester) async {
     await _open(tester, FakeHomeClimateService());
     expect(find.text('Température'), findsOneWidget);

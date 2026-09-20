@@ -248,6 +248,22 @@ void main() {
       expect(lire(null).suggestedView, isNull);
     });
 
+    test('les questions sont lues, trois au plus, sans doublon ni vide', () {
+      Diagnosis lire(Object? questions) => InfomaniakDiagnoser.parseResponse(_completion(jsonEncode({
+            'summary': '…',
+            'questions': questions,
+            'causes': [
+              {'title': 'Air sec', 'likelihood': 'possible'},
+            ],
+          })));
+      expect(lire(['Depuis quand ?', 'Arrosée quand ?']).questions, ['Depuis quand ?', 'Arrosée quand ?']);
+      // La consigne en demande trois au plus ; on ne dépend pas de son respect.
+      expect(lire(['a', 'b', 'c', 'd']).questions, ['a', 'b', 'c']);
+      expect(lire(['  Depuis quand ?  ', '', 'depuis quand ?']).questions, ['Depuis quand ?']);
+      expect(lire(null).questions, isEmpty);
+      expect(lire('depuis quand ?').questions, isEmpty, reason: 'une chaîne n’est pas une liste de questions');
+    });
+
     test('une réponse coupée en chemin garde ce qui avait été écrit', () {
       // Le cas le plus fréquent d'« Analyse impossible » : la réponse
       // s'arrête au milieu d'un mot faute de jetons. Deux pistes étaient
@@ -328,10 +344,73 @@ void main() {
       expect(consigne, isNot(contains('return no cause')));
     });
 
+    test('la consigne lit chaque photo à son échelle et nomme le ravageur', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // Le compte rendu restait général sur des gros plans : « feuilles
+      // vertes et brillantes, sans taches » sur un Monstera piqueté de
+      // thrips, et les points noirs du frass rangés avec le calcaire.
+      expect(consigne, contains('read each one at its own scale'));
+      expect(consigne, contains('Before calling a leaf clean'));
+      expect(consigne, contains('is thrips — not limescale'));
+      expect(consigne, contains('Name the pest the damage points to'));
+      // La photo qui trancherait est celle du dessous des feuilles.
+      expect(consigne, contains('"view" is "leaf_underside"'));
+    });
+
+    test('un geste se range sous la cause qu’il traite', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // « Vieillissement des feuilles basses » portait « laisser sécher le
+      // substrat entre deux arrosages » : le geste traitait l'excès d'eau,
+      // sous une cause qui ne demandait rien.
+      expect(consigne, contains('an action belongs under the cause it acts on'));
+      expect(consigne, contains('never treat a problem that is not there'));
+    });
+
     test('ce que la personne décrit vaut pour vu, que la photo le montre ou non', () {
       final texte = InfomaniakDiagnoser.userPrompt(language: 'fr', symptoms: 'feuille sèche tombante');
       expect(texte, contains('feuille sèche tombante'));
       expect(texte, contains('whether or not the photos show it'));
+    });
+
+    test('la consigne peut poser des questions, mais seulement utiles', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // Une photo ne dit ni depuis quand, ni ce qui a changé, ni ce qui a
+      // déjà été tenté : le service n'avait aucun moyen de le demander.
+      expect(consigne, contains('"questions" key next to "summary"'));
+      expect(consigne, contains('never ask more than three'));
+      expect(consigne, contains('Never ask what the message already answers'));
+      // Une question ne remplace jamais une réponse.
+      expect(consigne, contains('questions refine an answer, they never replace one'));
+      expect(consigne, contains('"questions" (array of strings, possibly empty)'));
+    });
+
+    test('les réponses de la personne repartent avec la question', () {
+      final texte = InfomaniakDiagnoser.userPrompt(
+        language: 'fr',
+        answers: const [
+          DiagnosisAnswer(question: 'Depuis quand ?', answer: 'Huit jours'),
+          DiagnosisAnswer(question: 'Arrosée quand ?', answer: 'Avant-hier'),
+        ],
+      );
+      // La question repart avec la réponse : « huit jours » seul ne veut rien
+      // dire.
+      expect(texte, contains('"Depuis quand ?" — Huit jours'));
+      expect(texte, contains('"Arrosée quand ?" — Avant-hier'));
+      expect(texte, contains('do not ask any of these again'));
+      // Rien à dire quand rien n'a été demandé.
+      expect(InfomaniakDiagnoser.answersLine(const []), isNull);
+      expect(InfomaniakDiagnoser.userPrompt(language: 'fr'), isNot(contains('Asked of the owner')));
+      // Une réponse vide ne part pas.
+      expect(InfomaniakDiagnoser.answersLine(const [DiagnosisAnswer(question: 'Depuis quand ?', answer: '  ')]), isNull);
+    });
+
+    test('la passe de repli emporte aussi les réponses', () {
+      final body = InfomaniakDiagnoser.buildFallbackRequest(
+        model: 'm',
+        language: 'fr',
+        answers: const [DiagnosisAnswer(question: 'Rempotée quand ?', answer: 'Au printemps')],
+      );
+      expect(jsonEncode(body), contains('Au printemps'));
     });
 
     test('la base locale part comme liste de pistes, groupée par nature', () async {

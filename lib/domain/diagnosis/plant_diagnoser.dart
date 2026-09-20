@@ -61,6 +61,29 @@ enum DiagnosisView {
   }
 }
 
+/// Une question du service et ce que la personne y a répondu.
+///
+/// Les deux voyagent ensemble : une réponse seule ne veut rien dire, et la
+/// question se relit dans le compte rendu à côté d'elle.
+class DiagnosisAnswer {
+  const DiagnosisAnswer({required this.question, required this.answer});
+
+  final String question;
+  final String answer;
+
+  Map<String, Object?> toJson() => {'question': question, 'answer': answer};
+
+  /// `null` dès que l'un des deux manque : une question sans réponse n'a pas
+  /// à repartir à l'analyse, et une réponse sans question ne se relit pas.
+  static DiagnosisAnswer? fromJson(Map<String, Object?> json) {
+    final q = json['question'];
+    final a = json['answer'];
+    if (q is! String || a is! String) return null;
+    if (q.trim().isEmpty || a.trim().isEmpty) return null;
+    return DiagnosisAnswer(question: q.trim(), answer: a.trim());
+  }
+}
+
 /// Une cause possible, avec sa vraisemblance et des gestes concrets.
 class DiagnosisCause {
   const DiagnosisCause({
@@ -140,7 +163,13 @@ class DiagnosisCause {
 
 /// Résultat d'un diagnostic : toujours des suggestions, jamais des certitudes.
 class Diagnosis {
-  const Diagnosis({required this.summary, required this.causes, this.urgent = false, this.suggestedView});
+  const Diagnosis({
+    required this.summary,
+    required this.causes,
+    this.urgent = false,
+    this.suggestedView,
+    this.questions = const [],
+  });
 
   /// Ce que l'on observe, en une ou deux phrases.
   final String summary;
@@ -163,10 +192,37 @@ class Diagnosis {
   /// entière sans elle.
   final DiagnosisView? suggestedView;
 
+  /// Ce que le service demanderait pour trancher : une à trois questions
+  /// courtes, dans la langue de la personne, ou rien.
+  ///
+  /// Une photo ne dit ni depuis quand, ni ce qui a changé dans la pièce, ni
+  /// ce qui a déjà été tenté — et le service n'avait aucun moyen de le
+  /// demander : il répondait donc avec ce qu'il avait. Comme la vue de plus,
+  /// c'est une proposition : les pistes sont rendues en entier, et personne
+  /// n'est obligé de répondre.
+  final List<String> questions;
+
+  /// Les questions telles qu'on les garde : rognées, vides écartées, doublons
+  /// écartés, trois au plus. La consigne le demande déjà ; on ne dépend pas
+  /// de son respect.
+  static List<String> readQuestions(Object? raw) {
+    final vues = <String>{};
+    final gardees = <String>[];
+    for (final q in raw is List ? raw : const []) {
+      if (q is! String) continue;
+      final texte = q.trim();
+      if (texte.isEmpty || !vues.add(texte.toLowerCase())) continue;
+      gardees.add(texte);
+      if (gardees.length == 3) break;
+    }
+    return gardees;
+  }
+
   Map<String, Object?> toJson() => {
         'summary': summary,
         'urgent': urgent,
         if (suggestedView != null) 'view': suggestedView!.wire,
+        if (questions.isNotEmpty) 'questions': questions,
         'causes': [for (final c in causes) c.toJson()],
       };
 
@@ -174,6 +230,7 @@ class Diagnosis {
         summary: json['summary'] is String ? json['summary'] as String : '',
         urgent: json['urgent'] == true,
         suggestedView: DiagnosisView.parse(json['view']),
+        questions: readQuestions(json['questions']),
         causes: [
           for (final c in json['causes'] is List ? json['causes'] as List : const [])
             if (c is Map)
@@ -229,6 +286,11 @@ abstract class PlantDiagnoser {
     /// lumière, les insectes. Aucune photo ne les montre, et ce sont eux qui
     /// tranchent le plus souvent.
     DiagnosisObservations? observations,
+
+    /// Ce que le service avait demandé au tour précédent, et ce qu'on lui a
+    /// répondu. Une analyse ne se recolle pas à la précédente : elle se
+    /// refait en entier, avec ces réponses en plus.
+    List<DiagnosisAnswer> answers = const [],
 
     /// Vrai pour une plante qui vit dans la maison, faux pour une plante
     /// dehors, `null` quand on l'ignore — une plante sans emplacement.
@@ -290,6 +352,7 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
     bool? indoors,
     DateTime? date,
     double? latitude,

@@ -891,7 +891,10 @@
   },
   "diagnosisTitle": "Diagnosi",
   "diagnosisHint": "Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.",
-  "diagnosisSymptomsHint": "Cosa hai notato (facoltativo)…",
+  "diagnosisMoreBelow": "Più sotto: sintomi e osservazioni",
+  "diagnosisSymptomsHint": "Cosa hai notato…",
+  "diagnosisNeedsPhoto": "Almeno una foto.",
+  "diagnosisNeedsSymptoms": "Cosa hai notato, anche in poche parole.",
   "diagnosisChecks": "Osservazioni",
   "diagnosisChecksHint": "Facoltativo: ciò che la foto non mostra affina l'analisi.",
   "diagnosisSoil": "Terra",
@@ -925,6 +928,10 @@
   "diagnosisUnreadable": "L'analisi non è riuscita. Riprova.",
   "diagnosisUncertain": "Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.",
   "diagnosisAnotherPhotoHint": "Un'altra foto renderebbe l'analisi più precisa.",
+  "diagnosisQuestionsHint": "Ciò che manca per decidere.",
+  "diagnosisAnswerHint": "Risposta…",
+  "diagnosisAnswerAgain": "Rifare l'analisi",
+  "diagnosisAnswersNoted": "Risposte date",
   "diagnosisAnotherPhotoView": "Da fotografare: {view}.",
   "@diagnosisAnotherPhotoView": {
     "placeholders": {

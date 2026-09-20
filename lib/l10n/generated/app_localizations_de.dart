@@ -2435,7 +2435,17 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fotografieren Sie Blätter, Stängel und Erde, aus der Nähe und ganz. Die Ergebnisse sind Hinweise.';
 
   @override
-  String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
+  String get diagnosisMoreBelow => 'Weiter unten: Symptome und Beobachtungen';
+
+  @override
+  String get diagnosisSymptomsHint => 'Was dir aufgefallen ist…';
+
+  @override
+  String get diagnosisNeedsPhoto => 'Mindestens ein Foto.';
+
+  @override
+  String get diagnosisNeedsSymptoms =>
+      'Was dir aufgefallen ist, auch in wenigen Worten.';
 
   @override
   String get diagnosisChecks => 'Beobachtungen';
@@ -2542,6 +2552,18 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get diagnosisAnotherPhotoHint =>
       'Ein weiteres Foto würde die Analyse schärfen.';
+
+  @override
+  String get diagnosisQuestionsHint => 'Was zum Entscheiden fehlt.';
+
+  @override
+  String get diagnosisAnswerHint => 'Antwort…';
+
+  @override
+  String get diagnosisAnswerAgain => 'Analyse erneut starten';
+
+  @override
+  String get diagnosisAnswersNoted => 'Gegebene Antworten';
 
   @override
   String diagnosisAnotherPhotoView(String view) {
