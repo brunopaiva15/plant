@@ -140,15 +140,16 @@ class _RoomFitResult extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
-    final room = ref.watch(scannedRoomProvider(scan.id));
+    final loading = ref.watch(scannedRoomProvider(scan.id)).isLoading;
+    final judged = ref.watch(roomForFitProvider(scan.id));
     final survey = ref.watch(roomSurveyProvider(scan.id));
     final markers = ref.watch(roomMarkersProvider(scan.id)).value ?? const [];
     final heaters = heaterPoints(markers);
     final plants = plantPoints(markers);
     // La place d'aujourd'hui de cette plante, si elle est posée sur ce plan.
     final currentSpot = plantId == null ? null : ref.watch(roomPlantSpotsProvider(scan.id))[plantId!];
-    return switch (room) {
-      AsyncData(:final value) when value != null && survey != null => Builder(
+    return switch ((judged, survey)) {
+      (final value?, final survey?) => Builder(
         builder: (context) {
           final fit = RoomFitAdvisor.placeIn(profile, survey);
           final current = currentSpot == null ? null : RoomFitAdvisor.judge(profile, currentSpot, humidRoom: survey.humidRoom);
@@ -209,7 +210,7 @@ class _RoomFitResult extends ConsumerWidget {
           );
         },
       ),
-      AsyncLoading() => const Padding(padding: EdgeInsets.all(Space.xl), child: Center(child: AdaptiveProgress())),
+      _ when loading => const Padding(padding: EdgeInsets.all(Space.xl), child: Center(child: AdaptiveProgress())),
       _ => EmptyState(emoji: '📐', title: l10n.roomScanFailed, compact: true),
     };
   }

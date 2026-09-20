@@ -157,7 +157,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
       _name.text = scan.name;
       _seeded = true;
     }
-    final room = ref.watch(scannedRoomProvider(scan.id)).value;
+    final room = ref.watch(roomForFitProvider(scan.id));
     final markers = ref.watch(roomMarkersProvider(scan.id)).value ?? const <RoomMarker>[];
     final heaters = heaterPoints(markers);
     final plants = plantPoints(markers).values.toList();
@@ -284,14 +284,40 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     final confirmed = markers.where((m) => m.kind == RoomMarkerKind.windowOrientation && m.windowIndex == i).firstOrNull?.orientation;
     final compass = room.windowDirection(room.windows[i]);
     final direction = confirmed ?? compass;
+    final dressing = windowDressings(room, markers)[i];
     return FloraListRow(
       leading: const Text('🪟', style: TextStyle(fontSize: 18)),
       title: l10n.roomScanWindowN(i + 1),
-      subtitle: direction == null
-          ? l10n.roomScanWindowUnknown
-          : '${l10n.directionName(direction)} · ${confirmed != null ? l10n.roomScanWindowConfirmed : l10n.roomScanWindowFromCompass}',
-      chevron: true,
+      subtitle: [
+        direction == null ? l10n.roomScanWindowUnknown : '${l10n.directionName(direction)} · ${confirmed != null ? l10n.roomScanWindowConfirmed : l10n.roomScanWindowFromCompass}',
+        if (dressing != WindowDressing.none) l10n.dressingName(dressing),
+      ].join(' · '),
+      // Le rideau a son bouton : RoomPlan ne le voit pas, et il change la
+      // lumière autant que l'orientation.
+      trailing: FloraButton(label: l10n.roomScanCurtain, size: FloraButtonSize.small, style: FloraButtonStyle.tonal, onPressed: () => _pickDressing(scan, room, i)),
+      chevron: false,
       onTap: () => _pickOrientation(scan, room, i),
+    );
+  }
+
+  Future<void> _pickDressing(RoomScan scan, ScannedRoom room, int index) async {
+    final l10n = context.l10n;
+    final w = room.windows[index];
+    await showAdaptiveActionSheet(
+      context,
+      title: l10n.roomScanWindowN(index + 1),
+      message: l10n.roomScanCurtainHelp,
+      cancelLabel: l10n.cancel,
+      actions: [
+        for (final d in WindowDressing.values)
+          SheetAction(
+            label: l10n.dressingName(d),
+            onPressed: () async {
+              await ref.read(roomScanControllerProvider.notifier).setWindowDressing(scan.id, index, d, x: w.center.x, z: w.center.z);
+              Haptics.success();
+            },
+          ),
+      ],
     );
   }
 

@@ -72,6 +72,7 @@ abstract final class RoomLightModel {
     required double height,
     required bool southern,
     List<CardinalDirection?>? directions,
+    List<WindowDressing>? dressings,
     double sunElevationDeg = defaultSunElevationDeg,
   }) {
     var total = 0.0;
@@ -85,8 +86,16 @@ abstract final class RoomLightModel {
       final cos = toP.normalized.dot(inward);
       if (cos <= 0) continue;
       final direction = directions != null && i < directions.length ? directions[i] : room.windowDirection(w);
-      total += w.area * orientationFactor(direction, southern: southern) * cos / (d * d);
-      final patch = _sunPatch(room, p, w, inward, direction, southern: southern, sunElevationDeg: sunElevationDeg);
+      final dressing = dressings != null && i < dressings.length ? dressings[i] : WindowDressing.none;
+      total += w.area * orientationFactor(direction, southern: southern) * dressing.factor * cos / (d * d);
+      // Un voilage ôte le soleil direct, il n'en laisse que le bord ; un
+      // rideau tiré n'en laisse rien.
+      var patch = _sunPatch(room, p, w, inward, direction, southern: southern, sunElevationDeg: sunElevationDeg);
+      patch = switch (dressing) {
+        WindowDressing.none => patch,
+        WindowDressing.sheer => patch == SunPatch.none ? SunPatch.none : SunPatch.edge,
+        WindowDressing.drawn => SunPatch.none,
+      };
       if (patch.index > sun.index) sun = patch;
     }
     return LightSample(total, sun);
@@ -99,9 +108,10 @@ abstract final class RoomLightModel {
     double height = potHeight,
     bool southern = false,
     List<CardinalDirection?>? directions,
+    List<WindowDressing>? dressings,
     double sunElevationDeg = defaultSunElevationDeg,
   }) =>
-      sample(room, p, height: height, southern: southern, directions: directions, sunElevationDeg: sunElevationDeg).light;
+      sample(room, p, height: height, southern: southern, directions: directions, dressings: dressings, sunElevationDeg: sunElevationDeg).light;
 
   /// La fenêtre se voit-elle du point ? Aucun mur entre les deux — sauf
   /// celui qui la porte — ni aucun meuble plus haut que le point.

@@ -42,26 +42,46 @@ final scannedRoomProvider = FutureProvider.family<ScannedRoom?, String>((ref, sc
   return RoomPlanParser.parse(json, northOffsetDeg: scan.northOffsetDeg);
 });
 
+/// La pièce telle qu'on la juge : dehors — un relevé lié à un emplacement
+/// extérieur, balcon ou terrasse —, ses ouvertures éclairent comme des
+/// fenêtres ; dedans, la pièce telle quelle.
+final roomForFitProvider = Provider.family<ScannedRoom?, String>((ref, scanId) {
+  final room = ref.watch(scannedRoomProvider(scanId)).value;
+  if (room == null) return null;
+  final scan = (ref.watch(roomScansProvider).value ?? const []).where((s) => s.id == scanId).firstOrNull;
+  final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan?.locationId).firstOrNull;
+  return (location?.isOutdoor ?? false) ? room.asOutdoor() : room;
+});
+
 /// Une pièce avec ses orientations de fenêtre : la confirmée d'abord, la
 /// boussole sinon.
 final roomDirectionsProvider = Provider.family<List<CardinalDirection?>, String>((ref, scanId) {
-  final room = ref.watch(scannedRoomProvider(scanId)).value;
+  final room = ref.watch(roomForFitProvider(scanId));
   if (room == null) return const [];
   final markers = ref.watch(roomMarkersProvider(scanId)).value ?? const [];
   return windowDirections(room, markers);
+});
+
+/// Ce qui habille chaque fenêtre, d'après les repères.
+final roomDressingsProvider = Provider.family<List<WindowDressing>, String>((ref, scanId) {
+  final room = ref.watch(roomForFitProvider(scanId));
+  if (room == null) return const [];
+  final markers = ref.watch(roomMarkersProvider(scanId)).value ?? const [];
+  return windowDressings(room, markers);
 });
 
 /// La pièce lue place par place, une fois pour toutes les fiches : la
 /// lumière selon la latitude du lieu de la météo, les radiateurs posés.
 /// `null` tant que le fichier n'est pas lu.
 final roomSurveyProvider = Provider.family<RoomSurvey?, String>((ref, scanId) {
-  final room = ref.watch(scannedRoomProvider(scanId)).value;
+  final room = ref.watch(roomForFitProvider(scanId));
   if (room == null) return null;
   final markers = ref.watch(roomMarkersProvider(scanId)).value ?? const [];
   return RoomFitAdvisor.survey(
     room,
     southern: ref.watch(southernHemisphereProvider),
     directions: windowDirections(room, markers),
+    dressings: windowDressings(room, markers),
     latitude: ref.watch(preferencesProvider.select((p) => p.weatherPlace?.latitude)),
     heaters: heaterPoints(markers),
   );
@@ -87,16 +107,17 @@ class PlantRoomFit {
 
 /// Les plantes posées sur le plan d'un relevé, lues là où elles sont.
 final roomPlantSpotsProvider = Provider.family<Map<String, SurveyedSpot>, String>((ref, scanId) {
-  final room = ref.watch(scannedRoomProvider(scanId)).value;
+  final room = ref.watch(roomForFitProvider(scanId));
   if (room == null) return const {};
   final markers = ref.watch(roomMarkersProvider(scanId)).value ?? const [];
   final directions = windowDirections(room, markers);
+  final dressings = windowDressings(room, markers);
   final heaters = heaterPoints(markers);
   final southern = ref.watch(southernHemisphereProvider);
   final latitude = ref.watch(preferencesProvider.select((p) => p.weatherPlace?.latitude));
   return {
     for (final e in plantPoints(markers).entries)
-      e.key: RoomFitAdvisor.spotAt(room, e.value, southern: southern, directions: directions, latitude: latitude, heaters: heaters),
+      e.key: RoomFitAdvisor.spotAt(room, e.value, southern: southern, directions: directions, dressings: dressings, latitude: latitude, heaters: heaters),
   };
 });
 
@@ -234,6 +255,21 @@ class RoomScanController extends Notifier<bool> {
   }
 
   Future<void> removeMarker(String id) => ref.read(roomScanRepositoryProvider).removeMarker(id);
+
+  /// Ce qui habille une fenêtre : un repère au plus par fenêtre, le nouveau
+  /// remplace l'ancien, et « sans rideau » les retire.
+  Future<void> setWindowDressing(String scanId, int windowIndex, WindowDressing dressing, {required double x, required double z}) async {
+    final repo = ref.read(roomScanRepositoryProvider);
+    for (final m in await repo.watchMarkers(scanId).first) {
+      if ((m.kind == RoomMarkerKind.windowSheer || m.kind == RoomMarkerKind.windowDrawn) && m.windowIndex == windowIndex) await repo.removeMarker(m.id);
+    }
+    final kind = switch (dressing) {
+      WindowDressing.none => null,
+      WindowDressing.sheer => RoomMarkerKind.windowSheer,
+      WindowDressing.drawn => RoomMarkerKind.windowDrawn,
+    };
+    if (kind != null) await repo.addMarker(scanId, kind, x: x, z: z, windowIndex: windowIndex);
+  }
 
   /// Renseigne l'orientation et la lumière d'un emplacement d'après le
   /// relevé, sans toucher à ce qui est déjà rempli.

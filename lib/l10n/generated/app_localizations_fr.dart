@@ -6603,4 +6603,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String placementCurrent(String place, String light) {
     return 'Aujourd\'hui : $place · $light';
   }
+
+  @override
+  String get sectionRooms => 'Relevés de la maison';
+
+  @override
+  String get roomScanCurtain => 'Rideau';
+
+  @override
+  String get roomScanCurtainNone => 'Sans rideau';
+
+  @override
+  String get roomScanCurtainSheer => 'Voilage';
+
+  @override
+  String get roomScanCurtainDrawn => 'Rideau souvent tiré';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.';
 }

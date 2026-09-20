@@ -395,6 +395,6 @@ abstract class RoomScanRepository {
   Future<void> setWindowOrientation(String scanId, int windowIndex, CardinalDirection? orientation, {required double x, required double z});
 
   /// Pose un repère — un radiateur, la place d'une plante — au point donné.
-  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId});
+  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId, int? windowIndex});
   Future<void> removeMarker(String id);
 }

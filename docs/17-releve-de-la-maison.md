@@ -1,10 +1,10 @@
 # Le relevé de la maison : où poser cette plante
 
-> Statut : fonction expérimentale. Les trois paliers sont codés derrière
+> Statut : fonction expérimentale. Quatre paliers sont codés derrière
 > `--dart-define=ROOM_SCAN=true`, et le palier 0 est passé : un relevé réel
 > sur un iPhone Pro a confirmé la construction, la présentation par-dessus
-> Flutter et la lecture du JSON. L'appartement entier (palier 3) attend son
-> relevé réel. Note créée le 20 septembre 2026.
+> Flutter et la lecture du JSON. L'appartement entier (palier 3) et les
+> paliers suivants attendent leur relevé réel. Note créée le 20 septembre 2026.
 
 ## L'idée
 
@@ -335,6 +335,18 @@ dépôt.** La synchronisation des relevés n'est pas faite : un plan de chez
 soi dans un jardin partagé pose la question de ce qu'on partage, qui
 n'est pas tranchée ici.
 
+**Palier 4 — affiner et garder.** Ce que RoomPlan ne voit pas et que la
+main peut dire : un voilage ou un rideau souvent tiré, par fenêtre
+(`windowSheer`, `windowDrawn` dans `room_markers`) — le voilage divise
+l'apport par deux et ne laisse du soleil que le bord, le rideau tiré le
+divise par trois et n'en laisse rien. Le balcon : un relevé lié à un
+emplacement extérieur est lu par `ScannedRoom.asOutdoor()`, ses ouvertures
+éclairent comme des fenêtres, à la suite des fenêtres pour que leurs rangs
+tiennent, et rien n'y est un courant d'air. Et la sauvegarde : une section
+« Relevés de la maison » dans l'export ZIP (`room_scans`, `room_markers`,
+et le JSON de chaque pièce sous `rooms/`), restaurée sans écraser ce qui
+existe. **Livré dans ce dépôt.**
+
 ## Ce qui reste ouvert
 
 - **La finesse du modèle.** Un apport en *1/d²* n'est pas un facteur de
@@ -343,8 +355,9 @@ n'est pas tranchée ici.
   luminosité, que `HomeClimateChannel` pourrait lire) affinerait au second
   ou troisième palier. La calibration sur le diorama garde le modèle
   cohérent avec les fiches ; elle ne le rend pas vrai.
-- **Les vitrages et les rideaux.** RoomPlan ne les distingue pas. Un
-  rideau tiré divise l'apport par trois ; le plan ne le sait pas.
+- **Les vitrages.** RoomPlan ne les distingue pas, et le plan ne les
+  demande pas : un double vitrage teinté ou un verre dépoli passent pour
+  une vitre claire. Les rideaux, eux, se disent depuis le palier 4.
 - **Les étages et les balcons.** Un balcon relevé est une pièce sans mur
   d'un côté ; le modèle le traite comme une fenêtre de la largeur de
   l'ouverture, et la fiche décide du gel comme aujourd'hui. À vérifier au

@@ -11135,6 +11135,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aujourd\'hui : {place} · {light}'**
   String placementCurrent(String place, String light);
+
+  /// No description provided for @sectionRooms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relevés de la maison'**
+  String get sectionRooms;
+
+  /// No description provided for @roomScanCurtain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rideau'**
+  String get roomScanCurtain;
+
+  /// No description provided for @roomScanCurtainNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans rideau'**
+  String get roomScanCurtainNone;
+
+  /// No description provided for @roomScanCurtainSheer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voilage'**
+  String get roomScanCurtainSheer;
+
+  /// No description provided for @roomScanCurtainDrawn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rideau souvent tiré'**
+  String get roomScanCurtainDrawn;
+
+  /// No description provided for @roomScanCurtainHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.'**
+  String get roomScanCurtainHelp;
 }
 
 class _AppLocalizationsDelegate

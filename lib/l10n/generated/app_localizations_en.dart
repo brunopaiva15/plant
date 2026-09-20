@@ -6554,4 +6554,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String placementCurrent(String place, String light) {
     return 'Now: $place · $light';
   }
+
+  @override
+  String get sectionRooms => 'Home scans';
+
+  @override
+  String get roomScanCurtain => 'Curtain';
+
+  @override
+  String get roomScanCurtainNone => 'No curtain';
+
+  @override
+  String get roomScanCurtainSheer => 'Sheer curtain';
+
+  @override
+  String get roomScanCurtainDrawn => 'Curtain often drawn';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.';
 }

@@ -60,6 +60,19 @@ enum CardinalDirection {
 
 enum RoomSurfaceKind { wall, window, door, opening }
 
+/// Ce qui habille une fenêtre. RoomPlan ne le voit pas ; la main le dit.
+enum WindowDressing {
+  none,
+
+  /// Un voilage : la lumière divisée par deux, et plus de soleil direct.
+  sheer,
+
+  /// Un rideau ou un store souvent tiré : la lumière divisée par trois.
+  drawn;
+
+  double get factor => switch (this) { none => 1.0, sheer => 0.5, drawn => 1 / 3 };
+}
+
 /// Une surface plane : un mur, ou ce qui s'y découpe.
 class RoomSurface {
   const RoomSurface({
@@ -237,6 +250,25 @@ class ScannedRoom {
 
   /// La normale d'une surface tournée vers l'intérieur de la pièce.
   RoomPoint inwardNormal(RoomSurface s) => (centroid - s.center).dot(s.normal) >= 0 ? s.normal : s.normal.scale(-1);
+
+  /// La même pièce lue comme un balcon ou une terrasse : les ouvertures —
+  /// le côté sans mur — éclairent comme des fenêtres, à la suite des
+  /// fenêtres pour que leurs rangs ne bougent pas ; dehors, l'air bouge
+  /// partout, et une porte n'y change rien.
+  ScannedRoom asOutdoor() => ScannedRoom(
+        walls: walls,
+        windows: [
+          ...windows,
+          for (final o in openings)
+            RoomSurface(kind: RoomSurfaceKind.window, center: o.center, along: o.along, normal: o.normal, width: o.width, height: o.height, bottomY: o.bottomY, parentId: o.parentId, id: o.id),
+        ],
+        doors: const [],
+        openings: const [],
+        objects: objects,
+        floorPolygon: floorPolygon,
+        section: section,
+        northOffsetDeg: northOffsetDeg,
+      );
 
   /// Le point d'un mur le plus proche, à moins de [within] : un radiateur
   /// se pose contre un mur, et le doigt vise à côté.

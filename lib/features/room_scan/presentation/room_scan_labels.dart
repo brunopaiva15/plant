@@ -52,6 +52,12 @@ extension RoomScanLabels on AppLocalizations {
     }
   }
 
+  String dressingName(WindowDressing d) => switch (d) {
+        WindowDressing.none => roomScanCurtainNone,
+        WindowDressing.sheer => roomScanCurtainSheer,
+        WindowDressing.drawn => roomScanCurtainDrawn,
+      };
+
   String verdictLine(RoomFitVerdict v) => switch (v) {
         RoomFitVerdict.good => placementVerdictGood,
         RoomFitVerdict.acceptable => placementVerdictAcceptable,

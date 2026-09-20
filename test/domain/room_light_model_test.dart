@@ -116,6 +116,34 @@ void main() {
     expect(RoomLightModel.sunElevationFor(-48.9), RoomLightModel.sunElevationFor(48.9));
   });
 
+  test("un voilage divise la lumière par deux et ôte le soleil direct, un rideau tiré par trois", () {
+    final sun = slots[LightNeed.fullSun]!;
+    expect(RoomLightModel.lightAt(room, sun, dressings: const [WindowDressing.sheer]), LightNeed.someSun);
+    expect(RoomLightModel.lightAt(room, sun, dressings: const [WindowDressing.drawn]), isNot(isIn([LightNeed.fullSun, LightNeed.someSun])));
+    final bare = RoomLightModel.sample(room, slots[LightNeed.brightIndirect]!, height: RoomLightModel.potHeight, southern: false).total;
+    final sheer = RoomLightModel.sample(room, slots[LightNeed.brightIndirect]!, height: RoomLightModel.potHeight, southern: false, dressings: const [WindowDressing.sheer]).total;
+    final drawn = RoomLightModel.sample(room, slots[LightNeed.brightIndirect]!, height: RoomLightModel.potHeight, southern: false, dressings: const [WindowDressing.drawn]).total;
+    expect(sheer, closeTo(bare / 2, 1e-9));
+    expect(drawn, closeTo(bare / 3, 1e-9));
+  });
+
+  test("un balcon : le côté ouvert éclaire comme une fenêtre, et rien n'y est un courant d'air", () {
+    final balcony = ScannedRoom(
+      walls: room.walls.where((w) => w.center.x > -2).toList(),
+      windows: const [],
+      doors: room.doors,
+      openings: const [
+        RoomSurface(kind: RoomSurfaceKind.opening, center: RoomPoint(-2.1, 0), along: RoomPoint(0, 1), normal: RoomPoint(1, 0), width: 3.6, height: 2.7, bottomY: 0),
+      ],
+      objects: const [],
+      northOffsetDeg: 90,
+    ).asOutdoor();
+    expect(balcony.windows, hasLength(1));
+    expect(balcony.doors, isEmpty);
+    expect(RoomLightModel.lightAt(balcony, const RoomPoint(-1.0, 0.0)), LightNeed.fullSun);
+    expect(RoomLightModel.isDrafty(balcony, const RoomPoint(1.0, -1.2)), isFalse);
+  });
+
   test("l'air bouge à moins d'un mètre d'une porte", () {
     expect(RoomLightModel.isDrafty(room, const RoomPoint(1.0, -1.2)), isTrue);
     expect(RoomLightModel.isDrafty(room, const RoomPoint(-1.0, 1.0)), isFalse);

@@ -108,6 +108,24 @@ void main() {
     expect(points, {'p1': const RoomPoint(0.5, -0.5)});
   });
 
+  test("un voilage ou un rideau se lit fenêtre par fenêtre", () async {
+    final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
+    await repo.addMarker(a.id, RoomMarkerKind.windowSheer, x: 0, z: 0, windowIndex: 0);
+    await repo.addMarker(a.id, RoomMarkerKind.windowDrawn, x: 0, z: 0, windowIndex: 2);
+    final room = ScannedRoom(
+      walls: const [],
+      windows: const [
+        RoomSurface(kind: RoomSurfaceKind.window, center: RoomPoint(0, 0), along: RoomPoint(1, 0), normal: RoomPoint(0, 1), width: 1, height: 1, bottomY: 1),
+        RoomSurface(kind: RoomSurfaceKind.window, center: RoomPoint(1, 0), along: RoomPoint(1, 0), normal: RoomPoint(0, 1), width: 1, height: 1, bottomY: 1),
+        RoomSurface(kind: RoomSurfaceKind.window, center: RoomPoint(2, 0), along: RoomPoint(1, 0), normal: RoomPoint(0, 1), width: 1, height: 1, bottomY: 1),
+      ],
+      doors: const [],
+      openings: const [],
+      objects: const [],
+    );
+    expect(windowDressings(room, await repo.watchMarkers(a.id).first), [WindowDressing.sheer, WindowDressing.none, WindowDressing.drawn]);
+  });
+
   test('supprimer retire le relevé et ses repères', () async {
     final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
     await repo.setWindowOrientation(a.id, 0, CardinalDirection.south, x: 0, z: 0);
