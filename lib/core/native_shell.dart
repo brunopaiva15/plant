@@ -164,11 +164,21 @@ abstract final class NativeShell {
     _voilee = veils > 0;
     if (pages != _profondeur) {
       _profondeur = pages;
+      overlay.value = pages;
       // À chaque changement d'étage, la barre est à reconquérir.
       _barreDemandee = false;
     }
     _appliquerChrome();
   }
+
+  /// Combien de pages couvrent la coquille, pour qui a besoin de le savoir.
+  ///
+  /// Écoutable : une page couverte cesse de prétendre à la barre, et doit la
+  /// reprendre quand ce qui la couvrait s'en va. Rien ne la forcerait sinon
+  /// à se redessiner, et la barre reviendrait vide.
+  static final ValueNotifier<int> overlay = ValueNotifier<int>(0);
+
+  static int get overlayDepth => overlay.value;
 
   /// Une page dit qu'elle sait remplir la barre. Sans effet sur la coquille,
   /// qui l'a de droit.

@@ -234,6 +234,20 @@ d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. P
 bouton retour : celui-là attend d'être rendu par la pile de navigation
 elle-même.
 
+**`isCurrent` ne vaut que dans son navigateur.** C'est le piège de cette
+mécanique, et il a coûté trois allers-retours. Une page de la coquille vit
+dans le navigateur de son onglet ; une feuille poussée sur le navigateur
+racine la couvre sans que sa branche en sache rien, et elle se croyait donc
+encore visible. Elle redemandait la barre que l'observateur venait d'effacer,
+et la feuille se retrouvait coiffée des boutons de la page d'en dessous.
+
+Une page qui n'est pas posée sur le navigateur racine ne prétend donc à la
+barre que si rien ne couvre la coquille. Celles qui y sont posées — une fiche,
+une page secondaire — y prétendent à tout étage, puisqu'elles *sont* cet
+étage. Et `NativeShell.overlay` est écoutable, pour qu'une page couverte
+reprenne la barre quand ce qui la couvrait s'en va : rien ne la forcerait
+sinon à se redessiner, et la barre reviendrait vide.
+
 **La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
 s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
 de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
