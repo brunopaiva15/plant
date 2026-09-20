@@ -1,3 +1,4 @@
+import 'package:flora/core/window_regions.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -242,6 +243,38 @@ void main() {
       await _pumpRail(tester, size: const Size(669, 260));
       expect(tester.takeException(), isNull);
       expect(_pill(tester).height, lessThanOrEqualTo(260));
+    });
+  });
+
+  group('ce que le système annonce', () {
+    tearDown(() => WindowRegionsService.regions.value = const WindowRegions());
+
+    testWidgets('l\'axe annoncé l\'emporte sur celui qui était mesuré', (tester) async {
+      WindowRegionsService.regions.value = const WindowRegions(systemAxisFromRight: 60);
+      await _pumpRail(tester);
+      expect(669 - _pill(tester).center.dx, closeTo(60, 0.5));
+    });
+
+    testWidgets('le bas de la pile annoncé décide du dégagement', (tester) async {
+      // 32 points d'air sous la pile, comme pour la mesure de repli.
+      WindowRegionsService.regions.value = const WindowRegions(systemStackBottom: 60);
+      await _pumpRail(tester);
+      expect(_pill(tester).top, moreOrLessEquals(92, epsilon: 0.5));
+    });
+
+    testWidgets('une annonce qui manque laisse la mesure en place', (tester) async {
+      // Le pli seul : il ne dit rien de la pile ni de l'axe.
+      WindowRegionsService.regions.value = const WindowRegions(fold: Rect.fromLTWH(0, 470, 669, 12));
+      await _pumpRail(tester);
+      final pill = _pill(tester);
+      expect(669 - pill.center.dx, closeTo(48, 0.5));
+      expect(pill.top, moreOrLessEquals(172, epsilon: 0.5));
+    });
+
+    testWidgets('la place prise au contenu suit l\'axe annoncé', (tester) async {
+      WindowRegionsService.regions.value = const WindowRegions(systemAxisFromRight: 60);
+      await _pumpRail(tester);
+      expect(tester.getRect(find.byKey(const Key('contenu'))).right, lessThanOrEqualTo(_pill(tester).left + 0.5));
     });
   });
 }

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/haptics.dart';
+import '../../core/window_regions.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
@@ -171,27 +172,53 @@ class FloraTabRail extends StatelessWidget {
   static const double _slot = 56;
 
   /// Jusqu'où descendent les éléments du système en haut de la bande —
-  /// caméra, heure et wifi empilés —, mesuré au pixel sur le simulateur de
-  /// l'iPhone Duo fermé.
+  /// caméra, heure et wifi empilés —, **à défaut de réponse du système**.
   ///
-  /// iOS n'en dit rien de fiable : `MediaQuery.padding.top` annonce 82 points
-  /// dans cette pose, là où la pile en descend à 140. La colonne commence
-  /// donc en dessous. Si une pose annonçait davantage, c'est elle qui
-  /// l'emporterait.
+  /// C'est une mesure au pixel, prise sur le simulateur de l'iPhone Duo
+  /// fermé, et elle ne sert que de repli : `WindowRegionsService` demande la
+  /// vraie géométrie au natif (`ios/Runner/WindowRegionsChannel.swift`). Les
+  /// marges sûres, elles, n'en disent rien — `padding.top` annonce 82 points
+  /// dans cette pose, là où la pile descend à 140.
   ///
   /// Les 32 points d'air ne sont pas décoratifs : douze collaient la pilule
   /// au wifi, et deux pièces d'argile de 64 points de large ont besoin de
   /// plus d'écart qu'un glyphe de vingt.
-  static const double _sousLesElementsDuSysteme = 140 + Space.xxl;
+  static const double _pileDuSysteme = 140;
+  static const double _airSousLaPile = Space.xxl;
+  static const double _sousLesElementsDuSysteme = _pileDuSysteme + _airSousLaPile;
 
-  /// Le blanc entre la pilule et le bord droit, choisi pour que la colonne
-  /// tombe sur le **même axe** que les éléments du système.
+  /// Le dégagement du haut, demandé au système quand il répond.
+  static double _degagement(BuildContext context, WindowRegions regions) {
+    final annonce = regions.systemStackBottom;
+    final mesure = annonce == null ? _sousLesElementsDuSysteme : annonce + _airSousLaPile;
+    return math.max(mesure, MediaQuery.paddingOf(context).top + Space.sm);
+  }
+
+  /// Le blanc à droite, pour que l'axe de la colonne tombe sur celui du
+  /// système. Demandé lui aussi ; à défaut, les 16 points mesurés.
   ///
-  /// iOS pose sa pile — caméra, heure, wifi — à 47,7 points du bord droit,
-  /// mesuré au pixel dans les trois poses du Duo : fermé 466, ouvert 669,
-  /// couché 951. La pilule fait 64 points de large, donc 16 de blanc mettent
-  /// son axe à 48 : les deux colonnes s'alignent. Douze points la décalaient
-  /// de quatre, assez pour que l'œil le voie.
+  /// La colonne se pose ainsi **dans** la bande que le système réserve de ce
+  /// côté, et non à côté d'elle : c'est là que le pliable met les commandes
+  /// d'une application, sous l'heure et le wifi, et s'en écarter laissait une
+  /// colonne vide large comme un pouce.
+  ///
+  /// Ce n'est pas contredire la marge sûre : elle vaut pour le **contenu**,
+  /// qui s'arrête bien avant — il ne prend que ce que la colonne lui laisse
+  /// (`app/shell.dart`). Le menu, lui, est du châssis, comme la barre
+  /// d'outils debout d'iOS.
+  static double _blancDroit(WindowRegions regions) {
+    final axe = regions.systemAxisFromRight;
+    if (axe == null) return _edgeGap;
+    return math.max(Space.xs, axe - _width / 2);
+  }
+
+  /// Le blanc entre la pilule et le bord droit, **à défaut de réponse du
+  /// système**, choisi pour que la colonne tombe sur le même axe que sa pile.
+  ///
+  /// iOS la pose à 47,7 points du bord droit, mesuré au pixel dans les trois
+  /// poses du Duo : fermé 466, ouvert 669, couché 951. La pilule fait 64
+  /// points de large, donc 16 de blanc mettent son axe à 48. Douze points la
+  /// décalaient de quatre, assez pour que l'œil le voie.
   static const double _edgeGap = Space.md;
 
   /// La fenêtre appelle un menu debout plutôt qu'une barre en bas.
@@ -221,27 +248,18 @@ class FloraTabRail extends StatelessWidget {
 
   /// La largeur que le rail prend au contenu, bord compris. Sert à ce qui
   /// flotte par-dessus l'application et doit l'éviter — le toast.
-  static double reserved(BuildContext context) => Space.md + _width + _rightInset;
-
-  /// Le blanc entre la pilule et le bord droit : le minimum, toujours.
-  ///
-  /// La colonne se pose **dans** la bande que le système réserve de ce côté —
-  /// 84 points mesurés sur un Duo — et non à côté d'elle. C'est là que le
-  /// pliable met les commandes d'une application, sous l'heure et le wifi, et
-  /// s'en écarter laissait une colonne vide large comme un pouce.
-  ///
-  /// Ce n'est pas contredire la marge : elle vaut pour le **contenu**, qui
-  /// s'arrête bien avant (voir `app/shell.dart`, le contenu prend ce que la
-  /// colonne lui laisse). Le menu, lui, est du châssis, comme la barre
-  /// d'outils debout d'iOS.
-  ///
-  /// Ce qui l'empêche de heurter l'heure, c'est sa position : la colonne est
-  /// centrée dans la hauteur, et les éléments du système se tiennent en haut
-  /// de la bande dans toutes les poses mesurées.
-  static double get _rightInset => _edgeGap;
+  static double reserved(BuildContext context) =>
+      Space.md + _width + _blancDroit(WindowRegionsService.regions.value);
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<WindowRegions>(
+      valueListenable: WindowRegionsService.regions,
+      builder: (context, regions, _) => _colonne(context, regions),
+    );
+  }
+
+  Widget _colonne(BuildContext context, WindowRegions regions) {
     final c = context.colors;
     return Padding(
       // En bas, la colonne flotte *dans* l'encart du système comme la pilule
@@ -250,7 +268,7 @@ class FloraTabRail extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(
         Space.md,
         Space.md,
-        _edgeGap,
+        _blancDroit(regions),
         math.max(Space.md, math.min(MediaQuery.paddingOf(context).bottom, FloraTabBar._floatingGap)),
       ),
       child: LayoutBuilder(
@@ -267,7 +285,7 @@ class FloraTabRail extends StatelessWidget {
           // pilule ne se déplace ni d'un onglet à l'autre, ni d'un pli à
           // l'autre. En bas, les boutons pendent et la place qui reste ne
           // sert qu'à eux.
-          final souhaite = math.max(_sousLesElementsDuSysteme, MediaQuery.paddingOf(context).top + Space.sm) - Space.md;
+          final souhaite = _degagement(context, regions) - Space.md;
           // Sauf dans une fenêtre trop courte pour ce dégagement : les
           // onglets gardent alors leurs 44 points de cible et la colonne
           // remonte de ce qu'il faut.

@@ -3,6 +3,7 @@ import 'dart:ui' show DisplayFeature;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../core/window_regions.dart';
 import 'window.dart';
 
 /// Ce que la fenêtre dit d'elle-même, écrit dans la console à chaque
@@ -86,6 +87,7 @@ class _WindowProbeObserver with WidgetsBindingObserver {
           '· ${_nb(display.refreshRate)} Hz'),
       _ligne('vues ouvertes', '${dispatcher.views.length}'),
       _ligne('pli', _pli(mq.displayFeatures)),
+      _ligne('régions système', WindowRegionsService.regions.value.toString()),
       _ligne('colonne de lecture', mq.size.width <= 700
           ? 'pleine largeur (${_pt(mq.size.width)} ≤ 700)'
           : 'recentrée, ${_pt((mq.size.width - 700) / 2)} pt de marge de chaque côté'),
