@@ -2,32 +2,41 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
+import '../../../core/haptics.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
+import '../../../domain/home/home_climate_advisor.dart';
 import '../../../domain/room/placement.dart';
 import '../../../domain/room/room_fit_advisor.dart';
 import '../../../domain/room/room_scan.dart';
+import '../../home_climate/application/home_climate_providers.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../application/room_scan_providers.dart';
 import 'room_plan_painter.dart';
 import 'room_scan_labels.dart';
 
-/// « Où la poser » : les places d'une fiche dans les pièces relevées. Une
-/// pièce à la fois, son plan, trois places nommées, et ce que la pièce vaut
-/// en une phrase.
-Future<void> showRoomFit(BuildContext context, {required CareProfile profile, required bool generic}) => showFloraScrollableFlow<void>(
-  context,
-  builder: (ctx, controller) => _RoomFitBody(profile: profile, generic: generic, controller: controller),
-);
+/// « Où la poser » : les places d'une fiche dans les pièces relevées. Les
+/// pièces classées d'abord, quand il y en a plusieurs ; puis la pièce
+/// choisie, son plan, trois places nommées, et ce qu'elle vaut en une
+/// phrase. Pour une plante du jardin, la place d'aujourd'hui si elle est
+/// posée sur le plan, et « Choisir cette place ».
+Future<void> showRoomFit(BuildContext context, {required CareProfile profile, required bool generic, String? plantId, String? plantName}) =>
+    showFloraScrollableFlow<void>(
+      context,
+      builder: (ctx, controller) => _RoomFitBody(profile: profile, generic: generic, plantId: plantId, plantName: plantName, controller: controller),
+    );
 
 class _RoomFitBody extends ConsumerStatefulWidget {
-  const _RoomFitBody({required this.profile, required this.generic, this.controller});
+  const _RoomFitBody({required this.profile, required this.generic, this.plantId, this.plantName, this.controller});
 
   final CareProfile profile;
 
   /// Une fiche générique ne demande aucune lumière précise : pas de place.
   final bool generic;
+  final String? plantId;
+  final String? plantName;
   final ScrollController? controller;
 
   @override
@@ -42,7 +51,10 @@ class _RoomFitBodyState extends ConsumerState<_RoomFitBody> {
     final l10n = context.l10n;
     final scans = ref.watch(roomScansProvider).value ?? const <RoomScan>[];
     if (scans.isEmpty) return const SizedBox.shrink();
-    final scan = scans.where((s) => s.id == _scanId).firstOrNull ?? scans.first;
+    // Les pièces, classées par ce qu'elles valent pour la fiche : la
+    // meilleure s'ouvre d'elle-même.
+    final ranked = widget.generic ? <(RoomScan, RoomFit?)>[for (final s in scans) (s, null)] : _ranked(scans);
+    final scan = scans.where((s) => s.id == _scanId).firstOrNull ?? ranked.first.$1;
     final side = Space.page + readableInset(context);
     // La sheet d'iOS prête son contrôleur à la vue qui défile : sans lui,
     // elle remporte tous les gestes verticaux (voir showFloraScrollableFlow).
@@ -58,57 +70,89 @@ class _RoomFitBodyState extends ConsumerState<_RoomFitBody> {
           children: [
             Text(l10n.placementHint, style: context.text.callout),
             const SizedBox(height: Space.md),
-            if (scans.length > 1) ...[
-              if (scans.length <= 3)
-                AdaptiveSegmented<String>(segments: {for (final s in scans) s.id: s.name}, value: scan.id, onChanged: (id) => setState(() => _scanId = id))
-              else
+            if (widget.generic)
+              FloraCard(color: context.colors.sunSoft, child: Text(l10n.placementGeneric, style: context.text.callout))
+            else ...[
+              if (scans.length > 1) ...[
                 FloraGroup(
+                  header: l10n.placementAllRooms,
                   children: [
-                    FloraListRow(
-                      leading: const Text('📐', style: TextStyle(fontSize: 18)),
-                      title: scan.name,
-                      chevron: true,
-                      onTap: () => showAdaptiveActionSheet(
-                        context,
-                        cancelLabel: l10n.cancel,
-                        actions: [for (final s in scans) SheetAction(label: s.name, onPressed: () => setState(() => _scanId = s.id))],
+                    for (final (s, fit) in ranked)
+                      FloraListRow(
+                        leading: Text(
+                          switch (fit?.verdict) {
+                            RoomFitVerdict.good => '🌿',
+                            RoomFitVerdict.acceptable => '🌤️',
+                            _ => '🚫',
+                          },
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        title: s.name,
+                        subtitle: fit == null
+                            ? null
+                            : fit.placements.isEmpty
+                                ? (fit.shortfall == null ? l10n.verdictLine(fit.verdict) : l10n.shortfallLine(fit.shortfall!))
+                                : l10n.placementLine(fit.placements.first),
+                        subtitleColor: fit?.verdict == RoomFitVerdict.unsuitable ? context.colors.danger : null,
+                        chevron: s.id != scan.id,
+                        trailing: s.id == scan.id ? Icon(CupertinoIcons.checkmark, size: 16, color: context.colors.sage) : null,
+                        onTap: () => setState(() => _scanId = s.id),
                       ),
-                    ),
                   ],
                 ),
-              const SizedBox(height: Space.md),
+                const SizedBox(height: Space.md),
+              ],
+              _RoomFitResult(profile: widget.profile, scan: scan, plantId: widget.plantId, plantName: widget.plantName),
             ],
-            if (widget.generic)
-              FloraCard(
-                color: context.colors.sunSoft,
-                child: Text(l10n.placementGeneric, style: context.text.callout),
-              )
-            else
-              _RoomFitResult(profile: widget.profile, scan: scan),
           ],
         ),
       ),
     );
   }
+
+  List<(RoomScan, RoomFit?)> _ranked(List<RoomScan> scans) {
+    final out = <(RoomScan, RoomFit?)>[
+      for (final s in scans)
+        (s, switch (ref.watch(roomSurveyProvider(s.id))) { final survey? => RoomFitAdvisor.placeIn(widget.profile, survey), null => null }),
+    ];
+    out.sort((a, b) => (b.$2?.all.firstOrNull?.score ?? -1).compareTo(a.$2?.all.firstOrNull?.score ?? -1));
+    return out;
+  }
 }
 
 class _RoomFitResult extends ConsumerWidget {
-  const _RoomFitResult({required this.profile, required this.scan});
+  const _RoomFitResult({required this.profile, required this.scan, this.plantId, this.plantName});
 
   final CareProfile profile;
   final RoomScan scan;
+  final String? plantId;
+  final String? plantName;
+
+  Future<void> _choose(BuildContext context, WidgetRef ref, Placement p) async {
+    final l10n = context.l10n;
+    await ref.read(roomScanControllerProvider.notifier).placePlant(scan.id, plantId!, p.point, locationId: scan.locationId);
+    if (!context.mounted) return;
+    Haptics.success();
+    ref.read(toastProvider.notifier).show(ToastData(message: l10n.placementChosen(l10n.placementLine(p)), emoji: '🌿'));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
-    final room = ref.watch(scannedRoomProvider(scan.id));
-    final directions = ref.watch(roomDirectionsProvider(scan.id));
-    final southern = ref.watch(southernHemisphereProvider);
-    return switch (room) {
-      AsyncData(:final value) when value != null => Builder(
+    final loading = ref.watch(scannedRoomProvider(scan.id)).isLoading;
+    final judged = ref.watch(roomForFitProvider(scan.id));
+    final survey = ref.watch(roomSurveyProvider(scan.id));
+    final markers = ref.watch(roomMarkersProvider(scan.id)).value ?? const [];
+    final heaters = heaterPoints(markers);
+    final plants = plantPoints(markers);
+    // La place d'aujourd'hui de cette plante, si elle est posée sur ce plan.
+    final currentSpot = plantId == null ? null : ref.watch(roomPlantSpotsProvider(scan.id))[plantId!];
+    return switch ((judged, survey)) {
+      (final value?, final survey?) => Builder(
         builder: (context) {
-          final fit = RoomFitAdvisor.place(profile, value, southern: southern, directions: directions);
+          final fit = RoomFitAdvisor.placeIn(profile, survey);
+          final current = currentSpot == null ? null : RoomFitAdvisor.judge(profile, currentSpot, humidRoom: survey.humidRoom);
           final tint = switch (fit.verdict) {
             RoomFitVerdict.good => c.sageSoft,
             RoomFitVerdict.acceptable => c.sunSoft,
@@ -128,6 +172,9 @@ class _RoomFitResult extends ConsumerWidget {
                       painter: RoomPlanPainter(
                         room: value,
                         fit: fit,
+                        heaters: heaters,
+                        plants: plants.values.toList(),
+                        current: current?.point,
                         colors: c,
                         numberStyle: context.text.caption.copyWith(color: c.onSage, fontWeight: FontWeight.w700),
                       ),
@@ -143,30 +190,32 @@ class _RoomFitResult extends ConsumerWidget {
                   children: [
                     Text(l10n.verdictLine(fit.verdict), style: context.text.title3),
                     if (fit.shortfall case final s?) ...[const SizedBox(height: 2), Text(l10n.shortfallLine(s), style: context.text.callout)],
+                    if (current != null) ...[
+                      const SizedBox(height: 2),
+                      Text(l10n.placementCurrent(l10n.placementLine(current), l10n.lightName(current.light)), style: context.text.callout),
+                    ],
                   ],
                 ),
               ),
               if (fit.placements.isNotEmpty) ...[
                 const SizedBox(height: Space.md),
-                FloraGroup(children: [for (var i = 0; i < fit.placements.length; i++) _placementRow(context, i, fit.placements[i])]),
+                FloraGroup(children: [for (var i = 0; i < fit.placements.length; i++) _placementRow(context, ref, i, fit.placements[i])]),
               ],
               if (fit.all.isNotEmpty && fit.all.first.humidRoom) ...[
                 const SizedBox(height: Space.sm),
                 Text(l10n.placementHumidRoomNote, style: context.text.caption),
               ],
+              _HomeReadingLine(profile: profile, scan: scan),
             ],
           );
         },
       ),
-      AsyncLoading() => const Padding(
-        padding: EdgeInsets.all(Space.xl),
-        child: Center(child: AdaptiveProgress()),
-      ),
+      _ when loading => const Padding(padding: EdgeInsets.all(Space.xl), child: Center(child: AdaptiveProgress())),
       _ => EmptyState(emoji: '📐', title: l10n.roomScanFailed, compact: true),
     };
   }
 
-  Widget _placementRow(BuildContext context, int i, Placement p) {
+  Widget _placementRow(BuildContext context, WidgetRef ref, int i, Placement p) {
     final l10n = context.l10n;
     final c = context.colors;
     return FloraListRow(
@@ -175,15 +224,72 @@ class _RoomFitResult extends ConsumerWidget {
         height: 26,
         alignment: Alignment.center,
         decoration: BoxDecoration(color: c.terracotta, shape: BoxShape.circle),
-        child: Text(
-          '${i + 1}',
-          style: context.text.caption.copyWith(color: c.onSage, fontWeight: FontWeight.w700),
-        ),
+        child: Text('${i + 1}', style: context.text.caption.copyWith(color: c.onSage, fontWeight: FontWeight.w700)),
       ),
       title: l10n.placementLine(p),
       titleMaxLines: 2,
-      subtitle: [l10n.lightName(p.light), if (p.drafty) l10n.placementDraftyNote].join(' · '),
+      subtitle: [l10n.lightName(p.light), ...l10n.placementNotes(p)].join(' · '),
+      // Une plante du jardin peut prendre la place : elle se pose sur le
+      // plan, et déménage dans l'emplacement du relevé s'il en a un.
+      trailing: plantId == null ? null : FloraButton(label: l10n.placementChoose, size: FloraButtonSize.small, style: FloraButtonStyle.tonal, onPressed: () => _choose(context, ref, p)),
       chevron: false,
+    );
+  }
+}
+
+/// La mesure du capteur de la maison, quand il est dans cette pièce : le
+/// capteur porte le nom de sa pièce, le relevé le sien ou celui de son
+/// emplacement, et c'est le nom qui les rapproche — comme pour les conseils
+/// du jour. Rien sans capteur, rien dans une autre pièce.
+class _HomeReadingLine extends ConsumerWidget {
+  const _HomeReadingLine({required this.profile, required this.scan});
+
+  final CareProfile profile;
+  final RoomScan scan;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final reading = ref.watch(homeReadingProvider).value;
+    if (reading == null || reading.isEmpty) return const SizedBox.shrink();
+    final sensorRoom = reading.sensor?.roomName?.trim().toLowerCase();
+    if (sensorRoom == null || sensorRoom.isEmpty) return const SizedBox.shrink();
+    final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan.locationId).firstOrNull;
+    final names = {scan.name.trim().toLowerCase(), ?location?.name.trim().toLowerCase()};
+    if (!names.contains(sensorRoom)) return const SizedBox.shrink();
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
+    final fit = homeFit(reading, profile);
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.md),
+      child: FloraCard(
+        color: fit == null ? c.sageSoft : c.sunSoft,
+        child: Row(
+          children: [
+            const EmojiTile(emoji: '🏠'),
+            const SizedBox(width: Space.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${l10n.placementAtHome} · ${homeReadingLabel(reading, metric: metric)}', style: context.text.title3),
+                  const SizedBox(height: 2),
+                  Text(
+                    switch (fit) {
+                      null => l10n.homeClimateFits,
+                      HomeClimateTipKind.cold => l10n.homeClimateTooCold,
+                      HomeClimateTipKind.hot => l10n.homeClimateTooHot,
+                      HomeClimateTipKind.dryAir => l10n.homeClimateTooDry,
+                      HomeClimateTipKind.humidAir => l10n.homeClimateTooHumid,
+                    },
+                    style: context.text.callout,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

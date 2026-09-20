@@ -383,6 +383,7 @@ abstract class RoomScanRepository {
     double floorAreaM2 = 0,
     RoomSectionLabel? section,
     String? locationId,
+    String? structureId,
   });
   Future<void> update(RoomScan scan);
 
@@ -392,4 +393,8 @@ abstract class RoomScanRepository {
 
   /// Pose ou remplace l'orientation d'une fenêtre ; `null` l'efface.
   Future<void> setWindowOrientation(String scanId, int windowIndex, CardinalDirection? orientation, {required double x, required double z});
+
+  /// Pose un repère — un radiateur, la place d'une plante — au point donné.
+  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId, int? windowIndex});
+  Future<void> removeMarker(String id);
 }

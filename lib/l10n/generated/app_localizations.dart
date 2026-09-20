@@ -10949,6 +10949,228 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Plan de la pièce vu de dessus, {count} places retenues.'**
   String placementPlanSemantics(int count);
+
+  /// No description provided for @roomScanHeaters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Radiateurs'**
+  String get roomScanHeaters;
+
+  /// No description provided for @roomScanHeatersHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'RoomPlan ne voit pas les radiateurs. Posé sur le plan, un radiateur écarte les plantes qui craignent l\'air sec et chaud.'**
+  String get roomScanHeatersHelp;
+
+  /// No description provided for @roomScanAddHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poser un radiateur'**
+  String get roomScanAddHeater;
+
+  /// No description provided for @roomScanTapForHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toucher le plan là où se trouve le radiateur.'**
+  String get roomScanTapForHeater;
+
+  /// No description provided for @roomScanHeatersCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{aucun radiateur} =1{un radiateur} other{{count} radiateurs}}'**
+  String roomScanHeatersCount(int count);
+
+  /// No description provided for @roomScanRemoveHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer ce radiateur'**
+  String get roomScanRemoveHeater;
+
+  /// No description provided for @roomScanFillLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renseigner l\'emplacement'**
+  String get roomScanFillLocation;
+
+  /// No description provided for @roomScanFillLocationDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Orientation « {orientation} », lumière « {light} », d\'après le relevé. Ce qui est déjà renseigné ne change pas.'**
+  String roomScanFillLocationDetail(String orientation, String light);
+
+  /// No description provided for @roomScanLocationFilled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement renseigné'**
+  String get roomScanLocationFilled;
+
+  /// No description provided for @roomScanWhoFitsHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qui serait bien ici'**
+  String get roomScanWhoFitsHere;
+
+  /// No description provided for @roomScanWhoFitsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les plantes du jardin, classées par ce que la pièce leur donne.'**
+  String get roomScanWhoFitsHint;
+
+  /// No description provided for @roomScanNoPlantsToRank.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune plante avec une espèce connue.'**
+  String get roomScanNoPlantsToRank;
+
+  /// No description provided for @placementShortfallHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les places sont près d\'un radiateur, et elle craint l\'air sec et chaud.'**
+  String get placementShortfallHeater;
+
+  /// No description provided for @placementHeaterNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Près d\'un radiateur : l\'air y est sec et chaud.'**
+  String get placementHeaterNote;
+
+  /// No description provided for @placementAtHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chez vous'**
+  String get placementAtHome;
+
+  /// No description provided for @roomScanStartStructure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever l\'appartement'**
+  String get roomScanStartStructure;
+
+  /// No description provided for @roomScanStructureHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever l\'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.'**
+  String get roomScanStructureHint;
+
+  /// No description provided for @roomScanNextRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce suivante'**
+  String get roomScanNextRoom;
+
+  /// No description provided for @roomScanRoomNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce {n}'**
+  String roomScanRoomNumber(int n);
+
+  /// No description provided for @roomScanPlantsOnPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plantes sur le plan'**
+  String get roomScanPlantsOnPlan;
+
+  /// No description provided for @roomScanPlantsHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une plante posée sur le plan est jugée là où elle est : la liste dit si une autre place lui irait mieux.'**
+  String get roomScanPlantsHelp;
+
+  /// No description provided for @roomScanAddPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poser une plante'**
+  String get roomScanAddPlant;
+
+  /// No description provided for @roomScanTapForPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toucher le plan là où se trouve {plant}.'**
+  String roomScanTapForPlant(String plant);
+
+  /// No description provided for @roomScanRemovePlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer {plant} du plan'**
+  String roomScanRemovePlant(String plant);
+
+  /// No description provided for @roomScanNoPlantToPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune plante à poser.'**
+  String get roomScanNoPlantToPlace;
+
+  /// No description provided for @roomScanPlantWellPlaced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bien placée · {light}'**
+  String roomScanPlantWellPlaced(String light);
+
+  /// No description provided for @roomScanPlantBetterAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui {light} · mieux {place}'**
+  String roomScanPlantBetterAt(String light, String place);
+
+  /// No description provided for @placementAllRooms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les pièces'**
+  String get placementAllRooms;
+
+  /// No description provided for @placementChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir cette place'**
+  String get placementChoose;
+
+  /// No description provided for @placementChosen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Place choisie : {place}'**
+  String placementChosen(String place);
+
+  /// No description provided for @placementCurrent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui : {place} · {light}'**
+  String placementCurrent(String place, String light);
+
+  /// No description provided for @sectionRooms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relevés de la maison'**
+  String get sectionRooms;
+
+  /// No description provided for @roomScanCurtain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rideau'**
+  String get roomScanCurtain;
+
+  /// No description provided for @roomScanCurtainNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans rideau'**
+  String get roomScanCurtainNone;
+
+  /// No description provided for @roomScanCurtainSheer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voilage'**
+  String get roomScanCurtainSheer;
+
+  /// No description provided for @roomScanCurtainDrawn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rideau souvent tiré'**
+  String get roomScanCurtainDrawn;
+
+  /// No description provided for @roomScanCurtainHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.'**
+  String get roomScanCurtainHelp;
 }
 
 class _AppLocalizationsDelegate

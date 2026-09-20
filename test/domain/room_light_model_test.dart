@@ -100,6 +100,50 @@ void main() {
     expect(RoomLightModel.lightAt(withObject(0.2), const RoomPoint(0.16, 0.3)), LightNeed.brightIndirect);
   });
 
+  test('la latitude allonge ou raccourcit la tache de soleil', () {
+    // Sans lieu, 45° : la tache porte aussi loin que la fenêtre est haute.
+    expect(RoomLightModel.sunElevationFor(null), 45);
+    expect(RoomLightModel.sunReach(room, room.windows.single), closeTo(2.25, 1e-9));
+    // À Paris, le soleil de mi-saison est plus bas : la tache va plus loin,
+    // et l'emplacement « à côté » du diorama passe dans le bord de la tache.
+    expect(RoomLightModel.sunElevationFor(48.9), closeTo(41.1, 1e-9));
+    expect(RoomLightModel.sunReach(room, room.windows.single, sunElevationDeg: 41.1), greaterThan(2.5));
+    expect(RoomLightModel.lightAt(room, slots[LightNeed.brightIndirect]!, sunElevationDeg: 41.1), LightNeed.someSun);
+    // Sous les tropiques, le soleil est haut : la tache reste au pied de la fenêtre.
+    expect(RoomLightModel.sunElevationFor(-10), 75);
+    expect(RoomLightModel.lightAt(room, slots[LightNeed.someSun]!, sunElevationDeg: 75), LightNeed.brightIndirect);
+    // La latitude sud se lit comme la nord : c'est l'hémisphère qui inverse les fenêtres, pas la latitude.
+    expect(RoomLightModel.sunElevationFor(-48.9), RoomLightModel.sunElevationFor(48.9));
+  });
+
+  test("un voilage divise la lumière par deux et ôte le soleil direct, un rideau tiré par trois", () {
+    final sun = slots[LightNeed.fullSun]!;
+    expect(RoomLightModel.lightAt(room, sun, dressings: const [WindowDressing.sheer]), LightNeed.someSun);
+    expect(RoomLightModel.lightAt(room, sun, dressings: const [WindowDressing.drawn]), isNot(isIn([LightNeed.fullSun, LightNeed.someSun])));
+    final bare = RoomLightModel.sample(room, slots[LightNeed.brightIndirect]!, height: RoomLightModel.potHeight, southern: false).total;
+    final sheer = RoomLightModel.sample(room, slots[LightNeed.brightIndirect]!, height: RoomLightModel.potHeight, southern: false, dressings: const [WindowDressing.sheer]).total;
+    final drawn = RoomLightModel.sample(room, slots[LightNeed.brightIndirect]!, height: RoomLightModel.potHeight, southern: false, dressings: const [WindowDressing.drawn]).total;
+    expect(sheer, closeTo(bare / 2, 1e-9));
+    expect(drawn, closeTo(bare / 3, 1e-9));
+  });
+
+  test("un balcon : le côté ouvert éclaire comme une fenêtre, et rien n'y est un courant d'air", () {
+    final balcony = ScannedRoom(
+      walls: room.walls.where((w) => w.center.x > -2).toList(),
+      windows: const [],
+      doors: room.doors,
+      openings: const [
+        RoomSurface(kind: RoomSurfaceKind.opening, center: RoomPoint(-2.1, 0), along: RoomPoint(0, 1), normal: RoomPoint(1, 0), width: 3.6, height: 2.7, bottomY: 0),
+      ],
+      objects: const [],
+      northOffsetDeg: 90,
+    ).asOutdoor();
+    expect(balcony.windows, hasLength(1));
+    expect(balcony.doors, isEmpty);
+    expect(RoomLightModel.lightAt(balcony, const RoomPoint(-1.0, 0.0)), LightNeed.fullSun);
+    expect(RoomLightModel.isDrafty(balcony, const RoomPoint(1.0, -1.2)), isFalse);
+  });
+
   test("l'air bouge à moins d'un mètre d'une porte", () {
     expect(RoomLightModel.isDrafty(room, const RoomPoint(1.0, -1.2)), isTrue);
     expect(RoomLightModel.isDrafty(room, const RoomPoint(-1.0, 1.0)), isFalse);

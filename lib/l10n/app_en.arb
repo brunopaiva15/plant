@@ -2127,5 +2127,114 @@
         "type": "int"
       }
     }
-  }
+  },
+  "roomScanHeaters": "Radiators",
+  "roomScanHeatersHelp": "RoomPlan does not see radiators. Placed on the plan, a radiator keeps away the plants that dislike dry, hot air.",
+  "roomScanAddHeater": "Place a radiator",
+  "roomScanTapForHeater": "Tap the plan where the radiator is.",
+  "roomScanHeatersCount": "{count, plural, =0{no radiator} =1{one radiator} other{{count} radiators}}",
+  "@roomScanHeatersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanRemoveHeater": "Remove this radiator",
+  "roomScanFillLocation": "Fill in the location",
+  "roomScanFillLocationDetail": "Orientation “{orientation}”, light “{light}”, from the scan. What is already filled in does not change.",
+  "@roomScanFillLocationDetail": {
+    "placeholders": {
+      "orientation": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanLocationFilled": "Location filled in",
+  "roomScanWhoFitsHere": "Who would do well here",
+  "roomScanWhoFitsHint": "The plants of the garden, ranked by what the room gives them.",
+  "roomScanNoPlantsToRank": "No plant with a known species.",
+  "placementShortfallHeater": "Every spot is near a radiator, and it dislikes dry, hot air.",
+  "placementHeaterNote": "Near a radiator: the air is dry and hot there.",
+  "placementAtHome": "At home",
+  "roomScanStartStructure": "Scan the whole home",
+  "roomScanStructureHint": "Scanning the whole home goes room by room: “Next room” between each, “Done” at the end. The rooms are placed relative to one another.",
+  "roomScanNextRoom": "Next room",
+  "roomScanRoomNumber": "Room {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Plants on the plan",
+  "roomScanPlantsHelp": "A plant placed on the plan is judged where it stands: the list says whether another spot would suit it better.",
+  "roomScanAddPlant": "Place a plant",
+  "roomScanTapForPlant": "Tap the plan where {plant} is.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "Remove {plant} from the plan",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "No plant to place.",
+  "roomScanPlantWellPlaced": "Well placed · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Now {light} · better {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "All rooms",
+  "placementChoose": "Choose this spot",
+  "placementChosen": "Chosen spot: {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Now: {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionRooms": "Home scans",
+  "roomScanCurtain": "Curtain",
+  "roomScanCurtainNone": "No curtain",
+  "roomScanCurtainSheer": "Sheer curtain",
+  "roomScanCurtainDrawn": "Curtain often drawn",
+  "roomScanCurtainHelp": "RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three."
 }

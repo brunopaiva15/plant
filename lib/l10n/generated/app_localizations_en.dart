@@ -6430,4 +6430,147 @@ class AppLocalizationsEn extends AppLocalizations {
   String placementPlanSemantics(int count) {
     return 'Room plan seen from above, $count spots kept.';
   }
+
+  @override
+  String get roomScanHeaters => 'Radiators';
+
+  @override
+  String get roomScanHeatersHelp =>
+      'RoomPlan does not see radiators. Placed on the plan, a radiator keeps away the plants that dislike dry, hot air.';
+
+  @override
+  String get roomScanAddHeater => 'Place a radiator';
+
+  @override
+  String get roomScanTapForHeater => 'Tap the plan where the radiator is.';
+
+  @override
+  String roomScanHeatersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count radiators',
+      one: 'one radiator',
+      zero: 'no radiator',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanRemoveHeater => 'Remove this radiator';
+
+  @override
+  String get roomScanFillLocation => 'Fill in the location';
+
+  @override
+  String roomScanFillLocationDetail(String orientation, String light) {
+    return 'Orientation “$orientation”, light “$light”, from the scan. What is already filled in does not change.';
+  }
+
+  @override
+  String get roomScanLocationFilled => 'Location filled in';
+
+  @override
+  String get roomScanWhoFitsHere => 'Who would do well here';
+
+  @override
+  String get roomScanWhoFitsHint =>
+      'The plants of the garden, ranked by what the room gives them.';
+
+  @override
+  String get roomScanNoPlantsToRank => 'No plant with a known species.';
+
+  @override
+  String get placementShortfallHeater =>
+      'Every spot is near a radiator, and it dislikes dry, hot air.';
+
+  @override
+  String get placementHeaterNote =>
+      'Near a radiator: the air is dry and hot there.';
+
+  @override
+  String get placementAtHome => 'At home';
+
+  @override
+  String get roomScanStartStructure => 'Scan the whole home';
+
+  @override
+  String get roomScanStructureHint =>
+      'Scanning the whole home goes room by room: “Next room” between each, “Done” at the end. The rooms are placed relative to one another.';
+
+  @override
+  String get roomScanNextRoom => 'Next room';
+
+  @override
+  String roomScanRoomNumber(int n) {
+    return 'Room $n';
+  }
+
+  @override
+  String get roomScanPlantsOnPlan => 'Plants on the plan';
+
+  @override
+  String get roomScanPlantsHelp =>
+      'A plant placed on the plan is judged where it stands: the list says whether another spot would suit it better.';
+
+  @override
+  String get roomScanAddPlant => 'Place a plant';
+
+  @override
+  String roomScanTapForPlant(String plant) {
+    return 'Tap the plan where $plant is.';
+  }
+
+  @override
+  String roomScanRemovePlant(String plant) {
+    return 'Remove $plant from the plan';
+  }
+
+  @override
+  String get roomScanNoPlantToPlace => 'No plant to place.';
+
+  @override
+  String roomScanPlantWellPlaced(String light) {
+    return 'Well placed · $light';
+  }
+
+  @override
+  String roomScanPlantBetterAt(String light, String place) {
+    return 'Now $light · better $place';
+  }
+
+  @override
+  String get placementAllRooms => 'All rooms';
+
+  @override
+  String get placementChoose => 'Choose this spot';
+
+  @override
+  String placementChosen(String place) {
+    return 'Chosen spot: $place';
+  }
+
+  @override
+  String placementCurrent(String place, String light) {
+    return 'Now: $place · $light';
+  }
+
+  @override
+  String get sectionRooms => 'Home scans';
+
+  @override
+  String get roomScanCurtain => 'Curtain';
+
+  @override
+  String get roomScanCurtainNone => 'No curtain';
+
+  @override
+  String get roomScanCurtainSheer => 'Sheer curtain';
+
+  @override
+  String get roomScanCurtainDrawn => 'Curtain often drawn';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.';
 }

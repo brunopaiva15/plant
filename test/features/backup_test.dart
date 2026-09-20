@@ -7,6 +7,7 @@ import 'package:drift/native.dart';
 import 'package:flora/core/config/app_config.dart';
 import 'package:flora/data/db/database.dart';
 import 'package:flora/data/services/photo_storage_service.dart';
+import 'package:flora/data/services/room_scan_service.dart';
 import 'package:flora/features/export/backup_sections.dart';
 import 'package:flora/features/export/export_service.dart';
 import 'package:flora/features/export/import_service.dart';
@@ -107,6 +108,28 @@ void main() {
       await source.close();
       await target.close();
       if (await temp.exists()) await temp.delete(recursive: true);
+    });
+
+    test('les relevés de la maison partent avec leurs fichiers et reviennent', () async {
+      final rooms = RoomScanStore(root: Directory(p.join(temp.path, 'rooms'))..createSync(recursive: true));
+      final exporter = ExportService(source, PhotoStorageService(), rooms: rooms);
+      final targetRooms = RoomScanStore(root: Directory(p.join(temp.path, 'rooms-target'))..createSync(recursive: true));
+      final importer = ImportService(target, PhotoStorageService(), rooms: targetRooms);
+      final now = DateTime(2026, 9, 20);
+      await source.into(source.gardens).insert(GardensCompanion.insert(id: 'g', ownerId: 'u', name: 'Chez moi', createdAt: now, updatedAt: now));
+      await source.into(source.roomScans).insert(RoomScansCompanion.insert(id: 's1', gardenId: 'g', name: 'Salon', capturedAt: now, filePath: 's1.json', createdAt: now, updatedAt: now));
+      await source.into(source.roomMarkers).insert(RoomMarkersCompanion.insert(id: 'm1', scanId: 's1', kind: 'heater', x: 1, z: 2, createdAt: now, updatedAt: now));
+      await rooms.write('s1.json', {'walls': <Object?>[]});
+
+      final zip = await exporter.buildZip(sections: {BackupSection.rooms});
+      final names = ZipDecoder().decodeBytes(await zip.readAsBytes()).files.map((f) => f.name).toSet();
+      expect(names, containsAll(['data.json', 'rooms/s1.json']));
+
+      final report = await importer.import(zip, sections: {BackupSection.rooms});
+      expect(report.imported['room_scans'], 1);
+      expect(report.imported['room_markers'], 1);
+      expect(await targetRooms.read('s1.json'), {'walls': <Object?>[]});
+      expect((await target.select(target.roomScans).get()).single.name, 'Salon');
     });
 
     test('une sauvegarde complète se relit à l\'identique', () async {

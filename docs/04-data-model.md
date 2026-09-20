@@ -94,23 +94,29 @@ projetées à la volée par `CalendarProjector` à partir des routines et de l'h
 ## Le relevé de la maison (schéma v13)
 ```
 room_scans     id, garden_id, location_id?, name, captured_at, north_offset_deg?,
-               file_path, floor_area_m2, section_label?, created_at, updated_at, deleted_at?
+               file_path, floor_area_m2, section_label?, structure_id? (v14),
+               created_at, updated_at, deleted_at?
 room_markers   id, scan_id, kind (windowOrientation | heater | plant), x, z,
                window_index?, orientation?, plant_id?, created_at, updated_at
 ```
 Un relevé est une ligne et un fichier : le JSON du `CapturedRoom` de RoomPlan
 vit dans `Documents/rooms/<id>.json`, la base n'en garde que le chemin
 relatif. Rien ne part dans l'outbox — le plan de chez soi ne se synchronise
-pas, et ne s'exporte pas encore. `north_offset_deg` est le cap du nord dans
+pas ; il part dans l'export ZIP, section « Relevés de la maison », avec le
+JSON de chaque pièce sous `rooms/`. `north_offset_deg` est le cap du nord dans
 le repère du relevé, mesuré à la boussole ; nul quand elle n'a rien donné de
 stable. `section_label` est le type de pièce que RoomPlan reconnaît sur
 iOS 17 (`kitchen`, `bathroom`…), nul sinon.
 
 `room_markers` porte ce que la main ajoute au relevé, séparé de ce que le
-capteur a vu : refaire un relevé ne perd pas les repères. Au palier 1, seul
-`windowOrientation` est écrit — l'orientation confirmée d'une fenêtre,
-indexée par son rang dans le JSON ; `heater` et `plant` attendent les
-paliers suivants (docs/17).
+capteur a vu : refaire un relevé ne perd pas les repères.
+`windowOrientation` est l'orientation confirmée d'une fenêtre, indexée par
+son rang dans le JSON ; `heater` un radiateur posé du doigt, collé au mur
+le plus proche ; `plant` la place d'une plante du jardin (`plant_id`), une
+par plante et par relevé ; `windowSheer` et `windowDrawn` ce qui habille
+une fenêtre (`window_index`), un au plus par fenêtre. `structure_id` (v14) réunit les pièces d'un même
+relevé d'appartement, dont les fichiers vivent dans un dossier
+(`rooms/<id>/<n>.json`) et partagent le repère.
 
 ## Tables prévues (schéma réservé, UI en P4)
 ```

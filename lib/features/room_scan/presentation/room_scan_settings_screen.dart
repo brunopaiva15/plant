@@ -17,15 +17,25 @@ import 'room_scan_labels.dart';
 class RoomScanSettingsScreen extends ConsumerWidget {
   const RoomScanSettingsScreen({super.key});
 
-  Future<void> _scan(BuildContext context, WidgetRef ref) async {
+  Future<void> _scan(BuildContext context, WidgetRef ref, {bool structure = false}) async {
     final l10n = context.l10n;
     // Une phrase avant le relevé du système : ce qui va se passer, et que
     // rien ne quitte l'appareil.
-    final go = await showAdaptiveConfirm(context, title: l10n.roomScanBeforeTitle, message: l10n.roomScanBeforeText, confirmLabel: l10n.continueLabel, cancelLabel: l10n.cancel);
+    final go = await showAdaptiveConfirm(
+      context,
+      title: l10n.roomScanBeforeTitle,
+      message: structure ? '${l10n.roomScanBeforeText}\n\n${l10n.roomScanStructureHint}' : l10n.roomScanBeforeText,
+      confirmLabel: l10n.continueLabel,
+      cancelLabel: l10n.cancel,
+    );
     if (!go || !context.mounted) return;
-    final outcome = await ref.read(roomScanControllerProvider.notifier).scan(
-          nameFor: (section) => section == null ? l10n.roomScanDefaultName : l10n.sectionName(section),
-        );
+    final controller = ref.read(roomScanControllerProvider.notifier);
+    final outcome = structure
+        ? await controller.scanStructure(
+            nameFor: (section, i) => section == null ? l10n.roomScanRoomNumber(i + 1) : l10n.sectionName(section),
+            nextRoomLabel: l10n.roomScanNextRoom,
+          )
+        : await controller.scan(nameFor: (section) => section == null ? l10n.roomScanDefaultName : l10n.sectionName(section));
     if (!context.mounted) return;
     if (outcome.cancelled) return;
     if (outcome.scan == null) {
@@ -74,9 +84,15 @@ class RoomScanSettingsScreen extends ConsumerWidget {
           const SizedBox(height: Space.lg),
           if (busy)
             const Padding(padding: EdgeInsets.all(Space.md), child: Center(child: AdaptiveProgress()))
-          else if (canScan)
-            FloraButton(label: l10n.roomScanStart, icon: CupertinoIcons.viewfinder, expand: true, onPressed: () => _scan(context, ref))
-          else if (available.hasValue)
+          else if (canScan) ...[
+            FloraButton(label: l10n.roomScanStart, icon: CupertinoIcons.viewfinder, expand: true, onPressed: () => _scan(context, ref)),
+            // L'appartement entier, pièce après pièce : iOS 17 sait assembler.
+            if (ref.watch(roomScanStructureAvailableProvider).value ?? false)
+              Padding(
+                padding: const EdgeInsets.only(top: Space.xs),
+                child: FloraButton(label: l10n.roomScanStartStructure, icon: CupertinoIcons.square_grid_2x2, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _scan(context, ref, structure: true)),
+              ),
+          ] else if (available.hasValue)
             // Un appareil sans LiDAR : la raison, plutôt qu'un bouton mort.
             Text(l10n.roomScanNoLidar, style: context.text.caption),
         ],

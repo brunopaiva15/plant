@@ -561,8 +561,8 @@ final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(spe
 final problemCatalogLoaderProvider = Provider<ProblemCatalogLoader>((ref) => ProblemCatalogLoader());
 final problemCatalogProvider = FutureProvider<ProblemCatalog>((ref) => ref.watch(problemCatalogLoaderProvider).load());
 
-final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
-final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
+final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider), rooms: ref.watch(roomScanStoreProvider)));
+final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider), rooms: ref.watch(roomScanStoreProvider)));
 
 /// Diagnostic : AI Services d'Infomaniak avec la clé de l'éditeur fournie au
 /// build, sans plafond ; sans clé, service inactif et entrée absente des

@@ -52,6 +52,12 @@ extension RoomScanLabels on AppLocalizations {
     }
   }
 
+  String dressingName(WindowDressing d) => switch (d) {
+        WindowDressing.none => roomScanCurtainNone,
+        WindowDressing.sheer => roomScanCurtainSheer,
+        WindowDressing.drawn => roomScanCurtainDrawn,
+      };
+
   String verdictLine(RoomFitVerdict v) => switch (v) {
         RoomFitVerdict.good => placementVerdictGood,
         RoomFitVerdict.acceptable => placementVerdictAcceptable,
@@ -63,5 +69,13 @@ extension RoomScanLabels on AppLocalizations {
         RoomFitShortfall.tooBright => placementShortfallTooBright,
         RoomFitShortfall.drafty => placementShortfallDrafty,
         RoomFitShortfall.tooDry => placementShortfallTooDry,
+        RoomFitShortfall.heater => placementShortfallHeater,
       };
+
+  /// Ce qu'une place a de particulier, sous sa lumière : l'air qui bouge,
+  /// le radiateur à côté.
+  List<String> placementNotes(Placement p) => [
+        if (p.drafty) placementDraftyNote,
+        if (p.nearHeater) placementHeaterNote,
+      ];
 }

@@ -16,6 +16,7 @@ class RoomScan {
     this.locationId,
     this.northOffsetDeg,
     this.section,
+    this.structureId,
   });
 
   final String id;
@@ -34,6 +35,9 @@ class RoomScan {
   final String filePath;
   final double floorAreaM2;
   final RoomSectionLabel? section;
+
+  /// Les pièces d'un même relevé d'appartement partagent cet identifiant.
+  final String? structureId;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -49,6 +53,7 @@ class RoomScan {
         locationId: locationId != null ? locationId() : this.locationId,
         northOffsetDeg: northOffsetDeg,
         section: section != null ? section() : this.section,
+        structureId: structureId,
       );
 }
 
@@ -62,7 +67,13 @@ enum RoomMarkerKind {
   heater,
 
   /// La place actuelle d'une plante.
-  plant;
+  plant,
+
+  /// Un voilage devant une fenêtre, indexée par son rang dans le JSON.
+  windowSheer,
+
+  /// Un rideau ou un store souvent tiré devant une fenêtre.
+  windowDrawn;
 
   static RoomMarkerKind? decode(String? raw) => values.where((k) => k.name == raw).firstOrNull;
 }
@@ -99,4 +110,27 @@ List<CardinalDirection?> windowDirections(ScannedRoom room, List<RoomMarker> mar
       for (var i = 0; i < room.windows.length; i++)
         markers.where((m) => m.kind == RoomMarkerKind.windowOrientation && m.windowIndex == i).firstOrNull?.orientation ??
             room.windowDirection(room.windows[i]),
+    ];
+
+/// Les radiateurs posés sur le plan.
+List<RoomPoint> heaterPoints(List<RoomMarker> markers) => [
+      for (final m in markers)
+        if (m.kind == RoomMarkerKind.heater) RoomPoint(m.x, m.z),
+    ];
+
+/// Les plantes posées sur le plan, par identifiant de plante.
+Map<String, RoomPoint> plantPoints(List<RoomMarker> markers) => {
+      for (final m in markers)
+        if (m.kind == RoomMarkerKind.plant && m.plantId != null) m.plantId!: RoomPoint(m.x, m.z),
+    };
+
+/// Ce qui habille chaque fenêtre, dans l'ordre des fenêtres : rien, un
+/// voilage, ou un rideau souvent tiré.
+List<WindowDressing> windowDressings(ScannedRoom room, List<RoomMarker> markers) => [
+      for (var i = 0; i < room.windows.length; i++)
+        markers.any((m) => m.kind == RoomMarkerKind.windowDrawn && m.windowIndex == i)
+            ? WindowDressing.drawn
+            : markers.any((m) => m.kind == RoomMarkerKind.windowSheer && m.windowIndex == i)
+                ? WindowDressing.sheer
+                : WindowDressing.none,
     ];

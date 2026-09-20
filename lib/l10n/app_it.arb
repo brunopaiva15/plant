@@ -2120,5 +2120,114 @@
         "type": "int"
       }
     }
-  }
+  },
+  "roomScanHeaters": "Termosifoni",
+  "roomScanHeatersHelp": "RoomPlan non vede i termosifoni. Posato sulla pianta, un termosifone allontana le piante che temono l'aria secca e calda.",
+  "roomScanAddHeater": "Posare un termosifone",
+  "roomScanTapForHeater": "Toccare la pianta dove si trova il termosifone.",
+  "roomScanHeatersCount": "{count, plural, =0{nessun termosifone} =1{un termosifone} other{{count} termosifoni}}",
+  "@roomScanHeatersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanRemoveHeater": "Rimuovere questo termosifone",
+  "roomScanFillLocation": "Compilare la posizione",
+  "roomScanFillLocationDetail": "Orientamento «{orientation}», luce «{light}», secondo il rilievo. Ciò che è già compilato non cambia.",
+  "@roomScanFillLocationDetail": {
+    "placeholders": {
+      "orientation": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanLocationFilled": "Posizione compilata",
+  "roomScanWhoFitsHere": "Chi starebbe bene qui",
+  "roomScanWhoFitsHint": "Le piante del giardino, ordinate per ciò che la stanza offre loro.",
+  "roomScanNoPlantsToRank": "Nessuna pianta con una specie nota.",
+  "placementShortfallHeater": "Tutti i posti sono vicino a un termosifone, e lei teme l'aria secca e calda.",
+  "placementHeaterNote": "Vicino a un termosifone: qui l'aria è secca e calda.",
+  "placementAtHome": "Da voi",
+  "roomScanStartStructure": "Rilevare tutta la casa",
+  "roomScanStructureHint": "Rilevare tutta la casa procede stanza per stanza: «Stanza successiva» tra una e l'altra, «Fine» alla fine. Le stanze si collocano l'una rispetto all'altra.",
+  "roomScanNextRoom": "Stanza successiva",
+  "roomScanRoomNumber": "Stanza {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Piante sulla pianta",
+  "roomScanPlantsHelp": "Una pianta posata sulla pianta è valutata dove si trova: l'elenco dice se un altro posto le andrebbe meglio.",
+  "roomScanAddPlant": "Posare una pianta",
+  "roomScanTapForPlant": "Toccare la pianta dove si trova {plant}.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "Rimuovere {plant} dalla pianta",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "Nessuna pianta da posare.",
+  "roomScanPlantWellPlaced": "Ben posizionata · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Ora {light} · meglio {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "Tutte le stanze",
+  "placementChoose": "Scegliere questo posto",
+  "placementChosen": "Posto scelto: {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Ora: {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionRooms": "Rilievi della casa",
+  "roomScanCurtain": "Tenda",
+  "roomScanCurtainNone": "Senza tenda",
+  "roomScanCurtainSheer": "Tenda leggera",
+  "roomScanCurtainDrawn": "Tenda spesso tirata",
+  "roomScanCurtainHelp": "RoomPlan non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre."
 }

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/room/placement.dart';
 import 'package:flora/domain/room/room_fit_advisor.dart';
+import 'package:flora/domain/room/room_light_model.dart';
 import 'package:flora/domain/room/room_plan_parser.dart';
 import 'package:flora/domain/room/scanned_room.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -124,6 +125,57 @@ void main() {
     final fit = RoomFitAdvisor.place(profile(light: LightNeed.indirect, tolerance: LightNeed.lowLight), room);
     expect(fit.all.any((p) => p.surface == PlacementSurface.table), isTrue);
     expect(fit.all.any((p) => p.surface == PlacementSurface.sill), isTrue);
+  });
+
+  test('un radiateur écarte qui craint l’air sec et chaud, pas une cactée', () {
+    final fern = profile(light: LightNeed.brightIndirect, humidity: HumidityNeed.high);
+    final cactus = CareProfile(
+      wateringSummerDays: 14,
+      wateringWinterDays: 30,
+      light: LightNeed.fullSun,
+      humidity: HumidityNeed.low,
+      idealTempMaxC: 30,
+      difficulty: CareDifficulty.easy,
+      soil: SoilKind.cactus,
+    );
+    expect(RoomFitAdvisor.score(fern, light: LightNeed.brightIndirect, drafty: false, humidRoom: false, nearHeater: true), 0.5);
+    expect(RoomFitAdvisor.score(cactus, light: LightNeed.fullSun, drafty: false, humidRoom: false, nearHeater: true), 1);
+    expect(RoomFitAdvisor.toleratesHeater(cactus), isTrue);
+    expect(RoomFitAdvisor.toleratesHeater(fern), isFalse);
+  });
+
+  test('un radiateur posé sous la fenêtre déplace la place d’une plante de lumière vive', () {
+    final p = profile(light: LightNeed.brightIndirect, tolerance: LightNeed.indirect, humidity: HumidityNeed.high);
+    final without = RoomFitAdvisor.place(p, room);
+    final heater = without.placements.first.point;
+    final with_ = RoomFitAdvisor.place(p, room, heaters: [heater]);
+    expect(with_.verdict, RoomFitVerdict.good);
+    expect(with_.placements.first.point.distanceTo(heater), greaterThanOrEqualTo(RoomLightModel.heaterRadius));
+    expect(with_.all.where((s) => s.nearHeater), isNotEmpty);
+  });
+
+  test('un relevé se fait une fois et se juge pour plusieurs fiches', () {
+    final survey = RoomFitAdvisor.survey(room, latitude: 46.5);
+    expect(survey.spots, isNotEmpty);
+    expect(survey.typicalLight, isNotNull);
+    final a = RoomFitAdvisor.placeIn(profile(light: LightNeed.fullSun, tolerance: LightNeed.someSun), survey);
+    final b = RoomFitAdvisor.placeIn(profile(light: LightNeed.shade), survey);
+    expect(a.placements.first.light, isIn([LightNeed.fullSun, LightNeed.someSun]));
+    expect(b.placements.first.light, LightNeed.shade);
+  });
+
+  test("une plante posée au fond se juge là où elle est, et la meilleure place dit mieux", () {
+    final p = profile(light: LightNeed.brightIndirect, tolerance: LightNeed.indirect);
+    final survey = RoomFitAdvisor.survey(room);
+    final back = RoomFitAdvisor.spotAt(room, const RoomPoint(1.15, 0.85));
+    expect(back.light, LightNeed.shade);
+    final now = RoomFitAdvisor.judge(p, back, humidRoom: survey.humidRoom);
+    expect(now.score, 0);
+    final fit = RoomFitAdvisor.placeIn(p, survey);
+    expect(fit.placements.first.score - now.score, greaterThanOrEqualTo(RoomFitAdvisor.betterByAtLeast));
+    // Bien placée : la même plante à côté de la tache.
+    final beside = RoomFitAdvisor.judge(p, RoomFitAdvisor.spotAt(room, const RoomPoint(0.16, 0.67)), humidRoom: false);
+    expect(beside.score, 1);
   });
 
   test('une pièce sans mur ne donne rien', () {

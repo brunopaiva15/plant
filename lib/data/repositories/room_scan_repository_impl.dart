@@ -37,6 +37,7 @@ class DriftRoomScanRepository implements RoomScanRepository {
     double floorAreaM2 = 0,
     RoomSectionLabel? section,
     String? locationId,
+    String? structureId,
   }) async {
     final now = DateTime.now();
     final id = _uuid.v4();
@@ -50,6 +51,7 @@ class DriftRoomScanRepository implements RoomScanRepository {
           filePath: filePath,
           floorAreaM2: Value(floorAreaM2),
           sectionLabel: Value(section?.name),
+          structureId: Value(structureId),
           createdAt: now,
           updatedAt: now,
         ));
@@ -110,4 +112,25 @@ class DriftRoomScanRepository implements RoomScanRepository {
           updatedAt: now,
         ));
   }
+
+  @override
+  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId, int? windowIndex}) async {
+    final now = DateTime.now();
+    final id = _uuid.v4();
+    await _db.into(_db.roomMarkers).insert(RoomMarkersCompanion.insert(
+          id: id,
+          scanId: scanId,
+          kind: kind.name,
+          x: x,
+          z: z,
+          plantId: Value(plantId),
+          windowIndex: Value(windowIndex),
+          createdAt: now,
+          updatedAt: now,
+        ));
+    return (await (_db.select(_db.roomMarkers)..where((m) => m.id.equals(id))).getSingle()).toDomain()!;
+  }
+
+  @override
+  Future<void> removeMarker(String id) => (_db.delete(_db.roomMarkers)..where((m) => m.id.equals(id))).go();
 }

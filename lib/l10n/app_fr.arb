@@ -3194,5 +3194,114 @@
         "type": "int"
       }
     }
-  }
+  },
+  "roomScanHeaters": "Radiateurs",
+  "roomScanHeatersHelp": "RoomPlan ne voit pas les radiateurs. Posé sur le plan, un radiateur écarte les plantes qui craignent l'air sec et chaud.",
+  "roomScanAddHeater": "Poser un radiateur",
+  "roomScanTapForHeater": "Toucher le plan là où se trouve le radiateur.",
+  "roomScanHeatersCount": "{count, plural, =0{aucun radiateur} =1{un radiateur} other{{count} radiateurs}}",
+  "@roomScanHeatersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanRemoveHeater": "Retirer ce radiateur",
+  "roomScanFillLocation": "Renseigner l'emplacement",
+  "roomScanFillLocationDetail": "Orientation « {orientation} », lumière « {light} », d'après le relevé. Ce qui est déjà renseigné ne change pas.",
+  "@roomScanFillLocationDetail": {
+    "placeholders": {
+      "orientation": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanLocationFilled": "Emplacement renseigné",
+  "roomScanWhoFitsHere": "Qui serait bien ici",
+  "roomScanWhoFitsHint": "Les plantes du jardin, classées par ce que la pièce leur donne.",
+  "roomScanNoPlantsToRank": "Aucune plante avec une espèce connue.",
+  "placementShortfallHeater": "Toutes les places sont près d'un radiateur, et elle craint l'air sec et chaud.",
+  "placementHeaterNote": "Près d'un radiateur : l'air y est sec et chaud.",
+  "placementAtHome": "Chez vous",
+  "roomScanStartStructure": "Relever l'appartement",
+  "roomScanStructureHint": "Relever l'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.",
+  "roomScanNextRoom": "Pièce suivante",
+  "roomScanRoomNumber": "Pièce {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Plantes sur le plan",
+  "roomScanPlantsHelp": "Une plante posée sur le plan est jugée là où elle est : la liste dit si une autre place lui irait mieux.",
+  "roomScanAddPlant": "Poser une plante",
+  "roomScanTapForPlant": "Toucher le plan là où se trouve {plant}.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "Retirer {plant} du plan",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "Aucune plante à poser.",
+  "roomScanPlantWellPlaced": "Bien placée · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Aujourd'hui {light} · mieux {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "Toutes les pièces",
+  "placementChoose": "Choisir cette place",
+  "placementChosen": "Place choisie : {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Aujourd'hui : {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionRooms": "Relevés de la maison",
+  "roomScanCurtain": "Rideau",
+  "roomScanCurtainNone": "Sans rideau",
+  "roomScanCurtainSheer": "Voilage",
+  "roomScanCurtainDrawn": "Rideau souvent tiré",
+  "roomScanCurtainHelp": "RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois."
 }

@@ -6459,4 +6459,148 @@ class AppLocalizationsDe extends AppLocalizations {
   String placementPlanSemantics(int count) {
     return 'Grundriss des Raums von oben, $count ausgewählte Plätze.';
   }
+
+  @override
+  String get roomScanHeaters => 'Heizkörper';
+
+  @override
+  String get roomScanHeatersHelp =>
+      'RoomPlan erkennt keine Heizkörper. Auf dem Grundriss gesetzt, hält ein Heizkörper die Pflanzen fern, die trockene, warme Luft nicht vertragen.';
+
+  @override
+  String get roomScanAddHeater => 'Heizkörper setzen';
+
+  @override
+  String get roomScanTapForHeater =>
+      'Auf dem Grundriss dort tippen, wo der Heizkörper steht.';
+
+  @override
+  String roomScanHeatersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Heizkörper',
+      one: 'ein Heizkörper',
+      zero: 'kein Heizkörper',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanRemoveHeater => 'Diesen Heizkörper entfernen';
+
+  @override
+  String get roomScanFillLocation => 'Ort ausfüllen';
+
+  @override
+  String roomScanFillLocationDetail(String orientation, String light) {
+    return 'Ausrichtung „$orientation“, Licht „$light“, laut Scan. Was schon ausgefüllt ist, bleibt unverändert.';
+  }
+
+  @override
+  String get roomScanLocationFilled => 'Ort ausgefüllt';
+
+  @override
+  String get roomScanWhoFitsHere => 'Wer hier gut stünde';
+
+  @override
+  String get roomScanWhoFitsHint =>
+      'Die Pflanzen des Gartens, geordnet nach dem, was der Raum ihnen bietet.';
+
+  @override
+  String get roomScanNoPlantsToRank => 'Keine Pflanze mit bekannter Art.';
+
+  @override
+  String get placementShortfallHeater =>
+      'Alle Plätze liegen nahe einem Heizkörper, und sie verträgt keine trockene, warme Luft.';
+
+  @override
+  String get placementHeaterNote =>
+      'Nahe einem Heizkörper: Die Luft ist hier trocken und warm.';
+
+  @override
+  String get placementAtHome => 'Bei dir';
+
+  @override
+  String get roomScanStartStructure => 'Die ganze Wohnung scannen';
+
+  @override
+  String get roomScanStructureHint =>
+      'Die ganze Wohnung scannen geht Raum für Raum: „Nächster Raum“ dazwischen, „Fertig“ am Ende. Die Räume werden zueinander gesetzt.';
+
+  @override
+  String get roomScanNextRoom => 'Nächster Raum';
+
+  @override
+  String roomScanRoomNumber(int n) {
+    return 'Raum $n';
+  }
+
+  @override
+  String get roomScanPlantsOnPlan => 'Pflanzen auf dem Grundriss';
+
+  @override
+  String get roomScanPlantsHelp =>
+      'Eine Pflanze auf dem Grundriss wird dort beurteilt, wo sie steht: Die Liste sagt, ob ein anderer Platz besser zu ihr passt.';
+
+  @override
+  String get roomScanAddPlant => 'Pflanze setzen';
+
+  @override
+  String roomScanTapForPlant(String plant) {
+    return 'Auf dem Grundriss dort tippen, wo $plant steht.';
+  }
+
+  @override
+  String roomScanRemovePlant(String plant) {
+    return '$plant vom Grundriss entfernen';
+  }
+
+  @override
+  String get roomScanNoPlantToPlace => 'Keine Pflanze zu setzen.';
+
+  @override
+  String roomScanPlantWellPlaced(String light) {
+    return 'Gut platziert · $light';
+  }
+
+  @override
+  String roomScanPlantBetterAt(String light, String place) {
+    return 'Jetzt $light · besser $place';
+  }
+
+  @override
+  String get placementAllRooms => 'Alle Räume';
+
+  @override
+  String get placementChoose => 'Diesen Platz wählen';
+
+  @override
+  String placementChosen(String place) {
+    return 'Gewählter Platz: $place';
+  }
+
+  @override
+  String placementCurrent(String place, String light) {
+    return 'Jetzt: $place · $light';
+  }
+
+  @override
+  String get sectionRooms => 'Raumscans';
+
+  @override
+  String get roomScanCurtain => 'Vorhang';
+
+  @override
+  String get roomScanCurtainNone => 'Kein Vorhang';
+
+  @override
+  String get roomScanCurtainSheer => 'Gardine';
+
+  @override
+  String get roomScanCurtainDrawn => 'Vorhang meist zugezogen';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.';
 }

@@ -6478,4 +6478,148 @@ class AppLocalizationsFr extends AppLocalizations {
   String placementPlanSemantics(int count) {
     return 'Plan de la pièce vu de dessus, $count places retenues.';
   }
+
+  @override
+  String get roomScanHeaters => 'Radiateurs';
+
+  @override
+  String get roomScanHeatersHelp =>
+      'RoomPlan ne voit pas les radiateurs. Posé sur le plan, un radiateur écarte les plantes qui craignent l\'air sec et chaud.';
+
+  @override
+  String get roomScanAddHeater => 'Poser un radiateur';
+
+  @override
+  String get roomScanTapForHeater =>
+      'Toucher le plan là où se trouve le radiateur.';
+
+  @override
+  String roomScanHeatersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count radiateurs',
+      one: 'un radiateur',
+      zero: 'aucun radiateur',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanRemoveHeater => 'Retirer ce radiateur';
+
+  @override
+  String get roomScanFillLocation => 'Renseigner l\'emplacement';
+
+  @override
+  String roomScanFillLocationDetail(String orientation, String light) {
+    return 'Orientation « $orientation », lumière « $light », d\'après le relevé. Ce qui est déjà renseigné ne change pas.';
+  }
+
+  @override
+  String get roomScanLocationFilled => 'Emplacement renseigné';
+
+  @override
+  String get roomScanWhoFitsHere => 'Qui serait bien ici';
+
+  @override
+  String get roomScanWhoFitsHint =>
+      'Les plantes du jardin, classées par ce que la pièce leur donne.';
+
+  @override
+  String get roomScanNoPlantsToRank => 'Aucune plante avec une espèce connue.';
+
+  @override
+  String get placementShortfallHeater =>
+      'Toutes les places sont près d\'un radiateur, et elle craint l\'air sec et chaud.';
+
+  @override
+  String get placementHeaterNote =>
+      'Près d\'un radiateur : l\'air y est sec et chaud.';
+
+  @override
+  String get placementAtHome => 'Chez vous';
+
+  @override
+  String get roomScanStartStructure => 'Relever l\'appartement';
+
+  @override
+  String get roomScanStructureHint =>
+      'Relever l\'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.';
+
+  @override
+  String get roomScanNextRoom => 'Pièce suivante';
+
+  @override
+  String roomScanRoomNumber(int n) {
+    return 'Pièce $n';
+  }
+
+  @override
+  String get roomScanPlantsOnPlan => 'Plantes sur le plan';
+
+  @override
+  String get roomScanPlantsHelp =>
+      'Une plante posée sur le plan est jugée là où elle est : la liste dit si une autre place lui irait mieux.';
+
+  @override
+  String get roomScanAddPlant => 'Poser une plante';
+
+  @override
+  String roomScanTapForPlant(String plant) {
+    return 'Toucher le plan là où se trouve $plant.';
+  }
+
+  @override
+  String roomScanRemovePlant(String plant) {
+    return 'Retirer $plant du plan';
+  }
+
+  @override
+  String get roomScanNoPlantToPlace => 'Aucune plante à poser.';
+
+  @override
+  String roomScanPlantWellPlaced(String light) {
+    return 'Bien placée · $light';
+  }
+
+  @override
+  String roomScanPlantBetterAt(String light, String place) {
+    return 'Aujourd\'hui $light · mieux $place';
+  }
+
+  @override
+  String get placementAllRooms => 'Toutes les pièces';
+
+  @override
+  String get placementChoose => 'Choisir cette place';
+
+  @override
+  String placementChosen(String place) {
+    return 'Place choisie : $place';
+  }
+
+  @override
+  String placementCurrent(String place, String light) {
+    return 'Aujourd\'hui : $place · $light';
+  }
+
+  @override
+  String get sectionRooms => 'Relevés de la maison';
+
+  @override
+  String get roomScanCurtain => 'Rideau';
+
+  @override
+  String get roomScanCurtainNone => 'Sans rideau';
+
+  @override
+  String get roomScanCurtainSheer => 'Voilage';
+
+  @override
+  String get roomScanCurtainDrawn => 'Rideau souvent tiré';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.';
 }
