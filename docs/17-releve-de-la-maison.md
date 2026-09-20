@@ -238,18 +238,42 @@ puis `support().lidar` décide de montrer ou non le bouton.
 
 ## Les écrans
 
-Trois entrées, une par question qu'on se pose :
+Le relevé n'est pas une fonction à part : il vit là où vivent déjà les
+pièces et les plantes. Cinq entrées, une par question qu'on se pose :
 
-- **Profil › Réglages › Relevé de la maison** : la liste des pièces
-  relevées (nom, surface, emplacement lié, date), « Relever une pièce »,
-  et pour chaque pièce : renommer, lier à un emplacement, corriger
-  l'orientation des fenêtres, supprimer. Sur un appareil sans LiDAR, la
-  ligne n'existe pas.
+- **Jardin › Fiche emplacement › « Plan de la pièce »** : la pièce relevée
+  qui décrit cet emplacement — son plan avec les plantes posées, ses
+  fenêtres, la date —, qui ouvre la feuille du relevé ; et « Renseigner
+  l'emplacement » quand le relevé sait l'orientation ou la lumière que le
+  lieu ne dit pas encore. Sans relevé, « Relever cette pièce » lance le
+  relevé et le lie d'emblée à l'emplacement. Sur un appareil sans LiDAR,
+  la section n'existe pas.
+- **Fiche plante › carte « Sa place »** sous « Comment en prendre soin »
+  (`plant_place_card.dart`) : posée sur un plan, la pièce et le repère
+  (« Salon · à 1 m de la fenêtre sud »), la lumière lue, et « mieux sur la
+  table » quand une place la dépasse d'au moins un quart ; pas posée, mais
+  dans un emplacement relevé, « Où la poser » avec la meilleure place de
+  sa pièce. La feuille s'ouvre sur sa pièce, pas sur la mieux classée.
+  Rien sans relevé autour d'elle, rien pour une fiche générique qui n'est
+  pas posée.
 - **Fiche d'entretien › « Où la poser »** sous le diorama, quand au moins
   une pièce est relevée. Le diorama ne change pas : il montre l'idéal, le
-  relevé montre le réel (docs/13, « Idéal et réel »).
+  relevé montre le réel (docs/13, « Idéal et réel »). Pour une plante déjà
+  posée, la ligne dit sa place.
+- **Profil › Réglages › Relevé de la maison** : la vue d'ensemble — la
+  liste des pièces relevées (nom, surface, emplacement lié, date),
+  « Relever une pièce », « Relever l'appartement », et pour chaque pièce :
+  renommer, lier à un emplacement, corriger l'orientation des fenêtres,
+  supprimer. Une pièce relevée d'ici se lie d'elle-même à l'emplacement
+  qui porte son nom (« Salon » reconnu par RoomPlan, un emplacement
+  « Salon » sans relevé), à la casse près ; deux emplacements du même nom,
+  et c'est la main qui décide. Sur un appareil sans LiDAR, la ligne
+  n'existe pas.
 - **Fiche de la pièce relevée › « Qui serait bien ici »** (palier 2) : les
   plantes du jardin classées par leur score dans cette pièce.
+
+Le flux du relevé est le même d'où qu'on parte (`room_scan_flow.dart`) ;
+seul change l'emplacement auquel la pièce se lie.
 
 L'écran de résultat, `lib/features/room_scan/presentation/room_fit_screen.dart` :
 
@@ -377,9 +401,13 @@ lib/domain/repositories/repositories.dart    RoomScanRepository
 lib/domain/room/                             scanned_room, room_light_model,
                                              room_fit_advisor, placement
 lib/features/room_scan/application/room_scan_providers.dart
-lib/features/room_scan/presentation/         room_scan_settings_screen,
+                                             dont roomScanForLocation, plantRoomPlace,
+                                             roomFillSuggestion
+lib/features/room_scan/presentation/         room_scan_settings_screen, room_scan_flow,
                                              room_scan_detail_sheet, room_plan_painter,
-                                             room_fit_sheet, room_fit_entry, room_scan_labels
+                                             room_fit_sheet, room_fit_entry, room_scan_labels,
+                                             location_room_section (fiche emplacement),
+                                             plant_place_card (fiche plante)
 lib/app/router.dart                          Routes.roomScan
 lib/l10n/app_*.arb                           roomScan*, placement*
 test/domain/room_light_model_test.dart       calibration sur la pièce du diorama
@@ -387,5 +415,6 @@ test/domain/room_fit_advisor_test.dart
 test/domain/room_plan_parser_test.dart       fixtures par version d'iOS
 test/data/room_scan_service_test.dart        canal simulé, patron HomeKit
 test/data/room_scan_repository_test.dart     SQLite en mémoire
-docs/03, 04, 05, 07, README                  le flux, le schéma, le canal, l'arbre
+test/features/plant_room_place_test.dart     le relevé lié à l'emplacement, la place d'une plante
+docs/02, 03, 04, 05, 07, README              les entrées, le flux, le schéma, le canal, l'arbre
 ```

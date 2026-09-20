@@ -2238,5 +2238,16 @@
         "type": "int"
       }
     }
+  },
+  "roomScanThisRoom": "Diesen Raum erfassen",
+  "roomScanThisRoomHint": "Der mit der Kamera erfasste Grundriss sagt, wo eine Pflanze in diesem Raum am besten stünde.",
+  "roomScanRoomPlan": "Grundriss des Raums",
+  "roomScanPlantsOnPlanCount": "{count, plural, =0{keine Pflanze auf dem Grundriss} =1{eine Pflanze auf dem Grundriss} other{{count} Pflanzen auf dem Grundriss}}",
+  "@roomScanPlantsOnPlanCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

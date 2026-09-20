@@ -6624,4 +6624,26 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get roomScanThisRoom => 'Rilevare questa stanza';
+
+  @override
+  String get roomScanThisRoomHint =>
+      'La pianta della stanza, rilevata con la fotocamera, dice dove una pianta starebbe meglio.';
+
+  @override
+  String get roomScanRoomPlan => 'Pianta della stanza';
+
+  @override
+  String roomScanPlantsOnPlanCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count piante sulla planimetria',
+      one: 'una pianta sulla planimetria',
+      zero: 'nessuna pianta sulla planimetria',
+    );
+    return '$_temp0';
+  }
 }

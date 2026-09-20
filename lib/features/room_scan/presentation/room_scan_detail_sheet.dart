@@ -8,7 +8,6 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
-import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../../domain/room/placement.dart';
@@ -17,6 +16,7 @@ import '../../../domain/room/scanned_room.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../../plants/application/plant_providers.dart';
 import '../application/room_scan_providers.dart';
+import 'location_room_section.dart';
 import 'room_marker_placer_sheet.dart';
 import 'room_plan_painter.dart';
 import 'room_scan_labels.dart';
@@ -159,6 +159,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     final heaters = heaterPoints(markers);
     final plants = plantPoints(markers).values.toList();
     final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan.locationId).firstOrNull;
+    final suggestion = ref.watch(roomFillSuggestionProvider(scan.id));
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xl),
       child: Column(
@@ -186,7 +187,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
                 chevron: true,
                 onTap: () => _pickLocation(scan),
               ),
-              if (location != null && room != null) ?_fillLocationRow(scan, room, location),
+              if (location != null && suggestion != null) RoomFillLocationRow(scan: scan, location: location, suggestion: suggestion),
             ],
           ),
           if (room != null && room.windows.isNotEmpty) ...[
@@ -307,42 +308,6 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
       ],
     );
   }
-
-  /// « Renseigner l'emplacement » : l'orientation de la plus grande fenêtre
-  /// et la lumière la plus fréquente au sol, proposées à un emplacement qui
-  /// ne les a pas encore. Rien quand tout est déjà rempli, ou quand le
-  /// relevé n'a rien à dire.
-  Widget? _fillLocationRow(RoomScan scan, ScannedRoom room, Location location) {
-    final l10n = context.l10n;
-    final survey = ref.watch(roomSurveyProvider(scan.id));
-    final directions = ref.watch(roomDirectionsProvider(scan.id));
-    CardinalDirection? mainDirection;
-    var mainArea = 0.0;
-    for (var i = 0; i < room.windows.length && i < directions.length; i++) {
-      if (directions[i] != null && room.windows[i].area > mainArea) {
-        mainArea = room.windows[i].area;
-        mainDirection = directions[i];
-      }
-    }
-    final light = survey?.typicalLight;
-    final orientation = location.orientation == null && mainDirection != null ? _capitalize(l10n.directionName(mainDirection)) : null;
-    final lightCode = location.light == null && light != null ? lightCodeFor(light) : null;
-    if (orientation == null && lightCode == null) return null;
-    return FloraListRow(
-      leading: const Text('✍️', style: TextStyle(fontSize: 18)),
-      title: l10n.roomScanFillLocation,
-      subtitle: l10n.roomScanFillLocationDetail(orientation ?? location.orientation ?? '—', l10n.lightName(light ?? lightNeedFromCode(location.light) ?? LightNeed.indirect)),
-      chevron: false,
-      onTap: () async {
-        await ref.read(roomScanControllerProvider.notifier).fillLocation(location, orientation: orientation, light: lightCode);
-        if (!mounted) return;
-        ref.read(toastProvider.notifier).show(ToastData(message: l10n.roomScanLocationFilled, emoji: '📍'));
-        Haptics.success();
-      },
-    );
-  }
-
-  static String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
 
 /// « Qui serait bien ici » : les plantes du jardin classées par ce que la

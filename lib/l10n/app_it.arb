@@ -2238,5 +2238,16 @@
         "type": "int"
       }
     }
+  },
+  "roomScanThisRoom": "Rilevare questa stanza",
+  "roomScanThisRoomHint": "La pianta della stanza, rilevata con la fotocamera, dice dove una pianta starebbe meglio.",
+  "roomScanRoomPlan": "Pianta della stanza",
+  "roomScanPlantsOnPlanCount": "{count, plural, =0{nessuna pianta sulla planimetria} =1{una pianta sulla planimetria} other{{count} piante sulla planimetria}}",
+  "@roomScanPlantsOnPlanCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

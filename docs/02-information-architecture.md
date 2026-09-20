@@ -29,6 +29,7 @@ Root
     │       ├── Ajouter une action (sheet)
     │       ├── Ajouter une note (sheet)
     │       ├── Ajouter une photo (flow 2 étapes : viser avec calque, titrer)
+    │       ├── Fiche d'entretien (push) · sous elle, sa place dans la maison relevée [LiDAR] → Où la poser (sheet)
     │       ├── Planning d'entretien (push)
     │       ├── Croissance (push) : timelapse, avant / après, visionneuse plein écran
     │       ├── Timeline complète (push)
@@ -37,7 +38,7 @@ Root
     ├── Jardin
     │   ├── Emplacements (arborescence)
     │   │   ├── Nouvel emplacement (sheet)
-    │   │   └── Fiche emplacement → plantes de l'emplacement
+    │   │   └── Fiche emplacement → plan de la pièce relevée [LiDAR] (feuille du relevé), ou « Relever cette pièce » ; plantes de l'emplacement
     │   └── [Inventaire, Calendrier — Phase 2]
     └── Profil
         ├── Apparence (système / clair / sombre, reduced motion)
@@ -50,9 +51,16 @@ Root
         │   ├── Problème (push) : famille, étendue, hôtes, plantes du jardin concernées
         │   ├── Phénomène normal (push) : étendue, hôtes, plantes du jardin concernées — rien à soigner
         │   └── Espèce (push) : la fiche d'entretien, hors de toute plante
+        ├── Relevé de la maison [LiDAR] : toutes les pièces relevées, relever l'appartement
         ├── Compte
         └── À propos
 ```
+
+Le relevé d'une pièce vit avec son emplacement, dans *Jardin* : c'est là
+qu'on le relève, qu'on voit son plan et ce qu'il apprend au lieu. La ligne
+de *Profil* n'est que la vue d'ensemble — toutes les pièces, l'appartement
+en une fois. Et une plante dit sa place sur sa propre fiche, sans passer
+par un réglage (docs/17, « Les écrans »).
 
 L'encyclopédie est sous *Profil* et non dans un onglet : c'est un contenu
 qu'on consulte, pas un lieu où l'on passe. Les mêmes fiches se rejoignent

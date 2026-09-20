@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../domain/care/care_guide.dart';
+import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../../domain/room/placement.dart';
@@ -32,6 +33,44 @@ final roomScanStructureAvailableProvider = FutureProvider<bool>((ref) async {
 
 /// Les repères posés à la main sur un relevé.
 final roomMarkersProvider = StreamProvider.family<List<RoomMarker>, String>((ref, scanId) => ref.watch(roomScanRepositoryProvider).watchMarkers(scanId));
+
+/// Le relevé qui décrit un emplacement, le plus récent s'il y en a
+/// plusieurs ; `null` quand la pièce n'est pas relevée.
+final roomScanForLocationProvider = Provider.family<RoomScan?, String>((ref, locationId) {
+  final scans = ref.watch(roomScansProvider).value ?? const <RoomScan>[];
+  return scans.where((s) => s.locationId == locationId).firstOrNull;
+});
+
+/// Ce qu'un relevé peut dire à son emplacement, quand celui-ci ne le dit
+/// pas encore : l'orientation de la plus grande fenêtre, la lumière la
+/// plus fréquente au sol. `null` quand tout est déjà renseigné, ou quand
+/// le relevé n'a rien à proposer.
+class RoomFillSuggestion {
+  const RoomFillSuggestion({this.orientation, this.light});
+
+  final CardinalDirection? orientation;
+  final LightNeed? light;
+}
+
+final roomFillSuggestionProvider = Provider.family<RoomFillSuggestion?, String>((ref, scanId) {
+  final scan = (ref.watch(roomScansProvider).value ?? const <RoomScan>[]).where((s) => s.id == scanId).firstOrNull;
+  final location = (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == scan?.locationId).firstOrNull;
+  final room = ref.watch(roomForFitProvider(scanId));
+  if (scan == null || location == null || room == null) return null;
+  final directions = ref.watch(roomDirectionsProvider(scanId));
+  CardinalDirection? mainDirection;
+  var mainArea = 0.0;
+  for (var i = 0; i < room.windows.length && i < directions.length; i++) {
+    if (directions[i] != null && room.windows[i].area > mainArea) {
+      mainArea = room.windows[i].area;
+      mainDirection = directions[i];
+    }
+  }
+  final orientation = location.orientation == null ? mainDirection : null;
+  final light = location.light == null ? ref.watch(roomSurveyProvider(scanId))?.typicalLight : null;
+  if (orientation == null && light == null) return null;
+  return RoomFillSuggestion(orientation: orientation, light: light);
+});
 
 /// La pièce lue depuis son fichier ; `null` si le fichier manque.
 final scannedRoomProvider = FutureProvider.family<ScannedRoom?, String>((ref, scanId) async {
@@ -152,6 +191,76 @@ final roomPlantFitsProvider = Provider.family<List<PlantRoomFit>, String>((ref, 
   return out;
 });
 
+/// La place d'une plante dans la maison relevée, vue depuis sa fiche.
+///
+/// Posée sur un plan, elle est jugée là où elle est ([spot], [current]) et
+/// la pièce lui propose sa meilleure place ([fit]). Pas posée, mais dans un
+/// emplacement relevé : la pièce est celle de l'emplacement, et [fit] dit
+/// où elle irait. Une fiche générique ne juge rien : [spot] reste, [current]
+/// et [fit] sont nuls.
+class PlantRoomPlace {
+  const PlantRoomPlace({required this.scan, required this.profile, required this.generic, this.spot, this.current, this.fit});
+
+  final RoomScan scan;
+
+  /// La fiche de la plante, telle que « Où la poser » la juge.
+  final CareProfile profile;
+
+  /// Une fiche générique ne demande aucune lumière précise : pas de place.
+  final bool generic;
+
+  /// La place d'aujourd'hui sur le plan, lue sans fiche : sa lumière, sa
+  /// fenêtre.
+  final SurveyedSpot? spot;
+
+  /// La même, jugée pour la fiche de la plante.
+  final Placement? current;
+  final RoomFit? fit;
+
+  bool get onPlan => spot != null;
+
+  /// Une autre place lui irait nettement mieux.
+  bool get betterElsewhere {
+    final now = current;
+    final best = fit?.placements.firstOrNull;
+    return now != null && best != null && best.score - now.score >= RoomFitAdvisor.betterByAtLeast;
+  }
+}
+
+/// La place d'une plante du jardin : le plan où elle est posée, sinon le
+/// relevé de son emplacement ; rien quand la maison n'est pas relevée
+/// autour d'elle.
+final plantRoomPlaceProvider = Provider.autoDispose.family<PlantRoomPlace?, String>((ref, plantId) {
+  final scans = ref.watch(roomScansProvider).value ?? const <RoomScan>[];
+  if (scans.isEmpty) return null;
+  final plant = ref.watch(plantSummaryProvider(plantId)).value?.plant;
+  if (plant == null) return null;
+  // Le plan où elle est posée d'abord ; à défaut, celui de son emplacement.
+  RoomScan? placed;
+  for (final s in scans) {
+    if (plantPoints(ref.watch(roomMarkersProvider(s.id)).value ?? const []).containsKey(plantId)) {
+      placed = s;
+      break;
+    }
+  }
+  final scan = placed ?? (plant.locationId == null ? null : ref.watch(roomScanForLocationProvider(plant.locationId!)));
+  if (scan == null) return null;
+  final spot = placed == null ? null : ref.watch(roomPlantSpotsProvider(scan.id))[plantId];
+  final species = plant.speciesName;
+  final care = ref.watch(careGuideProvider).resolve(species, family: speciesFamilyLookupIn(ref)(species));
+  final generic = species == null || species.isEmpty || care.match == CareMatch.generic || care.match == CareMatch.category;
+  final survey = generic ? null : ref.watch(roomSurveyProvider(scan.id));
+  if (survey == null) return PlantRoomPlace(scan: scan, profile: care.profile, generic: generic, spot: spot);
+  return PlantRoomPlace(
+    scan: scan,
+    profile: care.profile,
+    generic: false,
+    spot: spot,
+    current: spot == null ? null : RoomFitAdvisor.judge(care.profile, spot, humidRoom: survey.humidRoom),
+    fit: RoomFitAdvisor.placeIn(care.profile, survey),
+  );
+});
+
 /// Ce que le relevé a donné, ou pourquoi il n'a rien donné.
 class RoomScanOutcome {
   const RoomScanOutcome({this.scan, this.error});
@@ -168,7 +277,11 @@ class RoomScanController extends Notifier<bool> {
   @override
   bool build() => false;
 
-  Future<RoomScanOutcome> scan({required String Function(RoomSectionLabel? section) nameFor}) async {
+  /// Relever une pièce. [locationId] la lie d'emblée à un emplacement —
+  /// le relevé lancé depuis la fiche d'un emplacement décrit celui-là.
+  /// Sans lui, la pièce se lie d'elle-même à l'emplacement qui porte son
+  /// nom : une pièce reconnue comme « Salon » va au Salon du jardin.
+  Future<RoomScanOutcome> scan({required String Function(RoomSectionLabel? section) nameFor, String? locationId}) async {
     if (state) return const RoomScanOutcome();
     state = true;
     try {
@@ -181,13 +294,15 @@ class RoomScanController extends Notifier<bool> {
       final relative = store.relativeOf(result.path!);
       final json = await store.read(relative);
       final room = json == null ? null : RoomPlanParser.parse(json, northOffsetDeg: result.northOffsetDeg);
+      final name = nameFor(room?.section);
       final scan = await ref.read(roomScanRepositoryProvider).create(
-            name: nameFor(room?.section),
+            name: name,
             filePath: relative,
             capturedAt: DateTime.now(),
             northOffsetDeg: result.northOffsetDeg,
             floorAreaM2: room?.floorAreaM2 ?? 0,
             section: room?.section,
+            locationId: locationId ?? _locationNamed(name),
           );
       return RoomScanOutcome(scan: scan);
     } finally {
@@ -197,6 +312,7 @@ class RoomScanController extends Notifier<bool> {
 
   /// L'appartement, pièce après pièce : un dossier, un fichier par pièce,
   /// une ligne par pièce, toutes sous le même identifiant de structure.
+  /// Chaque pièce se lie à l'emplacement qui porte son nom, s'il existe.
   Future<RoomScanOutcome> scanStructure({required String Function(RoomSectionLabel? section, int index) nameFor, required String nextRoomLabel}) async {
     if (state) return const RoomScanOutcome();
     state = true;
@@ -208,18 +324,23 @@ class RoomScanController extends Notifier<bool> {
       if (result == null) return const RoomScanOutcome();
       if (!result.succeeded) return RoomScanOutcome(error: result.error);
       RoomScan? first;
+      final linked = <String>{};
       for (var i = 0; i < result.paths.length; i++) {
         final relative = store.relativeOf(result.paths[i]);
         final json = await store.read(relative);
         final room = json == null ? null : RoomPlanParser.parse(json, northOffsetDeg: result.northOffsetDeg);
+        final name = nameFor(room?.section, i);
+        final locationId = _locationNamed(name, taken: linked);
+        if (locationId != null) linked.add(locationId);
         final scan = await ref.read(roomScanRepositoryProvider).create(
-              name: nameFor(room?.section, i),
+              name: name,
               filePath: relative,
               capturedAt: DateTime.now(),
               northOffsetDeg: result.northOffsetDeg,
               floorAreaM2: room?.floorAreaM2 ?? 0,
               section: room?.section,
               structureId: id,
+              locationId: locationId,
             );
         first ??= scan;
       }
@@ -227,6 +348,20 @@ class RoomScanController extends Notifier<bool> {
     } finally {
       state = false;
     }
+  }
+
+  /// L'emplacement du jardin qui porte ce nom, à la casse près ; le
+  /// premier sans relevé, pour ne pas mettre deux pièces sur le même. Rien
+  /// si le nom est ambigu ou inconnu : lier se fait alors à la main.
+  String? _locationNamed(String name, {Set<String> taken = const {}}) {
+    final wanted = name.trim().toLowerCase();
+    if (wanted.isEmpty) return null;
+    final locations = ref.read(locationsProvider).value ?? const <Location>[];
+    final matches = locations.where((l) => l.name.trim().toLowerCase() == wanted).toList();
+    if (matches.length != 1) return null;
+    final id = matches.single.id;
+    final described = taken.contains(id) || (ref.read(roomScansProvider).value ?? const <RoomScan>[]).any((s) => s.locationId == id);
+    return described ? null : id;
   }
 
   Future<void> delete(RoomScan scan) async {

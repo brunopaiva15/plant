@@ -1,4 +1,5 @@
 import '../../../domain/room/placement.dart';
+import '../../../domain/room/room_fit_advisor.dart';
 import '../../../domain/room/scanned_room.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
@@ -36,9 +37,15 @@ extension RoomScanLabels on AppLocalizations {
 
   /// Le repère d'une place : « à 1 m de la fenêtre sud-ouest », « sur la
   /// table », « au fond, loin des fenêtres ».
-  String placementLine(Placement p) {
-    final direction = p.windowDirection == null ? null : directionName(p.windowDirection!);
-    switch (p.surface) {
+  String placementLine(Placement p) => _spotLine(p.surface, p.windowDirection, p.windowDistance, p.deepInRoom);
+
+  /// Le même repère pour une place lue sans fiche — là où une plante est
+  /// posée aujourd'hui.
+  String spotLine(SurveyedSpot s) => _spotLine(s.surface, s.windowDirection, s.windowDistance, s.windowIndex == null || (s.windowDistance ?? 0) > 3.0);
+
+  String _spotLine(PlacementSurface surface, CardinalDirection? windowDirection, double? windowDistance, bool deepInRoom) {
+    final direction = windowDirection == null ? null : directionName(windowDirection);
+    switch (surface) {
       case PlacementSurface.sill:
         return direction == null ? placementOnSillUnknown : placementOnSill(direction);
       case PlacementSurface.table:
@@ -46,8 +53,8 @@ extension RoomScanLabels on AppLocalizations {
       case PlacementSurface.storage:
         return placementOnStorage;
       case PlacementSurface.floor:
-        if (p.deepInRoom || p.windowDistance == null) return placementDeepInRoom;
-        final d = distanceLabel(p.windowDistance!);
+        if (deepInRoom || windowDistance == null) return placementDeepInRoom;
+        final d = distanceLabel(windowDistance);
         return direction == null ? placementNearWindowUnknown(d) : placementNearWindow(d, direction);
     }
   }

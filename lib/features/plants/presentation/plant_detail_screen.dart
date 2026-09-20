@@ -37,6 +37,7 @@ import 'photo_viewer.dart';
 import 'plant_tags_sheet.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
+import '../../room_scan/presentation/plant_place_card.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'timeline_row.dart';
 
@@ -446,6 +447,14 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             ),
           ),
           _CareGuideCard(plantId: id, speciesName: plant.speciesName),
+          // Sa place dans la maison relevée, juste sous la fiche : la pièce
+          // et le repère où elle est, ou « Où la poser » depuis sa pièce.
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.page, 0),
+              child: PlantPlaceCard(plantId: id, plantName: plant.name),
+            ),
+          ),
           _PlantTasks(plantId: id),
           _RecentHistory(plantId: id),
           GrowthSection(plantId: id, photos: photos, primaryId: plant.primaryPhotoId, onAdd: _addPhoto),

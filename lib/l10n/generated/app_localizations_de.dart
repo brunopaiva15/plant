@@ -6618,4 +6618,26 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get roomScanThisRoom => 'Diesen Raum erfassen';
+
+  @override
+  String get roomScanThisRoomHint =>
+      'Der mit der Kamera erfasste Grundriss sagt, wo eine Pflanze in diesem Raum am besten stünde.';
+
+  @override
+  String get roomScanRoomPlan => 'Grundriss des Raums';
+
+  @override
+  String roomScanPlantsOnPlanCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Pflanzen auf dem Grundriss',
+      one: 'eine Pflanze auf dem Grundriss',
+      zero: 'keine Pflanze auf dem Grundriss',
+    );
+    return '$_temp0';
+  }
 }

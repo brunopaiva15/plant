@@ -11183,6 +11183,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count, plural, =0{Aucune} =1{1 pièce} other{{count} pièces}}'**
   String roomScanRoomsShort(int count);
+
+  /// No description provided for @roomScanThisRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever cette pièce'**
+  String get roomScanThisRoom;
+
+  /// No description provided for @roomScanThisRoomHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le plan de la pièce, relevé avec l\'appareil photo, dit où une plante y serait le mieux.'**
+  String get roomScanThisRoomHint;
+
+  /// No description provided for @roomScanRoomPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan de la pièce'**
+  String get roomScanRoomPlan;
+
+  /// No description provided for @roomScanPlantsOnPlanCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}'**
+  String roomScanPlantsOnPlanCount(int count);
 }
 
 class _AppLocalizationsDelegate

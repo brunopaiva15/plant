@@ -3312,5 +3312,16 @@
         "type": "int"
       }
     }
+  },
+  "roomScanThisRoom": "Relever cette pièce",
+  "roomScanThisRoomHint": "Le plan de la pièce, relevé avec l'appareil photo, dit où une plante y serait le mieux.",
+  "roomScanRoomPlan": "Plan de la pièce",
+  "roomScanPlantsOnPlanCount": "{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}",
+  "@roomScanPlantsOnPlanCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

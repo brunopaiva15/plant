@@ -6588,4 +6588,26 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get roomScanThisRoom => 'Survey this room';
+
+  @override
+  String get roomScanThisRoomHint =>
+      'The room\'s plan, surveyed with the camera, tells where a plant would do best in it.';
+
+  @override
+  String get roomScanRoomPlan => 'Room plan';
+
+  @override
+  String roomScanPlantsOnPlanCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count plants on the plan',
+      one: 'one plant on the plan',
+      zero: 'no plant on the plan',
+    );
+    return '$_temp0';
+  }
 }

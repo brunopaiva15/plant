@@ -240,16 +240,28 @@ version — la vraie livraison d'Iris 8 en prendra donc un autre.
 
 ## 10. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
 ```
-Profil ─[tap « Relevé de la maison »]⟶ Pièces relevées
-  [Relever une pièce] ⟶ une phrase (ce qui va se passer, rien ne quitte l'appareil)
-    ⟶ le relevé du système (RoomPlan, coaching) ─[Terminer]⟶ feuille du relevé
-      plan vu de dessus, nom (proposé d'après le type de pièce), emplacement lié,
-      une ligne par fenêtre : « sud-ouest · D'après la boussole » ─[tap]⟶ huit points cardinaux
-Fiche d'entretien ─[tap « Où la poser », sous le diorama]⟶ Où la poser
-  sélecteur de pièce · plan avec le lavis de lumière et les places numérotées
+Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Relever cette pièce »]⟶ une phrase
+  (ce qui va se passer, rien ne quitte l'appareil)
+    ⟶ le relevé du système (RoomPlan, coaching) ─[Terminer]⟶ feuille du relevé,
+      déjà liée au Salon : plan vu de dessus, nom (proposé d'après le type de
+      pièce), une ligne par fenêtre : « sud-ouest · D'après la boussole »
+      ─[tap]⟶ huit points cardinaux ; « Renseigner l'emplacement » quand le
+      Salon n'a ni orientation ni lumière
+  ⟶ la fiche du Salon montre son plan, ses fenêtres, les plantes posées ;
+    [tap] rouvre la feuille du relevé
+Profil ─[tap « Relevé de la maison »]⟶ la même chose pour toutes les pièces,
+  et « Relever l'appartement » ; une pièce reconnue (« Salon ») se lie d'elle-même
+  à l'emplacement qui porte ce nom
+Fiche plante ─ carte « Où la poser · Salon · à 1 m de la fenêtre sud » sous
+  « Comment en prendre soin », dès que son emplacement est relevé ─[tap]⟶ Où la poser
+  ouvert sur sa pièce · plan avec le lavis de lumière et les places numérotées
   « Cette pièce lui convient. » puis 1 · à 1 m de la fenêtre sud · Lumière vive
+  [Choisir cette place] ⟶ la plante est posée sur le plan
+  ⟶ la carte devient « Salon · à 1 m de la fenêtre sud » · « Bien placée · Lumière
+    vive », ou « mieux sur la table » si une place la dépasse nettement
+Fiche d'entretien ─[tap « Où la poser », sous le diorama]⟶ la même feuille
 ```
-La ligne et l'entrée n'existent que sur un appareil à LiDAR, et l'entrée
-seulement quand une pièce est relevée.
+La ligne, la carte et l'entrée n'existent que sur un appareil à LiDAR ;
+l'entrée seulement quand une pièce est relevée, la carte seulement quand la
+maison est relevée autour de la plante.
 Une fiche générique ne donne pas de place : l'écran le dit. Détails : docs/17.
-

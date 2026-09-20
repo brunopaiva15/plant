@@ -2245,5 +2245,16 @@
         "type": "int"
       }
     }
+  },
+  "roomScanThisRoom": "Survey this room",
+  "roomScanThisRoomHint": "The room's plan, surveyed with the camera, tells where a plant would do best in it.",
+  "roomScanRoomPlan": "Room plan",
+  "roomScanPlantsOnPlanCount": "{count, plural, =0{no plant on the plan} =1{one plant on the plan} other{{count} plants on the plan}}",
+  "@roomScanPlantsOnPlanCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
