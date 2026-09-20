@@ -16,6 +16,7 @@ export 'page_scaffold.dart';
 export 'paper.dart';
 export 'plant_image.dart';
 export 'pressable.dart';
+export 'rail_actions.dart';
 export 'processing_field.dart';
 export 'scanning_overlay.dart';
 export 'section_header.dart';

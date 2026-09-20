@@ -94,28 +94,23 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
         LargeTitlePage(
           title: l10n.plantsTitle,
           searchField: searchField,
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FloraIconButton(icon: CupertinoIcons.qrcode_viewfinder, semanticLabel: l10n.scan, onPressed: () => context.push(Routes.scan)),
-              const SizedBox(width: Space.xs),
-              FloraIconButton(
-                icon: filter.hasActiveFilters ? CupertinoIcons.line_horizontal_3_decrease_circle_fill : CupertinoIcons.line_horizontal_3_decrease,
-                semanticLabel: l10n.filters,
-                color: filter.hasActiveFilters ? c.sage : null,
-                onPressed: () => showPlantFilterSheet(context),
-              ),
-              const SizedBox(width: Space.xs),
-              // « Trouver une plante » vit à côté du « + » : c'est ici qu'on
-              // vient quand on veut une plante de plus, en sachant laquelle
-              // ou non.
-              FloraIconButton(icon: CupertinoIcons.lightbulb, semanticLabel: l10n.finderTitle, onPressed: () => context.push(Routes.finder)),
-              if (ref.watch(canEditProvider)) ...[
-                const SizedBox(width: Space.xs),
-                FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.addPlant, onPressed: () => startCreatePlantFlow(context, ref)),
-              ],
-            ],
-          ),
+          // Une liste, pas une `Row` : le haut de page les met côte à côte,
+          // et le menu debout du pliable les reprend en colonne.
+          actions: [
+            FloraIconButton(icon: CupertinoIcons.qrcode_viewfinder, semanticLabel: l10n.scan, onPressed: () => context.push(Routes.scan)),
+            FloraIconButton(
+              icon: filter.hasActiveFilters ? CupertinoIcons.line_horizontal_3_decrease_circle_fill : CupertinoIcons.line_horizontal_3_decrease,
+              semanticLabel: l10n.filters,
+              color: filter.hasActiveFilters ? c.sage : null,
+              onPressed: () => showPlantFilterSheet(context),
+            ),
+            // « Trouver une plante » vit à côté du « + » : c'est ici qu'on
+            // vient quand on veut une plante de plus, en sachant laquelle
+            // ou non.
+            FloraIconButton(icon: CupertinoIcons.lightbulb, semanticLabel: l10n.finderTitle, onPressed: () => context.push(Routes.finder)),
+            if (ref.watch(canEditProvider))
+              FloraIconButton(icon: CupertinoIcons.plus, semanticLabel: l10n.addPlant, onPressed: () => startCreatePlantFlow(context, ref)),
+          ],
           slivers: [
             if (plants.hasValue && list.isEmpty)
               SliverCentered(

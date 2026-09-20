@@ -137,11 +137,28 @@ class FloraTabBar extends StatelessWidget {
 /// argile. Seuls les libellés tombent — quatre mots debout doubleraient la
 /// largeur de la colonne, et `Semantics` les dit toujours à VoiceOver.
 class FloraTabRail extends StatelessWidget {
-  const FloraTabRail({super.key, required this.tabs, required this.index, required this.onSelect});
+  const FloraTabRail({
+    super.key,
+    required this.tabs,
+    required this.index,
+    required this.onSelect,
+    this.actions = const <Widget>[],
+  });
 
   final List<FloraTab> tabs;
   final int index;
   final ValueChanged<int> onSelect;
+
+  /// Les boutons de la page ouverte, posés sous les onglets. Ils viennent du
+  /// haut de page, que la colonne remplace (voir `RailActionsSlot`), et le
+  /// dernier de la liste — le « + », le plus souvent — se retrouve le plus
+  /// près du pouce.
+  final List<Widget> actions;
+
+  /// La taille d'un bouton de page, celle de [FloraIconButton] par défaut.
+  /// La colonne en a besoin pour savoir ce qu'il lui reste : elle ne peut pas
+  /// mesurer ses enfants avant de se donner une hauteur.
+  static const double _actionSize = 40;
 
   /// La largeur de la colonne. Avec ses 6 points de marge intérieure, chaque
   /// onglet reçoit 52 points de large : au-delà des 44 exigés.
@@ -200,29 +217,47 @@ class FloraTabRail extends StatelessWidget {
       child: Center(
         widthFactor: 1,
         child: LayoutBuilder(
-          builder: (context, constraints) => ClayBox(
-            color: c.surface,
-            shape: const ClayShape.pill(),
-            width: _width,
-            // La colonne ne dépasse jamais ce qu'on lui laisse : dans une
-            // fenêtre courte — un pliable à demi replié, une app posée à côté
-            // d'une autre —, les onglets se resserrent au lieu de déborder.
-            height: constraints.hasBoundedHeight
-                ? math.min(12 + _slot * tabs.length, constraints.maxHeight)
-                : 12 + _slot * tabs.length,
-            padding: const EdgeInsets.all(6),
-            child: _TabStrip(
+          builder: (context, constraints) {
+            // Ce que les boutons de page prendront, gaps compris. Les onglets
+            // se contentent du reste : dans une fenêtre courte — un pliable
+            // fermé et couché —, ils se resserrent plutôt que de déborder.
+            final placeDesBoutons = actions.isEmpty
+                ? 0.0
+                : actions.length * _actionSize + (actions.length - 1) * Space.xs + Space.md;
+            final voulu = 12 + _slot * tabs.length;
+            final reste = constraints.maxHeight - placeDesBoutons;
+            final hauteur = constraints.hasBoundedHeight ? math.min(voulu, math.max(0.0, reste)) : voulu;
+            final pilule = ClayBox(
+              color: c.surface,
+              shape: const ClayShape.pill(),
+              width: _width,
+              height: hauteur,
+              padding: const EdgeInsets.all(6),
+              child: _TabStrip(
               axis: Axis.vertical,
               showLabels: false,
               tabs: tabs,
               index: index,
               labelLines: 1,
-              onSelect: (i) {
-                if (i != index) Haptics.selection();
-                onSelect(i);
-              },
-            ),
-          ),
+                onSelect: (i) {
+                  if (i != index) Haptics.selection();
+                  onSelect(i);
+                },
+              ),
+            );
+            if (actions.isEmpty) return pilule;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                pilule,
+                const SizedBox(height: Space.md),
+                for (final (i, action) in actions.indexed) ...[
+                  if (i > 0) const SizedBox(height: Space.xs),
+                  action,
+                ],
+              ],
+            );
+          },
         ),
       ),
     );

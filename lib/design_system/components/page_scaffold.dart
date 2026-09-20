@@ -6,6 +6,8 @@ import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
 import 'buttons.dart';
+import 'rail_actions.dart';
+import 'tab_bar.dart';
 
 
 /// La physique de défilement de toutes les pages : le rebond d'iOS, et rien
@@ -88,6 +90,7 @@ class LargeTitlePage extends StatelessWidget {
     this.collapsedTitle,
     this.trailing,
     this.leading,
+    this.actions,
     this.searchField,
     this.controller,
     this.bottomPadding = 132,
@@ -107,6 +110,14 @@ class LargeTitlePage extends StatelessWidget {
   final List<Widget> slivers;
   final Widget? trailing;
   final Widget? leading;
+
+  /// Plusieurs boutons à droite du titre, plutôt qu'un seul [trailing].
+  ///
+  /// C'est une liste et non une `Row` toute faite parce qu'elle se range
+  /// aussi bien debout : quand le menu passe sur le bord droit, ces
+  /// boutons-là le rejoignent, en colonne (voir [RailActions]).
+  final List<Widget>? actions;
+
   final Widget? searchField;
   final ScrollController? controller;
   final double bottomPadding;
@@ -114,7 +125,20 @@ class LargeTitlePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final lead = leading ?? _impliedBackButton(context);
+
+    // Quand le menu est debout à droite, les boutons du haut de page le
+    // rejoignent : ils sont déjà en colonne là-bas, et le haut de page n'a
+    // plus à porter deux choses. Le retour, lui, reste en haut : c'est un
+    // geste de navigation, pas une commande de la page.
+    final relais = RailActionsScope.maybeOf(context);
+    final debout = relais != null && FloraTabRail.fitsIn(context);
+    final boutons = <Widget>[
+      ?leading,
+      if (actions != null) ...actions! else ?trailing,
+    ];
+
+    final lead = debout ? _impliedBackButton(context) : (leading ?? _impliedBackButton(context));
+    final Widget? suite = debout ? null : _headerActions();
     final Widget header;
     if (isCupertino(context)) {
       header = CupertinoSliverNavigationBar(
@@ -128,7 +152,7 @@ class LargeTitlePage extends StatelessWidget {
         // replier comme avant.
         alwaysShowMiddle: collapsedTitle == null,
         leading: lead,
-        trailing: trailing,
+        trailing: suite,
         backgroundColor: c.canvas.withValues(alpha: 0.82),
         border: null,
         stretch: true,
@@ -148,7 +172,7 @@ class LargeTitlePage extends StatelessWidget {
         title: collapsedTitle == null ? Text(title) : _SwappedTitle(large: title, collapsed: collapsedTitle!),
         leading: lead,
         automaticallyImplyLeading: false,
-        actions: trailing == null ? null : [Padding(padding: const EdgeInsets.only(right: Space.xs), child: trailing)],
+        actions: suite == null ? null : [Padding(padding: const EdgeInsets.only(right: Space.xs), child: suite)],
         backgroundColor: c.canvas,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: context.text.display.copyWith(fontSize: 30),
@@ -164,30 +188,50 @@ class LargeTitlePage extends StatelessWidget {
     // contenu se recentre. Sur téléphone l'encart vaut zéro et la liste de
     // slivers reste exactement celle d'avant.
     final inset = readableInset(context);
-    return Scaffold(
-      backgroundColor: c.canvas,
-      body: CustomScrollView(
-        controller: controller,
+    return RailActions(
+      actions: debout ? boutons : const <Widget>[],
+      child: Scaffold(
+        backgroundColor: c.canvas,
+        body: CustomScrollView(
+          controller: controller,
         // Sans contrôleur à elle, la page s'attache à celui de son onglet
         // (`app/tab_scroll.dart`) — dit explicitement, et non laissé à
         // l'heuristique de plateforme de `PrimaryScrollController` : c'est ce
         // qui fait marcher le retour au sommet et le tap sur la barre d'état.
         // La physique reste la nôtre, `primary` ne la remplace que si on n'en
         // passe aucune.
-        primary: controller == null ? true : null,
-        physics: floraScrollPhysics,
-        slivers: [
-          header,
-          if (inset == 0)
-            ...slivers
-          else
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: inset),
-              sliver: SliverMainAxisGroup(slivers: slivers),
-            ),
-          SliverPadding(padding: EdgeInsets.only(bottom: bottomPadding)),
-        ],
+          primary: controller == null ? true : null,
+          physics: floraScrollPhysics,
+          slivers: [
+            header,
+            if (inset == 0)
+              ...slivers
+            else
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: inset),
+                sliver: SliverMainAxisGroup(slivers: slivers),
+              ),
+            SliverPadding(padding: EdgeInsets.only(bottom: bottomPadding)),
+          ],
+        ),
       ),
+    );
+  }
+
+  /// Les boutons tels que le haut de page les porte : en rangée, séparés.
+  /// Rendus nuls quand la page n'en a aucun, pour que la barre reste nue.
+  Widget? _headerActions() {
+    if (actions == null) return trailing;
+    if (actions!.isEmpty) return null;
+    if (actions!.length == 1) return actions!.single;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final (i, action) in actions!.indexed) ...[
+          if (i > 0) const SizedBox(width: Space.xs),
+          action,
+        ],
+      ],
     );
   }
 }
