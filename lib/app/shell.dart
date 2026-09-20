@@ -113,14 +113,18 @@ class _AppShellState extends ConsumerState<AppShell> {
               builder: (ctx) => MediaQuery.removePadding(context: ctx, removeRight: true, child: content),
             ),
           ),
+          // Prototype : l'interrupteur « Colonne Flutter » de la bande native
+          // efface l'argile pour qu'on juge la bande native sur pièce.
           ListenableBuilder(
-            listenable: _railActions,
-            builder: (context, _) => FloraTabRail(
-              index: shell.currentIndex,
-              onSelect: (i) => _select(context, ref, i),
-              tabs: tabs,
-              actions: _railActions.actions,
-            ),
+            listenable: Listenable.merge([_railActions, DuoNativeDemo.interrupteurs]),
+            builder: (context, _) => !DuoNativeDemo.colonneFlutter.value
+                ? const SizedBox.shrink()
+                : FloraTabRail(
+                    index: shell.currentIndex,
+                    onSelect: (i) => _select(context, ref, i),
+                    tabs: tabs,
+                    actions: _railActions.actions,
+                  ),
           ),
         ],
       ),

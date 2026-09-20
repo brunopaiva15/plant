@@ -48,6 +48,40 @@ dessiner. Voir `lib/app/duo_native_demo.dart`.
 - **Rien n'est retiré de Flutter.** La colonne, les hauts de page et les
   grands titres sont intacts. C'est une addition, pas un remplacement.
 
+## Ce que la première capture a répondu
+
+Écran extérieur, 20 septembre 2026. **Oui, iOS range les boutons debout dans
+la bande**, et dans l'ordre annoncé : le retour tout en haut dans sa propre
+capsule, les actions groupées dans une seconde, l'élément de bas de barre
+isolé en bas. La première question est tranchée.
+
+Deux coûts sont apparus du même coup.
+
+**La bande horizontale du haut reste.** iOS y affiche le titre de la page, et
+elle prend **82 points de marge sûre** — `marges sûres · haut` passe de 0 à 82
+dans la même pose. Les boutons sont à droite, mais le haut est quand même
+payé. Et « Aujourd'hui » s'affiche au-dessus du « Bonsoir » d'Auxine : deux
+titres pour une page.
+
+**Les deux colonnes se superposent.** La bande native et la colonne en argile
+occupent le même espace. En production, l'une des deux doit partir.
+
+Pas de débordement : les huit boutons tenaient dans la bande de l'écran
+extérieur. À revoir dans une pose plus courte.
+
+## Les deux interrupteurs
+
+Ils sont en bas de la bande native, et évitent une reconstruction par
+question :
+
+| bouton | ce qu'il tranche |
+|---|---|
+| `textformat` — Titre natif | sans titre, la bande horizontale du haut disparaît-elle, et les 82 points avec elle ? |
+| `sidebar.right` — Colonne Flutter | la bande native seule, sans l'argile derrière, pour la juger sur pièce |
+
+Le relevé `[auxine:fenêtre]` se réécrit à chaque bascule : c'est lui qui dira
+ce que le titre coûte.
+
 ## Ce qu'il faut regarder
 
 Sur le simulateur, dans chaque pose :

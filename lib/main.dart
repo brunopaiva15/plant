@@ -9,6 +9,7 @@ import 'app/app.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/sync_coordinator.dart';
+import 'app/duo_native_demo.dart';
 import 'app/window_probe.dart';
 import 'core/l10n/l10n.dart';
 import 'core/config/app_version.dart';
@@ -43,6 +44,7 @@ Future<void> main() async {
   // Prototype : la chrome de navigation rendue par UIKit. Voir
   // `docs/duo-native-prototype.md`. Muet ailleurs que sur iOS.
   NativeChrome.attach();
+  DuoNativeDemo.attach();
 
   // Relevé des cotes de la fenêtre dans la console, en debug seulement.
   WindowProbe.attach();
