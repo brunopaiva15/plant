@@ -118,19 +118,31 @@ void main() {
   });
 
   group('le menu debout', () {
-    testWidgets('se range contre le bord droit, sous les éléments du système', (tester) async {
+    testWidgets('se range contre le bord droit, la pilule en bas', (tester) async {
       await _pumpRail(tester);
       final pill = _pill(tester);
       // Contre le bord droit, pas au milieu.
       // Sur le même axe que la pile du système : iOS la pose à 47,7 points
       // du bord droit, mesuré dans les trois poses du Duo.
       expect(669 - pill.center.dx, closeTo(48, 0.5), reason: 'la colonne n\'est pas sur l\'axe du système');
-      // Et calée en haut, sous la caméra, l'heure et le wifi — qui
-      // descendent à 140 points alors qu'iOS n'en annonce que 82.
-      expect(pill.top, greaterThanOrEqualTo(140 + 24), reason: 'la pilule colle aux glyphes du système');
-      expect(pill.top, lessThan(210));
+      // En bas, comme iOS : « the tab bar moves to the bottom of the
+      // vertical bar ».
+      expect(951 - pill.bottom, lessThan(Space.xl), reason: 'la pilule n\'est pas au bas de la colonne');
       // Une colonne, pas une barre : plus haute que large.
       expect(pill.height, greaterThan(pill.width * 2));
+    });
+
+    testWidgets('les boutons de la page sont en haut, sous la pile du système', (tester) async {
+      // « Reserve the top for primary navigation controls […] followed by
+      // prominent actions. » Les glyphes du système descendent à 140 points
+      // là où iOS n'en annonce que 82 : les boutons commencent sous eux.
+      await _pumpRail(tester, actions: 4);
+      final premier = tester.getRect(find.byKey(const ValueKey('action0')));
+      expect(premier.top, greaterThanOrEqualTo(140 + 24), reason: 'les boutons collent aux glyphes du système');
+      expect(premier.top, lessThan(210));
+      for (var i = 0; i < 4; i++) {
+        expect(tester.getRect(find.byKey(ValueKey('action$i'))).bottom, lessThan(_pill(tester).top));
+      }
     });
 
     testWidgets('se pose dans la bande du système, pas à côté', (tester) async {
@@ -194,28 +206,28 @@ void main() {
       expect(arrivee.center.dx, moreOrLessEquals(depart.center.dx, epsilon: 0.5));
     });
 
-    testWidgets('la pilule est au même endroit dans toutes les poses', (tester) async {
-      // C'est la raison d'être de l'alignement en haut : ni un pli ni une
-      // rotation ne doivent déplacer la navigation.
-      await _pumpRail(tester, size: const Size(466, 678), actions: 4);
-      final ferme = _pill(tester).top;
-      await _pumpRail(tester, size: const Size(669, 951), actions: 4);
-      expect(_pill(tester).top, moreOrLessEquals(ferme, epsilon: 0.5));
-      await _pumpRail(tester, size: const Size(951, 669), actions: 4);
-      expect(_pill(tester).top, moreOrLessEquals(ferme, epsilon: 0.5));
+    testWidgets('la pilule reste au bas de la fenêtre dans toutes les poses', (tester) async {
+      // Ni un pli ni une rotation ne doivent déplacer la navigation : elle
+      // est calée sur un bord, pas sur le contenu de la colonne.
+      for (final pose in [const Size(466, 678), const Size(669, 951), const Size(951, 669)]) {
+        await _pumpRail(tester, size: pose, actions: 4);
+        expect(pose.height - _pill(tester).bottom, lessThan(Space.xl), reason: '$pose');
+      }
     });
 
-    testWidgets('la pilule ne bouge pas quand la page change de boutons', (tester) async {
+    testWidgets('ni la pilule ni les boutons ne bougent quand la page change', (tester) async {
       // C'est de la navigation : elle doit rester sous le même doigt d'un
-      // onglet à l'autre. Centrer le groupe entier la faisait remonter à
-      // chaque bouton de plus — assez haut, à quatre, pour passer sous
-      // l'heure du système.
+      // onglet à l'autre. Et les boutons, calés sous le dégagement du haut,
+      // ne remontent pas d'un cran à chaque bouton de plus — c'est le vide
+      // entre les deux groupes qui absorbe la différence.
       await _pumpRail(tester, actions: 0);
       final nue = _pill(tester);
       await _pumpRail(tester, actions: 2);
       expect(_pill(tester).top, moreOrLessEquals(nue.top, epsilon: 0.5));
+      final deux = tester.getRect(find.byKey(const ValueKey('action0'))).top;
       await _pumpRail(tester, actions: 4);
       expect(_pill(tester).top, moreOrLessEquals(nue.top, epsilon: 0.5));
+      expect(tester.getRect(find.byKey(const ValueKey('action0'))).top, moreOrLessEquals(deux, epsilon: 0.5));
     });
 
     testWidgets('dans une fenêtre trop courte, elle remonte plutôt que de déborder', (tester) async {
@@ -224,19 +236,15 @@ void main() {
       await _pumpRail(tester, size: const Size(678, 466), actions: 4);
       expect(tester.takeException(), isNull);
       final pill = _pill(tester);
-      expect(pill.top, lessThan(140), reason: 'le dégagement n\'a pas cédé');
+      expect(
+        tester.getRect(find.byKey(const ValueKey('action0'))).top,
+        lessThan(140),
+        reason: 'le dégagement n\'a pas cédé',
+      );
       // Les onglets gardent leurs 44 points : six points de marge intérieure
       // de chaque côté, et quatre créneaux dans ce qui reste.
       expect((pill.height - 12) / 4, greaterThanOrEqualTo(44));
-      expect(tester.getRect(find.byKey(const ValueKey('action3'))).bottom, lessThanOrEqualTo(466));
-    });
-
-    testWidgets('les boutons pendent sous la pilule', (tester) async {
-      await _pumpRail(tester, actions: 4);
-      final pilule = _pill(tester);
-      for (var i = 0; i < 4; i++) {
-        expect(tester.getRect(find.byKey(ValueKey('action$i'))).top, greaterThan(pilule.bottom));
-      }
+      expect(pill.bottom, lessThanOrEqualTo(466));
     });
 
     testWidgets('dans une fenêtre courte, la colonne se resserre au lieu de déborder', (tester) async {
@@ -259,25 +267,25 @@ void main() {
       // Huit points sous la région annoncée, et non les 32 qui dégagent des
       // glyphes mesurés : la région est déjà ce que le système se réserve.
       WindowRegionsService.regions.value = const WindowRegions(systemStackBottom: 60);
-      await _pumpRail(tester);
-      expect(_pill(tester).top, moreOrLessEquals(68, epsilon: 0.5));
+      await _pumpRail(tester, actions: 1);
+      expect(tester.getRect(find.byKey(const ValueKey('action0'))).top, moreOrLessEquals(68, epsilon: 0.5));
     });
 
     testWidgets('le relevé du Duo fermé ne déplace presque pas la colonne', (tester) async {
       // Ce que le simulateur a répondu le 20 septembre 2026 : bande haute de
       // 170 points, caméra à 47,8 du bord droit. La mesure disait 172 et
       // 47,7 — l'annonce la remplace sans la démentir.
-      await _pumpRail(tester, size: const Size(466, 678), rightInset: 84);
-      final mesure = _pill(tester);
+      await _pumpRail(tester, size: const Size(466, 678), rightInset: 84, actions: 1);
+      Rect bouton() => tester.getRect(find.byKey(const ValueKey('action0')));
+      final mesure = bouton();
       WindowRegionsService.regions.value = const WindowRegions(
         systemStackBottom: 170,
         systemAxisFromRight: 47.83,
       );
       await tester.pump();
-      final annonce = _pill(tester);
-      expect(annonce.top, moreOrLessEquals(178, epsilon: 0.5));
-      expect((annonce.top - mesure.top).abs(), lessThan(8), reason: 'la colonne saute');
-      expect(466 - annonce.center.dx, closeTo(47.83, 0.5));
+      expect(bouton().top, moreOrLessEquals(178, epsilon: 0.5));
+      expect((bouton().top - mesure.top).abs(), lessThan(8), reason: 'la colonne saute');
+      expect(466 - _pill(tester).center.dx, closeTo(47.83, 0.5));
     });
 
     testWidgets('l\'ouvert couché remonte la colonne, sans la décaler', (tester) async {
@@ -286,19 +294,17 @@ void main() {
       // colonne remonte d'autant. L'axe, lui, ne bouge pas : iOS n'annonce
       // pas la caméra dans cette pose, et la mesure tient.
       WindowRegionsService.regions.value = const WindowRegions(systemStackBottom: 120);
-      await _pumpRail(tester, size: const Size(951, 669), rightInset: 84);
-      final pill = _pill(tester);
-      expect(pill.top, moreOrLessEquals(128, epsilon: 0.5));
-      expect(951 - pill.center.dx, closeTo(48, 0.5));
+      await _pumpRail(tester, size: const Size(951, 669), rightInset: 84, actions: 1);
+      expect(tester.getRect(find.byKey(const ValueKey('action0'))).top, moreOrLessEquals(128, epsilon: 0.5));
+      expect(951 - _pill(tester).center.dx, closeTo(48, 0.5));
     });
 
     testWidgets('une annonce qui manque laisse la mesure en place', (tester) async {
       // Le pli seul : il ne dit rien de la pile ni de l'axe.
       WindowRegionsService.regions.value = const WindowRegions(fold: Rect.fromLTWH(0, 470, 669, 12));
-      await _pumpRail(tester);
-      final pill = _pill(tester);
-      expect(669 - pill.center.dx, closeTo(48, 0.5));
-      expect(pill.top, moreOrLessEquals(172, epsilon: 0.5));
+      await _pumpRail(tester, actions: 1);
+      expect(669 - _pill(tester).center.dx, closeTo(48, 0.5));
+      expect(tester.getRect(find.byKey(const ValueKey('action0'))).top, moreOrLessEquals(172, epsilon: 0.5));
     });
 
     testWidgets('la place prise au contenu suit l\'axe annoncé', (tester) async {

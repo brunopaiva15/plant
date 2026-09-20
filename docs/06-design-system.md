@@ -395,14 +395,21 @@ D'où `LargeTitlePage.actions`, une **liste** et non une `Row` toute faite :
 une rangée ne se range pas debout. Les pages qui n'ont qu'un bouton gardent
 `trailing`, qui marche pareil.
 
-**Tout se cale en haut**, et rien n'est centré. C'est ce qui fait qu'une
-pilule ne se déplace ni d'un onglet à l'autre, ni d'un pli à l'autre : elle
-commence à 172 points du bord haut dans toutes les poses, et les boutons
-pendent dessous. Centrer, même la pilule seule, la faisait bouger dès que la
-fenêtre changeait de hauteur — et à centrer le groupe entier, elle remontait
-d'un cran à chaque bouton de plus, jusqu'à passer sous l'heure du système.
+**L'ordre est celui d'iOS : les boutons en haut, les onglets en bas.** Apple
+le dit dans « Raise the bar with iPhone Duo » — « reserve the top for primary
+navigation controls, like back or close, followed by prominent actions » —, et
+la barre d'onglets, elle, « moves to the bottom of the vertical bar ». C'est la
+rotation à quatre-vingt-dix degrés de ce qu'un iPhone montre déjà : la
+navigation en haut, les onglets en bas.
 
-Ces 172 points sont une mesure plus une marge : sur l'écran extérieur du Duo,
+Rien n'est centré, et rien ne bouge. Les boutons sont calés sous le dégagement
+du haut, la pilule contre le bas, et c'est le vide entre les deux groupes qui
+absorbe la différence — le même vide que le système met entre ses placements du
+haut et ceux du bas. Centrer, même la pilule seule, la faisait bouger dès que
+la fenêtre changeait de hauteur ; centrer le groupe entier la faisait remonter
+d'un cran à chaque bouton de plus, jusqu'à passer sous l'heure.
+
+Les 172 points qui dégagent le haut sont une mesure plus une marge : sur l'écran extérieur du Duo,
 la pile caméra + heure + wifi descend à 140 points, là où
 `MediaQuery.padding.top` n'en annonce que 82. iOS ne dit donc pas où s'arrête
 sa propre colonne, et la nôtre commence sous la mesure. Si une pose annonçait
@@ -412,7 +419,8 @@ points de large demandent plus d'écart qu'un glyphe de vingt.
 
 Le dégagement cède avant les cibles : dans une fenêtre trop courte — un Duo
 fermé et couché, 466 points de haut pour quatre onglets et quatre boutons —
-la colonne remonte de ce qu'il faut, et les onglets gardent leurs 44 points.
+le groupe du haut remonte de ce qu'il faut, et les onglets gardent leurs
+44 points.
 
 **Horizontalement, les deux colonnes partagent un axe.** iOS pose sa pile à
 47,7 points du bord droit, mesuré au pixel dans les trois poses du Duo — 466,
