@@ -21,10 +21,18 @@ import UIKit
 /// `lib/core/window_regions.dart`.
 ///
 /// `reservedRegions(kind:)` n'existe qu'à partir du SDK iOS 27.1, livré avec
-/// Swift 6.4. Le `#if swift(>=6.4)` n'est donc pas une coquetterie : sans
+/// Swift 6.4. Le `#if compiler(>=6.4)` n'est donc pas une coquetterie : sans
 /// lui, ce fichier ne compilerait pas sur un Xcode plus ancien — le symbole
 /// n'y existe pas, et `#available` seul ne suffirait pas à le cacher au
 /// compilateur.
+///
+/// `compiler`, et surtout pas `swift`. Les deux directives se ressemblent et
+/// ne disent pas la même chose : `#if swift(>=x)` interroge la **version du
+/// langage**, qui ne prend que des valeurs comme 4.2, 5 ou 6, si bien que
+/// `swift(>=6.2)` est faux partout, même sur le compilateur le plus récent.
+/// C'est `#if compiler(>=x)` qui interroge la version du compilateur. Écrit
+/// avec la première, le bloc ci-dessous n'a jamais été compilé, et les
+/// régions revenaient vides sur un appareil où elles existent.
 final class WindowRegionsChannel {
   static let name = "ch.vergasta.plant/window_regions"
 
@@ -51,10 +59,10 @@ final class WindowRegionsChannel {
       "available": true,
       // De quoi lire un tableau vide : sans ces trois-là, « aucune région »
       // ne dit pas si c'est le SDK, le système ou la pose qui se tait.
-      "swift": Self.swiftVersion,
+      "compilateur": Self.compilerVersion,
       "os": UIDevice.current.systemVersion,
       "posee": view.window != nil,
-      "reservedRegions": "SDK antérieur à 27.1 — non compilé",
+      "reservedRegions": "compilateur antérieur à 6.4 — bloc non compilé",
       "occlusions": [[String: Any]](),
       "divisions": [[String: Any]](),
     ]
@@ -71,7 +79,7 @@ final class WindowRegionsChannel {
       payload["statusBar"] = Self.encode(view.convert(bar, from: nil))
     }
 
-    #if swift(>=6.4)
+    #if compiler(>=6.4)
       if #available(iOS 27.1, *) {
         payload["reservedRegions"] = "lues"
         // La vue d'abord, la fenêtre ensuite : une région n'est rendue qu'aux
@@ -102,17 +110,21 @@ final class WindowRegionsChannel {
 
   /// La version du compilateur, parce que c'est elle qui décide si le bloc
   /// ci-dessus existe — et qu'un tableau vide ne le dit pas tout seul.
-  private static var swiftVersion: String {
-    #if swift(>=6.5)
-      return "6.5+"
-    #elseif swift(>=6.4)
+  private static var compilerVersion: String {
+    #if compiler(>=6.6)
+      return "6.6+"
+    #elseif compiler(>=6.5)
+      return "6.5"
+    #elseif compiler(>=6.4)
       return "6.4"
-    #elseif swift(>=6.3)
+    #elseif compiler(>=6.3)
       return "6.3"
-    #elseif swift(>=6.2)
+    #elseif compiler(>=6.2)
       return "6.2"
+    #elseif compiler(>=6.0)
+      return "6.0 ou 6.1"
     #else
-      return "< 6.2"
+      return "< 6.0"
     #endif
   }
 
