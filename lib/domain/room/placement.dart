@@ -16,6 +16,7 @@ class Placement {
     required this.score,
     required this.drafty,
     required this.humidRoom,
+    this.nearHeater = false,
     this.windowIndex,
     this.windowDistance,
     this.windowDirection,
@@ -31,6 +32,9 @@ class Placement {
   final double score;
   final bool drafty;
   final bool humidRoom;
+
+  /// À moins de 80 cm d'un radiateur posé sur le plan : air sec et chaud.
+  final bool nearHeater;
 
   /// La fenêtre la plus proche qui se voit d'ici, et sa distance en mètres.
   final int? windowIndex;
@@ -54,7 +58,7 @@ enum RoomFitVerdict {
 }
 
 /// Pourquoi une pièce ne convient pas, quand c'est le cas.
-enum RoomFitShortfall { tooDark, tooBright, drafty, tooDry }
+enum RoomFitShortfall { tooDark, tooBright, drafty, tooDry, heater }
 
 class RoomFit {
   const RoomFit({required this.verdict, required this.placements, this.shortfall, this.all = const []});

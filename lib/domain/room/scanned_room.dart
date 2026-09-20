@@ -238,6 +238,24 @@ class ScannedRoom {
   /// La normale d'une surface tournée vers l'intérieur de la pièce.
   RoomPoint inwardNormal(RoomSurface s) => (centroid - s.center).dot(s.normal) >= 0 ? s.normal : s.normal.scale(-1);
 
+  /// Le point d'un mur le plus proche, à moins de [within] : un radiateur
+  /// se pose contre un mur, et le doigt vise à côté.
+  RoomPoint snapToWall(RoomPoint p, {double within = 0.5}) {
+    RoomPoint? best;
+    var bestD = within;
+    for (final w in walls) {
+      final d = p - w.start;
+      final t = d.dot(w.along).clamp(0.0, w.width);
+      final onWall = w.start + w.along.scale(t);
+      final dist = (p - onWall).length;
+      if (dist < bestD) {
+        bestD = dist;
+        best = onWall;
+      }
+    }
+    return best ?? p;
+  }
+
   /// Le point est-il dans la pièce ? Par le contour du sol s'il existe, par
   /// la boîte des murs sinon.
   bool contains(RoomPoint p) {

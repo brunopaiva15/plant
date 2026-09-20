@@ -8,30 +8,68 @@ import '../../../domain/care/care_profile.dart';
 import '../../../domain/room/placement.dart';
 import '../../../domain/room/scanned_room.dart';
 
+/// Le passage du plan à l'écran et retour : la pièce tient dans le cadre,
+/// centrée, à la même échelle dans les deux sens. C'est par là que le
+/// peintre dessine, et que le doigt qui pose un radiateur retrouve le point
+/// de la pièce qu'il a touché.
+class RoomPlanGeometry {
+  RoomPlanGeometry({required ScannedRoom room, required this.size, this.padding = 14}) {
+    final (minX, minZ, maxX, maxZ) = room.bounds;
+    _minX = minX;
+    _minZ = minZ;
+    final w = maxX - minX, h = maxZ - minZ;
+    scale = w <= 0 || h <= 0 ? 0 : math.min((size.width - 2 * padding) / w, (size.height - 2 * padding) / h);
+    _ox = (size.width - w * scale) / 2;
+    _oz = (size.height - h * scale) / 2;
+  }
+
+  final Size size;
+  final double padding;
+  late final double scale;
+  late final double _minX, _minZ, _ox, _oz;
+
+  bool get isEmpty => scale <= 0;
+
+  Offset toCanvas(RoomPoint p) => Offset(_ox + (p.x - _minX) * scale, _oz + (p.z - _minZ) * scale);
+
+  RoomPoint toRoom(Offset o) => RoomPoint(_minX + (o.dx - _ox) / scale, _minZ + (o.dy - _oz) / scale);
+}
+
 /// Le plan d'une pièce vu de dessus : murs, fenêtres, portes, meubles en
-/// silhouette, le lavis de la lumière lue place par place, et les places
-/// retenues en pastilles numérotées.
+/// silhouette, radiateurs posés, le lavis de la lumière lue place par place,
+/// et les places retenues en pastilles numérotées.
 ///
 /// Deux dimensions, dessinées par l'application — pas de moteur 3D, pour la
 /// même raison que le diorama : ce qu'on veut lire est une distance et une
 /// direction.
 class RoomPlanPainter extends CustomPainter {
-  RoomPlanPainter({required this.room, required this.colors, required this.numberStyle, this.fit, this.padding = 14});
+  RoomPlanPainter({
+    required this.room,
+    required this.colors,
+    required this.numberStyle,
+    this.fit,
+    this.heaters = const [],
+    this.padding = 14,
+  });
 
   final ScannedRoom room;
   final FloraColors colors;
   final TextStyle numberStyle;
   final RoomFit? fit;
+  final List<RoomPoint> heaters;
   final double padding;
+
+  /// La taille d'un radiateur à l'écran, en mètres de pièce.
+  static const double heaterWidth = 0.7;
+  static const double heaterDepth = 0.12;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final g = RoomPlanGeometry(room: room, size: size, padding: padding);
+    if (g.isEmpty) return;
+    final at = g.toCanvas;
+    final scale = g.scale;
     final (minX, minZ, maxX, maxZ) = room.bounds;
-    final w = maxX - minX, h = maxZ - minZ;
-    if (w <= 0 || h <= 0) return;
-    final scale = math.min((size.width - 2 * padding) / w, (size.height - 2 * padding) / h);
-    final ox = (size.width - w * scale) / 2, oz = (size.height - h * scale) / 2;
-    Offset at(RoomPoint p) => Offset(ox + (p.x - minX) * scale, oz + (p.z - minZ) * scale);
 
     // Le sol.
     final floor = Paint()..color = colors.surfaceMuted;
@@ -112,6 +150,27 @@ class RoomPlanPainter extends CustomPainter {
       }
     }
 
+    // Les radiateurs : une barre rose contre le mur, et trois ailettes.
+    final heaterPaint = Paint()..color = colors.rose;
+    final fin = Paint()
+      ..color = colors.surface
+      ..strokeWidth = 1;
+    for (final h in heaters) {
+      final c = at(h);
+      final w = heaterWidth * scale, d = math.max(heaterDepth * scale, 5.0);
+      // Le long du mur le plus proche : l'orientation vient du mur.
+      final wallDir = _wallDirectionAt(h);
+      canvas.save();
+      canvas.translate(c.dx, c.dy);
+      canvas.rotate(math.atan2(wallDir.z, wallDir.x));
+      final rect = RRect.fromRectAndRadius(Rect.fromCenter(center: Offset.zero, width: w, height: d), Radius.circular(d / 2));
+      canvas.drawRRect(rect, heaterPaint);
+      for (final k in [-0.25, 0.0, 0.25]) {
+        canvas.drawLine(Offset(k * w, -d / 2 + 1), Offset(k * w, d / 2 - 1), fin);
+      }
+      canvas.restore();
+    }
+
     // Les places retenues, numérotées dans l'ordre du classement.
     final placements = fit?.placements ?? const <Placement>[];
     for (var i = 0; i < placements.length; i++) {
@@ -126,6 +185,21 @@ class RoomPlanPainter extends CustomPainter {
     }
   }
 
+  RoomPoint _wallDirectionAt(RoomPoint p) {
+    RoomSurface? best;
+    var bestD = double.infinity;
+    for (final w in room.walls) {
+      final d = p - w.start;
+      final t = d.dot(w.along).clamp(0.0, w.width);
+      final dist = (d - w.along.scale(t)).length;
+      if (dist < bestD) {
+        bestD = dist;
+        best = w;
+      }
+    }
+    return best?.along ?? const RoomPoint(1, 0);
+  }
+
   @override
-  bool shouldRepaint(RoomPlanPainter old) => old.room != room || old.fit != fit || old.colors != colors;
+  bool shouldRepaint(RoomPlanPainter old) => old.room != room || old.fit != fit || old.colors != colors || old.heaters != heaters;
 }

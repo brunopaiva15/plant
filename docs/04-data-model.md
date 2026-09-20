@@ -107,10 +107,10 @@ stable. `section_label` est le type de pièce que RoomPlan reconnaît sur
 iOS 17 (`kitchen`, `bathroom`…), nul sinon.
 
 `room_markers` porte ce que la main ajoute au relevé, séparé de ce que le
-capteur a vu : refaire un relevé ne perd pas les repères. Au palier 1, seul
-`windowOrientation` est écrit — l'orientation confirmée d'une fenêtre,
-indexée par son rang dans le JSON ; `heater` et `plant` attendent les
-paliers suivants (docs/17).
+capteur a vu : refaire un relevé ne perd pas les repères.
+`windowOrientation` est l'orientation confirmée d'une fenêtre, indexée par
+son rang dans le JSON ; `heater` un radiateur posé du doigt, collé au mur
+le plus proche ; `plant` attend le palier 3 (docs/17).
 
 ## Tables prévues (schéma réservé, UI en P4)
 ```

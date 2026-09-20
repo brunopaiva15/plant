@@ -44,16 +44,36 @@ abstract final class RoomLightModel {
   static const double indirectAt = 0.29;
   static const double lowLightAt = 0.225;
 
-  /// La portée de la tache de soleil, en fraction de la hauteur du haut de
-  /// la fenêtre au-dessus du sol : un soleil à 45°, celui d'une mi-saison.
-  static const double sunReachPerHeight = 1.0;
+  /// La hauteur du soleil de mi-saison quand le lieu n'est pas connu : 45°,
+  /// et la tache porte aussi loin que la fenêtre est haute.
+  static const double defaultSunElevationDeg = 45;
 
   /// Le dernier cinquième de la tache est son bord : le soleil n'y passe
   /// qu'une partie de la journée.
   static const double sunEdgeFraction = 0.8;
 
+  /// La hauteur du soleil à midi, à la mi-saison, pour une latitude : 90°
+  /// moins la latitude, bornée pour que la tache ne s'étire ni ne se
+  /// réduise à rien. Le lieu de la météo la donne ; sans lieu, 45°.
+  ///
+  /// La saison ne bouge pas la place : la tache d'hiver est plus longue et
+  /// celle d'été plus courte, l'équinoxe est le compromis retenu — une place
+  /// qui changerait d'avis d'un mois à l'autre ne se lirait pas.
+  static double sunElevationFor(double? latitude) => latitude == null ? defaultSunElevationDeg : (90 - latitude.abs()).clamp(15.0, 75.0);
+
+  /// Jusqu'où la tache d'une fenêtre entre dans la pièce.
+  static double sunReach(ScannedRoom room, RoomSurface window, {double sunElevationDeg = defaultSunElevationDeg}) =>
+      (window.topY - room.floorY) / math.tan(sunElevationDeg * math.pi / 180);
+
   /// L'apport total d'un point, et s'il est dans la tache de soleil.
-  static LightSample sample(ScannedRoom room, RoomPoint p, {required double height, required bool southern, List<CardinalDirection?>? directions}) {
+  static LightSample sample(
+    ScannedRoom room,
+    RoomPoint p, {
+    required double height,
+    required bool southern,
+    List<CardinalDirection?>? directions,
+    double sunElevationDeg = defaultSunElevationDeg,
+  }) {
     var total = 0.0;
     var sun = SunPatch.none;
     for (var i = 0; i < room.windows.length; i++) {
@@ -66,15 +86,22 @@ abstract final class RoomLightModel {
       if (cos <= 0) continue;
       final direction = directions != null && i < directions.length ? directions[i] : room.windowDirection(w);
       total += w.area * orientationFactor(direction, southern: southern) * cos / (d * d);
-      final patch = _sunPatch(room, p, w, inward, direction, southern: southern);
+      final patch = _sunPatch(room, p, w, inward, direction, southern: southern, sunElevationDeg: sunElevationDeg);
       if (patch.index > sun.index) sun = patch;
     }
     return LightSample(total, sun);
   }
 
   /// Le cran de lumière d'un point.
-  static LightNeed lightAt(ScannedRoom room, RoomPoint p, {double height = potHeight, bool southern = false, List<CardinalDirection?>? directions}) =>
-      sample(room, p, height: height, southern: southern, directions: directions).light;
+  static LightNeed lightAt(
+    ScannedRoom room,
+    RoomPoint p, {
+    double height = potHeight,
+    bool southern = false,
+    List<CardinalDirection?>? directions,
+    double sunElevationDeg = defaultSunElevationDeg,
+  }) =>
+      sample(room, p, height: height, southern: southern, directions: directions, sunElevationDeg: sunElevationDeg).light;
 
   /// La fenêtre se voit-elle du point ? Aucun mur entre les deux — sauf
   /// celui qui la porte — ni aucun meuble plus haut que le point.
@@ -108,7 +135,15 @@ abstract final class RoomLightModel {
     return off < 0.2;
   }
 
-  static SunPatch _sunPatch(ScannedRoom room, RoomPoint p, RoomSurface w, RoomPoint inward, CardinalDirection? direction, {required bool southern}) {
+  static SunPatch _sunPatch(
+    ScannedRoom room,
+    RoomPoint p,
+    RoomSurface w,
+    RoomPoint inward,
+    CardinalDirection? direction, {
+    required bool southern,
+    required double sunElevationDeg,
+  }) {
     if (direction == null) return SunPatch.none;
     final dir = southern ? _mirror(direction) : direction;
     final strong = dir == CardinalDirection.south || dir == CardinalDirection.southEast || dir == CardinalDirection.southWest;
@@ -116,7 +151,7 @@ abstract final class RoomLightModel {
     if (!strong && !weak) return SunPatch.none;
     final toP = p - w.center;
     final depth = toP.dot(inward);
-    final reach = (w.topY - room.floorY) * sunReachPerHeight;
+    final reach = sunReach(room, w, sunElevationDeg: sunElevationDeg);
     if (depth <= 0 || depth > reach) return SunPatch.none;
     // Le soleil balaie : la tache déborde de l'ouverture d'un peu, plus loin.
     final lateral = toP.dot(w.along).abs();
@@ -144,6 +179,11 @@ abstract final class RoomLightModel {
     }
     return false;
   }
+
+  /// À moins de cette distance d'un radiateur, l'air est sec et chaud.
+  static const double heaterRadius = 0.8;
+
+  static bool isNearHeater(RoomPoint p, Iterable<RoomPoint> heaters) => heaters.any((h) => p.distanceTo(h) < heaterRadius);
 }
 
 /// La tache de soleil, en trois états ordonnés.

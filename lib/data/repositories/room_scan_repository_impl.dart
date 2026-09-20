@@ -110,4 +110,24 @@ class DriftRoomScanRepository implements RoomScanRepository {
           updatedAt: now,
         ));
   }
+
+  @override
+  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId}) async {
+    final now = DateTime.now();
+    final id = _uuid.v4();
+    await _db.into(_db.roomMarkers).insert(RoomMarkersCompanion.insert(
+          id: id,
+          scanId: scanId,
+          kind: kind.name,
+          x: x,
+          z: z,
+          plantId: Value(plantId),
+          createdAt: now,
+          updatedAt: now,
+        ));
+    return (await (_db.select(_db.roomMarkers)..where((m) => m.id.equals(id))).getSingle()).toDomain()!;
+  }
+
+  @override
+  Future<void> removeMarker(String id) => (_db.delete(_db.roomMarkers)..where((m) => m.id.equals(id))).go();
 }

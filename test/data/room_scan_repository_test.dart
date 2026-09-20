@@ -65,6 +65,32 @@ void main() {
     expect(markers.map((m) => m.windowIndex), [1]);
   });
 
+  test('un radiateur se pose et se retire, sans toucher aux fenêtres', () async {
+    final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
+    await repo.setWindowOrientation(a.id, 0, CardinalDirection.south, x: -2.1, z: 0.3);
+    final h = await repo.addMarker(a.id, RoomMarkerKind.heater, x: 1.0, z: -1.7);
+    expect(h.kind, RoomMarkerKind.heater);
+    expect(heaterPoints(await repo.watchMarkers(a.id).first), [const RoomPoint(1.0, -1.7)]);
+    await repo.removeMarker(h.id);
+    final left = await repo.watchMarkers(a.id).first;
+    expect(heaterPoints(left), isEmpty);
+    expect(left.map((m) => m.kind), [RoomMarkerKind.windowOrientation]);
+  });
+
+  test('un radiateur se colle au mur le plus proche', () {
+    final room = ScannedRoom(
+      walls: const [
+        RoomSurface(kind: RoomSurfaceKind.wall, center: RoomPoint(0, -2), along: RoomPoint(1, 0), normal: RoomPoint(0, 1), width: 4, height: 2.7, bottomY: 0),
+      ],
+      windows: const [],
+      doors: const [],
+      openings: const [],
+      objects: const [],
+    );
+    expect(room.snapToWall(const RoomPoint(0.5, -1.7)), const RoomPoint(0.5, -2));
+    expect(room.snapToWall(const RoomPoint(0.5, 0)), const RoomPoint(0.5, 0));
+  });
+
   test('supprimer retire le relevé et ses repères', () async {
     final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
     await repo.setWindowOrientation(a.id, 0, CardinalDirection.south, x: 0, z: 0);
