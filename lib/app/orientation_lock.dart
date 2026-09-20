@@ -10,10 +10,14 @@ const double compactWindowWidth = 600;
 ///
 /// La mesure est prise à chaque appel, jamais gardée. Sur un appareil pliable
 /// — l'iPhone Duo — c'est la même application qui passe de l'écran extérieur
-/// (environ 466 points de large) à l'écran intérieur (environ 669) et revient,
-/// sans rien relancer : une taille lue au démarrage se périme au premier pli.
-/// Ces deux nombres se déduisent des pixels publiés, au facteur 3 ; Apple n'a
-/// pas publié les cotes en points.
+/// à l'écran intérieur et revient, sans rien relancer : une taille lue au
+/// démarrage se périme au premier pli.
+///
+/// Les cotes, relevées dans Xcode 27.1 les 18 et 19 septembre 2026 (DPR 3) :
+/// fermé 386 × 678 points, ouvert 669 × 871 en mode de compatibilité ;
+/// 466 × 678 et 669 × 951 une fois l'application construite avec le SDK 27.1,
+/// qui l'étend jusqu'au bord. La limite des 600 points tient dans les deux
+/// modes.
 bool isCompactWindow() {
   final dispatcher = WidgetsBinding.instance.platformDispatcher;
   // La vue implicite est celle que l'application occupe ; sur un appareil à
@@ -49,6 +53,12 @@ bool isCompactWindow() {
 /// les appareils qui font cohabiter deux applications. Le verrou est donc une
 /// intention plus qu'une contrainte : ce qui compte est que l'application
 /// cesse de la porter dès que la fenêtre s'élargit.
+///
+/// Sur l'iPhone Duo, la demande est carrément **refusée** : UIKit répond
+/// `UISceneErrorDomain Code=101`, sans que Dart en sache rien — l'erreur part
+/// dans le gestionnaire vide de l'engine. L'écran extérieur tourne donc, et
+/// l'application doit être juste en 678 × 386 comme en 386 × 678. Ce sont
+/// `Info.plist` et la mise en page qui tiennent la barre, pas ces lignes.
 class OrientationLock with WidgetsBindingObserver {
   bool? _portrait;
 

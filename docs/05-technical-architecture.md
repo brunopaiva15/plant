@@ -168,28 +168,58 @@ avec une autre, et le refuser est un motif de rejet. La limite est à 600 points
 de côté le plus court ; au-delà de 700 points de large, le contenu rend son
 surplus en marges (`readableInset`, `design_system/components/page_scaffold.dart`).
 
-L'iPhone Duo tient les deux rôles dans la même séance : fermé, son écran
-extérieur fait environ 466 points de large ; ouvert, l'écran intérieur en fait
-environ 669, et rien n'a été relancé entre les deux. (Apple publie les pixels —
-1398 × 2034 dehors, 2007 × 2853 dedans pour le magasin — pas les points ; ces
-deux nombres s'en déduisent au facteur 3 et restent à confirmer sur
-l'appareil. Si l'écran intérieur passait sous la limite des 600, c'est la
-limite qu'il faudrait corriger, pas le mécanisme.) Le verrou n'est donc plus une décision de
-démarrage mais un état — `OrientationLock` écoute `didChangeMetrics` et le pose
-ou le retire à chaque pli —, et aucune taille n'est gardée : `isCompactWindow()`
-mesure la vue implicite à chaque appel. Le viseur intégré suit la même règle
+L'iPhone Duo tient les deux rôles dans la même séance : fermé il est un
+téléphone, ouvert une tablette, et rien n'a été relancé entre les deux. Le
+verrou n'est donc plus une décision de démarrage mais un état —
+`OrientationLock` écoute `didChangeMetrics` et le pose ou le retire à chaque
+pli —, et aucune taille n'est gardée : `isCompactWindow()` mesure la vue
+implicite à chaque appel. Le viseur intégré suit la même règle
 (`features/plants/presentation/inline_camera.dart`) : son verrou de capture se
 défait quand l'appareil s'ouvre, faute de quoi une photo prise après le pli
 sortirait couchée.
+
+### Les cotes, mesurées
+
+Relevées dans Xcode 27.1 les 18 et 19 septembre 2026, sur le simulateur, DPR 3
+dans les quatre cas. Elles viennent du harnais Duo de *disquebleu*
+(`docs/duo-harness.md` de ce dépôt-là), pas d'un calcul.
+
+| Pose | `MediaQuery.size` | `physicalSize` | Marges sûres |
+|---|---:|---:|---|
+| fermé, portrait | 386 × 678 pt | 1158 × 2034 px | bas 34 |
+| fermé, couché | 678 × 386 pt | 2034 × 1158 px | gauche 34 · droite 34 · bas 20 |
+| ouvert, portrait | 669 × 871 pt | 2007 × 2613 px | bas 34 |
+| ouvert, couché | 871 × 669 pt | 2613 × 2007 px | gauche 34 · droite 34 · bas 20 |
+
+**Ce sont les cotes du mode de compatibilité**, celui d'un binaire qui n'est
+pas encore construit avec le SDK 27.1 : iOS tient alors l'application à gauche
+de la zone heure/caméra, et elle perd 80 points sur un axe. Construite avec le
+SDK, elle s'étend jusqu'au bord et retrouve les cotes qui se déduisent des
+tailles de visuels du magasin : 466 × 678 fermé, 669 × 951 ouvert. Les deux
+limites de l'application — 600 points pour le verrou et le menu, 700 pour le
+côté le plus court — tiennent dans les deux modes, et c'est ce qui compte.
+
+Deux constats de ces relevés valent plus que les nombres :
+
+- `MediaQuery.displayFeatures` est **vide** dans les quatre poses, pli partiel
+  compris. Flutter ne l'alimente que sur Android, et le pli partiel ne produit
+  même pas de nouveau relevé : la scène garde la même surface. Rien, côté
+  Dart, ne dit où passe la charnière.
+- `SystemChrome.setPreferredOrientations` est **refusé** par UIKit, qui répond
+  `UISceneErrorDomain Code=101`. Dart n'en sait rien — l'engine passe un
+  gestionnaire d'erreur vide. L'écran extérieur tourne donc malgré la
+  déclaration portrait, et l'application doit être juste en 678 × 386. Ce sont
+  `Info.plist` et la mise en page qui tiennent la barre, pas `OrientationLock`,
+  qui reste utile ailleurs mais ne décide rien ici.
 
 Côté iOS, trois points valent d'être connus :
 
 - `UIRequiresFullScreen` ne doit pas revenir dans `Info.plist`. La clé dit au
   système que l'application veut tout l'écran à l'ancienne manière, et la tient
   hors de l'adaptation — fermée comme ouverte.
-- L'écran intérieur n'honore pas `UISupportedInterfaceOrientations` : la
-  déclaration portrait ne vaut que pour l'écran extérieur. Une page doit savoir
-  tourner, pas s'y opposer.
+- Les orientations ne se décident plus depuis le code : la déclaration de
+  `Info.plist` vaut, la demande programmatique est refusée (voir plus bas).
+  Une page doit savoir tourner, pas s'y opposer.
 - `TARGETED_DEVICE_FAMILY = "1,2"` était déjà posé pour l'iPad ; c'est cette
   valeur qui ouvre à l'écran intérieur les mises en page larges d'UIKit.
 
@@ -206,24 +236,26 @@ tient en deux nombres, dans `FloraTabRail.fitsIn`, et l'iPad n'est pas
 concerné : il garde sa barre du bas. Le détail du rail est dans docs/06,
 section « Le menu debout ».
 
-Pour relever les cotes d'une pose qu'on n'a pas sous la main, une sonde écrit
-la fenêtre dans la console à chaque changement — taille, marges sûres, écran,
-nombre de vues, pli — et rien par défaut :
+Pour relever les cotes d'une pose qu'on n'a pas sous la main,
+`app/window_probe.dart` écrit la fenêtre dans la console à chaque changement —
+taille, marges sûres, écran, nombre de vues, pli. En debug, sans rien
+demander ; jamais ailleurs. Un relevé qui répète le précédent n'est pas
+réécrit, si bien qu'un clavier qui monte ne dit rien et qu'un pli dit tout.
 
-```bash
-flutter run --dart-define=WINDOW_DEBUG=true   # appareil, simulateur
-flutter run -d chrome                         # puis ?window dans l'adresse
-```
+Elle a d'abord été muette sur l'appareil, pour deux raisons qu'il vaut mieux
+connaître : elle était derrière un `--dart-define`, qui se passe
+silencieusement de travers, et son premier relevé partait de `main()`, avant
+que l'application ait ouvert sa fenêtre — donc dans le journal de l'appareil
+avant que `flutter run` ne s'y branche. Le drapeau a disparu et le premier
+relevé attend la première image. Même chemin que le `_logDuoMetrics` de
+*disquebleu*, qui écrit depuis un `build()` pour la même raison.
 
-`app/window_probe.dart`. Elle sert surtout à trancher une question ouverte :
-Flutter ne remplit `MediaQuery.displayFeatures` que sur Android — `dart:ui` le
-dit —, donc sur iOS la liste est vide et rien ne dit où passe le pli. Tant
-qu'il en sera ainsi, une mise en page qui s'aligne sur la charnière demandera
-un canal natif, comme ceux qui existent déjà
+Tant que `displayFeatures` reste vide, une mise en page qui s'aligne sur la
+charnière demandera un canal natif, comme ceux qui existent déjà
 (`ios/Runner/HomeClimateChannel.swift`, `HapticsChannel.swift`). Une
-proposition est ouverte chez Flutter pour alimenter ces display features
-depuis les *reserved regions* d'iOS 27.1 (flutter/flutter#192515) ; si elle
-atterrit, le canal devient inutile.
+proposition est ouverte chez Flutter pour l'alimenter depuis les *reserved
+regions* d'iOS 27.1 (flutter/flutter#192515) ; si elle atterrit, le canal
+devient inutile.
 
 Ce qui reste à faire quand l'appareil sera là (23 octobre 2026) : les visuels
 du magasin pour l'écran intérieur (`store/README.md`) et, si la place le
@@ -246,8 +278,8 @@ justifie, une famille de widget plus grande que `systemMedium`.
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
 - `test/app/orientation_lock_test.dart` : le verrou de portrait posé et retiré
   quand la fenêtre change de taille en cours de séance (pliable).
-- `test/app/window_probe_test.dart` : la sonde de fenêtre reste muette tant
-  qu'on ne la demande pas.
+- `test/app/window_probe_test.dart` : la sonde de fenêtre écrit sans qu'on lui
+  demande rien, attend la première image, et ne se répète pas.
 - `test/design_system/tab_rail_test.dart` : où le menu se met debout, et ce
   qu'il fait une fois debout (bord, bande réservée, cibles, bulle).
 

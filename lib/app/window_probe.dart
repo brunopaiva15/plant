@@ -14,28 +14,33 @@ import 'orientation_lock.dart';
 /// poses a ses points, ses marges sûres et peut-être son pli. Le simulateur
 /// les donne toutes ; encore faut-il les lire.
 ///
-/// Rien n'est posé par défaut, et rien ne part en production :
+/// Elle écrit en debug, et nulle part ailleurs — il n'y a rien à demander au
+/// lancement. Un relevé qui répète le précédent n'est pas réécrit : la console
+/// ne voit un bloc que quand la fenêtre change vraiment.
 ///
-/// ```
-/// flutter run --dart-define=WINDOW_DEBUG=true      # appareil, simulateur
-/// flutter run -d chrome  # puis ?window dans l'adresse
-/// ```
+/// Elle ne s'est d'abord pas vue du tout : écrite depuis `main()`, avant que
+/// l'application ait ouvert sa fenêtre, et derrière un `--dart-define` qu'une
+/// faute de frappe rendait silencieux. Les deux sont corrigés — le premier
+/// relevé attend la première image, et il n'y a plus de drapeau à passer.
 abstract final class WindowProbe {
-  /// La sonde a été demandée au lancement. Jamais en production.
-  static bool get requested =>
-      !kReleaseMode && (kIsWeb ? Uri.base.queryParameters.containsKey('window') : const bool.fromEnvironment('WINDOW_DEBUG'));
+  /// La sonde écrit en debug seulement. Rien en profil, rien en production.
+  static bool get enabled => kDebugMode;
 
   static _WindowProbeObserver? _observer;
 
-  /// Branche la sonde si elle a été demandée, et écrit tout de suite la
-  /// fenêtre de départ.
-  static void attachIfRequested() {
-    if (!requested || _observer != null) return;
+  /// Branche la sonde et écrit la fenêtre de départ après la première image.
+  static void attach() {
+    if (!enabled || _observer != null) return;
     final observer = _WindowProbeObserver();
     _observer = observer;
     WidgetsBinding.instance.addObserver(observer);
-    debugPrint(_entete);
-    observer.report();
+    // Le premier relevé attend la première image. Écrit depuis `main()`, il
+    // part dans le journal de l'appareil avant que `flutter run` ne s'y
+    // branche : sur un simulateur, il n'arrive jamais jusqu'à la console.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint(_entete);
+      observer.report();
+    });
   }
 
   /// Débranche la sonde. Réservé aux tests.
@@ -47,13 +52,7 @@ abstract final class WindowProbe {
     _observer = null;
   }
 
-  static const String _entete = '''
-[auxine:fenêtre] sonde branchée. Un relevé par changement de fenêtre.
-[auxine:fenêtre] Les poses à parcourir, une à une :
-[auxine:fenêtre]   1. fermé, portrait          5. à demi plié
-[auxine:fenêtre]   2. fermé, paysage           6. Split View, à côté d'une autre app
-[auxine:fenêtre]   3. ouvert, portrait         7. ouvert puis refermé, sans relancer
-[auxine:fenêtre]   4. ouvert, paysage''';
+  static const String _entete = '[auxine:fenêtre] sonde branchée — un relevé par changement de fenêtre.';
 }
 
 class _WindowProbeObserver with WidgetsBindingObserver {

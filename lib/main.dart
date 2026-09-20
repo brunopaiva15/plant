@@ -40,9 +40,8 @@ Future<void> main() async {
   // dans `app/orientation_lock.dart`.
   await OrientationLock().attach();
 
-  // Relevé des cotes de la fenêtre dans la console, sur demande :
-  // `--dart-define=WINDOW_DEBUG=true`. Sans cela, rien ne s'écrit.
-  WindowProbe.attachIfRequested();
+  // Relevé des cotes de la fenêtre dans la console, en debug seulement.
+  WindowProbe.attach();
 
   // La version vient du binaire, jamais d'une constante recopiée : c'est
   // `pubspec.yaml` qui la fixe, et les deux plateformes l'y prennent déjà.

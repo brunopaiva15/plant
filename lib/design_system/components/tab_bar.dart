@@ -148,11 +148,17 @@ class FloraTabRail extends StatelessWidget {
   /// Deux conditions, et les deux comptent. Large : en deçà de 600 points, le
   /// menu debout mangerait un dixième de la largeur du contenu. Pas une
   /// tablette : un iPad garde sa barre en bas, et son côté le plus court fait
-  /// au minimum 744 points là où l'écran intérieur du Duo en fait environ 669.
+  /// au minimum 744 points là où l'écran intérieur du Duo en fait 669.
   ///
-  /// La limite des 700 points est donc un entre-deux, pas une mesure : Flutter
-  /// ne sait pas dire « iPhone » ou « iPad » sans canal natif, et ne remplit
-  /// pas `displayFeatures` sur iOS (voir `app/window_probe.dart`). Un iPad en
+  /// Ce que ça donne sur les quatre poses mesurées dans Xcode 27.1 : fermé
+  /// 386 × 678, la barre reste en bas ; fermé et couché 678 × 386, le menu se
+  /// met debout — et c'est voulu, une fenêtre courte et large est justement
+  /// celle où une barre en bas coûte le plus cher ; ouvert 669 × 871 et
+  /// 871 × 669, debout aussi.
+  ///
+  /// La limite des 700 points est un entre-deux, pas une mesure : Flutter ne
+  /// sait pas dire « iPhone » ou « iPad » sans canal natif, et ne remplit pas
+  /// `displayFeatures` sur iOS (voir `app/window_probe.dart`). Un iPad en
   /// Split View réglé aux deux tiers tomberait du mauvais côté ; c'est le seul
   /// cas connu, et il disparaîtra le jour où un canal dira le pli.
   static bool fitsIn(BuildContext context) {
