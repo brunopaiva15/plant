@@ -60,6 +60,16 @@ leur console développeur n'accepte pas d'inscription — c'est la limite de
 leur beta publique. Sans aucune maison lisible, l'étape et le réglage
 n'apparaissent pas. Détails : docs/05.
 
+## Le relevé de la maison (iPhone et iPad à LiDAR)
+Profil › Relevé de la maison relève une pièce — ou l'appartement, pièce
+après pièce — avec RoomPlan, puis « Où la poser », sous le diorama de la
+fiche d'entretien, dit où une plante serait le mieux : la distance et
+l'orientation des fenêtres, les rideaux, les radiateurs et les portes
+posés sur le plan, la pièce d'eau. Le nord vient de la boussole et se
+confirme à la main. Le relevé reste sur l'appareil ; il part dans
+l'export ZIP, jamais dans la synchronisation. Sans LiDAR, rien n'apparaît.
+Détails : docs/17.
+
 ## Sur l'écran d'accueil d'iOS
 Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,
 rond, rectangle et ligne sur l'écran verrouillé) ; l'appui long sur l'icône

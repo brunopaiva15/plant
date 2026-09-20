@@ -1,10 +1,10 @@
 # Le relevé de la maison : où poser cette plante
 
-> Statut : fonction expérimentale. Quatre paliers sont codés derrière
-> `--dart-define=ROOM_SCAN=true`, et le palier 0 est passé : un relevé réel
-> sur un iPhone Pro a confirmé la construction, la présentation par-dessus
-> Flutter et la lecture du JSON. L'appartement entier (palier 3) et les
-> paliers suivants attendent leur relevé réel. Note créée le 20 septembre 2026.
+> Statut : livrée, sur iPhone et iPad à LiDAR (`AppConfig.roomScanEnabled`).
+> Quatre paliers sont codés ; le palier 0 est passé — un relevé réel sur
+> un iPhone Pro a confirmé la construction, la présentation par-dessus
+> Flutter et la lecture du JSON. L'appartement entier (palier 3) et le
+> balcon attendent leur relevé réel. Note créée le 20 septembre 2026.
 
 ## L'idée
 
@@ -243,8 +243,8 @@ Trois entrées, une par question qu'on se pose :
 - **Profil › Réglages › Relevé de la maison** : la liste des pièces
   relevées (nom, surface, emplacement lié, date), « Relever une pièce »,
   et pour chaque pièce : renommer, lier à un emplacement, corriger
-  l'orientation des fenêtres, supprimer. Sur un appareil sans LiDAR, ou
-  sans le drapeau, la ligne n'existe pas.
+  l'orientation des fenêtres, supprimer. Sur un appareil sans LiDAR, la
+  ligne n'existe pas.
 - **Fiche d'entretien › « Où la poser »** sous le diorama, quand au moins
   une pièce est relevée. Le diorama ne change pas : il montre l'idéal, le
   relevé montre le réel (docs/13, « Idéal et réel »).
@@ -300,9 +300,9 @@ et le plan reste valable.
 `room_scans` et son dépôt (schéma v13), l'écran de réglage avec la liste
 des pièces et l'écran des fenêtres, le parseur et le modèle de lumière
 avec leur calibration sur la pièce du diorama, `RoomFitAdvisor`, l'écran
-de résultat depuis la fiche d'entretien. Drapeau `AppConfig.roomScanEnabled`
-à `false`, ouvert par `--dart-define=ROOM_SCAN=true` pour tester, comme
-les clés d'API. **Livré dans ce dépôt**, aux réserves du palier 0 près :
+de résultat depuis la fiche d'entretien. Drapeau `AppConfig.roomScanEnabled`,
+ouvert : la fonction est dans l'application, sur les appareils à LiDAR.
+**Livré dans ce dépôt**, aux réserves du palier 0 près :
 le résultat s'ouvre en feuille depuis la fiche, sans route, parce qu'une
 fiche ne se met pas dans une URL ; « refaire » un relevé est le supprimer
 et en relever un autre.

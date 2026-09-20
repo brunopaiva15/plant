@@ -110,7 +110,9 @@ class FloraDatabase extends _$FloraDatabase {
             await m.createTable(roomMarkers);
           }
           if (from < 14) {
-            await m.addColumn(roomScans, roomScans.structureId);
+            // Une base ramenée à un schéma plus ancien pour un test ne perd
+            // pas toujours cette colonne : on ne l'ajoute que si elle manque.
+            if (!await _hasColumn('room_scans', 'structure_id')) await m.addColumn(roomScans, roomScans.structureId);
           }
           await _createIndexes();
         },
@@ -119,6 +121,11 @@ class FloraDatabase extends _$FloraDatabase {
           await _seedActionTypes();
         },
       );
+
+  Future<bool> _hasColumn(String table, String column) async {
+    final rows = await customSelect('PRAGMA table_info($table)').get();
+    return rows.any((r) => r.read<String>('name') == column);
+  }
 
   Future<void> _createIndexes() async {
     await customStatement('CREATE INDEX IF NOT EXISTS idx_plants_status ON plants(status, deleted_at)');
