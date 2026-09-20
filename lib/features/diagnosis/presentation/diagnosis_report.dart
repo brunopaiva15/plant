@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/l10n/diagnosis_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/likelihood_labels.dart';
@@ -53,16 +55,23 @@ class _SavedReport extends StatelessWidget {
   }
 }
 
-/// Le compte rendu d'une analyse : urgence, photos, résumé, symptômes
-/// signalés, puis toutes les pistes.
+/// Le compte rendu d'une analyse : les photos regardées, le constat, ce qui
+/// avait été signalé et coché, puis toutes les pistes.
 ///
 /// Le même corps sert à l'analyse qui vient d'aboutir et à celle qu'on
 /// rouvre des mois plus tard — sans quoi les deux se mettraient à diverger,
 /// et « rouvrir le diagnostic » ne rendrait pas ce qu'on avait lu.
 class DiagnosisReportView extends ConsumerWidget {
-  const DiagnosisReportView({super.key, required this.record});
+  const DiagnosisReportView({super.key, required this.record, this.uncertain = false});
 
   final DiagnosisRecord record;
+
+  /// Vrai quand l'analyse ne tranche pas et qu'aucune photo de plus n'est à
+  /// demander : le constat le dit en toutes lettres plutôt que de laisser
+  /// croire que les pistes concluent. Une analyse rouverte du journal ne
+  /// garde pas cet état — elle n'a plus de décision en cours, seulement ce
+  /// qui a été écrit ce jour-là.
+  final bool uncertain;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,45 +83,138 @@ class DiagnosisReportView extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (diagnosis.urgent) ...[
-          DueBadge(emoji: '⚠️', label: l10n.urgentHint, status: DueStatus.overdue),
-          const SizedBox(height: Space.xs),
-        ],
         if (record.photos.isNotEmpty) ...[
-          DiagnosisPhotoStrip(photos: record.photos),
-          const SizedBox(height: Space.sm),
+          DiagnosisPhotoStrip(photos: record.photos, side: 108),
+          const SizedBox(height: Space.md),
         ],
-        Text(diagnosis.summary, style: context.text.body),
+        // Le constat d'abord, comme une carte du matin : la tuile, le nom,
+        // la phrase. En terre cuite quand il y a urgence — c'est la seule
+        // chose qui change de couleur dans le compte rendu.
+        _FindingCard(summary: diagnosis.summary, urgent: diagnosis.urgent, uncertain: uncertain),
         if (record.symptoms != null) ...[
           const SizedBox(height: Space.sm),
-          Text(l10n.diagnosisSymptomsNoted, style: context.text.caption),
-          const SizedBox(height: 2),
-          Text(record.symptoms!, style: context.text.callout),
+          FloraGroup(
+            header: l10n.diagnosisSymptomsNoted,
+            children: [FloraListRow(title: record.symptoms!, chevron: false, dense: true)],
+          ),
         ],
         // Ce qui avait été vérifié à la main ce jour-là. La photo ne le
         // montre pas, et c'est pourtant la moitié de ce qui a mené aux
         // pistes : le compte rendu ne se relit pas sans lui.
         if (record.observations.isNotEmpty) ...[
           const SizedBox(height: Space.sm),
-          Text(l10n.diagnosisChecks, style: context.text.caption),
-          const SizedBox(height: Space.xxs),
           FloraGroup(
+            header: l10n.diagnosisChecks,
             children: [
               for (final (label, value) in l10n.observationRows(record.observations))
-                FloraListRow(title: label, trailing: Text(value, style: context.text.callout, textAlign: TextAlign.end), dense: true),
+                FloraListRow(
+                  title: label,
+                  chevron: false,
+                  trailing: Text(value, style: context.text.callout, textAlign: TextAlign.end),
+                  dense: true,
+                ),
             ],
           ),
         ],
         if (diagnosis.causes.isNotEmpty) ...[
-          const SizedBox(height: Space.lg),
-          Text(l10n.possibleCauses, style: context.text.title3),
-          const SizedBox(height: Space.xxs),
+          SectionHeader(title: l10n.possibleCauses, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.xxs)),
           Text(l10n.causesHint, style: context.text.caption),
           const SizedBox(height: Space.sm),
           for (final cause in diagnosis.causes)
             CauseCard(cause: cause, title: diagnosisCauseTitle(cause, catalog, language), problem: catalog?[cause.problemId]),
         ],
       ],
+    );
+  }
+}
+
+/// Ce que l'analyse a vu, en tête du compte rendu.
+class _FindingCard extends StatelessWidget {
+  const _FindingCard({required this.summary, required this.urgent, required this.uncertain});
+
+  final String summary;
+  final bool urgent;
+  final bool uncertain;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    return FloraCard(
+      color: urgent ? c.terracottaSoft : null,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          EmojiTile(emoji: urgent ? '⚠️' : '🩺', background: urgent ? c.surface : null, variant: 2),
+          const SizedBox(width: Space.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(urgent ? l10n.urgentHint : l10n.diagnosisFinding, style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                if (summary.isNotEmpty) Text(summary, style: context.text.body),
+                if (uncertain) ...[
+                  const SizedBox(height: Space.xs),
+                  Text(l10n.diagnosisUncertain, style: context.text.caption),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// La photo qui préciserait l'analyse, proposée après le compte rendu.
+///
+/// Elle vient après les pistes, jamais à leur place : ce qui est déjà su se
+/// lit d'abord, et la photo de plus est un geste offert, pas un péage.
+class AnotherPhotoCard extends StatelessWidget {
+  const AnotherPhotoCard({super.key, required this.onAdd, this.view});
+
+  final VoidCallback onAdd;
+  final DiagnosisView? view;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    return FloraCard(
+      color: c.sageSoft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              EmojiTile(emoji: '📷', background: c.surface, variant: 3),
+              const SizedBox(width: Space.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.diagnosisAnotherPhotoHint, style: context.text.callout),
+                    if (view case final v?) ...[
+                      const SizedBox(height: 2),
+                      Text(l10n.diagnosisAnotherPhotoView(l10n.diagnosisViewLabel(v)), style: context.text.caption),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.sm),
+          FloraButton(
+            label: l10n.diagnosisAnotherPhoto,
+            icon: CupertinoIcons.camera,
+            style: FloraButtonStyle.secondary,
+            expand: true,
+            onPressed: onAdd,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -145,33 +247,58 @@ class CauseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final known = problem;
     return Padding(
-      padding: const EdgeInsets.only(bottom: Space.xs),
+      padding: const EdgeInsets.only(bottom: Space.sm),
       child: FloraCard(
+        // Une piste que la base connaît mène à sa fiche : ce que c'est, qui
+        // elle touche, à quoi elle ressemble. Une piste hors base n'a nulle
+        // part où mener et ne se presse pas.
+        onTap: known == null ? null : () => context.push(Routes.encyclopediaProblem(known.id)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (problem != null) ...[
-                  ProblemIcon(problem: problem!),
-                  const SizedBox(width: Space.sm),
-                ],
-                Expanded(child: Text(title, style: context.text.title3)),
-                const SizedBox(width: Space.xs),
-                // Trois crans, pas de barre : il n'y a rien à remplir quand
-                // il n'y a rien à mesurer.
-                DueBadge(
-                  emoji: likelihoodMark(cause.likelihood),
-                  label: context.l10n.likelihoodLabel(cause.likelihood),
-                  status: likelihoodStatus(cause.likelihood),
-                  compact: true,
+                // La tuile du compte rendu : l'illustration d'argile de la
+                // base, posée sur la teinte de sa famille — l'ocre des
+                // troubles, la terre cuite des ravageurs, le rose des
+                // maladies. Une piste hors base garde la tuile, sans dessin.
+                _KindTile(problem: known),
+                const SizedBox(width: Space.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: context.text.title3),
+                      const SizedBox(height: Space.xxs),
+                      // Trois crans, pas de barre : il n'y a rien à remplir
+                      // quand il n'y a rien à mesurer.
+                      DueBadge(
+                        emoji: likelihoodMark(cause.likelihood),
+                        label: context.l10n.likelihoodLabel(cause.likelihood),
+                        status: likelihoodStatus(cause.likelihood),
+                        compact: true,
+                      ),
+                    ],
+                  ),
                 ),
+                if (known != null) ...[
+                  const SizedBox(width: Space.xs),
+                  Icon(CupertinoIcons.chevron_right, size: 15, color: c.inkTertiary),
+                ],
               ],
             ),
-            const SizedBox(height: Space.xs),
-            Text(cause.explanation, style: context.text.callout),
+            if (cause.explanation.isNotEmpty) ...[
+              const SizedBox(height: Space.sm),
+              Text(cause.explanation, style: context.text.callout),
+            ],
+            // Les gestes se détachent de l'explication : on lit pourquoi,
+            // puis on fait quoi.
             if (cause.actions.isNotEmpty) ...[
+              const SizedBox(height: Space.sm),
+              Container(height: 1, color: c.line),
               const SizedBox(height: Space.xs),
               for (final a in cause.actions)
                 Padding(
@@ -188,6 +315,35 @@ class CauseCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// La tuile d'une piste : le dessin de la base sur la teinte de sa famille.
+class _KindTile extends StatelessWidget {
+  const _KindTile({required this.problem});
+
+  final PlantProblem? problem;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final p = problem;
+    final tint = switch (p?.kind) {
+      ProblemKind.disorder => c.sunSoft,
+      ProblemKind.pest => c.terracottaSoft,
+      ProblemKind.disease => c.roseSoft,
+      ProblemKind.condition => c.sageSoft,
+      null => c.surfaceMuted,
+    };
+    return Container(
+      width: EmojiTile.side,
+      height: EmojiTile.side,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: tint, borderRadius: Radii.mediumAll),
+      child: p == null
+          ? Icon(CupertinoIcons.question, size: 18, color: c.inkTertiary)
+          : ProblemIcon(problem: p, side: 30),
     );
   }
 }

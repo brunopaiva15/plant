@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -34,8 +35,14 @@ final _ok = jsonEncode({
 
 Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${DateTime.now().microsecondsSinceEpoch}.jpg').writeAsBytes([1, 2, 3]);
 
-InfomaniakDiagnoser _diagnoser(http.Client client) =>
-    InfomaniakDiagnoser(apiKey: 'tok', productId: '12345', model: 'mistralai/Mistral-Small-4-119B-2603', client: client);
+InfomaniakDiagnoser _diagnoser(http.Client client) => InfomaniakDiagnoser(
+      apiKey: 'tok',
+      productId: '12345',
+      model: 'mistralai/Mistral-Small-4-119B-2603',
+      client: client,
+      // Les renvois ne font pas attendre les tests.
+      retryPause: Duration.zero,
+    );
 
 PlantProblem _probleme(String id, ProblemKind kind, String en, {String fr = 'fr'}) =>
     PlantProblem(id: id, kind: kind, scope: ProblemScope.wide, fr: fr, en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
@@ -217,6 +224,44 @@ void main() {
       expect(InfomaniakDiagnoser.parseResponse(body).summary, 'ok');
     });
 
+    test('la vue proposée est lue, un mot inconnu ne l’est pas', () {
+      Diagnosis lire(Object? view) => InfomaniakDiagnoser.parseResponse(_completion(jsonEncode({
+            'summary': '…',
+            'view': view,
+            'causes': [
+              {'title': 'Air sec', 'likelihood': 'possible'},
+            ],
+          })));
+      expect(lire('leaf_underside').suggestedView, DiagnosisView.leafUnderside);
+      expect(lire('whole_plant').suggestedView, DiagnosisView.wholePlant);
+      expect(lire('none').suggestedView, isNull);
+      expect(lire('une belle photo').suggestedView, isNull);
+      expect(lire(null).suggestedView, isNull);
+    });
+
+    test('une réponse coupée en chemin garde ce qui avait été écrit', () {
+      // Le cas le plus fréquent d'« Analyse impossible » : la réponse
+      // s'arrête au milieu d'un mot faute de jetons. Deux pistes étaient
+      // complètes, elles restent.
+      const tronquee = '{"summary":"Feuilles jaunes en bas.","urgent":false,"view":"leaf_underside","causes":['
+          '{"problem":"002","title":"Excès d\'eau","likelihood":"likely","explanation":"La terre reste humide.","actions":["Laisser sécher"]},'
+          '{"problem":"126","title":"Oïdium","likelihood":"possible","explanation":"Un voile blanc.","actions":["Aérer"]},'
+          '{"problem":"060","title":"Tétran';
+      final d = InfomaniakDiagnoser.parseResponse(_completion(tronquee));
+      expect(d.summary, 'Feuilles jaunes en bas.');
+      expect(d.causes.map((c) => c.title), ["Excès d'eau", 'Oïdium']);
+      expect(d.causes.first.actions, ['Laisser sécher']);
+      expect(d.suggestedView, DiagnosisView.leafUnderside);
+    });
+
+    test('une réponse coupée dans une phrase garde les pistes entières', () {
+      const tronquee = '{"summary":"…","causes":['
+          '{"title":"Air trop sec","likelihood":"likely","explanation":"Les pointes brunissent.","actions":["Éloigner du radiateur"]},'
+          '{"title":"Manque d\'eau","likelihood":"possible","explanation":"La terre est sèche en profon';
+      final d = InfomaniakDiagnoser.parseResponse(_completion(tronquee));
+      expect(d.causes.map((c) => c.title), ['Air trop sec']);
+    });
+
     test('sans JSON lisible, échoue proprement', () {
       expect(() => InfomaniakDiagnoser.parseResponse(_completion('Je ne vois pas de plante.')), throwsA(isA<DiagnosisException>()));
     });
@@ -370,7 +415,7 @@ void main() {
     });
 
     test('traduit les codes HTTP en erreurs parlantes', () async {
-      for (final (code, expected) in [(401, 'unauthorized'), (403, 'unauthorized'), (429, 'quota'), (500, 'http 500')]) {
+      for (final (code, expected) in [(401, 'unauthorized'), (403, 'unauthorized'), (429, 'quota'), (500, 'busy'), (503, 'busy'), (404, 'http 404')]) {
         final client = MockClient((_) async => _reponse('', code));
         final tmp = await _tmpImage();
         await expectLater(
@@ -384,6 +429,110 @@ void main() {
     test('sans clé ou sans produit, ne part pas', () {
       expect(InfomaniakDiagnoser(apiKey: '', productId: '1', model: 'm').isConfigured, isFalse);
       expect(InfomaniakDiagnoser(apiKey: 'k', productId: '', model: 'm').isConfigured, isFalse);
+    });
+  });
+
+  group('les pannes du service', () {
+    /// Ce qui faisait dire « Analyse impossible » alors que le réseau allait
+    /// très bien : un 503 passager, une coupure en route, une réponse
+    /// tronquée. Aucun des trois ne dit quoi que ce soit sur la plante.
+    test('un service saturé se redemande, et c’est la réponse suivante qui compte', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return appels == 1 ? _reponse('', 503) : _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+
+      expect(result.summary, 'ok');
+      expect(appels, 2);
+    });
+
+    test('un réseau coupé se redemande, puis se dit tel quel', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        throw const SocketException('connection reset by peer');
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'network')),
+      );
+      await tmp.delete();
+      expect(appels, 3, reason: 'trois tentatives, pas une de plus');
+    });
+
+    test('un délai dépassé compte comme un réseau coupé', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        throw TimeoutException('trop long');
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'network')),
+      );
+      await tmp.delete();
+      expect(appels, 3);
+    });
+
+    test('une clé refusée ne se redemande pas', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return _reponse('', 401);
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'unauthorized')),
+      );
+      await tmp.delete();
+      expect(appels, 1);
+    });
+
+    test('une réponse illisible repart une fois, avec de quoi finir sa phrase', () async {
+      final corps = <Map<String, dynamic>>[];
+      final client = MockClient((req) async {
+        corps.add(jsonDecode(req.body) as Map<String, dynamic>);
+        return corps.length == 1 ? _reponse(_completion('je regarde la photo…'), 200) : _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+
+      expect(result.summary, 'ok');
+      expect(corps, hasLength(2));
+      expect(corps.first['max_tokens'], lessThan(corps.last['max_tokens'] as int));
+    });
+
+    test('deux réponses illisibles de suite se disent comme telles', () async {
+      final client = MockClient((_) async => _reponse(_completion('je regarde la photo…'), 200));
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'unreadable')),
+      );
+      await tmp.delete();
+    });
+
+    test('un refus de contenu ne se rejoue pas', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return _reponse(_completion('', finish: 'content_filter'), 200);
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'refusal')),
+      );
+      await tmp.delete();
+      expect(appels, 1);
     });
   });
 

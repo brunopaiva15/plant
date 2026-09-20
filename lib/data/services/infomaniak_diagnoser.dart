@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
+import '../../core/network/network_failure.dart';
 import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/diagnosis_observations.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
@@ -20,16 +21,40 @@ import '../../domain/problems/plant_problem.dart';
 /// que le modèle regarde de toute façon, et la facture se compte en jetons
 /// d'image. Rien n'est stocké côté service au-delà de la requête.
 class InfomaniakDiagnoser implements PlantDiagnoser {
-  InfomaniakDiagnoser({required this.apiKey, required this.productId, required this.model, http.Client? client})
-      : _client = client ?? http.Client();
+  InfomaniakDiagnoser({
+    required this.apiKey,
+    required this.productId,
+    required this.model,
+    http.Client? client,
+    this.retryPause = const Duration(seconds: 2),
+  }) : _client = client ?? http.Client();
 
   final String apiKey;
   final String productId;
   final String model;
   final http.Client _client;
 
+  /// Ce qu'on laisse passer avant de renvoyer la même demande. Multiplié par
+  /// le rang de la tentative : un service saturé ne se désature pas en une
+  /// seconde. Les tests le mettent à zéro.
+  final Duration retryPause;
+
   static const maxImages = 3;
   static const maxSide = 1024;
+
+  /// Ce qu'on attend d'une réponse, et combien de fois on repose la question.
+  ///
+  /// Quarante secondes suffisent largement à trois photos réduites ; au-delà,
+  /// c'est que la demande s'est perdue, et la reposer vaut mieux que de
+  /// l'attendre. Trois tentatives au pire, soit deux minutes, ce qu'une seule
+  /// attente de deux minutes coûtait déjà — sauf qu'elle ne rendait rien.
+  static const _callTimeout = Duration(seconds: 40);
+  static const _attempts = 3;
+
+  /// Jetons laissés à la réponse, et ce qu'on redonne quand elle est revenue
+  /// coupée au milieu d'une phrase.
+  static const _answerTokens = 1600;
+  static const _wideTokens = 2600;
 
   Uri get endpoint => Uri.parse('https://api.infomaniak.com/2/ai/$productId/openai/v1/chat/completions');
 
@@ -48,6 +73,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    bool? indoors,
+    DateTime? date,
+    double? latitude,
   }) async {
     if (!isConfigured) throw const DiagnosisException('unconfigured');
     if (images.isEmpty) throw const DiagnosisException('no_images');
@@ -69,26 +97,48 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           indoorClimate: indoorClimate,
           reportedClimate: reportedClimate,
           observations: observations,
+          indoors: indoors,
+          date: date,
+          latitude: latitude,
         ),
       },
     ];
+    Future<http.Response> ask({required bool constrainJson, int maxTokens = _answerTokens}) =>
+        _send(buildRequest(model: model, parts: parts, language: language, constrainJson: constrainJson, maxTokens: maxTokens));
+
     // Le format JSON contraint n'est pas garanti par tous les modèles : si
     // le service le refuse, on renvoie la même demande sans lui — la consigne
     // demande déjà du JSON, et le lecteur est tolérant.
-    var response = await _post(buildRequest(model: model, parts: parts, language: language, constrainJson: true));
+    var constrainJson = true;
+    var response = await ask(constrainJson: constrainJson);
     if (response.statusCode == 400) {
-      response = await _post(buildRequest(model: model, parts: parts, language: language, constrainJson: false));
+      constrainJson = false;
+      response = await ask(constrainJson: constrainJson);
     }
-    if (response.statusCode == 401 || response.statusCode == 403) throw const DiagnosisException('unauthorized');
-    if (response.statusCode == 429) throw const DiagnosisException('quota');
-    if (response.statusCode != 200) throw DiagnosisException('http ${response.statusCode}');
+    _check(response);
     // Un numéro qu'on n'a pas soumis ne vaut rien : soit le modèle l'a
     // inventé, soit il désigne un problème qu'on a écarté pour cette plante.
-    final diagnosis = parseResponse(
-      response.body,
-      allowed: {for (final p in candidates) p.id},
-      byName: namesOf(candidates, language),
-    );
+    Diagnosis? diagnosis;
+    try {
+      diagnosis = _read(response, candidates, language);
+    } on DiagnosisException catch (e) {
+      // Un refus de contenu ne se rejoue pas ; une réponse illisible, si.
+      if (e.message != 'empty') rethrow;
+    }
+    if (diagnosis == null) {
+      // Illisible veut presque toujours dire coupée : la réponse s'est
+      // arrêtée au milieu d'une phrase faute de jetons, et le lecteur n'a
+      // même pas pu la réparer. La même demande repart une fois, avec de
+      // quoi finir. C'est ce cas-là qui affichait « Analyse impossible » à
+      // quelqu'un dont le réseau allait très bien.
+      final second = await ask(constrainJson: constrainJson, maxTokens: _wideTokens);
+      _check(second);
+      try {
+        diagnosis = _read(second, candidates, language);
+      } on DiagnosisException catch (e) {
+        throw DiagnosisException(e.message == 'empty' ? 'unreadable' : e.message);
+      }
+    }
     final complete = diagnosis.causes.isNotEmpty
         ? diagnosis
         : await _causesFromWords(
@@ -155,6 +205,9 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
         summary: diagnosis.summary.isEmpty ? repli.summary : diagnosis.summary,
         causes: repli.causes,
         urgent: diagnosis.urgent || repli.urgent,
+        // La vue à demander est celle de la passe qui a vu les photos ; le
+        // repli, lui, n'en a regardé aucune.
+        suggestedView: diagnosis.suggestedView,
       );
     } on Object {
       return diagnosis;
@@ -246,7 +299,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
           problemId: e.value,
         );
       }
-      return Diagnosis(summary: diagnosis.summary, causes: causes, urgent: diagnosis.urgent);
+      return Diagnosis(summary: diagnosis.summary, causes: causes, urgent: diagnosis.urgent, suggestedView: diagnosis.suggestedView);
     } on Object {
       return diagnosis;
     }
@@ -301,6 +354,57 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     return out;
   }
 
+  /// La même demande, jusqu'à [attempts] fois.
+  ///
+  /// Un service d'IA n'est pas une base de données : il coupe, il sature, il
+  /// met une minute puis rend 503. Aucun de ces trois-là ne dit quoi que ce
+  /// soit sur la plante, et l'écran affichait pourtant « Analyse impossible »
+  /// alors qu'un simple renvoi de la même question aboutit presque toujours.
+  ///
+  /// Ne repartent que les échecs qui ne tranchent rien : réseau coupé, délai
+  /// dépassé, 408, 429, 5xx. Un 400, un 401 ou un refus de contenu, eux, se
+  /// corrigent et ne se rejouent pas.
+  Future<http.Response> _send(Map<String, Object?> body, {Duration timeout = _callTimeout, int attempts = _attempts}) async {
+    for (var attempt = 1;; attempt++) {
+      final http.Response response;
+      try {
+        response = await _post(body, timeout: timeout);
+      } on Object catch (e) {
+        if (!isNetworkFailure(e)) rethrow;
+        // Un réseau qui lâche n'est pas un incident de l'application : il se
+        // dit à l'écran, il ne se rapporte pas comme un plantage.
+        if (attempt >= attempts) throw const DiagnosisException('network');
+        await Future<void>.delayed(retryPause * attempt);
+        continue;
+      }
+      if (attempt >= attempts || !_worthAnotherTry(response.statusCode)) return response;
+      await Future<void>.delayed(retryPause * attempt);
+    }
+  }
+
+  /// Les codes qui ne disent rien de la demande : le service est occupé,
+  /// pas fâché.
+  static bool _worthAnotherTry(int code) => code == 408 || code == 429 || code >= 500;
+
+  /// Ce que vaut un code de retour, une fois les renvois épuisés. Chaque
+  /// famille a sa phrase à l'écran : une clé refusée ne se réessaie pas, un
+  /// service saturé si.
+  static void _check(http.Response response) {
+    final code = response.statusCode;
+    if (code == 200) return;
+    if (code == 401 || code == 403) throw const DiagnosisException('unauthorized');
+    if (code == 429) throw const DiagnosisException('quota');
+    if (code == 408 || code >= 500) throw const DiagnosisException('busy');
+    throw DiagnosisException('http $code');
+  }
+
+  /// Le compte rendu d'une réponse, borné à ce qu'on a soumis.
+  Diagnosis _read(http.Response response, List<PlantProblem> candidates, String language) => parseResponse(
+        response.body,
+        allowed: {for (final p in candidates) p.id},
+        byName: namesOf(candidates, language),
+      );
+
   Future<http.Response> _post(Map<String, Object?> body, {Duration timeout = const Duration(minutes: 2)}) => _client
       .post(endpoint, headers: {'content-type': 'application/json', 'authorization': 'Bearer ${apiKey.trim()}'}, body: jsonEncode(body))
       .timeout(timeout);
@@ -326,9 +430,16 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   }
 
   /// Corps de requête, au format OpenAI (exposé pour les tests).
-  static Map<String, Object?> buildRequest({required String model, required List<Map<String, Object?>> parts, required String language, required bool constrainJson}) => {
+  static Map<String, Object?> buildRequest({
+    required String model,
+    required List<Map<String, Object?>> parts,
+    required String language,
+    required bool constrainJson,
+    int maxTokens = _answerTokens,
+  }) =>
+      {
         'model': model,
-        'max_tokens': 1500,
+        'max_tokens': maxTokens,
         'temperature': 0.2,
         if (constrainJson) 'response_format': {'type': 'json_object'},
         'messages': [
@@ -344,6 +455,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Rate each cause with "likelihood", one of exactly these three words: "likely", "possible", "unlikely". '
       'Do not use numbers or percentages: you cannot measure this from a photo, and a figure would suggest a precision you do not have. '
       'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
+      // Ce qui sépare réellement deux pistes n'est pas la couleur mais le
+      // motif : quelles feuilles, quelle zone de la feuille, sec ou mou, net
+      // ou diffus. Sans cette consigne, le modèle nomme la couleur qu'il voit
+      // et range derrière elle les trois causes les plus courantes.
+      'Read the pattern before you name anything: which leaves are affected — the oldest, the newest, all of them —, whether the damage '
+      'sits at the edge, at the tip, between the veins or all over, whether it is dry or soft, sharply outlined or diffuse, and whether it '
+      'spreads. The pattern separates what the colour alone confuses: a yellowing that starts on the oldest leaves is not the one that '
+      'starts on the newest. '
+      'Say in "summary" what you actually see — where it is, what it looks like — before any conclusion. '
+      'Weigh the species, the light, the soil, the season and the room given in the message against every cause, and drop a cause one of '
+      'them rules out instead of listing it anyway. '
       'Always give at least one cause, whatever the photos show: "causes" is never empty. '
       'Every cause is a problem of the plant — a disorder, a pest, a disease, a care mistake. The photo is never a cause: never write that the '
       'reported symptom is missing from it, that it is unclear, or that another photo is needed, neither as a title, nor as an explanation, '
@@ -359,10 +481,18 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'One cause is one listed problem. When two listed problems both fit what you see, give them as two causes, each with its own number, '
       'instead of merging them into a single title of the form "A or B": they call for different actions, and the reader has to choose anyway. '
       'The list is a shortlist, not a closed set: a cause outside it takes "problem": null, and that is a perfectly good answer. '
+      // La seule place où une photo manquante a le droit d'exister. Le reste
+      // de la consigne l'interdit partout ailleurs, et c'est l'application,
+      // pas le compte rendu, qui décide d'en demander une (docs/16).
+      'Add a "view" key next to "summary": the single extra photo that would most change what you can tell, one of exactly '
+      '"leaf_closeup", "leaf_underside", "whole_plant", "stem_base", "soil_roots", or null when the photos already show what is needed. '
+      'This key is the only place a missing view may be named: never in "summary", never in a title, an explanation or an action. '
+      'It is a suggestion to the application, not a refusal to answer — the causes are given in full either way. '
       'Write every text field in the language with code "$language", in a warm, plain, human tone, without jargon. '
+      'Keep every explanation to two sentences at most and every action to one line, so the answer ends before it runs out of room. '
       'Answer with one JSON object only, no markdown, no text around it, with exactly these keys: '
-      '"summary" (string), "urgent" (boolean), "causes" (array of objects with "problem" (string or null), "title" (string), '
-      '"likelihood" (string), "explanation" (string), "actions" (array of strings)).';
+      '"summary" (string), "urgent" (boolean), "view" (string or null), "causes" (array of objects with "problem" (string or null), '
+      '"title" (string), "likelihood" (string), "explanation" (string), "actions" (array of strings)).';
 
   static String userPrompt({
     required String language,
@@ -374,10 +504,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    bool? indoors,
+    DateTime? date,
+    double? latitude,
   }) {
     final parts = <String>[
       if (plantName != null && plantName.isNotEmpty) 'Plant: $plantName.',
       if (species != null && species.isNotEmpty) 'Species: $species.',
+      // Où la plante vit et quel jour on est. Une cochenille de salon en
+      // février et une brûlure de balcon en juillet ne se confondent pas, et
+      // rien sur la photo ne dit laquelle des deux on regarde.
+      ?placeLine(indoors: indoors, date: date, latitude: latitude),
       // Ce que le capteur de la maison mesure, quand il y en a un, et ce que
       // la personne a donné à sa place : une donnée de plus pour départager
       // un air sec d'un manque d'eau, jamais une réponse.
@@ -400,6 +537,25 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'What might be wrong, and what can I do?',
     ];
     return parts.join(' ');
+  }
+
+  /// Où vit la plante et à quelle saison, ou `null` quand on n'en sait rien.
+  ///
+  /// La latitude ne part pas telle quelle : seul son signe compte ici, pour
+  /// que « septembre » veuille dire l'automne ou le printemps selon
+  /// l'hémisphère. Le lieu de la personne n'a pas à sortir de l'appareil
+  /// pour qu'une saison soit juste.
+  static String? placeLine({bool? indoors, DateTime? date, double? latitude}) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final facts = <String>[
+      if (indoors == true) 'The plant lives indoors, in a home.',
+      if (indoors == false) 'The plant lives outdoors.',
+      if (date != null)
+        'Today is ${date.year}-${two(date.month)}-${two(date.day)}'
+            '${latitude == null ? '' : ', in the ${latitude >= 0 ? 'northern' : 'southern'} hemisphere'}.',
+    ];
+    if (facts.isEmpty) return null;
+    return '${facts.join(' ')} Weigh the season and the setting: they rule some causes out and make others ordinary.';
   }
 
   /// La phrase qui décrit le climat, mesuré par le capteur ou donné par la
@@ -559,6 +715,10 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       summary: (data['summary'] as String?) ?? '',
       causes: [for (final (_, c) in classees) c],
       urgent: data['urgent'] == true,
+      // Ce que le service aurait voulu voir de plus. L'application en fera
+      // une proposition de photo ou rien du tout ; le compte rendu, lui, n'en
+      // parle jamais.
+      suggestedView: DiagnosisView.parse(data['view']),
     );
   }
 
@@ -610,13 +770,102 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   static Map<String, dynamic>? _extractJson(String text) {
     final start = text.indexOf('{');
+    if (start < 0) return null;
     final end = text.lastIndexOf('}');
-    if (start < 0 || end <= start) return null;
-    try {
-      final decoded = jsonDecode(text.substring(start, end + 1));
-      return decoded is Map<String, dynamic> ? decoded : null;
-    } on FormatException {
-      return null;
+    if (end > start) {
+      try {
+        final decoded = jsonDecode(text.substring(start, end + 1));
+        if (decoded is Map<String, dynamic>) return decoded;
+      } on FormatException {
+        // Tronqué, ou du texte après l'accolade : la réparation s'en occupe.
+      }
     }
+    return _repairJson(text.substring(start));
   }
+
+  /// Un objet JSON refermé à la main, quand la réponse s'est arrêtée en
+  /// chemin.
+  ///
+  /// Une réponse coupée faute de jetons est la panne la plus fréquente de
+  /// l'analyse, et la plus injuste : trois pistes complètes étaient là, la
+  /// quatrième s'est arrêtée au milieu d'un mot, et tout était jeté. On
+  /// revient donc au dernier endroit où le texte se tenait encore — une
+  /// virgule, une accolade, un crochet, une chaîne close — et on referme ce
+  /// qui restait ouvert.
+  ///
+  /// Réparer ne devine rien : on ne garde que ce qui a été écrit, jamais un
+  /// champ reconstitué. Une réponse qu'aucune coupure ne sauve rend `null`,
+  /// et l'appelant la redemandera.
+  static Map<String, dynamic>? _repairJson(String text) {
+    final ouverts = <String>[];
+    // Les endroits où couper, du plus tardif au plus ancien : la position et
+    // ce qui restait ouvert à cet instant.
+    final reprises = <(int, List<String>)>[];
+    var dansChaine = false;
+    var echappe = false;
+    for (var i = 0; i < text.length; i++) {
+      final ch = text[i];
+      if (dansChaine) {
+        if (echappe) {
+          echappe = false;
+        } else if (ch == '\\') {
+          echappe = true;
+        } else if (ch == '"') {
+          dansChaine = false;
+          reprises.add((i + 1, [...ouverts]));
+        }
+        continue;
+      }
+      switch (ch) {
+        case '"':
+          dansChaine = true;
+        case '{':
+          ouverts.add('}');
+        case '[':
+          ouverts.add(']');
+        case '}' || ']':
+          if (ouverts.isEmpty) return null;
+          ouverts.removeLast();
+          reprises.add((i + 1, [...ouverts]));
+        case ',':
+          // On coupe avant la virgule : ce qui la suit est justement ce qui
+          // n'a pas été écrit en entier.
+          reprises.add((i, [...ouverts]));
+      }
+    }
+    for (final (fin, restants) in reprises.reversed.take(_repairTries)) {
+      try {
+        final decoded = jsonDecode(text.substring(0, fin) + restants.reversed.join());
+        if (decoded is Map<String, dynamic> && decoded.isNotEmpty) return _withoutCutCause(decoded);
+      } on FormatException {
+        // Cette coupure-là tombait sur une clé sans sa valeur : on remonte
+        // à la précédente.
+      }
+    }
+    return null;
+  }
+
+  /// La dernière piste d'une réponse réparée, quand la coupure l'a prise en
+  /// cours d'écriture.
+  ///
+  /// Refermer les accolades sauve ce qui était écrit ; ce qui l'était à
+  /// moitié n'est pas sauvé pour autant. Une piste dont il ne reste ni
+  /// explication ni geste n'a rien à dire de plus qu'un titre — une carte
+  /// vide sous deux cartes pleines. Elle part, et seules les pistes écrites
+  /// en entier restent.
+  static Map<String, dynamic> _withoutCutCause(Map<String, dynamic> data) {
+    final causes = data['causes'];
+    if (causes is! List || causes.isEmpty) return data;
+    final last = causes.last;
+    if (last is! Map) return data;
+    final explication = last['explanation'];
+    final gestes = last['actions'];
+    final rien = (explication is! String || explication.trim().isEmpty) && (gestes is! List || gestes.isEmpty);
+    if (rien) causes.removeLast();
+    return data;
+  }
+
+  /// Combien de coupures on essaie avant de renoncer. Au-delà, ce n'est plus
+  /// une réponse tronquée mais une réponse qui n'en était pas une.
+  static const _repairTries = 12;
 }

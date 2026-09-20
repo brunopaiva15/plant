@@ -36,7 +36,6 @@ import 'photo_viewer.dart';
 import 'plant_tags_sheet.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
-import '../../diagnosis/presentation/diagnosis_sheet.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'timeline_row.dart';
 
@@ -363,7 +362,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       icon: CupertinoIcons.bandage,
                       style: FloraButtonStyle.tonal,
                       expand: true,
-                      onPressed: () => showDiagnosisSheet(context, plant: plant),
+                      onPressed: () => context.push(Routes.plantDiagnosis(id)),
                     ),
                   ],
                   // Les deux gestes qu'on cherche sans les trouver dans un

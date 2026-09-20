@@ -2056,7 +2056,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchingOnline => 'Searching online…';
 
   @override
-  String get suggestionsLocal => 'Iris results on your device · photo not uploaded';
+  String get suggestionsLocal =>
+      'Iris results on your device · photo not uploaded';
 
   @override
   String get suggestionsRemote => 'Suggested online by Pl@ntNet';
@@ -2426,7 +2427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Photograph the leaves, stem or soil from several angles. Results are indicative only.';
+      'Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.';
 
   @override
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
@@ -2484,6 +2485,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diagnosisBugsInSoil => 'In the soil';
 
   @override
+  String get diagnosisSymptoms => 'Symptoms';
+
+  @override
+  String get diagnosisAround => 'Around the plant';
+
+  @override
+  String get diagnosisPhotosFull => 'Three photos at most.';
+
+  @override
+  String get diagnosisRemovePhoto => 'Remove this photo';
+
+  @override
+  String get diagnosisFinding => 'Finding';
+
+  @override
   String get analyze => 'Analyze';
 
   @override
@@ -2499,6 +2515,45 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get diagnosisUnauthorized =>
       'Diagnosis is unavailable right now. Try again later.';
+
+  @override
+  String get diagnosisBusy =>
+      'The analysis service is not answering. Try again in a moment.';
+
+  @override
+  String get diagnosisUnreadable =>
+      'The analysis did not go through. Try again.';
+
+  @override
+  String get diagnosisUncertain =>
+      'The photos are not enough to conclude. The leads below still need checking.';
+
+  @override
+  String get diagnosisAnotherPhotoHint =>
+      'One more photo would sharpen the analysis.';
+
+  @override
+  String diagnosisAnotherPhotoView(String view) {
+    return 'To photograph: $view.';
+  }
+
+  @override
+  String get diagnosisAnotherPhoto => 'Add a photo';
+
+  @override
+  String get diagnosisViewLeafCloseup => 'a leaf up close';
+
+  @override
+  String get diagnosisViewLeafUnderside => 'the underside of a leaf';
+
+  @override
+  String get diagnosisViewWholePlant => 'the whole plant';
+
+  @override
+  String get diagnosisViewStemBase => 'the base of the stem';
+
+  @override
+  String get diagnosisViewSoilRoots => 'the soil at the base';
 
   @override
   String get possibleCauses => 'Possible causes';
@@ -5847,6 +5902,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get problemScopeTargetNote =>
       'Main hosts within a target group; the list is not exhaustive.';
+
+  @override
+  String get problemOtherNames => 'Other names';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Common and scientific names for the same thing.';
 
   @override
   String get problemHosts => 'Hosts';

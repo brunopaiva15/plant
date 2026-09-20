@@ -54,6 +54,7 @@ import '../data/services/photo_maintenance.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
+import '../data/services/jev_diagnosis_policy.dart';
 import '../data/services/jev_identification_policy.dart';
 import '../data/services/preferences_care_store.dart';
 import '../data/services/preferences_propagation_store.dart';
@@ -406,6 +407,16 @@ final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) 
   final policy = JevIdentificationPolicy(
     metrics: ref.watch(identificationMetricsStoreProvider),
   );
+  ref.onDispose(policy.dispose);
+  return policy;
+});
+
+/// Même arbitrage, côté diagnostic : consulté seulement quand le compte rendu
+/// ne désigne pas une piste et une seule, et jamais avec une photo — le rang
+/// des pistes, leur vraisemblance et ce qui a été vérifié à la main suffisent
+/// à juger si une vue de plus changerait quelque chose.
+final jevDiagnosisPolicyProvider = Provider<JevDiagnosisPolicy>((ref) {
+  final policy = JevDiagnosisPolicy();
   ref.onDispose(policy.dispose);
   return policy;
 });

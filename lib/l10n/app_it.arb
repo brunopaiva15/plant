@@ -890,7 +890,7 @@
     }
   },
   "diagnosisTitle": "Diagnosi",
-  "diagnosisHint": "Fotografate foglie, fusto o terra da più angolazioni. I risultati sono indicativi.",
+  "diagnosisHint": "Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.",
   "diagnosisSymptomsHint": "Cosa hai notato (facoltativo)…",
   "diagnosisChecks": "Osservazioni",
   "diagnosisChecksHint": "Facoltativo: ciò che la foto non mostra affina l'analisi.",
@@ -909,11 +909,34 @@
   "diagnosisBugsNone": "Nessuno visto",
   "diagnosisBugsOnPlant": "Sulla pianta",
   "diagnosisBugsInSoil": "Nella terra",
+  "diagnosisSymptoms": "Sintomi",
+  "diagnosisAround": "Intorno alla pianta",
+  "diagnosisPhotosFull": "Al massimo tre foto.",
+  "diagnosisRemovePhoto": "Rimuovi questa foto",
+  "diagnosisFinding": "Constatazione",
   "analyze": "Analizza",
   "analyzing": "Analisi in corso…",
   "diagnosisError": "Analisi impossibile. Controlla la connessione e riprova.",
   "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
   "diagnosisUnauthorized": "La diagnosi non è disponibile al momento. Riprova più tardi.",
+  "diagnosisBusy": "Il servizio di analisi non risponde. Riprova tra poco.",
+  "diagnosisUnreadable": "L'analisi non è riuscita. Riprova.",
+  "diagnosisUncertain": "Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.",
+  "diagnosisAnotherPhotoHint": "Un'altra foto renderebbe l'analisi più precisa.",
+  "diagnosisAnotherPhotoView": "Da fotografare: {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Aggiungi una foto",
+  "diagnosisViewLeafCloseup": "una foglia da vicino",
+  "diagnosisViewLeafUnderside": "il rovescio di una foglia",
+  "diagnosisViewWholePlant": "la pianta intera",
+  "diagnosisViewStemBase": "la base del fusto",
+  "diagnosisViewSoilRoots": "la terra ai piedi",
   "possibleCauses": "Cause possibili",
   "causesHint": "Ordinate per verosimiglianza, da confermare.",
   "likelihoodLikely": "Probabile",
@@ -1875,6 +1898,8 @@
   "problemScopeGeneralNote": "Possibile sulle piante vascolari, secondo le condizioni e lo stadio.",
   "problemScopeWideNote": "Molti ospiti; i taxa citati sono esempi.",
   "problemScopeTargetNote": "Ospiti principali di un gruppo mirato; l'elenco non è esaustivo.",
+  "problemOtherNames": "Altri nomi",
+  "problemOtherNamesNote": "Nomi comuni e scientifici che indicano la stessa cosa.",
   "problemHosts": "Ospiti",
   "problemHostsAll": "Tutte le piante vascolari",
   "problemHostsNote": "Un genere o una famiglia non rende sensibili tutte le sue specie.",

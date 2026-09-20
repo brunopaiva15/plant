@@ -890,7 +890,7 @@
     }
   },
   "diagnosisTitle": "Diagnose",
-  "diagnosisHint": "Fotografieren Sie Blätter, Stängel oder Erde aus mehreren Winkeln. Die Ergebnisse sind Hinweise.",
+  "diagnosisHint": "Fotografieren Sie Blätter, Stängel und Erde, aus der Nähe und ganz. Die Ergebnisse sind Hinweise.",
   "diagnosisSymptomsHint": "Was dir aufgefallen ist (optional)…",
   "diagnosisChecks": "Beobachtungen",
   "diagnosisChecksHint": "Optional: Was das Foto nicht zeigt, schärft die Analyse.",
@@ -909,11 +909,34 @@
   "diagnosisBugsNone": "Keine gesehen",
   "diagnosisBugsOnPlant": "An der Pflanze",
   "diagnosisBugsInSoil": "In der Erde",
+  "diagnosisSymptoms": "Symptome",
+  "diagnosisAround": "Um die Pflanze herum",
+  "diagnosisPhotosFull": "Höchstens drei Fotos.",
+  "diagnosisRemovePhoto": "Dieses Foto entfernen",
+  "diagnosisFinding": "Befund",
   "analyze": "Analysieren",
   "analyzing": "Analyse läuft…",
   "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "diagnosisRefused": "Dieses Foto konnte nicht analysiert werden.",
   "diagnosisUnauthorized": "Die Diagnose ist im Moment nicht verfügbar. Versuche es später noch einmal.",
+  "diagnosisBusy": "Der Analysedienst antwortet nicht. In einem Moment erneut versuchen.",
+  "diagnosisUnreadable": "Die Analyse ist fehlgeschlagen. Erneut versuchen.",
+  "diagnosisUncertain": "Die Fotos reichen für keinen Schluss. Die Spuren unten müssen geprüft werden.",
+  "diagnosisAnotherPhotoHint": "Ein weiteres Foto würde die Analyse schärfen.",
+  "diagnosisAnotherPhotoView": "Zu fotografieren: {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Foto hinzufügen",
+  "diagnosisViewLeafCloseup": "ein Blatt aus der Nähe",
+  "diagnosisViewLeafUnderside": "die Blattunterseite",
+  "diagnosisViewWholePlant": "die ganze Pflanze",
+  "diagnosisViewStemBase": "der Stängelansatz",
+  "diagnosisViewSoilRoots": "die Erde am Fuß",
   "possibleCauses": "Mögliche Ursachen",
   "causesHint": "Nach Wahrscheinlichkeit geordnet, zu bestätigen.",
   "likelihoodLikely": "Wahrscheinlich",
@@ -1875,6 +1898,8 @@
   "problemScopeGeneralNote": "Möglich bei Gefäßpflanzen, je nach Bedingungen und Entwicklungsstadium.",
   "problemScopeWideNote": "Viele Wirte; die genannten Taxa sind Beispiele.",
   "problemScopeTargetNote": "Hauptwirte einer Zielgruppe; die Liste ist nicht vollständig.",
+  "problemOtherNames": "Weitere Namen",
+  "problemOtherNamesNote": "Gebräuchliche und wissenschaftliche Namen für dieselbe Sache.",
   "problemHosts": "Wirte",
   "problemHostsAll": "Alle Gefäßpflanzen",
   "problemHostsNote": "Eine Gattung oder Familie macht nicht alle ihre Arten anfällig.",

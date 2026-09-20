@@ -890,7 +890,7 @@
     }
   },
   "diagnosisTitle": "Diagnosis",
-  "diagnosisHint": "Photograph the leaves, stem or soil from several angles. Results are indicative only.",
+  "diagnosisHint": "Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.",
   "diagnosisSymptomsHint": "What you noticed (optional)…",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Optional: what the photo cannot show sharpens the analysis.",
@@ -909,11 +909,34 @@
   "diagnosisBugsNone": "None seen",
   "diagnosisBugsOnPlant": "On the plant",
   "diagnosisBugsInSoil": "In the soil",
+  "diagnosisSymptoms": "Symptoms",
+  "diagnosisAround": "Around the plant",
+  "diagnosisPhotosFull": "Three photos at most.",
+  "diagnosisRemovePhoto": "Remove this photo",
+  "diagnosisFinding": "Finding",
   "analyze": "Analyze",
   "analyzing": "Analyzing…",
   "diagnosisError": "Couldn't analyze. Check your connection and try again.",
   "diagnosisRefused": "This photo couldn't be analyzed.",
   "diagnosisUnauthorized": "Diagnosis is unavailable right now. Try again later.",
+  "diagnosisBusy": "The analysis service is not answering. Try again in a moment.",
+  "diagnosisUnreadable": "The analysis did not go through. Try again.",
+  "diagnosisUncertain": "The photos are not enough to conclude. The leads below still need checking.",
+  "diagnosisAnotherPhotoHint": "One more photo would sharpen the analysis.",
+  "diagnosisAnotherPhotoView": "To photograph: {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Add a photo",
+  "diagnosisViewLeafCloseup": "a leaf up close",
+  "diagnosisViewLeafUnderside": "the underside of a leaf",
+  "diagnosisViewWholePlant": "the whole plant",
+  "diagnosisViewStemBase": "the base of the stem",
+  "diagnosisViewSoilRoots": "the soil at the base",
   "possibleCauses": "Possible causes",
   "causesHint": "Ranked by likelihood, to confirm.",
   "likelihoodLikely": "Likely",
@@ -1882,6 +1905,8 @@
   "problemScopeGeneralNote": "Possible on vascular plants, depending on conditions and growth stage.",
   "problemScopeWideNote": "Many hosts; the taxa listed are examples.",
   "problemScopeTargetNote": "Main hosts within a target group; the list is not exhaustive.",
+  "problemOtherNames": "Other names",
+  "problemOtherNamesNote": "Common and scientific names for the same thing.",
   "problemHosts": "Hosts",
   "problemHostsAll": "All vascular plants",
   "problemHostsNote": "A genus or a family does not make all of its species susceptible.",

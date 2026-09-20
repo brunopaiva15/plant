@@ -30,6 +30,36 @@ enum Likelihood {
   }
 }
 
+/// La vue qui manque à l'analyse, quand l'analyse en désigne une.
+///
+/// Fermée à cinq entrées : demander « une meilleure photo » ne dit pas quoi
+/// cadrer, alors que « le revers d'une feuille » se photographie sans y
+/// réfléchir. C'est le service qui la nomme, jamais l'application.
+enum DiagnosisView {
+  leafCloseup('leaf_closeup'),
+  leafUnderside('leaf_underside'),
+  wholePlant('whole_plant'),
+  stemBase('stem_base'),
+  soilRoots('soil_roots');
+
+  const DiagnosisView(this.wire);
+
+  /// Le mot tel qu'il circule : dans la réponse du service, dans l'état
+  /// envoyé à Jev, dans le compte rendu gardé au journal.
+  final String wire;
+
+  /// La vue nommée, ou `null` pour tout le reste — « none », un mot inconnu,
+  /// une clé absente. Une vue inventée ferait cadrer pour rien.
+  static DiagnosisView? parse(Object? raw) {
+    if (raw is! String) return null;
+    final mot = raw.trim().toLowerCase();
+    for (final v in DiagnosisView.values) {
+      if (v.wire == mot) return v;
+    }
+    return null;
+  }
+}
+
 /// Une cause possible, avec sa vraisemblance et des gestes concrets.
 class DiagnosisCause {
   const DiagnosisCause({required this.title, required this.likelihood, required this.explanation, required this.actions, this.problemId});
@@ -78,7 +108,7 @@ class DiagnosisCause {
 
 /// Résultat d'un diagnostic : toujours des suggestions, jamais des certitudes.
 class Diagnosis {
-  const Diagnosis({required this.summary, required this.causes, this.urgent = false});
+  const Diagnosis({required this.summary, required this.causes, this.urgent = false, this.suggestedView});
 
   /// Ce que l'on observe, en une ou deux phrases.
   final String summary;
@@ -89,15 +119,24 @@ class Diagnosis {
   /// Vrai si la plante mérite une attention rapide (parasites, pourriture…).
   final bool urgent;
 
+  /// La vue qui manquait au service pour trancher, quand il en nomme une.
+  ///
+  /// Elle ne se lit nulle part dans le compte rendu : c'est une photo à
+  /// proposer, pas une piste. Rien n'oblige à la donner, et l'analyse reste
+  /// entière sans elle.
+  final DiagnosisView? suggestedView;
+
   Map<String, Object?> toJson() => {
         'summary': summary,
         'urgent': urgent,
+        if (suggestedView != null) 'view': suggestedView!.wire,
         'causes': [for (final c in causes) c.toJson()],
       };
 
   factory Diagnosis.fromJson(Map<String, Object?> json) => Diagnosis(
         summary: json['summary'] is String ? json['summary'] as String : '',
         urgent: json['urgent'] == true,
+        suggestedView: DiagnosisView.parse(json['view']),
         causes: [
           for (final c in json['causes'] is List ? json['causes'] as List : const [])
             if (c is Map)
@@ -147,6 +186,18 @@ abstract class PlantDiagnoser {
     /// lumière, les insectes. Aucune photo ne les montre, et ce sont eux qui
     /// tranchent le plus souvent.
     DiagnosisObservations? observations,
+
+    /// Vrai pour une plante qui vit dans la maison, faux pour une plante
+    /// dehors, `null` quand on l'ignore — une plante sans emplacement.
+    bool? indoors,
+
+    /// Le jour de l'analyse. Une cochenille en février et une brûlure en
+    /// juillet ne se confondent pas, et aucune photo ne dit la saison.
+    DateTime? date,
+
+    /// La latitude du lieu déjà connu de l'application, quand il y en a un.
+    /// Seul son signe part : il dit l'hémisphère, donc la saison du mois.
+    double? latitude,
   });
 }
 
@@ -195,6 +246,9 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    bool? indoors,
+    DateTime? date,
+    double? latitude,
   }) =>
       throw const DiagnosisException('unconfigured');
 }

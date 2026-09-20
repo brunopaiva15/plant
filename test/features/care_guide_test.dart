@@ -1149,6 +1149,68 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
+
+    /// Le recul de la caméra : l'échelle du diorama à cet instant.
+    double echelle(WidgetTester tester) => tester
+        .widget<Transform>(
+          find
+              .descendant(
+                of: find.byType(CareEnvironmentScene),
+                matching: find.byType(Transform),
+              )
+              .first,
+        )
+        .transform
+        .getMaxScaleOnAxis();
+
+    /// La présence de la plante : son opacité à cet instant.
+    double presence(WidgetTester tester) => tester
+        .widget<Opacity>(
+          find.descendant(
+            of: find.byType(CareEnvironmentScene),
+            matching: find.byType(Opacity),
+          ),
+        )
+        .opacity;
+
+    testWidgets('la scène se pose : gros plan sur la plante, puis recul', (
+      tester,
+    ) async {
+      await pump(tester);
+      // Première image : le cadre est serré sur la plante, qui n'est pas
+      // encore posée.
+      expect(echelle(tester), closeTo(CareEnvironmentScene.zoomInitial, 1e-6));
+      expect(presence(tester), 0);
+
+      // La plante est posée avant que la caméra ne recule.
+      await tester.pump(CareEnvironmentScene.poseDuration * 0.36);
+      expect(presence(tester), 1);
+      expect(echelle(tester), closeTo(CareEnvironmentScene.zoomInitial, 1e-6));
+
+      // Au bout de la pose, le cadre entier — et rien ne bouge plus.
+      await tester.pump(CareEnvironmentScene.poseDuration);
+      expect(echelle(tester), closeTo(1, 1e-6));
+      expect(presence(tester), 1);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('en reduced motion, la scène est posée dès la première image', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        profile,
+        1.0,
+        const ToxicityFact.unknown(),
+        null,
+        true,
+        true,
+        true,
+      );
+      expect(echelle(tester), closeTo(1, 1e-6));
+      expect(presence(tester), 1);
+      expect(tester.takeException(), isNull);
+    });
   });
 }
 

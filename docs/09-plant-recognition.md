@@ -126,7 +126,7 @@ tiers. L'objectif :
 | `PlantNetIdentifier` | `lib/data/services/plantnet_identifier.dart` | adaptateur HTTP Pl@ntNet, clé utilisateur |
 | `plantIdentifierProvider` | `lib/app/providers.dart` | choisit le service selon la clé |
 | Catalogue trié | `lib/data/species/species_catalog.dart` | 297 espèces avec noms en 4 langues, famille, catégorie |
-| Catalogue étendu | `assets/species/catalog.tsv` → `SpeciesIndex` | 36 364 espèces, noms courants, chargé à la demande |
+| Catalogue étendu | `assets/species/catalog.tsv` → `SpeciesIndex` | 36 342 espèces, noms courants, chargé à la demande |
 | Appelants | création de plante, feuille « Identifier », fiche plante | affichent 5 candidats et laissent choisir |
 
 Les appelants n'ont **pas** changé : ils reçoivent toujours une liste de
@@ -1117,7 +1117,7 @@ anciennes.**
 
 Le réseau n'avait donc pas besoin d'être réappris, mais d'être **borné**. Et
 la borne n'a pas sa place dans l'application : `assets/species/catalog.tsv`
-porte 36 364 noms — plus que le modèle — et `CatalogCareGuide` résout
+porte 36 342 noms — plus que le modèle — et `CatalogCareGuide` résout
 l'entretien espèce → genre → famille → catégorie, si bien que l'application
 sait déjà dire quelque chose de presque n'importe quoi. Il n'existe aucun
 ensemble « ce que l'app sait afficher » à quoi masquer.
@@ -1428,6 +1428,35 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   (`json_object`) ; si le service refuse ce paramètre, la même demande
   repart sans lui et le lecteur extrait le JSON du texte, balises Markdown
   comprises.
+- **Quand le service flanche** : « Analyse impossible » était la panne la plus
+  visible de l'application, et presque jamais la faute du réseau de la
+  personne. Trois causes, trois réponses. Un 5xx, un 429, un 408, une
+  coupure ou un délai dépassé repartent d'eux-mêmes : la même demande, trois
+  tentatives au plus, une pause qui grandit entre deux. Une réponse coupée
+  faute de jetons — le cas le plus fréquent — est refermée à la main par le
+  lecteur, qui revient au dernier endroit où le texte se tenait et garde les
+  pistes écrites en entier ; celle qui ne se répare pas repart une fois avec
+  de quoi finir sa phrase. Un 401, un 400 ou un refus de contenu, eux, ne se
+  rejouent pas : ils se corrigent. Ce qui reste se dit à l'écran avec le mot
+  juste — service saturé, réponse inexploitable, réseau absent — au lieu
+  d'envoyer tout le monde vérifier sa connexion.
+- **Lire le motif avant de nommer** : la consigne demande d'abord *où* et
+  *comment* — quelles feuilles, bord ou centre, sec ou mou, net ou diffus, et
+  si cela s'étend — avant toute conclusion. C'est le motif, pas la couleur,
+  qui sépare un jaunissement qui commence par les vieilles feuilles de celui
+  qui commence par les jeunes. Partent avec les photos ce qu'aucune d'elles
+  ne montre : la plante vit dedans ou dehors, le jour de l'analyse et
+  l'hémisphère (le signe de la latitude déjà connue, rien de plus). Une
+  cochenille de salon en février et une brûlure de balcon en juillet ne se
+  confondent pas.
+- **Une photo de plus, quand elle changerait quelque chose** : le compte rendu
+  porte une clé à part, `view`, où le service nomme la seule vue qui
+  l'aiderait — feuille de près, revers, plante entière, base de la tige,
+  terre au pied — ou `null`. C'est la seule place où une photo manquante a le
+  droit d'exister : les pistes, elles, n'en parlent jamais. L'application en
+  fait une proposition (docs/16, « Jev côté diagnostic ») : le compte rendu
+  reste entier au-dessus, la photo ajoutée relance l'analyse avec les deux ou
+  trois vues ensemble, et trois photos restent le plafond.
 - **Toujours au moins une piste** : la consigne interdit d'en faire une de la
   photo — « la feuille sèche n'est pas visible sur l'image » n'est pas un
   diagnostic, et le symptôme a bien été vu sur la plante même quand le

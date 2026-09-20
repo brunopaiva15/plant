@@ -4317,7 +4317,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisHint.
   ///
   /// In fr, this message translates to:
-  /// **'Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.'**
+  /// **'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
   /// No description provided for @diagnosisSymptomsHint.
@@ -4428,6 +4428,36 @@ abstract class AppLocalizations {
   /// **'Dans la terre'**
   String get diagnosisBugsInSoil;
 
+  /// No description provided for @diagnosisSymptoms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Symptômes'**
+  String get diagnosisSymptoms;
+
+  /// No description provided for @diagnosisAround.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autour de la plante'**
+  String get diagnosisAround;
+
+  /// No description provided for @diagnosisPhotosFull.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trois photos au maximum.'**
+  String get diagnosisPhotosFull;
+
+  /// No description provided for @diagnosisRemovePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer cette photo'**
+  String get diagnosisRemovePhoto;
+
+  /// No description provided for @diagnosisFinding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Constat'**
+  String get diagnosisFinding;
+
   /// No description provided for @analyze.
   ///
   /// In fr, this message translates to:
@@ -4457,6 +4487,72 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Le diagnostic est indisponible pour le moment. Réessayez plus tard.'**
   String get diagnosisUnauthorized;
+
+  /// No description provided for @diagnosisBusy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le service d\'analyse ne répond pas. Réessayez dans un moment.'**
+  String get diagnosisBusy;
+
+  /// No description provided for @diagnosisUnreadable.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse n\'a pas abouti. Réessayez.'**
+  String get diagnosisUnreadable;
+
+  /// No description provided for @diagnosisUncertain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.'**
+  String get diagnosisUncertain;
+
+  /// No description provided for @diagnosisAnotherPhotoHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une photo de plus préciserait l\'analyse.'**
+  String get diagnosisAnotherPhotoHint;
+
+  /// No description provided for @diagnosisAnotherPhotoView.
+  ///
+  /// In fr, this message translates to:
+  /// **'À photographier : {view}.'**
+  String diagnosisAnotherPhotoView(String view);
+
+  /// No description provided for @diagnosisAnotherPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get diagnosisAnotherPhoto;
+
+  /// No description provided for @diagnosisViewLeafCloseup.
+  ///
+  /// In fr, this message translates to:
+  /// **'une feuille de près'**
+  String get diagnosisViewLeafCloseup;
+
+  /// No description provided for @diagnosisViewLeafUnderside.
+  ///
+  /// In fr, this message translates to:
+  /// **'le revers d\'une feuille'**
+  String get diagnosisViewLeafUnderside;
+
+  /// No description provided for @diagnosisViewWholePlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'la plante entière'**
+  String get diagnosisViewWholePlant;
+
+  /// No description provided for @diagnosisViewStemBase.
+  ///
+  /// In fr, this message translates to:
+  /// **'la base de la tige'**
+  String get diagnosisViewStemBase;
+
+  /// No description provided for @diagnosisViewSoilRoots.
+  ///
+  /// In fr, this message translates to:
+  /// **'la terre au pied'**
+  String get diagnosisViewSoilRoots;
 
   /// No description provided for @possibleCauses.
   ///
@@ -10001,6 +10097,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Hôtes principaux d\'un groupe cible ; la liste n\'est pas exhaustive.'**
   String get problemScopeTargetNote;
+
+  /// No description provided for @problemOtherNames.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autres noms'**
+  String get problemOtherNames;
+
+  /// No description provided for @problemOtherNamesNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Noms courants et scientifiques qui désignent la même chose.'**
+  String get problemOtherNamesNote;
 
   /// No description provided for @problemHosts.
   ///

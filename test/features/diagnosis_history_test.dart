@@ -126,12 +126,14 @@ void main() {
     expect(find.text('Laisser sécher trois centimètres'), findsOneWidget);
     expect(find.text('Vérifier le drainage du pot'), findsOneWidget);
     expect(find.text('Vieillissement normal'), findsOneWidget);
-    expect(find.text('Symptômes signalés'), findsOneWidget);
+    // Les deux rappels sont des groupes de liste : leur titre se lit en
+    // capitales, comme partout ailleurs.
+    expect(find.text('SYMPTÔMES SIGNALÉS'), findsOneWidget);
     expect(find.text('Les feuilles tombent depuis une semaine.'), findsOneWidget);
 
     // Ce qui avait été vérifié à la main ce jour-là se relit avec le reste ;
     // ce qui n'avait pas été coché n'a pas de ligne.
-    expect(find.text('Observations'), findsOneWidget);
+    expect(find.text('OBSERVATIONS'), findsOneWidget);
     expect(find.text('Terre'), findsOneWidget);
     expect(find.text('Détrempée'), findsOneWidget);
     expect(find.text('Insectes'), findsOneWidget);

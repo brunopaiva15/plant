@@ -822,16 +822,17 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  _Shutter(
+                  Shutter(
                     busy: _picking,
                     enabled: _camera.isReady,
+                    semanticLabel: l10n.takePhoto,
                     onTap: _capture,
                   ),
                   if (_mode == _PhotoMode.aim)
                     Transform.translate(
-                      // 34 = demi-déclencheur, 20 = demi-bouton galerie.
-                      // + Space.sm donne précisément 12 points entre les deux.
-                      offset: const Offset(-(34 + Space.sm + 20), 0),
+                      // Demi-déclencheur, l'écart, demi-bouton galerie : douze
+                      // points entre les deux, comptés par le composant.
+                      offset: const Offset(-Shutter.asideOffset, 0),
                       child: FloraIconButton(
                         icon: CupertinoIcons.photo,
                         semanticLabel: l10n.choosePhoto,
@@ -1475,42 +1476,6 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
 
 /// Les deux états de l'étape photo.
 enum _PhotoMode { aim, review }
-
-/// Le déclencheur : un anneau blanc et son disque, posés sur le viseur.
-class _Shutter extends StatelessWidget {
-  const _Shutter({required this.onTap, required this.busy, this.enabled = true});
-
-  final VoidCallback onTap;
-  final bool busy;
-
-  /// Faux tant que le flux n'est pas prêt : le déclencheur est là, il
-  /// n'écoute pas encore.
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Pressable(
-      onTap: busy || !enabled ? null : onTap,
-      enabled: enabled,
-      scale: 0.86,
-      semanticLabel: l10n.takePhoto,
-      child: Container(
-        width: 68,
-        height: 68,
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 4),
-          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 10, offset: Offset(0, 3))],
-        ),
-        child: Container(
-          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-        ),
-      ),
-    );
-  }
-}
 
 class _StepLayout extends StatelessWidget {
   const _StepLayout({required this.title, required this.body, required this.actions, this.subtitle, this.scrollable = false});

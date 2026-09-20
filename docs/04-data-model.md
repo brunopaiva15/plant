@@ -228,9 +228,9 @@ noms » ne s'affichent pas, ils rendent la recherche tolérante (« Edelweiß »
 « stella alpina »). La recherche compare des chaînes normalisées sans accents
 ni casse (`core/utils/search_text.dart`).
 
-Les quatre colonnes de langue sont creuses : sur les 36 364 espèces livrées,
-5 285 ont un nom français, 32 147 un nom anglais, 7 639 un nom allemand,
-1 416 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
+Les quatre colonnes de langue sont creuses : sur les 36 342 espèces livrées,
+5 283 ont un nom français, 32 123 un nom anglais, 7 639 un nom allemand,
+1 414 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
 ou le nom scientifique — jamais celui d'une autre langue : « Japanische
 Faserbanane » en tête d'une liste française se lit comme une erreur, et
 masquer les 31 000 espèces sans nom français viderait l'encyclopédie.
@@ -304,7 +304,7 @@ l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
 | `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
 | `portee` | `GENERAL` (toutes les plantes vasculaires), `LARGE` (beaucoup d'hôtes, exemples), `CIBLE` (hôtes principaux) |
 | `taxons_hotes_scientifiques` | Hôtes séparés par `;`, à tous les rangs : espèce, genre, famille, ou `Tracheophyta` |
-| `synonymes_recherche` | Facultatif. Les autres noms sous lesquels on cherche l'entrée, séparés par `;`, toutes langues mêlées. Jamais affichés. 171 entrées sur 200 en portent. |
+| `synonymes_recherche` | Facultatif. Les autres noms sous lesquels on cherche l'entrée, séparés par `;`, toutes langues mêlées. 171 entrées sur 200 en portent. |
 
 La recherche de l'encyclopédie (`PlantProblem.matches`) porte sur le numéro,
 les quatre noms, les synonymes et les hôtes. Chaque mot tapé doit ouvrir un
@@ -321,9 +321,13 @@ Les quatre langues répondent ensemble, pas seulement celle qui est lue :
 Un synonyme est un autre **nom** de l'entrée — un nom courant, un nom
 scientifique qui circule, une abréviation —, jamais un symptôme, un
 traitement ni un nom de plante : les hôtes s'en chargent. Un synonyme déjà
-trouvable par le titre n'entre pas, et un test le vérifie. Ils ne s'affichent
-nulle part : la base garde un seul nom par langue, pour que deux analyses de
-la même chose se lisent pareil.
+trouvable par le titre n'entre pas, et un test le vérifie.
+
+La fiche du problème les donne, sous « Autres noms », entre l'étendue et les
+hôtes : c'est « araignée rouge » qu'on a en tête, pas « tétranyque », et une
+fiche de référence doit le dire. Ils s'y lisent toutes langues mêlées, comme
+la base les range, et ne remplacent jamais le titre : celui-là garde un seul
+nom par langue, pour que deux analyses de la même chose se lisent pareil.
 
 Elle sert de vocabulaire commun au diagnostic. `candidatesFor` réduit la base
 aux pistes qui peuvent concerner une plante — l'universel, plus ce qui vise son

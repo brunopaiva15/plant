@@ -2059,7 +2059,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchingOnline => 'Ricerca online…';
 
   @override
-  String get suggestionsLocal => 'Risultati Iris sul dispositivo · foto non inviata';
+  String get suggestionsLocal =>
+      'Risultati Iris sul dispositivo · foto non inviata';
 
   @override
   String get suggestionsRemote => 'Proposto online da Pl@ntNet';
@@ -2431,7 +2432,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Fotografate foglie, fusto o terra da più angolazioni. I risultati sono indicativi.';
+      'Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.';
 
   @override
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
@@ -2489,6 +2490,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get diagnosisBugsInSoil => 'Nella terra';
 
   @override
+  String get diagnosisSymptoms => 'Sintomi';
+
+  @override
+  String get diagnosisAround => 'Intorno alla pianta';
+
+  @override
+  String get diagnosisPhotosFull => 'Al massimo tre foto.';
+
+  @override
+  String get diagnosisRemovePhoto => 'Rimuovi questa foto';
+
+  @override
+  String get diagnosisFinding => 'Constatazione';
+
+  @override
   String get analyze => 'Analizza';
 
   @override
@@ -2504,6 +2520,44 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get diagnosisUnauthorized =>
       'La diagnosi non è disponibile al momento. Riprova più tardi.';
+
+  @override
+  String get diagnosisBusy =>
+      'Il servizio di analisi non risponde. Riprova tra poco.';
+
+  @override
+  String get diagnosisUnreadable => 'L\'analisi non è riuscita. Riprova.';
+
+  @override
+  String get diagnosisUncertain =>
+      'Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.';
+
+  @override
+  String get diagnosisAnotherPhotoHint =>
+      'Un\'altra foto renderebbe l\'analisi più precisa.';
+
+  @override
+  String diagnosisAnotherPhotoView(String view) {
+    return 'Da fotografare: $view.';
+  }
+
+  @override
+  String get diagnosisAnotherPhoto => 'Aggiungi una foto';
+
+  @override
+  String get diagnosisViewLeafCloseup => 'una foglia da vicino';
+
+  @override
+  String get diagnosisViewLeafUnderside => 'il rovescio di una foglia';
+
+  @override
+  String get diagnosisViewWholePlant => 'la pianta intera';
+
+  @override
+  String get diagnosisViewStemBase => 'la base del fusto';
+
+  @override
+  String get diagnosisViewSoilRoots => 'la terra ai piedi';
 
   @override
   String get possibleCauses => 'Cause possibili';
@@ -5874,6 +5928,13 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get problemScopeTargetNote =>
       'Ospiti principali di un gruppo mirato; l\'elenco non è esaustivo.';
+
+  @override
+  String get problemOtherNames => 'Altri nomi';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Nomi comuni e scientifici che indicano la stessa cosa.';
 
   @override
   String get problemHosts => 'Ospiti';
