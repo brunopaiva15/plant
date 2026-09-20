@@ -12,9 +12,14 @@ import 'room_fit_sheet.dart';
 /// montre le réel (docs/13, « Idéal et réel »). Absent sans relevé, absent
 /// sans LiDAR, absent sans le drapeau.
 class RoomFitEntry extends ConsumerWidget {
-  const RoomFitEntry({super.key, required this.care});
+  const RoomFitEntry({super.key, required this.care, this.plantId, this.plantName});
 
   final ResolvedCare care;
+
+  /// La plante du jardin, quand la fiche est la sienne : elle peut alors
+  /// choisir sa place sur le plan.
+  final String? plantId;
+  final String? plantName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +37,7 @@ class RoomFitEntry extends ConsumerWidget {
             title: l10n.placementTitle,
             subtitle: l10n.placementRoomsCount(scans.length),
             chevron: true,
-            onTap: () => showRoomFit(context, profile: care.profile, generic: generic),
+            onTap: () => showRoomFit(context, profile: care.profile, generic: generic, plantId: plantId, plantName: plantName),
           ),
         ],
       ),

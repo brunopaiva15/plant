@@ -798,9 +798,13 @@ ici, ce qui tient au code.
   `support` rend ce que l'appareil sait faire (`lidar`, `sections`,
   `structure`), `scan` présente `RoomCaptureView` par-dessus la fenêtre
   Flutter, avec le coaching du système, et au « Terminer » encode le
-  `CapturedRoom` en JSON à l'endroit demandé. Annuler rend `nil` ; un relevé
-  qui échoue rend `error` sans `path`. Aucun entitlement : RoomPlan et ARKit
-  sont des frameworks système, liés à l'import.
+  `CapturedRoom` en JSON à l'endroit demandé ; `scanStructure` (iOS 17)
+  enchaîne les pièces dans le même repère — « Pièce suivante » arrête la
+  session sans mettre ARKit en pause et la relance une fois la pièce
+  rendue —, les assemble par `StructureBuilder` et écrit un fichier par
+  pièce dans le dossier demandé (`paths`). Annuler rend `nil` ; un relevé
+  qui échoue rend `error` sans `paths`. Aucun entitlement : RoomPlan et
+  ARKit sont des frameworks système, liés à l'import.
 - **Le nord.** RoomPlan ne le donne pas. `NorthEstimator` lit la boussole
   (`CLLocationManager`, cap vrai si la position est autorisée, magnétique
   sinon) et le lacet de la caméra ARKit au même instant, et garde la moyenne

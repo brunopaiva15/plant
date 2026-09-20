@@ -1,9 +1,10 @@
 # Le relevé de la maison : où poser cette plante
 
-> Statut : fonction expérimentale. Les paliers 1 et 2 sont codés derrière
+> Statut : fonction expérimentale. Les trois paliers sont codés derrière
 > `--dart-define=ROOM_SCAN=true`, et le palier 0 est passé : un relevé réel
 > sur un iPhone Pro a confirmé la construction, la présentation par-dessus
-> Flutter et la lecture du JSON. Note créée le 20 septembre 2026.
+> Flutter et la lecture du JSON. L'appartement entier (palier 3) attend son
+> relevé réel. Note créée le 20 septembre 2026.
 
 ## L'idée
 
@@ -319,11 +320,19 @@ ne se lirait pas — ; et la pièce se relève une fois pour toutes les fiches
 (`RoomFitAdvisor.survey`, puis `placeIn` par fiche), parce que « Qui
 serait bien ici » juge tout le jardin sur la même grille.
 
-**Palier 3 — l'appartement entier.** `StructureBuilder` pour enchaîner les
-pièces en un relevé, le classement des places sur toutes les pièces à la
-fois, la position actuelle des plantes sur le plan et « plus près de la
-fenêtre lui irait mieux », la synchronisation des relevés si elle est
-voulue — avec la question de ce qu'on partage d'un jardin partagé, qui
+**Palier 3 — l'appartement entier.** « Relever l'appartement » enchaîne
+les pièces dans le même repère (`stop(pauseARSession: false)`, puis
+`run` ; « Pièce suivante » entre chaque), `StructureBuilder` les assemble
+au « Terminer », et chaque pièce part dans son fichier sous un même
+`structure_id` (schéma v14). « Où la poser » classe d'abord les pièces —
+toutes, pas seulement celles d'un même relevé —, la meilleure s'ouvre
+d'elle-même. Une plante du jardin se pose sur le plan de la pièce ; elle
+est alors jugée là où elle est, et « Qui serait bien ici » dit « mieux
+sur la table » quand la meilleure place dépasse la sienne d'au moins un
+quart. Depuis sa fiche, « Choisir cette place » la pose sur le plan et la
+déménage dans l'emplacement du relevé s'il en a un. **Livré dans ce
+dépôt.** La synchronisation des relevés n'est pas faite : un plan de chez
+soi dans un jardin partagé pose la question de ce qu'on partage, qui
 n'est pas tranchée ici.
 
 ## Ce qui reste ouvert

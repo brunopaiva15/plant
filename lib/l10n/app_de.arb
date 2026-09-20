@@ -2152,5 +2152,76 @@
   "roomScanNoPlantsToRank": "Keine Pflanze mit bekannter Art.",
   "placementShortfallHeater": "Alle Plätze liegen nahe einem Heizkörper, und sie verträgt keine trockene, warme Luft.",
   "placementHeaterNote": "Nahe einem Heizkörper: Die Luft ist hier trocken und warm.",
-  "placementAtHome": "Bei dir"
+  "placementAtHome": "Bei dir",
+  "roomScanStartStructure": "Die ganze Wohnung scannen",
+  "roomScanStructureHint": "Die ganze Wohnung scannen geht Raum für Raum: „Nächster Raum“ dazwischen, „Fertig“ am Ende. Die Räume werden zueinander gesetzt.",
+  "roomScanNextRoom": "Nächster Raum",
+  "roomScanRoomNumber": "Raum {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Pflanzen auf dem Grundriss",
+  "roomScanPlantsHelp": "Eine Pflanze auf dem Grundriss wird dort beurteilt, wo sie steht: Die Liste sagt, ob ein anderer Platz besser zu ihr passt.",
+  "roomScanAddPlant": "Pflanze setzen",
+  "roomScanTapForPlant": "Auf dem Grundriss dort tippen, wo {plant} steht.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "{plant} vom Grundriss entfernen",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "Keine Pflanze zu setzen.",
+  "roomScanPlantWellPlaced": "Gut platziert · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Jetzt {light} · besser {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "Alle Räume",
+  "placementChoose": "Diesen Platz wählen",
+  "placementChosen": "Gewählter Platz: {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Jetzt: {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  }
 }

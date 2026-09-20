@@ -6520,4 +6520,68 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get placementAtHome => 'Bei dir';
+
+  @override
+  String get roomScanStartStructure => 'Die ganze Wohnung scannen';
+
+  @override
+  String get roomScanStructureHint =>
+      'Die ganze Wohnung scannen geht Raum für Raum: „Nächster Raum“ dazwischen, „Fertig“ am Ende. Die Räume werden zueinander gesetzt.';
+
+  @override
+  String get roomScanNextRoom => 'Nächster Raum';
+
+  @override
+  String roomScanRoomNumber(int n) {
+    return 'Raum $n';
+  }
+
+  @override
+  String get roomScanPlantsOnPlan => 'Pflanzen auf dem Grundriss';
+
+  @override
+  String get roomScanPlantsHelp =>
+      'Eine Pflanze auf dem Grundriss wird dort beurteilt, wo sie steht: Die Liste sagt, ob ein anderer Platz besser zu ihr passt.';
+
+  @override
+  String get roomScanAddPlant => 'Pflanze setzen';
+
+  @override
+  String roomScanTapForPlant(String plant) {
+    return 'Auf dem Grundriss dort tippen, wo $plant steht.';
+  }
+
+  @override
+  String roomScanRemovePlant(String plant) {
+    return '$plant vom Grundriss entfernen';
+  }
+
+  @override
+  String get roomScanNoPlantToPlace => 'Keine Pflanze zu setzen.';
+
+  @override
+  String roomScanPlantWellPlaced(String light) {
+    return 'Gut platziert · $light';
+  }
+
+  @override
+  String roomScanPlantBetterAt(String light, String place) {
+    return 'Jetzt $light · besser $place';
+  }
+
+  @override
+  String get placementAllRooms => 'Alle Räume';
+
+  @override
+  String get placementChoose => 'Diesen Platz wählen';
+
+  @override
+  String placementChosen(String place) {
+    return 'Gewählter Platz: $place';
+  }
+
+  @override
+  String placementCurrent(String place, String light) {
+    return 'Jetzt: $place · $light';
+  }
 }

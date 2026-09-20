@@ -37,6 +37,7 @@ class DriftRoomScanRepository implements RoomScanRepository {
     double floorAreaM2 = 0,
     RoomSectionLabel? section,
     String? locationId,
+    String? structureId,
   }) async {
     final now = DateTime.now();
     final id = _uuid.v4();
@@ -50,6 +51,7 @@ class DriftRoomScanRepository implements RoomScanRepository {
           filePath: filePath,
           floorAreaM2: Value(floorAreaM2),
           sectionLabel: Value(section?.name),
+          structureId: Value(structureId),
           createdAt: now,
           updatedAt: now,
         ));

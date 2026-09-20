@@ -281,6 +281,7 @@ extension RoomScanRowMapper on RoomScanRow {
         filePath: filePath,
         floorAreaM2: floorAreaM2,
         section: RoomSectionLabel.decode(sectionLabel),
+        structureId: structureId,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

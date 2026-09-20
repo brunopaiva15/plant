@@ -28,13 +28,15 @@ class RoomScanSupport {
 /// la raison pour laquelle rien n'a été écrit. Un relevé annulé ne rend
 /// rien du tout.
 class RoomScanResult {
-  const RoomScanResult({this.path, this.northOffsetDeg, this.error});
+  const RoomScanResult({this.paths = const [], this.northOffsetDeg, this.error});
 
-  final String? path;
+  /// Les fichiers écrits : un par pièce, dans l'ordre du relevé.
+  final List<String> paths;
   final double? northOffsetDeg;
   final String? error;
 
-  bool get succeeded => path != null && path!.isNotEmpty;
+  String? get path => paths.firstOrNull;
+  bool get succeeded => paths.isNotEmpty;
 }
 
 /// Le relevé d'une pièce par le téléphone (`ios/Runner/RoomScanChannel.swift`).
@@ -48,6 +50,12 @@ abstract class RoomScanService {
 
   /// Ouvre le relevé natif et, au « Terminer », écrit le JSON à [toPath].
   Future<RoomScanResult?> scan({required String toPath});
+
+  /// Relève l'appartement pièce après pièce, un fichier par pièce dans
+  /// [toDirectory], les pièces placées les unes par rapport aux autres.
+  /// [nextRoomLabel] est le bouton entre deux pièces, dans la langue de
+  /// l'interface. iOS 17.
+  Future<RoomScanResult?> scanStructure({required String toDirectory, required String nextRoomLabel});
 }
 
 /// Partout où RoomPlan n'existe pas : Android, le web, un build sans le drapeau.
@@ -62,6 +70,9 @@ class UnavailableRoomScanService implements RoomScanService {
 
   @override
   Future<RoomScanResult?> scan({required String toPath}) async => null;
+
+  @override
+  Future<RoomScanResult?> scanStructure({required String toDirectory, required String nextRoomLabel}) async => null;
 }
 
 /// Le canal natif, sur le patron de `ChannelHomeClimateService` : une
@@ -93,6 +104,12 @@ class ChannelRoomScanService implements RoomScanService {
     return parseResult(raw);
   }
 
+  @override
+  Future<RoomScanResult?> scanStructure({required String toDirectory, required String nextRoomLabel}) async {
+    final raw = await _ask(() => _channel.invokeMapMethod<String, Object?>('scanStructure', {'directory': toDirectory, 'nextRoomLabel': nextRoomLabel}));
+    return parseResult(raw);
+  }
+
   Future<T?> _ask<T>(Future<T?> Function() body) async {
     if (!isSupported) return null;
     try {
@@ -111,13 +128,23 @@ class ChannelRoomScanService implements RoomScanService {
 
   static RoomScanResult? parseResult(Map<String, Object?>? raw) {
     if (raw == null) return null;
-    final path = raw['path'];
     final north = raw['northOffsetDeg'];
     final error = raw['error'];
-    if (path is! String || path.isEmpty) {
+    // Plusieurs fichiers pour l'appartement, un seul pour une pièce : la
+    // liste prime, le chemin seul se lit comme une liste d'un.
+    final list = raw['paths'];
+    final paths = <String>[
+      if (list is List)
+        for (final p in list)
+          if (p is String && p.isNotEmpty) p,
+    ];
+    if (list is! List) {
+      if (raw['path'] case final String p when p.isNotEmpty) paths.add(p);
+    }
+    if (paths.isEmpty) {
       return error is String && error.isNotEmpty ? RoomScanResult(error: error) : null;
     }
-    return RoomScanResult(path: path, northOffsetDeg: north is num ? north.toDouble() : null, error: error is String ? error : null);
+    return RoomScanResult(paths: paths, northOffsetDeg: north is num ? north.toDouble() : null, error: error is String ? error : null);
   }
 }
 
@@ -140,10 +167,19 @@ class RoomScanStore {
   /// Le chemin absolu d'un nouveau fichier, à donner au relevé.
   Future<String> newPath(String id) async => p.join((await _dir()).path, '$id.json');
 
+  /// Le dossier d'un relevé d'appartement : une pièce par fichier dedans.
+  Future<String> newDirectory(String id) async => p.join((await _dir()).path, id);
+
   Future<String> absolutePath(String relative) async => p.join((await _dir()).path, relative);
 
-  /// Le chemin relatif à garder en base.
-  String relativeOf(String absolute) => p.basename(absolute);
+  /// Le chemin relatif à garder en base : `abc.json`, ou `abc/0.json` pour
+  /// une pièce d'un appartement. Le dossier est connu dès qu'un chemin a
+  /// été demandé ; sinon, le nom du fichier.
+  String relativeOf(String absolute) {
+    final root = _root?.path;
+    if (root != null && p.isWithin(root, absolute)) return p.relative(absolute, from: root);
+    return p.basename(absolute);
+  }
 
   /// Le JSON du relevé ; `null` si le fichier manque ou ne se lit pas.
   Future<Map<String, Object?>?> read(String relative) async {

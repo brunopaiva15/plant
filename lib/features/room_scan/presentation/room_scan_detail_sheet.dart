@@ -10,10 +10,12 @@ import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/models/models.dart';
+import '../../../domain/repositories/repositories.dart';
 import '../../../domain/room/placement.dart';
 import '../../../domain/room/room_scan.dart';
 import '../../../domain/room/scanned_room.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
+import '../../plants/application/plant_providers.dart';
 import '../application/room_scan_providers.dart';
 import 'room_plan_painter.dart';
 import 'room_scan_labels.dart';
@@ -39,6 +41,9 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
 
   /// Le doigt pose un radiateur au prochain toucher du plan.
   bool _placingHeater = false;
+
+  /// La plante que le doigt pose au prochain toucher du plan.
+  PlantSummary? _placingPlant;
 
   @override
   void dispose() {
@@ -91,12 +96,46 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
       Haptics.success();
       return;
     }
-    final hit = markers.where((m) => m.kind == RoomMarkerKind.heater && RoomPoint(m.x, m.z).distanceTo(at) < 0.5).firstOrNull;
+    if (_placingPlant case final plant?) {
+      setState(() => _placingPlant = null);
+      await ref.read(roomScanControllerProvider.notifier).placePlant(scan.id, plant.plant.id, at);
+      Haptics.success();
+      return;
+    }
+    final hit = markers.where((m) => (m.kind == RoomMarkerKind.heater || m.kind == RoomMarkerKind.plant) && RoomPoint(m.x, m.z).distanceTo(at) < 0.5).firstOrNull;
     if (hit == null) return;
+    final plantName = hit.kind == RoomMarkerKind.plant
+        ? (ref.read(plantSummariesProvider(const PlantFilter())).value ?? const <PlantSummary>[]).where((p) => p.plant.id == hit.plantId).firstOrNull?.plant.name
+        : null;
     await showAdaptiveActionSheet(
       context,
       cancelLabel: l10n.cancel,
-      actions: [SheetAction(label: l10n.roomScanRemoveHeater, destructive: true, onPressed: () => ref.read(roomScanControllerProvider.notifier).removeMarker(hit.id))],
+      actions: [
+        SheetAction(
+          label: hit.kind == RoomMarkerKind.plant ? l10n.roomScanRemovePlant(plantName ?? '·') : l10n.roomScanRemoveHeater,
+          destructive: true,
+          onPressed: () => ref.read(roomScanControllerProvider.notifier).removeMarker(hit.id),
+        ),
+      ],
+    );
+  }
+
+  /// Quelle plante poser : celles de l'emplacement lié d'abord, sinon
+  /// toutes celles du jardin.
+  Future<void> _pickPlantToPlace(RoomScan scan) async {
+    final l10n = context.l10n;
+    final all = ref.read(plantSummariesProvider(const PlantFilter())).value ?? const <PlantSummary>[];
+    final here = scan.locationId == null ? const <PlantSummary>[] : all.where((p) => p.plant.locationId == scan.locationId).toList();
+    final choices = here.isNotEmpty ? here : all;
+    if (choices.isEmpty) {
+      ref.read(toastProvider.notifier).show(ToastData(message: l10n.roomScanNoPlantToPlace, emoji: '🌿'));
+      return;
+    }
+    await showAdaptiveActionSheet(
+      context,
+      title: l10n.roomScanAddPlant,
+      cancelLabel: l10n.cancel,
+      actions: [for (final p in choices) SheetAction(label: p.plant.name, onPressed: () => setState(() => _placingPlant = p))],
     );
   }
 
@@ -121,6 +160,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     final room = ref.watch(scannedRoomProvider(scan.id)).value;
     final markers = ref.watch(roomMarkersProvider(scan.id)).value ?? const <RoomMarker>[];
     final heaters = heaterPoints(markers);
+    final plants = plantPoints(markers).values.toList();
     final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan.locationId).firstOrNull;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xl),
@@ -128,10 +168,14 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SheetHeader(title: scan.name),
-          if (room != null) _plan(scan, room, markers, heaters),
+          if (room != null) _plan(scan, room, markers, heaters, plants),
           if (_placingHeater) ...[
             const SizedBox(height: Space.xs),
             Text(l10n.roomScanTapForHeater, style: context.text.caption),
+          ],
+          if (_placingPlant case final plant?) ...[
+            const SizedBox(height: Space.xs),
+            Text(l10n.roomScanTapForPlant(plant.plant.name), style: context.text.caption),
           ],
           const SizedBox(height: Space.md),
           FloraGroup(
@@ -181,6 +225,21 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
               ],
             ),
             const SizedBox(height: Space.lg),
+            FloraGroup(
+              header: l10n.roomScanPlantsOnPlan,
+              footer: l10n.roomScanPlantsHelp,
+              children: [
+                FloraListRow(
+                  leading: const Text('🌿', style: TextStyle(fontSize: 18)),
+                  title: l10n.roomScanAddPlant,
+                  subtitle: l10n.plantCount(plantPoints(markers).length),
+                  chevron: false,
+                  trailing: _placingPlant != null ? const AdaptiveProgress() : null,
+                  onTap: _placingPlant != null ? null : () => _pickPlantToPlace(scan),
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.lg),
             _WhoFitsHere(scanId: scan.id),
           ],
           const SizedBox(height: Space.lg),
@@ -196,7 +255,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
 
   /// Le plan, et le doigt dessus : la géométrie du peintre rend le point de
   /// la pièce qu'on a touché.
-  Widget _plan(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, List<RoomPoint> heaters) {
+  Widget _plan(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, List<RoomPoint> heaters, List<RoomPoint> plants) {
     final c = context.colors;
     return FloraCard(
       padding: EdgeInsets.zero,
@@ -211,7 +270,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
               onTapUp: (d) => _tapPlan(scan, room, markers, RoomPlanGeometry(room: room, size: size).toRoom(d.localPosition)),
               child: CustomPaint(
                 size: size,
-                painter: RoomPlanPainter(room: room, heaters: heaters, colors: c, numberStyle: context.text.caption),
+                painter: RoomPlanPainter(room: room, heaters: heaters, plants: plants, colors: c, numberStyle: context.text.caption),
               ),
             );
           },
@@ -300,9 +359,13 @@ class _WhoFitsHere extends ConsumerWidget {
               style: const TextStyle(fontSize: 18),
             ),
             title: f.plant.plant.name,
-            subtitle: switch (f.fit.verdict) {
-              RoomFitVerdict.unsuitable => f.fit.shortfall == null ? l10n.verdictLine(f.fit.verdict) : l10n.shortfallLine(f.fit.shortfall!),
-              _ => f.fit.placements.isEmpty ? l10n.verdictLine(f.fit.verdict) : l10n.placementLine(f.fit.placements.first),
+            // Une plante posée sur le plan est jugée là où elle est ; les
+            // autres, à leur meilleure place.
+            subtitle: switch ((f.current, f.fit.verdict)) {
+              (final now?, _) when f.betterElsewhere => l10n.roomScanPlantBetterAt(l10n.lightName(now.light), l10n.placementLine(f.fit.placements.first)),
+              (final now?, _) => l10n.roomScanPlantWellPlaced(l10n.lightName(now.light)),
+              (null, RoomFitVerdict.unsuitable) => f.fit.shortfall == null ? l10n.verdictLine(f.fit.verdict) : l10n.shortfallLine(f.fit.shortfall!),
+              (null, _) => f.fit.placements.isEmpty ? l10n.verdictLine(f.fit.verdict) : l10n.placementLine(f.fit.placements.first),
             },
             subtitleColor: f.fit.verdict == RoomFitVerdict.unsuitable ? c.danger : null,
             chevron: true,

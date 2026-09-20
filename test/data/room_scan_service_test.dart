@@ -65,6 +65,22 @@ void main() {
     expect(result?.error, 'no floor detected');
   });
 
+  test("l'appartement rend un fichier par pièce, dans l'ordre", () async {
+    handler = (call) async => {'paths': ['/tmp/s/0.json', '/tmp/s/1.json'], 'path': '/tmp/s/0.json', 'northOffsetDeg': 12};
+    final result = await ChannelRoomScanService(enabled: true).scanStructure(toDirectory: '/tmp/s', nextRoomLabel: 'Pièce suivante');
+    expect(result?.paths, ['/tmp/s/0.json', '/tmp/s/1.json']);
+    expect(result?.path, '/tmp/s/0.json');
+    expect(result?.northOffsetDeg, 12);
+    expect(calls.single.method, 'scanStructure');
+    expect(calls.single.arguments, {'directory': '/tmp/s', 'nextRoomLabel': 'Pièce suivante'});
+  });
+
+  test("un chemin seul se lit comme une liste d'un", () {
+    expect(ChannelRoomScanService.parseResult({'path': '/tmp/a.json'})?.paths, ['/tmp/a.json']);
+    expect(ChannelRoomScanService.parseResult({'paths': <Object?>[]}), isNull);
+    expect(ChannelRoomScanService.parseResult({'paths': <Object?>[], 'error': 'x'})?.error, 'x');
+  });
+
   test('une erreur native vaut la réponse vide', () async {
     handler = (_) async => throw PlatformException(code: 'busy');
     expect(await ChannelRoomScanService(enabled: true).scan(toPath: '/tmp/room.json'), isNull);
@@ -109,6 +125,15 @@ void main() {
       await store.delete(relative);
       expect(await store.read(relative), isNull);
       await store.delete(relative);
+    });
+
+    test("une pièce d'un appartement garde son dossier dans le chemin relatif", () async {
+      final dir = await store.newDirectory('flat');
+      expect(store.relativeOf('$dir/0.json'), 'flat/0.json');
+      expect(store.relativeOf(await store.newPath('one')), 'one.json');
+      await Directory(dir).create(recursive: true);
+      await store.write('flat/0.json', {'walls': []});
+      expect(await store.read('flat/0.json'), {'walls': []});
     });
 
     test('un fichier qui n’est pas du JSON se lit comme absent', () async {

@@ -16,6 +16,7 @@ class RoomScan {
     this.locationId,
     this.northOffsetDeg,
     this.section,
+    this.structureId,
   });
 
   final String id;
@@ -34,6 +35,9 @@ class RoomScan {
   final String filePath;
   final double floorAreaM2;
   final RoomSectionLabel? section;
+
+  /// Les pièces d'un même relevé d'appartement partagent cet identifiant.
+  final String? structureId;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -49,6 +53,7 @@ class RoomScan {
         locationId: locationId != null ? locationId() : this.locationId,
         northOffsetDeg: northOffsetDeg,
         section: section != null ? section() : this.section,
+        structureId: structureId,
       );
 }
 
@@ -106,3 +111,9 @@ List<RoomPoint> heaterPoints(List<RoomMarker> markers) => [
       for (final m in markers)
         if (m.kind == RoomMarkerKind.heater) RoomPoint(m.x, m.z),
     ];
+
+/// Les plantes posées sur le plan, par identifiant de plante.
+Map<String, RoomPoint> plantPoints(List<RoomMarker> markers) => {
+      for (final m in markers)
+        if (m.kind == RoomMarkerKind.plant && m.plantId != null) m.plantId!: RoomPoint(m.x, m.z),
+    };

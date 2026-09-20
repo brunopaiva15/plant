@@ -64,6 +64,7 @@ class CareGuideScreen extends ConsumerWidget {
           key: ValueKey(care.match),
           child: CareGuideBody(
             care: care,
+            plantId: plant?.id,
             plantName: plant?.name,
             speciesName: plant?.speciesName,
             family: family,
@@ -98,6 +99,7 @@ class CareGuideBody extends ConsumerWidget {
   const CareGuideBody({
     super.key,
     required this.care,
+    this.plantId,
     this.plantName,
     this.speciesName,
     this.family,
@@ -110,6 +112,10 @@ class CareGuideBody extends ConsumerWidget {
   });
 
   final ResolvedCare care;
+
+  /// La plante du jardin dont c'est la fiche, quand c'en est une : c'est
+  /// elle que « Où la poser » peut poser sur le plan.
+  final String? plantId;
   final String? plantName;
 
   /// Nom scientifique, quand il est connu : c'est par lui que la base des
@@ -175,7 +181,7 @@ class CareGuideBody extends ConsumerWidget {
           CareEnvironmentHero(profile: p, speciesName: speciesName, family: family, category: category),
         // Puis le réel, quand une pièce est relevée : où, chez soi, cette
         // fiche serait le mieux. La scène ne change pas pour autant.
-        if (showEnvironmentHero) RoomFitEntry(care: care),
+        if (showEnvironmentHero) RoomFitEntry(care: care, plantId: plantId, plantName: plantName),
 
         SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 
