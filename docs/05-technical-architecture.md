@@ -159,6 +159,52 @@ la coquille soit là, après l'onboarding s'il y en a un.
   autre appareil — s'en vont. Les fichiers de moins de douze heures sont
   épargnés : pendant une création, la photo existe avant sa ligne.
 
+## La chrome de navigation, en natif sur iOS (`core/native_shell.dart`)
+
+Sur iOS, la barre d'onglets n'est plus dessinée par Flutter : c'est un
+`UITabBarController`. La raison est dans la documentation d'Apple, et elle ne
+laisse pas le choix — une `UITabBar` ou une `UINavigationBar` posée seule
+**n'est pas prise en compte** pour le placement vertical de l'iPhone Duo ; il
+faut un contrôleur qui possède sa barre. Une barre dessinée par une
+application, si fidèle soit-elle, reste du contenu aux yeux du système.
+
+Le partage est net :
+
+| qui | quoi |
+|---|---|
+| UIKit | la barre d'onglets, son placement, son débordement, son allure |
+| Dart | la navigation — go_router garde les branches et les pages |
+
+Toucher un onglet ne fait donc rien tout seul : le natif le dit à Dart sur
+`ch.vergasta.plant/native_shell`, Dart change de branche, Flutter redessine.
+L'inverse vaut aussi, pour qu'un lien profond déplace l'onglet.
+
+La forme, côté natif (`ios/Runner/NativeShell.swift`) :
+
+```
+UITabBarController          ← possède la barre, qu'iOS place
+├── HostViewController      ← un par onglet, vide
+│   └── (la vue de Flutter, quand cet onglet est choisi)
+└── …
+```
+
+Un contrôleur d'onglets tire ses onglets de ses enfants : il en faut autant
+que d'onglets. Mais il n'y a **qu'un moteur Flutter**, donc qu'une vue, et
+elle déménage d'un hôte à l'autre au changement d'onglet — contenance UIKit
+ordinaire, `addChild` et `didMove`, pas un tour de passe-passe. Quatre moteurs
+auraient coûté quatre démarrages et auraient retiré les onglets à go_router.
+
+Les onglets sont déclarés avec des **SF Symbols** et non les icônes Cupertino
+d'Auxine : c'est UIKit qui les dessine, et il ne connaît que les siens. Les
+libellés viennent des ARB comme partout ailleurs.
+
+Ailleurs que sur iOS, rien ne change : `FloraTabBar` en bas sur un téléphone,
+`FloraTabRail` debout sur une fenêtre large (docs/06, « Le menu debout »).
+
+Ce qui reste à faire : les titres et les boutons des pages
+(`UINavigationController` par onglet), le bouton retour, et les marges sûres
+rendues par le natif plutôt que mesurées.
+
 ## La fenêtre : téléphone, tablette, pliable (`app/window.dart`)
 
 Sur téléphone, l'application se tient en portrait : chaque écran est une

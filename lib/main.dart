@@ -14,6 +14,7 @@ import 'core/l10n/l10n.dart';
 import 'core/config/app_version.dart';
 import 'core/config/supabase_config.dart';
 import 'core/network/connectivity.dart';
+import 'core/native_shell.dart';
 import 'core/window_regions.dart';
 import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
@@ -38,6 +39,10 @@ Future<void> main() async {
   // caméra, le pli —, pour que le menu debout demande sa géométrie au lieu
   // de la supposer. Muet hors d'iOS.
   await WindowRegionsService.attach();
+
+  // La barre d'onglets d'iOS est un `UITabBarController` : sans cette
+  // écoute, toucher un onglet ne changerait rien. Muet ailleurs.
+  NativeShell.attach();
 
   // Relevé des cotes de la fenêtre dans la console, en debug seulement.
   WindowProbe.attach();
