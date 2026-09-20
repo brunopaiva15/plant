@@ -1,5 +1,5 @@
 import 'package:flora/core/window_regions.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// La lecture de ce que le système réserve dans la fenêtre.
@@ -135,6 +135,59 @@ void main() {
     test('vide, ce n\'est pas un pli', () {
       expect(WindowRegionsService.parse(duo(divisions: [rect(0, 333, 0, 0)])).fold, isNull);
       expect(WindowRegionsService.parse(duo()).fold, isNull);
+    });
+  });
+
+  group('le canal', () {
+    const canal = MethodChannel('ch.vergasta.plant/window_regions');
+    late Object? reponse;
+
+    setUp(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      WindowRegionsService.debugForceSupported = true;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(canal, (call) async => reponse);
+    });
+
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(canal, null);
+      WindowRegionsService.debugForceSupported = false;
+      WindowRegionsService.detach();
+      WindowRegionsService.regions.value = const WindowRegions();
+      WindowRegionsService.lastAnswer.value = 'pas encore demandé';
+    });
+
+    test('les régions sont à jour avant que la réponse ne s\'annonce', () async {
+      // L'ordre n'est pas un détail : la sonde écoute la réponse pour écrire
+      // son relevé, et elle lisait des régions encore vides. Une seule
+      // réponse suffisant à l'appareil, le relevé restait faux pour de bon.
+      reponse = duo(statusBar: barreInutile);
+      WindowRegions? vuesParLAuditeur;
+      void auditeur() => vuesParLAuditeur = WindowRegionsService.regions.value;
+      WindowRegionsService.lastAnswer.addListener(auditeur);
+      addTearDown(() => WindowRegionsService.lastAnswer.removeListener(auditeur));
+
+      await WindowRegionsService.refresh();
+
+      expect(vuesParLAuditeur?.systemStackBottom, 170);
+      expect(vuesParLAuditeur?.systemAxisFromRight, closeTo(47.8, 0.1));
+    });
+
+    test('un canal absent laisse les mesures et le dit', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(canal, null);
+      await WindowRegionsService.refresh();
+      expect(WindowRegionsService.regions.value.isEmpty, isTrue);
+      expect(WindowRegionsService.lastAnswer.value, contains('canal absent'));
+    });
+
+    test('la réponse s\'écrit à clés triées', () async {
+      reponse = duo(statusBar: barreInutile);
+      await WindowRegionsService.refresh();
+      final rendu = WindowRegionsService.lastAnswer.value;
+      expect(rendu.indexOf('available'), lessThan(rendu.indexOf('divisions')));
+      expect(rendu.indexOf('occlusions'), lessThan(rendu.indexOf('statusBar')));
     });
   });
 

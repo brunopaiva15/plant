@@ -67,7 +67,11 @@ abstract final class WindowRegionsService {
   static final ValueNotifier<String> lastAnswer = ValueNotifier<String>('pas encore demandé');
 
   /// Le canal n'existe que côté iOS. Ailleurs, rien n'est demandé.
-  static bool get isSupported => !kIsWeb && Platform.isIOS;
+  static bool get isSupported => debugForceSupported || (!kIsWeb && Platform.isIOS);
+
+  /// Pour qu'un test puisse répondre à la place du natif. Faux ailleurs.
+  @visibleForTesting
+  static bool debugForceSupported = false;
 
   static _RegionsObserver? _observer;
 
@@ -110,11 +114,16 @@ abstract final class WindowRegionsService {
         lastAnswer.value = 'le canal a répondu sans rien';
         return;
       }
+      // Les régions d'abord, la réponse ensuite, et l'ordre compte : un
+      // `ValueNotifier` prévient ses auditeurs sur-le-champ, et la sonde —
+      // qui écoute la réponse pour écrire son relevé — lisait des régions
+      // encore vides. Une seule réponse suffisant à l'appareil, elle ne
+      // repassait jamais.
+      regions.value = parse(raw);
       // Rendu à clés triées, et non `raw.toString()` : le canal rend une
       // carte dont l'ordre change d'un appel à l'autre, et la sonde croyait
       // à quatre fenêtres différentes là où il n'y en avait qu'une.
       lastAnswer.value = _rendu(raw);
-      regions.value = parse(raw);
     } on PlatformException catch (e) {
       lastAnswer.value = 'le canal a refusé : ${e.message}';
     } on MissingPluginException {
