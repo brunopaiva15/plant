@@ -81,6 +81,7 @@ void main() {
 
   _testsDeLaRecherche();
   _testsDuToast();
+  group('les pages secondaires', _testsDesPagesSecondaires);
 }
 
 /// Le champ de recherche vit dans la barre, qui garde toute la largeur : il
@@ -165,5 +166,59 @@ void _testsDuToast() {
     );
     await tester.pump();
     expect(tester.takeException(), isNull);
+  });
+}
+
+/// La bande du système sur les pages secondaires — celles de `FloraPage`.
+///
+/// C'est la classe de défaut qui s'est répétée : une page qui pose sa marge à
+/// la main oublie ce que le système réserve sur les bords, et son contenu
+/// passe sous la bande de la caméra d'un pliable. Trente-six pages en
+/// dépendaient.
+void _testsDesPagesSecondaires() {
+  Future<void> pump(WidgetTester tester, Size size, EdgeInsets marges) async {
+    await tester.binding.setSurfaceSize(size);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildFloraTheme(Brightness.light).copyWith(platform: TargetPlatform.iOS),
+        home: MediaQuery(
+          data: MediaQueryData(size: size, padding: marges, viewPadding: marges),
+          child: FloraPage(
+            title: 'Réglages',
+            bottom: const SizedBox(key: Key('barre'), height: 60, child: ColoredBox(color: Color(0xFF00FF00))),
+            child: Column(children: [for (var i = 0; i < 3; i++) FloraCard(key: ValueKey('c$i'), child: Text('carte $i'))]),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+  }
+
+  testWidgets('le contenu s\'arrête avant la bande du système, une fois', (tester) async {
+    await pump(tester, const Size(466, 678), const EdgeInsets.only(right: 84));
+    expect(tester.takeException(), isNull);
+    // « Une fois » n'est pas une coquetterie : le `SafeArea` du corps retire
+    // déjà la bande, et la retirer aussi à la main la comptait deux fois —
+    // 188 points de marge au lieu de 104, mesuré. Le test fixe donc la cote
+    // exacte, pas seulement un maximum.
+    expect(
+      466 - tester.getRect(find.byKey(const ValueKey('c0'))).right,
+      moreOrLessEquals(84 + Space.page, epsilon: 0.5),
+    );
+  });
+
+  testWidgets('et de la bande passée à gauche, une fois aussi', (tester) async {
+    await pump(tester, const Size(678, 466), const EdgeInsets.only(left: 84));
+    expect(
+      tester.getRect(find.byKey(const ValueKey('c0'))).left,
+      moreOrLessEquals(84 + Space.page, epsilon: 0.5),
+    );
+  });
+
+  testWidgets('sans bande, rien ne change', (tester) async {
+    await pump(tester, const Size(390, 844), EdgeInsets.zero);
+    final carte = tester.getRect(find.byKey(const ValueKey('c0')));
+    expect(carte.left, moreOrLessEquals(Space.page, epsilon: 0.5));
   });
 }

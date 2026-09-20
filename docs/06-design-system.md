@@ -350,6 +350,27 @@ dès que le grand titre glisse *sous* la barre.
 Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
 `CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
 
+### La bande du système, et qui la retire
+Sur un pliable, la bande de la caméra et de l'heure occupe un bord entier —
+quatre-vingt-quatre points sur l'iPhone Duo — et change de côté avec la
+rotation. La règle est simple à dire et facile à rater : **elle est retirée
+une fois, et une seule.**
+
+| gabarit | qui la retire |
+|---|---|
+| `LargeTitlePage` | la page, dans ses `SliverPadding` |
+| `FloraPage` | le `SafeArea` de son corps — ne rien ajouter par-dessus |
+| la fiche d'une plante | un `SliverPadding` qui couvre tout sauf la photo |
+| une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface |
+
+La deuxième ligne a coûté un aller-retour : ajouter la marge à `FloraPage`
+donnait 188 points au lieu de 104, le `SafeArea` l'ayant déjà retirée. Le test
+de `wide_layout_test.dart` fixe donc la **cote exacte** et non un maximum —
+un test qui n'accepte qu'un plafond laisse passer le double comptage.
+
+`systemSideInsets` existe pour les pages qui n'ont ni l'un ni l'autre : elle
+dit à quoi sert la valeur, là où un `MediaQuery.paddingOf` recopié ne dit rien.
+
 ### Ce qui vit dans la barre, et ce qui vit dessous
 La barre garde toute la largeur — c'est ce que fait iOS —, et seul le contenu
 se tient dans les marges. D'où une règle facile à oublier : **ce qui est posé

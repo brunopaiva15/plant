@@ -70,7 +70,25 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
   /// section Croissance, l'en-tête sans photo.
   Future<void> _addPhoto() => showPhotoCaptureFlow(context, ref, plantId: id);
 
+  /// Un menu à la fois.
+  ///
+  /// Le bouton qui l'ouvre est dans la barre du système, que Flutter ne
+  /// couvre pas : rien n'empêchait d'en empiler trois. Le verrou est ici
+  /// plutôt que dans la barre, parce que c'est cette page qui sait qu'elle a
+  /// déjà posé un menu.
+  bool _menuOuvert = false;
+
   Future<void> _menu(Plant plant) async {
+    if (_menuOuvert) return;
+    _menuOuvert = true;
+    try {
+      await _menuOuvre(plant);
+    } finally {
+      _menuOuvert = false;
+    }
+  }
+
+  Future<void> _menuOuvre(Plant plant) async {
     final l10n = context.l10n;
     // Invité en lecture seule : le menu se réduit à ce qui ne touche à rien.
     final canEdit = ref.read(canEditProvider);
@@ -311,6 +329,14 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             toolbarHeight: 56,
             collapsedHeight: 56 + (top > 0 ? 0 : 0),
           ),
+          // Tout ce qui suit la photo se range dans ce que le système
+          // réserve sur les bords : sur un pliable, la bande de la caméra
+          // prend quatre-vingt-quatre points d'un côté, et les cartes
+          // passaient dessous. La photo, elle, garde toute la largeur.
+          SliverPadding(
+            padding: systemSideInsets(context),
+            sliver: SliverMainAxisGroup(
+              slivers: [
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, 0),
@@ -425,6 +451,9 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           AttachmentsSection(plantId: id),
           _Cuttings(plantId: id, plant: plant),
           const SliverPadding(padding: EdgeInsets.only(bottom: Space.huge)),
+              ],
+            ),
+          ),
         ],
       ),
     );

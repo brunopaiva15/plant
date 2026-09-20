@@ -113,15 +113,22 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       // Une surcouche ne prend pas la place de la page : la chrome reste là
       // où elle était, invisible et intouchable, le temps du choix.
       let voile = (args["veil"] as? Bool) ?? false
+      let montrerLaBarre = barre && !voile
       for navigation in navigations {
         navigation.setNavigationBarHidden(!barre, animated: false)
-        navigation.navigationBar.alpha = voile ? 0 : 1
-        navigation.navigationBar.isUserInteractionEnabled = !voile
+        navigation.navigationBar.alpha = montrerLaBarre ? 1 : 0
+        navigation.navigationBar.isUserInteractionEnabled = montrerLaBarre
       }
+      // `isHidden` seul ne suffit pas pour la barre d'onglets : le contrôleur
+      // la remet en place à chaque mise en page qui lui passe par la tête, et
+      // elle reparaissait par-dessus une feuille. L'opacité, elle, n'est
+      // jamais remise — et les deux ensemble rendent la place au contenu tout
+      // en garantissant qu'on ne la voie pas.
+      let montrerLesOnglets = ongletsVisibles && !voile
       if let barreDOnglets = onglets?.tabBar {
         barreDOnglets.isHidden = !ongletsVisibles
-        barreDOnglets.alpha = voile ? 0 : 1
-        barreDOnglets.isUserInteractionEnabled = !voile
+        barreDOnglets.alpha = montrerLesOnglets ? 1 : 0
+        barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
       }
       result(true)
     case "setActions":
