@@ -109,6 +109,7 @@ Le point de comparaison fonctionnel est [HortusFox](https://github.com/danielbre
 - NFC (architecture prévue : `PlantTagLink` table `plant_links` type `nfc` / `qr`)
 - Apple Watch
 - Automatisations, Shortcuts / Siri, Home Assistant, capteurs
+- Relevé de la maison au LiDAR (RoomPlan, iPhone Pro) : où poser une plante, par pièce, d'après la distance et l'orientation des fenêtres — plan d'implémentation dans [docs/17-releve-de-la-maison.md](17-releve-de-la-maison.md), rien de codé
 - Import HortusFox (l'export complet JSON / CSV / ZIP est livré)
 - Reconnaissance de plantes sur l'appareil, Pl@ntNet en repli : livrée, et le modèle embarqué en est à **Iris Indoor** (+1,8 point de top-1 sur Iris 8 sur ce que l'application rend, mesuré à armes égales sur les plantes cultivées, en entraînant large pour exposer étroit). Ce qu'il pèse, ce qu'il sait et ce qu'il vaut ne se recopient pas ici : la fiche est au [§ 0 de docs/09](09-plant-recognition.md#0-le-nom), recopiée de `assets/model/model.json`. Deux photos de la même plante valent quatorze points de top-1 — [docs/09-plant-recognition.md](09-plant-recognition.md). Ce qu'il reste à faire, et dans quel ordre : [§ 12](09-plant-recognition.md#12-ce-quil-reste-à-faire-dans-lordre) et [§ 13](09-plant-recognition.md#13-cadrage-de-liris-9--entraîner-large-exposer-étroit)
 
