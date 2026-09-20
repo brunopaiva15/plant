@@ -77,4 +77,65 @@ void main() {
       expect(find.text('carte 7'), findsOneWidget);
     });
   });
+
+  _testsDeLaRecherche();
+}
+
+/// Le champ de recherche vit dans la barre, qui garde toute la largeur : il
+/// n'est pas couvert par la marge des contenus, et il lui faut la sienne.
+Future<void> _pumpAvecRecherche(
+  WidgetTester tester,
+  Size size,
+  EdgeInsets marges, {
+  TargetPlatform platform = TargetPlatform.iOS,
+}) async {
+  await tester.binding.setSurfaceSize(size);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+  await tester.pumpWidget(
+    MaterialApp(
+      // La barre d'iOS et celle de Material ne posent pas leur `bottom` de la
+      // même façon : c'est la première qui laissait passer le champ.
+      theme: buildFloraTheme(Brightness.light).copyWith(platform: platform),
+      home: MediaQuery(
+        data: MediaQueryData(size: size, padding: marges, viewPadding: marges),
+        child: LargeTitlePage(
+          title: 'Plantes',
+          searchField: const TextField(key: Key('recherche')),
+          slivers: [
+            SliverList.list(children: [for (var i = 0; i < 4; i++) FloraCard(child: Text('carte $i'))]),
+          ],
+        ),
+      ),
+    ),
+  );
+  await tester.pump();
+}
+
+void _testsDeLaRecherche() {
+  group('le champ de recherche', () {
+    testWidgets('s\'arrête avant la bande du système', (tester) async {
+      // Un iPhone Duo fermé : la bande de l'heure et de la caméra prend 84
+      // points à droite. Le champ passait dessous.
+      await _pumpAvecRecherche(tester, const Size(466, 678), const EdgeInsets.only(right: 84));
+      expect(tester.takeException(), isNull);
+      expect(tester.getRect(find.byKey(const Key('recherche'))).right, lessThanOrEqualTo(466 - 84));
+    });
+
+    testWidgets('garde sa marge ordinaire sans bande', (tester) async {
+      await _pumpAvecRecherche(tester, const Size(390, 844), EdgeInsets.zero);
+      final champ = tester.getRect(find.byKey(const Key('recherche')));
+      expect(champ.left, moreOrLessEquals(Space.md, epsilon: 0.5));
+      expect(390 - champ.right, moreOrLessEquals(Space.md, epsilon: 0.5));
+    });
+
+    testWidgets('et s\'arrête avant la bande sur Material aussi', (tester) async {
+      await _pumpAvecRecherche(
+        tester,
+        const Size(466, 678),
+        const EdgeInsets.only(right: 84),
+        platform: TargetPlatform.android,
+      );
+      expect(tester.getRect(find.byKey(const Key('recherche'))).right, lessThanOrEqualTo(466 - 84));
+    });
+  });
 }

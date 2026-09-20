@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -143,6 +145,24 @@ class LargeTitlePage extends StatelessWidget {
       if (actions != null) ...actions! else ?trailing,
     ];
 
+    // Ce que le système réserve sur les bords, et la colonne de lecture d'une
+    // fenêtre large. Le contenu s'y tient ; la barre, elle, garde toute la
+    // largeur, comme sur iOS.
+    final marges = MediaQuery.paddingOf(context);
+    final inset = readableInset(context);
+    final gauche = inset + marges.left;
+    final droite = inset + marges.right;
+
+    // Le champ de recherche vit dans cette barre, et n'est donc pas couvert
+    // par la marge des contenus : il lui faut la sienne. Sans elle, il
+    // passait sous la bande verticale de l'iPhone Duo.
+    final margeChamp = EdgeInsets.fromLTRB(
+      math.max(Space.md, gauche),
+      0,
+      math.max(Space.md, droite),
+      Space.xs,
+    );
+
     // Sur iOS, ces mêmes boutons partent à UIKit : la barre de navigation
     // native les dessine en SF Symbols, et c'est elle qu'iOS range dans la
     // bande verticale de l'iPhone Duo. `describe` rend `null` si un bouton
@@ -177,7 +197,7 @@ class LargeTitlePage extends StatelessWidget {
             ? null
             : PreferredSize(
                 preferredSize: const Size.fromHeight(52),
-                child: Padding(padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.xs), child: searchField),
+                child: Padding(padding: margeChamp, child: searchField),
               ),
       );
     } else {
@@ -193,7 +213,7 @@ class LargeTitlePage extends StatelessWidget {
             ? null
             : PreferredSize(
                 preferredSize: const Size.fromHeight(56),
-                child: Padding(padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.xs), child: searchField),
+                child: Padding(padding: margeChamp, child: searchField),
               ),
       );
     }
@@ -205,10 +225,6 @@ class LargeTitlePage extends StatelessWidget {
     // points mesurés — et rien ne dit qu'elle soit symétrique : sans ça, une
     // liste ou un sélecteur de section court dessous. La barre de navigation,
     // elle, se protège déjà toute seule (`SafeArea` de Cupertino).
-    final marges = MediaQuery.paddingOf(context);
-    final inset = readableInset(context);
-    final gauche = inset + marges.left;
-    final droite = inset + marges.right;
     final coquille = RailActions(
       actions: debout ? boutons : const <Widget>[],
       child: Scaffold(
