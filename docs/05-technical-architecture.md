@@ -257,6 +257,14 @@ canal de méthode livre dans l'ordre où on lui confie ; il suffit de lui
 confier les deux à la suite. `test/core/native_shell_test.dart` tient l'ordre,
 et échoue sur la version qui attendait.
 
+**La barre d'onglets se masque par son contrôleur.** `tabBar.isHidden` et
+`tabBar.alpha` portent sur la vue que le contrôleur possède ; il la remet
+comme il l'entend à chaque mise en page, et sur l'iPhone Duo c'est lui, non
+elle, qui décide de ce que le système range dans la bande verticale. La barre
+reparaissait donc par-dessus une feuille, trois tentatives de suite.
+`setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18 ; en
+deçà on retombe sur la vue, faute de mieux.
+
 **La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
 s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
 de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
