@@ -311,9 +311,13 @@ points de haut : une caméra est le **haut** de la pile, jamais son bas, et
 seule ne borne rien.
 
 Deux garde-fous, parce que la réponse vient de l'extérieur. Le premier est un
-`#if swift(>=6.4)` autour des *reserved regions* : le symbole n'existe pas
+`#if compiler(>=6.4)` autour des *reserved regions* : le symbole n'existe pas
 avant le SDK 27.1, et `#available` seul ne le cacherait pas au compilateur —
-sans ce test, le projet ne se construirait plus sur un Xcode plus ancien. Le
+sans ce test, le projet ne se construirait plus sur un Xcode plus ancien.
+`compiler`, et surtout pas `swift` : `#if swift(>=x)` interroge la version du
+**langage**, qui ne prend que des valeurs comme 4.2, 5 ou 6, si bien que
+`swift(>=6.4)` est faux partout. Écrit ainsi au départ, le bloc n'a jamais été
+compilé et les régions revenaient vides sur un appareil où elles existent. Le
 second est dans `WindowRegionsService.parse` : une pile qui prendrait plus du
 tiers de la fenêtre, ou un axe au milieu de l'écran, sont écartés. Le cadre de
 la barre d'état est le seul des trois dont on ne sache pas encore ce qu'il vaut
