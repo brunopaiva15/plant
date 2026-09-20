@@ -110,7 +110,10 @@ abstract final class WindowRegionsService {
         lastAnswer.value = 'le canal a répondu sans rien';
         return;
       }
-      lastAnswer.value = raw.toString();
+      // Rendu à clés triées, et non `raw.toString()` : le canal rend une
+      // carte dont l'ordre change d'un appel à l'autre, et la sonde croyait
+      // à quatre fenêtres différentes là où il n'y en avait qu'une.
+      lastAnswer.value = _rendu(raw);
       regions.value = parse(raw);
     } on PlatformException catch (e) {
       lastAnswer.value = 'le canal a refusé : ${e.message}';
@@ -138,12 +141,24 @@ abstract final class WindowRegionsService {
     final divisions = _rects(raw['divisions']);
     final barre = _rect(raw['statusBar']);
 
+    // Seule la barre d'état peut dire où **finit** la pile : c'est elle qui
+    // contient l'heure et le wifi. Une caméra ne borne rien — elle en est le
+    // haut. Sans cadre de barre d'état crédible, on ne prétend donc pas
+    // savoir, et l'appelant garde sa mesure.
+    //
+    // Sur l'iPhone Duo, justement, `statusBarFrame` rend 466 × 2 points en
+    // haut à gauche pendant que l'heure est debout contre le bord droit : il
+    // n'a pas suivi la barre dans sa rotation. C'est ce cadre-là qu'on écarte
+    // ici, et c'est pour lui que ces bornes existent.
     double? bas;
-    for (final r in [?barre, ...occlusions]) {
-      bas = bas == null ? r.bottom : math.max(bas, r.bottom);
+    if (barre != null && barre.height >= 20) {
+      bas = barre.bottom;
+      for (final r in occlusions) {
+        bas = math.max(bas!, r.bottom);
+      }
+      // Une pile de plus d'un tiers de la fenêtre n'est pas une pile.
+      if (bas! > hauteur / 3) bas = null;
     }
-    // Une pile de plus d'un tiers de la fenêtre n'est pas une pile.
-    if (bas != null && (bas < 20 || bas > hauteur / 3)) bas = null;
 
     // L'axe se lit d'abord sur la caméra, qui est le haut de la pile ; à
     // défaut sur la barre d'état.
@@ -161,6 +176,16 @@ abstract final class WindowRegionsService {
       systemAxisFromRight: axe,
       fold: divisions.isEmpty || divisions.first.isEmpty ? null : divisions.first,
     );
+  }
+
+  /// La réponse du natif, à clés triées : un texte stable pour la sonde.
+  static String _rendu(Object? v) {
+    if (v is Map) {
+      final cles = v.keys.map((k) => '$k').toList()..sort();
+      return '{${cles.map((k) => '$k: ${_rendu(v[k])}').join(', ')}}';
+    }
+    if (v is List) return '[${v.map(_rendu).join(', ')}]';
+    return '$v';
   }
 
   static List<Rect> _rects(Object? raw) {

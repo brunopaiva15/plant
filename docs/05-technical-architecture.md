@@ -301,6 +301,15 @@ chacune décidait jusqu'ici d'une constante relevée au pixel sur une capture :
 la vue Flutter, en points. `WindowRegionsService` les lit au lancement et à
 chaque `didChangeMetrics`, c'est-à-dire à chaque pli et à chaque rotation.
 
+Une des trois est déjà tombée. Mesuré sur le simulateur de l'écran extérieur,
+`statusBarFrame` rend **466 × 2 points en haut à gauche** pendant que l'heure
+et le wifi sont debout contre le bord droit : le cadre n'a pas suivi la barre
+dans sa rotation. Le bas de la pile ne viendra donc pas de là, et les 140
+points mesurés restent la seule source. C'est aussi pourquoi `parse` n'accepte
+un bas de pile que si la barre d'état est elle-même crédible — au moins 20
+points de haut : une caméra est le **haut** de la pile, jamais son bas, et
+seule ne borne rien.
+
 Deux garde-fous, parce que la réponse vient de l'extérieur. Le premier est un
 `#if swift(>=6.4)` autour des *reserved regions* : le symbole n'existe pas
 avant le SDK 27.1, et `#available` seul ne le cacherait pas au compilateur —
@@ -312,7 +321,11 @@ quand elle passe debout, et une valeur écartée n'est pas une panne : l'appelan
 garde sa mesure.
 
 La sonde écrit deux lignes plutôt qu'une : les régions retenues, et **la
-réponse du natif mot pour mot**. « Aucune région annoncée » a trop de causes
+réponse du natif**, à clés triées — la carte que rend le canal change d'ordre
+d'un appel à l'autre, et la sonde croyait à quatre fenêtres différentes là où
+il n'y en avait qu'une. Le natif y joint de quoi lire un tableau vide : la
+version de Swift qui l'a compilé, celle du système, et si les régions ont été
+demandées ou si le `#if` les a sautées. « Aucune région annoncée » a trop de causes
 pour se lire seul — pas d'iOS, un binaire construit sans le canal, un SDK
 antérieur à 27.1, une vue pas encore posée, ou une cote écartée par `parse`.
 La seconde ligne les distingue.

@@ -49,27 +49,71 @@ final class WindowRegionsChannel {
 
     var payload: [String: Any] = [
       "available": true,
-      "width": Double(view.bounds.width),
-      "height": Double(view.bounds.height),
+      // De quoi lire un tableau vide : sans ces trois-là, « aucune région »
+      // ne dit pas si c'est le SDK, le système ou la pose qui se tait.
+      "swift": Self.swiftVersion,
+      "os": UIDevice.current.systemVersion,
+      "posee": view.window != nil,
+      "reservedRegions": "SDK antérieur à 27.1 — non compilé",
       "occlusions": [[String: Any]](),
       "divisions": [[String: Any]](),
     ]
 
     // La barre d'état est donnée dans le repère de l'écran ; on la ramène
     // dans celui de la vue, qui est le seul dont Dart connaisse les cotes.
+    //
+    // Sur l'iPhone Duo elle ne vaut rien : mesurée sur l'écran extérieur,
+    // elle rend 466 × 2 points en haut à gauche pendant que l'heure et le
+    // wifi sont debout contre le bord droit. Le cadre part quand même — Dart
+    // l'écarte (`WindowRegionsService.parse`), et sur un appareil ordinaire
+    // il reste juste.
     if let bar = scene.statusBarManager?.statusBarFrame, !bar.isEmpty {
-      let local = view.convert(bar, from: nil)
-      payload["statusBar"] = Self.encode(local)
+      payload["statusBar"] = Self.encode(view.convert(bar, from: nil))
     }
 
     #if swift(>=6.4)
       if #available(iOS 27.1, *) {
-        payload["occlusions"] = view.reservedRegions(kind: .occlusion).map { Self.encode($0.frame) }
-        payload["divisions"] = view.reservedRegions(kind: .division).map { Self.encode($0.frame) }
+        payload["reservedRegions"] = "lues"
+        // La vue d'abord, la fenêtre ensuite : une région n'est rendue qu'aux
+        // vues qu'elle recouvre, et rien ne dit que celle de Flutter en soit
+        // une. La fenêtre, elle, les recouvre toutes ; ses cadres reviennent
+        // alors dans le repère de la vue.
+        var occlusions = view.reservedRegions(kind: .occlusion).map { $0.frame }
+        if occlusions.isEmpty {
+          occlusions = window.reservedRegions(kind: .occlusion).map {
+            view.convert($0.frame, from: window)
+          }
+        }
+        var divisions = view.reservedRegions(kind: .division).map { $0.frame }
+        if divisions.isEmpty {
+          divisions = window.reservedRegions(kind: .division).map {
+            view.convert($0.frame, from: window)
+          }
+        }
+        payload["occlusions"] = occlusions.map(Self.encode)
+        payload["divisions"] = divisions.map(Self.encode)
+      } else {
+        payload["reservedRegions"] = "système antérieur à 27.1"
       }
     #endif
 
     return payload
+  }
+
+  /// La version du compilateur, parce que c'est elle qui décide si le bloc
+  /// ci-dessus existe — et qu'un tableau vide ne le dit pas tout seul.
+  private static var swiftVersion: String {
+    #if swift(>=6.5)
+      return "6.5+"
+    #elseif swift(>=6.4)
+      return "6.4"
+    #elseif swift(>=6.3)
+      return "6.3"
+    #elseif swift(>=6.2)
+      return "6.2"
+    #else
+      return "< 6.2"
+    #endif
   }
 
   private static func activeScene() -> UIWindowScene? {
