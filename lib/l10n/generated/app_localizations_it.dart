@@ -741,7 +741,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSoftPotBody =>
-      'Trapiantata presto, a due o tre centimetri di radice: un getto tenero aspetta male.';
+      'Trapiantata presto, a due o tre centimetri di radice: un getto tenero non regge l\'attesa.';
 
   @override
   String get pgLeafName => 'Talea di foglia';
@@ -3243,10 +3243,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careRepotNone => 'Nessun rinvaso (coltura annuale)';
 
   @override
-  String get carePotSnug => 'Ama stare stretta';
+  String get carePotSnug => 'Meglio stretta';
 
   @override
-  String get carePotRoomy => 'Ama lo spazio';
+  String get carePotRoomy => 'Un vaso largo';
 
   @override
   String get carePotSnugNote =>
@@ -3354,7 +3354,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careHumidityAverage => 'Umidità normale';
 
   @override
-  String get careHumidityHigh => 'Ama l\'aria umida';
+  String get careHumidityHigh => 'Aria umida';
 
   @override
   String careHumidityRange(int min, int max) {
@@ -3374,7 +3374,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'L\'aria secca di una casa riscaldata la danneggia: l\'aria va mantenuta umida.';
 
   @override
-  String get careHumidityMethodMist => 'Nebulizzare le foglie le fa bene.';
+  String get careHumidityMethodMist => 'Nebulizzare le foglie.';
 
   @override
   String get careHumidityMethodHumidifier => 'Un umidificatore d\'aria.';
@@ -3499,7 +3499,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careWaterStrict => 'Acqua senza calcare';
 
   @override
-  String get careWaterTolerantNote => 'Il calcare non la disturba.';
+  String get careWaterTolerantNote => 'Il calcare non ha effetto.';
 
   @override
   String get careWaterSensitiveNote => 'Il calcare fa imbrunire le punte.';
@@ -3682,7 +3682,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careCalciumWelcome =>
-      'Calcio: l\'acqua dura le va bene, come i gusci d\'uovo tritati al rinvaso.';
+      'Calcio: l\'acqua dura è senza rischi; i gusci d\'uovo tritati al rinvaso ne apportano.';
 
   @override
   String get careCalciumNeeded =>
@@ -3710,7 +3710,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careGreenhouseAir =>
-      'Arieggiare ogni giorno: l\'aria ferma fa marcire ciò che ama l\'asciutto.';
+      'Arieggiare ogni giorno: l\'aria ferma fa marcire le piante di ambienti secchi.';
 
   @override
   String get careGreenhouseEarly =>
@@ -3753,7 +3753,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomDeadheadNote =>
-      'Taglia i fiori appassiti man mano: la pianta rimette energia nei successivi.';
+      'Taglia i fiori appassiti man mano: senza semi da formare, la pianta rifiorisce.';
 
   @override
   String get careBloomKeepSpike => 'Uno stelo tenuto';
@@ -3818,7 +3818,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomShortDaysNote =>
-      'Per circa sei settimane, garantisci almeno 12 ore di buio continuo ogni notte per favorire la formazione dei boccioli.';
+      'Per circa sei settimane, notti di almeno 12 ore di buio avviano la formazione dei boccioli.';
 
   @override
   String get careBloomDrySpell => 'Un periodo secco';
@@ -3839,7 +3839,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomBrightLightNote =>
-      'Per fiorire ha bisogno di più luce che per crescere. Sistemala in un luogo molto luminoso, evitando il sole troppo forte.';
+      'La fioritura richiede più luce della crescita: un luogo molto luminoso, senza sole forte.';
 
   @override
   String get carePropCutting => 'Talea di fusto';
@@ -4005,24 +4005,26 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipThirstyPlant =>
-      'Beve molto, in estate controllala ogni giorno.';
+      'Grande bisogno d\'acqua: in estate controlla la terra ogni giorno.';
 
   @override
-  String get careTipDroopSignal => 'Quando si affloscia, ha sete.';
+  String get careTipDroopSignal =>
+      'Foglie afflosciate segnalano mancanza d\'acqua.';
 
   @override
   String get careTipWinterDry => 'In inverno tienila quasi all\'asciutto.';
 
   @override
-  String get careTipWinterRest => 'In inverno riposa e vuole molta meno acqua.';
+  String get careTipWinterRest =>
+      'In inverno la crescita si ferma: molta meno acqua.';
 
   @override
   String get careTipSummerDormant =>
-      'Riposa in estate e in quel periodo vuole pochissima acqua.';
+      'Riposo in estate: in quel periodo pochissima acqua.';
 
   @override
   String get careTipNoWaterWhileSplitting =>
-      'Non annaffiare mentre cambia le foglie.';
+      'Non annaffiare durante il rinnovo delle foglie.';
 
   @override
   String get careTipOrchidSoak =>
@@ -4060,37 +4062,37 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipToleratesNeglect =>
-      'Perdona le dimenticanze, quindi nel dubbio non annaffiare.';
+      'Le dimenticanze non la danneggiano: nel dubbio, non annaffiare.';
 
   @override
   String get careTipBrightForColor => 'Più luce, più i colori sono intensi.';
 
   @override
   String get careTipRotatePot =>
-      'Ruota il vaso di un quarto ogni settimana perché cresca dritta.';
+      'Un quarto di giro al vaso ogni settimana mantiene lo stelo dritto.';
 
   @override
   String get careTipHatesMoving =>
-      'Trovale un posto e lasciala lì, odia essere spostata.';
+      'Mantieni un posto fisso: ogni spostamento fa cadere foglie.';
 
   @override
   String get careTipWipeLeaves =>
-      'Pulisci le foglie perché respirino e catturino meglio la luce.';
+      'Spolvera le foglie: la polvere blocca la luce.';
 
   @override
   String get careTipTrimToBushOut =>
-      'Accorcia gli steli lunghi e si ramificherà.';
+      'Accorciare gli steli lunghi fa ramificare.';
 
   @override
   String get careTipMonsteraSupport =>
-      'Dalle un tutore di muschio e le foglie diventeranno più grandi e incise.';
+      'Su un tutore di muschio le foglie diventano più grandi e incise.';
 
   @override
-  String get careTipShallowPot => 'Un vaso largo e basso le si addice di più.';
+  String get careTipShallowPot => 'Un vaso largo e basso.';
 
   @override
   String get careTipLikesBeingPotbound =>
-      'Fiorisce meglio se stretta, quindi rinvasa di rado.';
+      'La fioritura è migliore se stretta: rinvasa di rado.';
 
   @override
   String get careTipTrunkStoresWater =>
@@ -4098,7 +4100,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipPupsToShare =>
-      'Fa polloni, staccali per moltiplicare o regalare.';
+      'I polloni si staccano per moltiplicare o regalare.';
 
   @override
   String get careTipKeepFlowerSpike =>
@@ -4106,15 +4108,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipDarkForRebloom =>
-      'Per rifiorire, dalle sei settimane di notti lunghe e fresche.';
+      'Per rifiorire: sei settimane di notti lunghe e fresche.';
 
   @override
   String get careTipNotADesertCactus =>
-      'Non è un cactus del deserto, ama ombra e umidità.';
+      'Cactus di foresta, non del deserto: ombra e aria umida.';
 
   @override
   String get careTipDeadheadFlowers =>
-      'Togli i fiori appassiti e fiorirà più a lungo.';
+      'Togliere i fiori appassiti prolunga la fioritura.';
 
   @override
   String get careTipPinchFlowers =>
@@ -4157,15 +4159,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipContainItsRoots =>
-      'Invade tutto, coltivala in vaso o metti una barriera.';
+      'I rizomi invadono tutto: in vaso, o dietro una barriera anti-rizomi.';
 
   @override
   String get careTipMulchIt =>
       'Pacciama la base per annaffiare meno e limitare le erbacce.';
 
   @override
-  String get careTipAcidSoil =>
-      'Richiede terra acida, non terriccio universale.';
+  String get careTipAcidSoil => 'Terra acida, non terriccio universale.';
 
   @override
   String get careTipFeedsOnInsects =>
@@ -4181,11 +4182,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipNoFertilizer =>
-      'Niente concime, un terreno troppo ricco le toglie profumo e portamento.';
+      'Niente concime: un terreno ricco indebolisce profumo e portamento.';
 
   @override
   String get careTipNoNitrogen =>
-      'Evita il concime azotato, se lo produce da sola.';
+      'Niente concime azotato: la pianta fissa da sola l\'azoto.';
 
   @override
   String get careTipLetFoliageDieBack =>
@@ -4193,7 +4194,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipDiesBackInWinter =>
-      'Scompare in inverno e riparte in primavera, è normale.';
+      'Il fogliame scompare in inverno e riparte in primavera.';
 
   @override
   String get careTipSummerOutdoors =>
@@ -4207,12 +4208,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Svernala in una stanza fresca e luminosa.';
 
   @override
-  String get careTipWinterCool =>
-      'Un inverno fresco (10–14 °C) e luminoso le fa bene.';
+  String get careTipWinterCool => 'Inverno fresco (10–14 °C) e luminoso.';
 
   @override
   String get careTipCoolerIsBetter =>
-      'Preferisce il fresco, tienila lontana dai termosifoni.';
+      'Meglio al fresco: lontana dai termosifoni.';
 
   @override
   String get careTipHardyOutdoors =>
@@ -4224,11 +4224,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipAirFlow =>
-      'Fai circolare l\'aria, perché l\'aria ferma favorisce le malattie.';
+      'Aria intorno alla pianta: l\'aria ferma favorisce le malattie.';
 
   @override
   String get careTipSpiderMiteWatch =>
-      'Controlla sotto le foglie, dove si annida il ragnetto rosso.';
+      'Controlla sotto le foglie, dove si insedia il ragnetto rosso.';
 
   @override
   String get careTipSlugWatch =>
@@ -4247,8 +4247,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ogni sua parte è molto tossica, anche il fumo se bruciata.';
 
   @override
-  String get careTipSharpSpines =>
-      'Le sue punte sono pericolose, tienila lontana dai passaggi.';
+  String get careTipSharpSpines => 'Punte acuminate: lontana dai passaggi.';
 
   @override
   String get careTipSplitsAreNormal =>
@@ -5221,7 +5220,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderAiError => 'Nessuna proposta dall\'IA.';
 
   @override
-  String get finderReasonLight => 'Ama questa luce';
+  String get finderReasonLight => 'Luce adatta';
 
   @override
   String get finderReasonLowLight => 'Tollera l\'ombra';
@@ -6040,7 +6039,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Sei ore di sole diretto o più, in piena giornata.';
 
   @override
-  String get careHumidityLowNote => 'L\'aria di una casa riscaldata le basta.';
+  String get careHumidityLowNote => 'L\'aria di una casa riscaldata basta.';
 
   @override
   String get careHumidityAverageNote =>

@@ -126,7 +126,7 @@ void main() {
     // Le constat de chaque volet, sur sa carte. La lumière se lit deux
     // fois : la puce du héros « emplacement idéal », puis la carte.
     expect(find.text('Lumière vive indirecte'), findsNWidgets(2));
-    expect(find.text("Aime l'air humide"), findsOneWidget);
+    expect(find.text("Air humide"), findsOneWidget);
     expect(find.text('Tous les 15 jours'), findsOneWidget);
     expect(find.text('Tous les 2 ans'), findsOneWidget);
     // L'arrosage dit d'abord la règle de séchage, puis l'estimation en jours.
@@ -138,7 +138,7 @@ void main() {
     // La méthode d'humidité ne flotte plus au-dessus de la fiche : elle est
     // sous l'humidité, sur sa carte.
     expect(
-      tintOf(tester, 'Brumiser le feuillage lui profite.'),
+      tintOf(tester, 'Brumiser le feuillage.'),
       FloraColors.light.roseSoft,
     );
     expect(
@@ -347,7 +347,7 @@ void main() {
     );
     expect(find.textContaining('il faut le maintenir humide'), findsOneWidget);
     // La méthode propre à l'espèce suit : brumiser, ici.
-    expect(find.text('Brumiser le feuillage lui profite.'), findsOneWidget);
+    expect(find.text('Brumiser le feuillage.'), findsOneWidget);
   });
 
   testWidgets('la serre et la floraison sont deux projets, après la liste', (
@@ -436,7 +436,7 @@ void main() {
     // L'eau suit l'arrosage et garde son bleu : c'est le même sujet.
     expect(tintOf(tester, 'Eau'), FloraColors.light.waterSoft);
     expect(find.text('Eau du robinet'), findsOneWidget);
-    expect(find.text('Le calcaire ne la gêne pas.'), findsOneWidget);
+    expect(find.text('Le calcaire est sans effet.'), findsOneWidget);
 
     await toucher(tester, 'Eau');
     expect(find.text("Types d'eau"), findsOneWidget);
@@ -577,7 +577,7 @@ void main() {
           repotEveryMonths: 24,
         ),
       );
-      expect(find.text("Aime l'air humide"), findsOneWidget);
+      expect(find.text("Air humide"), findsOneWidget);
       expect(find.text("50 à 70 % d'humidité de l'air"), findsOneWidget);
     },
   );
@@ -594,7 +594,7 @@ void main() {
       ),
       FloraColors.light.terracottaSoft,
     );
-    expect(find.text("Aime être à l'étroit"), findsNothing);
+    expect(find.text("Mieux à l'étroit"), findsNothing);
 
     await pump(
       tester,
@@ -609,7 +609,7 @@ void main() {
         pot: PotPreference.roomy,
       ),
     );
-    expect(find.text("Aime l'espace"), findsOneWidget);
+    expect(find.text("Un pot large"), findsOneWidget);
     expect(
       find.textContaining('dès que les racines atteignent la paroi'),
       findsOneWidget,
@@ -890,7 +890,7 @@ void main() {
       expect(
         find.bySemanticsLabel(
           RegExp(
-            '^Emplacement idéal : Lumière vive indirecte, Aime l\'air humide',
+            '^Emplacement idéal : Lumière vive indirecte, Air humide',
           ),
         ),
         findsOneWidget,

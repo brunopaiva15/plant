@@ -624,7 +624,7 @@ sur toute carte teintée —, le nom du volet, le constat dessous, puis une lign
 par précision qui ne vaut que pour lui. Ces précisions sont le fond de la
 fiche :
 
-- **Humidité** : le taux de l'espèce, puis par quoi l'obtenir. « Aime l'air
+- **Humidité** : le taux de l'espèce, puis par quoi l'obtenir. « Air
   humide » seul ne se compare à rien, et ne suffit pas à régler une serre :
   entre deux plantes du même mot, l'une tient à 50 % et l'autre en veut 85.
   Le pourcentage vient de la fiche quand elle le précise, de la catégorie
