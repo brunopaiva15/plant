@@ -364,7 +364,11 @@ ce qui rend l'ordre indifférent.
 `test/core/window_regions_codec_test.dart` fait passer la réponse mesurée par
 le codec standard avant de la lire : le canal rend des `Map<Object?, Object?>`
 jusque dans les rectangles imbriqués, là où les autres tests donnent des
-littéraux typés.
+littéraux typés. Il ne dispense pas de regarder la réponse : le canal a un
+jour cessé d'envoyer les cotes de la vue, sans lesquelles `parse` ne retient
+rien, et le test les fournissait de sa main. La sonde marque donc « rien
+retenu » quand une réponse pleine ne donne aucune région — c'est la seule
+façon de distinguer un natif qui se tait d'un natif qu'on écarte.
 
 La première demande part de `main()`, avant la première image : la scène n'est
 pas encore active, la fenêtre pas encore clé, la barre d'état vaut zéro. Le

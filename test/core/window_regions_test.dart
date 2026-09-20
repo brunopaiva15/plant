@@ -182,6 +182,21 @@ void main() {
       expect(WindowRegionsService.lastAnswer.value, contains('canal absent'));
     });
 
+    test('une réponse dont rien n\'est retenu le dit', () async {
+      // Le canal a déjà oublié d'envoyer les cotes de la vue, et le relevé
+      // montrait une réponse pleine sans rien dire de ce qu'il en faisait.
+      reponse = <String, Object?>{'available': true, 'occlusions': [bande]};
+      await WindowRegionsService.refresh();
+      expect(WindowRegionsService.regions.value.isEmpty, isTrue);
+      expect(WindowRegionsService.lastAnswer.value, endsWith('rien retenu'));
+    });
+
+    test('une réponse retenue s\'écrit sans commentaire', () async {
+      reponse = duo(statusBar: barreInutile);
+      await WindowRegionsService.refresh();
+      expect(WindowRegionsService.lastAnswer.value, isNot(contains('rien retenu')));
+    });
+
     test('la réponse s\'écrit à clés triées', () async {
       reponse = duo(statusBar: barreInutile);
       await WindowRegionsService.refresh();

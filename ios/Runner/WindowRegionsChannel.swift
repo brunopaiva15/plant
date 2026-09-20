@@ -57,6 +57,11 @@ final class WindowRegionsChannel {
 
     var payload: [String: Any] = [
       "available": true,
+      // Les cotes de la vue. Dart s'en sert pour juger le reste — une pile de
+      // plus d'un tiers de la fenêtre n'est pas une pile — et sans elles il
+      // n'en retient rien du tout.
+      "width": Double(view.bounds.width),
+      "height": Double(view.bounds.height),
       // De quoi lire un tableau vide : sans ces trois-là, « aucune région »
       // ne dit pas si c'est le SDK, le système ou la pose qui se tait.
       "compilateur": Self.compilerVersion,
