@@ -46,7 +46,13 @@ abstract final class WindowProbe {
     // Le natif répond après coup : la première demande part de `main()`,
     // avant que la fenêtre existe, et la vraie réponse arrive une image plus
     // tard. Sans cette écoute, le relevé la manquerait.
+    //
+    // Les deux notifieurs, et pas seulement la réponse : celui qui parle en
+    // premier le fait pendant que l'autre est encore à jour de la fois
+    // d'avant, et le relevé montrait une réponse pleine sous des régions
+    // vides. Écouter les deux rend l'ordre indifférent.
     WindowRegionsService.lastAnswer.addListener(observer.report);
+    WindowRegionsService.regions.addListener(observer.report);
   }
 
   /// Débranche la sonde. Réservé aux tests.
@@ -56,6 +62,7 @@ abstract final class WindowProbe {
     if (observer == null) return;
     WidgetsBinding.instance.removeObserver(observer);
     WindowRegionsService.lastAnswer.removeListener(observer.report);
+    WindowRegionsService.regions.removeListener(observer.report);
     _observer = null;
   }
 
