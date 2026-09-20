@@ -891,6 +891,7 @@
   },
   "diagnosisTitle": "Diagnosis",
   "diagnosisHint": "Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.",
+  "diagnosisMoreBelow": "Below: symptoms and observations",
   "diagnosisSymptomsHint": "What you noticed (optional)…",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Optional: what the photo cannot show sharpens the analysis.",

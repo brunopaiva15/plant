@@ -81,6 +81,22 @@ void main() {
     expect(analyser.onPressed, isNull, reason: 'aucune photo, rien à analyser');
   });
 
+  testWidgets('une invite dit que la page continue, et y mène', (tester) async {
+    await _open(tester, FakeHomeClimateService());
+    // Le viseur prend le haut de l'écran et la barre du bas referme la page :
+    // sans invite, rien ne disait que le formulaire continuait dessous.
+    final invite = find.text('Plus bas : symptômes et observations');
+    expect(invite, findsOneWidget);
+    final avant = tester.getTopLeft(find.text('Symptômes')).dy;
+    expect(avant, greaterThan(422), reason: 'les symptômes sont sous la ligne de flottaison');
+
+    await tester.tap(invite);
+    await tester.pumpAndSettle();
+    final apres = tester.getTopLeft(find.text('Symptômes')).dy;
+    expect(apres, lessThan(avant));
+    expect(apres, lessThan(200), reason: 'la section est remontée en tête de page');
+  });
+
   testWidgets('sans capteur, la température et l’humidité se demandent, facultatives', (tester) async {
     await _open(tester, FakeHomeClimateService());
     expect(find.text('Température'), findsOneWidget);

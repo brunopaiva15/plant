@@ -2430,6 +2430,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.';
 
   @override
+  String get diagnosisMoreBelow => 'Below: symptoms and observations';
+
+  @override
   String get diagnosisSymptomsHint => 'What you noticed (optional)…';
 
   @override

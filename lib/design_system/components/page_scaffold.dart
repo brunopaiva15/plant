@@ -7,6 +7,7 @@ import '../tokens/spacing.dart';
 import 'adaptive.dart';
 import 'buttons.dart';
 import 'rail_actions.dart';
+import 'scroll_fade.dart';
 import 'tab_bar.dart';
 
 
@@ -367,14 +368,19 @@ class FloraPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     final side = bleed ? 0.0 : Space.page + readableInset(context);
-    Widget body(double topInset) => scrollable
-        ? SingleChildScrollView(
-            physics: floraScrollPhysics,
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: EdgeInsets.fromLTRB(side, topInset + Space.md, side, Space.huge),
-            child: child,
-          )
-        : Padding(padding: EdgeInsets.only(top: topInset), child: child);
+    Widget body(double topInset) {
+      if (!scrollable) return Padding(padding: EdgeInsets.only(top: topInset), child: child);
+      final scroller = SingleChildScrollView(
+        physics: floraScrollPhysics,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.fromLTRB(side, topInset + Space.md, side, Space.huge),
+        child: child,
+      );
+      // Une barre du bas ferme la page : sans fondu, la dernière ligne visible
+      // s'arrête net sur elle et la page a l'air finie, même quand la moitié
+      // du formulaire attend dessous.
+      return bottom == null ? scroller : ScrollFade(child: scroller);
+    }
     if (isCupertino(context)) {
       return CupertinoPageScaffold(
         backgroundColor: c.canvas,

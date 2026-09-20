@@ -2435,6 +2435,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fotografieren Sie Blätter, Stängel und Erde, aus der Nähe und ganz. Die Ergebnisse sind Hinweise.';
 
   @override
+  String get diagnosisMoreBelow => 'Weiter unten: Symptome und Beobachtungen';
+
+  @override
   String get diagnosisSymptomsHint => 'Was dir aufgefallen ist (optional)…';
 
   @override

@@ -4320,6 +4320,12 @@ abstract class AppLocalizations {
   /// **'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
+  /// No description provided for @diagnosisMoreBelow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus bas : symptômes et observations'**
+  String get diagnosisMoreBelow;
+
   /// No description provided for @diagnosisSymptomsHint.
   ///
   /// In fr, this message translates to:

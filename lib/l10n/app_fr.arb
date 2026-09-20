@@ -1195,6 +1195,7 @@
   "you": "vous",
   "diagnosisTitle": "Diagnostic",
   "diagnosisHint": "Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.",
+  "diagnosisMoreBelow": "Plus bas : symptômes et observations",
   "diagnosisSymptomsHint": "Ce que vous avez remarqué (facultatif)…",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Facultatif : ce que la photo ne montre pas affine l'analyse.",

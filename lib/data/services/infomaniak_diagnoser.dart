@@ -468,6 +468,18 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'Rate each cause with "likelihood", one of exactly these three words: "likely", "possible", "unlikely". '
       'Do not use numbers or percentages: you cannot measure this from a photo, and a figure would suggest a precision you do not have. '
       'Use "likely" sparingly, for what the photos really show; at most two causes may be "likely". '
+      // Ce que la personne est allée vérifier de sa main — la terre au doigt,
+      // les racines hors du pot, les insectes sous les feuilles — n'est pas
+      // une impression : c'est un constat, et aucune photo ne le montre. La
+      // consigne le rangeait pourtant sous la règle des symptômes racontés,
+      // qui interdit « probable » à tout ce que l'image ne montre pas : une
+      // terre détrempée et des racines brunes ne pouvaient alors jamais mener
+      // à une pourriture probable, et la personne lisait un compte rendu où
+      // ce qu'elle était allée voir ne pesait rien.
+      'The message may also carry what the owner checked by hand: the soil a couple of centimetres down, the roots out of the pot, the light '
+      'the plant gets, insects on it or in the soil. These are observations of the plant itself, as solid as the photos and about things no '
+      'photo shows. Weigh them exactly like the photos: a cause they support may be "likely", and a cause they contradict is dropped rather '
+      'than listed. '
       // Ce qui sépare réellement deux pistes n'est pas la couleur mais le
       // motif : quelles feuilles, quelle zone de la feuille, sec ou mou, net
       // ou diffus. Sans cette consigne, le modèle nomme la couleur qu'il voit
@@ -477,6 +489,8 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'spreads. The pattern separates what the colour alone confuses: a yellowing that starts on the oldest leaves is not the one that '
       'starts on the newest. '
       'Say in "summary" what you actually see — where it is, what it looks like — before any conclusion. '
+      'When what the owner checked by hand is what settles the answer, say that in "summary" too: a summary that describes only the photos '
+      'hides what the answer was really based on. '
       'Weigh the species, the light, the soil, the season and the room given in the message against every cause, and drop a cause one of '
       'them rules out instead of listing it anyway. '
       'Always give at least one cause, whatever the photos show: "causes" is never empty. '
@@ -495,9 +509,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       'reported symptom is missing from it, that it is unclear, or that another photo is needed, neither as a title, nor as an explanation, '
       'nor as an action, nor in "summary". Describe what the photos do show, never what they fail to show. '
       'When the photos do not show what the owner describes, work from the description, the species and the season: the owner has the plant in '
-      'front of them, and what they report happened even if the frame missed it. Such causes are "possible" or "unlikely", never "likely". '
+      'front of them, and what they report happened even if the frame missed it. Such causes are "possible" or "unlikely", never "likely" — '
+      'unless what the owner checked by hand supports them, which is an observation and not a report. '
       'If the plant looks healthy on the photos, say so in "summary" and still give the one or two most plausible causes of what the owner '
-      'reports, as "unlikely" — unless a normal phenomenon explains what is reported, which may be "likely". '
+      'reports, as "unlikely" — unless a normal phenomenon explains what is reported, or a hand check points to a cause the leaves do not '
+      'show yet, either of which may be "likely". '
       'Set "urgent" only for pests, rot or rapid decline. '
       'The message lists known problems for this plant, each as a three-digit number and a name, and the normal phenomena as "N" numbers. '
       'Read both lists before you name anything. '
@@ -649,6 +665,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     ].whereType<String>().join('; ');
     return 'Checked by the owner, by hand, on the plant itself: $facts. '
         'These were verified, not guessed, and no photo shows them: weigh every cause for and against them, '
+        'as heavily as what the photos show, say so in the summary when they are what settles it, '
         'and never give as an action something that has already been checked here.';
   }
 

@@ -2435,6 +2435,9 @@ class AppLocalizationsIt extends AppLocalizations {
       'Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.';
 
   @override
+  String get diagnosisMoreBelow => 'Più sotto: sintomi e osservazioni';
+
+  @override
   String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
 
   @override
