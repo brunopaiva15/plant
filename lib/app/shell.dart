@@ -13,6 +13,10 @@ import 'tab_scroll.dart';
 /// Coquille à 4 onglets avec barre flottante. Le contenu passe sous la barre
 /// (extendBody) pour le rendu translucide.
 ///
+/// La barre passe debout à droite quand la fenêtre est large sans être celle
+/// d'une tablette — un pliable ouvert. Le contenu est alors posé à côté du
+/// rail, pas dessous : voir [FloraTabRail.fitsIn].
+///
 /// C'est aussi le point d'atterrissage de l'application : [WhatsNewGate] y
 /// guette une mise à jour et ouvre, le cas échéant, la fenêtre des
 /// nouveautés — une fois, au premier rendu. [QuickActionsHost] y pose les
@@ -45,18 +49,46 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final tabs = [
+      FloraTab(icon: CupertinoIcons.sun_max, activeIcon: CupertinoIcons.sun_max_fill, label: l10n.tabToday),
+      FloraTab(icon: CupertinoIcons.square_grid_2x2, activeIcon: CupertinoIcons.square_grid_2x2_fill, label: l10n.tabPlants),
+      FloraTab(icon: CupertinoIcons.house, activeIcon: CupertinoIcons.house_fill, label: l10n.tabGarden),
+      FloraTab(icon: CupertinoIcons.person, activeIcon: CupertinoIcons.person_fill, label: l10n.tabProfile),
+    ];
+    final content = WhatsNewGate(child: QuickActionsHost(child: shell));
+    // Fenêtre large sans être une tablette — un pliable ouvert : le menu se
+    // met debout à droite, et le contenu prend ce qui reste. Ailleurs, rien
+    // ne bouge : la pilule reste en bas.
+    if (!FloraTabRail.fitsIn(context)) {
+      return Scaffold(
+        backgroundColor: context.colors.canvas,
+        extendBody: true,
+        body: content,
+        bottomNavigationBar: FloraTabBar(
+          index: shell.currentIndex,
+          onSelect: (i) => _select(context, ref, i),
+          tabs: tabs,
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: context.colors.canvas,
       extendBody: true,
-      body: WhatsNewGate(child: QuickActionsHost(child: shell)),
-      bottomNavigationBar: FloraTabBar(
-        index: shell.currentIndex,
-        onSelect: (i) => _select(context, ref, i),
-        tabs: [
-          FloraTab(icon: CupertinoIcons.sun_max, activeIcon: CupertinoIcons.sun_max_fill, label: l10n.tabToday),
-          FloraTab(icon: CupertinoIcons.square_grid_2x2, activeIcon: CupertinoIcons.square_grid_2x2_fill, label: l10n.tabPlants),
-          FloraTab(icon: CupertinoIcons.house, activeIcon: CupertinoIcons.house_fill, label: l10n.tabGarden),
-          FloraTab(icon: CupertinoIcons.person, activeIcon: CupertinoIcons.person_fill, label: l10n.tabProfile),
+      body: Row(
+        children: [
+          // Le rail occupe déjà la marge que le système réserve à droite : la
+          // laisser au contenu la compterait deux fois, et les pages
+          // s'écarteraient du rail sans raison.
+          Expanded(
+            child: Builder(
+              builder: (ctx) => MediaQuery.removePadding(context: ctx, removeRight: true, child: content),
+            ),
+          ),
+          FloraTabRail(
+            index: shell.currentIndex,
+            onSelect: (i) => _select(context, ref, i),
+            tabs: tabs,
+          ),
         ],
       ),
     );

@@ -327,6 +327,35 @@ départ et l'arrivée. Les libellés virent au passage — leur couleur suit la
 part de l'onglet que la bulle recouvre — au lieu de basculer à l'arrivée, et
 l'icône qui l'accueille se pose au ressort.
 
+### Le menu debout (`FloraTabRail`)
+Quand la fenêtre est large sans être celle d'une tablette — l'écran intérieur
+d'un iPhone Duo ouvert —, le menu passe à droite, en colonne : une pilule de
+64 points de large, centrée dans la hauteur, contre le bord. Une barre posée
+en bas y traverserait tout l'écran pour quatre onglets, et la main qui tient
+l'appareil ouvert est sur le côté, pas en bas.
+
+C'est la même pièce : la même bulle, le même ressort, la même argile,
+seulement couchée (`_TabStrip` prend un `Axis`). Deux choses changent.
+
+Les **libellés tombent** : quatre mots debout doubleraient la largeur de la
+colonne. L'icône reste, et `Semantics` dit toujours le libellé à VoiceOver —
+c'est ce que le rail perd pour l'œil qu'il garde pour l'oreille. En retour, la
+colonne ne bouge plus avec Dynamic Type, là où la barre du bas s'agrandit et
+passe à deux lignes.
+
+La **bande que le système réserve à droite** est rendue en entier, pas
+traversée comme l'est l'indicateur d'accueil en bas : sur un pliable ouvert,
+la barre d'état passe debout de ce côté, et il y a quelque chose d'écrit
+dedans. Ce qui flotte par-dessus l'application doit l'éviter aussi — le toast
+se range à gauche du rail et redescend, puisque plus rien n'occupe le bas
+(`FloraTabRail.reserved`).
+
+La bascule est dans `FloraTabRail.fitsIn` : au moins 600 points de large, et
+moins de 700 points de côté le plus court. La seconde condition est ce qui
+laisse l'iPad à sa barre du bas ; c'est un entre-deux, pas une mesure, faute
+de savoir dire « iPhone » ou « iPad » depuis Flutter. Voir
+docs/05, section « La fenêtre ».
+
 
 Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
 Chaque branche du shell pose son propre `ScrollController` en

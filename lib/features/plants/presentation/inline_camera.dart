@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../../app/orientation_lock.dart';
 import '../../../design_system/components/scanning_overlay.dart';
 
 /// Où en est le viseur intégré.
@@ -52,6 +53,10 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   bool _capturing = false;
   bool _disposed = false;
 
+  /// Ce que le verrou de capture dit en ce moment, ou `null` quand aucun flux
+  /// n'est ouvert. Voir [_alignCaptureToPage].
+  bool? _captureLocked;
+
   /// Le contrôleur du plugin, quand le flux est ouvert.
   CameraController? get camera => _camera;
 
@@ -76,15 +81,16 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
 
   /// Vrai quand la page ne peut pas tourner : sur Android le manifeste
   /// verrouille le portrait sur tous les appareils, ailleurs c'est la taille
-  /// qui décide, comme dans `main.dart`. Sur tablette libre, la capture reste
-  /// au capteur : la page tourne aussi.
+  /// qui décide, comme dans `app/orientation_lock.dart`. Sur tablette libre —
+  /// et sur un pliable ouvert — la capture reste au capteur : la page tourne
+  /// aussi.
+  ///
+  /// La question se repose à chaque ouverture du viseur, jamais une fois pour
+  /// toutes : entre deux photos, l'appareil a pu être déplié.
   static bool get _portraitOnly {
     if (kIsWeb) return false;
     if (Platform.isAndroid) return true;
-    final views = WidgetsBinding.instance.platformDispatcher.views;
-    if (views.isEmpty) return false;
-    final size = views.first.physicalSize / views.first.devicePixelRatio;
-    return !size.isEmpty && size.shortestSide < 600;
+    return isCompactWindow();
   }
 
   /// Demande le viseur. Sans effet s'il est déjà là.
@@ -124,6 +130,37 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
     }
   }
 
+  /// Aligne la capture sur la page : verrouillée en portrait quand la page ne
+  /// tourne pas, rendue au capteur sinon.
+  ///
+  /// Un pliable passe d'un cas à l'autre sans rien relancer, alors l'état
+  /// demandé est gardé : un changement de fenêtre est le plus souvent un
+  /// clavier qui monte, et il n'y a rien à redire au plugin.
+  Future<void> _alignCaptureToPage(CameraController controller) async {
+    final locked = _portraitOnly;
+    if (locked == _captureLocked) return;
+    try {
+      if (locked) {
+        await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
+      } else {
+        await controller.unlockCaptureOrientation();
+      }
+      _captureLocked = locked;
+    } on CameraException {
+      // Verrou refusé : la capture suivra le capteur, comme avant.
+    }
+  }
+
+  /// La fenêtre a changé de taille. Sur un pliable, l'appareil vient peut-être
+  /// de s'ouvrir : la page qui ne tournait pas tourne désormais, et la capture
+  /// n'a plus de raison d'être tenue en portrait.
+  @override
+  void didChangeMetrics() {
+    final camera = _camera;
+    if (_disposed || camera == null) return;
+    _alignCaptureToPage(camera);
+  }
+
   /// L'application passe derrière : le système reprend la caméra, autant la
   /// lui rendre proprement et la redemander au retour. Un refus levé entre
   /// deux — l'utilisateur revient des Réglages — se retrouve ici tout seul.
@@ -147,6 +184,7 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
     }
     _camera?.dispose();
     _camera = null;
+    _captureLocked = null;
     super.dispose();
   }
 
@@ -157,6 +195,9 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
       return;
     }
     _set(InlineCameraStatus.starting);
+    // Le flux qui s'ouvre est neuf : quoi qu'ait demandé le précédent, son
+    // orientation est à redire.
+    _captureLocked = null;
     CameraController? controller;
     try {
       final cameras = await availableCameras();
@@ -173,15 +214,10 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
       controller = CameraController(back, ResolutionPreset.veryHigh, enableAudio: false);
       await controller.initialize();
       // Le plugin suit le capteur, pas la page : appareil penché, il couche
-      // l'aperçu et la photo. Or ici la page ne tourne pas — voir `main.dart`
-      // et le manifeste Android — la capture s'aligne donc sur elle.
-      if (_portraitOnly) {
-        try {
-          await controller.lockCaptureOrientation(DeviceOrientation.portraitUp);
-        } on CameraException {
-          // Verrou refusé : la capture suivra le capteur, comme avant.
-        }
-      }
+      // l'aperçu et la photo. Or ici la page ne tourne pas — voir
+      // `app/orientation_lock.dart` et le manifeste Android — la capture
+      // s'aligne donc sur elle.
+      await _alignCaptureToPage(controller);
       // La page a pu partir, ou changer d'étape, pendant l'ouverture : le
       // flux n'a alors plus personne devant lui.
       if (_disposed || !_wanted || _status != InlineCameraStatus.starting) {
@@ -212,6 +248,8 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   Future<void> _close({bool suspended = false}) async {
     final camera = _camera;
     _camera = null;
+    // Le prochain flux repart d'un plugin neuf : son orientation est à redire.
+    _captureLocked = null;
     // Un refus reste un refus : le redire au lieu de faire croire à un viseur
     // qui n'attendrait qu'un geste.
     if (_status != InlineCameraStatus.unavailable) {

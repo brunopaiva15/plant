@@ -4,6 +4,7 @@ import 'package:flora/app/app.dart';
 import 'package:flora/app/providers.dart';
 import 'package:flora/core/config/app_version.dart';
 import 'package:flora/app/router.dart';
+import 'package:flora/app/shell.dart';
 import 'package:flora/data/auth/local_auth_repository.dart';
 import 'package:flora/data/db/database.dart';
 import 'package:flora/data/db/mappers.dart';
@@ -62,9 +63,12 @@ Future<List<PlantActionRow>> actionsOf(ProviderContainer c, String plantId) {
   return (db.select(db.plantActions)..where((a) => a.plantId.equals(plantId))).get();
 }
 
-Future<void> pumpApp(WidgetTester tester, ProviderContainer container, {bool settleAfter = true}) async {
-  tester.view.physicalSize = const Size(1170, 2532);
+/// [size] est en points, pas en pixels : celle d'un iPhone par défaut. La
+/// passer sert à voir l'application ailleurs — l'écran intérieur d'un
+/// pliable, où le menu se met debout à droite.
+Future<void> pumpApp(WidgetTester tester, ProviderContainer container, {bool settleAfter = true, Size size = const Size(390, 844)}) async {
   tester.view.devicePixelRatio = 3;
+  tester.view.physicalSize = size * 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(UncontrolledProviderScope(container: container, child: const FloraApp()));
   if (settleAfter) await settle(tester);
@@ -92,6 +96,34 @@ Future<void> skipLater(WidgetTester tester) async {
 }
 
 void main() {
+  group('le menu, selon la fenêtre', () {
+    testWidgets('sur un téléphone, la pilule reste en bas', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container);
+      expect(find.byType(FloraTabBar), findsOneWidget);
+      expect(find.byType(FloraTabRail), findsNothing);
+    });
+
+    testWidgets('sur l\'écran intérieur d\'un pliable, le menu se met debout à droite', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container, size: const Size(669, 951));
+      expect(find.byType(FloraTabRail), findsOneWidget);
+      expect(find.byType(FloraTabBar), findsNothing);
+
+      // Le contenu est posé à côté du rail, pas dessous.
+      final rail = tester.getRect(find.byType(FloraTabRail));
+      expect(669 - rail.right, lessThan(20));
+      expect(tester.getRect(find.byType(AppShell)).width, 669);
+
+      // Et le menu marche : on change d'onglet depuis la colonne.
+      await tester.tap(find.bySemanticsLabel('Jardin'));
+      await settle(tester);
+      // L'onglet Jardin s'est ouvert : son grand titre et ses sections.
+      expect(find.text('Lieux'), findsWidgets);
+      expect(find.text('Inventaire'), findsWidgets);
+    });
+  });
+
   testWidgets('empty garden shows the first-plant call to action', (tester) async {
     final container = await boot(tester);
     await pumpApp(tester, container);
