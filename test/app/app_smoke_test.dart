@@ -122,6 +122,51 @@ void main() {
       expect(find.text('Lieux'), findsWidgets);
       expect(find.text('Inventaire'), findsWidgets);
     });
+
+    /// Le bouton [libelle] est-il posé dans la colonne de droite ?
+    void dansLaColonne(WidgetTester tester, String libelle) {
+      final bouton = find.bySemanticsLabel(libelle);
+      expect(bouton, findsOneWidget, reason: '« $libelle » a disparu');
+      final colonne = tester.getRect(find.byType(FloraTabRail));
+      expect(
+        colonne.contains(tester.getRect(bouton).center),
+        isTrue,
+        reason: '« $libelle » est resté en haut de page',
+      );
+    }
+
+    testWidgets('les boutons du haut de page rejoignent la colonne', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container, size: const Size(669, 951));
+
+      // L'écran du matin en a deux, un de chaque côté du titre.
+      dansLaColonne(tester, 'Tableau de bord');
+      dansLaColonne(tester, 'Ajouter une plante');
+
+      // L'onglet Plantes en a quatre, et ils suivent aussi.
+      await tester.tap(find.bySemanticsLabel('Plantes'));
+      await settle(tester);
+      for (final libelle in ['Scanner', 'Filtres', 'Trouver une plante', 'Ajouter une plante']) {
+        dansLaColonne(tester, libelle);
+      }
+
+      // Et en revenant, ce sont de nouveau ceux de l'écran du matin : une
+      // branche laissée montée derrière ne garde pas la main sur la colonne.
+      await tester.tap(find.bySemanticsLabel("Aujourd'hui"));
+      await settle(tester);
+      dansLaColonne(tester, 'Tableau de bord');
+      expect(find.bySemanticsLabel('Scanner'), findsNothing);
+    });
+
+    testWidgets('sur un téléphone, ils restent en haut de page', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container);
+      expect(find.byType(FloraTabRail), findsNothing);
+      // Ils sont là, mais dans le tiers haut de l'écran, pas dans une colonne.
+      for (final libelle in ['Tableau de bord', 'Ajouter une plante']) {
+        expect(tester.getRect(find.bySemanticsLabel(libelle)).center.dy, lessThan(844 / 3));
+      }
+    });
   });
 
   testWidgets('empty garden shows the first-plant call to action', (tester) async {

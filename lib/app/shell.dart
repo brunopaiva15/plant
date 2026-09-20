@@ -25,10 +25,27 @@ import 'tab_scroll.dart';
 /// Un second tap sur l'onglet courant ramène sa liste en haut, comme sur
 /// iOS ; la branche revient aussi à sa racine, pour le jour où elle
 /// empilerait quelque chose.
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.shell});
 
   final StatefulNavigationShell shell;
+
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  /// Les boutons que la page ouverte veut voir dans le menu debout. Vide tant
+  /// que la barre est en bas : les pages gardent alors leur haut de page.
+  final RailActionsSlot _railActions = RailActionsSlot();
+
+  StatefulNavigationShell get shell => widget.shell;
+
+  @override
+  void dispose() {
+    _railActions.dispose();
+    super.dispose();
+  }
 
   void _select(BuildContext context, WidgetRef ref, int i) {
     if (i != shell.currentIndex) {
@@ -47,7 +64,7 @@ class AppShell extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tabs = [
       FloraTab(icon: CupertinoIcons.sun_max, activeIcon: CupertinoIcons.sun_max_fill, label: l10n.tabToday),
@@ -55,7 +72,13 @@ class AppShell extends ConsumerWidget {
       FloraTab(icon: CupertinoIcons.house, activeIcon: CupertinoIcons.house_fill, label: l10n.tabGarden),
       FloraTab(icon: CupertinoIcons.person, activeIcon: CupertinoIcons.person_fill, label: l10n.tabProfile),
     ];
-    final content = WhatsNewGate(child: QuickActionsHost(child: shell));
+    // Le relais est posé dans les deux cas : il n'apparaît pas et ne
+    // disparaît pas au gré de la taille de la fenêtre, ce qui éviterait aux
+    // pages de se redéclarer à chaque pli.
+    final content = RailActionsScope(
+      slot: _railActions,
+      child: WhatsNewGate(child: QuickActionsHost(child: shell)),
+    );
     // Fenêtre large sans être une tablette — un pliable ouvert : le menu se
     // met debout à droite, et le contenu prend ce qui reste. Ailleurs, rien
     // ne bouge : la pilule reste en bas.
@@ -84,10 +107,14 @@ class AppShell extends ConsumerWidget {
               builder: (ctx) => MediaQuery.removePadding(context: ctx, removeRight: true, child: content),
             ),
           ),
-          FloraTabRail(
-            index: shell.currentIndex,
-            onSelect: (i) => _select(context, ref, i),
-            tabs: tabs,
+          ListenableBuilder(
+            listenable: _railActions,
+            builder: (context, _) => FloraTabRail(
+              index: shell.currentIndex,
+              onSelect: (i) => _select(context, ref, i),
+              tabs: tabs,
+              actions: _railActions.actions,
+            ),
           ),
         ],
       ),

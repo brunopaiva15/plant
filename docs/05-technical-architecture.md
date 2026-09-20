@@ -243,7 +243,8 @@ déploiement, elle, ne bouge pas : iOS 17.
 
 Ce que l'ouverture change à l'écran : le menu passe debout sur le bord droit
 (`FloraTabRail`, `app/shell.dart`), le contenu prenant ce qui reste — une
-pilule posée en bas traverserait tout l'écran pour quatre onglets. La bascule
+pilule posée en bas traverserait tout l'écran pour quatre onglets — et les
+boutons du haut de page rejoignent la colonne (`RailActions`). La bascule
 tient en deux nombres, dans `FloraTabRail.fitsIn`, et l'iPad n'est pas
 concerné : il garde sa barre du bas. Le détail du rail est dans docs/06,
 section « Le menu debout ».

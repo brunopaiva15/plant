@@ -367,6 +367,31 @@ rotation : le rail la rend en entier quand elle est à droite, et se recolle au
 bord quand elle passe à gauche. La pilule du bas fait de même, bord par bord —
 rien n'est supposé symétrique. Voir docs/05, section « La fenêtre ».
 
+#### Les boutons de la page descendent avec
+Debout, la colonne ne porte pas que les onglets : les boutons du haut de page
+la rejoignent, sous la pilule, le dernier de la liste — le « + », le plus
+souvent — au plus près du pouce. Deux choses restent en haut : le titre, et le
+bouton de retour, qui est un geste de navigation et non une commande de la
+page.
+
+C'est un relais, parce que les deux bouts ne se voient pas : la coquille
+dessine la colonne, chaque page connaît ses boutons. Une page se déclare par
+`RailActions`, le relais garde les déclarations en pile, et c'est la dernière
+**visible** qui gagne — la visibilité se lit au `TickerMode` que go_router
+coupe sur les branches hors écran, sans quoi un onglet resté monté derrière
+garderait la main. La colonne se redessine après l'image, jamais pendant : la
+coquille est construite avant les pages, et la prévenir en cours de route
+reviendrait à rebâtir un ancêtre déjà bâti.
+
+D'où `LargeTitlePage.actions`, une **liste** et non une `Row` toute faite :
+une rangée ne se range pas debout. Les pages qui n'ont qu'un bouton gardent
+`trailing`, qui marche pareil.
+
+La colonne mesure la place qu'il lui reste avant de se donner une hauteur :
+les onglets se resserrent quand les boutons sont nombreux et la fenêtre
+courte. Dans le pire cas mesuré — un Duo fermé et couché, 466 points de haut,
+quatre boutons — les onglets passent de 56 à 55 points.
+
 
 Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
 Chaque branche du shell pose son propre `ScrollController` en
