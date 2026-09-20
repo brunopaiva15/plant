@@ -825,10 +825,10 @@ vraie des deux : la mesure ne quitte pas l'application.
 
 ## Le relevé de la maison (`domain/room/`, `features/room_scan/`)
 
-Expérimental, derrière `AppConfig.roomScanEnabled`
-(`--dart-define=ROOM_SCAN=true`), sur iPhone et iPad à LiDAR. Le dessein, le
-modèle de lumière et les paliers sont dans [docs/17](17-releve-de-la-maison.md) ;
-ici, ce qui tient au code.
+Livré, sur iPhone et iPad à LiDAR (`AppConfig.roomScanEnabled`, qu'on
+peut refermer sans rien effacer). Le dessein, le modèle de lumière et les
+paliers sont dans [docs/17](17-releve-de-la-maison.md) ; ici, ce qui tient
+au code.
 
 - **Le canal** `ios/Runner/RoomScanChannel.swift`
   (`ch.vergasta.plant/room_scan`), sur le patron de `HomeClimateChannel` :
