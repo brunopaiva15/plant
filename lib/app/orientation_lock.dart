@@ -13,11 +13,11 @@ const double compactWindowWidth = 600;
 /// à l'écran intérieur et revient, sans rien relancer : une taille lue au
 /// démarrage se périme au premier pli.
 ///
-/// Les cotes, relevées dans Xcode 27.1 les 18 et 19 septembre 2026 (DPR 3) :
-/// fermé 386 × 678 points, ouvert 669 × 871 en mode de compatibilité ;
-/// 466 × 678 et 669 × 951 une fois l'application construite avec le SDK 27.1,
-/// qui l'étend jusqu'au bord. La limite des 600 points tient dans les deux
-/// modes.
+/// Les cotes, relevées dans Xcode 27.1 sur un binaire construit avec le SDK
+/// 27.1 (DPR 3) : fermé 466 × 678 points, ouvert 669 × 951. Construite avec
+/// le SDK 27.0, la même application tourne en mode de compatibilité et perd
+/// 80 points sur un axe — 386 × 678 et 669 × 871. La limite des 600 points
+/// tient dans les deux modes ; `[auxine:sdk]` dit lequel est en cours.
 bool isCompactWindow() {
   final dispatcher = WidgetsBinding.instance.platformDispatcher;
   // La vue implicite est celle que l'application occupe ; sur un appareil à

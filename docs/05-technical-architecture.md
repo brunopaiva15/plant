@@ -180,24 +180,35 @@ sortirait couchée.
 
 ### Les cotes, mesurées
 
-Relevées dans Xcode 27.1 les 18 et 19 septembre 2026, sur le simulateur, DPR 3
-dans les quatre cas. Elles viennent du harnais Duo de *disquebleu*
-(`docs/duo-harness.md` de ce dépôt-là), pas d'un calcul.
+Relevées dans Xcode 27.1 sur le simulateur, DPR 3 partout. Elles viennent du
+harnais Duo de *disquebleu* (`docs/duo-harness.md` de ce dépôt-là), pas d'un
+calcul, et d'un binaire **construit avec le SDK 27.1** — celui qui dessine
+bord-à-bord.
 
-| Pose | `MediaQuery.size` | `physicalSize` | Marges sûres |
+| Pose | `MediaQuery.size` | `physicalSize` | Marges sûres (G/H/D/B) |
 |---|---:|---:|---|
-| fermé, portrait | 386 × 678 pt | 1158 × 2034 px | bas 34 |
-| fermé, couché | 678 × 386 pt | 2034 × 1158 px | gauche 34 · droite 34 · bas 20 |
-| ouvert, portrait | 669 × 871 pt | 2007 × 2613 px | bas 34 |
-| ouvert, couché | 871 × 669 pt | 2613 × 2007 px | gauche 34 · droite 34 · bas 20 |
+| fermé, portrait | 466 × 678 pt | 1398 × 2034 px | 0 / 82 / 0 / 34 |
+| fermé, couché | 678 × 466 pt | 2034 × 1398 px | 0 / 0 / 84 / 34 |
+| ouvert, portrait | 669 × 951 pt | 2007 × 2853 px | 0 / 82 / 0 / 34 |
+| ouvert, couché | 951 × 669 pt | 2853 × 2007 px | 0 / 0 / 84 / 34 |
+| multitâche, moitié | 445 × 626 pt | | |
+| multitâche, tiers | 320 × 626 pt | | |
 
-**Ce sont les cotes du mode de compatibilité**, celui d'un binaire qui n'est
-pas encore construit avec le SDK 27.1 : iOS tient alors l'application à gauche
-de la zone heure/caméra, et elle perd 80 points sur un axe. Construite avec le
-SDK, elle s'étend jusqu'au bord et retrouve les cotes qui se déduisent des
-tailles de visuels du magasin : 466 × 678 fermé, 669 × 951 ouvert. Les deux
-limites de l'application — 600 points pour le verrou et le menu, 700 pour le
-côté le plus court — tiennent dans les deux modes, et c'est ce qui compte.
+La bande de la caméra n'est pas toujours du même côté : selon le sens de
+rotation, les mêmes 84 points se retrouvent à gauche. **Rien n'est
+symétrique**, et chaque bord se lit pour lui-même — c'est aussi ce que
+recommande Apple. La pilule du bas comme le rail de droite ajoutent donc les
+marges du système aux leurs, bord par bord.
+
+Construite avec le SDK 27.0, la même application tourne en **mode de
+compatibilité** : bande noire, fenêtre tenue à l'écart de la zone
+heure/caméra, et 80 points perdus sur un axe — 386 × 678 fermé, 669 × 871
+ouvert. Les deux se ressemblent assez pour qu'on prenne l'un pour l'autre,
+d'où le `[auxine:sdk]` qu'écrit `ios/Runner/SceneDelegate.swift` en debug : il
+donne le SDK inscrit dans le bundle et prévient si c'est le mauvais. Changer
+de simulateur ne suffit pas, c'est le Xcode sélectionné à la construction qui
+décide. Les deux limites de l'application — 600 points pour le menu, 700 pour
+le côté le plus court — tiennent dans les deux modes.
 
 Deux constats de ces relevés valent plus que les nombres :
 
@@ -208,9 +219,11 @@ Deux constats de ces relevés valent plus que les nombres :
 - `SystemChrome.setPreferredOrientations` est **refusé** par UIKit, qui répond
   `UISceneErrorDomain Code=101`. Dart n'en sait rien — l'engine passe un
   gestionnaire d'erreur vide. L'écran extérieur tourne donc malgré la
-  déclaration portrait, et l'application doit être juste en 678 × 386. Ce sont
+  déclaration portrait, et l'application doit être juste en 678 × 466. Ce sont
   `Info.plist` et la mise en page qui tiennent la barre, pas `OrientationLock`,
-  qui reste utile ailleurs mais ne décide rien ici.
+  qui ne décide rien ici — et rien ailleurs non plus, puisque `Info.plist` et
+  le manifeste Android disent déjà la même chose. Le retirer est la suite
+  logique ; il est gardé le temps qu'on en décide.
 
 Côté iOS, trois points valent d'être connus :
 

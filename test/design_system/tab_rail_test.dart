@@ -5,14 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Le menu debout, celui des fenêtres larges qui ne sont pas des tablettes.
 ///
-/// Un iPhone Duo fermé montre 386 points de large, ouvert 669 : c'est le
+/// Un iPhone Duo fermé montre 466 points de large, ouvert 669 : c'est le
 /// second cas que sert ce rail. Un iPad, lui, garde sa pilule en bas — d'où
 /// la seconde condition, sur le côté le plus court.
 ///
-/// Les quatre poses du Duo sont celles relevées dans Xcode 27.1 les 18 et
-/// 19 septembre 2026, DPR 3. Fermé et couché, le menu se met debout lui
-/// aussi : c'est voulu, une fenêtre de 386 points de haut est celle où une
-/// barre posée en bas coûte le plus cher.
+/// Les poses du Duo sont celles relevées dans Xcode 27.1 sur un binaire
+/// bord-à-bord, DPR 3. Fermé et couché, le menu se met debout lui aussi :
+/// c'est voulu, une fenêtre de 466 points de haut est celle où une barre
+/// posée en bas coûte le plus cher.
 
 const _tabs = [
   FloraTab(icon: CupertinoIcons.sun_max, activeIcon: CupertinoIcons.sun_max_fill, label: "Aujourd'hui"),
@@ -25,7 +25,7 @@ const _tabs = [
 /// le reste.
 Future<void> _pumpRail(
   WidgetTester tester, {
-  Size size = const Size(669, 871),
+  Size size = const Size(669, 951),
   double rightInset = 0,
   int index = 0,
   ValueChanged<int>? onSelect,
@@ -71,13 +71,14 @@ void main() {
     // (ce qu'on tient, la fenêtre, le menu debout)
     const cas = <(String, Size, bool)>[
       ('iPhone', Size(402, 874), false),
-      ('iPhone Duo fermé', Size(386, 678), false),
-      ('iPhone Duo fermé, couché', Size(678, 386), true),
-      ('iPhone Duo ouvert', Size(669, 871), true),
-      ('iPhone Duo ouvert, couché', Size(871, 669), true),
+      ('iPhone Duo fermé', Size(466, 678), false),
+      ('iPhone Duo fermé, couché', Size(678, 466), true),
+      ('iPhone Duo ouvert', Size(669, 951), true),
+      ('iPhone Duo ouvert, couché', Size(951, 669), true),
       ('iPad mini, portrait', Size(744, 1133), false),
       ('iPad 11 pouces, paysage', Size(1180, 820), false),
-      ('une app posée à côté d\'une autre', Size(320, 626), false),
+      ('en multitâche, la moitié', Size(445, 626), false),
+      ('en multitâche, le tiers', Size(320, 626), false),
     ];
     for (final (appareil, size, debout) in cas) {
       testWidgets('$appareil : ${debout ? 'à droite' : 'en bas'}', (tester) async {
@@ -105,16 +106,23 @@ void main() {
       // Contre le bord droit, pas au milieu.
       expect(669 - pill.right, lessThan(20), reason: 'la pilule flotte loin du bord');
       // Et centrée dans la hauteur.
-      expect(pill.center.dy, closeTo(871 / 2, 1));
+      expect(pill.center.dy, closeTo(951 / 2, 1));
       // Une colonne, pas une barre : plus haute que large.
       expect(pill.height, greaterThan(pill.width * 2));
     });
 
     testWidgets('laisse au système la bande qu\'il réserve à droite', (tester) async {
-      await _pumpRail(tester, rightInset: 40);
-      // Sur un pliable ouvert, la barre d'état passe debout à droite : il y a
-      // quelque chose d'écrit dans cette bande, on ne la traverse pas.
-      expect(669 - _pill(tester).right, closeTo(40, 0.5));
+      // 84 points : la bande de la caméra sur un Duo couché, mesurée dans
+      // Xcode 27.1. Il y a quelque chose dedans, on ne la traverse pas.
+      await _pumpRail(tester, size: const Size(951, 669), rightInset: 84);
+      expect(951 - _pill(tester).right, closeTo(84, 0.5));
+    });
+
+    testWidgets('et se recolle au bord quand la bande passe de l\'autre côté', (tester) async {
+      // Selon le sens de rotation, la même bande se retrouve à gauche : il ne
+      // reste alors rien à éviter de ce côté-ci.
+      await _pumpRail(tester, size: const Size(678, 466));
+      expect(678 - _pill(tester).right, lessThan(16), reason: 'la pilule s\'écarte du bord sans raison');
     });
 
     testWidgets('ne laisse pas le contenu passer dessous', (tester) async {

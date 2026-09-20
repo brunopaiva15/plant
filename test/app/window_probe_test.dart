@@ -34,8 +34,9 @@ void main() {
   testWidgets('elle écrit sans qu\'on lui demande rien, une fois la première image passée', (tester) async {
     addTearDown(WindowProbe.detach);
     addTearDown(tester.view.reset);
-    // L'écran intérieur du Duo ouvert, mesuré dans Xcode 27.1.
-    resize(tester, const Size(669, 871));
+    // L'écran intérieur du Duo ouvert, mesuré dans Xcode 27.1 sur un binaire
+    // bord-à-bord.
+    resize(tester, const Size(669, 951));
 
     final lignes = await _capture(tester, () async {
       // `main()` appelle la sonde avant qu'aucune image n'ait été rendue.
@@ -47,14 +48,14 @@ void main() {
     expect(lignes, isNotEmpty, reason: 'la sonde n\'a rien écrit');
     final bloc = lignes.join('\n');
     expect(bloc, contains('[auxine:fenêtre]'));
-    expect(bloc, contains('669.0 × 871.0 pt'));
+    expect(bloc, contains('669.0 × 951.0 pt'));
     expect(bloc, contains('displayFeatures est vide'));
   });
 
   testWidgets('un pli donne un nouveau relevé, un clavier n\'en donne pas', (tester) async {
     addTearDown(WindowProbe.detach);
     addTearDown(tester.view.reset);
-    resize(tester, const Size(386, 678));
+    resize(tester, const Size(466, 678));
 
     final lignes = await _capture(tester, () async {
       WindowProbe.attach();
@@ -62,17 +63,17 @@ void main() {
       await tester.idle();
 
       // L'appareil s'ouvre : la fenêtre change, un relevé de plus.
-      resize(tester, const Size(669, 871));
+      resize(tester, const Size(669, 951));
       await tester.idle();
 
       // La même fenêtre redite : rien à réécrire.
-      resize(tester, const Size(669, 871));
+      resize(tester, const Size(669, 951));
       await tester.idle();
     });
 
     final releves = lignes.where((l) => l.startsWith('[auxine:fenêtre] relevé ')).toList();
     expect(releves.length, 2, reason: 'un relevé au départ, un à l\'ouverture, et pas un de plus');
-    expect(releves.first, contains('386.0 × 678.0 pt'));
-    expect(releves.last, contains('669.0 × 871.0 pt'));
+    expect(releves.first, contains('466.0 × 678.0 pt'));
+    expect(releves.last, contains('669.0 × 951.0 pt'));
   });
 }

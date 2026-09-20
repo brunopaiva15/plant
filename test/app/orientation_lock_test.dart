@@ -5,16 +5,17 @@ import 'package:flutter_test/flutter_test.dart';
 /// Le verrou de portrait, sur un appareil qui change de taille en cours de
 /// route.
 ///
-/// Un iPhone Duo fermé montre 386 points de large, ouvert 669 : c'est la même
+/// Un iPhone Duo fermé montre 466 points de large, ouvert 669 : c'est la même
 /// application, le même lancement, et pourtant l'un est un téléphone — une
 /// colonne, portrait — et l'autre une tablette, qu'iOS fait tourner de toute
 /// façon (l'écran intérieur n'honore pas `UISupportedInterfaceOrientations`).
 /// Le verrou doit donc se poser et se retirer à chaque pli, là où une mesure
 /// prise au démarrage restait pour la séance entière.
 ///
-/// Les cotes viennent de Xcode 27.1, relevées les 18 et 19 septembre 2026.
-const Size closed = Size(386, 678);
-const Size opened = Size(669, 871);
+/// Les cotes viennent de Xcode 27.1, sur un binaire construit avec le SDK
+/// 27.1 — celui qui dessine bord-à-bord.
+const Size closed = Size(466, 678);
+const Size opened = Size(669, 951);
 const Size tablet = Size(1024, 1366);
 
 void main() {
@@ -105,7 +106,7 @@ void main() {
 
       // Un clavier qui monte, une barre d'état qui change : la hauteur bouge,
       // la réponse non.
-      resize(tester, const Size(386, 400));
+      resize(tester, const Size(466, 400));
       await tester.idle();
       resize(tester, closed);
       await tester.idle();

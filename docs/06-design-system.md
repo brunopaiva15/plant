@@ -355,11 +355,17 @@ moins de 700 points de côté le plus court. La seconde condition est ce qui
 laisse l'iPad à sa barre du bas ; c'est un entre-deux, pas une mesure, faute
 de savoir dire « iPhone » ou « iPad » depuis Flutter.
 
-Sur les quatre poses mesurées du Duo, ça donne : fermé 386 × 678, la barre
-reste en bas ; **fermé et couché 678 × 386, le menu se met debout** — voulu,
-une fenêtre de 386 points de haut est celle où une barre posée en bas coûte le
-plus cher, et l'écran extérieur tourne quoi qu'on déclare ; ouvert 669 × 871
-et 871 × 669, debout aussi. Voir docs/05, section « La fenêtre ».
+Sur les poses mesurées du Duo, ça donne : fermé 466 × 678, la barre reste en
+bas ; **fermé et couché 678 × 466, le menu se met debout** — voulu, une
+fenêtre de 466 points de haut est celle où une barre posée en bas coûte le
+plus cher, et l'écran extérieur tourne quoi qu'on déclare ; ouvert 669 × 951
+et 951 × 669, debout aussi ; en multitâche (445 × 626, 320 × 626), la barre
+revient en bas.
+
+La bande de la caméra fait 84 points mesurés et change de côté selon la
+rotation : le rail la rend en entier quand elle est à droite, et se recolle au
+bord quand elle passe à gauche. La pilule du bas fait de même, bord par bord —
+rien n'est supposé symétrique. Voir docs/05, section « La fenêtre ».
 
 
 Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
