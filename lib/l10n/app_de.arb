@@ -1979,5 +1979,146 @@
   "moderationReports": "{count, plural, =1{1 Meldung} other{{count} Meldungen}}",
   "moderationHide": "Ausblenden",
   "moderationRestore": "Wiederherstellen",
-  "confirmRestoreTip": "Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht."
+  "confirmRestoreTip": "Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht.",
+  "roomScan": "Raumscan",
+  "roomScanHint": "Ein mit Kamera und LiDAR gescannter Raum liefert seine Wände, Fenster und Türen. Für eine Pflanze liest die App daraus, wo sie am besten stünde. Der Scan bleibt auf dem Gerät.",
+  "roomScanStart": "Raum scannen",
+  "roomScanRooms": "Gescannte Räume",
+  "roomScanEmptyTitle": "Kein Raum gescannt",
+  "roomScanEmptySubtitle": "Der Scan dauert ein bis zwei Minuten pro Raum, langsam an den Wänden entlang.",
+  "roomScanNoLidar": "Dieses Gerät hat kein LiDAR: Der Scan braucht ein iPhone Pro oder ein iPad Pro.",
+  "roomScanBeforeTitle": "Vor dem Scan",
+  "roomScanBeforeText": "Die Kamera öffnet sich in der Scanansicht des Systems. Langsam an den Wänden entlanggehen, bis der Raum gezeichnet ist, dann abschließen. Nichts verlässt das Gerät.",
+  "roomScanFailed": "Der Scan ist nicht zustande gekommen.",
+  "roomScanDefaultName": "Raum",
+  "roomScanArea": "{area} m²",
+  "@roomScanArea": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanWindowsCount": "{count, plural, =0{kein Fenster} =1{ein Fenster} other{{count} Fenster}}",
+  "@roomScanWindowsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanName": "Name des Raums",
+  "roomScanLinkedLocation": "Ort",
+  "roomScanWindows": "Fenster",
+  "roomScanWindowN": "Fenster {n}",
+  "@roomScanWindowN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanWindowUnknown": "Ausrichtung unbekannt",
+  "roomScanWindowFromCompass": "Laut Kompass",
+  "roomScanWindowConfirmed": "Bestätigt",
+  "roomScanOrientationHelp": "Der Kompass irrt um zehn bis fünfzehn Grad: Die Ausrichtung jedes Fensters wird hier bestätigt.",
+  "roomScanDelete": "Scan löschen",
+  "roomScanDeleteConfirm": "Der Scan und seine Markierungen verschwinden vom Gerät.",
+  "roomScanCapturedOn": "Gescannt am {date}",
+  "@roomScanCapturedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "roomSectionBathroom": "Badezimmer",
+  "roomSectionBedroom": "Schlafzimmer",
+  "roomSectionDiningRoom": "Esszimmer",
+  "roomSectionKitchen": "Küche",
+  "roomSectionLaundryRoom": "Waschküche",
+  "roomSectionLivingRoom": "Wohnzimmer",
+  "directionNorth": "Norden",
+  "directionNorthEast": "Nordosten",
+  "directionEast": "Osten",
+  "directionSouthEast": "Südosten",
+  "directionSouth": "Süden",
+  "directionSouthWest": "Südwesten",
+  "directionWest": "Westen",
+  "directionNorthWest": "Nordwesten",
+  "placementTitle": "Wohin damit",
+  "placementHint": "Die Plätze, die in den gescannten Räumen für diese Pflanze gefunden wurden. Sie kann auch anderswo stehen.",
+  "placementRoomsCount": "{count, plural, =1{ein gescannter Raum} other{{count} gescannte Räume}}",
+  "@placementRoomsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementVerdictGood": "Dieser Raum passt zu ihr.",
+  "placementVerdictAcceptable": "Dieser Raum passt einigermaßen zu ihr.",
+  "placementVerdictUnsuitable": "Dieser Raum passt nicht zu ihr.",
+  "placementShortfallTooDark": "Zu dunkel für das, was sie braucht.",
+  "placementShortfallTooBright": "Zu viel direkte Sonne für sie.",
+  "placementShortfallDrafty": "Alle Plätze liegen nahe einer Tür, und sie verträgt keinen Durchzug.",
+  "placementShortfallTooDry": "Ein Feuchtraum, für eine Pflanze, die trockene Luft will.",
+  "placementGeneric": "Die Seite ist allgemein: Ohne die Art ist nicht bekannt, wie viel Licht sie braucht.",
+  "placementDistanceM": "{m} m",
+  "@placementDistanceM": {
+    "placeholders": {
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "placementDistanceCm": "{cm} cm",
+  "@placementDistanceCm": {
+    "placeholders": {
+      "cm": {
+        "type": "int"
+      }
+    }
+  },
+  "placementNearWindow": "{distance} vom Fenster nach {direction}",
+  "@placementNearWindow": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementNearWindowUnknown": "{distance} vom Fenster",
+  "@placementNearWindowUnknown": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnTable": "auf dem Tisch",
+  "placementOnStorage": "auf der Kommode",
+  "placementOnSill": "auf der Fensterbank nach {direction}",
+  "@placementOnSill": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnSillUnknown": "auf der Fensterbank",
+  "placementDeepInRoom": "hinten im Raum, weit weg von den Fenstern",
+  "placementDraftyNote": "Nahe einer Tür: Hier bewegt sich die Luft.",
+  "placementHumidRoomNote": "Feuchtraum: Die Luft ist hier feuchter.",
+  "placementPlanSemantics": "Grundriss des Raums von oben, {count} ausgewählte Plätze.",
+  "@placementPlanSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

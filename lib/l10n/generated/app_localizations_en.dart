@@ -6202,4 +6202,232 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmRestoreTip => 'Restore this tip? Its reports are cleared.';
+
+  @override
+  String get roomScan => 'Home scan';
+
+  @override
+  String get roomScanHint =>
+      'A room scanned with the camera and the LiDAR gives its walls, windows and doors. For a plant, the app reads where it would do best. The scan stays on the device.';
+
+  @override
+  String get roomScanStart => 'Scan a room';
+
+  @override
+  String get roomScanRooms => 'Scanned rooms';
+
+  @override
+  String get roomScanEmptyTitle => 'No room scanned';
+
+  @override
+  String get roomScanEmptySubtitle =>
+      'A scan takes one to two minutes per room, walking slowly along the walls.';
+
+  @override
+  String get roomScanNoLidar =>
+      'This device has no LiDAR: scanning needs an iPhone Pro or an iPad Pro.';
+
+  @override
+  String get roomScanBeforeTitle => 'Before the scan';
+
+  @override
+  String get roomScanBeforeText =>
+      'The camera opens on the system\'s scanning view. Walk slowly along the walls until the room is drawn, then finish. Nothing leaves the device.';
+
+  @override
+  String get roomScanFailed => 'The scan did not complete.';
+
+  @override
+  String get roomScanDefaultName => 'Room';
+
+  @override
+  String roomScanArea(String area) {
+    return '$area m²';
+  }
+
+  @override
+  String roomScanWindowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count windows',
+      one: 'one window',
+      zero: 'no window',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanName => 'Room name';
+
+  @override
+  String get roomScanLinkedLocation => 'Location';
+
+  @override
+  String get roomScanWindows => 'Windows';
+
+  @override
+  String roomScanWindowN(int n) {
+    return 'Window $n';
+  }
+
+  @override
+  String get roomScanWindowUnknown => 'Unknown orientation';
+
+  @override
+  String get roomScanWindowFromCompass => 'From the compass';
+
+  @override
+  String get roomScanWindowConfirmed => 'Confirmed';
+
+  @override
+  String get roomScanOrientationHelp =>
+      'The compass is off by ten to fifteen degrees: each window\'s orientation is confirmed here.';
+
+  @override
+  String get roomScanDelete => 'Delete the scan';
+
+  @override
+  String get roomScanDeleteConfirm =>
+      'The scan and its markers are removed from the device.';
+
+  @override
+  String roomScanCapturedOn(String date) {
+    return 'Scanned on $date';
+  }
+
+  @override
+  String get roomSectionBathroom => 'Bathroom';
+
+  @override
+  String get roomSectionBedroom => 'Bedroom';
+
+  @override
+  String get roomSectionDiningRoom => 'Dining room';
+
+  @override
+  String get roomSectionKitchen => 'Kitchen';
+
+  @override
+  String get roomSectionLaundryRoom => 'Laundry room';
+
+  @override
+  String get roomSectionLivingRoom => 'Living room';
+
+  @override
+  String get directionNorth => 'north';
+
+  @override
+  String get directionNorthEast => 'north-east';
+
+  @override
+  String get directionEast => 'east';
+
+  @override
+  String get directionSouthEast => 'south-east';
+
+  @override
+  String get directionSouth => 'south';
+
+  @override
+  String get directionSouthWest => 'south-west';
+
+  @override
+  String get directionWest => 'west';
+
+  @override
+  String get directionNorthWest => 'north-west';
+
+  @override
+  String get placementTitle => 'Where to put it';
+
+  @override
+  String get placementHint =>
+      'The spots found in the scanned rooms, for this plant. It can live elsewhere.';
+
+  @override
+  String placementRoomsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rooms scanned',
+      one: 'one room scanned',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placementVerdictGood => 'This room suits it.';
+
+  @override
+  String get placementVerdictAcceptable => 'This room more or less suits it.';
+
+  @override
+  String get placementVerdictUnsuitable => 'This room does not suit it.';
+
+  @override
+  String get placementShortfallTooDark => 'Too dark for what it needs.';
+
+  @override
+  String get placementShortfallTooBright => 'Too much direct sun for it.';
+
+  @override
+  String get placementShortfallDrafty =>
+      'Every spot is near a door, and it dislikes draughts.';
+
+  @override
+  String get placementShortfallTooDry =>
+      'A humid room, for a plant that wants dry air.';
+
+  @override
+  String get placementGeneric =>
+      'The page is generic: without the species, the light it needs is not known.';
+
+  @override
+  String placementDistanceM(String m) {
+    return '$m m';
+  }
+
+  @override
+  String placementDistanceCm(int cm) {
+    return '$cm cm';
+  }
+
+  @override
+  String placementNearWindow(String distance, String direction) {
+    return '$distance from the $direction window';
+  }
+
+  @override
+  String placementNearWindowUnknown(String distance) {
+    return '$distance from the window';
+  }
+
+  @override
+  String get placementOnTable => 'on the table';
+
+  @override
+  String get placementOnStorage => 'on the cabinet';
+
+  @override
+  String placementOnSill(String direction) {
+    return 'on the $direction window sill';
+  }
+
+  @override
+  String get placementOnSillUnknown => 'on the window sill';
+
+  @override
+  String get placementDeepInRoom => 'at the back, away from the windows';
+
+  @override
+  String get placementDraftyNote => 'Near a door: the air moves there.';
+
+  @override
+  String get placementHumidRoomNote => 'Humid room: the air is damper there.';
+
+  @override
+  String placementPlanSemantics(int count) {
+    return 'Room plan seen from above, $count spots kept.';
+  }
 }

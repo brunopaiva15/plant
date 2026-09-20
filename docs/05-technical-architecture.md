@@ -688,3 +688,50 @@ accessoires sur l'appareil, les Home APIs passent par le compte Google de
 la personne. L'écran le dit, maison par maison (`homeClimateAppleNote`,
 `homeClimateGoogleNote`), et le texte commun ne promet plus qu'une chose,
 vraie des deux : la mesure ne quitte pas l'application.
+
+## Le relevé de la maison (`domain/room/`, `features/room_scan/`)
+
+Expérimental, derrière `AppConfig.roomScanEnabled`
+(`--dart-define=ROOM_SCAN=true`), sur iPhone et iPad à LiDAR. Le dessein, le
+modèle de lumière et les paliers sont dans [docs/17](17-releve-de-la-maison.md) ;
+ici, ce qui tient au code.
+
+- **Le canal** `ios/Runner/RoomScanChannel.swift`
+  (`ch.vergasta.plant/room_scan`), sur le patron de `HomeClimateChannel` :
+  `support` rend ce que l'appareil sait faire (`lidar`, `sections`,
+  `structure`), `scan` présente `RoomCaptureView` par-dessus la fenêtre
+  Flutter, avec le coaching du système, et au « Terminer » encode le
+  `CapturedRoom` en JSON à l'endroit demandé. Annuler rend `nil` ; un relevé
+  qui échoue rend `error` sans `path`. Aucun entitlement : RoomPlan et ARKit
+  sont des frameworks système, liés à l'import.
+- **Le nord.** RoomPlan ne le donne pas. `NorthEstimator` lit la boussole
+  (`CLLocationManager`, cap vrai si la position est autorisée, magnétique
+  sinon) et le lacet de la caméra ARKit au même instant, et garde la moyenne
+  circulaire de leur écart ; moins de cinq mesures, ou des mesures qui se
+  contredisent, et il ne rend rien. Le cap d'une direction se lit comme
+  `atan2(x, −z)` des deux côtés du canal (`ScannedRoom.headingOf`). Le
+  résultat vaut dix à quinze degrés : l'écran des fenêtres le montre et
+  demande de le confirmer, et l'orientation confirmée prime.
+- **Côté Dart**, `RoomScanService` (`data/services/room_scan_service.dart`) :
+  `ChannelRoomScanService` avale `PlatformException` et
+  `MissingPluginException` en réponse vide, `UnavailableRoomScanService`
+  partout ailleurs. `RoomScanStore` tient les fichiers dans
+  `Documents/rooms/`. Le lecteur `RoomPlanParser` (`domain/room/`) ne lit
+  que ce que le modèle consomme et tolère ce qu'il ne connaît pas ; le
+  format du JSON est celui du `Codable` de RoomPlan, et la fixture
+  `test/domain/fixtures/roomplan_diorama.json` en fixe une forme — à
+  confirmer sur un appareil, palier 0 de docs/17.
+- **Le modèle** est pur : `RoomLightModel.lightAt` rend un `LightNeed` en
+  chaque point, `RoomFitAdvisor.place` classe les places d'une fiche. Les
+  seuils sont calibrés sur la pièce du diorama : les six emplacements de
+  docs/13 rendent leurs six crans, ce que `test/domain/room_light_model_test.dart`
+  verrouille.
+- **Le gating** tient en trois niveaux, comme la maison : le drapeau et la
+  plateforme dans `isSupported`, le LiDAR demandé une fois au canal
+  (`roomScanAvailableProvider`), et les écrans qui n'existent pas sans lui —
+  la ligne de Profil, l'entrée « Où la poser » sous le diorama.
+- **Ce qui ne se compile pas ici.** Le Swift n'a pas encore été construit
+  dans Xcode : le canal est écrit d'après les API de RoomPlan et de
+  CoreLocation, et le palier 0 de docs/17 — un relevé réel sur un iPhone
+  Pro — reste à faire avant de s'y fier.
+

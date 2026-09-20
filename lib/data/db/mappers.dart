@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import '../../domain/care/care_profile.dart';
 import '../../domain/models/models.dart';
+import '../../domain/room/room_scan.dart';
+import '../../domain/room/scanned_room.dart';
 import 'database.dart';
 
 /// Conversions lignes drift ⇄ modèles de domaine.
@@ -266,4 +268,39 @@ extension CalendarEntryRowMapper on CalendarEntryRow {
         createdAt: createdAt,
         updatedAt: updatedAt,
       );
+}
+
+extension RoomScanRowMapper on RoomScanRow {
+  RoomScan toDomain() => RoomScan(
+        id: id,
+        gardenId: gardenId,
+        locationId: locationId,
+        name: name,
+        capturedAt: capturedAt,
+        northOffsetDeg: northOffsetDeg,
+        filePath: filePath,
+        floorAreaM2: floorAreaM2,
+        section: RoomSectionLabel.decode(sectionLabel),
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
+
+extension RoomMarkerRowMapper on RoomMarkerRow {
+  RoomMarker? toDomain() {
+    final k = RoomMarkerKind.decode(kind);
+    if (k == null) return null;
+    return RoomMarker(
+      id: id,
+      scanId: scanId,
+      kind: k,
+      x: x,
+      z: z,
+      windowIndex: windowIndex,
+      orientation: CardinalDirection.values.where((d) => d.name == orientation).firstOrNull,
+      plantId: plantId,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
 }

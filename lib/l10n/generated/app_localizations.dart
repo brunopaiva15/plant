@@ -10583,6 +10583,372 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Rétablir ce conseil ? Ses signalements sont effacés.'**
   String get confirmRestoreTip;
+
+  /// No description provided for @roomScan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relevé de la maison'**
+  String get roomScan;
+
+  /// No description provided for @roomScanHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. Pour une plante, l\'application y lit où elle serait le mieux. Le relevé reste sur l\'appareil.'**
+  String get roomScanHint;
+
+  /// No description provided for @roomScanStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever une pièce'**
+  String get roomScanStart;
+
+  /// No description provided for @roomScanRooms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièces relevées'**
+  String get roomScanRooms;
+
+  /// No description provided for @roomScanEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune pièce relevée'**
+  String get roomScanEmptyTitle;
+
+  /// No description provided for @roomScanEmptySubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.'**
+  String get roomScanEmptySubtitle;
+
+  /// No description provided for @roomScanNoLidar.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cet appareil n\'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.'**
+  String get roomScanNoLidar;
+
+  /// No description provided for @roomScanBeforeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant le relevé'**
+  String get roomScanBeforeTitle;
+
+  /// No description provided for @roomScanBeforeText.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'appareil photo s\'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu\'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l\'appareil.'**
+  String get roomScanBeforeText;
+
+  /// No description provided for @roomScanFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le relevé n\'a pas abouti.'**
+  String get roomScanFailed;
+
+  /// No description provided for @roomScanDefaultName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce'**
+  String get roomScanDefaultName;
+
+  /// No description provided for @roomScanArea.
+  ///
+  /// In fr, this message translates to:
+  /// **'{area} m²'**
+  String roomScanArea(String area);
+
+  /// No description provided for @roomScanWindowsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{aucune fenêtre} =1{une fenêtre} other{{count} fenêtres}}'**
+  String roomScanWindowsCount(int count);
+
+  /// No description provided for @roomScanName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de la pièce'**
+  String get roomScanName;
+
+  /// No description provided for @roomScanLinkedLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement'**
+  String get roomScanLinkedLocation;
+
+  /// No description provided for @roomScanWindows.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fenêtres'**
+  String get roomScanWindows;
+
+  /// No description provided for @roomScanWindowN.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fenêtre {n}'**
+  String roomScanWindowN(int n);
+
+  /// No description provided for @roomScanWindowUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Orientation inconnue'**
+  String get roomScanWindowUnknown;
+
+  /// No description provided for @roomScanWindowFromCompass.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'après la boussole'**
+  String get roomScanWindowFromCompass;
+
+  /// No description provided for @roomScanWindowConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmée'**
+  String get roomScanWindowConfirmed;
+
+  /// No description provided for @roomScanOrientationHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'La boussole se trompe de dix à quinze degrés : l\'orientation de chaque fenêtre se confirme ici.'**
+  String get roomScanOrientationHelp;
+
+  /// No description provided for @roomScanDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le relevé'**
+  String get roomScanDelete;
+
+  /// No description provided for @roomScanDeleteConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le relevé et ses repères disparaissent de l\'appareil.'**
+  String get roomScanDeleteConfirm;
+
+  /// No description provided for @roomScanCapturedOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relevée le {date}'**
+  String roomScanCapturedOn(String date);
+
+  /// No description provided for @roomSectionBathroom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salle de bain'**
+  String get roomSectionBathroom;
+
+  /// No description provided for @roomSectionBedroom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chambre'**
+  String get roomSectionBedroom;
+
+  /// No description provided for @roomSectionDiningRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salle à manger'**
+  String get roomSectionDiningRoom;
+
+  /// No description provided for @roomSectionKitchen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cuisine'**
+  String get roomSectionKitchen;
+
+  /// No description provided for @roomSectionLaundryRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Buanderie'**
+  String get roomSectionLaundryRoom;
+
+  /// No description provided for @roomSectionLivingRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon'**
+  String get roomSectionLivingRoom;
+
+  /// No description provided for @directionNorth.
+  ///
+  /// In fr, this message translates to:
+  /// **'nord'**
+  String get directionNorth;
+
+  /// No description provided for @directionNorthEast.
+  ///
+  /// In fr, this message translates to:
+  /// **'nord-est'**
+  String get directionNorthEast;
+
+  /// No description provided for @directionEast.
+  ///
+  /// In fr, this message translates to:
+  /// **'est'**
+  String get directionEast;
+
+  /// No description provided for @directionSouthEast.
+  ///
+  /// In fr, this message translates to:
+  /// **'sud-est'**
+  String get directionSouthEast;
+
+  /// No description provided for @directionSouth.
+  ///
+  /// In fr, this message translates to:
+  /// **'sud'**
+  String get directionSouth;
+
+  /// No description provided for @directionSouthWest.
+  ///
+  /// In fr, this message translates to:
+  /// **'sud-ouest'**
+  String get directionSouthWest;
+
+  /// No description provided for @directionWest.
+  ///
+  /// In fr, this message translates to:
+  /// **'ouest'**
+  String get directionWest;
+
+  /// No description provided for @directionNorthWest.
+  ///
+  /// In fr, this message translates to:
+  /// **'nord-ouest'**
+  String get directionNorthWest;
+
+  /// No description provided for @placementTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où la poser'**
+  String get placementTitle;
+
+  /// No description provided for @placementHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les places lues dans les pièces relevées, pour cette fiche. La plante peut vivre ailleurs.'**
+  String get placementHint;
+
+  /// No description provided for @placementRoomsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{une pièce relevée} other{{count} pièces relevées}}'**
+  String placementRoomsCount(int count);
+
+  /// No description provided for @placementVerdictGood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette pièce lui convient.'**
+  String get placementVerdictGood;
+
+  /// No description provided for @placementVerdictAcceptable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette pièce lui convient à peu près.'**
+  String get placementVerdictAcceptable;
+
+  /// No description provided for @placementVerdictUnsuitable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette pièce ne lui convient pas.'**
+  String get placementVerdictUnsuitable;
+
+  /// No description provided for @placementShortfallTooDark.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop sombre pour ce qu\'elle demande.'**
+  String get placementShortfallTooDark;
+
+  /// No description provided for @placementShortfallTooBright.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop de soleil direct pour elle.'**
+  String get placementShortfallTooBright;
+
+  /// No description provided for @placementShortfallDrafty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les places sont près d\'une porte, et elle craint les courants d\'air.'**
+  String get placementShortfallDrafty;
+
+  /// No description provided for @placementShortfallTooDry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une pièce d\'eau, pour une plante qui veut l\'air sec.'**
+  String get placementShortfallTooDry;
+
+  /// No description provided for @placementGeneric.
+  ///
+  /// In fr, this message translates to:
+  /// **'La fiche est générique : sans l\'espèce, la lumière qu\'elle demande n\'est pas connue.'**
+  String get placementGeneric;
+
+  /// No description provided for @placementDistanceM.
+  ///
+  /// In fr, this message translates to:
+  /// **'{m} m'**
+  String placementDistanceM(String m);
+
+  /// No description provided for @placementDistanceCm.
+  ///
+  /// In fr, this message translates to:
+  /// **'{cm} cm'**
+  String placementDistanceCm(int cm);
+
+  /// No description provided for @placementNearWindow.
+  ///
+  /// In fr, this message translates to:
+  /// **'à {distance} de la fenêtre {direction}'**
+  String placementNearWindow(String distance, String direction);
+
+  /// No description provided for @placementNearWindowUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'à {distance} de la fenêtre'**
+  String placementNearWindowUnknown(String distance);
+
+  /// No description provided for @placementOnTable.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur la table'**
+  String get placementOnTable;
+
+  /// No description provided for @placementOnStorage.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur le meuble'**
+  String get placementOnStorage;
+
+  /// No description provided for @placementOnSill.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur l\'appui de la fenêtre {direction}'**
+  String placementOnSill(String direction);
+
+  /// No description provided for @placementOnSillUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur l\'appui de la fenêtre'**
+  String get placementOnSillUnknown;
+
+  /// No description provided for @placementDeepInRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'au fond, loin des fenêtres'**
+  String get placementDeepInRoom;
+
+  /// No description provided for @placementDraftyNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Près d\'une porte : l\'air y bouge.'**
+  String get placementDraftyNote;
+
+  /// No description provided for @placementHumidRoomNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce d\'eau : l\'air y est plus humide.'**
+  String get placementHumidRoomNote;
+
+  /// No description provided for @placementPlanSemantics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan de la pièce vu de dessus, {count} places retenues.'**
+  String placementPlanSemantics(int count);
 }
 
 class _AppLocalizationsDelegate

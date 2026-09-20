@@ -1,7 +1,10 @@
 # Le relevé de la maison : où poser cette plante
 
-> Statut : fonction expérimentale, plan d'implémentation. Rien n'est codé.
-> Note créée le 20 septembre 2026.
+> Statut : fonction expérimentale. Le palier 1 est codé derrière
+> `--dart-define=ROOM_SCAN=true` ; le palier 0 — un relevé réel sur un
+> iPhone Pro, qui confirme le nord, le format du JSON et la présentation
+> par-dessus Flutter — reste à faire, et le Swift n'a pas encore été
+> construit dans Xcode. Note créée le 20 septembre 2026.
 
 ## L'idée
 
@@ -44,8 +47,9 @@ Ce que RoomPlan ne donne pas, et qu'il faut obtenir autrement :
   Pendant le relevé, le canal natif lit en parallèle le cap de la boussole
   (`CLLocationManager.startUpdatingHeading`, `trueHeading`) et le lacet de
   la caméra ARKit (`captureSession.arSession.currentFrame.camera`) au même
-  instant, plusieurs fois, et garde la médiane de leur écart : c'est le
-  décalage entre le repère du relevé et le nord. Une boussole de téléphone
+  instant, plusieurs fois, et garde la moyenne circulaire de leur écart :
+  c'est le décalage entre le repère du relevé et le nord. Moins de cinq
+  mesures, ou des mesures qui se contredisent, et il ne rend rien. Une boussole de téléphone
   vaut dix à quinze degrés, et un radiateur en fonte la trouble : l'écran
   de fin de relevé montre l'orientation trouvée pour chaque fenêtre et
   demande de la confirmer ou de la corriger, à huit points cardinaux.
@@ -80,10 +84,14 @@ fenêtre *W* :
 4. **Apport** de la fenêtre : *aire × facteur d'orientation × cos α / d²*.
    Les apports s'additionnent.
 5. **Soleil direct.** Le point est dans la tache de soleil si la fenêtre
-   donne dans le demi-plan ensoleillé et si *d* est inférieur à la portée de
-   la tache, prise à *hauteur de fenêtre × 1,7* (un soleil à 30°, celui
-   d'une mi-saison à nos latitudes). Le second palier fait dépendre cette
-   portée de la latitude du lieu et de la saison.
+   donne au sud, au sud-est ou au sud-ouest, si sa profondeur depuis la
+   vitre est inférieure à la portée de la tache — la hauteur du haut de la
+   fenêtre au-dessus du sol, un soleil à 45°, celui d'une mi-saison à nos
+   latitudes — et s'il est dans la largeur de l'ouverture, élargie de 15 %
+   de la profondeur parce que le soleil balaie. Le dernier cinquième de la
+   portée est le bord de la tache. À l'est et à l'ouest, la tache ne vaut
+   que le bord : le soleil n'y passe qu'une partie de la journée. Le second
+   palier fait dépendre la portée de la latitude du lieu et de la saison.
 
 Six seuils sur l'apport total, plus la tache, donnent les six crans de
 `LightNeed` : `fullSun` dans la tache, `someSun` à son bord, puis
@@ -104,8 +112,8 @@ casse un test avant de casser une fiche.
 
 Deux autres signaux, plus simples, sortent du même modèle :
 
-- **Courant d'air** : à moins d'un mètre d'une porte ou d'une ouverture, et
-  entre deux d'entre elles sur une ligne. Ne compte que si la fiche dit
+- **Courant d'air** : à moins d'un mètre d'une porte ou d'une ouverture.
+  Ne compte que si la fiche dit
   `AirflowPreference.sheltered` ou `ventilated` ; `null` reste un silence.
 - **Pièce humide** : la section RoomPlan est `kitchen`, `bathroom` ou
   `laundryRoom`. Sans section (iOS 16, ou pièce non reconnue), rien n'est
@@ -133,14 +141,18 @@ Le score d'une place, de 0 à 1 :
 
 Les places candidates sont une grille au sol à pas de 25 cm, plus le dessus
 des objets `table`, `storage` et le rebord des fenêtres : les plantes vivent
-sur les meubles autant que par terre. Les places au-dessus de 0,9 se
+sur les meubles autant que par terre. À score égal, la lumière la plus
+proche de l'idéal de la fiche passe devant : le toléré vient après le
+préféré. Les places à la hauteur de la meilleure (à 0,05 près) se
 regroupent en zones (voisines à moins de 60 cm), et chaque zone donne une
 phrase : la pièce, le repère (« à un mètre de la fenêtre sud-ouest », « sur la
 commode », « au fond, loin des fenêtres »), et la lumière qu'on y lit.
 Trois zones au plus sont nommées ; le reste se voit sur le plan.
 
-Chaque phrase est portée par un `PlacementReason`, une énumération, jamais
-par une chaîne construite : les ARB tiennent les quatre langues, et
+Chaque phrase est portée par des faits — la surface, la fenêtre la plus
+proche et sa distance, son orientation, l'air qui bouge —, jamais par une
+chaîne construite dans le domaine : `room_scan_labels.dart` les dit dans la
+langue de l'interface, les ARB tiennent les quatre langues, et
 `test/l10n/arb_tone_test.dart` les relit.
 
 **Rien n'est inventé.** Une fiche générique (`CareMatch.generic`) ne donne
@@ -231,9 +243,8 @@ Trois entrées, une par question qu'on se pose :
 - **Profil › Réglages › Relevé de la maison** : la liste des pièces
   relevées (nom, surface, emplacement lié, date), « Relever une pièce »,
   et pour chaque pièce : renommer, lier à un emplacement, corriger
-  l'orientation des fenêtres, refaire, supprimer. Sur un appareil sans
-  LiDAR, la ligne n'existe pas ; avec `AppConfig.roomScanSoon`, elle porte
-  « · Bientôt » et ne fait rien, comme Google Home.
+  l'orientation des fenêtres, supprimer. Sur un appareil sans LiDAR, ou
+  sans le drapeau, la ligne n'existe pas.
 - **Fiche d'entretien › « Où la poser »** sous le diorama, quand au moins
   une pièce est relevée. Le diorama ne change pas : il montre l'idéal, le
   relevé montre le réel (docs/13, « Idéal et réel »).
@@ -291,7 +302,10 @@ des pièces et l'écran des fenêtres, le parseur et le modèle de lumière
 avec leur calibration sur la pièce du diorama, `RoomFitAdvisor`, l'écran
 de résultat depuis la fiche d'entretien. Drapeau `AppConfig.roomScanEnabled`
 à `false`, ouvert par `--dart-define=ROOM_SCAN=true` pour tester, comme
-les clés d'API.
+les clés d'API. **Livré dans ce dépôt**, aux réserves du palier 0 près :
+le résultat s'ouvre en feuille depuis la fiche, sans route, parce qu'une
+fiche ne se met pas dans une URL ; « refaire » un relevé est le supprimer
+et en relever un autre.
 
 **Palier 2 — la maison telle qu'elle est.** Les radiateurs posés du doigt
 (`room_markers`), la latitude et la saison dans la portée de la tache de
@@ -328,7 +342,7 @@ n'est pas tranchée ici.
 
 ```
 ios/Runner/RoomScanChannel.swift
-lib/core/config/app_config.dart              roomScanEnabled, roomScanSoon
+lib/core/config/app_config.dart              roomScanEnabled
 lib/data/services/room_scan_service.dart
 lib/data/db/tables.dart, database.dart       RoomScans, RoomMarkers, v13
 lib/data/repositories/room_scan_repository_impl.dart
@@ -337,13 +351,13 @@ lib/domain/room/                             scanned_room, room_light_model,
                                              room_fit_advisor, placement
 lib/features/room_scan/application/room_scan_providers.dart
 lib/features/room_scan/presentation/         room_scan_settings_screen,
-                                             room_windows_sheet, room_plan_painter,
-                                             room_fit_screen
-lib/app/router.dart                          Routes.roomScan, Routes.roomFit(id)
+                                             room_scan_detail_sheet, room_plan_painter,
+                                             room_fit_sheet, room_fit_entry, room_scan_labels
+lib/app/router.dart                          Routes.roomScan
 lib/l10n/app_*.arb                           roomScan*, placement*
 test/domain/room_light_model_test.dart       calibration sur la pièce du diorama
 test/domain/room_fit_advisor_test.dart
-test/domain/scanned_room_parser_test.dart    fixtures par version d'iOS
+test/domain/room_plan_parser_test.dart       fixtures par version d'iOS
 test/data/room_scan_service_test.dart        canal simulé, patron HomeKit
 test/data/room_scan_repository_test.dart     SQLite en mémoire
 docs/03, 04, 05, 07, README                  le flux, le schéma, le canal, l'arbre

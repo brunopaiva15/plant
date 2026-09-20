@@ -237,3 +237,19 @@ le renommer rouvre la fenêtre chez tous ceux qui l'avaient fermée, le
 réemployer avale en silence celle qui devait s'ouvrir. L'identifiant de
 l'exemple (`iris-8`) est déjà dépensé sur tout appareil ayant lancé cette
 version — la vraie livraison d'Iris 8 en prendra donc un autre.
+
+## 10. Relever une pièce, puis poser une plante (expérimental, iPhone Pro)
+```
+Profil ─[tap « Relevé de la maison »]⟶ Pièces relevées
+  [Relever une pièce] ⟶ une phrase (ce qui va se passer, rien ne quitte l'appareil)
+    ⟶ le relevé du système (RoomPlan, coaching) ─[Terminer]⟶ feuille du relevé
+      plan vu de dessus, nom (proposé d'après le type de pièce), emplacement lié,
+      une ligne par fenêtre : « sud-ouest · D'après la boussole » ─[tap]⟶ huit points cardinaux
+Fiche d'entretien ─[tap « Où la poser », sous le diorama]⟶ Où la poser
+  sélecteur de pièce · plan avec le lavis de lumière et les places numérotées
+  « Cette pièce lui convient. » puis 1 · à 1 m de la fenêtre sud · Lumière vive
+```
+La ligne et l'entrée n'existent que derrière `--dart-define=ROOM_SCAN=true`,
+sur un appareil à LiDAR, et l'entrée seulement quand une pièce est relevée.
+Une fiche générique ne donne pas de place : l'écran le dit. Détails : docs/17.
+

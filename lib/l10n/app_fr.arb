@@ -3053,5 +3053,146 @@
   },
   "moderationHide": "Masquer",
   "moderationRestore": "Rétablir",
-  "confirmRestoreTip": "Rétablir ce conseil ? Ses signalements sont effacés."
+  "confirmRestoreTip": "Rétablir ce conseil ? Ses signalements sont effacés.",
+  "roomScan": "Relevé de la maison",
+  "roomScanHint": "Une pièce relevée avec l'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. Pour une plante, l'application y lit où elle serait le mieux. Le relevé reste sur l'appareil.",
+  "roomScanStart": "Relever une pièce",
+  "roomScanRooms": "Pièces relevées",
+  "roomScanEmptyTitle": "Aucune pièce relevée",
+  "roomScanEmptySubtitle": "Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.",
+  "roomScanNoLidar": "Cet appareil n'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.",
+  "roomScanBeforeTitle": "Avant le relevé",
+  "roomScanBeforeText": "L'appareil photo s'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l'appareil.",
+  "roomScanFailed": "Le relevé n'a pas abouti.",
+  "roomScanDefaultName": "Pièce",
+  "roomScanArea": "{area} m²",
+  "@roomScanArea": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanWindowsCount": "{count, plural, =0{aucune fenêtre} =1{une fenêtre} other{{count} fenêtres}}",
+  "@roomScanWindowsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanName": "Nom de la pièce",
+  "roomScanLinkedLocation": "Emplacement",
+  "roomScanWindows": "Fenêtres",
+  "roomScanWindowN": "Fenêtre {n}",
+  "@roomScanWindowN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanWindowUnknown": "Orientation inconnue",
+  "roomScanWindowFromCompass": "D'après la boussole",
+  "roomScanWindowConfirmed": "Confirmée",
+  "roomScanOrientationHelp": "La boussole se trompe de dix à quinze degrés : l'orientation de chaque fenêtre se confirme ici.",
+  "roomScanDelete": "Supprimer le relevé",
+  "roomScanDeleteConfirm": "Le relevé et ses repères disparaissent de l'appareil.",
+  "roomScanCapturedOn": "Relevée le {date}",
+  "@roomScanCapturedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "roomSectionBathroom": "Salle de bain",
+  "roomSectionBedroom": "Chambre",
+  "roomSectionDiningRoom": "Salle à manger",
+  "roomSectionKitchen": "Cuisine",
+  "roomSectionLaundryRoom": "Buanderie",
+  "roomSectionLivingRoom": "Salon",
+  "directionNorth": "nord",
+  "directionNorthEast": "nord-est",
+  "directionEast": "est",
+  "directionSouthEast": "sud-est",
+  "directionSouth": "sud",
+  "directionSouthWest": "sud-ouest",
+  "directionWest": "ouest",
+  "directionNorthWest": "nord-ouest",
+  "placementTitle": "Où la poser",
+  "placementHint": "Les places lues dans les pièces relevées, pour cette fiche. La plante peut vivre ailleurs.",
+  "placementRoomsCount": "{count, plural, =1{une pièce relevée} other{{count} pièces relevées}}",
+  "@placementRoomsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementVerdictGood": "Cette pièce lui convient.",
+  "placementVerdictAcceptable": "Cette pièce lui convient à peu près.",
+  "placementVerdictUnsuitable": "Cette pièce ne lui convient pas.",
+  "placementShortfallTooDark": "Trop sombre pour ce qu'elle demande.",
+  "placementShortfallTooBright": "Trop de soleil direct pour elle.",
+  "placementShortfallDrafty": "Toutes les places sont près d'une porte, et elle craint les courants d'air.",
+  "placementShortfallTooDry": "Une pièce d'eau, pour une plante qui veut l'air sec.",
+  "placementGeneric": "La fiche est générique : sans l'espèce, la lumière qu'elle demande n'est pas connue.",
+  "placementDistanceM": "{m} m",
+  "@placementDistanceM": {
+    "placeholders": {
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "placementDistanceCm": "{cm} cm",
+  "@placementDistanceCm": {
+    "placeholders": {
+      "cm": {
+        "type": "int"
+      }
+    }
+  },
+  "placementNearWindow": "à {distance} de la fenêtre {direction}",
+  "@placementNearWindow": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementNearWindowUnknown": "à {distance} de la fenêtre",
+  "@placementNearWindowUnknown": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnTable": "sur la table",
+  "placementOnStorage": "sur le meuble",
+  "placementOnSill": "sur l'appui de la fenêtre {direction}",
+  "@placementOnSill": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnSillUnknown": "sur l'appui de la fenêtre",
+  "placementDeepInRoom": "au fond, loin des fenêtres",
+  "placementDraftyNote": "Près d'une porte : l'air y bouge.",
+  "placementHumidRoomNote": "Pièce d'eau : l'air y est plus humide.",
+  "placementPlanSemantics": "Plan de la pièce vu de dessus, {count} places retenues.",
+  "@placementPlanSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -31,12 +31,14 @@ part 'database.g.dart';
   InventoryTags,
   EventCategories,
   CalendarEntries,
+  RoomScans,
+  RoomMarkers,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -103,6 +105,10 @@ class FloraDatabase extends _$FloraDatabase {
             await m.addColumn(inventoryItems, inventoryItems.phosphorus);
             await m.addColumn(inventoryItems, inventoryItems.potassium);
           }
+          if (from < 13) {
+            await m.createTable(roomScans);
+            await m.createTable(roomMarkers);
+          }
           await _createIndexes();
         },
         beforeOpen: (details) async {
@@ -128,6 +134,7 @@ class FloraDatabase extends _$FloraDatabase {
     await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_plants_number ON plants(garden_id, number) WHERE number > 0');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_group ON inventory_items(group_id)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_tags_item ON inventory_tags(item_id)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_room_markers_scan ON room_markers(scan_id)');
   }
 
   /// Attribue un numéro aux plantes créées avant la v8, par ordre de création.
