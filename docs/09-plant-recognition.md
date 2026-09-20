@@ -1461,10 +1461,14 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   troubles, ravageurs, maladies et fautes d'entretien, si bien que des gouttes
   de nectar extrafloral n'avaient que des cochenilles pour s'expliquer. Une
   seconde base part donc avec la demande, `assets/problems/natural.txt`
-  (docs/04) : dix-huit phénomènes numérotés `N01` à `N18` — nectar extrafloral,
-  guttation, vieille feuille du bas qui jaunit, panachure, racines aériennes,
-  latex à la coupe, repos hivernal —, réduits comme les problèmes à ce que
-  l'espèce, son genre ou sa famille peuvent montrer. Le service les rend comme
+  (docs/04) : trente-deux phénomènes numérotés `N01` à `N32` — nectar
+  extrafloral, guttation, vieille feuille du bas qui jaunit, panachure,
+  racines aériennes, latex à la coupe, repos hivernal, et les confusions qui
+  font traiter une plante saine : sores d'une fougère pris pour des
+  cochenilles, laine des aréoles, liégeage d'un cactus pris pour une
+  pourriture, nodosités des légumineuses prises pour des galles de nématodes,
+  lichens de l'écorce —, réduits comme les problèmes à ce que l'espèce, son
+  genre ou sa famille peuvent montrer, soit neuf à quatorze entrées. Le service les rend comme
   n'importe quelle piste, numéro dans `problem` et `"natural": true`, avec leur
   cran de vraisemblance et leurs gestes — celui de ne rien faire en est un. Les
   deux numérotations ne se croisent jamais, et le numéro tranche contre la clé :
