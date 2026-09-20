@@ -23,6 +23,7 @@
 		7A1C0B022F0100AA00C63802 /* AuxineWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B012F0100AA00C63801 /* AuxineWidget.swift */; };
 		7A1C0B062F0100AA00C63806 /* AuxineWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7A1C0B052F0100AA00C63805 /* AuxineWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7A1C0B082F0100AA00C63808 /* HapticsChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B072F0100AA00C63807 /* HapticsChannel.swift */; };
+		7A1C0B082F0100AA00C63821 /* WindowRegionsChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B072F0100AA00C63820 /* WindowRegionsChannel.swift */; };
 		7A1C0B0A2F0100AA00C6380A /* QuickActionsChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B092F0100AA00C63809 /* QuickActionsChannel.swift */; };
 		7A1C0B0C2F0100AA00C6380C /* TodayWidgetChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B0B2F0100AA00C6380B /* TodayWidgetChannel.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -97,6 +98,7 @@
 		7A1C0B042F0100AA00C63804 /* AuxineWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AuxineWidget.entitlements; sourceTree = "<group>"; };
 		7A1C0B052F0100AA00C63805 /* AuxineWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AuxineWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A1C0B072F0100AA00C63807 /* HapticsChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsChannel.swift; sourceTree = "<group>"; };
+		7A1C0B072F0100AA00C63820 /* WindowRegionsChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRegionsChannel.swift; sourceTree = "<group>"; };
 		7A1C0B092F0100AA00C63809 /* QuickActionsChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsChannel.swift; sourceTree = "<group>"; };
 		7A1C0B0B2F0100AA00C6380B /* TodayWidgetChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayWidgetChannel.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 				7A1C0A042F0100AA00C63704 /* HomeClimateChannel.swift */,
 				7A1C0A062F0100AA00C63706 /* GoogleHomeChannel.swift */,
 				7A1C0B072F0100AA00C63807 /* HapticsChannel.swift */,
+				7A1C0B072F0100AA00C63820 /* WindowRegionsChannel.swift */,
 				7A1C0B092F0100AA00C63809 /* QuickActionsChannel.swift */,
 				7A1C0B0B2F0100AA00C6380B /* TodayWidgetChannel.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
@@ -520,6 +523,7 @@
 				7A1C0A052F0100AA00C63705 /* HomeClimateChannel.swift in Sources */,
 				7A1C0A072F0100AA00C63707 /* GoogleHomeChannel.swift in Sources */,
 				7A1C0B082F0100AA00C63808 /* HapticsChannel.swift in Sources */,
+				7A1C0B082F0100AA00C63821 /* WindowRegionsChannel.swift in Sources */,
 				7A1C0B0A2F0100AA00C6380A /* QuickActionsChannel.swift in Sources */,
 				7A1C0B0C2F0100AA00C6380C /* TodayWidgetChannel.swift in Sources */,
 			);

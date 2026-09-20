@@ -285,12 +285,44 @@ avant que `flutter run` ne s'y branche. Le drapeau a disparu et le premier
 relevé attend la première image. Même chemin que le `_logDuoMetrics` de
 *disquebleu*, qui écrit depuis un `build()` pour la même raison.
 
-Tant que `displayFeatures` reste vide, une mise en page qui s'aligne sur la
-charnière demandera un canal natif, comme ceux qui existent déjà
-(`ios/Runner/HomeClimateChannel.swift`, `HapticsChannel.swift`). Une
-proposition est ouverte chez Flutter pour l'alimenter depuis les *reserved
-regions* d'iOS 27.1 (flutter/flutter#192515) ; si elle atterrit, le canal
-devient inutile.
+### Ce que le système réserve (`core/window_regions.dart`)
+Les marges sûres ne disent pas tout. Sur un pliable, trois cotes manquent, et
+chacune décidait jusqu'ici d'une constante relevée au pixel sur une capture :
+
+- **jusqu'où descend la pile du système** — caméra, heure, wifi empilés contre
+  le bord. `padding.top` annonce 82 points là où la pile descend à 140 ;
+- **sur quel axe** cette pile est posée, pour que le menu debout s'y aligne ;
+- **où passe le pli**, que `MediaQuery.displayFeatures` ne donne pas : le champ
+  est alimenté sur Android seulement.
+
+`ios/Runner/WindowRegionsChannel.swift` les demande à UIKit —
+`reservedRegions(kind: .occlusion)` pour la caméra, `.division` pour le pli,
+`statusBarManager.statusBarFrame` pour la pile — et les rend dans le repère de
+la vue Flutter, en points. `WindowRegionsService` les lit au lancement et à
+chaque `didChangeMetrics`, c'est-à-dire à chaque pli et à chaque rotation.
+
+Deux garde-fous, parce que la réponse vient de l'extérieur. Le premier est un
+`#if swift(>=6.4)` autour des *reserved regions* : le symbole n'existe pas
+avant le SDK 27.1, et `#available` seul ne le cacherait pas au compilateur —
+sans ce test, le projet ne se construirait plus sur un Xcode plus ancien. Le
+second est dans `WindowRegionsService.parse` : une pile qui prendrait plus du
+tiers de la fenêtre, ou un axe au milieu de l'écran, sont écartés. Le cadre de
+la barre d'état est le seul des trois dont on ne sache pas encore ce qu'il vaut
+quand elle passe debout, et une valeur écartée n'est pas une panne : l'appelant
+garde sa mesure.
+
+C'est bien l'ordre des choses — la mesure d'abord, l'annonce en raffinement.
+Hors d'iOS le canal n'existe pas, sur un binaire construit avec un SDK plus
+ancien il répond sans régions, et le menu debout se pose exactement où il se
+posait avant. Une proposition est ouverte chez Flutter pour alimenter
+`displayFeatures` depuis ces mêmes régions (flutter/flutter#192515) ; si elle
+atterrit, la moitié « pli » du canal devient inutile.
+
+Ce que le canal ne donne pas, et qu'il faut savoir : le regroupement et le
+débordement automatiques qu'iOS fait dans une barre d'outils debout. Ils
+viennent de `UINavigationController` et `UITabBarController`, pas des régions
+— une barre montée à la main ne les obtient pas, et le menu s'en passe (voir
+docs/06, « Le menu debout »).
 
 Ce qui reste à faire quand l'appareil sera là (23 octobre 2026) : les visuels
 du magasin pour l'écran intérieur (`store/README.md`) et, si la place le
@@ -315,8 +347,12 @@ justifie, une famille de widget plus grande que `systemMedium`.
   non au démarrage — la réponse change au pli.
 - `test/app/window_probe_test.dart` : la sonde de fenêtre écrit sans qu'on lui
   demande rien, attend la première image, et ne se répète pas.
-- `test/design_system/tab_rail_test.dart` : où le menu se met debout, et ce
-  qu'il fait une fois debout (bord, bande réservée, cibles, bulle).
+- `test/design_system/tab_rail_test.dart` : où le menu se met debout, ce qu'il
+  fait une fois debout (bord, bande réservée, cibles, bulle), et ce qu'il
+  change quand le système annonce sa géométrie.
+- `test/core/window_regions_test.dart` : la lecture des régions réservées, et
+  surtout ses refus — une cote invraisemblable disparaît au lieu de déplacer
+  le menu.
 
 ## La météo (`domain/weather/`, `features/weather/`)
 Un seul appel sert tout : `weatherWindowProvider` demande trois jours passés,

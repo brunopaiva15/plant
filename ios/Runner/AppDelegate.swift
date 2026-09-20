@@ -23,5 +23,8 @@ import UIKit
     TodayWidgetChannel.register(with: engineBridge.applicationRegistrar.messenger())
     // Les raccourcis de l'icône : posés par Dart, rendus par la scène.
     QuickActionsChannel.register(with: engineBridge.pluginRegistry)
+    // Ce que le système réserve dans la fenêtre — caméra, pli, barre d'état —
+    // pour que le menu debout demande sa géométrie au lieu de la supposer.
+    WindowRegionsChannel.register(with: engineBridge.applicationRegistrar.messenger())
   }
 }

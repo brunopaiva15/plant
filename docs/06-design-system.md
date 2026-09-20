@@ -420,6 +420,21 @@ la colonne remonte de ce qu'il faut, et les onglets gardent leurs 44 points.
 son axe à 48. Douze la décalaient de quatre points : c'est tout l'écart entre
 une colonne qui prolonge celle du système et une colonne posée à côté.
 
+**Ces deux cotes sont désormais des replis.** Un canal natif demande à UIKit
+où sont réellement la caméra, la barre d'état et le pli, et le menu s'y range
+quand la réponse est plausible — voir docs/05, « Ce que le système réserve ».
+Les 140 et les 47,7 points restent écrits dans le code, et servent partout où
+le canal se tait : ailleurs que sur iOS, sur un binaire construit avec un SDK
+plus ancien, ou quand la réponse est invraisemblable. Le menu se pose alors où
+il se posait avant, ce qui est déjà juste : l'annonce affine, elle ne porte
+rien.
+
+Ce que le canal ne rattrape pas : iOS regroupe et fait déborder tout seul les
+commandes d'une barre d'outils debout, mais seulement pour les barres de
+`UINavigationController` et `UITabBarController`. Une barre montée à la main
+n'y a pas droit, régions réservées ou non. C'est le prix d'un menu dessiné par
+l'application, et il se paie en gardant la colonne courte.
+
 La colonne mesure cette place avant de se donner une hauteur — elle ne peut
 pas mesurer ses enfants d'abord. Un bouton compte pour 44 points et non 40 :
 c'est `Pressable` qui décide, en garantissant la cible des HIG

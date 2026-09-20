@@ -14,6 +14,7 @@ import 'core/l10n/l10n.dart';
 import 'core/config/app_version.dart';
 import 'core/config/supabase_config.dart';
 import 'core/network/connectivity.dart';
+import 'core/window_regions.dart';
 import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
 import 'data/auth/supabase_auth_repository.dart';
@@ -32,6 +33,11 @@ Future<void> main() async {
   if (kDebugMode && kIsWeb && Uri.base.queryParameters.containsKey('ios')) {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
+
+  // Ce que le système réserve dans la fenêtre — la pile de l'heure, la
+  // caméra, le pli —, pour que le menu debout demande sa géométrie au lieu
+  // de la supposer. Muet hors d'iOS.
+  await WindowRegionsService.attach();
 
   // Relevé des cotes de la fenêtre dans la console, en debug seulement.
   WindowProbe.attach();
