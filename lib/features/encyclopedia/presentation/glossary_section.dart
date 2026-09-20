@@ -26,13 +26,17 @@ class GlossarySlivers extends StatelessWidget {
     final l10n = context.l10n;
     final q = foldSpeciesName(query);
     // Le troisième champ est le symbole du terme, quand l'application en
-    // dessine un ailleurs. Seules les familles de problèmes sont dans ce cas :
-    // leur argile se voit sur une fiche de soin et dans un diagnostic, et
-    // c'est ici qu'on vient chercher ce qu'elle veut dire.
+    // dessine un ailleurs. Seules les familles de problèmes sont dans ce cas,
+    // et ce qui n'en est pas une : leur argile se voit sur une fiche de soin
+    // et dans un diagnostic, et c'est ici qu'on vient chercher ce qu'elle
+    // veut dire.
     final groups = <(String, List<(String, String, Widget?)>)>[
       (
         l10n.problemKindsTitle,
-        [for (final k in ProblemKind.values) (l10n.problemKindName(k), l10n.problemKindNote(k), ProblemKindIcon(kind: k))],
+        [
+          for (final k in ProblemKind.values) (l10n.problemKindName(k), l10n.problemKindNote(k), ProblemKindIcon(kind: k)),
+          (l10n.diagnosisNatural, l10n.naturalCauseNote, const NaturalCauseIcon()),
+        ],
       ),
       (l10n.careLight, [for (final v in LightNeed.values) (l10n.lightName(v), l10n.lightNote(v), null)]),
       (l10n.careHumidity, [for (final v in HumidityNeed.values) (l10n.humidityName(v), l10n.humidityNote(v), null)]),

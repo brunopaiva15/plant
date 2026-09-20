@@ -115,6 +115,16 @@ void main() {
       expect(catalog.natural(null), isNull);
     });
 
+    test('se cherche comme un problème : par le nom, le numéro, l\'hôte', () {
+      final nectar = catalog.natural('N01')!;
+      expect(nectar.matches(''), isTrue);
+      expect(nectar.matches('nectar'), isTrue);
+      expect(nectar.matches('Extrafloral nectar'), isTrue, reason: 'les quatre langues ensemble');
+      expect(nectar.matches('n01'), isTrue);
+      expect(nectar.matches('philodendron'), isTrue, reason: 'un hôte');
+      expect(nectar.matches('cochenille'), isFalse);
+    });
+
     test('aucun phénomène ne porte le nom d\'un problème', () {
       // Le garde-fou de la base : ce dont il n'y a rien à soigner d'un côté,
       // ce qui se soigne de l'autre. La croûte blanche des sels (023) a sa

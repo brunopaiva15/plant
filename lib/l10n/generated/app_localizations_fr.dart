@@ -5924,6 +5924,18 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String encyclopediaNaturalCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count phénomènes normaux',
+      one: '1 phénomène normal',
+      zero: 'Aucun phénomène normal',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String encyclopediaSpeciesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -6005,6 +6017,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get problemKindConditionNote =>
       'Ni l\'un ni l\'autre : la fumagine pousse sur le miellat, sans s\'attaquer à la plante.';
+
+  @override
+  String get naturalCauses => 'Phénomènes normaux';
+
+  @override
+  String get naturalCauseNote =>
+      'Ce que la plante fait normalement et qu\'on prend pour un problème : rien à soigner.';
 
   @override
   String get careLightShadeNote =>

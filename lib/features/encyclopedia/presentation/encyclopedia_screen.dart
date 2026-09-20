@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
-import '../../../domain/problems/plant_problem.dart';
 import '../../../domain/species/species_info.dart';
 import 'glossary_section.dart';
 import 'problems_section.dart';
@@ -17,9 +16,10 @@ enum EncyclopediaSection { problems, species, glossary }
 /// ni de problème.
 ///
 /// Ces listes existaient déjà, mais chacune n'apparaissait qu'au moment où
-/// elle servait — la base des deux cents problèmes derrière un diagnostic, le
-/// catalogue d'espèces derrière la création d'une plante, le vocabulaire des
-/// fiches nulle part. Elles se lisent ici à froid, d'un bout à l'autre.
+/// elle servait — la base des deux cents problèmes et celle des phénomènes
+/// naturels derrière un diagnostic, le catalogue d'espèces derrière la
+/// création d'une plante, le vocabulaire des fiches nulle part. Elles se
+/// lisent ici à froid, d'un bout à l'autre.
 ///
 /// Rien n'est ajouté au passage : l'écran ne fait que montrer les actifs
 /// embarqués. Une entrée qui manque manque dans la base, pas ici.
@@ -37,10 +37,10 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
   EncyclopediaSection _section = EncyclopediaSection.problems;
   String _query = '';
 
-  /// Filtres propres à un rayon : la famille d'un problème, la catégorie
+  /// Filtres propres à un rayon : le groupe d'un problème, la catégorie
   /// d'une espèce. Gardés en changeant de rayon — on y revient comme on l'a
   /// laissé.
-  ProblemKind? _kind;
+  ProblemGroup? _group;
   SpeciesCategory? _category;
 
   @override
@@ -109,8 +109,8 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
         switch (_section) {
           EncyclopediaSection.problems => ProblemsSlivers(
               query: _query,
-              kind: _kind,
-              onKind: (k) => setState(() => _kind = k),
+              group: _group,
+              onGroup: (g) => setState(() => _group = g),
             ),
           EncyclopediaSection.species => SpeciesSlivers(
               query: _query,
@@ -145,7 +145,7 @@ class _EncyclopediaScreenState extends ConsumerState<EncyclopediaScreen> {
 }
 
 /// Le mobilier commun aux rayons : la bande de puces horizontale, pour les
-/// familles de problèmes et les catégories d'espèces.
+/// groupes de problèmes et les catégories d'espèces.
 class EncyclopediaFilterRow<T> extends StatelessWidget {
   const EncyclopediaFilterRow({super.key, required this.options, required this.value, required this.onChanged});
 

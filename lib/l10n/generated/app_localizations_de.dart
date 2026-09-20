@@ -5907,6 +5907,18 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String encyclopediaNaturalCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count normale Erscheinungen',
+      one: '1 normale Erscheinung',
+      zero: 'Keine normale Erscheinung',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String encyclopediaSpeciesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -5988,6 +6000,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get problemKindConditionNote =>
       'Weder noch: Rußtau wächst auf Honigtau, ohne die Pflanze zu befallen.';
+
+  @override
+  String get naturalCauses => 'Normale Erscheinungen';
+
+  @override
+  String get naturalCauseNote =>
+      'Was die Pflanze normalerweise tut und für ein Problem gehalten wird: nichts zu behandeln.';
 
   @override
   String get careLightShadeNote =>
