@@ -4329,8 +4329,20 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisSymptomsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ce que vous avez remarqué (facultatif)…'**
+  /// **'Ce que vous avez remarqué…'**
   String get diagnosisSymptomsHint;
+
+  /// No description provided for @diagnosisNeedsPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une photo au moins.'**
+  String get diagnosisNeedsPhoto;
+
+  /// No description provided for @diagnosisNeedsSymptoms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que vous avez remarqué, même en quelques mots.'**
+  String get diagnosisNeedsSymptoms;
 
   /// No description provided for @diagnosisChecks.
   ///

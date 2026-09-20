@@ -1496,6 +1496,13 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   décrits et la liste des problèmes connus suffisent à une piste incertaine,
   qui vaut mieux qu'un compte rendu vide. Ce repli est un bonus, jamais un
   motif d'échec.
+- **Une description, pas seulement des photos** : le champ des symptômes
+  était facultatif, et une photo seule ne dit ni depuis quand, ni ce qui a
+  changé, ni ce qui a déjà été tenté — le modèle n'a alors que des pixels et
+  répond ce que des pixels permettent. L'analyse attend donc une photo au
+  moins, puis quelques mots ; la barre du bas nomme celui des deux qui
+  manque (`diagnosisNeed`). Les quatre observations, elles, restent
+  facultatives.
 - **Ce que la photo ne montre pas** : quatre questions facultatives sous les
   symptômes — la terre au doigt, les racines hors du pot, la lumière reçue,
   les insectes trouvés (`DiagnosisObservations`). Ce sont elles qui

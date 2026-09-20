@@ -2436,7 +2436,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diagnosisMoreBelow => 'Plus bas : symptômes et observations';
 
   @override
-  String get diagnosisSymptomsHint => 'Ce que vous avez remarqué (facultatif)…';
+  String get diagnosisSymptomsHint => 'Ce que vous avez remarqué…';
+
+  @override
+  String get diagnosisNeedsPhoto => 'Une photo au moins.';
+
+  @override
+  String get diagnosisNeedsSymptoms =>
+      'Ce que vous avez remarqué, même en quelques mots.';
 
   @override
   String get diagnosisChecks => 'Observations';

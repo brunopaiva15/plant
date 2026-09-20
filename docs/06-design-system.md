@@ -615,6 +615,16 @@ Une fois la première photo prise, une bande montre ce qui partira à
 l'analyse et les places qui restent ; elle ne sert qu'à montrer, la croix
 d'une vignette mise à part.
 
+**Ce qu'on a remarqué se demande, il ne se propose plus.** Le champ des
+symptômes était facultatif, et c'est ce qui rendait les comptes rendus
+généraux : une photo seule ne dit ni depuis quand, ni ce qui a changé, ni ce
+qu'on a déjà fait à la plante. « Analyser » attend donc une photo, puis une
+description — dans cet ordre, une chose à la fois. Le bouton éteint ne reste
+pas muet : la barre du bas nomme ce qui manque au-dessus de lui, et quand
+c'est la description, elle le dit avec la pastille qui y mène et y pose le
+curseur. Les observations, elles, restent facultatives : on ne fait pas
+sortir une motte de son pot pour avoir le droit de demander.
+
 Puis ce qu'on décrit, et ce qu'on est allé vérifier de sa main : une carte par
 sujet, tuile d'emoji et teinte comprises, comme les volets de la fiche
 d'entretien — la terre en terre cuite, les racines en sauge, la lumière en

@@ -41,6 +41,23 @@ abstract final class DiagnosisLimits {
   static const maxImages = 3;
 }
 
+/// Ce qui manque encore avant de pouvoir analyser.
+enum DiagnosisNeed { photo, symptoms }
+
+/// La photo d'abord, puis ce que la personne a remarqué ; `null` quand
+/// l'analyse peut partir.
+///
+/// La description était facultative, et c'est ce qui rendait les comptes
+/// rendus généraux : une photo seule ne dit ni depuis quand, ni ce qui a
+/// changé, ni ce qui a été fait à la plante — le modèle n'a alors que des
+/// pixels, et il répond ce que des pixels permettent. Deux mots suffisent à
+/// tout changer ; on les demande donc.
+DiagnosisNeed? diagnosisNeed({required int photos, required String symptoms}) {
+  if (photos <= 0) return DiagnosisNeed.photo;
+  if (symptoms.trim().isEmpty) return DiagnosisNeed.symptoms;
+  return null;
+}
+
 /// « Ma plante a un problème » : une page, trois temps.
 ///
 /// C'était une feuille qu'on tirait du bas de la fiche, où un viseur ne
@@ -117,17 +134,31 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   /// mène, et le repère de ce que l'invite annonce.
   final _symptomsKey = GlobalKey();
 
+  /// Pour poser le curseur dans le champ quand c'est lui qui manque.
+  final _symptomsFocus = FocusNode();
+
+  /// Vrai dès que le champ dit quelque chose. Gardé à part pour ne rebâtir
+  /// la barre du bas qu'au passage du vide au plein, et non à chaque lettre.
+  bool _symptomsGiven = false;
+
   @override
   void initState() {
     super.initState();
     _storage = ref.read(photoStorageProvider);
+    _symptoms.addListener(_watchSymptoms);
     _camera.start();
+  }
+
+  void _watchSymptoms() {
+    final given = _symptoms.text.trim().isNotEmpty;
+    if (given != _symptomsGiven) setState(() => _symptomsGiven = given);
   }
 
   @override
   void dispose() {
     _camera.dispose();
     _symptoms.dispose();
+    _symptomsFocus.dispose();
     _temperature.dispose();
     _humidity.dispose();
     // Une analyse qu'on n'a pas gardée n'a laissé que des fichiers : on
@@ -215,7 +246,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   ///
   /// La section se pose sous la barre du titre, non derrière elle : la marge
   /// haute de la page est celle sous laquelle le contenu défile.
-  void _showSymptoms() {
+  Future<void> _showSymptoms() async {
     final target = _symptomsKey.currentContext;
     if (target == null) return;
     final scrollable = Scrollable.maybeOf(target);
@@ -230,7 +261,15 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     final to = (position.pixels + travel).clamp(position.minScrollExtent, position.maxScrollExtent);
     final duration = Motion.of(target, Motion.emphasis);
     if (duration == Duration.zero) return position.jumpTo(to);
-    position.animateTo(to, duration: duration, curve: Motion.easeInOut);
+    await position.animateTo(to, duration: duration, curve: Motion.easeInOut);
+  }
+
+  /// Le champ, et le curseur dedans : ce que demande la pastille de la barre
+  /// du bas quand c'est la description qui manque. La page y descend d'abord,
+  /// le clavier ensuite — l'inverse ferait deux montées pour un geste.
+  Future<void> _writeSymptoms() async {
+    await _showSymptoms();
+    if (mounted) _symptomsFocus.requestFocus();
   }
 
   /// Demander la photo qui manque, par l'appareil ou la galerie.
@@ -248,7 +287,8 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
 
   Future<void> _analyze() async {
     final plant = _plant;
-    if (_photos.isEmpty || _busy || plant == null) return;
+    if (_busy || plant == null) return;
+    if (diagnosisNeed(photos: _photos.length, symptoms: _symptoms.text) != null) return;
     final l10n = context.l10n;
     FocusManager.instance.primaryFocus?.unfocus();
     // Le viseur ne tourne que devant quelqu'un qui vise : pendant l'analyse
@@ -512,17 +552,29 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     if (_result == null) {
       // L'analyse part chez le prestataire : sans réseau le bouton n'aurait
       // qu'un échec à rendre, et il vaut mieux le dire avant.
+      if (!ref.watch(isOnlineProvider)) {
+        return _Bar(children: [OfflineBanner(message: l10n.offlineDiagnosis, padding: EdgeInsets.zero)]);
+      }
+      // Un bouton éteint sans raison n'apprend rien : ce qui manque se dit
+      // au-dessus de lui, dans l'ordre où cela se donne. La description
+      // manquante y mène, puisqu'elle s'écrit hors de vue.
+      final need = diagnosisNeed(photos: _photos.length, symptoms: _symptoms.text);
       return _Bar(
         children: [
-          if (!ref.watch(isOnlineProvider))
-            OfflineBanner(message: l10n.offlineDiagnosis, padding: EdgeInsets.zero)
-          else
-            FloraButton(
-              label: l10n.analyze,
-              icon: CupertinoIcons.sparkles,
-              expand: true,
-              onPressed: _photos.isEmpty ? null : _analyze,
-            ),
+          if (need == DiagnosisNeed.photo) ...[
+            Text(l10n.diagnosisNeedsPhoto, style: context.text.caption, textAlign: TextAlign.center),
+            const SizedBox(height: Space.xs),
+          ],
+          if (need == DiagnosisNeed.symptoms) ...[
+            _MoreBelow(label: l10n.diagnosisNeedsSymptoms, onTap: _writeSymptoms),
+            const SizedBox(height: Space.xxs),
+          ],
+          FloraButton(
+            label: l10n.analyze,
+            icon: CupertinoIcons.sparkles,
+            expand: true,
+            onPressed: need == null ? _analyze : null,
+          ),
         ],
       );
     }
@@ -595,7 +647,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
         _MoreBelow(label: l10n.diagnosisMoreBelow, onTap: _showSymptoms),
 
         SectionHeader(key: _symptomsKey, title: l10n.diagnosisSymptoms, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.sm)),
-        FloraTextField(controller: _symptoms, hint: l10n.diagnosisSymptomsHint, minLines: 2, maxLines: 5),
+        FloraTextField(controller: _symptoms, focusNode: _symptomsFocus, hint: l10n.diagnosisSymptomsHint, minLines: 2, maxLines: 5),
 
         SectionHeader(title: l10n.diagnosisChecks, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.xxs)),
         // Ce qu'une photo ne montrera jamais et que la personne, elle, peut
