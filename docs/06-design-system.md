@@ -337,11 +337,15 @@ devient du contenu**, en tête des slivers, avec sa police arrondie intacte.
 C'est le système qui porte le **titre replié**, sur la même ligne que les
 boutons — « Auxine » à côté du tableau de bord et de l'ajout.
 
-Le passage de l'un à l'autre se lit sur un sliver de rien du tout, posé juste
-après le titre : dès que le défilement a mangé ce qui le précède, il écrit le
-titre replié dans la barre, et l'efface au retour. Il prévient à l'image
-suivante et non pendant la mise en page, faute de quoi il rebâtirait un arbre
-en cours de construction.
+Le passage de l'un à l'autre se lit sur la position de défilement, au même
+seuil que le titre replié de la barre de Flutter — cinquante-deux points —,
+ce qui garde les deux chemins d'accord.
+
+Une première version guettait la sortie d'un sliver posé après le titre. Elle
+basculait **une hauteur de barre trop tard** : un sliver ne sait pas qu'il
+approche du bord, seulement qu'il l'a franchi, et le titre avait donc
+entièrement disparu avant que le système n'affiche le sien. iOS, lui, bascule
+dès que le grand titre glisse *sous* la barre.
 
 Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
 `CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
