@@ -168,17 +168,18 @@ class LargeTitlePage extends StatelessWidget {
     // bande verticale de l'iPhone Duo. `describe` rend `null` si un bouton
     // lui échappe, et la page garde alors les siens.
     final aCeder = <Widget>[if (actions != null) ...actions! else ?trailing];
-    // Le bouton de tête part aussi — le tableau de bord d'« Aujourd'hui » —,
-    // mais pas le retour : celui-là attend d'être rendu par la pile de
-    // navigation elle-même.
-    final teteCedable = <Widget>[?leading];
+    // Le retour et le bouton de tête partent avec le reste — le tableau de
+    // bord d'« Aujourd'hui », le chevron d'une fiche. Le retour est déjà un
+    // `FloraIconButton` à chevron : il se décrit comme les autres, et le
+    // geste de balayage reste celui de Flutter.
+    final teteCedable = <Widget>[?_impliedBackButton(context), ?leading];
     final natif = NativeShell.isSupported && !debout
         ? NativeActions.describe(teteCedable, aCeder)
         : null;
 
-    final lead = debout || natif != null
-        ? _impliedBackButton(context)
-        : (leading ?? _impliedBackButton(context));
+    final Widget? lead = natif != null
+        ? null
+        : (debout ? _impliedBackButton(context) : (leading ?? _impliedBackButton(context)));
     final Widget? suite = debout || natif != null ? null : _headerActions();
     final Widget header;
     if (isCupertino(context)) {

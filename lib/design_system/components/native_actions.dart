@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../core/native_shell.dart';
 import '../../core/sf_symbols.dart';
@@ -66,6 +66,10 @@ class NativeActions extends StatefulWidget {
           symbol: symbole,
           title: bouton.semanticLabel,
           enabled: bouton.onPressed != null,
+          // L'ajout est l'action principale d'Auxine, partout où elle est
+          // offerte : c'est elle qu'iOS doit garder visible quand la bande
+          // déborde, plutôt que de la replier dans le menu.
+          prominent: bouton.icon.codePoint == CupertinoIcons.plus.codePoint,
         ),
         onPressed: bouton.onPressed,
       ));
@@ -118,7 +122,14 @@ class _NativeActionsState extends State<NativeActions> {
     // bouton qui s'éteint, une sélection qui en ajoute un. Le service écarte
     // les déclarations identiques, si bien qu'un rendu ordinaire ne traverse
     // pas le canal.
-    if (visible) _publier();
+    if (visible) {
+      // Une page empilée n'a pas la barre de droit : l'observateur l'a
+      // effacée au moment de la poussée, et c'est à elle de la redemander.
+      // Celles qui ne savent pas la remplir — un scanner, une feuille — ne
+      // passent pas par ici et la laissent effacée.
+      NativeShell.requestBar();
+      _publier();
+    }
     return widget.child;
   }
 

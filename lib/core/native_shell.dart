@@ -29,7 +29,13 @@ class NativeTab {
 /// Un bouton de page, tel que le natif le dessine.
 @immutable
 class NativeAction {
-  const NativeAction({required this.id, required this.symbol, required this.title, this.enabled = true});
+  const NativeAction({
+    required this.id,
+    required this.symbol,
+    required this.title,
+    this.enabled = true,
+    this.prominent = false,
+  });
 
   /// Ce que le natif renvoie quand on le touche.
   final String id;
@@ -42,7 +48,17 @@ class NativeAction {
 
   final bool enabled;
 
-  Map<String, Object?> toMap() => {'id': id, 'symbol': symbol, 'title': title, 'enabled': enabled};
+  /// L'action principale de la page — l'ajout, chez Auxine. iOS la garde
+  /// visible quand la bande déborde, au lieu de la replier dans le menu.
+  final bool prominent;
+
+  Map<String, Object?> toMap() => {
+    'id': id,
+    'symbol': symbol,
+    'title': title,
+    'enabled': enabled,
+    'prominent': prominent,
+  };
 }
 
 abstract final class NativeShell {
@@ -119,17 +135,44 @@ abstract final class NativeShell {
     await _invoke('setActions', charge);
   }
 
-  static bool? _derniereEclipse;
+  static String? _derniereChrome;
+  static int _profondeur = 0;
+  static bool _barreDemandee = false;
 
-  /// Masque ou rend la chrome native.
+  /// Combien de routes couvrent la coquille. Dit par l'observateur du
+  /// navigateur racine (`app/native_chrome_observer.dart`).
   ///
-  /// Une page ouverte par Flutter par-dessus la coquille — une fiche, un
-  /// scanner, une feuille — n'existe pas pour UIKit : sans cela, ses barres
-  /// restaient posées par-dessus, avec les boutons de la page d'en dessous.
-  static Future<void> setChromeHidden(bool hidden) async {
-    if (!isSupported || hidden == _derniereEclipse) return;
-    _derniereEclipse = hidden;
-    await _invoke('setChromeHidden', hidden);
+  /// UIKit ne sait rien de la navigation de Flutter : une fiche, un scanner,
+  /// une feuille sont des routes qu'il ne voit pas, et ses barres restaient
+  /// posées par-dessus avec les boutons de la page d'en dessous. Toute route
+  /// qui couvre la coquille les efface donc, **et la page qui s'ouvre les
+  /// redemande si elle sait les remplir** — une fiche à grand titre le fait,
+  /// un scanner non.
+  static void setDepth(int depth) {
+    if (depth == _profondeur) return;
+    _profondeur = depth;
+    // À chaque changement d'étage, la barre est à reconquérir.
+    _barreDemandee = false;
+    _appliquerChrome();
+  }
+
+  /// Une page dit qu'elle sait remplir la barre. Sans effet sur la coquille,
+  /// qui l'a de droit.
+  static void requestBar() {
+    if (_barreDemandee) return;
+    _barreDemandee = true;
+    _appliquerChrome();
+  }
+
+  /// La barre d'onglets ne survit pas à une page empilée : c'est la règle
+  /// d'iOS, et `hidesBottomBarWhenPushed` ne dit rien d'autre.
+  static Future<void> _appliquerChrome() async {
+    if (!isSupported) return;
+    final charge = {'bar': _profondeur == 0 || _barreDemandee, 'tabs': _profondeur == 0};
+    final empreinte = charge.toString();
+    if (empreinte == _derniereChrome) return;
+    _derniereChrome = empreinte;
+    await _invoke('setChrome', charge);
   }
 
   static Future<void> _invoke(String methode, Object? arguments) async {
@@ -140,7 +183,7 @@ abstract final class NativeShell {
       _derniers = null;
       _dernierChoisi = null;
       _dernieresActions = null;
-      _derniereEclipse = null;
+      _derniereChrome = null;
     } on PlatformException catch (e) {
       debugPrint('[auxine:natif] refus de $methode : ${e.message}');
     }

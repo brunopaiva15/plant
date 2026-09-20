@@ -100,15 +100,18 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     case "setSelected":
       choisir((call.arguments as? Int) ?? 0)
       result(true)
-    case "setChromeHidden":
+    case "setChrome":
       // Une page ouverte par Flutter par-dessus la coquille n'existe pas pour
       // UIKit : sans cela, ses barres restaient posées dessus, avec les
-      // boutons de la page d'en dessous.
-      let cache = (call.arguments as? Bool) ?? false
+      // boutons de la page d'en dessous. Les deux barres se décident
+      // séparément — une fiche garde la sienne, la barre d'onglets non.
+      let args = call.arguments as? [String: Any] ?? [:]
+      let barre = (args["bar"] as? Bool) ?? true
+      let ongletsVisibles = (args["tabs"] as? Bool) ?? true
       for navigation in navigations {
-        navigation.setNavigationBarHidden(cache, animated: false)
+        navigation.setNavigationBarHidden(!barre, animated: false)
       }
-      onglets?.tabBar.isHidden = cache
+      onglets?.tabBar.isHidden = !ongletsVisibles
       result(true)
     case "setActions":
       guard let args = call.arguments as? [String: Any] else {
@@ -195,9 +198,39 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
 
     identifiants = []
     let aGauche = boutons(args["leading"])
-    let aDroite = boutons(args["actions"])
+    let (aDroite, proeminents) = boutonsDeDroite(args["actions"])
     item.leftBarButtonItems = aGauche.isEmpty ? nil : aGauche
     item.rightBarButtonItems = aDroite.isEmpty ? nil : aDroite.reversed()
+
+    // Le placement des actions proéminentes : iOS les garde visibles quand la
+    // bande déborde, au lieu de les replier dans le menu. Il n'existe pas
+    // avant iOS 26 ; sans lui, l'action reste un bouton ordinaire, ce qui
+    // était le cas jusqu'ici.
+    #if compiler(>=6.2)
+      if #available(iOS 26.0, *) {
+        item.pinnedTrailingGroup = proeminents.isEmpty
+          ? nil
+          : UIBarButtonItemGroup(barButtonItems: proeminents, representativeItem: nil)
+      }
+    #endif
+  }
+
+  /// Les boutons de droite, séparés de celui qu'il ne faut pas replier.
+  ///
+  /// Si le système ne sait pas épingler, le proéminent rejoint les autres :
+  /// une action qui disparaîtrait de la barre serait pire qu'une action mal
+  /// classée.
+  private func boutonsDeDroite(_ brut: Any?) -> ([UIBarButtonItem], [UIBarButtonItem]) {
+    var epinglable = false
+    #if compiler(>=6.2)
+      if #available(iOS 26.0, *) { epinglable = true }
+    #endif
+    guard epinglable else { return (boutons(brut), []) }
+
+    let descriptions = brut as? [[String: Any]] ?? []
+    let ordinaires = descriptions.filter { ($0["prominent"] as? Bool) != true }
+    let proeminents = descriptions.filter { ($0["prominent"] as? Bool) == true }
+    return (boutons(ordinaires), boutons(proeminents))
   }
 
   /// Bâtit les boutons d'un côté, en notant leur identité au passage.

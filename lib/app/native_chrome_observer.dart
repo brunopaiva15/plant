@@ -9,14 +9,18 @@ import '../core/native_shell.dart';
 /// par-dessus la coquille, et les barres natives restaient là, posées sur la
 /// page ouverte avec les boutons de celle d'en dessous.
 ///
-/// Un observateur du navigateur racine suffit à le dire : tant qu'il reste
-/// une route au-dessus de la première — la coquille —, les barres s'effacent.
-/// Les pages des branches d'onglets, elles, ne passent pas par ici : elles
-/// ont leur propre navigateur, et c'est bien la coquille qu'on regarde.
+/// Un observateur du navigateur racine suffit à le dire : il compte les
+/// routes posées au-dessus de la première — la coquille. À partir de là, la
+/// barre d'onglets s'efface, comme sur iOS, et la barre du haut aussi —
+/// jusqu'à ce que la page ouverte la redemande, si elle sait la remplir. Une
+/// fiche à grand titre le fait ; un scanner non.
+///
+/// Les pages des branches d'onglets ne passent pas par ici : elles ont leur
+/// propre navigateur, et c'est bien la coquille qu'on regarde alors.
 class NativeChromeObserver extends NavigatorObserver {
   int _empilees = 0;
 
-  void _dire() => NativeShell.setChromeHidden(_empilees > 0);
+  void _dire() => NativeShell.setDepth(_empilees);
 
   @override
   void didPush(Route<Object?> route, Route<Object?>? previousRoute) {
