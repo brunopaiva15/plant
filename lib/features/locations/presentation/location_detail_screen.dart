@@ -17,6 +17,7 @@ import '../../plants/presentation/plant_card.dart';
 import '../../actions/application/care_actions.dart';
 import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
 import '../../../data/services/photo_storage_service.dart';
+import '../../room_scan/presentation/location_room_section.dart';
 import 'location_edit_sheet.dart';
 
 /// Fiche emplacement : conditions et plantes qui s'y trouvent.
@@ -106,6 +107,9 @@ class LocationDetailScreen extends ConsumerWidget {
             FloraCard(child: MarkdownText(location.notes!)),
           ],
           const SizedBox(height: Space.xl),
+          // La pièce relevée qui décrit cet emplacement, ou de quoi la
+          // relever d'ici : le plan vit avec le lieu, pas dans un réglage.
+          LocationRoomSection(location: location),
           if (plants.isEmpty)
             EmptyState(emoji: '🪴', title: l10n.noPlantsHereTitle, subtitle: l10n.noPlantsHereSubtitle, actionLabel: l10n.addPlant, onAction: () => startCreatePlantFlow(context, ref, locationId: locationId), compact: true)
           else

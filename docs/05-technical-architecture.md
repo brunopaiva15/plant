@@ -894,20 +894,27 @@ au code.
   chaque point, `RoomFitAdvisor.survey` lit la pièce une fois — lumière
   selon la latitude du lieu de la météo, air qui bouge, radiateurs posés —
   et `placeIn` classe les places d'une fiche sur ce relevé ; c'est ce qui
-  permet de juger tout le jardin sur la même grille (« Qui serait bien
-  ici »). Les seuils sont calibrés sur la pièce du diorama : les six
+  permet de juger tout le jardin sur la même grille (« Le jardin dans
+  cette pièce »). Les seuils sont calibrés sur la pièce du diorama : les six
   emplacements de docs/13 rendent leurs six crans, ce que
   `test/domain/room_light_model_test.dart` verrouille — sans latitude, à
   45° de soleil ; le test dit aussi ce que Paris et les tropiques changent.
 - **Le gating** tient en trois niveaux, comme la maison : le drapeau et la
   plateforme dans `isSupported`, le LiDAR demandé une fois au canal
   (`roomScanAvailableProvider`), et les écrans qui n'existent pas sans lui —
-  la ligne de Profil, l'entrée « Où la poser » sous le diorama.
-- **Le relevé et l'emplacement.** Un relevé lié à un emplacement propose
-  de renseigner son orientation (celle de la plus grande fenêtre) et sa
-  lumière (la plus fréquente au sol, ramenée aux trois crans de
-  `locations.light` par `lightCodeFor`), sans toucher à ce qui est déjà
-  rempli. Et si le capteur de la maison porte le nom de la pièce ou de son
+  la ligne de Profil, la section « Plan de la pièce » de la fiche
+  emplacement, l'entrée « Où la poser » sous le diorama ; la carte de la
+  fiche plante, elle, n'existe que s'il y a un relevé autour de la plante
+  (`plantRoomPlaceProvider`), ce qui suppose déjà le LiDAR.
+- **Le relevé et l'emplacement.** Un relevé se lie à un emplacement dès le
+  relevé : celui d'où l'on part (fiche emplacement, `scan(locationId:)`),
+  sinon celui qui porte le nom de la pièce reconnue, s'il est seul et pas
+  encore décrit (`RoomScanController._locationNamed`). Lié, il propose
+  de renseigner l'orientation de l'emplacement (celle de la plus grande
+  fenêtre) et sa lumière (la plus fréquente au sol, ramenée aux trois
+  crans de `locations.light` par `lightCodeFor`), sans toucher à ce qui
+  est déjà rempli (`roomFillSuggestionProvider`, la même ligne sur la
+  fiche emplacement et sur la feuille du relevé). Et si le capteur de la maison porte le nom de la pièce ou de son
   emplacement, « Où la poser » montre sa mesure sous les places, avec le
   même verdict que la carte « Chez vous ».
 

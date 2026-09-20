@@ -21,15 +21,17 @@ import 'room_scan_labels.dart';
 /// pièces classées d'abord, quand il y en a plusieurs ; puis la pièce
 /// choisie, son plan, trois places nommées, et ce qu'elle vaut en une
 /// phrase. Pour une plante du jardin, la place d'aujourd'hui si elle est
-/// posée sur le plan, et « Choisir cette place ».
-Future<void> showRoomFit(BuildContext context, {required CareProfile profile, required bool generic, String? plantId, String? plantName}) =>
+/// posée sur le plan, et « Poser ici ». [initialScanId] ouvre
+/// sur une pièce donnée — celle où la plante est, quand on vient de sa
+/// fiche — plutôt que sur la mieux classée.
+Future<void> showRoomFit(BuildContext context, {required CareProfile profile, required bool generic, String? plantId, String? plantName, String? initialScanId}) =>
     showFloraScrollableFlow<void>(
       context,
-      builder: (ctx, controller) => _RoomFitBody(profile: profile, generic: generic, plantId: plantId, plantName: plantName, controller: controller),
+      builder: (ctx, controller) => _RoomFitBody(profile: profile, generic: generic, plantId: plantId, plantName: plantName, initialScanId: initialScanId, controller: controller),
     );
 
 class _RoomFitBody extends ConsumerStatefulWidget {
-  const _RoomFitBody({required this.profile, required this.generic, this.plantId, this.plantName, this.controller});
+  const _RoomFitBody({required this.profile, required this.generic, this.plantId, this.plantName, this.initialScanId, this.controller});
 
   final CareProfile profile;
 
@@ -37,6 +39,7 @@ class _RoomFitBody extends ConsumerStatefulWidget {
   final bool generic;
   final String? plantId;
   final String? plantName;
+  final String? initialScanId;
   final ScrollController? controller;
 
   @override
@@ -44,7 +47,7 @@ class _RoomFitBody extends ConsumerStatefulWidget {
 }
 
 class _RoomFitBodyState extends ConsumerState<_RoomFitBody> {
-  String? _scanId;
+  late String? _scanId = widget.initialScanId;
 
   @override
   Widget build(BuildContext context) {
@@ -171,6 +174,7 @@ class _RoomFitResult extends ConsumerWidget {
                     child: CustomPaint(
                       painter: RoomPlanPainter(
                         room: value,
+                        spots: survey.spots,
                         fit: fit,
                         heaters: heaters,
                         plants: plants.values.toList(),
@@ -182,6 +186,7 @@ class _RoomFitResult extends ConsumerWidget {
                   ),
                 ),
               ),
+              const RoomLightLegend(),
               const SizedBox(height: Space.md),
               FloraCard(
                 color: tint,

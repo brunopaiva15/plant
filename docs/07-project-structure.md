@@ -52,7 +52,7 @@ lib/
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, avertissements gel et chaleur, climat du lieu, réglages
 │   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur (Apple Maison, Google Home)
-│   ├── room_scan/                 relevé de la maison : pièces relevées, fenêtres, plan vu de dessus, « Où la poser » (expérimental, docs/17)
+│   ├── room_scan/                 relevé de la maison : pièces relevées, fenêtres, plan vu de dessus, « Où la poser », et ses greffes — plan de la fiche emplacement, place de la fiche plante (docs/17)
 │   ├── diagnosis/                 page « Ma plante a un problème » (viseur, observations, compte rendu), compte rendu rouvrable, état du service
 │   ├── community/                 conseils de la communauté : section de la fiche d'entretien, feuille d'écriture, écran de modération
 │   ├── encyclopedia/              les actifs embarqués à lire à froid : un écran à trois rayons (problèmes, espèces, vocabulaire), une page par problème, une par espèce

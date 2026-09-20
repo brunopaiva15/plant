@@ -1353,7 +1353,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSoftPotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre attend mal.'**
+  /// **'Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre supporte mal l\'attente.'**
   String get pgSoftPotBody;
 
   /// No description provided for @pgLeafName.
@@ -5643,13 +5643,13 @@ abstract class AppLocalizations {
   /// No description provided for @carePotSnug.
   ///
   /// In fr, this message translates to:
-  /// **'Aime être à l\'étroit'**
+  /// **'Mieux à l\'étroit'**
   String get carePotSnug;
 
   /// No description provided for @carePotRoomy.
   ///
   /// In fr, this message translates to:
-  /// **'Aime l\'espace'**
+  /// **'Un pot large'**
   String get carePotRoomy;
 
   /// No description provided for @carePotSnugNote.
@@ -5817,7 +5817,7 @@ abstract class AppLocalizations {
   /// No description provided for @careHumidityHigh.
   ///
   /// In fr, this message translates to:
-  /// **'Aime l\'air humide'**
+  /// **'Air humide'**
   String get careHumidityHigh;
 
   /// No description provided for @careHumidityRange.
@@ -5847,7 +5847,7 @@ abstract class AppLocalizations {
   /// No description provided for @careHumidityMethodMist.
   ///
   /// In fr, this message translates to:
-  /// **'Brumiser le feuillage lui profite.'**
+  /// **'Brumiser le feuillage.'**
   String get careHumidityMethodMist;
 
   /// No description provided for @careHumidityMethodHumidifier.
@@ -6075,7 +6075,7 @@ abstract class AppLocalizations {
   /// No description provided for @careWaterTolerantNote.
   ///
   /// In fr, this message translates to:
-  /// **'Le calcaire ne la gêne pas.'**
+  /// **'Le calcaire est sans effet.'**
   String get careWaterTolerantNote;
 
   /// No description provided for @careWaterSensitiveNote.
@@ -6381,7 +6381,7 @@ abstract class AppLocalizations {
   /// No description provided for @careCalciumWelcome.
   ///
   /// In fr, this message translates to:
-  /// **'Calcium : l\'eau calcaire lui convient, des coquilles d\'œufs broyées au rempotage aussi.'**
+  /// **'Calcium : l\'eau calcaire est sans risque ; des coquilles d\'œufs broyées au rempotage en apportent.'**
   String get careCalciumWelcome;
 
   /// No description provided for @careCalciumNeeded.
@@ -6429,7 +6429,7 @@ abstract class AppLocalizations {
   /// No description provided for @careGreenhouseAir.
   ///
   /// In fr, this message translates to:
-  /// **'Aérer chaque jour : l\'air confiné fait pourrir ce qui aime le sec.'**
+  /// **'Aérer chaque jour : l\'air confiné fait pourrir les plantes de milieu sec.'**
   String get careGreenhouseAir;
 
   /// No description provided for @careGreenhouseEarly.
@@ -6501,7 +6501,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomDeadheadNote.
   ///
   /// In fr, this message translates to:
-  /// **'Coupez les fleurs fanées au fur et à mesure : la plante remet alors son énergie dans les suivantes.'**
+  /// **'Coupez les fleurs fanées au fur et à mesure : sans graines à former, la plante refleurit.'**
   String get careBloomDeadheadNote;
 
   /// No description provided for @careBloomKeepSpike.
@@ -6609,7 +6609,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomShortDaysNote.
   ///
   /// In fr, this message translates to:
-  /// **'Pendant environ six semaines, offrez-lui des nuits d\'au moins 12 heures dans l\'obscurité pour favoriser la formation des boutons.'**
+  /// **'Pendant environ six semaines, des nuits d\'au moins 12 heures d\'obscurité déclenchent la formation des boutons.'**
   String get careBloomShortDaysNote;
 
   /// No description provided for @careBloomDrySpell.
@@ -6645,7 +6645,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomBrightLightNote.
   ///
   /// In fr, this message translates to:
-  /// **'Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.'**
+  /// **'La floraison demande plus de lumière que la pousse : un endroit très lumineux, sans soleil brûlant.'**
   String get careBloomBrightLightNote;
 
   /// No description provided for @carePropCutting.
@@ -6945,13 +6945,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipThirstyPlant.
   ///
   /// In fr, this message translates to:
-  /// **'Grosse buveuse, vérifiez-la tous les jours en été.'**
+  /// **'Gros besoin d\'eau : vérifiez la terre tous les jours en été.'**
   String get careTipThirstyPlant;
 
   /// No description provided for @careTipDroopSignal.
   ///
   /// In fr, this message translates to:
-  /// **'Quand elle s\'affaisse, c\'est qu\'elle a soif.'**
+  /// **'Un feuillage qui s\'affaisse signale le manque d\'eau.'**
   String get careTipDroopSignal;
 
   /// No description provided for @careTipWinterDry.
@@ -6963,19 +6963,19 @@ abstract class AppLocalizations {
   /// No description provided for @careTipWinterRest.
   ///
   /// In fr, this message translates to:
-  /// **'En hiver, elle se repose et demande beaucoup moins d\'eau.'**
+  /// **'En hiver, la croissance s\'arrête : beaucoup moins d\'eau.'**
   String get careTipWinterRest;
 
   /// No description provided for @careTipSummerDormant.
   ///
   /// In fr, this message translates to:
-  /// **'Elle se repose en été et demande très peu d\'eau à cette période.'**
+  /// **'Repos en été : très peu d\'eau à cette période.'**
   String get careTipSummerDormant;
 
   /// No description provided for @careTipNoWaterWhileSplitting.
   ///
   /// In fr, this message translates to:
-  /// **'N\'arrosez pas pendant qu\'elle change de feuilles.'**
+  /// **'N\'arrosez pas pendant le renouvellement des feuilles.'**
   String get careTipNoWaterWhileSplitting;
 
   /// No description provided for @careTipOrchidSoak.
@@ -7035,7 +7035,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipToleratesNeglect.
   ///
   /// In fr, this message translates to:
-  /// **'Elle pardonne les oublis, alors en cas de doute, n\'arrosez pas.'**
+  /// **'Les oublis ne l\'abîment pas : en cas de doute, n\'arrosez pas.'**
   String get careTipToleratesNeglect;
 
   /// No description provided for @careTipBrightForColor.
@@ -7047,43 +7047,43 @@ abstract class AppLocalizations {
   /// No description provided for @careTipRotatePot.
   ///
   /// In fr, this message translates to:
-  /// **'Tournez le pot d\'un quart de tour chaque semaine pour qu\'elle reste droite.'**
+  /// **'Un quart de tour au pot chaque semaine garde la tige droite.'**
   String get careTipRotatePot;
 
   /// No description provided for @careTipHatesMoving.
   ///
   /// In fr, this message translates to:
-  /// **'Trouvez-lui une place et laissez-la, elle déteste être déplacée.'**
+  /// **'Gardez une place fixe : chaque déplacement fait tomber des feuilles.'**
   String get careTipHatesMoving;
 
   /// No description provided for @careTipWipeLeaves.
   ///
   /// In fr, this message translates to:
-  /// **'Dépoussiérez les feuilles pour qu\'elles respirent et captent mieux la lumière.'**
+  /// **'Dépoussiérez les feuilles : la poussière bloque la lumière.'**
   String get careTipWipeLeaves;
 
   /// No description provided for @careTipTrimToBushOut.
   ///
   /// In fr, this message translates to:
-  /// **'Taillez les tiges trop longues et elle se ramifiera.'**
+  /// **'Tailler les tiges trop longues fait ramifier.'**
   String get careTipTrimToBushOut;
 
   /// No description provided for @careTipMonsteraSupport.
   ///
   /// In fr, this message translates to:
-  /// **'Offrez-lui un tuteur moussu et les feuilles deviendront plus grandes et découpées.'**
+  /// **'Sur un tuteur moussu, les feuilles deviennent plus grandes et découpées.'**
   String get careTipMonsteraSupport;
 
   /// No description provided for @careTipShallowPot.
   ///
   /// In fr, this message translates to:
-  /// **'Un pot large et peu profond lui convient mieux.'**
+  /// **'Un pot large et peu profond.'**
   String get careTipShallowPot;
 
   /// No description provided for @careTipLikesBeingPotbound.
   ///
   /// In fr, this message translates to:
-  /// **'Elle fleurit mieux à l\'étroit, alors rempotez rarement.'**
+  /// **'La floraison est meilleure à l\'étroit : rempotez rarement.'**
   String get careTipLikesBeingPotbound;
 
   /// No description provided for @careTipTrunkStoresWater.
@@ -7095,7 +7095,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipPupsToShare.
   ///
   /// In fr, this message translates to:
-  /// **'Elle fait des rejets, détachez-les pour multiplier ou offrir.'**
+  /// **'Les rejets se détachent pour multiplier ou offrir.'**
   String get careTipPupsToShare;
 
   /// No description provided for @careTipKeepFlowerSpike.
@@ -7107,19 +7107,19 @@ abstract class AppLocalizations {
   /// No description provided for @careTipDarkForRebloom.
   ///
   /// In fr, this message translates to:
-  /// **'Pour la refaire fleurir, offrez-lui six semaines de nuits longues et fraîches.'**
+  /// **'Pour refleurir : six semaines de nuits longues et fraîches.'**
   String get careTipDarkForRebloom;
 
   /// No description provided for @careTipNotADesertCactus.
   ///
   /// In fr, this message translates to:
-  /// **'Ce n\'est pas un cactus du désert, il aime l\'ombre et l\'humidité.'**
+  /// **'Cactus de forêt, pas du désert : ombre et air humide.'**
   String get careTipNotADesertCactus;
 
   /// No description provided for @careTipDeadheadFlowers.
   ///
   /// In fr, this message translates to:
-  /// **'Retirez les fleurs fanées et elle refleurira plus longtemps.'**
+  /// **'Retirer les fleurs fanées prolonge la floraison.'**
   String get careTipDeadheadFlowers;
 
   /// No description provided for @careTipPinchFlowers.
@@ -7185,7 +7185,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipContainItsRoots.
   ///
   /// In fr, this message translates to:
-  /// **'Elle envahit tout, plantez-la en pot ou posez une barrière anti-rhizome.'**
+  /// **'Les rhizomes envahissent tout : en pot, ou derrière une barrière anti-rhizome.'**
   String get careTipContainItsRoots;
 
   /// No description provided for @careTipMulchIt.
@@ -7197,7 +7197,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipAcidSoil.
   ///
   /// In fr, this message translates to:
-  /// **'Elle exige une terre acide, pas du terreau universel.'**
+  /// **'Terre acide, pas de terreau universel.'**
   String get careTipAcidSoil;
 
   /// No description provided for @careTipFeedsOnInsects.
@@ -7221,13 +7221,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipNoFertilizer.
   ///
   /// In fr, this message translates to:
-  /// **'Pas d\'engrais, une terre trop riche lui coûte son parfum et sa tenue.'**
+  /// **'Pas d\'engrais : une terre riche affaiblit le parfum et la tenue.'**
   String get careTipNoFertilizer;
 
   /// No description provided for @careTipNoNitrogen.
   ///
   /// In fr, this message translates to:
-  /// **'Évitez l\'engrais azoté, car elle fabrique le sien.'**
+  /// **'Pas d\'engrais azoté : la plante fixe elle-même l\'azote.'**
   String get careTipNoNitrogen;
 
   /// No description provided for @careTipLetFoliageDieBack.
@@ -7239,7 +7239,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipDiesBackInWinter.
   ///
   /// In fr, this message translates to:
-  /// **'Elle disparaît en hiver et repart au printemps, c\'est normal.'**
+  /// **'Le feuillage disparaît en hiver et repart au printemps.'**
   String get careTipDiesBackInWinter;
 
   /// No description provided for @careTipSummerOutdoors.
@@ -7263,13 +7263,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipWinterCool.
   ///
   /// In fr, this message translates to:
-  /// **'Un hiver frais (10–14 °C) et lumineux lui fait du bien.'**
+  /// **'Hiver frais (10–14 °C) et lumineux.'**
   String get careTipWinterCool;
 
   /// No description provided for @careTipCoolerIsBetter.
   ///
   /// In fr, this message translates to:
-  /// **'Elle préfère la fraîcheur, éloignez-la des radiateurs.'**
+  /// **'Mieux au frais : éloignez-la des radiateurs.'**
   String get careTipCoolerIsBetter;
 
   /// No description provided for @careTipHardyOutdoors.
@@ -7287,13 +7287,13 @@ abstract class AppLocalizations {
   /// No description provided for @careTipAirFlow.
   ///
   /// In fr, this message translates to:
-  /// **'Aérez autour d\'elle, car l\'air confiné favorise les maladies.'**
+  /// **'De l\'air autour de la plante : l\'air confiné favorise les maladies.'**
   String get careTipAirFlow;
 
   /// No description provided for @careTipSpiderMiteWatch.
   ///
   /// In fr, this message translates to:
-  /// **'Inspectez le dessous des feuilles, que les araignées rouges adorent.'**
+  /// **'Inspectez le dessous des feuilles, où s\'installent les araignées rouges.'**
   String get careTipSpiderMiteWatch;
 
   /// No description provided for @careTipSlugWatch.
@@ -7323,7 +7323,7 @@ abstract class AppLocalizations {
   /// No description provided for @careTipSharpSpines.
   ///
   /// In fr, this message translates to:
-  /// **'Ses pointes sont dangereuses, éloignez-la des passages.'**
+  /// **'Pointes acérées : loin des passages.'**
   String get careTipSharpSpines;
 
   /// No description provided for @careTipSplitsAreNormal.
@@ -9003,7 +9003,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderReasonLight.
   ///
   /// In fr, this message translates to:
-  /// **'Aime cette lumière'**
+  /// **'Lumière adaptée'**
   String get finderReasonLight;
 
   /// No description provided for @finderReasonLowLight.
@@ -10275,7 +10275,7 @@ abstract class AppLocalizations {
   /// No description provided for @careHumidityLowNote.
   ///
   /// In fr, this message translates to:
-  /// **'L\'air d\'un logement chauffé lui convient.'**
+  /// **'L\'air d\'un logement chauffé suffit.'**
   String get careHumidityLowNote;
 
   /// No description provided for @careHumidityAverageNote.
@@ -10593,7 +10593,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. Pour une plante, l\'application y lit où elle serait le mieux. Le relevé reste sur l\'appareil.'**
+  /// **'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s\'en déduit, pour dire où poser une plante. Le relevé reste sur l\'appareil.'**
   String get roomScanHint;
 
   /// No description provided for @roomScanStart.
@@ -10707,7 +10707,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanOrientationHelp.
   ///
   /// In fr, this message translates to:
-  /// **'La boussole se trompe de dix à quinze degrés : l\'orientation de chaque fenêtre se confirme ici.'**
+  /// **'La boussole a dix à quinze degrés d\'erreur. L\'orientation de chaque fenêtre se corrige ici.'**
   String get roomScanOrientationHelp;
 
   /// No description provided for @roomScanDelete.
@@ -10821,7 +10821,7 @@ abstract class AppLocalizations {
   /// No description provided for @placementHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les places lues dans les pièces relevées, pour cette fiche. La plante peut vivre ailleurs.'**
+  /// **'Les places sont classées d\'après la lumière qu\'elles reçoivent, comparée à celle de la fiche.'**
   String get placementHint;
 
   /// No description provided for @placementRoomsCount.
@@ -10833,49 +10833,49 @@ abstract class AppLocalizations {
   /// No description provided for @placementVerdictGood.
   ///
   /// In fr, this message translates to:
-  /// **'Cette pièce lui convient.'**
+  /// **'Pièce adaptée.'**
   String get placementVerdictGood;
 
   /// No description provided for @placementVerdictAcceptable.
   ///
   /// In fr, this message translates to:
-  /// **'Cette pièce lui convient à peu près.'**
+  /// **'Pièce acceptable, sans place idéale.'**
   String get placementVerdictAcceptable;
 
   /// No description provided for @placementVerdictUnsuitable.
   ///
   /// In fr, this message translates to:
-  /// **'Cette pièce ne lui convient pas.'**
+  /// **'Pièce inadaptée.'**
   String get placementVerdictUnsuitable;
 
   /// No description provided for @placementShortfallTooDark.
   ///
   /// In fr, this message translates to:
-  /// **'Trop sombre pour ce qu\'elle demande.'**
+  /// **'Trop sombre pour la lumière demandée.'**
   String get placementShortfallTooDark;
 
   /// No description provided for @placementShortfallTooBright.
   ///
   /// In fr, this message translates to:
-  /// **'Trop de soleil direct pour elle.'**
+  /// **'Trop de soleil direct.'**
   String get placementShortfallTooBright;
 
   /// No description provided for @placementShortfallDrafty.
   ///
   /// In fr, this message translates to:
-  /// **'Toutes les places sont près d\'une porte, et elle craint les courants d\'air.'**
+  /// **'Chaque place est près d\'une porte : courants d\'air.'**
   String get placementShortfallDrafty;
 
   /// No description provided for @placementShortfallTooDry.
   ///
   /// In fr, this message translates to:
-  /// **'Une pièce d\'eau, pour une plante qui veut l\'air sec.'**
+  /// **'Pièce d\'eau, air humide : la fiche demande l\'air sec.'**
   String get placementShortfallTooDry;
 
   /// No description provided for @placementGeneric.
   ///
   /// In fr, this message translates to:
-  /// **'La fiche est générique : sans l\'espèce, la lumière qu\'elle demande n\'est pas connue.'**
+  /// **'Fiche générique : sans espèce, la lumière demandée n\'est pas connue.'**
   String get placementGeneric;
 
   /// No description provided for @placementDistanceM.
@@ -10935,13 +10935,13 @@ abstract class AppLocalizations {
   /// No description provided for @placementDraftyNote.
   ///
   /// In fr, this message translates to:
-  /// **'Près d\'une porte : l\'air y bouge.'**
+  /// **'Près d\'une porte : courant d\'air.'**
   String get placementDraftyNote;
 
   /// No description provided for @placementHumidRoomNote.
   ///
   /// In fr, this message translates to:
-  /// **'Pièce d\'eau : l\'air y est plus humide.'**
+  /// **'Pièce d\'eau : air plus humide.'**
   String get placementHumidRoomNote;
 
   /// No description provided for @placementPlanSemantics.
@@ -10959,7 +10959,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanHeatersHelp.
   ///
   /// In fr, this message translates to:
-  /// **'RoomPlan ne voit pas les radiateurs. Posé sur le plan, un radiateur écarte les plantes qui craignent l\'air sec et chaud.'**
+  /// **'Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm.'**
   String get roomScanHeatersHelp;
 
   /// No description provided for @roomScanAddHeater.
@@ -10995,7 +10995,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanFillLocationDetail.
   ///
   /// In fr, this message translates to:
-  /// **'Orientation « {orientation} », lumière « {light} », d\'après le relevé. Ce qui est déjà renseigné ne change pas.'**
+  /// **'Orientation {orientation}, lumière {light}, d\'après le relevé. Les champs déjà remplis ne changent pas.'**
   String roomScanFillLocationDetail(String orientation, String light);
 
   /// No description provided for @roomScanLocationFilled.
@@ -11007,13 +11007,13 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanWhoFitsHere.
   ///
   /// In fr, this message translates to:
-  /// **'Qui serait bien ici'**
+  /// **'Le jardin dans cette pièce'**
   String get roomScanWhoFitsHere;
 
   /// No description provided for @roomScanWhoFitsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les plantes du jardin, classées par ce que la pièce leur donne.'**
+  /// **'Chaque plante est notée d\'après la lumière de la pièce et sa fiche.'**
   String get roomScanWhoFitsHint;
 
   /// No description provided for @roomScanNoPlantsToRank.
@@ -11025,19 +11025,19 @@ abstract class AppLocalizations {
   /// No description provided for @placementShortfallHeater.
   ///
   /// In fr, this message translates to:
-  /// **'Toutes les places sont près d\'un radiateur, et elle craint l\'air sec et chaud.'**
+  /// **'Chaque place est près d\'un radiateur : air sec et chaud.'**
   String get placementShortfallHeater;
 
   /// No description provided for @placementHeaterNote.
   ///
   /// In fr, this message translates to:
-  /// **'Près d\'un radiateur : l\'air y est sec et chaud.'**
+  /// **'Près d\'un radiateur : air sec et chaud.'**
   String get placementHeaterNote;
 
   /// No description provided for @placementAtHome.
   ///
   /// In fr, this message translates to:
-  /// **'Chez vous'**
+  /// **'Capteur de la pièce'**
   String get placementAtHome;
 
   /// No description provided for @roomScanStartStructure.
@@ -11073,7 +11073,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanPlantsHelp.
   ///
   /// In fr, this message translates to:
-  /// **'Une plante posée sur le plan est jugée là où elle est : la liste dit si une autre place lui irait mieux.'**
+  /// **'Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure.'**
   String get roomScanPlantsHelp;
 
   /// No description provided for @roomScanAddPlant.
@@ -11103,13 +11103,13 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanPlantWellPlaced.
   ///
   /// In fr, this message translates to:
-  /// **'Bien placée · {light}'**
+  /// **'Place adaptée · {light}'**
   String roomScanPlantWellPlaced(String light);
 
   /// No description provided for @roomScanPlantBetterAt.
   ///
   /// In fr, this message translates to:
-  /// **'Aujourd\'hui {light} · mieux {place}'**
+  /// **'Place actuelle {light} · mieux {place}'**
   String roomScanPlantBetterAt(String light, String place);
 
   /// No description provided for @placementAllRooms.
@@ -11121,19 +11121,19 @@ abstract class AppLocalizations {
   /// No description provided for @placementChoose.
   ///
   /// In fr, this message translates to:
-  /// **'Choisir cette place'**
+  /// **'Poser ici'**
   String get placementChoose;
 
   /// No description provided for @placementChosen.
   ///
   /// In fr, this message translates to:
-  /// **'Place choisie : {place}'**
+  /// **'Posée {place}'**
   String placementChosen(String place);
 
   /// No description provided for @placementCurrent.
   ///
   /// In fr, this message translates to:
-  /// **'Aujourd\'hui : {place} · {light}'**
+  /// **'Place actuelle : {place} · {light}'**
   String placementCurrent(String place, String light);
 
   /// No description provided for @sectionRooms.
@@ -11169,7 +11169,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanCurtainHelp.
   ///
   /// In fr, this message translates to:
-  /// **'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.'**
+  /// **'Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.'**
   String get roomScanCurtainHelp;
 
   /// No description provided for @roomScanPlace.
@@ -11183,6 +11183,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count, plural, =0{Aucune} =1{1 pièce} other{{count} pièces}}'**
   String roomScanRoomsShort(int count);
+
+  /// No description provided for @roomScanThisRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever cette pièce'**
+  String get roomScanThisRoom;
+
+  /// No description provided for @roomScanThisRoomHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante.'**
+  String get roomScanThisRoomHint;
+
+  /// No description provided for @roomScanRoomPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan de la pièce'**
+  String get roomScanRoomPlan;
+
+  /// No description provided for @roomScanPlantsOnPlanCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}'**
+  String roomScanPlantsOnPlanCount(int count);
 }
 
 class _AppLocalizationsDelegate
