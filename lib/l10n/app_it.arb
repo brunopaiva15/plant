@@ -2229,5 +2229,6 @@
   "roomScanCurtainNone": "Senza tenda",
   "roomScanCurtainSheer": "Tenda leggera",
   "roomScanCurtainDrawn": "Tenda spesso tirata",
-  "roomScanCurtainHelp": "RoomPlan non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre."
+  "roomScanCurtainHelp": "RoomPlan non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.",
+  "roomScanPlace": "Posare"
 }

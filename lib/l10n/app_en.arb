@@ -2236,5 +2236,6 @@
   "roomScanCurtainNone": "No curtain",
   "roomScanCurtainSheer": "Sheer curtain",
   "roomScanCurtainDrawn": "Curtain often drawn",
-  "roomScanCurtainHelp": "RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three."
+  "roomScanCurtainHelp": "RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.",
+  "roomScanPlace": "Place"
 }

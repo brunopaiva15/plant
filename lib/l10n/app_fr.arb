@@ -3303,5 +3303,6 @@
   "roomScanCurtainNone": "Sans rideau",
   "roomScanCurtainSheer": "Voilage",
   "roomScanCurtainDrawn": "Rideau souvent tiré",
-  "roomScanCurtainHelp": "RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois."
+  "roomScanCurtainHelp": "RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.",
+  "roomScanPlace": "Poser"
 }

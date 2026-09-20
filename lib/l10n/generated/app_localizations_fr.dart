@@ -6622,4 +6622,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get roomScanCurtainHelp =>
       'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.';
+
+  @override
+  String get roomScanPlace => 'Poser';
 }

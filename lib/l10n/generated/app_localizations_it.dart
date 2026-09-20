@@ -6609,4 +6609,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get roomScanCurtainHelp =>
       'RoomPlan non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.';
+
+  @override
+  String get roomScanPlace => 'Posare';
 }
