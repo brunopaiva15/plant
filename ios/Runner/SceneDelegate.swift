@@ -25,6 +25,9 @@ class SceneDelegate: FlutterSceneDelegate {
   ) {
     super.scene(scene, willConnectTo: session, options: connectionOptions)
     logDuoBuild(scene)
+    // Prototype : la chrome de navigation passe à UIKit. Cette ligne est
+    // toute la bascule — l'enlever rend l'application à Flutter seul.
+    DuoNativeChrome.install(in: scene)
   }
 
   private func logDuoBuild(_ scene: UIScene) {

@@ -26,5 +26,7 @@ import UIKit
     // Ce que le système réserve dans la fenêtre — caméra, pli, barre d'état —
     // pour que le menu debout demande sa géométrie au lieu de la supposer.
     WindowRegionsChannel.register(with: engineBridge.applicationRegistrar.messenger())
+    // Prototype : le titre et les boutons de la page, rendus par UIKit.
+    DuoNativeChrome.register(with: engineBridge.applicationRegistrar.messenger())
   }
 }

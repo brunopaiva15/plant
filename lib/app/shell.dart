@@ -7,6 +7,8 @@ import '../core/haptics.dart';
 import '../core/l10n/l10n.dart';
 import '../design_system/design_system.dart';
 import '../features/whats_new/presentation/whats_new_gate.dart';
+import '../core/native_chrome.dart';
+import 'duo_native_demo.dart';
 import 'quick_actions.dart';
 import 'tab_scroll.dart';
 
@@ -66,6 +68,10 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Prototype : ce que la chrome native reçoit. Sans effet hors d'iOS, et
+    // sans effet sur le reste de cette méthode. Voir
+    // `docs/duo-native-prototype.md`.
+    if (NativeChrome.isSupported) DuoNativeDemo.publish(l10n, shell.currentIndex);
     final tabs = [
       FloraTab(icon: CupertinoIcons.sun_max, activeIcon: CupertinoIcons.sun_max_fill, label: l10n.tabToday),
       FloraTab(icon: CupertinoIcons.square_grid_2x2, activeIcon: CupertinoIcons.square_grid_2x2_fill, label: l10n.tabPlants),
