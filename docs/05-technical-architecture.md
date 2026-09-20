@@ -731,16 +731,23 @@ ici, ce qui tient au code.
   `test/domain/fixtures/roomplan_diorama.json` en fixe une forme — à
   confirmer sur un appareil, palier 0 de docs/17.
 - **Le modèle** est pur : `RoomLightModel.lightAt` rend un `LightNeed` en
-  chaque point, `RoomFitAdvisor.place` classe les places d'une fiche. Les
-  seuils sont calibrés sur la pièce du diorama : les six emplacements de
-  docs/13 rendent leurs six crans, ce que `test/domain/room_light_model_test.dart`
-  verrouille.
+  chaque point, `RoomFitAdvisor.survey` lit la pièce une fois — lumière
+  selon la latitude du lieu de la météo, air qui bouge, radiateurs posés —
+  et `placeIn` classe les places d'une fiche sur ce relevé ; c'est ce qui
+  permet de juger tout le jardin sur la même grille (« Qui serait bien
+  ici »). Les seuils sont calibrés sur la pièce du diorama : les six
+  emplacements de docs/13 rendent leurs six crans, ce que
+  `test/domain/room_light_model_test.dart` verrouille — sans latitude, à
+  45° de soleil ; le test dit aussi ce que Paris et les tropiques changent.
 - **Le gating** tient en trois niveaux, comme la maison : le drapeau et la
   plateforme dans `isSupported`, le LiDAR demandé une fois au canal
   (`roomScanAvailableProvider`), et les écrans qui n'existent pas sans lui —
   la ligne de Profil, l'entrée « Où la poser » sous le diorama.
-- **Ce qui ne se compile pas ici.** Le Swift n'a pas encore été construit
-  dans Xcode : le canal est écrit d'après les API de RoomPlan et de
-  CoreLocation, et le palier 0 de docs/17 — un relevé réel sur un iPhone
-  Pro — reste à faire avant de s'y fier.
+- **Le relevé et l'emplacement.** Un relevé lié à un emplacement propose
+  de renseigner son orientation (celle de la plus grande fenêtre) et sa
+  lumière (la plus fréquente au sol, ramenée aux trois crans de
+  `locations.light` par `lightCodeFor`), sans toucher à ce qui est déjà
+  rempli. Et si le capteur de la maison porte le nom de la pièce ou de son
+  emplacement, « Où la poser » montre sa mesure sous les places, avec le
+  même verdict que la carte « Chez vous ».
 

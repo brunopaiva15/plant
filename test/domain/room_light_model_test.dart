@@ -100,6 +100,22 @@ void main() {
     expect(RoomLightModel.lightAt(withObject(0.2), const RoomPoint(0.16, 0.3)), LightNeed.brightIndirect);
   });
 
+  test('la latitude allonge ou raccourcit la tache de soleil', () {
+    // Sans lieu, 45° : la tache porte aussi loin que la fenêtre est haute.
+    expect(RoomLightModel.sunElevationFor(null), 45);
+    expect(RoomLightModel.sunReach(room, room.windows.single), closeTo(2.25, 1e-9));
+    // À Paris, le soleil de mi-saison est plus bas : la tache va plus loin,
+    // et l'emplacement « à côté » du diorama passe dans le bord de la tache.
+    expect(RoomLightModel.sunElevationFor(48.9), closeTo(41.1, 1e-9));
+    expect(RoomLightModel.sunReach(room, room.windows.single, sunElevationDeg: 41.1), greaterThan(2.5));
+    expect(RoomLightModel.lightAt(room, slots[LightNeed.brightIndirect]!, sunElevationDeg: 41.1), LightNeed.someSun);
+    // Sous les tropiques, le soleil est haut : la tache reste au pied de la fenêtre.
+    expect(RoomLightModel.sunElevationFor(-10), 75);
+    expect(RoomLightModel.lightAt(room, slots[LightNeed.someSun]!, sunElevationDeg: 75), LightNeed.brightIndirect);
+    // La latitude sud se lit comme la nord : c'est l'hémisphère qui inverse les fenêtres, pas la latitude.
+    expect(RoomLightModel.sunElevationFor(-48.9), RoomLightModel.sunElevationFor(48.9));
+  });
+
   test("l'air bouge à moins d'un mètre d'une porte", () {
     expect(RoomLightModel.isDrafty(room, const RoomPoint(1.0, -1.2)), isTrue);
     expect(RoomLightModel.isDrafty(room, const RoomPoint(-1.0, 1.0)), isFalse);

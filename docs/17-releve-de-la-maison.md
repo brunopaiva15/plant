@@ -1,10 +1,9 @@
 # Le relevé de la maison : où poser cette plante
 
-> Statut : fonction expérimentale. Le palier 1 est codé derrière
-> `--dart-define=ROOM_SCAN=true` ; le palier 0 — un relevé réel sur un
-> iPhone Pro, qui confirme le nord, le format du JSON et la présentation
-> par-dessus Flutter — reste à faire, et le Swift n'a pas encore été
-> construit dans Xcode. Note créée le 20 septembre 2026.
+> Statut : fonction expérimentale. Les paliers 1 et 2 sont codés derrière
+> `--dart-define=ROOM_SCAN=true`, et le palier 0 est passé : un relevé réel
+> sur un iPhone Pro a confirmé la construction, la présentation par-dessus
+> Flutter et la lecture du JSON. Note créée le 20 septembre 2026.
 
 ## L'idée
 
@@ -308,11 +307,17 @@ fiche ne se met pas dans une URL ; « refaire » un relevé est le supprimer
 et en relever un autre.
 
 **Palier 2 — la maison telle qu'elle est.** Les radiateurs posés du doigt
-(`room_markers`), la latitude et la saison dans la portée de la tache de
-soleil, « Qui serait bien ici » sur la pièce, le croisement avec la mesure
-des capteurs de la maison (`homeReadingProvider`) quand le capteur porte le
-nom de la pièce, et le remplissage proposé de `locations.orientation` et
-`locations.light`.
+(`room_markers`, collés au mur le plus proche), la latitude du lieu de la
+météo dans la portée de la tache de soleil, « Qui serait bien ici » sur la
+pièce, le croisement avec la mesure des capteurs de la maison
+(`homeReadingProvider`) quand le capteur porte le nom de la pièce ou de
+son emplacement, et le remplissage proposé de `locations.orientation` et
+`locations.light`. **Livré dans ce dépôt.** Deux écarts avec ce qui était
+prévu : la saison n'entre pas dans la portée de la tache — l'équinoxe est
+le compromis retenu, une place qui changerait d'avis d'un mois à l'autre
+ne se lirait pas — ; et la pièce se relève une fois pour toutes les fiches
+(`RoomFitAdvisor.survey`, puis `placeIn` par fiche), parce que « Qui
+serait bien ici » juge tout le jardin sur la même grille.
 
 **Palier 3 — l'appartement entier.** `StructureBuilder` pour enchaîner les
 pièces en un relevé, le classement des places sur toutes les pièces à la

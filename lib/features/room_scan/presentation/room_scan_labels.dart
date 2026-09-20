@@ -63,5 +63,13 @@ extension RoomScanLabels on AppLocalizations {
         RoomFitShortfall.tooBright => placementShortfallTooBright,
         RoomFitShortfall.drafty => placementShortfallDrafty,
         RoomFitShortfall.tooDry => placementShortfallTooDry,
+        RoomFitShortfall.heater => placementShortfallHeater,
       };
+
+  /// Ce qu'une place a de particulier, sous sa lumière : l'air qui bouge,
+  /// le radiateur à côté.
+  List<String> placementNotes(Placement p) => [
+        if (p.drafty) placementDraftyNote,
+        if (p.nearHeater) placementHeaterNote,
+      ];
 }

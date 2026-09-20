@@ -1,10 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/router.dart';
 import '../../../core/haptics.dart';
+import '../../../core/l10n/care_labels.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_profile.dart';
+import '../../../domain/models/models.dart';
+import '../../../domain/room/placement.dart';
 import '../../../domain/room/room_scan.dart';
 import '../../../domain/room/scanned_room.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
@@ -13,7 +19,8 @@ import 'room_plan_painter.dart';
 import 'room_scan_labels.dart';
 
 /// La feuille d'un relevé : son plan, son nom, l'emplacement qu'il décrit,
-/// l'orientation de ses fenêtres, et de quoi le supprimer.
+/// l'orientation de ses fenêtres, ses radiateurs, qui serait bien ici, et
+/// de quoi le supprimer.
 Future<void> showRoomScanDetail(BuildContext context, {required String scanId}) =>
     showFloraSheet<void>(context, scrollable: true, builder: (ctx) => _RoomScanDetailBody(scanId: scanId));
 
@@ -29,6 +36,9 @@ class _RoomScanDetailBody extends ConsumerStatefulWidget {
 class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
   final _name = TextEditingController();
   bool _seeded = false;
+
+  /// Le doigt pose un radiateur au prochain toucher du plan.
+  bool _placingHeater = false;
 
   @override
   void dispose() {
@@ -71,6 +81,25 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     );
   }
 
+  /// Un toucher sur le plan : pose un radiateur si on l'a demandé, sinon
+  /// propose de retirer celui qu'on touche.
+  Future<void> _tapPlan(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, RoomPoint at) async {
+    final l10n = context.l10n;
+    if (_placingHeater) {
+      setState(() => _placingHeater = false);
+      await ref.read(roomScanControllerProvider.notifier).addHeater(scan.id, room, at);
+      Haptics.success();
+      return;
+    }
+    final hit = markers.where((m) => m.kind == RoomMarkerKind.heater && RoomPoint(m.x, m.z).distanceTo(at) < 0.5).firstOrNull;
+    if (hit == null) return;
+    await showAdaptiveActionSheet(
+      context,
+      cancelLabel: l10n.cancel,
+      actions: [SheetAction(label: l10n.roomScanRemoveHeater, destructive: true, onPressed: () => ref.read(roomScanControllerProvider.notifier).removeMarker(hit.id))],
+    );
+  }
+
   Future<void> _delete(RoomScan scan) async {
     final l10n = context.l10n;
     final ok = await showAdaptiveConfirm(context, title: l10n.roomScanDelete, message: l10n.roomScanDeleteConfirm, confirmLabel: l10n.delete, cancelLabel: l10n.cancel, destructive: true);
@@ -91,6 +120,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     }
     final room = ref.watch(scannedRoomProvider(scan.id)).value;
     final markers = ref.watch(roomMarkersProvider(scan.id)).value ?? const <RoomMarker>[];
+    final heaters = heaterPoints(markers);
     final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan.locationId).firstOrNull;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xl),
@@ -98,15 +128,11 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SheetHeader(title: scan.name),
-          if (room != null)
-            FloraCard(
-              padding: EdgeInsets.zero,
-              clip: true,
-              child: AspectRatio(
-                aspectRatio: 1.25,
-                child: CustomPaint(painter: RoomPlanPainter(room: room, colors: c, numberStyle: context.text.caption)),
-              ),
-            ),
+          if (room != null) _plan(scan, room, markers, heaters),
+          if (_placingHeater) ...[
+            const SizedBox(height: Space.xs),
+            Text(l10n.roomScanTapForHeater, style: context.text.caption),
+          ],
           const SizedBox(height: Space.md),
           FloraGroup(
             children: [
@@ -127,6 +153,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
                 chevron: true,
                 onTap: () => _pickLocation(scan),
               ),
+              if (location != null && room != null) ?_fillLocationRow(scan, room, location),
             ],
           ),
           if (room != null && room.windows.isNotEmpty) ...[
@@ -134,11 +161,27 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
             FloraGroup(
               header: l10n.roomScanWindows,
               footer: l10n.roomScanOrientationHelp,
+              children: [for (var i = 0; i < room.windows.length; i++) _windowRow(scan, room, markers, i)],
+            ),
+          ],
+          if (room != null) ...[
+            const SizedBox(height: Space.lg),
+            FloraGroup(
+              header: l10n.roomScanHeaters,
+              footer: l10n.roomScanHeatersHelp,
               children: [
-                for (var i = 0; i < room.windows.length; i++)
-                  _windowRow(scan, room, markers, i),
+                FloraListRow(
+                  leading: const Text('♨️', style: TextStyle(fontSize: 18)),
+                  title: l10n.roomScanAddHeater,
+                  subtitle: l10n.roomScanHeatersCount(heaters.length),
+                  chevron: false,
+                  trailing: _placingHeater ? const AdaptiveProgress() : null,
+                  onTap: _placingHeater ? null : () => setState(() => _placingHeater = true),
+                ),
               ],
             ),
+            const SizedBox(height: Space.lg),
+            _WhoFitsHere(scanId: scan.id),
           ],
           const SizedBox(height: Space.lg),
           FloraGroup(
@@ -147,6 +190,32 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  /// Le plan, et le doigt dessus : la géométrie du peintre rend le point de
+  /// la pièce qu'on a touché.
+  Widget _plan(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, List<RoomPoint> heaters) {
+    final c = context.colors;
+    return FloraCard(
+      padding: EdgeInsets.zero,
+      clip: true,
+      child: AspectRatio(
+        aspectRatio: 1.25,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final size = Size(constraints.maxWidth, constraints.maxHeight);
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapUp: (d) => _tapPlan(scan, room, markers, RoomPlanGeometry(room: room, size: size).toRoom(d.localPosition)),
+              child: CustomPaint(
+                size: size,
+                painter: RoomPlanPainter(room: room, heaters: heaters, colors: c, numberStyle: context.text.caption),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -164,6 +233,82 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
           : '${l10n.directionName(direction)} · ${confirmed != null ? l10n.roomScanWindowConfirmed : l10n.roomScanWindowFromCompass}',
       chevron: true,
       onTap: () => _pickOrientation(scan, room, i),
+    );
+  }
+
+  /// « Renseigner l'emplacement » : l'orientation de la plus grande fenêtre
+  /// et la lumière la plus fréquente au sol, proposées à un emplacement qui
+  /// ne les a pas encore. Rien quand tout est déjà rempli, ou quand le
+  /// relevé n'a rien à dire.
+  Widget? _fillLocationRow(RoomScan scan, ScannedRoom room, Location location) {
+    final l10n = context.l10n;
+    final survey = ref.watch(roomSurveyProvider(scan.id));
+    final directions = ref.watch(roomDirectionsProvider(scan.id));
+    CardinalDirection? mainDirection;
+    var mainArea = 0.0;
+    for (var i = 0; i < room.windows.length && i < directions.length; i++) {
+      if (directions[i] != null && room.windows[i].area > mainArea) {
+        mainArea = room.windows[i].area;
+        mainDirection = directions[i];
+      }
+    }
+    final light = survey?.typicalLight;
+    final orientation = location.orientation == null && mainDirection != null ? _capitalize(l10n.directionName(mainDirection)) : null;
+    final lightCode = location.light == null && light != null ? lightCodeFor(light) : null;
+    if (orientation == null && lightCode == null) return null;
+    return FloraListRow(
+      leading: const Text('✍️', style: TextStyle(fontSize: 18)),
+      title: l10n.roomScanFillLocation,
+      subtitle: l10n.roomScanFillLocationDetail(orientation ?? location.orientation ?? '—', l10n.lightName(light ?? lightNeedFromCode(location.light) ?? LightNeed.indirect)),
+      chevron: false,
+      onTap: () async {
+        await ref.read(roomScanControllerProvider.notifier).fillLocation(location, orientation: orientation, light: lightCode);
+        if (!mounted) return;
+        ref.read(toastProvider.notifier).show(ToastData(message: l10n.roomScanLocationFilled, emoji: '📍'));
+        Haptics.success();
+      },
+    );
+  }
+
+  static String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+}
+
+/// « Qui serait bien ici » : les plantes du jardin classées par ce que la
+/// pièce leur donne, et la fiche d'entretien à un toucher.
+class _WhoFitsHere extends ConsumerWidget {
+  const _WhoFitsHere({required this.scanId});
+
+  final String scanId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final fits = ref.watch(roomPlantFitsProvider(scanId));
+    return FloraGroup(
+      header: l10n.roomScanWhoFitsHere,
+      footer: fits.isEmpty ? l10n.roomScanNoPlantsToRank : l10n.roomScanWhoFitsHint,
+      children: [
+        for (final f in fits)
+          FloraListRow(
+            leading: Text(
+              switch (f.fit.verdict) {
+                RoomFitVerdict.good => '🌿',
+                RoomFitVerdict.acceptable => '🌤️',
+                RoomFitVerdict.unsuitable => '🚫',
+              },
+              style: const TextStyle(fontSize: 18),
+            ),
+            title: f.plant.plant.name,
+            subtitle: switch (f.fit.verdict) {
+              RoomFitVerdict.unsuitable => f.fit.shortfall == null ? l10n.verdictLine(f.fit.verdict) : l10n.shortfallLine(f.fit.shortfall!),
+              _ => f.fit.placements.isEmpty ? l10n.verdictLine(f.fit.verdict) : l10n.placementLine(f.fit.placements.first),
+            },
+            subtitleColor: f.fit.verdict == RoomFitVerdict.unsuitable ? c.danger : null,
+            chevron: true,
+            onTap: () => context.push(Routes.plantCare(f.plant.plant.id)),
+          ),
+      ],
     );
   }
 }

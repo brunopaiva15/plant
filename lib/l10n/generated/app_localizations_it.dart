@@ -6465,4 +6465,65 @@ class AppLocalizationsIt extends AppLocalizations {
   String placementPlanSemantics(int count) {
     return 'Pianta della stanza vista dall\'alto, $count posti selezionati.';
   }
+
+  @override
+  String get roomScanHeaters => 'Termosifoni';
+
+  @override
+  String get roomScanHeatersHelp =>
+      'RoomPlan non vede i termosifoni. Posato sulla pianta, un termosifone allontana le piante che temono l\'aria secca e calda.';
+
+  @override
+  String get roomScanAddHeater => 'Posare un termosifone';
+
+  @override
+  String get roomScanTapForHeater =>
+      'Toccare la pianta dove si trova il termosifone.';
+
+  @override
+  String roomScanHeatersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count termosifoni',
+      one: 'un termosifone',
+      zero: 'nessun termosifone',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanRemoveHeater => 'Rimuovere questo termosifone';
+
+  @override
+  String get roomScanFillLocation => 'Compilare la posizione';
+
+  @override
+  String roomScanFillLocationDetail(String orientation, String light) {
+    return 'Orientamento «$orientation», luce «$light», secondo il rilievo. Ciò che è già compilato non cambia.';
+  }
+
+  @override
+  String get roomScanLocationFilled => 'Posizione compilata';
+
+  @override
+  String get roomScanWhoFitsHere => 'Chi starebbe bene qui';
+
+  @override
+  String get roomScanWhoFitsHint =>
+      'Le piante del giardino, ordinate per ciò che la stanza offre loro.';
+
+  @override
+  String get roomScanNoPlantsToRank => 'Nessuna pianta con una specie nota.';
+
+  @override
+  String get placementShortfallHeater =>
+      'Tutti i posti sono vicino a un termosifone, e lei teme l\'aria secca e calda.';
+
+  @override
+  String get placementHeaterNote =>
+      'Vicino a un termosifone: qui l\'aria è secca e calda.';
+
+  @override
+  String get placementAtHome => 'Da voi';
 }

@@ -6459,4 +6459,65 @@ class AppLocalizationsDe extends AppLocalizations {
   String placementPlanSemantics(int count) {
     return 'Grundriss des Raums von oben, $count ausgewählte Plätze.';
   }
+
+  @override
+  String get roomScanHeaters => 'Heizkörper';
+
+  @override
+  String get roomScanHeatersHelp =>
+      'RoomPlan erkennt keine Heizkörper. Auf dem Grundriss gesetzt, hält ein Heizkörper die Pflanzen fern, die trockene, warme Luft nicht vertragen.';
+
+  @override
+  String get roomScanAddHeater => 'Heizkörper setzen';
+
+  @override
+  String get roomScanTapForHeater =>
+      'Auf dem Grundriss dort tippen, wo der Heizkörper steht.';
+
+  @override
+  String roomScanHeatersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Heizkörper',
+      one: 'ein Heizkörper',
+      zero: 'kein Heizkörper',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanRemoveHeater => 'Diesen Heizkörper entfernen';
+
+  @override
+  String get roomScanFillLocation => 'Ort ausfüllen';
+
+  @override
+  String roomScanFillLocationDetail(String orientation, String light) {
+    return 'Ausrichtung „$orientation“, Licht „$light“, laut Scan. Was schon ausgefüllt ist, bleibt unverändert.';
+  }
+
+  @override
+  String get roomScanLocationFilled => 'Ort ausgefüllt';
+
+  @override
+  String get roomScanWhoFitsHere => 'Wer hier gut stünde';
+
+  @override
+  String get roomScanWhoFitsHint =>
+      'Die Pflanzen des Gartens, geordnet nach dem, was der Raum ihnen bietet.';
+
+  @override
+  String get roomScanNoPlantsToRank => 'Keine Pflanze mit bekannter Art.';
+
+  @override
+  String get placementShortfallHeater =>
+      'Alle Plätze liegen nahe einem Heizkörper, und sie verträgt keine trockene, warme Luft.';
+
+  @override
+  String get placementHeaterNote =>
+      'Nahe einem Heizkörper: Die Luft ist hier trocken und warm.';
+
+  @override
+  String get placementAtHome => 'Bei dir';
 }

@@ -9,6 +9,9 @@ import '../../../domain/care/care_profile.dart';
 import '../../../domain/room/placement.dart';
 import '../../../domain/room/room_fit_advisor.dart';
 import '../../../domain/room/room_scan.dart';
+import '../../home_climate/application/home_climate_providers.dart';
+import '../../../domain/home/home_climate_advisor.dart';
+import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../application/room_scan_providers.dart';
 import 'room_plan_painter.dart';
 import 'room_scan_labels.dart';
@@ -103,12 +106,12 @@ class _RoomFitResult extends ConsumerWidget {
     final l10n = context.l10n;
     final c = context.colors;
     final room = ref.watch(scannedRoomProvider(scan.id));
-    final directions = ref.watch(roomDirectionsProvider(scan.id));
-    final southern = ref.watch(southernHemisphereProvider);
+    final survey = ref.watch(roomSurveyProvider(scan.id));
+    final heaters = heaterPoints(ref.watch(roomMarkersProvider(scan.id)).value ?? const []);
     return switch (room) {
-      AsyncData(:final value) when value != null => Builder(
+      AsyncData(:final value) when value != null && survey != null => Builder(
         builder: (context) {
-          final fit = RoomFitAdvisor.place(profile, value, southern: southern, directions: directions);
+          final fit = RoomFitAdvisor.placeIn(profile, survey);
           final tint = switch (fit.verdict) {
             RoomFitVerdict.good => c.sageSoft,
             RoomFitVerdict.acceptable => c.sunSoft,
@@ -128,6 +131,7 @@ class _RoomFitResult extends ConsumerWidget {
                       painter: RoomPlanPainter(
                         room: value,
                         fit: fit,
+                        heaters: heaters,
                         colors: c,
                         numberStyle: context.text.caption.copyWith(color: c.onSage, fontWeight: FontWeight.w700),
                       ),
@@ -154,6 +158,7 @@ class _RoomFitResult extends ConsumerWidget {
                 const SizedBox(height: Space.sm),
                 Text(l10n.placementHumidRoomNote, style: context.text.caption),
               ],
+              _HomeReadingLine(profile: profile, scan: scan),
             ],
           );
         },
@@ -182,8 +187,65 @@ class _RoomFitResult extends ConsumerWidget {
       ),
       title: l10n.placementLine(p),
       titleMaxLines: 2,
-      subtitle: [l10n.lightName(p.light), if (p.drafty) l10n.placementDraftyNote].join(' · '),
+      subtitle: [l10n.lightName(p.light), ...l10n.placementNotes(p)].join(' · '),
       chevron: false,
+    );
+  }
+}
+
+/// La mesure du capteur de la maison, quand il est dans cette pièce : le
+/// capteur porte le nom de sa pièce, le relevé le sien ou celui de son
+/// emplacement, et c'est le nom qui les rapproche — comme pour les conseils
+/// du jour. Rien sans capteur, rien dans une autre pièce.
+class _HomeReadingLine extends ConsumerWidget {
+  const _HomeReadingLine({required this.profile, required this.scan});
+
+  final CareProfile profile;
+  final RoomScan scan;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    final reading = ref.watch(homeReadingProvider).value;
+    if (reading == null || reading.isEmpty) return const SizedBox.shrink();
+    final sensorRoom = reading.sensor?.roomName?.trim().toLowerCase();
+    if (sensorRoom == null || sensorRoom.isEmpty) return const SizedBox.shrink();
+    final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan.locationId).firstOrNull;
+    final names = {scan.name.trim().toLowerCase(), ?location?.name.trim().toLowerCase()};
+    if (!names.contains(sensorRoom)) return const SizedBox.shrink();
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
+    final fit = homeFit(reading, profile);
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.md),
+      child: FloraCard(
+        color: fit == null ? c.sageSoft : c.sunSoft,
+        child: Row(
+          children: [
+            const EmojiTile(emoji: '🏠'),
+            const SizedBox(width: Space.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${l10n.placementAtHome} · ${homeReadingLabel(reading, metric: metric)}', style: context.text.title3),
+                  const SizedBox(height: 2),
+                  Text(
+                    switch (fit) {
+                      null => l10n.homeClimateFits,
+                      HomeClimateTipKind.cold => l10n.homeClimateTooCold,
+                      HomeClimateTipKind.hot => l10n.homeClimateTooHot,
+                      HomeClimateTipKind.dryAir => l10n.homeClimateTooDry,
+                      HomeClimateTipKind.humidAir => l10n.homeClimateTooHumid,
+                    },
+                    style: context.text.callout,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

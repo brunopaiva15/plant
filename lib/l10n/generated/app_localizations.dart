@@ -10949,6 +10949,96 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Plan de la pièce vu de dessus, {count} places retenues.'**
   String placementPlanSemantics(int count);
+
+  /// No description provided for @roomScanHeaters.
+  ///
+  /// In fr, this message translates to:
+  /// **'Radiateurs'**
+  String get roomScanHeaters;
+
+  /// No description provided for @roomScanHeatersHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'RoomPlan ne voit pas les radiateurs. Posé sur le plan, un radiateur écarte les plantes qui craignent l\'air sec et chaud.'**
+  String get roomScanHeatersHelp;
+
+  /// No description provided for @roomScanAddHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poser un radiateur'**
+  String get roomScanAddHeater;
+
+  /// No description provided for @roomScanTapForHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toucher le plan là où se trouve le radiateur.'**
+  String get roomScanTapForHeater;
+
+  /// No description provided for @roomScanHeatersCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{aucun radiateur} =1{un radiateur} other{{count} radiateurs}}'**
+  String roomScanHeatersCount(int count);
+
+  /// No description provided for @roomScanRemoveHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer ce radiateur'**
+  String get roomScanRemoveHeater;
+
+  /// No description provided for @roomScanFillLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renseigner l\'emplacement'**
+  String get roomScanFillLocation;
+
+  /// No description provided for @roomScanFillLocationDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Orientation « {orientation} », lumière « {light} », d\'après le relevé. Ce qui est déjà renseigné ne change pas.'**
+  String roomScanFillLocationDetail(String orientation, String light);
+
+  /// No description provided for @roomScanLocationFilled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement renseigné'**
+  String get roomScanLocationFilled;
+
+  /// No description provided for @roomScanWhoFitsHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qui serait bien ici'**
+  String get roomScanWhoFitsHere;
+
+  /// No description provided for @roomScanWhoFitsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les plantes du jardin, classées par ce que la pièce leur donne.'**
+  String get roomScanWhoFitsHint;
+
+  /// No description provided for @roomScanNoPlantsToRank.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune plante avec une espèce connue.'**
+  String get roomScanNoPlantsToRank;
+
+  /// No description provided for @placementShortfallHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les places sont près d\'un radiateur, et elle craint l\'air sec et chaud.'**
+  String get placementShortfallHeater;
+
+  /// No description provided for @placementHeaterNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Près d\'un radiateur : l\'air y est sec et chaud.'**
+  String get placementHeaterNote;
+
+  /// No description provided for @placementAtHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chez vous'**
+  String get placementAtHome;
 }
 
 class _AppLocalizationsDelegate

@@ -100,3 +100,9 @@ List<CardinalDirection?> windowDirections(ScannedRoom room, List<RoomMarker> mar
         markers.where((m) => m.kind == RoomMarkerKind.windowOrientation && m.windowIndex == i).firstOrNull?.orientation ??
             room.windowDirection(room.windows[i]),
     ];
+
+/// Les radiateurs posés sur le plan.
+List<RoomPoint> heaterPoints(List<RoomMarker> markers) => [
+      for (final m in markers)
+        if (m.kind == RoomMarkerKind.heater) RoomPoint(m.x, m.z),
+    ];

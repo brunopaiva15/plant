@@ -5,6 +5,53 @@ import 'placement.dart';
 import 'room_light_model.dart';
 import 'scanned_room.dart';
 
+/// Ce qu'une place de la pièce donne, avant toute fiche : sa lumière, l'air
+/// qui y bouge, le radiateur à côté, la fenêtre la plus proche. Une pièce se
+/// relève une fois par [RoomFitAdvisor.survey] et se juge ensuite pour
+/// autant de fiches qu'on veut.
+class RoomSurvey {
+  const RoomSurvey({required this.room, required this.spots});
+
+  final ScannedRoom room;
+  final List<SurveyedSpot> spots;
+
+  bool get isEmpty => spots.isEmpty;
+  bool get humidRoom => room.section?.isHumid ?? false;
+
+  /// La lumière la plus fréquente au sol : ce que « la pièce » reçoit, en un
+  /// mot, pour renseigner un emplacement.
+  LightNeed? get typicalLight {
+    final counts = <LightNeed, int>{};
+    for (final s in spots) {
+      if (s.surface == PlacementSurface.floor) counts[s.light] = (counts[s.light] ?? 0) + 1;
+    }
+    if (counts.isEmpty) return null;
+    return counts.entries.reduce((a, b) => b.value > a.value ? b : a).key;
+  }
+}
+
+class SurveyedSpot {
+  const SurveyedSpot({
+    required this.point,
+    required this.surface,
+    required this.light,
+    required this.drafty,
+    required this.nearHeater,
+    this.windowIndex,
+    this.windowDistance,
+    this.windowDirection,
+  });
+
+  final RoomPoint point;
+  final PlacementSurface surface;
+  final LightNeed light;
+  final bool drafty;
+  final bool nearHeater;
+  final int? windowIndex;
+  final double? windowDistance;
+  final CardinalDirection? windowDirection;
+}
+
 /// Où, dans une pièce relevée, une fiche d'entretien serait le mieux.
 ///
 /// Calqué sur `HomeClimateAdvisor` : une fonction pure, sans dépendance,
@@ -32,31 +79,56 @@ abstract final class RoomFitAdvisor {
   /// Le nombre de places nommées.
   static const int maxPlacements = 3;
 
-  /// À moins de cette distance d'un radiateur, l'air est sec et chaud.
-  static const double heaterRadius = 0.8;
+  /// Une fiche qui accepte la chaleur sèche d'un radiateur : de l'air sec,
+  /// et une plage idéale qui monte au moins jusque-là.
+  static const int heaterTolerantTempC = 28;
 
-  static RoomFit place(CareProfile profile, ScannedRoom room, {bool southern = false, List<CardinalDirection?>? directions}) {
-    final candidates = _candidates(room);
-    if (candidates.isEmpty) return RoomFit.empty;
-    final humid = room.section?.isHumid ?? false;
-    final all = <Placement>[];
-    for (final c in candidates) {
-      final sample = RoomLightModel.sample(room, c.point, height: c.height, southern: southern, directions: directions);
-      final light = sample.light;
-      final drafty = RoomLightModel.isDrafty(room, c.point);
+  /// La pièce, lue place par place.
+  static RoomSurvey survey(
+    ScannedRoom room, {
+    bool southern = false,
+    List<CardinalDirection?>? directions,
+    double? latitude,
+    List<RoomPoint> heaters = const [],
+  }) {
+    final elevation = RoomLightModel.sunElevationFor(latitude);
+    final spots = <SurveyedSpot>[];
+    for (final c in _candidates(room)) {
+      final sample = RoomLightModel.sample(room, c.point, height: c.height, southern: southern, directions: directions, sunElevationDeg: elevation);
       final nearest = _nearestVisibleWindow(room, c, directions);
-      all.add(Placement(
+      spots.add(SurveyedSpot(
         point: c.point,
         surface: c.surface,
-        light: light,
-        score: score(profile, light: light, drafty: drafty, humidRoom: humid),
-        drafty: drafty,
-        humidRoom: humid,
+        light: sample.light,
+        drafty: RoomLightModel.isDrafty(room, c.point),
+        nearHeater: RoomLightModel.isNearHeater(c.point, heaters),
         windowIndex: nearest?.$1,
         windowDistance: nearest?.$2,
         windowDirection: nearest?.$3,
       ));
     }
+    return RoomSurvey(room: room, spots: spots);
+  }
+
+  /// Les places d'une fiche dans une pièce déjà relevée.
+  static RoomFit placeIn(CareProfile profile, RoomSurvey survey) {
+    if (survey.isEmpty) return RoomFit.empty;
+    final humid = survey.humidRoom;
+    final all = [
+      for (final s in survey.spots)
+        Placement(
+          point: s.point,
+          surface: s.surface,
+          light: s.light,
+          score: score(profile, light: s.light, drafty: s.drafty, humidRoom: humid, nearHeater: s.nearHeater),
+          drafty: s.drafty,
+          humidRoom: humid,
+          nearHeater: s.nearHeater,
+          windowIndex: s.windowIndex,
+          windowDistance: s.windowDistance,
+          windowDirection: s.windowDirection,
+        ),
+    ];
     // Le score d'abord ; à score égal, la lumière la plus proche de l'idéal
     // de la fiche : le toléré vient après le préféré.
     all.sort((a, b) {
@@ -86,8 +158,19 @@ abstract final class RoomFitAdvisor {
     );
   }
 
+  /// [survey] puis [placeIn], pour une fiche seule.
+  static RoomFit place(
+    CareProfile profile,
+    ScannedRoom room, {
+    bool southern = false,
+    List<CardinalDirection?>? directions,
+    double? latitude,
+    List<RoomPoint> heaters = const [],
+  }) =>
+      placeIn(profile, survey(room, southern: southern, directions: directions, latitude: latitude, heaters: heaters));
+
   /// Le score d'une place, de 0 à 1.
-  static double score(CareProfile profile, {required LightNeed light, required bool drafty, required bool humidRoom}) {
+  static double score(CareProfile profile, {required LightNeed light, required bool drafty, required bool humidRoom, bool nearHeater = false}) {
     var s = _lightScore(profile, light);
     switch (profile.airflow) {
       case AirflowPreference.sheltered when drafty:
@@ -107,8 +190,13 @@ abstract final class RoomFitAdvisor {
           break;
       }
     }
+    if (nearHeater && !toleratesHeater(profile)) s *= 0.5;
     return s;
   }
+
+  /// Un radiateur sèche et chauffe l'air : seule une fiche qui veut l'air
+  /// sec et accepte 28 °C n'en souffre pas.
+  static bool toleratesHeater(CareProfile profile) => profile.humidity == HumidityNeed.low && (profile.idealTempMaxC ?? 0) >= heaterTolerantTempC;
 
   /// Dans la plage acceptée, 1 ; un cran sous le plancher, 0,5 ; deux ou
   /// plus, 0. Au-dessus de l'idéal, 0,6 puis 0,2 : une fougère en plein
@@ -129,6 +217,7 @@ abstract final class RoomFitAdvisor {
     if (brightest < profile.lightFloor.index) return RoomFitShortfall.tooDark;
     if (darkest > profile.light.index) return RoomFitShortfall.tooBright;
     if (profile.airflow == AirflowPreference.sheltered && all.every((p) => p.drafty)) return RoomFitShortfall.drafty;
+    if (!toleratesHeater(profile) && all.every((p) => p.nearHeater)) return RoomFitShortfall.heater;
     if (profile.humidity == HumidityNeed.low && all.first.humidRoom) return RoomFitShortfall.tooDry;
     return brightest <= profile.light.index ? RoomFitShortfall.tooDark : RoomFitShortfall.tooBright;
   }

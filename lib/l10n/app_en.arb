@@ -2127,5 +2127,37 @@
         "type": "int"
       }
     }
-  }
+  },
+  "roomScanHeaters": "Radiators",
+  "roomScanHeatersHelp": "RoomPlan does not see radiators. Placed on the plan, a radiator keeps away the plants that dislike dry, hot air.",
+  "roomScanAddHeater": "Place a radiator",
+  "roomScanTapForHeater": "Tap the plan where the radiator is.",
+  "roomScanHeatersCount": "{count, plural, =0{no radiator} =1{one radiator} other{{count} radiators}}",
+  "@roomScanHeatersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanRemoveHeater": "Remove this radiator",
+  "roomScanFillLocation": "Fill in the location",
+  "roomScanFillLocationDetail": "Orientation “{orientation}”, light “{light}”, from the scan. What is already filled in does not change.",
+  "@roomScanFillLocationDetail": {
+    "placeholders": {
+      "orientation": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanLocationFilled": "Location filled in",
+  "roomScanWhoFitsHere": "Who would do well here",
+  "roomScanWhoFitsHint": "The plants of the garden, ranked by what the room gives them.",
+  "roomScanNoPlantsToRank": "No plant with a known species.",
+  "placementShortfallHeater": "Every spot is near a radiator, and it dislikes dry, hot air.",
+  "placementHeaterNote": "Near a radiator: the air is dry and hot there.",
+  "placementAtHome": "At home"
 }
