@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/native_shell.dart';
@@ -273,7 +271,8 @@ class LargeTitlePage extends StatelessWidget {
           physics: floraScrollPhysics,
           slivers: [
             header,
-            if (aTitreNatif) _TitreReplie(notifier: replie, texte: collapsedTitle ?? title),
+            if (aTitreNatif)
+              SliverToBoxAdapter(child: _TitreReplie(notifier: replie, texte: collapsedTitle ?? title)),
             if (gauche == 0 && droite == 0)
               ...slivers
             else
@@ -549,50 +548,65 @@ class _GrandTitreNatif extends StatelessWidget {
   }
 }
 
-/// Dit à la barre du système quand le grand titre a quitté l'écran.
+/// Dit à la barre du système quand le grand titre passe dessous.
 ///
-/// Un sliver de rien du tout, posé juste après le titre : c'est de l'endroit
-/// où il se trouve qu'on déduit ce qu'il faut écrire dans la barre. `pinned`
-/// le garde en vie une fois sorti, faute de quoi il cesserait de répondre au
-/// moment précis où sa réponse compte.
-class _TitreReplie extends SingleChildRenderObjectWidget {
+/// « Dessous », et non « hors de l'écran » : iOS bascule dès que le grand
+/// titre glisse sous la barre, pas une fois qu'il a disparu. Mesuré sur la
+/// position de défilement, comme le fait déjà le titre replié de la barre de
+/// Flutter, et avec le même seuil — ce qui garde les deux chemins d'accord.
+///
+/// Une première version guettait la sortie d'un sliver posé après le titre.
+/// Elle basculait une hauteur de barre trop tard : un sliver ne sait pas
+/// qu'il *approche* du bord, seulement qu'il l'a franchi.
+class _TitreReplie extends StatefulWidget {
   const _TitreReplie({required this.notifier, required this.texte});
 
   final ValueNotifier<String> notifier;
   final String texte;
 
   @override
-  RenderObject createRenderObject(BuildContext context) => _RenderTitreReplie(notifier, texte);
-
-  @override
-  void updateRenderObject(BuildContext context, _RenderTitreReplie renderObject) {
-    renderObject
-      ..notifier = notifier
-      ..texte = texte;
-  }
+  State<_TitreReplie> createState() => _TitreReplieState();
 }
 
-class _RenderTitreReplie extends RenderSliver {
-  _RenderTitreReplie(this.notifier, this.texte);
+class _TitreReplieState extends State<_TitreReplie> {
+  /// Le repli du grand titre, en points de défilement. Celui de
+  /// `_CollapsedTitleState`, pour que les deux barres basculent ensemble.
+  static const double _seuil = 52;
 
-  ValueNotifier<String> notifier;
-  String texte;
+  ScrollPosition? _position;
 
   @override
-  void performLayout() {
-    // Le titre est parti dès que le défilement a mangé ce qui le précède.
-    final parti = constraints.scrollOffset > 0;
-    final voulu = parti ? texte : '';
-    if (notifier.value != voulu) {
-      // Pendant une mise en page : on attend l'image suivante pour prévenir,
-      // sans quoi on rebâtirait un arbre en cours de construction.
-      final cible = notifier;
-      SchedulerBinding.instance.addPostFrameCallback((_) => cible.value = voulu);
-    }
-    geometry = SliverGeometry.zero;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final position = Scrollable.maybeOf(context)?.position;
+    if (identical(position, _position)) return;
+    _position?.removeListener(_relire);
+    _position = position;
+    _position?.addListener(_relire);
+    _relire();
   }
-}
 
+  @override
+  void didUpdateWidget(_TitreReplie old) {
+    super.didUpdateWidget(old);
+    if (old.texte != widget.texte || old.notifier != widget.notifier) _relire();
+  }
+
+  @override
+  void dispose() {
+    _position?.removeListener(_relire);
+    super.dispose();
+  }
+
+  void _relire() {
+    final position = _position;
+    final passe = position != null && position.hasPixels && position.pixels >= _seuil;
+    widget.notifier.value = passe ? widget.texte : '';
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
 
 /// Porte le titre replié d'une page, et le fait vivre aussi longtemps qu'elle.
 class _AvecTitreReplie extends StatefulWidget {
