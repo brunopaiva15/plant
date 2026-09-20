@@ -1450,6 +1450,20 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   rejouent pas : ils se corrigent. Ce qui reste se dit à l'écran avec le mot
   juste — service saturé, réponse inexploitable, réseau absent — au lieu
   d'envoyer tout le monde vérifier sa connexion.
+- **La réflexion du modèle, coupée** : Qwen 3.5 réfléchit avant de répondre,
+  par défaut, et ce monologue invisible compte dans `max_tokens` comme la
+  réponse. Devant une photo, il durait parfois plus que le budget entier :
+  contenu vide, arrêté faute de place, deux fois de suite, et « L'analyse n'a
+  pas abouti » à quelqu'un dont le troisième essai passait — la panne
+  intermittente du diagnostic, celle qui se corrige en réessayant. Toutes les
+  passes partent désormais avec `reasoning_effort: "none"` (le paramètre
+  documenté par Infomaniak pour cela) : la consigne fait déjà raisonner le
+  modèle à voix haute, dans le résumé, et la réflexion cachée n'ajoutait que
+  du hasard, de l'attente et des jetons. Si le service refuse le paramètre,
+  la demande repart sans lui ni `response_format` ; et si une réflexion
+  reste allumée et se retrouve dans le contenu, entre balises `<think>`, le
+  lecteur l'écarte avant de chercher le JSON — une réflexion jamais close est
+  une réponse qui n'a pas commencé, et elle repart.
 - **Lire le motif avant de nommer** : la consigne demande d'abord *où* et
   *comment* — quelles feuilles, bord ou centre, sec ou mou, net ou diffus, et
   si cela s'étend — avant toute conclusion. C'est le motif, pas la couleur,

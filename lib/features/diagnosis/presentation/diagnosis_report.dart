@@ -56,8 +56,14 @@ class _SavedReport extends StatelessWidget {
   }
 }
 
-/// Le compte rendu d'une analyse : les photos regardées, le constat, ce qui
-/// avait été signalé et coché, puis toutes les pistes.
+/// Le compte rendu d'une analyse : les photos regardées, les pistes, puis le
+/// constat et ce qui avait été signalé et coché.
+///
+/// Les pistes d'abord : c'est ce qu'on est venu lire. Le constat et les
+/// symptômes signalés prenaient tout l'écran au-dessus d'elles, et on
+/// descendait sous un paragraphe et sa propre phrase pour apprendre ce que
+/// la plante a. Ils suivent désormais, pour qui veut comprendre sur quoi
+/// les pistes reposent.
 ///
 /// Le même corps sert à l'analyse qui vient d'aboutir et à celle qu'on
 /// rouvre des mois plus tard — sans quoi les deux se mettraient à diverger,
@@ -68,8 +74,8 @@ class DiagnosisReportView extends ConsumerWidget {
   final DiagnosisRecord record;
 
   /// Vrai quand l'analyse ne tranche pas et qu'aucune photo de plus n'est à
-  /// demander : le constat le dit en toutes lettres plutôt que de laisser
-  /// croire que les pistes concluent. Une analyse rouverte du journal ne
+  /// demander : les pistes le disent en toutes lettres, sous leur titre,
+  /// plutôt que de laisser croire qu'elles concluent. Une analyse rouverte du journal ne
   /// garde pas cet état — elle n'a plus de décision en cours, seulement ce
   /// qui a été écrit ce jour-là.
   final bool uncertain;
@@ -88,13 +94,33 @@ class DiagnosisReportView extends ConsumerWidget {
           DiagnosisPhotoStrip(photos: record.photos, side: 108),
           const SizedBox(height: Space.md),
         ],
-        // Le constat d'abord, comme une carte du matin : la tuile, le nom,
-        // la phrase. En terre cuite quand il y a urgence — c'est la seule
-        // chose qui change de couleur dans le compte rendu.
+        // L'urgence avant tout, en terre cuite — la seule chose qui change
+        // de couleur dans le compte rendu.
+        if (diagnosis.urgent) ...[
+          const _UrgentCard(),
+          const SizedBox(height: Space.sm),
+        ],
+        if (diagnosis.causes.isNotEmpty) ...[
+          SectionHeader(title: l10n.possibleCauses, padding: const EdgeInsets.only(bottom: Space.xxs)),
+          // Quand l'analyse ne tranche pas, c'est dit ici, sur les pistes
+          // que cela qualifie.
+          Text(uncertain ? l10n.diagnosisUncertain : l10n.causesHint, style: context.text.caption),
+          const SizedBox(height: Space.sm),
+          for (final cause in diagnosis.causes)
+            CauseCard(
+              cause: cause,
+              title: diagnosisCauseTitle(cause, catalog, language),
+              problem: catalog?[cause.problemId],
+              naturalCause: catalog?.natural(cause.naturalId),
+            ),
+          const SizedBox(height: Space.sm),
+        ],
+        // Puis ce sur quoi les pistes reposent : le constat de l'analyse —
+        // la tuile, le nom, la phrase, comme une carte du matin —, ce qui
+        // avait été signalé, vérifié et répondu.
         _FindingCard(
           summary: diagnosis.summary,
-          urgent: diagnosis.urgent,
-          uncertain: uncertain,
+          uncertain: uncertain && diagnosis.causes.isEmpty,
           natural: diagnosis.onlyNatural,
         ),
         if (record.symptoms != null) ...[
@@ -134,57 +160,62 @@ class DiagnosisReportView extends ConsumerWidget {
             ],
           ),
         ],
-        if (diagnosis.causes.isNotEmpty) ...[
-          SectionHeader(title: l10n.possibleCauses, padding: const EdgeInsets.only(top: Space.xl, bottom: Space.xxs)),
-          Text(l10n.causesHint, style: context.text.caption),
-          const SizedBox(height: Space.sm),
-          for (final cause in diagnosis.causes)
-            CauseCard(
-              cause: cause,
-              title: diagnosisCauseTitle(cause, catalog, language),
-              problem: catalog?[cause.problemId],
-              naturalCause: catalog?.natural(cause.naturalId),
-            ),
-        ],
       ],
     );
   }
 }
 
-/// Ce que l'analyse a vu, en tête du compte rendu.
+/// L'urgence, en tête du compte rendu : un ravageur, une pourriture, un
+/// déclin rapide. Elle passe avant les pistes — c'est ce qui presse — et
+/// ne redit rien d'autre : les pistes disent quoi, juste dessous.
+class _UrgentCard extends StatelessWidget {
+  const _UrgentCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return FloraCard(
+      color: c.terracottaSoft,
+      child: Row(
+        children: [
+          EmojiTile(emoji: '⚠️', background: c.surface, variant: 2),
+          const SizedBox(width: Space.md),
+          Expanded(child: Text(context.l10n.urgentHint, style: context.text.callout.copyWith(fontWeight: FontWeight.w600))),
+        ],
+      ),
+    );
+  }
+}
+
+/// Ce que l'analyse a vu, sous les pistes.
 class _FindingCard extends StatelessWidget {
-  const _FindingCard({required this.summary, required this.urgent, required this.uncertain, this.natural = false});
+  const _FindingCard({required this.summary, required this.uncertain, this.natural = false});
 
   final String summary;
-  final bool urgent;
+
+  /// Vrai quand l'analyse ne tranche pas et qu'aucune piste ne porte déjà la
+  /// mention : sans piste, le constat est le seul endroit où le dire.
   final bool uncertain;
 
-  /// Vrai quand aucune piste n'est un problème. Le titre le dit tout de
-  /// suite : trois cartes à lire avant de comprendre que rien ne va mal,
-  /// c'est trois cartes d'inquiétude pour rien.
+  /// Vrai quand aucune piste n'est un problème. Les pistes le disent déjà
+  /// par leur pastille ; le constat le redit en titre, sur la feuille.
   final bool natural;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final c = context.colors;
     return FloraCard(
-      color: urgent ? c.terracottaSoft : null,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          EmojiTile(emoji: urgent ? '⚠️' : (natural ? '🌿' : '🩺'), background: urgent ? c.surface : null, variant: 2),
+          EmojiTile(emoji: natural ? '🌿' : '🩺', variant: 2),
           const SizedBox(width: Space.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  urgent
-                      ? l10n.urgentHint
-                      : natural
-                          ? l10n.diagnosisNothingWrong
-                          : l10n.diagnosisFinding,
+                  natural ? l10n.diagnosisNothingWrong : l10n.diagnosisFinding,
                   style: context.text.caption.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 2),

@@ -295,6 +295,25 @@ void main() {
       expect(() => InfomaniakDiagnoser.parseResponse(_completion('', finish: 'content_filter')),
           throwsA(predicate((e) => e is DiagnosisException && e.message == 'refusal')));
     });
+
+    test('une réflexion laissée dans le contenu ne se lit pas, la réponse qui la suit si', () {
+      final brouillon = jsonEncode({'summary': 'brouillon', 'causes': []});
+      final d = InfomaniakDiagnoser.parseResponse(_completion('<think>Je regarde… $brouillon</think>\n$_ok'));
+      expect(d.summary, 'ok');
+      expect(d.causes.single.title, 'Tétranyques');
+    });
+
+    test('une réflexion dont il ne reste que la fermeture s\'écarte aussi', () {
+      final d = InfomaniakDiagnoser.parseResponse(_completion('Je regarde {"summary": "non"} </think>$_ok'));
+      expect(d.summary, 'ok');
+    });
+
+    test('une réflexion jamais close est une réponse qui n\'a pas commencé', () {
+      expect(
+        () => InfomaniakDiagnoser.parseResponse(_completion('<think>Je regarde la photo… {"summary": "non", "causes": []', finish: 'length')),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'empty')),
+      );
+    });
   });
 
   group('la requête', () {
@@ -314,6 +333,7 @@ void main() {
       final body = jsonDecode(captured.body) as Map<String, dynamic>;
       expect(body['model'], 'Qwen/Qwen3.5-397B-A17B-FP8');
       expect(body['response_format'], {'type': 'json_object'});
+      expect(body['reasoning_effort'], 'none', reason: 'la réflexion du modèle mangeait le budget de la réponse');
       final messages = body['messages'] as List;
       expect(messages.first['role'], 'system');
       expect(messages.first['content'], contains('"fr"'));
@@ -411,6 +431,7 @@ void main() {
         answers: const [DiagnosisAnswer(question: 'Rempotée quand ?', answer: 'Au printemps')],
       );
       expect(jsonEncode(body), contains('Au printemps'));
+      expect(body['reasoning_effort'], 'none');
     });
 
     test('la base locale part comme liste de pistes, groupée par nature', () async {
@@ -500,6 +521,23 @@ void main() {
       expect(result.summary, 'ok');
       expect(bodies, hasLength(2));
       expect(bodies.last.containsKey('response_format'), isFalse);
+      expect(bodies.last.containsKey('reasoning_effort'), isFalse, reason: 'on ne sait pas laquelle des deux options a été refusée');
+    });
+
+    test('une réponse vide, arrêtée faute de place, repart avec plus de jetons', () async {
+      final corps = <Map<String, dynamic>>[];
+      final client = MockClient((req) async {
+        corps.add(jsonDecode(req.body) as Map<String, dynamic>);
+        return corps.length == 1 ? _reponse(_completion('', finish: 'length'), 200) : _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+
+      expect(result.summary, 'ok');
+      expect(corps, hasLength(2));
+      expect(corps.last['max_tokens'], greaterThan(corps.first['max_tokens'] as int));
+      expect(corps.last['reasoning_effort'], 'none');
     });
 
     test('traduit les codes HTTP en erreurs parlantes', () async {
@@ -722,6 +760,7 @@ void main() {
       expect(texte, contains('0. Toile fine'));
       expect(texte, contains('sous les feuilles'));
       expect(body['temperature'], 0.0);
+      expect(body['reasoning_effort'], 'none', reason: 'trois cents jetons ne tiennent pas devant une réflexion');
     });
 
     test('la lecture écarte les numéros hors liste et les rangs illisibles', () {
