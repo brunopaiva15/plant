@@ -25,6 +25,9 @@ class SceneDelegate: FlutterSceneDelegate {
   ) {
     super.scene(scene, willConnectTo: session, options: connectionOptions)
     logDuoBuild(scene)
+    // La chrome de navigation passe à UIKit : c'est la seule façon qu'iOS la
+    // range dans la bande verticale de l'iPhone Duo.
+    NativeShell.install(in: scene)
   }
 
   private func logDuoBuild(_ scene: UIScene) {

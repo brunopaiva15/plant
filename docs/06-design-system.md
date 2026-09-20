@@ -327,6 +327,19 @@ départ et l'arrivée. Les libellés virent au passage — leur couleur suit la
 part de l'onglet que la bulle recouvre — au lieu de basculer à l'arrivée, et
 l'icône qui l'accueille se pose au ressort.
 
+### Ce qui vit dans la barre, et ce qui vit dessous
+La barre garde toute la largeur — c'est ce que fait iOS —, et seul le contenu
+se tient dans les marges. D'où une règle facile à oublier : **ce qui est posé
+dans la barre doit prendre ses marges lui-même.** Le champ de recherche est le
+cas d'espèce ; posé dans le `bottom` de la barre, il ignorait les marges des
+contenus et passait sous la bande verticale de l'iPhone Duo. Il prend
+désormais `max(Space.md, marge)` de chaque côté : sa marge ordinaire sur un
+téléphone, celle du système là où il y en a une.
+
+`test/design_system/wide_layout_test.dart` le tient sur les deux plateformes.
+Le premier test écrit ne prouvait rien : sous `flutter test`, la plateforme
+par défaut est Android, et c'est la barre d'iOS qui laissait passer le champ.
+
 ### Le menu debout (`FloraTabRail`)
 Quand la fenêtre est large sans être celle d'une tablette — l'écran intérieur
 d'un iPhone Duo ouvert —, le menu passe à droite, en colonne : une pilule de

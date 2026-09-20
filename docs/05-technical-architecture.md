@@ -159,6 +159,94 @@ la coquille soit là, après l'onboarding s'il y en a un.
   autre appareil — s'en vont. Les fichiers de moins de douze heures sont
   épargnés : pendant une création, la photo existe avant sa ligne.
 
+## La chrome de navigation, en natif sur iOS (`core/native_shell.dart`)
+
+Sur iOS, la barre d'onglets n'est plus dessinée par Flutter : c'est un
+`UITabBarController`. La raison est dans la documentation d'Apple, et elle ne
+laisse pas le choix — une `UITabBar` ou une `UINavigationBar` posée seule
+**n'est pas prise en compte** pour le placement vertical de l'iPhone Duo ; il
+faut un contrôleur qui possède sa barre. Une barre dessinée par une
+application, si fidèle soit-elle, reste du contenu aux yeux du système.
+
+Le partage est net :
+
+| qui | quoi |
+|---|---|
+| UIKit | la barre d'onglets, son placement, son débordement, son allure |
+| Dart | la navigation — go_router garde les branches et les pages |
+
+Toucher un onglet ne fait donc rien tout seul : le natif le dit à Dart sur
+`ch.vergasta.plant/native_shell`, Dart change de branche, Flutter redessine.
+L'inverse vaut aussi, pour qu'un lien profond déplace l'onglet.
+
+La forme, côté natif (`ios/Runner/NativeShell.swift`) :
+
+```
+UITabBarController          ← possède la barre, qu'iOS place
+├── HostViewController      ← un par onglet, vide
+│   └── (la vue de Flutter, quand cet onglet est choisi)
+└── …
+```
+
+Un contrôleur d'onglets tire ses onglets de ses enfants : il en faut autant
+que d'onglets. Mais il n'y a **qu'un moteur Flutter**, donc qu'une vue, et
+elle déménage d'un hôte à l'autre au changement d'onglet — contenance UIKit
+ordinaire, `addChild` et `didMove`, pas un tour de passe-passe. Quatre moteurs
+auraient coûté quatre démarrages et auraient retiré les onglets à go_router.
+
+Les onglets sont déclarés avec des **SF Symbols** et non les icônes Cupertino
+d'Auxine : c'est UIKit qui les dessine, et il ne connaît que les siens. Les
+libellés viennent des ARB comme partout ailleurs.
+
+Ailleurs que sur iOS, rien ne change : `FloraTabBar` en bas sur un téléphone,
+`FloraTabRail` debout sur une fenêtre large (docs/06, « Le menu debout »).
+
+Chaque onglet porte en plus un `UINavigationController`, pour la même raison
+que le contrôleur d'onglets : les boutons d'une page sont de vrais
+`UIBarButtonItem`, et c'est à ce titre qu'iOS les range dans la bande.
+
+Les pages n'ont pas changé pour autant. Elles donnent toujours des
+`FloraIconButton` à `LargeTitlePage` ; `components/native_actions.dart` les
+traduit — l'icône par `core/sf_symbols.dart`, le libellé par `semanticLabel`,
+l'action par un identifiant que le natif renvoie. Une table plutôt qu'un nom
+de symbole déclaré partout : cent vingt sites d'appel n'ont pas eu à bouger.
+
+C'est **tout ou rien** : si une seule icône manque à la table, la page garde
+ses boutons en argile, et le point de code manquant s'écrit dans la console en
+debug. Une rangée moitié système moitié argile serait pire que l'une ou
+l'autre.
+
+Les pages qui prétendent à la barre forment une **pile**, et la dernière
+visible l'emporte. Une page poussée par-dessus une autre prend la barre ;
+quand elle s'en va, celle qu'elle recouvrait la reprend sans avoir à se
+redessiner — rien ne la forcerait à le faire. « Visible » se lit sur deux
+choses : la route est-elle celle du dessus, et sa branche d'onglet est-elle
+éveillée (`TickerMode`).
+
+**Le titre reste à Flutter.** La barre native n'en porte pas : le grand titre
+en argile — le « Bonsoir » arrondi — est la signature d'Auxine, et « fini les
+menus » ne dit rien des titres. Deux titres empilés seraient une faute ; c'est
+donc le natif qui se tait. À rouvrir si la bande horizontale que la barre
+garde en haut se révèle trop chère.
+
+Le bouton de tête d'une page part avec les autres — le tableau de bord
+d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. Pas le
+bouton retour : celui-là attend d'être rendu par la pile de navigation
+elle-même.
+
+**Et la chrome s'efface quand une page la couvre.** UIKit ne sait rien de la
+navigation de Flutter : une fiche de plante, un scanner de QR code, une
+feuille d'ajout sont des routes que go_router pose par-dessus la coquille, et
+les barres natives restaient là — sur la page ouverte, avec les boutons de
+celle d'en dessous. `app/native_chrome_observer.dart` observe le navigateur
+racine : tant qu'il reste une route au-dessus de la première, les deux barres
+s'effacent. Les pages des branches d'onglets ne passent pas par là, elles ont
+leur propre navigateur, et c'est bien la coquille qu'on regarde alors.
+
+Ce qui reste à faire : le bouton retour, le placement des actions proéminentes
+(`pinnedTrailingGroup`), et les marges sûres rendues par le natif plutôt que
+mesurées.
+
 ## La fenêtre : téléphone, tablette, pliable (`app/window.dart`)
 
 Sur téléphone, l'application se tient en portrait : chaque écran est une
