@@ -500,36 +500,52 @@ def n28():
 
 def n29():
     """Ecorce qui se desquame : l'arbre change de peau, celle du dessous est neuve."""
-    # Le tronc droit, dans l'ecorce neuve et claire : c'est elle qui apparait
-    # sous celle qui s'en va, et l'ecart entre les deux fait tout le dessin.
-    contour = [(-.38, -1.16), (.38, -1.16), (.40, -.58), (.41, .00), (.40, .58),
-               (.38, 1.16), (-.38, 1.16), (-.40, .58), (-.41, .00), (-.40, -.58)]
-    # Le bois neuf est chaud et clair, l'ecorce qui s'en va sombre : sans cet
-    # ecart, les deux couches se confondent en une seule masse.
-    plaque('Tronc', contour, M['ochre'], epaisseur=.60, lisse=1)
-    # Deux lanieres qui se soulevent et s'enroulent hors du tronc : c'est ce
-    # debord qui dit qu'elles se detachent, et non qu'elles sont peintes.
-    for i, (z, sens, haut) in enumerate(((.42, 1, .56), (-.46, -1, .52))):
-        b = sens * .36
-        laniere = [(b * .96, z + haut), (b + sens * .40, z + haut * .72),
-                   (b + sens * .52, z - haut * .30), (b + sens * .26, z - haut),
-                   (b + sens * .10, z - haut * .56), (b + sens * .30, z + haut * .26),
-                   (b * .92, z + haut * .60)]
-        plaque(f'Laniere_{i}', laniere, M['ecorce_sombre'], depth=.46, epaisseur=.16, lisse=2)
-        trace(f'Decollement_{i}', [(b * .94, z + haut * .92), (b * .98, z), (b * .94, z - haut * .92)],
-              [.026, .034, .026], M['ecorce'], depth=.34)
+    # Le tronc de trois quarts, dans l'ecorce neuve : chaude et claire, c'est
+    # elle qui apparait sous celle qui s'en va.
+    # Les coins doubles gardent les bouts francs : une section de tronc, pas
+    # une gelule. La subdivision arrondit ce qu'on lui laisse d'espace.
+    contour = [(-.84, -1.16), (-.20, -1.16), (-.18, -1.10), (-.14, -.55), (-.13, .00), (-.14, .55),
+               (-.18, 1.10), (-.20, 1.16), (-.84, 1.16), (-.88, 1.10),
+               (-.90, .55), (-.91, .00), (-.90, -.55), (-.88, -1.10)]
+    plaque('Tronc', contour, M['ochre'], epaisseur=.58, lisse=1)
+    # La laniere part du tronc, se souleve et finit enroulee : c'est le
+    # rouleau qui dit qu'elle se detache, mieux qu'une ecaille posee a plat.
+    def enroulement(cx, cz, r0, r1, tours, depart):
+        pas = 26
+        return [(cx + (r0 + (r1 - r0) * k / pas) * math.cos(depart + tours * 2 * math.pi * k / pas),
+                 cz + (r0 + (r1 - r0) * k / pas) * math.sin(depart + tours * 2 * math.pi * k / pas))
+                for k in range(pas + 1)]
+
+    laniere = [(-.20, .62), (.02, .56), (.20, .40)] + enroulement(.34, .10, .34, .07, 1.35, math.radians(96))
+    trace('Laniere', laniere, [.145] * 3 + [.135 - .075 * k / 26 for k in range(27)],
+          M['ecorce_sombre'], depth=.34)
+    # Celle de l'an dernier, tombee au pied, deja toute roulee.
+    tombee = enroulement(.28, -.86, .26, .06, 1.25, math.radians(-40))
+    trace('Laniere_tombee', tombee, [.105 - .055 * k / 26 for k in range(27)],
+          M['ecorce'], depth=.30)
 
 
 def n30():
-    """Lenticelles : les pores de l'ecorce, alignes et reguliers."""
-    trace('Rameau', [(-.34, -1.02), (-.12, -.34), (.10, .34), (.30, 1.00)],
-         [.205, .200, .190, .170], M['ecorce_claire'])
-    for i, (t, f) in enumerate(((.10, -.5), (.22, .5), (.34, -.4), (.46, .4), (.58, -.5),
-                                (.70, .4), (.82, -.3), (.90, .5))):
-        x = -.34 + .64 * t + f * .12
-        z = -1.02 + 2.02 * t
-        ball(f'Lenticelle_{i}', (x, .26, z), (.075, .030, .026), M['ecorce_sombre'])
-    perle('Bourgeon', .32, 1.08, .085, M['sage_dark'], depth=.30, aplati=.86)
+    """Lenticelles : les pores de l'ecorce, en tirets alignes."""
+    # Une branche de l'annee, en biais et en ecorce sombre : les lenticelles
+    # sont des tirets clairs en travers, la ou les racines adventives (N26)
+    # sont des bosses sur une tige verte. Les deux dessins ne doivent pas se
+    # ressembler.
+    axe = [(-1.02, -.66), (-.34, -.26), (.34, .20), (.96, .68)]
+    trace('Branche', axe, [.235, .225, .210, .180], M['ecorce_sombre'], depth=0)
+    direction = math.atan2(.68 + .66, .96 + 1.02)
+    nx, nz = -math.sin(direction), math.cos(direction)
+    for i, (t, decalage, longueur) in enumerate(((.12, .30, .085), (.24, -.34, .080), (.36, .26, .090),
+                                                 (.47, -.28, .082), (.58, .30, .078), (.68, -.24, .072),
+                                                 (.79, .22, .066), (.88, -.20, .058))):
+        x = -1.02 + 1.98 * t + nx * decalage * .18
+        z = -.66 + 1.34 * t + nz * decalage * .18
+        trace(f'Lenticelle_{i}', [(x - nx * longueur, z - nz * longueur),
+                                  (x + nx * longueur, z + nz * longueur)],
+              [.030, .030], M['cream'], depth=.30)
+    # Un bourgeon au bout : c'est une branche vivante, pas un baton.
+    perle('Bourgeon', 1.02, .78, .105, M['sage_dark'], depth=.24, aplati=.88)
+    feuille(.74, 1.02, .38, -34)
 
 
 def n31():
