@@ -43,12 +43,18 @@ class WindowRegions {
   @override
   int get hashCode => Object.hash(systemStackBottom, systemAxisFromRight, fold);
 
+  /// Ce qui est annoncé, et rien d'autre : une cote absente se tait plutôt
+  /// que d'écrire « axe à null », qui se lit comme une panne alors que c'est
+  /// le cas ordinaire — iOS n'annonce pas la caméra dans toutes les poses.
   @override
-  String toString() => isEmpty
-      ? 'aucune région annoncée'
-      : 'pile jusqu\'à ${systemStackBottom?.toStringAsFixed(1)} · '
-            'axe à ${systemAxisFromRight?.toStringAsFixed(1)} du bord · '
-            'pli ${fold ?? "aucun"}';
+  String toString() {
+    if (isEmpty) return 'aucune région annoncée';
+    return [
+      if (systemStackBottom != null) 'pile jusqu\'à ${systemStackBottom!.toStringAsFixed(1)}',
+      if (systemAxisFromRight != null) 'axe à ${systemAxisFromRight!.toStringAsFixed(1)} du bord',
+      if (fold != null) 'pli $fold',
+    ].join(' · ');
+  }
 }
 
 /// Le canal qui les demande, et les tient à jour au fil des plis.
