@@ -26,6 +26,25 @@ class NativeTab {
   Map<String, Object?> toMap() => {'title': title, 'symbol': symbol};
 }
 
+/// Un bouton de page, tel que le natif le dessine.
+@immutable
+class NativeAction {
+  const NativeAction({required this.id, required this.symbol, required this.title, this.enabled = true});
+
+  /// Ce que le natif renvoie quand on le touche.
+  final String id;
+
+  /// Un nom de SF Symbol. Voir `core/sf_symbols.dart`.
+  final String symbol;
+
+  /// Dit à VoiceOver, et par iOS quand il déplie un menu de débordement.
+  final String title;
+
+  final bool enabled;
+
+  Map<String, Object?> toMap() => {'id': id, 'symbol': symbol, 'title': title, 'enabled': enabled};
+}
+
 abstract final class NativeShell {
   static const MethodChannel _channel = MethodChannel('ch.vergasta.plant/native_shell');
 
@@ -35,6 +54,9 @@ abstract final class NativeShell {
   /// Ce que fait un onglet touché. Posé par la coquille.
   static void Function(int index)? onTab;
 
+  /// Ce que fait un bouton de page touché. Posé par la page ouverte.
+  static void Function(String id)? onAction;
+
   static bool _branche = false;
   static String? _derniers;
   static int? _dernierChoisi;
@@ -43,7 +65,12 @@ abstract final class NativeShell {
     if (!isSupported || _branche) return;
     _branche = true;
     _channel.setMethodCallHandler((call) async {
-      if (call.method == 'onTab') onTab?.call(call.arguments as int);
+      switch (call.method) {
+        case 'onTab':
+          onTab?.call(call.arguments as int);
+        case 'onAction':
+          onAction?.call(call.arguments as String);
+      }
       return null;
     });
   }
@@ -68,6 +95,22 @@ abstract final class NativeShell {
     await _invoke('setSelected', selected);
   }
 
+  static String? _dernieresActions;
+
+  /// Déclare le titre et les boutons de la page ouverte.
+  ///
+  /// Une déclaration identique à la précédente n'est pas renvoyée : une page
+  /// se reconstruit souvent, et UIKit refait ses boutons chaque fois qu'on
+  /// les lui redonne.
+  static Future<void> publishActions({String? title, List<NativeAction> actions = const []}) async {
+    if (!isSupported) return;
+    final charge = {'title': title ?? '', 'actions': [for (final a in actions) a.toMap()]};
+    final empreinte = charge.toString();
+    if (empreinte == _dernieresActions) return;
+    _dernieresActions = empreinte;
+    await _invoke('setActions', charge);
+  }
+
   static Future<void> _invoke(String methode, Object? arguments) async {
     try {
       await _channel.invokeMethod<bool>(methode, arguments);
@@ -75,6 +118,7 @@ abstract final class NativeShell {
       // Un binaire sans la coquille native. On oublie, et on redemandera.
       _derniers = null;
       _dernierChoisi = null;
+      _dernieresActions = null;
     } on PlatformException catch (e) {
       debugPrint('[auxine:natif] refus de $methode : ${e.message}');
     }

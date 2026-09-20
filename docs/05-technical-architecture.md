@@ -201,9 +201,37 @@ libellés viennent des ARB comme partout ailleurs.
 Ailleurs que sur iOS, rien ne change : `FloraTabBar` en bas sur un téléphone,
 `FloraTabRail` debout sur une fenêtre large (docs/06, « Le menu debout »).
 
-Ce qui reste à faire : les titres et les boutons des pages
-(`UINavigationController` par onglet), le bouton retour, et les marges sûres
-rendues par le natif plutôt que mesurées.
+Chaque onglet porte en plus un `UINavigationController`, pour la même raison
+que le contrôleur d'onglets : les boutons d'une page sont de vrais
+`UIBarButtonItem`, et c'est à ce titre qu'iOS les range dans la bande.
+
+Les pages n'ont pas changé pour autant. Elles donnent toujours des
+`FloraIconButton` à `LargeTitlePage` ; `components/native_actions.dart` les
+traduit — l'icône par `core/sf_symbols.dart`, le libellé par `semanticLabel`,
+l'action par un identifiant que le natif renvoie. Une table plutôt qu'un nom
+de symbole déclaré partout : cent vingt sites d'appel n'ont pas eu à bouger.
+
+C'est **tout ou rien** : si une seule icône manque à la table, la page garde
+ses boutons en argile, et le point de code manquant s'écrit dans la console en
+debug. Une rangée moitié système moitié argile serait pire que l'une ou
+l'autre.
+
+Les pages qui prétendent à la barre forment une **pile**, et la dernière
+visible l'emporte. Une page poussée par-dessus une autre prend la barre ;
+quand elle s'en va, celle qu'elle recouvrait la reprend sans avoir à se
+redessiner — rien ne la forcerait à le faire. « Visible » se lit sur deux
+choses : la route est-elle celle du dessus, et sa branche d'onglet est-elle
+éveillée (`TickerMode`).
+
+**Le titre reste à Flutter.** La barre native n'en porte pas : le grand titre
+en argile — le « Bonsoir » arrondi — est la signature d'Auxine, et « fini les
+menus » ne dit rien des titres. Deux titres empilés seraient une faute ; c'est
+donc le natif qui se tait. À rouvrir si la bande horizontale que la barre
+garde en haut se révèle trop chère.
+
+Ce qui reste à faire : le bouton retour, le placement des actions proéminentes
+(`pinnedTrailingGroup`), et les marges sûres rendues par le natif plutôt que
+mesurées.
 
 ## La fenêtre : téléphone, tablette, pliable (`app/window.dart`)
 

@@ -15,11 +15,18 @@ import UIKit
 /// navigation entre les pages. Le contrôleur d'onglets ne sert qu'à la chrome :
 ///
 /// ```
-/// UITabBarController          ← possède la barre, qu'iOS place
-/// ├── HostViewController      ← un par onglet, vide
-/// │   └── (la vue de Flutter, quand cet onglet est choisi)
+/// UITabBarController              ← possède la barre d'onglets
+/// ├── UINavigationController      ← un par onglet, possède sa barre
+/// │   └── HostViewController      ← vide, porte le titre et les boutons
+/// │       └── (la vue de Flutter, quand cet onglet est choisi)
 /// └── …
 /// ```
+///
+/// Les deux contrôleurs sont là pour la même raison : ce sont eux, et non
+/// leurs barres prises isolément, qu'iOS considère pour le placement
+/// vertical. Les boutons des pages sont donc de vrais `UIBarButtonItem`,
+/// dessinés en SF Symbols — voir `core/sf_symbols.dart`, qui traduit les
+/// icônes d'Auxine sans que les pages aient à changer.
 ///
 /// Un contrôleur d'onglets tire ses onglets de ses enfants : il en faut donc
 /// autant que d'onglets. Mais il n'y a qu'un moteur, donc qu'une vue Flutter,
@@ -38,6 +45,10 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   private weak var flutter: UIViewController?
   private var onglets: UITabBarController?
   private var hotes: [HostViewController] = []
+  private var navigations: [UINavigationController] = []
+  /// L'identité des boutons de la page ouverte, dans l'ordre reçu. Un
+  /// `UIBarButtonItem` ne porte qu'un entier, pas une chaîne.
+  private var identifiants: [String] = []
   /// Vrai pendant qu'on applique une sélection venue de Dart : le contrôleur
   /// préviendrait sinon Dart d'un changement que Dart vient de demander.
   private var enEcho = false
@@ -89,6 +100,13 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     case "setSelected":
       choisir((call.arguments as? Int) ?? 0)
       result(true)
+    case "setActions":
+      guard let args = call.arguments as? [String: Any] else {
+        result(false)
+        return
+      }
+      appliquer(args)
+      result(true)
     default:
       result(FlutterMethodNotImplemented)
     }
@@ -98,15 +116,17 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   private func rebatir(titres: [String], symboles: [String]) {
     guard let onglets else { return }
     let choisi = min(onglets.selectedIndex, max(0, titres.count - 1))
-    hotes = titres.indices.map { i in
-      let hote = HostViewController()
-      hote.tabBarItem = UITabBarItem(
+    hotes = titres.indices.map { _ in HostViewController() }
+    navigations = titres.indices.map { i in
+      let navigation = UINavigationController(rootViewController: hotes[i])
+      navigation.navigationBar.prefersLargeTitles = false
+      navigation.tabBarItem = UITabBarItem(
         title: titres[i],
         image: UIImage(systemName: symboles[i]),
         tag: i)
-      return hote
+      return navigation
     }
-    onglets.setViewControllers(hotes, animated: false)
+    onglets.setViewControllers(navigations, animated: false)
     enEcho = true
     onglets.selectedIndex = choisi
     enEcho = false
@@ -151,10 +171,44 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     hote.view.setNeedsLayout()
   }
 
+  /// Pose le titre et les boutons de la page ouverte sur l'onglet courant.
+  ///
+  /// Les boutons vont à droite, dans l'ordre reçu : `rightBarButtonItems` les
+  /// range de droite à gauche, donc la liste est retournée pour que le
+  /// premier déclaré reste le plus près du bord — l'ordre qu'une page écrit.
+  private func appliquer(_ args: [String: Any]) {
+    guard let onglets, onglets.selectedIndex < hotes.count else { return }
+    let item = hotes[onglets.selectedIndex].navigationItem
+    let titre = args["title"] as? String
+    item.title = (titre?.isEmpty ?? true) ? nil : titre
+
+    var boutons: [UIBarButtonItem] = []
+    identifiants = []
+    for brut in args["actions"] as? [[String: Any]] ?? [] {
+      guard let id = brut["id"] as? String, let symbole = brut["symbol"] as? String else { continue }
+      let bouton = UIBarButtonItem(
+        image: UIImage(systemName: symbole),
+        style: .plain,
+        target: self,
+        action: #selector(touche(_:)))
+      bouton.tag = identifiants.count
+      bouton.accessibilityLabel = brut["title"] as? String
+      bouton.isEnabled = (brut["enabled"] as? Bool) ?? true
+      identifiants.append(id)
+      boutons.append(bouton)
+    }
+    item.rightBarButtonItems = boutons.isEmpty ? nil : boutons.reversed()
+  }
+
+  @objc private func touche(_ envoyeur: UIBarButtonItem) {
+    guard envoyeur.tag >= 0, envoyeur.tag < identifiants.count else { return }
+    channel?.invokeMethod("onAction", arguments: identifiants[envoyeur.tag])
+  }
+
   // MARK: - UITabBarControllerDelegate
 
   func tabBarController(_ controller: UITabBarController, didSelect viewController: UIViewController) {
-    guard !enEcho, let index = hotes.firstIndex(where: { $0 === viewController }) else { return }
+    guard !enEcho, let index = navigations.firstIndex(where: { $0 === viewController }) else { return }
     heberger(dans: hotes[index])
     channel?.invokeMethod("onTab", arguments: index)
   }

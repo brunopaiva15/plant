@@ -7,6 +7,7 @@ import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
 import 'buttons.dart';
+import 'native_actions.dart';
 import 'rail_actions.dart';
 import 'scroll_fade.dart';
 import 'tab_bar.dart';
@@ -142,8 +143,15 @@ class LargeTitlePage extends StatelessWidget {
       if (actions != null) ...actions! else ?trailing,
     ];
 
+    // Sur iOS, ces mêmes boutons partent à UIKit : la barre de navigation
+    // native les dessine en SF Symbols, et c'est elle qu'iOS range dans la
+    // bande verticale de l'iPhone Duo. `describe` rend `null` si un bouton
+    // lui échappe, et la page garde alors les siens.
+    final aCeder = <Widget>[if (actions != null) ...actions! else ?trailing];
+    final natif = NativeShell.isSupported && !debout ? NativeActions.describe(aCeder) : null;
+
     final lead = debout ? _impliedBackButton(context) : (leading ?? _impliedBackButton(context));
-    final Widget? suite = debout ? null : _headerActions();
+    final Widget? suite = debout || natif != null ? null : _headerActions();
     final Widget header;
     if (isCupertino(context)) {
       header = CupertinoSliverNavigationBar(
@@ -201,7 +209,7 @@ class LargeTitlePage extends StatelessWidget {
     final inset = readableInset(context);
     final gauche = inset + marges.left;
     final droite = inset + marges.right;
-    return RailActions(
+    final coquille = RailActions(
       actions: debout ? boutons : const <Widget>[],
       child: Scaffold(
         backgroundColor: c.canvas,
@@ -229,6 +237,10 @@ class LargeTitlePage extends StatelessWidget {
         ),
       ),
     );
+
+    // Le natif ne dessine que si tous les boutons lui parlent.
+    if (natif == null) return coquille;
+    return NativeActions(title: '', actions: natif, child: coquille);
   }
 
   /// Les boutons tels que le haut de page les porte : en rangée, séparés.
