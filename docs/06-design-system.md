@@ -395,11 +395,28 @@ D'où `LargeTitlePage.actions`, une **liste** et non une `Row` toute faite :
 une rangée ne se range pas debout. Les pages qui n'ont qu'un bouton gardent
 `trailing`, qui marche pareil.
 
-C'est la **pilule** qui est centrée dans la hauteur, pas le groupe. La
-navigation ne doit pas se déplacer d'un onglet à l'autre : à centrer le tout,
-elle remontait d'un cran à chaque bouton de plus, et quatre boutons la
-faisaient passer sous l'heure du système. Les boutons pendent donc sous elle,
-et le groupe ne remonte que s'ils manquent de place en bas.
+**Tout se cale en haut**, et rien n'est centré. C'est ce qui fait qu'une
+pilule ne se déplace ni d'un onglet à l'autre, ni d'un pli à l'autre : elle
+commence à 152 points du bord haut dans toutes les poses, et les boutons
+pendent dessous. Centrer, même la pilule seule, la faisait bouger dès que la
+fenêtre changeait de hauteur — et à centrer le groupe entier, elle remontait
+d'un cran à chaque bouton de plus, jusqu'à passer sous l'heure du système.
+
+Ces 152 points sont une mesure, pas un choix : sur l'écran extérieur du Duo,
+la pile caméra + heure + wifi descend à 140 points, là où
+`MediaQuery.padding.top` n'en annonce que 82. iOS ne dit donc pas où s'arrête
+sa propre colonne, et la nôtre commence sous la mesure, avec un peu d'air. Si
+une pose annonçait davantage, c'est l'annonce qui l'emporterait.
+
+Le dégagement cède avant les cibles : dans une fenêtre trop courte — un Duo
+fermé et couché, 466 points de haut pour quatre onglets et quatre boutons —
+la colonne remonte de ce qu'il faut, et les onglets gardent leurs 44 points.
+
+**Horizontalement, les deux colonnes partagent un axe.** iOS pose sa pile à
+47,7 points du bord droit, mesuré au pixel dans les trois poses du Duo — 466,
+669 et 951 points de large. La pilule en fait 64, donc 16 de blanc mettent
+son axe à 48. Douze la décalaient de quatre points : c'est tout l'écart entre
+une colonne qui prolonge celle du système et une colonne posée à côté.
 
 La colonne mesure cette place avant de se donner une hauteur — elle ne peut
 pas mesurer ses enfants d'abord. Un bouton compte pour 44 points et non 40 :

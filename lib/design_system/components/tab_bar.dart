@@ -170,8 +170,25 @@ class FloraTabRail extends StatelessWidget {
   /// La hauteur d'un onglet dans la colonne.
   static const double _slot = 56;
 
-  /// Le blanc minimal entre la pilule et le bord.
-  static const double _edgeGap = Space.sm;
+  /// Jusqu'où descendent les éléments du système en haut de la bande —
+  /// caméra, heure et wifi empilés —, mesuré au pixel sur le simulateur de
+  /// l'iPhone Duo fermé.
+  ///
+  /// iOS n'en dit rien de fiable : `MediaQuery.padding.top` annonce 82 points
+  /// dans cette pose, là où la pile en descend à 140. La colonne commence
+  /// donc en dessous, avec un peu d'air. Si une pose annonçait davantage,
+  /// c'est elle qui l'emporterait.
+  static const double _sousLesElementsDuSysteme = 152;
+
+  /// Le blanc entre la pilule et le bord droit, choisi pour que la colonne
+  /// tombe sur le **même axe** que les éléments du système.
+  ///
+  /// iOS pose sa pile — caméra, heure, wifi — à 47,7 points du bord droit,
+  /// mesuré au pixel dans les trois poses du Duo : fermé 466, ouvert 669,
+  /// couché 951. La pilule fait 64 points de large, donc 16 de blanc mettent
+  /// son axe à 48 : les deux colonnes s'alignent. Douze points la décalaient
+  /// de quatre, assez pour que l'œil le voie.
+  static const double _edgeGap = Space.md;
 
   /// La fenêtre appelle un menu debout plutôt qu'une barre en bas.
   ///
@@ -242,7 +259,17 @@ class FloraTabRail extends StatelessWidget {
               : actions.length * _actionSize + (actions.length - 1) * Space.xs + Space.md;
           final voulu = 12 + _slot * tabs.length;
           final dispo = constraints.hasBoundedHeight ? constraints.maxHeight : double.infinity;
-          final hauteur = dispo.isFinite ? math.min(voulu, math.max(0.0, dispo - placeDesBoutons)) : voulu;
+          // Tout se cale en haut, et non au milieu : c'est ce qui fait qu'une
+          // pilule ne se déplace ni d'un onglet à l'autre, ni d'un pli à
+          // l'autre. En bas, les boutons pendent et la place qui reste ne
+          // sert qu'à eux.
+          final souhaite = math.max(_sousLesElementsDuSysteme, MediaQuery.paddingOf(context).top + Space.sm) - Space.md;
+          // Sauf dans une fenêtre trop courte pour ce dégagement : les
+          // onglets gardent alors leurs 44 points de cible et la colonne
+          // remonte de ce qu'il faut.
+          final piluleMinimale = 12 + kMinTapTarget * tabs.length;
+          final haut = dispo.isFinite ? math.max(0.0, math.min(souhaite, dispo - placeDesBoutons - piluleMinimale)) : 0.0;
+          final hauteur = dispo.isFinite ? math.min(voulu, math.max(0.0, dispo - haut - placeDesBoutons)) : voulu;
 
           final colonne = Column(
             mainAxisSize: MainAxisSize.min,
@@ -275,20 +302,12 @@ class FloraTabRail extends StatelessWidget {
             ],
           );
           if (!dispo.isFinite) return colonne;
-
-          // C'est la **pilule** qui est centrée dans la hauteur, pas le groupe :
-          // la navigation ne doit pas se déplacer d'un onglet à l'autre. Sans
-          // ça, quatre boutons la poussaient assez haut pour qu'elle passe
-          // sous l'heure du système. Les boutons pendent en dessous, et le
-          // groupe ne remonte que s'ils manquent de place en bas.
-          final centre = math.max(0.0, (dispo - hauteur) / 2);
-          final debord = math.max(0.0, centre + hauteur + placeDesBoutons - dispo);
           // `max` n'est pas un détail : une colonne qui épouse son contenu se
           // ferait recentrer par la rangée qui la porte, et le décalage
           // calculé ici s'ajouterait à ce recentrage.
           return Column(
             mainAxisSize: MainAxisSize.max,
-            children: [SizedBox(height: math.max(0.0, centre - debord)), colonne],
+            children: [SizedBox(height: haut), colonne],
           );
         },
       ),

@@ -117,13 +117,17 @@ void main() {
   });
 
   group('le menu debout', () {
-    testWidgets('se range contre le bord droit, à hauteur du regard', (tester) async {
+    testWidgets('se range contre le bord droit, sous les éléments du système', (tester) async {
       await _pumpRail(tester);
       final pill = _pill(tester);
       // Contre le bord droit, pas au milieu.
-      expect(669 - pill.right, lessThan(20), reason: 'la pilule flotte loin du bord');
-      // Et centrée dans la hauteur.
-      expect(pill.center.dy, closeTo(951 / 2, 1));
+      // Sur le même axe que la pile du système : iOS la pose à 47,7 points
+      // du bord droit, mesuré dans les trois poses du Duo.
+      expect(669 - pill.center.dx, closeTo(48, 0.5), reason: 'la colonne n\'est pas sur l\'axe du système');
+      // Et calée en haut, sous la caméra, l'heure et le wifi — qui
+      // descendent à 140 points alors qu'iOS n'en annonce que 82.
+      expect(pill.top, greaterThanOrEqualTo(140));
+      expect(pill.top, lessThan(200));
       // Une colonne, pas une barre : plus haute que large.
       expect(pill.height, greaterThan(pill.width * 2));
     });
@@ -133,7 +137,7 @@ void main() {
       // Xcode 27.1. C'est là que le pliable met les commandes d'une app ; s'en
       // écarter laissait une colonne vide large comme un pouce.
       await _pumpRail(tester, size: const Size(951, 669), rightInset: 84);
-      expect(951 - _pill(tester).right, lessThan(16), reason: 'la colonne reste à côté de la bande au lieu d\'y entrer');
+      expect(951 - _pill(tester).center.dx, closeTo(48, 0.5), reason: 'la colonne reste à côté de la bande au lieu d\'y entrer');
     });
 
     testWidgets('mais le contenu, lui, s\'arrête avant la bande', (tester) async {
@@ -145,7 +149,7 @@ void main() {
 
     testWidgets('elle reste au bord quand la bande passe de l\'autre côté', (tester) async {
       await _pumpRail(tester, size: const Size(678, 466));
-      expect(678 - _pill(tester).right, lessThan(16), reason: 'la pilule s\'écarte du bord sans raison');
+      expect(678 - _pill(tester).center.dx, closeTo(48, 0.5), reason: 'la pilule s\'écarte du bord sans raison');
     });
 
     testWidgets('ne laisse pas le contenu passer dessous', (tester) async {
@@ -189,6 +193,17 @@ void main() {
       expect(arrivee.center.dx, moreOrLessEquals(depart.center.dx, epsilon: 0.5));
     });
 
+    testWidgets('la pilule est au même endroit dans toutes les poses', (tester) async {
+      // C'est la raison d'être de l'alignement en haut : ni un pli ni une
+      // rotation ne doivent déplacer la navigation.
+      await _pumpRail(tester, size: const Size(466, 678), actions: 4);
+      final ferme = _pill(tester).top;
+      await _pumpRail(tester, size: const Size(669, 951), actions: 4);
+      expect(_pill(tester).top, moreOrLessEquals(ferme, epsilon: 0.5));
+      await _pumpRail(tester, size: const Size(951, 669), actions: 4);
+      expect(_pill(tester).top, moreOrLessEquals(ferme, epsilon: 0.5));
+    });
+
     testWidgets('la pilule ne bouge pas quand la page change de boutons', (tester) async {
       // C'est de la navigation : elle doit rester sous le même doigt d'un
       // onglet à l'autre. Centrer le groupe entier la faisait remonter à
@@ -202,14 +217,17 @@ void main() {
       expect(_pill(tester).top, moreOrLessEquals(nue.top, epsilon: 0.5));
     });
 
-    testWidgets('et dans une fenêtre trop courte pour tout centrer, le groupe remonte sans déborder', (tester) async {
-      // L'écran extérieur du Duo, onglet Plantes : la pilule et quatre
-      // boutons ne tiennent plus en gardant la pilule au milieu. Le groupe
-      // remonte de ce qu'il faut, et pas d'un point de plus.
-      await _pumpRail(tester, size: const Size(466, 678), actions: 4);
+    testWidgets('dans une fenêtre trop courte, elle remonte plutôt que de déborder', (tester) async {
+      // Un Duo fermé et couché : 466 points de haut pour quatre onglets et
+      // quatre boutons. Le dégagement du haut cède avant les cibles.
+      await _pumpRail(tester, size: const Size(678, 466), actions: 4);
       expect(tester.takeException(), isNull);
-      final bas = tester.getRect(find.byKey(const ValueKey('action3'))).bottom;
-      expect(bas, lessThanOrEqualTo(678));
+      final pill = _pill(tester);
+      expect(pill.top, lessThan(140), reason: 'le dégagement n\'a pas cédé');
+      // Les onglets gardent leurs 44 points : six points de marge intérieure
+      // de chaque côté, et quatre créneaux dans ce qui reste.
+      expect((pill.height - 12) / 4, greaterThanOrEqualTo(44));
+      expect(tester.getRect(find.byKey(const ValueKey('action3'))).bottom, lessThanOrEqualTo(466));
     });
 
     testWidgets('les boutons pendent sous la pilule', (tester) async {
