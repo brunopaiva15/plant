@@ -338,6 +338,15 @@ Le bas de la pile, lui, varie vraiment d'une pose à l'autre : 170 fermé, 120
 ouvert couché. C'est le vrai gain du canal, celui qu'aucune constante ne
 pouvait rendre. L'axe, la mesure l'avait déjà juste.
 
+**Le pli, en revanche, n'est pas venu.** `divisions` est vide dans toutes les
+poses du simulateur — fermé, semi-ouvert, ouvert —, et le passage de l'une à
+l'autre n'y change rien. Une requête par défaut ne rend que les régions
+**actives**, et rien ne dit qu'une charnière sans rupture visible en soit une.
+Le champ `fold` reste donc en place, et vide : il coûte une ligne, et c'est la
+seule voie qu'aura une mise en page qui veut éviter la charnière, puisque
+`MediaQuery.displayFeatures` ne sera jamais rempli sur iOS. À revérifier sur
+l'appareil.
+
 C'est aussi pourquoi l'air sous une région annoncée n'est pas celui d'une
 mesure — huit points sous ce que le système se réserve, trente-deux sous des
 glyphes vus sur une capture.

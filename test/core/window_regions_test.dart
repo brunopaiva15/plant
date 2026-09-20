@@ -219,6 +219,28 @@ void main() {
     });
   });
 
+  group('ce que le relevé en dit', () {
+    test('une cote absente se tait', () {
+      // « axe à null » se lit comme une panne alors que c'est le cas
+      // ordinaire : iOS n'annonce pas la caméra dans toutes les poses.
+      const regions = WindowRegions(systemStackBottom: 120);
+      expect(regions.toString(), "pile jusqu'à 120.0");
+    });
+
+    test('tout annoncé, tout écrit', () {
+      const regions = WindowRegions(
+        systemStackBottom: 170,
+        systemAxisFromRight: 47.83,
+        fold: Rect.fromLTWH(0, 333, 466, 12),
+      );
+      expect(regions.toString(), startsWith("pile jusqu'à 170.0 · axe à 47.8 du bord · pli "));
+    });
+
+    test('rien annoncé, une phrase', () {
+      expect(const WindowRegions().toString(), 'aucune région annoncée');
+    });
+  });
+
   test('deux lectures identiques se valent', () {
     expect(WindowRegionsService.parse(duo()), WindowRegionsService.parse(duo()));
     expect(WindowRegionsService.parse(duo()).hashCode, WindowRegionsService.parse(duo()).hashCode);
