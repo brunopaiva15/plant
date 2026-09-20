@@ -1426,7 +1426,8 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   pixels ternes — lus comme du calcaire, sous un constat qui disait
   « feuilles vertes, sans taches ». L'image double de poids et de jetons ;
   c'est le prix d'un compte rendu qui nomme le ravageur. Le délai d'une
-  tentative passe de 40 à 60 secondes pour absorber le téléversement.
+  tentative était passé de 40 à 60 secondes pour absorber le téléversement ;
+  il est à 90 pour laisser le modèle réfléchir (ci-dessous).
 - **Clé** : celle de l'éditeur, au build, comme Pl@ntNet (§ 3.3). Aucun
   réglage côté utilisateur ; l'écran « Diagnostic » dit seulement si le
   service est là et où partent les photos.
@@ -1450,6 +1451,21 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   rejouent pas : ils se corrigent. Ce qui reste se dit à l'écran avec le mot
   juste — service saturé, réponse inexploitable, réseau absent — au lieu
   d'envoyer tout le monde vérifier sa connexion.
+- **La réflexion du modèle a sa place** : Qwen 3.5 réfléchit avant de
+  répondre, par défaut, et ce monologue invisible compte dans `max_tokens`
+  comme la réponse. Devant une photo difficile, il durait parfois plus que
+  le budget entier : contenu vide, arrêté faute de place, deux fois de
+  suite, et « L'analyse n'a pas abouti » à quelqu'un dont le troisième essai
+  passait — la panne intermittente du diagnostic, celle qui se corrige en
+  réessayant. On garde la réflexion, c'est elle qui lit le motif avant de
+  nommer ; on lui laisse la place : 5 000 jetons à la première demande,
+  9 000 à celle qui repart, 3 000 au repli sur les mots et 1 500 au
+  rattachement (qui n'avait aucune chance à 300), et une minute et demie
+  par tentative au lieu d'une. Le plafond ne coûte rien tant qu'il n'est pas
+  atteint, seuls les jetons écrits se facturent. Si une réflexion se
+  retrouve dans le contenu, entre balises `<think>`, le lecteur l'écarte
+  avant de chercher le JSON — une réflexion jamais close est une réponse
+  qui n'a pas commencé, et elle repart.
 - **Lire le motif avant de nommer** : la consigne demande d'abord *où* et
   *comment* — quelles feuilles, bord ou centre, sec ou mou, net ou diffus, et
   si cela s'étend — avant toute conclusion. C'est le motif, pas la couleur,

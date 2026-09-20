@@ -682,12 +682,19 @@ ne s'arrête plus net sur la barre.
 familles de problèmes tournant autour (`AnalysisWait`) ; le formulaire
 s'efface, la barre du bas avec lui.
 
-**Répondre.** Le compte rendu prend la page : le constat d'abord, sur une
-carte — crème, ou terre cuite quand il y a urgence, seule couleur qui change
-—, puis ce qui avait été signalé et coché, puis les pistes. Chaque piste porte
-la tuile de sa famille (l'illustration d'argile de la base sur sa teinte), son
-cran de vraisemblance, son explication, et ses gestes sous un filet ; celles
-que la base connaît mènent à leur fiche de l'encyclopédie.
+**Répondre.** Le compte rendu prend la page : les pistes d'abord — c'est ce
+qu'on est venu lire —, puis le constat sur une carte crème, puis ce qui avait
+été signalé et coché. Le constat et les symptômes ont longtemps ouvert le
+compte rendu ; un paragraphe et sa propre phrase prenaient l'écran, et on
+descendait sous eux pour apprendre ce que la plante a. Ils suivent, pour qui
+veut comprendre sur quoi les pistes reposent. Quand il y a urgence, une carte
+terre cuite précède tout — « À traiter rapidement », seule couleur qui change
+—, et ne dit rien de plus : les pistes disent quoi, juste dessous. Chaque
+piste porte la tuile de sa famille (l'illustration d'argile de la base sur sa
+teinte), son cran de vraisemblance, son explication, et ses gestes sous un
+filet ; celles que la base connaît mènent à leur fiche de l'encyclopédie.
+Quand l'analyse ne tranche pas, c'est dit sous le titre des pistes, à la place
+de « Classées par vraisemblance, à confirmer », et non dans le constat.
 
 **Une piste peut n'être un problème pour personne.** Des gouttes claires et
 collantes sous un philodendron sont du nectar extrafloral aussi souvent que du
@@ -698,11 +705,10 @@ d'argile — les sores d'une fougère, la laine des aréoles, le liégeage d'un
 cactus — au lieu de celui d'une famille, dont elles ne relèvent pas ; et une
 seconde pastille, « Phénomène normal », à côté du cran. Un phénomène hors base
 porte le symbole commun, la feuille et sa goutte claire. Elles ne mènent nulle part : l'encyclopédie
-parle de ce qui se soigne. Quand aucune piste n'est un problème, le constat le
-dit avant tout le reste : « Rien d'anormal », sur la feuille, plutôt que
-« Constat » sur le stéthoscope — trois cartes à lire avant de comprendre que
-rien ne va mal, c'est trois cartes d'inquiétude pour rien. Un compte rendu
-pareil n'est jamais urgent. Quand rien ne
+parle de ce qui se soigne. Quand aucune piste n'est un problème, la première
+carte le dit par sa pastille, et le constat le redit en titre : « Rien
+d'anormal », sur la feuille, plutôt que « Constat » sur le stéthoscope. Un
+compte rendu pareil n'est jamais urgent. Quand rien ne
 tranche, ce qui manque se propose après les pistes, jamais à leur place
 (docs/16) : d'abord les une à trois questions que le service a posées — une
 carte ocre, un champ par question, « Reprendre l'analyse » dessous —, et la

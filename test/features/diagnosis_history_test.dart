@@ -184,7 +184,7 @@ void main() {
     await tester.tap(find.textContaining('Voir le diagnostic complet'));
     await tester.pumpAndSettle();
 
-    // Le constat le dit avant les pistes : il n'y a rien à soigner.
+    // Le constat le dit en titre : il n'y a rien à soigner.
     expect(find.text('Rien d\'anormal'), findsOneWidget);
     expect(find.text('Constat'), findsNothing);
     expect(find.text('À traiter rapidement'), findsNothing);
