@@ -234,6 +234,11 @@ d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. P
 bouton retour : celui-là attend d'être rendu par la pile de navigation
 elle-même.
 
+**La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
+s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
+de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
+barres restent donc effacées tant que la coquille n'a pas déclaré ses onglets.
+
 **Une page et une surcouche ne se valent pas.** Un menu d'action, une alerte,
 ne prennent pas la place de la page : elles se posent dessus le temps d'un
 choix. Les effacer pour de bon rendrait leur place au contenu, la marge sûre

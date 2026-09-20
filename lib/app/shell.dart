@@ -49,15 +49,22 @@ class _AppShellState extends ConsumerState<AppShell> {
     // onglet ne fait rien tout seul, le natif le dit ici, et c'est go_router
     // qui change de branche. Voir `core/native_shell.dart`.
     if (NativeShell.isSupported) {
-      NativeShell.onTab = (i) {
+      _surOnglet = (i) {
         if (mounted) _select(context, ref, i);
       };
+      NativeShell.onTab = _surOnglet;
     }
   }
 
+  /// Ce qu'on a posé sur le canal, pour ne décrocher que le sien.
+  void Function(int)? _surOnglet;
+
   @override
   void dispose() {
-    if (NativeShell.isSupported) NativeShell.onTab = null;
+    // Une coquille qui s'en va ne décroche que sa propre écoute : la
+    // suivante est construite avant que celle-ci ne parte, et effacer sans
+    // regarder laisserait les onglets sans réponse.
+    if (identical(NativeShell.onTab, _surOnglet)) NativeShell.onTab = null;
     _railActions.dispose();
     super.dispose();
   }

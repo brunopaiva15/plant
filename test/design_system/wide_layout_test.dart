@@ -1,5 +1,6 @@
 import 'package:flora/design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Le recentrage du contenu sur les écrans larges, vérifié dans une vraie
@@ -79,6 +80,7 @@ void main() {
   });
 
   _testsDeLaRecherche();
+  _testsDuToast();
 }
 
 /// Le champ de recherche vit dans la barre, qui garde toute la largeur : il
@@ -137,5 +139,31 @@ void _testsDeLaRecherche() {
       );
       expect(tester.getRect(find.byKey(const Key('recherche'))).right, lessThanOrEqualTo(466 - 84));
     });
+  });
+}
+
+/// Le toast évite le menu, où qu'il soit — et il ne doit pas compter le bas
+/// de l'écran deux fois là où la barre est dans la marge sûre.
+void _testsDuToast() {
+  testWidgets('le toast se pose au-dessus de la pilule', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildFloraTheme(Brightness.light),
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(390, 844),
+            padding: EdgeInsets.only(bottom: 34),
+            viewPadding: EdgeInsets.only(bottom: 34),
+          ),
+          child: ProviderScope(
+            child: ToastHost(child: const SizedBox.expand(key: Key('fond'))),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(tester.takeException(), isNull);
   });
 }

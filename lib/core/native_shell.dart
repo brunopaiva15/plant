@@ -99,6 +99,10 @@ abstract final class NativeShell {
   /// rien.
   static Future<void> publish({required List<NativeTab> tabs, required int selected}) async {
     if (!isSupported) return;
+    if (!_coquilleDeclaree) {
+      _coquilleDeclaree = true;
+      await _appliquerChrome();
+    }
     final declaration = [for (final t in tabs) t.toMap()].toString();
     if (declaration != _derniers) {
       _derniers = declaration;
@@ -139,6 +143,12 @@ abstract final class NativeShell {
   static int _profondeur = 0;
   static bool _barreDemandee = false;
   static bool _voilee = false;
+  /// La coquille a-t-elle dit ses onglets ?
+  ///
+  /// Au premier lancement, l'accueil s'ouvre sans elle : sans ce verrou, le
+  /// contrôleur d'onglets montrait son onglet de départ — un rond sans nom —
+  /// par-dessus, et une barre vide avec.
+  static bool _coquilleDeclaree = false;
 
   /// Ce qui couvre la coquille — les pages d'un côté, les surcouches de
   /// l'autre. Dit par l'observateur du
@@ -173,8 +183,8 @@ abstract final class NativeShell {
   static Future<void> _appliquerChrome() async {
     if (!isSupported) return;
     final charge = {
-      'bar': _profondeur == 0 || _barreDemandee,
-      'tabs': _profondeur == 0,
+      'bar': _coquilleDeclaree && (_profondeur == 0 || _barreDemandee),
+      'tabs': _coquilleDeclaree && _profondeur == 0,
       // Voiler plutôt qu'effacer : une barre retirée rend sa place au
       // contenu, et la page glisse sous le menu qui vient de s'ouvrir.
       'veil': _voilee,
