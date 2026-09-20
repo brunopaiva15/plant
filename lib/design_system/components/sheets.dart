@@ -153,6 +153,13 @@ class SheetHeader extends StatelessWidget {
 /// On relit donc les marges à la source — la vue —, et on garde la plus
 /// grande des deux de chaque côté. Seulement les côtés : le haut et le bas
 /// d'une feuille sont sa propre affaire, et les lui rendre la décalerait.
+///
+/// Et la feuille s'écarte **pour de bon**, au lieu de se contenter de rentrer
+/// son contenu : c'est sa surface elle-même qui s'arrête avant la bande,
+/// comme le font les autres fenêtres de l'application. Une feuille dont le
+/// fond passait sous l'heure se voyait tout de suite, même avec un contenu
+/// bien rangé. Le `MediaQuery` rendu aux enfants repart donc à zéro de ces
+/// côtés-là : la marge a déjà été prise, la reprendre la compterait deux fois.
 class _MargesLaterales extends StatelessWidget {
   const _MargesLaterales({required this.child});
 
@@ -163,11 +170,15 @@ class _MargesLaterales extends StatelessWidget {
     final heritee = MediaQuery.of(context);
     final vue = MediaQueryData.fromView(View.of(context));
     final marges = heritee.padding;
-    final rendue = marges.copyWith(
-      left: math.max(marges.left, vue.padding.left),
-      right: math.max(marges.right, vue.padding.right),
+    final gauche = math.max(marges.left, vue.padding.left);
+    final droite = math.max(marges.right, vue.padding.right);
+    if (gauche == 0 && droite == 0) return child;
+    return Padding(
+      padding: EdgeInsets.only(left: gauche, right: droite),
+      child: MediaQuery(
+        data: heritee.copyWith(padding: marges.copyWith(left: 0, right: 0)),
+        child: child,
+      ),
     );
-    if (rendue == marges) return child;
-    return MediaQuery(data: heritee.copyWith(padding: rendue), child: child);
   }
 }

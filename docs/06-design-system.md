@@ -361,7 +361,7 @@ une fois, et une seule.**
 | `LargeTitlePage` | la page, dans ses `SliverPadding` |
 | `FloraPage` | le `SafeArea` de son corps — ne rien ajouter par-dessus |
 | la fiche d'une plante | un `SliverPadding` qui couvre tout, **photo comprise** |
-| une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface |
+| une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface — et c'est sa **surface** qui s'écarte, pas seulement son contenu |
 
 La deuxième ligne a coûté un aller-retour : ajouter la marge à `FloraPage`
 donnait 188 points au lieu de 104, le `SafeArea` l'ayant déjà retirée. Le test
