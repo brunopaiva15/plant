@@ -119,6 +119,10 @@ class JevDiagnosisPolicy {
               {
                 'rank': i + 1,
                 'likelihood': c.likelihood.name,
+                // Une piste qui n'est pas un problème : la plante fait ce
+                // qu'elle fait normalement. Une photo de plus ne la
+                // départagera pas d'un souci qui n'existe pas.
+                'normal_phenomenon': c.natural,
                 // Le numéro de la base, quand la piste en porte un : une
                 // piste rattachée est une piste que l'application sait
                 // nommer, illustrer et suivre.
@@ -213,7 +217,7 @@ class JevDiagnosisPolicy {
         symptomsGiven,
         diagnosis.suggestedView?.wire ?? '-',
         _checks(observations).join(','),
-        for (final c in diagnosis.causes) '${c.likelihood.name}:${c.problemId ?? '-'}',
+        for (final c in diagnosis.causes) '${c.likelihood.name}:${c.problemId ?? c.naturalId ?? '-'}:${c.natural}',
       ].join('|');
 
   void _noteIncident(String key) {

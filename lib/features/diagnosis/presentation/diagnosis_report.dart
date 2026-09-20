@@ -15,6 +15,7 @@ import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/diagnosis/diagnosis_record.dart';
 import '../../../domain/diagnosis/plant_diagnoser.dart';
+import '../../../domain/problems/natural_cause.dart';
 import '../../../domain/problems/plant_problem.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
 
@@ -90,7 +91,12 @@ class DiagnosisReportView extends ConsumerWidget {
         // Le constat d'abord, comme une carte du matin : la tuile, le nom,
         // la phrase. En terre cuite quand il y a urgence — c'est la seule
         // chose qui change de couleur dans le compte rendu.
-        _FindingCard(summary: diagnosis.summary, urgent: diagnosis.urgent, uncertain: uncertain),
+        _FindingCard(
+          summary: diagnosis.summary,
+          urgent: diagnosis.urgent,
+          uncertain: uncertain,
+          natural: diagnosis.onlyNatural,
+        ),
         if (record.symptoms != null) ...[
           const SizedBox(height: Space.sm),
           FloraGroup(
@@ -121,7 +127,12 @@ class DiagnosisReportView extends ConsumerWidget {
           Text(l10n.causesHint, style: context.text.caption),
           const SizedBox(height: Space.sm),
           for (final cause in diagnosis.causes)
-            CauseCard(cause: cause, title: diagnosisCauseTitle(cause, catalog, language), problem: catalog?[cause.problemId]),
+            CauseCard(
+              cause: cause,
+              title: diagnosisCauseTitle(cause, catalog, language),
+              problem: catalog?[cause.problemId],
+              naturalCause: catalog?.natural(cause.naturalId),
+            ),
         ],
       ],
     );
@@ -130,11 +141,16 @@ class DiagnosisReportView extends ConsumerWidget {
 
 /// Ce que l'analyse a vu, en tête du compte rendu.
 class _FindingCard extends StatelessWidget {
-  const _FindingCard({required this.summary, required this.urgent, required this.uncertain});
+  const _FindingCard({required this.summary, required this.urgent, required this.uncertain, this.natural = false});
 
   final String summary;
   final bool urgent;
   final bool uncertain;
+
+  /// Vrai quand aucune piste n'est un problème. Le titre le dit tout de
+  /// suite : trois cartes à lire avant de comprendre que rien ne va mal,
+  /// c'est trois cartes d'inquiétude pour rien.
+  final bool natural;
 
   @override
   Widget build(BuildContext context) {
@@ -145,13 +161,20 @@ class _FindingCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          EmojiTile(emoji: urgent ? '⚠️' : '🩺', background: urgent ? c.surface : null, variant: 2),
+          EmojiTile(emoji: urgent ? '⚠️' : (natural ? '🌿' : '🩺'), background: urgent ? c.surface : null, variant: 2),
           const SizedBox(width: Space.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(urgent ? l10n.urgentHint : l10n.diagnosisFinding, style: context.text.caption.copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  urgent
+                      ? l10n.urgentHint
+                      : natural
+                          ? l10n.diagnosisNothingWrong
+                          : l10n.diagnosisFinding,
+                  style: context.text.caption.copyWith(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 2),
                 if (summary.isNotEmpty) Text(summary, style: context.text.body),
                 if (uncertain) ...[
@@ -228,11 +251,11 @@ class AnotherPhotoCard extends StatelessWidget {
 /// chaque fois, et dans la langue de l'application — y compris sur une
 /// analyse conservée avant un changement de langue.
 String diagnosisCauseTitle(DiagnosisCause cause, ProblemCatalog? catalog, String language) =>
-    catalog?[cause.problemId]?.nameIn(language) ?? cause.title;
+    catalog?[cause.problemId]?.nameIn(language) ?? catalog?.natural(cause.naturalId)?.nameIn(language) ?? cause.title;
 
 /// Une piste : son nom, sa vraisemblance, ce qu'elle explique, les gestes.
 class CauseCard extends StatelessWidget {
-  const CauseCard({super.key, required this.cause, required this.title, this.problem});
+  const CauseCard({super.key, required this.cause, required this.title, this.problem, this.naturalCause});
 
   final DiagnosisCause cause;
 
@@ -243,6 +266,10 @@ class CauseCard extends StatelessWidget {
   /// cause hors base, qui n'a alors pas d'image plutôt qu'une image
   /// approximative.
   final PlantProblem? problem;
+
+  /// L'entrée de la base des phénomènes naturels, même chose de l'autre
+  /// côté : elle porte le dessin de ce phénomène-là.
+  final NaturalCause? naturalCause;
 
   @override
   Widget build(BuildContext context) {
@@ -264,8 +291,10 @@ class CauseCard extends StatelessWidget {
                 // La tuile du compte rendu : l'illustration d'argile de la
                 // base, posée sur la teinte de sa famille — l'ocre des
                 // troubles, la terre cuite des ravageurs, le rose des
-                // maladies. Une piste hors base garde la tuile, sans dessin.
-                _KindTile(problem: known),
+                // maladies. Une piste hors base garde la tuile, sans dessin,
+                // et un phénomène naturel porte la feuille : il n'a pas de
+                // famille.
+                _KindTile(problem: known, natural: cause.natural, naturalCause: naturalCause),
                 const SizedBox(width: Space.md),
                 Expanded(
                   child: Column(
@@ -274,12 +303,32 @@ class CauseCard extends StatelessWidget {
                       Text(title, style: context.text.title3),
                       const SizedBox(height: Space.xxs),
                       // Trois crans, pas de barre : il n'y a rien à remplir
-                      // quand il n'y a rien à mesurer.
-                      DueBadge(
-                        emoji: likelihoodMark(cause.likelihood),
-                        label: context.l10n.likelihoodLabel(cause.likelihood),
-                        status: likelihoodStatus(cause.likelihood),
-                        compact: true,
+                      // quand il n'y a rien à mesurer. Une piste naturelle
+                      // garde le sien — le service n'est pas plus sûr de
+                      // reconnaître du nectar qu'une cochenille — et dit en
+                      // plus qu'elle n'est pas un problème.
+                      Wrap(
+                        spacing: Space.xxs,
+                        runSpacing: Space.xxs,
+                        children: [
+                          DueBadge(
+                            emoji: likelihoodMark(cause.likelihood),
+                            label: context.l10n.likelihoodLabel(cause.likelihood),
+                            status: likelihoodStatus(cause.likelihood),
+                            compact: true,
+                          ),
+                          if (cause.natural)
+                            DueBadge(
+                              emoji: '🌿',
+                              label: context.l10n.diagnosisNatural,
+                              status: DueStatus.none,
+                              // Le vert du fait accompli : ici il ne confirme
+                              // pas un soin, il dit qu'il n'y en a pas à
+                              // faire.
+                              done: true,
+                              compact: true,
+                            ),
+                        ],
                       ),
                     ],
                   ),
@@ -321,29 +370,42 @@ class CauseCard extends StatelessWidget {
 
 /// La tuile d'une piste : le dessin de la base sur la teinte de sa famille.
 class _KindTile extends StatelessWidget {
-  const _KindTile({required this.problem});
+  const _KindTile({required this.problem, this.natural = false, this.naturalCause});
 
   final PlantProblem? problem;
+
+  /// Le phénomène nommé par la base, quand il l'est : il a son dessin, comme
+  /// un problème a le sien.
+  final NaturalCause? naturalCause;
+
+  /// Une piste qui n'est pas un problème : elle a son symbole d'argile, la
+  /// feuille et sa goutte claire, qui ne se confond avec aucune des quatre
+  /// familles.
+  final bool natural;
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     final p = problem;
-    final tint = switch (p?.kind) {
-      ProblemKind.disorder => c.sunSoft,
-      ProblemKind.pest => c.terracottaSoft,
-      ProblemKind.disease => c.roseSoft,
-      ProblemKind.condition => c.sageSoft,
-      null => c.surfaceMuted,
-    };
+    final tint = natural && p == null
+        ? c.sageSoft
+        : switch (p?.kind) {
+            ProblemKind.disorder => c.sunSoft,
+            ProblemKind.pest => c.terracottaSoft,
+            ProblemKind.disease => c.roseSoft,
+            ProblemKind.condition => c.sageSoft,
+            null => c.surfaceMuted,
+          };
     return Container(
       width: EmojiTile.side,
       height: EmojiTile.side,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: tint, borderRadius: Radii.mediumAll),
-      child: p == null
-          ? Icon(CupertinoIcons.question, size: 18, color: c.inkTertiary)
-          : ProblemIcon(problem: p, side: 30),
+      child: p != null
+          ? ProblemIcon(problem: p, side: 30)
+          : natural
+              ? NaturalCauseIcon(cause: naturalCause, side: 30)
+              : Icon(CupertinoIcons.question, size: 18, color: c.inkTertiary),
     );
   }
 }

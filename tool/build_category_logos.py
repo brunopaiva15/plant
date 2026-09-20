@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Les quatre symboles d'argile des familles de problemes.
+"""Les cinq symboles d'argile du diagnostic.
 
 ABIOTIQUE, RAVAGEUR, MALADIE, AFFECTION : les quatre valeurs du champ `type`
-de assets/problems/catalog.txt. Meme studio et memes materiaux que l'icone et
+de assets/problems/catalog.txt. NATUREL : ce dont il n'y a rien a soigner,
+assets/problems/natural.txt, qui n'est pas une cinquieme famille de problemes
+mais ce qui n'en est pas un. Meme studio et memes materiaux que l'icone et
 que les illustrations de l'onboarding (tool/clay_scene.py), pour que les
 symboles soient de la meme argile que le reste.
 
@@ -29,7 +31,7 @@ R = Vector((-math.sin(AZIMUT), math.cos(AZIMUT), 0))
 C = VUE.copy()
 U = C.cross(R).normalized()
 BASIS = Matrix((R, -C, U)).transposed()
-CATEGORIES = ('abiotique', 'ravageur', 'maladie', 'affection')
+CATEGORIES = ('abiotique', 'ravageur', 'maladie', 'affection', 'naturel')
 M = {}
 
 
@@ -58,6 +60,14 @@ def palette():
         'soot': material('Fumagine_342D26', '342D26', .90, .014),
         'soot_light': material('Fumagine_50483A', '50483A', .86, .012),
         'honey': material('Miellat_D5A047', 'D5A047', .53),
+        # La goutte claire du nectar extrafloral et de la guttation : plus
+        # lisse que le reste de l'argile, pour qu'elle se lise mouillee, et
+        # assez pale pour ne se confondre ni avec le bleu de l'eau du trouble
+        # abiotique ni avec l'ambre du miellat. Pale, mais pas blanche : un
+        # blanc mat sur une feuille, dans cette application, se lirait
+        # cochenille farineuse.
+        'dew': material('Rosee_D8E8F0', 'D8E8F0', .24, .004),
+        'dew_deep': material('Rosee_sombre_B4D0DF', 'B4D0DF', .28, .004),
     }
 
 
@@ -129,9 +139,12 @@ def drop(name, x, z, radius, height, mat, depth=.40, angle=-10):
 
 
 class Leaf:
-    def __init__(self, x=0, z=0, scale=1, lean=30):
+    def __init__(self, x=0, z=0, scale=1, lean=30, mat=None, vein=None, stem=None, veins=True):
         self.x=x; self.z=z; self.scale=scale
         self.a=math.radians(lean)
+        # Les symboles de familles gardent la sauge ; les icones des
+        # phenomenes empruntent la meme feuille en ocre ou en creme.
+        self.mat=mat; self.vein=vein; self.stem=stem; self.veins=veins
 
     def coords(self, t, f, offset=0):
         width=.68*math.sin(math.pi*max(.00001,min(.99999,t)))**.72
@@ -172,17 +185,19 @@ class Leaf:
             for j in range(nf):
                 a=i*(nf+1)+j
                 faces.append((a,a+count,a+count+1,a+1))
-        leaf=mesh('Feuille_argile',verts,faces,M['sage'])
+        limbe=self.mat or M['sage']; nervure=self.vein or M['sage_light']; petiole=self.stem or M['sage_dark']
+        leaf=mesh('Feuille_argile',verts,faces,limbe)
         # Raised veins are fully modelled; no bitmap decals.
-        tube('Nervure_principale',[self.coords(t,0,.012) for t in [.015,.12,.25,.40,.56,.72,.88,.97]],
-             [.035,.035,.032,.028,.025,.021,.015,.009],M['sage_light'])
-        for side in (-1,1):
-            for i,t in enumerate((.24,.40,.56,.72)):
-                pts=[self.coords(t+u*.11,side*u*.80,.008) for u in (0,.2,.4,.6,.8,1)]
-                tube(f'Nervure_{side}_{i}',pts,[.017,.016,.014,.012,.009,.005],M['sage_light'])
+        if self.veins:
+            tube('Nervure_principale',[self.coords(t,0,.012) for t in [.015,.12,.25,.40,.56,.72,.88,.97]],
+                 [.035,.035,.032,.028,.025,.021,.015,.009],nervure)
+            for side in (-1,1):
+                for i,t in enumerate((.24,.40,.56,.72)):
+                    pts=[self.coords(t+u*.11,side*u*.80,.008) for u in (0,.2,.4,.6,.8,1)]
+                    tube(f'Nervure_{side}_{i}',pts,[.017,.016,.014,.012,.009,.005],nervure)
         p0=Vector(self.coords(.018,0,-.02)); p1=Vector(self.coords(.11,0,-.02))
         end=p0-(p1-p0).normalized()*.28*self.scale
-        tube('Petiole',[tuple(end),tuple(p0),self.coords(.10,0,-.018)],.048*self.scale,M['sage_dark'])
+        tube('Petiole',[tuple(end),tuple(p0),self.coords(.10,0,-.018)],.048*self.scale,petiole)
         return leaf
 
 
@@ -258,6 +273,34 @@ def affection():
     ball('Perle_miellat',(-.93,.38,-.78),(.085,.056,.090),M['honey'])
 
 
+def naturel():
+    # Ce que la plante fait, pas ce qui lui arrive : une feuille saine, la
+    # goutte claire suspendue a sa pointe, deux perles de nectar le long de
+    # la nervure. Aucune lesion, aucun depot, aucun insecte — c'est
+    # l'absence de tout cela qui fait le symbole.
+    lean = 34
+    leaf = Leaf(-.13, -.06, .93, lean)
+    leaf.build()
+    tip_x, tip_d, tip_z = leaf.coords(.995, 0, 0)
+    hauteur, rayon = .52, .175
+    # La goutte pend a la pointe, au bout de l'axe de la feuille : dehors,
+    # sinon elle passe pour une tache posee sur le limbe. Le profil de `drop`
+    # monte a 1.09/1.54 de sa hauteur, d'ou le decalage vers le bas qui pose
+    # sa pointe sur celle de la feuille.
+    axe = math.radians(lean)
+    pointe_x = tip_x + .11 * math.sin(axe) + .05
+    pointe_z = tip_z + .11 * math.cos(axe)
+    drop('Goutte_suspendue', pointe_x, pointe_z - hauteur * (1.09 / 1.54),
+         rayon, hauteur, M['dew'], depth=tip_d + .22, angle=4)
+    # Les nectaires : deux perles posees sur la nervure, la ou les
+    # philodendrons les portent.
+    for i, (t, f, r) in enumerate(((.30, .05, .062), (.52, -.07, .045))):
+        x, d, z = leaf.coords(t, f, .030)
+        ball(f'Perle_de_nectar_{i}', (x, d, z), (r, r * .62, r * .94), M['dew'])
+        ball(f'Perle_de_nectar_{i}_ombre', (x, d - .012, z - r * .5),
+             (r * .86, r * .40, r * .52), M['dew_deep'])
+
+
 def animate_native(root, ortho):
     # Optional native Blender animation, in the image plane. Runtime assets
     # remain still: Flutter rotates the already lit image with BreathPose.
@@ -283,7 +326,8 @@ def animate_native(root, ortho):
 
 def build(category, output, res, samples):
     purge(); palette()
-    {'abiotique':abiotic,'ravageur':pest,'maladie':disease,'affection':affection}[category]()
+    {'abiotique':abiotic,'ravageur':pest,'maladie':disease,'affection':affection,
+     'naturel':naturel}[category]()
     objects=[o for o in bpy.context.scene.objects if o.type=='MESH']
     camera,*_=studio(objects,fill=.80)
     # Fixed framing and scale across the family; reserve room for motion.

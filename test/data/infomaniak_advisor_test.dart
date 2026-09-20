@@ -28,7 +28,7 @@ const _criteria = FinderCriteria(
 );
 
 InfomaniakAdvisor _advisor(http.Client client) =>
-    InfomaniakAdvisor(apiKey: 'tok', productId: '12345', model: 'mistralai/Mistral-Small-4-119B-2603', client: client);
+    InfomaniakAdvisor(apiKey: 'tok', productId: '12345', model: 'Qwen/Qwen3.5-397B-A17B-FP8', client: client);
 
 void main() {
   group('la lecture de la réponse', () {

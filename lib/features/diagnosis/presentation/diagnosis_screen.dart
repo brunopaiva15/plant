@@ -241,6 +241,13 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
               family: speciesFamilyOf(ref, plant.speciesName),
               pinned: frequent,
             ),
+            // Ce que cette plante fait normalement, soumis avec le reste :
+            // des gouttes collantes sous un philodendron sont du nectar
+            // aussi souvent que du miellat.
+            naturalCauses: catalog.naturalFor(
+              species: plant.speciesName,
+              family: speciesFamilyOf(ref, plant.speciesName),
+            ),
             frequentIds: frequent,
             indoorClimate: measured,
             reportedClimate: _reportedClimate(measured),
@@ -386,7 +393,10 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     final language = Localizations.localeOf(context).languageCode;
     final text = [
       r.summary,
-      ...r.causes.take(3).map((c) => '• ${diagnosisCauseTitle(c, catalog, language)} (${l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
+      // Le cran de vraisemblance entre parenthèses, et pour une piste
+      // naturelle ce qui compte davantage : qu'il n'y avait rien à soigner.
+      ...r.causes.take(3).map((c) => '• ${diagnosisCauseTitle(c, catalog, language)} '
+          '(${c.natural ? l10n.diagnosisNatural : l10n.likelihoodLabel(c.likelihood).toLowerCase()})'),
     ].join('\n');
     final record = _record;
     final kept = List<StoredPhoto>.of(_photos);

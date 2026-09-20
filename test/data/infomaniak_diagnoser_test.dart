@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flora/data/services/infomaniak_diagnoser.dart';
 import 'package:flora/domain/diagnosis/plant_diagnoser.dart';
+import 'package:flora/domain/problems/natural_cause.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -38,7 +39,7 @@ Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${Date
 InfomaniakDiagnoser _diagnoser(http.Client client) => InfomaniakDiagnoser(
       apiKey: 'tok',
       productId: '12345',
-      model: 'mistralai/Mistral-Small-4-119B-2603',
+      model: 'Qwen/Qwen3.5-397B-A17B-FP8',
       client: client,
       // Les renvois ne font pas attendre les tests.
       retryPause: Duration.zero,
@@ -46,6 +47,14 @@ InfomaniakDiagnoser _diagnoser(http.Client client) => InfomaniakDiagnoser(
 
 PlantProblem _probleme(String id, ProblemKind kind, String en, {String fr = 'fr'}) =>
     PlantProblem(id: id, kind: kind, scope: ProblemScope.wide, fr: fr, en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
+
+NaturalCause _naturel(String id, String en, {String fr = 'fr'}) =>
+    NaturalCause(id: id, scope: ProblemScope.wide, fr: fr, en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
+
+final _naturels = [
+  _naturel('N01', 'Extrafloral nectar', fr: 'Nectar extrafloral'),
+  _naturel('N02', 'Guttation', fr: 'Guttation'),
+];
 
 final _pistes = [
   _probleme('002', ProblemKind.disorder, 'Waterlogging and root oxygen deficiency', fr: 'Excès d\'eau et asphyxie racinaire'),
@@ -287,7 +296,7 @@ void main() {
       expect(captured.url.toString(), 'https://api.infomaniak.com/2/ai/12345/openai/v1/chat/completions');
       expect(captured.headers['authorization'], 'Bearer tok');
       final body = jsonDecode(captured.body) as Map<String, dynamic>;
-      expect(body['model'], 'mistralai/Mistral-Small-4-119B-2603');
+      expect(body['model'], 'Qwen/Qwen3.5-397B-A17B-FP8');
       expect(body['response_format'], {'type': 'json_object'});
       final messages = body['messages'] as List;
       expect(messages.first['role'], 'system');
@@ -721,6 +730,150 @@ void main() {
       await tmp.delete();
       expect(corps, hasLength(1));
       expect(d.causes.single.problemId, '060');
+    });
+  });
+
+  group('ce qui n\'est pas un problème', () {
+    test('une piste rendue sous un numéro en N est un phénomène naturel', () {
+      final body = _completion(jsonEncode({
+        'summary': 'Des gouttes claires sous les feuilles.',
+        'urgent': false,
+        'causes': [
+          {'problem': 'N01', 'natural': true, 'title': 'Nectar extrafloral', 'likelihood': 'likely', 'explanation': '…', 'actions': ['Essuyer la feuille']},
+          {'problem': '054', 'title': 'Cochenilles farineuses', 'likelihood': 'possible', 'explanation': '…'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'054'}, allowedNatural: const {'N01'});
+      final nectar = d.causes.first;
+      expect(nectar.naturalId, 'N01');
+      expect(nectar.natural, isTrue);
+      expect(nectar.problemId, isNull, reason: 'N01 n\'est pas le problème 001');
+      expect(d.causes.last.natural, isFalse);
+      expect(d.onlyNatural, isFalse, reason: 'une piste sur deux reste un problème');
+    });
+
+    test('un numéro naturel qu\'on n\'a pas soumis ne devient pas un problème', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'problem': 'N09', 'natural': true, 'title': 'Latex à la coupe', 'likelihood': 'possible'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'009'}, allowedNatural: const {'N01'});
+      expect(d.causes.single.naturalId, isNull);
+      expect(d.causes.single.problemId, isNull, reason: 'les chiffres seuls ne disent pas de quelle base ils viennent');
+      expect(d.causes.single.natural, isTrue, reason: 'la clé, elle, reste lisible');
+    });
+
+    test('la base est courte : un phénomène hors base reste un phénomène', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'natural': true, 'title': 'Vieille fronde qui finit', 'likelihood': 'likely', 'explanation': '…'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body);
+      expect(d.causes.single.natural, isTrue);
+      expect(d.causes.single.naturalId, isNull);
+      expect(d.onlyNatural, isTrue);
+    });
+
+    test('un numéro de problème tranche contre la clé', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'problem': '060', 'natural': true, 'title': 'Tétranyques', 'likelihood': 'possible'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'060'});
+      expect(d.causes.single.problemId, '060');
+      expect(d.causes.single.natural, isFalse, reason: 'ce que la base range en ravageur n\'est pas normal');
+    });
+
+    test('le nom exact rattrape un phénomène rendu sans numéro', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'title': 'Nectar extrafloral', 'likelihood': 'possible', 'explanation': '…'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(
+        body,
+        allowed: const {'060'},
+        allowedNatural: const {'N01'},
+        byName: InfomaniakDiagnoser.namesOf(_pistes, 'fr', naturalCauses: _naturels),
+      );
+      expect(d.causes.single.naturalId, 'N01');
+      expect(d.causes.single.natural, isTrue);
+    });
+
+    test('un compte rendu sans le moindre problème n\'est jamais urgent', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'urgent': true,
+        'causes': [
+          {'problem': 'N02', 'natural': true, 'title': 'Guttation', 'likelihood': 'likely'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowedNatural: const {'N02'});
+      expect(d.onlyNatural, isTrue);
+      expect(d.urgent, isFalse, reason: 'il n\'y a rien à traiter rapidement');
+    });
+
+    test('la liste des phénomènes part avec celle des problèmes, dite pour ce qu\'elle est', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(
+        images: [tmp],
+        language: 'fr',
+        species: 'Philodendron hederaceum',
+        candidates: _pistes,
+        naturalCauses: _naturels,
+      );
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      final text = parts.last['text'] as String;
+      expect(text, contains('N01 Nectar extrafloral; N02 Guttation.'));
+      expect(text, contains('not problems'));
+    });
+
+    test('sans phénomène soumis, la demande part comme avant', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      expect(parts.last['text'], isNot(contains('not problems')));
+    });
+
+    test('une piste naturelle n\'est pas envoyée chercher un numéro de problème', () async {
+      final corps = <String>[];
+      final client = MockClient((req) async {
+        corps.add(req.body);
+        return _reponse(
+          _completion(jsonEncode({
+            'summary': '…',
+            'causes': [
+              {'natural': true, 'title': 'Vieille feuille du bas qui finit', 'likelihood': 'likely', 'explanation': '…'},
+            ],
+          })),
+          200,
+        );
+      });
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes, naturalCauses: _naturels);
+      await tmp.delete();
+      expect(corps, hasLength(1), reason: 'aucune passe de rattachement ne part');
+      expect(d.causes.single.problemId, isNull);
+      expect(d.causes.single.natural, isTrue);
     });
   });
 }

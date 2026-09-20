@@ -4458,6 +4458,18 @@ abstract class AppLocalizations {
   /// **'Constat'**
   String get diagnosisFinding;
 
+  /// No description provided for @diagnosisNothingWrong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rien d\'anormal'**
+  String get diagnosisNothingWrong;
+
+  /// No description provided for @diagnosisNatural.
+  ///
+  /// In fr, this message translates to:
+  /// **'Phénomène normal'**
+  String get diagnosisNatural;
+
   /// No description provided for @analyze.
   ///
   /// In fr, this message translates to:

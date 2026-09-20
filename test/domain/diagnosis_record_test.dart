@@ -135,4 +135,52 @@ void main() {
     expect(relu.photos, hasLength(1));
     expect(relu.photos.single.thumbPath, 'b.jpg');
   });
+
+  test('une piste naturelle se relit pour ce qu\'elle est', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: const Diagnosis(
+        summary: 'Des gouttes claires et collantes sous les feuilles.',
+        causes: [
+          DiagnosisCause(
+            title: 'Gouttes sucrées',
+            likelihood: Likelihood.likely,
+            explanation: 'Le philodendron en produit sur le revers de ses feuilles.',
+            actions: [],
+            naturalId: 'N01',
+            natural: true,
+          ),
+        ],
+      ),
+    ))!;
+
+    final piste = relu.diagnosis.causes.single;
+    expect(piste.naturalId, 'N01', reason: 'la base la renomme dans la langue du moment');
+    expect(piste.natural, isTrue);
+    expect(piste.problemId, isNull);
+    expect(relu.diagnosis.onlyNatural, isTrue);
+  });
+
+  test('un phénomène hors base se relit aussi, et un compte rendu d\'avant reste un problème', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: const Diagnosis(
+        summary: '…',
+        causes: [
+          DiagnosisCause(title: 'Vieille fronde qui finit', likelihood: Likelihood.possible, explanation: '…', actions: [], natural: true),
+        ],
+      ),
+    ))!;
+    expect(relu.diagnosis.causes.single.natural, isTrue);
+    expect(relu.diagnosis.causes.single.naturalId, isNull);
+
+    // Une analyse gardée avant que les phénomènes naturels existent ne porte
+    // pas la clé : elle se relit comme un problème, ce qu'elle disait.
+    final ancien = Diagnosis.fromJson({
+      'summary': '…',
+      'causes': [
+        {'title': 'Tétranyques', 'likelihood': 'likely', 'problemId': '060'},
+      ],
+    });
+    expect(ancien.causes.single.natural, isFalse);
+    expect(ancien.onlyNatural, isFalse);
+  });
 }

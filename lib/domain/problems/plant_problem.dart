@@ -149,20 +149,27 @@ class PlantProblem {
   /// pistes à soumettre, pas de trancher. Un problème du genre vaut pour
   /// l'espèce, et l'inverse aussi — les hôtes cités sont des exemples, la
   /// base le dit elle-même.
-  bool affects({String? species, String? family}) {
-    final sp = _fold(species);
-    final genus = sp.isEmpty ? '' : sp.split(' ').first;
-    final fam = _fold(family);
-    for (final host in hosts) {
-      final h = _fold(host);
-      if (h == 'tracheophyta') return true;
-      if (h.isEmpty) continue;
-      if (sp.isNotEmpty && (h == sp || h == genus)) return true;
-      if (genus.isNotEmpty && h.startsWith('$genus ')) return true;
-      if (fam.isNotEmpty && h == fam) return true;
-    }
-    return false;
-  }
+  bool affects({String? species, String? family}) => hostsCover(hosts, species: species, family: family);
+}
 
-  static String _fold(String? name) => (name ?? '').trim().toLowerCase();
+/// Cette liste d'hôtes couvre-t-elle cette plante ?
+///
+/// La règle est la même pour un problème et pour un phénomène naturel : un
+/// hôte du genre vaut pour l'espèce, et l'inverse aussi ; `Tracheophyta`
+/// vaut pour tout le monde. Elle vit ici parce que la base des problèmes est
+/// la première à s'en servir.
+bool hostsCover(List<String> hosts, {String? species, String? family}) {
+  String fold(String? name) => (name ?? '').trim().toLowerCase();
+  final sp = fold(species);
+  final genus = sp.isEmpty ? '' : sp.split(' ').first;
+  final fam = fold(family);
+  for (final host in hosts) {
+    final h = fold(host);
+    if (h == 'tracheophyta') return true;
+    if (h.isEmpty) continue;
+    if (sp.isNotEmpty && (h == sp || h == genus)) return true;
+    if (genus.isNotEmpty && h.startsWith('$genus ')) return true;
+    if (fam.isNotEmpty && h == fam) return true;
+  }
+  return false;
 }
