@@ -32,7 +32,17 @@ class NativeChromeObserver extends NavigatorObserver {
   /// alerte. Elles n'occupent pas la place, elles se posent dessus.
   int _surcouches = 0;
 
-  void _dire() => NativeShell.setOverlay(pages: _pages, veils: _surcouches);
+  void _dire() {
+    // Le premier maillon de la chaîne, écrit en debug : si cette ligne ne
+    // paraît pas quand une page s'ouvre, c'est que l'observateur n'a rien vu,
+    // et il est inutile de chercher plus loin. La suivante est
+    // `[auxine:natif] chrome …`, et la dernière est ce que montre l'écran.
+    assert(() {
+      debugPrint('[auxine:natif] routes pages=$_pages surcouches=$_surcouches');
+      return true;
+    }());
+    NativeShell.setOverlay(pages: _pages, veils: _surcouches);
+  }
 
   void _compter(Route<Object?> route, int sens) {
     if (route is PageRoute) {
