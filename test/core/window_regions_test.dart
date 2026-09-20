@@ -102,20 +102,33 @@ void main() {
       expect(WindowRegionsService.parse(duo()).systemAxisFromRight, closeTo(47.8, 0.1));
     });
 
-    test('sans caméra, la bande fait l\'affaire', () {
-      expect(WindowRegionsService.parse(duo(occlusions: [bande])).systemAxisFromRight, 42);
+    test('la bande ne le donne pas, même seule', () {
+      // Son milieu tombe à 42 du bord, les glyphes à 47,8. Et iOS ne
+      // l'annonce pas dans toutes les poses : s'en servir ferait sauter le
+      // menu d'un pli à l'autre. La bande borne la pile, rien de plus.
+      final regions = WindowRegionsService.parse(duo(occlusions: [bande]));
+      expect(regions.systemAxisFromRight, isNull);
+      expect(regions.systemStackBottom, 170);
     });
 
-    test('sans région, il se lit sur la barre d\'état', () {
+    test('le relevé de l\'ouvert couché n\'en donne pas non plus', () {
+      // 951 × 669, une seule région : la bande, 867, 0 · 84 × 120.
+      final regions = WindowRegionsService.parse({
+        'available': true,
+        'width': 951.0,
+        'height': 669.0,
+        'statusBar': rect(0, 0, 951, 2),
+        'occlusions': [rect(867, 0, 84, 120)],
+        'divisions': const <Object?>[],
+      });
+      expect(regions.systemStackBottom, 120);
+      expect(regions.systemAxisFromRight, isNull);
+    });
+
+    test('une barre d\'état ne le donne pas', () {
       final regions = WindowRegionsService.parse(
         duo(statusBar: rect(402, 0, 64, 170), occlusions: const <Object?>[]),
       );
-      expect(regions.systemAxisFromRight, 32);
-    });
-
-    test('une barre d\'état couchée n\'en donne pas', () {
-      // Son milieu est au milieu de l'écran : ce n'est pas une colonne.
-      final regions = WindowRegionsService.parse(duo(statusBar: barreInutile, occlusions: const <Object?>[]));
       expect(regions.systemAxisFromRight, isNull);
     });
 
