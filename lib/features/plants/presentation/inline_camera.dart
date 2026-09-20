@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import '../../../app/orientation_lock.dart';
+import '../../../app/window.dart';
 import '../../../design_system/components/scanning_overlay.dart';
 
 /// Où en est le viseur intégré.
@@ -80,10 +80,10 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   static bool get isSupported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   /// Vrai quand la page ne peut pas tourner : sur Android le manifeste
-  /// verrouille le portrait sur tous les appareils, ailleurs c'est la taille
-  /// qui décide, comme dans `app/orientation_lock.dart`. Sur tablette libre —
-  /// et sur un pliable ouvert — la capture reste au capteur : la page tourne
-  /// aussi.
+  /// verrouille le portrait sur tous les appareils, sur iOS c'est `Info.plist`
+  /// — portrait sur iPhone, les quatre orientations sur iPad —, et la taille
+  /// de la fenêtre dit lequel des deux on est. Sur tablette libre, et sur un
+  /// pliable ouvert, la capture reste au capteur : la page tourne aussi.
   ///
   /// La question se repose à chaque ouverture du viseur, jamais une fois pour
   /// toutes : entre deux photos, l'appareil a pu être déplié.
@@ -214,9 +214,9 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
       controller = CameraController(back, ResolutionPreset.veryHigh, enableAudio: false);
       await controller.initialize();
       // Le plugin suit le capteur, pas la page : appareil penché, il couche
-      // l'aperçu et la photo. Or ici la page ne tourne pas — voir
-      // `app/orientation_lock.dart` et le manifeste Android — la capture
-      // s'aligne donc sur elle.
+      // l'aperçu et la photo. Or sur un téléphone la page ne tourne pas —
+      // `ios/Runner/Info.plist` et le manifeste Android le déclarent — et la
+      // capture s'aligne donc sur elle.
       await _alignCaptureToPage(controller);
       // La page a pu partir, ou changer d'étape, pendant l'ouverture : le
       // flux n'a alors plus personne devant lui.

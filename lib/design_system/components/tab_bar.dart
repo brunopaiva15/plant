@@ -79,8 +79,18 @@ class FloraTabBar extends StatelessWidget {
     final lines = scaler.scale(_labelSize) > _labelSize * 1.2 ? 2 : 1;
     // La barre grandit avec son contenu au lieu de le rogner.
     final height = math.max(64.0, 12 + _iconSize + 2 + lineHeight * lines + 12);
+    // Les marges latérales du système s'ajoutent aux nôtres. Sur un pliable,
+    // la bande de la caméra passe sur un côté selon la rotation — 84 points à
+    // droite, ou à gauche —, et rien ne dit qu'elle soit symétrique : chaque
+    // bord est lu pour lui-même.
+    final marges = MediaQuery.paddingOf(context);
     return Padding(
-      padding: EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, _bottomInset(context)),
+      padding: EdgeInsets.fromLTRB(
+        Space.xl + marges.left,
+        0,
+        Space.xl + marges.right,
+        _bottomInset(context),
+      ),
       // Une barre d'argile crème, opaque : la matière de l'app, posée sur le
       // contenu qui défile dessous. Bornée en largeur : sur un iPad en
       // paysage, une pilule de mille points serait ridicule.
@@ -148,11 +158,18 @@ class FloraTabRail extends StatelessWidget {
   /// Deux conditions, et les deux comptent. Large : en deçà de 600 points, le
   /// menu debout mangerait un dixième de la largeur du contenu. Pas une
   /// tablette : un iPad garde sa barre en bas, et son côté le plus court fait
-  /// au minimum 744 points là où l'écran intérieur du Duo en fait environ 669.
+  /// au minimum 744 points là où l'écran intérieur du Duo en fait 669.
   ///
-  /// La limite des 700 points est donc un entre-deux, pas une mesure : Flutter
-  /// ne sait pas dire « iPhone » ou « iPad » sans canal natif, et ne remplit
-  /// pas `displayFeatures` sur iOS (voir `app/window_probe.dart`). Un iPad en
+  /// Ce que ça donne sur les quatre poses mesurées dans Xcode 27.1 : fermé
+  /// 466 × 678, la barre reste en bas ; fermé et couché 678 × 466, le menu se
+  /// met debout — et c'est voulu, une fenêtre courte et large est justement
+  /// celle où une barre en bas coûte le plus cher ; ouvert 669 × 951 et
+  /// 951 × 669, debout aussi. En multitâche (445 × 626 et 320 × 626), la
+  /// barre revient en bas.
+  ///
+  /// La limite des 700 points est un entre-deux, pas une mesure : Flutter ne
+  /// sait pas dire « iPhone » ou « iPad » sans canal natif, et ne remplit pas
+  /// `displayFeatures` sur iOS (voir `app/window_probe.dart`). Un iPad en
   /// Split View réglé aux deux tiers tomberait du mauvais côté ; c'est le seul
   /// cas connu, et il disparaîtra le jour où un canal dira le pli.
   static bool fitsIn(BuildContext context) {
@@ -165,9 +182,10 @@ class FloraTabRail extends StatelessWidget {
   static double reserved(BuildContext context) => Space.md + _width + _rightInset(context);
 
   /// Le blanc entre la pilule et le bord droit. Ce que le système réserve de
-  /// ce côté — sur un pliable ouvert, la barre d'état passe debout à droite —
-  /// est rendu en entier : contrairement à l'indicateur d'accueil, il y a
-  /// quelque chose d'écrit dedans.
+  /// ce côté est rendu en entier : contrairement à l'indicateur d'accueil, il
+  /// y a quelque chose dedans. Sur un Duo couché, cette bande fait 84 points
+  /// mesurés — et elle passe à gauche selon le sens de rotation, auquel cas
+  /// il ne reste ici que le blanc minimal. Rien n'est supposé symétrique.
   static double _rightInset(BuildContext context) =>
       math.max(_edgeGap, MediaQuery.paddingOf(context).right);
 
