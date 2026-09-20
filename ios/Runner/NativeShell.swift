@@ -119,14 +119,22 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
         navigation.navigationBar.alpha = montrerLaBarre ? 1 : 0
         navigation.navigationBar.isUserInteractionEnabled = montrerLaBarre
       }
-      // `isHidden` seul ne suffit pas pour la barre d'onglets : le contrôleur
-      // la remet en place à chaque mise en page qui lui passe par la tête, et
-      // elle reparaissait par-dessus une feuille. L'opacité, elle, n'est
-      // jamais remise — et les deux ensemble rendent la place au contenu tout
-      // en garantissant qu'on ne la voie pas.
+      // La barre d'onglets se masque par son **contrôleur**, et non en
+      // touchant à la vue.
+      //
+      // C'est la leçon de trois tentatives ratées. `tabBar.isHidden` et
+      // `tabBar.alpha` portent sur la vue que le contrôleur possède ; il la
+      // remet comme il l'entend à chaque mise en page, et sur l'iPhone Duo
+      // c'est lui, non elle, qui décide de ce que le système range dans la
+      // bande verticale. La barre reparaissait donc par-dessus une feuille.
+      //
+      // `setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis
+      // iOS 18. En deçà, on retombe sur la vue, faute de mieux.
       let montrerLesOnglets = ongletsVisibles && !voile
-      if let barreDOnglets = onglets?.tabBar {
-        barreDOnglets.isHidden = !ongletsVisibles
+      if #available(iOS 18.0, *) {
+        onglets?.setTabBarHidden(!montrerLesOnglets, animated: false)
+      } else if let barreDOnglets = onglets?.tabBar {
+        barreDOnglets.isHidden = !montrerLesOnglets
         barreDOnglets.alpha = montrerLesOnglets ? 1 : 0
         barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
       }
