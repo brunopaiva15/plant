@@ -358,7 +358,13 @@ que la sonde, qui écoute la réponse pour écrire son relevé, lisait des régi
 encore vides — et comme une seule réponse suffit à l'appareil, elle ne
 repassait jamais. Le relevé affichait « aucune région annoncée » sous une
 réponse qui en contenait deux. `test/core/window_regions_test.dart` tient
-l'ordre par un auditeur.
+l'ordre par un auditeur, et la sonde écoute désormais les deux notifieurs,
+ce qui rend l'ordre indifférent.
+
+`test/core/window_regions_codec_test.dart` fait passer la réponse mesurée par
+le codec standard avant de la lire : le canal rend des `Map<Object?, Object?>`
+jusque dans les rectangles imbriqués, là où les autres tests donnent des
+littéraux typés.
 
 La première demande part de `main()`, avant la première image : la scène n'est
 pas encore active, la fenêtre pas encore clé, la barre d'état vaut zéro. Le
