@@ -104,6 +104,7 @@ class _NativeActionsState extends State<NativeActions> {
     super.initState();
     _pile.add(this);
     widget.titleListenable?.addListener(_publier);
+    NativeShell.overlay.addListener(_reconsiderer);
   }
 
   @override
@@ -117,6 +118,7 @@ class _NativeActionsState extends State<NativeActions> {
 
   @override
   void dispose() {
+    NativeShell.overlay.removeListener(_reconsiderer);
     widget.titleListenable?.removeListener(_publier);
     _pile.remove(this);
     _publier();
@@ -129,7 +131,23 @@ class _NativeActionsState extends State<NativeActions> {
     // une autre, ou dans une branche d'onglet en sommeil, se reconstruit
     // aussi, et elle volerait la barre à celle qu'on regarde.
     final route = ModalRoute.of(context);
-    final visible = TickerMode.valuesOf(context).enabled && (route == null || route.isCurrent);
+    // `isCurrent` ne vaut que dans le navigateur de la route. Une page de la
+    // coquille vit dans celui de son onglet : une feuille poussée sur le
+    // navigateur racine la couvre sans que sa branche en sache rien, et elle
+    // se croyait encore visible. Elle redemandait alors la barre — que
+    // l'observateur venait d'effacer —, et la feuille se retrouvait coiffée
+    // des boutons de la page d'en dessous.
+    //
+    // D'où la seconde condition : une page qui n'est pas posée sur le
+    // navigateur racine ne prétend à la barre que si rien ne couvre la
+    // coquille. Celles qui y sont posées — une fiche, une page secondaire —
+    // y prétendent à tout étage, puisqu'elles sont cet étage.
+    final navigateur = Navigator.maybeOf(context);
+    final racine = Navigator.maybeOf(context, rootNavigator: true);
+    final surLaRacine = navigateur != null && identical(navigateur, racine);
+    final visible = TickerMode.valuesOf(context).enabled &&
+        (route == null || route.isCurrent) &&
+        (surLaRacine || NativeShell.overlayDepth == 0);
     if (visible && (_pile.isEmpty || _pile.last != this)) {
       _pile
         ..remove(this)
@@ -161,6 +179,12 @@ class _NativeActionsState extends State<NativeActions> {
       leading: [for (final e in actuelle?.widget.leading ?? const <NativeActionEntry>[]) e.action],
       actions: [for (final e in actuelle?.widget.actions ?? const <NativeActionEntry>[]) e.action],
     );
+  }
+
+  /// Ce qui couvre la coquille a changé : la page reconsidère sa prétention
+  /// à la barre, qu'elle vienne de la perdre ou de la retrouver.
+  void _reconsiderer() {
+    if (mounted) setState(() {});
   }
 
   void _toucher(String id) {
