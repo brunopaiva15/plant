@@ -170,28 +170,29 @@ class FloraTabRail extends StatelessWidget {
   /// Le blanc minimal entre la pilule et le bord.
   static const double _edgeGap = Space.sm;
 
-  /// La fenêtre est large, sans être celle d'une tablette.
+  /// La fenêtre appelle un menu debout plutôt qu'une barre en bas.
   ///
-  /// Deux conditions, et les deux comptent. Large : en deçà de 600 points, le
-  /// menu debout mangerait un dixième de la largeur du contenu. Pas une
-  /// tablette : un iPad garde sa barre en bas, et son côté le plus court fait
-  /// au minimum 744 points là où l'écran intérieur du Duo en fait 669.
+  /// Trois conditions, chacune pour une raison mesurée.
   ///
-  /// Ce que ça donne sur les quatre poses mesurées dans Xcode 27.1 : fermé
-  /// 466 × 678, la barre reste en bas ; fermé et couché 678 × 466, le menu se
-  /// met debout — et c'est voulu, une fenêtre courte et large est justement
-  /// celle où une barre en bas coûte le plus cher ; ouvert 669 × 951 et
-  /// 951 × 669, debout aussi. En multitâche (445 × 626 et 320 × 626), la
-  /// barre revient en bas.
+  /// **Pas une tablette** : au-delà de 700 points de côté le plus court, c'est
+  /// un iPad — le plus petit fait 744 — et l'iPad garde sa barre en bas.
   ///
-  /// La limite des 700 points est un entre-deux, pas une mesure : Flutter ne
-  /// sait pas dire « iPhone » ou « iPad » sans canal natif, et ne remplit pas
-  /// `displayFeatures` sur iOS (voir `app/window_probe.dart`). Un iPad en
-  /// Split View réglé aux deux tiers tomberait du mauvais côté ; c'est le seul
-  /// cas connu, et il disparaîtra le jour où un canal dira le pli.
+  /// **Assez large** pour céder les 80 points de la colonne sans étouffer le
+  /// contenu. L'écran extérieur du Duo en fait 466 et lui reste 386 ; une
+  /// tranche de multitâche à 445 tomberait trop bas.
+  ///
+  /// **Pas une colonne de téléphone** : c'est la forme qui tranche, pas la
+  /// taille. Un iPhone en portrait est étroit et long — 402 × 874, soit 0,46 —
+  /// et une barre en bas y est chez elle. Les fenêtres du Duo sont trapues :
+  /// 0,69 fermé, 0,70 ouvert, 1,4 couché. C'est aussi ce qui règle enfin le
+  /// cas de l'iPad en Split View aux deux tiers, 678 × 1133, qui vaut 0,60.
+  ///
+  /// Les cotes viennent de Xcode 27.1, sur un binaire bord-à-bord.
   static bool fitsIn(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return size.width >= 600 && size.shortestSide < 700;
+    if (size.shortestSide >= 700) return false;
+    if (size.width < 460) return false;
+    return size.width / size.height > 0.6;
   }
 
   /// La largeur que le rail prend au contenu, bord compris. Sert à ce qui

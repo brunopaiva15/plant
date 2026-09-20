@@ -71,12 +71,14 @@ void main() {
     // (ce qu'on tient, la fenêtre, le menu debout)
     const cas = <(String, Size, bool)>[
       ('iPhone', Size(402, 874), false),
-      ('iPhone Duo fermé', Size(466, 678), false),
+      ('iPhone 16 Pro Max', Size(440, 956), false),
+      ('iPhone Duo fermé', Size(466, 678), true),
       ('iPhone Duo fermé, couché', Size(678, 466), true),
       ('iPhone Duo ouvert', Size(669, 951), true),
       ('iPhone Duo ouvert, couché', Size(951, 669), true),
       ('iPad mini, portrait', Size(744, 1133), false),
       ('iPad 11 pouces, paysage', Size(1180, 820), false),
+      ('iPad en Split View aux deux tiers', Size(678, 1133), false),
       ('en multitâche, la moitié', Size(445, 626), false),
       ('en multitâche, le tiers', Size(320, 626), false),
     ];
