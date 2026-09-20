@@ -192,6 +192,15 @@ abstract final class NativeShell {
     final empreinte = charge.toString();
     if (empreinte == _derniereChrome) return;
     _derniereChrome = empreinte;
+    debugPrint('[auxine:natif] chrome $empreinte');
+    // Une barre effacée ne garde pas ses boutons. Ce n'est pas seulement de
+    // l'hygiène : si l'effacement échouait pour une raison quelconque, elle
+    // montrerait ceux de la page d'en dessous — et c'est précisément ce que
+    // le relevé permettra de distinguer d'un simple binaire en retard.
+    if (charge['bar'] == false) {
+      _dernieresActions = null;
+      await _invoke('setActions', const {'title': '', 'leading': [], 'actions': []});
+    }
     await _invoke('setChrome', charge);
   }
 
