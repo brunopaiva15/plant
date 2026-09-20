@@ -187,7 +187,15 @@ class LargeTitlePage extends StatelessWidget {
     // La barre garde toute la largeur — c'est ce que fait iOS —, seul le
     // contenu se recentre. Sur téléphone l'encart vaut zéro et la liste de
     // slivers reste exactement celle d'avant.
+    // Ce que le système réserve sur les côtés s'ajoute à la colonne de
+    // lecture. Sur un pliable, la bande de la caméra passe sur un bord — 84
+    // points mesurés — et rien ne dit qu'elle soit symétrique : sans ça, une
+    // liste ou un sélecteur de section court dessous. La barre de navigation,
+    // elle, se protège déjà toute seule (`SafeArea` de Cupertino).
+    final marges = MediaQuery.paddingOf(context);
     final inset = readableInset(context);
+    final gauche = inset + marges.left;
+    final droite = inset + marges.right;
     return RailActions(
       actions: debout ? boutons : const <Widget>[],
       child: Scaffold(
@@ -204,11 +212,11 @@ class LargeTitlePage extends StatelessWidget {
           physics: floraScrollPhysics,
           slivers: [
             header,
-            if (inset == 0)
+            if (gauche == 0 && droite == 0)
               ...slivers
             else
               SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: inset),
+                padding: EdgeInsets.only(left: gauche, right: droite),
                 sliver: SliverMainAxisGroup(slivers: slivers),
               ),
             SliverPadding(padding: EdgeInsets.only(bottom: bottomPadding)),

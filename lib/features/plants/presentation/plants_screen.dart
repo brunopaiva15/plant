@@ -139,8 +139,10 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
           ],
         ),
         Positioned(
-          left: Space.xl,
-          right: Space.xl,
+          // Les marges du système s'ajoutent aux nôtres, bord par bord : sur
+          // un pliable, la bande de la caméra passe sur un côté.
+          left: Space.xl + MediaQuery.paddingOf(context).left,
+          right: Space.xl + MediaQuery.paddingOf(context).right,
           // Sous extendBody, le padding bas du body correspond déjà à la hauteur de la tab bar.
           bottom: MediaQuery.paddingOf(context).bottom + Space.sm,
           child: AnimatedSwitcher(

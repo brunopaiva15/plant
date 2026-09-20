@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,13 +73,17 @@ class ToastHost extends ConsumerWidget {
     // debout à droite, il se range à gauche du rail et redescend, puisque
     // plus rien n'occupe le bas de l'écran.
     final rail = FloraTabRail.fitsIn(context) ? FloraTabRail.reserved(context) : 0.0;
+    // Et ce que le système réserve sur les côtés, bord par bord : sur un
+    // pliable, la bande de la caméra passe à droite ou à gauche selon la
+    // rotation.
+    final marges = MediaQuery.paddingOf(context);
     return Stack(
       children: [
         child,
         Positioned(
-          left: Space.md,
-          right: Space.md + rail,
-          bottom: MediaQuery.paddingOf(context).bottom + (rail > 0 ? Space.md : 96),
+          left: Space.md + marges.left,
+          right: Space.md + math.max(rail, marges.right),
+          bottom: marges.bottom + (rail > 0 ? Space.md : 96),
           child: IgnorePointer(
             ignoring: toast == null,
             child: AnimatedSwitcher(
