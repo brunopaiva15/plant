@@ -6236,4 +6236,233 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get confirmRestoreTip =>
       'Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.';
+
+  @override
+  String get roomScan => 'Rilievo della casa';
+
+  @override
+  String get roomScanHint =>
+      'Una stanza rilevata con la fotocamera e il LiDAR restituisce muri, finestre e porte. Per una pianta, l\'app vi legge dove starebbe meglio. Il rilievo resta sul dispositivo.';
+
+  @override
+  String get roomScanStart => 'Rilevare una stanza';
+
+  @override
+  String get roomScanRooms => 'Stanze rilevate';
+
+  @override
+  String get roomScanEmptyTitle => 'Nessuna stanza rilevata';
+
+  @override
+  String get roomScanEmptySubtitle =>
+      'Il rilievo richiede uno o due minuti per stanza, girando lentamente lungo i muri.';
+
+  @override
+  String get roomScanNoLidar =>
+      'Questo dispositivo non ha il LiDAR: il rilievo richiede un iPhone Pro o un iPad Pro.';
+
+  @override
+  String get roomScanBeforeTitle => 'Prima del rilievo';
+
+  @override
+  String get roomScanBeforeText =>
+      'La fotocamera si apre sulla schermata di rilievo del sistema. Girare lentamente lungo i muri finché la stanza non è disegnata, poi terminare. Nulla lascia il dispositivo.';
+
+  @override
+  String get roomScanFailed => 'Il rilievo non è andato a buon fine.';
+
+  @override
+  String get roomScanDefaultName => 'Stanza';
+
+  @override
+  String roomScanArea(String area) {
+    return '$area m²';
+  }
+
+  @override
+  String roomScanWindowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count finestre',
+      one: 'una finestra',
+      zero: 'nessuna finestra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanName => 'Nome della stanza';
+
+  @override
+  String get roomScanLinkedLocation => 'Posizione';
+
+  @override
+  String get roomScanWindows => 'Finestre';
+
+  @override
+  String roomScanWindowN(int n) {
+    return 'Finestra $n';
+  }
+
+  @override
+  String get roomScanWindowUnknown => 'Orientamento sconosciuto';
+
+  @override
+  String get roomScanWindowFromCompass => 'Secondo la bussola';
+
+  @override
+  String get roomScanWindowConfirmed => 'Confermato';
+
+  @override
+  String get roomScanOrientationHelp =>
+      'La bussola sbaglia di dieci o quindici gradi: l\'orientamento di ogni finestra si conferma qui.';
+
+  @override
+  String get roomScanDelete => 'Elimina il rilievo';
+
+  @override
+  String get roomScanDeleteConfirm =>
+      'Il rilievo e i suoi riferimenti scompaiono dal dispositivo.';
+
+  @override
+  String roomScanCapturedOn(String date) {
+    return 'Rilevata il $date';
+  }
+
+  @override
+  String get roomSectionBathroom => 'Bagno';
+
+  @override
+  String get roomSectionBedroom => 'Camera da letto';
+
+  @override
+  String get roomSectionDiningRoom => 'Sala da pranzo';
+
+  @override
+  String get roomSectionKitchen => 'Cucina';
+
+  @override
+  String get roomSectionLaundryRoom => 'Lavanderia';
+
+  @override
+  String get roomSectionLivingRoom => 'Soggiorno';
+
+  @override
+  String get directionNorth => 'nord';
+
+  @override
+  String get directionNorthEast => 'nord-est';
+
+  @override
+  String get directionEast => 'est';
+
+  @override
+  String get directionSouthEast => 'sud-est';
+
+  @override
+  String get directionSouth => 'sud';
+
+  @override
+  String get directionSouthWest => 'sud-ovest';
+
+  @override
+  String get directionWest => 'ovest';
+
+  @override
+  String get directionNorthWest => 'nord-ovest';
+
+  @override
+  String get placementTitle => 'Dove metterla';
+
+  @override
+  String get placementHint =>
+      'I posti letti nelle stanze rilevate, per questa scheda. La pianta può vivere altrove.';
+
+  @override
+  String placementRoomsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stanze rilevate',
+      one: 'una stanza rilevata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placementVerdictGood => 'Questa stanza le va bene.';
+
+  @override
+  String get placementVerdictAcceptable =>
+      'Questa stanza le va più o meno bene.';
+
+  @override
+  String get placementVerdictUnsuitable => 'Questa stanza non le va bene.';
+
+  @override
+  String get placementShortfallTooDark => 'Troppo buia per ciò che le serve.';
+
+  @override
+  String get placementShortfallTooBright => 'Troppo sole diretto per lei.';
+
+  @override
+  String get placementShortfallDrafty =>
+      'Tutti i posti sono vicino a una porta, e lei teme le correnti d\'aria.';
+
+  @override
+  String get placementShortfallTooDry =>
+      'Un locale umido, per una pianta che vuole aria secca.';
+
+  @override
+  String get placementGeneric =>
+      'La scheda è generica: senza la specie, la luce che le serve non è nota.';
+
+  @override
+  String placementDistanceM(String m) {
+    return '$m m';
+  }
+
+  @override
+  String placementDistanceCm(int cm) {
+    return '$cm cm';
+  }
+
+  @override
+  String placementNearWindow(String distance, String direction) {
+    return 'a $distance dalla finestra a $direction';
+  }
+
+  @override
+  String placementNearWindowUnknown(String distance) {
+    return 'a $distance dalla finestra';
+  }
+
+  @override
+  String get placementOnTable => 'sul tavolo';
+
+  @override
+  String get placementOnStorage => 'sul mobile';
+
+  @override
+  String placementOnSill(String direction) {
+    return 'sul davanzale della finestra a $direction';
+  }
+
+  @override
+  String get placementOnSillUnknown => 'sul davanzale della finestra';
+
+  @override
+  String get placementDeepInRoom => 'in fondo, lontano dalle finestre';
+
+  @override
+  String get placementDraftyNote => 'Vicino a una porta: qui l\'aria si muove.';
+
+  @override
+  String get placementHumidRoomNote => 'Locale umido: qui l\'aria è più umida.';
+
+  @override
+  String placementPlanSemantics(int count) {
+    return 'Pianta della stanza vista dall\'alto, $count posti selezionati.';
+  }
 }

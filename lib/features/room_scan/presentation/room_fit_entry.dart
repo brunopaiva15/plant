@@ -1,0 +1,41 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/l10n/l10n.dart';
+import '../../../design_system/design_system.dart';
+import '../../../domain/care/care_guide.dart';
+import '../application/room_scan_providers.dart';
+import 'room_fit_sheet.dart';
+
+/// Sous le diorama d'une fiche d'entretien : « Où la poser », quand au
+/// moins une pièce est relevée. Le diorama montre l'idéal ; le relevé
+/// montre le réel (docs/13, « Idéal et réel »). Absent sans relevé, absent
+/// sans LiDAR, absent sans le drapeau.
+class RoomFitEntry extends ConsumerWidget {
+  const RoomFitEntry({super.key, required this.care});
+
+  final ResolvedCare care;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    if (!(ref.watch(roomScanAvailableProvider).value ?? false)) return const SizedBox.shrink();
+    final scans = ref.watch(roomScansProvider).value ?? const [];
+    if (scans.isEmpty) return const SizedBox.shrink();
+    final generic = care.match == CareMatch.generic || care.match == CareMatch.category;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.md),
+      child: FloraGroup(
+        children: [
+          FloraListRow(
+            leading: const Text('📐', style: TextStyle(fontSize: 18)),
+            title: l10n.placementTitle,
+            subtitle: l10n.placementRoomsCount(scans.length),
+            chevron: true,
+            onTap: () => showRoomFit(context, profile: care.profile, generic: generic),
+          ),
+        ],
+      ),
+    );
+  }
+}

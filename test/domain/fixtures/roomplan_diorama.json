@@ -1,0 +1,320 @@
+{
+ "version": 2,
+ "story": 0,
+ "identifier": "ROOM_DIORAMA",
+ "walls": [
+  {
+   "category": {
+    "wall": {}
+   },
+   "dimensions": [
+    3.6,
+    2.7,
+    0
+   ],
+   "transform": [
+    6.123233995736766e-17,
+    0,
+    -1.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1.0,
+    0,
+    6.123233995736766e-17,
+    0,
+    -2.1,
+    1.35,
+    0,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "WALL_LEFT",
+   "parentIdentifier": null,
+   "story": 0
+  },
+  {
+   "category": {
+    "wall": {}
+   },
+   "dimensions": [
+    3.6,
+    2.7,
+    0
+   ],
+   "transform": [
+    6.123233995736766e-17,
+    0,
+    -1.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1.0,
+    0,
+    6.123233995736766e-17,
+    0,
+    2.1,
+    1.35,
+    0,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "WALL_RIGHT",
+   "parentIdentifier": null,
+   "story": 0
+  },
+  {
+   "category": {
+    "wall": {}
+   },
+   "dimensions": [
+    4.2,
+    2.7,
+    0
+   ],
+   "transform": [
+    1.0,
+    0,
+    -0.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0.0,
+    0,
+    1.0,
+    0,
+    0,
+    1.35,
+    1.8,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "WALL_BACK",
+   "parentIdentifier": null,
+   "story": 0
+  },
+  {
+   "category": {
+    "wall": {}
+   },
+   "dimensions": [
+    4.2,
+    2.7,
+    0
+   ],
+   "transform": [
+    1.0,
+    0,
+    -0.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0.0,
+    0,
+    1.0,
+    0,
+    0,
+    1.35,
+    -1.8,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "WALL_FRONT",
+   "parentIdentifier": null,
+   "story": 0
+  }
+ ],
+ "windows": [
+  {
+   "category": {
+    "window": {}
+   },
+   "dimensions": [
+    1.5,
+    1.5,
+    0
+   ],
+   "transform": [
+    6.123233995736766e-17,
+    0,
+    -1.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1.0,
+    0,
+    6.123233995736766e-17,
+    0,
+    -2.1,
+    1.5,
+    0.3,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "WINDOW_1",
+   "parentIdentifier": "WALL_LEFT",
+   "story": 0
+  }
+ ],
+ "doors": [
+  {
+   "category": {
+    "door": {
+     "isOpen": false
+    }
+   },
+   "dimensions": [
+    0.9,
+    2.0,
+    0
+   ],
+   "transform": [
+    1.0,
+    0,
+    -0.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0.0,
+    0,
+    1.0,
+    0,
+    1.0,
+    1.0,
+    -1.8,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "DOOR_1",
+   "parentIdentifier": "WALL_FRONT",
+   "story": 0
+  }
+ ],
+ "openings": [],
+ "objects": [
+  {
+   "category": {
+    "table": {}
+   },
+   "dimensions": [
+    1.2,
+    0.75,
+    0.6
+   ],
+   "transform": [
+    1.0,
+    0,
+    -0.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0.0,
+    0,
+    1.0,
+    0,
+    0.9,
+    0.375,
+    -0.9,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "TABLE_1",
+   "attributes": {}
+  }
+ ],
+ "floors": [
+  {
+   "category": {
+    "floor": {}
+   },
+   "dimensions": [
+    4.2,
+    0,
+    3.6
+   ],
+   "transform": [
+    1.0,
+    0,
+    -0.0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0.0,
+    0,
+    1.0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "confidence": {
+    "high": {}
+   },
+   "identifier": "FLOOR_1",
+   "polygonCorners": [
+    [
+     -2.1,
+     0,
+     -1.8
+    ],
+    [
+     2.1,
+     0,
+     -1.8
+    ],
+    [
+     2.1,
+     0,
+     1.8
+    ],
+    [
+     -2.1,
+     0,
+     1.8
+    ]
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "label": "livingRoom",
+   "center": [
+    0,
+    0,
+    0
+   ],
+   "story": 0
+  }
+ ]
+}

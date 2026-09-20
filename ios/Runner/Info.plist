@@ -118,7 +118,7 @@
 	<key>GoogleHomeAppGroup</key>
 	<string>group.ch.vergasta.plant</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Auxine utilise l'appareil photo pour photographier vos plantes.</string>
+	<string>Auxine utilise l'appareil photo pour photographier vos plantes et, sur demande, pour relever une pièce de la maison. Le relevé reste sur l'appareil.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Auxine accède à vos photos pour illustrer vos plantes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

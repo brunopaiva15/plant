@@ -6247,4 +6247,235 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get confirmRestoreTip =>
       'Rétablir ce conseil ? Ses signalements sont effacés.';
+
+  @override
+  String get roomScan => 'Relevé de la maison';
+
+  @override
+  String get roomScanHint =>
+      'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. Pour une plante, l\'application y lit où elle serait le mieux. Le relevé reste sur l\'appareil.';
+
+  @override
+  String get roomScanStart => 'Relever une pièce';
+
+  @override
+  String get roomScanRooms => 'Pièces relevées';
+
+  @override
+  String get roomScanEmptyTitle => 'Aucune pièce relevée';
+
+  @override
+  String get roomScanEmptySubtitle =>
+      'Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.';
+
+  @override
+  String get roomScanNoLidar =>
+      'Cet appareil n\'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.';
+
+  @override
+  String get roomScanBeforeTitle => 'Avant le relevé';
+
+  @override
+  String get roomScanBeforeText =>
+      'L\'appareil photo s\'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu\'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l\'appareil.';
+
+  @override
+  String get roomScanFailed => 'Le relevé n\'a pas abouti.';
+
+  @override
+  String get roomScanDefaultName => 'Pièce';
+
+  @override
+  String roomScanArea(String area) {
+    return '$area m²';
+  }
+
+  @override
+  String roomScanWindowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fenêtres',
+      one: 'une fenêtre',
+      zero: 'aucune fenêtre',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanName => 'Nom de la pièce';
+
+  @override
+  String get roomScanLinkedLocation => 'Emplacement';
+
+  @override
+  String get roomScanWindows => 'Fenêtres';
+
+  @override
+  String roomScanWindowN(int n) {
+    return 'Fenêtre $n';
+  }
+
+  @override
+  String get roomScanWindowUnknown => 'Orientation inconnue';
+
+  @override
+  String get roomScanWindowFromCompass => 'D\'après la boussole';
+
+  @override
+  String get roomScanWindowConfirmed => 'Confirmée';
+
+  @override
+  String get roomScanOrientationHelp =>
+      'La boussole se trompe de dix à quinze degrés : l\'orientation de chaque fenêtre se confirme ici.';
+
+  @override
+  String get roomScanDelete => 'Supprimer le relevé';
+
+  @override
+  String get roomScanDeleteConfirm =>
+      'Le relevé et ses repères disparaissent de l\'appareil.';
+
+  @override
+  String roomScanCapturedOn(String date) {
+    return 'Relevée le $date';
+  }
+
+  @override
+  String get roomSectionBathroom => 'Salle de bain';
+
+  @override
+  String get roomSectionBedroom => 'Chambre';
+
+  @override
+  String get roomSectionDiningRoom => 'Salle à manger';
+
+  @override
+  String get roomSectionKitchen => 'Cuisine';
+
+  @override
+  String get roomSectionLaundryRoom => 'Buanderie';
+
+  @override
+  String get roomSectionLivingRoom => 'Salon';
+
+  @override
+  String get directionNorth => 'nord';
+
+  @override
+  String get directionNorthEast => 'nord-est';
+
+  @override
+  String get directionEast => 'est';
+
+  @override
+  String get directionSouthEast => 'sud-est';
+
+  @override
+  String get directionSouth => 'sud';
+
+  @override
+  String get directionSouthWest => 'sud-ouest';
+
+  @override
+  String get directionWest => 'ouest';
+
+  @override
+  String get directionNorthWest => 'nord-ouest';
+
+  @override
+  String get placementTitle => 'Où la poser';
+
+  @override
+  String get placementHint =>
+      'Les places lues dans les pièces relevées, pour cette fiche. La plante peut vivre ailleurs.';
+
+  @override
+  String placementRoomsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pièces relevées',
+      one: 'une pièce relevée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placementVerdictGood => 'Cette pièce lui convient.';
+
+  @override
+  String get placementVerdictAcceptable =>
+      'Cette pièce lui convient à peu près.';
+
+  @override
+  String get placementVerdictUnsuitable => 'Cette pièce ne lui convient pas.';
+
+  @override
+  String get placementShortfallTooDark =>
+      'Trop sombre pour ce qu\'elle demande.';
+
+  @override
+  String get placementShortfallTooBright => 'Trop de soleil direct pour elle.';
+
+  @override
+  String get placementShortfallDrafty =>
+      'Toutes les places sont près d\'une porte, et elle craint les courants d\'air.';
+
+  @override
+  String get placementShortfallTooDry =>
+      'Une pièce d\'eau, pour une plante qui veut l\'air sec.';
+
+  @override
+  String get placementGeneric =>
+      'La fiche est générique : sans l\'espèce, la lumière qu\'elle demande n\'est pas connue.';
+
+  @override
+  String placementDistanceM(String m) {
+    return '$m m';
+  }
+
+  @override
+  String placementDistanceCm(int cm) {
+    return '$cm cm';
+  }
+
+  @override
+  String placementNearWindow(String distance, String direction) {
+    return 'à $distance de la fenêtre $direction';
+  }
+
+  @override
+  String placementNearWindowUnknown(String distance) {
+    return 'à $distance de la fenêtre';
+  }
+
+  @override
+  String get placementOnTable => 'sur la table';
+
+  @override
+  String get placementOnStorage => 'sur le meuble';
+
+  @override
+  String placementOnSill(String direction) {
+    return 'sur l\'appui de la fenêtre $direction';
+  }
+
+  @override
+  String get placementOnSillUnknown => 'sur l\'appui de la fenêtre';
+
+  @override
+  String get placementDeepInRoom => 'au fond, loin des fenêtres';
+
+  @override
+  String get placementDraftyNote => 'Près d\'une porte : l\'air y bouge.';
+
+  @override
+  String get placementHumidRoomNote =>
+      'Pièce d\'eau : l\'air y est plus humide.';
+
+  @override
+  String placementPlanSemantics(int count) {
+    return 'Plan de la pièce vu de dessus, $count places retenues.';
+  }
 }

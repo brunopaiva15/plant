@@ -13453,6 +13453,1348 @@ class CalendarEntriesCompanion extends UpdateCompanion<CalendarEntryRow> {
   }
 }
 
+class $RoomScansTable extends RoomScans
+    with TableInfo<$RoomScansTable, RoomScanRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RoomScansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gardenIdMeta = const VerificationMeta(
+    'gardenId',
+  );
+  @override
+  late final GeneratedColumn<String> gardenId = GeneratedColumn<String>(
+    'garden_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _locationIdMeta = const VerificationMeta(
+    'locationId',
+  );
+  @override
+  late final GeneratedColumn<String> locationId = GeneratedColumn<String>(
+    'location_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _capturedAtMeta = const VerificationMeta(
+    'capturedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> capturedAt = GeneratedColumn<DateTime>(
+    'captured_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _northOffsetDegMeta = const VerificationMeta(
+    'northOffsetDeg',
+  );
+  @override
+  late final GeneratedColumn<double> northOffsetDeg = GeneratedColumn<double>(
+    'north_offset_deg',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _filePathMeta = const VerificationMeta(
+    'filePath',
+  );
+  @override
+  late final GeneratedColumn<String> filePath = GeneratedColumn<String>(
+    'file_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _floorAreaM2Meta = const VerificationMeta(
+    'floorAreaM2',
+  );
+  @override
+  late final GeneratedColumn<double> floorAreaM2 = GeneratedColumn<double>(
+    'floor_area_m2',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _sectionLabelMeta = const VerificationMeta(
+    'sectionLabel',
+  );
+  @override
+  late final GeneratedColumn<String> sectionLabel = GeneratedColumn<String>(
+    'section_label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    locationId,
+    name,
+    capturedAt,
+    northOffsetDeg,
+    filePath,
+    floorAreaM2,
+    sectionLabel,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'room_scans';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RoomScanRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('garden_id')) {
+      context.handle(
+        _gardenIdMeta,
+        gardenId.isAcceptableOrUnknown(data['garden_id']!, _gardenIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gardenIdMeta);
+    }
+    if (data.containsKey('location_id')) {
+      context.handle(
+        _locationIdMeta,
+        locationId.isAcceptableOrUnknown(data['location_id']!, _locationIdMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('captured_at')) {
+      context.handle(
+        _capturedAtMeta,
+        capturedAt.isAcceptableOrUnknown(data['captured_at']!, _capturedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_capturedAtMeta);
+    }
+    if (data.containsKey('north_offset_deg')) {
+      context.handle(
+        _northOffsetDegMeta,
+        northOffsetDeg.isAcceptableOrUnknown(
+          data['north_offset_deg']!,
+          _northOffsetDegMeta,
+        ),
+      );
+    }
+    if (data.containsKey('file_path')) {
+      context.handle(
+        _filePathMeta,
+        filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_filePathMeta);
+    }
+    if (data.containsKey('floor_area_m2')) {
+      context.handle(
+        _floorAreaM2Meta,
+        floorAreaM2.isAcceptableOrUnknown(
+          data['floor_area_m2']!,
+          _floorAreaM2Meta,
+        ),
+      );
+    }
+    if (data.containsKey('section_label')) {
+      context.handle(
+        _sectionLabelMeta,
+        sectionLabel.isAcceptableOrUnknown(
+          data['section_label']!,
+          _sectionLabelMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RoomScanRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RoomScanRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      gardenId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}garden_id'],
+      )!,
+      locationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_id'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      capturedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}captured_at'],
+      )!,
+      northOffsetDeg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}north_offset_deg'],
+      ),
+      filePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_path'],
+      )!,
+      floorAreaM2: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}floor_area_m2'],
+      )!,
+      sectionLabel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}section_label'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $RoomScansTable createAlias(String alias) {
+    return $RoomScansTable(attachedDatabase, alias);
+  }
+}
+
+class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String gardenId;
+  final String? locationId;
+  final String name;
+  final DateTime capturedAt;
+
+  /// Le cap du nord dans le repère du relevé, en degrés ; null sans boussole.
+  final double? northOffsetDeg;
+
+  /// Chemin du JSON, relatif au dossier des relevés.
+  final String filePath;
+  final double floorAreaM2;
+
+  /// Le type de pièce reconnu par RoomPlan (`kitchen`, `bathroom`…), ou null.
+  final String? sectionLabel;
+  final DateTime? deletedAt;
+  const RoomScanRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.gardenId,
+    this.locationId,
+    required this.name,
+    required this.capturedAt,
+    this.northOffsetDeg,
+    required this.filePath,
+    required this.floorAreaM2,
+    this.sectionLabel,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['garden_id'] = Variable<String>(gardenId);
+    if (!nullToAbsent || locationId != null) {
+      map['location_id'] = Variable<String>(locationId);
+    }
+    map['name'] = Variable<String>(name);
+    map['captured_at'] = Variable<DateTime>(capturedAt);
+    if (!nullToAbsent || northOffsetDeg != null) {
+      map['north_offset_deg'] = Variable<double>(northOffsetDeg);
+    }
+    map['file_path'] = Variable<String>(filePath);
+    map['floor_area_m2'] = Variable<double>(floorAreaM2);
+    if (!nullToAbsent || sectionLabel != null) {
+      map['section_label'] = Variable<String>(sectionLabel);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  RoomScansCompanion toCompanion(bool nullToAbsent) {
+    return RoomScansCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      gardenId: Value(gardenId),
+      locationId: locationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationId),
+      name: Value(name),
+      capturedAt: Value(capturedAt),
+      northOffsetDeg: northOffsetDeg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(northOffsetDeg),
+      filePath: Value(filePath),
+      floorAreaM2: Value(floorAreaM2),
+      sectionLabel: sectionLabel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sectionLabel),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory RoomScanRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RoomScanRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      gardenId: serializer.fromJson<String>(json['gardenId']),
+      locationId: serializer.fromJson<String?>(json['locationId']),
+      name: serializer.fromJson<String>(json['name']),
+      capturedAt: serializer.fromJson<DateTime>(json['capturedAt']),
+      northOffsetDeg: serializer.fromJson<double?>(json['northOffsetDeg']),
+      filePath: serializer.fromJson<String>(json['filePath']),
+      floorAreaM2: serializer.fromJson<double>(json['floorAreaM2']),
+      sectionLabel: serializer.fromJson<String?>(json['sectionLabel']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'gardenId': serializer.toJson<String>(gardenId),
+      'locationId': serializer.toJson<String?>(locationId),
+      'name': serializer.toJson<String>(name),
+      'capturedAt': serializer.toJson<DateTime>(capturedAt),
+      'northOffsetDeg': serializer.toJson<double?>(northOffsetDeg),
+      'filePath': serializer.toJson<String>(filePath),
+      'floorAreaM2': serializer.toJson<double>(floorAreaM2),
+      'sectionLabel': serializer.toJson<String?>(sectionLabel),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  RoomScanRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? gardenId,
+    Value<String?> locationId = const Value.absent(),
+    String? name,
+    DateTime? capturedAt,
+    Value<double?> northOffsetDeg = const Value.absent(),
+    String? filePath,
+    double? floorAreaM2,
+    Value<String?> sectionLabel = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => RoomScanRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    gardenId: gardenId ?? this.gardenId,
+    locationId: locationId.present ? locationId.value : this.locationId,
+    name: name ?? this.name,
+    capturedAt: capturedAt ?? this.capturedAt,
+    northOffsetDeg: northOffsetDeg.present
+        ? northOffsetDeg.value
+        : this.northOffsetDeg,
+    filePath: filePath ?? this.filePath,
+    floorAreaM2: floorAreaM2 ?? this.floorAreaM2,
+    sectionLabel: sectionLabel.present ? sectionLabel.value : this.sectionLabel,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  RoomScanRow copyWithCompanion(RoomScansCompanion data) {
+    return RoomScanRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      gardenId: data.gardenId.present ? data.gardenId.value : this.gardenId,
+      locationId: data.locationId.present
+          ? data.locationId.value
+          : this.locationId,
+      name: data.name.present ? data.name.value : this.name,
+      capturedAt: data.capturedAt.present
+          ? data.capturedAt.value
+          : this.capturedAt,
+      northOffsetDeg: data.northOffsetDeg.present
+          ? data.northOffsetDeg.value
+          : this.northOffsetDeg,
+      filePath: data.filePath.present ? data.filePath.value : this.filePath,
+      floorAreaM2: data.floorAreaM2.present
+          ? data.floorAreaM2.value
+          : this.floorAreaM2,
+      sectionLabel: data.sectionLabel.present
+          ? data.sectionLabel.value
+          : this.sectionLabel,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RoomScanRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('locationId: $locationId, ')
+          ..write('name: $name, ')
+          ..write('capturedAt: $capturedAt, ')
+          ..write('northOffsetDeg: $northOffsetDeg, ')
+          ..write('filePath: $filePath, ')
+          ..write('floorAreaM2: $floorAreaM2, ')
+          ..write('sectionLabel: $sectionLabel, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    gardenId,
+    locationId,
+    name,
+    capturedAt,
+    northOffsetDeg,
+    filePath,
+    floorAreaM2,
+    sectionLabel,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RoomScanRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.gardenId == this.gardenId &&
+          other.locationId == this.locationId &&
+          other.name == this.name &&
+          other.capturedAt == this.capturedAt &&
+          other.northOffsetDeg == this.northOffsetDeg &&
+          other.filePath == this.filePath &&
+          other.floorAreaM2 == this.floorAreaM2 &&
+          other.sectionLabel == this.sectionLabel &&
+          other.deletedAt == this.deletedAt);
+}
+
+class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> gardenId;
+  final Value<String?> locationId;
+  final Value<String> name;
+  final Value<DateTime> capturedAt;
+  final Value<double?> northOffsetDeg;
+  final Value<String> filePath;
+  final Value<double> floorAreaM2;
+  final Value<String?> sectionLabel;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const RoomScansCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.gardenId = const Value.absent(),
+    this.locationId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.capturedAt = const Value.absent(),
+    this.northOffsetDeg = const Value.absent(),
+    this.filePath = const Value.absent(),
+    this.floorAreaM2 = const Value.absent(),
+    this.sectionLabel = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RoomScansCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String gardenId,
+    this.locationId = const Value.absent(),
+    required String name,
+    required DateTime capturedAt,
+    this.northOffsetDeg = const Value.absent(),
+    required String filePath,
+    this.floorAreaM2 = const Value.absent(),
+    this.sectionLabel = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       gardenId = Value(gardenId),
+       name = Value(name),
+       capturedAt = Value(capturedAt),
+       filePath = Value(filePath);
+  static Insertable<RoomScanRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? gardenId,
+    Expression<String>? locationId,
+    Expression<String>? name,
+    Expression<DateTime>? capturedAt,
+    Expression<double>? northOffsetDeg,
+    Expression<String>? filePath,
+    Expression<double>? floorAreaM2,
+    Expression<String>? sectionLabel,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (gardenId != null) 'garden_id': gardenId,
+      if (locationId != null) 'location_id': locationId,
+      if (name != null) 'name': name,
+      if (capturedAt != null) 'captured_at': capturedAt,
+      if (northOffsetDeg != null) 'north_offset_deg': northOffsetDeg,
+      if (filePath != null) 'file_path': filePath,
+      if (floorAreaM2 != null) 'floor_area_m2': floorAreaM2,
+      if (sectionLabel != null) 'section_label': sectionLabel,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RoomScansCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? gardenId,
+    Value<String?>? locationId,
+    Value<String>? name,
+    Value<DateTime>? capturedAt,
+    Value<double?>? northOffsetDeg,
+    Value<String>? filePath,
+    Value<double>? floorAreaM2,
+    Value<String?>? sectionLabel,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return RoomScansCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      gardenId: gardenId ?? this.gardenId,
+      locationId: locationId ?? this.locationId,
+      name: name ?? this.name,
+      capturedAt: capturedAt ?? this.capturedAt,
+      northOffsetDeg: northOffsetDeg ?? this.northOffsetDeg,
+      filePath: filePath ?? this.filePath,
+      floorAreaM2: floorAreaM2 ?? this.floorAreaM2,
+      sectionLabel: sectionLabel ?? this.sectionLabel,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (gardenId.present) {
+      map['garden_id'] = Variable<String>(gardenId.value);
+    }
+    if (locationId.present) {
+      map['location_id'] = Variable<String>(locationId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (capturedAt.present) {
+      map['captured_at'] = Variable<DateTime>(capturedAt.value);
+    }
+    if (northOffsetDeg.present) {
+      map['north_offset_deg'] = Variable<double>(northOffsetDeg.value);
+    }
+    if (filePath.present) {
+      map['file_path'] = Variable<String>(filePath.value);
+    }
+    if (floorAreaM2.present) {
+      map['floor_area_m2'] = Variable<double>(floorAreaM2.value);
+    }
+    if (sectionLabel.present) {
+      map['section_label'] = Variable<String>(sectionLabel.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RoomScansCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('gardenId: $gardenId, ')
+          ..write('locationId: $locationId, ')
+          ..write('name: $name, ')
+          ..write('capturedAt: $capturedAt, ')
+          ..write('northOffsetDeg: $northOffsetDeg, ')
+          ..write('filePath: $filePath, ')
+          ..write('floorAreaM2: $floorAreaM2, ')
+          ..write('sectionLabel: $sectionLabel, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RoomMarkersTable extends RoomMarkers
+    with TableInfo<$RoomMarkersTable, RoomMarkerRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RoomMarkersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scanIdMeta = const VerificationMeta('scanId');
+  @override
+  late final GeneratedColumn<String> scanId = GeneratedColumn<String>(
+    'scan_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _xMeta = const VerificationMeta('x');
+  @override
+  late final GeneratedColumn<double> x = GeneratedColumn<double>(
+    'x',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _zMeta = const VerificationMeta('z');
+  @override
+  late final GeneratedColumn<double> z = GeneratedColumn<double>(
+    'z',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _windowIndexMeta = const VerificationMeta(
+    'windowIndex',
+  );
+  @override
+  late final GeneratedColumn<int> windowIndex = GeneratedColumn<int>(
+    'window_index',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _orientationMeta = const VerificationMeta(
+    'orientation',
+  );
+  @override
+  late final GeneratedColumn<String> orientation = GeneratedColumn<String>(
+    'orientation',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _plantIdMeta = const VerificationMeta(
+    'plantId',
+  );
+  @override
+  late final GeneratedColumn<String> plantId = GeneratedColumn<String>(
+    'plant_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    scanId,
+    kind,
+    x,
+    z,
+    windowIndex,
+    orientation,
+    plantId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'room_markers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RoomMarkerRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('scan_id')) {
+      context.handle(
+        _scanIdMeta,
+        scanId.isAcceptableOrUnknown(data['scan_id']!, _scanIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scanIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('x')) {
+      context.handle(_xMeta, x.isAcceptableOrUnknown(data['x']!, _xMeta));
+    } else if (isInserting) {
+      context.missing(_xMeta);
+    }
+    if (data.containsKey('z')) {
+      context.handle(_zMeta, z.isAcceptableOrUnknown(data['z']!, _zMeta));
+    } else if (isInserting) {
+      context.missing(_zMeta);
+    }
+    if (data.containsKey('window_index')) {
+      context.handle(
+        _windowIndexMeta,
+        windowIndex.isAcceptableOrUnknown(
+          data['window_index']!,
+          _windowIndexMeta,
+        ),
+      );
+    }
+    if (data.containsKey('orientation')) {
+      context.handle(
+        _orientationMeta,
+        orientation.isAcceptableOrUnknown(
+          data['orientation']!,
+          _orientationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('plant_id')) {
+      context.handle(
+        _plantIdMeta,
+        plantId.isAcceptableOrUnknown(data['plant_id']!, _plantIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RoomMarkerRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RoomMarkerRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      scanId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scan_id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      x: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}x'],
+      )!,
+      z: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}z'],
+      )!,
+      windowIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}window_index'],
+      ),
+      orientation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}orientation'],
+      ),
+      plantId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plant_id'],
+      ),
+    );
+  }
+
+  @override
+  $RoomMarkersTable createAlias(String alias) {
+    return $RoomMarkersTable(attachedDatabase, alias);
+  }
+}
+
+class RoomMarkerRow extends DataClass implements Insertable<RoomMarkerRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String id;
+  final String scanId;
+
+  /// `windowOrientation` | `heater` | `plant`.
+  final String kind;
+  final double x;
+  final double z;
+  final int? windowIndex;
+
+  /// Un point cardinal (`south`, `northWest`…), pour `windowOrientation`.
+  final String? orientation;
+  final String? plantId;
+  const RoomMarkerRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.scanId,
+    required this.kind,
+    required this.x,
+    required this.z,
+    this.windowIndex,
+    this.orientation,
+    this.plantId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<String>(id);
+    map['scan_id'] = Variable<String>(scanId);
+    map['kind'] = Variable<String>(kind);
+    map['x'] = Variable<double>(x);
+    map['z'] = Variable<double>(z);
+    if (!nullToAbsent || windowIndex != null) {
+      map['window_index'] = Variable<int>(windowIndex);
+    }
+    if (!nullToAbsent || orientation != null) {
+      map['orientation'] = Variable<String>(orientation);
+    }
+    if (!nullToAbsent || plantId != null) {
+      map['plant_id'] = Variable<String>(plantId);
+    }
+    return map;
+  }
+
+  RoomMarkersCompanion toCompanion(bool nullToAbsent) {
+    return RoomMarkersCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      scanId: Value(scanId),
+      kind: Value(kind),
+      x: Value(x),
+      z: Value(z),
+      windowIndex: windowIndex == null && nullToAbsent
+          ? const Value.absent()
+          : Value(windowIndex),
+      orientation: orientation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(orientation),
+      plantId: plantId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(plantId),
+    );
+  }
+
+  factory RoomMarkerRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RoomMarkerRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      scanId: serializer.fromJson<String>(json['scanId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      x: serializer.fromJson<double>(json['x']),
+      z: serializer.fromJson<double>(json['z']),
+      windowIndex: serializer.fromJson<int?>(json['windowIndex']),
+      orientation: serializer.fromJson<String?>(json['orientation']),
+      plantId: serializer.fromJson<String?>(json['plantId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<String>(id),
+      'scanId': serializer.toJson<String>(scanId),
+      'kind': serializer.toJson<String>(kind),
+      'x': serializer.toJson<double>(x),
+      'z': serializer.toJson<double>(z),
+      'windowIndex': serializer.toJson<int?>(windowIndex),
+      'orientation': serializer.toJson<String?>(orientation),
+      'plantId': serializer.toJson<String?>(plantId),
+    };
+  }
+
+  RoomMarkerRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? id,
+    String? scanId,
+    String? kind,
+    double? x,
+    double? z,
+    Value<int?> windowIndex = const Value.absent(),
+    Value<String?> orientation = const Value.absent(),
+    Value<String?> plantId = const Value.absent(),
+  }) => RoomMarkerRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    scanId: scanId ?? this.scanId,
+    kind: kind ?? this.kind,
+    x: x ?? this.x,
+    z: z ?? this.z,
+    windowIndex: windowIndex.present ? windowIndex.value : this.windowIndex,
+    orientation: orientation.present ? orientation.value : this.orientation,
+    plantId: plantId.present ? plantId.value : this.plantId,
+  );
+  RoomMarkerRow copyWithCompanion(RoomMarkersCompanion data) {
+    return RoomMarkerRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      scanId: data.scanId.present ? data.scanId.value : this.scanId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      x: data.x.present ? data.x.value : this.x,
+      z: data.z.present ? data.z.value : this.z,
+      windowIndex: data.windowIndex.present
+          ? data.windowIndex.value
+          : this.windowIndex,
+      orientation: data.orientation.present
+          ? data.orientation.value
+          : this.orientation,
+      plantId: data.plantId.present ? data.plantId.value : this.plantId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RoomMarkerRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('scanId: $scanId, ')
+          ..write('kind: $kind, ')
+          ..write('x: $x, ')
+          ..write('z: $z, ')
+          ..write('windowIndex: $windowIndex, ')
+          ..write('orientation: $orientation, ')
+          ..write('plantId: $plantId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    scanId,
+    kind,
+    x,
+    z,
+    windowIndex,
+    orientation,
+    plantId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RoomMarkerRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.scanId == this.scanId &&
+          other.kind == this.kind &&
+          other.x == this.x &&
+          other.z == this.z &&
+          other.windowIndex == this.windowIndex &&
+          other.orientation == this.orientation &&
+          other.plantId == this.plantId);
+}
+
+class RoomMarkersCompanion extends UpdateCompanion<RoomMarkerRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<String> id;
+  final Value<String> scanId;
+  final Value<String> kind;
+  final Value<double> x;
+  final Value<double> z;
+  final Value<int?> windowIndex;
+  final Value<String?> orientation;
+  final Value<String?> plantId;
+  final Value<int> rowid;
+  const RoomMarkersCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.scanId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.x = const Value.absent(),
+    this.z = const Value.absent(),
+    this.windowIndex = const Value.absent(),
+    this.orientation = const Value.absent(),
+    this.plantId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RoomMarkersCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required String id,
+    required String scanId,
+    required String kind,
+    required double x,
+    required double z,
+    this.windowIndex = const Value.absent(),
+    this.orientation = const Value.absent(),
+    this.plantId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       scanId = Value(scanId),
+       kind = Value(kind),
+       x = Value(x),
+       z = Value(z);
+  static Insertable<RoomMarkerRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? id,
+    Expression<String>? scanId,
+    Expression<String>? kind,
+    Expression<double>? x,
+    Expression<double>? z,
+    Expression<int>? windowIndex,
+    Expression<String>? orientation,
+    Expression<String>? plantId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (scanId != null) 'scan_id': scanId,
+      if (kind != null) 'kind': kind,
+      if (x != null) 'x': x,
+      if (z != null) 'z': z,
+      if (windowIndex != null) 'window_index': windowIndex,
+      if (orientation != null) 'orientation': orientation,
+      if (plantId != null) 'plant_id': plantId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RoomMarkersCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<String>? id,
+    Value<String>? scanId,
+    Value<String>? kind,
+    Value<double>? x,
+    Value<double>? z,
+    Value<int?>? windowIndex,
+    Value<String?>? orientation,
+    Value<String?>? plantId,
+    Value<int>? rowid,
+  }) {
+    return RoomMarkersCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      scanId: scanId ?? this.scanId,
+      kind: kind ?? this.kind,
+      x: x ?? this.x,
+      z: z ?? this.z,
+      windowIndex: windowIndex ?? this.windowIndex,
+      orientation: orientation ?? this.orientation,
+      plantId: plantId ?? this.plantId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (scanId.present) {
+      map['scan_id'] = Variable<String>(scanId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (x.present) {
+      map['x'] = Variable<double>(x.value);
+    }
+    if (z.present) {
+      map['z'] = Variable<double>(z.value);
+    }
+    if (windowIndex.present) {
+      map['window_index'] = Variable<int>(windowIndex.value);
+    }
+    if (orientation.present) {
+      map['orientation'] = Variable<String>(orientation.value);
+    }
+    if (plantId.present) {
+      map['plant_id'] = Variable<String>(plantId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RoomMarkersCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('scanId: $scanId, ')
+          ..write('kind: $kind, ')
+          ..write('x: $x, ')
+          ..write('z: $z, ')
+          ..write('windowIndex: $windowIndex, ')
+          ..write('orientation: $orientation, ')
+          ..write('plantId: $plantId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FloraDatabase extends GeneratedDatabase {
   _$FloraDatabase(QueryExecutor e) : super(e);
   $FloraDatabaseManager get managers => $FloraDatabaseManager(this);
@@ -13491,6 +14833,8 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
   late final $CalendarEntriesTable calendarEntries = $CalendarEntriesTable(
     this,
   );
+  late final $RoomScansTable roomScans = $RoomScansTable(this);
+  late final $RoomMarkersTable roomMarkers = $RoomMarkersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -13519,6 +14863,8 @@ abstract class _$FloraDatabase extends GeneratedDatabase {
     inventoryTags,
     eventCategories,
     calendarEntries,
+    roomScans,
+    roomMarkers,
   ];
 }
 
@@ -20389,6 +21735,664 @@ typedef $$CalendarEntriesTableProcessedTableManager =
       CalendarEntryRow,
       PrefetchHooks Function()
     >;
+typedef $$RoomScansTableCreateCompanionBuilder = RoomScansCompanion Function({
+  required DateTime createdAt,
+  required DateTime updatedAt,
+  required String id,
+  required String gardenId,
+  Value<String?> locationId,
+  required String name,
+  required DateTime capturedAt,
+  Value<double?> northOffsetDeg,
+  required String filePath,
+  Value<double> floorAreaM2,
+  Value<String?> sectionLabel,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+typedef $$RoomScansTableUpdateCompanionBuilder = RoomScansCompanion Function({
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<String> id,
+  Value<String> gardenId,
+  Value<String?> locationId,
+  Value<String> name,
+  Value<DateTime> capturedAt,
+  Value<double?> northOffsetDeg,
+  Value<String> filePath,
+  Value<double> floorAreaM2,
+  Value<String?> sectionLabel,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+
+class $$RoomScansTableFilterComposer
+    extends Composer<_$FloraDatabase, $RoomScansTable> {
+  $$RoomScansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get capturedAt => $composableBuilder(
+    column: $table.capturedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get northOffsetDeg => $composableBuilder(
+    column: $table.northOffsetDeg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get filePath => $composableBuilder(
+    column: $table.filePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get floorAreaM2 => $composableBuilder(
+    column: $table.floorAreaM2,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sectionLabel => $composableBuilder(
+    column: $table.sectionLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RoomScansTableOrderingComposer
+    extends Composer<_$FloraDatabase, $RoomScansTable> {
+  $$RoomScansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gardenId => $composableBuilder(
+    column: $table.gardenId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get capturedAt => $composableBuilder(
+    column: $table.capturedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get northOffsetDeg => $composableBuilder(
+    column: $table.northOffsetDeg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get filePath => $composableBuilder(
+    column: $table.filePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get floorAreaM2 => $composableBuilder(
+    column: $table.floorAreaM2,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sectionLabel => $composableBuilder(
+    column: $table.sectionLabel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RoomScansTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $RoomScansTable> {
+  $$RoomScansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get gardenId =>
+      $composableBuilder(column: $table.gardenId, builder: (column) => column);
+
+  GeneratedColumn<String> get locationId => $composableBuilder(
+    column: $table.locationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get capturedAt => $composableBuilder(
+    column: $table.capturedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get northOffsetDeg => $composableBuilder(
+    column: $table.northOffsetDeg,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get filePath =>
+      $composableBuilder(column: $table.filePath, builder: (column) => column);
+
+  GeneratedColumn<double> get floorAreaM2 => $composableBuilder(
+    column: $table.floorAreaM2,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sectionLabel => $composableBuilder(
+    column: $table.sectionLabel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$RoomScansTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $RoomScansTable,
+          RoomScanRow,
+          $$RoomScansTableFilterComposer,
+          $$RoomScansTableOrderingComposer,
+          $$RoomScansTableAnnotationComposer,
+          $$RoomScansTableCreateCompanionBuilder,
+          $$RoomScansTableUpdateCompanionBuilder,
+          (
+            RoomScanRow,
+            BaseReferences<_$FloraDatabase, $RoomScansTable, RoomScanRow>,
+          ),
+          RoomScanRow,
+          PrefetchHooks Function()
+        > {
+  $$RoomScansTableTableManager(_$FloraDatabase db, $RoomScansTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RoomScansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoomScansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoomScansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> gardenId = const Value.absent(),
+                Value<String?> locationId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime> capturedAt = const Value.absent(),
+                Value<double?> northOffsetDeg = const Value.absent(),
+                Value<String> filePath = const Value.absent(),
+                Value<double> floorAreaM2 = const Value.absent(),
+                Value<String?> sectionLabel = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RoomScansCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                locationId: locationId,
+                name: name,
+                capturedAt: capturedAt,
+                northOffsetDeg: northOffsetDeg,
+                filePath: filePath,
+                floorAreaM2: floorAreaM2,
+                sectionLabel: sectionLabel,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String gardenId,
+                Value<String?> locationId = const Value.absent(),
+                required String name,
+                required DateTime capturedAt,
+                Value<double?> northOffsetDeg = const Value.absent(),
+                required String filePath,
+                Value<double> floorAreaM2 = const Value.absent(),
+                Value<String?> sectionLabel = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RoomScansCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                gardenId: gardenId,
+                locationId: locationId,
+                name: name,
+                capturedAt: capturedAt,
+                northOffsetDeg: northOffsetDeg,
+                filePath: filePath,
+                floorAreaM2: floorAreaM2,
+                sectionLabel: sectionLabel,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RoomScansTable, RoomScanRow>(table),
+                  BaseReferences<_$FloraDatabase, $RoomScansTable, RoomScanRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RoomScansTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $RoomScansTable,
+      RoomScanRow,
+      $$RoomScansTableFilterComposer,
+      $$RoomScansTableOrderingComposer,
+      $$RoomScansTableAnnotationComposer,
+      $$RoomScansTableCreateCompanionBuilder,
+      $$RoomScansTableUpdateCompanionBuilder,
+      (
+        RoomScanRow,
+        BaseReferences<_$FloraDatabase, $RoomScansTable, RoomScanRow>,
+      ),
+      RoomScanRow,
+      PrefetchHooks Function()
+    >;
+typedef $$RoomMarkersTableCreateCompanionBuilder =
+    RoomMarkersCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      required String id,
+      required String scanId,
+      required String kind,
+      required double x,
+      required double z,
+      Value<int?> windowIndex,
+      Value<String?> orientation,
+      Value<String?> plantId,
+      Value<int> rowid,
+    });
+typedef $$RoomMarkersTableUpdateCompanionBuilder =
+    RoomMarkersCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<String> id,
+      Value<String> scanId,
+      Value<String> kind,
+      Value<double> x,
+      Value<double> z,
+      Value<int?> windowIndex,
+      Value<String?> orientation,
+      Value<String?> plantId,
+      Value<int> rowid,
+    });
+
+class $$RoomMarkersTableFilterComposer
+    extends Composer<_$FloraDatabase, $RoomMarkersTable> {
+  $$RoomMarkersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scanId => $composableBuilder(
+    column: $table.scanId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get x => $composableBuilder(
+    column: $table.x,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get z => $composableBuilder(
+    column: $table.z,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get windowIndex => $composableBuilder(
+    column: $table.windowIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get orientation => $composableBuilder(
+    column: $table.orientation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get plantId => $composableBuilder(
+    column: $table.plantId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RoomMarkersTableOrderingComposer
+    extends Composer<_$FloraDatabase, $RoomMarkersTable> {
+  $$RoomMarkersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scanId => $composableBuilder(
+    column: $table.scanId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get x => $composableBuilder(
+    column: $table.x,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get z => $composableBuilder(
+    column: $table.z,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get windowIndex => $composableBuilder(
+    column: $table.windowIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get orientation => $composableBuilder(
+    column: $table.orientation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get plantId => $composableBuilder(
+    column: $table.plantId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RoomMarkersTableAnnotationComposer
+    extends Composer<_$FloraDatabase, $RoomMarkersTable> {
+  $$RoomMarkersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get scanId =>
+      $composableBuilder(column: $table.scanId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<double> get x =>
+      $composableBuilder(column: $table.x, builder: (column) => column);
+
+  GeneratedColumn<double> get z =>
+      $composableBuilder(column: $table.z, builder: (column) => column);
+
+  GeneratedColumn<int> get windowIndex => $composableBuilder(
+    column: $table.windowIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get orientation => $composableBuilder(
+    column: $table.orientation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get plantId =>
+      $composableBuilder(column: $table.plantId, builder: (column) => column);
+}
+
+class $$RoomMarkersTableTableManager
+    extends
+        RootTableManager<
+          _$FloraDatabase,
+          $RoomMarkersTable,
+          RoomMarkerRow,
+          $$RoomMarkersTableFilterComposer,
+          $$RoomMarkersTableOrderingComposer,
+          $$RoomMarkersTableAnnotationComposer,
+          $$RoomMarkersTableCreateCompanionBuilder,
+          $$RoomMarkersTableUpdateCompanionBuilder,
+          (
+            RoomMarkerRow,
+            BaseReferences<_$FloraDatabase, $RoomMarkersTable, RoomMarkerRow>,
+          ),
+          RoomMarkerRow,
+          PrefetchHooks Function()
+        > {
+  $$RoomMarkersTableTableManager(_$FloraDatabase db, $RoomMarkersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RoomMarkersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RoomMarkersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RoomMarkersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> scanId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<double> x = const Value.absent(),
+                Value<double> z = const Value.absent(),
+                Value<int?> windowIndex = const Value.absent(),
+                Value<String?> orientation = const Value.absent(),
+                Value<String?> plantId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RoomMarkersCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                scanId: scanId,
+                kind: kind,
+                x: x,
+                z: z,
+                windowIndex: windowIndex,
+                orientation: orientation,
+                plantId: plantId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                required String id,
+                required String scanId,
+                required String kind,
+                required double x,
+                required double z,
+                Value<int?> windowIndex = const Value.absent(),
+                Value<String?> orientation = const Value.absent(),
+                Value<String?> plantId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RoomMarkersCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                scanId: scanId,
+                kind: kind,
+                x: x,
+                z: z,
+                windowIndex: windowIndex,
+                orientation: orientation,
+                plantId: plantId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RoomMarkersTable, RoomMarkerRow>(table),
+                  BaseReferences<
+                    _$FloraDatabase,
+                    $RoomMarkersTable,
+                    RoomMarkerRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RoomMarkersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FloraDatabase,
+      $RoomMarkersTable,
+      RoomMarkerRow,
+      $$RoomMarkersTableFilterComposer,
+      $$RoomMarkersTableOrderingComposer,
+      $$RoomMarkersTableAnnotationComposer,
+      $$RoomMarkersTableCreateCompanionBuilder,
+      $$RoomMarkersTableUpdateCompanionBuilder,
+      (
+        RoomMarkerRow,
+        BaseReferences<_$FloraDatabase, $RoomMarkersTable, RoomMarkerRow>,
+      ),
+      RoomMarkerRow,
+      PrefetchHooks Function()
+    >;
 
 class $FloraDatabaseManager {
   final _$FloraDatabase _db;
@@ -20438,4 +22442,8 @@ class $FloraDatabaseManager {
       $$EventCategoriesTableTableManager(_db, _db.eventCategories);
   $$CalendarEntriesTableTableManager get calendarEntries =>
       $$CalendarEntriesTableTableManager(_db, _db.calendarEntries);
+  $$RoomScansTableTableManager get roomScans =>
+      $$RoomScansTableTableManager(_db, _db.roomScans);
+  $$RoomMarkersTableTableManager get roomMarkers =>
+      $$RoomMarkersTableTableManager(_db, _db.roomMarkers);
 }

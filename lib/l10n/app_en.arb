@@ -1986,5 +1986,146 @@
   "moderationReports": "{count, plural, =1{1 report} other{{count} reports}}",
   "moderationHide": "Hide",
   "moderationRestore": "Restore",
-  "confirmRestoreTip": "Restore this tip? Its reports are cleared."
+  "confirmRestoreTip": "Restore this tip? Its reports are cleared.",
+  "roomScan": "Home scan",
+  "roomScanHint": "A room scanned with the camera and the LiDAR gives its walls, windows and doors. For a plant, the app reads where it would do best. The scan stays on the device.",
+  "roomScanStart": "Scan a room",
+  "roomScanRooms": "Scanned rooms",
+  "roomScanEmptyTitle": "No room scanned",
+  "roomScanEmptySubtitle": "A scan takes one to two minutes per room, walking slowly along the walls.",
+  "roomScanNoLidar": "This device has no LiDAR: scanning needs an iPhone Pro or an iPad Pro.",
+  "roomScanBeforeTitle": "Before the scan",
+  "roomScanBeforeText": "The camera opens on the system's scanning view. Walk slowly along the walls until the room is drawn, then finish. Nothing leaves the device.",
+  "roomScanFailed": "The scan did not complete.",
+  "roomScanDefaultName": "Room",
+  "roomScanArea": "{area} m²",
+  "@roomScanArea": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanWindowsCount": "{count, plural, =0{no window} =1{one window} other{{count} windows}}",
+  "@roomScanWindowsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanName": "Room name",
+  "roomScanLinkedLocation": "Location",
+  "roomScanWindows": "Windows",
+  "roomScanWindowN": "Window {n}",
+  "@roomScanWindowN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanWindowUnknown": "Unknown orientation",
+  "roomScanWindowFromCompass": "From the compass",
+  "roomScanWindowConfirmed": "Confirmed",
+  "roomScanOrientationHelp": "The compass is off by ten to fifteen degrees: each window's orientation is confirmed here.",
+  "roomScanDelete": "Delete the scan",
+  "roomScanDeleteConfirm": "The scan and its markers are removed from the device.",
+  "roomScanCapturedOn": "Scanned on {date}",
+  "@roomScanCapturedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "roomSectionBathroom": "Bathroom",
+  "roomSectionBedroom": "Bedroom",
+  "roomSectionDiningRoom": "Dining room",
+  "roomSectionKitchen": "Kitchen",
+  "roomSectionLaundryRoom": "Laundry room",
+  "roomSectionLivingRoom": "Living room",
+  "directionNorth": "north",
+  "directionNorthEast": "north-east",
+  "directionEast": "east",
+  "directionSouthEast": "south-east",
+  "directionSouth": "south",
+  "directionSouthWest": "south-west",
+  "directionWest": "west",
+  "directionNorthWest": "north-west",
+  "placementTitle": "Where to put it",
+  "placementHint": "The spots found in the scanned rooms, for this plant. It can live elsewhere.",
+  "placementRoomsCount": "{count, plural, =1{one room scanned} other{{count} rooms scanned}}",
+  "@placementRoomsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementVerdictGood": "This room suits it.",
+  "placementVerdictAcceptable": "This room more or less suits it.",
+  "placementVerdictUnsuitable": "This room does not suit it.",
+  "placementShortfallTooDark": "Too dark for what it needs.",
+  "placementShortfallTooBright": "Too much direct sun for it.",
+  "placementShortfallDrafty": "Every spot is near a door, and it dislikes draughts.",
+  "placementShortfallTooDry": "A humid room, for a plant that wants dry air.",
+  "placementGeneric": "The page is generic: without the species, the light it needs is not known.",
+  "placementDistanceM": "{m} m",
+  "@placementDistanceM": {
+    "placeholders": {
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "placementDistanceCm": "{cm} cm",
+  "@placementDistanceCm": {
+    "placeholders": {
+      "cm": {
+        "type": "int"
+      }
+    }
+  },
+  "placementNearWindow": "{distance} from the {direction} window",
+  "@placementNearWindow": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementNearWindowUnknown": "{distance} from the window",
+  "@placementNearWindowUnknown": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnTable": "on the table",
+  "placementOnStorage": "on the cabinet",
+  "placementOnSill": "on the {direction} window sill",
+  "@placementOnSill": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnSillUnknown": "on the window sill",
+  "placementDeepInRoom": "at the back, away from the windows",
+  "placementDraftyNote": "Near a door: the air moves there.",
+  "placementHumidRoomNote": "Humid room: the air is damper there.",
+  "placementPlanSemantics": "Room plan seen from above, {count} spots kept.",
+  "@placementPlanSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

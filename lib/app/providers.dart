@@ -18,6 +18,8 @@ import '../data/repositories/tag_repository_impl.dart';
 import '../data/repositories/attachment_repository_impl.dart';
 import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
+import '../data/repositories/room_scan_repository_impl.dart';
+import '../data/services/room_scan_service.dart';
 import '../core/config/app_version.dart';
 import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
@@ -201,6 +203,12 @@ final attachmentRepositoryProvider = Provider<AttachmentRepository>(
     (ref) => DriftAttachmentRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), currentUserId: () => _remoteUserId(ref)));
 final attributeRepositoryProvider = Provider<AttributeRepository>((ref) => DriftAttributeRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final taskRepositoryProvider = Provider<TaskRepository>((ref) => DriftTaskRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+final roomScanRepositoryProvider = Provider<RoomScanRepository>((ref) => DriftRoomScanRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+
+/// Le relevé d'une pièce au LiDAR : le canal sur iPhone et iPad, derrière
+/// [AppConfig.roomScanEnabled] ; muet partout ailleurs.
+final roomScanServiceProvider = Provider<RoomScanService>((ref) => ChannelRoomScanService.isPossible ? ChannelRoomScanService() : const UnavailableRoomScanService());
+final roomScanStoreProvider = Provider<RoomScanStore>((ref) => RoomScanStore());
 final tagRepositoryProvider =
     Provider<TagRepository>((ref) => DriftTagRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final calendarRepositoryProvider =

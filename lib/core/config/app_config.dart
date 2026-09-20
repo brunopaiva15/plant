@@ -81,6 +81,18 @@ abstract final class AppConfig {
   /// reparaître, sans autre geste.
   static const bool googleHomeSoon = true;
 
+  /// Le relevé de la maison au LiDAR (docs/17) : relever une pièce avec
+  /// RoomPlan, puis dire pour une plante où elle serait le mieux.
+  ///
+  /// Expérimental, fermé par défaut : la ligne « Relevé de la maison » de
+  /// Profil et le bouton « Où la poser » de la fiche d'entretien n'existent
+  /// qu'avec `--dart-define=ROOM_SCAN=true`, sur un iPhone ou un iPad à
+  /// LiDAR. Ce que le drapeau ne règle pas : le nord vient de la boussole,
+  /// à dix degrés près, et l'orientation de chaque fenêtre se confirme à la
+  /// main ; le modèle de lumière est une heuristique calibrée sur la pièce
+  /// du diorama, pas une mesure.
+  static const bool roomScanEnabled = bool.fromEnvironment('ROOM_SCAN');
+
   /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
   /// entière et gratuite. Voir `SupportService`.
   static const String supportProductId = 'ch.vergasta.plant.support';

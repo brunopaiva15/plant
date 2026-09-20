@@ -20,6 +20,7 @@ import '../../community/presentation/community_tips_section.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import '../../room_scan/presentation/room_fit_entry.dart';
 import 'care_environment_hero.dart';
 import 'care_guide_copy.dart';
 import 'water_types_sheet.dart';
@@ -172,6 +173,9 @@ class CareGuideBody extends ConsumerWidget {
         // l'état réel de la pièce — c'est HomeClimateFitCard qui compare.
         if (showEnvironmentHero)
           CareEnvironmentHero(profile: p, speciesName: speciesName, family: family, category: category),
+        // Puis le réel, quand une pièce est relevée : où, chez soi, cette
+        // fiche serait le mieux. La scène ne change pas pour autant.
+        if (showEnvironmentHero) RoomFitEntry(care: care),
 
         SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 

@@ -91,6 +91,27 @@ d'avant la v12. Les autres catégories d'inventaire ne changent pas.
 Le calendrier mêle deux sources : les événements stockés dans `calendar_entries` et les échéances de soin
 projetées à la volée par `CalendarProjector` à partir des routines et de l'historique.
 
+## Le relevé de la maison (schéma v13)
+```
+room_scans     id, garden_id, location_id?, name, captured_at, north_offset_deg?,
+               file_path, floor_area_m2, section_label?, created_at, updated_at, deleted_at?
+room_markers   id, scan_id, kind (windowOrientation | heater | plant), x, z,
+               window_index?, orientation?, plant_id?, created_at, updated_at
+```
+Un relevé est une ligne et un fichier : le JSON du `CapturedRoom` de RoomPlan
+vit dans `Documents/rooms/<id>.json`, la base n'en garde que le chemin
+relatif. Rien ne part dans l'outbox — le plan de chez soi ne se synchronise
+pas, et ne s'exporte pas encore. `north_offset_deg` est le cap du nord dans
+le repère du relevé, mesuré à la boussole ; nul quand elle n'a rien donné de
+stable. `section_label` est le type de pièce que RoomPlan reconnaît sur
+iOS 17 (`kitchen`, `bathroom`…), nul sinon.
+
+`room_markers` porte ce que la main ajoute au relevé, séparé de ce que le
+capteur a vu : refaire un relevé ne perd pas les repères. Au palier 1, seul
+`windowOrientation` est écrit — l'orientation confirmée d'une fenêtre,
+indexée par son rang dans le JSON ; `heater` et `plant` attendent les
+paliers suivants (docs/17).
+
 ## Tables prévues (schéma réservé, UI en P4)
 ```
 notifications, devices, plant_links(nfc), plant_relationships
