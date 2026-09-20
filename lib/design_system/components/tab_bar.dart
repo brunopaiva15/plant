@@ -187,10 +187,19 @@ class FloraTabRail extends StatelessWidget {
   static const double _airSousLaPile = Space.xxl;
   static const double _sousLesElementsDuSysteme = _pileDuSysteme + _airSousLaPile;
 
+  /// L'air sous la **région annoncée**, qui n'est pas le même. Les 32 points
+  /// ci-dessus dégagent des glyphes mesurés ; ici c'est ce que le système
+  /// réserve pour lui — 170 points sur l'écran extérieur du Duo, là où les
+  /// glyphes s'arrêtent à 140 —, et on se pose juste dessous.
+  ///
+  /// Les deux chemins tombent à six points l'un de l'autre, 172 contre 178 :
+  /// la mesure était bonne, l'annonce la remplace sans la démentir.
+  static const double _airSousLaRegion = Space.xs;
+
   /// Le dégagement du haut, demandé au système quand il répond.
   static double _degagement(BuildContext context, WindowRegions regions) {
     final annonce = regions.systemStackBottom;
-    final mesure = annonce == null ? _sousLesElementsDuSysteme : annonce + _airSousLaPile;
+    final mesure = annonce == null ? _sousLesElementsDuSysteme : annonce + _airSousLaRegion;
     return math.max(mesure, MediaQuery.paddingOf(context).top + Space.sm);
   }
 

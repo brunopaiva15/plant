@@ -421,10 +421,12 @@ son axe à 48. Douze la décalaient de quatre points : c'est tout l'écart entre
 une colonne qui prolonge celle du système et une colonne posée à côté.
 
 **Ces deux cotes sont désormais des replis.** Un canal natif demande à UIKit
-où sont réellement la caméra, la barre d'état et le pli, et le menu s'y range
-quand la réponse est plausible — voir docs/05, « Ce que le système réserve ».
-Les 140 et les 47,7 points restent écrits dans le code, et servent partout où
-le canal se tait : ailleurs que sur iOS, sur un binaire construit avec un SDK
+où sont réellement la bande du système, la caméra et le pli, et le menu s'y
+range quand la réponse est plausible — voir docs/05, « Ce que le système
+réserve ». Sur l'écran extérieur du Duo, iOS annonce une bande haute de 170
+points et une caméra à 47,8 du bord droit : le menu commence à 178 au lieu de
+172, et son axe ne bouge pas d'un dixième. Les 140 et les 47,7 points restent
+écrits dans le code, et servent partout où le canal se tait : ailleurs que sur iOS, sur un binaire construit avec un SDK
 plus ancien, ou quand la réponse est invraisemblable. Le menu se pose alors où
 il se posait avant, ce qui est déjà juste : l'annonce affine, elle ne porte
 rien.
