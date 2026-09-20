@@ -22,6 +22,14 @@ final roomScanAvailableProvider = FutureProvider<bool>((ref) async {
   return (await service.support()).lidar;
 });
 
+/// L'appartement entier, pièce après pièce : iOS 17 et un LiDAR.
+final roomScanStructureAvailableProvider = FutureProvider<bool>((ref) async {
+  final service = ref.watch(roomScanServiceProvider);
+  if (!service.isSupported) return false;
+  final support = await service.support();
+  return support.lidar && support.structure;
+});
+
 /// Les repères posés à la main sur un relevé.
 final roomMarkersProvider = StreamProvider.family<List<RoomMarker>, String>((ref, scanId) => ref.watch(roomScanRepositoryProvider).watchMarkers(scanId));
 
@@ -59,13 +67,38 @@ final roomSurveyProvider = Provider.family<RoomSurvey?, String>((ref, scanId) {
   );
 });
 
-/// Une plante du jardin et ce que la pièce vaut pour elle.
+/// Une plante du jardin et ce que la pièce vaut pour elle ; et, si elle est
+/// posée sur le plan, ce que vaut la place où elle est aujourd'hui.
 class PlantRoomFit {
-  const PlantRoomFit({required this.plant, required this.fit});
+  const PlantRoomFit({required this.plant, required this.fit, this.current});
 
   final PlantSummary plant;
   final RoomFit fit;
+  final Placement? current;
+
+  /// Une autre place lui irait nettement mieux : la meilleure dépasse celle
+  /// d'aujourd'hui d'au moins un quart.
+  bool get betterElsewhere {
+    final now = current;
+    final best = fit.placements.firstOrNull;
+    return now != null && best != null && best.score - now.score >= RoomFitAdvisor.betterByAtLeast;
+  }
 }
+
+/// Les plantes posées sur le plan d'un relevé, lues là où elles sont.
+final roomPlantSpotsProvider = Provider.family<Map<String, SurveyedSpot>, String>((ref, scanId) {
+  final room = ref.watch(scannedRoomProvider(scanId)).value;
+  if (room == null) return const {};
+  final markers = ref.watch(roomMarkersProvider(scanId)).value ?? const [];
+  final directions = windowDirections(room, markers);
+  final heaters = heaterPoints(markers);
+  final southern = ref.watch(southernHemisphereProvider);
+  final latitude = ref.watch(preferencesProvider.select((p) => p.weatherPlace?.latitude));
+  return {
+    for (final e in plantPoints(markers).entries)
+      e.key: RoomFitAdvisor.spotAt(room, e.value, southern: southern, directions: directions, latitude: latitude, heaters: heaters),
+  };
+});
 
 /// « Qui serait bien ici » : les plantes du jardin dont l'espèce est
 /// connue, classées par leur meilleure place dans la pièce. Une fiche
@@ -77,13 +110,19 @@ final roomPlantFitsProvider = Provider.family<List<PlantRoomFit>, String>((ref, 
   final plants = ref.watch(plantSummariesProvider(const PlantFilter())).value ?? const <PlantSummary>[];
   final guide = ref.watch(careGuideProvider);
   final family = speciesFamilyLookupIn(ref);
+  final spots = ref.watch(roomPlantSpotsProvider(scanId));
   final out = <PlantRoomFit>[];
   for (final p in plants) {
     final species = p.plant.speciesName;
     if (species == null || species.isEmpty) continue;
     final care = guide.resolve(species, family: family(species));
     if (care.match == CareMatch.generic || care.match == CareMatch.category) continue;
-    out.add(PlantRoomFit(plant: p, fit: RoomFitAdvisor.placeIn(care.profile, survey)));
+    final spot = spots[p.plant.id];
+    out.add(PlantRoomFit(
+      plant: p,
+      fit: RoomFitAdvisor.placeIn(care.profile, survey),
+      current: spot == null ? null : RoomFitAdvisor.judge(care.profile, spot, humidRoom: survey.humidRoom),
+    ));
   }
   out.sort((a, b) {
     final byScore = (b.fit.all.firstOrNull?.score ?? 0).compareTo(a.fit.all.firstOrNull?.score ?? 0);
@@ -135,9 +174,57 @@ class RoomScanController extends Notifier<bool> {
     }
   }
 
+  /// L'appartement, pièce après pièce : un dossier, un fichier par pièce,
+  /// une ligne par pièce, toutes sous le même identifiant de structure.
+  Future<RoomScanOutcome> scanStructure({required String Function(RoomSectionLabel? section, int index) nameFor, required String nextRoomLabel}) async {
+    if (state) return const RoomScanOutcome();
+    state = true;
+    try {
+      final store = ref.read(roomScanStoreProvider);
+      final id = DateTime.now().millisecondsSinceEpoch.toRadixString(36);
+      final dir = await store.newDirectory(id);
+      final result = await ref.read(roomScanServiceProvider).scanStructure(toDirectory: dir, nextRoomLabel: nextRoomLabel);
+      if (result == null) return const RoomScanOutcome();
+      if (!result.succeeded) return RoomScanOutcome(error: result.error);
+      RoomScan? first;
+      for (var i = 0; i < result.paths.length; i++) {
+        final relative = store.relativeOf(result.paths[i]);
+        final json = await store.read(relative);
+        final room = json == null ? null : RoomPlanParser.parse(json, northOffsetDeg: result.northOffsetDeg);
+        final scan = await ref.read(roomScanRepositoryProvider).create(
+              name: nameFor(room?.section, i),
+              filePath: relative,
+              capturedAt: DateTime.now(),
+              northOffsetDeg: result.northOffsetDeg,
+              floorAreaM2: room?.floorAreaM2 ?? 0,
+              section: room?.section,
+              structureId: id,
+            );
+        first ??= scan;
+      }
+      return RoomScanOutcome(scan: first);
+    } finally {
+      state = false;
+    }
+  }
+
   Future<void> delete(RoomScan scan) async {
     await ref.read(roomScanRepositoryProvider).delete(scan.id);
     await ref.read(roomScanStoreProvider).delete(scan.filePath);
+  }
+
+  /// Une plante posée sur le plan : une seule place par plante et par
+  /// relevé, la nouvelle remplace l'ancienne.
+  Future<void> placePlant(String scanId, String plantId, RoomPoint at, {String? locationId}) async {
+    final repo = ref.read(roomScanRepositoryProvider);
+    final markers = await repo.watchMarkers(scanId).first;
+    for (final m in markers) {
+      if (m.kind == RoomMarkerKind.plant && m.plantId == plantId) await repo.removeMarker(m.id);
+    }
+    await repo.addMarker(scanId, RoomMarkerKind.plant, x: at.x, z: at.z, plantId: plantId);
+    // La place choisie vaut déménagement : si le relevé décrit un
+    // emplacement, la plante y va.
+    if (locationId != null) await ref.read(plantRepositoryProvider).moveToLocation([plantId], locationId);
   }
 
   /// Un radiateur, posé contre le mur le plus proche du doigt.

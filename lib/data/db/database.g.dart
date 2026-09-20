@@ -13577,6 +13577,17 @@ class $RoomScansTable extends RoomScans
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _structureIdMeta = const VerificationMeta(
+    'structureId',
+  );
+  @override
+  late final GeneratedColumn<String> structureId = GeneratedColumn<String>(
+    'structure_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
@@ -13601,6 +13612,7 @@ class $RoomScansTable extends RoomScans
     filePath,
     floorAreaM2,
     sectionLabel,
+    structureId,
     deletedAt,
   ];
   @override
@@ -13701,6 +13713,15 @@ class $RoomScansTable extends RoomScans
         ),
       );
     }
+    if (data.containsKey('structure_id')) {
+      context.handle(
+        _structureIdMeta,
+        structureId.isAcceptableOrUnknown(
+          data['structure_id']!,
+          _structureIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('deleted_at')) {
       context.handle(
         _deletedAtMeta,
@@ -13760,6 +13781,10 @@ class $RoomScansTable extends RoomScans
         DriftSqlType.string,
         data['${effectivePrefix}section_label'],
       ),
+      structureId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}structure_id'],
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -13791,6 +13816,10 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
 
   /// Le type de pièce reconnu par RoomPlan (`kitchen`, `bathroom`…), ou null.
   final String? sectionLabel;
+
+  /// Les pièces d'un même relevé d'appartement partagent cet identifiant,
+  /// et leur repère ; null pour une pièce relevée seule.
+  final String? structureId;
   final DateTime? deletedAt;
   const RoomScanRow({
     required this.createdAt,
@@ -13804,6 +13833,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
     required this.filePath,
     required this.floorAreaM2,
     this.sectionLabel,
+    this.structureId,
     this.deletedAt,
   });
   @override
@@ -13825,6 +13855,9 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
     map['floor_area_m2'] = Variable<double>(floorAreaM2);
     if (!nullToAbsent || sectionLabel != null) {
       map['section_label'] = Variable<String>(sectionLabel);
+    }
+    if (!nullToAbsent || structureId != null) {
+      map['structure_id'] = Variable<String>(structureId);
     }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -13851,6 +13884,9 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
       sectionLabel: sectionLabel == null && nullToAbsent
           ? const Value.absent()
           : Value(sectionLabel),
+      structureId: structureId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(structureId),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
@@ -13874,6 +13910,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
       filePath: serializer.fromJson<String>(json['filePath']),
       floorAreaM2: serializer.fromJson<double>(json['floorAreaM2']),
       sectionLabel: serializer.fromJson<String?>(json['sectionLabel']),
+      structureId: serializer.fromJson<String?>(json['structureId']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
@@ -13892,6 +13929,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
       'filePath': serializer.toJson<String>(filePath),
       'floorAreaM2': serializer.toJson<double>(floorAreaM2),
       'sectionLabel': serializer.toJson<String?>(sectionLabel),
+      'structureId': serializer.toJson<String?>(structureId),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
@@ -13908,6 +13946,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
     String? filePath,
     double? floorAreaM2,
     Value<String?> sectionLabel = const Value.absent(),
+    Value<String?> structureId = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => RoomScanRow(
     createdAt: createdAt ?? this.createdAt,
@@ -13923,6 +13962,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
     filePath: filePath ?? this.filePath,
     floorAreaM2: floorAreaM2 ?? this.floorAreaM2,
     sectionLabel: sectionLabel.present ? sectionLabel.value : this.sectionLabel,
+    structureId: structureId.present ? structureId.value : this.structureId,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   RoomScanRow copyWithCompanion(RoomScansCompanion data) {
@@ -13948,6 +13988,9 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
       sectionLabel: data.sectionLabel.present
           ? data.sectionLabel.value
           : this.sectionLabel,
+      structureId: data.structureId.present
+          ? data.structureId.value
+          : this.structureId,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
@@ -13966,6 +14009,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
           ..write('filePath: $filePath, ')
           ..write('floorAreaM2: $floorAreaM2, ')
           ..write('sectionLabel: $sectionLabel, ')
+          ..write('structureId: $structureId, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
@@ -13984,6 +14028,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
     filePath,
     floorAreaM2,
     sectionLabel,
+    structureId,
     deletedAt,
   );
   @override
@@ -14001,6 +14046,7 @@ class RoomScanRow extends DataClass implements Insertable<RoomScanRow> {
           other.filePath == this.filePath &&
           other.floorAreaM2 == this.floorAreaM2 &&
           other.sectionLabel == this.sectionLabel &&
+          other.structureId == this.structureId &&
           other.deletedAt == this.deletedAt);
 }
 
@@ -14016,6 +14062,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
   final Value<String> filePath;
   final Value<double> floorAreaM2;
   final Value<String?> sectionLabel;
+  final Value<String?> structureId;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
   const RoomScansCompanion({
@@ -14030,6 +14077,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
     this.filePath = const Value.absent(),
     this.floorAreaM2 = const Value.absent(),
     this.sectionLabel = const Value.absent(),
+    this.structureId = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -14045,6 +14093,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
     required String filePath,
     this.floorAreaM2 = const Value.absent(),
     this.sectionLabel = const Value.absent(),
+    this.structureId = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdAt = Value(createdAt),
@@ -14066,6 +14115,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
     Expression<String>? filePath,
     Expression<double>? floorAreaM2,
     Expression<String>? sectionLabel,
+    Expression<String>? structureId,
     Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
@@ -14081,6 +14131,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
       if (filePath != null) 'file_path': filePath,
       if (floorAreaM2 != null) 'floor_area_m2': floorAreaM2,
       if (sectionLabel != null) 'section_label': sectionLabel,
+      if (structureId != null) 'structure_id': structureId,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -14098,6 +14149,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
     Value<String>? filePath,
     Value<double>? floorAreaM2,
     Value<String?>? sectionLabel,
+    Value<String?>? structureId,
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
@@ -14113,6 +14165,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
       filePath: filePath ?? this.filePath,
       floorAreaM2: floorAreaM2 ?? this.floorAreaM2,
       sectionLabel: sectionLabel ?? this.sectionLabel,
+      structureId: structureId ?? this.structureId,
       deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -14154,6 +14207,9 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
     if (sectionLabel.present) {
       map['section_label'] = Variable<String>(sectionLabel.value);
     }
+    if (structureId.present) {
+      map['structure_id'] = Variable<String>(structureId.value);
+    }
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
@@ -14177,6 +14233,7 @@ class RoomScansCompanion extends UpdateCompanion<RoomScanRow> {
           ..write('filePath: $filePath, ')
           ..write('floorAreaM2: $floorAreaM2, ')
           ..write('sectionLabel: $sectionLabel, ')
+          ..write('structureId: $structureId, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -21747,6 +21804,7 @@ typedef $$RoomScansTableCreateCompanionBuilder = RoomScansCompanion Function({
   required String filePath,
   Value<double> floorAreaM2,
   Value<String?> sectionLabel,
+  Value<String?> structureId,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
@@ -21762,6 +21820,7 @@ typedef $$RoomScansTableUpdateCompanionBuilder = RoomScansCompanion Function({
   Value<String> filePath,
   Value<double> floorAreaM2,
   Value<String?> sectionLabel,
+  Value<String?> structureId,
   Value<DateTime?> deletedAt,
   Value<int> rowid,
 });
@@ -21827,6 +21886,11 @@ class $$RoomScansTableFilterComposer
 
   ColumnFilters<String> get sectionLabel => $composableBuilder(
     column: $table.sectionLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get structureId => $composableBuilder(
+    column: $table.structureId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21900,6 +21964,11 @@ class $$RoomScansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get structureId => $composableBuilder(
+    column: $table.structureId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
@@ -21958,6 +22027,11 @@ class $$RoomScansTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get structureId => $composableBuilder(
+    column: $table.structureId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
@@ -22004,6 +22078,7 @@ class $$RoomScansTableTableManager
                 Value<String> filePath = const Value.absent(),
                 Value<double> floorAreaM2 = const Value.absent(),
                 Value<String?> sectionLabel = const Value.absent(),
+                Value<String?> structureId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RoomScansCompanion(
@@ -22018,6 +22093,7 @@ class $$RoomScansTableTableManager
                 filePath: filePath,
                 floorAreaM2: floorAreaM2,
                 sectionLabel: sectionLabel,
+                structureId: structureId,
                 deletedAt: deletedAt,
                 rowid: rowid,
               ),
@@ -22034,6 +22110,7 @@ class $$RoomScansTableTableManager
                 required String filePath,
                 Value<double> floorAreaM2 = const Value.absent(),
                 Value<String?> sectionLabel = const Value.absent(),
+                Value<String?> structureId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RoomScansCompanion.insert(
@@ -22048,6 +22125,7 @@ class $$RoomScansTableTableManager
                 filePath: filePath,
                 floorAreaM2: floorAreaM2,
                 sectionLabel: sectionLabel,
+                structureId: structureId,
                 deletedAt: deletedAt,
                 rowid: rowid,
               ),

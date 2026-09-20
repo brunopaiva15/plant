@@ -2152,5 +2152,76 @@
   "roomScanNoPlantsToRank": "Nessuna pianta con una specie nota.",
   "placementShortfallHeater": "Tutti i posti sono vicino a un termosifone, e lei teme l'aria secca e calda.",
   "placementHeaterNote": "Vicino a un termosifone: qui l'aria è secca e calda.",
-  "placementAtHome": "Da voi"
+  "placementAtHome": "Da voi",
+  "roomScanStartStructure": "Rilevare tutta la casa",
+  "roomScanStructureHint": "Rilevare tutta la casa procede stanza per stanza: «Stanza successiva» tra una e l'altra, «Fine» alla fine. Le stanze si collocano l'una rispetto all'altra.",
+  "roomScanNextRoom": "Stanza successiva",
+  "roomScanRoomNumber": "Stanza {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Piante sulla pianta",
+  "roomScanPlantsHelp": "Una pianta posata sulla pianta è valutata dove si trova: l'elenco dice se un altro posto le andrebbe meglio.",
+  "roomScanAddPlant": "Posare una pianta",
+  "roomScanTapForPlant": "Toccare la pianta dove si trova {plant}.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "Rimuovere {plant} dalla pianta",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "Nessuna pianta da posare.",
+  "roomScanPlantWellPlaced": "Ben posizionata · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Ora {light} · meglio {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "Tutte le stanze",
+  "placementChoose": "Scegliere questo posto",
+  "placementChosen": "Posto scelto: {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Ora: {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  }
 }

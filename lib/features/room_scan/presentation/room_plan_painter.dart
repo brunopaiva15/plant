@@ -49,6 +49,8 @@ class RoomPlanPainter extends CustomPainter {
     required this.numberStyle,
     this.fit,
     this.heaters = const [],
+    this.plants = const [],
+    this.current,
     this.padding = 14,
   });
 
@@ -57,6 +59,13 @@ class RoomPlanPainter extends CustomPainter {
   final TextStyle numberStyle;
   final RoomFit? fit;
   final List<RoomPoint> heaters;
+
+  /// Les plantes posées sur le plan : un point sauge par plante.
+  final List<RoomPoint> plants;
+
+  /// La place d'aujourd'hui de la plante dont on cherche la place : un
+  /// anneau, pour la distinguer des places proposées.
+  final RoomPoint? current;
   final double padding;
 
   /// La taille d'un radiateur à l'écran, en mètres de pièce.
@@ -171,6 +180,24 @@ class RoomPlanPainter extends CustomPainter {
       canvas.restore();
     }
 
+    // Les plantes posées : un point sauge cerné de blanc.
+    for (final p in plants) {
+      final o = at(p);
+      canvas.drawCircle(o, 7, Paint()..color = colors.surface);
+      canvas.drawCircle(o, 5.5, Paint()..color = colors.sage);
+    }
+    if (current case final cur?) {
+      final o = at(cur);
+      canvas.drawCircle(
+        o,
+        9,
+        Paint()
+          ..color = colors.ink
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+    }
+
     // Les places retenues, numérotées dans l'ordre du classement.
     final placements = fit?.placements ?? const <Placement>[];
     for (var i = 0; i < placements.length; i++) {
@@ -201,5 +228,6 @@ class RoomPlanPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(RoomPlanPainter old) => old.room != room || old.fit != fit || old.colors != colors || old.heaters != heaters;
+  bool shouldRepaint(RoomPlanPainter old) =>
+      old.room != room || old.fit != fit || old.colors != colors || old.heaters != heaters || old.plants != plants || old.current != current;
 }

@@ -383,6 +383,7 @@ abstract class RoomScanRepository {
     double floorAreaM2 = 0,
     RoomSectionLabel? section,
     String? locationId,
+    String? structureId,
   });
   Future<void> update(RoomScan scan);
 

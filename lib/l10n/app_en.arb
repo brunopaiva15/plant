@@ -2159,5 +2159,76 @@
   "roomScanNoPlantsToRank": "No plant with a known species.",
   "placementShortfallHeater": "Every spot is near a radiator, and it dislikes dry, hot air.",
   "placementHeaterNote": "Near a radiator: the air is dry and hot there.",
-  "placementAtHome": "At home"
+  "placementAtHome": "At home",
+  "roomScanStartStructure": "Scan the whole home",
+  "roomScanStructureHint": "Scanning the whole home goes room by room: “Next room” between each, “Done” at the end. The rooms are placed relative to one another.",
+  "roomScanNextRoom": "Next room",
+  "roomScanRoomNumber": "Room {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Plants on the plan",
+  "roomScanPlantsHelp": "A plant placed on the plan is judged where it stands: the list says whether another spot would suit it better.",
+  "roomScanAddPlant": "Place a plant",
+  "roomScanTapForPlant": "Tap the plan where {plant} is.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "Remove {plant} from the plan",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "No plant to place.",
+  "roomScanPlantWellPlaced": "Well placed · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Now {light} · better {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "All rooms",
+  "placementChoose": "Choose this spot",
+  "placementChosen": "Chosen spot: {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Now: {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  }
 }

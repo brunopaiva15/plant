@@ -91,6 +91,23 @@ void main() {
     expect(room.snapToWall(const RoomPoint(0.5, 0)), const RoomPoint(0.5, 0));
   });
 
+  test("les pièces d'un appartement partagent leur identifiant de structure", () async {
+    final a = await repo.create(name: 'Salon', filePath: 'flat/0.json', capturedAt: DateTime(2026, 9, 1), structureId: 'flat');
+    final b = await repo.create(name: 'Cuisine', filePath: 'flat/1.json', capturedAt: DateTime(2026, 9, 1), structureId: 'flat');
+    final c = await repo.create(name: 'Bureau', filePath: 'c.json', capturedAt: DateTime(2026, 9, 2));
+    final all = await repo.watchAll().first;
+    expect(all.where((s) => s.structureId == 'flat').map((s) => s.id), containsAll([a.id, b.id]));
+    expect(all.where((s) => s.id == c.id).single.structureId, isNull);
+  });
+
+  test('une plante posée sur le plan se retrouve par son identifiant', () async {
+    final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
+    await repo.addMarker(a.id, RoomMarkerKind.plant, x: 0.5, z: -0.5, plantId: 'p1');
+    await repo.addMarker(a.id, RoomMarkerKind.heater, x: 2, z: 0);
+    final points = plantPoints(await repo.watchMarkers(a.id).first);
+    expect(points, {'p1': const RoomPoint(0.5, -0.5)});
+  });
+
   test('supprimer retire le relevé et ses repères', () async {
     final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
     await repo.setWindowOrientation(a.id, 0, CardinalDirection.south, x: 0, z: 0);

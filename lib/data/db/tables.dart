@@ -424,6 +424,10 @@ class RoomScans extends Table with Timestamps {
 
   /// Le type de pièce reconnu par RoomPlan (`kitchen`, `bathroom`…), ou null.
   TextColumn get sectionLabel => text().nullable()();
+
+  /// Les pièces d'un même relevé d'appartement partagent cet identifiant,
+  /// et leur repère ; null pour une pièce relevée seule.
+  TextColumn get structureId => text().nullable()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
   @override

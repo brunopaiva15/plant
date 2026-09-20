@@ -11039,6 +11039,102 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Chez vous'**
   String get placementAtHome;
+
+  /// No description provided for @roomScanStartStructure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever l\'appartement'**
+  String get roomScanStartStructure;
+
+  /// No description provided for @roomScanStructureHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relever l\'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.'**
+  String get roomScanStructureHint;
+
+  /// No description provided for @roomScanNextRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce suivante'**
+  String get roomScanNextRoom;
+
+  /// No description provided for @roomScanRoomNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce {n}'**
+  String roomScanRoomNumber(int n);
+
+  /// No description provided for @roomScanPlantsOnPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plantes sur le plan'**
+  String get roomScanPlantsOnPlan;
+
+  /// No description provided for @roomScanPlantsHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une plante posée sur le plan est jugée là où elle est : la liste dit si une autre place lui irait mieux.'**
+  String get roomScanPlantsHelp;
+
+  /// No description provided for @roomScanAddPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poser une plante'**
+  String get roomScanAddPlant;
+
+  /// No description provided for @roomScanTapForPlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toucher le plan là où se trouve {plant}.'**
+  String roomScanTapForPlant(String plant);
+
+  /// No description provided for @roomScanRemovePlant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer {plant} du plan'**
+  String roomScanRemovePlant(String plant);
+
+  /// No description provided for @roomScanNoPlantToPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune plante à poser.'**
+  String get roomScanNoPlantToPlace;
+
+  /// No description provided for @roomScanPlantWellPlaced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bien placée · {light}'**
+  String roomScanPlantWellPlaced(String light);
+
+  /// No description provided for @roomScanPlantBetterAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui {light} · mieux {place}'**
+  String roomScanPlantBetterAt(String light, String place);
+
+  /// No description provided for @placementAllRooms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les pièces'**
+  String get placementAllRooms;
+
+  /// No description provided for @placementChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir cette place'**
+  String get placementChoose;
+
+  /// No description provided for @placementChosen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Place choisie : {place}'**
+  String placementChosen(String place);
+
+  /// No description provided for @placementCurrent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui : {place} · {light}'**
+  String placementCurrent(String place, String light);
 }
 
 class _AppLocalizationsDelegate

@@ -110,25 +110,54 @@ abstract final class RoomFitAdvisor {
     return RoomSurvey(room: room, spots: spots);
   }
 
+  /// Une place précise de la pièce — là où une plante est aujourd'hui —
+  /// lue comme les autres : sa lumière à hauteur de pot, l'air, le radiateur.
+  static SurveyedSpot spotAt(
+    ScannedRoom room,
+    RoomPoint point, {
+    bool southern = false,
+    List<CardinalDirection?>? directions,
+    double? latitude,
+    List<RoomPoint> heaters = const [],
+  }) {
+    final c = _Candidate(point, PlacementSurface.floor, RoomLightModel.potHeight);
+    final sample = RoomLightModel.sample(room, point, height: c.height, southern: southern, directions: directions, sunElevationDeg: RoomLightModel.sunElevationFor(latitude));
+    final nearest = _nearestVisibleWindow(room, c, directions);
+    return SurveyedSpot(
+      point: point,
+      surface: c.surface,
+      light: sample.light,
+      drafty: RoomLightModel.isDrafty(room, point),
+      nearHeater: RoomLightModel.isNearHeater(point, heaters),
+      windowIndex: nearest?.$1,
+      windowDistance: nearest?.$2,
+      windowDirection: nearest?.$3,
+    );
+  }
+
+  /// Ce qu'une place lue vaut pour une fiche, avec son score.
+  static Placement judge(CareProfile profile, SurveyedSpot s, {required bool humidRoom}) => Placement(
+        point: s.point,
+        surface: s.surface,
+        light: s.light,
+        score: score(profile, light: s.light, drafty: s.drafty, humidRoom: humidRoom, nearHeater: s.nearHeater),
+        drafty: s.drafty,
+        humidRoom: humidRoom,
+        nearHeater: s.nearHeater,
+        windowIndex: s.windowIndex,
+        windowDistance: s.windowDistance,
+        windowDirection: s.windowDirection,
+      );
+
+  /// Une autre place lui irait-elle nettement mieux ? Au moins ce
+  /// d'écart entre la place d'aujourd'hui et la meilleure.
+  static const double betterByAtLeast = 0.25;
+
   /// Les places d'une fiche dans une pièce déjà relevée.
   static RoomFit placeIn(CareProfile profile, RoomSurvey survey) {
     if (survey.isEmpty) return RoomFit.empty;
     final humid = survey.humidRoom;
-    final all = [
-      for (final s in survey.spots)
-        Placement(
-          point: s.point,
-          surface: s.surface,
-          light: s.light,
-          score: score(profile, light: s.light, drafty: s.drafty, humidRoom: humid, nearHeater: s.nearHeater),
-          drafty: s.drafty,
-          humidRoom: humid,
-          nearHeater: s.nearHeater,
-          windowIndex: s.windowIndex,
-          windowDistance: s.windowDistance,
-          windowDirection: s.windowDirection,
-        ),
-    ];
+    final all = [for (final s in survey.spots) judge(profile, s, humidRoom: humid)];
     // Le score d'abord ; à score égal, la lumière la plus proche de l'idéal
     // de la fiche : le toléré vient après le préféré.
     all.sort((a, b) {

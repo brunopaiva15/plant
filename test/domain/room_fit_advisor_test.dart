@@ -164,6 +164,20 @@ void main() {
     expect(b.placements.first.light, LightNeed.shade);
   });
 
+  test("une plante posée au fond se juge là où elle est, et la meilleure place dit mieux", () {
+    final p = profile(light: LightNeed.brightIndirect, tolerance: LightNeed.indirect);
+    final survey = RoomFitAdvisor.survey(room);
+    final back = RoomFitAdvisor.spotAt(room, const RoomPoint(1.15, 0.85));
+    expect(back.light, LightNeed.shade);
+    final now = RoomFitAdvisor.judge(p, back, humidRoom: survey.humidRoom);
+    expect(now.score, 0);
+    final fit = RoomFitAdvisor.placeIn(p, survey);
+    expect(fit.placements.first.score - now.score, greaterThanOrEqualTo(RoomFitAdvisor.betterByAtLeast));
+    // Bien placée : la même plante à côté de la tache.
+    final beside = RoomFitAdvisor.judge(p, RoomFitAdvisor.spotAt(room, const RoomPoint(0.16, 0.67)), humidRoom: false);
+    expect(beside.score, 1);
+  });
+
   test('une pièce sans mur ne donne rien', () {
     final empty = ScannedRoom(walls: const [], windows: const [], doors: const [], openings: const [], objects: const []);
     expect(RoomFitAdvisor.place(profile(), empty).placements, isEmpty);

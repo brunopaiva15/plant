@@ -38,7 +38,7 @@ class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -108,6 +108,9 @@ class FloraDatabase extends _$FloraDatabase {
           if (from < 13) {
             await m.createTable(roomScans);
             await m.createTable(roomMarkers);
+          }
+          if (from < 14) {
+            await m.addColumn(roomScans, roomScans.structureId);
           }
           await _createIndexes();
         },

@@ -94,7 +94,8 @@ projetées à la volée par `CalendarProjector` à partir des routines et de l'h
 ## Le relevé de la maison (schéma v13)
 ```
 room_scans     id, garden_id, location_id?, name, captured_at, north_offset_deg?,
-               file_path, floor_area_m2, section_label?, created_at, updated_at, deleted_at?
+               file_path, floor_area_m2, section_label?, structure_id? (v14),
+               created_at, updated_at, deleted_at?
 room_markers   id, scan_id, kind (windowOrientation | heater | plant), x, z,
                window_index?, orientation?, plant_id?, created_at, updated_at
 ```
@@ -110,7 +111,10 @@ iOS 17 (`kitchen`, `bathroom`…), nul sinon.
 capteur a vu : refaire un relevé ne perd pas les repères.
 `windowOrientation` est l'orientation confirmée d'une fenêtre, indexée par
 son rang dans le JSON ; `heater` un radiateur posé du doigt, collé au mur
-le plus proche ; `plant` attend le palier 3 (docs/17).
+le plus proche ; `plant` la place d'une plante du jardin (`plant_id`), une
+par plante et par relevé. `structure_id` (v14) réunit les pièces d'un même
+relevé d'appartement, dont les fichiers vivent dans un dossier
+(`rooms/<id>/<n>.json`) et partagent le repère.
 
 ## Tables prévues (schéma réservé, UI en P4)
 ```
