@@ -236,7 +236,11 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     final photos = ref.watch(plantPhotosProvider(id)).value ?? const <PlantPhoto>[];
     final primary = photos.where((p) => p.id == plant.primaryPhotoId).firstOrNull ?? photos.firstOrNull;
     final top = MediaQuery.paddingOf(context).top;
-    final width = MediaQuery.sizeOf(context).width;
+    // La largeur qui reste à la photo une fois la bande du système retirée :
+    // c'est elle qui donne la hauteur de l'en-tête, sinon les proportions de
+    // l'image se faussent de ce que la bande a pris.
+    final marges = systemSideInsets(context);
+    final width = MediaQuery.sizeOf(context).width - marges.left - marges.right;
 
     // Le retour, le cœur et le menu partent à UIKit quand il tient la barre :
     // ils flottent sur la photo, mais ce sont des commandes de navigation et
@@ -268,6 +272,14 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
       body: CustomScrollView(
         physics: floraScrollPhysics,
         slivers: [
+          // La bande que le système réserve vaut pour la photo comme pour
+          // le reste : les glyphes de l'heure et du wifi se posent dessus,
+          // et une image qui passe dessous les rend illisibles. C'est
+          // justement ce qu'une région réservée veut dire.
+          SliverPadding(
+            padding: marges,
+            sliver: SliverMainAxisGroup(
+              slivers: [
           SliverAppBar(
             expandedHeight: primary == null ? width * 0.62 : width * 1.05,
             pinned: true,
@@ -329,14 +341,6 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             toolbarHeight: 56,
             collapsedHeight: 56 + (top > 0 ? 0 : 0),
           ),
-          // Tout ce qui suit la photo se range dans ce que le système
-          // réserve sur les bords : sur un pliable, la bande de la caméra
-          // prend quatre-vingt-quatre points d'un côté, et les cartes
-          // passaient dessous. La photo, elle, garde toute la largeur.
-          SliverPadding(
-            padding: systemSideInsets(context),
-            sliver: SliverMainAxisGroup(
-              slivers: [
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, 0),
