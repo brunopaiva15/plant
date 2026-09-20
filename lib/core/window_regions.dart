@@ -58,6 +58,14 @@ abstract final class WindowRegionsService {
   /// Ce que le système a répondu la dernière fois. Le menu debout l'écoute.
   static final ValueNotifier<WindowRegions> regions = ValueNotifier<WindowRegions>(const WindowRegions());
 
+  /// La réponse du natif mot pour mot, pour la sonde de `window_probe.dart`.
+  ///
+  /// « Aucune région annoncée » a trop de causes pour se lire seul : pas
+  /// d'iOS, un binaire sans le canal, un SDK antérieur à 27.1, une vue pas
+  /// encore posée, ou une cote écartée par [parse]. Cette ligne-là les
+  /// distingue, et c'est tout ce qu'elle fait.
+  static final ValueNotifier<String> lastAnswer = ValueNotifier<String>('pas encore demandé');
+
   /// Le canal n'existe que côté iOS. Ailleurs, rien n'est demandé.
   static bool get isSupported => !kIsWeb && Platform.isIOS;
 
@@ -66,11 +74,20 @@ abstract final class WindowRegionsService {
   /// Branche le service et demande une première fois. Sans effet ailleurs
   /// que sur iOS, et sans effet deux fois.
   static Future<void> attach() async {
-    if (!isSupported || _observer != null) return;
+    if (!isSupported) {
+      lastAnswer.value = 'hors iOS — rien à demander';
+      return;
+    }
+    if (_observer != null) return;
     final observer = _RegionsObserver();
     _observer = observer;
     WidgetsBinding.instance.addObserver(observer);
+    // Demandé depuis `main()`, avant la première image : la scène n'est pas
+    // encore active, la fenêtre pas encore clé, et la barre d'état vaut zéro.
+    // La première réponse est donc souvent vide — on redemande une fois la
+    // fenêtre posée, et c'est celle-là qui compte.
     await refresh();
+    WidgetsBinding.instance.addPostFrameCallback((_) => refresh());
   }
 
   /// Débranche le service. Réservé aux tests.
@@ -81,6 +98,7 @@ abstract final class WindowRegionsService {
     WidgetsBinding.instance.removeObserver(observer);
     _observer = null;
     regions.value = const WindowRegions();
+    lastAnswer.value = 'pas encore demandé';
   }
 
   /// Redemande au système. Un échec laisse la dernière réponse en place.
@@ -88,11 +106,18 @@ abstract final class WindowRegionsService {
     if (!isSupported) return;
     try {
       final raw = await _channel.invokeMapMethod<String, Object?>('read');
-      if (raw != null) regions.value = parse(raw);
+      if (raw == null) {
+        lastAnswer.value = 'le canal a répondu sans rien';
+        return;
+      }
+      lastAnswer.value = raw.toString();
+      regions.value = parse(raw);
     } on PlatformException catch (e) {
-      debugPrint('régions de la fenêtre : ${e.message}');
+      lastAnswer.value = 'le canal a refusé : ${e.message}';
     } on MissingPluginException {
-      // Le canal n'est pas là — un binaire plus ancien. On garde les mesures.
+      // Le canal n'est pas là — un binaire construit sans lui. On garde les
+      // mesures, et on le dit plutôt que de laisser croire à un SDK trop vieux.
+      lastAnswer.value = 'canal absent du binaire — à reconstruire';
     }
   }
 

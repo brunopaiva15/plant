@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../core/window_regions.dart';
+import '../design_system/design_system.dart';
 import 'window.dart';
 
 /// Ce que la fenêtre dit d'elle-même, écrit dans la console à chaque
@@ -42,6 +43,10 @@ abstract final class WindowProbe {
       debugPrint(_entete);
       observer.report();
     });
+    // Le natif répond après coup : la première demande part de `main()`,
+    // avant que la fenêtre existe, et la vraie réponse arrive une image plus
+    // tard. Sans cette écoute, le relevé la manquerait.
+    WindowRegionsService.lastAnswer.addListener(observer.report);
   }
 
   /// Débranche la sonde. Réservé aux tests.
@@ -50,6 +55,7 @@ abstract final class WindowProbe {
     final observer = _observer;
     if (observer == null) return;
     WidgetsBinding.instance.removeObserver(observer);
+    WindowRegionsService.lastAnswer.removeListener(observer.report);
     _observer = null;
   }
 
@@ -79,7 +85,8 @@ class _WindowProbeObserver with WidgetsBindingObserver {
       _ligne('taille', '${_pt(mq.size.width)} × ${_pt(mq.size.height)} pt · dpr ${_nb(mq.devicePixelRatio)} '
           '· physique ${_pt(view.physicalSize.width)} × ${_pt(view.physicalSize.height)} px'),
       _ligne('orientation', '${mq.orientation.name} · côté le plus court ${_pt(mq.size.shortestSide)} pt'),
-      _ligne('fenêtre', isCompactWindow() ? 'compacte — menu en bas' : 'large — menu debout à droite'),
+      _ligne('fenêtre', isCompactWindow() ? 'compacte' : 'large'),
+      _ligne('menu', FloraTabRail.fitsInSize(mq.size) ? 'debout, à droite' : 'en bas'),
       _ligne('marges sûres', _bords(mq.padding)),
       _ligne('marges vues', _bords(mq.viewPadding)),
       _ligne('clavier', _bords(mq.viewInsets)),
@@ -88,6 +95,7 @@ class _WindowProbeObserver with WidgetsBindingObserver {
       _ligne('vues ouvertes', '${dispatcher.views.length}'),
       _ligne('pli', _pli(mq.displayFeatures)),
       _ligne('régions système', WindowRegionsService.regions.value.toString()),
+      _ligne('réponse du natif', WindowRegionsService.lastAnswer.value),
       _ligne('colonne de lecture', mq.size.width <= 700
           ? 'pleine largeur (${_pt(mq.size.width)} ≤ 700)'
           : 'recentrée, ${_pt((mq.size.width - 700) / 2)} pt de marge de chaque côté'),

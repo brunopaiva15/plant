@@ -311,6 +311,18 @@ la barre d'état est le seul des trois dont on ne sache pas encore ce qu'il vaut
 quand elle passe debout, et une valeur écartée n'est pas une panne : l'appelant
 garde sa mesure.
 
+La sonde écrit deux lignes plutôt qu'une : les régions retenues, et **la
+réponse du natif mot pour mot**. « Aucune région annoncée » a trop de causes
+pour se lire seul — pas d'iOS, un binaire construit sans le canal, un SDK
+antérieur à 27.1, une vue pas encore posée, ou une cote écartée par `parse`.
+La seconde ligne les distingue.
+
+La première demande part de `main()`, avant la première image : la scène n'est
+pas encore active, la fenêtre pas encore clé, la barre d'état vaut zéro. Le
+service redemande donc une fois la fenêtre posée, et c'est cette réponse-là
+qui compte. La sonde écoute la réponse pour la même raison : elle arrive après
+son premier relevé.
+
 C'est bien l'ordre des choses — la mesure d'abord, l'annonce en raffinement.
 Hors d'iOS le canal n'existe pas, sur un binaire construit avec un SDK plus
 ancien il répond sans régions, et le menu debout se pose exactement où il se
