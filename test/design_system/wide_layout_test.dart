@@ -82,6 +82,7 @@ void main() {
   _testsDeLaRecherche();
   _testsDuToast();
   group('les pages secondaires', _testsDesPagesSecondaires);
+  group('les feuilles', _testsDesFeuilles);
 }
 
 /// Le champ de recherche vit dans la barre, qui garde toute la largeur : il
@@ -220,5 +221,46 @@ void _testsDesPagesSecondaires() {
     await pump(tester, const Size(390, 844), EdgeInsets.zero);
     final carte = tester.getRect(find.byKey(const ValueKey('c0')));
     expect(carte.left, moreOrLessEquals(Space.page, epsilon: 0.5));
+  });
+}
+
+/// Les feuilles s'écartent de la bande du système — leur surface, pas
+/// seulement leur contenu.
+///
+/// `CupertinoSheetRoute` remplace la marge de son contenu par celle de sa
+/// poignée : tout ce que le système réservait sur les côtés disparaissait, et
+/// le fond de la feuille passait sous l'heure. La cote est fixée exactement,
+/// pas plafonnée : une marge prise deux fois passerait un plafond sans rien
+/// dire.
+void _testsDesFeuilles() {
+  testWidgets('la surface s\'arrête avant la bande, une fois', (tester) async {
+    const size = Size(466, 678);
+    await tester.binding.setSurfaceSize(size);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.devicePixelRatio = 3;
+    tester.view.padding = const FakeViewPadding(right: 84 * 3);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildFloraTheme(Brightness.light),
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: FloraButton(
+                label: 'ouvrir',
+                onPressed: () => showFloraSheet<void>(
+                  context,
+                  builder: (_) => const SizedBox(key: Key('dedans'), height: 120, width: double.infinity),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('ouvrir'));
+    await tester.pumpAndSettle();
+    expect(tester.getRect(find.byKey(const Key('dedans'))).right, moreOrLessEquals(466 - 84, epsilon: 0.5));
   });
 }
