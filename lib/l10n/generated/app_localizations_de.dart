@@ -6603,4 +6603,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get roomScanCurtainHelp =>
       'RoomPlan sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.';
+
+  @override
+  String get roomScanPlace => 'Setzen';
 }

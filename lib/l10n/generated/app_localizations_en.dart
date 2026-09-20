@@ -6573,4 +6573,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get roomScanCurtainHelp =>
       'RoomPlan sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.';
+
+  @override
+  String get roomScanPlace => 'Place';
 }

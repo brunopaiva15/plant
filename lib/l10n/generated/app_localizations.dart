@@ -11171,6 +11171,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'RoomPlan ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.'**
   String get roomScanCurtainHelp;
+
+  /// No description provided for @roomScanPlace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Poser'**
+  String get roomScanPlace;
 }
 
 class _AppLocalizationsDelegate
