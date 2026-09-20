@@ -99,6 +99,29 @@ void main() {
     expect(regions.isEmpty, isTrue);
   });
 
+  test('une caméra seule ne dit pas où finit la pile', () {
+    // La caméra est le haut de la pile, pas son bas : l'heure et le wifi
+    // sont dessous, et rien ici ne dit jusqu'où. On garde la mesure.
+    final regions = WindowRegionsService.parse(duoOuvert(statusBar: null)..remove('statusBar'));
+    expect(regions.systemStackBottom, isNull);
+    expect(regions.systemAxisFromRight, 48, reason: 'l\'axe, lui, reste lisible');
+  });
+
+  test('la réponse mesurée sur l\'iPhone Duo fermé ne donne rien', () {
+    // Relevé le 20 septembre 2026 sur le simulateur, écran extérieur : la
+    // barre d'état est debout contre le bord droit, mais `statusBarFrame`
+    // rend 466 × 2 points en haut à gauche. Rien n'en sort, et c'est voulu.
+    final regions = WindowRegionsService.parse({
+      'available': true,
+      'width': 466.0,
+      'height': 678.0,
+      'statusBar': rect(0, 0, 466, 2),
+      'occlusions': const <Object?>[],
+      'divisions': const <Object?>[],
+    });
+    expect(regions.isEmpty, isTrue);
+  });
+
   test('deux lectures identiques se valent', () {
     expect(WindowRegionsService.parse(duoOuvert()), WindowRegionsService.parse(duoOuvert()));
     expect(
