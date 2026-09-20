@@ -328,6 +328,28 @@ void main() {
       expect(consigne, isNot(contains('return no cause')));
     });
 
+    test('la consigne lit chaque photo à son échelle et nomme le ravageur', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // Le compte rendu restait général sur des gros plans : « feuilles
+      // vertes et brillantes, sans taches » sur un Monstera piqueté de
+      // thrips, et les points noirs du frass rangés avec le calcaire.
+      expect(consigne, contains('read each one at its own scale'));
+      expect(consigne, contains('Before calling a leaf clean'));
+      expect(consigne, contains('is thrips — not limescale'));
+      expect(consigne, contains('Name the pest the damage points to'));
+      // La photo qui trancherait est celle du dessous des feuilles.
+      expect(consigne, contains('"view" is "leaf_underside"'));
+    });
+
+    test('un geste se range sous la cause qu’il traite', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // « Vieillissement des feuilles basses » portait « laisser sécher le
+      // substrat entre deux arrosages » : le geste traitait l'excès d'eau,
+      // sous une cause qui ne demandait rien.
+      expect(consigne, contains('an action belongs under the cause it acts on'));
+      expect(consigne, contains('never treat a problem that is not there'));
+    });
+
     test('ce que la personne décrit vaut pour vu, que la photo le montre ou non', () {
       final texte = InfomaniakDiagnoser.userPrompt(language: 'fr', symptoms: 'feuille sèche tombante');
       expect(texte, contains('feuille sèche tombante'));

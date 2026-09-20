@@ -67,6 +67,18 @@ void main() {
     expect(consigne, contains('say that in "summary" too'));
   });
 
+  test('des insectes vus de ses yeux valent une piste de ravageur', () {
+    final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+    // Le cas qui a fait revoir la consigne : « insectes sur la plante »
+    // coché, deux photos de thrips, et un compte rendu de phénomènes
+    // normaux. Un thrips mesure un millimètre : l'image ne le montrera pas.
+    expect(consigne, contains('When the owner checked that insects are on the plant or in the soil'));
+    expect(consigne, contains('Give a pest among the causes'));
+    expect(consigne, contains('never answer with normal phenomena alone'));
+    // Et la case « aucun vu » joue dans l'autre sens.
+    expect(consigne, contains('weigh pests down instead'));
+  });
+
   test('la passe de repli les emporte aussi', () {
     // Le repli juge sur les mots, les photos n'ayant rien donné : c'est là
     // que ce qui a été vérifié compte le plus.
