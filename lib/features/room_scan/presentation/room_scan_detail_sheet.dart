@@ -45,6 +45,27 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
   /// La plante que le doigt pose au prochain toucher du plan.
   PlantSummary? _placingPlant;
 
+  /// Le plan, pour y ramener la feuille quand on pose quelque chose : la
+  /// ligne qui le demande est en bas, le plan en haut.
+  final _planKey = GlobalKey();
+
+  /// Entrer dans un mode « poser » : l'état, puis le plan sous les yeux.
+  void _startPlacing({bool heater = false, PlantSummary? plant}) {
+    setState(() {
+      _placingHeater = heater;
+      _placingPlant = plant;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _planKey.currentContext;
+      if (ctx != null) Scrollable.ensureVisible(ctx, alignment: 0.05, duration: const Duration(milliseconds: 350), curve: Curves.easeOut);
+    });
+  }
+
+  void _stopPlacing() => setState(() {
+        _placingHeater = false;
+        _placingPlant = null;
+      });
+
   @override
   void dispose() {
     _name.dispose();
@@ -135,7 +156,7 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
       context,
       title: l10n.roomScanAddPlant,
       cancelLabel: l10n.cancel,
-      actions: [for (final p in choices) SheetAction(label: p.plant.name, onPressed: () => setState(() => _placingPlant = p))],
+      actions: [for (final p in choices) SheetAction(label: p.plant.name, onPressed: () => _startPlacing(plant: p))],
     );
   }
 
@@ -217,10 +238,12 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
                 FloraListRow(
                   leading: const Text('♨️', style: TextStyle(fontSize: 18)),
                   title: l10n.roomScanAddHeater,
-                  subtitle: l10n.roomScanHeatersCount(heaters.length),
+                  // En mode « poser », la ligne dit quoi faire et s'annule ;
+                  // une roue ressemblerait à un chargement.
+                  subtitle: _placingHeater ? l10n.roomScanTapForHeater : l10n.roomScanHeatersCount(heaters.length),
                   chevron: false,
-                  trailing: _placingHeater ? const AdaptiveProgress() : null,
-                  onTap: _placingHeater ? null : () => setState(() => _placingHeater = true),
+                  trailing: _placingHeater ? FloraButton(label: l10n.cancel, size: FloraButtonSize.small, style: FloraButtonStyle.ghost, onPressed: _stopPlacing) : null,
+                  onTap: _placingHeater ? null : () => _startPlacing(heater: true),
                 ),
               ],
             ),
@@ -232,9 +255,9 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
                 FloraListRow(
                   leading: const Text('🌿', style: TextStyle(fontSize: 18)),
                   title: l10n.roomScanAddPlant,
-                  subtitle: l10n.plantCount(plantPoints(markers).length),
+                  subtitle: _placingPlant == null ? l10n.plantCount(plantPoints(markers).length) : l10n.roomScanTapForPlant(_placingPlant!.plant.name),
                   chevron: false,
-                  trailing: _placingPlant != null ? const AdaptiveProgress() : null,
+                  trailing: _placingPlant != null ? FloraButton(label: l10n.cancel, size: FloraButtonSize.small, style: FloraButtonStyle.ghost, onPressed: _stopPlacing) : null,
                   onTap: _placingPlant != null ? null : () => _pickPlantToPlace(scan),
                 ),
               ],
@@ -257,9 +280,12 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
   /// la pièce qu'on a touché.
   Widget _plan(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, List<RoomPoint> heaters, List<RoomPoint> plants) {
     final c = context.colors;
+    final placing = _placingHeater || _placingPlant != null;
     return FloraCard(
+      key: _planKey,
       padding: EdgeInsets.zero,
       clip: true,
+      color: placing ? c.sunSoft : null,
       child: AspectRatio(
         aspectRatio: 1.25,
         child: LayoutBuilder(
