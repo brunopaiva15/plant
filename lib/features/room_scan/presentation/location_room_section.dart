@@ -54,6 +54,7 @@ class LocationRoomSection extends ConsumerWidget {
     final markers = ref.watch(roomMarkersProvider(scan.id)).value ?? const <RoomMarker>[];
     final plants = plantPoints(markers);
     final suggestion = ref.watch(roomFillSuggestionProvider(scan.id));
+    final spots = ref.watch(roomSurveyProvider(scan.id))?.spots ?? const [];
     void open() => showRoomScanDetail(context, scanId: scan.id);
     return Padding(
       padding: const EdgeInsets.only(bottom: Space.xl),
@@ -67,7 +68,7 @@ class LocationRoomSection extends ConsumerWidget {
               child: AspectRatio(
                 aspectRatio: 2.2,
                 child: CustomPaint(
-                  painter: RoomPlanPainter(room: room, heaters: heaterPoints(markers), plants: plants.values.toList(), colors: c, numberStyle: context.text.caption),
+                  painter: RoomPlanPainter(room: room, spots: spots, heaters: heaterPoints(markers), plants: plants.values.toList(), colors: c, numberStyle: context.text.caption),
                 ),
               ),
             ),

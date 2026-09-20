@@ -3,9 +3,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
+import '../../../core/l10n/care_labels.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/room/placement.dart';
+import '../../../domain/room/room_fit_advisor.dart';
 import '../../../domain/room/scanned_room.dart';
 
 /// Le passage du plan à l'écran et retour : la pièce tient dans le cadre,
@@ -36,8 +39,12 @@ class RoomPlanGeometry {
 }
 
 /// Le plan d'une pièce vu de dessus : murs, fenêtres, portes, meubles en
-/// silhouette, radiateurs posés, le lavis de la lumière lue place par place,
-/// et les places retenues en pastilles numérotées.
+/// silhouette, radiateurs posés, le lavis de la lumière lue place par place
+/// — de l'ombre au plein soleil, la tache de soleil comprise —, et les
+/// places retenues en pastilles numérotées.
+///
+/// Le lavis vient de la pièce seule ([spots]) : il se lit sur tout plan,
+/// avant toute fiche. Les pastilles viennent d'une fiche ([fit]).
 ///
 /// Deux dimensions, dessinées par l'application — pas de moteur 3D, pour la
 /// même raison que le diorama : ce qu'on veut lire est une distance et une
@@ -47,6 +54,7 @@ class RoomPlanPainter extends CustomPainter {
     required this.room,
     required this.colors,
     required this.numberStyle,
+    this.spots = const [],
     this.fit,
     this.heaters = const [],
     this.plants = const [],
@@ -57,6 +65,9 @@ class RoomPlanPainter extends CustomPainter {
   final ScannedRoom room;
   final FloraColors colors;
   final TextStyle numberStyle;
+
+  /// La lumière lue place par place, pour le lavis.
+  final List<SurveyedSpot> spots;
   final RoomFit? fit;
   final List<RoomPoint> heaters;
 
@@ -71,6 +82,13 @@ class RoomPlanPainter extends CustomPainter {
   /// La taille d'un radiateur à l'écran, en mètres de pièce.
   static const double heaterWidth = 0.7;
   static const double heaterDepth = 0.12;
+
+  /// La teinte du lavis pour une lumière : de la sauge de l'ombre au soleil
+  /// du plein sud. La légende reprend les mêmes.
+  static Color washColor(FloraColors colors, LightNeed light) {
+    final t = light.index / (LightNeed.values.length - 1);
+    return Color.lerp(colors.sage.withValues(alpha: 0.18), colors.sun.withValues(alpha: 0.55), t)!;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -92,17 +110,15 @@ class RoomPlanPainter extends CustomPainter {
       canvas.drawRect(Rect.fromPoints(at(RoomPoint(minX, minZ)), at(RoomPoint(maxX, maxZ))), floor);
     }
 
-    // Le lavis de lumière : une tache douce par place évaluée, de l'ombre
-    // au soleil. Les places se recouvrent : le lavis se lit en continu.
-    final all = fit?.all ?? const <Placement>[];
+    // Le lavis de lumière : une tache douce par place lue, de l'ombre au
+    // soleil. Les places se recouvrent : le lavis se lit en continu.
     final radius = math.max(scale * 0.22, 6.0);
-    for (final p in all) {
-      if (p.surface != PlacementSurface.floor) continue;
-      final t = p.light.index / (LightNeed.values.length - 1);
+    for (final s in spots) {
+      if (s.surface != PlacementSurface.floor) continue;
       final paint = Paint()
-        ..color = Color.lerp(colors.sage.withValues(alpha: 0.18), colors.sun.withValues(alpha: 0.55), t)!
+        ..color = washColor(colors, s.light)
         ..maskFilter = ui.MaskFilter.blur(ui.BlurStyle.normal, radius * 0.6);
-      canvas.drawCircle(at(p.point), radius, paint);
+      canvas.drawCircle(at(s.point), radius, paint);
     }
 
     // Les meubles, en silhouette.
@@ -229,5 +245,37 @@ class RoomPlanPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(RoomPlanPainter old) =>
-      old.room != room || old.fit != fit || old.colors != colors || old.heaters != heaters || old.plants != plants || old.current != current;
+      old.room != room || old.spots != spots || old.fit != fit || old.colors != colors || old.heaters != heaters || old.plants != plants || old.current != current;
+}
+
+/// Sous un plan : ce que le lavis veut dire, de l'ombre au plein soleil,
+/// dans les teintes du peintre.
+class RoomLightLegend extends StatelessWidget {
+  const RoomLightLegend({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final c = context.colors;
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.xs),
+      child: Row(
+        children: [
+          Text(l10n.lightName(LightNeed.shade), style: context.text.caption),
+          const SizedBox(width: Space.xs),
+          Expanded(
+            child: Container(
+              height: 6,
+              decoration: BoxDecoration(
+                borderRadius: Radii.fullAll,
+                gradient: LinearGradient(colors: [for (final l in LightNeed.values) Color.alphaBlend(RoomPlanPainter.washColor(c, l), c.surfaceMuted)]),
+              ),
+            ),
+          ),
+          const SizedBox(width: Space.xs),
+          Text(l10n.lightName(LightNeed.fullSun), style: context.text.caption),
+        ],
+      ),
+    );
+  }
 }

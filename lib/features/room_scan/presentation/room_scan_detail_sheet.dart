@@ -241,29 +241,37 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     );
   }
 
-  /// Le plan, et le doigt dessus : la géométrie du peintre rend le point de
-  /// la pièce qu'on a touché.
+  /// Le plan, avec la lumière lue place par place — c'est ce que le relevé
+  /// apporte, avant toute fiche —, et le doigt dessus : la géométrie du
+  /// peintre rend le point de la pièce qu'on a touché.
   Widget _plan(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, List<RoomPoint> heaters, List<RoomPoint> plants) {
     final c = context.colors;
-    return FloraCard(
-      padding: EdgeInsets.zero,
-      clip: true,
-      child: AspectRatio(
-        aspectRatio: 1.25,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final size = Size(constraints.maxWidth, constraints.maxHeight);
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapUp: (d) => _tapPlan(scan, room, markers, RoomPlanGeometry(room: room, size: size).toRoom(d.localPosition)),
-              child: CustomPaint(
-                size: size,
-                painter: RoomPlanPainter(room: room, heaters: heaters, plants: plants, colors: c, numberStyle: context.text.caption),
-              ),
-            );
-          },
+    final spots = ref.watch(roomSurveyProvider(scan.id))?.spots ?? const [];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FloraCard(
+          padding: EdgeInsets.zero,
+          clip: true,
+          child: AspectRatio(
+            aspectRatio: 1.25,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final size = Size(constraints.maxWidth, constraints.maxHeight);
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapUp: (d) => _tapPlan(scan, room, markers, RoomPlanGeometry(room: room, size: size).toRoom(d.localPosition)),
+                  child: CustomPaint(
+                    size: size,
+                    painter: RoomPlanPainter(room: room, spots: spots, heaters: heaters, plants: plants, colors: c, numberStyle: context.text.caption),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        const RoomLightLegend(),
+      ],
     );
   }
 

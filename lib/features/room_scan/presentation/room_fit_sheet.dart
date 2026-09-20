@@ -174,6 +174,7 @@ class _RoomFitResult extends ConsumerWidget {
                     child: CustomPaint(
                       painter: RoomPlanPainter(
                         room: value,
+                        spots: survey.spots,
                         fit: fit,
                         heaters: heaters,
                         plants: plants.values.toList(),
@@ -185,6 +186,7 @@ class _RoomFitResult extends ConsumerWidget {
                   ),
                 ),
               ),
+              const RoomLightLegend(),
               const SizedBox(height: Space.md),
               FloraCard(
                 color: tint,

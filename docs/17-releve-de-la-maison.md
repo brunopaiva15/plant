@@ -290,6 +290,12 @@ Fiche d'entretien ─[tap « Où la poser »]⟶ Résultat
     renseigne l'emplacement de la plante
 ```
 
+Le lavis de lumière — de l'ombre à la tache de soleil — vient de la pièce
+seule (`RoomFitAdvisor.survey`), pas d'une fiche : il se dessine sur tout
+plan, la feuille du relevé et la fiche de l'emplacement compris, avec une
+légende ombre → plein soleil. C'est ce que le relevé apporte avant toute
+plante ; les pastilles numérotées, elles, demandent une fiche.
+
 Le plan est en deux dimensions, vu de dessus, dessiné par l'application :
 pas de moteur 3D, pas de vue AR au premier palier. C'est la même décision
 que pour le diorama, pour la même raison : ce qu'on veut lire, c'est une
