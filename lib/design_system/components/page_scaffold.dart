@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/native_shell.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
@@ -9,7 +10,6 @@ import 'buttons.dart';
 import 'rail_actions.dart';
 import 'scroll_fade.dart';
 import 'tab_bar.dart';
-
 
 /// La physique de défilement de toutes les pages : le rebond d'iOS, et rien
 /// d'autre.
@@ -131,8 +131,12 @@ class LargeTitlePage extends StatelessWidget {
     // rejoignent : ils sont déjà en colonne là-bas, et le haut de page n'a
     // plus à porter deux choses. Le retour, lui, reste en haut : c'est un
     // geste de navigation, pas une commande de la page.
+    //
+    // Sauf là où le menu est passé au natif : il n'y a plus de colonne en
+    // argile pour les recevoir, et les céder les ferait disparaître. La page
+    // les garde donc jusqu'à ce que la chrome native sache les porter.
     final relais = RailActionsScope.maybeOf(context);
-    final debout = relais != null && FloraTabRail.fitsIn(context);
+    final debout = relais != null && !NativeShell.isSupported && FloraTabRail.fitsIn(context);
     final boutons = <Widget>[
       ?leading,
       if (actions != null) ...actions! else ?trailing,

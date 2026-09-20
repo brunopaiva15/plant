@@ -122,6 +122,14 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   }
 
   /// Déménage la vue de Flutter dans l'hôte donné. Sans effet s'il y est déjà.
+  ///
+  /// Par contraintes et non par cadre : au moment du déménagement, l'hôte n'a
+  /// pas encore été mis en page, et `bounds` y vaut ce qu'il veut. Un cadre
+  /// recopié de là fige une erreur que le redimensionnement automatique
+  /// reporte ensuite — les marges sûres de Flutter annonçaient 34 points en
+  /// bas là où la barre d'onglets en prenait 83, et le contenu passait
+  /// dessous. Les contraintes, elles, se résolvent quand la mise en page
+  /// arrive, et disparaissent avec la vue quand elle repart.
   private func heberger(dans hote: UIViewController) {
     guard let flutter, flutter.parent !== hote else { return }
     if flutter.parent != nil {
@@ -130,10 +138,17 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       flutter.removeFromParent()
     }
     hote.addChild(flutter)
-    flutter.view.frame = hote.view.bounds
-    flutter.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    hote.view.insertSubview(flutter.view, at: 0)
+    let vue = flutter.view!
+    vue.translatesAutoresizingMaskIntoConstraints = false
+    hote.view.insertSubview(vue, at: 0)
+    NSLayoutConstraint.activate([
+      vue.topAnchor.constraint(equalTo: hote.view.topAnchor),
+      vue.leadingAnchor.constraint(equalTo: hote.view.leadingAnchor),
+      vue.trailingAnchor.constraint(equalTo: hote.view.trailingAnchor),
+      vue.bottomAnchor.constraint(equalTo: hote.view.bottomAnchor),
+    ])
     flutter.didMove(toParent: hote)
+    hote.view.setNeedsLayout()
   }
 
   // MARK: - UITabBarControllerDelegate
