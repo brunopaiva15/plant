@@ -395,10 +395,17 @@ D'où `LargeTitlePage.actions`, une **liste** et non une `Row` toute faite :
 une rangée ne se range pas debout. Les pages qui n'ont qu'un bouton gardent
 `trailing`, qui marche pareil.
 
-La colonne mesure la place qu'il lui reste avant de se donner une hauteur :
-les onglets se resserrent quand les boutons sont nombreux et la fenêtre
-courte. Dans le pire cas mesuré — un Duo fermé et couché, 466 points de haut,
-quatre boutons — les onglets passent de 56 à 55 points.
+C'est la **pilule** qui est centrée dans la hauteur, pas le groupe. La
+navigation ne doit pas se déplacer d'un onglet à l'autre : à centrer le tout,
+elle remontait d'un cran à chaque bouton de plus, et quatre boutons la
+faisaient passer sous l'heure du système. Les boutons pendent donc sous elle,
+et le groupe ne remonte que s'ils manquent de place en bas.
+
+La colonne mesure cette place avant de se donner une hauteur — elle ne peut
+pas mesurer ses enfants d'abord. Un bouton compte pour 44 points et non 40 :
+c'est `Pressable` qui décide, en garantissant la cible des HIG
+(`kMinTapTarget`). Les quatre points d'écart passaient inaperçus jusqu'à ce
+que quatre boutons débordent de onze.
 
 
 Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.

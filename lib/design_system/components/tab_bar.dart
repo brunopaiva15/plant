@@ -8,6 +8,7 @@ import '../tokens/motion.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
 import 'clay.dart';
+import 'pressable.dart';
 
 class FloraTab {
   const FloraTab({required this.icon, required this.activeIcon, required this.label});
@@ -155,10 +156,12 @@ class FloraTabRail extends StatelessWidget {
   /// près du pouce.
   final List<Widget> actions;
 
-  /// La taille d'un bouton de page, celle de [FloraIconButton] par défaut.
-  /// La colonne en a besoin pour savoir ce qu'il lui reste : elle ne peut pas
-  /// mesurer ses enfants avant de se donner une hauteur.
-  static const double _actionSize = 40;
+  /// La place qu'un bouton de page occupe vraiment. Un [FloraIconButton] est
+  /// rond de 40 points, mais [Pressable] lui garantit les 44 des HIG —
+  /// `kMinTapTarget` — et c'est cette taille-là qui compte ici : la colonne
+  /// doit savoir ce qu'il lui reste avant de se donner une hauteur, faute de
+  /// pouvoir mesurer ses enfants.
+  static const double _actionSize = kMinTapTarget;
 
   /// La largeur de la colonne. Avec ses 6 points de marge intérieure, chaque
   /// onglet reçoit 52 points de large : au-delà des 44 exigés.
@@ -220,55 +223,74 @@ class FloraTabRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.md, Space.md, _edgeGap, Space.md),
-      // `widthFactor: 1` fait ici ce que `heightFactor` fait pour la barre du
-      // bas : la colonne épouse sa pilule en largeur et ne se centre que dans
-      // la hauteur.
-      child: Center(
-        widthFactor: 1,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            // Ce que les boutons de page prendront, gaps compris. Les onglets
-            // se contentent du reste : dans une fenêtre courte — un pliable
-            // fermé et couché —, ils se resserrent plutôt que de déborder.
-            final placeDesBoutons = actions.isEmpty
-                ? 0.0
-                : actions.length * _actionSize + (actions.length - 1) * Space.xs + Space.md;
-            final voulu = 12 + _slot * tabs.length;
-            final reste = constraints.maxHeight - placeDesBoutons;
-            final hauteur = constraints.hasBoundedHeight ? math.min(voulu, math.max(0.0, reste)) : voulu;
-            final pilule = ClayBox(
-              color: c.surface,
-              shape: const ClayShape.pill(),
-              width: _width,
-              height: hauteur,
-              padding: const EdgeInsets.all(6),
-              child: _TabStrip(
-              axis: Axis.vertical,
-              showLabels: false,
-              tabs: tabs,
-              index: index,
-              labelLines: 1,
-                onSelect: (i) {
-                  if (i != index) Haptics.selection();
-                  onSelect(i);
-                },
+      // En bas, la colonne flotte *dans* l'encart du système comme la pilule
+      // du bas le fait : l'indicateur d'accueil est au milieu, la colonne au
+      // bord droit, et vingt points les dégagent l'un de l'autre.
+      padding: EdgeInsets.fromLTRB(
+        Space.md,
+        Space.md,
+        _edgeGap,
+        math.max(Space.md, math.min(MediaQuery.paddingOf(context).bottom, FloraTabBar._floatingGap)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Ce que les boutons de page prendront, l'écart compris. Les onglets
+          // se contentent du reste : dans une fenêtre courte — un pliable
+          // fermé et couché —, ils se resserrent plutôt que de déborder.
+          final placeDesBoutons = actions.isEmpty
+              ? 0.0
+              : actions.length * _actionSize + (actions.length - 1) * Space.xs + Space.md;
+          final voulu = 12 + _slot * tabs.length;
+          final dispo = constraints.hasBoundedHeight ? constraints.maxHeight : double.infinity;
+          final hauteur = dispo.isFinite ? math.min(voulu, math.max(0.0, dispo - placeDesBoutons)) : voulu;
+
+          final colonne = Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClayBox(
+                color: c.surface,
+                shape: const ClayShape.pill(),
+                width: _width,
+                height: hauteur,
+                padding: const EdgeInsets.all(6),
+                child: _TabStrip(
+                  axis: Axis.vertical,
+                  showLabels: false,
+                  tabs: tabs,
+                  index: index,
+                  labelLines: 1,
+                  onSelect: (i) {
+                    if (i != index) Haptics.selection();
+                    onSelect(i);
+                  },
+                ),
               ),
-            );
-            if (actions.isEmpty) return pilule;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                pilule,
+              if (actions.isNotEmpty) ...[
                 const SizedBox(height: Space.md),
                 for (final (i, action) in actions.indexed) ...[
                   if (i > 0) const SizedBox(height: Space.xs),
                   action,
                 ],
               ],
-            );
-          },
-        ),
+            ],
+          );
+          if (!dispo.isFinite) return colonne;
+
+          // C'est la **pilule** qui est centrée dans la hauteur, pas le groupe :
+          // la navigation ne doit pas se déplacer d'un onglet à l'autre. Sans
+          // ça, quatre boutons la poussaient assez haut pour qu'elle passe
+          // sous l'heure du système. Les boutons pendent en dessous, et le
+          // groupe ne remonte que s'ils manquent de place en bas.
+          final centre = math.max(0.0, (dispo - hauteur) / 2);
+          final debord = math.max(0.0, centre + hauteur + placeDesBoutons - dispo);
+          // `max` n'est pas un détail : une colonne qui épouse son contenu se
+          // ferait recentrer par la rangée qui la porte, et le décalage
+          // calculé ici s'ajouterait à ce recentrage.
+          return Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [SizedBox(height: math.max(0.0, centre - debord)), colonne],
+          );
+        },
       ),
     );
   }

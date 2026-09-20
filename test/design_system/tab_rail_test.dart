@@ -28,6 +28,7 @@ Future<void> _pumpRail(
   Size size = const Size(669, 951),
   double rightInset = 0,
   int index = 0,
+  int actions = 0,
   ValueChanged<int>? onSelect,
 }) async {
   await tester.binding.setSurfaceSize(size);
@@ -46,7 +47,21 @@ Future<void> _pumpRail(
           body: Row(
             children: [
               const Expanded(child: SizedBox.expand(key: Key('contenu'))),
-              FloraTabRail(tabs: _tabs, index: index, onSelect: onSelect ?? (_) {}),
+              FloraTabRail(
+                tabs: _tabs,
+                index: index,
+                onSelect: onSelect ?? (_) {},
+                actions: [
+                  for (var i = 0; i < actions; i++)
+                    // La vraie pièce : 40 points de rond, 44 de cible.
+                    FloraIconButton(
+                      key: ValueKey('action$i'),
+                      icon: CupertinoIcons.plus,
+                      semanticLabel: 'action $i',
+                      onPressed: () {},
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -172,6 +187,37 @@ void main() {
       // Elle descend : elle ne s'étire pas, et elle ne part pas de côté.
       expect(arrivee.height, moreOrLessEquals(depart.height, epsilon: 0.5));
       expect(arrivee.center.dx, moreOrLessEquals(depart.center.dx, epsilon: 0.5));
+    });
+
+    testWidgets('la pilule ne bouge pas quand la page change de boutons', (tester) async {
+      // C'est de la navigation : elle doit rester sous le même doigt d'un
+      // onglet à l'autre. Centrer le groupe entier la faisait remonter à
+      // chaque bouton de plus — assez haut, à quatre, pour passer sous
+      // l'heure du système.
+      await _pumpRail(tester, actions: 0);
+      final nue = _pill(tester);
+      await _pumpRail(tester, actions: 2);
+      expect(_pill(tester).top, moreOrLessEquals(nue.top, epsilon: 0.5));
+      await _pumpRail(tester, actions: 4);
+      expect(_pill(tester).top, moreOrLessEquals(nue.top, epsilon: 0.5));
+    });
+
+    testWidgets('et dans une fenêtre trop courte pour tout centrer, le groupe remonte sans déborder', (tester) async {
+      // L'écran extérieur du Duo, onglet Plantes : la pilule et quatre
+      // boutons ne tiennent plus en gardant la pilule au milieu. Le groupe
+      // remonte de ce qu'il faut, et pas d'un point de plus.
+      await _pumpRail(tester, size: const Size(466, 678), actions: 4);
+      expect(tester.takeException(), isNull);
+      final bas = tester.getRect(find.byKey(const ValueKey('action3'))).bottom;
+      expect(bas, lessThanOrEqualTo(678));
+    });
+
+    testWidgets('les boutons pendent sous la pilule', (tester) async {
+      await _pumpRail(tester, actions: 4);
+      final pilule = _pill(tester);
+      for (var i = 0; i < 4; i++) {
+        expect(tester.getRect(find.byKey(ValueKey('action$i'))).top, greaterThan(pilule.bottom));
+      }
     });
 
     testWidgets('dans une fenêtre courte, la colonne se resserre au lieu de déborder', (tester) async {
