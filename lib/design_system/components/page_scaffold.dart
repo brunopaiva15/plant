@@ -423,6 +423,33 @@ class FloraPage extends StatelessWidget {
       return bottom == null ? scroller : ScrollFade(child: scroller);
     }
     if (isCupertino(context)) {
+      // Sur iOS, la barre est celle d'UIKit : le titre au milieu, le retour à
+      // gauche, l'action à droite. C'est le même titre centré qu'avant, à
+      // ceci près que le système le dessine — et qu'il sait le ranger dans la
+      // bande verticale de l'iPhone Duo, ce qu'une barre à nous ne peut pas.
+      //
+      // `describe` rend `null` dès qu'un bouton lui échappe — une action en
+      // toutes lettres, par exemple —, et la page garde alors sa barre.
+      final natif = NativeShell.isSupported
+          ? NativeActions.describe(<Widget>[?_impliedBackButton(context)], <Widget>[?trailing])
+          : null;
+      // Sans barre à nous, le décalage du haut vient de la marge sûre, que le
+      // contrôleur de navigation d'UIKit a déjà augmentée de sa hauteur.
+      final corps = Builder(
+        builder: (ctx) => SafeArea(
+          top: false,
+          bottom: false,
+          child: Column(children: [Expanded(child: body(MediaQuery.paddingOf(ctx).top)), ?bottom]),
+        ),
+      );
+      if (natif != null) {
+        return NativeActions(
+          title: title,
+          leading: natif.leading,
+          actions: natif.actions,
+          child: CupertinoPageScaffold(backgroundColor: c.canvas, child: corps),
+        );
+      }
       return CupertinoPageScaffold(
         backgroundColor: c.canvas,
         navigationBar: CupertinoNavigationBar(
@@ -434,13 +461,7 @@ class FloraPage extends StatelessWidget {
           heroTag: 'page-$title',
         ),
         // La barre est translucide : le contenu défile dessous, décalé de sa hauteur.
-        child: Builder(
-          builder: (ctx) => SafeArea(
-            top: false,
-            bottom: false,
-            child: Column(children: [Expanded(child: body(MediaQuery.paddingOf(ctx).top)), ?bottom]),
-          ),
-        ),
+        child: corps,
       );
     }
     return Scaffold(

@@ -243,9 +243,33 @@ racine : tant qu'il reste une route au-dessus de la première, les deux barres
 s'effacent. Les pages des branches d'onglets ne passent pas par là, elles ont
 leur propre navigateur, et c'est bien la coquille qu'on regarde alors.
 
-Ce qui reste à faire : le bouton retour, le placement des actions proéminentes
-(`pinnedTrailingGroup`), et les marges sûres rendues par le natif plutôt que
-mesurées.
+Le **bouton retour** part avec le reste : c'était déjà un `FloraIconButton` à
+chevron, il se décrit comme les autres et va à gauche. Le geste de balayage
+reste celui de Flutter, qui possède la pile de routes.
+
+L'**ajout** est marqué proéminent, et iOS le garde visible quand la bande
+déborde au lieu de le replier dans le menu — `pinnedTrailingGroup`, qui
+n'existe pas avant iOS 26 ; sans lui l'action reste un bouton ordinaire.
+C'est l'ajout et pas un autre parce qu'il est l'action principale d'Auxine
+partout où elle est offerte.
+
+Trois gabarits cèdent désormais leur barre :
+
+| gabarit | ce qui part |
+|---|---|
+| `LargeTitlePage` | le bouton de tête, le retour, les actions. Le grand titre reste à Flutter |
+| `FloraPage` | le retour, l'action, **et le titre** — il était centré et petit, c'est exactement ce qu'`UINavigationItem.title` dessine |
+| la fiche plante | le retour, le cœur, le menu. Ils flottaient sur la photo ; ce sont des commandes, et iOS les range comme telles |
+
+Ce qui reste : les pages qui dessinent leur propre chrome sans passer par ces
+gabarits — un scanner, une feuille —, et qui gardent leurs boutons. Elles
+n'ont pas de barre, donc rien à céder ; la chrome native s'efface pour elles.
+
+Et les marges sûres : elles viennent de la propagation d'UIKit, que les
+contraintes de `heberger` ont remise d'aplomb. Y ajouter un canal qui les
+calculerait à part créerait une seconde source de vérité capable de
+contredire la première — à ne faire que si un relevé montre qu'elle se
+trompe.
 
 ## La fenêtre : téléphone, tablette, pliable (`app/window.dart`)
 
