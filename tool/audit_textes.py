@@ -97,12 +97,17 @@ LONGUEUR = 140          # une aide en ligne tient en deçà
 CHAPEAU = 220           # un chapeau d'écran a droit à davantage
 PHRASES = 2             # au-delà, l'aide devient un paragraphe
 
-# Le consentement et la confidentialité ont droit à trois phrases et au budget
-# d'un chapeau (docs/06, « Les textes », règle 3) : chaque phrase y porte une
+# Ce qui n'est pas de la chrome d'interface se lit posément, et tient au budget
+# d'un chapeau (220) plutôt qu'à celui d'une aide en ligne (140) : le texte
+# d'une page d'accueil, seul à l'écran, et les blocs de référence de la fiche
+# d'entretien — le risque d'une eau, le détail d'une humidité, la période de
+# repos —, qui forment un document.
+CHAPEAU_DE_PAGE = re.compile(r'^care\w*(Risk|Detail)$|^careRestNote$|^onb\w*Body$')
+
+# Le consentement et la confidentialité ont droit à trois phrases et au même
+# budget (docs/06, « Les textes », règle 3) : chaque phrase y porte une
 # garantie distincte — ce qui part, qui peut le lire, ce qu'il advient si l'on
 # refuse. Une clé ne s'ajoute ici que si elle demande un consentement.
-REFERENCE = re.compile(r'^care\w*(Risk|Detail)$|^careRestNote$')
-
 CONSENTEMENT = frozenset({
     'irisFeedbackHint',
     'irisFeedbackAskBody',
@@ -134,7 +139,7 @@ def defauts(locale: str, cle: str, texte: str) -> list[str]:
         trouves.append('apostrophe-courbe')
     if NOMBRES[locale].search(nu):
         trouves.append('nombre-en-lettres')
-    consentement = cle in CONSENTEMENT or REFERENCE.match(cle) is not None
+    consentement = cle in CONSENTEMENT or CHAPEAU_DE_PAGE.match(cle) is not None
     if len(nu) > CHAPEAU:
         trouves.append('phrase-tres-longue')
     elif len(nu) > LONGUEUR and not consentement:

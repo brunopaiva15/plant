@@ -1535,7 +1535,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbPlaceBody =>
-      'For the weather and outdoor watering. A city is enough, the exact position is not stored.';
+      'For the weather and outdoor watering. A city is enough: your exact position is not stored.';
 
   @override
   String get useMyLocation => 'Use my location';
@@ -1555,7 +1555,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Apple Home and Google Home sensors give the room\'s temperature and humidity. Advice and diagnoses for indoor plants take them into account. The reading stays in the app.';
+      'Apple Home and Google Home sensors give the temperature and humidity of your rooms. Indoor advice and diagnoses take them into account, and the reading stays in the app.';
 
   @override
   String get homeClimate => 'Home sensors';
@@ -4959,7 +4959,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbGardenBody =>
-      'Every watering and repotting is dated and filed with the plant.';
+      'The app dates every watering and repotting, and files them with the plant.';
 
   @override
   String onbIrisTitle(String name) {
@@ -4968,7 +4968,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Plant unknown to Iris: the search continues online.';
+      'If Iris does not know the plant, the search continues online.';
 
   @override
   String get onbPrivacyTitle => 'Everything stays on your phone';
@@ -5005,7 +5005,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsNewIrisOfflineBody =>
-      'Recognition stays local: nothing leaves without your say-so, and the online fallback is one switch away.';
+      'Recognition stays local: nothing leaves without your say-so, and you can turn the online fallback off.';
 
   @override
   String get whatsNewIrisDoubtTitle => 'Doubt flagged';
@@ -5062,7 +5062,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportOffer =>
-      'If you would still like to help the developer, a one-off purchase is enough.';
+      'To help the developer, a one-off purchase is enough.';
 
   @override
   String get supportOnce => 'One time only';
@@ -5149,7 +5149,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finderStepSafety => 'Pets or children?';
 
   @override
-  String get finderStepSafetyHint => 'Many houseplants are toxic when chewed.';
+  String get finderStepSafetyHint =>
+      'Many houseplants are toxic if a pet or a child chews them.';
 
   @override
   String get finderSafetyYes => 'Yes, non-toxic only';
@@ -5172,7 +5173,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finderEmptySubtitle =>
-      'No species in the catalogue matches all the criteria. Change an answer or widen the plant types.';
+      'No species in the catalogue ticks every criterion. Change an answer or widen the plant types.';
 
   @override
   String get finderRestart => 'Start over';

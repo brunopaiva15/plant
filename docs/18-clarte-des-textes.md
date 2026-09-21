@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 6 livrés**, lots 7 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 7 livrés**, lots 8 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -477,7 +477,25 @@ Les 62 `careTip…` explicatives ne sont pas dans ce lot. Les libellés courts
 
 ### Lot 7 — La découverte, l'accueil, le soutien (111 clés, 36 explicatives)
 
+> **Livré.** 51 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 19 clés signalées à 0. `flutter gen-l10n` passé, tests et
+> `flutter analyze` verts.
+
 Préfixes `onb…`, `whatsNew…`, `support…`, `about…`, `finder…`.
+
+C'est le lot où le registre pesait le plus : l'accueil, la première chose
+qu'on lit, vouvoyait d'un bout à l'autre en allemand (« Ihre Stadt », « Ihr
+Vorname », « Ein Konto sichert Ihre Daten ») et en italien (« La vostra
+città », « delle vostre piante », « il vostro ID Apple »). Quinze chaînes
+passent au *du* et au *tu* — une bonne part du lot 11 se fait ici.
+
+**L'italien avait un troisième registre.** `finderAiBody` disait « dalle sue
+risposte […] che aggiunge qui », la forme de politesse *lei*, seule de son
+espèce dans les 1 851 clés. Elle passe au *tu* comme le reste.
+
+Un texte de page d'accueil est seul à l'écran : c'est un chapeau, pas une aide
+en ligne. `tool/audit_textes.py` juge donc les `onb…Body` au budget de 220,
+comme les blocs de référence de la fiche d'entretien.
 
 | Clé | Avant | Après |
 |---|---|---|
@@ -627,7 +645,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 4 ✓ | Identification, Iris | 84 | 21 | **livré** — porte trois consentements |
 | 5 ✓ | Diagnostic, encyclopédie | 138 | 23 | **livré** |
 | 6 ✓ | Fiches d'entretien | 303 | 117 | **livré** — volumineux mais déjà propre |
-| 7 | Découverte, soutien | 111 | 36 | première impression |
+| 7 ✓ | Découverte, soutien | 111 | 36 | **livré** — première impression |
 | 8 | Compte, partage | 132 | 35 | |
 | 9 | Données, hors-ligne | 74 | 26 | |
 | 10 | Jardin au jour le jour | 575 | 69 | libellés courts, passe rapide |

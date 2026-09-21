@@ -2805,7 +2805,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbPlaceBody.
   ///
   /// In fr, this message translates to:
-  /// **'Pour la météo et l\'arrosage en extérieur. Une ville suffit, la position exacte n\'est pas conservée.'**
+  /// **'Pour la météo et l\'arrosage en extérieur. Une ville suffit : votre position exacte n\'est pas conservée.'**
   String get onbPlaceBody;
 
   /// No description provided for @useMyLocation.
@@ -2841,7 +2841,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbHomeBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les capteurs d\'Apple Maison et de Google Home donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. La mesure ne quitte pas l\'application.'**
+  /// **'Les capteurs Apple Maison et Google Home donnent la température et l\'humidité de vos pièces. Les conseils et les diagnostics d\'intérieur en tiennent compte, et la mesure ne quitte pas l\'application.'**
   String get onbHomeBody;
 
   /// No description provided for @homeClimate.
@@ -3153,7 +3153,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbAccountBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un compte sauvegarde vos données et permet de partager un jardin. Connexion avec votre identifiant Apple.'**
+  /// **'Un compte sauvegarde vos données et vous permet de partager un jardin. Connectez-vous avec votre identifiant Apple.'**
   String get onbAccountBody;
 
   /// No description provided for @notificationAskTitle.
@@ -8577,7 +8577,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbGardenBody.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.'**
+  /// **'L\'application date chaque arrosage et chaque rempotage, et les range avec la plante.'**
   String get onbGardenBody;
 
   /// No description provided for @onbIrisTitle.
@@ -8589,7 +8589,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbIrisBody.
   ///
   /// In fr, this message translates to:
-  /// **'Plante inconnue d\'Iris : la recherche continue en ligne.'**
+  /// **'Si Iris ne connaît pas la plante, la recherche continue en ligne.'**
   String get onbIrisBody;
 
   /// No description provided for @onbPrivacyTitle.
@@ -8643,7 +8643,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisSpeciesBody.
   ///
   /// In fr, this message translates to:
-  /// **'Des plantes d\'intérieur plus rares s\'ajoutent au catalogue.'**
+  /// **'Le catalogue accueille des plantes d\'intérieur plus rares.'**
   String get whatsNewIrisSpeciesBody;
 
   /// No description provided for @whatsNewIrisOfflineTitle.
@@ -8655,7 +8655,7 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIrisOfflineBody.
   ///
   /// In fr, this message translates to:
-  /// **'La reconnaissance reste locale : rien ne part sans votre accord, et le repli en ligne se coupe d\'un interrupteur.'**
+  /// **'La reconnaissance reste locale : rien ne part sans votre accord, et vous pouvez couper le repli en ligne.'**
   String get whatsNewIrisOfflineBody;
 
   /// No description provided for @whatsNewIrisDoubtTitle.
@@ -8751,7 +8751,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportOffer.
   ///
   /// In fr, this message translates to:
-  /// **'Si vous souhaitez néanmoins aider le développeur, un achat unique suffit.'**
+  /// **'Pour aider le développeur, un achat unique suffit.'**
   String get supportOffer;
 
   /// No description provided for @supportOnce.
@@ -8919,7 +8919,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderStepSafetyHint.
   ///
   /// In fr, this message translates to:
-  /// **'Beaucoup de plantes d\'intérieur sont toxiques si on les mordille.'**
+  /// **'Beaucoup de plantes d\'intérieur sont toxiques si un animal ou un enfant les mordille.'**
   String get finderStepSafetyHint;
 
   /// No description provided for @finderSafetyYes.
@@ -8961,7 +8961,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderEmptySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune espèce du catalogue ne correspond à tous les critères. Modifiez une réponse ou élargissez les genres de plantes.'**
+  /// **'Aucune espèce du catalogue ne coche tous les critères. Modifiez une réponse ou élargissez les genres de plantes.'**
   String get finderEmptySubtitle;
 
   /// No description provided for @finderRestart.
@@ -9153,7 +9153,7 @@ abstract class AppLocalizations {
   /// No description provided for @finderAiBody.
   ///
   /// In fr, this message translates to:
-  /// **'Recherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.'**
+  /// **'Recherche hors catalogue, à partir de vos réponses et de ce que vous ajoutez ici.'**
   String get finderAiBody;
 
   /// No description provided for @finderPhotoSource.

@@ -1534,11 +1534,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingSubtitle => 'Mit oder ohne Foto hinzufügen.';
 
   @override
-  String get onbPlaceTitle => 'Ihre Stadt';
+  String get onbPlaceTitle => 'Deine Stadt';
 
   @override
   String get onbPlaceBody =>
-      'Für Wetter und Gießen im Freien. Eine Stadt genügt, die genaue Position wird nicht gespeichert.';
+      'Für Wetter und Gießen im Freien. Eine Stadt genügt: Deine genaue Position wird nicht gespeichert.';
 
   @override
   String get useMyLocation => 'Meinen Standort verwenden';
@@ -1558,7 +1558,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Sensoren von Apple Home und Google Home liefern Temperatur und Luftfeuchtigkeit des Raums. Tipps und Diagnosen für Zimmerpflanzen berücksichtigen sie. Der Messwert bleibt in der App.';
+      'Sensoren von Apple Home und Google Home liefern Temperatur und Luftfeuchtigkeit deiner Räume. Tipps und Diagnosen für drinnen berücksichtigen sie, und der Messwert bleibt in der App.';
 
   @override
   String get homeClimate => 'Sensoren im Zuhause';
@@ -1736,7 +1736,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get askNameTitle => 'Ihr Vorname';
+  String get askNameTitle => 'Dein Vorname';
 
   @override
   String get askNameSubtitle => 'Später im Profil änderbar.';
@@ -1746,7 +1746,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbAccountBody =>
-      'Ein Konto sichert Ihre Daten und ermöglicht das Teilen eines Gartens. Anmeldung mit Ihrer Apple-ID.';
+      'Ein Konto sichert deine Daten und lässt dich einen Garten teilen. Melde dich mit deiner Apple-ID an.';
 
   @override
   String get notificationAskTitle => 'Tägliche Erinnerung';
@@ -4969,7 +4969,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbGardenBody =>
-      'Jedes Gießen, jedes Umtopfen wird datiert und bei der Pflanze abgelegt.';
+      'Die App datiert jedes Gießen und Umtopfen und legt es bei der Pflanze ab.';
 
   @override
   String onbIrisTitle(String name) {
@@ -4978,7 +4978,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Iris unbekannte Pflanze: die Suche geht online weiter.';
+      'Kennt Iris die Pflanze nicht, geht die Suche online weiter.';
 
   @override
   String get onbPrivacyTitle => 'Alles bleibt auf deinem Handy';
@@ -5073,7 +5073,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get supportOffer =>
-      'Wenn Sie den Entwickler dennoch unterstützen möchten, genügt ein einmaliger Kauf.';
+      'Wenn du den Entwickler unterstützen möchtest, genügt ein einmaliger Kauf.';
 
   @override
   String get supportOnce => 'Nur einmal';
@@ -5090,7 +5090,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get supportThanksTitle => 'Danke';
 
   @override
-  String get supportThanksBody => 'Ihre Unterstützung wurde gespeichert.';
+  String get supportThanksBody => 'Deine Unterstützung wurde gespeichert.';
 
   @override
   String get supportUnavailable =>
@@ -5146,7 +5146,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get finderStepEffort => 'Wie viel Pflege?';
 
   @override
-  String get finderStepEffortHint => 'Wie oft Sie gießen können.';
+  String get finderStepEffortHint => 'Wie oft du gießen kannst.';
 
   @override
   String get finderEffortForgiving => 'Gelegentliches Gießen';
@@ -5162,7 +5162,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get finderStepSafetyHint =>
-      'Viele Zimmerpflanzen sind giftig, wenn daran geknabbert wird.';
+      'Viele Zimmerpflanzen sind giftig, wenn ein Tier oder ein Kind daran knabbert.';
 
   @override
   String get finderSafetyYes => 'Ja, nur ungiftige';
@@ -5185,7 +5185,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get finderEmptySubtitle =>
-      'Keine Art im Katalog erfüllt alle Kriterien. Ändern Sie eine Antwort oder erweitern Sie die Pflanzenarten.';
+      'Keine Art im Katalog erfüllt alle Kriterien. Ändere eine Antwort oder erweitere die Pflanzenarten.';
 
   @override
   String get finderRestart => 'Von vorne';
@@ -5294,7 +5294,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get finderAiBody =>
-      'Suche über den Katalog hinaus, anhand Ihrer Antworten und dem, was Sie hier ergänzen.';
+      'Suche über den Katalog hinaus, anhand deiner Antworten und dem, was du hier ergänzt.';
 
   @override
   String get finderPhotoSource => 'Fotos: GBIF-Beobachtungen, frei lizenziert.';
@@ -5303,7 +5303,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onbWelcomeTitle => 'Willkommen bei Auxine';
 
   @override
-  String get onbWelcomeBody => 'Das Pflegetagebuch Ihrer Pflanzen.';
+  String get onbWelcomeBody => 'Das Pflegetagebuch deiner Pflanzen.';
 
   @override
   String get careMatchAssisted => 'Von der KI ergänzt';

@@ -1537,7 +1537,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbPlaceBody =>
-      'Pour la météo et l\'arrosage en extérieur. Une ville suffit, la position exacte n\'est pas conservée.';
+      'Pour la météo et l\'arrosage en extérieur. Une ville suffit : votre position exacte n\'est pas conservée.';
 
   @override
   String get useMyLocation => 'Utiliser ma position';
@@ -1557,7 +1557,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbHomeBody =>
-      'Les capteurs d\'Apple Maison et de Google Home donnent la température et l\'humidité de la pièce. Les conseils et les diagnostics des plantes d\'intérieur en tiennent compte. La mesure ne quitte pas l\'application.';
+      'Les capteurs Apple Maison et Google Home donnent la température et l\'humidité de vos pièces. Les conseils et les diagnostics d\'intérieur en tiennent compte, et la mesure ne quitte pas l\'application.';
 
   @override
   String get homeClimate => 'Capteurs de la maison';
@@ -1746,7 +1746,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbAccountBody =>
-      'Un compte sauvegarde vos données et permet de partager un jardin. Connexion avec votre identifiant Apple.';
+      'Un compte sauvegarde vos données et vous permet de partager un jardin. Connectez-vous avec votre identifiant Apple.';
 
   @override
   String get notificationAskTitle => 'Rappel quotidien';
@@ -4987,7 +4987,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbGardenBody =>
-      'Chaque arrosage, chaque rempotage est daté et rangé avec la plante.';
+      'L\'application date chaque arrosage et chaque rempotage, et les range avec la plante.';
 
   @override
   String onbIrisTitle(String name) {
@@ -4996,7 +4996,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Plante inconnue d\'Iris : la recherche continue en ligne.';
+      'Si Iris ne connaît pas la plante, la recherche continue en ligne.';
 
   @override
   String get onbPrivacyTitle => 'Tout reste sur votre téléphone';
@@ -5027,14 +5027,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get whatsNewIrisSpeciesBody =>
-      'Des plantes d\'intérieur plus rares s\'ajoutent au catalogue.';
+      'Le catalogue accueille des plantes d\'intérieur plus rares.';
 
   @override
   String get whatsNewIrisOfflineTitle => 'Toujours sur l\'appareil';
 
   @override
   String get whatsNewIrisOfflineBody =>
-      'La reconnaissance reste locale : rien ne part sans votre accord, et le repli en ligne se coupe d\'un interrupteur.';
+      'La reconnaissance reste locale : rien ne part sans votre accord, et vous pouvez couper le repli en ligne.';
 
   @override
   String get whatsNewIrisDoubtTitle => 'Doute signalé';
@@ -5092,7 +5092,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get supportOffer =>
-      'Si vous souhaitez néanmoins aider le développeur, un achat unique suffit.';
+      'Pour aider le développeur, un achat unique suffit.';
 
   @override
   String get supportOnce => 'Une seule fois';
@@ -5181,7 +5181,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get finderStepSafetyHint =>
-      'Beaucoup de plantes d\'intérieur sont toxiques si on les mordille.';
+      'Beaucoup de plantes d\'intérieur sont toxiques si un animal ou un enfant les mordille.';
 
   @override
   String get finderSafetyYes => 'Oui, sans risque de préférence';
@@ -5204,7 +5204,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get finderEmptySubtitle =>
-      'Aucune espèce du catalogue ne correspond à tous les critères. Modifiez une réponse ou élargissez les genres de plantes.';
+      'Aucune espèce du catalogue ne coche tous les critères. Modifiez une réponse ou élargissez les genres de plantes.';
 
   @override
   String get finderRestart => 'Recommencer';
@@ -5312,7 +5312,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get finderAiBody =>
-      'Recherche hors du catalogue, à partir de vos réponses et de ce que vous ajoutez ici.';
+      'Recherche hors catalogue, à partir de vos réponses et de ce que vous ajoutez ici.';
 
   @override
   String get finderPhotoSource =>
