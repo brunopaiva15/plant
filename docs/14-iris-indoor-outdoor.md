@@ -207,7 +207,41 @@ vérifiés**.
 | PlantNet-300K MobileNetV3-Small | 1 081 espèces, flore sauvage d'Europe | **non** — 7,4 % de recouvrement, 93 % de gros plans (§ 12.8 de `docs/09`) |
 | `domai-tb/OpenPlants-…-ViT-Base-Patch16-224` | ~97 M paramètres, ~14 000 espèces, GBIF/iNat, Apache 2.0 | **pas embarquable**, et 14 000 sorties rejouent les 10,2 points du § 6.7 bis |
 | `imageomics/bioclip-2.5-vith14` | le teacher, ~630 M paramètres | **pas embarquable** ; 79,9 img/s sur une RTX 2070 Super |
+| `litert-community/PlantNet-300K-ResNet18-LiteRT` | ResNet18, 1 081 espèces, 224 px, 47 Mo fp16, Apache-2.0 | **à mesurer, mais dehors seulement** |
 | **`crazedcodernate/bioclip-2.5-mobile-fastvit`** | FastViT `sa12`, **11,6 M**, sortie 1 024 d, MIT, 23,8 Mo ONNX fp16 | **à mesurer** — c'est l'étape 5 déjà faite |
+
+**Le quatrième est le seul directement embarquable.** LiteRT *est* TFLite :
+`tflite_flutter`, déjà lié, le charge sans conversion. Latences annoncées :
+0,90 ms sur NPU Snapdragon, ~16 ms sur GPU Pixel 8a, 34 ms sur CPU Raspberry
+Pi 5 — contre la seconde d'Iris 9 à 320 px. L'argument du coût de calcul, qui
+écarte les trois précédents, ne s'applique pas à lui.
+
+Le § 12.8 de `docs/09` écrivait que les poids du 300K sont « des ResNet18
+PyTorch, rien de réutilisable pour un MobileNetV3 TensorFlow ». C'était vrai
+du **pré-entraînement**, et ça le reste ; ce n'est plus vrai de
+l'**embarquement**.
+
+Restent trois réserves et un vrai doute :
+
+- **47 Mo contre les 9,0 Mo d'Iris 9**, pour un domaine minoritaire ;
+- son entrée est déclarée **NCHW** `1,3,224,224`, quand `tflite_plant_model.dart`
+  nourrit du NHWC. À vérifier avant toute mesure : c'est le genre d'écart qui
+  rend un modèle silencieusement faux plutôt que cassé (§ 6.2) ;
+- **aucun top-1 publié** sur la carte du modèle.
+
+**Le doute, lui, porte sur le dehors.** Iris 9 y est un généraliste — le
+§ 14.6 a mesuré que le masque extérieur ne rapporte que 0,2 point — avec
+~190 images par espèce. Le 300K, c'est exactement la flore sauvage d'Europe
+de l'Ouest, à **1 040 images par espèce en médiane** (§ 12.8). Sur une photo
+de massif, il pourrait battre Iris 9 sur les 108 espèces communes. Le § 12.8
+ne répond pas à cette question : il jugeait une **source de jeu**, pas un
+second avis à l'inférence.
+
+La mesure qui trancherait est celle du dépôt, à armes égales : les deux
+modèles sur les mêmes images de la tranche `outdoor` du banc, restreintes aux
+espèces que les deux connaissent. Si le ResNet18 gagne là, un second avis
+conditionné au lieu extérieur devient défendable — et c'est le seul cas où
+ajouter un modèle à l'application se discute.
 
 **Pourquoi les trois premiers ne règlent rien.** Ce qu'Iris rate, c'est neuf
 fois sur dix une espèce qu'il n'expose pas — un second classifieur n'aide que
@@ -215,7 +249,7 @@ si la réponse est dans *sa* liste. Et le repli Pl@ntNet joue déjà ce rôle
 (§ 3.1 de `docs/09`) : un modèle local n'achèterait que le hors-ligne et le
 quota.
 
-**Le quatrième est autre chose.** Distillation cosinus sur des embeddings de
+**Le cinquième est autre chose.** Distillation cosinus sur des embeddings de
 teacher cachés, FastViT, pas d'encodeur de texte sur l'appareil : c'est mot
 pour mot la recette du § 20 bis, franchie par un tiers. **La porte A tient.**
 Accord annoncé avec le teacher : top-1 71,7 %, cosinus 0,8383.
