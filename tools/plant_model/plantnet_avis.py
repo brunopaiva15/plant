@@ -38,6 +38,14 @@ avec assurance (§ 3.2).
 communes et n'apporte rien sur le reste. Si c'est vrai, c'est 47 Mo pour
 123 espèces, dont 43 seulement peuvent apparaître dans un salon.
 
+**Mesuré le 21 septembre 2026, et la prédiction était fausse par sa
+première moitié.** Sur la tranche `outdoor`, 173 images des 123 espèces
+communes : Iris 9 rend 0,8671 de top-1 en sorties masquées contre **0,7688**,
+et 0,9672 de justesse au seuil 0,70 contre **0,8504**. Il est battu de dix
+points sur son propre terrain. Et sur `ood_plante`, il ne nomme que **4,85 %**
+de ce qu'Iris ignore. Décision : on ne l'embarque pas (§ 5 de `docs/14`).
+Ce script reste, parce que la question se reposera au prochain modèle tiers.
+
 ## Les deux chaînes de prétraitement ne sont pas la même
 
 C'est le piège de ce script, et il est silencieux : une image mal préparée

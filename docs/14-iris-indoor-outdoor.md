@@ -207,7 +207,7 @@ vérifiés**.
 | PlantNet-300K MobileNetV3-Small | 1 081 espèces, flore sauvage d'Europe | **non** — 7,4 % de recouvrement, 93 % de gros plans (§ 12.8 de `docs/09`) |
 | `domai-tb/OpenPlants-…-ViT-Base-Patch16-224` | ~97 M paramètres, ~14 000 espèces, GBIF/iNat, Apache 2.0 | **pas embarquable**, et 14 000 sorties rejouent les 10,2 points du § 6.7 bis |
 | `imageomics/bioclip-2.5-vith14` | le teacher, ~630 M paramètres | **pas embarquable** ; 79,9 img/s sur une RTX 2070 Super |
-| `litert-community/PlantNet-300K-ResNet18-LiteRT` | ResNet18, 1 081 espèces, 224 px, 47 Mo fp16, Apache-2.0 | **à mesurer, mais dehors seulement** |
+| `litert-community/PlantNet-300K-ResNet18-LiteRT` | ResNet18, 1 081 espèces, 224 px, 47 Mo fp16, Apache-2.0 | **non** — mesuré, battu de 10 points dehors |
 | **`crazedcodernate/bioclip-2.5-mobile-fastvit`** | FastViT `sa12`, **11,6 M**, sortie 1 024 d, MIT, 23,8 Mo ONNX fp16 | **à mesurer** — c'est l'étape 5 déjà faite |
 
 **Le quatrième est le seul directement embarquable.** LiteRT *est* TFLite :
@@ -237,11 +237,41 @@ de massif, il pourrait battre Iris 9 sur les 108 espèces communes. Le § 12.8
 ne répond pas à cette question : il jugeait une **source de jeu**, pas un
 second avis à l'inférence.
 
-La mesure qui trancherait est celle du dépôt, à armes égales : les deux
-modèles sur les mêmes images de la tranche `outdoor` du banc, restreintes aux
-espèces que les deux connaissent. Si le ResNet18 gagne là, un second avis
-conditionné au lieu extérieur devient défendable — et c'est le seul cas où
-ajouter un modèle à l'application se discute.
+#### Mesuré le 21 septembre 2026, et la prédiction était fausse
+
+`plantnet_avis.py`, tranche `outdoor` du banc, 173 images des 123 espèces
+que les deux modèles connaissent :
+
+| | Iris 9 | PlantNet-300K |
+|---|---|---|
+| top-1, sorties masquées | **0,8671** | 0,7688 |
+| top-3 | **0,9942** | 0,8960 |
+| top-1, sorties entières | **0,7630** | 0,6821 |
+| au seuil 0,70 | 70,5 % acceptées, **0,9672** | 73,4 %, 0,8504 |
+
+Et la couverture, sur les 2 000 images de `ood_plante` — toutes hors du
+catalogue d'Iris : PlantNet en nomme **97**, soit **4,85 %**. Mille neuf cent
+trois restent perdues pour les deux.
+
+**Le doute est levé dans l'autre sens.** La prédiction écrite avant la mesure
+disait qu'il battrait Iris sur les espèces communes et n'apporterait rien
+ailleurs ; la seconde moitié est vraie, la première est fausse. Iris 9 le bat
+de **dix points** sur son propre terrain — des plantes sauvages d'Europe,
+dehors, là où PlantNet dispose de 1 040 images par espèce contre nos ~190 —
+et de **douze points de justesse** au seuil de l'application.
+
+La profondeur d'échantillonnage ne suffit donc pas à compenser ce que la v8
+avait établi : une représentation entraînée sur 991 000 images vaut mieux
+qu'un réseau entraîné sur 306 000, même sur les espèces de ce dernier.
+
+> **Une réserve, et elle joue en faveur d'Iris.** Le banc est bâti sur notre
+> corpus GBIF/iNaturalist, donc ses images ressemblent à celles qui ont
+> entraîné Iris, quand PlantNet a appris sur des photos d'utilisateurs
+> Pl@ntNet. Le terrain n'est pas parfaitement neutre. Mais dix points d'écart
+> et 4,85 % de couverture ne se renversent pas avec ça.
+
+**Décision : on ne l'embarque pas.** Quarante-sept mégaoctets pour un modèle
+battu sur sa spécialité et qui rattrape une image sur vingt.
 
 **Pourquoi les trois premiers ne règlent rien.** Ce qu'Iris rate, c'est neuf
 fois sur dix une espèce qu'il n'expose pas — un second classifieur n'aide que
