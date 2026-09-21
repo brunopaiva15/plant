@@ -400,3 +400,43 @@ La chaîne a été vérifiée de bout en bout sur l'image de la carte du modèle
 *Calendula officinalis* à 0,95, avec *Calendula stellata* en quatrième. Un
 décalage d'étiquettes aurait rendu une espèce au hasard, pas une grappe de
 genre.
+
+## La porte C : l'espace contre le softmax
+
+```bash
+python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip \
+  --iris ../../assets/model
+```
+
+La plus fondamentale des cinq portes du § 19 de `docs/14` : **nommer par la
+référence la plus proche vaut-il mieux qu'une couche de sortie apprise ?**
+Tant que ce n'est pas mesuré, la distillation des étapes 5 et 6 est un pari.
+
+Elle ne coûte presque rien, et c'est tout l'intérêt. Les images du banc sont
+des images de test, donc `bioclip.py cache` les a déjà encodées : le teacher
+n'a rien à recalculer, et classer une photo devient un produit scalaire.
+Quelques secondes de numpy, sans carte graphique.
+
+Deux lectures, comme au § 6.7 bis :
+
+- **à armes égales** — références restreintes aux classes qu'Iris expose.
+  « L'espace fait-il aussi bien que la tête apprise ? », et il part avec un
+  handicap : il n'a jamais vu nos étiquettes ;
+- **répertoire entier** — une référence par espèce du catalogue, ~5 800 au
+  lieu de 1 569. C'est ce que la tranche `ood_plante` interroge, là où Iris
+  est à zéro par construction.
+
+Le compte rendu affiche toujours combien d'images sont **nommables** par le
+jeu de références utilisé : un top-1 sans son dénominateur ne dit pas si le
+modèle s'est trompé ou n'avait aucune chance.
+
+**Aucun seuil n'est cité.** Un cosinus n'est pas une probabilité, et le 0,70
+d'Iris a été réglé sur ses sorties (§ 3.1). Top-1 et top-3 se comparent sans
+calibration ; l'autonomie est rendue sous `--temperature`, comme une courbe à
+lire, jamais comme un chiffre à publier.
+
+Trois pièges tenus par des tests : deux références d'une même espèce ne font
+qu'une classe (sinon `monstera-deliciosa#captive` compterait une bonne
+réponse comme fausse), elles sont prises **au mieux** et non additionnées
+— additionner favoriserait l'espèce qui a le plus de vues —, et une image
+absente du cache est écartée avec son compte, jamais comptée fausse.
