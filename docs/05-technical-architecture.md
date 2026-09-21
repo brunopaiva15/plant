@@ -310,10 +310,19 @@ donnait une feuille coiffée du titre et du retour de la page d'en dessous,
 poignée cachée et titre lu au travers. C'est `setNavigationBarHidden` qui la
 retire.
 
-**La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
-s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
-de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
-barres restent donc effacées tant que la coquille n'a pas déclaré ses onglets.
+**La chrome n'existe pas avant la coquille.** Au premier lancement,
+l'introduction s'ouvre sans elle : sans verrou, le contrôleur d'onglets
+montrait son onglet de départ — un rond sans nom — par-dessus, et une barre
+vide avec. Les deux barres restent donc effacées tant que la coquille n'a pas
+déclaré ses onglets.
+
+Le verrou tient des deux côtés, et il a fallu les deux. Côté Dart, la coquille
+dit ses onglets **avant** de rendre la barre : un canal livre dans l'ordre, et
+la barre ne reparaît donc que remplie. Côté natif, les deux barres partent
+cachées — le rond sans nom se voyait pendant toute l'introduction, parce que
+Dart, lui, n'avait encore rien dit du tout. L'état demandé est gardé, parce que
+`rebatir` refait les contrôleurs de navigation : neufs, ils arrivent avec leur
+barre visible, et Dart ne redit pas une chrome qui n'a pas changé.
 
 **Une page et une surcouche ne se valent pas.** Un menu d'action, une alerte,
 une feuille à hauteur de contenu ne prennent pas la place de la page : elles
@@ -337,9 +346,20 @@ navigation de Flutter : une fiche de plante, un scanner de QR code, une
 feuille d'ajout sont des routes que go_router pose par-dessus la coquille, et
 les barres natives restaient là — sur la page ouverte, avec les boutons de
 celle d'en dessous. `app/native_chrome_observer.dart` observe le navigateur
-racine : tant qu'il reste une route au-dessus de la première, les deux barres
-s'effacent. Les pages des branches d'onglets ne passent pas par là, elles ont
-leur propre navigateur, et c'est bien la coquille qu'on regarde alors.
+racine : il tient la liste des pages vivantes, et tout ce qui se trouve
+au-dessus de la plus basse efface les deux barres. Les pages des branches
+d'onglets ne passent pas par là, elles ont leur propre navigateur, et c'est
+bien la coquille qu'on regarde alors.
+
+**Une liste, et non un compteur.** Le compteur ignorait la page du bas — elle
+n'a rien en dessous, donc c'est la coquille — et se trompait à la fin de
+l'introduction : `context.go` pose la coquille **par-dessus** l'introduction,
+puis retire celle-ci d'en dessous. Le premier mouvement comptait une page de
+trop, le second ne la retirait pas faute de route en dessous, et l'application
+restait sans aucune barre jusqu'au lancement suivant — c'est le redémarrage qui
+la rendait, puisque la coquille y est la première page. Une liste dit ce qui
+reste debout quel que soit l'ordre des deux mouvements, et
+`test/app/native_chrome_observer_test.dart` rejoue la séquence.
 
 Le **bouton retour** part avec le reste : c'était déjà un `FloraIconButton` à
 chevron, il se décrit comme les autres et va à gauche. Le geste de balayage

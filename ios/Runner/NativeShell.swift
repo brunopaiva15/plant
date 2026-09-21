@@ -56,6 +56,18 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// au moment où le voile est tombé. Voir `appliquerLaChrome`.
   private var voilee = false
   private var margesVoilees: UIEdgeInsets = .zero
+  /// L'état de la chrome, tel que Dart l'a demandé en dernier.
+  ///
+  /// Les deux barres partent **cachées** : au lancement, le contrôleur
+  /// d'onglets n'a qu'un onglet de service — un rond sans nom — et Dart n'a
+  /// encore rien dit. Les montrer en attendant, c'est ce rond qu'on montre,
+  /// et c'est ce qu'on voyait pendant toute l'introduction.
+  ///
+  /// L'état est gardé parce que `rebatir` refait les contrôleurs de
+  /// navigation : neufs, ils arrivent avec leur barre visible, et Dart ne
+  /// redit pas une chrome qui n'a pas changé.
+  private var barreDemandee = false
+  private var ongletsDemandes = false
 
   static func register(with messenger: FlutterBinaryMessenger) {
     let channel = FlutterMethodChannel(name: name, binaryMessenger: messenger)
@@ -80,6 +92,7 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     shared.flutter = flutter
     shared.onglets = onglets
     // Un seul hôte au départ : Dart dira combien il en faut, et lesquels.
+    // Rien ne se montre avant qu'il l'ait dit — voir `barreDemandee`.
     shared.rebatir(titres: [""], symboles: ["circle"])
     window.rootViewController = onglets
     #if DEBUG
@@ -148,6 +161,8 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// quatre sens, parce qu'une barre rangée dans la bande verticale ne prend
   /// pas la sienne en haut.
   private func appliquerLaChrome(barre: Bool, onglets ongletsVisibles: Bool, voile: Bool) {
+    barreDemandee = barre
+    ongletsDemandes = ongletsVisibles
     if voile != voilee {
       voilee = voile
       margesVoilees = voile ? margesDeLaChrome() : .zero
@@ -212,6 +227,10 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     onglets.selectedIndex = choisi
     enEcho = false
     heberger(dans: hotes[choisi])
+    // Des contrôleurs neufs arrivent avec leurs barres visibles. Dart ne
+    // redit pas une chrome qui n'a pas changé : c'est donc ici qu'on la
+    // remet, et au lancement elle vaut « rien de visible ».
+    appliquerLaChrome(barre: barreDemandee, onglets: ongletsDemandes, voile: voilee)
   }
 
   private func choisir(_ index: Int) {

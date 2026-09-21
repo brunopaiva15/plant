@@ -171,20 +171,25 @@ abstract final class NativeShell {
   /// rien.
   static Future<void> publish({required List<NativeTab> tabs, required int selected}) async {
     if (!isSupported) return;
+    // Les onglets d'abord, la barre ensuite. Le contrôleur natif démarre avec
+    // un onglet de service — un rond sans nom —, et le montrer le temps d'une
+    // image suffit à le faire voir. Un canal de méthode livre dans l'ordre où
+    // on lui confie : la barre ne reparaît donc qu'une fois remplie.
+    final declaration = [for (final t in tabs) t.toMap()].toString();
+    Future<void>? envoi;
+    if (declaration != _derniers) {
+      _derniers = declaration;
+      _dernierChoisi = selected;
+      envoi = _invoke('setTabs', {'tabs': [for (final t in tabs) t.toMap()], 'selected': selected});
+    } else if (selected != _dernierChoisi) {
+      _dernierChoisi = selected;
+      envoi = _invoke('setSelected', selected);
+    }
     if (!_coquilleDeclaree) {
       _coquilleDeclaree = true;
       _appliquerChrome();
     }
-    final declaration = [for (final t in tabs) t.toMap()].toString();
-    if (declaration != _derniers) {
-      _derniers = declaration;
-      _dernierChoisi = selected;
-      await _invoke('setTabs', {'tabs': [for (final t in tabs) t.toMap()], 'selected': selected});
-      return;
-    }
-    if (selected == _dernierChoisi) return;
-    _dernierChoisi = selected;
-    await _invoke('setSelected', selected);
+    if (envoi != null) await envoi;
   }
 
   static String? _dernieresActions;
