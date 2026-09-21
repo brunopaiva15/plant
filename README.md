@@ -24,6 +24,7 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/12-guides-de-multiplication.md](docs/12-guides-de-multiplication.md) | Guides de multiplication : archétypes de gestes, choix du guide, rendus Blender |
 | [docs/13-care-environment-scenes.md](docs/13-care-environment-scenes.md) | Scène d'environnement idéal : diorama clay, projection des besoins, pipeline Blender |
 | [docs/17-releve-de-la-maison.md](docs/17-releve-de-la-maison.md) | Relevé de la maison au LiDAR (expérimental) : où poser une plante, modèle de lumière, canal RoomPlan, paliers |
+| [docs/18-clarte-des-textes.md](docs/18-clarte-des-textes.md) | Clarté des textes : charte de rédaction, lots de réécriture des quatre ARB, garde-fous |
 
 ## Démarrer
 ```bash
