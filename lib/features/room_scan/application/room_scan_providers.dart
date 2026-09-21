@@ -81,12 +81,15 @@ final scannedRoomProvider = FutureProvider.family<ScannedRoom?, String>((ref, sc
   return RoomPlanParser.parse(json, northOffsetDeg: scan.northOffsetDeg);
 });
 
-/// La pièce telle qu'on la juge : dehors — un relevé lié à un emplacement
-/// extérieur, balcon ou terrasse —, ses ouvertures éclairent comme des
+/// La pièce telle qu'on la juge : les fenêtres ajoutées à la main à la
+/// suite de celles du relevé, puis, dehors — un relevé lié à un emplacement
+/// extérieur, balcon ou terrasse —, les ouvertures qui éclairent comme des
 /// fenêtres ; dedans, la pièce telle quelle.
 final roomForFitProvider = Provider.family<ScannedRoom?, String>((ref, scanId) {
-  final room = ref.watch(scannedRoomProvider(scanId)).value;
-  if (room == null) return null;
+  final scanned = ref.watch(scannedRoomProvider(scanId)).value;
+  if (scanned == null) return null;
+  final markers = ref.watch(roomMarkersProvider(scanId)).value ?? const <RoomMarker>[];
+  final room = scanned.withWindows(handWindows(scanned, markers));
   final scan = (ref.watch(roomScansProvider).value ?? const []).where((s) => s.id == scanId).firstOrNull;
   final location = (ref.watch(locationsProvider).value ?? const []).where((l) => l.id == scan?.locationId).firstOrNull;
   return (location?.isOutdoor ?? false) ? room.asOutdoor() : room;
@@ -294,15 +297,19 @@ class RoomScanController extends Notifier<bool> {
       final relative = store.relativeOf(result.path!);
       final json = await store.read(relative);
       final room = json == null ? null : RoomPlanParser.parse(json, northOffsetDeg: result.northOffsetDeg);
-      final name = nameFor(room?.section);
+      // La pièce s'appelle comme l'emplacement qu'elle décrit — « Cuisine »
+      // relevée depuis la Cuisine est la Cuisine ; le type reconnu par
+      // RoomPlan ne sert de nom qu'à une pièce qui ne décrit rien.
+      final proposed = nameFor(room?.section);
+      final linked = locationId ?? _locationNamed(proposed);
       final scan = await ref.read(roomScanRepositoryProvider).create(
-            name: name,
+            name: _locationName(linked) ?? proposed,
             filePath: relative,
             capturedAt: DateTime.now(),
             northOffsetDeg: result.northOffsetDeg,
             floorAreaM2: room?.floorAreaM2 ?? 0,
             section: room?.section,
-            locationId: locationId ?? _locationNamed(name),
+            locationId: linked,
           );
       return RoomScanOutcome(scan: scan);
     } finally {
@@ -350,6 +357,10 @@ class RoomScanController extends Notifier<bool> {
     }
   }
 
+  /// Le nom d'un emplacement du jardin, quand il y en a un.
+  String? _locationName(String? locationId) =>
+      locationId == null ? null : (ref.read(locationsProvider).value ?? const <Location>[]).where((l) => l.id == locationId).firstOrNull?.name;
+
   /// L'emplacement du jardin qui porte ce nom, à la casse près ; le
   /// premier sans relevé, pour ne pas mettre deux pièces sur le même. Rien
   /// si le nom est ambigu ou inconnu : lier se fait alors à la main.
@@ -388,6 +399,16 @@ class RoomScanController extends Notifier<bool> {
     final p = room.snapToWall(at);
     await ref.read(roomScanRepositoryProvider).addMarker(scanId, RoomMarkerKind.heater, x: p.x, z: p.z);
   }
+
+  /// Une fenêtre que le relevé a manquée : le point touché et la taille
+  /// dite ; c'est [ScannedRoom.handWindowAt] qui la couche sur le mur.
+  Future<void> addWindow(String scanId, RoomPoint at, HandWindow size) async {
+    await ref.read(roomScanRepositoryProvider).addMarker(scanId, RoomMarkerKind.of(size), x: at.x, z: at.z);
+  }
+
+  /// La retirer : son repère, et ce qui tenait à son rang.
+  Future<void> removeWindow(String scanId, RoomMarker marker, int windowIndex) =>
+      ref.read(roomScanRepositoryProvider).removeWindow(marker.id, scanId: scanId, windowIndex: windowIndex);
 
   Future<void> removeMarker(String id) => ref.read(roomScanRepositoryProvider).removeMarker(id);
 

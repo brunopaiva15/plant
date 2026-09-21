@@ -2243,6 +2243,14 @@
   "roomScanCurtainDrawn": "Curtain often drawn",
   "roomScanCurtainHelp": "The scan does not detect curtains. A sheer curtain halves the light and removes direct sun; a curtain that is often drawn divides it by 3.",
   "roomScanPlace": "Place",
+  "roomScanAddWindow": "Add a window",
+  "roomScanAddWindowHelp": "The scan does not see a window behind a drawn curtain. Add it here, at its size.",
+  "roomScanTapForWindow": "Tap the plan next to the wall that holds the window.",
+  "roomScanWindowSmall": "Small window · 0.6 m",
+  "roomScanWindowStandard": "Window · 1.2 m",
+  "roomScanWindowWide": "Patio door · 2.2 m",
+  "roomScanWindowByHand": "Added by hand",
+  "roomScanRemoveWindow": "Remove this window",
   "roomScanRoomsShort": "{count, plural, =0{None} =1{1 room} other{{count} rooms}}",
   "@roomScanRoomsShort": {
     "placeholders": {

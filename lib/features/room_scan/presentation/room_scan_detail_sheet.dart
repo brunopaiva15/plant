@@ -52,18 +52,25 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
     await ref.read(roomScanRepositoryProvider).update(scan.copyWith(name: name));
   }
 
+  /// Lier la pièce à un emplacement lui donne son nom : une pièce et
+  /// l'endroit qu'elle décrit ne portent pas deux noms différents. Délier
+  /// ne renomme rien — le nom reste celui qu'elle avait.
   Future<void> _pickLocation(RoomScan scan) async {
     final choice = await showLocationPicker(context, selectedId: scan.locationId);
     if (choice == null) return;
-    await ref.read(roomScanRepositoryProvider).update(scan.copyWith(locationId: () => choice.id));
+    final location = (ref.read(locationsProvider).value ?? const <Location>[]).where((l) => l.id == choice.id).firstOrNull;
+    await ref.read(roomScanRepositoryProvider).update(scan.copyWith(name: location?.name, locationId: () => choice.id));
+    if (location != null) _name.text = location.name;
     Haptics.light();
   }
 
   /// Huit points cardinaux dans une feuille d'actions : la boussole propose,
-  /// la main confirme.
-  Future<void> _pickOrientation(RoomScan scan, ScannedRoom room, int index) async {
+  /// la main confirme. Une fenêtre que la main a ajoutée s'y retire aussi :
+  /// c'est là qu'on la regarde.
+  Future<void> _pickOrientation(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, int index) async {
     final l10n = context.l10n;
     final w = room.windows[index];
+    final byHand = handWindowMarkerAt(room, markers, index);
     await showAdaptiveActionSheet(
       context,
       title: l10n.roomScanWindowN(index + 1),
@@ -77,8 +84,43 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
               Haptics.success();
             },
           ),
+        if (byHand != null)
+          SheetAction(
+            label: l10n.roomScanRemoveWindow,
+            destructive: true,
+            onPressed: () async {
+              await ref.read(roomScanControllerProvider.notifier).removeWindow(scan.id, byHand, index);
+              Haptics.success();
+            },
+          ),
       ],
     );
+  }
+
+  /// Une fenêtre que le relevé a manquée : sa taille d'abord — c'est elle
+  /// qui fait la lumière —, puis le mur où la poser.
+  Future<void> _addWindow(RoomScan scan, ScannedRoom room, List<RoomMarker> markers) async {
+    final l10n = context.l10n;
+    await showAdaptiveActionSheet(
+      context,
+      title: l10n.roomScanAddWindow,
+      message: l10n.roomScanAddWindowHelp,
+      cancelLabel: l10n.cancel,
+      actions: [
+        for (final size in HandWindow.values)
+          SheetAction(
+            label: l10n.handWindowName(size),
+            onPressed: () => _placeWindow(scan, room, markers, size),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _placeWindow(RoomScan scan, ScannedRoom room, List<RoomMarker> markers, HandWindow size) async {
+    final at = await showRoomMarkerPlacer(context, room: room, markers: markers, kind: RoomMarkerPlacement.window, windowSize: size);
+    if (at == null || !mounted) return;
+    await ref.read(roomScanControllerProvider.notifier).addWindow(scan.id, at, size);
+    Haptics.success();
   }
 
   /// Un toucher sur un repère du plan propose de le retirer.
@@ -199,12 +241,24 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
               if (location != null && suggestion != null) RoomFillLocationRow(scan: scan, location: location, suggestion: suggestion),
             ],
           ),
-          if (room != null && room.windows.isNotEmpty) ...[
+          // Le groupe tient même sans fenêtre : c'est là qu'on ajoute celle
+          // que le relevé a manquée, et une pièce sans fenêtre est
+          // justement le cas où elle manque.
+          if (room != null) ...[
             const SizedBox(height: Space.lg),
             FloraGroup(
               header: l10n.roomScanWindows,
-              footer: l10n.roomScanOrientationHelp,
-              children: [for (var i = 0; i < room.windows.length; i++) _windowRow(scan, room, markers, i)],
+              footer: room.windows.isEmpty ? l10n.roomScanAddWindowHelp : l10n.roomScanOrientationHelp,
+              children: [
+                for (var i = 0; i < room.windows.length; i++) _windowRow(scan, room, markers, i),
+                FloraListRow(
+                  leading: const Text('🪟', style: TextStyle(fontSize: 18)),
+                  title: l10n.roomScanAddWindow,
+                  subtitle: l10n.roomScanWindowsCount(room.windows.length),
+                  chevron: true,
+                  onTap: () => _addWindow(scan, room, markers),
+                ),
+              ],
             ),
           ],
           if (room != null) ...[
@@ -295,13 +349,14 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
       title: l10n.roomScanWindowN(i + 1),
       subtitle: [
         direction == null ? l10n.roomScanWindowUnknown : '${l10n.directionName(direction)} · ${confirmed != null ? l10n.roomScanWindowConfirmed : l10n.roomScanWindowFromCompass}',
+        if (room.windows[i].byHand) l10n.roomScanWindowByHand,
         if (dressing != WindowDressing.none) l10n.dressingName(dressing),
       ].join(' · '),
       // Le rideau a son bouton : RoomPlan ne le voit pas, et il change la
       // lumière autant que l'orientation.
       trailing: FloraButton(label: l10n.roomScanCurtain, size: FloraButtonSize.small, style: FloraButtonStyle.tonal, onPressed: () => _pickDressing(scan, room, i)),
       chevron: false,
-      onTap: () => _pickOrientation(scan, room, i),
+      onTap: () => _pickOrientation(scan, room, markers, i),
     );
   }
 

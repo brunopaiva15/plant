@@ -11208,6 +11208,54 @@ abstract class AppLocalizations {
   /// **'Placer'**
   String get roomScanPlace;
 
+  /// No description provided for @roomScanAddWindow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une fenêtre'**
+  String get roomScanAddWindow;
+
+  /// No description provided for @roomScanAddWindowHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le scan ne voit pas une fenêtre derrière un rideau tiré. Ajoutez-la ici, à sa taille.'**
+  String get roomScanAddWindowHelp;
+
+  /// No description provided for @roomScanTapForWindow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez le plan près du mur qui porte la fenêtre.'**
+  String get roomScanTapForWindow;
+
+  /// No description provided for @roomScanWindowSmall.
+  ///
+  /// In fr, this message translates to:
+  /// **'Petite fenêtre · 0,6 m'**
+  String get roomScanWindowSmall;
+
+  /// No description provided for @roomScanWindowStandard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fenêtre · 1,2 m'**
+  String get roomScanWindowStandard;
+
+  /// No description provided for @roomScanWindowWide.
+  ///
+  /// In fr, this message translates to:
+  /// **'Baie vitrée · 2,2 m'**
+  String get roomScanWindowWide;
+
+  /// No description provided for @roomScanWindowByHand.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutée à la main'**
+  String get roomScanWindowByHand;
+
+  /// No description provided for @roomScanRemoveWindow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer cette fenêtre'**
+  String get roomScanRemoveWindow;
+
   /// No description provided for @roomScanRoomsShort.
   ///
   /// In fr, this message translates to:

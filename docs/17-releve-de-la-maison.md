@@ -64,6 +64,14 @@ Ce que RoomPlan ne donne pas, et qu'il faut obtenir autrement :
   prenait la largeur qu'on lui donnait et la hauteur qui va avec, ce qui sur
   un iPad mettait « Poser » hors de l'écran. Facultatif, et
   seulement au second palier.
+- **Les fenêtres qu'il manque.** RoomPlan ne voit pas une fenêtre derrière
+  un rideau tiré. La feuille du relevé en ajoute une : on choisit sa taille
+  — petite fenêtre, fenêtre, baie vitrée, chacune avec sa largeur, sa
+  hauteur et son appui —, puis on touche le plan ; elle se couche sur le mur
+  le plus proche, qui lui donne son orientation, et se voit sur le plan
+  avant d'être posée. Elle se range à la suite des fenêtres du relevé, pour
+  que leurs rangs tiennent ; la retirer fait descendre d'un cran les rangs
+  au-dessus, avec ce qui s'y accroche (orientation, rideau).
 - **La lumière réelle.** ARKit donne une estimation d'éclairement
   (`ARFrame.lightEstimate.ambientIntensity`) qui dépend de l'heure et du
   temps qu'il fait : inutilisable seule pour dire ce qu'une place reçoit à
@@ -79,8 +87,14 @@ Pour un point candidat *P* de la pièce, à hauteur de pot, et pour chaque
 fenêtre *W* :
 
 1. **Visibilité.** Le segment *P → centre de W* ne traverse aucun mur de la
-   pièce ni aucun objet plus haut que *P* (une armoire). Une fenêtre qu'on
-   ne voit pas n'éclaire pas.
+   pièce, et aucun meuble ne dépasse la visée. La visée monte : elle part du
+   pot et va au milieu de la vitre, presque toujours plus haut — un bureau,
+   une table, un lit n'arrêtent donc rien, la lumière leur passe au-dessus,
+   là où une armoire la coupe. Un meuble est comparé à la hauteur de la
+   visée là où elle entre dans son empreinte, c'est-à-dire là où elle est le
+   plus basse. Comparer sa hauteur à celle du pot, comme au premier palier,
+   rendait un bureau aussi opaque qu'un mur. Une fenêtre qu'on ne voit pas
+   n'éclaire pas.
 2. **Distance** *d* en mètres, bornée par le bas à 0,5 m, et **angle** *α*
    entre la normale intérieure de la fenêtre et *P − W*.
 3. **Orientation.** Un facteur par point cardinal, miroir dans
@@ -94,7 +108,10 @@ fenêtre *W* :
    vitre est inférieure à la portée de la tache — la hauteur du haut de la
    fenêtre au-dessus du sol, un soleil à 45°, celui d'une mi-saison à nos
    latitudes — et s'il est dans la largeur de l'ouverture, élargie de 15 %
-   de la profondeur parce que le soleil balaie. Le dernier cinquième de la
+   de la profondeur parce que le soleil balaie. Un meuble entre la vitre et le
+   point lui porte son ombre quand il dépasse le rayon qui y descend — un
+   bureau collé à la fenêtre ombre le sol derrière lui, tout en laissant
+   passer la lumière du jour. Le dernier cinquième de la
    portée est le bord de la tache. À l'est et à l'ouest, la tache ne vaut
    que le bord : le soleil n'y passe qu'une partie de la journée. Le second
    palier fait dépendre la portée de la latitude du lieu et de la saison.
@@ -185,8 +202,11 @@ room_markers   id, scan_id, kind (window_orientation | radiator | plant),
 
 `room_markers` porte ce que la personne ajoute au relevé : l'orientation
 confirmée de chaque fenêtre (`window_orientation`, une par fenêtre,
-indexée par son ordre dans le JSON), les radiateurs (palier 2), et la
-position actuelle d'une plante (palier 3). Séparer ce qui vient du capteur
+indexée par son ordre dans le JSON), les radiateurs (palier 2), la
+position actuelle d'une plante (palier 3), et les fenêtres que le relevé a
+manquées (`windowSmall`, `windowStandard`, `windowWide` — la taille est
+dans le genre, comme pour le voilage et le rideau, et la base ne porte
+aucune dimension). Séparer ce qui vient du capteur
 de ce qui vient de la main permet de refaire un relevé sans perdre les
 repères.
 
@@ -277,6 +297,11 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   n'existe pas.
 - **Fiche de la pièce relevée › « Le jardin dans cette pièce »** (palier 2) : les
   plantes du jardin classées par leur score dans cette pièce.
+
+La pièce porte le nom de l'emplacement qu'elle décrit : relevée depuis la
+fiche de la Cuisine, elle s'appelle Cuisine ; liée à un emplacement depuis
+sa feuille, elle en prend le nom. Le type reconnu par RoomPlan ne nomme
+qu'une pièce qui ne décrit aucun emplacement.
 
 Le flux du relevé est le même d'où qu'on parte (`room_scan_flow.dart`) ;
 seul change l'emplacement auquel la pièce se lie.
@@ -372,8 +397,10 @@ soi dans un jardin partagé pose la question de ce qu'on partage, qui
 n'est pas tranchée ici.
 
 **Palier 4 — affiner et garder.** Ce que RoomPlan ne voit pas et que la
-main peut dire : un voilage ou un rideau souvent tiré, par fenêtre
-(`windowSheer`, `windowDrawn` dans `room_markers`) — le voilage divise
+main peut dire : une fenêtre manquée, à sa taille (`windowSmall`,
+`windowStandard`, `windowWide`), couchée sur le mur le plus proche du
+doigt et rangée à la suite des fenêtres du relevé ; un voilage ou un rideau
+souvent tiré, par fenêtre (`windowSheer`, `windowDrawn` dans `room_markers`) — le voilage divise
 l'apport par deux et ne laisse du soleil que le bord, le rideau tiré le
 divise par trois et n'en laisse rien. Le balcon : un relevé lié à un
 emplacement extérieur est lu par `ScannedRoom.asOutdoor()`, ses ouvertures

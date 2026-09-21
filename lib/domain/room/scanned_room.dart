@@ -73,6 +73,24 @@ enum WindowDressing {
   double get factor => switch (this) { none => 1.0, sheer => 0.5, drawn => 1 / 3 };
 }
 
+/// La taille d'une fenêtre que la main ajoute, quand le relevé l'a manquée
+/// — RoomPlan ne voit pas une fenêtre derrière un rideau tiré. Le relevé ne
+/// mesure rien ici : chaque taille porte ses trois dimensions, et le genre
+/// du repère dit laquelle, comme il dit le voilage et le rideau.
+enum HandWindow {
+  small(width: 0.6, height: 0.8, sill: 1.1),
+  standard(width: 1.2, height: 1.3, sill: 0.9),
+  wide(width: 2.2, height: 2.1, sill: 0.05);
+
+  const HandWindow({required this.width, required this.height, required this.sill});
+
+  final double width;
+  final double height;
+
+  /// La hauteur de l'appui au-dessus du sol.
+  final double sill;
+}
+
 /// Une surface plane : un mur, ou ce qui s'y découpe.
 class RoomSurface {
   const RoomSurface({
@@ -85,6 +103,7 @@ class RoomSurface {
     required this.bottomY,
     this.parentId,
     this.id,
+    this.byHand = false,
   });
 
   final RoomSurfaceKind kind;
@@ -105,6 +124,10 @@ class RoomSurface {
   final double bottomY;
   final String? parentId;
   final String? id;
+
+  /// La main l'a ajoutée, le capteur ne l'a pas vue : une fenêtre derrière
+  /// un rideau tiré, que RoomPlan manque.
+  final bool byHand;
 
   double get topY => bottomY + height;
   double get area => width * height;
@@ -273,20 +296,71 @@ class ScannedRoom {
   /// Le point d'un mur le plus proche, à moins de [within] : un radiateur
   /// se pose contre un mur, et le doigt vise à côté.
   RoomPoint snapToWall(RoomPoint p, {double within = 0.5}) {
-    RoomPoint? best;
-    var bestD = within;
+    final wall = nearestWall(p);
+    if (wall == null) return p;
+    final onWall = _onWall(wall, p);
+    return (p - onWall).length < within ? onWall : p;
+  }
+
+  /// Le mur le plus proche d'un point, quelle que soit la distance ; `null`
+  /// quand la pièce n'a pas de mur.
+  RoomSurface? nearestWall(RoomPoint p) {
+    RoomSurface? best;
+    var bestD = double.infinity;
     for (final w in walls) {
-      final d = p - w.start;
-      final t = d.dot(w.along).clamp(0.0, w.width);
-      final onWall = w.start + w.along.scale(t);
-      final dist = (p - onWall).length;
+      final dist = (p - _onWall(w, p)).length;
       if (dist < bestD) {
         bestD = dist;
-        best = onWall;
+        best = w;
       }
     }
-    return best ?? p;
+    return best;
   }
+
+  /// Le point d'un mur le plus proche d'un point, sans sortir du segment.
+  static RoomPoint _onWall(RoomSurface wall, RoomPoint p) {
+    final t = (p - wall.start).dot(wall.along).clamp(0.0, wall.width);
+    return wall.start + wall.along.scale(t);
+  }
+
+  /// La fenêtre que la main pose au plus près d'un point : elle se couche
+  /// sur le mur le plus proche — c'est lui qui lui donne son orientation —,
+  /// sans déborder de ses bords, et prend les dimensions de sa taille.
+  /// `null` quand la pièce n'a pas de mur pour la porter.
+  RoomSurface? handWindowAt(RoomPoint p, HandWindow size) {
+    final wall = nearestWall(p);
+    if (wall == null) return null;
+    final width = math.min(size.width, wall.width);
+    final half = width / 2;
+    final t = (p - wall.start).dot(wall.along).clamp(half, math.max(half, wall.width - half));
+    return RoomSurface(
+      kind: RoomSurfaceKind.window,
+      center: wall.start + wall.along.scale(t),
+      along: wall.along,
+      normal: wall.normal,
+      width: width,
+      height: size.height,
+      bottomY: floorY + size.sill,
+      parentId: wall.id,
+      byHand: true,
+    );
+  }
+
+  /// La même pièce avec des fenêtres de plus, à la suite des siennes : les
+  /// rangs des fenêtres du relevé ne bougent pas, et les ouvertures d'un
+  /// balcon ([asOutdoor]) viennent encore après.
+  ScannedRoom withWindows(List<RoomSurface> extra) => extra.isEmpty
+      ? this
+      : ScannedRoom(
+          walls: walls,
+          windows: [...windows, ...extra],
+          doors: doors,
+          openings: openings,
+          objects: objects,
+          floorPolygon: floorPolygon,
+          section: section,
+          northOffsetDeg: northOffsetDeg,
+        );
 
   /// Le point est-il dans la pièce ? Par le contour du sol s'il existe, par
   /// la boîte des murs sinon.
@@ -323,8 +397,14 @@ class ScannedRoom {
 }
 
 /// Deux segments au sol se croisent-ils ?
-bool segmentsCross(RoomPoint a, RoomPoint b, RoomPoint c, RoomPoint d) {
+bool segmentsCross(RoomPoint a, RoomPoint b, RoomPoint c, RoomPoint d) => crossFraction(a, b, c, d) != null;
+
+/// La fraction du segment *a → b* où il croise *c – d*, ou `null` s'ils ne
+/// se croisent pas : une visée sait ainsi où elle rencontre un obstacle,
+/// et pas seulement qu'elle le rencontre.
+double? crossFraction(RoomPoint a, RoomPoint b, RoomPoint c, RoomPoint d) {
   double orient(RoomPoint p, RoomPoint q, RoomPoint r) => (q.x - p.x) * (r.z - p.z) - (q.z - p.z) * (r.x - p.x);
   final o1 = orient(a, b, c), o2 = orient(a, b, d), o3 = orient(c, d, a), o4 = orient(c, d, b);
-  return o1 * o2 < 0 && o3 * o4 < 0;
+  if (o1 * o2 >= 0 || o3 * o4 >= 0) return null;
+  return o3 / (o3 - o4);
 }

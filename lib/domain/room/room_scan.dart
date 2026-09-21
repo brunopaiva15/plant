@@ -73,9 +73,32 @@ enum RoomMarkerKind {
   windowSheer,
 
   /// Un rideau ou un store souvent tiré devant une fenêtre.
-  windowDrawn;
+  windowDrawn,
+
+  /// Une fenêtre que la main a ajoutée, à sa taille : le relevé manque
+  /// celles qu'un rideau tiré cache. La taille est dans le genre, comme
+  /// pour le voilage et le rideau — la base ne porte pas de dimensions.
+  windowSmall,
+  windowStandard,
+  windowWide;
 
   static RoomMarkerKind? decode(String? raw) => values.where((k) => k.name == raw).firstOrNull;
+
+  /// La taille de la fenêtre que ce genre porte ; `null` quand le repère
+  /// n'est pas une fenêtre ajoutée à la main.
+  HandWindow? get handWindow => switch (this) {
+        windowSmall => HandWindow.small,
+        windowStandard => HandWindow.standard,
+        windowWide => HandWindow.wide,
+        _ => null,
+      };
+
+  /// Le genre de repère d'une taille de fenêtre.
+  static RoomMarkerKind of(HandWindow size) => switch (size) {
+        HandWindow.small => windowSmall,
+        HandWindow.standard => windowStandard,
+        HandWindow.wide => windowWide,
+      };
 }
 
 class RoomMarker {
@@ -111,6 +134,31 @@ List<CardinalDirection?> windowDirections(ScannedRoom room, List<RoomMarker> mar
         markers.where((m) => m.kind == RoomMarkerKind.windowOrientation && m.windowIndex == i).firstOrNull?.orientation ??
             room.windowDirection(room.windows[i]),
     ];
+
+/// Les repères des fenêtres ajoutées à la main, dans l'ordre où elles se
+/// posent — celui où elles s'ajoutent aux fenêtres du relevé.
+List<RoomMarker> handWindowMarkers(List<RoomMarker> markers) => [
+      for (final m in markers)
+        if (m.kind.handWindow != null) m,
+    ];
+
+/// Les fenêtres que la main a ajoutées à une pièce, couchées sur le mur le
+/// plus proche du point où on les a posées. [ScannedRoom.withWindows] les
+/// met à la suite des fenêtres du relevé : les rangs du JSON tiennent, et
+/// l'orientation comme le rideau continuent de s'indexer par le rang.
+List<RoomSurface> handWindows(ScannedRoom room, List<RoomMarker> markers) => [
+      for (final m in handWindowMarkers(markers))
+        ?room.handWindowAt(RoomPoint(m.x, m.z), m.kind.handWindow!),
+    ];
+
+/// Le repère de la fenêtre de rang [index] d'une pièce complétée, quand
+/// c'est la main qui l'a ajoutée ; `null` pour une fenêtre du relevé.
+RoomMarker? handWindowMarkerAt(ScannedRoom room, List<RoomMarker> markers, int index) {
+  if (index >= room.windows.length || !room.windows[index].byHand) return null;
+  final rank = room.windows.take(index).where((w) => w.byHand).length;
+  final hands = handWindowMarkers(markers);
+  return rank < hands.length ? hands[rank] : null;
+}
 
 /// Les radiateurs posés sur le plan.
 List<RoomPoint> heaterPoints(List<RoomMarker> markers) => [

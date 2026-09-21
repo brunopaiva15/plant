@@ -79,7 +79,10 @@ class DriftRoomScanRepository implements RoomScanRepository {
   @override
   Stream<List<RoomMarker>> watchMarkers(String scanId) => (_db.select(_db.roomMarkers)
         ..where((m) => m.scanId.equals(scanId))
-        ..orderBy([(m) => OrderingTerm.asc(m.createdAt)]))
+        // L'identifiant départage : deux repères posés dans la même seconde
+        // ne doivent pas échanger leur rang d'une lecture à l'autre — c'est
+        // le rang qui fait la fenêtre ajoutée à la main.
+        ..orderBy([(m) => OrderingTerm.asc(m.createdAt), (m) => OrderingTerm.asc(m.id)]))
       .watch()
       .map((rows) => [for (final r in rows) ?r.toDomain()]);
 
@@ -133,4 +136,19 @@ class DriftRoomScanRepository implements RoomScanRepository {
 
   @override
   Future<void> removeMarker(String id) => (_db.delete(_db.roomMarkers)..where((m) => m.id.equals(id))).go();
+
+  @override
+  Future<void> removeWindow(String markerId, {required String scanId, required int windowIndex}) async {
+    await _db.transaction(() async {
+      await (_db.delete(_db.roomMarkers)..where((m) => m.id.equals(markerId))).go();
+      await (_db.delete(_db.roomMarkers)..where((m) => m.scanId.equals(scanId) & m.windowIndex.equals(windowIndex))).go();
+      // Les fenêtres au-dessus prennent le rang libéré : leur orientation et
+      // leur rideau les suivent.
+      await _db.customUpdate(
+        'UPDATE room_markers SET window_index = window_index - 1 WHERE scan_id = ? AND window_index > ?',
+        variables: [Variable.withString(scanId), Variable.withInt(windowIndex)],
+        updates: {_db.roomMarkers},
+      );
+    });
+  }
 }
