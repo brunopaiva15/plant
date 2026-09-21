@@ -15,12 +15,12 @@ import '../core/native_shell.dart';
 /// jusqu'à ce que la page ouverte la redemande, si elle sait la remplir. Une
 /// fiche à grand titre le fait ; un scanner non.
 ///
-/// **Une page et une surcouche ne se valent pas.** Un menu d'action ou une
-/// alerte ne prend pas la place de la page, elle se pose dessus le temps d'un
-/// choix. L'effacer pour de bon changerait la marge sûre, et la page
-/// glisserait sous le menu — ce qu'elle faisait. Ces routes-là ne font donc
-/// que voiler la chrome : invisible, intouchable, et toujours là où elle
-/// était.
+/// **Une page et une surcouche ne se valent pas.** Un menu d'action, une
+/// alerte, une feuille à hauteur de contenu ne prennent pas la place de la
+/// page : elles se posent dessus le temps d'un choix. L'effacer pour de bon
+/// changerait la marge sûre, et la page glisserait sous le menu — ce qu'elle
+/// faisait. Ces routes-là ne font donc que voiler la chrome : la barre s'en
+/// va, mais sa place lui reste (voir `NativeShell.swift`).
 ///
 /// Les pages des branches d'onglets ne passent pas par ici : elles ont leur
 /// propre navigateur, et c'est bien la coquille qu'on regarde alors.
