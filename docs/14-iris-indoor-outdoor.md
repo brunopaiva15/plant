@@ -195,6 +195,48 @@ la taille du binaire et surtout la précision sur nos jeux Indoor / Outdoor.
 Le bake-off doit comparer les candidats **avec la même recette de distillation,
 les mêmes données et la même géométrie BioCLIP de sortie**.
 
+### Modèles tiers examinés le 21 septembre 2026
+
+La question posée était double : *aider Iris 9 quand il hésite*, et *raccourcir
+l'étape 5*. Rien n'est décidé ici — c'est un relevé, gardé pour ne pas le
+refaire. Les chiffres de cartes de modèles sont **auto-déclarés et non
+vérifiés**.
+
+| candidat | ce qu'il est | verdict |
+|---|---|---|
+| PlantNet-300K MobileNetV3-Small | 1 081 espèces, flore sauvage d'Europe | **non** — 7,4 % de recouvrement, 93 % de gros plans (§ 12.8 de `docs/09`) |
+| `domai-tb/OpenPlants-…-ViT-Base-Patch16-224` | ~97 M paramètres, ~14 000 espèces, GBIF/iNat, Apache 2.0 | **pas embarquable**, et 14 000 sorties rejouent les 10,2 points du § 6.7 bis |
+| `imageomics/bioclip-2.5-vith14` | le teacher, ~630 M paramètres | **pas embarquable** ; 79,9 img/s sur une RTX 2070 Super |
+| **`crazedcodernate/bioclip-2.5-mobile-fastvit`** | FastViT `sa12`, **11,6 M**, sortie 1 024 d, MIT, 23,8 Mo ONNX fp16 | **à mesurer** — c'est l'étape 5 déjà faite |
+
+**Pourquoi les trois premiers ne règlent rien.** Ce qu'Iris rate, c'est neuf
+fois sur dix une espèce qu'il n'expose pas — un second classifieur n'aide que
+si la réponse est dans *sa* liste. Et le repli Pl@ntNet joue déjà ce rôle
+(§ 3.1 de `docs/09`) : un modèle local n'achèterait que le hors-ligne et le
+quota.
+
+**Le quatrième est autre chose.** Distillation cosinus sur des embeddings de
+teacher cachés, FastViT, pas d'encodeur de texte sur l'appareil : c'est mot
+pour mot la recette du § 20 bis, franchie par un tiers. **La porte A tient.**
+Accord annoncé avec le teacher : top-1 71,7 %, cosinus 0,8383.
+
+Deux réserves, et elles portent tout le travail qui reste :
+
+- il est distillé sur iNat21 `train_mini`, Plantae seul — 213 550 images de
+  plantes **sauvages**. Pas le domaine salon, qui est le seul endroit où nos
+  modèles sont bons (§ 13.1 de `docs/09`). Notre corpus de 997 660 images avec
+  le drapeau `captive` est exactement ce qu'aucune distillation publique n'a ;
+- **71,7 % est un accord avec le teacher, pas une justesse sur notre
+  problème.** Il ne dit pas s'il bat Iris 9 sur une photo de rebord de
+  fenêtre, et la porte C reste entière.
+
+L'étape 5 pourrait donc devenir « affiner ce student sur notre corpus »
+plutôt que « distiller depuis zéro ». À trancher sur une mesure, pas sur une
+carte de modèle — et la mesure est celle des portes A et C, à trois
+concurrents sur les mêmes photos : Iris 9, le teacher via ses références, ce
+FastViT. Ni CoreML ni TFLite publiés : la conversion reste entière, et c'est
+là que les choses cassent (§ 7 de `docs/09`).
+
 ## 6. Iris Core produit un embedding BioCLIP-compatible, pas un nom
 
 Le contrat principal d'Iris Core devient :
@@ -676,7 +718,15 @@ cadrage :
   qu'on croirait présent.
 
 Le cache est incrémental : relancer la même ligne reprend où elle s'est
-arrêtée. Contrairement à la reprise de `train.py` (§ 13.6 de `docs/09`), il
+arrêtée.
+
+> **À corriger après la passe, pas pendant.** La liste de travail garde
+> l'ordre de `splits.csv`, qui est trié par espèce : un cache à moitié rempli
+> contient donc à peu près la première moitié de l'alphabet, et non la moitié
+> des espèces. Il est inutilisable comme réservoir de plus proches voisins
+> tant qu'il n'est pas complet. Mélanger la liste avant de la découper rendrait
+> exploitable toute passe interrompue ; l'index étant par chemin, le
+> changement ne ferait rien recalculer. Contrairement à la reprise de `train.py` (§ 13.6 de `docs/09`), il
 n'y a ici rien à perdre à reprendre — un vecteur ne dépend d'aucun état
 d'optimiseur, seulement de l'image et de la signature.
 
