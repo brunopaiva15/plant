@@ -86,7 +86,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get offlineHint =>
-      'Dafür ist eine Verbindung nötig. Bereits auf dem Gerät gespeicherte Daten bleiben lesbar.';
+      'Dafür ist eine Verbindung nötig. Daten, die schon auf deinem Gerät sind, bleiben lesbar.';
 
   @override
   String get offlineActionFailed =>
@@ -105,7 +105,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get offlineIdentification =>
-      'Die Online-Suche erfordert eine Verbindung. Die Erkennung auf dem Gerät nicht.';
+      'Die Online-Suche braucht eine Verbindung; die Erkennung auf deinem Gerät nicht.';
 
   @override
   String get offlineSupport => 'Der Kauf erfordert eine Verbindung.';
@@ -1505,7 +1505,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get localAccount => 'Daten auf diesem Gerät';
 
   @override
-  String get localAccountHint => 'Ihre Daten bleiben auf diesem Telefon.';
+  String get localAccountHint => 'Deine Daten bleiben auf diesem Telefon.';
 
   @override
   String version(String version) {
@@ -2286,7 +2286,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get exportHint =>
-      'Eine ZIP-Datei mit Ihren Pflanzen, Verläufen, Inventar, Einstellungen und Fotos.';
+      'Eine ZIP-Datei mit deinen Pflanzen, Verläufen, deinem Inventar, deinen Einstellungen und Fotos.';
 
   @override
   String get exporting => 'Export wird vorbereitet…';
@@ -4359,7 +4359,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get confirmDeleteAttachment =>
-      'Dokument löschen? Die Datei wird vom Gerät entfernt.';
+      'Dokument löschen? Die Datei wird von deinem Gerät entfernt.';
 
   @override
   String get openAttachment => 'Öffnen';
@@ -4858,7 +4858,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get backupTitle => 'Sicherung';
 
   @override
-  String get backupExplain => 'Eine .zip-Datei mit Ihren Daten und Fotos.';
+  String get backupExplain => 'Eine .zip-Datei mit deinen Daten und Fotos.';
 
   @override
   String get backupWhatToExport => 'Was sichern';
@@ -5490,7 +5490,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String deleteGardenConfirm(String name) {
-    return '„$name“, seine Pflanzen und sein Verlauf werden gelöscht, für Sie und für die eingeladenen Personen.';
+    return '„$name“, seine Pflanzen und sein Verlauf werden gelöscht, für dich und für die eingeladenen Personen.';
   }
 
   @override

@@ -255,7 +255,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineHint.
   ///
   /// In fr, this message translates to:
-  /// **'Cette fonction demande une connexion. Les données déjà sur l\'appareil restent lisibles.'**
+  /// **'Cette fonction demande une connexion. Les données déjà sur votre appareil restent consultables.'**
   String get offlineHint;
 
   /// No description provided for @offlineActionFailed.
@@ -285,7 +285,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineIdentification.
   ///
   /// In fr, this message translates to:
-  /// **'La recherche en ligne demande une connexion. La reconnaissance sur l\'appareil, non.'**
+  /// **'La recherche en ligne demande une connexion ; la reconnaissance sur votre appareil, non.'**
   String get offlineIdentification;
 
   /// No description provided for @offlineSupport.
@@ -4071,7 +4071,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos.'**
+  /// **'Un fichier ZIP contenant vos plantes, vos historiques, votre inventaire, vos réglages et vos photos.'**
   String get exportHint;
 
   /// No description provided for @exporting.
@@ -7545,7 +7545,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmDeleteAttachment.
   ///
   /// In fr, this message translates to:
-  /// **'Supprimer ce document ? Le fichier sera effacé de l\'appareil.'**
+  /// **'Supprimer ce document ? Le fichier sera effacé de votre appareil.'**
   String get confirmDeleteAttachment;
 
   /// No description provided for @openAttachment.
@@ -7893,7 +7893,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteGroupHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les articles ne sont pas supprimés, ils rejoignent le groupe choisi.'**
+  /// **'Les articles ne sont pas supprimés : ils rejoignent le groupe choisi.'**
   String get deleteGroupHint;
 
   /// No description provided for @moveItemsTo.
@@ -7977,7 +7977,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteGroupExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Les articles ne sont pas supprimés, ils perdent leur groupe.'**
+  /// **'Les articles ne sont pas supprimés : ils perdent leur groupe.'**
   String get deleteGroupExplain;
 
   /// No description provided for @newEvent.
@@ -8109,7 +8109,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteEventCategoryExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Les événements ne sont pas supprimés, ils perdent leur catégorie.'**
+  /// **'Les événements ne sont pas supprimés : ils perdent leur catégorie.'**
   String get deleteEventCategoryExplain;
 
   /// No description provided for @noEventCategoriesYet.
@@ -8505,7 +8505,7 @@ abstract class AppLocalizations {
   /// No description provided for @importConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'Les données du fichier remplacent celles de même identifiant. Rien n\'est supprimé.'**
+  /// **'Les données du fichier remplacent celles qui portent le même identifiant. Rien n\'est supprimé.'**
   String get importConfirm;
 
   /// No description provided for @importErrorNotAZip.

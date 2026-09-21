@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 8 livrés**, lots 9 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 9 livrés**, lots 10 et 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -550,18 +550,38 @@ la même chose.
 
 ### Lot 9 — Les données, la sauvegarde, le hors-ligne (74 clés, 26 explicatives)
 
+> **Livré.** 40 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 9 clés signalées à 5, toutes vérifiées : trois passifs de
+> confirmation de suppression, où l'acteur est évident et la voix passive est
+> la bonne (« Cette plante et tout son historique seront supprimés »), et deux
+> participes italiens (« Archiviate di recente ») que le détecteur prend pour
+> des impératifs de politesse.
+
 Préfixes `export…`, `import…`, `backup…`, `offline…`, `delete…`, `confirm…`,
 `archive…`.
+
+**La même faute d'anglais qu'au lot 8** : `importErrorNotAZip` disait « a
+Auxine backup ». Et l'allemand comme l'italien parlaient encore des données
+sans dire à qui elles sont — « Ihre Daten », « i dati » — là où le français
+disait déjà « vos données ».
+
+Un piège de ma propre main, à retenir : remplacer la virgule par un
+deux-points dans « Les articles ne sont pas supprimés : ils rejoignent le
+groupe choisi » se transpose mal en allemand, où la majuscule après
+deux-points rend le « Sie » qui suit indistinguable du vouvoiement. La
+virgule y reste, et le « sie » minuscule avec elle — la règle 7 en acte : on
+écrit chaque langue depuis l'intention, pas depuis la ponctuation
+française.
 
 | Clé | Avant | Après |
 |---|---|---|
 | `offlineHint` | Cette fonction demande une connexion. Les données déjà sur l'appareil restent lisibles. | Cette fonction demande une connexion. Les données déjà sur votre appareil restent consultables. |
 | `offlineIdentification` | La recherche en ligne demande une connexion. La reconnaissance sur l'appareil, non. | La recherche en ligne demande une connexion ; la reconnaissance sur votre appareil, non. |
-| `offlineCommunityTips` | Lire et publier des conseils demande une connexion. | Lire et publier des conseils demande une connexion. *(inchangé)* |
+| `offlineCommunityTips` | Lire et publier des conseils demande une connexion. | Lire et publier des conseils demande une connexion. |
 | `exportHint` | Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos. | Un fichier ZIP contenant vos plantes, vos historiques, votre inventaire, vos réglages et vos photos. |
 | `importConfirm` | Les données du fichier remplacent celles de même identifiant. Rien n'est supprimé. | Les données du fichier remplacent celles qui portent le même identifiant. Rien n'est supprimé. |
 | `deleteGroupHint` | Les articles ne sont pas supprimés, ils rejoignent le groupe choisi. | Les articles ne sont pas supprimés : ils rejoignent le groupe choisi. |
-| `deleteGardenConfirm` | Le jardin « {name} », ses plantes et son journal seront supprimés, pour vous comme pour les personnes invitées. | Le jardin « {name} », ses plantes et son journal seront supprimés, pour vous comme pour les personnes invitées. *(inchangé)* |
+| `deleteGardenConfirm` | Le jardin « {name} », ses plantes et son journal seront supprimés, pour vous comme pour les personnes invitées. | Le jardin « {name} », ses plantes et son journal seront supprimés, pour vous comme pour les personnes invitées. |
 | `confirmDeleteAttachment` | Supprimer ce document ? Le fichier sera effacé de l'appareil. | Supprimer ce document ? Le fichier sera effacé de votre appareil. |
 
 ### Lot 10 — Le jardin au jour le jour (575 clés, 69 explicatives)
@@ -661,7 +681,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 6 ✓ | Fiches d'entretien | 303 | 117 | **livré** — volumineux mais déjà propre |
 | 7 ✓ | Découverte, soutien | 111 | 36 | **livré** — première impression |
 | 8 ✓ | Compte, partage | 132 | 35 | **livré** |
-| 9 | Données, hors-ligne | 74 | 26 | |
+| 9 ✓ | Données, hors-ligne | 74 | 26 | **livré** |
 | 10 | Jardin au jour le jour | 575 | 69 | libellés courts, passe rapide |
 | 11 | Passes mécaniques | — | — | quand plus rien ne bouge |
 | | **Total** | **1 851** | **513** | soit 2 052 chaînes sur quatre langues |

@@ -86,7 +86,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get offlineHint =>
-      'Serve una connessione. I dati già sul dispositivo restano leggibili.';
+      'Serve una connessione. I dati già sul tuo dispositivo restano leggibili.';
 
   @override
   String get offlineActionFailed => 'Offline. Riprova quando la rete torna.';
@@ -104,7 +104,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get offlineIdentification =>
-      'La ricerca online richiede una connessione. Il riconoscimento sul dispositivo no.';
+      'La ricerca online richiede una connessione; il riconoscimento sul tuo dispositivo no.';
 
   @override
   String get offlineSupport => 'L\'acquisto richiede una connessione.';
@@ -1503,7 +1503,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localAccount => 'Dati su questo dispositivo';
 
   @override
-  String get localAccountHint => 'I dati restano su questo telefono.';
+  String get localAccountHint => 'I tuoi dati restano su questo telefono.';
 
   @override
   String version(String version) {
@@ -2286,7 +2286,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get exportHint =>
-      'Un file ZIP con piante, cronologia, inventario, impostazioni e foto.';
+      'Un file ZIP con le tue piante, la cronologia, l\'inventario, le impostazioni e le foto.';
 
   @override
   String get exporting => 'Preparazione dell\'esportazione…';
@@ -4371,7 +4371,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get confirmDeleteAttachment =>
-      'Eliminare questo documento? Il file sarà rimosso dal dispositivo.';
+      'Eliminare questo documento? Il file sarà rimosso dal tuo dispositivo.';
 
   @override
   String get openAttachment => 'Apri';
@@ -4551,7 +4551,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteGroupHint =>
-      'Gli articoli non vengono eliminati, passano al gruppo scelto.';
+      'Gli articoli non vengono eliminati: passano al gruppo scelto.';
 
   @override
   String get moveItemsTo => 'Sposta gli articoli in';
@@ -4602,7 +4602,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteGroupExplain =>
-      'Gli articoli non vengono eliminati, perdono il gruppo.';
+      'Gli articoli non vengono eliminati: perdono il gruppo.';
 
   @override
   String get newEvent => 'Nuovo evento';
@@ -4693,7 +4693,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Gli eventi non vengono eliminati, perdono la categoria.';
+      'Gli eventi non vengono eliminati: perdono la categoria.';
 
   @override
   String get noEventCategoriesYet => 'Nessuna categoria.';
@@ -4870,7 +4870,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get backupTitle => 'Backup';
 
   @override
-  String get backupExplain => 'Un file .zip con i dati e le foto.';
+  String get backupExplain => 'Un file .zip con i tuoi dati e le tue foto.';
 
   @override
   String get backupWhatToExport => 'Cosa salvare';
@@ -5505,7 +5505,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String deleteGardenConfirm(String name) {
-    return 'Il giardino «$name», le sue piante e la sua cronologia saranno eliminati, per voi e per le persone invitate.';
+    return 'Il giardino «$name», le sue piante e la sua cronologia saranno eliminati, per te e per le persone invitate.';
   }
 
   @override

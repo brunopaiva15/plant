@@ -86,7 +86,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get offlineHint =>
-      'Cette fonction demande une connexion. Les données déjà sur l\'appareil restent lisibles.';
+      'Cette fonction demande une connexion. Les données déjà sur votre appareil restent consultables.';
 
   @override
   String get offlineActionFailed =>
@@ -105,7 +105,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get offlineIdentification =>
-      'La recherche en ligne demande une connexion. La reconnaissance sur l\'appareil, non.';
+      'La recherche en ligne demande une connexion ; la reconnaissance sur votre appareil, non.';
 
   @override
   String get offlineSupport => 'L\'achat demande une connexion.';
@@ -2286,7 +2286,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get exportHint =>
-      'Un fichier ZIP avec vos plantes, historiques, inventaire, réglages et photos.';
+      'Un fichier ZIP contenant vos plantes, vos historiques, votre inventaire, vos réglages et vos photos.';
 
   @override
   String get exporting => 'Préparation de l\'export…';
@@ -4375,7 +4375,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get confirmDeleteAttachment =>
-      'Supprimer ce document ? Le fichier sera effacé de l\'appareil.';
+      'Supprimer ce document ? Le fichier sera effacé de votre appareil.';
 
   @override
   String get openAttachment => 'Ouvrir';
@@ -4555,7 +4555,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteGroupHint =>
-      'Les articles ne sont pas supprimés, ils rejoignent le groupe choisi.';
+      'Les articles ne sont pas supprimés : ils rejoignent le groupe choisi.';
 
   @override
   String get moveItemsTo => 'Déplacer les articles vers';
@@ -4606,7 +4606,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteGroupExplain =>
-      'Les articles ne sont pas supprimés, ils perdent leur groupe.';
+      'Les articles ne sont pas supprimés : ils perdent leur groupe.';
 
   @override
   String get newEvent => 'Nouvel événement';
@@ -4697,7 +4697,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Les événements ne sont pas supprimés, ils perdent leur catégorie.';
+      'Les événements ne sont pas supprimés : ils perdent leur catégorie.';
 
   @override
   String get noEventCategoriesYet => 'Aucune catégorie.';
@@ -4937,7 +4937,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get importConfirm =>
-      'Les données du fichier remplacent celles de même identifiant. Rien n\'est supprimé.';
+      'Les données du fichier remplacent celles qui portent le même identifiant. Rien n\'est supprimé.';
 
   @override
   String get importErrorNotAZip =>

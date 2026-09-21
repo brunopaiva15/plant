@@ -37,7 +37,7 @@ EXEMPT = ('careTip',)
 CONSIGNE = re.compile(
     r'^\s*(Tourner|Poser|Toucher|Relever|Renseigner|Choisir|Ajouter|Retirer|Garder|'
     r'Vérifier|Photographier|Saisir|Envoyer|Noter|Couper|Planter|Enterrer|Arracher|'
-    r'Tirer|Laisser|Attacher|Guider|Humidifier|Aérer|Écarter|Tenir|Éviter|Lire|Compter)\b')
+    r'Tirer|Laisser|Attacher|Guider|Humidifier|Aérer|Écarter|Tenir|Éviter|Compter)\b')
 
 PRONOMINAL = re.compile(
     r"\b(se|s')\s?(fait|change|choisit|corrige|coupe|détache|déduit|défont|dépose|"

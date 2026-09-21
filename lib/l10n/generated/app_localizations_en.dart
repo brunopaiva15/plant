@@ -86,7 +86,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineHint =>
-      'This needs a connection. Data already on the device stays readable.';
+      'This needs a connection. Data already on your device stays readable.';
 
   @override
   String get offlineActionFailed =>
@@ -105,7 +105,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineIdentification =>
-      'Online search needs a connection. On-device recognition does not.';
+      'Online search needs a connection; on-device recognition does not.';
 
   @override
   String get offlineSupport => 'The purchase needs a connection.';
@@ -2282,7 +2282,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportHint =>
-      'A ZIP file with your plants, history, inventory, settings and photos.';
+      'A ZIP file containing your plants, history, inventory, settings and photos.';
 
   @override
   String get exporting => 'Preparing export…';
@@ -4352,7 +4352,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmDeleteAttachment =>
-      'Delete this document? The file will be removed from the device.';
+      'Delete this document? The file will be removed from your device.';
 
   @override
   String get openAttachment => 'Open';
@@ -4530,7 +4530,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteGroupHint =>
-      'Items are not deleted, they move to the group you pick.';
+      'Items are not deleted: they move to the group you pick.';
 
   @override
   String get moveItemsTo => 'Move items to';
@@ -4581,7 +4581,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteGroupExplain =>
-      'Items are not deleted, they lose their group.';
+      'Items are not deleted: they lose their group.';
 
   @override
   String get newEvent => 'New event';
@@ -4672,7 +4672,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Events are not deleted, they lose their category.';
+      'Events are not deleted: they lose their category.';
 
   @override
   String get noEventCategoriesYet => 'No categories.';
@@ -4914,7 +4914,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Data in the file replaces entries with the same id. Nothing is deleted.';
 
   @override
-  String get importErrorNotAZip => 'This file is not a Auxine backup.';
+  String get importErrorNotAZip => 'This file is not an Auxine backup.';
 
   @override
   String get importErrorWrongApp => 'This backup comes from another app.';
