@@ -352,11 +352,11 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
             if pas % 200 == 0:
                 lu = etat_du_lot(s.float(), y)
                 csv.writer(journal).writerow(
-                    [epoque, pas, round(float(perte), 4),
+                    [epoque, pas, round(float(perte.detach()), 4),
                      round(lu['accord'], 4), round(lu['cone'], 4)])
                 journal.flush()
                 vitesse = (pas + 1) * args.batch / (time.perf_counter() - debut)
-                print(f'  é{epoque} pas {pas}/{len(lots)}  perte {float(perte):.4f}  '
+                print(f'  é{epoque} pas {pas}/{len(lots)}  perte {float(perte.detach()):.4f}  '
                       f"accord {lu['accord']:.4f}  cône {lu['cone']:.4f}  "
                       f'{vitesse:.0f} img/s', flush=True)
 
