@@ -197,6 +197,14 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     ap.add_argument('--taux', type=float, default=1e-3)
     ap.add_argument('--contrastive', type=float, default=1.0,
                     help='poids du terme qui écarte ; 0 reproduit la recette publique')
+    ap.add_argument('--demi', action='store_true',
+                    help='précision mixte : les convolutions en float16, les pertes et '
+                         "les poids en float32. C'est le plus gros levier une fois le "
+                         'décodage réparé, et il libère de la VRAM pour un lot plus grand')
+    ap.add_argument('--images', type=int, default=0,
+                    help="n'entraîner que sur ce nombre d'images ; 0 = toutes. Une "
+                         'comparaison de recettes se tranche sur une fraction du jeu, '
+                         'pas sur une passe complète')
     ap.add_argument('--fils', type=int, default=6,
                     help='fils de décodage. En série, le décodage tient 83 images/s '
                          "et la carte attend : c'est le défaut du § 2 bis de docs/10, "
@@ -210,6 +218,13 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     if not lot_complet:
         raise SystemExit(f'aucune image de {dataset} n\'a de vecteur dans {cache}')
     print(f'{len(lot_complet)} images avec une cible cachée')
+    if args.images and args.images < len(lot_complet):
+        # Le tirage passe par le mélange, donc il reste réparti sur les espèces :
+        # prendre les premières lignes de `splits.csv` donnerait le début de
+        # l'alphabet (§ 20 bis de docs/14).
+        garde = melanger(len(lot_complet), args.graine)[:args.images]
+        lot_complet = [lot_complet[i] for i in garde]
+        print(f'  restreint à {len(lot_complet)}, tirées au hasard sur tout le jeu')
 
     import torch
     appareil = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -220,6 +235,12 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     if args.commande == 'mesure':
         from student import preparer
         optimiseur = torch.optim.AdamW(modele.parameters(), lr=args.taux)
+        # Les pertes restent en float32 : un cosinus et un InfoNCE sur 1 024
+        # dimensions perdent leurs petits écarts en float16, et ce sont
+        # justement ces écarts qui font le classement (§ 19 bis de docs/14).
+        echelle = torch.amp.GradScaler('cuda') if args.demi else None
+        if args.demi:
+            modele = modele.to(memory_format=torch.channels_last)
         ordre = melanger(len(lot_complet), args.graine)
         # Les lots sont bâtis d'avance, et leurs images décodées pendant que
         # la carte travaille sur le lot précédent. En série, le décodage tient
@@ -232,12 +253,21 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         for pas, (lot, images) in enumerate(
                 flux_de_lots(lots, lambda t: preparer(t[0])[0], args.fils)):
             x = torch.from_numpy(np.stack(images)).to(appareil)
+            if args.demi:
+                x = x.to(memory_format=torch.channels_last)
             y = torch.from_numpy(cibles(cache, lot, memo)).to(appareil)
-            sortie = modele(x)
-            perte = perte_cosinus(sortie, y) + args.contrastive * perte_contrastive(sortie, y)
             optimiseur.zero_grad()
-            perte.backward()
-            optimiseur.step()
+            with torch.autocast('cuda', dtype=torch.float16, enabled=args.demi):
+                sortie = modele(x)
+                perte = (perte_cosinus(sortie.float(), y)
+                         + args.contrastive * perte_contrastive(sortie.float(), y))
+            if echelle is not None:
+                echelle.scale(perte).backward()
+                echelle.step(optimiseur)
+                echelle.update()
+            else:
+                perte.backward()
+                optimiseur.step()
             if pas == 4:                      # les cinq premiers paient la compilation
                 if appareil == 'cuda':
                     torch.cuda.synchronize()
