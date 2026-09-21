@@ -90,6 +90,8 @@ abstract final class SfSymbols {
     CupertinoIcons.eye_slash.codePoint: 'eye.slash',
     CupertinoIcons.heart.codePoint: 'heart',
     CupertinoIcons.heart_fill.codePoint: 'heart.fill',
+    CupertinoIcons.heart_slash.codePoint: 'heart.slash',
+    CupertinoIcons.checkmark_square.codePoint: 'checkmark.square',
     CupertinoIcons.star_fill.codePoint: 'star.fill',
     CupertinoIcons.star.codePoint: 'star',
   };

@@ -216,6 +216,31 @@ ses boutons en argile, et le point de code manquant s'écrit dans la console en
 debug. Une rangée moitié système moitié argile serait pire que l'une ou
 l'autre.
 
+**Un bouton peut déplier plutôt qu'agir.** Les trois points d'une fiche de
+plante ouvraient une feuille d'actions, qui montait du bas et recouvrait la
+photo. Ce n'est pas ce que fait iOS : un bouton de barre qui porte un `UIMenu`
+fait sortir son menu **de lui-même**, à sa place dans la barre, en floutant la
+page derrière — ce que font Maison, Photos ou Mail. La feuille est faite pour
+un choix qui engage ; un menu, pour la liste des gestes d'une page.
+
+La page ne déclare qu'une chose : `FloraIconButton.menu`, la même liste de
+`SheetAction` que la feuille recevait. `native_actions.dart` la traduit en
+entrées, le natif en `UIAction`, et `separated` ouvre un groupe — iOS sépare
+ses groupes d'un trait. Une entrée sans SF Symbol n'entraîne pas le bouton
+dans sa chute : c'est une ligne de texte, ce qu'iOS accepte sans broncher ; le
+tout ou rien vaut pour la barre, pas pour ce qu'elle déplie.
+
+La liste est dressée **au rendu**, et non à l'ouverture : un menu du système
+est déclaré avant d'être touché, et il doit donc déjà dire « Retirer des
+favoris » quand le cœur est plein. Le natif renvoie l'entrée choisie —
+`R1.3`, la quatrième du menu du deuxième bouton de droite —, pas le bouton
+qui la portait.
+
+Là où le natif n'est pas — Android, ou une barre qu'il a refusée —, le bouton
+reste en argile et c'est `showAdaptiveActionSheet` qui répond, comme avant :
+une feuille reste la bonne réponse de cette plateforme-là. Les deux disent la
+même chose ; ce n'est pas la même façon de la dire.
+
 Les pages qui prétendent à la barre forment une **pile**, et la dernière
 visible l'emporte. Une page poussée par-dessus une autre prend la barre ;
 quand elle s'en va, celle qu'elle recouvrait la reprend sans avoir à se

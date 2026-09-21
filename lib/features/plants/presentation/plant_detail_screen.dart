@@ -71,65 +71,76 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
   /// section Croissance, l'en-tête sans photo.
   Future<void> _addPhoto() => showPhotoCaptureFlow(context, ref, plantId: id);
 
+  /// Ce que la fiche offre au-delà de ses actions rapides.
+  ///
+  /// **Une seule liste, deux façons de la montrer.** Quand le système tient
+  /// la barre, c'est lui qui la déplie — un `UIMenu` qui sort des trois
+  /// points, à leur place, en floutant la fiche derrière. Ailleurs, une
+  /// feuille monte du bas, qui reste la bonne réponse d'Android. La liste ne
+  /// sait rien de tout cela : elle est dressée ici, une fois, au rendu.
+  ///
+  /// Dressée au rendu, justement, et non à l'ouverture : un menu du système
+  /// est déclaré avant d'être touché, et il doit donc déjà dire « Retirer des
+  /// favoris » quand le cœur est plein.
+  List<SheetAction> _actions(Plant plant) {
+    final l10n = context.l10n;
+    // Invité en lecture seule : le menu se réduit à ce qui ne touche à rien.
+    final canEdit = ref.watch(canEditProvider);
+    final identifiable = ref.watch(plantIdentifierProvider).isConfigured;
+    return [
+      if (canEdit) SheetAction(label: l10n.editPlant, icon: CupertinoIcons.pencil, onPressed: () => showEditPlantSheet(context, plant: plant)),
+      if (canEdit)
+        SheetAction(
+          label: plant.isFavorite ? l10n.unfavorite : l10n.favorite,
+          icon: plant.isFavorite ? CupertinoIcons.heart_slash : CupertinoIcons.heart,
+          onPressed: () => _toggleFavorite(plant),
+        ),
+      SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
+      if (canEdit) SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
+      // Ce qui sort la plante de la fiche — un lien, une étiquette — fait un
+      // groupe à part dans le menu du système : iOS l'y sépare d'un trait.
+      if (canEdit) SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, separated: true, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
+      SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
+      if (canEdit && identifiable && plant.primaryPhotoId != null)
+        SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
+      if (canEdit) SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, separated: true, onPressed: () => showPlantTagsSheet(context, plantId: id)),
+      if (canEdit)
+        SheetAction(
+          label: l10n.move,
+          icon: CupertinoIcons.location,
+          onPressed: () async {
+            final choice = await showLocationPicker(context, selectedId: plant.locationId);
+            if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
+          },
+        ),
+      if (canEdit)
+        SheetAction(label: l10n.propagate, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
+      // Une plante déjà rangée ne s'archive pas deux fois : à sa place, le
+      // geste qui a du sens depuis sa fiche, c'est de la ressortir.
+      if (canEdit && plant.isArchived)
+        SheetAction(label: l10n.restore, icon: CupertinoIcons.arrow_uturn_left, separated: true, onPressed: () => _restore(plant)),
+      if (canEdit && !plant.isArchived)
+        SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, separated: true, destructive: true, onPressed: () => _archive(plant)),
+    ];
+  }
+
   /// Un menu à la fois.
   ///
   /// Le bouton qui l'ouvre est dans la barre du système, que Flutter ne
   /// couvre pas : rien n'empêchait d'en empiler trois. Le verrou est ici
   /// plutôt que dans la barre, parce que c'est cette page qui sait qu'elle a
-  /// déjà posé un menu.
+  /// déjà posé un menu. Sans objet quand c'est le système qui déplie : il
+  /// s'en charge lui-même, et n'ouvre jamais deux fois le même menu.
   bool _menuOuvert = false;
 
-  Future<void> _menu(Plant plant) async {
+  Future<void> _menu(List<SheetAction> actions) async {
     if (_menuOuvert) return;
     _menuOuvert = true;
     try {
-      await _menuOuvre(plant);
+      await showAdaptiveActionSheet(context, cancelLabel: context.l10n.cancel, actions: actions);
     } finally {
       _menuOuvert = false;
     }
-  }
-
-  Future<void> _menuOuvre(Plant plant) async {
-    final l10n = context.l10n;
-    // Invité en lecture seule : le menu se réduit à ce qui ne touche à rien.
-    final canEdit = ref.read(canEditProvider);
-    await showAdaptiveActionSheet(
-      context,
-      cancelLabel: l10n.cancel,
-      actions: [
-        if (canEdit) SheetAction(label: l10n.editPlant, icon: CupertinoIcons.pencil, onPressed: () => showEditPlantSheet(context, plant: plant)),
-        if (canEdit)
-          SheetAction(
-            label: plant.isFavorite ? l10n.unfavorite : l10n.favorite,
-            icon: plant.isFavorite ? CupertinoIcons.heart_slash : CupertinoIcons.heart,
-            onPressed: () => _toggleFavorite(plant),
-          ),
-        SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
-        if (canEdit) SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
-        if (canEdit) SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
-        SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
-        if (canEdit && ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
-          SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
-        if (canEdit) SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
-        if (canEdit)
-          SheetAction(
-            label: l10n.move,
-            icon: CupertinoIcons.location,
-            onPressed: () async {
-              final choice = await showLocationPicker(context, selectedId: plant.locationId);
-              if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
-            },
-          ),
-        if (canEdit)
-          SheetAction(label: l10n.propagate, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
-        // Une plante déjà rangée ne s'archive pas deux fois : à sa place, le
-        // geste qui a du sens depuis sa fiche, c'est de la ressortir.
-        if (canEdit && plant.isArchived)
-          SheetAction(label: l10n.restore, icon: CupertinoIcons.arrow_uturn_left, onPressed: () => _restore(plant)),
-        if (canEdit && !plant.isArchived)
-          SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
-      ],
-    );
   }
 
   /// Au-delà, le gain d'une photo de plus n'est plus mesuré (docs/09 § 6.7),
@@ -259,10 +270,13 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
       semanticLabel: l10n.favorite,
       onPressed: () => _toggleFavorite(plant),
     );
+    final actions = _actions(plant);
     final plus = FloraIconButton(
       icon: CupertinoIcons.ellipsis,
       semanticLabel: l10n.more,
-      onPressed: () => _menu(plant),
+      // Déplié par le système quand il tient la barre ; sinon, la feuille.
+      menu: actions,
+      onPressed: () => _menu(actions),
     );
     final natif = NativeShell.isSupported
         ? NativeActions.describe(<Widget>[retour], <Widget>[favori, plus])
