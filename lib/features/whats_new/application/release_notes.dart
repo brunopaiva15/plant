@@ -205,7 +205,7 @@ List<ReleaseNote> releaseNotes(AppLocalizations l10n) => [
           ReleaseHighlight(
             icon: CupertinoIcons.book,
             accent: ReleaseAccent.sun,
-            title: l10n.whatsNewNaturalTitle,
+            title: l10n.naturalCauses,
             body: l10n.whatsNewNaturalBody,
           ),
           ReleaseHighlight(

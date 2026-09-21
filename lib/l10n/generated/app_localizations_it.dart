@@ -5039,33 +5039,30 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get whatsNewRoomsIntro =>
-      'La pianta di casa, un modello che distingue interno ed esterno, e un\'enciclopedia più ampia.';
+      'Questa versione aggiunge la scansione della casa, separa interno ed esterno in Iris e amplia l\'enciclopedia.';
 
   @override
   String get whatsNewRoomScanBody =>
-      'Il LiDAR rileva le tue stanze, l\'app calcola la luce di ogni punto. Su iPhone Pro e iPad Pro.';
+      'Scansiona le tue stanze con il LiDAR: l\'app calcola la luce di ogni punto. Su iPhone Pro e iPad Pro.';
 
   @override
   String get whatsNewIndoorOutdoorTitle => 'Interno ed esterno';
 
   @override
   String get whatsNewIndoorOutdoorBody =>
-      'Iris tiene i due ambiti in un solo modello. Il luogo della pianta restringe le specie proposte.';
+      'Iris riconosce entrambi da un solo modello. L\'app propone allora solo le specie adatte al luogo.';
 
   @override
   String get whatsNewDiagnosisQuestionsBody =>
-      'La diagnosi chiede quello che manca: un\'osservazione, o una foto da un\'altra angolazione.';
-
-  @override
-  String get whatsNewNaturalTitle => 'Fenomeni normali';
+      'L\'app chiede quello che manca per decidere: un\'osservazione o una foto da un\'altra angolazione.';
 
   @override
   String get whatsNewNaturalBody =>
-      'Guttazione, nettare extrafloreale, una vecchia foglia in basso: anche ciò che non è una malattia ha la sua scheda.';
+      'L\'enciclopedia elenca 32 fenomeni innocui: guttazione, nettare extrafloreale, muffa bianca del terriccio.';
 
   @override
   String get whatsNewCareSourcesBody =>
-      'Ogni valore dice da dove viene: la RHS, l\'habitat d\'origine o una regola di coltivazione.';
+      'La scheda di cura indica la fonte di ogni valore: la RHS, l\'habitat d\'origine o una regola di coltura.';
 
   @override
   String onbStepOf(int current, int total) {

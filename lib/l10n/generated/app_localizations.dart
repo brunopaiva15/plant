@@ -8673,13 +8673,13 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewRoomsIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Le plan de la maison, un modèle qui distingue l\'intérieur du dehors, et une encyclopédie plus large.'**
+  /// **'Cette version ajoute le scan de la maison, sépare l\'intérieur de l\'extérieur dans Iris et élargit l\'encyclopédie.'**
   String get whatsNewRoomsIntro;
 
   /// No description provided for @whatsNewRoomScanBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le LiDAR dessine vos pièces, l\'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.'**
+  /// **'Scannez vos pièces au LiDAR : l\'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.'**
   String get whatsNewRoomScanBody;
 
   /// No description provided for @whatsNewIndoorOutdoorTitle.
@@ -8691,31 +8691,25 @@ abstract class AppLocalizations {
   /// No description provided for @whatsNewIndoorOutdoorBody.
   ///
   /// In fr, this message translates to:
-  /// **'Iris tient les deux domaines dans un seul modèle. Le lieu de la plante affine la liste des espèces proposées.'**
+  /// **'Iris reconnaît les deux dans un seul modèle. L\'application ne propose alors que les espèces du lieu de la plante.'**
   String get whatsNewIndoorOutdoorBody;
 
   /// No description provided for @whatsNewDiagnosisQuestionsBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le diagnostic demande ce qui manque pour trancher : une observation, ou la photo d\'une autre vue.'**
+  /// **'L\'application demande ce qui manque pour trancher : une observation, ou une photo sous un autre angle.'**
   String get whatsNewDiagnosisQuestionsBody;
-
-  /// No description provided for @whatsNewNaturalTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Phénomènes normaux'**
-  String get whatsNewNaturalTitle;
 
   /// No description provided for @whatsNewNaturalBody.
   ///
   /// In fr, this message translates to:
-  /// **'Guttation, nectar extrafloral, vieille feuille du bas : ce qui n\'est pas une maladie se lit aussi dans l\'encyclopédie.'**
+  /// **'L\'encyclopédie recense 32 phénomènes sans gravité : guttation, nectar extrafloral, moisissure blanche du terreau.'**
   String get whatsNewNaturalBody;
 
   /// No description provided for @whatsNewCareSourcesBody.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque repère dit d\'où il vient : la RHS, l\'habitat d\'origine ou une règle de culture.'**
+  /// **'La fiche indique la source de chaque repère : la RHS, l\'habitat d\'origine ou une règle de culture.'**
   String get whatsNewCareSourcesBody;
 
   /// No description provided for @onbStepOf.

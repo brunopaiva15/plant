@@ -5017,33 +5017,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsNewRoomsIntro =>
-      'The plan of your home, a model that tells indoors from outdoors, and a wider encyclopedia.';
+      'This version adds the home scan, separates indoor from outdoor in Iris and widens the encyclopedia.';
 
   @override
   String get whatsNewRoomScanBody =>
-      'LiDAR maps your rooms, and the app works out the light at each spot. On iPhone Pro and iPad Pro.';
+      'Scan your rooms with LiDAR: the app calculates the light at each spot. On iPhone Pro and iPad Pro.';
 
   @override
   String get whatsNewIndoorOutdoorTitle => 'Indoors and outdoors';
 
   @override
   String get whatsNewIndoorOutdoorBody =>
-      'Iris holds both in a single model. Where the plant lives narrows the species it puts forward.';
+      'Iris recognises both from a single model. The app then offers only the species that suit the spot.';
 
   @override
   String get whatsNewDiagnosisQuestionsBody =>
-      'The diagnosis asks for what is missing: an observation, or a photo from another angle.';
-
-  @override
-  String get whatsNewNaturalTitle => 'Normal phenomena';
+      'The app asks for what is missing: an observation, or a photo from another angle.';
 
   @override
   String get whatsNewNaturalBody =>
-      'Guttation, extrafloral nectar, an old lower leaf: what is not a disease has its page too.';
+      'The encyclopedia lists 32 harmless phenomena: guttation, extrafloral nectar, white mould on the potting soil.';
 
   @override
   String get whatsNewCareSourcesBody =>
-      'Each figure says where it comes from: the RHS, the native habitat, or a growing rule.';
+      'The care guide names the source of each figure: the RHS, the native habitat, or a cultivation rule.';
 
   @override
   String onbStepOf(int current, int total) {

@@ -5045,33 +5045,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get whatsNewRoomsIntro =>
-      'Le plan de la maison, un modèle qui distingue l\'intérieur du dehors, et une encyclopédie plus large.';
+      'Cette version ajoute le scan de la maison, sépare l\'intérieur de l\'extérieur dans Iris et élargit l\'encyclopédie.';
 
   @override
   String get whatsNewRoomScanBody =>
-      'Le LiDAR dessine vos pièces, l\'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.';
+      'Scannez vos pièces au LiDAR : l\'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.';
 
   @override
   String get whatsNewIndoorOutdoorTitle => 'Intérieur et extérieur';
 
   @override
   String get whatsNewIndoorOutdoorBody =>
-      'Iris tient les deux domaines dans un seul modèle. Le lieu de la plante affine la liste des espèces proposées.';
+      'Iris reconnaît les deux dans un seul modèle. L\'application ne propose alors que les espèces du lieu de la plante.';
 
   @override
   String get whatsNewDiagnosisQuestionsBody =>
-      'Le diagnostic demande ce qui manque pour trancher : une observation, ou la photo d\'une autre vue.';
-
-  @override
-  String get whatsNewNaturalTitle => 'Phénomènes normaux';
+      'L\'application demande ce qui manque pour trancher : une observation, ou une photo sous un autre angle.';
 
   @override
   String get whatsNewNaturalBody =>
-      'Guttation, nectar extrafloral, vieille feuille du bas : ce qui n\'est pas une maladie se lit aussi dans l\'encyclopédie.';
+      'L\'encyclopédie recense 32 phénomènes sans gravité : guttation, nectar extrafloral, moisissure blanche du terreau.';
 
   @override
   String get whatsNewCareSourcesBody =>
-      'Chaque repère dit d\'où il vient : la RHS, l\'habitat d\'origine ou une règle de culture.';
+      'La fiche indique la source de chaque repère : la RHS, l\'habitat d\'origine ou une règle de culture.';
 
   @override
   String onbStepOf(int current, int total) {
