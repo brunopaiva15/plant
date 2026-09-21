@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 """Ce que PlantNet-300K rendrait en second avis d'Iris, mesuré.
 
-    python3 plantnet_avis.py --banc benchmark.csv \\
+    CUDA_VISIBLE_DEVICES= python3 plantnet_avis.py --banc benchmark.csv \\
         --iris ../../assets/model --plantnet ~/plant-data/plantnet.tflite
+
+**`CUDA_VISIBLE_DEVICES=` n'est pas une précaution de style.** Tout est
+calculé sur processeur ici — TFLite tourne en XNNPACK —, mais `prepare()`
+décode et redimensionne avec des ops TensorFlow, que TensorFlow placera sur
+la carte s'il en voit une, en réservant au passage la mémoire qu'il trouve.
+Lancé à côté d'un `bioclip.py cache` qui tient déjà 3,74 Gio sur 8, c'est la
+passe de plusieurs heures qui tombe en OOM, pas cette mesure-ci.
 
 La question posée est celle du § 5 de `docs/14` : embarquer
 `litert-community/PlantNet-300K-ResNet18-LiteRT` à côté d'Iris coûterait

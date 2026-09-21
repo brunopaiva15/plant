@@ -349,9 +349,14 @@ vecteurs de photos d'une autre ne vivent pas dans le même espace.
 ## Un second avis vaut-il ses mégaoctets ?
 
 ```bash
-python3 plantnet_avis.py --banc benchmark.csv \
+CUDA_VISIBLE_DEVICES= python3 plantnet_avis.py --banc benchmark.csv \
   --iris ../../assets/model --plantnet ~/plant-data/plantnet.tflite
 ```
+
+`CUDA_VISIBLE_DEVICES=` parce que tout se calcule ici sur processeur, mais
+que `prepare()` passe par des ops TensorFlow : voyant une carte, TensorFlow
+les y place et réserve la mémoire qu'il trouve. Lancée à côté d'un
+`bioclip.py cache`, la mesure ferait tomber la passe plutôt que l'inverse.
 
 Embarquer `litert-community/PlantNet-300K-ResNet18-LiteRT` à côté d'Iris
 coûterait **47 Mo** dans une application qui en porte 9,0. Ce script dit ce
