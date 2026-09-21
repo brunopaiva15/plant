@@ -11,8 +11,8 @@ import numpy as np
 import pytest
 
 from bioclip import (accorder_signature, accumuler, centroides, conf_du_transforme,
-                     empreinte, extrapolation, lire_index, moyenne_unitaire, phrases,
-                     restant, signature, tranche)
+                     empreinte, extrapolation, flux_de_lots, lire_index,
+                     moyenne_unitaire, phrases, restant, signature, tranche)
 
 
 # --------------------------------------------------------------------------
@@ -239,3 +239,66 @@ def test_aucune_espece_assez_riche_rend_un_tableau_vide():
     accumuler(sommes, comptes, ['a'], np.array([[1.0, 0.0]]))
     cles, vecteurs, nombres = centroides(sommes, comptes, min_images=5)
     assert cles == [] and nombres == [] and vecteurs.shape[0] == 0
+
+
+# --------------------------------------------------------------------------
+# Le décodage en fils parallèles
+# --------------------------------------------------------------------------
+
+def test_le_flux_rend_les_lots_dans_lordre():
+    """La garantie sur laquelle repose l'écriture des vecteurs : un vecteur
+    va à la ligne qui lui revient, sans qu'on demande lequel est arrivé le
+    premier."""
+    lots = [[1, 2, 3], [4, 5], [6]]
+    rendu = list(flux_de_lots(lots, lambda x: x * 10, fils=4))
+    assert [lot for lot, _ in rendu] == lots
+    assert [prepares for _, prepares in rendu] == [[10, 20, 30], [40, 50], [60]]
+
+
+def test_chaque_element_passe_une_fois_et_une_seule():
+    import threading
+    vus, verrou = [], threading.Lock()
+
+    def prepare(x):
+        with verrou:
+            vus.append(x)
+        return x
+
+    list(flux_de_lots([list(range(8)), list(range(8, 16))], prepare, fils=4))
+    assert sorted(vus) == list(range(16))
+
+
+def test_lordre_tient_meme_quand_les_elements_ne_finissent_pas_dans_lordre():
+    """Des images de tailles très différentes ne se décodent pas en un temps
+    égal ; c'est le cas normal, pas le cas limite."""
+    import time
+
+    def prepare(x):
+        time.sleep(0.02 if x % 2 == 0 else 0.001)
+        return x
+
+    rendu = list(flux_de_lots([[0, 1, 2, 3], [4, 5, 6, 7]], prepare, fils=4))
+    assert [p for _, prepares in rendu for p in prepares] == list(range(8))
+
+
+def test_une_image_illisible_remonte_au_lieu_de_figer_la_passe():
+    """Le pire défaut possible ici serait un blocage silencieux à la
+    quatrième heure."""
+    def prepare(x):
+        if x == 3:
+            raise OSError('image tronquée')
+        return x
+
+    with pytest.raises(OSError):
+        list(flux_de_lots([[1, 2], [3, 4]], prepare, fils=2))
+
+
+def test_un_seul_fil_marche_aussi():
+    """Le repli si les fils posaient problème : --fils 1 doit rendre
+    exactement la même chose, en série."""
+    lots = [[1, 2], [3]]
+    assert list(flux_de_lots(lots, lambda x: x, fils=1)) == [([1, 2], [1, 2]), ([3], [3])]
+
+
+def test_aucun_lot_ne_bloque_pas():
+    assert list(flux_de_lots([], lambda x: x, fils=4)) == []

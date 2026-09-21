@@ -325,6 +325,7 @@ c'est elle qui décide du `--batch`, comme à l'entraînement en 320 px.
 | option | pourquoi |
 |---|---|
 | `--batch 32` | 8 Go de VRAM face à un ViT-H/14 ; c'est une décision, pas un accident |
+| `--fils 6` | fils de décodage ; en série la carte n'était occupée que 53 % du temps |
 | `--part i --parts n` | deux machines ou deux nuits ; les parts sont entrelacées, pas contiguës, parce que `splits.csv` est rangé par espèce |
 | `--fragment 8192` | vecteurs par fichier `.npy` : 16 Mo, une coupure ne perd jamais plus que ça |
 | `--splits train` | pour `centroides` : une référence tirée des images de test rendrait le banc faux |

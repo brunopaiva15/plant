@@ -270,8 +270,69 @@ def conf_du_transforme(transforme) -> tuple[int, list, list]:
     return taille, moyenne, ecart
 
 
+def charger_image(chemin: str, transforme):  # pragma: no cover - demande Pillow
+    """Une image décodée et prétraitée par le teacher lui-même.
+
+    C'est le seul endroit où une image est lue, et le `transforme` reçu est
+    celui d'open_clip, appelé tel quel. D'où qu'on l'appelle — du fil
+    principal ou d'un fil de décodage — il rend le même tenseur, donc la
+    signature du cache reste vraie.
+    """
+    from PIL import Image
+    with Image.open(chemin) as im:
+        return transforme(im.convert('RGB'))
+
+
+def flux_de_lots(lots, prepare, fils: int, avance: int = 2):
+    """Rend `(lot, éléments préparés)` dans l'ordre, avec des lots d'avance.
+
+    Le décodage d'un lot se fait pendant que le précédent est sur la carte.
+    Mesuré le 21 septembre 2026 : à décoder en série, la RTX 2070 Super
+    n'était occupée que 53 % du temps — le redimensionnement bicubique vers
+    224 px coûte bien plus qu'un décodage JPEG nu, et il coûtait la moitié
+    de la passe.
+
+    L'ordre est garanti : `pool.map` rend ses résultats dans l'ordre reçu et
+    la file est FIFO. C'est ce qui permet d'écrire les vecteurs à la ligne
+    qui leur revient sans se demander lequel est arrivé le premier.
+
+    `avance` borne la mémoire : à 32 images de 3×224×224 en `float32`, un lot
+    pèse 19 Mo, et on n'en tient jamais plus de `avance + 1`.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    from queue import Queue
+    from threading import Thread
+
+    file: Queue = Queue(maxsize=max(1, avance))
+    echec: list = []
+
+    def produire():
+        try:
+            # Le `pool.map` bloque le fil producteur, jamais le principal :
+            # c'est tout l'intérêt, et c'est aussi ce qui évite l'interblocage
+            # d'un `map` appelé depuis un fil du pool lui-même.
+            with ThreadPoolExecutor(max_workers=fils) as pool:
+                for lot in lots:
+                    file.put((lot, list(pool.map(prepare, lot))))
+        except BaseException as e:  # une image illisible ne doit pas figer la passe
+            echec.append(e)
+        finally:
+            file.put(None)
+
+    fil = Thread(target=produire, daemon=True)
+    fil.start()
+    while True:
+        item = file.get()
+        if item is None:
+            break
+        yield item
+    fil.join()
+    if echec:
+        raise echec[0]
+
+
 def encoder(modele, transforme, chemins: list[str], appareil: str, demi: bool,
-            batch: int):  # pragma: no cover - demande PyTorch et des images
+            batch: int, fils: int = 6):  # pragma: no cover - demande PyTorch
     """Les vecteurs de ces images, unitaires, dans l'ordre reçu.
 
     **Rangés normalisés.** La perte cosinus de l'étape 5 et le k-plus-proches-
@@ -281,16 +342,11 @@ def encoder(modele, transforme, chemins: list[str], appareil: str, demi: bool,
     composantes toutes de l'ordre du trentième.
     """
     import torch
-    from PIL import Image
 
     sortie = np.empty((len(chemins), DIM), dtype=np.float16)
+    lots = [chemins[d:d + batch] for d in range(0, len(chemins), batch)]
     ecrit = 0
-    for debut in range(0, len(chemins), batch):
-        lot = chemins[debut:debut + batch]
-        images = []
-        for c in lot:
-            with Image.open(c) as im:
-                images.append(transforme(im.convert('RGB')))
+    for lot, images in flux_de_lots(lots, lambda c: charger_image(c, transforme), fils):
         x = torch.stack(images).to(appareil)
         if demi:
             x = x.half()
@@ -408,9 +464,9 @@ def cmd_mesure(args) -> int:  # pragma: no cover - demande PyTorch
 
     # Un premier lot ne compte pas : il paie les noyaux CUDA, l'allocateur et
     # le premier accès au disque. Le chronomètre part après.
-    encoder(modele, transforme, chemins[:args.batch], appareil, demi, args.batch)
+    encoder(modele, transforme, chemins[:args.batch], appareil, demi, args.batch, args.fils)
     debut = time.perf_counter()
-    encoder(modele, transforme, chemins, appareil, demi, args.batch)
+    encoder(modele, transforme, chemins, appareil, demi, args.batch, args.fils)
     secondes = time.perf_counter() - debut
 
     e = extrapolation(combien, secondes, args.corpus)
@@ -458,7 +514,7 @@ def cmd_cache(args) -> int:  # pragma: no cover - demande PyTorch
         for d in range(0, len(afaire), args.fragment):
             lot = afaire[d:d + args.fragment]
             vecteurs = encoder(modele, transforme, [c for c, _, _ in lot],
-                               appareil, demi, args.batch)
+                               appareil, demi, args.batch, args.fils)
             nom = f'emb-{args.part}-{numero:04d}'
             # Le tableau d'abord, l'index ensuite : l'index est la vérité du
             # cache, et une coupure entre les deux ne perd qu'un fragment à
@@ -591,6 +647,7 @@ def main() -> int:
     m.add_argument('--corpus', type=int, default=991926,
                    help='taille du corpus à extrapoler')
     m.add_argument('--batch', type=int, default=32)
+    m.add_argument('--fils', type=int, default=6, help='fils de décodage')
     m.set_defaults(fonction=cmd_mesure)
 
     c = sous.add_parser('cache', help='les embeddings du corpus, repris où ils s\'arrêtent')
@@ -598,6 +655,8 @@ def main() -> int:
     c.add_argument('--cache', default='~/plant-data/bioclip')
     c.add_argument('--splits', default=','.join(SPLITS))
     c.add_argument('--batch', type=int, default=32, help='8 Go de VRAM : 32 passe')
+    c.add_argument('--fils', type=int, default=6,
+                   help='fils de décodage ; en série la carte attendait la moitié du temps')
     c.add_argument('--fragment', type=int, default=8192, help='vecteurs par fichier .npy')
     c.add_argument('--part', type=int, default=0)
     c.add_argument('--parts', type=int, default=1)
