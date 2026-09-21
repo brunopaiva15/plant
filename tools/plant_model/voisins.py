@@ -238,12 +238,17 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
     ap.add_argument('--temperature', type=float, default=100.0)
     ap.add_argument('--seuil', type=float, default=0.70,
                     help='autonomie lue à ce seuil — non calibré, à lire comme une courbe')
+    ap.add_argument('--masque', action='append', default=[], metavar='TRANCHE=FICHIER',
+                    help="restreindre Iris 9 au masque du lieu pour cette tranche, "
+                         "comme le fait l'application (§ 14 de docs/09). Sans lui, "
+                         'Iris répond sur ses 1 569 classes, ce que l\'app ne fait pas')
     ap.add_argument('--avec-iris', action='store_true',
                     help="faire aussi tourner Iris 9 sur les mêmes images (demande "
                          'TensorFlow). Sans lui, ce script ne dit pas si l\'espace fait '
                          'mieux — il dit seulement ce que l\'espace rend')
     args = ap.parse_args()
 
+    masques = dict(m.split('=', 1) for m in args.masque if '=' in m)
     cache = Path(args.cache).expanduser()
     sig = lire_signature(cache)
     if sig is None:
@@ -282,10 +287,17 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
             modele = _iris(args.iris)
             chemins = [lignes[i][0] for i in gardes]
             predictions = [(v, predict(modele, c)) for v, c in zip(verites, chemins)]
-            r = tally(predictions, modele, None, seuil=args.seuil)
             atteignable = sum(1 for x in verites if x in modele['index'])
-            print(f'  {"Iris 9":<10} {"ses 1 569 classes":<18} top-1 {r["top1"]}  '
-                  f'top-3 {r["top3"]}  ({atteignable}/{len(verites)} nommables)')
+            lectures = [(f'ses {len(modele["labels"])} classes', None, False)]
+            fichier = masques.get(tranche)
+            if fichier:
+                garde = {l.strip() for l in Path(fichier).expanduser()
+                         .read_text(encoding='utf-8').splitlines() if l.strip()}
+                lectures.append((f'masque du lieu ({len(garde)})', garde, True))
+            for titre, garde, renorm in lectures:
+                r = tally(predictions, modele, garde, renormalise=renorm, seuil=args.seuil)
+                print(f'  {"Iris 9":<10} {titre:<18} top-1 {r["top1"]}  '
+                      f'top-3 {r["top3"]}  ({atteignable}/{len(verites)} nommables)')
 
         for nom, (cles, vecteurs) in jeux.items():
             for titre, garder in (('à armes égales', expose), ('répertoire entier', None)):
