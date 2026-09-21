@@ -195,7 +195,39 @@ def accord(cache_teacher: Path, cache_student: Path) -> dict:
         'cosinus_median': float(np.median(cos)),
         'centile_10': float(np.percentile(cos, 10)),
         'centile_90': float(np.percentile(cos, 90)),
+        'cone_teacher': etalement(par_cache[0]),
+        'cone_student': etalement(par_cache[1]),
     }
+
+
+def etalement(vecteurs: np.ndarray, combien: int = 2000,
+              graine: int = 20260919) -> float:
+    """Le cosinus moyen entre deux images quelconques — la largeur du cône.
+
+    **Le diagnostic que la courbe de `voisins.py --degrader` réclame.** Un
+    bruit au hasard à 0,80 de cosinus ne coûte que trois points de top-1,
+    quand le student réel à 0,748 en coûte cinquante : son erreur n'est donc
+    pas du bruit, elle est structurée.
+
+    L'hypothèse la plus simple est un **effondrement du cône** : si toutes
+    les images du student se ressemblent davantage entre elles que chez le
+    teacher, les écarts qui séparent deux espèces se réduisent, et le
+    classement de 5 813 références se joue alors sous le niveau du bruit.
+    Ce chiffre le dit en une ligne.
+
+    Un teacher CLIP tourne d'ordinaire autour de 0,3 à 0,5. Nettement
+    au-dessus chez le student, c'est le cône qui s'est refermé — et le
+    remède est une perte qui pousse les vecteurs à s'écarter, pas une perte
+    cosinus plus longue.
+    """
+    alea = np.random.default_rng(graine)
+    v = np.asarray(vecteurs, dtype=np.float32)
+    if len(v) > combien:
+        v = v[alea.choice(len(v), combien, replace=False)]
+    v = v / np.linalg.norm(v, axis=1, keepdims=True)
+    produits = v @ v.T
+    hors_diagonale = ~np.eye(len(v), dtype=bool)
+    return float(produits[hors_diagonale].mean())
 
 
 def main() -> int:  # pragma: no cover - demande onnxruntime et les images
@@ -224,6 +256,9 @@ def main() -> int:  # pragma: no cover - demande onnxruntime et les images
         print(f'  médiane         {r["cosinus_median"]:.4f}')
         print(f'  10e centile     {r["centile_10"]:.4f}')
         print(f'  90e centile     {r["centile_90"]:.4f}')
+        print('\nlargeur du cône — cosinus moyen entre deux images quelconques')
+        print(f'  teacher         {r["cone_teacher"]:.4f}')
+        print(f'  student         {r["cone_student"]:.4f}')
         return 0
 
     cache = Path(args.cache).expanduser()

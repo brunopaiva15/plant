@@ -97,3 +97,25 @@ def test_le_banc_se_restreint_aux_tranches_demandees(tmp_path):
         w.writerow(['indoor', '/a.jpg', 'x', 'g', '0'])
         w.writerow(['multi', '/b.jpg', 'y', 'g', '0'])
     assert lire_banc(chemin, {'indoor'}) == ['/a.jpg']
+
+
+def test_letalement_voit_un_cone_referme():
+    """Le diagnostic : des vecteurs tous semblables rendent un cosinus moyen
+    élevé, des vecteurs bien répartis un cosinus proche de zéro."""
+    from student import etalement
+    alea = np.random.default_rng(0)
+    repartis = alea.standard_normal((200, 64)).astype(np.float32)
+    # Le bruit se somme sur les 64 dimensions : à 0,02 par axe sa norme vaut
+    # 0,16 contre 1 pour le signal, donc le cône reste serré.
+    serres = np.zeros((200, 64), dtype=np.float32)
+    serres[:, 0] = 1.0
+    serres += 0.02 * alea.standard_normal((200, 64)).astype(np.float32)
+    assert etalement(repartis) < 0.1
+    assert etalement(serres) > 0.8
+
+
+def test_letalement_ignore_la_diagonale():
+    """Un vecteur comparé à lui-même vaut 1 et gonflerait la moyenne."""
+    from student import etalement
+    v = np.eye(4, dtype=np.float32)
+    assert etalement(v) == pytest.approx(0.0, abs=1e-6)
