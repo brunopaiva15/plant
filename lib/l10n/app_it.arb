@@ -722,8 +722,6 @@
   "irisSpeciesLabel": "specie",
   "irisOfflineValue": "offline",
   "irisOfflineLabel": "anche in aereo",
-  "irisTwoPhotosTitle": "Due foto valgono più di una",
-  "irisTwoPhotosBody": "Fotografa la pianta intera, poi una foglia da vicino: con due foto, {name} trova la specie giusta 2 volte su 3, invece di 1 su 2.",
   "confidence": "{percent}%",
   "speciesSet": "Specie aggiornata",
   "compare": "Confronta",

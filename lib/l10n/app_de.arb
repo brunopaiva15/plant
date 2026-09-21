@@ -722,8 +722,6 @@
   "irisSpeciesLabel": "Arten",
   "irisOfflineValue": "offline",
   "irisOfflineLabel": "auch im Flugzeug",
-  "irisTwoPhotosTitle": "Zwei Fotos sind besser als eins",
-  "irisTwoPhotosBody": "Fotografiere die ganze Pflanze, dann ein Blatt aus der Nähe: Mit zwei Fotos findet {name} die richtige Art in 2 von 3 statt in 1 von 2.",
   "confidence": "{percent} %",
   "speciesSet": "Art aktualisiert",
   "compare": "Vergleichen",

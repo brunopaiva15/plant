@@ -722,8 +722,6 @@
   "irisSpeciesLabel": "species",
   "irisOfflineValue": "offline",
   "irisOfflineLabel": "even on a plane",
-  "irisTwoPhotosTitle": "Two photos beat one",
-  "irisTwoPhotosBody": "Photograph the whole plant, then a leaf close up: with two photos, {name} finds the right species 2 times out of 3, instead of 1 out of 2.",
   "confidence": "{percent}%",
   "speciesSet": "Species updated",
   "compare": "Compare",

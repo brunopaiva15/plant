@@ -3870,18 +3870,6 @@ abstract class AppLocalizations {
   /// **'même en avion'**
   String get irisOfflineLabel;
 
-  /// No description provided for @irisTwoPhotosTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Deux photos valent mieux qu\'une'**
-  String get irisTwoPhotosTitle;
-
-  /// No description provided for @irisTwoPhotosBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Photographiez la plante entière, puis une feuille de près : avec deux photos, {name} trouve la bonne espèce 2 fois sur 3, contre 1 sur 2.'**
-  String irisTwoPhotosBody(String name);
-
   /// No description provided for @confidence.
   ///
   /// In fr, this message translates to:

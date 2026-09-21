@@ -2168,14 +2168,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get irisOfflineLabel => 'même en avion';
 
   @override
-  String get irisTwoPhotosTitle => 'Deux photos valent mieux qu\'une';
-
-  @override
-  String irisTwoPhotosBody(String name) {
-    return 'Photographiez la plante entière, puis une feuille de près : avec deux photos, $name trouve la bonne espèce 2 fois sur 3, contre 1 sur 2.';
-  }
-
-  @override
   String confidence(int percent) {
     return '$percent %';
   }
