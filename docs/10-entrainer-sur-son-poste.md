@@ -138,21 +138,43 @@ réseau. Monter à 320 rééquilibre la machine au lieu de l'étrangler.
 
 `bioclip.py mesure`, le 21 septembre 2026, sur l'échantillon :
 
-| | images/s | |
-|---|---|---|
-| MobileNetV3Large, 320 px, lot 64 | 831 | la passe d'entraînement |
-| **BioCLIP 2.5 ViT-H/14, 224 px, lot 32** | **36,6** | **23× plus lent** |
+| | images/s | corpus | |
+|---|---|---|---|
+| MobileNetV3Large, 320 px, lot 64 | 831 | — | la passe d'entraînement |
+| BioCLIP ViT-H/14, décodage en série | 36,6 | 7,5 h | le premier jet |
+| **BioCLIP ViT-H/14, `--fils 6`** | **79,9** | **3,4 h** | **2,2×** |
 
-Sept heures et demie pour les 991 926 images, 1,89 Gio de vecteurs, et
-**3,74 Gio de VRAM sur les 8** au lot de 32 — la moitié de la carte reste
-libre, mais c'est le premier chiffre mesuré et non deviné, ce qui est tout
-l'objet de la commande.
+Lot 32, `float16`, **3,74 Gio de VRAM sur les 8** — la moitié de la carte
+reste libre.
 
-Vingt-trois fois plus lent, et ce n'est pas un problème : le teacher tourne
-**une fois**, là où l'entraînement repasse trente époques. Sept heures et
-demie pour BioCLIP contre huit heures pour une passe d'Iris 9 — le cache
-coûte donc un entraînement, une seule fois, et aucune distillation ne le
-rappellera ensuite.
+Dix fois plus lent que l'entraînement, et ce n'est pas un problème : le
+teacher tourne **une fois**, là où l'entraînement repasse trente époques.
+Trois heures et demie pour BioCLIP contre huit heures pour une passe d'Iris
+9 — le cache coûte moins qu'un entraînement, une seule fois, et aucune
+distillation ne le rappellera ensuite.
+
+#### La moitié de la passe était du décodage, et ça ne se devinait pas
+
+Le premier jet décodait un lot, l'envoyait à la carte, décodait le suivant.
+`nvidia-smi` pendant la passe : **53 %** d'utilisation en moyenne sur huit
+échantillons. La carte attendait le processeur à peu près la moitié du
+temps.
+
+Deux estimations successives se sont trompées, dans les deux sens, et c'est
+l'intérêt de les avoir écrites :
+
+- **23 %**, prévu avant la passe, en partant des 1 260 images/s de décodage
+  JPEG mesurés plus haut. Faux : ce chiffre-là mesure un décodage nu, quand
+  le teacher décode **et** redimensionne en bicubique vers 224 px, ce qui
+  coûte bien davantage ;
+- **69 images/s**, prévu depuis les 53 % d'utilisation. Faux aussi, mais par
+  défaut : on a obtenu 79,9. L'utilisation vue par `nvidia-smi` est une
+  moyenne grossière qui compte mal les creux courts.
+
+> **Un débit ne se déduit pas d'un autre débit.** Les deux estimations
+> partaient d'un chiffre mesuré et juste, et toutes deux étaient fausses de
+> près du double. Trente secondes de `mesure` ont tranché ce que deux
+> raisonnements n'avaient pas su approcher.
 
 ### Déplacer le jeu : une archive, jamais un million de fichiers
 

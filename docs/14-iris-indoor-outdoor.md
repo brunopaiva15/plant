@@ -616,15 +616,26 @@ multiplie ; une passe qui dépasserait la nuit se découpe par dossier, le
 cache étant incrémental par construction.
 
 **Mesuré le 21 septembre 2026** sur la RTX 2070 Super, `float16`, lot 32 :
-**36,6 images/s**, soit **7,5 h** pour les 991 926 images et 1,89 Gio de
-vecteurs. Le lot de 32 réserve 3,74 Gio de VRAM sur les 8.
+**79,9 images/s**, soit **3,4 h** pour le corpus et 1,90 Gio de vecteurs. Le
+lot de 32 réserve 3,74 Gio de VRAM sur les 8.
 
-Vingt-trois fois plus lent que les 831 images/s de `train.py` à 320 px — et
-c'est l'argument du cache plutôt qu'une objection contre lui : le teacher
-passe **une fois**, l'entraînement repasse trente époques. Sept heures et
-demie pour BioCLIP contre huit pour une passe d'Iris 9, et plus jamais
-ensuite. Une nuit suffit, donc les parts ne servent pas ici ; elles restent
+Dix fois plus lent que les 831 images/s de `train.py` à 320 px — et c'est
+l'argument du cache plutôt qu'une objection contre lui : le teacher passe
+**une fois**, l'entraînement repasse trente époques. Trois heures et demie
+pour BioCLIP contre huit pour une passe d'Iris 9, et plus jamais ensuite.
+Une demi-journée suffit, donc les parts ne servent pas ici ; elles restent
 pour le jour où le corpus grandira.
+
+Le premier jet rendait 36,6 images/s, le décodage se faisant en série avec
+le calcul : `--fils` le met en parallèle et vaut 2,2×. Ce que cet écart a
+appris est écrit au § 2 bis de [`docs/10`](10-entrainer-sur-son-poste.md),
+et tient en une phrase — un débit ne se déduit pas d'un autre débit.
+
+> **Le corpus compte 997 660 images**, et non les 991 926 du tableau
+> ci-dessus. Celui-là est le compte d'images gardées de la v8, repris de
+> `docs/09` ; celui-ci est ce que `splits.csv` porte réellement sur les trois
+> répartitions. L'écart de 5 734 ne change rien au disque ni à la durée, mais
+> il vaut d'être noté plutôt que corrigé en douce dans l'un des deux.
 
 Deux précautions, parce qu'un cache faux est pire qu'un cache absent :
 
