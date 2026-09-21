@@ -225,11 +225,12 @@ Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir u
    réglage concerné, ouvert après fermeture.
 4. Elle est marquée comme vue **avant** d'être affichée : une application tuée
    en cours de lecture ne la rouvre pas au lancement suivant.
-5. Pas de porte d'entrée manuelle pour l'instant : les réglages n'ont pas de
-   ligne « Nouveautés » tant que le catalogue ne contient que l'exemple, dont
-   les chiffres sont inventés. Rouvrir cette ligne à la première vraie
-   livraison est une FloraListRow — la marche à suivre est dans
-   `profile_screen.dart`.
+5. La porte d'entrée manuelle est dans les réglages : une ligne
+   « Nouveautés » rouvre la dernière livrée (`WhatsNew.latest`), sans rien
+   consommer. C'est le seul chemin pour la relire — et le seul pour la voir
+   quand la règle l'a passée sous silence, ce qui est le cas de toute
+   installation neuve : le premier lancement marque tout le catalogue comme
+   vu.
 
 Ajouter une version = une entrée dans `releaseNotes()` et ses clés dans les
 quatre `.arb`. Un identifiant de nouveauté ne se renomme ni ne se réemploie :
