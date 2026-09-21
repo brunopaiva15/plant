@@ -55,19 +55,19 @@ NOMBRES = {
     'fr': re.compile(
         r'\b(deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|quinze|vingt|trente|'
         r'cinquante)\b[^.;:]{0,24}\b(centimètres?|millimètres?|mètres?|semaines?|jours?|'
-        r'mois|heures?|minutes?|ans?|années?|degrés?|pour cent|%)', re.I),
+        r'mois|heures?|minutes?|ans?|années?|degrés?|pour cent|%)\b', re.I),
     'en': re.compile(
         r'\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|fifteen|twenty|thirty|'
         r'fifty)\b[^.;:]{0,24}\b(centimet\w+|millimet\w+|met(re|er)s?|weeks?|days?|months?|'
-        r'hours?|minutes?|years?|degrees?|per cent|percent|%)', re.I),
+        r'hours?|minutes?|years?|degrees?|per cent|percent|%)\b', re.I),
     'de': re.compile(
         r'\b(zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf|fünfzehn|zwanzig|'
         r'dreißig|fünfzig)\b[^.;:]{0,24}\b(Zentimetern?|Millimetern?|Metern?|Wochen?|Tagen?|'
-        r'Monaten?|Stunden?|Minuten?|Jahren?|Grad|Prozent|%)', re.I),
+        r'Monaten?|Stunden?|Minuten?|Jahren?|Grad|Prozent|%)\b', re.I),
     'it': re.compile(
         r'\b(due|tre|quattro|cinque|sei|sette|otto|nove|dieci|undici|dodici|quindici|venti|'
         r'trenta|cinquanta)\b[^.;:]{0,24}\b(centimetri?|millimetri?|metri?|settimane?|giorni?|'
-        r'mesi?|ore?|minuti?|anni?|gradi?|per cento|%)', re.I),
+        r'mesi?|ore?|minuti?|anni?|gradi?|per cento|%)\b', re.I),
 }
 
 # Le registre est tranché (docs/06, « Les textes ») : « vous » en français,
@@ -75,7 +75,7 @@ NOMBRES = {
 # registre de trop.
 REGISTRE_DE_TROP = {
     'de': re.compile(r'\bIhnen\b|\bIhre\w*\b|\bIhr\b|\b\w+en Sie\b'),
-    'it': re.compile(r'\b(vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
+    'it': re.compile(r'\b(voi|vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
                      r'aggiungete|verificate|inserite|attivate|premete|aprite)\b', re.I),
 }
 

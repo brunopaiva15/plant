@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 et 2 livrés**, lots 3 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 3 livrés**, lots 4 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -316,14 +316,34 @@ où l'infinitif est la forme juste. Seules leurs mesures passent aux chiffres
 
 ### Lot 3 — L'écran du matin, la météo, les rappels (132 clés, 35 explicatives)
 
+> **Livré.** 72 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 15 clés signalées à 1 — un passif d'état (« l'arrosage est noté
+> fait ») que rendre actif ferait déborder la ligne, et dont l'acteur est
+> évident. `flutter gen-l10n` passé, tests et `flutter analyze` verts.
+
 Préfixes `home…`, `weather…`, `today…`, `notif…`, `strategy…`, `rain…`.
+
+Trois choses s'y ajoutent à ce que le plan prévoyait :
+
+- **Les conseils de l'air de la maison étaient à l'infinitif** — « Air sec :
+  brumiser ou regrouper {names} », « Chaleur : … vérifier la terre ». Ce sont
+  des consignes sur l'écran du matin, elles passent à l'impératif.
+- **Les alertes de gel et de canicule étaient nominales** — « À rentrer ou à
+  couvrir : {names} » devient « Rentrez ou couvrez {names} », dans la carte
+  comme dans la notification.
+- **`homeClimateAtHome` disait « Da voi » en italien**, seul reste de
+  vouvoiement de ce lot ; il passe au *tu*.
+
+`weatherRainCountsHint` perd sa troisième phrase (« Coupé, l'écran du matin le
+propose en un tap ») : le bouton « Noter arrosé » est déjà sur l'écran du
+matin, la phrase décrivait ce qui se voit. C'est la règle 4 appliquée.
 
 | Clé | Avant | Après |
 |---|---|---|
-| `weatherHint` | Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo. | Pour vos plantes en extérieur : la pluie tombée compte comme un arrosage, la pluie annoncée le reporte, le gel et la canicule sont signalés. Source : Open-Meteo. |
-| `weatherRainCountsHint` | Au-delà de 5 mm sur trois jours, l'arrosage des emplacements extérieurs est noté fait. Coupé, l'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie. | Au-delà de 5 mm de pluie sur trois jours, l'arrosage de vos emplacements extérieurs est noté comme fait ; désactivé, l'écran du matin vous le propose en un geste. Un pot abrité par du feuillage reçoit moins de pluie. |
+| `weatherHint` | Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo. | Pour vos plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, gel et canicule sont signalés (Open-Meteo). |
+| `weatherRainCountsHint` | Au-delà de 5 mm sur trois jours, l'arrosage des emplacements extérieurs est noté fait. Coupé, l'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie. | Au-delà de 5 mm sur 3 jours, l'arrosage de vos emplacements extérieurs est noté fait. Un pot sous un feuillage reçoit moins de pluie. |
 | `weatherClimateHint` | Les propositions de plantes pour l'extérieur suivent les hivers et les étés du lieu. | Les plantes proposées pour l'extérieur tiennent compte des hivers et des étés de votre région. |
-| `homeClimateHint` | La température et l'humidité d'un capteur de la maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. La mesure ne quitte pas l'application. | La température et l'humidité mesurées par un capteur ajustent les conseils de vos plantes d'intérieur et complètent les diagnostics. La mesure ne quitte pas l'application. |
+| `homeClimateHint` | La température et l'humidité d'un capteur de la maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. La mesure ne quitte pas l'application. | Un capteur de la maison ajuste les conseils de vos plantes d'intérieur et complète les diagnostics. La mesure ne quitte pas l'application. |
 | `homeClimateHumidityMissing` | Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité. | Ce capteur n'envoie pas l'humidité. Choisissez-en un autre dans la ligne Humidité. |
 | `homeClimateDeniedApple` | Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison. | Accès à Apple Maison refusé. Vous pouvez le rétablir dans Réglages › Confidentialité › Maison. |
 | `homeClimateDeniedGoogle` | Accès à Google Home refusé. Il se rouvre dans l'application Google Home, aux autorisations. | Accès à Google Home refusé. Vous pouvez le rétablir dans les autorisations de l'application Google Home. |
@@ -331,7 +351,7 @@ Préfixes `home…`, `weather…`, `today…`, `notif…`, `strategy…`, `rain�
 | `homeClimateFailedIn` | {home} indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison. | {home} est indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison. |
 | `strategyWeatherHint` | L'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid. | L'intervalle de la saison se resserre par temps chaud et sec, s'espace par temps pluvieux ou froid. |
 | `strategyWeatherNoPlace` | Sans lieu météo, l'intervalle reste celui de la saison. | Sans lieu météo renseigné, l'intervalle reste celui de la saison. |
-| `notificationPermissionDenied` | Autorisez les notifications dans les Réglages de votre téléphone. | Autorisez les notifications dans les réglages de votre téléphone. |
+| `notificationPermissionDenied` | Autorisez les notifications dans les Réglages de votre téléphone. | *(inchangé — « Réglages » est le nom de l'app d'iOS, la majuscule est juste)* |
 
 ### Lot 4 — L'identification et Iris (84 clés, 21 explicatives)
 
@@ -548,7 +568,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 |---:|---|---:|---:|---|
 | 1 ✓ | Relevé de la maison | 95 | 27 | **livré** — l'écran qui a ouvert le chantier ; sert de patron aux autres |
 | 2 ✓ | Guides de multiplication | 133 | 62 | **livré** — le plus atteint, et le plus lu quand on s'en sert |
-| 3 | Écran du matin, météo | 132 | 35 | vu tous les jours |
+| 3 ✓ | Écran du matin, météo | 132 | 35 | **livré** — vu tous les jours |
 | 4 | Identification, Iris | 84 | 21 | porte trois consentements |
 | 5 | Diagnostic, encyclopédie | 138 | 23 | |
 | 6 | Fiches d'entretien | 303 | 117 | volumineux mais déjà propre |

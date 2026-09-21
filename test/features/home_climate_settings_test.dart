@@ -108,7 +108,7 @@ void main() {
 
     await _tap(tester, 'Déconnecter Google Home');
     // La confirmation dit ce que la déconnexion ne fait pas.
-    expect(find.textContaining("L'autorisation accordée reste dans le compte Google"), findsOneWidget);
+    expect(find.textContaining('reste dans votre compte Google'), findsOneWidget);
     await _tap(tester, 'Déconnecter');
 
     expect(google.disconnectCalls, 1);

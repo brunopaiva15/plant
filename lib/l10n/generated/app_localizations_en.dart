@@ -1562,7 +1562,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateHint =>
-      'The temperature and humidity of a home sensor adjust the advice for indoor plants and complete diagnoses. The reading stays in the app.';
+      'A home sensor adjusts the advice for your indoor plants and fills out diagnoses. The reading stays in the app.';
 
   @override
   String get homeClimateApple => 'Apple Home';
@@ -1614,7 +1614,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Humidity not received from this sensor. Another one is chosen in the Humidity row.';
+      'This sensor is not sending humidity. Pick another one in the Humidity row.';
 
   @override
   String get homeClimateNone => 'No sensor';
@@ -1647,15 +1647,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateDeniedApple =>
-      'Access to Apple Home refused. It can be granted again in Settings › Privacy › Home.';
+      'Access to Apple Home denied. You can grant it again in Settings › Privacy › Home.';
 
   @override
   String get homeClimateDeniedGoogle =>
-      'Access to Google Home refused. It can be granted again in the Google Home app, under permissions.';
+      'Access to Google Home denied. You can grant it again in the Google Home app, under permissions.';
 
   @override
   String homeClimateFailedIn(String home) {
-    return '$home unavailable. You can connect a sensor in Profile › Home sensors.';
+    return '$home is unavailable. You can connect a sensor in Profile › Home sensors.';
   }
 
   @override
@@ -1674,7 +1674,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeClimateDisconnectGoogleHint =>
-      'The Google Home sensors are forgotten on this device. The access granted stays in the Google account, and is withdrawn from there.';
+      'The Google Home sensors are forgotten on this device. The access stays in your Google account: withdraw it from there.';
 
   @override
   String get homeClimateDisconnectedGoogle => 'Google Home disconnected.';
@@ -2206,7 +2206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'For outdoor plants: rain that has fallen counts as watering, rain that is forecast postpones it, and frost and heat are flagged. Open-Meteo data.';
+      'For your outdoor plants: rain that has fallen counts as watering, forecast rain postpones it, frost and heat are flagged (Open-Meteo).';
 
   @override
   String get weatherPlace => 'Place';
@@ -5706,7 +5706,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get strategyWeatherHint =>
-      'The seasonal interval, shortened by dry heat, stretched by rain and cold.';
+      'The seasonal interval shortens in dry heat and stretches in rain and cold.';
 
   @override
   String strategyWeatherNow(String interval) {
@@ -5743,12 +5743,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String weatherFrostBody(String names) {
-    return 'To bring in or cover: $names.';
+    return 'Bring in or cover $names.';
   }
 
   @override
   String weatherHeatBody(String names) {
-    return 'To move into shade, and water early: $names.';
+    return 'Move $names into shade, and water early.';
   }
 
   @override
@@ -5769,12 +5769,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String notifFrost(String when, String names) {
-    return 'Frost $when · to bring in or cover: $names.';
+    return 'Frost $when · bring in or cover $names.';
   }
 
   @override
   String notifHeat(String when, String names) {
-    return 'Heat $when · to move into shade: $names.';
+    return 'Heat $when · move $names into shade.';
   }
 
   @override
@@ -5816,14 +5816,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherRainCountsHint =>
-      'Above 5 mm over three days, watering at outdoor locations is logged as done. Turned off, the morning screen offers it in one tap. A pot sheltered by foliage gets less rain.';
+      'Above 5 mm over 3 days, watering at your outdoor locations is logged as done. A pot under foliage gets less rain.';
 
   @override
   String get weatherClimate => 'Climate';
 
   @override
   String get weatherClimateHint =>
-      'Plant suggestions for outdoors follow the winters and summers of the place.';
+      'Plants suggested for outdoors take account of the winters and summers where you are.';
 
   @override
   String weatherClimateZone(String zone) {

@@ -2853,7 +2853,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateHint.
   ///
   /// In fr, this message translates to:
-  /// **'La température et l\'humidité d\'un capteur de la maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. La mesure ne quitte pas l\'application.'**
+  /// **'Un capteur de la maison ajuste les conseils de vos plantes d\'intérieur et complète les diagnostics. La mesure ne quitte pas l\'application.'**
   String get homeClimateHint;
 
   /// No description provided for @homeClimateApple.
@@ -2955,7 +2955,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateHumidityMissing.
   ///
   /// In fr, this message translates to:
-  /// **'Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.'**
+  /// **'Ce capteur n\'envoie pas l\'humidité. Choisissez-en un autre dans la ligne Humidité.'**
   String get homeClimateHumidityMissing;
 
   /// No description provided for @homeClimateNone.
@@ -2997,19 +2997,19 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateDeniedApple.
   ///
   /// In fr, this message translates to:
-  /// **'Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.'**
+  /// **'Accès à Apple Maison refusé. Vous pouvez le rétablir dans Réglages › Confidentialité › Maison.'**
   String get homeClimateDeniedApple;
 
   /// No description provided for @homeClimateDeniedGoogle.
   ///
   /// In fr, this message translates to:
-  /// **'Accès à Google Home refusé. Il se rouvre dans l\'application Google Home, aux autorisations.'**
+  /// **'Accès à Google Home refusé. Vous pouvez le rétablir dans les autorisations de l\'application Google Home.'**
   String get homeClimateDeniedGoogle;
 
   /// No description provided for @homeClimateFailedIn.
   ///
   /// In fr, this message translates to:
-  /// **'{home} indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.'**
+  /// **'{home} est indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.'**
   String homeClimateFailedIn(String home);
 
   /// No description provided for @homeClimateAppleNote.
@@ -3039,7 +3039,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeClimateDisconnectGoogleHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les capteurs de Google Home sont oubliés sur cet appareil. L\'autorisation accordée reste dans le compte Google, et se retire depuis ce compte.'**
+  /// **'Les capteurs Google Home sont oubliés sur cet appareil. L\'autorisation reste dans votre compte Google : retirez-la depuis ce compte.'**
   String get homeClimateDisconnectGoogleHint;
 
   /// No description provided for @homeClimateDisconnectedGoogle.
@@ -3093,19 +3093,19 @@ abstract class AppLocalizations {
   /// No description provided for @homeTipDryAir.
   ///
   /// In fr, this message translates to:
-  /// **'Air sec : brumiser ou regrouper {names}.'**
+  /// **'Air sec : brumisez ou regroupez {names}.'**
   String homeTipDryAir(String names);
 
   /// No description provided for @homeTipHumidAir.
   ///
   /// In fr, this message translates to:
-  /// **'Air humide : aérer la pièce.'**
+  /// **'Air humide : aérez la pièce.'**
   String get homeTipHumidAir;
 
   /// No description provided for @homeTipHumidAirPlants.
   ///
   /// In fr, this message translates to:
-  /// **'Air humide : aérer, et laisser sécher {names} entre deux arrosages.'**
+  /// **'Air humide : aérez, et laissez sécher {names} entre deux arrosages.'**
   String homeTipHumidAirPlants(String names);
 
   /// No description provided for @homeTipCold.
@@ -3117,7 +3117,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeTipHot.
   ///
   /// In fr, this message translates to:
-  /// **'Chaleur : {names} sèchent plus vite, vérifier la terre.'**
+  /// **'Chaleur : {names} sèchent plus vite, vérifiez la terre.'**
   String homeTipHot(String names);
 
   /// No description provided for @diagnosisWithHome.
@@ -3945,7 +3945,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo.'**
+  /// **'Pour vos plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, gel et canicule sont signalés (Open-Meteo).'**
   String get weatherHint;
 
   /// No description provided for @weatherPlace.
@@ -9861,7 +9861,7 @@ abstract class AppLocalizations {
   /// No description provided for @strategyWeatherHint.
   ///
   /// In fr, this message translates to:
-  /// **'L\'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid.'**
+  /// **'L\'intervalle de la saison se resserre par temps chaud et sec, s\'espace par temps pluvieux ou froid.'**
   String get strategyWeatherHint;
 
   /// No description provided for @strategyWeatherNow.
@@ -9873,7 +9873,7 @@ abstract class AppLocalizations {
   /// No description provided for @strategyWeatherNoPlace.
   ///
   /// In fr, this message translates to:
-  /// **'Sans lieu météo, l\'intervalle reste celui de la saison.'**
+  /// **'Sans lieu météo renseigné, l\'intervalle reste celui de la saison.'**
   String get strategyWeatherNoPlace;
 
   /// No description provided for @weatherWhenTonight.
@@ -9915,13 +9915,13 @@ abstract class AppLocalizations {
   /// No description provided for @weatherFrostBody.
   ///
   /// In fr, this message translates to:
-  /// **'À rentrer ou à couvrir : {names}.'**
+  /// **'Rentrez ou couvrez {names}.'**
   String weatherFrostBody(String names);
 
   /// No description provided for @weatherHeatBody.
   ///
   /// In fr, this message translates to:
-  /// **'À mettre à l\'ombre, et à arroser tôt : {names}.'**
+  /// **'Mettez {names} à l\'ombre, et arrosez tôt.'**
   String weatherHeatBody(String names);
 
   /// No description provided for @weatherAlertMore.
@@ -9939,13 +9939,13 @@ abstract class AppLocalizations {
   /// No description provided for @notifFrost.
   ///
   /// In fr, this message translates to:
-  /// **'Gel {when} · à rentrer ou à couvrir : {names}.'**
+  /// **'Gel {when} · rentrez ou couvrez {names}.'**
   String notifFrost(String when, String names);
 
   /// No description provided for @notifHeat.
   ///
   /// In fr, this message translates to:
-  /// **'Chaleur {when} · à mettre à l\'ombre : {names}.'**
+  /// **'Chaleur {when} · mettez {names} à l\'ombre.'**
   String notifHeat(String when, String names);
 
   /// No description provided for @weatherRainFallenTitle.
@@ -9993,7 +9993,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherRainCountsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Au-delà de 5 mm sur trois jours, l\'arrosage des emplacements extérieurs est noté fait. Coupé, l\'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie.'**
+  /// **'Au-delà de 5 mm sur 3 jours, l\'arrosage de vos emplacements extérieurs est noté fait. Un pot sous un feuillage reçoit moins de pluie.'**
   String get weatherRainCountsHint;
 
   /// No description provided for @weatherClimate.
@@ -10005,7 +10005,7 @@ abstract class AppLocalizations {
   /// No description provided for @weatherClimateHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les propositions de plantes pour l\'extérieur suivent les hivers et les étés du lieu.'**
+  /// **'Les plantes proposées pour l\'extérieur tiennent compte des hivers et des étés de votre région.'**
   String get weatherClimateHint;
 
   /// No description provided for @weatherClimateZone.

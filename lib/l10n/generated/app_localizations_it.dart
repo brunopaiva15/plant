@@ -1563,7 +1563,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateHint =>
-      'Temperatura e umidità di un sensore di casa adattano i consigli delle piante da interno e completano le diagnosi. La misura resta nell\'app.';
+      'Un sensore di casa adatta i consigli delle tue piante da interno e completa le diagnosi. La misura resta nell\'app.';
 
   @override
   String get homeClimateApple => 'Casa di Apple';
@@ -1615,7 +1615,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Umidità non ricevuta da questo sensore. Un altro si sceglie nella riga Umidità.';
+      'Questo sensore non invia l\'umidità. Scegline un altro nella riga Umidità.';
 
   @override
   String get homeClimateNone => 'Nessun sensore';
@@ -1648,15 +1648,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateDeniedApple =>
-      'Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.';
+      'Accesso a Casa di Apple negato. Puoi riattivarlo in Impostazioni › Privacy › Casa.';
 
   @override
   String get homeClimateDeniedGoogle =>
-      'Accesso a Google Home rifiutato. Si riattiva nell\'app Google Home, nelle autorizzazioni.';
+      'Accesso a Google Home negato. Puoi riattivarlo nell\'app Google Home, nelle autorizzazioni.';
 
   @override
   String homeClimateFailedIn(String home) {
-    return '$home non disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.';
+    return '$home non è disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.';
   }
 
   @override
@@ -1675,7 +1675,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateDisconnectGoogleHint =>
-      'I sensori di Google Home vengono dimenticati su questo dispositivo. L\'autorizzazione concessa resta nell\'account Google e si revoca da lì.';
+      'I sensori Google Home vengono dimenticati su questo dispositivo. L\'autorizzazione resta nel tuo account Google: revocala da lì.';
 
   @override
   String get homeClimateDisconnectedGoogle => 'Google Home disconnesso.';
@@ -1684,7 +1684,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeClimateGoogleAccess => 'Autorizzazioni dell\'account Google';
 
   @override
-  String get homeClimateAtHome => 'Da voi';
+  String get homeClimateAtHome => 'Da te';
 
   @override
   String get homeClimateFits => 'Niente che disturbi questa specie.';
@@ -1703,15 +1703,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String homeTipDryAir(String names) {
-    return 'Aria secca: nebulizzare o raggruppare $names.';
+    return 'Aria secca: nebulizza o raggruppa $names.';
   }
 
   @override
-  String get homeTipHumidAir => 'Aria umida: arieggiare la stanza.';
+  String get homeTipHumidAir => 'Aria umida: arieggia la stanza.';
 
   @override
   String homeTipHumidAirPlants(String names) {
-    return 'Aria umida: arieggiare, e lasciare asciugare $names tra due annaffiature.';
+    return 'Aria umida: arieggia, e lascia asciugare $names tra due annaffiature.';
   }
 
   @override
@@ -1721,7 +1721,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String homeTipHot(String names) {
-    return 'Caldo: $names si asciugano più in fretta, controllare la terra.';
+    return 'Caldo: $names si asciugano più in fretta, controlla la terra.';
   }
 
   @override
@@ -2210,7 +2210,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto: la pioggia caduta vale come annaffiatura, quella prevista la rinvia, e gelo e caldo vengono segnalati. Dati Open-Meteo.';
+      'Per le tue piante all\'aperto: la pioggia caduta vale un\'annaffiatura, quella prevista la rinvia, gelo e caldo sono segnalati (Open-Meteo).';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -5736,7 +5736,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get strategyWeatherHint =>
-      'L\'intervallo della stagione, accorciato dal caldo secco, allungato da pioggia e freddo.';
+      'L\'intervallo della stagione si accorcia col caldo secco e si allunga con pioggia e freddo.';
 
   @override
   String strategyWeatherNow(String interval) {
@@ -5773,12 +5773,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String weatherFrostBody(String names) {
-    return 'Da riparare o coprire: $names.';
+    return 'Ripara o copri $names.';
   }
 
   @override
   String weatherHeatBody(String names) {
-    return 'Da spostare all\'ombra e annaffiare presto: $names.';
+    return 'Sposta $names all\'ombra e annaffia presto.';
   }
 
   @override
@@ -5799,12 +5799,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String notifFrost(String when, String names) {
-    return 'Gelo $when · da riparare o coprire: $names.';
+    return 'Gelo $when · ripara o copri $names.';
   }
 
   @override
   String notifHeat(String when, String names) {
-    return 'Caldo $when · da spostare all\'ombra: $names.';
+    return 'Caldo $when · sposta $names all\'ombra.';
   }
 
   @override
@@ -5846,14 +5846,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherRainCountsHint =>
-      'Oltre 5 mm in tre giorni, l\'annaffiatura dei luoghi esterni viene registrata come fatta. Disattivato, la schermata del mattino la propone con un tocco. Un vaso riparato dalle foglie riceve meno pioggia.';
+      'Oltre 5 mm in 3 giorni, l\'annaffiatura dei tuoi luoghi esterni viene registrata come fatta. Un vaso sotto le foglie riceve meno pioggia.';
 
   @override
   String get weatherClimate => 'Clima';
 
   @override
   String get weatherClimateHint =>
-      'Le proposte di piante per l\'esterno seguono gli inverni e le estati del luogo.';
+      'Le piante proposte per l\'esterno tengono conto degli inverni e delle estati della tua zona.';
 
   @override
   String weatherClimateZone(String zone) {

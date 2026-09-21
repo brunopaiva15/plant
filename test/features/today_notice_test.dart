@@ -75,11 +75,11 @@ void main() {
 
     test('la consigne ne répète pas la mesure', () {
       const hot = HomeClimateTip(kind: HomeClimateTipKind.hot, value: 25, plantNames: ['Monstera', 'Pilea']);
-      expect(homeTipText(l10n, hot), 'Chaleur : Monstera et Pilea sèchent plus vite, vérifier la terre.');
+      expect(homeTipText(l10n, hot), 'Chaleur : Monstera et Pilea sèchent plus vite, vérifiez la terre.');
       const dry = HomeClimateTip(kind: HomeClimateTipKind.dryAir, value: 32, plantNames: ['Calathea']);
-      expect(homeTipText(l10n, dry), 'Air sec : brumiser ou regrouper Calathea.');
+      expect(homeTipText(l10n, dry), 'Air sec : brumisez ou regroupez Calathea.');
       const humid = HomeClimateTip(kind: HomeClimateTipKind.humidAir, value: 75, plantNames: []);
-      expect(homeTipText(l10n, humid), 'Air humide : aérer la pièce.');
+      expect(homeTipText(l10n, humid), 'Air humide : aérez la pièce.');
       const cold = HomeClimateTip(kind: HomeClimateTipKind.cold, value: 12, plantNames: ['Pilea']);
       expect(homeTipText(l10n, cold), 'Trop froid pour Pilea.');
     });

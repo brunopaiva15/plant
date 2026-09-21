@@ -465,7 +465,7 @@
   "onbHomeTitle": "La vostra casa",
   "onbHomeBody": "I sensori di Casa di Apple e di Google Home danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. La misura resta nell'app.",
   "homeClimate": "Sensori di casa",
-  "homeClimateHint": "Temperatura e umidità di un sensore di casa adattano i consigli delle piante da interno e completano le diagnosi. La misura resta nell'app.",
+  "homeClimateHint": "Un sensore di casa adatta i consigli delle tue piante da interno e completa le diagnosi. La misura resta nell'app.",
   "homeClimateApple": "Casa di Apple",
   "homeClimateGoogle": "Google Home",
   "homeClimateConnect": "Collega una casa",
@@ -482,7 +482,7 @@
   "homeClimateTemperatureSensor": "Sensore di temperatura",
   "homeClimateHumiditySensor": "Sensore di umidità",
   "homeClimateSameSensor": "Stesso sensore",
-  "homeClimateHumidityMissing": "Umidità non ricevuta da questo sensore. Un altro si sceglie nella riga Umidità.",
+  "homeClimateHumidityMissing": "Questo sensore non invia l'umidità. Scegline un altro nella riga Umidità.",
   "homeClimateNone": "Nessun sensore",
   "homeClimateRemove": "Rimuovi sensore",
   "homeClimateReading": "Misura",
@@ -503,9 +503,9 @@
       }
     }
   },
-  "homeClimateDeniedApple": "Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.",
-  "homeClimateDeniedGoogle": "Accesso a Google Home rifiutato. Si riattiva nell'app Google Home, nelle autorizzazioni.",
-  "homeClimateFailedIn": "{home} non disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.",
+  "homeClimateDeniedApple": "Accesso a Casa di Apple negato. Puoi riattivarlo in Impostazioni › Privacy › Casa.",
+  "homeClimateDeniedGoogle": "Accesso a Google Home negato. Puoi riattivarlo nell'app Google Home, nelle autorizzazioni.",
+  "homeClimateFailedIn": "{home} non è disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.",
   "@homeClimateFailedIn": {
     "placeholders": {
       "home": {
@@ -517,16 +517,16 @@
   "homeClimateGoogleNote": "Google Home legge i dispositivi tramite il tuo account Google.",
   "homeClimateDisconnect": "Disconnetti",
   "homeClimateDisconnectGoogle": "Disconnetti Google Home",
-  "homeClimateDisconnectGoogleHint": "I sensori di Google Home vengono dimenticati su questo dispositivo. L'autorizzazione concessa resta nell'account Google e si revoca da lì.",
+  "homeClimateDisconnectGoogleHint": "I sensori Google Home vengono dimenticati su questo dispositivo. L'autorizzazione resta nel tuo account Google: revocala da lì.",
   "homeClimateDisconnectedGoogle": "Google Home disconnesso.",
   "homeClimateGoogleAccess": "Autorizzazioni dell'account Google",
-  "homeClimateAtHome": "Da voi",
+  "homeClimateAtHome": "Da te",
   "homeClimateFits": "Niente che disturbi questa specie.",
   "homeClimateTooDry": "Aria troppo secca per questa specie.",
   "homeClimateTooHumid": "Aria troppo umida per questa specie.",
   "homeClimateTooCold": "Troppo freddo per questa specie.",
   "homeClimateTooHot": "Troppo caldo per questa specie.",
-  "homeTipDryAir": "Aria secca: nebulizzare o raggruppare {names}.",
+  "homeTipDryAir": "Aria secca: nebulizza o raggruppa {names}.",
   "@homeTipDryAir": {
     "placeholders": {
       "names": {
@@ -534,8 +534,8 @@
       }
     }
   },
-  "homeTipHumidAir": "Aria umida: arieggiare la stanza.",
-  "homeTipHumidAirPlants": "Aria umida: arieggiare, e lasciare asciugare {names} tra due annaffiature.",
+  "homeTipHumidAir": "Aria umida: arieggia la stanza.",
+  "homeTipHumidAirPlants": "Aria umida: arieggia, e lascia asciugare {names} tra due annaffiature.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
       "names": {
@@ -551,7 +551,7 @@
       }
     }
   },
-  "homeTipHot": "Caldo: {names} si asciugano più in fretta, controllare la terra.",
+  "homeTipHot": "Caldo: {names} si asciugano più in fretta, controlla la terra.",
   "@homeTipHot": {
     "placeholders": {
       "names": {
@@ -765,7 +765,7 @@
   "outdoor": "Esterno",
   "outdoorHint": "Balcone, giardino o serra: il meteo viene considerato.",
   "weather": "Meteo",
-  "weatherHint": "Per le piante all'aperto: la pioggia caduta vale come annaffiatura, quella prevista la rinvia, e gelo e caldo vengono segnalati. Dati Open-Meteo.",
+  "weatherHint": "Per le tue piante all'aperto: la pioggia caduta vale un'annaffiatura, quella prevista la rinvia, gelo e caldo sono segnalati (Open-Meteo).",
   "weatherPlace": "Luogo",
   "weatherSearchHint": "Città…",
   "weatherNone": "Nessun luogo",
@@ -1855,7 +1855,7 @@
   "viewAnother": "Altra vista",
   "viewForModel": "Usata da {name} per riconoscere la specie, non conservata.",
   "strategyWeather": "Meteo",
-  "strategyWeatherHint": "L'intervallo della stagione, accorciato dal caldo secco, allungato da pioggia e freddo.",
+  "strategyWeatherHint": "L'intervallo della stagione si accorcia col caldo secco e si allunga con pioggia e freddo.",
   "strategyWeatherNow": "Con il tempo di questa settimana: {interval}",
   "strategyWeatherNoPlace": "Senza un luogo meteo, l'intervallo resta quello della stagione.",
   "weatherWhenTonight": "stanotte",
@@ -1864,12 +1864,12 @@
   "weatherWhenInDays": "tra {count} giorni",
   "weatherFrostTitle": "Gelo {when} · {temp}",
   "weatherHeatTitle": "Caldo {when} · {temp}",
-  "weatherFrostBody": "Da riparare o coprire: {names}.",
-  "weatherHeatBody": "Da spostare all'ombra e annaffiare presto: {names}.",
+  "weatherFrostBody": "Ripara o copri {names}.",
+  "weatherHeatBody": "Sposta {names} all'ombra e annaffia presto.",
   "weatherAlertMore": "{count, plural, =1{e 1 altra} other{e altre {count}}}",
   "weatherAlertFamily": "la famiglia {name}",
-  "notifFrost": "Gelo {when} · da riparare o coprire: {names}.",
-  "notifHeat": "Caldo {when} · da spostare all'ombra: {names}.",
+  "notifFrost": "Gelo {when} · ripara o copri {names}.",
+  "notifHeat": "Caldo {when} · sposta {names} all'ombra.",
   "weatherRainFallenTitle": "Pioggia · {mm} mm",
   "weatherRainWatered": "Annaffiatura registrata per {names}.",
   "weatherRainWaterable": "La pioggia vale l'annaffiatura di {names}.",
@@ -1877,9 +1877,9 @@
   "weatherRainWateredToast": "{count, plural, =1{1 annaffiatura registrata} other{{count} annaffiature registrate}}",
   "weatherRainNote": "Annaffiata dalla pioggia ({mm} mm).",
   "weatherRainCounts": "La pioggia vale come annaffiatura",
-  "weatherRainCountsHint": "Oltre 5 mm in tre giorni, l'annaffiatura dei luoghi esterni viene registrata come fatta. Disattivato, la schermata del mattino la propone con un tocco. Un vaso riparato dalle foglie riceve meno pioggia.",
+  "weatherRainCountsHint": "Oltre 5 mm in 3 giorni, l'annaffiatura dei tuoi luoghi esterni viene registrata come fatta. Un vaso sotto le foglie riceve meno pioggia.",
   "weatherClimate": "Clima",
-  "weatherClimateHint": "Le proposte di piante per l'esterno seguono gli inverni e le estati del luogo.",
+  "weatherClimateHint": "Le piante proposte per l'esterno tengono conto degli inverni e delle estati della tua zona.",
   "weatherClimateZone": "Zona {zone}",
   "weatherClimateRange": "Inverni a {low}, estati a {high}",
   "weatherClimateNone": "Sconosciuto",

@@ -676,7 +676,7 @@
   "onbHomeTitle": "Votre intérieur",
   "onbHomeBody": "Les capteurs d'Apple Maison et de Google Home donnent la température et l'humidité de la pièce. Les conseils et les diagnostics des plantes d'intérieur en tiennent compte. La mesure ne quitte pas l'application.",
   "homeClimate": "Capteurs de la maison",
-  "homeClimateHint": "La température et l'humidité d'un capteur de la maison ajustent les conseils des plantes d'intérieur et complètent les diagnostics. La mesure ne quitte pas l'application.",
+  "homeClimateHint": "Un capteur de la maison ajuste les conseils de vos plantes d'intérieur et complète les diagnostics. La mesure ne quitte pas l'application.",
   "homeClimateApple": "Apple Maison",
   "homeClimateGoogle": "Google Home",
   "homeClimateConnect": "Connecter la maison",
@@ -693,7 +693,7 @@
   "homeClimateTemperatureSensor": "Capteur de température",
   "homeClimateHumiditySensor": "Capteur d'humidité",
   "homeClimateSameSensor": "Même capteur",
-  "homeClimateHumidityMissing": "Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.",
+  "homeClimateHumidityMissing": "Ce capteur n'envoie pas l'humidité. Choisissez-en un autre dans la ligne Humidité.",
   "homeClimateNone": "Aucun capteur",
   "homeClimateRemove": "Retirer le capteur",
   "homeClimateReading": "Mesure",
@@ -714,9 +714,9 @@
       }
     }
   },
-  "homeClimateDeniedApple": "Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.",
-  "homeClimateDeniedGoogle": "Accès à Google Home refusé. Il se rouvre dans l'application Google Home, aux autorisations.",
-  "homeClimateFailedIn": "{home} indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.",
+  "homeClimateDeniedApple": "Accès à Apple Maison refusé. Vous pouvez le rétablir dans Réglages › Confidentialité › Maison.",
+  "homeClimateDeniedGoogle": "Accès à Google Home refusé. Vous pouvez le rétablir dans les autorisations de l'application Google Home.",
+  "homeClimateFailedIn": "{home} est indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.",
   "@homeClimateFailedIn": {
     "placeholders": {
       "home": {
@@ -728,7 +728,7 @@
   "homeClimateGoogleNote": "Google Home lit les appareils via votre compte Google.",
   "homeClimateDisconnect": "Déconnecter",
   "homeClimateDisconnectGoogle": "Déconnecter Google Home",
-  "homeClimateDisconnectGoogleHint": "Les capteurs de Google Home sont oubliés sur cet appareil. L'autorisation accordée reste dans le compte Google, et se retire depuis ce compte.",
+  "homeClimateDisconnectGoogleHint": "Les capteurs Google Home sont oubliés sur cet appareil. L'autorisation reste dans votre compte Google : retirez-la depuis ce compte.",
   "homeClimateDisconnectedGoogle": "Google Home déconnecté.",
   "homeClimateGoogleAccess": "Autorisations du compte Google",
   "homeClimateAtHome": "Chez vous",
@@ -737,7 +737,7 @@
   "homeClimateTooHumid": "Air trop humide pour cette espèce.",
   "homeClimateTooCold": "Trop froid pour cette espèce.",
   "homeClimateTooHot": "Trop chaud pour cette espèce.",
-  "homeTipDryAir": "Air sec : brumiser ou regrouper {names}.",
+  "homeTipDryAir": "Air sec : brumisez ou regroupez {names}.",
   "@homeTipDryAir": {
     "placeholders": {
       "names": {
@@ -745,8 +745,8 @@
       }
     }
   },
-  "homeTipHumidAir": "Air humide : aérer la pièce.",
-  "homeTipHumidAirPlants": "Air humide : aérer, et laisser sécher {names} entre deux arrosages.",
+  "homeTipHumidAir": "Air humide : aérez la pièce.",
+  "homeTipHumidAirPlants": "Air humide : aérez, et laissez sécher {names} entre deux arrosages.",
   "@homeTipHumidAirPlants": {
     "placeholders": {
       "names": {
@@ -762,7 +762,7 @@
       }
     }
   },
-  "homeTipHot": "Chaleur : {names} sèchent plus vite, vérifier la terre.",
+  "homeTipHot": "Chaleur : {names} sèchent plus vite, vérifiez la terre.",
   "@homeTipHot": {
     "placeholders": {
       "names": {
@@ -1069,7 +1069,7 @@
   "outdoor": "Extérieur",
   "outdoorHint": "Balcon, jardin ou serre : la météo est prise en compte.",
   "weather": "Météo",
-  "weatherHint": "Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo.",
+  "weatherHint": "Pour vos plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, gel et canicule sont signalés (Open-Meteo).",
   "weatherPlace": "Lieu",
   "weatherSearchHint": "Ville…",
   "weatherNone": "Aucun lieu",
@@ -2770,7 +2770,7 @@
     }
   },
   "strategyWeather": "Météo",
-  "strategyWeatherHint": "L'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid.",
+  "strategyWeatherHint": "L'intervalle de la saison se resserre par temps chaud et sec, s'espace par temps pluvieux ou froid.",
   "strategyWeatherNow": "Avec le temps de la semaine : {interval}",
   "@strategyWeatherNow": {
     "placeholders": {
@@ -2779,7 +2779,7 @@
       }
     }
   },
-  "strategyWeatherNoPlace": "Sans lieu météo, l'intervalle reste celui de la saison.",
+  "strategyWeatherNoPlace": "Sans lieu météo renseigné, l'intervalle reste celui de la saison.",
   "weatherWhenTonight": "cette nuit",
   "weatherWhenToday": "aujourd'hui",
   "weatherWhenTomorrow": "demain",
@@ -2813,7 +2813,7 @@
       }
     }
   },
-  "weatherFrostBody": "À rentrer ou à couvrir : {names}.",
+  "weatherFrostBody": "Rentrez ou couvrez {names}.",
   "@weatherFrostBody": {
     "placeholders": {
       "names": {
@@ -2821,7 +2821,7 @@
       }
     }
   },
-  "weatherHeatBody": "À mettre à l'ombre, et à arroser tôt : {names}.",
+  "weatherHeatBody": "Mettez {names} à l'ombre, et arrosez tôt.",
   "@weatherHeatBody": {
     "placeholders": {
       "names": {
@@ -2845,7 +2845,7 @@
       }
     }
   },
-  "notifFrost": "Gel {when} · à rentrer ou à couvrir : {names}.",
+  "notifFrost": "Gel {when} · rentrez ou couvrez {names}.",
   "@notifFrost": {
     "placeholders": {
       "when": {
@@ -2856,7 +2856,7 @@
       }
     }
   },
-  "notifHeat": "Chaleur {when} · à mettre à l'ombre : {names}.",
+  "notifHeat": "Chaleur {when} · mettez {names} à l'ombre.",
   "@notifHeat": {
     "placeholders": {
       "when": {
@@ -2909,9 +2909,9 @@
     }
   },
   "weatherRainCounts": "La pluie compte comme un arrosage",
-  "weatherRainCountsHint": "Au-delà de 5 mm sur trois jours, l'arrosage des emplacements extérieurs est noté fait. Coupé, l'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie.",
+  "weatherRainCountsHint": "Au-delà de 5 mm sur 3 jours, l'arrosage de vos emplacements extérieurs est noté fait. Un pot sous un feuillage reçoit moins de pluie.",
   "weatherClimate": "Climat",
-  "weatherClimateHint": "Les propositions de plantes pour l'extérieur suivent les hivers et les étés du lieu.",
+  "weatherClimateHint": "Les plantes proposées pour l'extérieur tiennent compte des hivers et des étés de votre région.",
   "weatherClimateZone": "Zone {zone}",
   "@weatherClimateZone": {
     "placeholders": {

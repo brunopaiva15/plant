@@ -1564,7 +1564,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeClimateHint =>
-      'La température et l\'humidité d\'un capteur de la maison ajustent les conseils des plantes d\'intérieur et complètent les diagnostics. La mesure ne quitte pas l\'application.';
+      'Un capteur de la maison ajuste les conseils de vos plantes d\'intérieur et complète les diagnostics. La mesure ne quitte pas l\'application.';
 
   @override
   String get homeClimateApple => 'Apple Maison';
@@ -1616,7 +1616,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Humidité non reçue de ce capteur. Un autre se choisit dans la ligne Humidité.';
+      'Ce capteur n\'envoie pas l\'humidité. Choisissez-en un autre dans la ligne Humidité.';
 
   @override
   String get homeClimateNone => 'Aucun capteur';
@@ -1649,15 +1649,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeClimateDeniedApple =>
-      'Accès à Apple Maison refusé. Il se rouvre dans Réglages › Confidentialité › Maison.';
+      'Accès à Apple Maison refusé. Vous pouvez le rétablir dans Réglages › Confidentialité › Maison.';
 
   @override
   String get homeClimateDeniedGoogle =>
-      'Accès à Google Home refusé. Il se rouvre dans l\'application Google Home, aux autorisations.';
+      'Accès à Google Home refusé. Vous pouvez le rétablir dans les autorisations de l\'application Google Home.';
 
   @override
   String homeClimateFailedIn(String home) {
-    return '$home indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.';
+    return '$home est indisponible. Vous pourrez connecter un capteur dans Profil › Capteurs de la maison.';
   }
 
   @override
@@ -1676,7 +1676,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeClimateDisconnectGoogleHint =>
-      'Les capteurs de Google Home sont oubliés sur cet appareil. L\'autorisation accordée reste dans le compte Google, et se retire depuis ce compte.';
+      'Les capteurs Google Home sont oubliés sur cet appareil. L\'autorisation reste dans votre compte Google : retirez-la depuis ce compte.';
 
   @override
   String get homeClimateDisconnectedGoogle => 'Google Home déconnecté.';
@@ -1704,15 +1704,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String homeTipDryAir(String names) {
-    return 'Air sec : brumiser ou regrouper $names.';
+    return 'Air sec : brumisez ou regroupez $names.';
   }
 
   @override
-  String get homeTipHumidAir => 'Air humide : aérer la pièce.';
+  String get homeTipHumidAir => 'Air humide : aérez la pièce.';
 
   @override
   String homeTipHumidAirPlants(String names) {
-    return 'Air humide : aérer, et laisser sécher $names entre deux arrosages.';
+    return 'Air humide : aérez, et laissez sécher $names entre deux arrosages.';
   }
 
   @override
@@ -1722,7 +1722,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String homeTipHot(String names) {
-    return 'Chaleur : $names sèchent plus vite, vérifier la terre.';
+    return 'Chaleur : $names sèchent plus vite, vérifiez la terre.';
   }
 
   @override
@@ -2210,7 +2210,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Pour les plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, et le gel comme la canicule sont signalés. Données Open-Meteo.';
+      'Pour vos plantes en extérieur : la pluie tombée vaut un arrosage, la pluie annoncée le reporte, gel et canicule sont signalés (Open-Meteo).';
 
   @override
   String get weatherPlace => 'Lieu';
@@ -5742,7 +5742,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get strategyWeatherHint =>
-      'L\'intervalle de la saison, resserré par la chaleur sèche, espacé par la pluie et le froid.';
+      'L\'intervalle de la saison se resserre par temps chaud et sec, s\'espace par temps pluvieux ou froid.';
 
   @override
   String strategyWeatherNow(String interval) {
@@ -5751,7 +5751,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get strategyWeatherNoPlace =>
-      'Sans lieu météo, l\'intervalle reste celui de la saison.';
+      'Sans lieu météo renseigné, l\'intervalle reste celui de la saison.';
 
   @override
   String get weatherWhenTonight => 'cette nuit';
@@ -5779,12 +5779,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String weatherFrostBody(String names) {
-    return 'À rentrer ou à couvrir : $names.';
+    return 'Rentrez ou couvrez $names.';
   }
 
   @override
   String weatherHeatBody(String names) {
-    return 'À mettre à l\'ombre, et à arroser tôt : $names.';
+    return 'Mettez $names à l\'ombre, et arrosez tôt.';
   }
 
   @override
@@ -5805,12 +5805,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String notifFrost(String when, String names) {
-    return 'Gel $when · à rentrer ou à couvrir : $names.';
+    return 'Gel $when · rentrez ou couvrez $names.';
   }
 
   @override
   String notifHeat(String when, String names) {
-    return 'Chaleur $when · à mettre à l\'ombre : $names.';
+    return 'Chaleur $when · mettez $names à l\'ombre.';
   }
 
   @override
@@ -5852,14 +5852,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherRainCountsHint =>
-      'Au-delà de 5 mm sur trois jours, l\'arrosage des emplacements extérieurs est noté fait. Coupé, l\'écran du matin le propose en un tap. Un pot abrité par un feuillage reçoit moins de pluie.';
+      'Au-delà de 5 mm sur 3 jours, l\'arrosage de vos emplacements extérieurs est noté fait. Un pot sous un feuillage reçoit moins de pluie.';
 
   @override
   String get weatherClimate => 'Climat';
 
   @override
   String get weatherClimateHint =>
-      'Les propositions de plantes pour l\'extérieur suivent les hivers et les étés du lieu.';
+      'Les plantes proposées pour l\'extérieur tiennent compte des hivers et des étés de votre région.';
 
   @override
   String weatherClimateZone(String zone) {
