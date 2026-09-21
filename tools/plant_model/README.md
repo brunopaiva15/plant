@@ -518,3 +518,39 @@ incomparables.
 > bien dans sa propre table de 4 271 taxons. Le voisinage reste cohérent (des
 > Astéracées jaunes) et `carre` s'en tire mieux qu'`etire`, mais une image ne
 > fait pas une mesure. C'est le banc qui tranche.
+
+## L'étape 5 : notre student
+
+```bash
+source ~/venv-torch/bin/activate && pip install timm
+python3 distiller.py mesure --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip
+```
+
+Le teacher est passé une fois, la porte C est franchie, et le student public
+a montré ce qu'il ne faut pas faire. Reste un petit réseau qui apprend à
+rendre les vecteurs déjà cachés.
+
+**Trois choix que le § 19 bis de `docs/14` impose**, et qui ne se discutent
+plus :
+
+1. **un terme contrastif dès la baseline.** Une perte cosinus seule se
+   minimise en rapprochant tout le monde d'une direction moyenne : c'est le
+   cône refermé du student public (0,4179 contre 0,2889 chez son teacher), et
+   c'est ce qui détruit la recherche. `--contrastive 0` reproduit la recette
+   publique, pour mesurer l'écart plutôt que le supposer ;
+2. **le critère d'arrêt est `voisins.py`, pas la perte.** À 0,80 d'accord un
+   écart isotrope ne coûte que 3 % du top-1, l'écart réel en coûtait 61 % ;
+3. **le cône se surveille pendant l'entraînement.** Il descend avec la perte
+   quand tout va bien ; s'il se referme, le student ne saura rien retrouver,
+   et la courbe de perte ne le dira pas.
+
+**Le dorsal de départ est `fastvit_sa12`** — exactement celui du modèle
+public. S'il fait mieux que ses 0,3132, c'est notre recette qui l'explique et
+rien d'autre. MobileNetV4 Hybrid vient après, à recette figée : une variable
+à la fois (§ 12 de `docs/09`).
+
+Le mélange est **global**, pas par tampon : `splits.csv` est trié par espèce,
+et un lot monospécifique donnerait à la contrastive des négatifs de la même
+plante — elle apprendrait à séparer ce qu'il faut rapprocher. C'est le défaut
+du § 6.2, avec une conséquence nouvelle.
